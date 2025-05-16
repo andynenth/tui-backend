@@ -1,4 +1,9 @@
 # ui/cli.py
+
+def show_round_banner(round_number):
+    print(f"\n===== ROUND {round_number} =====")
+
+
 def declare_input(player, max_total, is_last_player):
     display_hand(player)
     while True:
@@ -33,6 +38,7 @@ def display_hand(player):
 
 def select_play_input(player):
     display_hand(player)
+    print_declared_points(player)
     sorted_hand = sorted(
         [(i, piece) for i, piece in enumerate(player.hand)],
         key=lambda pair: (pair[1].color != "RED", -pair[1].point)
@@ -80,3 +86,15 @@ def ask_redeal(player):
         print(f"{i}: {piece}")
     answer = input(f"{player.name}, do you want to Redeal? (y/n): ").strip().lower()
     return answer == 'y'
+
+def show_winner(game):
+    winners = game.get_winners()
+
+    if not winners:
+        print("\n🤷‍♂️ No winner this game.")
+    elif len(winners) == 1:
+        winner = winners[0]
+        print(f"\n🏆 {winner.name} wins the game with {winner.score} points!")
+    else:
+        names = ", ".join(p.name for p in winners)
+        print(f"\n🤝 It's a tie! {names} win together with {winners[0].score} points!")

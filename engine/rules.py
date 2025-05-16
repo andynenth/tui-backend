@@ -1,8 +1,17 @@
+# rules.py
+
 from collections import Counter
 
-# ------------------------------
-# ENUM หรือ TYPE สำหรับ valid play
-# ------------------------------
+__all__ = [
+    "get_play_type",
+    "is_valid_play",
+    "compare_plays",
+    "PLAY_TYPE_PRIORITY"
+]
+
+# -------------------------------------------------
+# Priority order of play types (used for comparison)
+# -------------------------------------------------
 
 PLAY_TYPE_PRIORITY = [
     "SINGLE",
@@ -15,9 +24,9 @@ PLAY_TYPE_PRIORITY = [
     "DOUBLE_STRAIGHT"
 ]
 
-# ------------------------------
-# ฟังก์ชันตรวจชนิดของ play
-# ------------------------------
+# -------------------------------------------------
+# Determine the type of a given play
+# -------------------------------------------------
 
 def get_play_type(pieces):
     if len(pieces) == 1:
@@ -46,16 +55,12 @@ def get_play_type(pieces):
 
     return "INVALID"
 
-# ------------------------------
-# ฟังก์ชันตรวจว่า valid ไหม
-# ------------------------------
-
 def is_valid_play(pieces):
     return get_play_type(pieces) != "INVALID"
 
-# ------------------------------
-# ประเภท play ต่าง ๆ
-# ------------------------------
+# -------------------------------------------------
+# Play type validation functions
+# -------------------------------------------------
 
 def is_pair(pieces):
     return pieces[0].name == pieces[1].name and pieces[0].color == pieces[1].color
@@ -90,8 +95,6 @@ def is_extended_straight(pieces):
 def is_five_of_a_kind(pieces):
     return all(p.name == "SOLDIER" and p.color == pieces[0].color for p in pieces)
 
-
-
 def is_double_straight(pieces):
     if len(pieces) != 6:
         return False
@@ -103,13 +106,17 @@ def is_double_straight(pieces):
     counter = Counter(names)
     return set(counter.keys()) == {"CHARIOT", "HORSE", "CANNON"} and all(v == 2 for v in counter.values())
 
-
-# ------------------------------
-# เปรียบเทียบ play สองชุด
-# ------------------------------
+# -------------------------------------------------
+# Compare two plays of the same type
+# -------------------------------------------------
 
 def compare_plays(p1, p2):
-    """เปรียบเทียบ 2 play ที่ชนิดเดียวกัน"""
+    """Compare two plays of the same type. Returns:
+       1 → p1 wins
+       2 → p2 wins
+       0 → draw
+      -1 → invalid comparison
+    """
     type1 = get_play_type(p1)
     type2 = get_play_type(p2)
 
@@ -124,4 +131,4 @@ def compare_plays(p1, p2):
     elif sum2 > sum1:
         return 2
     else:
-        return 0  # draw
+        return 0

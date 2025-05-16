@@ -1,13 +1,16 @@
+# game.py
+
 import random
 from engine.piece import Piece
 from engine.player import Player
 from engine.ai import choose_best_play
 from engine.rules import is_valid_play, get_play_type, compare_plays
 from engine.scoring import calculate_score
+from engine.win_conditions import is_game_over, get_winners, WinConditionType
 import ui.cli as cli
 
 class Game:
-    def __init__(self):
+    def __init__(self, win_condition_type=WinConditionType.FIRST_TO_REACH_50):
         self.players = [
             Player("P1", is_bot=False),
             Player("P2", is_bot=False),
@@ -17,13 +20,16 @@ class Game:
         self.current_order = []
         self.round_number = 0
         self.max_score = 50
+        self.max_rounds = 20
+        self.win_condition_type = win_condition_type
+        
         self.last_round_winner = None
         self.redeal_multiplier = 1
 
     def start_game(self):
-        while all(p.score < self.max_score for p in self.players):
+        while not is_game_over(self):
             self.round_number += 1
-            print(f"\n===== ROUND {self.round_number} =====")
+            cli.show_round_banner(self.round_number) 
 
             while True:
                 self._deal_pieces()
@@ -35,7 +41,9 @@ class Game:
             self.play_round()
             self._print_scores()
 
-        self._announce_winner()
+        winners = get_winners(self)
+        cli.show_winner(winners)
+
 
     def _deal_pieces(self):
         deck = Piece.build_deck()
@@ -57,7 +65,6 @@ class Game:
                     return
 
     def _check_redeal(self):
-        print("\n--- Redeal Check ---")
         for player in self.players:
             has_strong_piece = any(p.point > 9 for p in player.hand)  # ELEPHANT_BLACK = 9
             if not has_strong_piece:
@@ -137,7 +144,8 @@ class Game:
                 pile_count = len(winning_play)
                 pile_counts[winner.name] += pile_count
                 round_scores[winner.name] += pile_count
-                print(f">>> {winner.name} wins +{pile_count} pts the turn with {winning_play}, the current score is {round_scores[winner.name]}")
+                print(f">>> 🎉 {winner.name} captures the turn with {winning_play} (+{pile_count} pts). Current score: {round_scores[winner.name]}")
+
                 turn_winner = winner
             else:
                 print(">>> No valid plays. No one wins this turn.")
@@ -164,7 +172,5 @@ class Game:
         print("\n--- Total Scores ---")
         for player in self.players:
             print(f"{player.name}: {player.score} pts")
-
-    def _announce_winner(self):
-        winner = max(self.players, key=lambda p: p.score)
-        print(f"\n🏆 {winner.name} wins the game with {winner.score} points!")
+        
+    
