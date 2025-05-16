@@ -73,3 +73,10 @@ def print_played_pieces(player, selected, valid, play_type):
     
 def print_the_winner(winner, winning_play):
     print(f">>> Winner: {winner.name} with {winning_play}")
+    
+def ask_redeal(player):
+    print(f"\n🃏 {player.name} hand:")
+    for i, piece in enumerate(player.hand):
+        print(f"{i}: {piece}")
+    answer = input(f"{player.name}, do you want to Redeal? (y/n): ").strip().lower()
+    return answer == 'y'
