@@ -39,7 +39,7 @@ class Game:
                 break
 
             self.play_round()
-            self._print_scores()
+            cli.print_total_scores(self.players)
 
         winners = get_winners(self)
         cli.show_winner(winners)
@@ -61,7 +61,7 @@ class Game:
             for i, player in enumerate(self.players):
                 if player.has_red_general():
                     self.current_order = self.players[i:] + self.players[:i]
-                    print(f"{player.name} starts the game (has GENERAL_RED)")
+                    cli.print_game_starter(player)
                     return
 
     def _check_redeal(self):
@@ -69,7 +69,7 @@ class Game:
             has_strong_piece = any(p.point > 9 for p in player.hand)  # ELEPHANT_BLACK = 9
             if not has_strong_piece:
                 if cli.ask_redeal(player):
-                    print(f"{player.name} has requested a redeal!")
+                    cli.print_redeal_request(player)
                     self.last_round_winner = player  # ได้เริ่มรอบถัดไป
                     self.redeal_multiplier += 1
                     return True  # redeal เกิดขึ้น
@@ -82,7 +82,7 @@ class Game:
         round_scores = {p.name: 0 for p in self.players}
         pile_counts = {p.name: 0 for p in self.players}
 
-        print("\n--- Declare Phase ---")
+        cli.print_declare_phase_banner()
         for i, player in enumerate(self.current_order):
             is_last = i == len(self.current_order) - 1
             value = cli.declare_input(player, declared_total, is_last)
@@ -93,7 +93,7 @@ class Game:
         total_turns = 0
 
         while all(len(p.hand) > 0 for p in self.players):
-            print(f"\n--- Turn {total_turns + 1} ---")
+            cli.print_turn_banner(total_turns + 1)
             turn_starter = turn_winner
             index = self.players.index(turn_starter)
             self.current_order = self.players[index:] + self.players[:index]
@@ -103,21 +103,25 @@ class Game:
                 if 1 <= len(selected) <= 6 and is_valid_play(selected):
                     break
                 else:
-                    print("❌ Invalid opening play. Please select a valid set (1-6 pieces).")
+                    cli.print_error("Invalid opening play. Please select a valid set (1–6 pieces).")
 
+            is_valid = is_valid_play(selected)
+            play_type = get_play_type(selected)
+            cli.print_played_pieces(turn_starter, selected, is_valid, play_type)
+            
             required_count = len(selected)
             turn_plays = [(turn_starter, selected, True)]
 
             for player in self.current_order[1:]:
                 if len(player.hand) < required_count:
-                    print(f"{player.name} cannot play: not enough pieces.")
+                    cli.print_error("{player.name} cannot play: not enough pieces.")
                     turn_plays.append((player, [], False))
                     continue
 
                 while True:
                     selected = cli.select_play_input(player)
                     if len(selected) != required_count:
-                        print(f"❌ You must play exactly {required_count} pieces.")
+                        cli.print_error("You must play exactly {required_count} pieces.")
                     else:
                         break
 
@@ -144,11 +148,11 @@ class Game:
                 pile_count = len(winning_play)
                 pile_counts[winner.name] += pile_count
                 round_scores[winner.name] += pile_count
-                print(f">>> 🎉 {winner.name} captures the turn with {winning_play} (+{pile_count} pts). Current score: {round_scores[winner.name]}")
+                cli.print_turn_winner(winner, winning_play, pile_count, round_scores)
 
                 turn_winner = winner
             else:
-                print(">>> No valid plays. No one wins this turn.")
+                cli.print_error(">>> No valid plays. No one wins this turn.")
 
             for player, pieces, _ in turn_plays:
                 for piece in pieces:
@@ -157,20 +161,25 @@ class Game:
 
             total_turns += 1
 
-        print("\n--- End of Round ---")
+        cli.print_end_of_round_banner()
+
+        score_data = []
         for player in self.players:
             actual = pile_counts[player.name]
             declared = player.declared
-            score_delta = calculate_score(declared, actual) * self.redeal_multiplier
-            player.score += score_delta
-            print(f"{player.name}: declared {declared}, got {actual} → {score_delta:+} pts (×{self.redeal_multiplier})")
+            delta = calculate_score(declared, actual) * self.redeal_multiplier
+            player.score += delta
+            score_data.append({
+                "player": player,
+                "declared": declared,
+                "actual": actual,
+                "delta": delta,
+                "multiplier": self.redeal_multiplier,
+                "total": player.score
+            })
+        
+        cli.print_score_summary(score_data)
 
         self.redeal_multiplier = 1
         self.last_round_winner = turn_winner
 
-    def _print_scores(self):
-        print("\n--- Total Scores ---")
-        for player in self.players:
-            print(f"{player.name}: {player.score} pts")
-        
-    

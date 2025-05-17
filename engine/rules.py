@@ -1,4 +1,15 @@
 # rules.py
+# ------------------------------
+# Available Play Types
+# ------------------------------
+# SINGLE             → 1 piece
+# PAIR               → 2 same name and color
+# THREE_OF_A_KIND    → 3 SOLDIERs of same color
+# STRAIGHT           → 3 of GENERAL, ADVISOR, ELEPHANT or CHARIOT, HORSE, CANNON (same color)
+# FOUR_OF_A_KIND     → 4 SOLDIERs of same color
+# EXTENDED_STRAIGHT  → 4 of group above, 1 duplicated, same color
+# FIVE_OF_A_KIND     → 5 SOLDIERs of same color
+# DOUBLE_STRAIGHT    → 2 CHARIOTs, 2 HORSEs, 2 CANNONs (same color)
 
 from collections import Counter
 
@@ -20,9 +31,11 @@ PLAY_TYPE_PRIORITY = [
     "STRAIGHT",
     "FOUR_OF_A_KIND",
     "EXTENDED_STRAIGHT",
+    "EXTENDED_STRAIGHT_5",
     "FIVE_OF_A_KIND",
     "DOUBLE_STRAIGHT"
 ]
+
 
 # -------------------------------------------------
 # Determine the type of a given play
@@ -47,8 +60,11 @@ def get_play_type(pieces):
         elif is_extended_straight(pieces):
             return "EXTENDED_STRAIGHT"
 
-    if len(pieces) == 5 and is_five_of_a_kind(pieces):
-        return "FIVE_OF_A_KIND"
+    if len(pieces) == 5:
+        if is_five_of_a_kind(pieces):
+            return "FIVE_OF_A_KIND"
+        elif is_extended_straight_5(pieces):
+            return "EXTENDED_STRAIGHT_5"
 
     if len(pieces) == 6 and is_double_straight(pieces):
         return "DOUBLE_STRAIGHT"
@@ -91,6 +107,26 @@ def is_extended_straight(pieces):
             if any(v == 2 for v in counter.values()):
                 return True
     return False
+
+def is_extended_straight_5(pieces):
+    if len(pieces) != 5:
+        return False
+
+    color = pieces[0].color
+    names = [p.name for p in pieces]
+    counter = Counter(names)
+    name_set = set(names)
+
+    valid_groups = [
+        {"GENERAL", "ADVISOR", "ELEPHANT"},
+        {"CHARIOT", "HORSE", "CANNON"}
+    ]
+
+    return (
+        all(p.color == color for p in pieces) and
+        any(name_set.issubset(group) for group in valid_groups) and
+        sorted(counter.values()) == [1, 2, 2]  # two duplicates
+    )
 
 def is_five_of_a_kind(pieces):
     return all(p.name == "SOLDIER" and p.color == pieces[0].color for p in pieces)

@@ -3,6 +3,39 @@
 def show_round_banner(round_number):
     print(f"\n===== ROUND {round_number} =====")
 
+def print_declare_phase_banner():
+    print("\n🔸 --- Declare Phase ---")
+
+def print_error(message):
+    print(f"❌ {message}")
+
+def print_turn_winner(winner, winning_play, pile_count, round_scores):
+    print(f">>> 🎉 {winner.name} captures the turn with {winning_play} (+{pile_count} pts). Current score: {round_scores[winner.name]}")
+
+def print_end_of_round_banner():
+    print("\n🏁 --- End of Round ---")
+
+def print_game_starter(player):
+    print(f"{player.name} starts the game (has GENERAL_RED)")
+
+def print_total_scores(players):
+    print("\n📊 --- Total Scores ---")
+    for player in players:
+        print(f"{player.name}: {player.score} pts")
+
+
+def print_redeal_request(player):
+    print(f"🔁 {player.name} has requested a redeal!")
+
+def print_turn_banner(turn_number):
+    print(f"\n--- Turn {turn_number} ---")
+
+def print_score_summary(score_data):
+    print_end_of_round_banner()
+    print("\n📊 Round Summary:")
+    for p in score_data:
+        print(f"{p['player'].name} → declared {p['declared']}, got {p['actual']} → {p['delta']:+} pts (×{p['multiplier']}), total: {p['total']}")
+
 
 def declare_input(player, max_total, is_last_player):
     display_hand(player)
@@ -81,9 +114,7 @@ def print_the_winner(winner, winning_play):
     print(f">>> Winner: {winner.name} with {winning_play}")
     
 def ask_redeal(player):
-    print(f"\n🃏 {player.name} hand:")
-    for i, piece in enumerate(player.hand):
-        print(f"{i}: {piece}")
+    display_hand(player)
     answer = input(f"{player.name}, do you want to Redeal? (y/n): ").strip().lower()
     return answer == 'y'
 
