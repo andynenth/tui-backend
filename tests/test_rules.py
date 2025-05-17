@@ -85,7 +85,7 @@ class TestExtendedStraight(unittest.TestCase):
             Piece("HORSE_RED")  # duplicated HORSE
         ]
         self.assertTrue(is_valid_play(pieces))
-        self.assertEqual(get_play_type(pieces), "EXTENDED_STRAIGHT")
+        self.assertEqual(get_play_type(pieces), "EXTENDED_STRAIGHT_5")
         
     def test_valid_extended_straight(self):
         pieces = [
@@ -96,7 +96,7 @@ class TestExtendedStraight(unittest.TestCase):
             Piece("ELEPHANT_RED")  
         ]
         self.assertTrue(is_valid_play(pieces))
-        self.assertEqual(get_play_type(pieces), "EXTENDED_STRAIGHT")
+        self.assertEqual(get_play_type(pieces), "EXTENDED_STRAIGHT_5")
 
 
 # -------------------------------
@@ -108,6 +108,26 @@ class TestComparePlays(unittest.TestCase):
         play2 = [Piece("CANNON_RED"), Piece("CANNON_RED")]    # 7 + 7 = 14
         result = compare_plays(play1, play2)
         self.assertEqual(result, 2)  # play2 wins
+        
+    def test_compare_extended_straight_draw(self):
+        black = [
+            Piece("CHARIOT_BLACK"),
+            Piece("CHARIOT_BLACK"),
+            Piece("HORSE_BLACK"),
+            Piece("CANNON_BLACK")
+        ]
+        red = [
+            Piece("CHARIOT_RED"),
+            Piece("HORSE_RED"),
+            Piece("CANNON_RED"),
+            Piece("CANNON_RED")
+        ]
+        self.assertEqual(get_play_type(black), "EXTENDED_STRAIGHT")
+        self.assertEqual(get_play_type(red), "EXTENDED_STRAIGHT")
+
+        result = compare_plays(black, red)
+        self.assertEqual(result, 2) 
+        
 
 if __name__ == "__main__":
     unittest.main()

@@ -147,24 +147,48 @@ def is_double_straight(pieces):
 # -------------------------------------------------
 
 def compare_plays(p1, p2):
-    """Compare two plays of the same type. Returns:
-       1 → p1 wins
-       2 → p2 wins
-       0 → draw
-      -1 → invalid comparison
-    """
+    # Determine the play types of both inputs
     type1 = get_play_type(p1)
     type2 = get_play_type(p2)
 
+    # If the play types are different, they cannot be compared
     if type1 != type2:
-        return -1  # invalid comparison
+        return -1  # Invalid comparison
 
-    sum1 = sum(p.point for p in p1)
-    sum2 = sum(p.point for p in p2)
+    # For extended straights (both 4-piece and 5-piece), 
+    # compare using only the top 3 unique piece types (no duplicates)
+    if type1 in ["EXTENDED_STRAIGHT", "EXTENDED_STRAIGHT_5"]:
+        
+        def core_sum(pieces):
+            names_seen = set()  # Track unique piece names
+            total = 0           # Accumulator for the score of top 3 unique pieces
 
-    if sum1 > sum2:
-        return 1
-    elif sum2 > sum1:
-        return 2
+            # Sort pieces by point value descending
+            for p in sorted(pieces, key=lambda x: -x.point):
+                if p.name not in names_seen:
+                    names_seen.add(p.name)
+                    total += p.point
+                # Stop once we have 3 different types
+                if len(names_seen) == 3:
+                    break
+
+            return total
+
+        # Calculate scores based on core 3 unique types only
+        sum1 = core_sum(p1)
+        sum2 = core_sum(p2)
+
     else:
-        return 0
+        # For all other play types, sum the total point values normally
+        sum1 = sum(p.point for p in p1)
+        sum2 = sum(p.point for p in p2)
+
+    # Determine which play has the higher score
+    if sum1 > sum2:
+        return 1  # p1 wins
+    elif sum2 > sum1:
+        return 2  # p2 wins
+    else:
+        return 0  # Tie
+
+
