@@ -7,18 +7,15 @@
 # THREE_OF_A_KIND    → 3 SOLDIERs of same color
 # STRAIGHT           → 3 of GENERAL, ADVISOR, ELEPHANT or CHARIOT, HORSE, CANNON (same color)
 # FOUR_OF_A_KIND     → 4 SOLDIERs of same color
-# EXTENDED_STRAIGHT  → 4 of group above, 1 duplicated, same color
+# EXTENDED_STRAIGHT  → 4 pieces of the same group (GENERAL–ELEPHANT or CHARIOT–CANNON),
+#                      same color, 1 piece must be duplicated (e.g., HORSE appears twice)
+# EXTENDED_STRAIGHT_5 → 5 pieces of the same group and color, with 2 pieces duplicated 
+#                       (e.g., HORSE and CANNON appear twice), still only 3 unique types
 # FIVE_OF_A_KIND     → 5 SOLDIERs of same color
 # DOUBLE_STRAIGHT    → 2 CHARIOTs, 2 HORSEs, 2 CANNONs (same color)
 
-from collections import Counter
 
-__all__ = [
-    "get_play_type",
-    "is_valid_play",
-    "compare_plays",
-    "PLAY_TYPE_PRIORITY"
-]
+from collections import Counter
 
 # -------------------------------------------------
 # Priority order of play types (used for comparison)

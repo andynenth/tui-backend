@@ -7,6 +7,7 @@ from engine.ai import choose_best_play
 from engine.rules import is_valid_play, get_play_type, compare_plays
 from engine.scoring import calculate_score
 from engine.win_conditions import is_game_over, get_winners, WinConditionType
+from engine.turn_resolution import resolve_turn_winner, TurnPlay
 import ui.cli as cli
 
 class Game:
@@ -70,34 +71,46 @@ class Game:
             if not has_strong_piece:
                 if cli.ask_redeal(player):
                     cli.print_redeal_request(player)
-                    self.last_round_winner = player  # ได้เริ่มรอบถัดไป
+                    self.last_round_winner = player
                     self.redeal_multiplier += 1
-                    return True  # redeal เกิดขึ้น
+                    return True  
         return False
 
     def play_round(self):
+        # Reset declarations from the previous round
         for p in self.players:
             p.declared = 0
         declared_total = 0
+
+        # Initialize tracking for this round
         round_scores = {p.name: 0 for p in self.players}
         pile_counts = {p.name: 0 for p in self.players}
 
+        # --- Phase 1: Declaration ---
         cli.print_declare_phase_banner()
         for i, player in enumerate(self.current_order):
             is_last = i == len(self.current_order) - 1
+            # Prompt the player to declare how many sets they will capture
             value = cli.declare_input(player, declared_total, is_last)
             player.record_declaration(value)
             declared_total += value
 
+        # 
+        # Set the player who starts the first turn
         turn_winner = self.current_order[0]
         total_turns = 0
 
+        # --- Phase 2: Turn-by-turn play ---
         while all(len(p.hand) > 0 for p in self.players):
             cli.print_turn_banner(total_turns + 1)
+
+            # Determine the play order starting from the last turn winner
             turn_starter = turn_winner
             index = self.players.index(turn_starter)
             self.current_order = self.players[index:] + self.players[:index]
 
+            # --- First player plays ---
+            # First player of a turn must make a valid opening play
             while True:
                 selected = cli.select_play_input(turn_starter)
                 if 1 <= len(selected) <= 6 and is_valid_play(selected):
@@ -110,12 +123,13 @@ class Game:
             cli.print_played_pieces(turn_starter, selected, is_valid, play_type)
             
             required_count = len(selected)
-            turn_plays = [(turn_starter, selected, True)]
+            turn_plays = [TurnPlay(turn_starter, selected, True)]
 
+            # --- Other players respond ---
             for player in self.current_order[1:]:
                 if len(player.hand) < required_count:
                     cli.print_error("{player.name} cannot play: not enough pieces.")
-                    turn_plays.append((player, [], False))
+                    turn_plays.append(TurnPlay(player, [], False))
                     continue
 
                 while True:
@@ -128,39 +142,33 @@ class Game:
                 is_valid = is_valid_play(selected)
                 play_type = get_play_type(selected)
                 cli.print_played_pieces(player, selected, is_valid, play_type)
-                turn_plays.append((player, selected, is_valid))
+                turn_plays.append(TurnPlay(player, selected, is_valid))
 
-            winner = None
-            winning_play = None
-            for player, play, valid in turn_plays:
-                if not valid:
-                    continue
-                if not winning_play:
-                    winner = player
-                    winning_play = play
-                else:
-                    result = compare_plays(winning_play, play)
-                    if result == 2:
-                        winner = player
-                        winning_play = play
+            # --- Determine winner of the turn ---
+            winning_play = resolve_turn_winner(turn_plays)
 
-            if winner:
-                pile_count = len(winning_play)
+            if winning_play:
+                winner = winning_play.player
+                pieces = winning_play.pieces
+                pile_count = len(pieces)
+                
+                # Update scores and set winner for next turn
                 pile_counts[winner.name] += pile_count
                 round_scores[winner.name] += pile_count
-                cli.print_turn_winner(winner, winning_play, pile_count, round_scores)
-
+                cli.print_turn_winner(winner, pieces, pile_count, round_scores)
                 turn_winner = winner
             else:
                 cli.print_error(">>> No valid plays. No one wins this turn.")
 
-            for player, pieces, _ in turn_plays:
-                for piece in pieces:
-                    if piece in player.hand:
-                        player.hand.remove(piece)
+            # --- Remove played pieces from players' hands ---
+            for play in turn_plays:
+                for piece in play.pieces:
+                    if piece in play.player.hand:
+                        play.player.hand.remove(piece)
 
             total_turns += 1
 
+        # --- Phase 3: Round End & Scoring ---
         cli.print_end_of_round_banner()
 
         score_data = []
@@ -180,6 +188,7 @@ class Game:
         
         cli.print_score_summary(score_data)
 
+        # Reset redeal multiplier for next round
         self.redeal_multiplier = 1
         self.last_round_winner = turn_winner
 

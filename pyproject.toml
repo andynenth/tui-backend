@@ -1,0 +1,21 @@
+[project]
+name = "tui-backend"
+version = "0.1.0"
+description = "Liap Tui game engine with CLI interface"
+authors = [
+    {name = "Andy Nenthong", email = "andy.nenth@gmail.com"}
+]
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = []
+
+[tool.poetry]
+package-mode = false
+
+[tool.poetry.group.dev.dependencies]
+pytest = "^8.3.5"
+black = "^25.1.0"
+
+[build-system]
+requires = ["poetry-core>=2.0.0,<3.0.0"]
+build-backend = "poetry.core.masonry.api"
