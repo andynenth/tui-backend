@@ -87,9 +87,7 @@ def ask_redeal(player):
     answer = input(f"{player.name}, do you want to Redeal? (y/n): ").strip().lower()
     return answer == 'y'
 
-def show_winner(game):
-    winners = game.get_winners()
-
+def show_winner(winners):
     if not winners:
         print("\n🤷‍♂️ No winner this game.")
     elif len(winners) == 1:
@@ -98,3 +96,4 @@ def show_winner(game):
     else:
         names = ", ".join(p.name for p in winners)
         print(f"\n🤝 It's a tie! {names} win together with {winners[0].score} points!")
+
