@@ -31,7 +31,6 @@ def print_turn_banner(turn_number):
     print(f"\n--- Turn {turn_number} ---")
 
 def print_score_summary(score_data):
-    print_end_of_round_banner()
     print("\n📊 Round Summary:")
     for p in score_data:
         print(f"{p['player'].name} → declared {p['declared']}, got {p['actual']} → {p['delta']:+} pts (×{p['multiplier']}), total: {p['total']}")

@@ -5,7 +5,7 @@ from engine.piece import Piece
 from engine.player import Player
 from engine.ai import choose_best_play
 from engine.rules import is_valid_play, get_play_type, compare_plays
-from engine.scoring import calculate_score
+from engine.scoring import calculate_score, calculate_round_scores
 from engine.win_conditions import is_game_over, get_winners, WinConditionType
 from engine.turn_resolution import resolve_turn_winner, TurnPlay
 import ui.cli as cli
@@ -40,7 +40,6 @@ class Game:
                 break
 
             self.play_round()
-            cli.print_total_scores(self.players)
 
         winners = get_winners(self)
         cli.show_winner(winners)
@@ -122,19 +121,20 @@ class Game:
             play_type = get_play_type(selected)
             cli.print_played_pieces(turn_starter, selected, is_valid, play_type)
             
-            required_count = len(selected)
+            required_piece_count = len(selected)
             turn_plays = [TurnPlay(turn_starter, selected, True)]
 
             # --- Other players respond ---
             for player in self.current_order[1:]:
-                if len(player.hand) < required_count:
-                    cli.print_error("{player.name} cannot play: not enough pieces.")
-                    turn_plays.append(TurnPlay(player, [], False))
-                    continue
+                if len(player.hand) < required_piece_count:
+                    cli.print_error(
+                        f"ERROR: {player.name} has only {len(player.hand)} pieces but needs {required_piece_count}."
+                    )
+                    raise RuntimeError("Invalid state: player has insufficient pieces for this turn.")
 
                 while True:
                     selected = cli.select_play_input(player)
-                    if len(selected) != required_count:
+                    if len(selected) != required_piece_count:
                         cli.print_error("You must play exactly {required_count} pieces.")
                     else:
                         break
@@ -171,24 +171,13 @@ class Game:
         # --- Phase 3: Round End & Scoring ---
         cli.print_end_of_round_banner()
 
-        score_data = []
-        for player in self.players:
-            actual = pile_counts[player.name]
-            declared = player.declared
-            delta = calculate_score(declared, actual) * self.redeal_multiplier
-            player.score += delta
-            score_data.append({
-                "player": player,
-                "declared": declared,
-                "actual": actual,
-                "delta": delta,
-                "multiplier": self.redeal_multiplier,
-                "total": player.score
-            })
-        
+        score_data = calculate_round_scores(self.players, pile_counts, self.redeal_multiplier)
+
         cli.print_score_summary(score_data)
 
         # Reset redeal multiplier for next round
         self.redeal_multiplier = 1
         self.last_round_winner = turn_winner
+
+
 

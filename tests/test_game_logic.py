@@ -1,7 +1,7 @@
 import unittest
 from engine.game import Game
 from engine.win_conditions import WinConditionType
-
+from engine.piece import Piece
 class TestGameLogic(unittest.TestCase):
     def test_deal_gives_8_each(self):
         game = Game()
