@@ -1,3 +1,5 @@
+# game.py
+
 import random
 from engine.piece import Piece
 from engine.player import Player
@@ -5,6 +7,7 @@ from engine.rules import is_valid_play, get_play_type, compare_plays
 from engine.scoring import calculate_round_scores
 from engine.win_conditions import is_game_over, get_winners, WinConditionType
 from engine.turn_resolution import resolve_turn_winner, TurnPlay
+from engine.interface import GameInterface
 
 class Game:
     """
@@ -78,7 +81,8 @@ class Game:
                 return True
         return False
 
-    def play_round(self, declare_inputs, play_inputs):
+    def play_round(self, interface: GameInterface):
+
         """
         Executes one full round: Declaration → Play turns → Scoring.
         Input functions are passed in as dicts to allow CLI/AI integration.
@@ -100,7 +104,8 @@ class Game:
         for i, player in enumerate(self.current_order):
             is_last = i == len(self.current_order) - 1
             # Each player declares how many sets they plan to capture
-            player.choose_declaration(declared_total, is_last, declare_inputs[player.name])
+            input_func = interface.declare_inputs[player.name]
+            player.choose_declaration(declared_total, is_last, input_func)
             declared_total += player.declared
 
         # First turn is started by first player in the order
@@ -119,14 +124,19 @@ class Game:
 
             # First player makes a valid opening play (1–6 pieces)
             while True:
-                selected = play_inputs[turn_starter.name]()
+                selected = interface.play_inputs[turn_starter.name]()
                 if 1 <= len(selected) <= 6 and is_valid_play(selected):
                     break
                 else:
                     raise ValueError("Invalid opening play.")
 
+            play_type = get_play_type(selected)
+
+            interface.on_play(turn_starter, selected, True, play_type)
+
             required_piece_count = len(selected)
             turn_plays = [TurnPlay(turn_starter, selected, True)]
+
 
             # All other players must respond with the same number of pieces
             for player in self.current_order[1:]:
@@ -135,10 +145,15 @@ class Game:
 
                 selected, is_valid = player.choose_play(
                     required_piece_count,
-                    play_inputs[player.name],
+                    interface.play_inputs[player.name],
                     is_valid_play
                 )
+                play_type = get_play_type(selected) if is_valid else "INVALID"
+
+                interface.on_play(player, selected, is_valid, play_type)
+
                 turn_plays.append(TurnPlay(player, selected, is_valid))
+
 
             # Determine winner of this turn (based on highest valid play)
             winning_play = resolve_turn_winner(turn_plays)

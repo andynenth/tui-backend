@@ -13,6 +13,10 @@ def make_play_inputs(game):
         for player in game.players
     }
 
+def make_play_event_handler():
+    return lambda player, pieces, is_valid, play_type: cli.print_played_pieces(player, pieces, is_valid, play_type)
+
+
 def print_score_summary(score_data):
     cli.print_score_summary(score_data)
 

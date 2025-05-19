@@ -86,7 +86,6 @@ def select_play_input(player):
                 print("❌ Duplicate indices are not allowed.")
                 continue
 
-            # แปลงจาก index ที่โชว์ → index จริงใน player.hand
             real_indices = [sorted_hand[i][0] for i in selected_indices]
             selected = [player.hand[i] for i in real_indices]
             return selected
