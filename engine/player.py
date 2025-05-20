@@ -29,3 +29,4 @@ class Player:
             self.zero_declares_in_a_row += 1
         else:
             self.zero_declares_in_a_row = 0
+    

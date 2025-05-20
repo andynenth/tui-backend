@@ -148,3 +148,6 @@ def show_winner(winners):
 
 def print_warning(message):
     print(f"⚠️  {message}")
+
+def print_auto_declare(player, value):
+    print(f"🤖 {player.name} declares {value} piles.")

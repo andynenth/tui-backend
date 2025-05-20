@@ -3,7 +3,7 @@
 import random
 from engine.piece import Piece
 from engine.player import Player
-from engine.ai import choose_best_play
+import engine.ai as ai
 from engine.rules import is_valid_play, get_play_type, get_valid_declares
 from engine.scoring import calculate_round_scores
 from engine.win_conditions import is_game_over, get_winners, WinConditionType
@@ -14,10 +14,10 @@ class Game:
     def __init__(self, win_condition_type=WinConditionType.FIRST_TO_REACH_50):
         # Initialize the game with 4 players and default win conditions
         self.players = [
-            Player("P1", is_bot=False),
-            Player("P2", is_bot=False),
-            Player("P3", is_bot=False),
-            Player("P4", is_bot=False)
+            Player("P1", is_bot=True),
+            Player("P2", is_bot=True),
+            Player("P3", is_bot=True),
+            Player("P4", is_bot=True)
         ]
         self.current_order = []
         self.round_number = 0
@@ -119,7 +119,18 @@ class Game:
 
                 # Prompt until a valid declaration is entered
                 while True:
-                    value = cli.declare_input(player, declared_total, is_last)
+                    if player.is_bot:
+                        value = ai.choose_declare(
+                            hand=player.hand,
+                            is_first_player=(i == 0),
+                            position_in_order=i,
+                            previous_declarations=[p.declared for p in self.current_order[:i]],
+                            must_declare_nonzero=(player.zero_declares_in_a_row >= 2)
+                        )
+                        cli.print_auto_declare(player, value)  # เพิ่มฟังก์ชันนี้ใน cli ถ้ายังไม่มี
+                    else:
+                        value = cli.declare_input(player, declared_total, is_last)
+
                     if value in options:
                         break
                     else:
@@ -150,41 +161,51 @@ class Game:
             self.current_order = self.players[index:] + self.players[:index]
 
             # --- First player makes the opening play ---
-            while True:
-                selected = cli.select_play_input(turn_starter)
-                if 1 <= len(selected) <= 6 and is_valid_play(selected):
-                    break
-                else:
-                    cli.print_error("Invalid opening play. Please select a valid set (1–6 pieces).")
+            if turn_starter.is_bot:
+                selected = ai.choose_best_play(turn_starter.hand, required_count=None, verbose=True)
+                required_piece_count = len(selected)
+                is_valid = is_valid_play(selected)
+                play_type = get_play_type(selected)
+                cli.print_played_pieces(turn_starter, selected, is_valid, play_type)
+            else:
+                while True:
+                    selected = cli.select_play_input(turn_starter)
+                    if 1 <= len(selected) <= 6 and is_valid_play(selected):
+                        break
+                    else:
+                        cli.print_error("Invalid opening play. Please select a valid set (1–6 pieces).")
 
-            is_valid = is_valid_play(selected)
-            play_type = get_play_type(selected)
-            cli.print_played_pieces(turn_starter, selected, is_valid, play_type)
+                is_valid = is_valid_play(selected)
+                play_type = get_play_type(selected)
+                cli.print_played_pieces(turn_starter, selected, is_valid, play_type)
 
             required_piece_count = len(selected)
-            turn_plays = [TurnPlay(turn_starter, selected, True)]
+            turn_plays = [TurnPlay(turn_starter, selected, is_valid)]
+
 
             # --- Other players respond ---
             for player in self.current_order[1:]:
-                # If a player doesn't have enough pieces, it's an error
                 if len(player.hand) < required_piece_count:
                     cli.print_error(
                         f"ERROR: {player.name} has only {len(player.hand)} pieces but needs {required_piece_count}."
                     )
                     raise RuntimeError("Invalid state: player has insufficient pieces for this turn.")
 
-                # Prompt until a play with the correct number of pieces is selected
-                while True:
-                    selected = cli.select_play_input(player)
-                    if len(selected) != required_piece_count:
-                        cli.print_error(f"You must play exactly {required_piece_count} pieces.")
-                    else:
-                        break
+                if player.is_bot:
+                    selected = ai.choose_best_play(player.hand, required_count=required_piece_count, verbose=True)
+                else:
+                    while True:
+                        selected = cli.select_play_input(player)
+                        if len(selected) != required_piece_count:
+                            cli.print_error(f"You must play exactly {required_piece_count} pieces.")
+                        else:
+                            break
 
                 is_valid = is_valid_play(selected)
                 play_type = get_play_type(selected)
                 cli.print_played_pieces(player, selected, is_valid, play_type)
                 turn_plays.append(TurnPlay(player, selected, is_valid))
+
 
             # --- Determine turn winner ---
             turn_result = resolve_turn(turn_plays)
