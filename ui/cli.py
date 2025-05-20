@@ -1,4 +1,5 @@
 # ui/cli.py
+from engine.rules import get_valid_declares
 
 def show_round_banner(round_number):
     print(f"\n===== ROUND {round_number} =====")
@@ -9,8 +10,32 @@ def print_declare_phase_banner():
 def print_error(message):
     print(f"❌ {message}")
 
-def print_turn_winner(winner, winning_play, pile_count, round_scores):
-    print(f">>> 🎉 {winner.name} captures the turn with {winning_play} (+{pile_count} pts). Current score: {round_scores[winner.name]}")
+def print_turn_winner(turn_result, pile_count, round_scores):
+    """
+    Print concise turn summary:
+    - Each player's move
+    - Validity
+    - [current_pts / declared]
+    - Winner announcement
+    """
+    print("\n🎯 Turn Summary:")
+
+    for play in turn_result.plays:
+        name = play.player.name
+        pieces = play.pieces
+        valid = "✅" if play.is_valid else "❌"
+        declared = play.player.declared
+        score = round_scores[name]
+        score_note = f"[{score}/{declared}]"
+        print(f"  - {name}: {pieces} {valid} {score_note}")
+
+    if turn_result.winner:
+        winner = turn_result.winner.player
+        pieces = turn_result.winner.pieces
+        print(f"\n>>> 🏆 {winner.name} wins the turn with {pieces} (+{pile_count} pts).")
+    else:
+        print("\n>>> ⚠️ No one wins the turn.")
+
 
 def print_end_of_round_banner():
     print("\n🏁 --- End of Round ---")
@@ -36,27 +61,21 @@ def print_score_summary(score_data):
         print(f"{p['player'].name} → declared {p['declared']}, got {p['actual']} → {p['delta']:+} pts (×{p['multiplier']}), total: {p['total']}")
 
 
-def declare_input(player, max_total, is_last_player):
+def declare_input(player, declared_total, is_last):
+    options = get_valid_declares(player, declared_total, is_last)
+
     display_hand(player)
+    print(f"\n🟨 {player.name}, declare how many piles you want to capture (options: {options}):")
+
     while True:
         try:
-            if player.zero_declares_in_a_row >= 2:
-                print("❗ You declared 0 twice already. You cannot declare 0 again.")
-                options = [1, 2, 3, 4, 5, 6, 7, 8]
+            value = int(input("Your declaration: ").strip())
+            if value in options:
+                return value
             else:
-                options = [0, 1, 2, 3, 4, 5, 6, 7, 8]
-
-            value = int(input(f"{player.name}, declare (options: {options}): "))
-            if value not in options:
-                continue
-
-            if is_last_player and max_total + value == 8:
-                print("❌ Total declarations cannot be exactly 8.")
-                continue
-
-            return value
+                print_error(f"Invalid declaration. Choose from {options}.")
         except ValueError:
-            continue
+            print_error("Please enter a number.")
 
 def display_hand(player):
     print(f"\n🃏 {player.name} hand:")
@@ -127,3 +146,5 @@ def show_winner(winners):
         names = ", ".join(p.name for p in winners)
         print(f"\n🤝 It's a tie! {names} win together with {winners[0].score} points!")
 
+def print_warning(message):
+    print(f"⚠️  {message}")

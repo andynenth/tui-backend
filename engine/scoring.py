@@ -1,40 +1,65 @@
-# engine/scoring.py
 # ------------------------------------------------------------------------
-# Calculate the player's score based on their declared and actual result.
+# Scoring Logic for Each Round
 # ------------------------------------------------------------------------
-#     - If the player declares 0 and gets 0: +3 bonus points.
-#     - If the player declares 0 but captures something: penalty = -actual.
-#     - If declared equals actual (non-zero): score = declared + 5 bonus.
-#     - Otherwise: penalty = -abs(declared - actual).
-
+# Rules:
+# - If declared = 0 and actual = 0 → +3 bonus points
+# - If declared = 0 but actual > 0 → penalty = -actual
+# - If declared == actual (non-zero) → score = declared + 5 bonus
+# - Otherwise → penalty = -abs(declared - actual)
+# - If this round was triggered by a redeal → score × multiplier
+# ------------------------------------------------------------------------
 
 def calculate_score(declared: int, actual: int) -> int:
+    """
+    Calculate base score based on declared and actual piles captured.
 
+    Args:
+        declared (int): The number of piles the player aimed to capture.
+        actual (int): The number of piles the player actually captured.
+
+    Returns:
+        int: The score before applying any multipliers.
+    """
     if declared == 0:
         if actual == 0:
-            return 3  # Success: declared 0 and captured nothing → +3 bonus
+            return 3  # Success: declared 0 and kept it → reward
         else:
-            return -actual  # Fail: declared 0 but captured something → -actual
+            return -actual  # Failure: declared 0 but took some → penalty
     else:
         if actual == declared:
-            return declared + 5  # Exact match → declared + 5 bonus
+            return declared + 5  # Perfect prediction → bonus
         else:
-            return -abs(declared - actual)  # Off target → penalty by difference
+            return -abs(declared - actual)  # Missed target → penalty
 
 
 def calculate_round_scores(players, pile_counts, redeal_multiplier):
+    """
+    Apply score calculation to all players at the end of the round.
+
+    Args:
+        players (List[Player]): All players in the game.
+        pile_counts (Dict[str, int]): How many pieces (piles) each player captured.
+        redeal_multiplier (int): Score multiplier due to redeals (e.g., ×2, ×3...)
+
+    Returns:
+        List[Dict]: Score summary for this round, one entry per player.
+    """
     score_data = []
+
     for player in players:
-        actual = pile_counts[player.name]
-        declared = player.declared
+        declared = player.declared                 # What they announced they'd capture
+        actual = pile_counts[player.name]          # What they actually captured
         delta = calculate_score(declared, actual) * redeal_multiplier
-        player.score += delta
+
+        player.score += delta                      # Update total score
+
         score_data.append({
-            "player": player,
-            "declared": declared,
-            "actual": actual,
-            "delta": delta,
-            "multiplier": redeal_multiplier,
-            "total": player.score
+            "player": player,                      # Reference to player object
+            "declared": declared,                  # Declared pile target
+            "actual": actual,                      # Actual piles captured
+            "delta": delta,                        # Score gained/lost this round
+            "multiplier": redeal_multiplier,       # Score multiplier from redeals
+            "total": player.score                  # Updated total score
         })
+
     return score_data

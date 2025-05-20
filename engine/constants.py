@@ -1,4 +1,16 @@
-# constants.py
+# -------------------------------------------------
+# Piece Point Values
+# -------------------------------------------------
+# This dictionary maps each unique piece (by name and color) to its point value.
+# These values are used to determine:
+# - Strength when comparing plays
+# - Turn winners
+# - Sorting for combo resolution
+#
+# Higher numbers = stronger pieces.
+# Note: RED pieces are generally stronger than BLACK pieces of the same type.
+# -------------------------------------------------
+
 PIECE_POINTS = {
     "GENERAL_RED": 14,
     "GENERAL_BLACK": 13,

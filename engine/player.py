@@ -1,20 +1,29 @@
 class Player:
     def __init__(self, name, is_bot=False):
-        self.name = name
-        self.hand = []
-        self.score = 0
-        self.declared = 0
-        self.is_bot = is_bot
-        self.zero_declares_in_a_row = 0
+        self.name = name                   # Player's name (e.g., "P1", "P2", etc.)
+        self.hand = []                    # List of current pieces in hand (max 8 at the start of each round)
+        self.score = 0                    # Total score accumulated throughout the game
+        self.declared = 0                 # Number of piles the player declared for this round
+        self.is_bot = is_bot              # Whether this player is AI-controlled
+        self.zero_declares_in_a_row = 0   # Counter for how many rounds this player has declared 0 in a row
 
     def has_red_general(self):
+        """
+        Check if the player has the RED GENERAL piece.
+        This determines who starts the first round.
+        """
         return any(p.name == "GENERAL" and p.color == "RED" for p in self.hand)
 
     def __repr__(self):
+        # Display format for debugging/logging: e.g., "P1 - 12 pts"
         return f"{self.name} - {self.score} pts"
 
     def record_declaration(self, value):
-        """อัปเดตสถานะเมื่อผู้เล่นประกาศ"""
+        """
+        Update player's state when they declare how many piles they aim to capture.
+        - If value == 0, increment the zero-declare streak.
+        - Otherwise, reset the zero-declare streak.
+        """
         self.declared = value
         if value == 0:
             self.zero_declares_in_a_row += 1
