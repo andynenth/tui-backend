@@ -4,7 +4,6 @@ from engine.rules import is_valid_play, get_play_type
 
 router = APIRouter()
 
-# ⏱ สร้างเกม global (ภายหลังแยก session ได้)
 game = Game()
 
 @router.get("/deal")
