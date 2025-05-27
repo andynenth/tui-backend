@@ -1,3 +1,5 @@
+// frontend/game-ui.js
+
 import { deal } from './api.js';
 
 /**
@@ -27,23 +29,6 @@ await app.init({
 
 document.getElementById('game-container').appendChild(app.canvas);
 
-// 🧩 All unique piece names
-const allPieceNames = [
-  "GENERAL_RED",
-  "GENERAL_BLACK",
-  "ADVISOR_RED",
-  "ADVISOR_BLACK",
-  "ELEPHANT_RED",
-  "ELEPHANT_BLACK",
-  "CHARIOT_RED",
-  "CHARIOT_BLACK",
-  "HORSE_RED",
-  "HORSE_BLACK",
-  "CANNON_RED",
-  "CANNON_BLACK",
-  "SOLDIER_RED",
-  "SOLDIER_BLACK"
-];
 
 document.getElementById('deal-button').addEventListener('click', async () => {
   console.log("🟡 Deal button clicked");
