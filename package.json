@@ -1,0 +1,26 @@
+{
+  "name": "liap-tui",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "dev": "vite"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/andynenth/tui-backend.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/andynenth/tui-backend/issues"
+  },
+  "homepage": "https://github.com/andynenth/tui-backend#readme",
+  "dependencies": {
+    "pixi.js": "^6.5.8"
+  },
+  "devDependencies": {
+    "vite": "^6.3.5"
+  }
+}

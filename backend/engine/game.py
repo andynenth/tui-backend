@@ -1,5 +1,3 @@
-# game.py
-
 import random
 from engine.piece import Piece
 from engine.player import Player
@@ -8,49 +6,246 @@ from engine.rules import is_valid_play, get_play_type, get_valid_declares
 from engine.scoring import calculate_round_scores
 from engine.win_conditions import is_game_over, get_winners, WinConditionType
 from engine.turn_resolution import resolve_turn, TurnPlay
-import ui.cli as cli
+
 
 class Game:
-    def __init__(self, win_condition_type=WinConditionType.FIRST_TO_REACH_50):
-        # Initialize the game with 4 players and default win conditions
-        self.players = [
-            Player("P1", is_bot=True),
-            Player("P2", is_bot=True),
-            Player("P3", is_bot=True),
-            Player("P4", is_bot=True)
-        ]
-        self.current_order = []
+    def __init__(self, players, interface=None, win_condition_type=WinConditionType.FIRST_TO_REACH_50):
+        # Core game state
+        self.players = players
+        self.interface = interface  # Adapter for CLI, GUI, or API
+        self.current_order = []     # Player order for each round
         self.round_number = 0
         self.max_score = 50
         self.max_rounds = 20
         self.win_condition_type = win_condition_type
-        
-        self.last_round_winner = None  # Used to determine who starts the next round
-        self.redeal_multiplier = 1     # Score multiplier when a redeal occurs
 
-    def start_game(self):
-        # Main game loop: continue until win condition is met
-        while not is_game_over(self):
-            self.round_number += 1
-            cli.show_round_banner(self.round_number)
+        # Round-specific state
+        self.last_round_winner = None      # Player who won the last round
+        self.redeal_multiplier = 1         # Score multiplier increases with each redeal
+        self.current_turn_plays = []       # Stores TurnPlay objects for current turn
+        self.required_piece_count = None   # Number of pieces required this turn
+        self.turn_order = []               # Player order for current turn
+        self.last_turn_winner = None       # Player who won the last turn
 
-            # Deal pieces until a valid hand is dealt (or a redeal is accepted)
-            while True:
-                self._deal_pieces()
-                self._set_round_start_player()
-                if self._check_redeal():
-                    continue  # Someone requested a redeal, repeat deal
-                break
 
-            # Play one round (declare → play turns → scoring)
-            self.play_round()
+    def prepare_round(self) -> dict:
+        """Prepare for a new round: shuffle and deal pieces, determine starting player, reset declarations."""
+        self.round_number += 1
+        self._deal_pieces()
+        self._set_round_start_player()
 
-        # Game ends → determine winners and display results
-        winners = get_winners(self)
-        cli.show_winner(winners)
+        # Initialize pile and score tracking
+        self.pile_counts = {p.name: 0 for p in self.players}
+        self.round_scores = {p.name: 0 for p in self.players}
+
+        # Reset player declarations
+        for player in self.players:
+            player.declared = 0
+
+        return {
+            "round": self.round_number,
+            "starter": self.current_order[0].name,
+            "hands": {
+                player.name: [str(piece) for piece in player.hand]
+                for player in self.players
+            }
+        }
+
+    def request_redeal(self, player_name: str) -> dict:
+        """Allow a player to request a redeal if they have no strong pieces."""
+        player = self.get_player(player_name)
+
+        has_strong_piece = any(p.point > 9 for p in player.hand)
+        if has_strong_piece:
+            return {
+                "redeal_allowed": False,
+                "reason": "You have strong pieces.",
+                "hand": [str(p) for p in player.hand]
+            }
+
+        self.last_round_winner = player
+        self.redeal_multiplier += 1
+
+        return {
+            "redeal_allowed": True,
+            "new_starter": player.name,
+            "multiplier": self.redeal_multiplier
+        }
+
+    def get_player(self, name: str) -> Player:
+        """Retrieve a Player instance by name."""
+        for p in self.players:
+            if p.name == name:
+                return p
+        raise ValueError(f"Player '{name}' not found")
+
+    def declare(self, player_name: str, value: int) -> dict:
+        """Allow a player to declare how many piles they plan to win this round."""
+        player = self.get_player(player_name)
+
+        if player.declared != 0:
+            return {
+                "status": "already_declared",
+                "message": f"{player.name} has already declared {player.declared}."
+            }
+
+        if player.zero_declares_in_a_row >= 2 and value == 0:
+            return {
+                "status": "error",
+                "message": f"{player.name} must declare at least 1 after two zeros in a row."
+            }
+
+        player.record_declaration(value)
+
+        total_declared = sum(p.declared for p in self.players)
+        declarations = {p.name: p.declared for p in self.players}
+
+        return {
+            "status": "ok",
+            "declared_by": player.name,
+            "value": value,
+            "total_declared": total_declared,
+            "declarations": declarations
+        }
+
+    def all_players_declared(self) -> bool:
+        """Check if all players have declared."""
+        return all(p.declared is not None for p in self.players)
+
+    def play_turn(self, player_name: str, piece_indexes: list[int]) -> dict:
+        """Handle a player's move, validate it, and resolve the turn if all players have played."""
+        player = self.get_player(player_name)
+
+        if player not in self.turn_order:
+            return {"status": "error", "message": f"{player.name} is not in current turn order."}
+
+        if any(play.player == player for play in self.current_turn_plays):
+            return {"status": "error", "message": f"{player.name} has already played this turn."}
+
+        try:
+            selected = [player.hand[i] for i in piece_indexes]
+        except IndexError:
+            return {"status": "error", "message": "Invalid piece index."}
+
+        if not (1 <= len(selected) <= 6):
+            return {"status": "error", "message": "You must play between 1–6 pieces."}
+
+        if len(self.current_turn_plays) == 0:
+            # First player sets required piece count and determines order
+            self.required_piece_count = len(selected)
+            self.turn_order = self._rotate_players_starting_from(player)
+        else:
+            if len(selected) != self.required_piece_count:
+                return {"status": "error", "message": f"You must play exactly {self.required_piece_count} pieces."}
+
+        is_valid = is_valid_play(selected)
+        play_type = get_play_type(selected) if is_valid else None
+
+        self.current_turn_plays.append(TurnPlay(player, selected, is_valid))
+
+        for piece in selected:
+            player.hand.remove(piece)
+
+        if len(self.current_turn_plays) < len(self.players):
+            return {
+                "status": "waiting",
+                "player": player.name,
+                "pieces": [str(p) for p in selected],
+                "is_valid": is_valid,
+                "play_type": play_type
+            }
+
+        # All players have played → resolve the turn
+        result = resolve_turn(self.current_turn_plays)
+        winner = result.winner.player if result.winner else None
+
+        if result.winner:
+            pile = len(result.winner.pieces)
+            self.pile_counts[winner.name] += pile
+            self.round_scores[winner.name] += pile
+            self.last_turn_winner = winner
+            pile_count = pile
+        else:
+            pile_count = 0
+
+        turn_summary = {
+            "status": "resolved",
+            "winner": winner.name if winner else None,
+            "plays": [
+                {
+                    "player": play.player.name,
+                    "pieces": [str(p) for p in play.pieces],
+                    "is_valid": play.is_valid
+                }
+                for play in self.current_turn_plays
+            ],
+            "pile_count": pile_count
+        }
+
+        # Reset turn state
+        self.current_turn_plays = []
+        self.required_piece_count = None
+
+        return turn_summary
+
+    def _rotate_players_starting_from(self, starter: Player) -> list[Player]:
+        """Generate a player order starting from a given player."""
+        idx = self.players.index(starter)
+        return self.players[idx:] + self.players[:idx]
+
+    def score_round(self) -> dict:
+        """Finalize the round: calculate scores, apply bonuses, and update total scores."""
+        score_data = calculate_round_scores(
+            players=self.players,
+            pile_counts=self.pile_counts,
+            multiplier=self.redeal_multiplier
+        )
+
+        for p in self.players:
+            p.score += score_data["scores"][p.name]
+
+        summary = {
+            "round": self.round_number,
+            "scores": score_data["scores"],
+            "bonuses": score_data["bonuses"],
+            "declares": {p.name: p.declared for p in self.players},
+            "captured": self.pile_counts,
+            "multiplier": self.redeal_multiplier
+        }
+
+        # Reset for next round
+        self.redeal_multiplier = 1
+        self.last_round_winner = self._get_round_winner()
+        self.pile_counts = {}
+        self.round_scores = {}
+
+        for player in self.players:
+            player.reset_for_next_round()
+
+        return summary
+
+    def _get_round_winner(self) -> Player:
+        """Determine the player with the highest total score so far."""
+        max_score = -1
+        winner = None
+        for p in self.players:
+            if p.score > max_score:
+                max_score = p.score
+                winner = p
+        return winner
+
+    def is_game_over(self) -> bool:
+        """Check if game has ended based on the configured win condition."""
+        if self.win_condition_type == WinConditionType.FIRST_TO_REACH_50:
+            return any(p.score >= self.max_score for p in self.players)
+
+        if self.win_condition_type == WinConditionType.AFTER_20_ROUNDS:
+            return self.round_number >= self.max_rounds
+
+        return False
 
     def _deal_pieces(self):
-        # Shuffle and deal 32 pieces evenly among 4 players (8 each)
+        """Shuffle and deal 32 pieces evenly among the 4 players."""
         deck = Piece.build_deck()
         random.shuffle(deck)
         for player in self.players:
@@ -59,9 +254,7 @@ class Game:
             self.players[i % 4].hand.append(deck[i])
 
     def _set_round_start_player(self):
-        # Choose starting player for the round:
-        # - If there's a previous round winner → they start
-        # - Else, the player who holds the RED GENERAL goes first
+        """Determine the starting player for this round."""
         if self.last_round_winner:
             index = self.players.index(self.last_round_winner)
             self.current_order = self.players[index:] + self.players[:index]
@@ -69,182 +262,15 @@ class Game:
             for i, player in enumerate(self.players):
                 if player.has_red_general():
                     self.current_order = self.players[i:] + self.players[:i]
-                    cli.print_game_starter(player)
                     return
 
     def _check_redeal(self):
-        # Check if any player has a "weak hand" (no piece > 9 points)
-        # If so, they are allowed to request a redeal
+        """(Optional Legacy) Check for weak hands and allow redeal via interface."""
         for player in self.players:
-            has_strong_piece = any(p.point > 9 for p in player.hand)  # ELEPHANT_BLACK = 9
+            has_strong_piece = any(p.point > 9 for p in player.hand)
             if not has_strong_piece:
-                if cli.ask_redeal(player):
-                    cli.print_redeal_request(player)
-                    self.last_round_winner = player  # That player gets to start the next round
-                    self.redeal_multiplier += 1     # Score multiplier increases with each redeal
+                if self.interface.ask_redeal(player):
+                    self.last_round_winner = player
+                    self.redeal_multiplier += 1
                     return True
         return False
-
-    def play_round(self):
-        # Reset declarations from previous round
-        for p in self.players:
-            p.declared = 0
-        declared_total = 0
-
-        # Initialize tracking for piles captured and temporary scores
-        round_scores = {p.name: 0 for p in self.players}
-        pile_counts = {p.name: 0 for p in self.players}
-
-        # ----------------------------------------
-        # Phase 1: Declaration
-        # ----------------------------------------
-        # Each player declares how many "piles" (sets of pieces) they aim to capture this round.
-        # Valid options are 0–8, but:
-        # - Declaring 0 three rounds in a row is not allowed (must choose at least 1)
-        # - The sum of all declarations cannot equal exactly 8 (enforced by rule logic)
-
-        cli.print_declare_phase_banner()
-        valid_declare = False
-        while not valid_declare:
-            declared_total = 0
-            for i, player in enumerate(self.current_order):
-                is_last = i == len(self.current_order) - 1
-
-                # Get valid declare options based on current state
-                options = get_valid_declares(player, declared_total, is_last)
-
-                # Warn player if they are forced to declare non-zero
-                if player.zero_declares_in_a_row >= 2:
-                    cli.print_warning(f"{player.name} must declare at least 1 this round.")
-
-                # Prompt until a valid declaration is entered
-                while True:
-                    if player.is_bot:
-                        value = ai.choose_declare(
-                            hand=player.hand,
-                            is_first_player=(i == 0),
-                            position_in_order=i,
-                            previous_declarations=[p.declared for p in self.current_order[:i]],
-                            must_declare_nonzero=(player.zero_declares_in_a_row >= 2)
-                        )
-                        cli.print_auto_declare(player, value)  # เพิ่มฟังก์ชันนี้ใน cli ถ้ายังไม่มี
-                    else:
-                        value = cli.declare_input(player, declared_total, is_last)
-
-                    if value in options:
-                        break
-                    else:
-                        cli.print_error(f"Invalid declaration. Choose from {options}.")
-
-                player.record_declaration(value)
-                declared_total += value
-
-            valid_declare = True  # Rule checks already handled by get_valid_declares()
-
-        # ----------------------------------------
-        # Phase 2: Turn-by-turn play
-        # ----------------------------------------
-        # Players take turns playing sets of 1–6 pieces.
-        # The first player defines the number of pieces; others must match that count.
-        # The best valid set wins the turn and collects the pile.
-        # Turns continue until all players have no pieces left.
-
-        turn_winner = self.current_order[0]  # First player to play
-        total_turns = 0
-
-        while all(len(p.hand) > 0 for p in self.players):
-            cli.print_turn_banner(total_turns + 1)
-
-            # Determine play order based on last turn's winner
-            turn_starter = turn_winner
-            index = self.players.index(turn_starter)
-            self.current_order = self.players[index:] + self.players[:index]
-
-            # --- First player makes the opening play ---
-            if turn_starter.is_bot:
-                selected = ai.choose_best_play(turn_starter.hand, required_count=None, verbose=True)
-                required_piece_count = len(selected)
-                is_valid = is_valid_play(selected)
-                play_type = get_play_type(selected)
-                cli.print_played_pieces(turn_starter, selected, is_valid, play_type)
-            else:
-                while True:
-                    selected = cli.select_play_input(turn_starter)
-                    if 1 <= len(selected) <= 6 and is_valid_play(selected):
-                        break
-                    else:
-                        cli.print_error("Invalid opening play. Please select a valid set (1–6 pieces).")
-
-                is_valid = is_valid_play(selected)
-                play_type = get_play_type(selected)
-                cli.print_played_pieces(turn_starter, selected, is_valid, play_type)
-
-            required_piece_count = len(selected)
-            turn_plays = [TurnPlay(turn_starter, selected, is_valid)]
-
-
-            # --- Other players respond ---
-            for player in self.current_order[1:]:
-                if len(player.hand) < required_piece_count:
-                    cli.print_error(
-                        f"ERROR: {player.name} has only {len(player.hand)} pieces but needs {required_piece_count}."
-                    )
-                    raise RuntimeError("Invalid state: player has insufficient pieces for this turn.")
-
-                if player.is_bot:
-                    selected = ai.choose_best_play(player.hand, required_count=required_piece_count, verbose=True)
-                else:
-                    while True:
-                        selected = cli.select_play_input(player)
-                        if len(selected) != required_piece_count:
-                            cli.print_error(f"You must play exactly {required_piece_count} pieces.")
-                        else:
-                            break
-
-                is_valid = is_valid_play(selected)
-                play_type = get_play_type(selected)
-                cli.print_played_pieces(player, selected, is_valid, play_type)
-                turn_plays.append(TurnPlay(player, selected, is_valid))
-
-
-            # --- Determine turn winner ---
-            turn_result = resolve_turn(turn_plays)
-
-            if turn_result.winner:
-                winner = turn_result.winner.player
-                pieces = turn_result.winner.pieces
-                pile_count = len(pieces)
-
-                # Update pile count and score
-                pile_counts[winner.name] += pile_count
-                round_scores[winner.name] += pile_count
-                cli.print_turn_winner(turn_result, pile_count, round_scores)
-                turn_winner = winner
-            else:
-                cli.print_error(">>> No valid plays. No one wins this turn.")
-
-            # --- Remove played pieces from hands ---
-            for play in turn_plays:
-                for piece in play.pieces:
-                    if piece in play.player.hand:
-                        play.player.hand.remove(piece)
-
-            total_turns += 1
-
-        # ----------------------------------------
-        # Phase 3: Scoring
-        # ----------------------------------------
-        # Compare number of piles each player captured vs. their declaration.
-        # Score is based on:
-        # - Exact match → declared + 5 bonus
-        # - Over/under → penalty
-        # - Declared 0 → +3 if succeeded, minus actual if failed
-        # If this round was a redeal → multiply score accordingly
-
-        cli.print_end_of_round_banner()
-        score_data = calculate_round_scores(self.players, pile_counts, self.redeal_multiplier)
-        cli.print_score_summary(score_data)
-
-        # Prepare for next round
-        self.redeal_multiplier = 1
-        self.last_round_winner = turn_winner

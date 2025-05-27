@@ -3,9 +3,9 @@
 from enum import Enum
 
 class WinConditionType(Enum):
-    FIRST_TO_REACH_50 = 1              # Any player with score >= 50 wins
-    MOST_POINTS_AFTER_20_ROUNDS = 2    # After 20 rounds, highest score wins
-    EXACTLY_50_POINTS = 3              # Only a score of exactly 50 wins
+    FIRST_TO_REACH_50 = "first_to_50"
+    AFTER_20_ROUNDS = "after_20_rounds"
+    EXACTLY_50_POINTS = "exactly_50_points"              # Only a score of exactly 50 wins
 
 # -----------------------------------------------
 # Check if the game should end

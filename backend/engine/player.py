@@ -30,3 +30,6 @@ class Player:
         else:
             self.zero_declares_in_a_row = 0
     
+    def reset_for_next_round(self):
+        self.declared = 0
+        self.hand.clear()
