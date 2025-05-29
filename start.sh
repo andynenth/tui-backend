@@ -8,18 +8,17 @@
 echo "▶️ Starting backend on http://localhost:5050 ..."
 PYTHONPATH=backend uvicorn api.main:app --reload --port 5050 &
 
-# Store backend PID so we can kill it later if needed
+# Store backend PID
 BACKEND_PID=$!
 
-# Wait a bit to make sure backend starts first
+# Wait for backend to start
 sleep 1
 
-# Start frontend server
-echo "🌐 Starting frontend on http://localhost:3000 ..."
+# Start Vite frontend dev server
+echo "🌐 Starting frontend on http://localhost:5173 ..."
 cd frontend
-python3 -m http.server 3000
+npm run dev
 
-# If frontend is stopped (Ctrl+C), kill backend too
+# When frontend stops (Ctrl+C), kill backend
 echo "🛑 Shutting down backend (PID: $BACKEND_PID)..."
 kill $BACKEND_PID
-
