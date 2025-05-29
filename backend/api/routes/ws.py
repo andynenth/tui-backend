@@ -1,15 +1,15 @@
-# backend/api/routes/ws.py
-from fastapi import APIRouter, WebSocket
+# backend/api/ws.py
+from fastapi import WebSocket, WebSocketDisconnect, APIRouter
+from backend.socket_manager import register, unregister
 
 router = APIRouter()
 
 @router.websocket("/ws/{room_id}")
 async def websocket_endpoint(websocket: WebSocket, room_id: str):
-    await websocket.accept()
-    await websocket.send_text(f"Connected to room: {room_id}")
-    while True:
-        try:
-            data = await websocket.receive_text()
-            await websocket.send_text(f"Echo: {data}")
-        except:
-            break
+    await register(room_id, websocket)
+    try:
+        while True:
+            await websocket.receive_text()
+            # ไม่ต้องทำอะไรกับข้อความนี้ก็ได้
+    except WebSocketDisconnect:
+        unregister(room_id, websocket)
