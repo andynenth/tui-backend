@@ -1,8 +1,22 @@
 // frontend/api.js
+
+console.log("📡 API module loaded");
+
+
 export async function createRoom(name) {
-  const res = await fetch(`/api/create-room?name=${encodeURIComponent(name)}`);
-  return res.json();
+  const res = await fetch(`/api/create-room?name=${encodeURIComponent(name)}`, {
+    method: 'POST',
+  });
+
+  const text = await res.text();
+  try {
+    return JSON.parse(text);
+  } catch (err) {
+    console.error("❌ Failed to parse JSON:", text);
+    throw err;
+  }
 }
+
 
 export async function listRooms() {
   const res = await fetch(`/api/list-rooms`);

@@ -1,10 +1,12 @@
 {
   "name": "liap-tui",
   "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "description": "A real-time online multiplayer board game inspired by Liap Tui, a traditional Chinese-Thai game. Built with FastAPI for the backend and PixiJS for the frontend, with support for real-time interaction via WebSocket.",
+  "type": "module",
+  "main": "esbuild.config.js",
   "scripts": {
-    "dev": "vite"
+    "build": "node esbuild.config.cjs",
+    "start": "serve build"
   },
   "repository": {
     "type": "git",
@@ -19,7 +21,8 @@
   "homepage": "https://github.com/andynenth/tui-backend#readme",
   "devDependencies": {
     "@pixi/devtools": "^2.0.1",
-    "vite": "^6.3.5"
+    "esbuild": "^0.21.5",
+    "serve": "^14.2.4"
   },
   "dependencies": {
     "@pixi/layout": "^3.0.2",
