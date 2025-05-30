@@ -1,8 +1,11 @@
+// frontend/main.js
+
 import { Application } from 'pixi.js';
 import '@pixi/layout';
 import { SceneManager } from './SceneManager.js';
 import { StartScene } from './scenes/StartScene.js';
-//import { LobbyScene } from './scenes/LobbyScene.js'; // ต่อในอนาคต
+// import './test.js';
+
 
 (async () => {
   const app = new Application();

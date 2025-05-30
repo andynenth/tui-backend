@@ -1,0 +1,34 @@
+# Ignore Python artifacts
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Ignore Node modules
+node_modules/
+npm-debug.log
+yarn-error.log
+package-lock.json
+
+# Ignore virtual environments
+venv/
+.env
+*.env
+
+# Ignore test files
+backend/tests/
+project-structure.txt
+
+# Ignore frontend dev files not needed in image
+frontend/test.js
+frontend/styles.css.map
+
+# Ignore local build output (we rebuild inside Docker)
+build/
+dist/
+
+# Misc
+.DS_Store
+start.sh
+poetry.lock
+*.md
