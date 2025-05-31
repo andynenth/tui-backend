@@ -12,7 +12,7 @@ export class StartScene extends Container {
         super();
         this.layout = { justifyContent: 'center', alignItems: 'center', gap: 16 };
 
-        const textbox = new GameTextbox({ placeholder: 'Your name' });
+        const textbox = new GameTextbox({ placeholder: 'Enter yourrrrr' });
         const statusText = new Text({ text: '', style: new TextStyle({ fill: '#ffffff' }) });
 
         const button = new GameButton({

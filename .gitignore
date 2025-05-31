@@ -43,3 +43,4 @@ frontend/styles.css.map
 # Docker files
 docker-compose.override.yml
 *.tar
+.env

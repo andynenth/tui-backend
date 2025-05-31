@@ -62,36 +62,43 @@ Then open your browser:
 
 ---
 
-## ⚙️ Development (Optional)
+## ⚙️ Development (Local with Hot Reload)
 
-### Backend (FastAPI with Hot Reload)
-
-```bash
-python3 -m venv venv
-source venv/bin/activate
-pip install -r requirements.txt
-uvicorn backend.api.main:app --reload
-```
-
-### Frontend Rebuild
+### Option 1: With `./start.sh`
 
 ```bash
-npm install
-node esbuild.config.cjs
+./start.sh
 ```
 
-Or use **watch mode** during development:
+This launches:
+- `uvicorn` backend server with hot reload
+- `esbuild` frontend watch mode
+- Auto-copies `index.html` into `static/`
+
+---
+
+### Option 2: Manually (Local Dev)
+
+#### Backend (Docker)
 
 ```bash
-npx esbuild frontend/main.js --bundle --outfile=build/bundle.js --watch
+docker-compose -f docker-compose.dev.yml up backend
 ```
+
+#### Frontend (Host / Mac)
+
+```bash
+npx esbuild frontend/main.js --bundle --outfile=backend/static/bundle.js --watch
+```
+
+> This ensures backend runs in Docker, while frontend is live-rebuilt by host.
 
 ---
 
 ## 🧠 Liap Tui – Game Rules
 
-> [Full rules omitted here for brevity — see full README above or in `/docs`]  
-> Includes: Piece types, Turn flow, Declaration, Redeal logic, Scoring system, and more.
+> [See `/docs`]  
+Includes: Piece types, Turn flow, Declaration, Redeal logic, Scoring system, and more.
 
 ---
 

@@ -1,0 +1,19 @@
+version: "3.8"
+
+services:
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    volumes:
+      - ./backend:/app/backend
+      - ./requirements.txt:/app/requirements.txt
+    ports:
+      - "5050:5050"
+    command: >
+      uvicorn backend.api.main:app
+      --host 0.0.0.0
+      --port 5050
+      --reload
+    environment:
+      - PYTHONPATH=/app/backend
