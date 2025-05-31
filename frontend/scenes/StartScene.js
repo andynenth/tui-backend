@@ -2,7 +2,7 @@
 import { Container, Text, TextStyle } from 'pixi.js';
 import { GameTextbox } from '../components/GameTextbox.js';
 import { GameButton } from '../components/GameButton.js';
-import { createRoom } from '../api.js'; // ✅ WORK 100%
+import { createRoom } from '../api.js';
 
 
 
@@ -22,16 +22,13 @@ export class StartScene extends Container {
                 if (!name) return;
 
                 try {
-                    const result = await createRoom(name); // ✅ เรียก API
+                    const result = await createRoom(name); 
                     statusText.text = `✅ Room ID: ${result.room_id}`;
                     console.log("Created room:", result.room_id);
                 } catch (err) {
                     statusText.text = "❌ Failed to create room";
                     console.error(err);
                 }
-
-                // 🔹 ถ้าต้องการไปต่อหลังจากสร้างห้อง:
-                // onNext(name);
             }
         });
 
