@@ -6,6 +6,7 @@
   "main": "esbuild.config.js",
   "scripts": {
     "build": "node esbuild.config.cjs",
+    "dev": "npx esbuild frontend/main.js --bundle --outfile=backend/static/bundle.js --watch",
     "start": "serve build"
   },
   "repository": {
