@@ -35,6 +35,8 @@ build/
 dist/
 *.bundle.js
 *.map
+backend/static/bundle.js
+frontend/package-lock.json
 
 # Frontend temp/dev/test files
 frontend/test.js
@@ -44,6 +46,4 @@ frontend/styles.css.map
 docker-compose.override.yml
 *.tar
 .env
-backend/static/bundle.js
-build/
-backend/static/bundle.js
+
