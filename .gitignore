@@ -44,3 +44,6 @@ frontend/styles.css.map
 docker-compose.override.yml
 *.tar
 .env
+backend/static/bundle.js
+build/
+backend/static/bundle.js
