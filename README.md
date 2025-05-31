@@ -85,10 +85,10 @@ This launches:
 docker-compose -f docker-compose.dev.yml up backend
 ```
 
-#### Frontend (Host / Mac)
+#### Frontend Development (Live Build)
 
 ```bash
-npx esbuild frontend/main.js --bundle --outfile=backend/static/bundle.js --watch
+npm run dev
 ```
 
 > This ensures backend runs in Docker, while frontend is live-rebuilt by host.
