@@ -1,21 +1,22 @@
-# Dockerfile (Backend-only)
+# 📄 Dockerfile (Backend-only)
 
 FROM python:3.11-slim
 
 WORKDIR /app
 
-# Copy backend source
+# 🐍 Copy backend source code and dependencies
 COPY backend/ ./backend
 COPY requirements.txt ./
 
-# Install dependencies
+# 📦 Install Python dependencies
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Set PYTHONPATH for FastAPI
+# 🧭 Set PYTHONPATH for FastAPI
 ENV PYTHONPATH=/app/backend
 
-# Expose port for FastAPI
+# 🌐 Expose API port (actual value controlled by .env and docker-compose)
 EXPOSE 5050
 
-# Run backend with hot reload
-CMD ["uvicorn", "backend.api.main:app", "--host", "0.0.0.0", "--port", "5050", "--reload"]
+# 🏁 Let docker-compose set the command via `command:` and `.env`
+# Leave CMD minimal
+CMD ["uvicorn", "backend.api.main:app"]

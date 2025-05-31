@@ -1,10 +1,13 @@
 #!/bin/bash
 
 # -------------------------------
-# 🚀 Liap Tui Dev Launcher
+# 🚀 Liap Tui Dev Launcher (Local Dev)
 # -------------------------------
 
-# Load environment variables
+# Go to script root (project root)
+cd "$(dirname "$0")"
+
+# Load environment variables from .env at root
 set -a
 source .env
 set +a
@@ -17,7 +20,7 @@ cp "frontend/$INDEX_FILE" "$STATIC_DIR/$INDEX_FILE"
 
 # Start FastAPI backend with hot reload
 echo "▶️ Starting backend on http://${API_HOST}:${API_PORT} ..."
-PYTHONPATH=backend uvicorn api.main:app \
+PYTHONPATH=backend uvicorn backend.api.main:app \
   --host "$API_HOST" \
   --port "$API_PORT" \
   --reload &
@@ -25,16 +28,15 @@ PYTHONPATH=backend uvicorn api.main:app \
 # Store backend PID
 BACKEND_PID=$!
 
-# Wait a moment for backend to boot
+# Wait for backend to boot
 sleep 1
 
-# Start esbuild in watch mode and output to static folder
+# Start esbuild in watch mode
 echo "🌐 Starting esbuild in watch mode..."
-npx esbuild "$ESBUILD_ENTRY" \
-  --bundle \
-  --outfile="$STATIC_DIR/bundle.js" \
-  --watch
 
-# When esbuild stops, kill backend
+cd frontend
+npm run dev
+
+# When esbuild exits, stop backend too
 echo "🛑 Shutting down backend (PID: $BACKEND_PID)..."
 kill $BACKEND_PID
