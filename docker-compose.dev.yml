@@ -1,3 +1,4 @@
+# docker-compose.dev.yml
 version: "3.8"
 
 services:
@@ -9,11 +10,17 @@ services:
       - ./backend:/app/backend
       - ./requirements.txt:/app/requirements.txt
     ports:
-      - "5050:5050"
+      - "${API_PORT}:${API_PORT}"
+    env_file: .env
     command: >
       uvicorn backend.api.main:app
-      --host 0.0.0.0
-      --port 5050
+      --host ${API_HOST}
+      --port ${API_PORT}
       --reload
     environment:
       - PYTHONPATH=/app/backend
+      - DEBUG=${DEBUG}
+      - MAX_SCORE=${MAX_SCORE}
+      - MAX_ROUNDS=${MAX_ROUNDS}
+      - BOT_ENABLED=${BOT_ENABLED}
+      - ALLOWED_ORIGINS=${ALLOWED_ORIGINS}
