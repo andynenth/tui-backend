@@ -4,11 +4,14 @@ import { Application } from 'pixi.js';
 import '@pixi/layout';
 import { SceneManager } from './SceneManager.js';
 import { StartScene } from './scenes/StartScene.js';
-// import './test.js';
+import { initDevtools } from '@pixi/devtools';
 
 
 (async () => {
   const app = new Application();
+
+  initDevtools({ app });
+
   await app.init({ width: 540, height: 960, background: '#1e1e2e' });
   document.body.appendChild(app.canvas);
 
