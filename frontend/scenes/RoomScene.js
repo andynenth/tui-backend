@@ -8,7 +8,13 @@ export class RoomScene extends Container {
 
     console.log("🔵 Entered RoomScene");
 
-    this.layout = { justifyContent: "center", alignItems: "center", gap: 16 };
+    this.layout = {
+      width: "100%",
+      flexDirection: "column",
+      alignItems: "center",
+      padding: 16,
+      gap: 16,
+    };
 
     this.roomId = roomId;
     this.playerName = playerName;
@@ -22,7 +28,25 @@ export class RoomScene extends Container {
       style: new TextStyle({ fill: "#ffffff", fontSize: 22 }),
     });
 
-    this.addChild(title);
+    const headerRow = new Container();
+    headerRow.layout = {
+      flexDirection: "row",
+      justifyContent: "flex-end",
+      alignItems: "center",
+      width: "100%",
+    };
+
+    this.playerTable = new Container();
+    this.playerTable.layout = {
+      flexDirection: "column",
+      justifyContent: "center",
+      alignItems: "center",
+      width: "100%",
+    };
+
+    headerRow.addChild(title);
+
+    this.addChild(headerRow, this.playerTable);
 
     this.renderSlots();
     this.refreshRoomState();
@@ -56,6 +80,16 @@ export class RoomScene extends Container {
 
   renderSlots() {
     for (const slot of this.slots) {
+      // 🧱 สร้าง container สำหรับแถวนี้
+      const row = new Container();
+      row.layout = {
+        flexDirection: "row",
+        alignItems: "center",
+        justifyContent: "flex-end", // หรือ center, flex-start แล้วแต่ต้องการ
+        width: "100%",
+        margin: 10,
+      };
+
       const label = new Text({
         text: `${slot}: ...`,
         style: new TextStyle({ fill: "#ffffff", fontSize: 18 }),
@@ -63,6 +97,8 @@ export class RoomScene extends Container {
 
       const joinBtn = new GameButton({
         label: "Join",
+        height:30,
+        width:90,
         onClick: async () => {
           try {
             await assignSlot(
@@ -77,8 +113,14 @@ export class RoomScene extends Container {
         },
       });
 
+      // 🧩 ใส่ label กับปุ่มเข้า container แถวนี้
+      row.addChild(label, joinBtn.view);
+
+      // 🧷 เก็บ reference เพื่อ update ทีหลัง
       this.slotLabels[slot] = { label, joinBtn };
-      this.addChild(label, joinBtn.view);
+
+      // 📌 ใส่เข้า scene หลัก
+      this.playerTable.addChild(row);
     }
   }
 
