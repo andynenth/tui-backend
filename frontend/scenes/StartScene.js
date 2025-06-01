@@ -1,37 +1,34 @@
 // scenes/StartScene.js
-import { Container, Text, TextStyle } from 'pixi.js';
-import { GameTextbox } from '../components/GameTextbox.js';
-import { GameButton } from '../components/GameButton.js';
-import { createRoom } from '../api.js';
-
-
-
+import { Container, Text, TextStyle } from "pixi.js";
+import { GameTextbox } from "../components/GameTextbox.js";
+import { GameButton } from "../components/GameButton.js";
+import { createRoom } from "../api.js";
 
 export class StartScene extends Container {
-    constructor(onNext) {
-        super();
-        this.layout = { justifyContent: 'center', alignItems: 'center', gap: 16 };
+  constructor(onNext) {
+    super();
 
-        const textbox = new GameTextbox({ placeholder: 'Enter your' });
-        const statusText = new Text({ text: '', style: new TextStyle({ fill: '#ffffff' }) });
+    console.log("🔵 Entered StartScene");
 
-        const button = new GameButton({
-            label: 'Continue',
-            onClick: async () => {
-                const name = textbox.getText().trim();
-                if (!name) return;
+    this.layout = { justifyContent: "center", alignItems: "center", gap: 16 };
 
-                try {
-                    const result = await createRoom(name); 
-                    statusText.text = `✅ Room ID: ${result.room_id}`;
-                    console.log("Created room:", result.room_id);
-                } catch (err) {
-                    statusText.text = "❌ Failed to create room";
-                    console.error(err);
-                }
-            }
-        });
+    const textbox = new GameTextbox({ placeholder: "Enter yourrrr" });
 
-        this.addChild(textbox.view, button.view, statusText);
-    }
+
+    const button = new GameButton({
+      label: "Continue",
+      onClick: async () => {
+        const name = textbox.getText().trim();
+        if (!name) return;
+
+        try {
+          onNext(name);
+        } catch (err) {
+          console.error(err);
+        }
+      },
+    });
+
+    this.addChild(textbox.view, button.view);
+  }
 }

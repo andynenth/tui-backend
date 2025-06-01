@@ -11,7 +11,7 @@ esbuild.context({
   outfile,
   loader: { '.js': 'js' },
   minify: true,
-  sourcemap: false,
+  sourcemap: true,
 }).then(ctx => {
   return ctx.watch();
 }).then(() => {

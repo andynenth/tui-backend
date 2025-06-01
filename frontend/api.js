@@ -32,3 +32,17 @@ export async function startGame(roomId) {
   const res = await fetch(`/api/start-game?room_id=${roomId}`, { method: 'POST' });
   return res.json();
 }
+
+export async function assignSlot(roomId, name, slot) {
+  const res = await fetch(`/api/assign-slot?room_id=${roomId}&name=${name}&slot=${slot}`, {
+    method: 'POST',
+  });
+  return res.json();
+}
+
+export async function getRoomState(roomId, name) {
+  const res = await fetch(`/api/join-room?room_id=${roomId}&name=${name}`, {
+    method: 'POST',
+  });
+  return res.json(); // จะได้ { slots: { P1: {...}, P2: ..., ... } }
+}
