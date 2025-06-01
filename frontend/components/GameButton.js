@@ -5,7 +5,7 @@ import { Button as PixiButton } from '@pixi/ui';
 export class GameButton {
     constructor({
         label = 'Click me',
-        width = 200,
+        width = 150,
         height = 50,
         radius = 12,
         bgColor = 0x4f46e5,

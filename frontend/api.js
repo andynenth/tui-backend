@@ -24,9 +24,12 @@ export async function listRooms() {
 }
 
 export async function joinRoom(roomId, name) {
-  const res = await fetch(`/api/join-room?room_id=${roomId}&name=${name}`);
+  const res = await fetch(`/api/join-room?room_id=${roomId}&name=${name}`, {
+    method: 'POST',
+  });
   return res.json();
 }
+
 
 export async function startGame(roomId) {
   const res = await fetch(`/api/start-game?room_id=${roomId}`, { method: 'POST' });
