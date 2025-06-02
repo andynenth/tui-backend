@@ -3,19 +3,34 @@
 from fastapi import APIRouter, HTTPException, Query
 from engine.game import Game
 from engine.rules import is_valid_play, get_play_type
-from engine.room_manager import RoomManager
+# from engine.room_manager import RoomManager
 from engine.win_conditions import is_game_over, get_winners
 from socket_manager import broadcast
+from backend.shared_instances import shared_room_manager
+import asyncio 
 
 router = APIRouter()
-room_manager = RoomManager()
+# room_manager = RoomManager()
+room_manager = shared_room_manager
 
 # ---------- ROOM MANAGEMENT ----------
+
+@router.get("/get-room-state")
+async def get_room_state(room_id: str = Query(...)):
+    room = room_manager.get_room(room_id)
+    if not room:
+        raise HTTPException(status_code=404, detail="Room not found")
+    # คืนค่า summary ของห้อง ซึ่งรวมถึง slots และ host_name
+    return room.summary()
+
 
 @router.post("/create-room")
 async def create_room(name: str = Query(...)):
     room_id = room_manager.create_room(name)
-    return {"room_id": room_id}
+    room = room_manager.get_room(room_id)
+    # ❌ ลบ await broadcast(...) บรรทัดนี้ออกไป
+    # await broadcast(room_id, "room_state_update", {"slots": room.summary()["slots"], "host_name": room.host_name})
+    return {"room_id": room_id, "host_name": room.host_name}
 
 @router.get("/list-rooms")
 async def list_rooms():
@@ -26,7 +41,14 @@ async def join_room(room_id: str = Query(...), name: str = Query(...)):
     room = room_manager.get_room(room_id)
     if not room:
         raise HTTPException(status_code=404, detail="Room not found")
-    return {"slots": room.summary()["slots"]}
+    try:
+        room.join_room(name)
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=str(e))
+    # 🎯 สำคัญ: Broadcast สถานะที่อัปเดตหลังจาก Join สำเร็จ
+    await broadcast(room_id, "room_state_update", {"slots": room.summary()["slots"], "host_name": room.host_name})
+    # ✅ ต้องคืนค่า host_name กลับไปด้วย
+    return {"slots": room.summary()["slots"], "host_name": room.host_name}
 
 @router.post("/assign-slot")
 async def assign_slot(room_id: str = Query(...), name: str = Query(...), slot: int = Query(...)):
@@ -37,6 +59,15 @@ async def assign_slot(room_id: str = Query(...), name: str = Query(...), slot: i
         room.assign_slot(slot, name)
     except ValueError as e:
         raise HTTPException(status_code=400, detail=str(e))
+
+    updated_summary = room.summary()
+    print(f"DEBUG: assign_slot - Broadcasting update for room {room_id}. New slots: {updated_summary['slots']}")
+    
+    # ✅ สำคัญ: ใช้ asyncio.sleep(0) เพื่อให้ Event Loop ได้มีโอกาสประมวลผลงานอื่น
+    # เช่นการส่ง WebSocket message ก่อนที่ HTTP request จะจบสมบูรณ์
+    await broadcast(room_id, "room_state_update", {"slots": updated_summary["slots"], "host_name": updated_summary["host_name"]})
+    await asyncio.sleep(0) # <-- เพิ่มบรรทัดนี้
+
     return {"ok": True}
 
 @router.post("/set-bot")
@@ -44,7 +75,9 @@ async def set_bot(room_id: str = Query(...), slot: int = Query(...)):
     room = room_manager.get_room(room_id)
     if not room:
         raise HTTPException(status_code=404, detail="Room not found")
-    room.set_bot(slot)
+    room.set_bot(slot) # ควรเรียก assign_slot() ภายใน set_bot() หรือปรับให้ set_bot() เรียก assign_slot() แทน
+    # ควรเรียก broadcast หลังการเปลี่ยนแปลง
+    await broadcast(room_id, "room_state_update", {"slots": room.summary()["slots"]})
     return {"ok": True}
 
 @router.post("/start-game")
@@ -54,7 +87,7 @@ async def start_game(room_id: str = Query(...)):
         raise HTTPException(status_code=404, detail="Room not found")
     try:
         room.start_game()
-        await broadcast(room_id, "start_game", {"message": "Game started."})
+        await broadcast(room_id, "start_game", {"message": "Game started."}) # อันนี้มีอยู่แล้วดีมาก
     except ValueError as e:
         raise HTTPException(status_code=400, detail=str(e))
     return {"ok": True}
@@ -69,12 +102,15 @@ async def exit_room(room_id: str = Query(...), name: str = Query(...)):
 
     if is_host:
         room_manager.delete_room(room_id)
+        # เมื่อห้องถูกปิด ให้ broadcast ไปยังทุกคนในห้องนั้น
         await broadcast(room_id, "room_closed", {"message": "Host has exited the room."})
+        # Note: การเชื่อมต่อ WebSocket ของห้องนี้ควรจะถูกปิดไปโดยอัตโนมัติเมื่อ Client disconnect
     else:
-        await broadcast(room_id, "player_left", {"player": name})
-
+        # เมื่อผู้เล่นออก ให้ broadcast สถานะห้องที่อัปเดตแล้ว
+        await broadcast(room_id, "room_state_update", {"slots": room.summary()["slots"]})
+        await broadcast(room_id, "player_left", {"player": name}) # อาจจะส่ง 2 event ก็ได้ หรือรวมกัน
+        
     return {"ok": True}
-
 
 # ---------- ROUND PHASES ----------
 

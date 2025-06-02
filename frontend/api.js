@@ -7,9 +7,9 @@ export async function createRoom(name) {
   const res = await fetch(`/api/create-room?name=${encodeURIComponent(name)}`, {
     method: 'POST',
   });
-
   const text = await res.text();
   try {
+    // ✅ ตรงนี้จะได้รับ { room_id: "...", host_name: "..." }
     return JSON.parse(text);
   } catch (err) {
     console.error("❌ Failed to parse JSON:", text);
@@ -43,9 +43,14 @@ export async function assignSlot(roomId, name, slot) {
   return res.json();
 }
 
-export async function getRoomState(roomId, name) {
-  const res = await fetch(`/api/join-room?room_id=${roomId}&name=${name}`, {
-    method: 'POST',
-  });
-  return res.json(); // จะได้ { slots: { P1: {...}, P2: ..., ... } }
+export async function getRoomStateData(roomId) { // เปลี่ยนชื่อจาก getRoomState เพื่อหลีกเลี่ยงความสับสน
+  const res = await fetch(`/api/get-room-state?room_id=${roomId}`);
+  const text = await res.text();
+  try {
+    // จะคืนค่า { room_id: "...", host_name: "...", slots: {...}, started: false }
+    return JSON.parse(text);
+  } catch (err) {
+    console.error("❌ Failed to parse JSON for getRoomStateData:", text);
+    throw err;
+  }
 }
