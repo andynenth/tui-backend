@@ -1,4 +1,4 @@
-// socketManager.js
+// frontend/socketManager.js
 let socket;
 const listeners = {};
 

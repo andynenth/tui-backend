@@ -59,6 +59,23 @@ async def start_game(room_id: str = Query(...)):
         raise HTTPException(status_code=400, detail=str(e))
     return {"ok": True}
 
+@router.post("/exit-room")
+async def exit_room(room_id: str = Query(...), name: str = Query(...)):
+    room = room_manager.get_room(room_id)
+    if not room:
+        raise HTTPException(status_code=404, detail="Room not found")
+
+    is_host = room.exit_room(name)
+
+    if is_host:
+        room_manager.delete_room(room_id)
+        await broadcast(room_id, "room_closed", {"message": "Host has exited the room."})
+    else:
+        await broadcast(room_id, "player_left", {"player": name})
+
+    return {"ok": True}
+
+
 # ---------- ROUND PHASES ----------
 
 @router.post("/start-round")

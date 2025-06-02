@@ -1,4 +1,4 @@
-// scenes/StartScene.js
+// frontend/scenes/StartScene.js
 import { Container, Text, TextStyle } from "pixi.js";
 import { GameTextbox } from "../components/GameTextbox.js";
 import { GameButton } from "../components/GameButton.js";

@@ -1,3 +1,5 @@
+// frontend/components/GameTextbox.js
+
 import { Container, Graphics, Text, TextStyle, Ticker } from 'pixi.js';
 import { Button } from '@pixi/ui';
 

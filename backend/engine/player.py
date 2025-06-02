@@ -1,3 +1,5 @@
+# backend/engine/player.py
+
 class Player:
     def __init__(self, name, is_bot=False):
         self.name = name                   # Player's name (e.g., "P1", "P2", etc.)

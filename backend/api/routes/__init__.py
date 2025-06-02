@@ -1,3 +1,5 @@
+# backend/api/routes/__init__.py
+
 from .routes import router as api_router
 from .ws import router as ws_router
 from fastapi import APIRouter
