@@ -17,14 +17,15 @@ class Room:
 
         # Assign bots to P2–P4
         for i in range(1, 4):
-            self.players[i] = Player(f"Bot {i}", is_bot=True)
+            self.players[i] = Player(f"Bot {i+1}", is_bot=True)
 
     def summary(self):
         def slot_info(player: Optional[Player]):
             if player is None:
                 return None
             return {
-                "name": None if player.is_bot else player.name,
+                # ✅ ต้องเป็น player.name เสมอ ไม่ว่าจะเป็นบอทหรือไม่
+                "name": player.name,
                 "is_bot": player.is_bot
             }
 
@@ -41,8 +42,6 @@ class Room:
         if slot < 0 or slot > 3:
             raise ValueError("Invalid slot number")
 
-        current = self.players[slot]
-
         if name_or_none is None:
             # Remove player or bot → make slot empty
             self.players[slot] = None
@@ -54,13 +53,33 @@ class Room:
             self.players[slot] = Player(name_or_none, is_bot=False)
 
     def join_room(self, player_name: str) -> int:
+        # 1. ตรวจสอบว่าผู้เล่นชื่อนี้อยู่ในห้องแล้วหรือไม่ (ป้องกันการ Join ซ้ำ)
         for i, player in enumerate(self.players):
-            if player is None:
-                self.players[i] = Player(player_name, is_bot=False)
-                return i
-            if player.is_bot:
-                continue
-        raise ValueError("No empty slot available")
+            if player and player.name == player_name and not player.is_bot:
+                raise ValueError(f"Player '{player_name}' is already in this room.")
+
+        # 2. หา slot ที่ว่างจริงๆ (None) หรือ slot ที่เป็น Bot
+        found_slot_index = -1
+        # ลองหาสล็อตว่างก่อน
+        for i, player in enumerate(self.players):
+            if player is None: # ช่องว่างจริงๆ
+                found_slot_index = i
+                break
+        
+        # ถ้าไม่มีช่องว่างจริง ให้หาช่องที่เป็น Bot แทน
+        if found_slot_index == -1:
+            for i, player in enumerate(self.players):
+                if player and player.is_bot: # ช่องที่เป็น Bot
+                    found_slot_index = i
+                    break # เลือก Bot ตัวแรกที่เจอ
+
+        if found_slot_index != -1:
+            self.players[found_slot_index] = Player(player_name, is_bot=False)
+            return found_slot_index
+        
+        # ถ้าหาไม่เจอเลย (ห้องเต็มไปด้วยผู้เล่นคนอื่น)
+        raise ValueError("No available slot (all slots are filled by human players or cannot be replaced).")
+
 
     def exit_room(self, player_name: str) -> bool:
         if player_name == self.host_name:
