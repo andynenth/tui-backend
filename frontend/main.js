@@ -1,4 +1,4 @@
-// main.js
+// frontend/main.js
 
 import { Application } from "pixi.js";
 import "@pixi/layout";
@@ -35,21 +35,21 @@ import { createRoom } from "./api.js"; // ✅ เพิ่มตรงนี้�
 
   ////
 
-  // const startScene = new StartScene((playerName) => {
-  //   localStorage.setItem("playerName", playerName);
+  const startScene = new StartScene((playerName) => {
+    localStorage.setItem("playerName", playerName);
 
-  //   const lobbyScene = new LobbyScene(playerName, (roomId) => {
-  //     const roomScene = new RoomScene(roomId, playerName, () => {
-  //       console.log("🎯 Game started! Go to GameScene next.");
-  //     });
+    const lobbyScene = new LobbyScene(playerName, (roomId) => {
+      const roomScene = new RoomScene(roomId, playerName, () => {
+        console.log("🎯 Game started! Go to GameScene next.");
+      }, sceneManager);
 
-  //     sceneManager.changeScene(roomScene); // ✅ เปลี่ยนไป RoomScene
-  //   });
+      sceneManager.changeScene(roomScene); // ✅ เปลี่ยนไป RoomScene
+    });
 
-  //   sceneManager.changeScene(lobbyScene); // เริ่มจาก Lobby
-  // });
+    sceneManager.changeScene(lobbyScene); // เริ่มจาก Lobby
+  });
 
-  // sceneManager.changeScene(startScene);
+  sceneManager.changeScene(startScene);
 
   ///
   // 🔧 ข้าม StartScene แล้วเข้าสู่ LobbyScene ตรง ๆ
@@ -69,14 +69,14 @@ import { createRoom } from "./api.js"; // ✅ เพิ่มตรงนี้�
   ///
 
   // 🧪 ตั้งค่าทดสอบ
-  const playerName = "TestPlayer";
+  // const playerName = "TestPlayer";
 
-  const res = await createRoom(playerName);
-  const roomId = res.room_id;
-  // onEnterRoom(result.room_id);
+  // const res = await createRoom(playerName);
+  // const roomId = res.room_id;
+  // // onEnterRoom(result.room_id);
 
-  const roomScene = new RoomScene(roomId, playerName, () => {
-    console.log("🎯 Game started!");
-  });
-  sceneManager.changeScene(roomScene);
+  // const roomScene = new RoomScene(roomId, playerName, () => {
+  //   console.log("🎯 Game started!");
+  // });
+  // sceneManager.changeScene(roomScene);
 })();

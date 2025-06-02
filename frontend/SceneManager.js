@@ -1,4 +1,4 @@
-// SceneManager.js
+// frontend/SceneManager.js
 export class SceneManager {
     constructor(app) {
         this.app = app;

@@ -1,3 +1,5 @@
+// frontend/scenes/LobbyScene.js
+
 import { Container, Text, TextStyle } from "pixi.js";
 import { GameButton } from "../components/GameButton.js";
 import { GameTextbox } from "../components/GameTextbox.js";

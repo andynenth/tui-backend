@@ -1,4 +1,4 @@
-# win_conditions.py
+# backend/engine/win_conditions.py
 
 from enum import Enum
 
