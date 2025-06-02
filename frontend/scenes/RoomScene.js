@@ -34,6 +34,7 @@ export class RoomScene extends Container {
       justifyContent: "flex-end",
       alignItems: "center",
       width: "100%",
+      height: 30,
     };
 
     this.playerTable = new Container();
@@ -64,8 +65,29 @@ export class RoomScene extends Container {
       },
     });
 
-    this.startButton.visible = false;
-    this.addChild(this.startButton.view);
+    this.exitButton = new GameButton({
+      label: "Exit",
+      onClick: async () => {
+        try {
+          console.log("Exit!");
+        } catch (err) {
+          console.error("❌ Failed to exit", err);
+        }
+      },
+    });
+
+    const footerRow = new Container();
+    footerRow.layout = {
+      flexDirection: "row",
+      justifyContent: "space-between",
+      width: "100%",
+      height: "auto",
+    };
+
+    this.startButton.setEnabled(false);
+    footerRow.addChild(this.exitButton.view, this.startButton.view);
+
+    this.addChild(footerRow);
   }
 
   async refreshRoomState() {
@@ -87,18 +109,27 @@ export class RoomScene extends Container {
         alignItems: "center",
         justifyContent: "flex-end", // หรือ center, flex-start แล้วแต่ต้องการ
         width: "100%",
-        margin: 10,
+        padding: 10,
       };
 
-      const label = new Text({
+      const slotText = new Text({
         text: `${slot}: ...`,
         style: new TextStyle({ fill: "#ffffff", fontSize: 18 }),
       });
 
-      const joinBtn = new GameButton({
-        label: "Join",
-        height:30,
-        width:90,
+      const textContainer = new Container();
+      textContainer.layout = {
+        alignSelf: "center",
+        justifyContent: "flex-start",
+        width: "100%",
+        height: "100%",
+        marginTop: 10,
+      };
+
+      const slotBtn = new GameButton({
+        label: "Add bot",
+        height: 30,
+        width: 100,
         onClick: async () => {
           try {
             await assignSlot(
@@ -113,11 +144,22 @@ export class RoomScene extends Container {
         },
       });
 
-      // 🧩 ใส่ label กับปุ่มเข้า container แถวนี้
-      row.addChild(label, joinBtn.view);
+      const btnContainer = new Container();
+      btnContainer.layout = {
+        alignItems: "center",
+        justifyContent: "flex-end",
+        width: "100%",
+        height: 40,
+      };
+
+      textContainer.addChild(slotText);
+      btnContainer.addChild(slotBtn.view);
+      //   btnContainer.removeChild(slotBtn.view);
+
+      row.addChild(textContainer, btnContainer);
 
       // 🧷 เก็บ reference เพื่อ update ทีหลัง
-      this.slotLabels[slot] = { label, joinBtn };
+      this.slotLabels[slot] = { label: slotText, joinBtn: slotBtn };
 
       // 📌 ใส่เข้า scene หลัก
       this.playerTable.addChild(row);
