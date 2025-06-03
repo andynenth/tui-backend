@@ -442,14 +442,28 @@ export class RoomScene extends Container {
 
       console.log("WS: Received room_closed", data);
 
-      // ✅ ตรวจสอบว่าเรายังอยู่ใน RoomScene
-      // ถ้าได้รับ room_closed แสดงว่า host ออกแล้ว ต้องกลับไป Lobby
       if (this.triggerFSMEvent) {
         alert(data.message);
         this.triggerFSMEvent(GameEvents.EXIT_ROOM);
       }
     };
     onSocketEvent("room_closed", this.handleRoomClosed);
+
+    // ✅ Register listener for 'player_kicked' event
+    this.handlePlayerKicked = (data) => {
+      if (!this.isActive) return;
+
+      console.log("WS: Received player_kicked", data);
+
+      // ถ้าผู้เล่นที่ถูกเตะคือตัวเรา
+      if (data.player === this.playerName) {
+        alert(
+          data.reason || "You have been removed from the room by the host."
+        );
+        this.triggerFSMEvent(GameEvents.EXIT_ROOM);
+      }
+    };
+    onSocketEvent("player_kicked", this.handlePlayerKicked);
 
     // Register listener for 'player_left' event
     this.handlePlayerLeft = (data) => {
@@ -465,11 +479,11 @@ export class RoomScene extends Container {
    * when the scene is no longer active.
    */
   teardownWebSocketListeners() {
-    // ✅ Mark as inactive
     this.isActive = false;
 
     offSocketEvent("room_state_update", this.handleRoomStateUpdate);
     offSocketEvent("room_closed", this.handleRoomClosed);
+    offSocketEvent("player_kicked", this.handlePlayerKicked); // ✅ Clean up new listener
     offSocketEvent("player_left", this.handlePlayerLeft);
     disconnectSocket();
   }
