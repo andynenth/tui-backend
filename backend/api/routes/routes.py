@@ -8,7 +8,7 @@ from engine.win_conditions import is_game_over, get_winners # Import win conditi
 from backend.socket_manager import broadcast
 from backend.shared_instances import shared_room_manager # Import the shared RoomManager instance.
 import asyncio # Standard library for asynchronous programming.
-
+from typing import Optional
 import backend.socket_manager
 print(f"socket_manager id in {__name__}: {id(backend.socket_manager)}")
 
@@ -85,33 +85,42 @@ async def join_room(room_id: str = Query(...), name: str = Query(...)):
     return {"slots": room.summary()["slots"], "host_name": room.host_name}
 
 @router.post("/assign-slot")
-async def assign_slot(room_id: str = Query(...), name: str = Query(...), slot: int = Query(...)):
+async def assign_slot(
+    room_id: str = Query(...), 
+    slot: int = Query(...),
+    name: Optional[str] = Query(None)  # Make name optional with None default
+):
     """
-    Assigns a player (or null to unassign) to a specific slot in a room.
+    Assigns a player (or None to unassign) to a specific slot in a room.
     Args:
         room_id (str): The ID of the room.
-        name (str): The name of the player to assign (or null to unassign).
+        name (Optional[str]): The name of the player to assign, or None to clear the slot.
         slot (int): The 0-indexed slot number to assign to.
     Returns:
         dict: A confirmation dictionary.
     Raises:
         HTTPException: If the room is not found or assignment fails.
     """
-    room = room_manager.get_room(room_id) # Get the room object.
+    room = room_manager.get_room(room_id)
     if not room:
-        raise HTTPException(status_code=404, detail="Room not found") # Raise 404 if room doesn't exist.
+        raise HTTPException(status_code=404, detail="Room not found")
+    
     try:
-        room.assign_slot(slot, name) # Attempt to assign the slot.
+        # Pass None if name is None or "null" string
+        if name == "null":
+            name = None
+        room.assign_slot(slot, name)
     except ValueError as e:
-        raise HTTPException(status_code=400, detail=str(e)) # Raise 400 if assignment fails.
+        raise HTTPException(status_code=400, detail=str(e))
 
-    updated_summary = room.summary() # Get the updated room summary.
+    updated_summary = room.summary()
     print(f"DEBUG: assign_slot - Broadcasting update for room {room_id}. New slots: {updated_summary['slots']}")
     
-    # ✅ IMPORTANT: Use asyncio.sleep(0) to allow the Event Loop to process other tasks,
-    # such as sending WebSocket messages, before the HTTP request completes.
-    await broadcast(room_id, "room_state_update", {"slots": updated_summary["slots"], "host_name": updated_summary["host_name"]})
-    await asyncio.sleep(0) # <-- Added this line to yield control.
+    await broadcast(room_id, "room_state_update", {
+        "slots": updated_summary["slots"], 
+        "host_name": updated_summary["host_name"]
+    })
+    await asyncio.sleep(0)
 
     return {"ok": True}
 
