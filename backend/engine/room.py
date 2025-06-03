@@ -115,19 +115,18 @@ class Room:
     def exit_room(self, player_name: str) -> bool:
         """
         Handles a player exiting the room.
-        If the host exits, the room should be considered for deletion.
-        Args:
-            player_name (str): The name of the player exiting.
-        Returns:
-            bool: True if the exiting player was the host, False otherwise.
+        Returns True if the exiting player was the host.
         """
         if player_name == self.host_name:
-            return True  # If the host exits, signal to remove the entire room.
+            return True  # Host is leaving
+        
+        # Find and remove the player
         for i, player in enumerate(self.players):
             if player and not player.is_bot and player.name == player_name:
-                self.players[i] = None # Set the player's slot to None (empty).
-                return False # Player exited, but not the host.
-        return False # Player not found or was a bot.
+                self.players[i] = None
+                return False
+        
+        return False  # Player not found
 
     def start_game(self):
         """
