@@ -8,56 +8,44 @@ const listeners = {}; // An object to store callback functions for different eve
  * @param {string} roomId - The ID of the room to connect to.
  */
 export function connect(roomId) {
-    // Check if a WebSocket connection already exists and is open.
-    if (socket && socket.readyState === WebSocket.OPEN) {
-        console.warn("WebSocket already connected.");
-        return; // If already connected, do nothing.
+    // ✅ ปิด WebSocket เก่าก่อนเปิดใหม่
+    if (socket) {
+        console.log(`Closing existing WebSocket before connecting to room: ${roomId}`);
+        socket.close();
+        socket = null;
     }
 
-    // Create a new WebSocket instance, connecting to the backend server with the specified room ID.
     socket = new WebSocket(`ws://localhost:5050/ws/${roomId}`);
 
-    // Event handler for when the WebSocket connection is successfully opened.
     socket.onopen = () => {
         console.log(`WebSocket connected to room: ${roomId}`);
-        // IMPORTANT: Once the WebSocket is open, inform the backend that the client is ready.
-        // This is crucial for initial setup or synchronization.
-        emit('client_ready', { room_id: roomId }); // Emit a 'client_ready' event to the server.
-        // Trigger any registered 'connected' listeners.
+        emit('client_ready', { room_id: roomId });
         if (listeners['connected']) listeners['connected'].forEach(fn => fn());
     };
 
-    // Event handler for when a message is received from the WebSocket server.
     socket.onmessage = (event) => {
-        console.log("[WebSocket] Raw message received:", event.data); // Log the raw message data for debugging.
-        const message = JSON.parse(event.data); // Parse the incoming JSON message.
-        console.log("[WebSocket] Parsed message:", message); // Log the parsed message object.
-        const eventName = message.event; // Extract the event name from the message.
-        const data = message.data; // Extract the associated data.
+        console.log("[WebSocket] Raw message received:", event.data);
+        const message = JSON.parse(event.data);
+        console.log("[WebSocket] Parsed message:", message);
+        const eventName = message.event;
+        const data = message.data;
 
-        // Check if there are any registered listeners for the received event name.
         if (listeners[eventName]) {
-            console.log(`[WebSocket] Triggering listeners for event: ${eventName}`); // Log that listeners are being triggered.
-            // Iterate over all registered callback functions for this event and call them with the data.
+            console.log(`[WebSocket] Triggering listeners for event: ${eventName}`);
             listeners[eventName].forEach((fn) => fn(data));
         } else {
-            // Warn if no listener is found for the received event.
             console.warn(`[WebSocket] No listener for event: ${eventName}`, data);
         }
     };
 
-    // Event handler for when the WebSocket connection is closed.
     socket.onclose = (event) => {
         console.log("WebSocket disconnected:", event);
-        // Trigger any registered 'disconnected' listeners.
         if (listeners["disconnected"])
             listeners["disconnected"].forEach((fn) => fn(event));
     };
 
-    // Event handler for WebSocket errors.
     socket.onerror = (error) => {
         console.error("WebSocket error:", error);
-        // Trigger any registered 'error' listeners.
         if (listeners["error"]) listeners["error"].forEach((fn) => fn(error));
     };
 }
@@ -109,11 +97,14 @@ export function off(event, fn) {
  * Closes the WebSocket connection.
  */
 export function disconnect() {
-    // Check if a socket instance exists.
     if (socket) {
-        socket.close(); // Close the WebSocket connection.
-        socket = null; // Clear the socket instance.
+        socket.close();
+        socket = null;
     }
+    // ✅ Clear all listeners
+    Object.keys(listeners).forEach(event => {
+        listeners[event] = [];
+    });
 }
 
 /**

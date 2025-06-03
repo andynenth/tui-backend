@@ -91,25 +91,13 @@ async def join_room(room_id: str = Query(...), name: str = Query(...)):
 async def assign_slot(
     room_id: str = Query(...), 
     slot: int = Query(...),
-    name: Optional[str] = Query(None)  # Make name optional with None default
+    name: Optional[str] = Query(None)
 ):
-    """
-    Assigns a player (or None to unassign) to a specific slot in a room.
-    Args:
-        room_id (str): The ID of the room.
-        name (Optional[str]): The name of the player to assign, or None to clear the slot.
-        slot (int): The 0-indexed slot number to assign to.
-    Returns:
-        dict: A confirmation dictionary.
-    Raises:
-        HTTPException: If the room is not found or assignment fails.
-    """
     room = room_manager.get_room(room_id)
     if not room:
         raise HTTPException(status_code=404, detail="Room not found")
     
     try:
-        # Pass None if name is None or "null" string
         if name == "null":
             name = None
         room.assign_slot(slot, name)
@@ -117,14 +105,13 @@ async def assign_slot(
         raise HTTPException(status_code=400, detail=str(e))
 
     updated_summary = room.summary()
-    print(f"DEBUG: assign_slot - Broadcasting update for room {room_id}. New slots: {updated_summary['slots']}")
     
+    # ✅ Always include host_name in broadcast
     await broadcast(room_id, "room_state_update", {
         "slots": updated_summary["slots"], 
-        "host_name": updated_summary["host_name"]
+        "host_name": updated_summary["host_name"]  # Important!
     })
-    await asyncio.sleep(0)
-
+    
     return {"ok": True}
 
 @router.post("/set-bot")
@@ -172,31 +159,23 @@ async def start_game(room_id: str = Query(...)):
 
 @router.post("/exit-room")
 async def exit_room(room_id: str = Query(...), name: str = Query(...)):
-    """
-    Allows a player to exit a room. If the host exits, the room is deleted.
-    Args:
-        room_id (str): The ID of the room.
-        name (str): The name of the player exiting.
-    Returns:
-        dict: A confirmation dictionary.
-    Raises:
-        HTTPException: If the room is not found.
-    """
-    room = room_manager.get_room(room_id) # Get the room object.
+    room = room_manager.get_room(room_id)
     if not room:
-        raise HTTPException(status_code=404, detail="Room not found") # Raise 404 if room doesn't exist.
+        raise HTTPException(status_code=404, detail="Room not found")
 
-    is_host = room.exit_room(name) # Player exits, returns True if the exiting player was the host.
+    is_host = room.exit_room(name)
 
     if is_host:
-        room_manager.delete_room(room_id) # If host exited, delete the room.
-        # When the room is closed, broadcast a 'room_closed' event to everyone in that room.
+        # ✅ Only broadcast to active connections
         await broadcast(room_id, "room_closed", {"message": "Host has exited the room."})
-        # Note: WebSocket connections for this room should ideally be closed automatically when clients disconnect.
+        room_manager.delete_room(room_id)
     else:
-        # When a player exits, broadcast the updated room state.
-        await broadcast(room_id, "room_state_update", {"slots": room.summary()["slots"]})
-        await broadcast(room_id, "player_left", {"player": name}) # Can send a separate 'player_left' event or combine.
+        # ✅ Always include host_name
+        await broadcast(room_id, "room_state_update", {
+            "slots": room.summary()["slots"],
+            "host_name": room.summary()["host_name"]
+        })
+        await broadcast(room_id, "player_left", {"player": name})
         
     return {"ok": True}
 

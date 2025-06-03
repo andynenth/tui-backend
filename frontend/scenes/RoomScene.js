@@ -28,7 +28,7 @@ export class RoomScene extends Container {
   constructor(roomId, playerName, triggerFSMEvent) {
     super(); // Call the constructor of the parent class (Container).
 
-    console.log("🔵 Entered RoomScene"); // Log a message indicating entry into this scene.
+    console.log("🔵 Entered RoomScene");
 
     // Define the layout properties for the entire scene container using PixiJS Layout.
     this.layout = {
@@ -49,6 +49,7 @@ export class RoomScene extends Container {
     this.latestSlots = {}; // Stores the most recent slot data received from the server.
     this.openSlots = []; // Not currently used, but could be for tracking available slots.
     this.isHost = false; // Flag to determine if the current player is the host.
+    this.isActive = true; // Track if we're in this room
 
     // Create the room ID title.
     const title = new Text({
@@ -416,34 +417,53 @@ export class RoomScene extends Container {
    * This includes listening for room state changes, room closure, and player departures.
    */
   setupWebSocketListeners() {
-    // Connect to the WebSocket when entering RoomScene.
+    // ✅ ปิด connection เก่าก่อนเปิดใหม่
+    disconnectSocket();
+
+    // Connect to the WebSocket for this room
     connectSocket(this.roomId);
 
-    // Register listener for 'room_state_update' event.
+    // Register listener for 'room_state_update' event
     this.handleRoomStateUpdate = (data) => {
-      console.log("[RoomScene.handleRoomStateUpdate] Received data:", data); // Log received data.
-      this.isHost = data.host_name === this.playerName; // Re-evaluate host status.
+      // ✅ Check if we're still active
+      if (!this.isActive) return;
+
+      console.log("[RoomScene.handleRoomStateUpdate] Received data:", data);
+
+      // ✅ Always update isHost when we receive room state
+      if (data.host_name !== undefined) {
+        this.isHost = data.host_name === this.playerName;
+      }
+
       console.log(
         `[RoomScene.handleRoomStateUpdate] isHost: ${this.isHost}, playerName: ${this.playerName}, host_name from data: ${data.host_name}`
       );
-      this.updateSlotViews(data.slots); // Update UI with new slot data.
+
+      if (data.slots) {
+        this.updateSlotViews(data.slots);
+      }
+
       console.log("[RoomScene.handleRoomStateUpdate] updateSlotViews called.");
     };
     onSocketEvent("room_state_update", this.handleRoomStateUpdate);
 
-    // Register listener for 'room_closed' event (e.g., if the host leaves the room).
+    // Register listener for 'room_closed' event
     this.handleRoomClosed = (data) => {
+      // ✅ Check if we're still active
+      if (!this.isActive) return;
+
       console.log("WS: Received room_closed", data);
-      alert(data.message); // Notify the player that the room is closed.
-      this.triggerFSMEvent(GameEvents.EXIT_ROOM); // Trigger FSM to return to LobbyScene.
+      alert(data.message);
+      this.triggerFSMEvent(GameEvents.EXIT_ROOM);
     };
     onSocketEvent("room_closed", this.handleRoomClosed);
 
-    // Register listener for 'player_left' event (when any player leaves the room).
+    // Register listener for 'player_left' event
     this.handlePlayerLeft = (data) => {
+      // ✅ Check if we're still active
+      if (!this.isActive) return;
+
       console.log("WS: Player left:", data.player);
-      // This event might be primarily for logging or displaying in-game notifications,
-      // as `room_state_update` will also be sent concurrently.
     };
     onSocketEvent("player_left", this.handlePlayerLeft);
   }
@@ -454,10 +474,13 @@ export class RoomScene extends Container {
    * when the scene is no longer active.
    */
   teardownWebSocketListeners() {
+    // ✅ Mark as inactive
+    this.isActive = false;
+
     offSocketEvent("room_state_update", this.handleRoomStateUpdate);
     offSocketEvent("room_closed", this.handleRoomClosed);
     offSocketEvent("player_left", this.handlePlayerLeft);
-    disconnectSocket(); // Close the WebSocket connection.
+    disconnectSocket();
   }
 
   /**
