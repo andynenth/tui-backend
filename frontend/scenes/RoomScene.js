@@ -417,52 +417,43 @@ export class RoomScene extends Container {
    * This includes listening for room state changes, room closure, and player departures.
    */
   setupWebSocketListeners() {
-    // ✅ ปิด connection เก่าก่อนเปิดใหม่
     disconnectSocket();
-
-    // Connect to the WebSocket for this room
     connectSocket(this.roomId);
 
     // Register listener for 'room_state_update' event
     this.handleRoomStateUpdate = (data) => {
-      // ✅ Check if we're still active
       if (!this.isActive) return;
 
       console.log("[RoomScene.handleRoomStateUpdate] Received data:", data);
 
-      // ✅ Always update isHost when we receive room state
       if (data.host_name !== undefined) {
         this.isHost = data.host_name === this.playerName;
       }
 
-      console.log(
-        `[RoomScene.handleRoomStateUpdate] isHost: ${this.isHost}, playerName: ${this.playerName}, host_name from data: ${data.host_name}`
-      );
-
       if (data.slots) {
         this.updateSlotViews(data.slots);
       }
-
-      console.log("[RoomScene.handleRoomStateUpdate] updateSlotViews called.");
     };
     onSocketEvent("room_state_update", this.handleRoomStateUpdate);
 
     // Register listener for 'room_closed' event
     this.handleRoomClosed = (data) => {
-      // ✅ Check if we're still active
       if (!this.isActive) return;
 
       console.log("WS: Received room_closed", data);
-      alert(data.message);
-      this.triggerFSMEvent(GameEvents.EXIT_ROOM);
+
+      // ✅ ตรวจสอบว่าเรายังอยู่ใน RoomScene
+      // ถ้าได้รับ room_closed แสดงว่า host ออกแล้ว ต้องกลับไป Lobby
+      if (this.triggerFSMEvent) {
+        alert(data.message);
+        this.triggerFSMEvent(GameEvents.EXIT_ROOM);
+      }
     };
     onSocketEvent("room_closed", this.handleRoomClosed);
 
     // Register listener for 'player_left' event
     this.handlePlayerLeft = (data) => {
-      // ✅ Check if we're still active
       if (!this.isActive) return;
-
       console.log("WS: Player left:", data.player);
     };
     onSocketEvent("player_left", this.handlePlayerLeft);

@@ -26,6 +26,12 @@ export class LobbyScene extends Container {
         this.playerName = playerName; // Store the player's name.
         this.triggerFSMEvent = triggerFSMEvent; // Store the FSM event trigger callback.
 
+        // ✅ Track if scene is active
+        this.isActive = true;
+        
+        // ✅ Store refresh interval
+        this.refreshInterval = null;
+
         // Define the layout properties for the entire scene container using PixiJS Layout.
         this.layout = {
             width: "100%", // Scene takes full width.
@@ -136,6 +142,34 @@ export class LobbyScene extends Container {
 
         // Load the list of available rooms when the scene is initialized.
         this.loadRoomList();
+
+        // ✅ Setup auto-refresh every 2 seconds
+        this.startAutoRefresh();
+    }
+
+    /**
+     * ✅ Start auto-refresh of room list
+     */
+    startAutoRefresh() {
+        if (this.refreshInterval) {
+            clearInterval(this.refreshInterval);
+        }
+        
+        this.refreshInterval = setInterval(() => {
+            if (this.isActive) {
+                this.loadRoomList();
+            }
+        }, 2000); // Refresh every 2 seconds
+    }
+
+    /**
+     * ✅ Stop auto-refresh
+     */
+    stopAutoRefresh() {
+        if (this.refreshInterval) {
+            clearInterval(this.refreshInterval);
+            this.refreshInterval = null;
+        }
     }
 
     /**
@@ -210,5 +244,14 @@ export class LobbyScene extends Container {
             console.error("❌ Failed to load room list:", err);
             alert(`Failed to load room list: ${err.message || "Unknown error"}`);
         }
+    }
+    
+    /**
+     * ✅ Override destroy to cleanup interval
+     */
+    destroy(options) {
+        this.isActive = false;
+        this.stopAutoRefresh();
+        super.destroy(options);
     }
 }

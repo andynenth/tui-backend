@@ -161,16 +161,22 @@ async def start_game(room_id: str = Query(...)):
 async def exit_room(room_id: str = Query(...), name: str = Query(...)):
     room = room_manager.get_room(room_id)
     if not room:
-        raise HTTPException(status_code=404, detail="Room not found")
+        # ✅ ถ้าห้องไม่มีแล้ว ให้ return success เลย
+        return {"ok": True, "message": "Room does not exist"}
 
     is_host = room.exit_room(name)
 
     if is_host:
-        # ✅ Only broadcast to active connections
+        # ✅ Broadcast to all players before deleting room
         await broadcast(room_id, "room_closed", {"message": "Host has exited the room."})
+        
+        # ✅ Wait a bit to ensure message is sent
+        await asyncio.sleep(0.1)
+        
+        # Then delete the room
         room_manager.delete_room(room_id)
     else:
-        # ✅ Always include host_name
+        # Player (not host) is leaving
         await broadcast(room_id, "room_state_update", {
             "slots": room.summary()["slots"],
             "host_name": room.summary()["host_name"]
