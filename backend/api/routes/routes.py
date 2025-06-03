@@ -100,17 +100,31 @@ async def assign_slot(
     try:
         if name == "null":
             name = None
+        
+        # ✅ ตรวจสอบว่าจะมีใครถูกเตะไหม
+        kicked_player = room.get_kicked_player(slot, name)
+        
         room.assign_slot(slot, name)
     except ValueError as e:
         raise HTTPException(status_code=400, detail=str(e))
 
     updated_summary = room.summary()
     
-    # ✅ Always include host_name in broadcast
+    # Broadcast room state update
     await broadcast(room_id, "room_state_update", {
         "slots": updated_summary["slots"], 
-        "host_name": updated_summary["host_name"]  # Important!
+        "host_name": updated_summary["host_name"]
     })
+    
+    # ✅ ถ้ามีผู้เล่นถูกเตะ
+    if kicked_player:
+        await broadcast(room_id, "player_kicked", {
+            "player": kicked_player,
+            "reason": "Host assigned a bot to your slot"
+        })
+        
+        # Optional: บันทึก log
+        print(f"Player {kicked_player} was kicked from room {room_id} slot {slot}")
     
     return {"ok": True}
 

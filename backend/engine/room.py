@@ -143,3 +143,24 @@ class Room:
         self.game = Game(self.players) # Create a new Game instance with the current players.
         self.started = True # Set the room's status to started.
         self.game.start_game() # Call the game's start_game method.
+
+    def get_kicked_player(self, slot: int, new_assignment: Optional[str]) -> Optional[str]:
+        """
+        Check if a player will be kicked when assigning to a slot.
+        Returns the name of the kicked player or None.
+        """
+        current = self.players[slot]
+        
+        # ถ้า slot ว่าง หรือมี bot อยู่ = ไม่มีใครถูกเตะ
+        if not current or current.is_bot:
+            return None
+        
+        # ถ้ากำลังจะใส่ bot หรือใส่คนอื่น = คนเดิมถูกเตะ
+        if new_assignment and (new_assignment.startswith("Bot") or new_assignment.startswith("BOT_")):
+            return current.name
+        
+        # ถ้าใส่คนอื่นที่ไม่ใช่ bot
+        if new_assignment and new_assignment != current.name:
+            return current.name
+        
+        return None
