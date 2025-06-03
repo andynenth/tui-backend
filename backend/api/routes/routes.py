@@ -5,9 +5,12 @@ from engine.game import Game # Import the Game class from the game engine.
 from engine.rules import is_valid_play, get_play_type # Import game rule functions.
 # from engine.room_manager import RoomManager # (Commented out) Original RoomManager import.
 from engine.win_conditions import is_game_over, get_winners # Import win condition functions.
-from socket_manager import broadcast # Import the broadcast function for sending WebSocket messages.
+from backend.socket_manager import broadcast
 from backend.shared_instances import shared_room_manager # Import the shared RoomManager instance.
 import asyncio # Standard library for asynchronous programming.
+
+import backend.socket_manager
+print(f"socket_manager id in {__name__}: {id(backend.socket_manager)}")
 
 router = APIRouter() # Create a new FastAPI APIRouter instance.
 # room_manager = RoomManager() # (Commented out) Direct instantiation of RoomManager.
