@@ -68,11 +68,18 @@ export async function startGame(roomId) {
  * @returns {Promise<object>} A promise that resolves with the assignment confirmation.
  */
 export async function assignSlot(roomId, name, slot) {
-  // Send a POST request to the '/api/assign-slot' endpoint with room ID, player name, and slot.
-  const res = await fetch(`/api/assign-slot?room_id=${roomId}&name=${name}&slot=${slot}`, {
-    method: 'POST', // Specify the HTTP method as POST.
+  // If name is null or undefined, don't include it in the query string
+  let url = `/api/assign-slot?room_id=${roomId}&slot=${slot}`;
+  
+  // Only add name parameter if it's not null
+  if (name !== null && name !== undefined) {
+    url += `&name=${encodeURIComponent(name)}`;
+  }
+  
+  const res = await fetch(url, {
+    method: 'POST',
   });
-  return res.json(); // Parse and return the JSON response.
+  return res.json();
 }
 
 /**
