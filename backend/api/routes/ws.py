@@ -1,10 +1,12 @@
 # backend/api/routes/ws.py
 
 from fastapi import WebSocket, WebSocketDisconnect, APIRouter # Import WebSocket and WebSocketDisconnect for handling WebSocket connections, and APIRouter for routing.
-from backend.socket_manager import register, unregister, broadcast # Import functions from the custom socket_manager for managing WebSocket connections and broadcasting messages.
-# from backend.engine.room_manager import RoomManager # (Commented out) Original RoomManager import.
+from backend.socket_manager import register, unregister, broadcast
 from backend.shared_instances import shared_room_manager # Import the globally shared RoomManager instance.
 import asyncio # Standard library for asynchronous programming.
+
+import backend.socket_manager
+print(f"socket_manager id in {__name__}: {id(backend.socket_manager)}")
 
 router = APIRouter() # Create a new FastAPI APIRouter instance for WebSocket routes.
 # room_manager = RoomManager() # (Commented out) Direct instantiation of RoomManager.
