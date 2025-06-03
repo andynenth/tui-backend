@@ -64,64 +64,52 @@ class Room:
 
     def assign_slot(self, slot: int, name_or_none: Optional[str]):
         """
-        Assigns a player (human or bot) or clears a slot.
-        Args:
-            slot (int): The 0-indexed slot number (0 to 3).
-            name_or_none (Optional[str]): The name of the player/bot to assign, or None to clear the slot.
-        Raises:
-            ValueError: If the slot number is invalid.
+        Assigns a player or clears a slot.
+        Prevents duplicate players.
         """
         if slot < 0 or slot > 3:
-            raise ValueError("Invalid slot number") # Validate slot index.
-
+            raise ValueError("Invalid slot number")
+        
+        # ถ้าจะ assign ผู้เล่น ต้องเช็คว่าไม่ซ้ำ
+        if name_or_none and not (name_or_none.startswith("BOT_") or name_or_none.startswith("Bot")):
+            # เช็คว่าผู้เล่นนี้อยู่ในห้องแล้วหรือไม่
+            for i, player in enumerate(self.players):
+                if i != slot and player and player.name == name_or_none and not player.is_bot:
+                    # ถ้าอยู่แล้ว ให้ย้ายมาที่ slot ใหม่
+                    self.players[i] = None  # Clear old slot
+                    break
+        
+        # Assign ตามปกติ
         if name_or_none is None:
-            # If name_or_none is None, clear the slot.
             self.players[slot] = None
         elif name_or_none.startswith("BOT_") or name_or_none.startswith("Bot"):
-            # If the name starts with "BOT_" or "Bot", assign a bot.
             self.players[slot] = Player(name_or_none, is_bot=True)
         else:
-            # Otherwise, assign a human player.
             self.players[slot] = Player(name_or_none, is_bot=False)
 
     def join_room(self, player_name: str) -> int:
         """
         Allows a player to join the room.
-        A player can join an empty slot or replace a bot.
-        Args:
-            player_name (str): The name of the player attempting to join.
-        Returns:
-            int: The index of the slot the player joined.
-        Raises:
-            ValueError: If the player is already in the room or no available slots.
+        Automatically assigns to the first available slot.
         """
-        # 1. Check if the player with this name is already in the room (prevent duplicate joins).
+        # 1. ตรวจสอบว่าผู้เล่นอยู่ในห้องแล้วหรือไม่
         for i, player in enumerate(self.players):
             if player and player.name == player_name and not player.is_bot:
                 raise ValueError(f"Player '{player_name}' is already in this room.")
 
-        # 2. Find an available slot: prioritize truly empty slots (None), then bot slots.
-        found_slot_index = -1
-        # First, try to find a truly empty slot.
+        # 2. หาช่องว่างแรกสุด (ไม่ใช่หา bot slot)
         for i, player in enumerate(self.players):
-            if player is None: # Found an empty slot.
-                found_slot_index = i
-                break
+            if player is None:
+                self.players[i] = Player(player_name, is_bot=False)
+                return i
         
-        # If no empty slot was found, try to find a bot slot to replace.
-        if found_slot_index == -1:
-            for i, player in enumerate(self.players):
-                if player and player.is_bot: # Found a bot slot.
-                    found_slot_index = i
-                    break # Select the first bot found.
-
-        if found_slot_index != -1:
-            # Assign the human player to the found slot.
-            self.players[found_slot_index] = Player(player_name, is_bot=False)
-            return found_slot_index
+        # 3. ถ้าไม่มีช่องว่าง ให้แทนที่ bot slot แรกที่เจอ
+        for i, player in enumerate(self.players):
+            if player and player.is_bot:
+                self.players[i] = Player(player_name, is_bot=False)
+                return i
         
-        # If no suitable slot was found (all slots are filled by other human players).
-        raise ValueError("No available slot (all slots are filled by human players or cannot be replaced).")
+        raise ValueError("No available slot (all slots are filled by human players).")
 
 
     def exit_room(self, player_name: str) -> bool:

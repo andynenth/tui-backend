@@ -3,7 +3,6 @@
 from fastapi import APIRouter, HTTPException, Query # Import FastAPI components for routing, HTTP exceptions, and query parameters.
 from engine.game import Game # Import the Game class from the game engine.
 from engine.rules import is_valid_play, get_play_type # Import game rule functions.
-# from engine.room_manager import RoomManager # (Commented out) Original RoomManager import.
 from engine.win_conditions import is_game_over, get_winners # Import win condition functions.
 from backend.socket_manager import broadcast
 from backend.shared_instances import shared_room_manager # Import the shared RoomManager instance.
@@ -64,25 +63,29 @@ async def list_rooms():
 async def join_room(room_id: str = Query(...), name: str = Query(...)):
     """
     Allows a player to join an existing game room.
-    Args:
-        room_id (str): The ID of the room to join.
-        name (str): The name of the player joining.
-    Returns:
-        dict: A summary of the room's state after the player joins.
-    Raises:
-        HTTPException: If the room is not found or joining fails.
+    Automatically assigns to first available slot.
     """
-    room = room_manager.get_room(room_id) # Get the room object.
+    room = room_manager.get_room(room_id)
     if not room:
-        raise HTTPException(status_code=404, detail="Room not found") # Raise 404 if room doesn't exist.
+        raise HTTPException(status_code=404, detail="Room not found")
+    
     try:
-        room.join_room(name) # Attempt to join the room.
+        slot_index = room.join_room(name)  # join_room จะคืน slot index
+        # ไม่ต้องเรียก assign_slot อีก เพราะ join_room ทำให้แล้ว
     except ValueError as e:
-        raise HTTPException(status_code=400, detail=str(e)) # Raise 400 if joining fails (e.g., room full).
-    # 🎯 IMPORTANT: Broadcast the updated room state after a successful join.
-    await broadcast(room_id, "room_state_update", {"slots": room.summary()["slots"], "host_name": room.host_name})
-    # ✅ Must return the host_name along with the slots.
-    return {"slots": room.summary()["slots"], "host_name": room.host_name}
+        raise HTTPException(status_code=400, detail=str(e))
+    
+    # Broadcast updated room state
+    await broadcast(room_id, "room_state_update", {
+        "slots": room.summary()["slots"], 
+        "host_name": room.host_name
+    })
+    
+    return {
+        "slots": room.summary()["slots"], 
+        "host_name": room.host_name,
+        "assigned_slot": slot_index  # บอกด้วยว่าได้ slot ไหน
+    }
 
 @router.post("/assign-slot")
 async def assign_slot(

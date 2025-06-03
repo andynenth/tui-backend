@@ -146,7 +146,10 @@ export class RoomScene extends Container {
         this.isHost = result.host_name === this.playerName; // Determine if current player is host.
         this.updateSlotViews(result.slots); // Update the UI based on the fetched slot data.
       } else {
-        console.error("Received unexpected data from getRoomStateData:", result);
+        console.error(
+          "Received unexpected data from getRoomStateData:",
+          result
+        );
         alert(
           "Room state invalid or room may have been closed. Returning to Lobby."
         );
@@ -307,130 +310,105 @@ export class RoomScene extends Container {
       slots
     );
     console.log("[RoomScene.updateSlotViews] Current isHost:", this.isHost);
-    this.latestSlots = slots; // Store the latest slot data.
+    this.latestSlots = slots;
 
     for (const slot of this.slots) {
-      const info = slots[slot]; // Get information for the current slot.
-      const { label, joinBtn } = this.slotLabels[slot]; // Get references to the PixiJS objects for this slot.
+      const info = slots[slot];
+      const { label, joinBtn } = this.slotLabels[slot];
       console.log(
         `[RoomScene.updateSlotViews] Processing slot ${slot}. Info:`,
         info
       );
 
       if (!info) {
-        // Slot is empty (null).
+        // Slot ว่าง
         if (this.isHost) {
-          label.text = `${slot}: (Open)`; // Host sees "Open" (empty).
-          joinBtn.setText("Add bot"); // Host can "Add bot".
+          label.text = `${slot}: (Open)`;
+          joinBtn.setText("Add bot");
           joinBtn.view.visible = true;
-          console.log(
-            `  - Slot ${slot} (empty), Host view: label='(Open)', btn='Add bot', visible=true`
-          );
-        } else {
-          label.text = `${slot}: Open`; // Player sees "Open" (empty).
-          joinBtn.setText("Join"); // Player can "Join".
-          joinBtn.view.visible = true;
-          // ✅ Re-assign onClick for the "Join" button for players.
+
+          // ✅ สำคัญ: Re-assign onClick handler ทุกครั้ง
           joinBtn.onClick = async () => {
             try {
               console.log(
-                `[RoomScene.onClick] Player '${this.playerName}' attempting to join open slot ${slot}.`
+                `[RoomScene.onClick] Host adding bot to empty slot ${slot}.`
               );
               await assignSlot(
                 this.roomId,
-                this.playerName,
+                `Bot ${parseInt(slot[1])}`,
                 parseInt(slot[1]) - 1
               );
             } catch (err) {
-              console.error("❌ [RoomScene.onClick] Failed to join slot", err);
-              alert(`Failed to join slot: ${err.message || err.detail}`);
+              console.error("❌ Failed to add bot", err);
+              alert(`Failed to add bot: ${err.message || err.detail}`);
             }
           };
-          console.log(
-            `  - Slot ${slot} (empty), Player view: label='Open', btn='Join', visible=true`
-          );
+        } else {
+          // ผู้เล่นทั่วไป - ไม่ต้องมีปุ่ม Join
+          label.text = `${slot}: Open`;
+          joinBtn.view.visible = false; // ✅ ซ่อนปุ่ม
         }
       } else if (info.is_bot) {
-        // Slot has a Bot.
-        label.text = `${slot}: 🤖 ${info.name}`; // Display bot's actual name (e.g., "Bot 2").
+        // Slot มี Bot
+        label.text = `${slot}: 🤖 ${info.name}`;
         if (this.isHost) {
-          joinBtn.setText("Open"); // Host can "Open" (make empty).
+          joinBtn.setText("Open");
           joinBtn.view.visible = true;
-          // ✅ Re-assign onClick for the "Open" button for Host on a Bot slot.
+
+          // ✅ Re-assign onClick สำหรับ Open
           joinBtn.onClick = async () => {
             try {
               console.log(
-                `[RoomScene.onClick] Host attempting to open slot ${slot} from Bot ${info.name}.`
+                `[RoomScene.onClick] Host opening slot ${slot} from Bot.`
               );
-              await assignSlot(this.roomId, null, parseInt(slot[1]) - 1); // Make slot empty.
+              await assignSlot(this.roomId, null, parseInt(slot[1]) - 1);
             } catch (err) {
-              console.error(
-                "❌ [RoomScene.onClick] Failed to open slot from bot",
-                err
-              );
+              console.error("❌ Failed to open slot", err);
               alert(`Failed to open slot: ${err.message || err.detail}`);
             }
           };
         } else {
-          joinBtn.view.visible = false; // Player does not see the button.
+          joinBtn.view.visible = false;
         }
-        console.log(
-          `  - Slot ${slot} (bot), Host view (${this.isHost}): label='🤖 ${
-            info.name
-          }', btn='Open' (if Host), visible=${this.isHost ? "true" : "false"}`
-        );
       } else if (info.name === this.playerName) {
-        // Slot is occupied by the current player.
-        label.text = `${slot}: ${info.name} <<`; // Indicate it's "us".
-        joinBtn.view.visible = false; // No button for self-occupied slot.
-        console.log(
-          `  - Slot ${slot} (self), Host view (${this.isHost}): label='<<', btn visible=false`
-        );
+        // Slot ของตัวเอง
+        label.text = `${slot}: ${info.name} <<`;
+        joinBtn.view.visible = false;
       } else {
-        // Slot has another player.
+        // Slot มีผู้เล่นอื่น
         label.text = `${slot}: ${info.name}`;
         if (this.isHost) {
-          joinBtn.setText("Add bot"); // Host can "Add bot" (to kick the player).
+          joinBtn.setText("Add bot");
           joinBtn.view.visible = true;
-          // ✅ Re-assign onClick for the "Add bot" button for Host on another player's slot.
+
+          // ✅ Re-assign onClick สำหรับเตะผู้เล่น
           joinBtn.onClick = async () => {
             try {
               console.log(
-                `[RoomScene.onClick] Host attempting to kick player '${info.name}' from slot ${slot} and replace with Bot.`
+                `[RoomScene.onClick] Host kicking player '${info.name}' and replacing with Bot.`
               );
               await assignSlot(
                 this.roomId,
-                `Bot ${parseInt(slot[1])}`, // Use the slot index for bot naming.
+                `Bot ${parseInt(slot[1])}`,
                 parseInt(slot[1]) - 1
               );
             } catch (err) {
-              console.error(
-                "❌ [RoomScene.onClick] Failed to kick player",
-                err
-              );
+              console.error("❌ Failed to kick player", err);
               alert(`Failed to kick player: ${err.message || err.detail}`);
             }
           };
         } else {
-          joinBtn.view.visible = false; // Player does not see the button.
+          joinBtn.view.visible = false;
         }
-        console.log(
-          `  - Slot ${slot} (other player), Host view (${
-            this.isHost
-          }): label='${info.name}', btn='Add bot' (if Host), visible=${
-            this.isHost ? "true" : "false"
-          }`
-        );
       }
     }
 
-    // "Start Game" button logic:
-    // It's enabled only for the host and when all slots are filled (by players or bots).
+    // Update Start Game button
     const isReady = Object.values(slots).every(
       (info) => info && (info.is_bot || info.name)
     );
-    this.startButton.setEnabled(isReady); // Enable/disable based on readiness.
-    this.startButton.view.visible = this.isHost; // Only visible to the host.
+    this.startButton.setEnabled(isReady);
+    this.startButton.view.visible = this.isHost;
   }
 
   /**
