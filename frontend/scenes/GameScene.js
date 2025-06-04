@@ -4,183 +4,193 @@ import { Container, Text, TextStyle } from "pixi.js";
 import { GameButton } from "../components/GameButton.js";
 import { GameEvents } from "../SceneFSM.js";
 import {
-    on as onSocketEvent,
-    off as offSocketEvent,
-    emit as emitSocketEvent
+  on as onSocketEvent,
+  off as offSocketEvent,
+  emit as emitSocketEvent,
 } from "../socketManager.js";
 
 export class GameScene extends Container {
-    constructor(roomId, playerName, gameData, triggerFSMEvent) {
-        super();
-        console.log("🎮 Entered GameScene");
+  constructor(roomId, playerName, gameData, triggerFSMEvent) {
+    super();
+    console.log("🎮 Entered GameScene");
 
-        this.roomId = roomId;
-        this.playerName = playerName;
-        this.gameData = gameData;
-        this.triggerFSMEvent = triggerFSMEvent;
-        
-        // Game state
-        this.currentRound = gameData.round || 1;
-        this.players = gameData.players || [];
-        this.myHand = [];
-        this.currentPhase = "DEAL"; // DEAL, DECLARE, PLAY, SCORE
-        
-        // Find my player data
-        this.myPlayerData = this.players.find(p => p.name === this.playerName);
-        this.myHand = gameData.hands?.[this.playerName] || [];
+    this.roomId = roomId;
+    this.playerName = playerName;
+    this.gameData = gameData;
+    this.triggerFSMEvent = triggerFSMEvent;
 
-        this.layout = {
-            width: "100%",
-            height: "100%",
-            flexDirection: "column",
-            alignItems: "center",
-            padding: 16,
-            gap: 16,
-        };
+    // Game state
+    this.currentRound = gameData.round || 1;
+    this.players = gameData.players || [];
+    this.myHand = [];
+    this.currentPhase = "DEAL"; // DEAL, DECLARE, PLAY, SCORE
 
-        this.setupUI();
-        this.setupWebSocketListeners();
-    }
+    // Find my player data
+    this.myPlayerData = this.players.find((p) => p.name === this.playerName);
+    this.myHand = gameData.hands?.[this.playerName] || [];
 
-    setupUI() {
-        // Header
-        const header = new Container();
-        header.layout = {
-            width: "100%",
-            flexDirection: "row",
-            justifyContent: "space-between",
-            alignItems: "center",
-        };
+    this.layout = {
+      width: "100%",
+      height: "100%",
+      flexDirection: "column",
+      alignItems: "center",
+      padding: 16,
+      gap: 16,
+    };
 
-        const roundText = new Text({
-            text: `Round ${this.currentRound}`,
-            style: new TextStyle({ fill: "#ffffff", fontSize: 24 }),
-        });
+    this.setupUI();
+    this.setupWebSocketListeners();
+  }
 
-        const scoreText = new Text({
-            text: `Score: ${this.myPlayerData?.score || 0}`,
-            style: new TextStyle({ fill: "#ffffff", fontSize: 20 }),
-        });
+  setupUI() {
+    // Header
+    const header = new Container();
+    header.layout = {
+      width: "100%",
+      flexDirection: "row",
+      justifyContent: "space-between",
+      alignItems: "center",
+    };
 
-        header.addChild(roundText, scoreText);
+    const roundText = new Text({
+      text: `Round ${this.currentRound}`,
+      style: new TextStyle({ fill: "#ffffff", fontSize: 24 }),
+    });
 
-        // Player area
-        const playerArea = new Container();
-        playerArea.layout = {
-            width: "100%",
-            flexDirection: "column",
-            gap: 8,
-        };
+    const scoreText = new Text({
+      text: `Score: ${this.myPlayerData?.score || 0}`,
+      style: new TextStyle({ fill: "#ffffff", fontSize: 20 }),
+      x: 200,
+      y: 0,
+    });
 
-        // Show all players
-        this.players.forEach(player => {
-            const playerRow = new Container();
-            playerRow.layout = {
-                flexDirection: "row",
-                gap: 8,
-            };
+    header.addChild(roundText, scoreText);
 
-            const nameText = new Text({
-                text: `${player.name}${player.is_bot ? ' 🤖' : ''}${player.name === this.playerName ? ' (You)' : ''}`,
-                style: new TextStyle({ fill: "#ffffff", fontSize: 16 }),
-            });
+    // Player area
+    const playerArea = new Container();
+    playerArea.layout = {
+      width: "100%",
+      flexDirection: "column",
+      gap: 8,
+      marginTop: 30,
+    };
 
-            const scoreText = new Text({
-                text: `${player.score} pts`,
-                style: new TextStyle({ fill: "#aaaaaa", fontSize: 16 }),
-            });
+    // Show all players
+    this.players.forEach((player) => {
+      const playerRow = new Container();
+      playerRow.layout = {
+        flexDirection: "row",
+        gap: 8,
+        marginTop: 20,
+      };
 
-            playerRow.addChild(nameText, scoreText);
-            playerArea.addChild(playerRow);
-        });
+      const nameText = new Text({
+        text: `${player.name}${player.is_bot ? " 🤖" : ""}${
+          player.name === this.playerName ? " (You)" : ""
+        }`,
+        style: new TextStyle({ fill: "#ffffff", fontSize: 16 }),
+      });
 
-        // Hand area
-        const handArea = new Container();
-        handArea.layout = {
-            width: "100%",
-            flexDirection: "column",
-            alignItems: "center",
-            gap: 8,
-        };
+      const scoreText = new Text({
+        text: `${player.score} pts`,
+        style: new TextStyle({ fill: "#aaaaaa", fontSize: 16 }),
+        x: 200,
+        y: 0,
+      });
 
-        const handTitle = new Text({
-            text: "Your Hand:",
-            style: new TextStyle({ fill: "#ffffff", fontSize: 18 }),
-        });
+      playerRow.addChild(nameText, scoreText);
+      playerArea.addChild(playerRow);
+    });
 
-        const handContainer = new Container();
-        handContainer.layout = {
-            flexDirection: "row",
-            flexWrap: "wrap",
-            gap: 8,
-        };
+    // Hand area
+    const handArea = new Container();
+    handArea.layout = {
+      width: "100%",
+      flexDirection: "column",
+      alignItems: "center",
+      gap: 8,
+      marginTop: 200,
+    };
 
-        // Show cards in hand
-        this.myHand.forEach((card, index) => {
-            const cardButton = new GameButton({
-                label: card,
-                width: 80,
-                height: 60,
-                onClick: () => {
-                    console.log(`Clicked card: ${card}`);
-                    // TODO: Implement card selection
-                },
-            });
-            handContainer.addChild(cardButton.view);
-        });
+    const handTitle = new Text({
+      text: "Your Hand:",
+      style: new TextStyle({ fill: "#ffffff", fontSize: 18 }),
+    });
 
-        handArea.addChild(handTitle, handContainer);
+    const handContainer = new Container();
+    handContainer.layout = {
+      flexDirection: "row",
+      flexWrap: "wrap",
+      gap: 8,
+      marginTop: 50,
+    };
 
-        // Exit button
-        const exitButton = new GameButton({
-            label: "Exit Game",
-            bgColor: 0xaa0000,
-            onClick: () => {
-                if (confirm("Are you sure you want to exit the game?")) {
-                    this.triggerFSMEvent(GameEvents.EXIT_ROOM);
-                }
-            },
-        });
+    // Show cards in hand
+    this.myHand.forEach((card, index) => {
+      const cardButton = new GameButton({
+        label: card,
+        width: 80,
+        height: 60,
+        onClick: () => {
+          console.log(`Clicked card: ${card}`);
+          // TODO: Implement card selection
+        },
+      });
+      handContainer.addChild(cardButton.view);
+    });
 
-        this.addChild(header, playerArea, handArea, exitButton.view);
-    }
+    handArea.addChild(handTitle, handContainer);
 
-    setupWebSocketListeners() {
-        // Listen for game events
-        this.handleDeclare = (data) => {
-            console.log("WS: Player declared", data);
-            // TODO: Update UI
-        };
-        onSocketEvent("declare", this.handleDeclare);
+    // Exit button
+    const exitButton = new GameButton({
+      label: "Exit Game",
+      bgColor: 0xaa0000,
+      onClick: () => {
+        if (confirm("Are you sure you want to exit the game?")) {
+          this.triggerFSMEvent(GameEvents.EXIT_ROOM);
+        }
+      },
+    });
 
-        this.handlePlay = (data) => {
-            console.log("WS: Player played", data);
-            // TODO: Update UI
-        };
-        onSocketEvent("play", this.handlePlay);
+    this.addChild(header, playerArea, handArea, exitButton.view);
+  }
 
-        this.handleScore = (data) => {
-            console.log("WS: Round scored", data);
-            // TODO: Update scores and check game over
-        };
-        onSocketEvent("score", this.handleScore);
+  setupWebSocketListeners() {
+    // Listen for game events
+    this.handleDeclare = (data) => {
+      console.log("WS: Player declared", data);
+      // TODO: Update UI
+    };
+    onSocketEvent("declare", this.handleDeclare);
 
-        this.handleRedeal = (data) => {
-            console.log("WS: Redeal requested", data);
-            // TODO: Handle redeal
-        };
-        onSocketEvent("redeal", this.handleRedeal);
-    }
+    this.handlePlay = (data) => {
+      console.log("WS: Player played", data);
+      // TODO: Update UI
+    };
+    onSocketEvent("play", this.handlePlay);
 
-    teardownWebSocketListeners() {
-        offSocketEvent("declare", this.handleDeclare);
-        offSocketEvent("play", this.handlePlay);
-        offSocketEvent("score", this.handleScore);
-        offSocketEvent("redeal", this.handleRedeal);
-    }
+    this.handleScore = (data) => {
+      console.log("WS: Round scored", data);
+      // TODO: Update scores and check game over
+    };
+    onSocketEvent("score", this.handleScore);
 
-    destroy(options) {
-        this.teardownWebSocketListeners();
-        super.destroy(options);
-    }
+    this.handleRedeal = (data) => {
+      console.log("WS: Redeal requested", data);
+      // TODO: Handle redeal
+    };
+    onSocketEvent("redeal", this.handleRedeal);
+  }
+
+  teardownWebSocketListeners() {
+    offSocketEvent("declare", this.handleDeclare);
+    offSocketEvent("play", this.handlePlay);
+    offSocketEvent("score", this.handleScore);
+    offSocketEvent("redeal", this.handleRedeal);
+  }
+
+  destroy(options) {
+    this.teardownWebSocketListeners();
+    super.destroy(options);
+  }
 }
