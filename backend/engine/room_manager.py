@@ -13,8 +13,8 @@ class RoomManager:
         """
         Initializes the RoomManager.
         Attributes:
-            rooms (Dict[str, Room]): A dictionary to store Room objects,
-                                     where keys are room IDs (strings) and values are Room instances.
+        rooms (Dict[str, Room]): A dictionary to store Room objects,
+        where keys are room IDs (strings) and values are Room instances.
         """
         self.rooms: Dict[str, Room] = {}
 
@@ -53,12 +53,22 @@ class RoomManager:
             del self.rooms[room_id] # Remove the room from the dictionary if it exists.
 
     def list_rooms(self):
-        """
-        Lists all available rooms that have not yet started a game.
-        Returns:
-            list: A list of summaries for rooms that are not yet started.
-                  Each summary is typically a dictionary containing room details.
-        """
-        # Iterate through all room values and filter for rooms where 'started' attribute is False.
-        # Then, return the summary of each filtered room.
-        return [room.summary() for room in self.rooms.values() if not room.started]
+            """
+            Lists all available rooms with complete information.
+            This method iterates through all rooms and includes only those that have not started.
+            For each available room, it provides a detailed summary including slot occupancy.
+            Returns:
+                list: A list of dictionaries, where each dictionary is a summary of an available room.
+            """
+            available_rooms = [] # Initialize an empty list to store summaries of available rooms.
+            
+            # Iterate through all room objects currently managed.
+            for room in self.rooms.values():
+                # Only include rooms that have not yet started a game.
+                if not room.started:
+                    summary = room.summary() # Get the detailed summary of the room.
+                    # ✅ Ensure that 'occupied_slots' and 'total_slots' data are present in the summary.
+                    # These fields are expected to be added by the Room.summary() method.
+                    available_rooms.append(summary) # Add the room's summary to the list.
+            
+            return available_rooms # Return the list of available room summaries.

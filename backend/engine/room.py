@@ -30,11 +30,37 @@ class Room:
         for i in range(1, 4):
             self.players[i] = Player(f"Bot {i+1}", is_bot=True)
 
+    def get_occupied_slots(self) -> int:
+        """
+        Counts the number of occupied slots (by both human players and bots).
+        Returns:
+            int: The count of non-empty slots.
+        """
+        return sum(1 for player in self.players if player is not None)
+
+    def get_total_slots(self) -> int:
+        """
+        Returns the total number of slots available in the room.
+        Returns:
+            int: The total number of player slots.
+        """
+        return len(self.players)
+
+    def is_full(self) -> bool:
+        """
+        Checks if the room is completely full (all slots are occupied).
+        Returns:
+            bool: True if the room is full, False otherwise.
+        """
+        return self.get_occupied_slots() >= self.get_total_slots()
+
     def summary(self):
         """
         Generates a summary of the room's current state, suitable for sending to clients.
+        Includes information about occupied and total slots.
         Returns:
-            dict: A dictionary containing room_id, host_name, started status, and slot information.
+            dict: A dictionary containing room_id, host_name, started status,
+                  slot information, occupied slots count, and total slots count.
         """
         def slot_info(player: Optional[Player]):
             """
@@ -47,8 +73,7 @@ class Room:
             if player is None:
                 return None # Return None if the slot is empty.
             return {
-                # ✅ Always use player.name, regardless of whether it's a bot or human.
-                "name": player.name,
+                "name": player.name, # Always use player.name, regardless of whether it's a bot or human.
                 "is_bot": player.is_bot
             }
 
@@ -59,74 +84,93 @@ class Room:
             "slots": {
                 # Create a dictionary mapping slot names (P1, P2, etc.) to their info.
                 f"P{i+1}": slot_info(p) for i, p in enumerate(self.players)
-            }
+            },
+            "occupied_slots": self.get_occupied_slots(),  # ✅ Added occupied slots count.
+            "total_slots": self.get_total_slots()         # ✅ Added total slots count.
         }
 
     def assign_slot(self, slot: int, name_or_none: Optional[str]):
         """
-        Assigns a player or clears a slot.
-        Prevents duplicate players.
+        Assigns a player (human or bot) or clears a slot.
+        If a human player is assigned to a slot, and they were previously in another slot,
+        their old slot is cleared.
+        Args:
+            slot (int): The 0-indexed slot number (0 to 3).
+            name_or_none (Optional[str]): The name of the player/bot to assign, or None to clear the slot.
+        Raises:
+            ValueError: If the slot number is invalid.
         """
         if slot < 0 or slot > 3:
-            raise ValueError("Invalid slot number")
+            raise ValueError("Invalid slot number") # Validate slot index.
         
-        # ถ้าจะ assign ผู้เล่น ต้องเช็คว่าไม่ซ้ำ
+        # If a human player is being assigned, check for duplicates and move them.
         if name_or_none and not (name_or_none.startswith("BOT_") or name_or_none.startswith("Bot")):
-            # เช็คว่าผู้เล่นนี้อยู่ในห้องแล้วหรือไม่
+            # Check if this player is already in another slot in the room.
             for i, player in enumerate(self.players):
                 if i != slot and player and player.name == name_or_none and not player.is_bot:
-                    # ถ้าอยู่แล้ว ให้ย้ายมาที่ slot ใหม่
-                    self.players[i] = None  # Clear old slot
+                    self.players[i] = None  # Clear the old slot if the player is found elsewhere.
                     break
         
-        # Assign ตามปกติ
+        # Assign the new player/bot or clear the slot.
         if name_or_none is None:
-            self.players[slot] = None
+            self.players[slot] = None # Clear the slot.
         elif name_or_none.startswith("BOT_") or name_or_none.startswith("Bot"):
-            self.players[slot] = Player(name_or_none, is_bot=True)
+            self.players[slot] = Player(name_or_none, is_bot=True) # Assign a bot.
         else:
-            self.players[slot] = Player(name_or_none, is_bot=False)
+            self.players[slot] = Player(name_or_none, is_bot=False) # Assign a human player.
 
     def join_room(self, player_name: str) -> int:
         """
         Allows a player to join the room.
-        Automatically assigns to the first available slot.
+        Automatically assigns the player to the first available empty slot.
+        If no empty slots, replaces the first available bot.
+        Args:
+            player_name (str): The name of the player attempting to join.
+        Returns:
+            int: The index of the slot the player joined.
+        Raises:
+            ValueError: If the player is already in the room or no available slots.
         """
-        # 1. ตรวจสอบว่าผู้เล่นอยู่ในห้องแล้วหรือไม่
+        # 1. Check if the player with this name is already in the room.
         for i, player in enumerate(self.players):
             if player and player.name == player_name and not player.is_bot:
                 raise ValueError(f"Player '{player_name}' is already in this room.")
 
-        # 2. หาช่องว่างแรกสุด (ไม่ใช่หา bot slot)
+        # 2. Find the first truly empty slot (None).
         for i, player in enumerate(self.players):
             if player is None:
                 self.players[i] = Player(player_name, is_bot=False)
                 return i
         
-        # 3. ถ้าไม่มีช่องว่าง ให้แทนที่ bot slot แรกที่เจอ
+        # 3. If no empty slots, find the first bot slot to replace.
         for i, player in enumerate(self.players):
             if player and player.is_bot:
                 self.players[i] = Player(player_name, is_bot=False)
                 return i
         
+        # If no suitable slot was found (all slots are filled by other human players).
         raise ValueError("No available slot (all slots are filled by human players).")
 
 
     def exit_room(self, player_name: str) -> bool:
         """
         Handles a player exiting the room.
-        Returns True if the exiting player was the host.
+        If the host exits, the room should be considered for deletion.
+        Args:
+            player_name (str): The name of the player exiting.
+        Returns:
+            bool: True if the exiting player was the host, False otherwise.
         """
         if player_name == self.host_name:
-            return True  # Host is leaving
+            return True  # If the host exits, signal to remove the entire room.
         
-        # Find and remove the player
+        # Find and remove the specific human player.
         for i, player in enumerate(self.players):
             if player and not player.is_bot and player.name == player_name:
-                self.players[i] = None
-                return False
+                self.players[i] = None # Set the player's slot to None (empty).
+                return False # Player exited, but not the host.
         
-        return False  # Player not found
+        return False  # Player not found or was a bot.
 
     def start_game(self):
         """
@@ -146,21 +190,26 @@ class Room:
 
     def get_kicked_player(self, slot: int, new_assignment: Optional[str]) -> Optional[str]:
         """
-        Check if a player will be kicked when assigning to a slot.
-        Returns the name of the kicked player or None.
+        Checks if a player will be kicked from a slot when a new assignment is made.
+        Args:
+            slot (int): The 0-indexed slot number being assigned to.
+            new_assignment (Optional[str]): The name of the new player/bot, or None if clearing the slot.
+        Returns:
+            Optional[str]: The name of the player who would be kicked, or None if no one is kicked.
         """
-        current = self.players[slot]
+        current = self.players[slot] # Get the current player/bot in the slot.
         
-        # ถ้า slot ว่าง หรือมี bot อยู่ = ไม่มีใครถูกเตะ
+        # If the slot is currently empty or has a bot, no one is kicked.
         if not current or current.is_bot:
             return None
         
-        # ถ้ากำลังจะใส่ bot หรือใส่คนอื่น = คนเดิมถูกเตะ
+        # If a bot is being assigned to a slot currently held by a human player, that player is kicked.
         if new_assignment and (new_assignment.startswith("Bot") or new_assignment.startswith("BOT_")):
             return current.name
         
-        # ถ้าใส่คนอื่นที่ไม่ใช่ bot
+        # If a different human player is being assigned to a slot currently held by another human player,
+        # the current player is kicked.
         if new_assignment and new_assignment != current.name:
             return current.name
         
-        return None
+        return None # No player is kicked in other scenarios.
