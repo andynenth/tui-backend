@@ -1,11 +1,17 @@
 // frontend/scenes/LobbyScene.js
 
-// Import necessary modules from PixiJS and local components/APIs.
-import { Container, Text, TextStyle } from "pixi.js"; // PixiJS Container for scene structure, Text for displaying text, TextStyle for text styling.
-import { GameButton } from "../components/GameButton.js"; // Custom Button component.
-import { GameTextbox } from "../components/GameTextbox.js"; // Custom Textbox component for user input.
-import { createRoom, joinRoom, listRooms } from "../api.js"; // API functions for interacting with the backend.
-import { GameEvents } from "../SceneFSM.js"; // Import GameEvents enum from the SceneFSM for triggering state transitions.
+import { Container, Text, TextStyle } from "pixi.js";
+import { GameButton } from "../components/GameButton.js";
+import { GameTextbox } from "../components/GameTextbox.js";
+import { createRoom, joinRoom } from "../api.js";
+import { GameEvents } from "../SceneFSM.js";
+import {
+  connect as connectSocket,
+  on as onSocketEvent,
+  off as offSocketEvent,
+  disconnect as disconnectSocket,
+  emit as emitSocketEvent,
+} from "../socketManager.js";
 
 /**
  * LobbyScene class represents the game lobby screen where players can
@@ -21,31 +27,28 @@ export class LobbyScene extends Container {
   constructor(playerName, triggerFSMEvent) {
     super(); // Call the constructor of the parent class (Container).
 
-    console.log("🔵 Entered LobbyScene"); // Log a message indicating entry into this scene.
+    console.log("🔵 Entered Enhanced LobbyScene with WebSocket");
 
     this.playerName = playerName; // Store the player's name.
     this.triggerFSMEvent = triggerFSMEvent; // Store the FSM event trigger callback.
 
-    // ✅ Track if scene is active
+    // Track if scene is active
     this.isActive = true;
-
-    // ✅ Store refresh interval
-    this.refreshInterval = null;
 
     // Define the layout properties for the entire scene container using PixiJS Layout.
     this.layout = {
-      width: "100%", // Scene takes full width.
-      flexDirection: "column", // Arrange children in a column.
-      alignItems: "center", // Horizontally center children.
-      padding: 16, // Add padding around the scene content.
-      gap: 16, // Add a gap between child elements.
+      width: "100%",
+      flexDirection: "column",
+      alignItems: "center",
+      padding: 16,
+      gap: 16,
     };
 
     // Create a header row container for the welcome message and "Create Room" button.
     const headerRow = new Container();
     headerRow.layout = {
       flexDirection: "row",
-      justifyContent: "flex-end", // Align content to the right.
+      justifyContent: "flex-end",
       alignItems: "center",
       width: "100%",
     };
@@ -136,17 +139,261 @@ export class LobbyScene extends Container {
       },
     });
 
+    // Connection status indicator
+    this.connectionStatus = new Text({
+      text: "🔴 Connecting to lobby...",
+      style: new TextStyle({ fill: "#ffaa00", fontSize: 14 }),
+    });
+
     // Add elements to their respective containers and then to the main scene.
     headerRow.addChild(title, createBtn.view);
     roomTable.addChild(this.tableHeader, this.roomListContainer);
     joinRow.addChild(roomIdInput.view, joinBtn.view);
     this.addChild(headerRow, roomTable, joinRow);
 
-    // Load the list of available rooms when the scene is initialized.
-    this.loadRoomList();
+    this.setupLobbyWebSocket();
+  }
 
-    // ✅ Setup auto-refresh every 2 seconds
-    this.startAutoRefresh();
+  /**
+   * ✅ Setup WebSocket connection for real-time lobby updates
+   */
+  setupLobbyWebSocket() {
+    // ✅ Connect to special lobby WebSocket
+    disconnectSocket(); // Ensure clean state
+    connectSocket("lobby");
+
+    console.log("🌐 Setting up lobby WebSocket listeners");
+
+    // ✅ Handle connection events
+    this.handleConnected = () => {
+      if (!this.isActive) return;
+      console.log("✅ Connected to lobby WebSocket");
+      this.connectionStatus.text = "🟢 Connected";
+      this.connectionStatus.style.fill = "#00ff00";
+
+      // Request initial room list
+      emitSocketEvent("request_room_list", { player_name: this.playerName });
+    };
+
+    this.handleDisconnected = () => {
+      if (!this.isActive) return;
+      console.log("⚠️ Disconnected from lobby WebSocket");
+      this.connectionStatus.text = "🔴 Disconnected";
+      this.connectionStatus.style.fill = "#ff0000";
+    };
+
+    this.handleReconnecting = (data) => {
+      if (!this.isActive) return;
+      this.connectionStatus.text = `🟡 Reconnecting... (${data.attempt}/${data.maxAttempts})`;
+      this.connectionStatus.style.fill = "#ffaa00";
+    };
+
+    this.handleConnectionFailed = () => {
+      if (!this.isActive) return;
+      this.connectionStatus.text = "❌ Connection Failed";
+      this.connectionStatus.style.fill = "#ff0000";
+
+      // Fallback to showing cached/empty state
+      this.showFallbackRoomList();
+    };
+
+    // ✅ Handle room list updates
+    this.handleRoomListUpdate = (data) => {
+      if (!this.isActive) return;
+      console.log("📡 Received room list update:", data);
+
+      if (data.rooms) {
+        this.updateRoomList(data.rooms);
+      }
+    };
+
+    // ✅ Handle individual room updates
+    this.handleRoomCreated = (data) => {
+      if (!this.isActive) return;
+      console.log("🆕 Room created:", data);
+      // Request fresh room list
+      emitSocketEvent("request_room_list", { player_name: this.playerName });
+    };
+
+    this.handleRoomClosed = (data) => {
+      if (!this.isActive) return;
+      console.log("🗑️ Room closed:", data);
+      // Request fresh room list
+      emitSocketEvent("request_room_list", { player_name: this.playerName });
+    };
+
+    this.handleRoomUpdated = (data) => {
+      if (!this.isActive) return;
+      console.log("🔄 Room updated:", data);
+      // Request fresh room list to get latest occupancy
+      emitSocketEvent("request_room_list", { player_name: this.playerName });
+    };
+
+    // ✅ Register all event listeners
+    onSocketEvent("connected", this.handleConnected);
+    onSocketEvent("disconnected", this.handleDisconnected);
+    onSocketEvent("reconnecting", this.handleReconnecting);
+    onSocketEvent("connection_failed", this.handleConnectionFailed);
+    onSocketEvent("room_list_update", this.handleRoomListUpdate);
+    onSocketEvent("room_created", this.handleRoomCreated);
+    onSocketEvent("room_closed", this.handleRoomClosed);
+    onSocketEvent("room_updated", this.handleRoomUpdated);
+
+    // ✅ ขอ room list ทันทีถ้า connection พร้อมแล้ว
+    // (กรณี WebSocket เชื่อมต่อเร็วกว่าการ setup listeners)
+    setTimeout(() => {
+      if (this.isActive) {
+        emitSocketEvent("request_room_list", { player_name: this.playerName });
+      }
+    }, 100);
+  }
+
+  updateRoomList(roomList) {
+    console.log("🔄 Updating room list with", roomList.length, "rooms");
+
+    // Clear existing content
+    this.roomListContainer.removeChildren();
+    this.tableHeader.removeChildren();
+
+    if (roomList.length === 0) {
+      const emptyText = new Text({
+        text: "No available rooms. Create one to get started!",
+        style: new TextStyle({ fill: "#999999", fontSize: 16 }),
+      });
+      this.tableHeader.addChild(emptyText);
+      return;
+    }
+
+    const listTitle = new Text({
+      text: `🗂 Available Rooms (${roomList.length}):`,
+      style: new TextStyle({ fill: "#ffffff", fontSize: 20 }),
+    });
+    this.tableHeader.addChild(listTitle);
+
+    // ✅ Filter and display rooms
+    let displayedRooms = 0;
+    for (const room of roomList) {
+      const occupiedSlots = room.occupied_slots || 0;
+      const totalSlots = room.total_slots || 4;
+
+      // Skip full rooms
+      if (occupiedSlots >= totalSlots) {
+        continue;
+      }
+
+      const row = new Container();
+      row.layout = {
+        flexDirection: "row",
+        justifyContent: "flex-end",
+        alignItems: "center",
+        width: "100%",
+        gap: 16,
+      };
+
+      // ✅ Enhanced room label with host info
+      const hostInfo = room.host_name ? ` by ${room.host_name}` : "";
+      const label = new Text({
+        text: `Room: ${room.room_id} (${occupiedSlots}/${totalSlots})${hostInfo}`,
+        style: new TextStyle({
+          fill: "#ffffff",
+          fontSize: 18,
+          wordWrap: false,
+        }),
+      });
+
+      const joinBtn = new GameButton({
+        width: 90,
+        height: 30,
+        label: "Join",
+        onClick: async () => {
+          try {
+            // ✅ Optimistic UI update
+            joinBtn.setText("Joining...");
+            joinBtn.setEnabled(false);
+
+            const result = await joinRoom(room.room_id, this.playerName);
+            console.log("✅ Joined room:", room.room_id);
+            this.triggerFSMEvent(GameEvents.ROOM_JOINED, {
+              roomId: room.room_id,
+            });
+          } catch (err) {
+            console.error("❌ Failed to join room:", err);
+
+            // ✅ Reset button state
+            joinBtn.setText("Join");
+            joinBtn.setEnabled(true);
+
+            if (err.message && err.message.includes("409")) {
+              alert("Cannot join: Room is already full.");
+            } else if (err.message && err.message.includes("404")) {
+              alert("Room no longer exists.");
+              // Request fresh room list
+              emitSocketEvent("request_room_list", { player_name: this.playerName });
+            } else {
+              alert(`Failed to join room: ${err.message || "Unknown error"}`);
+            }
+          }
+        },
+      });
+
+      row.addChild(label, joinBtn.view);
+      this.roomListContainer.addChild(row);
+      displayedRooms++;
+    }
+
+    // ✅ Show message if all rooms are full
+    if (displayedRooms === 0 && roomList.length > 0) {
+      const fullText = new Text({
+        text: "All rooms are currently full. Please create a new room.",
+        style: new TextStyle({ fill: "#ffaa00", fontSize: 16 }),
+      });
+      this.roomListContainer.addChild(fullText);
+    }
+  }
+
+/**
+   * ✅ Fallback room list when connection fails
+   */
+  showFallbackRoomList() {
+    this.roomListContainer.removeChildren();
+    this.tableHeader.removeChildren();
+
+    const fallbackText = new Text({
+      text: "⚠️ Unable to load room list. Connection issue.",
+      style: new TextStyle({ fill: "#ff6666", fontSize: 16 }),
+    });
+
+    const retryBtn = new GameButton({
+      label: "Retry Connection",
+      onClick: () => {
+        this.setupLobbyWebSocket();
+      },
+    });
+
+    this.tableHeader.addChild(fallbackText);
+    this.roomListContainer.addChild(retryBtn.view);
+  }
+
+  /**
+   * ✅ Cleanup WebSocket listeners
+   */
+  teardownWebSocketListeners() {
+    console.log("🧹 Cleaning up lobby WebSocket listeners");
+
+    this.isActive = false;
+
+    // Remove all event listeners
+    offSocketEvent("connected", this.handleConnected);
+    offSocketEvent("disconnected", this.handleDisconnected);
+    offSocketEvent("reconnecting", this.handleReconnecting);
+    offSocketEvent("connection_failed", this.handleConnectionFailed);
+    offSocketEvent("room_list_update", this.handleRoomListUpdate);
+    offSocketEvent("room_created", this.handleRoomCreated);
+    offSocketEvent("room_closed", this.handleRoomClosed);
+    offSocketEvent("room_updated", this.handleRoomUpdated);
+
+    // Disconnect from lobby WebSocket
+    disconnectSocket();
   }
 
   /**
