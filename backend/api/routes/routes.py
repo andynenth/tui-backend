@@ -53,25 +53,35 @@ async def create_room(name: str = Query(...)):
 @router.get("/list-rooms")
 async def list_rooms():
     """
-    Lists all currently available game rooms.
-    Returns:
-        dict: A dictionary containing a list of available rooms.
+    Lists all available rooms (not started and not full)
     """
-    return {"rooms": room_manager.list_rooms()}
+    all_rooms = room_manager.list_rooms()
+    
+    available_rooms = [
+        room for room in all_rooms 
+        if room.get("occupied_slots", 0) < room.get("total_slots", 4)
+    ]
+    
+    return {"rooms": available_rooms}
 
 @router.post("/join-room")
 async def join_room(room_id: str = Query(...), name: str = Query(...)):
     """
     Allows a player to join an existing game room.
-    Automatically assigns to first available slot.
+    Prevents joining full rooms.
     """
     room = room_manager.get_room(room_id)
     if not room:
         raise HTTPException(status_code=404, detail="Room not found")
     
+    if room.is_full():
+        raise HTTPException(
+            status_code=409,  # Conflict
+            detail="Selected room is already full."
+        )
+    
     try:
-        slot_index = room.join_room(name)  # join_room จะคืน slot index
-        # ไม่ต้องเรียก assign_slot อีก เพราะ join_room ทำให้แล้ว
+        slot_index = room.join_room(name)
     except ValueError as e:
         raise HTTPException(status_code=400, detail=str(e))
     
@@ -84,7 +94,7 @@ async def join_room(room_id: str = Query(...), name: str = Query(...)):
     return {
         "slots": room.summary()["slots"], 
         "host_name": room.host_name,
-        "assigned_slot": slot_index  # บอกด้วยว่าได้ slot ไหน
+        "assigned_slot": slot_index
     }
 
 @router.post("/assign-slot")
@@ -128,27 +138,27 @@ async def assign_slot(
     
     return {"ok": True}
 
-@router.post("/set-bot")
-async def set_bot(room_id: str = Query(...), slot: int = Query(...)):
-    """
-    Sets a bot in a specific slot.
-    Note: It's recommended that `set_bot()` internally calls `assign_slot()`
-    or that `set_bot()` is refactored to use `assign_slot()` directly.
-    Args:
-        room_id (str): The ID of the room.
-        slot (int): The 0-indexed slot number for the bot.
-    Returns:
-        dict: A confirmation dictionary.
-    Raises:
-        HTTPException: If the room is not found.
-    """
-    room = room_manager.get_room(room_id) # Get the room object.
-    if not room:
-        raise HTTPException(status_code=404, detail="Room not found") # Raise 404 if room doesn't exist.
-    room.set_bot(slot) # Call the room's set_bot method.
-    # Should broadcast after the change.
-    await broadcast(room_id, "room_state_update", {"slots": room.summary()["slots"]})
-    return {"ok": True}
+# @router.post("/set-bot")
+# async def set_bot(room_id: str = Query(...), slot: int = Query(...)):
+#     """
+#     Sets a bot in a specific slot.
+#     Note: It's recommended that `set_bot()` internally calls `assign_slot()`
+#     or that `set_bot()` is refactored to use `assign_slot()` directly.
+#     Args:
+#         room_id (str): The ID of the room.
+#         slot (int): The 0-indexed slot number for the bot.
+#     Returns:
+#         dict: A confirmation dictionary.
+#     Raises:
+#         HTTPException: If the room is not found.
+#     """
+#     room = room_manager.get_room(room_id) # Get the room object.
+#     if not room:
+#         raise HTTPException(status_code=404, detail="Room not found") # Raise 404 if room doesn't exist.
+#     room.set_bot(slot) # Call the room's set_bot method.
+#     # Should broadcast after the change.
+#     await broadcast(room_id, "room_state_update", {"slots": room.summary()["slots"]})
+#     return {"ok": True}
 
 @router.post("/start-game")
 async def start_game(room_id: str = Query(...)):

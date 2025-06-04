@@ -37,16 +37,30 @@ export async function listRooms() {
 
 /**
  * Sends a request to the backend to join an existing game room.
+ * Handles both successful responses and API errors.
  * @param {string} roomId - The ID of the room to join.
  * @param {string} name - The name of the player joining the room.
- * @returns {Promise<object>} A promise that resolves with details about the joined room.
+ * @returns {Promise<object>} A promise that resolves with room details if successful.
+ * @throws {Error} If the request fails or the API returns an error.
  */
 export async function joinRoom(roomId, name) {
-  // Send a POST request to the '/api/join-room' endpoint, with room ID and player name.
-  const res = await fetch(`/api/join-room?room_id=${roomId}&name=${name}`, {
-    method: 'POST', // Specify the HTTP method as POST.
-  });
-  return res.json(); // Parse and return the JSON response.
+    // Send a POST request to the backend API to join a room.
+    const res = await fetch(`/api/join-room?room_id=${roomId}&name=${name}`, {
+        method: 'POST',
+    });
+    
+    // Check if the HTTP response indicates an error (status code outside 200-299 range).
+    if (!res.ok) {
+        // Parse the error details from the response body.
+        const errorData = await res.json();
+        // Create and throw an Error object with details from the backend.
+        const error = new Error(errorData.detail || 'Failed to join room');
+        error.status = res.status; // Attach the HTTP status code.
+        throw error;
+    }
+    
+    // If the response is successful, parse and return the JSON data.
+    return res.json();
 }
 
 /**
