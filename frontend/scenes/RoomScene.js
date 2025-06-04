@@ -90,10 +90,12 @@ export class RoomScene extends Container {
       label: "Start Game",
       onClick: async () => {
         try {
-          await startGame(this.roomId); // Call API to start the game.
-          console.log("🚀 Game started!");
-          // Trigger FSM event to inform that the game has started, prompting a scene change.
-          this.triggerFSMEvent(GameEvents.GAME_STARTED);
+          // ✅ เรียก API เพื่อเริ่มเกม
+          const result = await startGame(this.roomId);
+          console.log("🚀 Game started!", result);
+
+          // ✅ ไม่ต้อง trigger event ที่นี่
+          // รอให้ WebSocket broadcast มาแทน
         } catch (err) {
           console.error("❌ Failed to start game", err);
           alert(`Failed to start game: ${err.message || "Unknown error"}`);
@@ -455,7 +457,7 @@ export class RoomScene extends Container {
 
       console.log("WS: Received player_kicked", data);
 
-      // ถ้าผู้เล่นที่ถูกเตะคือตัวเรา
+      // If you are kicked
       if (data.player === this.playerName) {
         alert(
           data.reason || "You have been removed from the room by the host."
@@ -471,6 +473,19 @@ export class RoomScene extends Container {
       console.log("WS: Player left:", data.player);
     };
     onSocketEvent("player_left", this.handlePlayerLeft);
+
+    this.handleGameStarted = (data) => {
+      if (!this.isActive) return;
+
+      console.log("WS: Game started!", data);
+
+      // ส่ง event ไปที่ FSM พร้อมข้อมูลเกม
+      this.triggerFSMEvent(GameEvents.GAME_STARTED, {
+        roomId: this.roomId,
+        gameData: data,
+      });
+    };
+    onSocketEvent("start_game", this.handleGameStarted);
   }
 
   /**
@@ -486,6 +501,7 @@ export class RoomScene extends Container {
     offSocketEvent("player_kicked", this.handlePlayerKicked); // ✅ Clean up new listener
     offSocketEvent("player_left", this.handlePlayerLeft);
     disconnectSocket();
+    offSocketEvent("start_game", this.handleGameStarted);
   }
 
   /**

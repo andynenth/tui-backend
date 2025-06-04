@@ -162,23 +162,36 @@ async def assign_slot(
 
 @router.post("/start-game")
 async def start_game(room_id: str = Query(...)):
-    """
-    Starts the game in a specific room.
-    Args:
-        room_id (str): The ID of the room to start the game in.
-    Returns:
-        dict: A confirmation dictionary.
-    Raises:
-        HTTPException: If the room is not found or starting the game fails.
-    """
-    room = room_manager.get_room(room_id) # Get the room object.
+    room = room_manager.get_room(room_id)
     if not room:
-        raise HTTPException(status_code=404, detail="Room not found") # Raise 404 if room doesn't exist.
+        raise HTTPException(status_code=404, detail="Room not found")
+    
     try:
-        room.start_game() # Attempt to start the game.
-        await broadcast(room_id, "start_game", {"message": "Game started."}) # Broadcast game start event.
+        # เริ่มเกม
+        room.start_game()
+        
+        # ✅ เตรียมข้อมูลเกมสำหรับ round แรก
+        game_data = room.game.prepare_round()
+        
+        # ✅ Broadcast พร้อมข้อมูลเกม
+        await broadcast(room_id, "start_game", {
+            "message": "Game started",
+            "round": game_data["round"],
+            "starter": game_data["starter"],
+            "hands": game_data["hands"],  # มือของแต่ละคน
+            "players": [
+                {
+                    "name": p.name,
+                    "score": p.score,
+                    "is_bot": p.is_bot
+                }
+                for p in room.game.players
+            ]
+        })
+        
     except ValueError as e:
-        raise HTTPException(status_code=400, detail=str(e)) # Raise 400 if starting fails (e.g., not enough players).
+        raise HTTPException(status_code=400, detail=str(e))
+    
     return {"ok": True}
 
 @router.post("/exit-room")
