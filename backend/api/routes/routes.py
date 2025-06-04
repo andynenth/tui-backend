@@ -1,14 +1,16 @@
 # backend/api/routes/routes.py
 
-from fastapi import APIRouter, HTTPException, Query # Import FastAPI components for routing, HTTP exceptions, and query parameters.
-from engine.game import Game # Import the Game class from the game engine.
-from engine.rules import is_valid_play, get_play_type # Import game rule functions.
-from engine.win_conditions import is_game_over, get_winners # Import win condition functions.
+from fastapi import APIRouter, HTTPException, Query
+from engine.game import Game
+from engine.rules import is_valid_play, get_play_type
+from engine.win_conditions import is_game_over, get_winners
 from backend.socket_manager import broadcast
-from backend.shared_instances import shared_room_manager # Import the shared RoomManager instance.
-import asyncio # Standard library for asynchronous programming.
+from backend.shared_instances import shared_room_manager
+import asyncio
+import time
 from typing import Optional
 import backend.socket_manager
+
 print(f"socket_manager id in {__name__}: {id(backend.socket_manager)}")
 
 router = APIRouter() # Create a new FastAPI APIRouter instance.
@@ -38,22 +40,86 @@ async def get_room_state(room_id: str = Query(...)):
 @router.post("/create-room")
 async def create_room(name: str = Query(...)):
     """
-    Creates a new game room.
-    Args:
-        name (str): The name of the player creating the room (host).
-    Returns:
-        dict: A dictionary containing the new room's ID and the host's name.
+    Creates a new game room and notifies lobby clients.
     """
     room_id = room_manager.create_room(name)
     room = room_manager.get_room(room_id)
     
-    # ✅ Notify lobby about new room
-    await notify_lobby_room_created({
+    # ✅ Prepare room data for notification
+    room_summary = room.summary()
+    
+    # ✅ Notify lobby about new room (async, don't wait)
+    asyncio.create_task(notify_lobby_room_created({
         "room_id": room_id,
-        "host_name": room.host_name
-    })
+        "host_name": room.host_name,
+        "room_data": room_summary
+    }))
     
     return {"room_id": room_id, "host_name": room.host_name}
+
+@router.post("/join-room")  # ✅ ADD THIS MISSING DECORATOR!
+async def join_room(room_id: str = Query(...), name: str = Query(...)):
+    """
+    ✅ Enhanced join room with lobby notifications
+    """
+    room = room_manager.get_room(room_id)
+    if not room:
+        raise HTTPException(status_code=404, detail="Room not found")
+    
+    if room.is_full():
+        raise HTTPException(status_code=409, detail="Selected room is already full.")
+    
+    # Store previous occupancy
+    old_occupancy = room.get_occupied_slots()
+    
+    try:
+        result = await room.join_room_safe(name)
+        
+        if not result["success"]:
+            raise HTTPException(status_code=400, detail=result["reason"])
+        
+        new_occupancy = room.get_occupied_slots()
+        
+        # Broadcast to room
+        await broadcast(room_id, "room_state_update", {
+            "slots": result["room_state"]["slots"], 
+            "host_name": result["room_state"]["host_name"],
+            "operation_id": result["operation_id"]
+        })
+        
+        # ✅ Notify lobby about occupancy change
+        if old_occupancy != new_occupancy:
+            await notify_lobby_room_updated(result["room_state"])
+        
+        return {
+            "slots": result["room_state"]["slots"], 
+            "host_name": result["room_state"]["host_name"],
+            "assigned_slot": result["assigned_slot"],
+            "operation_id": result["operation_id"]
+        }
+        
+    except Exception as e:
+        # ✅ Fallback to simple join if enhanced method fails
+        try:
+            slot_index = room.join_room(name)
+            
+            # Broadcast updates
+            updated_summary = room.summary()
+            await broadcast(room_id, "room_state_update", {
+                "slots": updated_summary["slots"], 
+                "host_name": updated_summary["host_name"]
+            })
+            
+            # Notify lobby
+            await notify_lobby_room_updated(updated_summary)
+            
+            return {
+                "slots": updated_summary["slots"], 
+                "host_name": updated_summary["host_name"],
+                "assigned_slot": slot_index
+            }
+        except ValueError as ve:
+            raise HTTPException(status_code=400, detail=str(ve))
 
 @router.get("/list-rooms")
 async def list_rooms():
@@ -485,22 +551,70 @@ async def get_room_stats(room_id: Optional[str] = Query(None)):
         "stats": stats
     }
 
+# ✅ Enhanced lobby notification functions
 async def notify_lobby_room_created(room_data):
     """
-    ✅ Notify lobby clients about new room creation
+    Notify lobby clients about new room creation
     """
-    await broadcast("lobby", "room_created", {
-        "room_id": room_data["room_id"],
-        "host_name": room_data["host_name"],
-        "timestamp": asyncio.get_event_loop().time()
-    })
+    try:
+        await broadcast("lobby", "room_created", {
+            "room_id": room_data["room_id"],
+            "host_name": room_data["host_name"],
+            "timestamp": asyncio.get_event_loop().time()
+        })
+        
+        # Also send updated room list
+        available_rooms = room_manager.list_rooms()
+        await broadcast("lobby", "room_list_update", {
+            "rooms": available_rooms,
+            "timestamp": asyncio.get_event_loop().time(),
+            "reason": "new_room_created"
+        })
+        print(f"✅ Notified lobby about new room: {room_data['room_id']}")
+    except Exception as e:
+        print(f"❌ Failed to notify lobby about new room: {e}")
+
+async def notify_lobby_room_updated(room_data):
+    """
+    Notify lobby clients about room updates (occupancy changes)
+    """
+    try:
+        await broadcast("lobby", "room_updated", {
+            "room_id": room_data["room_id"],
+            "occupied_slots": room_data["occupied_slots"],
+            "total_slots": room_data["total_slots"],
+            "timestamp": asyncio.get_event_loop().time()
+        })
+        
+        # Send fresh room list
+        available_rooms = room_manager.list_rooms()
+        await broadcast("lobby", "room_list_update", {
+            "rooms": available_rooms,
+            "timestamp": asyncio.get_event_loop().time(),
+            "reason": "room_updated"
+        })
+        print(f"✅ Notified lobby about room update: {room_data['room_id']}")
+    except Exception as e:
+        print(f"❌ Failed to notify lobby about room update: {e}")
 
 async def notify_lobby_room_closed(room_id, reason="Room closed"):
     """
-    ✅ Notify lobby clients about room closure
+    Notify lobby clients about room closure
     """
-    await broadcast("lobby", "room_closed", {
-        "room_id": room_id,
-        "reason": reason,
-        "timestamp": asyncio.get_event_loop().time()
-    })
+    try:
+        await broadcast("lobby", "room_closed", {
+            "room_id": room_id,
+            "reason": reason,
+            "timestamp": asyncio.get_event_loop().time()
+        })
+        
+        # Send updated room list (without the closed room)
+        available_rooms = room_manager.list_rooms()
+        await broadcast("lobby", "room_list_update", {
+            "rooms": available_rooms,
+            "timestamp": asyncio.get_event_loop().time(),
+            "reason": "room_closed"
+        })
+        print(f"✅ Notified lobby about room closure: {room_id}")
+    except Exception as e:
+        print(f"❌ Failed to notify lobby about room closure: {e}")

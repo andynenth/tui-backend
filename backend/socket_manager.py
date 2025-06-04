@@ -146,6 +146,34 @@ class SocketManager:
         
         return websocket
 
+    def unregister(self, room_id: str, websocket: WebSocket):
+        """
+        Unregisters a WebSocket connection from a room.
+        """
+        asyncio.create_task(self._unregister_async(room_id, websocket))
+
+    async def _unregister_async(self, room_id: str, websocket: WebSocket):
+        async with self.lock:
+            if room_id not in self.room_connections:
+                print(f"DEBUG_WS: Attempted to unregister from non-existent room {room_id}")
+                return
+                
+            self.room_connections[room_id].discard(websocket)
+            
+            # ✅ Update connection stats
+            if room_id in self.connection_stats:
+                self.connection_stats[room_id]["current_connections"] = len(self.room_connections[room_id])
+                self.connection_stats[room_id]["last_disconnection"] = time.time()
+            
+            print(f"DEBUG_WS: Unregistered connection for room {room_id}. Remaining connections: {len(self.room_connections[room_id])}")
+            
+            # ✅ Clean up empty rooms
+            if not self.room_connections[room_id]:
+                del self.room_connections[room_id]
+                if room_id in self.broadcast_tasks:
+                    self.broadcast_tasks[room_id].cancel()
+                print(f"DEBUG_WS: Cleaned up empty room {room_id}")
+
     async def broadcast(self, room_id: str, event: str, data: dict):
         """
         ✅ Enhanced broadcast with rate limiting and validation
@@ -205,28 +233,19 @@ class SocketManager:
                 "queue_stats": self.queue_stats
             }
 
-    # ✅ Keep existing methods but add enhanced error handling
-    def unregister(self, room_id: str, websocket: WebSocket):
-        asyncio.create_task(self._unregister_async(room_id, websocket))
 
-    async def _unregister_async(self, room_id: str, websocket: WebSocket):
-        async with self.lock:
-            if room_id not in self.room_connections:
-                print(f"DEBUG_WS: Attempted to unregister from non-existent room {room_id}")
-                return
-                
-            self.room_connections[room_id].discard(websocket)
-            
-            # ✅ Update connection stats
-            if room_id in self.connection_stats:
-                self.connection_stats[room_id]["current_connections"] = len(self.room_connections[room_id])
-                self.connection_stats[room_id]["last_disconnection"] = time.time()
-            
-            print(f"DEBUG_WS: Unregistered connection for room {room_id}. Remaining connections: {len(self.room_connections[room_id])}")
-            
-            # ✅ Clean up empty rooms
-            if not self.room_connections[room_id]:
-                del self.room_connections[room_id]
-                if room_id in self.broadcast_tasks:
-                    self.broadcast_tasks[room_id].cancel()
-                print(f"DEBUG_WS: Cleaned up empty room {room_id}")
+# ✅ CREATE SINGLETON INSTANCE
+_socket_manager = SocketManager()
+
+# ✅ EXPORT MODULE-LEVEL FUNCTIONS (THIS WAS MISSING!)
+async def register(room_id: str, websocket: WebSocket) -> WebSocket:
+    return await _socket_manager.register(room_id, websocket)
+
+def unregister(room_id: str, websocket: WebSocket):
+    _socket_manager.unregister(room_id, websocket)
+
+async def broadcast(room_id: str, event: str, data: dict):
+    await _socket_manager.broadcast(room_id, event, data)
+
+def get_room_stats(room_id: str = None) -> dict:
+    return _socket_manager.get_room_stats(room_id)
