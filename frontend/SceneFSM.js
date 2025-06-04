@@ -5,7 +5,7 @@ import { SceneManager } from "./SceneManager.js"; // The SceneManager is respons
 import { StartScene } from "./scenes/StartScene.js"; // Scene for the initial screen where players enter their name.
 import { LobbyScene } from "./scenes/LobbyScene.js"; // Scene for the game lobby, where players can create or join rooms.
 import { RoomScene } from "./scenes/RoomScene.js"; // Scene for a specific game room.
-// import { GameScene } from './scenes/GameScene.js'; // To be imported when the GameScene is implemented.
+import { GameScene } from "./scenes/GameScene.js";
 
 // Define the possible states of the game.
 // These states represent different phases or screens of the application.
@@ -71,9 +71,13 @@ export class SceneFSM {
         },
       },
       [GameStates.ROOM]: {
-        [GameEvents.GAME_STARTED]: () => GameStates.GAME,
+        [GameEvents.GAME_STARTED]: (data) => {
+          this.context.gameData = data.gameData;
+          return GameStates.GAME;
+        },
         [GameEvents.EXIT_ROOM]: () => {
           delete this.context.roomId;
+          delete this.context.gameData;
           return GameStates.LOBBY;
         },
       },
@@ -167,17 +171,22 @@ export class SceneFSM {
         );
         break;
       case GameStates.GAME:
-        // TODO: Create and instantiate the GameScene here.
-        // sceneInstance = new GameScene(this.context.roomId, this.context.playerName, this.triggerEvent);
-        console.log("FSM: TODO: Load GameScene here!");
-        // If GameScene is not yet implemented, you might want to prevent staying in this state
-        // by transitioning back to a previous state, e.g., this.changeState(GameStates.ROOM);
-        // return;
+        if (
+          !this.context.roomId ||
+          !this.context.playerName ||
+          !this.context.gameData
+        ) {
+          console.error("FSM: Missing data for GameState. Returning to Room.");
+          this.changeState(GameStates.ROOM);
+          return;
+        }
+        sceneInstance = new GameScene(
+          this.context.roomId,
+          this.context.playerName,
+          this.context.gameData,
+          this.triggerEvent
+        );
         break;
-      default:
-        // Log an error for unknown or unhandled states.
-        console.error("FSM: Unknown or unhandled game state:", newState);
-        return;
     }
 
     // If a scene instance was successfully created, tell the SceneManager to change the current scene.

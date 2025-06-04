@@ -175,18 +175,17 @@ class Room:
     def start_game(self):
         """
         Starts the game within the room.
-        Initializes the Game instance and sets the room's started status.
-        Raises:
-            ValueError: If the game has already started or not all slots are filled.
         """
         if self.started:
-            raise ValueError("Game already started") # Prevent starting a game that's already in progress.
-        # Check if all slots are filled (either by a player or a bot).
-        if any(p is None or (not p.is_bot and not p.name) for p in self.players):
+            raise ValueError("Game already started")
+        
+        # ตรวจสอบว่าทุก slot มีคนหรือ bot
+        if any(p is None for p in self.players):
             raise ValueError("All slots must be filled before starting")
-        self.game = Game(self.players) # Create a new Game instance with the current players.
-        self.started = True # Set the room's status to started.
-        self.game.start_game() # Call the game's start_game method.
+        
+        # สร้าง Game instance
+        self.game = Game(self.players)
+        self.started = True
 
     def get_kicked_player(self, slot: int, new_assignment: Optional[str]) -> Optional[str]:
         """
