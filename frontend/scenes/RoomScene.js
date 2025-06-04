@@ -12,7 +12,7 @@ import {
   off as offSocketEvent, // Function to unregister WebSocket event listeners.
   getSocketReadyState, // Function to get the WebSocket connection state.
 } from "../socketManager.js"; // WebSocket manager for real-time communication.
-
+import { ConnectionStatus } from "../components/ConnectionStatus.js";
 /**
  * RoomScene class represents the game room screen where players wait for a game to start,
  * join slots, or manage bots (for the host).
@@ -50,6 +50,9 @@ export class RoomScene extends Container {
     this.openSlots = []; // Not currently used, but could be for tracking available slots.
     this.isHost = false; // Flag to determine if the current player is the host.
     this.isActive = true; // Track if we're in this room
+
+    this.connectionStatus = new ConnectionStatus();
+    this.addChild(this.connectionStatus.view);
 
     // Create the room ID title.
     const title = new Text({
@@ -486,6 +489,14 @@ export class RoomScene extends Container {
       });
     };
     onSocketEvent("start_game", this.handleGameStarted);
+
+    this.handleConnectionFailed = (data) => {
+      if (!this.isActive) return;
+
+      alert(`Connection lost: ${data.reason}. Returning to Lobby.`);
+      this.triggerFSMEvent(GameEvents.EXIT_ROOM);
+    };
+    onSocketEvent("connection_failed", this.handleConnectionFailed);
   }
 
   /**
@@ -502,6 +513,10 @@ export class RoomScene extends Container {
     offSocketEvent("player_left", this.handlePlayerLeft);
     disconnectSocket();
     offSocketEvent("start_game", this.handleGameStarted);
+    offSocketEvent("connection_failed", this.handleConnectionFailed);
+    if (this.connectionStatus) {
+      this.connectionStatus.destroy();
+    }
   }
 
   /**

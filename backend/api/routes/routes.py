@@ -44,10 +44,15 @@ async def create_room(name: str = Query(...)):
     Returns:
         dict: A dictionary containing the new room's ID and the host's name.
     """
-    room_id = room_manager.create_room(name) # Create a new room and get its ID.
-    room = room_manager.get_room(room_id) # Retrieve the newly created room object.
-    # ❌ Removed the direct broadcast here. Room state updates should happen after join/assign actions.
-    # await broadcast(room_id, "room_state_update", {"slots": room.summary()["slots"], "host_name": room.host_name})
+    room_id = room_manager.create_room(name)
+    room = room_manager.get_room(room_id)
+    
+    # ✅ Notify lobby about new room
+    await notify_lobby_room_created({
+        "room_id": room_id,
+        "host_name": room.host_name
+    })
+    
     return {"room_id": room_id, "host_name": room.host_name}
 
 @router.get("/list-rooms")
@@ -64,37 +69,43 @@ async def list_rooms():
     
     return {"rooms": available_rooms}
 
-@router.post("/join-room")
 async def join_room(room_id: str = Query(...), name: str = Query(...)):
     """
-    Allows a player to join an existing game room.
-    Prevents joining full rooms.
+    ✅ Enhanced join room with lobby notifications
     """
     room = room_manager.get_room(room_id)
     if not room:
         raise HTTPException(status_code=404, detail="Room not found")
     
     if room.is_full():
-        raise HTTPException(
-            status_code=409,  # Conflict
-            detail="Selected room is already full."
-        )
+        raise HTTPException(status_code=409, detail="Selected room is already full.")
     
-    try:
-        slot_index = room.join_room(name)
-    except ValueError as e:
-        raise HTTPException(status_code=400, detail=str(e))
+    # Store previous occupancy
+    old_occupancy = room.get_occupied_slots()
     
-    # Broadcast updated room state
+    result = await room.join_room_safe(name)
+    
+    if not result["success"]:
+        raise HTTPException(status_code=400, detail=result["reason"])
+    
+    new_occupancy = room.get_occupied_slots()
+    
+    # Broadcast to room
     await broadcast(room_id, "room_state_update", {
-        "slots": room.summary()["slots"], 
-        "host_name": room.host_name
+        "slots": result["room_state"]["slots"], 
+        "host_name": result["room_state"]["host_name"],
+        "operation_id": result["operation_id"]
     })
     
+    # ✅ Notify lobby about occupancy change
+    if old_occupancy != new_occupancy:
+        await notify_lobby_room_updated(result["room_state"])
+    
     return {
-        "slots": room.summary()["slots"], 
-        "host_name": room.host_name,
-        "assigned_slot": slot_index
+        "slots": result["room_state"]["slots"], 
+        "host_name": result["room_state"]["host_name"],
+        "assigned_slot": result["assigned_slot"],
+        "operation_id": result["operation_id"]
     }
 
 @router.post("/assign-slot")
@@ -103,6 +114,9 @@ async def assign_slot(
     slot: int = Query(...),
     name: Optional[str] = Query(None)
 ):
+    """
+    ✅ Enhanced assign slot with lobby notifications
+    """
     room = room_manager.get_room(room_id)
     if not room:
         raise HTTPException(status_code=404, detail="Room not found")
@@ -111,64 +125,60 @@ async def assign_slot(
         if name == "null":
             name = None
         
-        # ✅ ตรวจสอบว่าจะมีใครถูกเตะไหม
-        kicked_player = room.get_kicked_player(slot, name)
+        # Store previous occupancy for comparison
+        old_occupancy = room.get_occupied_slots()
         
-        room.assign_slot(slot, name)
+        result = await room.assign_slot_safe(slot, name)
+        
+        if not result["success"]:
+            raise HTTPException(status_code=400, detail=result.get("reason", "Assignment failed"))
+        
+        new_occupancy = room.get_occupied_slots()
+        updated_summary = room.summary()
+        
+        # Broadcast to room
+        await broadcast(room_id, "room_state_update", {
+            "slots": updated_summary["slots"], 
+            "host_name": updated_summary["host_name"],
+            "operation_id": result["operation_id"]
+        })
+        
+        # ✅ Notify lobby if occupancy changed
+        if old_occupancy != new_occupancy:
+            await notify_lobby_room_updated(updated_summary)
+        
+        # Handle kicked player
+        kicked_player = result.get("kicked_player")
+        if kicked_player:
+            await broadcast(room_id, "player_kicked", {
+                "player": kicked_player,
+                "reason": "Host assigned a bot to your slot",
+                "operation_id": result["operation_id"]
+            })
+        
+        return {
+            "ok": True,
+            "operation_id": result["operation_id"]
+        }
+        
     except ValueError as e:
         raise HTTPException(status_code=400, detail=str(e))
 
-    updated_summary = room.summary()
-    
-    # Broadcast room state update
-    await broadcast(room_id, "room_state_update", {
-        "slots": updated_summary["slots"], 
-        "host_name": updated_summary["host_name"]
-    })
-    
-    # ✅ ถ้ามีผู้เล่นถูกเตะ
-    if kicked_player:
-        await broadcast(room_id, "player_kicked", {
-            "player": kicked_player,
-            "reason": "Host assigned a bot to your slot"
-        })
-        
-        # Optional: บันทึก log
-        print(f"Player {kicked_player} was kicked from room {room_id} slot {slot}")
-    
-    return {"ok": True}
-
-# @router.post("/set-bot")
-# async def set_bot(room_id: str = Query(...), slot: int = Query(...)):
-#     """
-#     Sets a bot in a specific slot.
-#     Note: It's recommended that `set_bot()` internally calls `assign_slot()`
-#     or that `set_bot()` is refactored to use `assign_slot()` directly.
-#     Args:
-#         room_id (str): The ID of the room.
-#         slot (int): The 0-indexed slot number for the bot.
-#     Returns:
-#         dict: A confirmation dictionary.
-#     Raises:
-#         HTTPException: If the room is not found.
-#     """
-#     room = room_manager.get_room(room_id) # Get the room object.
-#     if not room:
-#         raise HTTPException(status_code=404, detail="Room not found") # Raise 404 if room doesn't exist.
-#     room.set_bot(slot) # Call the room's set_bot method.
-#     # Should broadcast after the change.
-#     await broadcast(room_id, "room_state_update", {"slots": room.summary()["slots"]})
-#     return {"ok": True}
-
 @router.post("/start-game")
 async def start_game(room_id: str = Query(...)):
+    """
+    ✅ Enhanced game starting with race condition prevention
+    """
     room = room_manager.get_room(room_id)
     if not room:
         raise HTTPException(status_code=404, detail="Room not found")
     
     try:
-        # เริ่มเกม
-        room.start_game()
+        # ✅ Use the thread-safe method
+        result = await room.start_game_safe()
+        
+        if not result["success"]:
+            raise HTTPException(status_code=400, detail="Failed to start game")
         
         # ✅ เตรียมข้อมูลเกมสำหรับ round แรก
         game_data = room.game.prepare_round()
@@ -178,7 +188,7 @@ async def start_game(room_id: str = Query(...)):
             "message": "Game started",
             "round": game_data["round"],
             "starter": game_data["starter"],
-            "hands": game_data["hands"],  # มือของแต่ละคน
+            "hands": game_data["hands"],
             "players": [
                 {
                     "name": p.name,
@@ -186,39 +196,57 @@ async def start_game(room_id: str = Query(...)):
                     "is_bot": p.is_bot
                 }
                 for p in room.game.players
-            ]
+            ],
+            "operation_id": result["operation_id"]
         })
+        
+        return {
+            "ok": True,
+            "operation_id": result["operation_id"]
+        }
         
     except ValueError as e:
         raise HTTPException(status_code=400, detail=str(e))
-    
-    return {"ok": True}
+    except Exception as e:
+        print(f"❌ Unexpected error in start_game: {str(e)}")
+        raise HTTPException(status_code=500, detail="Internal server error")
 
 @router.post("/exit-room")
 async def exit_room(room_id: str = Query(...), name: str = Query(...)):
+    """
+    ✅ Enhanced exit room with lobby notifications
+    """
     room = room_manager.get_room(room_id)
     if not room:
-        # ✅ ถ้าห้องไม่มีแล้ว ให้ return success เลย
         return {"ok": True, "message": "Room does not exist"}
 
+    # Store previous occupancy
+    old_occupancy = room.get_occupied_slots()
     is_host = room.exit_room(name)
 
     if is_host:
-        # ✅ Broadcast to all players before deleting room
+        # Host is leaving - room will be deleted
         await broadcast(room_id, "room_closed", {"message": "Host has exited the room."})
-        
-        # ✅ Wait a bit to ensure message is sent
         await asyncio.sleep(0.1)
         
-        # Then delete the room
+        # ✅ Notify lobby about room closure
+        await notify_lobby_room_closed(room_id, "Host exited")
+        
         room_manager.delete_room(room_id)
     else:
         # Player (not host) is leaving
+        new_occupancy = room.get_occupied_slots()
+        updated_summary = room.summary()
+        
         await broadcast(room_id, "room_state_update", {
-            "slots": room.summary()["slots"],
-            "host_name": room.summary()["host_name"]
+            "slots": updated_summary["slots"],
+            "host_name": updated_summary["host_name"]
         })
         await broadcast(room_id, "player_left", {"player": name})
+        
+        # ✅ Notify lobby about occupancy change
+        if old_occupancy != new_occupancy:
+            await notify_lobby_room_updated(updated_summary)
         
     return {"ok": True}
 
@@ -434,3 +462,45 @@ async def play(data: dict):
         "play_type": play_type,
         "pieces": [str(p) for p in pieces] # Return string representation of pieces.
     }
+
+@router.get("/debug/room-stats")
+async def get_room_stats(room_id: Optional[str] = Query(None)):
+    """
+    ✅ Debug endpoint for monitoring room and connection statistics
+    """
+    from backend.socket_manager import _socket_manager
+    
+    stats = _socket_manager.get_room_stats(room_id)
+    
+    if room_id:
+        # Include room validation if specific room requested
+        room = room_manager.get_room(room_id)
+        if room:
+            validation = room.validate_state()
+            stats["room_validation"] = validation
+            stats["room_summary"] = room.summary()
+    
+    return {
+        "timestamp": time.time(),
+        "stats": stats
+    }
+
+async def notify_lobby_room_created(room_data):
+    """
+    ✅ Notify lobby clients about new room creation
+    """
+    await broadcast("lobby", "room_created", {
+        "room_id": room_data["room_id"],
+        "host_name": room_data["host_name"],
+        "timestamp": asyncio.get_event_loop().time()
+    })
+
+async def notify_lobby_room_closed(room_id, reason="Room closed"):
+    """
+    ✅ Notify lobby clients about room closure
+    """
+    await broadcast("lobby", "room_closed", {
+        "room_id": room_id,
+        "reason": reason,
+        "timestamp": asyncio.get_event_loop().time()
+    })

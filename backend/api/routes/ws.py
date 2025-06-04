@@ -26,40 +26,56 @@ async def websocket_endpoint(websocket: WebSocket, room_id: str):
     registered_ws = await register(room_id, websocket) 
 
     try:
-        # Keep the connection open to receive messages from the client.
         while True:
-            message = await websocket.receive_json() # Receive a JSON message from the client.
-            event_name = message.get("event") # Extract the event name from the message.
-            event_data = message.get("data", {}) # Extract the event data (default to empty dict if not present).
+            message = await websocket.receive_json()
+            event_name = message.get("event")
+            event_data = message.get("data", {})
 
-            print(f"DEBUG_WS_RECEIVE: Received event '{event_name}' from client in room {room_id} with data: {event_data}")
+            print(f"DEBUG_LOBBY_WS: Received event '{event_name}' with data: {event_data}")
 
-            # Handle specific events received from the client.
-            if event_name == "client_ready":
-                # No need for await asyncio.sleep(0) here anymore,
-                # as cleanup in socket_manager.py and await register() should be sufficient.
+            if event_name == "request_room_list":
+                # ✅ Get available rooms and send to client
+                available_rooms = room_manager.list_rooms()
+                
+                await registered_ws.send_json({
+                    "event": "room_list_update",
+                    "data": {
+                        "rooms": available_rooms,
+                        "timestamp": asyncio.get_event_loop().time(),
+                        "requested_by": event_data.get("player_name", "unknown")
+                    }
+                })
+                print(f"DEBUG_LOBBY_WS: Sent room list with {len(available_rooms)} rooms")
 
-                room = room_manager.get_room(room_id) # Get the room object.
-                if room:
-                    updated_summary = room.summary() # Get the current summary of the room.
-                    # ✅ Send the initial room state directly back to the newly registered WebSocket.
-                    await registered_ws.send_json({
-                        "event": "room_state_update",
-                        "data": {"slots": updated_summary["slots"], "host_name": updated_summary["host_name"]}
-                    })
-                    await asyncio.sleep(0) # Yield control to the event loop after sending.
-                    print(f"DEBUG_WS_RECEIVE: Sent initial room state to client in room {room_id} after client_ready.")
-                else:
-                    print(f"DEBUG_WS_RECEIVE: Room {room_id} not found for client_ready event.")
-                    # If the room is not found, inform the client that the room is closed.
-                    await registered_ws.send_json({"event": "room_closed", "data": {"message": "Room not found."}})
-                    await asyncio.sleep(0) # Yield control.
-            # ... (Other event handling logic would go here, e.g., for game actions)
+            elif event_name == "client_ready":
+                # ✅ Send initial room list when client connects
+                available_rooms = room_manager.list_rooms()
+                
+                await registered_ws.send_json({
+                    "event": "room_list_update",
+                    "data": {
+                        "rooms": available_rooms,
+                        "timestamp": asyncio.get_event_loop().time(),
+                        "initial": True
+                    }
+                })
+                print(f"DEBUG_LOBBY_WS: Sent initial room list to new client")
+
     except WebSocketDisconnect:
-        # This exception is raised when a WebSocket client disconnects.
-        unregister(room_id, websocket) # Unregister the disconnected WebSocket.
-        print(f"DEBUG_WS_DISCONNECT: WebSocket client disconnected from room {room_id}.")
+        unregister("lobby", websocket)
+        print(f"DEBUG_LOBBY_WS: Client disconnected from lobby")
     except Exception as e:
-        # Catch any other unexpected exceptions during WebSocket communication.
-        print(f"DEBUG_WS_ERROR: WebSocket error in room {room_id}: {e}")
-        unregister(room_id, websocket) # Ensure the WebSocket is unregistered even on error.
+        print(f"DEBUG_LOBBY_WS: Error in lobby WebSocket: {e}")
+        unregister("lobby", websocket)
+
+@router.websocket("/ws/lobby")
+async def notify_lobby_room_updated(room_data):
+    """
+    ✅ Notify lobby clients about room updates (occupancy changes)
+    """
+    await broadcast("lobby", "room_updated", {
+        "room_id": room_data["room_id"],
+        "occupied_slots": room_data["occupied_slots"],
+        "total_slots": room_data["total_slots"],
+        "timestamp": asyncio.get_event_loop().time()
+    })
