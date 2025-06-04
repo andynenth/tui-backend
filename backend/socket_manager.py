@@ -13,20 +13,19 @@ class SocketManager:
         self.broadcast_tasks: Dict[str, asyncio.Task] = {}
         self.lock = asyncio.Lock()
         
-        # ✅ เพิ่ม monitoring และ rate limiting
         self.queue_stats = {}
         self.connection_stats = {}
         self.rate_limiters = {}  # Rate limiting per room
 
     async def _process_broadcast_queue(self, room_id: str):
         """
-        ✅ Enhanced broadcast queue processor with monitoring
+        Enhanced broadcast queue processor with monitoring
         """
         queue = self.broadcast_queues.get(room_id)
         if not queue:
             return
             
-        # ✅ Initialize stats
+        # Initialize stats
         self.queue_stats[room_id] = {
             "messages_processed": 0,
             "average_latency": 0,
@@ -39,13 +38,15 @@ class SocketManager:
         while True:
             try:
                 start_time = time.time()
-                message = await asyncio.wait_for(queue.get(), timeout=1.0)
+                # ✅ FIXED: Reduce timeout for lobby to make it more responsive
+                timeout = 0.5 if room_id == "lobby" else 1.0
+                message = await asyncio.wait_for(queue.get(), timeout=timeout)
                 
                 event = message["event"]
                 data = message["data"]
                 operation_id = data.get("operation_id", "unknown")
 
-                # ✅ Get active WebSocket connections with lock
+                # Get active WebSocket connections with lock
                 async with self.lock:
                     active_websockets = list(self.room_connections.get(room_id, set()))
 
@@ -55,7 +56,7 @@ class SocketManager:
 
                 print(f"DEBUG_WS: Broadcasting event '{event}' (op_id: {operation_id}) to {len(active_websockets)} clients in room {room_id}.")
 
-                # ✅ Send to all active websockets with error tracking
+                # Send to all active websockets with error tracking
                 failed_websockets = []
                 success_count = 0
                 
@@ -68,14 +69,14 @@ class SocketManager:
                         print(f"DEBUG_WS: Error sending to client in room {room_id}: {e}")
                         failed_websockets.append(ws)
 
-                # ✅ Clean up failed connections
+                # Clean up failed connections
                 if failed_websockets:
                     async with self.lock:
                         for ws in failed_websockets:
                             if room_id in self.room_connections:
                                 self.room_connections[room_id].discard(ws)
                 
-                # ✅ Update stats
+                # Update stats
                 processing_time = time.time() - start_time
                 stats = self.queue_stats[room_id]
                 stats["messages_processed"] += 1
@@ -85,7 +86,11 @@ class SocketManager:
                 stats["last_failure_count"] = len(failed_websockets)
                 
             except asyncio.TimeoutError:
-                # ✅ Check if we should continue processing
+                # For lobby, be more aggressive about keeping the processor alive
+                if room_id == "lobby":
+                    continue  # Keep processing for lobby even if no messages
+                    
+                # Check if we should continue processing
                 async with self.lock:
                     if room_id not in self.room_connections or not self.room_connections[room_id]:
                         print(f"DEBUG_WS: No connections for room {room_id}, stopping queue processor.")
@@ -97,7 +102,7 @@ class SocketManager:
                     self.queue_stats[room_id]["last_error"] = str(e)
                     self.queue_stats[room_id]["last_error_time"] = time.time()
 
-        # ✅ Cleanup when the processor stops
+        # Cleanup when the processor stops
         async with self.lock:
             if room_id in self.broadcast_queues:
                 del self.broadcast_queues[room_id]
@@ -111,12 +116,12 @@ class SocketManager:
 
     async def register(self, room_id: str, websocket: WebSocket) -> WebSocket:
         """
-        ✅ Enhanced WebSocket registration with connection tracking
+        Enhanced WebSocket registration with connection tracking
         """
         await websocket.accept()
         
         async with self.lock:
-            # ✅ Initialize room connections set if it doesn't exist
+            # Initialize room connections set if it doesn't exist
             if room_id not in self.room_connections:
                 self.room_connections[room_id] = set()
                 self.connection_stats[room_id] = {
@@ -126,21 +131,28 @@ class SocketManager:
                     "first_connection": time.time()
                 }
             
-            # ✅ Add the connection
+            # Add the connection
             self.room_connections[room_id].add(websocket)
             
-            # ✅ Update stats
+            # Update stats
             stats = self.connection_stats[room_id]
             stats["total_connections"] += 1
             stats["current_connections"] = len(self.room_connections[room_id])
             stats["peak_connections"] = max(stats["peak_connections"], stats["current_connections"])
             stats["last_connection"] = time.time()
             
-            # ✅ Create broadcast queue and task if they don't exist
+            # Create broadcast queue and task if they don't exist
             if room_id not in self.broadcast_queues:
                 self.broadcast_queues[room_id] = asyncio.Queue()
                 self.broadcast_tasks[room_id] = asyncio.create_task(self._process_broadcast_queue(room_id))
                 print(f"DEBUG_WS: Created new enhanced broadcast queue and task for room {room_id}.")
+            
+            # IMPORTANT: Ensure lobby broadcast processor is always running
+            elif room_id == "lobby" and room_id in self.broadcast_tasks:
+                task = self.broadcast_tasks[room_id]
+                if task.done() or task.cancelled():
+                    print(f"DEBUG_WS: Restarting lobby broadcast task...")
+                    self.broadcast_tasks[room_id] = asyncio.create_task(self._process_broadcast_queue(room_id))
             
             print(f"DEBUG_WS: Registered new connection for room {room_id}. Total connections: {stats['current_connections']}")
         
@@ -160,14 +172,14 @@ class SocketManager:
                 
             self.room_connections[room_id].discard(websocket)
             
-            # ✅ Update connection stats
+            # Update connection stats
             if room_id in self.connection_stats:
                 self.connection_stats[room_id]["current_connections"] = len(self.room_connections[room_id])
                 self.connection_stats[room_id]["last_disconnection"] = time.time()
             
             print(f"DEBUG_WS: Unregistered connection for room {room_id}. Remaining connections: {len(self.room_connections[room_id])}")
             
-            # ✅ Clean up empty rooms
+            # Clean up empty rooms
             if not self.room_connections[room_id]:
                 del self.room_connections[room_id]
                 if room_id in self.broadcast_tasks:
@@ -176,47 +188,70 @@ class SocketManager:
 
     async def broadcast(self, room_id: str, event: str, data: dict):
         """
-        ✅ Enhanced broadcast with rate limiting and validation
+        Enhanced broadcast with debugging specifically for lobby
         """
+        # Add extra debugging for lobby
+        if room_id == "lobby":
+            print(f"🔔 LOBBY_BROADCAST: Attempting to broadcast '{event}' to lobby")
+            print(f"🔔 LOBBY_BROADCAST: Data keys: {list(data.keys())}")
+        
         async with self.lock:
-            # ✅ Check if we have connections for this room
+            # Check if we have connections for this room
             if room_id not in self.room_connections or not self.room_connections[room_id]:
                 print(f"DEBUG_WS: No connections for room {room_id}. Cannot broadcast event '{event}'.")
+                if room_id == "lobby":
+                    print(f"🔔 LOBBY_BROADCAST: No lobby connections found!")
+                    print(f"🔔 LOBBY_BROADCAST: Available rooms: {list(self.room_connections.keys())}")
                 return
             
-            # ✅ Check if broadcast queue exists
+            # Check if broadcast queue exists
             if room_id not in self.broadcast_queues:
                 print(f"DEBUG_WS: No broadcast queue for room {room_id}. This should not happen!")
+                if room_id == "lobby":
+                    print(f"🔔 LOBBY_BROADCAST: No lobby broadcast queue!")
+                    print(f"🔔 LOBBY_BROADCAST: Available queues: {list(self.broadcast_queues.keys())}")
                 return
             
-            # ✅ Validate message
+            # Validate message
             if not isinstance(data, dict):
                 print(f"DEBUG_WS: Invalid data type for broadcast. Expected dict, got {type(data)}")
                 return
+            
+            # Show lobby connection count
+            if room_id == "lobby":
+                connection_count = len(self.room_connections[room_id])
+                print(f"🔔 LOBBY_BROADCAST: Found {connection_count} lobby connections")
+                print(f"🔔 LOBBY_BROADCAST: Queue size: {self.broadcast_queues[room_id].qsize()}")
         
-        # ✅ Add timestamp and room info to message
+        # Add timestamp and room info to message
         enhanced_data = {
             **data,
             "timestamp": time.time(),
             "room_id": room_id
         }
         
-        # ✅ Add message to queue
+        # Add message to queue
         try:
             await self.broadcast_queues[room_id].put({
                 "event": event, 
                 "data": enhanced_data
             })
             print(f"DEBUG_WS: Message for event '{event}' added to queue for room {room_id}.")
+            
+            if room_id == "lobby":
+                print(f"🔔 LOBBY_BROADCAST: Message added to lobby queue. New queue size: {self.broadcast_queues[room_id].qsize()}")
+                
         except Exception as e:
             print(f"DEBUG_WS: Failed to queue message for room {room_id}: {e}")
+            if room_id == "lobby":
+                print(f"🔔 LOBBY_BROADCAST: Failed to add message to lobby queue: {e}")
         
-        # ✅ Give the queue processor a chance to run
+        # Give the queue processor a chance to run
         await asyncio.sleep(0)
 
     def get_room_stats(self, room_id: str = None) -> dict:
         """
-        ✅ Get statistics for monitoring
+        Get statistics for monitoring
         """
         if room_id:
             return {
@@ -232,12 +267,24 @@ class SocketManager:
                 "connection_stats": self.connection_stats,
                 "queue_stats": self.queue_stats
             }
+    
+    def ensure_lobby_broadcast_task(self):
+        """
+        Ensure lobby broadcast task is always running
+        """
+        if "lobby" not in self.broadcast_queues:
+            self.broadcast_queues["lobby"] = asyncio.Queue()
+            print(f"🔔 LOBBY_BROADCAST: Created lobby broadcast queue")
+        
+        if "lobby" not in self.broadcast_tasks or self.broadcast_tasks["lobby"].done():
+            self.broadcast_tasks["lobby"] = asyncio.create_task(self._process_broadcast_queue("lobby"))
+            print(f"🔔 LOBBY_BROADCAST: Created/restarted lobby broadcast task")
 
 
-# ✅ CREATE SINGLETON INSTANCE
+# CREATE SINGLETON INSTANCE
 _socket_manager = SocketManager()
 
-# ✅ EXPORT MODULE-LEVEL FUNCTIONS (THIS WAS MISSING!)
+# EXPORT MODULE-LEVEL FUNCTIONS (THIS WAS MISSING!)
 async def register(room_id: str, websocket: WebSocket) -> WebSocket:
     return await _socket_manager.register(room_id, websocket)
 
@@ -249,3 +296,6 @@ async def broadcast(room_id: str, event: str, data: dict):
 
 def get_room_stats(room_id: str = None) -> dict:
     return _socket_manager.get_room_stats(room_id)
+
+def ensure_lobby_ready():
+    _socket_manager.ensure_lobby_broadcast_task()
