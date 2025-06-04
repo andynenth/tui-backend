@@ -45,10 +45,10 @@ async def create_room(name: str = Query(...)):
     room_id = room_manager.create_room(name)
     room = room_manager.get_room(room_id)
     
-    # ✅ Prepare room data for notification
+    # Prepare room data for notification
     room_summary = room.summary()
     
-    # ✅ Notify lobby about new room (async, don't wait)
+    # Notify lobby about new room (async, don't wait)
     asyncio.create_task(notify_lobby_room_created({
         "room_id": room_id,
         "host_name": room.host_name,
@@ -57,11 +57,9 @@ async def create_room(name: str = Query(...)):
     
     return {"room_id": room_id, "host_name": room.host_name}
 
-@router.post("/join-room")  # ✅ ADD THIS MISSING DECORATOR!
+@router.post("/join-room")
 async def join_room(room_id: str = Query(...), name: str = Query(...)):
-    """
-    ✅ Enhanced join room with lobby notifications
-    """
+
     room = room_manager.get_room(room_id)
     if not room:
         raise HTTPException(status_code=404, detail="Room not found")
@@ -87,7 +85,7 @@ async def join_room(room_id: str = Query(...), name: str = Query(...)):
             "operation_id": result["operation_id"]
         })
         
-        # ✅ Notify lobby about occupancy change
+        # Notify lobby about occupancy change
         if old_occupancy != new_occupancy:
             await notify_lobby_room_updated(result["room_state"])
         
@@ -99,7 +97,7 @@ async def join_room(room_id: str = Query(...), name: str = Query(...)):
         }
         
     except Exception as e:
-        # ✅ Fallback to simple join if enhanced method fails
+        # Fallback to simple join if enhanced method fails
         try:
             slot_index = room.join_room(name)
             
@@ -163,7 +161,7 @@ async def join_room(room_id: str = Query(...), name: str = Query(...)):
         "operation_id": result["operation_id"]
     })
     
-    # ✅ Notify lobby about occupancy change
+    # Notify lobby about occupancy change
     if old_occupancy != new_occupancy:
         await notify_lobby_room_updated(result["room_state"])
     
@@ -180,9 +178,6 @@ async def assign_slot(
     slot: int = Query(...),
     name: Optional[str] = Query(None)
 ):
-    """
-    ✅ Enhanced assign slot with lobby notifications
-    """
     room = room_manager.get_room(room_id)
     if not room:
         raise HTTPException(status_code=404, detail="Room not found")
@@ -246,10 +241,8 @@ async def start_game(room_id: str = Query(...)):
         if not result["success"]:
             raise HTTPException(status_code=400, detail="Failed to start game")
         
-        # ✅ เตรียมข้อมูลเกมสำหรับ round แรก
         game_data = room.game.prepare_round()
         
-        # ✅ Broadcast พร้อมข้อมูลเกม
         await broadcast(room_id, "start_game", {
             "message": "Game started",
             "round": game_data["round"],
@@ -279,9 +272,6 @@ async def start_game(room_id: str = Query(...)):
 
 @router.post("/exit-room")
 async def exit_room(room_id: str = Query(...), name: str = Query(...)):
-    """
-    ✅ Enhanced exit room with lobby notifications
-    """
     room = room_manager.get_room(room_id)
     if not room:
         return {"ok": True, "message": "Room does not exist"}
@@ -295,7 +285,7 @@ async def exit_room(room_id: str = Query(...), name: str = Query(...)):
         await broadcast(room_id, "room_closed", {"message": "Host has exited the room."})
         await asyncio.sleep(0.1)
         
-        # ✅ Notify lobby about room closure
+        # Notify lobby about room closure
         await notify_lobby_room_closed(room_id, "Host exited")
         
         room_manager.delete_room(room_id)
@@ -310,7 +300,7 @@ async def exit_room(room_id: str = Query(...), name: str = Query(...)):
         })
         await broadcast(room_id, "player_left", {"player": name})
         
-        # ✅ Notify lobby about occupancy change
+        # Notify lobby about occupancy change
         if old_occupancy != new_occupancy:
             await notify_lobby_room_updated(updated_summary)
         
@@ -531,9 +521,6 @@ async def play(data: dict):
 
 @router.get("/debug/room-stats")
 async def get_room_stats(room_id: Optional[str] = Query(None)):
-    """
-    ✅ Debug endpoint for monitoring room and connection statistics
-    """
     from backend.socket_manager import _socket_manager
     
     stats = _socket_manager.get_room_stats(room_id)
@@ -551,12 +538,15 @@ async def get_room_stats(room_id: Optional[str] = Query(None)):
         "stats": stats
     }
 
-# ✅ Enhanced lobby notification functions
 async def notify_lobby_room_created(room_data):
     """
     Notify lobby clients about new room creation
     """
     try:
+        # Ensure lobby is ready before broadcasting
+        from backend.socket_manager import ensure_lobby_ready
+        ensure_lobby_ready()
+        
         await broadcast("lobby", "room_created", {
             "room_id": room_data["room_id"],
             "host_name": room_data["host_name"],
@@ -573,12 +563,18 @@ async def notify_lobby_room_created(room_data):
         print(f"✅ Notified lobby about new room: {room_data['room_id']}")
     except Exception as e:
         print(f"❌ Failed to notify lobby about new room: {e}")
+        import traceback
+        traceback.print_exc()
 
 async def notify_lobby_room_updated(room_data):
     """
     Notify lobby clients about room updates (occupancy changes)
     """
     try:
+        # Ensure lobby is ready before broadcasting
+        from backend.socket_manager import ensure_lobby_ready
+        ensure_lobby_ready()
+        
         await broadcast("lobby", "room_updated", {
             "room_id": room_data["room_id"],
             "occupied_slots": room_data["occupied_slots"],
@@ -596,6 +592,8 @@ async def notify_lobby_room_updated(room_data):
         print(f"✅ Notified lobby about room update: {room_data['room_id']}")
     except Exception as e:
         print(f"❌ Failed to notify lobby about room update: {e}")
+        import traceback
+        traceback.print_exc()
 
 async def notify_lobby_room_closed(room_id, reason="Room closed"):
     """
