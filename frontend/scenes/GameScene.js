@@ -20,17 +20,29 @@ import {
 export class GameScene extends Container {
   constructor(roomId, playerName, gameData, triggerFSMEvent) {
     super();
-    console.log("=" * 50);
+    console.log("=".repeat(50));
     console.log("🎮 GAME STARTED - ROUND " + gameData.round);
-    console.log("=" * 50);
+    console.log("=".repeat(50));
+
+    // Determine start reason
+    let startReason = "Won previous round";
+    if (gameData.round === 1) {
+      // Check if starter has RED GENERAL
+      const starterHand = gameData.hands[gameData.starter];
+      if (
+        starterHand &&
+        starterHand.some((card) => card.includes("GENERAL_RED"))
+      ) {
+        startReason = "Has RED GENERAL";
+      }
+    }
 
     console.log("📍 Game Info:", {
       roomId,
       playerName,
       round: gameData.round,
       starter: gameData.starter,
-      startReason:
-        gameData.starter === "Bot 3" ? "Has RED GENERAL" : "Won previous round",
+      startReason,
     });
 
     console.log("\n👥 Players:");
@@ -41,7 +53,7 @@ export class GameScene extends Container {
     });
 
     console.log("\n🃏 My Hand:", gameData.hands[playerName]);
-    console.log("=" * 50);
+    console.log("=".repeat(50));
 
     this.roomId = roomId;
     this.playerName = playerName;
@@ -208,11 +220,13 @@ export class GameScene extends Container {
   }
 
   onPhaseChange(phase, data) {
-    console.log("\n" + "=" * 40);
+    console.log("\n" + "=".repeat(40));
     console.log(
-      `📊 PHASE CHANGE: ${this.phaseManager.getCurrentPhase()} → ${phase}`
+      `📊 PHASE CHANGE: ${
+        this.phaseManager.getCurrentPhase() || "NONE"
+      } → ${phase}`
     );
-    console.log("=" * 40);
+    console.log("=".repeat(40));
 
     // Clear previous UI
     this.phaseUIContainer.removeChildren();
@@ -227,18 +241,44 @@ export class GameScene extends Container {
       case GamePhases.DECLARATION:
         console.log("📢 DECLARATION PHASE");
         console.log(
-          "📍 Declaration order:",
-          this.players.map((p) => p.name)
+          "📍 Declaration order should follow turn order starting from:",
+          this.gameData.starter
         );
-        console.log("📍 Starter:", this.gameData.starter, "declares first");
+        console.log("📍 Expected order:", this.getDeclarationOrder());
         this.showDeclarationUI();
         break;
 
       case GamePhases.TURN_PLAY:
         console.log("🎯 TURN PLAY PHASE");
+        // Initialize first turn with correct starter
+        if (this.phaseManager.currentTurn.number === 0) {
+          this.phaseManager.startNewTurn(this.gameData.starter);
+        }
         this.showTurnPlayUI(data);
         break;
+
+      case GamePhases.TURN_RESOLUTION:
+        console.log("🏆 TURN RESOLUTION");
+        this.showTurnResultUI(data);
+        break;
+
+      case GamePhases.ROUND_SCORING:
+        console.log("📊 ROUND SCORING");
+        this.showRoundScoreUI(data);
+        break;
     }
+  }
+
+  getDeclarationOrder() {
+    const starter = this.gameData.starter;
+    const starterIndex = this.players.findIndex((p) => p.name === starter);
+
+    if (starterIndex === -1) return this.players.map((p) => p.name);
+
+    return [
+      ...this.players.slice(starterIndex),
+      ...this.players.slice(0, starterIndex),
+    ].map((p) => p.name);
   }
 
   // 4. เพิ่ม methods สำหรับแต่ละ phase
@@ -263,6 +303,23 @@ export class GameScene extends Container {
   }
 
   showDeclarationUI() {
+    // Get expected declaration order
+    const expectedOrder = this.getDeclarationOrder();
+    const myPosition = expectedOrder.indexOf(this.playerName);
+
+    // Check who should declare now
+    let shouldDeclareNow = true;
+    for (let i = 0; i < myPosition; i++) {
+      const playerName = expectedOrder[i];
+      if (this.declarations[playerName] === null) {
+        shouldDeclareNow = false;
+        console.log(
+          `⏳ Waiting for ${playerName} to declare first (position ${i + 1})`
+        );
+        break;
+      }
+    }
+
     // Check if already declared
     if (this.declarations[this.playerName] !== null) {
       console.log("✅ Already declared:", this.declarations[this.playerName]);
@@ -270,7 +327,17 @@ export class GameScene extends Container {
       return;
     }
 
-    console.log("🎯 Showing declaration UI for", this.playerName);
+    if (!shouldDeclareNow) {
+      console.log("⏳ Not your turn to declare yet");
+      this.showWaitingForDeclarations();
+      return;
+    }
+
+    console.log(
+      "🎯 Your turn to declare (position",
+      myPosition + 1,
+      "in order)"
+    );
 
     const ui = new DeclarationUI(
       this.playerName,
@@ -333,6 +400,13 @@ export class GameScene extends Container {
   }
 
   showTurnPlayUI(data) {
+    // ตรวจสอบว่ามี turn data
+    if (!this.phaseManager.currentTurn.firstPlayer) {
+      console.error("❌ No first player set for turn!");
+      // Set first player as starter if not set
+      this.phaseManager.startNewTurn(this.gameData.starter);
+    }
+
     const isFirstPlayer = this.phaseManager.isFirstPlayerOfTurn(
       this.playerName
     );
@@ -348,11 +422,16 @@ export class GameScene extends Container {
 
     if (isFirstPlayer) {
       console.log("✅ You are FIRST PLAYER - can play 1-6 pieces");
-    } else {
+    } else if (requiredCount) {
       console.log(`⚠️ You must play exactly ${requiredCount} pieces`);
+    } else {
+      console.log("⏳ Waiting for first player to play...");
     }
 
-    console.log("🃏 Your current hand:", this.myHand);
+    console.log("🃏 Your current hand (" + this.myHand.length + " pieces):");
+    this.myHand.forEach((card, i) => {
+      console.log(`  [${i}] ${card}`);
+    });
 
     // Main container
     const container = new Container();
