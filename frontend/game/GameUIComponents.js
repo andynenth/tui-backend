@@ -53,6 +53,11 @@ export class DeclarationUI {
       style: new TextStyle({ fill: "#ffffff", fontSize: 20 })
     });
 
+    const instruction = new Text({
+      text: "Declare how many piles you aim to capture:",
+      style: new TextStyle({ fill: "#aaaaaa", fontSize: 16 })
+    });
+
     // Show current declarations
     const declareList = new Container();
     declareList.layout = { flexDirection: "column", gap: 4 };
@@ -78,17 +83,23 @@ export class DeclarationUI {
       justifyContent: "center"
     };
 
+    this.buttons = [];
     for (let i = 0; i <= 8; i++) {
       const btn = new GameButton({
         label: String(i),
         width: 60,
         height: 40,
-        onClick: () => onDeclare(i)
+        onClick: () => {
+          // Disable all buttons after click
+          this.buttons.forEach(b => b.setEnabled(false));
+          onDeclare(i);
+        }
       });
+      this.buttons.push(btn);
       buttonGrid.addChild(btn.view);
     }
 
-    this.view.addChild(title, declareList, buttonGrid);
+    this.view.addChild(title, instruction, declareList, buttonGrid);
   }
 }
 

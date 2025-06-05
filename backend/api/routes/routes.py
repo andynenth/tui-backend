@@ -354,24 +354,24 @@ async def redeal(room_id: str = Query(...), player_name: str = Query(...)):
 async def declare(room_id: str = Query(...), player_name: str = Query(...), value: int = Query(...)):
     """
     Handles a player's declaration of a value.
-    Args:
-        room_id (str): The ID of the room.
-        player_name (str): The name of the player declaring.
-        value (int): The declared value.
-    Returns:
-        dict: Result of the declaration.
-    Raises:
-        HTTPException: If the room or game is not found.
+    Now also triggers bot declarations.
     """
-    room = room_manager.get_room(room_id) # Get the room.
+    room = room_manager.get_room(room_id)
     if not room or not room.game:
-        raise HTTPException(status_code=404, detail="Game not found") # Check if room and game exist.
+        raise HTTPException(status_code=404, detail="Game not found")
 
-    result = room.game.declare(player_name, value) # Perform the declaration in the game.
+    result = room.game.declare(player_name, value)
+    
+    # Broadcast player declaration
     await broadcast(room_id, "declare", {
         "player": player_name,
-        "value": value # Broadcast declaration details.
+        "value": value,
+        "is_bot": False
     })
+    
+    # Trigger bot declarations in background
+    asyncio.create_task(handle_bot_declarations(room_id))
+    
     return result
 
 @router.post("/play-turn")
@@ -616,3 +616,60 @@ async def notify_lobby_room_closed(room_id, reason="Room closed"):
         print(f"✅ Notified lobby about room closure: {room_id}")
     except Exception as e:
         print(f"❌ Failed to notify lobby about room closure: {e}")
+        
+async def handle_bot_declarations(room_id: str):
+    """
+    Automatically handle bot declarations after human declares
+    """
+    room = room_manager.get_room(room_id)
+    if not room or not room.game:
+        return
+    
+    game = room.game
+    
+    # Wait a bit for UI effect
+    await asyncio.sleep(1)
+    
+    # Get all bot players that haven't declared yet
+    for player in game.players:
+        if player.is_bot and player.declared == 0:  # Bot hasn't declared
+            # Calculate what this bot should declare
+            
+            # Get previously declared values
+            previous_declarations = []
+            for p in game.players:
+                if p != player and p.declared != 0:
+                    previous_declarations.append(p.declared)
+            
+            # Check if bot must declare non-zero
+            must_declare_nonzero = player.zero_declares_in_a_row >= 2
+            
+            # Get bot's position in order
+            position = game.players.index(player)
+            is_first = position == 0
+            
+            # Bot chooses declaration
+            value = choose_declare(
+                hand=player.hand,
+                is_first_player=is_first,
+                position_in_order=position,
+                previous_declarations=previous_declarations,
+                must_declare_nonzero=must_declare_nonzero,
+                verbose=True  # Enable debug output
+            )
+            
+            # Make the declaration
+            result = game.declare(player.name, value)
+            
+            # Broadcast to room
+            await broadcast(room_id, "declare", {
+                "player": player.name,
+                "value": value,
+                "is_bot": True
+            })
+            
+            # Log bot declaration
+            print(f"🤖 Bot {player.name} declared {value}")
+            
+            # Small delay between bot declarations
+            await asyncio.sleep(0.5)
