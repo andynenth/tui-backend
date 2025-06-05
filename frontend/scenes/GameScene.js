@@ -461,20 +461,81 @@ export class GameScene extends Container {
     onSocketEvent("redeal", this.handleRedeal);
 
     this.handleDeclare = (data) => {
-      console.log("WS: Player declared", data);
-      this.declarations[data.player] = data.value;
+      console.log("📡 WS: Declaration received:", {
+        player: data.player,
+        value: data.value,
+        isBot: data.is_bot,
+        currentDeclarations: { ...this.declarations },
+        timestamp: new Date().toISOString(),
+      });
 
-      // Update UI ถ้าอยู่ใน declaration phase
-      if (this.phaseManager.getCurrentPhase() === GamePhases.DECLARATION) {
-        this.showDeclarationUI(); // Refresh UI
+      // Prevent duplicate updates
+      if (this.declarations[data.player] === data.value) {
+        console.log(
+          `⚠️ Duplicate declaration ignored for ${data.player}: ${data.value}`
+        );
+        return;
       }
 
-      // Check ว่าทุกคนประกาศครบหรือยัง
-      const allDeclared = Object.values(this.declarations).every(
-        (v) => v !== null
+      // Update declarations
+      this.declarations[data.player] = data.value;
+
+      // Log individual declaration
+      console.log(
+        `✅ ${data.player}${data.is_bot ? " 🤖" : ""} declared: ${data.value}`
       );
+
+      // Update waiting UI if visible
+      if (
+        this.declarationStatusContainer &&
+        this.phaseManager.getCurrentPhase() === GamePhases.DECLARATION
+      ) {
+        this.updateDeclarationStatus();
+      }
+
+      // Check if all declared
+      const declaredPlayers = this.players.filter(
+        (p) => this.declarations[p.name] !== null
+      );
+      const allDeclared = declaredPlayers.length === this.players.length;
+
+      console.log("📊 Declaration progress:", {
+        declared: declaredPlayers.map((p) => p.name),
+        remaining: this.players
+          .filter((p) => this.declarations[p.name] === null)
+          .map((p) => p.name),
+        total: `${declaredPlayers.length}/${this.players.length}`,
+        allDeclared,
+      });
+
       if (allDeclared) {
-        this.phaseManager.setPhase(GamePhases.TURN_PLAY);
+        // Calculate total and check if valid
+        const total = Object.values(this.declarations).reduce(
+          (sum, val) => sum + val,
+          0
+        );
+        console.log(
+          `📊 All players declared! Total: ${total} (must not equal 8)`
+        );
+
+        if (total === 8) {
+          console.error("❌ Total declarations = 8, which is not allowed!");
+          // This should be handled by backend
+        }
+
+        // Show declaration summary
+        console.log("📋 Final declarations:");
+        this.players.forEach((p) => {
+          console.log(
+            `  ${p.name}${p.is_bot ? " 🤖" : ""}: ${this.declarations[p.name]}`
+          );
+        });
+
+        // Transition to TURN_PLAY
+        setTimeout(() => {
+          console.log("➡️ Moving to TURN_PLAY phase");
+          this.phaseManager.setPhase(GamePhases.TURN_PLAY);
+        }, 1000); // Small delay to see final declarations
       }
     };
     onSocketEvent("declare", this.handleDeclare);
@@ -609,20 +670,55 @@ export class GameScene extends Container {
   updateDeclarationStatus() {
     if (!this.declarationStatusContainer) return;
 
+    console.log("🔄 Updating declaration status display");
+
     this.declarationStatusContainer.removeChildren();
 
-    this.players.forEach((player) => {
+    // Sort players to show declared ones first
+    const sortedPlayers = [...this.players].sort((a, b) => {
+      const aDeclared = this.declarations[a.name] !== null;
+      const bDeclared = this.declarations[b.name] !== null;
+      if (aDeclared && !bDeclared) return -1;
+      if (!aDeclared && bDeclared) return 1;
+      return 0;
+    });
+
+    sortedPlayers.forEach((player) => {
       const declared = this.declarations[player.name];
       const statusText = new Text({
         text: `${player.name}${player.is_bot ? " 🤖" : ""}: ${
-          declared !== null ? `Declared ${declared}` : "Thinking..."
+          declared !== null ? `Declared ${declared} ✓` : "Thinking..."
         }`,
         style: new TextStyle({
-          fill: declared !== null ? "#00ff00" : "#ffffff",
+          fill: declared !== null ? "#00ff00" : "#ffaa00",
           fontSize: 16,
         }),
       });
       this.declarationStatusContainer.addChild(statusText);
+    });
+
+    // Add total if at least 2 players declared
+    const declaredValues = Object.values(this.declarations).filter(
+      (v) => v !== null
+    );
+    if (declaredValues.length >= 2) {
+      const currentTotal = declaredValues.reduce((sum, val) => sum + val, 0);
+      const totalText = new Text({
+        text: `Current Total: ${currentTotal}`,
+        style: new TextStyle({
+          fill: currentTotal === 8 ? "#ff0000" : "#ffffff",
+          fontSize: 14,
+          fontStyle: "italic",
+        }),
+      });
+      this.declarationStatusContainer.addChild(totalText);
+    }
+  }
+
+  resetDeclarations() {
+    console.log("🔄 Resetting all declarations");
+    this.players.forEach((p) => {
+      this.declarations[p.name] = null;
     });
   }
 

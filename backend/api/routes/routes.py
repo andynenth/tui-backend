@@ -3,6 +3,7 @@
 from fastapi import APIRouter, HTTPException, Query
 from engine.game import Game
 from engine.rules import is_valid_play, get_play_type
+from engine.ai import choose_declare
 from engine.win_conditions import is_game_over, get_winners
 from backend.socket_manager import broadcast
 from backend.shared_instances import shared_room_manager
@@ -360,6 +361,16 @@ async def declare(room_id: str = Query(...), player_name: str = Query(...), valu
     if not room or not room.game:
         raise HTTPException(status_code=404, detail="Game not found")
 
+    # ตรวจสอบว่าเป็น player ที่อยู่ในเกมจริงหรือไม่
+    player = room.game.get_player(player_name)
+    if not player:
+        raise HTTPException(status_code=400, detail=f"Player {player_name} not found in game")
+
+    # ตรวจสอบว่าประกาศแล้วหรือยัง
+    if player.declared != 0:
+        print(f"⚠️ Player {player_name} already declared {player.declared}")
+        return {"status": "already_declared", "value": player.declared}
+
     result = room.game.declare(player_name, value)
     
     # Broadcast player declaration
@@ -369,8 +380,14 @@ async def declare(room_id: str = Query(...), player_name: str = Query(...), valu
         "is_bot": False
     })
     
-    # Trigger bot declarations in background
-    asyncio.create_task(handle_bot_declarations(room_id))
+    print(f"📢 {player_name} declared {value}")
+    
+    # Check if this is the first declaration
+    declared_count = sum(1 for p in room.game.players if p.declared != 0)
+    if declared_count == 1:  # First declaration
+        # Trigger bot declarations in background
+        print(f"🤖 First declaration detected, triggering bot declarations...")
+        asyncio.create_task(handle_bot_declarations(room_id))
     
     return result
 
@@ -623,23 +640,28 @@ async def handle_bot_declarations(room_id: str):
     """
     room = room_manager.get_room(room_id)
     if not room or not room.game:
+        print(f"❌ Room {room_id} or game not found")
         return
     
     game = room.game
     
+    print(f"🤖 Starting bot declarations for room {room_id}")
+    
     # Wait a bit for UI effect
     await asyncio.sleep(1)
     
-    # Get all bot players that haven't declared yet
+    # Get all players in order
     for player in game.players:
         if player.is_bot and player.declared == 0:  # Bot hasn't declared
-            # Calculate what this bot should declare
+            print(f"🤖 Processing bot {player.name}")
             
             # Get previously declared values
             previous_declarations = []
             for p in game.players:
-                if p != player and p.declared != 0:
+                if p.declared != 0:  # Someone already declared
                     previous_declarations.append(p.declared)
+            
+            print(f"📊 Previous declarations: {previous_declarations}")
             
             # Check if bot must declare non-zero
             must_declare_nonzero = player.zero_declares_in_a_row >= 2
@@ -648,28 +670,52 @@ async def handle_bot_declarations(room_id: str):
             position = game.players.index(player)
             is_first = position == 0
             
-            # Bot chooses declaration
-            value = choose_declare(
-                hand=player.hand,
-                is_first_player=is_first,
-                position_in_order=position,
-                previous_declarations=previous_declarations,
-                must_declare_nonzero=must_declare_nonzero,
-                verbose=True  # Enable debug output
-            )
-            
-            # Make the declaration
-            result = game.declare(player.name, value)
-            
-            # Broadcast to room
-            await broadcast(room_id, "declare", {
-                "player": player.name,
-                "value": value,
-                "is_bot": True
-            })
-            
-            # Log bot declaration
-            print(f"🤖 Bot {player.name} declared {value}")
+            try:
+                # Bot chooses declaration
+                value = choose_declare(
+                    hand=player.hand,
+                    is_first_player=is_first,
+                    position_in_order=position,
+                    previous_declarations=previous_declarations,
+                    must_declare_nonzero=must_declare_nonzero,
+                    verbose=True  # Enable debug output
+                )
+                
+                print(f"🤖 Bot {player.name} will declare {value}")
+                
+                # Make the declaration
+                result = game.declare(player.name, value)
+                
+                if result["status"] == "ok":
+                    # Broadcast to room
+                    await broadcast(room_id, "declare", {
+                        "player": player.name,
+                        "value": value,
+                        "is_bot": True
+                    })
+                    
+                    print(f"✅ Bot {player.name} successfully declared {value}")
+                else:
+                    print(f"❌ Bot {player.name} declaration failed: {result}")
+                
+            except Exception as e:
+                print(f"❌ Error in bot {player.name} declaration: {str(e)}")
+                import traceback
+                traceback.print_exc()
+                
+                # Fallback: declare 1 if error
+                try:
+                    result = game.declare(player.name, 1)
+                    await broadcast(room_id, "declare", {
+                        "player": player.name,
+                        "value": 1,
+                        "is_bot": True
+                    })
+                    print(f"⚠️ Bot {player.name} fallback declared 1")
+                except:
+                    pass
             
             # Small delay between bot declarations
             await asyncio.sleep(0.5)
+    
+    print(f"✅ All bot declarations completed for room {room_id}")

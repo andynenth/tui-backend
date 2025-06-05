@@ -84,23 +84,36 @@ class Game:
     def declare(self, player_name: str, value: int) -> dict:
         """Allow a player to declare how many piles they plan to win this round."""
         player = self.get_player(player_name)
+        
+        # Debug logging
+        print(f"\n📢 Declaration attempt:")
+        print(f"  Player: {player_name} (Bot: {player.is_bot})")
+        print(f"  Value: {value}")
+        print(f"  Current declared: {player.declared}")
+        print(f"  Zero streak: {player.zero_declares_in_a_row}")
 
         if player.declared != 0:
+            print(f"  ❌ Already declared: {player.declared}")
             return {
                 "status": "already_declared",
                 "message": f"{player.name} has already declared {player.declared}."
             }
 
         if player.zero_declares_in_a_row >= 2 and value == 0:
+            print(f"  ❌ Must declare ≥1 (had 2 zeros in a row)")
             return {
                 "status": "error",
                 "message": f"{player.name} must declare at least 1 after two zeros in a row."
             }
 
         player.record_declaration(value)
+        print(f"  ✅ Declaration recorded: {value}")
 
         total_declared = sum(p.declared for p in self.players)
         declarations = {p.name: p.declared for p in self.players}
+        
+        print(f"  Current declarations: {declarations}")
+        print(f"  Total so far: {total_declared}")
 
         return {
             "status": "ok",
