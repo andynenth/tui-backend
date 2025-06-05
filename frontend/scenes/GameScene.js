@@ -34,6 +34,7 @@ export class GameScene extends Container {
     this.currentTurnNumber = 0;
     this.waitingForInput = false;
     this.requiredPieceCount = null;
+    this.currentTurnPlays = [];
     
     // Simple UI setup
     this.layout = {
@@ -325,10 +326,16 @@ export class GameScene extends Container {
       const pieces = indices.map(i => this.myHand[i]);
       console.log(`Playing: ${pieces.join(", ")}`);
       
-      const response = await fetch(
-        `/api/play-turn?room_id=${this.roomId}&player_name=${this.playerName}&piece_indexes=${indices.join(",")}`,
-        { method: "POST" }
-      );
+      // Send indices as comma-separated string in query parameter
+      const url = `/api/play-turn?room_id=${this.roomId}&player_name=${this.playerName}&piece_indexes=${indices.join(',')}`;
+      const response = await fetch(url, { method: "POST" });
+      
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error("Server error:", errorText);
+        return;
+      }
+      
       const result = await response.json();
       
       if (result.status === "waiting" || result.status === "resolved") {
