@@ -20,15 +20,28 @@ import {
 export class GameScene extends Container {
   constructor(roomId, playerName, gameData, triggerFSMEvent) {
     super();
-    console.log("🎮 Entered GameScene with data:", {
+    console.log("=" * 50);
+    console.log("🎮 GAME STARTED - ROUND " + gameData.round);
+    console.log("=" * 50);
+
+    console.log("📍 Game Info:", {
       roomId,
       playerName,
-      gameData,
       round: gameData.round,
       starter: gameData.starter,
-      players: gameData.players,
-      myHand: gameData.hands?.[playerName],
+      startReason:
+        gameData.starter === "Bot 3" ? "Has RED GENERAL" : "Won previous round",
     });
+
+    console.log("\n👥 Players:");
+    gameData.players.forEach((p, i) => {
+      console.log(
+        `  ${i + 1}. ${p.name}${p.is_bot ? " 🤖" : " 👤"} - Score: ${p.score}`
+      );
+    });
+
+    console.log("\n🃏 My Hand:", gameData.hands[playerName]);
+    console.log("=" * 50);
 
     this.roomId = roomId;
     this.playerName = playerName;
@@ -195,44 +208,35 @@ export class GameScene extends Container {
   }
 
   onPhaseChange(phase, data) {
+    console.log("\n" + "=" * 40);
     console.log(
-      `📊 Phase change: ${this.phaseManager.getCurrentPhase()} → ${phase}`,
-      data
+      `📊 PHASE CHANGE: ${this.phaseManager.getCurrentPhase()} → ${phase}`
     );
+    console.log("=" * 40);
 
-    // Clear ALL previous phase UI
+    // Clear previous UI
     this.phaseUIContainer.removeChildren();
     this.currentPhaseUI = null;
 
-    // Hide waiting message if any
-    if (this.waitingText) {
-      this.waitingText.visible = false;
-    }
-
     switch (phase) {
       case GamePhases.ROUND_PREPARATION:
-        console.log("🔄 Round preparation phase - checking for redeal");
+        console.log("🔄 Checking for redeal conditions...");
         this.checkForRedeal();
         break;
 
       case GamePhases.DECLARATION:
-        console.log("📢 Declaration phase started");
+        console.log("📢 DECLARATION PHASE");
+        console.log(
+          "📍 Declaration order:",
+          this.players.map((p) => p.name)
+        );
+        console.log("📍 Starter:", this.gameData.starter, "declares first");
         this.showDeclarationUI();
         break;
 
       case GamePhases.TURN_PLAY:
-        console.log("🎯 Turn play phase started");
+        console.log("🎯 TURN PLAY PHASE");
         this.showTurnPlayUI(data);
-        break;
-
-      case GamePhases.TURN_RESOLUTION:
-        console.log("🏆 Turn resolution phase");
-        this.showTurnResultUI(data);
-        break;
-
-      case GamePhases.ROUND_SCORING:
-        console.log("📊 Round scoring phase");
-        this.showRoundScoreUI(data);
         break;
     }
   }
@@ -333,6 +337,22 @@ export class GameScene extends Container {
       this.playerName
     );
     const requiredCount = this.phaseManager.currentTurn.requiredPieceCount;
+    const turnNumber = this.phaseManager.currentTurn.number;
+
+    console.log("\n🎲 TURN", turnNumber);
+    console.log(
+      "📍 Turn order:",
+      this.phaseManager.currentTurn.turnOrder.map((p) => p.name)
+    );
+    console.log("📍 First player:", this.phaseManager.currentTurn.firstPlayer);
+
+    if (isFirstPlayer) {
+      console.log("✅ You are FIRST PLAYER - can play 1-6 pieces");
+    } else {
+      console.log(`⚠️ You must play exactly ${requiredCount} pieces`);
+    }
+
+    console.log("🃏 Your current hand:", this.myHand);
 
     // Main container
     const container = new Container();
@@ -341,6 +361,13 @@ export class GameScene extends Container {
       alignItems: "center",
       gap: 16,
     };
+
+    // Turn info
+    const turnInfo = new Text({
+      text: `Turn ${turnNumber} - ${this.phaseManager.currentTurn.firstPlayer} leads`,
+      style: new TextStyle({ fill: "#ffffff", fontSize: 16 }),
+    });
+    container.addChild(turnInfo);
 
     // Turn status display
     this.turnStatusContainer = new Container();
@@ -352,8 +379,6 @@ export class GameScene extends Container {
     };
 
     container.addChild(this.turnStatusContainer);
-
-    // Update initial status
     this.updateTurnPlaysDisplay();
 
     // Play UI
@@ -361,7 +386,14 @@ export class GameScene extends Container {
       this.myHand,
       isFirstPlayer,
       requiredCount,
-      (selectedIndexes) => this.playSelectedCards(selectedIndexes)
+      (selectedIndexes) => {
+        console.log("🎯 Playing pieces at indexes:", selectedIndexes);
+        console.log(
+          "🎯 Pieces:",
+          selectedIndexes.map((i) => this.myHand[i])
+        );
+        this.playSelectedCards(selectedIndexes);
+      }
     );
 
     container.addChild(ui.view);
@@ -371,12 +403,7 @@ export class GameScene extends Container {
   setupWebSocketListeners() {
     // Listen for game events
     this.handleDeclare = (data) => {
-      console.log("📡 WS: Declaration received:", {
-        player: data.player,
-        value: data.value,
-        isBot: data.is_bot,
-        currentDeclarations: this.declarations,
-      });
+      console.log("\n📢 DECLARATION:", data.player, "declared", data.value);
 
       // Update declarations
       this.declarations[data.player] = data.value;
@@ -397,28 +424,32 @@ export class GameScene extends Container {
       });
 
       if (allDeclared) {
-        console.log("✅ All players declared! Moving to TURN_PLAY");
+        console.log("\n✅ ALL PLAYERS DECLARED!");
+        console.log("📊 Final declarations:");
+        this.players.forEach((p, i) => {
+          const order =
+            this.gameData.starter === p.name ? "STARTER" : `Order ${i + 1}`;
+          console.log(`  ${p.name}: ${this.declarations[p.name]} (${order})`);
+        });
 
-        // Calculate total
         const total = Object.values(this.declarations).reduce(
           (sum, val) => sum + val,
           0
         );
-        console.log(`📊 Total declared: ${total} (must not equal 8)`);
+        console.log(`📊 Total: ${total} ✅ (not 8)`);
 
-        this.phaseManager.setPhase(GamePhases.TURN_PLAY);
+        setTimeout(() => {
+          console.log("\n➡️ Moving to TURN PLAY phase");
+          this.phaseManager.setPhase(GamePhases.TURN_PLAY);
+        }, 1000);
       }
     };
     onSocketEvent("declare", this.handleDeclare);
 
     this.handlePlay = (data) => {
-      console.log("📡 WS: Play received:", {
-        player: data.player,
-        pieces: data.pieces,
-        valid: data.valid,
-        play_type: data.play_type,
-        currentTurn: this.phaseManager.currentTurn,
-      });
+      console.log("\n🎯 PLAY:", data.player, "played", data.pieces);
+      console.log("  Valid:", data.valid ? "✅" : "❌");
+      console.log("  Type:", data.play_type || "Unknown");
 
       // Record the play in phase manager
       this.phaseManager.recordPlay(data.player, data.pieces, data.valid);

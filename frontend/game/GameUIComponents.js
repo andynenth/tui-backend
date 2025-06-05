@@ -11,28 +11,28 @@ export class RedealUI {
       alignItems: "center",
       gap: 16,
       padding: 20,
-      backgroundColor: 0x333333
+      backgroundColor: 0x333333,
     };
 
     const title = new Text({
       text: "🔄 Redeal Check",
-      style: new TextStyle({ fill: "#ffffff", fontSize: 20 })
+      style: new TextStyle({ fill: "#ffffff", fontSize: 20 }),
     });
 
     const info = new Text({
       text: "You have no pieces > 9 points",
-      style: new TextStyle({ fill: "#ffaa00", fontSize: 16 })
+      style: new TextStyle({ fill: "#ffaa00", fontSize: 16 }),
     });
 
     const redealBtn = new GameButton({
       label: "Request Redeal",
       bgColor: 0xff6600,
-      onClick: onRedeal
+      onClick: onRedeal,
     });
 
     const skipBtn = new GameButton({
       label: "Continue",
-      onClick: onSkip
+      onClick: onSkip,
     });
 
     this.view.addChild(title, info, redealBtn.view, skipBtn.view);
@@ -45,17 +45,17 @@ export class DeclarationUI {
     this.view.layout = {
       flexDirection: "column",
       alignItems: "center",
-      gap: 12
+      gap: 12,
     };
 
     const title = new Text({
       text: "📢 Declaration Phase",
-      style: new TextStyle({ fill: "#ffffff", fontSize: 20 })
+      style: new TextStyle({ fill: "#ffffff", fontSize: 20 }),
     });
 
     const instruction = new Text({
       text: "Declare how many piles you aim to capture:",
-      style: new TextStyle({ fill: "#aaaaaa", fontSize: 16 })
+      style: new TextStyle({ fill: "#aaaaaa", fontSize: 16 }),
     });
 
     // Show current declarations
@@ -65,10 +65,10 @@ export class DeclarationUI {
     Object.entries(currentDeclarations).forEach(([player, value]) => {
       const text = new Text({
         text: `${player}: ${value !== null ? value : "..."}`,
-        style: new TextStyle({ 
-          fill: player === playerName ? "#00ff00" : "#ffffff", 
-          fontSize: 14 
-        })
+        style: new TextStyle({
+          fill: player === playerName ? "#00ff00" : "#ffffff",
+          fontSize: 14,
+        }),
       });
       declareList.addChild(text);
     });
@@ -80,7 +80,7 @@ export class DeclarationUI {
       flexWrap: "wrap",
       gap: 8,
       width: 300,
-      justifyContent: "center"
+      justifyContent: "center",
     };
 
     this.buttons = [];
@@ -91,9 +91,9 @@ export class DeclarationUI {
         height: 40,
         onClick: () => {
           // Disable all buttons after click
-          this.buttons.forEach(b => b.setEnabled(false));
+          this.buttons.forEach((b) => b.setEnabled(false));
           onDeclare(i);
-        }
+        },
       });
       this.buttons.push(btn);
       buttonGrid.addChild(btn.view);
@@ -109,17 +109,26 @@ export class TurnPlayUI {
     this.view.layout = {
       flexDirection: "column",
       alignItems: "center",
-      gap: 16
+      gap: 16,
     };
 
     this.selectedPieces = new Set();
     this.cardButtons = [];
+    this.playerHand = playerHand;
+    this.isFirstPlayer = isFirstPlayer;
+    this.requiredCount = requiredCount;
 
     const title = new Text({
-      text: isFirstPlayer ? 
-        "🎯 Your turn - Play 1-6 pieces" : 
-        `🎯 Play exactly ${requiredCount} pieces`,
-      style: new TextStyle({ fill: "#ffffff", fontSize: 18 })
+      text: isFirstPlayer
+        ? "🎯 Your turn - Play 1-6 pieces"
+        : `🎯 Play exactly ${requiredCount} pieces`,
+      style: new TextStyle({ fill: "#ffffff", fontSize: 18 }),
+    });
+
+    // Show hand info
+    const handInfo = new Text({
+      text: `Your hand (${playerHand.length} pieces):`,
+      style: new TextStyle({ fill: "#aaaaaa", fontSize: 14 }),
     });
 
     // Hand display
@@ -128,63 +137,141 @@ export class TurnPlayUI {
       flexDirection: "row",
       flexWrap: "wrap",
       gap: 8,
-      maxWidth: 500
+      maxWidth: 500,
     };
 
     playerHand.forEach((piece, index) => {
       const btn = new GameButton({
         label: piece,
-        width: 80,
-        height: 60,
+        width: 90,
+        height: 70,
         bgColor: 0x4444ff,
-        onClick: () => this.togglePiece(index, btn)
+        onClick: () => this.togglePiece(index),
       });
-      this.cardButtons.push({ button: btn, index: index });
+
+      // Store button reference
+      this.cardButtons.push({
+        button: btn,
+        index: index,
+        piece: piece,
+        selected: false,
+      });
+
       handContainer.addChild(btn.view);
+    });
+
+    // Selection info
+    this.selectionInfo = new Text({
+      text: "Select pieces to play",
+      style: new TextStyle({ fill: "#ffaa00", fontSize: 14 }),
     });
 
     // Play button
     this.playBtn = new GameButton({
-      label: "Play Selected",
+      label: "Play 0 pieces",
       bgColor: 0x00aa00,
       onClick: () => {
         const selected = Array.from(this.selectedPieces);
-        if (this.validateSelection(isFirstPlayer, requiredCount)) {
+        if (this.validateSelection()) {
           onPlay(selected);
+        } else {
+          alert(this.getValidationError());
         }
-      }
+      },
     });
 
-    this.view.addChild(title, handContainer, this.playBtn.view);
+    this.playBtn.setEnabled(false);
+    this.view.addChild(
+      title,
+      handInfo,
+      handContainer,
+      this.selectionInfo,
+      this.playBtn.view
+    );
   }
 
-  togglePiece(index, btn) {
+  togglePiece(index) {
+    // Find the card button
+    const cardData = this.cardButtons.find((c) => c.index === index);
+    if (!cardData) return;
+
     if (this.selectedPieces.has(index)) {
+      // Deselect
       this.selectedPieces.delete(index);
-      btn._createView(); // Reset button appearance
+      cardData.selected = false;
+      cardData.button.bgColor = 0x4444ff;
+      cardData.button._createView();
     } else {
+      // Select
       this.selectedPieces.add(index);
-      btn.bgColor = 0x00ff00;
-      btn._createView(); // Update button appearance
+      cardData.selected = true;
+      cardData.button.bgColor = 0x00ff00;
+      cardData.button._createView();
     }
-    
-    this.updatePlayButton();
+
+    this.updateUI();
   }
 
-  updatePlayButton() {
+  updateUI() {
     const count = this.selectedPieces.size;
-    this.playBtn.setText(`Play ${count} piece${count !== 1 ? 's' : ''}`);
-    this.playBtn.setEnabled(count > 0);
+
+    // Update play button text
+    if (count === 0) {
+      this.playBtn.setText("Play 0 pieces");
+      this.playBtn.setEnabled(false);
+    } else {
+      this.playBtn.setText(`Play ${count} piece${count !== 1 ? "s" : ""}`);
+      this.playBtn.setEnabled(true);
+    }
+
+    // Update selection info
+    if (count === 0) {
+      this.selectionInfo.text = "Select pieces to play";
+      this.selectionInfo.style.fill = "#ffaa00";
+    } else {
+      const selectedPieces = Array.from(this.selectedPieces)
+        .map((i) => this.playerHand[i])
+        .join(", ");
+      this.selectionInfo.text = `Selected: ${selectedPieces}`;
+
+      if (this.validateSelection()) {
+        this.selectionInfo.style.fill = "#00ff00";
+      } else {
+        this.selectionInfo.style.fill = "#ff0000";
+      }
+    }
   }
 
-  validateSelection(isFirstPlayer, requiredCount) {
+  validateSelection() {
     const count = this.selectedPieces.size;
-    
-    if (isFirstPlayer) {
+
+    if (count === 0) return false;
+
+    if (this.isFirstPlayer) {
       return count >= 1 && count <= 6;
     } else {
-      return count === requiredCount;
+      return count === this.requiredCount;
     }
+  }
+
+  getValidationError() {
+    const count = this.selectedPieces.size;
+
+    if (count === 0) {
+      return "Please select at least one piece";
+    }
+
+    if (this.isFirstPlayer) {
+      if (count > 6) {
+        return "Cannot play more than 6 pieces";
+      }
+    } else {
+      if (count !== this.requiredCount) {
+        return `Must play exactly ${this.requiredCount} pieces`;
+      }
+    }
+
+    return "";
   }
 }
 
@@ -195,39 +282,41 @@ export class TurnResultUI {
       flexDirection: "column",
       alignItems: "center",
       gap: 12,
-      padding: 20
+      padding: 20,
     };
 
     const title = new Text({
       text: "🏆 Turn Result",
-      style: new TextStyle({ fill: "#ffffff", fontSize: 20 })
+      style: new TextStyle({ fill: "#ffffff", fontSize: 20 }),
     });
 
     // Show all plays
     const playsContainer = new Container();
     playsContainer.layout = { flexDirection: "column", gap: 8 };
 
-    turnResult.plays.forEach(play => {
+    turnResult.plays.forEach((play) => {
       const text = new Text({
-        text: `${play.player}: ${play.pieces.join(", ")} ${play.isValid ? "✅" : "❌"}`,
-        style: new TextStyle({ 
+        text: `${play.player}: ${play.pieces.join(", ")} ${
+          play.isValid ? "✅" : "❌"
+        }`,
+        style: new TextStyle({
           fill: play.player === turnResult.winner ? "#00ff00" : "#ffffff",
-          fontSize: 14 
-        })
+          fontSize: 14,
+        }),
       });
       playsContainer.addChild(text);
     });
 
     const winnerText = new Text({
-      text: turnResult.winner ? 
-        `${turnResult.winner} wins ${turnResult.pileCount} pieces!` : 
-        "No winner this turn",
-      style: new TextStyle({ fill: "#ffff00", fontSize: 18 })
+      text: turnResult.winner
+        ? `${turnResult.winner} wins ${turnResult.pileCount} pieces!`
+        : "No winner this turn",
+      style: new TextStyle({ fill: "#ffff00", fontSize: 18 }),
     });
 
     const continueBtn = new GameButton({
       label: "Continue",
-      onClick: onContinue
+      onClick: onContinue,
     });
 
     this.view.addChild(title, playsContainer, winnerText, continueBtn.view);
@@ -240,12 +329,12 @@ export class RoundScoreUI {
     this.view.layout = {
       flexDirection: "column",
       alignItems: "center",
-      gap: 12
+      gap: 12,
     };
 
     const title = new Text({
       text: "📊 Round Scores",
-      style: new TextStyle({ fill: "#ffffff", fontSize: 24 })
+      style: new TextStyle({ fill: "#ffffff", fontSize: 24 }),
     });
 
     const scoresContainer = new Container();
@@ -253,18 +342,20 @@ export class RoundScoreUI {
 
     scoreData.scores.forEach((playerScore, player) => {
       const text = new Text({
-        text: `${player}: Declared ${playerScore.declared}, Got ${playerScore.actual} → ${playerScore.delta >= 0 ? '+' : ''}${playerScore.delta} pts`,
-        style: new TextStyle({ 
+        text: `${player}: Declared ${playerScore.declared}, Got ${
+          playerScore.actual
+        } → ${playerScore.delta >= 0 ? "+" : ""}${playerScore.delta} pts`,
+        style: new TextStyle({
           fill: playerScore.delta >= 0 ? "#00ff00" : "#ff0000",
-          fontSize: 16 
-        })
+          fontSize: 16,
+        }),
       });
       scoresContainer.addChild(text);
     });
 
     const continueBtn = new GameButton({
       label: "Next Round",
-      onClick: onContinue
+      onClick: onContinue,
     });
 
     this.view.addChild(title, scoresContainer, continueBtn.view);
