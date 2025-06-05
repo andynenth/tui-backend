@@ -2,59 +2,18 @@
 
 import { Container, Text, TextStyle } from "pixi.js";
 import { GameButton } from "../components/GameButton.js";
+import { GameTextbox } from "../components/GameTextbox.js";
 import { GameEvents } from "../SceneFSM.js";
 import {
   on as onSocketEvent,
   off as offSocketEvent,
   emit as emitSocketEvent,
 } from "../socketManager.js";
-import { GamePhaseManager, GamePhases } from "../game/GamePhaseManager.js";
-import {
-  RedealUI,
-  DeclarationUI,
-  TurnPlayUI,
-  TurnResultUI,
-  RoundScoreUI,
-} from "../game/GameUIComponents.js";
 
 export class GameScene extends Container {
   constructor(roomId, playerName, gameData, triggerFSMEvent) {
     super();
-    console.log("=".repeat(50));
-    console.log("🎮 GAME STARTED - ROUND " + gameData.round);
-    console.log("=".repeat(50));
-
-    // Determine start reason
-    let startReason = "Won previous round";
-    if (gameData.round === 1) {
-      // Check if starter has RED GENERAL
-      const starterHand = gameData.hands[gameData.starter];
-      if (
-        starterHand &&
-        starterHand.some((card) => card.includes("GENERAL_RED"))
-      ) {
-        startReason = "Has RED GENERAL";
-      }
-    }
-
-    console.log("📍 Game Info:", {
-      roomId,
-      playerName,
-      round: gameData.round,
-      starter: gameData.starter,
-      startReason,
-    });
-
-    console.log("\n👥 Players:");
-    gameData.players.forEach((p, i) => {
-      console.log(
-        `  ${i + 1}. ${p.name}${p.is_bot ? " 🤖" : " 👤"} - Score: ${p.score}`
-      );
-    });
-
-    console.log("\n🃏 My Hand:", gameData.hands[playerName]);
-    console.log("=".repeat(50));
-
+    
     this.roomId = roomId;
     this.playerName = playerName;
     this.gameData = gameData;
@@ -64,12 +23,19 @@ export class GameScene extends Container {
     this.currentRound = gameData.round || 1;
     this.players = gameData.players || [];
     this.myHand = [];
-    this.currentPhase = "DEAL"; // DEAL, DECLARE, PLAY, SCORE
-
+    this.currentPhase = "ROUND_START";
+    
     // Find my player data
     this.myPlayerData = this.players.find((p) => p.name === this.playerName);
     this.myHand = gameData.hands?.[this.playerName] || [];
-
+    
+    // Track game state
+    this.declarations = {};
+    this.currentTurnNumber = 0;
+    this.waitingForInput = false;
+    this.requiredPieceCount = null;
+    
+    // Simple UI setup
     this.layout = {
       width: "100%",
       height: "100%",
@@ -79,887 +45,464 @@ export class GameScene extends Container {
       gap: 16,
     };
 
-    this.phaseUIContainer = new Container();
-    this.phaseUIContainer.layout = {
-      width: "100%",
-      flexDirection: "column",
-      alignItems: "center",
-      marginTop: 20,
-    };
-
-    this.setupUI();
-    this.phaseManager = new GamePhaseManager(this);
-    this.addChild(this.phaseUIContainer);
-
-    // Initialize declarations tracking
-    this.declarations = {};
-    this.players.forEach((p) => {
-      this.declarations[p.name] = null;
-    });
-
-    this.phaseManager.setPhase(GamePhases.ROUND_PREPARATION, gameData);
-
-    this.setupWebSocketListeners();
-
-    this.currentPhaseUI = null;
-    this.waitingForOthers = false;
-    console.log("📊 Initial declarations state:", this.declarations);
-  }
-
-  setupUI() {
-    // Header
-    const header = new Container();
-    header.layout = {
-      width: "100%",
-      flexDirection: "row",
-      justifyContent: "space-between",
-      alignItems: "center",
-    };
-
-    const roundText = new Text({
-      text: `Round ${this.currentRound}`,
+    // Title
+    const title = new Text({
+      text: `Game - Round ${this.currentRound}`,
       style: new TextStyle({ fill: "#ffffff", fontSize: 24 }),
     });
-
-    const scoreText = new Text({
-      text: `Score: ${this.myPlayerData?.score || 0}`,
-      style: new TextStyle({ fill: "#ffffff", fontSize: 20 }),
-      x: 200,
-      y: 0,
+    
+    // Console output area (just for visual reference)
+    this.outputText = new Text({
+      text: "Check console for game output",
+      style: new TextStyle({ fill: "#aaaaaa", fontSize: 14 }),
     });
-
-    header.addChild(roundText, scoreText);
-
-    // Player area
-    const playerArea = new Container();
-    playerArea.layout = {
-      width: "100%",
-      flexDirection: "column",
-      gap: 8,
-      marginTop: 30,
-    };
-
-    // Show all players
-    this.players.forEach((player) => {
-      const playerRow = new Container();
-      playerRow.layout = {
-        flexDirection: "row",
-        gap: 8,
-        marginTop: 20,
-      };
-
-      const nameText = new Text({
-        text: `${player.name}${player.is_bot ? " 🤖" : ""}${
-          player.name === this.playerName ? " (You)" : ""
-        }`,
-        style: new TextStyle({ fill: "#ffffff", fontSize: 16 }),
-      });
-
-      const scoreText = new Text({
-        text: `${player.score} pts`,
-        style: new TextStyle({ fill: "#aaaaaa", fontSize: 16 }),
-        x: 200,
-        y: 0,
-      });
-
-      playerRow.addChild(nameText, scoreText);
-      playerArea.addChild(playerRow);
-    });
-
-    // Hand area
-    const handArea = new Container();
-    handArea.layout = {
-      width: "100%",
-      flexDirection: "column",
-      alignItems: "center",
-      gap: 8,
-      marginTop: 200,
-    };
-
-    const handTitle = new Text({
-      text: "Your Hand:",
-      style: new TextStyle({ fill: "#ffffff", fontSize: 18 }),
-    });
-
-    const handContainer = new Container();
-    handContainer.layout = {
+    
+    // Input area
+    this.inputContainer = new Container();
+    this.inputContainer.layout = {
       flexDirection: "row",
-      flexWrap: "wrap",
       gap: 8,
-      marginTop: 50,
+      alignItems: "center",
     };
-
-    // Show cards in hand
-    this.myHand.forEach((card, index) => {
-      const cardButton = new GameButton({
-        label: card,
-        width: 80,
-        height: 60,
-        onClick: () => {
-          console.log(`Clicked card: ${card}`);
-          // TODO: Implement card selection
-        },
-      });
-      handContainer.addChild(cardButton.view);
+    
+    // Text input
+    this.textInput = new GameTextbox({
+      placeholder: "Enter value",
+      width: 200,
     });
-
-    handArea.addChild(handTitle, handContainer);
-
+    
+    // Submit button
+    this.submitButton = new GameButton({
+      label: "Submit",
+      onClick: () => this.handleSubmit(),
+    });
+    
+    // Initially hide input
+    this.inputContainer.visible = false;
+    
+    this.inputContainer.addChild(this.textInput.view, this.submitButton.view);
+    
     // Exit button
     const exitButton = new GameButton({
       label: "Exit Game",
       bgColor: 0xaa0000,
       onClick: () => {
-        if (confirm("Are you sure you want to exit the game?")) {
+        if (confirm("Are you sure you want to exit?")) {
           this.triggerFSMEvent(GameEvents.EXIT_ROOM);
         }
       },
     });
-
-    this.addChild(header, playerArea, handArea, exitButton.view);
+    
+    this.addChild(title, this.outputText, this.inputContainer, exitButton.view);
+    
+    // Setup WebSocket listeners
+    this.setupWebSocketListeners();
+    
+    // Start the game
+    this.printRoundStart();
+    this.checkForRedeal();
   }
 
-  onPhaseChange(phase, data) {
-    console.log("\n" + "=".repeat(40));
-    console.log(
-      `📊 PHASE CHANGE: ${
-        this.phaseManager.getCurrentPhase() || "NONE"
-      } → ${phase}`
-    );
-    console.log("=".repeat(40));
-
-    // Clear previous UI
-    this.phaseUIContainer.removeChildren();
-    this.currentPhaseUI = null;
-
-    switch (phase) {
-      case GamePhases.ROUND_PREPARATION:
-        console.log("🔄 Checking for redeal conditions...");
-        this.checkForRedeal();
-        break;
-
-      case GamePhases.DECLARATION:
-        console.log("📢 DECLARATION PHASE");
-        console.log(
-          "📍 Declaration order should follow turn order starting from:",
-          this.gameData.starter
-        );
-        console.log("📍 Expected order:", this.getDeclarationOrder());
-        this.showDeclarationUI();
-        break;
-
-      case GamePhases.TURN_PLAY:
-        console.log("🎯 TURN PLAY PHASE");
-        // Initialize first turn with correct starter
-        if (this.phaseManager.currentTurn.number === 0) {
-          this.phaseManager.startNewTurn(this.gameData.starter);
-        }
-        this.showTurnPlayUI(data);
-        break;
-
-      case GamePhases.TURN_RESOLUTION:
-        console.log("🏆 TURN RESOLUTION");
-        this.showTurnResultUI(data);
-        break;
-
-      case GamePhases.ROUND_SCORING:
-        console.log("📊 ROUND SCORING");
-        this.showRoundScoreUI(data);
-        break;
-    }
-  }
-
-  getDeclarationOrder() {
+  printRoundStart() {
+    console.log("=".repeat(50));
+    console.log(`🎮 ROUND ${this.currentRound}`);
+    console.log("=".repeat(50));
+    
+    // Determine starter
     const starter = this.gameData.starter;
-    const starterIndex = this.players.findIndex((p) => p.name === starter);
-
-    if (starterIndex === -1) return this.players.map((p) => p.name);
-
-    return [
-      ...this.players.slice(starterIndex),
-      ...this.players.slice(0, starterIndex),
-    ].map((p) => p.name);
+    let startReason = "Won previous round";
+    
+    if (this.currentRound === 1) {
+      const starterHand = this.gameData.hands[starter];
+      if (starterHand?.some(card => card.includes("GENERAL_RED"))) {
+        startReason = "Has RED GENERAL";
+      }
+    }
+    
+    console.log(`${starter} starts the game (${startReason})\n`);
   }
 
-  // 4. เพิ่ม methods สำหรับแต่ละ phase
   checkForRedeal() {
-    const hasStrongPiece = this.myHand.some((card) => {
-      // ตรวจสอบจาก string เช่น "GENERAL_RED(14)"
+    const hasStrongPiece = this.myHand.some(card => {
       const match = card.match(/\((\d+)\)/);
       return match && parseInt(match[1]) > 9;
     });
 
-    if (!hasStrongPiece) {
-      this.phaseManager.setPhase(GamePhases.REDEAL_CHECK);
-      const ui = new RedealUI(
-        () => this.requestRedeal(),
-        () => this.skipToDeclaration()
-      );
-      this.phaseUIContainer.addChild(ui.view);
+    if (!hasStrongPiece && !this.myPlayerData.is_bot) {
+      console.log("⚠️ You have no pieces > 9 points. You can request a redeal.");
+      this.showInput("Request redeal? (y/n)", (answer) => {
+        if (answer.toLowerCase() === 'y') {
+          this.requestRedeal();
+        } else {
+          this.startDeclarationPhase();
+        }
+      });
     } else {
-      // ถ้ามีไพ่แรง ข้ามไป declaration
-      this.phaseManager.setPhase(GamePhases.DECLARATION);
+      this.startDeclarationPhase();
     }
   }
 
-  showDeclarationUI() {
-    // Get expected declaration order
-    const expectedOrder = this.getDeclarationOrder();
-    const myPosition = expectedOrder.indexOf(this.playerName);
+  async requestRedeal() {
+    try {
+      const response = await fetch(
+        `/api/redeal?room_id=${this.roomId}&player_name=${this.playerName}`,
+        { method: "POST" }
+      );
+      const result = await response.json();
+      
+      if (result.redeal_allowed) {
+        console.log(`🔄 ${this.playerName} has requested a redeal!`);
+        console.log(`Score multiplier: x${result.multiplier}`);
+      }
+    } catch (err) {
+      console.error("Failed to request redeal:", err);
+    }
+  }
 
-    // Check who should declare now
-    let shouldDeclareNow = true;
-    for (let i = 0; i < myPosition; i++) {
-      const playerName = expectedOrder[i];
-      if (this.declarations[playerName] === null) {
-        shouldDeclareNow = false;
-        console.log(
-          `⏳ Waiting for ${playerName} to declare first (position ${i + 1})`
-        );
+  startDeclarationPhase() {
+    console.log("\n🔸 --- Declare Phase ---\n");
+    this.currentPhase = "DECLARATION";
+    
+    // Initialize all declarations as null
+    this.players.forEach(p => {
+      this.declarations[p.name] = null;
+    });
+    
+    // Check if it's my turn to declare
+    this.checkDeclarationTurn();
+  }
+
+  checkDeclarationTurn() {
+    // Get declaration order starting from starter
+    const starter = this.gameData.starter;
+    const starterIndex = this.players.findIndex(p => p.name === starter);
+    const orderedPlayers = [
+      ...this.players.slice(starterIndex),
+      ...this.players.slice(0, starterIndex)
+    ];
+    
+    // Check if I've already declared
+    if (this.declarations[this.playerName] !== null) {
+      return;
+    }
+    
+    // Check if it's my turn (all players before me have declared)
+    const myIndex = orderedPlayers.findIndex(p => p.name === this.playerName);
+    let myTurn = true;
+    
+    for (let i = 0; i < myIndex; i++) {
+      if (this.declarations[orderedPlayers[i].name] === null) {
+        myTurn = false;
         break;
       }
     }
-
-    // Check if already declared
-    if (this.declarations[this.playerName] !== null) {
-      console.log("✅ Already declared:", this.declarations[this.playerName]);
-      this.showWaitingForDeclarations();
-      return;
+    
+    if (myTurn && !this.waitingForInput) {
+      this.promptDeclaration();
     }
-
-    if (!shouldDeclareNow) {
-      console.log("⏳ Not your turn to declare yet");
-      this.showWaitingForDeclarations();
-      return;
-    }
-
-    console.log(
-      "🎯 Your turn to declare (position",
-      myPosition + 1,
-      "in order)"
-    );
-
-    const ui = new DeclarationUI(
-      this.playerName,
-      this.declarations,
-      async (value) => {
-        console.log(`📢 Player ${this.playerName} declaring ${value}`);
-
-        // Disable UI immediately
-        if (this.currentPhaseUI) {
-          this.currentPhaseUI.visible = false;
-        }
-
-        // Call API
-        await this.makeDeclaration(value);
-      }
-    );
-
-    this.currentPhaseUI = ui.view;
-    this.phaseUIContainer.addChild(ui.view);
   }
 
-  showWaitingForDeclarations() {
-    console.log("⏳ Waiting for other players to declare");
-
-    const waitingContainer = new Container();
-    waitingContainer.layout = {
-      flexDirection: "column",
-      alignItems: "center",
-      gap: 12,
-    };
-
-    const title = new Text({
-      text: "⏳ Waiting for other players...",
-      style: new TextStyle({ fill: "#ffaa00", fontSize: 20 }),
-    });
-
-    // Show current declaration status
-    const statusContainer = new Container();
-    statusContainer.layout = { flexDirection: "column", gap: 8 };
-
-    this.players.forEach((player) => {
-      const declared = this.declarations[player.name];
-      const statusText = new Text({
-        text: `${player.name}${player.is_bot ? " 🤖" : ""}: ${
-          declared !== null ? `Declared ${declared}` : "Thinking..."
-        }`,
-        style: new TextStyle({
-          fill: declared !== null ? "#00ff00" : "#ffffff",
-          fontSize: 16,
-        }),
-      });
-      statusContainer.addChild(statusText);
-    });
-
-    waitingContainer.addChild(title, statusContainer);
-    this.phaseUIContainer.addChild(waitingContainer);
-
-    // Store reference for updates
-    this.declarationStatusContainer = statusContainer;
-  }
-
-  showTurnPlayUI(data) {
-    // ตรวจสอบว่ามี turn data
-    if (!this.phaseManager.currentTurn.firstPlayer) {
-      console.error("❌ No first player set for turn!");
-      // Set first player as starter if not set
-      this.phaseManager.startNewTurn(this.gameData.starter);
-    }
-
-    const isFirstPlayer = this.phaseManager.isFirstPlayerOfTurn(
-      this.playerName
-    );
-    const requiredCount = this.phaseManager.currentTurn.requiredPieceCount;
-    const turnNumber = this.phaseManager.currentTurn.number;
-
-    console.log("\n🎲 TURN", turnNumber);
-    console.log(
-      "📍 Turn order:",
-      this.phaseManager.currentTurn.turnOrder.map((p) => p.name)
-    );
-    console.log("📍 First player:", this.phaseManager.currentTurn.firstPlayer);
-
-    if (isFirstPlayer) {
-      console.log("✅ You are FIRST PLAYER - can play 1-6 pieces");
-    } else if (requiredCount) {
-      console.log(`⚠️ You must play exactly ${requiredCount} pieces`);
-    } else {
-      console.log("⏳ Waiting for first player to play...");
-    }
-
-    console.log("🃏 Your current hand (" + this.myHand.length + " pieces):");
+  promptDeclaration() {
+    console.log("\n🃏 Your hand:");
     this.myHand.forEach((card, i) => {
-      console.log(`  [${i}] ${card}`);
+      console.log(`${i}: ${card}`);
     });
-
-    // Main container
-    const container = new Container();
-    container.layout = {
-      flexDirection: "column",
-      alignItems: "center",
-      gap: 16,
-    };
-
-    // Turn info
-    const turnInfo = new Text({
-      text: `Turn ${turnNumber} - ${this.phaseManager.currentTurn.firstPlayer} leads`,
-      style: new TextStyle({ fill: "#ffffff", fontSize: 16 }),
+    
+    // Calculate valid options
+    const declaredSoFar = Object.values(this.declarations)
+      .filter(v => v !== null)
+      .reduce((sum, v) => sum + v, 0);
+    
+    const isLast = Object.values(this.declarations)
+      .filter(v => v === null).length === 1;
+    
+    let options = [0, 1, 2, 3, 4, 5, 6, 7, 8];
+    
+    if (isLast) {
+      const forbidden = 8 - declaredSoFar;
+      options = options.filter(v => v !== forbidden);
+    }
+    
+    // Check zero streak
+    const myPlayer = this.players.find(p => p.name === this.playerName);
+    if (myPlayer.zero_declares_in_a_row >= 2) {
+      options = options.filter(v => v > 0);
+      console.log("⚠️ You must declare at least 1 (declared 0 twice in a row)");
+    }
+    
+    console.log(`\n🟨 ${this.playerName}, declare how many piles (options: ${options}):`);
+    
+    this.showInput("Your declaration", async (value) => {
+      const num = parseInt(value);
+      if (options.includes(num)) {
+        await this.makeDeclaration(num);
+      } else {
+        console.log(`❌ Invalid declaration. Choose from ${options}`);
+        this.promptDeclaration();
+      }
     });
-    container.addChild(turnInfo);
-
-    // Turn status display
-    this.turnStatusContainer = new Container();
-    this.turnStatusContainer.layout = {
-      flexDirection: "column",
-      gap: 8,
-      padding: 10,
-      backgroundColor: 0x2a2a2a,
-    };
-
-    container.addChild(this.turnStatusContainer);
-    this.updateTurnPlaysDisplay();
-
-    // Play UI
-    const ui = new TurnPlayUI(
-      this.myHand,
-      isFirstPlayer,
-      requiredCount,
-      (selectedIndexes) => {
-        console.log("🎯 Playing pieces at indexes:", selectedIndexes);
-        console.log(
-          "🎯 Pieces:",
-          selectedIndexes.map((i) => this.myHand[i])
-        );
-        this.playSelectedCards(selectedIndexes);
-      }
-    );
-
-    container.addChild(ui.view);
-    this.phaseUIContainer.addChild(container);
-  }
-
-  setupWebSocketListeners() {
-    // Listen for game events
-    this.handleDeclare = (data) => {
-      console.log("\n📢 DECLARATION:", data.player, "declared", data.value);
-
-      // Update declarations
-      this.declarations[data.player] = data.value;
-
-      // Update waiting UI if visible
-      if (this.declarationStatusContainer) {
-        this.updateDeclarationStatus();
-      }
-
-      // Check if all declared
-      const allDeclared = this.players.every(
-        (p) => this.declarations[p.name] !== null
-      );
-
-      console.log("📊 Declaration status:", {
-        declarations: this.declarations,
-        allDeclared,
-      });
-
-      if (allDeclared) {
-        console.log("\n✅ ALL PLAYERS DECLARED!");
-        console.log("📊 Final declarations:");
-        this.players.forEach((p, i) => {
-          const order =
-            this.gameData.starter === p.name ? "STARTER" : `Order ${i + 1}`;
-          console.log(`  ${p.name}: ${this.declarations[p.name]} (${order})`);
-        });
-
-        const total = Object.values(this.declarations).reduce(
-          (sum, val) => sum + val,
-          0
-        );
-        console.log(`📊 Total: ${total} ✅ (not 8)`);
-
-        setTimeout(() => {
-          console.log("\n➡️ Moving to TURN PLAY phase");
-          this.phaseManager.setPhase(GamePhases.TURN_PLAY);
-        }, 1000);
-      }
-    };
-    onSocketEvent("declare", this.handleDeclare);
-
-    this.handlePlay = (data) => {
-      console.log("\n🎯 PLAY:", data.player, "played", data.pieces);
-      console.log("  Valid:", data.valid ? "✅" : "❌");
-      console.log("  Type:", data.play_type || "Unknown");
-
-      // Record the play in phase manager
-      this.phaseManager.recordPlay(data.player, data.pieces, data.valid);
-
-      // If this is the first play of the turn, set required piece count
-      if (this.phaseManager.currentTurn.plays.length === 1) {
-        this.phaseManager.setRequiredPieceCount(data.pieces.length);
-        console.log(
-          `🎯 First play: ${data.pieces.length} pieces required for this turn`
-        );
-      }
-
-      // Update UI to show current plays
-      this.updateTurnPlaysDisplay();
-
-      // Check if all players have played
-      if (this.phaseManager.allPlayersPlayed()) {
-        console.log("✅ All players have played this turn");
-        // Wait for server to send turn result
-      }
-    };
-    onSocketEvent("play", this.handlePlay);
-
-    this.handleRedeal = (data) => {
-      console.log("🔄 WS: Redeal occurred", {
-        player: data.player,
-        multiplier: data.multiplier,
-        newStarter: data.player,
-      });
-
-      // Update multiplier display
-      this.updateMultiplierDisplay(data.multiplier);
-
-      // Show redeal notification
-      this.showRedealNotification(data.player, data.multiplier);
-
-      // If redeal was accepted, we'll receive new hands via start_round event
-      // The server will reshuffle and send new hands
-    };
-    onSocketEvent("redeal", this.handleRedeal);
-
-    this.handleDeclare = (data) => {
-      console.log("📡 WS: Declaration received:", {
-        player: data.player,
-        value: data.value,
-        isBot: data.is_bot,
-        currentDeclarations: { ...this.declarations },
-        timestamp: new Date().toISOString(),
-      });
-
-      // Prevent duplicate updates
-      if (this.declarations[data.player] === data.value) {
-        console.log(
-          `⚠️ Duplicate declaration ignored for ${data.player}: ${data.value}`
-        );
-        return;
-      }
-
-      // Update declarations
-      this.declarations[data.player] = data.value;
-
-      // Log individual declaration
-      console.log(
-        `✅ ${data.player}${data.is_bot ? " 🤖" : ""} declared: ${data.value}`
-      );
-
-      // Update waiting UI if visible
-      if (
-        this.declarationStatusContainer &&
-        this.phaseManager.getCurrentPhase() === GamePhases.DECLARATION
-      ) {
-        this.updateDeclarationStatus();
-      }
-
-      // Check if all declared
-      const declaredPlayers = this.players.filter(
-        (p) => this.declarations[p.name] !== null
-      );
-      const allDeclared = declaredPlayers.length === this.players.length;
-
-      console.log("📊 Declaration progress:", {
-        declared: declaredPlayers.map((p) => p.name),
-        remaining: this.players
-          .filter((p) => this.declarations[p.name] === null)
-          .map((p) => p.name),
-        total: `${declaredPlayers.length}/${this.players.length}`,
-        allDeclared,
-      });
-
-      if (allDeclared) {
-        // Calculate total and check if valid
-        const total = Object.values(this.declarations).reduce(
-          (sum, val) => sum + val,
-          0
-        );
-        console.log(
-          `📊 All players declared! Total: ${total} (must not equal 8)`
-        );
-
-        if (total === 8) {
-          console.error("❌ Total declarations = 8, which is not allowed!");
-          // This should be handled by backend
-        }
-
-        // Show declaration summary
-        console.log("📋 Final declarations:");
-        this.players.forEach((p) => {
-          console.log(
-            `  ${p.name}${p.is_bot ? " 🤖" : ""}: ${this.declarations[p.name]}`
-          );
-        });
-
-        // Transition to TURN_PLAY
-        setTimeout(() => {
-          console.log("➡️ Moving to TURN_PLAY phase");
-          this.phaseManager.setPhase(GamePhases.TURN_PLAY);
-        }, 1000); // Small delay to see final declarations
-      }
-    };
-    onSocketEvent("declare", this.handleDeclare);
-
-    // แก้ไข handlePlay ที่มีอยู่
-    this.handlePlay = (data) => {
-      console.log("WS: Player played", data);
-
-      // Record play in phase manager
-      this.phaseManager.recordPlay(data.player, data.pieces, data.valid);
-
-      if (this.phaseManager.currentTurn.plays.length === 1) {
-        this.phaseManager.setRequiredPieceCount(data.pieces.length);
-      }
-
-      // Update UI to show current plays
-      this.updateCurrentPlaysDisplay();
-    };
-    onSocketEvent("play", this.handlePlay);
-
-    // turn resolution
-    // this.handleTurnComplete = (data) => {
-    //   console.log("WS: Turn complete", data);
-    //   this.phaseManager.setPhase(GamePhases.TURN_RESOLUTION, data);
-    // };
-    // onSocketEvent("turn_complete", this.handleTurnComplete);
-
-    this.handleTurnResolved = (data) => {
-      console.log("🏆 WS: Turn resolved", {
-        winner: data.winner,
-        plays: data.plays,
-        pile_count: data.pile_count,
-      });
-
-      // Show turn result
-      this.phaseManager.setPhase(GamePhases.TURN_RESOLUTION, {
-        turnResult: {
-          plays: data.plays,
-          winner: data.winner,
-          pileCount: data.pile_count,
-        },
-        hasMoreTurns: this.myHand.length > 0,
-      });
-    };
-    onSocketEvent("turn_resolved", this.handleTurnResolved);
-
-    this.handleStartRound = (data) => {
-      console.log("🆕 WS: New round started (after redeal)", {
-        round: data.round,
-        starter: data.starter,
-        hands: data.hands,
-      });
-
-      // Update game state
-      this.currentRound = data.round;
-      this.myHand = data.hands[this.playerName] || [];
-
-      // Reset declarations
-      this.players.forEach((p) => {
-        this.declarations[p.name] = null;
-      });
-
-      // Start from redeal check again
-      this.phaseManager.setPhase(GamePhases.ROUND_PREPARATION, data);
-    };
-    onSocketEvent("start_round", this.handleStartRound);
-
-    this.handleScore = (data) => {
-      console.log("WS: Round scored", data);
-      this.phaseManager.setPhase(GamePhases.ROUND_SCORING, data);
-    };
   }
 
   async makeDeclaration(value) {
     try {
-      console.log(`🎲 Making declaration: ${value}`);
-
       const response = await fetch(
         `/api/declare?room_id=${this.roomId}&player_name=${this.playerName}&value=${value}`,
         { method: "POST" }
       );
       const result = await response.json();
-
-      console.log("📡 Declaration response:", result);
-
+      
       if (result.status === "ok") {
         this.declarations[this.playerName] = value;
-        this.showWaitingForDeclarations();
-      } else if (result.status === "error") {
-        console.error("❌ Declaration error:", result.message);
-        alert(result.message);
-        // Re-enable UI
-        if (this.currentPhaseUI) {
-          this.currentPhaseUI.visible = true;
-        }
+        console.log(`✅ You declared ${value}`);
       }
     } catch (err) {
-      console.error("❌ Failed to declare:", err);
-      alert(`Failed to declare: ${err.message || "Unknown error"}`);
+      console.error("Failed to declare:", err);
     }
   }
 
-  async playSelectedCards(selectedIndexes) {
-    try {
-      // Remove cards from hand display immediately
-      const playedCards = selectedIndexes.map((i) => this.myHand[i]);
+  startTurnPhase() {
+    console.log("\n🎯 --- Turn Phase ---");
+    this.currentPhase = "TURN_PLAY";
+    this.currentTurnNumber = 0;
+    this.currentTurnPlays = [];
+    this.checkTurnPlay();
+  }
 
+  checkTurnPlay() {
+    // Check if I need to play
+    const alreadyPlayed = this.currentTurnPlays.some(p => p.player === this.playerName);
+    
+    if (!alreadyPlayed && !this.waitingForInput && this.myHand.length > 0) {
+      const isFirstPlayer = this.currentTurnPlays.length === 0;
+      this.promptTurnPlay(isFirstPlayer);
+    }
+  }
+
+  promptTurnPlay(isFirstPlayer) {
+    console.log(`\n--- Turn ${this.currentTurnNumber + 1} ---`);
+    console.log("\n🃏 Your hand:");
+    this.myHand.forEach((card, i) => {
+      console.log(`${i}: ${card}`);
+    });
+    console.log(`${this.playerName} declares ${this.declarations[this.playerName]} piles.`);
+    
+    if (isFirstPlayer) {
+      console.log("You are first player - play 1-6 pieces");
+    } else {
+      console.log(`You must play exactly ${this.requiredPieceCount} pieces`);
+    }
+    
+    this.showInput("Enter piece indices (space-separated)", async (input) => {
+      const indices = input.trim().split(/\s+/).map(i => parseInt(i));
+      
+      // Validate
+      if (indices.some(i => isNaN(i) || i < 0 || i >= this.myHand.length)) {
+        console.log("❌ Invalid indices");
+        this.promptTurnPlay(isFirstPlayer);
+        return;
+      }
+      
+      if (isFirstPlayer) {
+        if (indices.length < 1 || indices.length > 6) {
+          console.log("❌ Must play 1-6 pieces");
+          this.promptTurnPlay(isFirstPlayer);
+          return;
+        }
+      } else {
+        if (indices.length !== this.requiredPieceCount) {
+          console.log(`❌ Must play exactly ${this.requiredPieceCount} pieces`);
+          this.promptTurnPlay(isFirstPlayer);
+          return;
+        }
+      }
+      
+      await this.playTurn(indices);
+    });
+  }
+
+  async playTurn(indices) {
+    try {
+      const pieces = indices.map(i => this.myHand[i]);
+      console.log(`Playing: ${pieces.join(", ")}`);
+      
       const response = await fetch(
-        `/api/play-turn?room_id=${this.roomId}&player_name=${
-          this.playerName
-        }&piece_indexes=${selectedIndexes.join(",")}`,
+        `/api/play-turn?room_id=${this.roomId}&player_name=${this.playerName}&piece_indexes=${indices.join(",")}`,
         { method: "POST" }
       );
       const result = await response.json();
-
-      if (result.status === "waiting") {
-        // Show waiting for other players
-        this.showWaitingForPlayers();
-      }
-
-      // Remove played cards from hand
-      selectedIndexes
-        .sort((a, b) => b - a)
-        .forEach((i) => {
+      
+      if (result.status === "waiting" || result.status === "resolved") {
+        // Remove played pieces from hand
+        indices.sort((a, b) => b - a).forEach(i => {
           this.myHand.splice(i, 1);
         });
+      }
     } catch (err) {
       console.error("Failed to play turn:", err);
     }
   }
 
-  updateDeclarationStatus() {
-    if (!this.declarationStatusContainer) return;
-
-    console.log("🔄 Updating declaration status display");
-
-    this.declarationStatusContainer.removeChildren();
-
-    // Sort players to show declared ones first
-    const sortedPlayers = [...this.players].sort((a, b) => {
-      const aDeclared = this.declarations[a.name] !== null;
-      const bDeclared = this.declarations[b.name] !== null;
-      if (aDeclared && !bDeclared) return -1;
-      if (!aDeclared && bDeclared) return 1;
-      return 0;
-    });
-
-    sortedPlayers.forEach((player) => {
-      const declared = this.declarations[player.name];
-      const statusText = new Text({
-        text: `${player.name}${player.is_bot ? " 🤖" : ""}: ${
-          declared !== null ? `Declared ${declared} ✓` : "Thinking..."
-        }`,
-        style: new TextStyle({
-          fill: declared !== null ? "#00ff00" : "#ffaa00",
-          fontSize: 16,
-        }),
-      });
-      this.declarationStatusContainer.addChild(statusText);
-    });
-
-    // Add total if at least 2 players declared
-    const declaredValues = Object.values(this.declarations).filter(
-      (v) => v !== null
-    );
-    if (declaredValues.length >= 2) {
-      const currentTotal = declaredValues.reduce((sum, val) => sum + val, 0);
-      const totalText = new Text({
-        text: `Current Total: ${currentTotal}`,
-        style: new TextStyle({
-          fill: currentTotal === 8 ? "#ff0000" : "#ffffff",
-          fontSize: 14,
-          fontStyle: "italic",
-        }),
-      });
-      this.declarationStatusContainer.addChild(totalText);
-    }
+  showInput(prompt, callback) {
+    this.waitingForInput = true;
+    this.currentCallback = callback;
+    
+    // Update UI
+    this.outputText.text = prompt;
+    this.textInput.setText("");
+    this.inputContainer.visible = true;
+    this.textInput.focus();
   }
 
-  resetDeclarations() {
-    console.log("🔄 Resetting all declarations");
-    this.players.forEach((p) => {
-      this.declarations[p.name] = null;
-    });
+  hideInput() {
+    this.waitingForInput = false;
+    this.currentCallback = null;
+    this.inputContainer.visible = false;
+    this.outputText.text = "Check console for game output";
   }
 
-  updateTurnPlaysDisplay() {
-    // If we have a turn status container, update it
-    if (this.turnStatusContainer) {
-      this.turnStatusContainer.removeChildren();
-
-      const playsText = new Text({
-        text: "Current plays:",
-        style: new TextStyle({
-          fill: "#ffffff",
-          fontSize: 16,
-          fontWeight: "bold",
-        }),
-      });
-      this.turnStatusContainer.addChild(playsText);
-
-      // Show each play
-      this.phaseManager.currentTurn.plays.forEach((play) => {
-        const playText = new Text({
-          text: `${play.player}: ${play.pieces.join(", ")} ${
-            play.isValid ? "✅" : "❌"
-          }`,
-          style: new TextStyle({
-            fill: play.isValid ? "#00ff00" : "#ff0000",
-            fontSize: 14,
-          }),
-        });
-        this.turnStatusContainer.addChild(playText);
-      });
-
-      // Show waiting count
-      const remaining =
-        this.players.length - this.phaseManager.currentTurn.plays.length;
-      if (remaining > 0) {
-        const waitingText = new Text({
-          text: `⏳ Waiting for ${remaining} player${
-            remaining > 1 ? "s" : ""
-          }...`,
-          style: new TextStyle({ fill: "#ffaa00", fontSize: 14 }),
-        });
-        this.turnStatusContainer.addChild(waitingText);
+  handleSubmit() {
+    if (this.currentCallback) {
+      const value = this.textInput.getText().trim();
+      if (value) {
+        const callback = this.currentCallback;
+        this.hideInput();
+        callback(value);
       }
     }
   }
 
-  updateMultiplierDisplay(multiplier) {
-    if (!this.multiplierText) {
-      this.multiplierText = new Text({
-        text: "",
-        style: new TextStyle({
-          fill: "#ff6600",
-          fontSize: 18,
-          fontWeight: "bold",
-        }),
-      });
-      // Add to header area
-      this.headerContainer.addChild(this.multiplierText);
-    }
-
-    if (multiplier > 1) {
-      this.multiplierText.text = `🔥 x${multiplier} Multiplier!`;
-      this.multiplierText.visible = true;
-    } else {
-      this.multiplierText.visible = false;
-    }
-  }
-
-  showRedealNotification(playerName, multiplier) {
-    // Clear previous UI
-    this.phaseUIContainer.removeChildren();
-
-    const notificationContainer = new Container();
-    notificationContainer.layout = {
-      flexDirection: "column",
-      alignItems: "center",
-      gap: 16,
-      padding: 20,
-      backgroundColor: 0x333333,
+  setupWebSocketListeners() {
+    // Handle declarations
+    this.handleDeclare = (data) => {
+      console.log(`📢 ${data.player}${data.is_bot ? " 🤖" : ""} declared ${data.value}`);
+      this.declarations[data.player] = data.value;
+      
+      // Check if all declared
+      const allDeclared = this.players.every(p => this.declarations[p.name] !== null);
+      
+      if (allDeclared) {
+        console.log("\n✅ All players declared!");
+        const total = Object.values(this.declarations).reduce((sum, v) => sum + v, 0);
+        console.log(`Total declarations: ${total}`);
+        
+        setTimeout(() => {
+          this.startTurnPhase();
+        }, 1000);
+      } else {
+        this.checkDeclarationTurn();
+      }
     };
+    onSocketEvent("declare", this.handleDeclare);
 
-    const icon = new Text({
-      text: "🔄",
-      style: new TextStyle({ fontSize: 48 }),
-    });
-
-    const title = new Text({
-      text: "Redeal Triggered!",
-      style: new TextStyle({
-        fill: "#ff6600",
-        fontSize: 24,
-        fontWeight: "bold",
-      }),
-    });
-
-    const info = new Text({
-      text: `${playerName} requested a redeal`,
-      style: new TextStyle({ fill: "#ffffff", fontSize: 18 }),
-    });
-
-    const multiplierInfo = new Text({
-      text: `Score multiplier is now x${multiplier}`,
-      style: new TextStyle({
-        fill: "#ffaa00",
-        fontSize: 20,
-        fontWeight: "bold",
-      }),
-    });
-
-    const subtext = new Text({
-      text: "All hands will be reshuffled...",
-      style: new TextStyle({ fill: "#aaaaaa", fontSize: 14 }),
-    });
-
-    notificationContainer.addChild(icon, title, info, multiplierInfo, subtext);
-    this.phaseUIContainer.addChild(notificationContainer);
-
-    // Auto-remove after 3 seconds
-    setTimeout(() => {
-      if (this.phaseUIContainer.children.includes(notificationContainer)) {
-        this.phaseUIContainer.removeChild(notificationContainer);
+    // Handle plays
+    this.handlePlay = (data) => {
+      const validStr = data.valid ? "✅" : "❌";
+      console.log(`${data.player}'s play: [${data.pieces.join(", ")}] → ${validStr} (${data.play_type || "INVALID"})`);
+      
+      // Track plays
+      this.currentTurnPlays.push({
+        player: data.player,
+        pieces: data.pieces,
+        valid: data.valid
+      });
+      
+      // Set required count from first play
+      if (this.currentTurnPlays.length === 1) {
+        this.requiredPieceCount = data.pieces.length;
       }
-    }, 3000);
+      
+      // Check if I need to play
+      this.checkTurnPlay();
+    };
+    onSocketEvent("play", this.handlePlay);
+
+    // Handle turn resolution
+    this.handleTurnResolved = (data) => {
+      console.log("\n🎯 Turn Summary:");
+      
+      data.plays.forEach(play => {
+        const playerData = this.players.find(p => p.name === play.player);
+        const declared = this.declarations[play.player];
+        console.log(`  - ${play.player}: [${play.pieces.join(", ")}] ${play.is_valid ? "✅" : "❌"} [?/${declared}]`);
+      });
+      
+      if (data.winner) {
+        console.log(`\n>>> 🏆 ${data.winner} wins the turn with [${data.plays.find(p => p.player === data.winner).pieces.join(", ")}] (+${data.pile_count} pts).`);
+      } else {
+        console.log("\n>>> ⚠️ No one wins the turn.");
+      }
+      
+      // Reset for next turn
+      this.currentTurnPlays = [];
+      this.currentTurnNumber++;
+      this.requiredPieceCount = null;
+      
+      // Continue if we have pieces
+      if (this.myHand.length > 0) {
+        setTimeout(() => {
+          this.checkTurnPlay();
+        }, 1000);
+      }
+    };
+    onSocketEvent("turn_resolved", this.handleTurnResolved);
+
+    // Handle round scoring
+    this.handleScore = (data) => {
+      console.log("\n🏁 --- End of Round ---");
+      console.log("\n📊 Round Summary:");
+      
+      // Show scoring details
+      if (data.summary && data.summary.scores) {
+        Object.entries(data.summary.scores).forEach(([player, scoreData]) => {
+          console.log(`${player} → declared ${scoreData.declared}, got ${scoreData.actual} → ${scoreData.delta >= 0 ? "+" : ""}${scoreData.delta} pts (×${scoreData.multiplier || 1}), total: ${scoreData.total}`);
+        });
+      }
+      
+      if (data.game_over) {
+        console.log("\n🎮 GAME OVER!");
+        if (data.winners && data.winners.length > 0) {
+          console.log(`🏆 Winner: ${data.winners.join(", ")}`);
+        }
+      }
+    };
+    onSocketEvent("score", this.handleScore);
+
+    // Handle redeal
+    this.handleRedeal = (data) => {
+      console.log(`\n🔄 ${data.player} has requested a redeal!`);
+      console.log(`Score multiplier is now x${data.multiplier}`);
+    };
+    onSocketEvent("redeal", this.handleRedeal);
+
+    // Handle new round after redeal
+    this.handleStartRound = (data) => {
+      console.log("\n🆕 New round started (after redeal)");
+      
+      // Update game state
+      this.currentRound = data.round;
+      this.myHand = data.hands[this.playerName] || [];
+      this.gameData = data;
+      
+      // Reset declarations
+      this.declarations = {};
+      this.players.forEach(p => {
+        this.declarations[p.name] = null;
+      });
+      
+      // Start over
+      this.printRoundStart();
+      this.checkForRedeal();
+    };
+    onSocketEvent("start_round", this.handleStartRound);
   }
 
   teardownWebSocketListeners() {
     offSocketEvent("declare", this.handleDeclare);
     offSocketEvent("play", this.handlePlay);
+    offSocketEvent("turn_resolved", this.handleTurnResolved);
     offSocketEvent("score", this.handleScore);
     offSocketEvent("redeal", this.handleRedeal);
+    offSocketEvent("start_round", this.handleStartRound);
   }
 
   destroy(options) {
