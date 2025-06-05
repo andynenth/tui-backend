@@ -51,6 +51,7 @@ export class LobbyScene extends Container {
       justifyContent: "flex-end",
       alignItems: "center",
       width: "100%",
+      height: 50,
     };
 
     // Create the welcome message text.
@@ -108,6 +109,15 @@ export class LobbyScene extends Container {
       gap: 8,
     };
 
+
+    const createBtnRow = new Container();
+    createBtnRow.layout = {
+      flexDirection: "row",
+      alignSelf: "flex-start",
+      gap: 8,
+    };
+
+
     // Create a row for joining a room by ID.
     const joinRow = new Container();
     joinRow.layout = {
@@ -146,10 +156,12 @@ export class LobbyScene extends Container {
     });
 
     // Add elements to their respective containers and then to the main scene.
-    headerRow.addChild(title, createBtn.view);
+    headerRow.addChild(title, this.connectionStatus);
     roomTable.addChild(this.tableHeader, this.roomListContainer);
+    createBtnRow.addChild(createBtn.view);
     joinRow.addChild(roomIdInput.view, joinBtn.view);
-    this.addChild(headerRow, roomTable, joinRow);
+    this.addChild(headerRow, roomTable, createBtnRow
+        , joinRow);
 
     this.setupLobbyWebSocket();
   }
@@ -229,7 +241,7 @@ export class LobbyScene extends Container {
       emitSocketEvent("request_room_list", { player_name: this.playerName });
     };
 
-    // ✅ Register all event listeners
+    // Register all event listeners
     onSocketEvent("connected", this.handleConnected);
     onSocketEvent("disconnected", this.handleDisconnected);
     onSocketEvent("reconnecting", this.handleReconnecting);
@@ -239,8 +251,8 @@ export class LobbyScene extends Container {
     onSocketEvent("room_closed", this.handleRoomClosed);
     onSocketEvent("room_updated", this.handleRoomUpdated);
 
-    // ✅ ขอ room list ทันทีถ้า connection พร้อมแล้ว
-    // (กรณี WebSocket เชื่อมต่อเร็วกว่าการ setup listeners)
+    // Request room list if connection is ready
+    // In case WebSocket connect faster than setup listeners
     setTimeout(() => {
       if (this.isActive) {
         emitSocketEvent("request_room_list", { player_name: this.playerName });

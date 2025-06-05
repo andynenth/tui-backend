@@ -1,5 +1,5 @@
 // ===== CONNECTION STATUS COMPONENT =====
-// frontend/components/ConnectionStatus.js - ไฟล์ใหม่
+// frontend/components/ConnectionStatus.js
 
 import { Container, Text, TextStyle } from 'pixi.js';
 import { getConnectionStatus, on as onSocketEvent, off as offSocketEvent } from '../socketManager.js';
@@ -7,12 +7,6 @@ import { getConnectionStatus, on as onSocketEvent, off as offSocketEvent } from 
 export class ConnectionStatus {
     constructor() {
         this.view = new Container();
-        this.view.layout = {
-            position: 'absolute',
-            top: 10,
-            right: 10,
-            padding: 8,
-        };
 
         this.statusText = new Text({
             text: '🔴 Disconnected',
