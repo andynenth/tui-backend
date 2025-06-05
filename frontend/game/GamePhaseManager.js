@@ -45,6 +45,12 @@ export class GamePhaseManager {
 
   // Turn management methods
   startNewTurn(firstPlayer) {
+
+    if (!firstPlayer) {
+      console.error("❌ No first player specified for new turn!");
+      return;
+    }
+    
     this.currentTurn = {
       number: this.currentTurn.number + 1,
       requiredPieceCount: null,
@@ -52,6 +58,8 @@ export class GamePhaseManager {
       plays: [],
       turnOrder: this.generateTurnOrder(firstPlayer)
     };
+    
+    console.log("🎯 Started turn", this.currentTurn.number, "with first player:", firstPlayer);
   }
 
   generateTurnOrder(firstPlayer) {
@@ -59,12 +67,18 @@ export class GamePhaseManager {
     const players = this.gameScene.players;
     const firstIndex = players.findIndex(p => p.name === firstPlayer);
     
-    if (firstIndex === -1) return players;
+    if (firstIndex === -1) {
+      console.error("❌ First player not found in players list!");
+      return players;
+    }
     
-    return [
+    const order = [
       ...players.slice(firstIndex),
       ...players.slice(0, firstIndex)
     ];
+    
+    console.log("📍 Turn order generated:", order.map(p => p.name));
+    return order;
   }
 
   setRequiredPieceCount(count) {
