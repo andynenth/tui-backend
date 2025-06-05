@@ -52,22 +52,22 @@ export class RoomScene extends Container {
     this.isActive = true; // Track if we're in this room
 
     this.connectionStatus = new ConnectionStatus();
-    this.addChild(this.connectionStatus.view);
-
+    
     // Create the room ID title.
     const title = new Text({
       text: `📦 Room ID: ${roomId}`,
       style: new TextStyle({ fill: "#ffffff", fontSize: 22 }),
     });
+    const titleC = new Container();
+    titleC.addChild(title);
 
     // Create a header row container for the title.
     const headerRow = new Container();
     headerRow.layout = {
       flexDirection: "row",
-      justifyContent: "flex-end", // Align title to the right.
-      alignItems: "center",
+      justifyContent: "space-between",
       width: "100%",
-      height: 30,
+      height: "auto",
     };
 
     // Create a container for the player slots table.
@@ -80,7 +80,7 @@ export class RoomScene extends Container {
     };
 
     // Add elements to the scene.
-    headerRow.addChild(title);
+    headerRow.addChild(titleC, this.connectionStatus.view);
     this.addChild(headerRow, this.playerTable);
 
     // Initialize the slot views and fetch the initial room state.
@@ -350,18 +350,17 @@ export class RoomScene extends Container {
             }
           };
         } else {
-          // ผู้เล่นทั่วไป - ไม่ต้องมีปุ่ม Join
+          // Hide join button from other players
           label.text = `${slot}: Open`;
-          joinBtn.view.visible = false; // ✅ ซ่อนปุ่ม
+          joinBtn.view.visible = false; 
         }
       } else if (info.is_bot) {
-        // Slot มี Bot
         label.text = `${slot}: 🤖 ${info.name}`;
         if (this.isHost) {
           joinBtn.setText("Open");
           joinBtn.view.visible = true;
 
-          // ✅ Re-assign onClick สำหรับ Open
+          // ✅ Re-assign onClick for Open
           joinBtn.onClick = async () => {
             try {
               console.log(
@@ -377,17 +376,17 @@ export class RoomScene extends Container {
           joinBtn.view.visible = false;
         }
       } else if (info.name === this.playerName) {
-        // Slot ของตัวเอง
+        // Slot self-indicator
         label.text = `${slot}: ${info.name} <<`;
         joinBtn.view.visible = false;
       } else {
-        // Slot มีผู้เล่นอื่น
+        // Slot is occupied
         label.text = `${slot}: ${info.name}`;
         if (this.isHost) {
           joinBtn.setText("Add bot");
           joinBtn.view.visible = true;
 
-          // ✅ Re-assign onClick สำหรับเตะผู้เล่น
+          // ✅ Re-assign onClick, kick player
           joinBtn.onClick = async () => {
             try {
               console.log(
