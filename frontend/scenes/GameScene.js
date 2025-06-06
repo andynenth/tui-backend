@@ -1,4 +1,4 @@
-// frontend/scenes/GameScene.js
+// frontend/scenes/GameScene.js - Fixed turn order tracking
 
 import { Container, Text, TextStyle } from "pixi.js";
 import { GameButton } from "../components/GameButton.js";
@@ -35,6 +35,10 @@ export class GameScene extends Container {
     this.waitingForInput = false;
     this.requiredPieceCount = null;
     this.currentTurnPlays = [];
+    
+    // Track turn order
+    this.currentTurnStarter = this.gameData.starter; // Start with round starter
+    this.turnOrder = [];
     
     // Simple UI setup
     this.layout = {
@@ -266,21 +270,44 @@ export class GameScene extends Container {
     this.currentPhase = "TURN_PLAY";
     this.currentTurnNumber = 0;
     this.currentTurnPlays = [];
+    
+    // Set initial turn order based on round starter
+    this.currentTurnStarter = this.gameData.starter;
+    this.updateTurnOrder();
+    
     this.checkTurnPlay();
   }
 
-  checkTurnPlay() {
-    // Check if I need to play
-    const alreadyPlayed = this.currentTurnPlays.some(p => p.player === this.playerName);
+  updateTurnOrder() {
+    // Create turn order starting from current turn starter
+    const starterIndex = this.players.findIndex(p => p.name === this.currentTurnStarter);
+    this.turnOrder = [
+      ...this.players.slice(starterIndex),
+      ...this.players.slice(0, starterIndex)
+    ];
     
-    if (!alreadyPlayed && !this.waitingForInput && this.myHand.length > 0) {
-      const isFirstPlayer = this.currentTurnPlays.length === 0;
+    console.log(`📍 Turn order: ${this.turnOrder.map(p => p.name).join(" → ")}`);
+  }
+
+  checkTurnPlay() {
+    // Check if I need to play based on turn order
+    const myOrderIndex = this.turnOrder.findIndex(p => p.name === this.playerName);
+    const playsCompleted = this.currentTurnPlays.length;
+    
+    // Check if it's my position in the turn order
+    if (myOrderIndex === playsCompleted && !this.waitingForInput && this.myHand.length > 0) {
+      const isFirstPlayer = playsCompleted === 0;
       this.promptTurnPlay(isFirstPlayer);
     }
   }
 
   promptTurnPlay(isFirstPlayer) {
     console.log(`\n--- Turn ${this.currentTurnNumber + 1} ---`);
+    
+    if (isFirstPlayer) {
+      console.log(`${this.playerName} leads this turn`);
+    }
+    
     console.log("\n🃏 Your hand:");
     this.myHand.forEach((card, i) => {
       console.log(`${i}: ${card}`);
@@ -427,14 +454,19 @@ export class GameScene extends Container {
     this.handleTurnResolved = (data) => {
       console.log("\n🎯 Turn Summary:");
       
-      data.plays.forEach(play => {
-        const playerData = this.players.find(p => p.name === play.player);
-        const declared = this.declarations[play.player];
-        console.log(`  - ${play.player}: [${play.pieces.join(", ")}] ${play.is_valid ? "✅" : "❌"} [?/${declared}]`);
+      // Show plays in turn order
+      this.turnOrder.forEach(player => {
+        const play = data.plays.find(p => p.player === player.name);
+        if (play) {
+          const declared = this.declarations[play.player];
+          console.log(`  - ${play.player}: [${play.pieces.join(", ")}] ${play.is_valid ? "✅" : "❌"} [?/${declared}]`);
+        }
       });
       
       if (data.winner) {
         console.log(`\n>>> 🏆 ${data.winner} wins the turn with [${data.plays.find(p => p.player === data.winner).pieces.join(", ")}] (+${data.pile_count} pts).`);
+        // Update turn starter for next turn
+        this.currentTurnStarter = data.winner;
       } else {
         console.log("\n>>> ⚠️ No one wins the turn.");
       }
@@ -446,6 +478,9 @@ export class GameScene extends Container {
       
       // Continue if we have pieces
       if (this.myHand.length > 0) {
+        // Update turn order for next turn
+        this.updateTurnOrder();
+        
         setTimeout(() => {
           this.checkTurnPlay();
         }, 1000);

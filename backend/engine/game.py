@@ -44,6 +44,10 @@ class Game:
         for player in self.players:
             player.declared = 0
 
+        # Initialize turn order for first turn
+        self.turn_order = list(self.current_order)  # Copy the round order
+        self.last_turn_winner = None
+
         return {
             "round": self.round_number,
             "starter": self.current_order[0].name,
@@ -149,59 +153,65 @@ class Game:
             # First player sets required piece count and determines order
             self.required_piece_count = len(selected)
             self.turn_order = self._rotate_players_starting_from(player)
+            print(f"🎯 Turn order set: {[p.name for p in self.turn_order]}")
         else:
             if len(selected) != self.required_piece_count:
                 return {"status": "error", "message": f"You must play exactly {self.required_piece_count} pieces."}
 
         is_valid = is_valid_play(selected)
-        play_type = get_play_type(selected) if is_valid else None
+        play_type = get_play_type(selected) if is_valid else "INVALID"
 
         self.current_turn_plays.append(TurnPlay(player, selected, is_valid))
 
+        # Remove pieces from hand
         for piece in selected:
             player.hand.remove(piece)
 
-        if len(self.current_turn_plays) < len(self.players):
-            return {
-                "status": "waiting",
-                "player": player.name,
-                "pieces": [str(p) for p in selected],
-                "is_valid": is_valid,
-                "play_type": play_type
-            }
-
-        # All players have played → resolve the turn
-        result = resolve_turn(self.current_turn_plays)
-        winner = result.winner.player if result.winner else None
-
-        if result.winner:
-            pile = len(result.winner.pieces)
-            self.pile_counts[winner.name] += pile
-            self.round_scores[winner.name] += pile
-            self.last_turn_winner = winner
-            pile_count = pile
-        else:
-            pile_count = 0
-
-        turn_summary = {
-            "status": "resolved",
-            "winner": winner.name if winner else None,
-            "plays": [
-                {
-                    "player": play.player.name,
-                    "pieces": [str(p) for p in play.pieces],
-                    "is_valid": play.is_valid
-                }
-                for play in self.current_turn_plays
-            ],
-            "pile_count": pile_count
+        # Return play info
+        response = {
+            "status": "waiting",
+            "player": player.name,
+            "pieces": [str(p) for p in selected],
+            "is_valid": is_valid,
+            "play_type": play_type
         }
 
-        # Reset turn state
-        self.current_turn_plays = []
-        self.required_piece_count = None
+        # Check if all players have played
+        if len(self.current_turn_plays) >= len(self.players):
+            # All players have played → resolve the turn
+            result = resolve_turn(self.current_turn_plays)
+            winner = result.winner.player if result.winner else None
 
-        return turn_summary
+            if result.winner:
+                pile = len(result.winner.pieces)
+                self.pile_counts[winner.name] += pile
+                self.round_scores[winner.name] += pile
+                self.last_turn_winner = winner
+                pile_count = pile
+            else:
+                pile_count = 0
+
+            turn_summary = {
+                "status": "resolved",
+                "winner": winner.name if winner else None,
+                "plays": [
+                    {
+                        "player": play.player.name,
+                        "pieces": [str(p) for p in play.pieces],
+                        "is_valid": play.is_valid
+                    }
+                    for play in self.current_turn_plays
+                ],
+                "pile_count": pile_count
+            }
+
+            # Reset turn state
+            self.current_turn_plays = []
+            self.required_piece_count = None
+
+            return turn_summary
+
+        return response
 
     def _rotate_players_starting_from(self, starter: Player) -> list[Player]:
         """Generate a player order starting from a given player."""
@@ -213,16 +223,26 @@ class Game:
         score_data = calculate_round_scores(
             players=self.players,
             pile_counts=self.pile_counts,
-            multiplier=self.redeal_multiplier
+            redeal_multiplier=self.redeal_multiplier
         )
 
-        for p in self.players:
-            p.score += score_data["scores"][p.name]
+        # The calculate_round_scores function returns a list of score dictionaries
+        # We need to extract the scores properly
+        scores_by_player = {}
+        for score_entry in score_data:
+            player = score_entry["player"]
+            scores_by_player[player.name] = {
+                "declared": score_entry["declared"],
+                "actual": score_entry["actual"],
+                "delta": score_entry["delta"],
+                "multiplier": score_entry["multiplier"],
+                "total": score_entry["total"]
+            }
 
         summary = {
             "round": self.round_number,
-            "scores": score_data["scores"],
-            "bonuses": score_data["bonuses"],
+            "scores": scores_by_player,
+            "bonuses": {},  # Can be expanded later
             "declares": {p.name: p.declared for p in self.players},
             "captured": self.pile_counts,
             "multiplier": self.redeal_multiplier
