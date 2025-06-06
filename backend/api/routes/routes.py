@@ -10,13 +10,9 @@ from backend.shared_instances import shared_room_manager
 import asyncio
 import time
 from typing import Optional
-import backend.socket_manager
 
-print(f"socket_manager id in {__name__}: {id(backend.socket_manager)}")
-
-router = APIRouter() # Create a new FastAPI APIRouter instance.
-# room_manager = RoomManager() # (Commented out) Direct instantiation of RoomManager.
-room_manager = shared_room_manager # Use the globally shared RoomManager instance.
+router = APIRouter()
+room_manager = shared_room_manager
 
 # ---------- ROOM MANAGEMENT ----------
 
@@ -398,7 +394,7 @@ async def play_turn(
     piece_indexes: str = Query(...)
 ):
     """
-    Handles a player's turn to play pieces.
+    ✅ Enhanced play-turn with proper bot continuation and round scoring
     """
     room = room_manager.get_room(room_id)
     if not room or not room.game:
@@ -417,41 +413,134 @@ async def play_turn(
     player = room.game.get_player(player_name)
     selected_pieces = []
     try:
-        # Get pieces before they're removed
-        for i in indices:
-            if i < len(player.hand):
-                selected_pieces.append(player.hand[i])
-    except:
-        pass
+        # Get pieces before they're removed (from the result)
+        if "pieces" in result:
+            selected_pieces = result["pieces"]
+        else:
+            # Fallback: reconstruct from indices if still in hand
+            for i in indices:
+                if i < len(player.hand):
+                    selected_pieces.append(str(player.hand[i]))
+    except Exception as e:
+        print(f"⚠️ Could not get pieces for broadcast: {e}")
+        selected_pieces = [f"Piece_{i}" for i in indices]
 
     # Broadcast the play immediately
     await broadcast(room_id, "play", {
         "player": player_name,
-        "pieces": [str(p) for p in selected_pieces] if selected_pieces else result.get("pieces", []),
+        "pieces": selected_pieces,
         "valid": result.get("is_valid", True),
         "play_type": result.get("play_type", "UNKNOWN")
     })
 
-    # If this was the first play, trigger bot plays
+    # ✅ Handle different turn states
     if result.get("status") == "waiting":
-        # Only trigger bots if we haven't already
-        if len(room.game.current_turn_plays) > 0:
-            asyncio.create_task(handle_bot_plays_in_order(room_id))
-    
-    # If turn is resolved, broadcast the result
+        # First play sets the piece count - trigger remaining bot plays
+        print(f"🎯 Turn started by {player_name}, triggering bot plays in order")
+        asyncio.create_task(handle_bot_plays_in_order(room_id))
+        
     elif result.get("status") == "resolved":
+        # Turn is complete - broadcast result
         await broadcast(room_id, "turn_resolved", {
             "plays": result["plays"],
             "winner": result["winner"],
             "pile_count": result["pile_count"]
         })
         
-        # If there's a winner and more turns to play, start next turn
-        if result["winner"] and any(len(p.hand) > 0 for p in room.game.players):
+        # ✅ Check if round is complete (all hands empty)
+        all_hands_empty = all(len(p.hand) == 0 for p in room.game.players)
+        
+        if all_hands_empty:
+            print(f"🏁 Round {room.game.round_number} complete - triggering scoring")
+            await asyncio.sleep(0.5)  # Brief pause before scoring
+            await trigger_round_scoring(room_id)
+        elif result["winner"]:
+            # More turns to play - start next turn with winner
+            print(f"🎯 Starting next turn with winner: {result['winner']}")
             await asyncio.sleep(0.5)
-            asyncio.create_task(start_next_turn(room_id, result["winner"]))
+            await start_next_turn(room_id, result["winner"])
 
     return result
+
+async def trigger_round_scoring(room_id: str):
+    """
+    ✅ Trigger round scoring when all hands are empty
+    """
+    try:
+        room = room_manager.get_room(room_id)
+        if not room or not room.game:
+            print(f"❌ Room {room_id} or game not found for scoring")
+            return
+        
+        game = room.game
+        print(f"📊 Scoring round {game.round_number}")
+        
+        # Score the round
+        summary = game.score_round()
+        game_over = is_game_over(game)
+        winners = get_winners(game) if game_over else []
+        
+        # Broadcast score results
+        await broadcast(room_id, "score", {
+            "summary": summary,
+            "game_over": game_over,
+            "winners": [p.name for p in winners]
+        })
+        
+        # If game is not over, start next round
+        if not game_over:
+            print(f"🆕 Starting round {game.round_number + 1}")
+            await asyncio.sleep(2)  # Give players time to see scores
+            await start_next_round(room_id)
+        else:
+            print(f"🎮 Game over! Winners: {[p.name for p in winners]}")
+            
+    except Exception as e:
+        print(f"❌ Error in round scoring: {e}")
+        import traceback
+        traceback.print_exc()
+
+async def start_next_round(room_id: str):
+    """
+    ✅ Start the next round of the game
+    """
+    try:
+        room = room_manager.get_room(room_id)
+        if not room or not room.game:
+            return
+        
+        game = room.game
+        
+        # Prepare the new round
+        round_data = game.prepare_round()
+        
+        # Broadcast new round start
+        await broadcast(room_id, "start_round", {
+            "round": round_data["round"],
+            "starter": round_data["starter"],
+            "hands": round_data["hands"],
+            "players": [
+                {
+                    "name": p.name,
+                    "score": p.score,
+                    "is_bot": p.is_bot,
+                    "zero_declares_in_a_row": p.zero_declares_in_a_row
+                }
+                for p in game.players
+            ]
+        })
+        
+        # If starter is a bot, trigger bot declarations
+        starter = game.current_order[0]
+        if starter.is_bot:
+            print(f"🤖 New round starter is bot: {starter.name}")
+            await asyncio.sleep(1)
+            asyncio.create_task(handle_bot_declarations(room_id, starter.name))
+            
+    except Exception as e:
+        print(f"❌ Error starting next round: {e}")
+        import traceback
+        traceback.print_exc()
 
 @router.post("/score-round")
 async def score_round(room_id: str = Query(...)):
@@ -590,11 +679,8 @@ async def get_room_stats(room_id: Optional[str] = Query(None)):
     }
 
 async def notify_lobby_room_created(room_data):
-    """
-    Notify lobby clients about new room creation
-    """
+    """Notify lobby clients about new room creation"""
     try:
-        # Ensure lobby is ready before broadcasting
         from backend.socket_manager import ensure_lobby_ready
         ensure_lobby_ready()
         
@@ -604,7 +690,6 @@ async def notify_lobby_room_created(room_data):
             "timestamp": asyncio.get_event_loop().time()
         })
         
-        # Also send updated room list
         available_rooms = room_manager.list_rooms()
         await broadcast("lobby", "room_list_update", {
             "rooms": available_rooms,
@@ -614,15 +699,10 @@ async def notify_lobby_room_created(room_data):
         print(f"✅ Notified lobby about new room: {room_data['room_id']}")
     except Exception as e:
         print(f"❌ Failed to notify lobby about new room: {e}")
-        import traceback
-        traceback.print_exc()
 
 async def notify_lobby_room_updated(room_data):
-    """
-    Notify lobby clients about room updates (occupancy changes)
-    """
+    """Notify lobby clients about room updates"""
     try:
-        # Ensure lobby is ready before broadcasting
         from backend.socket_manager import ensure_lobby_ready
         ensure_lobby_ready()
         
@@ -633,7 +713,6 @@ async def notify_lobby_room_updated(room_data):
             "timestamp": asyncio.get_event_loop().time()
         })
         
-        # Send fresh room list
         available_rooms = room_manager.list_rooms()
         await broadcast("lobby", "room_list_update", {
             "rooms": available_rooms,
@@ -643,13 +722,9 @@ async def notify_lobby_room_updated(room_data):
         print(f"✅ Notified lobby about room update: {room_data['room_id']}")
     except Exception as e:
         print(f"❌ Failed to notify lobby about room update: {e}")
-        import traceback
-        traceback.print_exc()
 
 async def notify_lobby_room_closed(room_id, reason="Room closed"):
-    """
-    Notify lobby clients about room closure
-    """
+    """Notify lobby clients about room closure"""
     try:
         await broadcast("lobby", "room_closed", {
             "room_id": room_id,
@@ -657,7 +732,6 @@ async def notify_lobby_room_closed(room_id, reason="Room closed"):
             "timestamp": asyncio.get_event_loop().time()
         })
         
-        # Send updated room list (without the closed room)
         available_rooms = room_manager.list_rooms()
         await broadcast("lobby", "room_list_update", {
             "rooms": available_rooms,
@@ -668,66 +742,43 @@ async def notify_lobby_room_closed(room_id, reason="Room closed"):
     except Exception as e:
         print(f"❌ Failed to notify lobby about room closure: {e}")
         
-async def handle_bot_declarations(room_id: str, player_name: str):
+async def handle_bot_declarations(room_id: str, triggering_player: str = None):
     """
-    Automatically handle bot declarations in correct order
+    ✅ Enhanced bot declarations with better order tracking
     """
     room = room_manager.get_room(room_id)
     if not room or not room.game:
-        print(f"❌ Room {room_id} or game not found")
         return
     
     game = room.game
     
-    print(f"\n🤖 Starting bot declarations for room {room_id}")
-    print(f"📍 Round starter: {game.current_order[0].name}")
+    print(f"\n🤖 Bot declarations triggered by: {triggering_player}")
     print(f"📍 Declaration order: {[p.name for p in game.current_order]}")
     
-    # Wait a bit for UI effect
-    await asyncio.sleep(1)
+    await asyncio.sleep(0.5)  # Brief delay for UI
     
-    # Get the player who just declared
-    declaring_player = game.get_player(player_name)
-    declaring_position = game.current_order.index(declaring_player)
-    
-    # Process declarations in order starting from the starter
+    # Process each player in declaration order
     for i, player in enumerate(game.current_order):
-        # Skip if:
-        # 1. Not a bot
-        # 2. Already declared
-        # 3. Haven't reached this player yet in order
+        # Skip non-bots or already declared
         if not player.is_bot or player.declared != 0:
             continue
             
-        # Check if it's this bot's turn to declare
-        # If a human declared out of order, we still follow the correct order
+        # Check if it's this bot's turn (all previous players have declared)
         should_declare = True
         for j in range(i):
             prev_player = game.current_order[j]
             if prev_player.declared == 0:
-                # Previous player in order hasn't declared yet
                 should_declare = False
                 break
         
         if not should_declare:
-            print(f"⏭️ Skipping {player.name} - waiting for earlier players")
             continue
             
-        print(f"\n🤖 Processing bot {player.name} (position {i} in order)")
+        print(f"\n🤖 Bot {player.name} declaring (position {i})")
         
-        # Get previously declared values
-        previous_declarations = []
-        for p in game.players:
-            if p.declared != 0:
-                previous_declarations.append(p.declared)
-        
-        print(f"📊 Previous declarations: {previous_declarations}")
-        
-        # Check if bot must declare non-zero
+        # Get previous declarations
+        previous_declarations = [p.declared for p in game.players if p.declared != 0]
         must_declare_nonzero = player.zero_declares_in_a_row >= 2
-        
-        # Check if last player (special rule)
-        is_last_player = (i == 3)
         
         try:
             # Bot chooses declaration
@@ -740,53 +791,41 @@ async def handle_bot_declarations(room_id: str, player_name: str):
                 verbose=True
             )
             
-            # If last player, check forbidden value
-            if is_last_player:
+            # Handle last player restriction
+            if i == 3:  # Last player
                 total_so_far = sum(p.declared for p in game.players)
                 forbidden = 8 - total_so_far
-                if value == forbidden and forbidden >= 0:
-                    print(f"⚠️ Bot {player.name} cannot declare {value} (would make total 8)")
-                    # Choose different value
+                if value == forbidden and 0 <= forbidden <= 8:
+                    print(f"⚠️ Bot {player.name} cannot declare {value} (total would be 8)")
                     value = 1 if forbidden != 1 else 2
             
-            print(f"🤖 Bot {player.name} will declare {value}")
-            
-            # Make the declaration
+            # Make declaration
             result = game.declare(player.name, value)
             
             if result["status"] == "ok":
-                # Broadcast to room
                 await broadcast(room_id, "declare", {
                     "player": player.name,
                     "value": value,
                     "is_bot": True
                 })
-                
-                print(f"✅ Bot {player.name} successfully declared {value}")
+                print(f"✅ Bot {player.name} declared {value}")
             else:
                 print(f"❌ Bot {player.name} declaration failed: {result}")
                 
         except Exception as e:
-            print(f"❌ Error in bot {player.name} declaration: {str(e)}")
-            import traceback
-            traceback.print_exc()
-            
-            # Fallback: declare 1
+            print(f"❌ Error in bot {player.name} declaration: {e}")
+            # Fallback declaration
             try:
-                result = game.declare(player.name, 1)
+                game.declare(player.name, 1)
                 await broadcast(room_id, "declare", {
                     "player": player.name,
                     "value": 1,
                     "is_bot": True
                 })
-                print(f"⚠️ Bot {player.name} fallback declared 1")
             except:
                 pass
         
-        # Small delay between bot declarations
-        await asyncio.sleep(0.5)
-    
-    print(f"✅ All bot declarations completed for room {room_id}")
+        await asyncio.sleep(0.5)  # Delay between declarations
     
 async def handle_bot_turns(room_id: str, last_winner: str):
     """
@@ -865,26 +904,25 @@ async def handle_bot_turns(room_id: str, last_winner: str):
             
 async def handle_bot_plays_in_order(room_id: str):
     """
-    Handle bot plays in the correct turn order
+    ✅ Handle bot plays in correct turn order after human plays
     """
     room = room_manager.get_room(room_id)
     if not room or not room.game:
         return
     
     game = room.game
-    
-    # Wait a bit for UI effect
-    await asyncio.sleep(0.5)
-    
-    # Get the required piece count from first play
     required_count = game.required_piece_count
+    
     if not required_count:
-        print(f"❌ No required piece count set")
+        print("❌ No required piece count set for bot plays")
         return
     
-    # Process each player in turn order
+    print(f"\n🤖 Processing bot plays ({required_count} pieces each)")
+    await asyncio.sleep(0.5)
+    
+    # Get turn order and process remaining players
     for player in game.turn_order:
-        # Skip if player already played
+        # Skip if already played this turn
         if any(play.player == player for play in game.current_turn_plays):
             continue
             
@@ -894,53 +932,67 @@ async def handle_bot_plays_in_order(room_id: str):
             
         print(f"🤖 Bot {player.name} playing {required_count} pieces")
         
-        # Bot chooses play
-        selected = choose_best_play(
-            player.hand, 
-            required_count=required_count,
-            verbose=True
-        )
-        
-        # Find indices of selected pieces
-        indices = []
-        hand_copy = list(player.hand)
-        for piece in selected:
-            if piece in hand_copy:
-                idx = hand_copy.index(piece)
-                indices.append(idx)
-                hand_copy[idx] = None  # Mark as used
-        
-        # Make the play
-        result = game.play_turn(player.name, indices)
-        
-        # Broadcast the bot's play
-        await broadcast(room_id, "play", {
-            "player": player.name,
-            "pieces": [str(p) for p in selected],
-            "valid": result.get("is_valid", True),
-            "play_type": result.get("play_type", "UNKNOWN")
-        })
-        
-        # Small delay between bot plays
-        await asyncio.sleep(0.5)
-        
-        # If turn is resolved after this bot play, broadcast result
-        if result.get("status") == "resolved":
-            await broadcast(room_id, "turn_resolved", {
-                "plays": result["plays"],
-                "winner": result["winner"],
-                "pile_count": result["pile_count"]
+        try:
+            # Bot chooses play
+            selected = choose_best_play(
+                player.hand, 
+                required_count=required_count,
+                verbose=True
+            )
+            
+            # Find indices of selected pieces
+            indices = []
+            hand_copy = list(player.hand)
+            for piece in selected:
+                if piece in hand_copy:
+                    idx = hand_copy.index(piece)
+                    indices.append(idx)
+                    hand_copy[idx] = None  # Mark as used
+            
+            # Make the play
+            result = game.play_turn(player.name, indices)
+            
+            # Broadcast the bot's play
+            await broadcast(room_id, "play", {
+                "player": player.name,
+                "pieces": [str(p) for p in selected],
+                "valid": result.get("is_valid", True),
+                "play_type": result.get("play_type", "UNKNOWN")
             })
             
-            # If there's a winner and more turns to play, start next turn
-            if result["winner"] and any(len(p.hand) > 0 for p in game.players):
-                await asyncio.sleep(0.5)
-                await start_next_turn(room_id, result["winner"])
-            break
+            await asyncio.sleep(0.5)  # Delay between bot plays
+            
+            # If turn is resolved, broadcast and handle next steps
+            if result.get("status") == "resolved":
+                await broadcast(room_id, "turn_resolved", {
+                    "plays": result["plays"],
+                    "winner": result["winner"],
+                    "pile_count": result["pile_count"]
+                })
+                
+                # Check if round is complete
+                all_hands_empty = all(len(p.hand) == 0 for p in game.players)
+                
+                if all_hands_empty:
+                    print(f"🏁 Round complete after bot play")
+                    await asyncio.sleep(0.5)
+                    await trigger_round_scoring(room_id)
+                elif result["winner"]:
+                    # Continue with next turn
+                    print(f"🎯 Next turn will start with: {result['winner']}")
+                    await asyncio.sleep(0.5)
+                    await start_next_turn(room_id, result["winner"])
+                
+                break  # Turn is resolved, stop processing
+                
+        except Exception as e:
+            print(f"❌ Error in bot {player.name} play: {e}")
+            import traceback
+            traceback.print_exc()
         
 async def start_next_turn(room_id: str, winner_name: str):
     """
-    Start the next turn with the winner as the first player
+    ✅ Start the next turn with winner as first player
     """
     room = room_manager.get_room(room_id)
     if not room or not room.game:
@@ -949,37 +1001,46 @@ async def start_next_turn(room_id: str, winner_name: str):
     game = room.game
     winner = game.get_player(winner_name)
     
-    if not winner:
+    if not winner or len(winner.hand) == 0:
+        print(f"⚠️ Cannot start turn: {winner_name} has no pieces left")
         return
     
     print(f"\n🎯 Starting new turn with {winner_name} as first player")
     
     # Check if winner is a bot
-    if winner.is_bot and len(winner.hand) > 0:
-        # Bot plays first
-        selected = choose_best_play(winner.hand, required_count=None, verbose=True)
-        
-        # Find indices
-        indices = []
-        hand_copy = list(winner.hand)
-        for piece in selected:
-            if piece in hand_copy:
-                idx = hand_copy.index(piece)
-                indices.append(idx)
-                hand_copy[idx] = None
-        
-        # Make the play
-        result = game.play_turn(winner.name, indices)
-        
-        # Broadcast the play
-        await broadcast(room_id, "play", {
-            "player": winner.name,
-            "pieces": [str(p) for p in selected],
-            "valid": result.get("is_valid", True),
-            "play_type": result.get("play_type", "UNKNOWN")
-        })
-        
-        # Trigger other bot plays
-        if result.get("status") == "waiting":
-            await asyncio.sleep(0.5)
-            await handle_bot_plays_in_order(room_id)
+    if winner.is_bot:
+        try:
+            # Bot plays first
+            selected = choose_best_play(winner.hand, required_count=None, verbose=True)
+            
+            # Find indices
+            indices = []
+            hand_copy = list(winner.hand)
+            for piece in selected:
+                if piece in hand_copy:
+                    idx = hand_copy.index(piece)
+                    indices.append(idx)
+                    hand_copy[idx] = None
+            
+            # Make the play
+            result = game.play_turn(winner.name, indices)
+            
+            # Broadcast the play
+            await broadcast(room_id, "play", {
+                "player": winner.name,
+                "pieces": [str(p) for p in selected],
+                "valid": result.get("is_valid", True),
+                "play_type": result.get("play_type", "UNKNOWN")
+            })
+            
+            # Continue with other bot plays if waiting
+            if result.get("status") == "waiting":
+                await asyncio.sleep(0.5)
+                await handle_bot_plays_in_order(room_id)
+                
+        except Exception as e:
+            print(f"❌ Error in bot turn start: {e}")
+            import traceback
+            traceback.print_exc()
+            
+            
