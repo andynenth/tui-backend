@@ -86,7 +86,10 @@ export class RoomScene extends Container {
     // Initialize the slot views and fetch the initial room state.
     this.renderSlots(); // Renders the initial structure of slots (labels and buttons).
     this.refreshRoomState(); // Fetches the current state of the room from the backend.
-    this.setupWebSocketListeners(); // Sets up real-time updates via WebSocket.
+
+    setTimeout(() => {
+      this.setupWebSocketListeners();
+    }, 500); // Give backend time to set up
 
     // Create the "Start Game" button.
     this.startButton = new GameButton({
