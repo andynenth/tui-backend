@@ -3,7 +3,7 @@
 from fastapi import APIRouter, HTTPException, Query
 from engine.game import Game
 from engine.rules import is_valid_play, get_play_type
-from engine.ai import choose_declare
+from engine.ai import choose_declare, choose_best_play
 from engine.win_conditions import is_game_over, get_winners
 from backend.socket_manager import broadcast
 from backend.shared_instances import shared_room_manager
@@ -395,18 +395,10 @@ async def declare(room_id: str = Query(...), player_name: str = Query(...), valu
 async def play_turn(
     room_id: str = Query(...), 
     player_name: str = Query(...), 
-    piece_indexes: str = Query(...)  # Changed to string to receive comma-separated values
+    piece_indexes: str = Query(...)
 ):
     """
     Handles a player's turn to play pieces.
-    Args:
-        room_id (str): The ID of the room.
-        player_name (str): The name of the player playing.
-        piece_indexes (str): Comma-separated list of piece indices.
-    Returns:
-        dict: Result of the play turn, including validity and play type.
-    Raises:
-        HTTPException: If the room or game is not found.
     """
     room = room_manager.get_room(room_id)
     if not room or not room.game:
@@ -418,44 +410,46 @@ async def play_turn(
     except ValueError:
         raise HTTPException(status_code=400, detail="Invalid piece indices format")
 
-    # Get the game and player
-    game = room.game
-    player = game.get_player(player_name)
-    if not player:
-        raise HTTPException(status_code=400, detail=f"Player {player_name} not found")
+    # Process the turn
+    result = room.game.play_turn(player_name, indices)
 
-    # Get the selected pieces
+    # Get the actual pieces for broadcasting
+    player = room.game.get_player(player_name)
+    selected_pieces = []
     try:
-        selected_pieces = [player.hand[i] for i in indices]
-    except IndexError:
-        raise HTTPException(status_code=400, detail="Invalid piece index")
+        # Get pieces before they're removed
+        for i in indices:
+            if i < len(player.hand):
+                selected_pieces.append(player.hand[i])
+    except:
+        pass
 
-    # Validate the play
-    is_valid = is_valid_play(selected_pieces)
-    play_type = get_play_type(selected_pieces) if is_valid else "INVALID"
-
-    # Broadcast the play
+    # Broadcast the play immediately
     await broadcast(room_id, "play", {
         "player": player_name,
-        "pieces": [str(p) for p in selected_pieces],
-        "valid": is_valid,
-        "play_type": play_type
+        "pieces": [str(p) for p in selected_pieces] if selected_pieces else result.get("pieces", []),
+        "valid": result.get("is_valid", True),
+        "play_type": result.get("play_type", "UNKNOWN")
     })
 
-    # Process the turn
-    result = game.play_turn(player_name, indices)
-
+    # If this was the first play, trigger bot plays
+    if result.get("status") == "waiting":
+        # Only trigger bots if we haven't already
+        if len(room.game.current_turn_plays) > 0:
+            asyncio.create_task(handle_bot_plays_in_order(room_id))
+    
     # If turn is resolved, broadcast the result
-    if result.get("status") == "resolved":
+    elif result.get("status") == "resolved":
         await broadcast(room_id, "turn_resolved", {
             "plays": result["plays"],
             "winner": result["winner"],
             "pile_count": result["pile_count"]
         })
         
-        # Trigger bot plays for the next turn
-        if result["winner"]:
-            asyncio.create_task(handle_bot_turns(room_id, result["winner"]))
+        # If there's a winner and more turns to play, start next turn
+        if result["winner"] and any(len(p.hand) > 0 for p in room.game.players):
+            await asyncio.sleep(0.5)
+            asyncio.create_task(start_next_turn(room_id, result["winner"]))
 
     return result
 
@@ -827,7 +821,7 @@ async def handle_bot_turns(room_id: str, last_winner: str):
                 required_count = game.required_piece_count
                 
                 # Bot chooses play
-                selected = ai.choose_best_play(
+                selected = choose_best_play(
                     player.hand, 
                     required_count=required_count,
                     verbose=True
@@ -868,3 +862,124 @@ async def handle_bot_turns(room_id: str, last_winner: str):
                 
                 # Wait between bot plays
                 await asyncio.sleep(0.5)
+            
+async def handle_bot_plays_in_order(room_id: str):
+    """
+    Handle bot plays in the correct turn order
+    """
+    room = room_manager.get_room(room_id)
+    if not room or not room.game:
+        return
+    
+    game = room.game
+    
+    # Wait a bit for UI effect
+    await asyncio.sleep(0.5)
+    
+    # Get the required piece count from first play
+    required_count = game.required_piece_count
+    if not required_count:
+        print(f"❌ No required piece count set")
+        return
+    
+    # Process each player in turn order
+    for player in game.turn_order:
+        # Skip if player already played
+        if any(play.player == player for play in game.current_turn_plays):
+            continue
+            
+        # Only handle bots
+        if not player.is_bot:
+            continue
+            
+        print(f"🤖 Bot {player.name} playing {required_count} pieces")
+        
+        # Bot chooses play
+        selected = choose_best_play(
+            player.hand, 
+            required_count=required_count,
+            verbose=True
+        )
+        
+        # Find indices of selected pieces
+        indices = []
+        hand_copy = list(player.hand)
+        for piece in selected:
+            if piece in hand_copy:
+                idx = hand_copy.index(piece)
+                indices.append(idx)
+                hand_copy[idx] = None  # Mark as used
+        
+        # Make the play
+        result = game.play_turn(player.name, indices)
+        
+        # Broadcast the bot's play
+        await broadcast(room_id, "play", {
+            "player": player.name,
+            "pieces": [str(p) for p in selected],
+            "valid": result.get("is_valid", True),
+            "play_type": result.get("play_type", "UNKNOWN")
+        })
+        
+        # Small delay between bot plays
+        await asyncio.sleep(0.5)
+        
+        # If turn is resolved after this bot play, broadcast result
+        if result.get("status") == "resolved":
+            await broadcast(room_id, "turn_resolved", {
+                "plays": result["plays"],
+                "winner": result["winner"],
+                "pile_count": result["pile_count"]
+            })
+            
+            # If there's a winner and more turns to play, start next turn
+            if result["winner"] and any(len(p.hand) > 0 for p in game.players):
+                await asyncio.sleep(0.5)
+                await start_next_turn(room_id, result["winner"])
+            break
+        
+async def start_next_turn(room_id: str, winner_name: str):
+    """
+    Start the next turn with the winner as the first player
+    """
+    room = room_manager.get_room(room_id)
+    if not room or not room.game:
+        return
+    
+    game = room.game
+    winner = game.get_player(winner_name)
+    
+    if not winner:
+        return
+    
+    print(f"\n🎯 Starting new turn with {winner_name} as first player")
+    
+    # Check if winner is a bot
+    if winner.is_bot and len(winner.hand) > 0:
+        # Bot plays first
+        selected = choose_best_play(winner.hand, required_count=None, verbose=True)
+        
+        # Find indices
+        indices = []
+        hand_copy = list(winner.hand)
+        for piece in selected:
+            if piece in hand_copy:
+                idx = hand_copy.index(piece)
+                indices.append(idx)
+                hand_copy[idx] = None
+        
+        # Make the play
+        result = game.play_turn(winner.name, indices)
+        
+        # Broadcast the play
+        await broadcast(room_id, "play", {
+            "player": winner.name,
+            "pieces": [str(p) for p in selected],
+            "valid": result.get("is_valid", True),
+            "play_type": result.get("play_type", "UNKNOWN")
+        })
+        
+        # Trigger other bot plays
+        if result.get("status") == "waiting":
+            await asyncio.sleep(0.5)
+            await handle_bot_plays_in_order(room_id)
