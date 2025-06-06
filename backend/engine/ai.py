@@ -61,29 +61,29 @@ def choose_declare(
     score = min(max(score, 1), 7)  # Clamp score to range [1, 7]
 
     # Debug info for analysis
-    if verbose:
-        print(f"\n🤖 DEBUG: Evaluating declare for BOT")
-        print(f"  Position in order: {position_in_order} (First: {is_first_player})")
-        print(f"  Must declare ≥1: {must_declare_nonzero}")
-        print(f"  Previous declarations: {previous_declarations}")
+    # if verbose:
+        # print(f"\n🤖 DEBUG: Evaluating declare for BOT")
+        # print(f"  Position in order: {position_in_order} (First: {is_first_player})")
+        # print(f"  Must declare ≥1: {must_declare_nonzero}")
+        # print(f"  Previous declarations: {previous_declarations}")
         
         # 🔧 Sorting: RED first (reverse lexicographically), then by descending point
-        sorted_hand = sorted(
-            [(i, piece) for i, piece in enumerate(hand)],
-            key=lambda pair: (pair[1].color != "RED", -pair[1].point)
-        )
-        print(f"  Hand: ") 
-        for shown_idx, (real_idx, piece) in enumerate(sorted_hand):
-            print(f"    [{real_idx}] {piece}")
+        # sorted_hand = sorted(
+        #     [(i, piece) for i, piece in enumerate(hand)],
+        #     key=lambda pair: (pair[1].color != "RED", -pair[1].point)
+        # )
+        # print(f"  Hand: ") 
+        # for shown_idx, (real_idx, piece) in enumerate(sorted_hand):
+        #     print(f"    [{real_idx}] {piece}")
         
-        print(f"  High pieces (>=9): {[p.name for p in high_pieces]}")
-        print(f"  Mid pieces (7–8): {[p.name for p in mid_pieces]}")
-        print(f"  Found {len(strong_combos)} strong combo(s):")
-        for play_type, pieces in strong_combos:
-            summary = ', '.join(p.name for p in pieces)
-            print(f"    - {play_type}: {summary}")
-        print(f"  Has strong opening: {has_strong_opening}")
-        print(f"  Raw declare score (before filtering): {score}")
+        # print(f"  High pieces (>=9): {[p.name for p in high_pieces]}")
+        # print(f"  Mid pieces (7–8): {[p.name for p in mid_pieces]}")
+        # print(f"  Found {len(strong_combos)} strong combo(s):")
+        # for play_type, pieces in strong_combos:
+        #     summary = ', '.join(p.name for p in pieces)
+        #     print(f"    - {play_type}: {summary}")
+        # print(f"  Has strong opening: {has_strong_opening}")
+        # print(f"  Raw declare score (before filtering): {score}")
 
     # Apply game rules that forbid certain declarations
     forbidden_declares = set()
