@@ -74,7 +74,27 @@ function _createConnection(roomId) {
   try {
     socket = new WebSocket(`ws://localhost:5050/ws/${roomId}`);
 
+    const connectionTimeout = setTimeout(() => {
+      if (socket.readyState !== WebSocket.OPEN) {
+        console.error(`⏱️ Connection timeout for room ${roomId}`);
+        socket.close();
+
+        // Notify about connection failure
+        if (listeners["connection_failed"]) {
+          listeners["connection_failed"].forEach((fn) =>
+            fn({
+              reason: "Connection timeout",
+              roomId: roomId,
+            })
+          );
+        }
+      }
+    }, 5000); // 5 second timeout
+
     socket.onopen = () => {
+      clearTimeout(connectionTimeout);
+      connectionInProgress = false;
+      
       console.log(`✅ WebSocket connected to room: ${roomId}`);
       reconnectAttempts = 0; // Reset on successful connection
 

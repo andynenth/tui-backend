@@ -17,6 +17,24 @@ async def websocket_endpoint(websocket: WebSocket, room_id: str):
     WebSocket endpoint for real-time communication within a specific room.
     Also handles special 'lobby' room for lobby updates.
     """
+    print(f"🔌 WebSocket connection attempt for room: {room_id}")
+    
+    try:
+        registered_ws = await register(room_id, websocket)
+        print(f"✅ WebSocket registered for room: {room_id}")
+    except Exception as e:
+        print(f"❌ Failed to register WebSocket for room {room_id}: {e}")
+        await websocket.close()
+        return
+    
+    # Special handling for lobby
+    if room_id != "lobby":
+        room = room_manager.get_room(room_id)
+        if not room:
+            print(f"❌ Room {room_id} not found, rejecting WebSocket")
+            await websocket.close(code=1008, reason="Room not found")
+            return
+    
     registered_ws = await register(room_id, websocket)
 
     try:
