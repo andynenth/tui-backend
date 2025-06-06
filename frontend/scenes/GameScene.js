@@ -1,4 +1,4 @@
-// frontend/scenes/GameScene.js - Fixed turn order tracking
+// frontend/scenes/GameScene.js - Fixed bot turn management and round progression
 
 import { Container, Text, TextStyle } from "pixi.js";
 import { GameButton } from "../components/GameButton.js";
@@ -37,7 +37,7 @@ export class GameScene extends Container {
     this.currentTurnPlays = [];
     
     // Track turn order
-    this.currentTurnStarter = this.gameData.starter; // Start with round starter
+    this.currentTurnStarter = this.gameData.starter;
     this.turnOrder = [];
     
     // Simple UI setup
@@ -56,7 +56,7 @@ export class GameScene extends Container {
       style: new TextStyle({ fill: "#ffffff", fontSize: 24 }),
     });
     
-    // Console output area (just for visual reference)
+    // Console output area
     this.outputText = new Text({
       text: "Check console for game output",
       style: new TextStyle({ fill: "#aaaaaa", fontSize: 14 }),
@@ -113,7 +113,6 @@ export class GameScene extends Container {
     console.log(`🎮 ROUND ${this.currentRound}`);
     console.log("=".repeat(50));
     
-    // Determine starter
     const starter = this.gameData.starter;
     let startReason = "Won previous round";
     
@@ -268,7 +267,7 @@ export class GameScene extends Container {
   startTurnPhase() {
     console.log("\n🎯 --- Turn Phase ---");
     this.currentPhase = "TURN_PLAY";
-    this.currentTurnNumber = 0;
+    this.currentTurnNumber = 1; // ✅ Start from 1
     this.currentTurnPlays = [];
     
     // Set initial turn order based on round starter
@@ -302,7 +301,7 @@ export class GameScene extends Container {
   }
 
   promptTurnPlay(isFirstPlayer) {
-    console.log(`\n--- Turn ${this.currentTurnNumber + 1} ---`);
+    console.log(`\n--- Turn ${this.currentTurnNumber} ---`);
     
     if (isFirstPlayer) {
       console.log(`${this.playerName} leads this turn`);
@@ -353,7 +352,6 @@ export class GameScene extends Container {
       const pieces = indices.map(i => this.myHand[i]);
       console.log(`Playing: ${pieces.join(", ")}`);
       
-      // Send indices as comma-separated string in query parameter
       const url = `/api/play-turn?room_id=${this.roomId}&player_name=${this.playerName}&piece_indexes=${indices.join(',')}`;
       const response = await fetch(url, { method: "POST" });
       
@@ -402,6 +400,29 @@ export class GameScene extends Container {
         this.hideInput();
         callback(value);
       }
+    }
+  }
+
+  // ✅ Check if round is complete
+  checkRoundComplete() {
+    const allHandsEmpty = this.players.every(p => {
+      if (p.name === this.playerName) {
+        return this.myHand.length === 0;
+      }
+      // We don't track other players' hands, but the server will trigger scoring
+      return true;
+    });
+    
+    if (this.myHand.length === 0) {
+      console.log("\n🏁 Your hand is empty - waiting for round scoring...");
+    }
+  }
+
+  // ✅ Trigger bot turn continuation
+  triggerBotTurnContinuation() {
+    // Only trigger if we're waiting for bots and it's turn play phase
+    if (this.currentPhase === "TURN_PLAY" && this.currentTurnPlays.length < this.players.length) {
+      console.log("🤖 Waiting for other players to complete their turns...");
     }
   }
 
@@ -473,8 +494,11 @@ export class GameScene extends Container {
       
       // Reset for next turn
       this.currentTurnPlays = [];
-      this.currentTurnNumber++;
+      this.currentTurnNumber++; // ✅ Increment turn number
       this.requiredPieceCount = null;
+      
+      // ✅ Check if round is complete
+      this.checkRoundComplete();
       
       // Continue if we have pieces
       if (this.myHand.length > 0) {
@@ -484,11 +508,13 @@ export class GameScene extends Container {
         setTimeout(() => {
           this.checkTurnPlay();
         }, 1000);
+      } else {
+        console.log("🏁 All your pieces played - waiting for round to complete...");
       }
     };
     onSocketEvent("turn_resolved", this.handleTurnResolved);
 
-    // Handle round scoring
+    // ✅ Handle round scoring
     this.handleScore = (data) => {
       console.log("\n🏁 --- End of Round ---");
       console.log("\n📊 Round Summary:");
@@ -505,6 +531,8 @@ export class GameScene extends Container {
         if (data.winners && data.winners.length > 0) {
           console.log(`🏆 Winner: ${data.winners.join(", ")}`);
         }
+      } else {
+        console.log("\n⏳ Preparing next round...");
       }
     };
     onSocketEvent("score", this.handleScore);
@@ -516,9 +544,9 @@ export class GameScene extends Container {
     };
     onSocketEvent("redeal", this.handleRedeal);
 
-    // Handle new round after redeal
+    // ✅ Handle new round after redeal or next round
     this.handleStartRound = (data) => {
-      console.log("\n🆕 New round started (after redeal)");
+      console.log("\n🆕 New round started");
       
       // Update game state
       this.currentRound = data.round;
@@ -530,6 +558,12 @@ export class GameScene extends Container {
       this.players.forEach(p => {
         this.declarations[p.name] = null;
       });
+      
+      // Reset turn tracking
+      this.currentTurnNumber = 0;
+      this.currentTurnPlays = [];
+      this.requiredPieceCount = null;
+      this.currentTurnStarter = data.starter;
       
       // Start over
       this.printRoundStart();

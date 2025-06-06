@@ -1,4 +1,4 @@
-# backend/engine/game.py
+# backend/engine/game.py - Fixed round progression and turn management
 
 import random
 from engine.piece import Piece
@@ -29,7 +29,6 @@ class Game:
         self.turn_order = []               # Player order for current turn
         self.last_turn_winner = None       # Player who won the last turn
 
-
     def prepare_round(self) -> dict:
         """Prepare for a new round: shuffle and deal pieces, determine starting player, reset declarations."""
         self.round_number += 1
@@ -40,13 +39,17 @@ class Game:
         self.pile_counts = {p.name: 0 for p in self.players}
         self.round_scores = {p.name: 0 for p in self.players}
 
-        # Reset player declarations
+        # ✅ Reset player declarations properly
         for player in self.players:
-            player.declared = 0
+            player.declared = 0  # Reset to 0, not None
 
         # Initialize turn order for first turn
         self.turn_order = list(self.current_order)  # Copy the round order
         self.last_turn_winner = None
+        
+        # ✅ Reset turn state
+        self.current_turn_plays = []
+        self.required_piece_count = None
 
         return {
             "round": self.round_number,
@@ -89,7 +92,6 @@ class Game:
         """Allow a player to declare how many piles they plan to win this round."""
         player = self.get_player(player_name)
         
-        # Debug logging
         print(f"\n📢 Declaration attempt:")
         print(f"  Player: {player_name} (Bot: {player.is_bot})")
         print(f"  Value: {value}")
@@ -129,11 +131,16 @@ class Game:
 
     def all_players_declared(self) -> bool:
         """Check if all players have declared."""
-        return all(p.declared is not None for p in self.players)
+        print(f"p.declared: {p.declared}, p.declared != 0: {p.declared != 0}, p.declared is not None: {p.declared is not None}")
+        return all(p.declared != 0 for p in self.players)  # ✅ Check != 0 instead of is not None
 
     def play_turn(self, player_name: str, piece_indexes: list[int]) -> dict:
         """Handle a player's move, validate it, and resolve the turn if all players have played."""
         player = self.get_player(player_name)
+
+        # ✅ Better turn order validation
+        if not hasattr(self, 'turn_order') or not self.turn_order:
+            self.turn_order = list(self.current_order)
 
         if player not in self.turn_order:
             return {"status": "error", "message": f"{player.name} is not in current turn order."}
@@ -149,12 +156,14 @@ class Game:
         if not (1 <= len(selected) <= 6):
             return {"status": "error", "message": "You must play between 1–6 pieces."}
 
+        # ✅ First player logic
         if len(self.current_turn_plays) == 0:
             # First player sets required piece count and determines order
             self.required_piece_count = len(selected)
             self.turn_order = self._rotate_players_starting_from(player)
             print(f"🎯 Turn order set: {[p.name for p in self.turn_order]}")
         else:
+            # ✅ Subsequent players must match piece count
             if len(selected) != self.required_piece_count:
                 return {"status": "error", "message": f"You must play exactly {self.required_piece_count} pieces."}
 
@@ -167,7 +176,7 @@ class Game:
         for piece in selected:
             player.hand.remove(piece)
 
-        # Return play info
+        # Return play info with pieces included
         response = {
             "status": "waiting",
             "player": player.name,
@@ -176,7 +185,7 @@ class Game:
             "play_type": play_type
         }
 
-        # Check if all players have played
+        # ✅ Check if all players have played
         if len(self.current_turn_plays) >= len(self.players):
             # All players have played → resolve the turn
             result = resolve_turn(self.current_turn_plays)
@@ -205,7 +214,7 @@ class Game:
                 "pile_count": pile_count
             }
 
-            # Reset turn state
+            # ✅ Reset turn state properly
             self.current_turn_plays = []
             self.required_piece_count = None
 
@@ -219,15 +228,17 @@ class Game:
         return self.players[idx:] + self.players[:idx]
 
     def score_round(self) -> dict:
-        """Finalize the round: calculate scores, apply bonuses, and update total scores."""
+        """✅ Enhanced round scoring with proper cleanup"""
+        print(f"📊 Scoring round {self.round_number}")
+        
+        # Calculate scores
         score_data = calculate_round_scores(
             players=self.players,
             pile_counts=self.pile_counts,
             redeal_multiplier=self.redeal_multiplier
         )
 
-        # The calculate_round_scores function returns a list of score dictionaries
-        # We need to extract the scores properly
+        # Extract scores properly
         scores_by_player = {}
         for score_entry in score_data:
             player = score_entry["player"]
@@ -242,18 +253,24 @@ class Game:
         summary = {
             "round": self.round_number,
             "scores": scores_by_player,
-            "bonuses": {},  # Can be expanded later
+            "bonuses": {},
             "declares": {p.name: p.declared for p in self.players},
             "captured": self.pile_counts,
             "multiplier": self.redeal_multiplier
         }
 
-        # Reset for next round
+        # ✅ Proper cleanup for next round
         self.redeal_multiplier = 1
         self.last_round_winner = self._get_round_winner()
         self.pile_counts = {}
         self.round_scores = {}
+        
+        # ✅ Reset turn state
+        self.current_turn_plays = []
+        self.required_piece_count = None
+        self.turn_order = []
 
+        # ✅ Reset player states for next round
         for player in self.players:
             player.reset_for_next_round()
 
@@ -294,17 +311,21 @@ class Game:
             index = self.players.index(self.last_round_winner)
             self.current_order = self.players[index:] + self.players[:index]
         else:
+            # First round: find player with RED GENERAL
             for i, player in enumerate(self.players):
                 if player.has_red_general():
                     self.current_order = self.players[i:] + self.players[:i]
                     return
+            
+            # Fallback: use first player
+            self.current_order = list(self.players)
 
     def _check_redeal(self):
         """(Optional Legacy) Check for weak hands and allow redeal via interface."""
         for player in self.players:
             has_strong_piece = any(p.point > 9 for p in player.hand)
             if not has_strong_piece:
-                if self.interface.ask_redeal(player):
+                if self.interface and self.interface.ask_redeal(player):
                     self.last_round_winner = player
                     self.redeal_multiplier += 1
                     return True
