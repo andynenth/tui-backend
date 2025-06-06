@@ -109,14 +109,12 @@ export class LobbyScene extends Container {
       gap: 8,
     };
 
-
     const createBtnRow = new Container();
     createBtnRow.layout = {
       flexDirection: "row",
       alignSelf: "flex-start",
       gap: 8,
     };
-
 
     // Create a row for joining a room by ID.
     const joinRow = new Container();
@@ -160,8 +158,7 @@ export class LobbyScene extends Container {
     roomTable.addChild(this.tableHeader, this.roomListContainer);
     createBtnRow.addChild(createBtn.view);
     joinRow.addChild(roomIdInput.view, joinBtn.view);
-    this.addChild(headerRow, roomTable, createBtnRow
-        , joinRow);
+    this.addChild(headerRow, roomTable, createBtnRow, joinRow);
 
     this.setupLobbyWebSocket();
   }
@@ -340,7 +337,9 @@ export class LobbyScene extends Container {
             } else if (err.message && err.message.includes("404")) {
               alert("Room no longer exists.");
               // Request fresh room list
-              emitSocketEvent("request_room_list", { player_name: this.playerName });
+              emitSocketEvent("request_room_list", {
+                player_name: this.playerName,
+              });
             } else {
               alert(`Failed to join room: ${err.message || "Unknown error"}`);
             }
@@ -363,7 +362,7 @@ export class LobbyScene extends Container {
     }
   }
 
-/**
+  /**
    * ✅ Fallback room list when connection fails
    */
   showFallbackRoomList() {
@@ -530,12 +529,14 @@ export class LobbyScene extends Container {
     }
   }
 
-  /**
-   * ✅ Override destroy to cleanup interval
-   */
+  // properly cleanup before transitioning
   destroy(options) {
-    this.isActive = false;
-    this.stopAutoRefresh();
+    console.log("🧹 LobbyScene destroying, cleaning up WebSocket");
+    this.teardownWebSocketListeners();
+
+    // Ensure socket is fully closed before destroy completes
+    disconnectSocket();
+
     super.destroy(options);
   }
 }

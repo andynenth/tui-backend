@@ -52,7 +52,7 @@ export class RoomScene extends Container {
     this.isActive = true; // Track if we're in this room
 
     this.connectionStatus = new ConnectionStatus();
-    
+
     // Create the room ID title.
     const title = new Text({
       text: `📦 Room ID: ${roomId}`,
@@ -352,7 +352,7 @@ export class RoomScene extends Container {
         } else {
           // Hide join button from other players
           label.text = `${slot}: Open`;
-          joinBtn.view.visible = false; 
+          joinBtn.view.visible = false;
         }
       } else if (info.is_bot) {
         label.text = `${slot}: 🤖 ${info.name}`;
@@ -421,6 +421,17 @@ export class RoomScene extends Container {
    * This includes listening for room state changes, room closure, and player departures.
    */
   setupWebSocketListeners() {
+    // Ensure we're truly disconnected first
+    if (getSocketReadyState().state === WebSocket.OPEN) {
+      console.log("⚠️ Socket still open, forcing disconnect");
+      disconnectSocket();
+
+      // Wait for socket to close
+      return setTimeout(() => this.setupWebSocketListeners(), 100);
+    }
+
+    connectSocket(this.roomId);
+
     disconnectSocket();
     connectSocket(this.roomId);
 

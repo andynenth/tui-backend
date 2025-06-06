@@ -384,7 +384,12 @@ async def declare(room_id: str = Query(...), player_name: str = Query(...), valu
     
     # Trigger bot declarations
     asyncio.create_task(handle_bot_declarations(room_id, player_name))
-    
+    if room.game.all_players_declared():
+        print(f"✅ All players declared - checking if first player is bot")
+        first_player = room.game.current_order[0]
+        if first_player.is_bot:
+            print(f"🤖 First player {first_player.name} is a bot - should trigger bot play")
+            
     return result
 
 @router.post("/play-turn")
