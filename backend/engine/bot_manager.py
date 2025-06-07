@@ -266,21 +266,41 @@ class GameBotHandler:
             
     async def _handle_turn_start(self, starter_name: str):
         """Handle start of a new turn"""
+        print(f"🎮 Bot Manager: Handling turn start for {starter_name}")
+        
         starter = self.game.get_player(starter_name)
-        if starter and starter.is_bot and len(starter.hand) > 0:
+        if not starter:
+            print(f"❌ Starter {starter_name} not found")
+            return
+            
+        if starter.is_bot and len(starter.hand) > 0:
+            print(f"🤖 Bot {starter_name} will play first")
             # Bot starts the turn
             await self._bot_play_first(starter)
+        else:
+            print(f"👤 Human player {starter_name} starts, waiting for their play")
             
     async def _bot_play_first(self, bot: Player):
         """Bot plays as first player"""
         from backend.socket_manager import broadcast
         
         try:
+            print(f"🤖 Bot {bot.name} choosing first play...")
+            
+            # Reset turn state
+            self.game.current_turn_plays = []
+            self.game.required_piece_count = None
+            
+            # Choose play
             selected = ai.choose_best_play(bot.hand, required_count=None, verbose=True)
             indices = self._get_piece_indices(bot.hand, selected)
             
+            print(f"🤖 Bot {bot.name} will play {len(selected)} pieces: {[str(p) for p in selected]}")
+            
+            # Make the play
             result = self.game.play_turn(bot.name, indices)
             
+            # Broadcast the play
             await broadcast(self.room_id, "play", {
                 "player": bot.name,
                 "pieces": [str(p) for p in selected],
@@ -288,8 +308,12 @@ class GameBotHandler:
                 "play_type": result.get("play_type", "UNKNOWN")
             })
             
-            # Trigger other bot plays
+            print(f"✅ Bot {bot.name} played, status: {result.get('status')}")
+            
+            # If waiting for other players, trigger their plays
             if result.get("status") == "waiting":
+                print(f"🎯 Waiting for other players to respond with {len(selected)} pieces")
+                await asyncio.sleep(0.5)
                 await self._handle_play_phase(bot.name)
                 
         except Exception as e:

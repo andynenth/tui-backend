@@ -276,3 +276,32 @@ class Game:
                     self.redeal_multiplier += 1
                     return True
         return False
+    
+    def all_players_declared(self) -> bool:
+        """Check if all players have declared."""
+        # Check != 0 instead of is not None since we initialize declared to 0
+        declared_count = sum(1 for p in self.players if p.declared != 0)
+        print(f"📊 Players declared: {declared_count}/{len(self.players)}")
+        return declared_count == len(self.players)
+    
+    def start_turn_phase(self):
+        """Initialize the turn phase after declarations are complete"""
+        print(f"🎮 Starting turn phase")
+        
+        # Reset turn state
+        self.current_turn_plays = []
+        self.required_piece_count = None
+        
+        # Set initial turn order based on round starter
+        if self.current_order:
+            self.turn_order = list(self.current_order)
+            self.last_turn_winner = self.current_order[0]
+            print(f"📍 Initial turn order: {[p.name for p in self.turn_order]}")
+            print(f"🎯 First player: {self.turn_order[0].name}")
+        else:
+            print("❌ No current order set!")
+            
+        return {
+            "phase": "turn_play",
+            "first_player": self.turn_order[0].name if self.turn_order else None
+        }
