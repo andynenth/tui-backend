@@ -31,7 +31,7 @@ export class GameScene extends Container {
 
     // Track game state
     this.declarations = {};
-    this.currentTurnNumber = 0;
+    this.currentTurnNumber = 1; // ✅ Initialize to 1, not 0
     this.waitingForInput = false;
     this.requiredPieceCount = null;
     this.currentTurnPlays = [];
@@ -321,6 +321,7 @@ export class GameScene extends Container {
   startTurnPhase() {
     console.log("\n🎯 --- Turn Phase ---");
     this.currentPhase = "TURN_PLAY";
+    // Don't reset currentTurnNumber here - it should maintain its value
     this.currentTurnPlays = [];
 
     // Set initial turn order based on round starter
@@ -362,15 +363,21 @@ export class GameScene extends Container {
   promptTurnPlay(isFirstPlayer) {
     console.log(`\n--- Turn ${this.currentTurnNumber} ---`);
 
-    // Display all bot hands
+    // Display all bot hands with correct piece count
     console.log("\n🤖 Bot Hands:");
+
+    // Calculate how many pieces each player should have
+    // Each player starts with 8 pieces and plays some each turn
+    const totalTurnsPlayed = this.currentTurnNumber - 1;
+    const piecesPlayedPerPlayer = Math.floor(
+      totalTurnsPlayed * this.requiredPieceCount || 0
+    );
+    const estimatedPiecesLeft = Math.max(0, 8 - piecesPlayedPerPlayer);
+
     this.players.forEach((player) => {
       if (player.is_bot && player.name !== this.playerName) {
-        // We don't have bot hand data in frontend, so indicate it's hidden
         console.log(
-          `${player.name}: [Hand hidden - ${
-            8 - Math.floor((this.currentTurnNumber - 1) / this.players.length)
-          } pieces]`
+          `${player.name}: [Hand hidden - ~${estimatedPiecesLeft} pieces]`
         );
       }
     });
@@ -413,6 +420,14 @@ export class GameScene extends Container {
         return;
       }
 
+      // Check for duplicate indices
+      const uniqueIndices = [...new Set(indices)];
+      if (uniqueIndices.length !== indices.length) {
+        console.log("❌ Duplicate indices are not allowed");
+        this.promptTurnPlay(isFirstPlayer);
+        return;
+      }
+
       if (isFirstPlayer) {
         if (indices.length < 1 || indices.length > 6) {
           console.log("❌ Must play 1-6 pieces");
@@ -434,6 +449,7 @@ export class GameScene extends Container {
   async playTurn(indices) {
     try {
       const pieces = indices.map((i) => this.myHand[i]);
+      console.log(`Playing: ${pieces.join(", ")}`);
 
       const url = `/api/play-turn?room_id=${this.roomId}&player_name=${
         this.playerName
@@ -441,12 +457,21 @@ export class GameScene extends Container {
       const response = await fetch(url, { method: "POST" });
 
       if (!response.ok) {
-        const errorText = await response.text();
-        console.error("Server error:", errorText);
+        const errorData = await response.json();
+        console.error("❌", errorData.detail || "Server error");
         return;
       }
 
       const result = await response.json();
+
+      // Handle error responses
+      if (result.status === "error") {
+        console.error("❌", result.message || "Unknown error");
+        // Re-prompt for input
+        const isFirstPlayer = this.currentTurnPlays.length === 0;
+        this.promptTurnPlay(isFirstPlayer);
+        return;
+      }
 
       if (result.status === "waiting" || result.status === "resolved") {
         // Remove played pieces from hand
@@ -528,14 +553,17 @@ export class GameScene extends Container {
     this.handleTurnResolved = (data) => {
       console.log("\n🎯 Turn Summary:");
 
-      // Show plays
-      data.plays.forEach((play) => {
-        const declared = this.declarations[play.player];
-        console.log(
-          `  - ${play.player}: [${play.pieces.join(", ")}] ${
-            play.is_valid ? "✅" : "❌"
-          } [?/${declared}]`
-        );
+      // Show plays in turn order
+      this.turnOrder.forEach((player) => {
+        const play = data.plays.find((p) => p.player === player.name);
+        if (play) {
+          const declared = this.declarations[play.player];
+          console.log(
+            `  - ${play.player}: [${play.pieces.join(", ")}] ${
+              play.is_valid ? "✅" : "❌"
+            } [?/${declared}]`
+          );
+        }
       });
 
       if (data.winner) {
@@ -544,6 +572,7 @@ export class GameScene extends Container {
             .find((p) => p.player === data.winner)
             .pieces.join(", ")}] (+${data.pile_count} pts).`
         );
+        // Update turn starter for next turn
         this.currentTurnStarter = data.winner;
       } else {
         console.log("\n>>> ⚠️ No one wins the turn.");
@@ -551,17 +580,26 @@ export class GameScene extends Container {
 
       // Reset for next turn
       this.currentTurnPlays = [];
-      this.currentTurnNumber++;
       this.requiredPieceCount = null;
 
+      // ✅ Check if round is complete
       this.checkRoundComplete();
 
       // Continue if we have pieces
       if (this.myHand.length > 0) {
+        // ✅ Increment turn number AFTER the turn is complete
+        this.currentTurnNumber++;
+
+        // Update turn order for next turn
         this.updateTurnOrder();
+
         setTimeout(() => {
           this.checkTurnPlay();
         }, 1000);
+      } else {
+        console.log(
+          "🏁 All your pieces played - waiting for round to complete..."
+        );
       }
     };
     onSocketEvent("turn_resolved", this.handleTurnResolved);
