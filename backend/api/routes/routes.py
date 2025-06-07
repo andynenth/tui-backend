@@ -452,10 +452,10 @@ async def play_turn(
 
     # Broadcast the play immediately
     await broadcast(room_id, "play", {
-        "player": player_name,
-        "pieces": selected_pieces,
+        "player": player.name,
+        "pieces": [str(p) for p in selected_pieces],
         "valid": result.get("is_valid", True),
-        "play_type": result.get("play_type", "UNKNOWN")
+        "play_type": result.get("play_type", get_play_type(selected_pieces))  # Use actual play type
     })
 
     print(f"📡 Broadcasted {player_name}'s play, result status: {result.get('status')}")
