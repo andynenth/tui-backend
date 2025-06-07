@@ -125,6 +125,17 @@ def pieces_exist_in_hand(play, hand):
 # Choose the best play (set of 1–6 pieces) based on total point value
 # ------------------------------------------------------------------
 def choose_best_play(hand: list, required_count: int | None, verbose: bool = True) -> list:
+    if verbose:
+        # Show the bot's current hand
+        sorted_hand = sorted(hand, key=lambda p: (p.color != "RED", -p.point))
+        print(f"\n🤖 Bot Hand ({len(hand)} pieces):")
+        for i, piece in enumerate(sorted_hand):
+            print(f"  [{i}] {piece}")
+    
+    best_play = None
+    best_score = -1
+    best_type = None
+    
     best_play = None
     best_score = -1
     best_type = None

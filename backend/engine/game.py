@@ -118,11 +118,19 @@ class Game:
         """Handle a player's move, validate it, and resolve the turn if all players have played."""
         player = self.get_player(player_name)
 
+        # ✅ Better turn order validation
+        if not hasattr(self, 'turn_order') or not self.turn_order:
+            self.turn_order = list(self.current_order)
+
         if player not in self.turn_order:
             return {"status": "error", "message": f"{player.name} is not in current turn order."}
 
         if any(play.player == player for play in self.current_turn_plays):
             return {"status": "error", "message": f"{player.name} has already played this turn."}
+
+        # ✅ Add validation for empty piece_indexes
+        if not piece_indexes:
+            return {"status": "error", "message": "You must select at least one piece."}
 
         try:
             selected = [player.hand[i] for i in piece_indexes]
