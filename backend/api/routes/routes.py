@@ -5,17 +5,19 @@ from engine.game import Game
 from engine.rules import is_valid_play, get_play_type
 from engine.win_conditions import is_game_over, get_winners
 from backend.socket_manager import broadcast
-from backend.shared_instances import shared_room_manager
+from backend.shared_instances import shared_room_manager, shared_bot_manager
 import asyncio
 import time
 from typing import Optional
 import backend.socket_manager
 
+
 print(f"socket_manager id in {__name__}: {id(backend.socket_manager)}")
 
 router = APIRouter() # Create a new FastAPI APIRouter instance.
 # room_manager = RoomManager() # (Commented out) Direct instantiation of RoomManager.
-room_manager = shared_room_manager # Use the globally shared RoomManager instance.
+room_manager = shared_room_manager
+bot_manager = shared_bot_manager
 
 # ---------- ROOM MANAGEMENT ----------
 
@@ -227,19 +229,18 @@ async def assign_slot(
 
 @router.post("/start-game")
 async def start_game(room_id: str = Query(...)):
-    """
-    ✅ Enhanced game starting with race condition prevention
-    """
     room = room_manager.get_room(room_id)
     if not room:
         raise HTTPException(status_code=404, detail="Room not found")
     
     try:
-        # ✅ Use the thread-safe method
         result = await room.start_game_safe()
         
         if not result["success"]:
             raise HTTPException(status_code=400, detail="Failed to start game")
+        
+        # Register game with bot manager
+        bot_manager.register_game(room_id, room.game)
         
         game_data = room.game.prepare_round()
         
@@ -252,17 +253,22 @@ async def start_game(room_id: str = Query(...)):
                 {
                     "name": p.name,
                     "score": p.score,
-                    "is_bot": p.is_bot
+                    "is_bot": p.is_bot,
+                    "zero_declares_in_a_row": p.zero_declares_in_a_row
                 }
                 for p in room.game.players
             ],
             "operation_id": result["operation_id"]
         })
         
-        return {
-            "ok": True,
-            "operation_id": result["operation_id"]
-        }
+        # Notify bot manager about round start
+        await bot_manager.handle_game_event(
+            room_id, 
+            "round_started", 
+            {"starter": game_data["starter"]}
+        )
+        
+        return {"ok": True, "operation_id": result["operation_id"]}
         
     except ValueError as e:
         raise HTTPException(status_code=400, detail=str(e))
@@ -352,53 +358,88 @@ async def redeal(room_id: str = Query(...), player_name: str = Query(...)):
 
 @router.post("/declare")
 async def declare(room_id: str = Query(...), player_name: str = Query(...), value: int = Query(...)):
-    """
-    Handles a player's declaration of a value.
-    Args:
-        room_id (str): The ID of the room.
-        player_name (str): The name of the player declaring.
-        value (int): The declared value.
-    Returns:
-        dict: Result of the declaration.
-    Raises:
-        HTTPException: If the room or game is not found.
-    """
-    room = room_manager.get_room(room_id) # Get the room.
+    room = room_manager.get_room(room_id)
     if not room or not room.game:
-        raise HTTPException(status_code=404, detail="Game not found") # Check if room and game exist.
+        raise HTTPException(status_code=404, detail="Game not found")
 
-    result = room.game.declare(player_name, value) # Perform the declaration in the game.
-    await broadcast(room_id, "declare", {
-        "player": player_name,
-        "value": value # Broadcast declaration details.
-    })
+    player = room.game.get_player(player_name)
+    if not player:
+        raise HTTPException(status_code=400, detail=f"Player {player_name} not found in game")
+
+    if player.declared != 0:
+        print(f"⚠️ Player {player_name} already declared {player.declared}")
+        return {"status": "already_declared", "value": player.declared}
+
+    result = room.game.declare(player_name, value)
+    
+    if result["status"] == "ok":
+        # Broadcast player declaration
+        await broadcast(room_id, "declare", {
+            "player": player_name,
+            "value": value,
+            "is_bot": False
+        })
+        
+        print(f"📢 {player_name} declared {value}")
+        
+        # Notify bot manager to handle bot declarations
+        await bot_manager.handle_game_event(
+            room_id,
+            "player_declared", 
+            {"player_name": player_name}
+        )
+    
     return result
 
 @router.post("/play-turn")
-async def play_turn(room_id: str = Query(...), player_name: str = Query(...), piece_indexes: list[int] = Query(...)):
-    """
-    Handles a player's turn to play pieces.
-    Args:
-        room_id (str): The ID of the room.
-        player_name (str): The name of the player playing.
-        piece_indexes (list[int]): List of indexes of pieces to play from player's hand.
-    Returns:
-        dict: Result of the play turn, including validity and play type.
-    Raises:
-        HTTPException: If the room or game is not found.
-    """
-    room = room_manager.get_room(room_id) # Get the room.
+async def play_turn(
+    room_id: str = Query(...), 
+    player_name: str = Query(...), 
+    piece_indexes: str = Query(...)
+):
+    room = room_manager.get_room(room_id)
     if not room or not room.game:
-        raise HTTPException(status_code=404, detail="Game not found") # Check if room and game exist.
+        raise HTTPException(status_code=404, detail="Game not found")
 
-    result = room.game.play_turn(player_name, piece_indexes) # Perform the play turn.
+    # Parse comma-separated indices
+    try:
+        indices = [int(i) for i in piece_indexes.split(',')]
+    except ValueError:
+        raise HTTPException(status_code=400, detail="Invalid piece indices format")
 
+    # Process the turn
+    result = room.game.play_turn(player_name, indices)
+
+    # Get the actual pieces for broadcasting
+    player = room.game.get_player(player_name)
+    selected_pieces = []
+    try:
+        if "pieces" in result:
+            selected_pieces = result["pieces"]
+        else:
+            # Reconstruct from indices if still in hand
+            for i in indices:
+                if i < len(player.hand):
+                    selected_pieces.append(str(player.hand[i]))
+    except Exception as e:
+        print(f"⚠️ Could not get pieces for broadcast: {e}")
+        selected_pieces = [f"Piece_{i}" for i in indices]
+
+    # Broadcast the play immediately
     await broadcast(room_id, "play", {
         "player": player_name,
-        "pieces": [str(p) for p in result["pieces"]], # Convert pieces to string representation.
-        "valid": result["valid"],
-        "play_type": result["play_type"]
+        "pieces": selected_pieces,
+        "valid": result.get("is_valid", True),
+        "play_type": result.get("play_type", "UNKNOWN")
     })
+
+    # Notify bot manager to handle bot plays
+    if result.get("status") == "waiting":
+        await bot_manager.handle_game_event(
+            room_id,
+            "player_played",
+            {"player_name": player_name}
+        )
 
     return result
 
