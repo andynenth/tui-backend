@@ -1,13 +1,13 @@
 # backend/api/routes/routes.py
 
+import asyncio
+import time
 from fastapi import APIRouter, HTTPException, Query
 from engine.game import Game
 from engine.rules import is_valid_play, get_play_type
 from engine.win_conditions import is_game_over, get_winners
 from backend.socket_manager import broadcast
 from backend.shared_instances import shared_room_manager, shared_bot_manager
-import asyncio
-import time
 from typing import Optional
 import backend.socket_manager
 
@@ -388,6 +388,28 @@ async def declare(room_id: str = Query(...), player_name: str = Query(...), valu
             "player_declared", 
             {"player_name": player_name}
         )
+        
+        # Check if all players have declared
+        if room.game.all_players_declared():
+            print(f"✅ All players have declared! Starting turn phase...")
+            
+            # Initialize turn phase
+            turn_info = room.game.start_turn_phase()
+            
+            # Get the first player (starter) for the turn
+            first_player_name = turn_info.get("first_player")
+            if first_player_name:
+                first_player = room.game.get_player(first_player_name)
+                print(f"🎯 First player for turn: {first_player.name} (Bot: {first_player.is_bot})")
+                
+                # If first player is a bot, notify bot manager to start turn
+                if first_player.is_bot:
+                    await asyncio.sleep(1)  # Small delay for UI
+                    await bot_manager.handle_game_event(
+                        room_id,
+                        "turn_started",
+                        {"starter": first_player.name}
+                    )
     
     return result
 
@@ -407,6 +429,8 @@ async def play_turn(
     except ValueError:
         raise HTTPException(status_code=400, detail="Invalid piece indices format")
 
+    print(f"🎮 {player_name} playing pieces at indices: {indices}")
+
     # Process the turn
     result = room.game.play_turn(player_name, indices)
 
@@ -417,8 +441,9 @@ async def play_turn(
         if "pieces" in result:
             selected_pieces = result["pieces"]
         else:
-            # Reconstruct from indices if still in hand
-            for i in indices:
+            # Get pieces before they're removed from hand
+            selected_pieces = []
+            for i in sorted(indices):
                 if i < len(player.hand):
                     selected_pieces.append(str(player.hand[i]))
     except Exception as e:
@@ -433,13 +458,41 @@ async def play_turn(
         "play_type": result.get("play_type", "UNKNOWN")
     })
 
-    # Notify bot manager to handle bot plays
+    print(f"📡 Broadcasted {player_name}'s play, result status: {result.get('status')}")
+
+    # Handle different result statuses
     if result.get("status") == "waiting":
+        # First play of the turn - notify bot manager to handle bot plays
+        print(f"⏳ Turn started by {player_name}, notifying bot manager...")
         await bot_manager.handle_game_event(
             room_id,
             "player_played",
             {"player_name": player_name}
         )
+    elif result.get("status") == "resolved":
+        # Turn is complete
+        print(f"✅ Turn resolved, winner: {result.get('winner')}")
+        
+        # Check if round is complete
+        all_hands_empty = all(len(p.hand) == 0 for p in room.game.players)
+        
+        if all_hands_empty:
+            print(f"🏁 Round complete - all hands empty")
+            # Bot manager will handle scoring
+        elif result.get("winner"):
+            # More turns to play
+            next_starter = result.get("winner")
+            print(f"🎯 Next turn starter: {next_starter}")
+            
+            # If next starter is a bot, notify bot manager
+            next_player = room.game.get_player(next_starter)
+            if next_player and next_player.is_bot:
+                await asyncio.sleep(0.5)
+                await bot_manager.handle_game_event(
+                    room_id,
+                    "turn_started",
+                    {"starter": next_starter}
+                )
 
     return result
 
