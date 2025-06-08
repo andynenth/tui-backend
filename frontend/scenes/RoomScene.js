@@ -1,77 +1,71 @@
 // frontend/scenes/RoomScene.js
 
-// Import necessary modules from PixiJS and local components/APIs.
-import { Container, Text, TextStyle } from "pixi.js"; // PixiJS Container for scene structure, Text for displaying text, TextStyle for text styling.
-import { GameButton } from "../components/GameButton.js"; // Custom Button component.
-import { getRoomStateData, assignSlot, startGame } from "../api.js"; // API functions for interacting with the backend.
-import { GameEvents } from "../SceneFSM.js"; // GameEvents enum for triggering state transitions in the FSM.
-import {
-  connect as connectSocket,
-  on as onSocketEvent,
-  disconnect as disconnectSocket,
-  off as offSocketEvent,
-} from "../network/index.js"; // WebSocket manager for real-time communication.
-import { ConnectionStatus } from "../components/ConnectionStatus.js";
+import { Container, Text, TextStyle } from "pixi.js";
+import { GameButton } from "../components/GameButton.js";
+import { getRoomStateData, assignSlot, startGame } from "../api.js";
+import { GameEvents } from "../SceneFSM.js";
 import { SocketManager } from "../network/SocketManager.js";
-
+import { ConnectionStatus } from "../components/ConnectionStatus.js";
 
 /**
  * RoomScene class represents the game room screen where players wait for a game to start,
  * join slots, or manage bots (for the host).
- * It extends PixiJS Container to act as a display object.
+ * 
+ * REFACTORED: Now uses the new modular SocketManager instead of legacy functions
  */
 export class RoomScene extends Container {
-  /**
-   * Constructor for the RoomScene.
-   * @param {string} roomId - The ID of the current room.
-   * @param {string} playerName - The name of the current player.
-   * @param {function} triggerFSMEvent - A callback function to trigger events in the FSM.
-   */
   constructor(roomId, playerName, triggerFSMEvent) {
-    super(); // Call the constructor of the parent class (Container).
+    super();
 
-    console.log("🔵 Entered RoomScene");
+    console.log("🔵 Entered RoomScene (Refactored Version)");
 
-    // Define the layout properties for the entire scene container using PixiJS Layout.
+    // Scene layout configuration
     this.layout = {
-      width: "100%", // Scene takes full width.
-      flexDirection: "column", // Arrange children in a column.
-      alignItems: "center", // Horizontally center children.
-      padding: 16, // Add padding around the scene content.
-      gap: 16, // Add a gap between child elements.
+      width: "100%",
+      flexDirection: "column",
+      alignItems: "center",
+      padding: 16,
+      gap: 16,
     };
 
-    // Store scene-specific properties.
+    // Core properties
     this.roomId = roomId;
     this.playerName = playerName;
-    this.triggerFSMEvent = triggerFSMEvent; // FSM event trigger callback.
+    this.triggerFSMEvent = triggerFSMEvent;
 
-    this.slots = ["P1", "P2", "P3", "P4"]; // Predefined player slots.
-    this.slotLabels = {}; // Object to store references to PixiJS Text and Button objects for each slot.
-    this.latestSlots = {}; // Stores the most recent slot data received from the server.
-    this.openSlots = []; // Not currently used, but could be for tracking available slots.
-    this.isHost = false; // Flag to determine if the current player is the host.
-    this.isActive = true; // Track if we're in this room
+    // Game state
+    this.slots = ["P1", "P2", "P3", "P4"];
+    this.slotLabels = {};
+    this.latestSlots = {};
+    this.isHost = false;
+    this.isActive = true;
 
-    this.connectionStatus = new ConnectionStatus();
-
+    // ✅ NEW: Create dedicated SocketManager instance
     this.socketManager = new SocketManager({
       enableReconnection: true,
+      enableMessageQueue: true,
       reconnection: {
         maxAttempts: 10,
         baseDelay: 2000,
       },
     });
 
-    // Create the room ID title.
-    const title = new Text({
-      text: `📦 Room ID: ${roomId}`,
-      style: new TextStyle({ fill: "#ffffff", fontSize: 22 }),
-    });
-    const titleC = new Container();
-    titleC.addChild(title);
+    // ✅ NEW: Connection status component with SocketManager
+    this.connectionStatus = new ConnectionStatus(this.socketManager);
 
-    // Create a header row container for the title.
+    // Initialize UI
+    this._createUI();
+    this._setupEventListeners();
+
+    // Start connection and fetch initial state
+    this._initializeConnection();
+  }
+
+  /**
+   * Create the UI components
+   */
+  _createUI() {
+    // Header row with title and connection status
     const headerRow = new Container();
     headerRow.layout = {
       flexDirection: "row",
@@ -80,7 +74,14 @@ export class RoomScene extends Container {
       height: "auto",
     };
 
-    // Create a container for the player slots table.
+    const title = new Text({
+      text: `📦 Room ID: ${this.roomId}`,
+      style: new TextStyle({ fill: "#ffffff", fontSize: 22 }),
+    });
+
+    headerRow.addChild(title, this.connectionStatus.view);
+
+    // Player table container
     this.playerTable = new Container();
     this.playerTable.layout = {
       flexDirection: "column",
@@ -89,26 +90,14 @@ export class RoomScene extends Container {
       width: "100%",
     };
 
-    // Add elements to the scene.
-    headerRow.addChild(titleC, this.connectionStatus.view);
-    this.addChild(headerRow, this.playerTable);
-
-    // Initialize the slot views and fetch the initial room state.
-    this.renderSlots(); // Renders the initial structure of slots (labels and buttons).
-    this.refreshRoomState(); // Fetches the current state of the room from the backend.
-    this.setupWebSocketListeners(); // Sets up real-time updates via WebSocket.
-
-    // Create the "Start Game" button.
+    // Start button (host only)
     this.startButton = new GameButton({
       label: "Start Game",
       onClick: async () => {
         try {
-          // ✅ เรียก API เพื่อเริ่มเกม
           const result = await startGame(this.roomId);
           console.log("🚀 Game started!", result);
-
-          // ✅ ไม่ต้อง trigger event ที่นี่
-          // รอให้ WebSocket broadcast มาแทน
+          // Game start event will come through WebSocket
         } catch (err) {
           console.error("❌ Failed to start game", err);
           alert(`Failed to start game: ${err.message || "Unknown error"}`);
@@ -116,19 +105,15 @@ export class RoomScene extends Container {
       },
     });
 
-    // Create the "Exit" button.
+    // Exit button
     this.exitButton = new GameButton({
       label: "Exit",
       onClick: async () => {
         try {
-          // Call API to exit the room.
           await fetch(
             `/api/exit-room?room_id=${this.roomId}&name=${this.playerName}`,
-            {
-              method: "POST",
-            }
+            { method: "POST" }
           );
-          // Trigger FSM event to inform that the player has exited the room, prompting a scene change.
           this.triggerFSMEvent(GameEvents.EXIT_ROOM);
         } catch (err) {
           console.error("❌ Failed to exit", err);
@@ -137,288 +122,277 @@ export class RoomScene extends Container {
       },
     });
 
-    // Create a footer row for the buttons.
+    // Footer row with buttons
     const footerRow = new Container();
     footerRow.layout = {
       flexDirection: "row",
-      justifyContent: "space-between", // Space buttons evenly.
+      justifyContent: "space-between",
       width: "100%",
       height: "auto",
     };
 
-    this.startButton.setEnabled(false); // Initially disable the "Start Game" button.
+    this.startButton.setEnabled(false);
     footerRow.addChild(this.exitButton.view, this.startButton.view);
-    this.addChild(footerRow);
+
+    // Add all components to scene
+    this.addChild(headerRow, this.playerTable, footerRow);
+
+    // Initialize slot views
+    this._renderSlots();
   }
 
   /**
-   * Fetches the current state of the room from the backend API and updates the UI.
+   * Initialize WebSocket connection and fetch initial state
    */
-  async refreshRoomState() {
+  async _initializeConnection() {
     try {
-      const result = await getRoomStateData(this.roomId); // Fetch room state data.
-      // Check if the result is valid and contains necessary data.
-      if (result && result.slots && result.host_name !== undefined) {
-        this.isHost = result.host_name === this.playerName; // Determine if current player is host.
-        this.updateSlotViews(result.slots); // Update the UI based on the fetched slot data.
-      } else {
-        console.error(
-          "Received unexpected data from getRoomStateData:",
-          result
-        );
-        alert(
-          "Room state invalid or room may have been closed. Returning to Lobby."
-        );
-        this.triggerFSMEvent(GameEvents.EXIT_ROOM); // Go back to Lobby if data is invalid.
-      }
+      // Connect to room WebSocket
+      await this.socketManager.connect(this.roomId);
+      console.log("✅ Connected to room WebSocket");
+
+      // Fetch initial room state
+      await this._refreshRoomState();
     } catch (err) {
-      console.error("❌ Failed to fetch room state:", err);
-      alert(
-        `Error fetching room state: ${
-          err.message || "Unknown error"
-        }. Returning to Lobby.`
-      );
-      this.triggerFSMEvent(GameEvents.EXIT_ROOM); // Go back to Lobby on API error.
+      console.error("❌ Failed to initialize connection:", err);
+      alert("Failed to connect to room. Returning to lobby.");
+      this.triggerFSMEvent(GameEvents.EXIT_ROOM);
     }
   }
 
   /**
-   * Renders the initial structure of player slots (labels and buttons).
-   * This method sets up the visual elements but doesn't fill them with dynamic data.
+   * Set up WebSocket event listeners using new SocketManager
    */
-  renderSlots() {
+  _setupEventListeners() {
+    // ✅ NEW: Using SocketManager's event system
+    
+    // Connection events
+    this.socketManager.on("connected", () => {
+      console.log("✅ WebSocket connected to room");
+    });
+
+    this.socketManager.on("disconnected", (data) => {
+      console.log("⚠️ WebSocket disconnected:", data);
+      if (!data.intentional && this.isActive) {
+        // Will auto-reconnect due to enableReconnection: true
+      }
+    });
+
+    this.socketManager.on("reconnecting", (status) => {
+      console.log(`🔄 Reconnecting... (${status.attempts}/${status.maxAttempts})`);
+    });
+
+    this.socketManager.on("reconnected", () => {
+      console.log("✅ WebSocket reconnected");
+      // Refresh room state after reconnection
+      this._refreshRoomState();
+    });
+
+    this.socketManager.on("connection_failed", (data) => {
+      console.error("❌ Connection failed:", data);
+      if (this.isActive) {
+        alert(`Connection lost: ${data.reason}. Returning to Lobby.`);
+        this.triggerFSMEvent(GameEvents.EXIT_ROOM);
+      }
+    });
+
+    // Room events
+    this.socketManager.on("room_state_update", (data) => {
+      if (!this.isActive) return;
+      console.log("📡 Room state update:", data);
+
+      if (data.host_name !== undefined) {
+        this.isHost = data.host_name === this.playerName;
+      }
+
+      if (data.slots) {
+        this._updateSlotViews(data.slots);
+      }
+    });
+
+    this.socketManager.on("room_closed", (data) => {
+      if (!this.isActive) return;
+      console.log("🚪 Room closed:", data);
+      alert(data.message || "Room has been closed");
+      this.triggerFSMEvent(GameEvents.EXIT_ROOM);
+    });
+
+    this.socketManager.on("player_kicked", (data) => {
+      if (!this.isActive) return;
+      if (data.player === this.playerName) {
+        alert(data.reason || "You have been removed from the room by the host.");
+        this.triggerFSMEvent(GameEvents.EXIT_ROOM);
+      }
+    });
+
+    this.socketManager.on("player_left", (data) => {
+      if (!this.isActive) return;
+      console.log("👋 Player left:", data.player);
+    });
+
+    this.socketManager.on("start_game", (data) => {
+      if (!this.isActive) return;
+      console.log("🎮 Game started!", data);
+      this.triggerFSMEvent(GameEvents.GAME_STARTED, {
+        roomId: this.roomId,
+        gameData: data,
+      });
+    });
+  }
+
+  /**
+   * Fetch and update room state
+   */
+  async _refreshRoomState() {
+    try {
+      const result = await getRoomStateData(this.roomId);
+      if (result && result.slots && result.host_name !== undefined) {
+        this.isHost = result.host_name === this.playerName;
+        this._updateSlotViews(result.slots);
+      } else {
+        console.error("Invalid room state data:", result);
+        alert("Room state invalid. Returning to Lobby.");
+        this.triggerFSMEvent(GameEvents.EXIT_ROOM);
+      }
+    } catch (err) {
+      console.error("❌ Failed to fetch room state:", err);
+      alert(`Error fetching room state: ${err.message || "Unknown error"}`);
+      this.triggerFSMEvent(GameEvents.EXIT_ROOM);
+    }
+  }
+
+  /**
+   * Render slot UI components
+   */
+  _renderSlots() {
     for (const slot of this.slots) {
       const row = new Container();
       row.layout = {
         flexDirection: "row",
         alignItems: "center",
-        justifyContent: "flex-end", // Align content to the right.
+        justifyContent: "flex-end",
         width: "100%",
         padding: 10,
       };
 
-      // Create a text label for the slot (e.g., "P1: ...").
+      // Slot label
       const slotText = new Text({
-        text: `${slot}: ...`, // Initial placeholder text.
+        text: `${slot}: ...`,
         style: new TextStyle({ fill: "#ffffff", fontSize: 18 }),
       });
 
       const textContainer = new Container();
       textContainer.layout = {
         alignSelf: "center",
-        justifyContent: "flex-start", // Align text to the left within its container.
+        justifyContent: "flex-start",
         width: "100%",
         height: "100%",
         marginTop: 10,
       };
+      textContainer.addChild(slotText);
 
-      // Create a button for the slot (label will be updated dynamically).
+      // Slot button
       const slotBtn = new GameButton({
-        label: "Add bot", // Initial label, will be updated by updateSlotViews.
+        label: "Add bot",
         height: 30,
         width: 100,
-        onClick: async () => {
-          const slotId = slot; // e.g., "P1", "P2"
-          const slotIndex = parseInt(slotId[1]) - 1; // Convert "P1" to index 0, "P2" to 1, etc.
-          const info = this.latestSlots[slotId]; // Get the current state of the clicked slot from the frontend's latest data.
-          console.log(
-            `[RoomScene.onClick] Player '${this.playerName}' clicked slot ${slotId} (index ${slotIndex}). Current Frontend Info:`,
-            info
-          );
-
-          try {
-            if (this.isHost) {
-              // --- Logic for HOST ---
-              if (!info) {
-                // Slot is empty (null) --> HOST clicks "Add bot" (to add a bot).
-                console.log(
-                  `[RoomScene.onClick] Host adding bot to empty slot ${slotId}.`
-                );
-                await assignSlot(
-                  this.roomId,
-                  `Bot ${slotIndex + 1}`, // Assign a bot name like "Bot 1", "Bot 2".
-                  slotIndex
-                );
-              } else if (info.is_bot) {
-                // Slot has a Bot --> HOST clicks "Open" (to make it empty).
-                console.log(
-                  `[RoomScene.onClick] Host opening slot ${slotId} from bot.`
-                );
-                await assignSlot(this.roomId, null, slotIndex); // Assign null to make the slot empty.
-              } else if (info.name && info.name !== this.playerName) {
-                // Slot has another player --> HOST clicks "Add bot" (to kick that player and replace with a bot).
-                console.log(
-                  `[RoomScene.onClick] Host kicking player '${info.name}' from slot ${slotId} and replacing with Bot.`
-                );
-                await assignSlot(
-                  this.roomId,
-                  `Bot ${slotIndex + 1}`,
-                  slotIndex
-                );
-              } else {
-                console.warn(
-                  `[RoomScene.onClick] Host clicked on unexpected slot state for action. Info:`,
-                  info
-                );
-                return; // Do nothing if state is unexpected.
-              }
-            } else {
-              // --- Logic for PLAYER (not Host) ---
-              if (!info) {
-                // Slot is empty (Player clicks "Join").
-                console.log(
-                  `[RoomScene.onClick] Player '${this.playerName}' attempting to join empty slot ${slotId}.`
-                );
-                await assignSlot(this.roomId, this.playerName, slotIndex);
-              } else {
-                console.warn(
-                  `[RoomScene.onClick] Player clicked on non-empty slot:`,
-                  info
-                );
-                return; // Do nothing if the slot is not empty.
-              }
-            }
-
-            console.log(
-              `[RoomScene.onClick] assignSlot API call sent for slot ${slotIndex}.`
-            );
-            // ✅ Added immediate call to getRoomStateData after assignSlot for debugging.
-            const serverStateAfterClick = await getRoomStateData(this.roomId);
-            console.log(
-              "[RoomScene.onClick] Server State AFTER API Call (for Debug):",
-              serverStateAfterClick
-            );
-
-            console.log(`[RoomScene.onClick] Awaiting WS update...`); // Expecting a WebSocket update.
-          } catch (err) {
-            console.error("❌ [RoomScene.onClick] Failed to toggle slot", err);
-            alert(`Failed to change slot: ${err.message || err.detail}`);
-          }
-        },
+        onClick: () => this._handleSlotClick(slot),
       });
 
-      textContainer.addChild(slotText); // Add the text label to its container.
       const btnContainer = new Container();
       btnContainer.layout = {
         alignItems: "center",
-        justifyContent: "flex-end", // Align button to the right.
+        justifyContent: "flex-end",
         width: "100%",
         height: 40,
       };
-      btnContainer.addChild(slotBtn.view); // Add the button view to its container.
+      btnContainer.addChild(slotBtn.view);
 
-      row.addChild(textContainer, btnContainer); // Add text and button containers to the row.
-
-      // Store references to the text label and button for later updates.
+      row.addChild(textContainer, btnContainer);
       this.slotLabels[slot] = { label: slotText, joinBtn: slotBtn };
-      this.playerTable.addChild(row); // Add the slot row to the player table.
+      this.playerTable.addChild(row);
     }
   }
 
   /**
-   * Updates the visual representation of player slots based on new data received from the server.
-   * This method dynamically changes text labels and button visibility/labels.
-   * @param {object} slots - An object containing the current state of all player slots.
+   * Handle slot button clicks
    */
-  updateSlotViews(slots) {
-    console.log(
-      "[RoomScene.updateSlotViews] Called with new slots data:",
-      slots
-    );
-    console.log("[RoomScene.updateSlotViews] Current isHost:", this.isHost);
+  async _handleSlotClick(slotId) {
+    const slotIndex = parseInt(slotId[1]) - 1;
+    const info = this.latestSlots[slotId];
+
+    console.log(`Slot ${slotId} clicked. Current state:`, info);
+
+    try {
+      if (this.isHost) {
+        if (!info) {
+          // Empty slot - add bot
+          await assignSlot(this.roomId, `Bot ${slotIndex + 1}`, slotIndex);
+        } else if (info.is_bot) {
+          // Bot slot - make it open
+          await assignSlot(this.roomId, null, slotIndex);
+        } else if (info.name && info.name !== this.playerName) {
+          // Other player - kick and replace with bot
+          await assignSlot(this.roomId, `Bot ${slotIndex + 1}`, slotIndex);
+        }
+      } else {
+        // Non-host can only join empty slots
+        if (!info) {
+          await assignSlot(this.roomId, this.playerName, slotIndex);
+        }
+      }
+    } catch (err) {
+      console.error("❌ Failed to update slot:", err);
+      alert(`Failed to change slot: ${err.message || err.detail}`);
+    }
+  }
+
+  /**
+   * Update slot views based on new data
+   */
+  _updateSlotViews(slots) {
+    console.log("Updating slot views:", slots);
     this.latestSlots = slots;
 
     for (const slot of this.slots) {
       const info = slots[slot];
       const { label, joinBtn } = this.slotLabels[slot];
-      console.log(
-        `[RoomScene.updateSlotViews] Processing slot ${slot}. Info:`,
-        info
-      );
 
       if (!info) {
-        // Slot ว่าง
+        // Empty slot
+        label.text = `${slot}: (Open)`;
         if (this.isHost) {
-          label.text = `${slot}: (Open)`;
           joinBtn.setText("Add bot");
           joinBtn.view.visible = true;
-
-          // ✅ สำคัญ: Re-assign onClick handler ทุกครั้ง
-          joinBtn.onClick = async () => {
-            try {
-              console.log(
-                `[RoomScene.onClick] Host adding bot to empty slot ${slot}.`
-              );
-              await assignSlot(
-                this.roomId,
-                `Bot ${parseInt(slot[1])}`,
-                parseInt(slot[1]) - 1
-              );
-            } catch (err) {
-              console.error("❌ Failed to add bot", err);
-              alert(`Failed to add bot: ${err.message || err.detail}`);
-            }
-          };
         } else {
-          // Hide join button from other players
-          label.text = `${slot}: Open`;
-          joinBtn.view.visible = false;
+          joinBtn.setText("Join");
+          joinBtn.view.visible = true;
         }
       } else if (info.is_bot) {
+        // Bot slot
         label.text = `${slot}: 🤖 ${info.name}`;
         if (this.isHost) {
           joinBtn.setText("Open");
           joinBtn.view.visible = true;
-
-          // ✅ Re-assign onClick for Open
-          joinBtn.onClick = async () => {
-            try {
-              console.log(
-                `[RoomScene.onClick] Host opening slot ${slot} from Bot.`
-              );
-              await assignSlot(this.roomId, null, parseInt(slot[1]) - 1);
-            } catch (err) {
-              console.error("❌ Failed to open slot", err);
-              alert(`Failed to open slot: ${err.message || err.detail}`);
-            }
-          };
         } else {
           joinBtn.view.visible = false;
         }
       } else if (info.name === this.playerName) {
-        // Slot self-indicator
+        // Current player's slot
         label.text = `${slot}: ${info.name} <<`;
         joinBtn.view.visible = false;
       } else {
-        // Slot is occupied
+        // Other player's slot
         label.text = `${slot}: ${info.name}`;
         if (this.isHost) {
           joinBtn.setText("Add bot");
           joinBtn.view.visible = true;
-
-          // ✅ Re-assign onClick, kick player
-          joinBtn.onClick = async () => {
-            try {
-              console.log(
-                `[RoomScene.onClick] Host kicking player '${info.name}' and replacing with Bot.`
-              );
-              await assignSlot(
-                this.roomId,
-                `Bot ${parseInt(slot[1])}`,
-                parseInt(slot[1]) - 1
-              );
-            } catch (err) {
-              console.error("❌ Failed to kick player", err);
-              alert(`Failed to kick player: ${err.message || err.detail}`);
-            }
-          };
         } else {
           joinBtn.view.visible = false;
         }
       }
     }
 
-    // Update Start Game button
+    // Update start button
     const isReady = Object.values(slots).every(
       (info) => info && (info.is_bot || info.name)
     );
@@ -427,123 +401,22 @@ export class RoomScene extends Container {
   }
 
   /**
-   * Sets up WebSocket listeners for real-time updates from the server.
-   * This includes listening for room state changes, room closure, and player departures.
+   * Clean up when scene is destroyed
    */
-  setupWebSocketListeners() {
-    // Show reconnection status to user
-    this.socketManager.on("reconnecting", (status) => {
-      this.connectionStatus.text = `🟡 Reconnecting... (${status.attempts}/${status.maxAttempts})`;
-    });
-
-    this.socketManager.on("reconnected", () => {
-      this.connectionStatus.text = "🟢 Connected";
-    });
-
-    disconnectSocket();
-    connectSocket(this.roomId);
-
-    // Register listener for 'room_state_update' event
-    this.handleRoomStateUpdate = (data) => {
-      if (!this.isActive) return;
-
-      console.log("[RoomScene.handleRoomStateUpdate] Received data:", data);
-
-      if (data.host_name !== undefined) {
-        this.isHost = data.host_name === this.playerName;
-      }
-
-      if (data.slots) {
-        this.updateSlotViews(data.slots);
-      }
-    };
-    onSocketEvent("room_state_update", this.handleRoomStateUpdate);
-
-    // Register listener for 'room_closed' event
-    this.handleRoomClosed = (data) => {
-      if (!this.isActive) return;
-
-      console.log("WS: Received room_closed", data);
-
-      if (this.triggerFSMEvent) {
-        alert(data.message);
-        this.triggerFSMEvent(GameEvents.EXIT_ROOM);
-      }
-    };
-    onSocketEvent("room_closed", this.handleRoomClosed);
-
-    // ✅ Register listener for 'player_kicked' event
-    this.handlePlayerKicked = (data) => {
-      if (!this.isActive) return;
-
-      console.log("WS: Received player_kicked", data);
-
-      // If you are kicked
-      if (data.player === this.playerName) {
-        alert(
-          data.reason || "You have been removed from the room by the host."
-        );
-        this.triggerFSMEvent(GameEvents.EXIT_ROOM);
-      }
-    };
-    onSocketEvent("player_kicked", this.handlePlayerKicked);
-
-    // Register listener for 'player_left' event
-    this.handlePlayerLeft = (data) => {
-      if (!this.isActive) return;
-      console.log("WS: Player left:", data.player);
-    };
-    onSocketEvent("player_left", this.handlePlayerLeft);
-
-    this.handleGameStarted = (data) => {
-      if (!this.isActive) return;
-
-      console.log("WS: Game started!", data);
-
-      // ส่ง event ไปที่ FSM พร้อมข้อมูลเกม
-      this.triggerFSMEvent(GameEvents.GAME_STARTED, {
-        roomId: this.roomId,
-        gameData: data,
-      });
-    };
-    onSocketEvent("start_game", this.handleGameStarted);
-
-    this.handleConnectionFailed = (data) => {
-      if (!this.isActive) return;
-
-      alert(`Connection lost: ${data.reason}. Returning to Lobby.`);
-      this.triggerFSMEvent(GameEvents.EXIT_ROOM);
-    };
-    onSocketEvent("connection_failed", this.handleConnectionFailed);
-  }
-
-  /**
-   * Cleans up WebSocket listeners and disconnects the WebSocket connection.
-   * This is crucial for preventing memory leaks and ensuring proper resource management
-   * when the scene is no longer active.
-   */
-  teardownWebSocketListeners() {
+  destroy(options) {
+    console.log("🧹 Cleaning up RoomScene");
     this.isActive = false;
 
-    offSocketEvent("room_state_update", this.handleRoomStateUpdate);
-    offSocketEvent("room_closed", this.handleRoomClosed);
-    offSocketEvent("player_kicked", this.handlePlayerKicked); // ✅ Clean up new listener
-    offSocketEvent("player_left", this.handlePlayerLeft);
-    disconnectSocket();
-    offSocketEvent("start_game", this.handleGameStarted);
-    offSocketEvent("connection_failed", this.handleConnectionFailed);
+    // Disconnect WebSocket
+    if (this.socketManager) {
+      this.socketManager.disconnect();
+    }
+
+    // Clean up connection status component
     if (this.connectionStatus) {
       this.connectionStatus.destroy();
     }
-  }
 
-  /**
-   * Overrides the PixiJS Container's destroy method to perform custom cleanup.
-   * This ensures that WebSocket listeners are removed when the scene is destroyed.
-   * @param {object} [options] - Options passed to the super.destroy method.
-   */
-  destroy(options) {
-    this.teardownWebSocketListeners(); // Call custom cleanup method.
-    super.destroy(options); // Call the parent class's destroy method.
+    super.destroy(options);
   }
 }
