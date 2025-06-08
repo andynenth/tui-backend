@@ -1,4 +1,4 @@
-// frontend/scenes/RoomScene.js
+// frontend/scenes/RoomScene.js - Fixed duplicate WebSocket connection
 
 // Import necessary modules from PixiJS and local components/APIs.
 import { Container, Text, TextStyle } from "pixi.js"; // PixiJS Container for scene structure, Text for displaying text, TextStyle for text styling.
@@ -13,6 +13,7 @@ import {
   getSocketReadyState, // Function to get the WebSocket connection state.
 } from "../socketManager.js"; // WebSocket manager for real-time communication.
 import { ConnectionStatus } from "../components/ConnectionStatus.js";
+
 /**
  * RoomScene class represents the game room screen where players wait for a game to start,
  * join slots, or manage bots (for the host).
@@ -52,7 +53,7 @@ export class RoomScene extends Container {
     this.isActive = true; // Track if we're in this room
 
     this.connectionStatus = new ConnectionStatus();
-    
+
     // Create the room ID title.
     const title = new Text({
       text: `📦 Room ID: ${roomId}`,
@@ -86,19 +87,21 @@ export class RoomScene extends Container {
     // Initialize the slot views and fetch the initial room state.
     this.renderSlots(); // Renders the initial structure of slots (labels and buttons).
     this.refreshRoomState(); // Fetches the current state of the room from the backend.
-    this.setupWebSocketListeners(); // Sets up real-time updates via WebSocket.
+
+    setTimeout(() => {
+      this.setupWebSocketListeners();
+    }, 500); // Give backend time to set up
 
     // Create the "Start Game" button.
     this.startButton = new GameButton({
       label: "Start Game",
       onClick: async () => {
         try {
-          // ✅ เรียก API เพื่อเริ่มเกม
+          // Call API to start the game
           const result = await startGame(this.roomId);
           console.log("🚀 Game started!", result);
 
-          // ✅ ไม่ต้อง trigger event ที่นี่
-          // รอให้ WebSocket broadcast มาแทน
+          // Wait for WebSocket broadcast instead of triggering event directly
         } catch (err) {
           console.error("❌ Failed to start game", err);
           alert(`Failed to start game: ${err.message || "Unknown error"}`);
@@ -272,13 +275,6 @@ export class RoomScene extends Container {
             console.log(
               `[RoomScene.onClick] assignSlot API call sent for slot ${slotIndex}.`
             );
-            // ✅ Added immediate call to getRoomStateData after assignSlot for debugging.
-            const serverStateAfterClick = await getRoomStateData(this.roomId);
-            console.log(
-              "[RoomScene.onClick] Server State AFTER API Call (for Debug):",
-              serverStateAfterClick
-            );
-
             console.log(`[RoomScene.onClick] Awaiting WS update...`); // Expecting a WebSocket update.
           } catch (err) {
             console.error("❌ [RoomScene.onClick] Failed to toggle slot", err);
@@ -327,13 +323,13 @@ export class RoomScene extends Container {
       );
 
       if (!info) {
-        // Slot ว่าง
+        // Slot is empty
         if (this.isHost) {
           label.text = `${slot}: (Open)`;
           joinBtn.setText("Add bot");
           joinBtn.view.visible = true;
 
-          // ✅ สำคัญ: Re-assign onClick handler ทุกครั้ง
+          // Re-assign onClick handler
           joinBtn.onClick = async () => {
             try {
               console.log(
@@ -352,7 +348,7 @@ export class RoomScene extends Container {
         } else {
           // Hide join button from other players
           label.text = `${slot}: Open`;
-          joinBtn.view.visible = false; 
+          joinBtn.view.visible = false;
         }
       } else if (info.is_bot) {
         label.text = `${slot}: 🤖 ${info.name}`;
@@ -360,7 +356,7 @@ export class RoomScene extends Container {
           joinBtn.setText("Open");
           joinBtn.view.visible = true;
 
-          // ✅ Re-assign onClick for Open
+          // Re-assign onClick for Open
           joinBtn.onClick = async () => {
             try {
               console.log(
@@ -386,7 +382,7 @@ export class RoomScene extends Container {
           joinBtn.setText("Add bot");
           joinBtn.view.visible = true;
 
-          // ✅ Re-assign onClick, kick player
+          // Re-assign onClick, kick player
           joinBtn.onClick = async () => {
             try {
               console.log(
@@ -421,7 +417,16 @@ export class RoomScene extends Container {
    * This includes listening for room state changes, room closure, and player departures.
    */
   setupWebSocketListeners() {
-    disconnectSocket();
+    // Ensure we're truly disconnected first
+    if (getSocketReadyState().state === WebSocket.OPEN) {
+      console.log("⚠️ Socket still open, forcing disconnect");
+      disconnectSocket();
+
+      // Wait for socket to close
+      return setTimeout(() => this.setupWebSocketListeners(), 100);
+    }
+
+    // Only connect once (FIXED: removed duplicate connection)
     connectSocket(this.roomId);
 
     // Register listener for 'room_state_update' event
@@ -453,7 +458,7 @@ export class RoomScene extends Container {
     };
     onSocketEvent("room_closed", this.handleRoomClosed);
 
-    // ✅ Register listener for 'player_kicked' event
+    // Register listener for 'player_kicked' event
     this.handlePlayerKicked = (data) => {
       if (!this.isActive) return;
 
@@ -481,7 +486,7 @@ export class RoomScene extends Container {
 
       console.log("WS: Game started!", data);
 
-      // ส่ง event ไปที่ FSM พร้อมข้อมูลเกม
+      // Send event to FSM with game data
       this.triggerFSMEvent(GameEvents.GAME_STARTED, {
         roomId: this.roomId,
         gameData: data,
@@ -508,14 +513,16 @@ export class RoomScene extends Container {
 
     offSocketEvent("room_state_update", this.handleRoomStateUpdate);
     offSocketEvent("room_closed", this.handleRoomClosed);
-    offSocketEvent("player_kicked", this.handlePlayerKicked); // ✅ Clean up new listener
+    offSocketEvent("player_kicked", this.handlePlayerKicked);
     offSocketEvent("player_left", this.handlePlayerLeft);
-    disconnectSocket();
     offSocketEvent("start_game", this.handleGameStarted);
     offSocketEvent("connection_failed", this.handleConnectionFailed);
+    
     if (this.connectionStatus) {
       this.connectionStatus.destroy();
     }
+    
+    disconnectSocket();
   }
 
   /**
