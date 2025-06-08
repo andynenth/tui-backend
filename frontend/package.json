@@ -1,6 +1,7 @@
 {
   "name": "frontend",
   "version": "1.0.0",
+  "type": "module",
   "main": "main.js",
   "dependencies": {
     "@pixi/devtools": "^2.0.1",
@@ -107,7 +108,9 @@
   },
   "scripts": {
     "dev": "node esbuild.config.cjs",
-    "build": "esbuild main.js --bundle --outfile=../backend/static/bundle.js"
+    "build": "esbuild main.js --bundle --outfile=../backend/static/bundle.js",
+    "test": "node --experimental-vm-modules test-runner.js",
+    "test:manual": "echo 'Running manual verification tests...' && node manual-tests.js"
   },
   "keywords": [],
   "author": "",

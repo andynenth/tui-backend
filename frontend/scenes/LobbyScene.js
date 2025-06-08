@@ -11,7 +11,7 @@ import {
   off as offSocketEvent,
   disconnect as disconnectSocket,
   emit as emitSocketEvent,
-} from "../socketManager.js";
+} from "../network/index.js";
 
 /**
  * LobbyScene class represents the game lobby screen where players can
