@@ -1,8 +1,12 @@
-// ===== CONNECTION STATUS COMPONENT =====
-// frontend/components/ConnectionStatus.js
+// ===== frontend/components/ConnectionStatus.js =====
+// UPDATED VERSION - Using new network module
 
 import { Container, Text, TextStyle } from 'pixi.js';
-import { getConnectionStatus, on as onSocketEvent, off as offSocketEvent } from '../socketManager.js';
+// OLD IMPORT:
+// import { getConnectionStatus, on as onSocketEvent, off as offSocketEvent } from '../socketManager.js';
+
+// NEW IMPORT:
+import { getConnectionStatus, on as onSocketEvent, off as offSocketEvent } from '../network/index.js';
 
 export class ConnectionStatus {
     constructor() {

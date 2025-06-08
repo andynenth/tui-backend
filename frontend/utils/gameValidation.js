@@ -1,7 +1,7 @@
 // ===== FRONTEND VALIDATION =====
 // frontend/utils/gameValidation.js
 
-import { PIECE_POINTS } from '../constants.js';
+//import { PIECE_POINTS } from './constants.js';
 
 /**
  * Validates if a play is a valid combination

@@ -6,13 +6,15 @@ import { GameButton } from "../components/GameButton.js"; // Custom Button compo
 import { getRoomStateData, assignSlot, startGame } from "../api.js"; // API functions for interacting with the backend.
 import { GameEvents } from "../SceneFSM.js"; // GameEvents enum for triggering state transitions in the FSM.
 import {
-  connect as connectSocket, // Function to establish WebSocket connection.
-  on as onSocketEvent, // Function to register WebSocket event listeners.
-  disconnect as disconnectSocket, // Function to close WebSocket connection.
-  off as offSocketEvent, // Function to unregister WebSocket event listeners.
-  getSocketReadyState, // Function to get the WebSocket connection state.
-} from "../socketManager.js"; // WebSocket manager for real-time communication.
+  connect as connectSocket,
+  on as onSocketEvent,
+  disconnect as disconnectSocket,
+  off as offSocketEvent,
+} from "../network/index.js"; // WebSocket manager for real-time communication.
 import { ConnectionStatus } from "../components/ConnectionStatus.js";
+import { SocketManager } from "../network/SocketManager.js";
+
+
 /**
  * RoomScene class represents the game room screen where players wait for a game to start,
  * join slots, or manage bots (for the host).
@@ -52,7 +54,15 @@ export class RoomScene extends Container {
     this.isActive = true; // Track if we're in this room
 
     this.connectionStatus = new ConnectionStatus();
-    
+
+    this.socketManager = new SocketManager({
+      enableReconnection: true,
+      reconnection: {
+        maxAttempts: 10,
+        baseDelay: 2000,
+      },
+    });
+
     // Create the room ID title.
     const title = new Text({
       text: `📦 Room ID: ${roomId}`,
@@ -352,7 +362,7 @@ export class RoomScene extends Container {
         } else {
           // Hide join button from other players
           label.text = `${slot}: Open`;
-          joinBtn.view.visible = false; 
+          joinBtn.view.visible = false;
         }
       } else if (info.is_bot) {
         label.text = `${slot}: 🤖 ${info.name}`;
@@ -421,6 +431,15 @@ export class RoomScene extends Container {
    * This includes listening for room state changes, room closure, and player departures.
    */
   setupWebSocketListeners() {
+    // Show reconnection status to user
+    this.socketManager.on("reconnecting", (status) => {
+      this.connectionStatus.text = `🟡 Reconnecting... (${status.attempts}/${status.maxAttempts})`;
+    });
+
+    this.socketManager.on("reconnected", () => {
+      this.connectionStatus.text = "🟢 Connected";
+    });
+
     disconnectSocket();
     connectSocket(this.roomId);
 
