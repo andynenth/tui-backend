@@ -4,12 +4,12 @@ import { Container, Text, TextStyle } from "pixi.js";
 import { GameButton } from "../components/GameButton.js";
 import { GameTextbox } from "../components/GameTextbox.js";
 import { GameEvents } from "../SceneFSM.js";
-import {
-  on as onSocketEvent,
-  off as offSocketEvent,
-  emit as emitSocketEvent,
-} from "../network/index.js";
-
+// import {
+//   on as onSocketEvent,
+//   off as offSocketEvent,
+//   emit as emitSocketEvent,
+// } from "../network/index.js";
+// import { SocketManager } from "../network/SocketManager.js";
 export class GameScene extends Container {
   constructor(roomId, playerName, gameData, triggerFSMEvent) {
     super();
@@ -19,6 +19,45 @@ export class GameScene extends Container {
     this.gameData = gameData;
     this.triggerFSMEvent = triggerFSMEvent;
 
+    // Feature flag
+    // this.USE_NEW_ARCHITECTURE = process.env.NODE_ENV === "development";
+    this.USE_NEW_ARCHITECTURE = true;
+
+    if (this.USE_NEW_ARCHITECTURE) {
+      this._initializeNewArchitecture();
+    } else {
+      this._initializeOldArchitecture();
+    }
+  }
+
+  _initializeNewArchitecture() {
+    // New modular approach
+    this.socketManager = new SocketManager();
+    this.stateManager = new GameStateManager(
+      this.roomId,
+      this.playerName,
+      this.gameData
+    );
+    this.uiRenderer = new GameUIRenderer(this, this.stateManager);
+    this.eventHandler = new GameEventHandler(
+      this.socketManager,
+      this.stateManager,
+      this.phaseManager
+    );
+    this.phaseManager = new GamePhaseManager(
+      this.stateManager,
+      this.socketManager,
+      this.uiRenderer
+    );
+
+    // Connect and start
+    this.socketManager.connect(this.roomId).then(() => {
+      this.eventHandler.connect();
+      this.phaseManager.start();
+    });
+  }
+
+  _initializeOldArchitecture() {
     // Game state
     this.currentRound = gameData.round || 1;
     this.players = gameData.players || [];
@@ -168,6 +207,11 @@ export class GameScene extends Container {
   // ===== GAME PHASES =====
 
   async checkForRedeal() {
+    if (this.USE_NEW_ARCHITECTURE) {
+      // New architecture handles this in RedealPhase
+      return;
+    }
+
     const hasStrongPiece = this.myHand.some((card) => {
       const match = card.match(/\((\d+)\)/);
       return match && parseInt(match[1]) > 9;
@@ -452,6 +496,11 @@ export class GameScene extends Container {
   // ===== WEBSOCKET HANDLERS =====
 
   setupWebSocketListeners() {
+    if (this.USE_NEW_ARCHITECTURE) {
+      // Handled by GameEventHandler
+      return;
+    }
+
     // Handle declarations
     this.handleDeclare = (data) => {
       if (data.is_bot) {
