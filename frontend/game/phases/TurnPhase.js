@@ -33,7 +33,7 @@ export class TurnPhase extends BasePhase {
     console.log("\n--- Turn Phase ---");
     
     // Show UI
-    this.uiManager.showTurnPhase();
+    this.uiRenderer.showTurnPhase();
     
     // Initialize first turn
     this.initializeFirstTurn();
@@ -93,7 +93,7 @@ export class TurnPhase extends BasePhase {
     console.log(`\n--- Turn ${this.stateManager.currentTurnNumber} ---`);
     
     // Show hand
-    this.uiManager.displayHand(this.stateManager.myHand);
+    this.uiRenderer.displayHand(this.stateManager.myHand);
     
     // Show declaration reminder
     const myDeclaration = this.stateManager.declarations[this.stateManager.playerName];
@@ -113,7 +113,7 @@ export class TurnPhase extends BasePhase {
       validator = this.validateFollowPlay.bind(this, required);
     }
     
-    const input = await this.uiManager.showInput(prompt, validator);
+    const input = await this.uiRenderer.showInput(prompt, validator);
     
     // Parse indices
     const indices = input.trim().split(/\s+/).map(i => parseInt(i));
@@ -187,7 +187,7 @@ export class TurnPhase extends BasePhase {
       if (!response.ok) {
         const errorText = await response.text();
         console.error("Server error:", errorText);
-        this.uiManager.showError("Failed to play turn");
+        this.uiRenderer.showError("Failed to play turn");
         this.waitingForPlay = false;
         return;
       }
@@ -196,7 +196,7 @@ export class TurnPhase extends BasePhase {
       
       if (result.status === "error") {
         console.error("❌", result.message);
-        this.uiManager.showError(result.message);
+        this.uiRenderer.showError(result.message);
         this.waitingForPlay = false;
         return;
       }
@@ -216,7 +216,7 @@ export class TurnPhase extends BasePhase {
       
     } catch (err) {
       console.error("Failed to play turn:", err);
-      this.uiManager.showError("Network error. Please try again.");
+      this.uiRenderer.showError("Network error. Please try again.");
       this.waitingForPlay = false;
     }
   }
@@ -241,7 +241,7 @@ export class TurnPhase extends BasePhase {
     this.stateManager.addTurnPlay(player, pieces, valid);
     
     // Update UI
-    this.uiManager.updateTurnPlay(player, pieces, valid, play_type);
+    this.uiRenderer.updateTurnPlay(player, pieces, valid, play_type);
     
     // Check if we need to play
     const progress = this.stateManager.getTurnProgress();
@@ -292,7 +292,7 @@ export class TurnPhase extends BasePhase {
     }
     
     // Update UI
-    this.uiManager.showTurnResult(data);
+    this.uiRenderer.showTurnResult(data);
     
     // Check if round is complete
     if (this.stateManager.myHand.length === 0) {
@@ -388,7 +388,7 @@ export class TurnPhase extends BasePhase {
     this.isProcessingTurn = false;
     
     // Hide UI
-    this.uiManager.hideTurnPhase();
+    this.uiRenderer.hideTurnPhase();
     
     await super.exit();
   }

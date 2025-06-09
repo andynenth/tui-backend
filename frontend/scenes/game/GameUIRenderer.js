@@ -1,13 +1,13 @@
 // frontend/scenes/game/GameUIRenderer.js
 
-import { Container, Text, TextStyle } from 'pixi.js';
-import { GameTextbox } from '../../components/GameTextbox.js';
-import { GameButton } from '../../components/GameButton.js';
+import { Container, Text, TextStyle } from "pixi.js";
+import { GameTextbox } from "../../components/GameTextbox.js";
+import { GameButton } from "../../components/GameButton.js";
 
 /**
  * Handles all UI rendering for the game
  * Separates presentation logic from game logic
- * 
+ *
  * Responsibilities:
  * - Create and manage UI components
  * - Update UI based on game state
@@ -17,34 +17,34 @@ import { GameButton } from '../../components/GameButton.js';
 export class GameUIRenderer extends Container {
   constructor(gameScene) {
     super();
-    
+
     this.gameScene = gameScene;
     this.parentContainer = gameScene;
-    
+
     // UI containers
     this.containers = {
       header: new Container(),
       main: new Container(),
       input: new Container(),
-      footer: new Container()
+      footer: new Container(),
     };
-    
+
     // UI components
     this.components = {
       statusText: null,
       handDisplay: null,
       inputBox: null,
       submitButton: null,
-      phaseIndicator: null
+      phaseIndicator: null,
     };
-    
+
     // Input state
     this.currentInputCallback = null;
     this.inputValidator = null;
-    
+
     // Add self to parent
     gameScene.addChild(this);
-    
+
     this.setupLayout();
   }
 
@@ -70,18 +70,18 @@ export class GameUIRenderer extends Container {
       alignItems: "center",
       justifyContent: "flex-start",
       padding: 20,
-      gap: 20
+      gap: 20,
     };
-    
+
     // Header layout
     this.containers.header.layout = {
       width: "100%",
       height: "auto",
       flexDirection: "column",
       alignItems: "center",
-      gap: 10
+      gap: 10,
     };
-    
+
     // Main content layout
     this.containers.main.layout = {
       width: "100%",
@@ -89,27 +89,27 @@ export class GameUIRenderer extends Container {
       flexDirection: "column",
       alignItems: "center",
       justifyContent: "center",
-      gap: 20
+      gap: 20,
     };
-    
+
     // Input layout
     this.containers.input.layout = {
       flexDirection: "row",
       gap: 8,
-      alignItems: "center"
+      alignItems: "center",
     };
-    
+
     // Footer layout
     this.containers.footer.layout = {
       width: "100%",
       height: "auto",
       flexDirection: "row",
       justifyContent: "space-between",
-      alignItems: "center"
+      alignItems: "center",
     };
-    
+
     // Add containers to self
-    Object.values(this.containers).forEach(container => {
+    Object.values(this.containers).forEach((container) => {
       this.addChild(container);
     });
   }
@@ -121,41 +121,41 @@ export class GameUIRenderer extends Container {
     // Status text
     this.components.statusText = new Text({
       text: `Game Room: ${this.stateManager.roomId}`,
-      style: new TextStyle({ 
-        fill: "#666666", 
-        fontSize: 14 
-      })
+      style: new TextStyle({
+        fill: "#666666",
+        fontSize: 14,
+      }),
     });
     this.containers.header.addChild(this.components.statusText);
-    
+
     // Phase indicator
     this.components.phaseIndicator = new Text({
-      text: '',
-      style: new TextStyle({ 
-        fill: "#ffffff", 
+      text: "",
+      style: new TextStyle({
+        fill: "#ffffff",
         fontSize: 20,
-        fontWeight: 'bold'
-      })
+        fontWeight: "bold",
+      }),
     });
     this.containers.header.addChild(this.components.phaseIndicator);
-    
+
     // Input components
     this.components.inputBox = new GameTextbox({
       placeholder: "Your input",
-      width: 300
+      width: 300,
     });
-    
+
     this.components.submitButton = new GameButton({
       label: "Enter",
       width: 80,
-      onClick: () => this.handleSubmit()
+      onClick: () => this.handleSubmit(),
     });
-    
+
     this.containers.input.addChild(
       this.components.inputBox.view,
       this.components.submitButton.view
     );
-    
+
     // Hide input by default
     this.containers.input.visible = false;
   }
@@ -166,7 +166,7 @@ export class GameUIRenderer extends Container {
    * Show redeal phase UI
    */
   showRedealPhase() {
-    this.updatePhaseIndicator('Redeal Check');
+    this.updatePhaseIndicator("Redeal Check");
     this.clearMainContent();
   }
 
@@ -174,16 +174,16 @@ export class GameUIRenderer extends Container {
    * Show declaration phase UI
    */
   showDeclarationPhase() {
-    this.updatePhaseIndicator('Declaration Phase');
+    this.updatePhaseIndicator("Declaration Phase");
     this.clearMainContent();
-    
+
     // Show declaration progress
     const progressText = new Text({
-      text: 'Waiting for declarations...',
-      style: new TextStyle({ 
-        fill: "#ffffff", 
-        fontSize: 16 
-      })
+      text: "Waiting for declarations...",
+      style: new TextStyle({
+        fill: "#ffffff",
+        fontSize: 16,
+      }),
     });
     this.containers.main.addChild(progressText);
   }
@@ -192,7 +192,7 @@ export class GameUIRenderer extends Container {
    * Show turn phase UI
    */
   showTurnPhase() {
-    this.updatePhaseIndicator('Turn Phase');
+    this.updatePhaseIndicator("Turn Phase");
     this.clearMainContent();
   }
 
@@ -200,7 +200,7 @@ export class GameUIRenderer extends Container {
    * Show scoring phase UI
    */
   showScoringPhase() {
-    this.updatePhaseIndicator('Scoring');
+    this.updatePhaseIndicator("Scoring");
     this.clearMainContent();
   }
 
@@ -212,11 +212,11 @@ export class GameUIRenderer extends Container {
   async showInput(prompt, validator = null) {
     return new Promise((resolve) => {
       console.log(`\n${prompt}`);
-      
+
       this.containers.input.visible = true;
       this.components.inputBox.setText("");
       this.components.inputBox.focus();
-      
+
       this.currentInputCallback = resolve;
       this.inputValidator = validator;
     });
@@ -228,21 +228,21 @@ export class GameUIRenderer extends Container {
   showDeclarationInput(validOptions, callback) {
     // Could enhance this with buttons for each option
     this.showInput(
-      `Enter declaration (${validOptions.join(', ')}):`,
+      `Enter declaration (${validOptions.join(", ")}):`,
       (value) => {
         const num = parseInt(value);
         if (isNaN(num)) {
           return { valid: false, message: "Please enter a number" };
         }
         if (!validOptions.includes(num)) {
-          return { 
-            valid: false, 
-            message: `Choose from [${validOptions.join(", ")}]` 
+          return {
+            valid: false,
+            message: `Choose from [${validOptions.join(", ")}]`,
           };
         }
         return { valid: true };
       }
-    ).then(value => {
+    ).then((value) => {
       callback(parseInt(value));
     });
   }
@@ -261,10 +261,10 @@ export class GameUIRenderer extends Container {
    */
   handleSubmit() {
     if (!this.currentInputCallback) return;
-    
+
     const value = this.components.inputBox.getText().trim();
     if (!value) return;
-    
+
     // Validate if validator provided
     if (this.inputValidator) {
       const result = this.inputValidator(value);
@@ -273,11 +273,14 @@ export class GameUIRenderer extends Container {
         return;
       }
     }
-    
-    // Hide and resolve
-    this.hideInput();
+
+    // Save callback BEFORE hiding input
     const callback = this.currentInputCallback;
-    this.currentInputCallback = null;
+
+    // Now hide and clear
+    this.hideInput();
+
+    // Call the saved callback
     callback(value);
   }
 
@@ -291,7 +294,7 @@ export class GameUIRenderer extends Container {
     hand.forEach((card, i) => {
       console.log(`${i}: ${card}`);
     });
-    
+
     // TODO: Create visual hand display
   }
 
@@ -334,17 +337,17 @@ export class GameUIRenderer extends Container {
    */
   showError(message) {
     console.error(`❌ ${message}`);
-    
+
     const errorText = new Text({
       text: message,
-      style: new TextStyle({ 
-        fill: "#ff0000", 
-        fontSize: 16 
-      })
+      style: new TextStyle({
+        fill: "#ff0000",
+        fontSize: 16,
+      }),
     });
     errorText.position.set(10, 200);
     this.containers.main.addChild(errorText);
-    
+
     // Remove after 3 seconds
     setTimeout(() => {
       if (errorText.parent) {
@@ -374,19 +377,20 @@ export class GameUIRenderer extends Container {
    */
   showGameResults(data) {
     this.clearMainContent();
-    this.updatePhaseIndicator('Game Over');
-    
+    this.updatePhaseIndicator("Game Over");
+
     const gameOverText = new Text({
-      text: data.winners?.length > 0 
-        ? `🏆 Winner: ${data.winners.join(', ')}`
-        : '🎮 Game Over!',
-      style: new TextStyle({ 
-        fill: "#00ff00", 
+      text:
+        data.winners?.length > 0
+          ? `🏆 Winner: ${data.winners.join(", ")}`
+          : "🎮 Game Over!",
+      style: new TextStyle({
+        fill: "#00ff00",
         fontSize: 30,
-        fontWeight: 'bold'
-      })
+        fontWeight: "bold",
+      }),
     });
-    
+
     this.containers.main.addChild(gameOverText);
   }
 
@@ -396,13 +400,13 @@ export class GameUIRenderer extends Container {
    * Destroy all UI components
    */
   destroy(options) {
-    Object.values(this.containers).forEach(container => {
+    Object.values(this.containers).forEach((container) => {
       container.destroy({ children: true });
     });
-    
+
     this.components = {};
     this.containers = {};
-    
+
     super.destroy(options);
   }
 }

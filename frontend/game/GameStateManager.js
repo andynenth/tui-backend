@@ -80,16 +80,93 @@ export class GameStateManager extends EventEmitter {
   }
 
   /**
-   * Remove cards from hand
+   * Check if it's player's turn to declare
    */
-//   removeFromHand(cards) {
-//     const cardsToRemove = Array.isArray(cards) ? cards : [cards];
-//     this.myHand = this.myHand.filter((card) => !cardsToRemove.includes(card));
-//     this.emit("handUpdated", {
-//       hand: this.myHand,
-//       removed: cardsToRemove,
-//     });
-//   }
+  isMyTurnToDeclare() {
+    // Get players in declaration order (starting from starter)
+    const starterIndex = this.players.findIndex((p) => p.name === this.starter);
+    const orderedPlayers = [
+      ...this.players.slice(starterIndex),
+      ...this.players.slice(0, starterIndex),
+    ];
+
+    // Find first player who hasn't declared
+    for (const player of orderedPlayers) {
+      if (!(player.name in this.declarations)) {
+        return player.name === this.playerName;
+      }
+    }
+
+    return false;
+  }
+
+  /**
+   * Check if all players have declared
+   */
+  areAllPlayersDeclarated() {
+    // Check if every player has a declaration (not just if key exists)
+    return this.players.every(
+      (player) =>
+        player.name in this.declarations &&
+        this.declarations[player.name] !== undefined
+    );
+  }
+
+  /**
+   * Get valid declaration options
+   */
+  getValidDeclarationOptions(isLastPlayer) {
+    const handSize = this.myHand.length;
+    const options = [];
+
+    // Basic options 0 to hand size
+    for (let i = 0; i <= handSize; i++) {
+      options.push(i);
+    }
+
+    // Apply game rules
+    const myPlayer = this.getMyPlayer();
+
+    // Rule: If declared 0 twice, must declare at least 1
+    if (myPlayer?.zero_declares_in_a_row >= 2) {
+      options.splice(0, 1); // Remove 0
+    }
+
+    // Rule: If last player, total cannot equal 8
+    if (isLastPlayer) {
+      const currentTotal = Object.values(this.declarations).reduce(
+        (sum, v) => sum + (v || 0),
+        0
+      );
+      const forbidden = 8 - currentTotal;
+      const index = options.indexOf(forbidden);
+      if (index > -1) {
+        options.splice(index, 1);
+      }
+    }
+
+    return options;
+  }
+
+  /**
+   * Get declaration progress
+   */
+  getDeclarationProgress() {
+    const declared = Object.keys(this.declarations).length;
+    const total = this.players.length;
+    return {
+      declared,
+      total,
+      percentage: (declared / total) * 100,
+    };
+  }
+
+  /**
+   * Get my player data
+   */
+  getMyPlayer() {
+    return this.players.find((p) => p.name === this.playerName);
+  }
 
   // ===== DECLARATION MANAGEMENT =====
 
