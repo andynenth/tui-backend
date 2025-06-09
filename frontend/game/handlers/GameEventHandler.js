@@ -33,8 +33,8 @@ export class GameEventHandler {
     console.log('📡 Connecting game event handlers');
     
     // Connect to game WebSocket
-    const url = `/ws/game?room_id=${this.stateManager.roomId}&name=${this.stateManager.playerName}`;
-    await this.socketManager.connect(url, 'game');
+    // const url = `/ws/game?room_id=${this.stateManager.roomId}&name=${this.stateManager.playerName}`;
+    await this.socketManager.connect(this.stateManager.roomId);
     
     // Set up event listeners
     Object.entries(this.eventHandlers).forEach(([event, handler]) => {
