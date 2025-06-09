@@ -54,8 +54,8 @@ export class RedealPhase extends BasePhase {
     console.log(`${starter} starts the game (${startReason})\n`);
     
     // Update UI
-    this.uiManager.showRedealPhase();
-    this.uiManager.updatePhaseIndicator(`Round ${this.stateManager.currentRound} - Redeal Check`);
+    this.uiRenderer.showRedealPhase();
+    this.uiRenderer.updatePhaseIndicator(`Round ${this.stateManager.currentRound} - Redeal Check`);
   }
 
   /**
@@ -92,12 +92,12 @@ export class RedealPhase extends BasePhase {
     this.waitingForResponse = true;
     
     // Show hand
-    this.uiManager.displayHand(this.stateManager.myHand);
+    this.uiRenderer.displayHand(this.stateManager.myHand);
     
     // Show redeal prompt
     console.log("⚠️ You have no pieces > 9 points. Request redeal?");
     
-    const response = await this.uiManager.showInput(
+    const response = await this.uiRenderer.showInput(
       "Request redeal? (y/n):",
       (input) => {
         const lower = input.toLowerCase();
@@ -138,12 +138,12 @@ export class RedealPhase extends BasePhase {
         // Wait for new hand via socket
       } else {
         console.log("❌ Redeal not allowed:", result.reason);
-        this.uiManager.showError(result.reason);
+        this.uiRenderer.showError(result.reason);
         this.skipRedeal();
       }
     } catch (err) {
       console.error("Failed to request redeal:", err);
-      this.uiManager.showError("Failed to request redeal");
+      this.uiRenderer.showError("Failed to request redeal");
       this.skipRedeal();
     }
   }
@@ -182,7 +182,7 @@ export class RedealPhase extends BasePhase {
     this.stateManager.redealMultiplier = data.multiplier;
     
     // Show in UI
-    this.uiManager.showSuccess(`${data.player} requested redeal. Multiplier: x${data.multiplier}`);
+    this.uiRenderer.showSuccess(`${data.player} requested redeal. Multiplier: x${data.multiplier}`);
   }
 
   /**

@@ -30,7 +30,7 @@ export class ScoringPhase extends BasePhase {
     console.log("\n🏁 --- End of Round ---");
     
     // Show UI
-    this.uiManager.showScoringPhase();
+    this.uiRenderer.showScoringPhase();
     
     // Request scoring from server
     this.requestScoring();
@@ -57,7 +57,7 @@ export class ScoringPhase extends BasePhase {
       
       if (!response.ok) {
         console.error("Failed to score round");
-        this.uiManager.showError("Failed to calculate scores");
+        this.uiRenderer.showError("Failed to calculate scores");
         return;
       }
       
@@ -65,7 +65,7 @@ export class ScoringPhase extends BasePhase {
       
     } catch (err) {
       console.error("Failed to request scoring:", err);
-      this.uiManager.showError("Network error during scoring");
+      this.uiRenderer.showError("Network error during scoring");
     }
   }
 
@@ -143,7 +143,7 @@ export class ScoringPhase extends BasePhase {
     }
     
     // Update UI
-    this.uiManager.showScoreSummary(summary);
+    this.uiRenderer.showScoreSummary(summary);
     
     // Show current standings
     this.displayCurrentStandings();
@@ -194,7 +194,7 @@ export class ScoringPhase extends BasePhase {
       // Check if we won
       if (this.winners[0] === this.stateManager.playerName) {
         console.log("🎉 Congratulations! You won!");
-        this.uiManager.showSuccess("Victory! You won the game!");
+        this.uiRenderer.showSuccess("Victory! You won the game!");
       } else {
         console.log(`Better luck next time!`);
       }
@@ -203,7 +203,7 @@ export class ScoringPhase extends BasePhase {
       
       if (this.winners.includes(this.stateManager.playerName)) {
         console.log("🎉 Congratulations! You tied for the win!");
-        this.uiManager.showSuccess("You tied for the win!");
+        this.uiRenderer.showSuccess("You tied for the win!");
       }
     } else {
       console.log("\n🤷 No winner determined");
@@ -219,7 +219,7 @@ export class ScoringPhase extends BasePhase {
       });
     
     // Update UI
-    this.uiManager.showGameOver({
+    this.uiRenderer.showGameOver({
       winners: this.winners,
       finalScores: this.stateManager.totalScores,
       gameOver: true
@@ -308,7 +308,7 @@ export class ScoringPhase extends BasePhase {
    */
   async exit() {
     // Hide scoring UI
-    this.uiManager.hideScoringPhase();
+    this.uiRenderer.hideScoringPhase();
     
     // Reset state
     this.scoringComplete = false;
