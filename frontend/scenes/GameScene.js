@@ -1,4 +1,4 @@
-// frontend/scenes/GameScene.js - Refactored Version
+// frontend/scenes/GameScene.js - New Architecture Only
 
 import { Container } from "pixi.js";
 import { GameEvents } from "../SceneFSM.js";
@@ -12,11 +12,8 @@ import { UserInputHandler } from "../game/handlers/UserInputHandler.js";
 import { GameUIRenderer } from "./game/GameUIRenderer.js";
 
 /**
- * GameScene - Refactored to be a thin orchestrator
- * 
- * Old: 700+ lines handling everything
- * New: <150 lines orchestrating specialized components
- * 
+ * GameScene - Clean implementation using only new architecture
+ *
  * Responsibilities:
  * - Initialize game components
  * - Coordinate between managers
@@ -31,159 +28,159 @@ export class GameScene extends Container {
     this.gameData = gameData;
     this.triggerFSMEvent = triggerFSMEvent;
 
-    // Feature flag for gradual rollout
-    this.USE_NEW_ARCHITECTURE = this._shouldUseNewArchitecture();
+    console.log("🔵 Entered GameScene (New Architecture)");
+    console.log("📊 Game data:", gameData);
 
-    if (this.USE_NEW_ARCHITECTURE) {
-      console.log("🚀 Using new modular GameScene architecture");
-      this._initializeNewArchitecture();
-    } else {
-      console.log("📦 Using legacy GameScene implementation");
-      this._initializeLegacyArchitecture();
-    }
+    this._initialize();
   }
 
   /**
-   * Determine if new architecture should be used
+   * Initialize all game components
    */
-  _shouldUseNewArchitecture() {
-    // Check feature flag from environment
-    if (process.env.USE_NEW_GAME_ARCHITECTURE === 'true') {
-      return true;
-    }
-    
-    // Check URL parameter for testing
-    const urlParams = new URLSearchParams(window.location.search);
-    if (urlParams.get('newGameArch') === 'true') {
-      return true;
-    }
-    
-    // Gradual rollout - enable for % of users
-    const rolloutPercentage = parseInt(process.env.GAME_ARCH_ROLLOUT || '0');
-    if (rolloutPercentage > 0) {
-      const userHash = this._hashString(this.playerName);
-      return (userHash % 100) < rolloutPercentage;
-    }
-    
-    return false;
-  }
-
-  /**
-   * Simple hash function for gradual rollout
-   */
-  _hashString(str) {
-    let hash = 0;
-    for (let i = 0; i < str.length; i++) {
-      const char = str.charCodeAt(i);
-      hash = ((hash << 5) - hash) + char;
-      hash = hash & hash; // Convert to 32-bit integer
-    }
-    return Math.abs(hash);
-  }
-
-  /**
-   * Initialize new modular architecture
-   */
-  async _initializeNewArchitecture() {
+  async _initialize() {
     try {
-      // Create socket manager
-      this.socketManager = new SocketManager({
-        enableReconnection: true,
-        enableMessageQueue: true,
-        reconnection: {
-          maxAttempts: 10,
-          baseDelay: 2000
-        }
-      });
+      console.log("🚀 Initializing game components...");
 
-      // Create game state manager
+      // 1. Create state manager
       this.stateManager = new GameStateManager(
         this.roomId,
         this.playerName,
         this.gameData
       );
+      console.log("✅ GameStateManager initialized");
 
-      // Create UI renderer
-      this.uiRenderer = new GameUIRenderer(this, this.stateManager);
+      // 2. Create socket manager
+      this.socketManager = new SocketManager();
+      console.log("✅ SocketManager initialized");
 
-      // Create phase manager
+      // 3. Create UI renderer
+      this.uiRenderer = new GameUIRenderer(this);
+      console.log("✅ GameUIRenderer initialized");
+
+      // 4. Create phase manager
       this.phaseManager = new GamePhaseManager(
         this.stateManager,
         this.socketManager,
         this.uiRenderer
       );
+      console.log("✅ GamePhaseManager initialized");
 
-      // Create event handler
+      // 5. Create event handler
       this.eventHandler = new GameEventHandler(
-        this.socketManager,
         this.stateManager,
-        this.phaseManager
-      );
-
-      // Create input handler
-      this.inputHandler = new UserInputHandler(
         this.phaseManager,
+        this.socketManager
+      );
+      console.log("✅ GameEventHandler initialized");
+
+      // 6. Create input handler
+      this.inputHandler = new UserInputHandler(
+        this.stateManager,
+        this.phaseManager,
+        this.socketManager,
         this.uiRenderer
       );
+      console.log("✅ UserInputHandler initialized");
 
-      // Set up event listeners
+      // 7. Connect to game socket
+      await this.eventHandler.connect();
+      console.log("✅ Connected to game socket");
+
+      // 8. Initialize UI
+      await this.uiRenderer.initialize(this.gameData);
+      console.log("✅ UI initialized");
+
+      // 9. Set up event listeners
       this._setupEventListeners();
+      console.log("✅ Event listeners set up");
 
-      // Connect to room
-      await this.socketManager.connect(this.roomId);
-      console.log("✅ Connected to game room");
+      // 10. Start game based on initial state
+      this._startInitialPhase();
 
-      // Initialize components
-      this.eventHandler.connect();
-      this.inputHandler.initialize();
-
-      // Start game flow
-      this.phaseManager.start();
-
-      // Log successful initialization
-      console.log("✅ New game architecture initialized successfully");
-      
+      console.log("🎮 Game initialization complete!");
     } catch (error) {
-      console.error("❌ Failed to initialize new architecture:", error);
-      
-      // Fallback to legacy
-      console.log("⚠️ Falling back to legacy architecture");
-      this.USE_NEW_ARCHITECTURE = false;
-      this._initializeLegacyArchitecture();
+      console.error("❌ Failed to initialize game:", error);
+      this.handleInitializationError(error);
     }
   }
 
   /**
-   * Set up event listeners for new architecture
+   * Set up event listeners
    */
   _setupEventListeners() {
     // Listen for game ending events
-    this.stateManager.on('gameEnded', (data) => {
+    this.stateManager.on("gameEnded", (data) => {
       this.handleGameEnd(data);
     });
 
     // Listen for room closed events
-    this.stateManager.on('roomClosed', (data) => {
+    this.stateManager.on("roomClosed", (data) => {
       this.handleRoomClosed(data);
     });
 
     // Listen for player quit
-    this.stateManager.on('playerQuit', () => {
+    this.stateManager.on("playerQuit", () => {
       this.handlePlayerQuit();
     });
+
+    // Listen for phase transitions
+    this.phaseManager.on("phaseChanged", (data) => {
+      console.log(`🔄 Phase changed: ${data.from} → ${data.to}`);
+    });
+  }
+
+  /**
+   * Start the appropriate initial phase
+   */
+  _startInitialPhase() {
+    // Determine initial phase based on game state
+    const { need_redeal, starter, round } = this.gameData;
+
+    if (need_redeal) {
+      console.log("🔄 Starting with redeal phase");
+      this.phaseManager.transitionTo("redeal");
+    } else if (starter) {
+      console.log("📣 Starting with declaration phase");
+      this.phaseManager.transitionTo("declaration");
+    } else {
+      console.log("⚠️ Unknown initial state, starting with waiting phase");
+      this.phaseManager.transitionTo("waiting");
+    }
+  }
+
+  /**
+   * Handle initialization errors
+   */
+  handleInitializationError(error) {
+    console.error("Failed to initialize game:", error);
+
+    // Show error message to user
+    if (this.uiRenderer) {
+      this.uiRenderer.showError(
+        "Failed to initialize game. Returning to lobby..."
+      );
+    }
+
+    // Return to lobby after delay
+    setTimeout(() => {
+      this.triggerFSMEvent(GameEvents.EXIT_ROOM);
+    }, 3000);
   }
 
   /**
    * Handle game ending
    */
   handleGameEnd(data) {
-    console.log("🏁 Game ended, returning to lobby");
-    
-    // Clean up
-    this.cleanup();
-    
+    console.log("🏁 Game ended, showing results");
+
+    // Show game results
+    if (this.uiRenderer) {
+      this.uiRenderer.showGameResults(data);
+    }
+
     // Return to lobby after delay
     setTimeout(() => {
+      this.cleanup();
       this.triggerFSMEvent(GameEvents.EXIT_ROOM);
     }, 5000);
   }
@@ -193,10 +190,17 @@ export class GameScene extends Container {
    */
   handleRoomClosed(data) {
     console.log("🚪 Room closed:", data.message);
-    
+
+    // Show message to user
+    if (this.uiRenderer) {
+      this.uiRenderer.showError(data.message || "Room closed");
+    }
+
     // Clean up and return to lobby
-    this.cleanup();
-    this.triggerFSMEvent(GameEvents.EXIT_ROOM);
+    setTimeout(() => {
+      this.cleanup();
+      this.triggerFSMEvent(GameEvents.EXIT_ROOM);
+    }, 2000);
   }
 
   /**
@@ -204,12 +208,12 @@ export class GameScene extends Container {
    */
   handlePlayerQuit() {
     console.log("👋 Player quit");
-    
+
     // Notify server
     fetch(`/api/exit-room?room_id=${this.roomId}&name=${this.playerName}`, {
-      method: 'POST'
-    }).catch(err => console.error("Failed to notify exit:", err));
-    
+      method: "POST",
+    }).catch((err) => console.error("Failed to notify exit:", err));
+
     // Clean up and return
     this.cleanup();
     this.triggerFSMEvent(GameEvents.EXIT_ROOM);
@@ -219,30 +223,39 @@ export class GameScene extends Container {
    * Clean up resources
    */
   cleanup() {
-    if (this.USE_NEW_ARCHITECTURE) {
-      // Clean up new architecture
-      if (this.inputHandler) {
-        this.inputHandler.destroy();
-      }
-      
-      if (this.eventHandler) {
-        this.eventHandler.disconnect();
-      }
-      
-      if (this.phaseManager) {
-        this.phaseManager.destroy();
-      }
-      
-      if (this.socketManager) {
-        this.socketManager.disconnect();
-      }
-      
-      if (this.uiRenderer) {
-        this.uiRenderer.destroy();
-      }
-    } else {
-      // Clean up legacy
-      this._cleanupLegacy();
+    console.log("🧹 Cleaning up GameScene");
+
+    // Clean up in reverse order of creation
+    if (this.inputHandler) {
+      this.inputHandler.destroy();
+      this.inputHandler = null;
+    }
+
+    if (this.eventHandler) {
+      this.eventHandler.disconnect();
+      this.eventHandler = null;
+    }
+
+    if (this.phaseManager) {
+      this.phaseManager.destroy();
+      this.phaseManager = null;
+    }
+
+    if (this.uiRenderer) {
+      this.uiRenderer.destroy();
+      this.uiRenderer = null;
+    }
+
+    if (this.socketManager) {
+      this.socketManager.disconnect();
+      this.socketManager = null;
+    }
+
+    if (this.stateManager) {
+      // Use clear() instead of removeAllListeners()
+      // based on your EventEmitter implementation
+      this.stateManager.clear();
+      this.stateManager = null;
     }
   }
 
@@ -250,61 +263,32 @@ export class GameScene extends Container {
    * Destroy scene
    */
   destroy(options) {
-    console.log("🧹 Destroying GameScene");
-    
+    console.log("💥 Destroying GameScene");
+
     this.cleanup();
     super.destroy(options);
-  }
-
-  // ===== LEGACY IMPLEMENTATION =====
-  // Keep all old code below this line for backward compatibility
-  
-  _initializeLegacyArchitecture() {
-    // All the original 700+ lines of code would go here
-    // This is temporarily kept for safe rollback
-    console.warn("Legacy GameScene implementation would run here");
-    
-    // For demo purposes, just show a message
-    const text = new PIXI.Text("Legacy Game Mode", {
-      fontSize: 30,
-      fill: 0xff0000
-    });
-    text.position.set(100, 100);
-    this.addChild(text);
-  }
-  
-  _cleanupLegacy() {
-    // Legacy cleanup code
   }
 }
 
 /**
- * MIGRATION METRICS
- * 
- * Before: 700+ lines, 8+ responsibilities
- * After: <150 lines, 1 responsibility (orchestration)
- * 
+ * ARCHITECTURE SUMMARY
+ *
+ * This GameScene acts as a thin orchestrator that:
+ * 1. Initializes all game components in the correct order
+ * 2. Sets up communication between components
+ * 3. Handles scene lifecycle (cleanup, transitions)
+ * 4. Delegates all game logic to specialized components
+ *
+ * Component Responsibilities:
+ * - GameStateManager: Maintains game state
+ * - GamePhaseManager: Manages phase transitions
+ * - GameEventHandler: Handles socket events
+ * - UserInputHandler: Processes user input
+ * - GameUIRenderer: Renders the game UI
+ *
  * Benefits:
- * - 80% reduction in file size
  * - Clear separation of concerns
  * - Easy to test each component
- * - Feature flag for safe rollout
- * - Fallback to legacy if needed
- * 
- * Components created:
- * - GameStateManager (340 lines) - State management
- * - GamePhaseManager (200 lines) - Phase transitions
- * - GameEventHandler (190 lines) - Socket events
- * - UserInputHandler (290 lines) - User input
- * - GameUIRenderer (290 lines) - UI rendering
- * - BasePhase (100 lines) - Phase base class
- * - RedealPhase (180 lines) - Redeal logic
- * - DeclarationPhase (220 lines) - Declaration logic
- * - TurnPhase (350 lines) - Turn play logic
- * - ScoringPhase (250 lines) - Scoring logic
- * - PlayValidator (350 lines) - Play validation
- * 
- * Total: ~2,560 lines in 11 focused modules
- * Average: 233 lines per module
- * All under 350 line limit ✅
+ * - No more 700+ line monolithic file
+ * - Each component can be modified independently
  */

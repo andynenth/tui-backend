@@ -30,23 +30,24 @@ A player wins by reaching **50 points**, or having the **highest score after 20 
 
 ### 1. Deal Phase
 
-- Shuffle and deal 32 pieces (8 per player)
-- If a player has **no piece > 9 points**, they may request a **redeal**
-    - If redeal is accepted:
-        - All hands are reshuffled and redealt
-        - The redealing player becomes **starter next round**
-        - Scores are multiplied (×2, ×3, etc.)
+- Shuffle the 32 pieces and deal **8 pieces to each player**.
+- **Redeal Request:** If a player has a **weak hand** (meaning no single piece has a value greater than **9 points**), they may request a **redeal**.
+    - **When a Redeal Occurs:**
+        - All hands are immediately **reshuffled and redealt**.
+        - The player who requested the redeal becomes the **starter of the round**.
+        - Scores for this round are **doubled** (a 2x multiplier applies).
+        - If a player still has a **weak hand** after this redeal, they may request another redeal. For each subsequent redeal request, the score multiplier increases by **1** (e.g., a 3x multiplier for the second redeal, 4x for the third, and so on).
 
 ### 2. Starter Selection
-
-- If a previous round winner exists → they start
-- Otherwise → player with `GENERAL_RED` starts
+- **First Round:** The player holding the **GENERAL_RED** piece starts the round.
+- **Redeal Override:** If a **redeal** occurs this turn, the player who requested the redeal starts the round.
+- **Subsequent Rounds:** Otherwise, the **winner of the last turn of the previous round** starts the current round.
 
 ### 3. Declaration Phase
 
 - Each player declares how many **piles** they aim to capture (0–8)
 - Rules:
-    - **Sum of declarations must NOT equal 8**
+    - **The cumulative total of all declarations must not equal 8. To ensure this, the last player of the declaration phase may not declare a number that would cause the total sum to reach exactly 8.**
     - If a player declares `0` for **2 rounds in a row**, they must declare **≥1** this round
 
 ### 4. Turn Phase
@@ -54,11 +55,10 @@ A player wins by reaching **50 points**, or having the **highest score after 20 
 - Players take turns playing **sets of 1–6 pieces**
 - Each turn:
     1. **Starter** plays a valid set (must pass validation)
-    2. Others must play **same number of pieces** (can be invalid)
+    2. Others must play **same number of pieces** (can be invalid, but auto lose the turn)
     3. Winner is determined using `compare_plays()`
         - Winner takes all pieces as a **pile**
         - Winner starts next turn
-    4. Remove all played pieces from hands
 
 ### 5. Scoring Phase
 
@@ -70,8 +70,7 @@ A player wins by reaching **50 points**, or having the **highest score after 20 
 ### 6. End Game Check
 
 - Game ends if:
-    - A player reaches **50 points**, or
-    - **20 rounds** have passed
+    - A player reaches **50 points**
 - Highest score wins (ties allowed)
 
 ---
