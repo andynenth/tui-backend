@@ -1,220 +1,222 @@
 // frontend/game/handlers/GameEventHandler.js
 
 /**
- * Centralized WebSocket event handling for the game
- * Separates network concerns from game logic
- * 
- * Responsibilities:
- * - Register/unregister socket listeners
- * - Route events to appropriate handlers
- * - Update state manager
- * - Coordinate with phase manager
+ * Handles all game-related socket events
+ * Bridges between socket events and game state/phases
  */
 export class GameEventHandler {
-  constructor(socketManager, stateManager, phaseManager) {
-    this.socketManager = socketManager;
+  constructor(stateManager, phaseManager, socketManager) {
     this.stateManager = stateManager;
     this.phaseManager = phaseManager;
+    this.socketManager = socketManager;
     
-    // Event handler map
-    this.handlers = new Map();
+    // Bind event handlers
+    this.eventHandlers = {
+      'declare': this.handleDeclare.bind(this),
+      'all_declared': this.handleAllDeclared.bind(this),
+      'play': this.handlePlay.bind(this),
+      'turn_end': this.handleTurnEnd.bind(this),
+      'round_end': this.handleRoundEnd.bind(this),
+      'game_end': this.handleGameEnd.bind(this),
+      'player_quit': this.handlePlayerQuit.bind(this),
+      'room_closed': this.handleRoomClosed.bind(this),
+      'error': this.handleError.bind(this)
+    };
     
-    // Track active state
-    this.isActive = false;
+    console.log('GameEventHandler initialized');
   }
-
+  
   /**
-   * Connect and register all event handlers
+   * Connect to game WebSocket and set up listeners
    */
-  connect() {
-    if (this.isActive) return;
-    
+  async connect() {
     console.log('📡 Connecting game event handlers');
-    this.isActive = true;
     
-    // Core game events
-    this.registerHandler('start_game', this.handleStartGame);
-    this.registerHandler('start_round', this.handleStartRound);
-    this.registerHandler('player_left', this.handlePlayerLeft);
-    this.registerHandler('room_closed', this.handleRoomClosed);
+    // Connect to game WebSocket
+    const url = `/ws/game?room_id=${this.stateManager.roomId}&name=${this.stateManager.playerName}`;
+    await this.socketManager.connect(url, 'game');
     
-    // Phase-specific events (handled by current phase)
-    this.registerHandler('declare', this.routeToPhase);
-    this.registerHandler('play', this.routeToPhase);
-    this.registerHandler('turn_resolved', this.routeToPhase);
-    this.registerHandler('score', this.handleScore);
-    this.registerHandler('redeal', this.routeToPhase);
-    
-    // Connection events
-    this.registerHandler('reconnected', this.handleReconnected);
-  }
-
-  /**
-   * Disconnect and clean up handlers
-   */
-  disconnect() {
-    if (!this.isActive) return;
-    
-    console.log('📡 Disconnecting game event handlers');
-    
-    this.handlers.forEach((handler, event) => {
-      this.socketManager.off(event, handler);
+    // Set up event listeners
+    Object.entries(this.eventHandlers).forEach(([event, handler]) => {
+      this.socketManager.on(event, handler);
     });
     
-    this.handlers.clear();
-    this.isActive = false;
+    console.log('✅ Game event handlers connected');
   }
-
+  
   /**
-   * Register an event handler
+   * Handle declaration event
    */
-  registerHandler(event, handler) {
-    const boundHandler = handler.bind(this);
-    this.handlers.set(event, boundHandler);
-    this.socketManager.on(event, boundHandler);
-  }
-
-  /**
-   * Route event to current phase
-   */
-  routeToPhase(data) {
-    const currentPhase = this.phaseManager.currentPhase;
-    if (currentPhase && currentPhase.handleSocketEvent) {
-      currentPhase.handleSocketEvent(data.event, data);
-    }
-  }
-
-  /**
-   * Handle game start
-   */
-  handleStartGame(data) {
-    console.log('🎮 Game started!', data);
+  handleDeclare(data) {
+    console.log('📣 Declaration received:', data);
     
-    // Update state with initial game data
-    if (data.players) {
-      this.stateManager.players = data.players;
-    }
-    
-    if (data.round) {
-      this.stateManager.currentRound = data.round;
-    }
-    
-    if (data.starter) {
-      this.stateManager.roundStarter = data.starter;
-    }
-    
-    if (data.hands && data.hands[this.stateManager.playerName]) {
-      this.stateManager.updateHand(data.hands[this.stateManager.playerName]);
-    }
-    
-    // Start game flow
-    this.phaseManager.start();
-  }
-
-  /**
-   * Handle new round start
-   */
-  handleStartRound(data) {
-    console.log('🆕 New round started', data);
-    
-    // Reset state for new round
-    this.stateManager.resetForNewRound(data);
-    
-    // Start new round flow
-    this.phaseManager.resetForNewRound(data);
-  }
-
-  /**
-   * Handle scoring
-   */
-  handleScore(data) {
-    console.log('📊 Round scored', data);
-    
-    // Update scores
-    if (data.summary) {
-      this.stateManager.updateRoundScores(data.summary);
-    }
-    
-    // Check for game over
-    if (data.game_over) {
-      this.handleGameOver(data);
-    } else {
-      // Emit event for phase manager
-      this.stateManager.emit('roundScoringComplete', {
-        gameOver: false,
-        winners: []
-      });
-    }
-  }
-
-  /**
-   * Handle game over
-   */
-  handleGameOver(data) {
-    console.log('🏁 Game over!', data);
-    
-    this.stateManager.emit('roundScoringComplete', {
-      gameOver: true,
-      winners: data.winners || [],
-      finalScores: this.stateManager.totalScores
-    });
-  }
-
-  /**
-   * Handle player left
-   */
-  handlePlayerLeft(data) {
-    console.log('👋 Player left:', data.player);
+    // Update state
+    this.stateManager.addDeclaration(data.player, data.value);
     
     // Update UI
-    this.stateManager.emit('playerLeft', data);
+    if (this.phaseManager.uiRenderer) {
+      this.phaseManager.uiRenderer.updateDeclaration(data.player, data.value);
+    }
+    
+    // If it's a bot declaration, log it
+    if (data.is_bot) {
+      console.log(`🤖 ${data.player} declares ${data.value} piles.`);
+    }
+    
+    // Check if it's now our turn to declare
+    if (data.next_player === this.stateManager.playerName) {
+      this.promptForDeclaration();
+    }
   }
-
+  
+  /**
+   * Prompt player for declaration
+   */
+  promptForDeclaration() {
+    console.log("🎯 It's your turn to declare!");
+    
+    // Calculate valid declaration options
+    const validOptions = this.calculateValidDeclarations();
+    
+    // Show input UI
+    if (this.phaseManager.uiRenderer) {
+      this.phaseManager.uiRenderer.showDeclarationInput(
+        validOptions,
+        (value) => this.sendDeclaration(value)
+      );
+    }
+  }
+  
+  /**
+   * Calculate valid declaration options based on hand
+   */
+  calculateValidDeclarations() {
+    const handSize = this.stateManager.myHand.length;
+    const options = [];
+    
+    // Can declare 0 to handSize piles
+    for (let i = 0; i <= handSize; i++) {
+      options.push(i);
+    }
+    
+    return options;
+  }
+  
+  /**
+   * Send declaration to server
+   */
+  sendDeclaration(value) {
+    console.log(`📤 Sending declaration: ${value}`);
+    
+    this.socketManager.send('declare', {
+      value: value
+    });
+  }
+  
+  /**
+   * Handle all players declared
+   */
+  handleAllDeclared(data) {
+    console.log('✅ All players have declared!');
+    
+    // Show declaration summary
+    if (this.phaseManager.uiRenderer) {
+      this.phaseManager.uiRenderer.showDeclarationSummary(data.declarations);
+    }
+    
+    // Transition to turn phase
+    setTimeout(() => {
+      this.phaseManager.transitionTo('turn');
+    }, 2000);
+  }
+  
+  /**
+   * Handle play event
+   */
+  handlePlay(data) {
+    console.log('🎮 Play received:', data);
+    
+    // Update state
+    this.stateManager.addTurnPlay(data.player, data.cards);
+    
+    // TODO: Update UI with play
+  }
+  
+  /**
+   * Handle turn end
+   */
+  handleTurnEnd(data) {
+    console.log('🔚 Turn ended:', data);
+    
+    // Clear turn plays
+    this.stateManager.clearTurnPlays();
+    
+    // TODO: Show turn winner
+  }
+  
+  /**
+   * Handle round end
+   */
+  handleRoundEnd(data) {
+    console.log('🏁 Round ended:', data);
+    
+    // Update scores
+    if (data.scores) {
+      this.stateManager.setRoundScores(data.scores);
+    }
+    
+    // Transition to scoring phase
+    this.phaseManager.transitionTo('scoring');
+  }
+  
+  /**
+   * Handle game end
+   */
+  handleGameEnd(data) {
+    console.log('🎮 Game ended:', data);
+    
+    // Update state
+    this.stateManager.endGame(data);
+  }
+  
+  /**
+   * Handle player quit
+   */
+  handlePlayerQuit(data) {
+    console.log('👋 Player quit:', data);
+    
+    this.stateManager.playerQuit(data.player);
+  }
+  
   /**
    * Handle room closed
    */
   handleRoomClosed(data) {
     console.log('🚪 Room closed:', data);
     
-    // Clean up and return to lobby
-    this.disconnect();
-    this.stateManager.emit('roomClosed', data);
+    this.stateManager.roomClosed(data);
   }
-
+  
   /**
-   * Handle reconnection
+   * Handle errors
    */
-  async handleReconnected() {
-    console.log('✅ Reconnected to game');
+  handleError(data) {
+    console.error('❌ Game error:', data);
     
-    // Request current game state
-    try {
-      const response = await fetch(`/api/get-game-state?room_id=${this.stateManager.roomId}`);
-      const gameState = await response.json();
-      
-      // Update state
-      this.stateManager.syncWithServerState(gameState);
-      
-      // Resume current phase
-      this.phaseManager.resumeCurrentPhase();
-      
-    } catch (error) {
-      console.error('Failed to sync game state:', error);
+    if (this.phaseManager.uiRenderer) {
+      this.phaseManager.uiRenderer.showError(data.message || 'An error occurred');
     }
   }
-
+  
   /**
-   * Send event to server
+   * Disconnect and clean up
    */
-  async sendGameEvent(event, data) {
-    if (!this.socketManager.connected) {
-      console.warn('Not connected, queuing event:', event);
-    }
-    
-    this.socketManager.send(event, {
-      room_id: this.stateManager.roomId,
-      player_name: this.stateManager.playerName,
-      ...data
+  disconnect() {
+    // Remove all listeners
+    Object.keys(this.eventHandlers).forEach(event => {
+      this.socketManager.off(event);
     });
+    
+    console.log('GameEventHandler disconnected');
   }
 }

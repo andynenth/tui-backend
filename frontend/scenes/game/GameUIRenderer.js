@@ -14,10 +14,12 @@ import { GameButton } from '../../components/GameButton.js';
  * - Handle UI animations
  * - Manage layout
  */
-export class GameUIRenderer {
-  constructor(parentContainer, stateManager) {
-    this.parentContainer = parentContainer;
-    this.stateManager = stateManager;
+export class GameUIRenderer extends Container {
+  constructor(gameScene) {
+    super();
+    
+    this.gameScene = gameScene;
+    this.parentContainer = gameScene;
     
     // UI containers
     this.containers = {
@@ -40,8 +42,20 @@ export class GameUIRenderer {
     this.currentInputCallback = null;
     this.inputValidator = null;
     
+    // Add self to parent
+    gameScene.addChild(this);
+    
     this.setupLayout();
+  }
+
+  /**
+   * Initialize UI after all components are ready
+   */
+  async initialize(gameData) {
+    // Now we can safely access stateManager
+    this.stateManager = this.gameScene.stateManager;
     this.createComponents();
+    console.log("UI components created");
   }
 
   /**
@@ -49,7 +63,7 @@ export class GameUIRenderer {
    */
   setupLayout() {
     // Main layout
-    this.parentContainer.layout = {
+    this.layout = {
       width: "100%",
       height: "100%",
       flexDirection: "column",
@@ -94,9 +108,9 @@ export class GameUIRenderer {
       alignItems: "center"
     };
     
-    // Add containers to parent
+    // Add containers to self
     Object.values(this.containers).forEach(container => {
-      this.parentContainer.addChild(container);
+      this.addChild(container);
     });
   }
 
@@ -320,7 +334,23 @@ export class GameUIRenderer {
    */
   showError(message) {
     console.error(`❌ ${message}`);
-    // TODO: Show visual error
+    
+    const errorText = new Text({
+      text: message,
+      style: new TextStyle({ 
+        fill: "#ff0000", 
+        fontSize: 16 
+      })
+    });
+    errorText.position.set(10, 200);
+    this.containers.main.addChild(errorText);
+    
+    // Remove after 3 seconds
+    setTimeout(() => {
+      if (errorText.parent) {
+        errorText.destroy();
+      }
+    }, 3000);
   }
 
   /**
@@ -342,7 +372,7 @@ export class GameUIRenderer {
   /**
    * Show game over screen
    */
-  showGameOver(data) {
+  showGameResults(data) {
     this.clearMainContent();
     this.updatePhaseIndicator('Game Over');
     
@@ -365,12 +395,14 @@ export class GameUIRenderer {
   /**
    * Destroy all UI components
    */
-  destroy() {
+  destroy(options) {
     Object.values(this.containers).forEach(container => {
       container.destroy({ children: true });
     });
     
     this.components = {};
     this.containers = {};
+    
+    super.destroy(options);
   }
 }

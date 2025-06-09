@@ -3,299 +3,275 @@
 import { EventEmitter } from '../network/core/EventEmitter.js';
 
 /**
- * Centralized game state management
- * Single source of truth for all game data
+ * Manages all game state
+ * Single source of truth for game data
  * 
  * Responsibilities:
- * - Store and update game state
- * - Emit events when state changes
- * - Provide computed properties
- * - Validate state transitions
+ * - Store game state
+ * - Emit state change events
+ * - Provide state access methods
+ * - Validate state changes
  */
 export class GameStateManager extends EventEmitter {
-  constructor(roomId, playerName, initialGameData) {
+  constructor(roomId, playerName, initialData) {
     super();
     
     // Core identifiers
     this.roomId = roomId;
     this.playerName = playerName;
     
-    // Game configuration
-    this.gameData = initialGameData;
+    // Game state
+    this.currentRound = initialData.round || 1;
+    this.players = initialData.players || [];
+    this.myHand = initialData.hands?.[playerName] || [];
     
-    // Round information
-    this.currentRound = initialGameData.round || 1;
-    this.roundStarter = initialGameData.starter || null;
-    this.redealMultiplier = initialGameData.multiplier || 1;
-    
-    // Players
-    this.players = initialGameData.players || [];
-    this.myPlayerData = this.players.find(p => p.name === playerName) || null;
-    
-    // Hand management
-    this.myHand = initialGameData.hands?.[playerName] || [];
+    // Round state
+    this.declarations = {};
+    this.currentTurnPlays = [];
+    this.requiredPieceCount = null;
+    this.starter = initialData.starter || null;
+    this.currentPlayerTurn = null;
     
     // Phase tracking
     this.currentPhase = 'INITIALIZATION';
     
-    // Declaration phase state
-    this.declarations = {};
-    this.declarationOrder = [];
-    
-    // Turn phase state
-    this.currentTurnNumber = 0;
-    this.currentTurnStarter = null;
-    this.currentTurnPlays = [];
-    this.requiredPieceCount = null;
-    this.turnOrder = [];
-    
-    // Score tracking
+    // Scoring
+    this.scores = {};
     this.roundScores = {};
-    this.totalScores = {};
     
-    // Initialize derived state
-    this._initializeDerivedState();
-  }
-
-  /**
-   * Initialize derived state from initial data
-   */
-  _initializeDerivedState() {
     // Initialize player scores
     this.players.forEach(player => {
-      this.totalScores[player.name] = player.score || 0;
+      this.scores[player.name] = player.score || 0;
     });
     
-    // Set declaration order based on round starter
-    this._updateDeclarationOrder();
-  }
-
-  /**
-   * Update declaration order based on round starter
-   */
-  _updateDeclarationOrder() {
-    if (!this.roundStarter) return;
+    // Derived data
+    this.myPlayerData = this.players.find(p => p.name === playerName) || {
+      name: playerName,
+      score: 0,
+      is_bot: false
+    };
     
-    const starterIndex = this.players.findIndex(p => p.name === this.roundStarter);
-    if (starterIndex === -1) return;
-    
-    this.declarationOrder = [
-      ...this.players.slice(starterIndex),
-      ...this.players.slice(0, starterIndex)
-    ];
+    console.log('GameStateManager initialized with:', { 
+      roomId, 
+      playerName, 
+      round: this.currentRound,
+      players: this.players.length,
+      hand: this.myHand.length
+    });
   }
-
-  // ===== PHASE MANAGEMENT =====
-
-  setPhase(phaseName) {
-    const oldPhase = this.currentPhase;
-    this.currentPhase = phaseName;
-    this.emit('phaseChanged', { oldPhase, newPhase: phaseName });
-  }
-
+  
   // ===== HAND MANAGEMENT =====
-
+  
+  /**
+   * Update player's hand
+   */
   updateHand(newHand) {
-    const oldHand = [...this.myHand];
+    const oldHandSize = this.myHand.length;
     this.myHand = newHand;
-    this.emit('handUpdated', { oldHand, newHand });
-  }
-
-  removeFromHand(indices) {
-    const removedPieces = indices.map(i => this.myHand[i]);
-    
-    // Remove in reverse order to maintain indices
-    const sortedIndices = [...indices].sort((a, b) => b - a);
-    sortedIndices.forEach(i => {
-      this.myHand.splice(i, 1);
+    this.emit('handUpdated', { 
+      hand: newHand,
+      oldSize: oldHandSize,
+      newSize: newHand.length
     });
-    
-    this.emit('piecesRemoved', { indices, pieces: removedPieces });
-    return removedPieces;
   }
-
-  // ===== DECLARATION PHASE =====
-
+  
+  /**
+   * Remove cards from hand
+   */
+  removeFromHand(cards) {
+    const cardsToRemove = Array.isArray(cards) ? cards : [cards];
+    this.myHand = this.myHand.filter(card => !cardsToRemove.includes(card));
+    this.emit('handUpdated', { 
+      hand: this.myHand,
+      removed: cardsToRemove
+    });
+  }
+  
+  // ===== DECLARATION MANAGEMENT =====
+  
+  /**
+   * Add a player's declaration
+   */
   addDeclaration(playerName, value) {
     this.declarations[playerName] = value;
-    this.emit('declarationAdded', { player: playerName, value });
+    this.emit('declarationAdded', { 
+      player: playerName, 
+      value,
+      totalDeclared: Object.keys(this.declarations).length
+    });
     
-    // Check if all declared
-    if (this.areAllPlayersDeclarated()) {
-      const total = Object.values(this.declarations).reduce((sum, v) => sum + v, 0);
-      this.emit('allPlayersDeclarated', { declarations: this.declarations, total });
+    // Check if all players have declared
+    if (Object.keys(this.declarations).length === this.players.length) {
+      this.emit('allPlayersDeclared', { declarations: this.declarations });
     }
   }
-
-  getValidDeclarationOptions(isLastPlayer = false) {
-    let options = [0, 1, 2, 3, 4, 5, 6, 7, 8];
-    
-    if (isLastPlayer) {
-      const declaredSoFar = Object.values(this.declarations)
-        .filter(v => v !== null && v !== undefined)
-        .reduce((sum, v) => sum + v, 0);
-      
-      const forbidden = 8 - declaredSoFar;
-      options = options.filter(v => v !== forbidden);
-    }
-    
-    // Check zero streak
-    if (this.myPlayerData?.zero_declares_in_a_row >= 2) {
-      options = options.filter(v => v > 0);
-    }
-    
-    return options;
+  
+  /**
+   * Clear all declarations
+   */
+  clearDeclarations() {
+    this.declarations = {};
+    this.emit('declarationsCleared');
   }
-
-  isMyTurnToDeclare() {
-    if (!this.declarationOrder.length) return false;
-    if (this.declarations[this.playerName] !== undefined) return false;
-    
-    // Check if all players before me have declared
-    for (const player of this.declarationOrder) {
-      if (player.name === this.playerName) return true;
-      if (this.declarations[player.name] === undefined) return false;
-    }
-    
-    return false;
-  }
-
-  areAllPlayersDeclarated() {
-    return this.players.every(p => 
-      this.declarations[p.name] !== undefined && 
-      this.declarations[p.name] !== null
-    );
-  }
-
-  // ===== TURN PHASE =====
-
-  startNewTurn(starter) {
-    this.currentTurnNumber++;
-    this.currentTurnStarter = starter;
-    this.currentTurnPlays = [];
-    this.requiredPieceCount = null;
-    
-    // Update turn order
-    const starterIndex = this.players.findIndex(p => p.name === starter);
-    this.turnOrder = [
-      ...this.players.slice(starterIndex),
-      ...this.players.slice(0, starterIndex)
-    ];
-    
-    this.emit('turnStarted', { 
-      turnNumber: this.currentTurnNumber, 
-      starter,
-      turnOrder: this.turnOrder.map(p => p.name)
+  
+  // ===== TURN MANAGEMENT =====
+  
+  /**
+   * Set current player's turn
+   */
+  setCurrentTurn(playerName) {
+    this.currentPlayerTurn = playerName;
+    this.emit('turnChanged', { 
+      player: playerName,
+      isMyTurn: playerName === this.playerName
     });
   }
-
-  addTurnPlay(playerName, pieces, isValid) {
-    // Set required count from first play
-    if (this.currentTurnPlays.length === 0) {
-      this.requiredPieceCount = pieces.length;
-    }
-    
+  
+  /**
+   * Add play to current turn
+   */
+  addTurnPlay(playerName, cards) {
     this.currentTurnPlays.push({
       player: playerName,
-      pieces,
-      valid: isValid
+      cards: Array.isArray(cards) ? cards : [cards]
     });
     
-    this.emit('turnPlayAdded', { 
-      player: playerName, 
-      pieces, 
-      valid: isValid,
-      playsCount: this.currentTurnPlays.length
+    this.emit('playMade', {
+      player: playerName,
+      cards,
+      totalPlays: this.currentTurnPlays.length
     });
   }
-
-  isMyTurnToPlay() {
-    if (!this.turnOrder.length) return false;
-    
-    const myOrderIndex = this.turnOrder.findIndex(p => p.name === this.playerName);
-    const playsCompleted = this.currentTurnPlays.length;
-    
-    // Check if I've already played
-    const alreadyPlayed = this.currentTurnPlays.some(play => 
-      play.player === this.playerName
-    );
-    
-    return myOrderIndex === playsCompleted && !alreadyPlayed;
+  
+  /**
+   * Clear current turn plays
+   */
+  clearTurnPlays() {
+    this.currentTurnPlays = [];
+    this.emit('turnPlaysCleared');
   }
-
-  isFirstPlayerInTurn() {
-    return this.currentTurnPlays.length === 0;
+  
+  // ===== SCORE MANAGEMENT =====
+  
+  /**
+   * Update player score
+   */
+  updateScore(playerName, newScore) {
+    const oldScore = this.scores[playerName] || 0;
+    this.scores[playerName] = newScore;
+    
+    // Update player object
+    const player = this.players.find(p => p.name === playerName);
+    if (player) {
+      player.score = newScore;
+    }
+    
+    this.emit('scoreUpdated', {
+      player: playerName,
+      oldScore,
+      newScore,
+      difference: newScore - oldScore
+    });
   }
-
-  // ===== SCORING =====
-
-  updateRoundScores(scoreData) {
-    this.roundScores = scoreData.scores || {};
+  
+  /**
+   * Set round scores
+   */
+  setRoundScores(roundScores) {
+    this.roundScores = roundScores;
     
     // Update total scores
-    Object.entries(this.roundScores).forEach(([player, data]) => {
-      if (data.total !== undefined) {
-        this.totalScores[player] = data.total;
-      }
+    Object.entries(roundScores).forEach(([player, roundScore]) => {
+      const currentScore = this.scores[player] || 0;
+      this.updateScore(player, currentScore + roundScore);
     });
     
-    this.emit('scoresUpdated', { 
-      roundScores: this.roundScores, 
-      totalScores: this.totalScores 
-    });
+    this.emit('roundScoresSet', { roundScores });
   }
-
-  // ===== GETTERS =====
-
-  getMyPlayer() {
-    return this.myPlayerData;
-  }
-
-  getPlayerByName(name) {
-    return this.players.find(p => p.name === name);
-  }
-
-  getDeclarationProgress() {
-    const declared = Object.keys(this.declarations).length;
-    const total = this.players.length;
-    return { declared, total, percentage: (declared / total) * 100 };
-  }
-
-  getTurnProgress() {
-    const played = this.currentTurnPlays.length;
-    const total = this.players.length;
-    return { played, total, percentage: (played / total) * 100 };
-  }
-
-  // ===== RESET METHODS =====
-
-  resetForNewRound(roundData) {
+  
+  // ===== GAME STATE =====
+  
+  /**
+   * Start new round
+   */
+  startNewRound(roundData) {
     this.currentRound = roundData.round;
-    this.roundStarter = roundData.starter;
+    this.starter = roundData.starter;
     this.myHand = roundData.hands?.[this.playerName] || [];
     
-    // Reset round-specific state
-    this.declarations = {};
-    this.currentTurnNumber = 0;
-    this.currentTurnPlays = [];
-    this.requiredPieceCount = null;
+    // Clear round state
+    this.clearDeclarations();
+    this.clearTurnPlays();
+    this.roundScores = {};
     
-    // Update derived state
-    this._updateDeclarationOrder();
-    
-    this.emit('roundReset', { round: this.currentRound });
-  }
-
-  // ===== DEBUG =====
-
-  getDebugInfo() {
-    return {
-      phase: this.currentPhase,
+    this.emit('newRoundStarted', {
       round: this.currentRound,
-      hand: this.myHand.length,
+      starter: this.starter,
+      handSize: this.myHand.length
+    });
+  }
+  
+  /**
+   * End game
+   */
+  endGame(gameData) {
+    this.emit('gameEnded', gameData);
+  }
+  
+  /**
+   * Handle room closed
+   */
+  roomClosed(data) {
+    this.emit('roomClosed', data);
+  }
+  
+  /**
+   * Handle player quit
+   */
+  playerQuit(playerName) {
+    if (playerName === this.playerName) {
+      this.emit('playerQuit');
+    } else {
+      this.emit('otherPlayerQuit', { player: playerName });
+    }
+  }
+  
+  // ===== UTILITY METHODS =====
+  
+  /**
+   * Get player by name
+   */
+  getPlayer(playerName) {
+    return this.players.find(p => p.name === playerName);
+  }
+  
+  /**
+   * Check if it's my turn
+   */
+  isMyTurn() {
+    return this.currentPlayerTurn === this.playerName;
+  }
+  
+  /**
+   * Get current game state summary
+   */
+  getStateSummary() {
+    return {
+      roomId: this.roomId,
+      playerName: this.playerName,
+      round: this.currentRound,
+      phase: this.currentPhase,
+      players: this.players.length,
+      handSize: this.myHand.length,
       declarations: Object.keys(this.declarations).length,
-      turnNumber: this.currentTurnNumber,
-      scores: this.totalScores
+      currentTurn: this.currentPlayerTurn
     };
+  }
+  
+  /**
+   * Remove all event listeners (extends from EventEmitter)
+   */
+  removeAllListeners() {
+    this.clear(); // EventEmitter's method to clear all listeners
   }
 }

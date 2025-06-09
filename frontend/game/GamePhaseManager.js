@@ -1,89 +1,115 @@
 // frontend/game/GamePhaseManager.js
 
-import { BasePhase } from './phases/BasePhase.js';
-import { RedealPhase } from './phases/RedealPhase.js';
-import { DeclarationPhase } from './phases/DeclarationPhase.js';
-import { TurnPhase } from './phases/TurnPhase.js';
-import { ScoringPhase } from './phases/ScoringPhase.js';
+import { EventEmitter } from "../network/core/EventEmitter.js";
 
 /**
- * Manages game phase transitions
- * Implements the State pattern for game flow
- * 
+ * Manages game phase transitions and phase lifecycle
+ *
  * Responsibilities:
- * - Create and manage phase instances
+ * - Track current game phase
  * - Handle phase transitions
- * - Ensure proper cleanup between phases
- * - Provide phase history for debugging
+ * - Manage phase instances
+ * - Emit phase change events
  */
-export class GamePhaseManager {
-  constructor(stateManager, socketManager, uiManager) {
+export class GamePhaseManager extends EventEmitter {
+  constructor(stateManager, socketManager, uiRenderer) {
+    super();
+
     this.stateManager = stateManager;
     this.socketManager = socketManager;
-    this.uiManager = uiManager;
-    
-    // Current phase instance
+    this.uiRenderer = uiRenderer;
+
     this.currentPhase = null;
-    
-    // Phase history for debugging
-    this.phaseHistory = [];
-    
-    // Available phases
-    this.phases = {
-      'redeal': RedealPhase,
-      'declaration': DeclarationPhase,
-      'turn': TurnPhase,
-      'scoring': ScoringPhase
-    };
-    
-    // Phase transition map
-    this.transitions = {
-      'initialization': 'redeal',
-      'redeal': 'declaration',
-      'declaration': 'turn',
-      'turn': 'scoring',
-      'scoring': 'redeal'  // Next round
-    };
-    
-    // Listen for phase completion events
-    this.stateManager.on('phaseComplete', this.handlePhaseComplete.bind(this));
-    
-    // Listen for game events that trigger phase changes
-    this.setupGameEventListeners();
+    this.currentPhaseName = null;
+    this.phases = new Map();
+
+    // Register available phases
+    this.registerPhases();
+
+    console.log("GamePhaseManager initialized");
   }
 
   /**
-   * Set up listeners for game events that trigger phase changes
+   * Register all available game phases
    */
-  setupGameEventListeners() {
-    // When all players declare, move to turn phase
-    this.stateManager.on('allPlayersDeclarated', () => {
-      if (this.currentPhase?.constructor.name === 'DeclarationPhase') {
-        this.transitionTo('turn');
-      }
-    });
-    
-    // When round scoring is complete, check for game over or new round
-    this.stateManager.on('roundScoringComplete', (data) => {
-      if (data.gameOver) {
-        this.endGame(data);
-      } else {
-        // Prepare for next round
-        setTimeout(() => {
-          this.transitionTo('redeal');
-        }, 2000);
-      }
-    });
-  }
+  registerPhases() {
+    // For now, we'll use simple phase objects
+    // Later these can be replaced with actual phase classes
 
-  /**
-   * Start the game flow
-   */
-  async start() {
-    console.log('🎮 Starting game phase manager');
-    
-    // Start with redeal check
-    await this.transitionTo('redeal');
+    this.phases.set("waiting", {
+      name: "waiting",
+      enter: () => {
+        console.log("⏳ Entering waiting phase");
+        this.uiRenderer.updatePhaseIndicator("Waiting...");
+      },
+      exit: () => {
+        console.log("Exiting waiting phase");
+      },
+    });
+
+    this.phases.set("redeal", {
+      name: "redeal",
+      enter: () => {
+        console.log("🔄 Entering redeal phase");
+        this.uiRenderer.showRedealPhase();
+      },
+      exit: () => {
+        console.log("Exiting redeal phase");
+      },
+    });
+
+    this.phases.set("declaration", {
+      name: "declaration",
+      enter: () => {
+        console.log("📣 Entering declaration phase");
+        this.uiRenderer.showDeclarationPhase();
+
+        // Check if it's our turn to declare (we might be the starter)
+        if (this.stateManager.starter === this.stateManager.playerName) {
+          console.log("🎯 You're the starter - your turn to declare!");
+
+          // Give a small delay for UI to update
+          setTimeout(() => {
+            // Find the event handler and prompt for declaration
+            const gameScene = this.uiRenderer.gameScene;
+            if (gameScene && gameScene.eventHandler) {
+              gameScene.eventHandler.promptForDeclaration();
+            }
+          }, 500);
+        } else {
+          console.log(
+            `⏳ Waiting for ${this.stateManager.starter} to declare first...`
+          );
+        }
+      },
+      exit: () => {
+        console.log("Exiting declaration phase");
+        // Hide any input UI
+        this.uiRenderer.hideInput();
+      },
+    });
+
+    this.phases.set("turn", {
+      name: "turn",
+      enter: () => {
+        console.log("🎮 Entering turn phase");
+        this.uiRenderer.showTurnPhase();
+      },
+      exit: () => {
+        console.log("Exiting turn phase");
+      },
+    });
+
+    this.phases.set("scoring", {
+      name: "scoring",
+      enter: () => {
+        console.log("📊 Entering scoring phase");
+        this.uiRenderer.showScoringPhase();
+      },
+      exit: () => {
+        console.log("Exiting scoring phase");
+      },
+    });
   }
 
   /**
@@ -91,157 +117,97 @@ export class GamePhaseManager {
    */
   async transitionTo(phaseName) {
     console.log(`🔄 Transitioning to phase: ${phaseName}`);
-    
-    // Exit current phase if exists
-    if (this.currentPhase) {
-      try {
-        await this.currentPhase.exit();
-      } catch (error) {
-        console.error('Error exiting phase:', error);
-      }
-    }
-    
-    // Create new phase instance
-    const PhaseClass = this.phases[phaseName];
-    if (!PhaseClass) {
+
+    // Check if phase exists
+    if (!this.phases.has(phaseName)) {
       console.error(`Unknown phase: ${phaseName}`);
       return;
     }
-    
-    try {
-      this.currentPhase = new PhaseClass(
-        this.stateManager,
-        this.socketManager,
-        this.uiManager
-      );
-      
-      // Update state manager
-      this.stateManager.setPhase(phaseName);
-      
-      // Record in history
-      this.phaseHistory.push({
-        phase: phaseName,
-        timestamp: Date.now()
-      });
-      
-      // Enter new phase
-      await this.currentPhase.enter();
-      
-    } catch (error) {
-      console.error(`Error entering phase ${phaseName}:`, error);
-      // TODO: Handle phase transition errors
-    }
-  }
 
-  /**
-   * Handle phase completion events
-   */
-  handlePhaseComplete(data) {
-    console.log('📍 Phase complete:', data);
-    
-    if (data.nextPhase) {
-      this.transitionTo(data.nextPhase);
-    } else {
-      // Use default transition map
-      const currentPhaseName = this.getCurrentPhaseName();
-      const nextPhase = this.transitions[currentPhaseName];
-      
-      if (nextPhase) {
-        this.transitionTo(nextPhase);
-      } else {
-        console.warn('No next phase defined for:', currentPhaseName);
+    const oldPhaseName = this.currentPhaseName;
+    const newPhase = this.phases.get(phaseName);
+
+    try {
+      // Exit current phase
+      if (this.currentPhase && this.currentPhase.exit) {
+        await this.currentPhase.exit();
       }
+
+      // Update current phase
+      this.currentPhase = newPhase;
+      this.currentPhaseName = phaseName;
+
+      // Enter new phase
+      if (newPhase.enter) {
+        await newPhase.enter();
+      }
+
+      // Emit phase change event
+      this.emit("phaseChanged", {
+        from: oldPhaseName,
+        to: phaseName,
+      });
+
+      // Update state manager
+      this.stateManager.currentPhase = phaseName;
+    } catch (error) {
+      console.error(`Error transitioning to phase ${phaseName}:`, error);
+      // Emit error event
+      this.emit("phaseError", { phase: phaseName, error });
     }
   }
 
   /**
    * Get current phase name
    */
-  getCurrentPhaseName() {
-    if (!this.currentPhase) return 'none';
-    
-    // Convert class name to phase key
-    const className = this.currentPhase.constructor.name;
-    return className.replace('Phase', '').toLowerCase();
+  getCurrentPhase() {
+    return this.currentPhaseName;
   }
 
   /**
-   * Handle user input
+   * Check if in specific phase
    */
-  async handleUserInput(input) {
-    if (!this.currentPhase) {
-      console.warn('No active phase to handle input');
-      return false;
+  isInPhase(phaseName) {
+    return this.currentPhaseName === phaseName;
+  }
+
+  /**
+   * Handle input for current phase
+   */
+  async handleInput(input) {
+    if (this.currentPhase && this.currentPhase.handleInput) {
+      return await this.currentPhase.handleInput(input);
     }
-    
-    return await this.currentPhase.handleUserInput(input);
+    console.warn("Current phase does not handle input");
   }
 
   /**
-   * Force a phase transition (for testing/debugging)
+   * Handle socket event for current phase
    */
-  async forceTransition(phaseName) {
-    console.warn(`⚠️ Forcing transition to ${phaseName}`);
-    await this.transitionTo(phaseName);
-  }
-
-  /**
-   * End the game
-   */
-  endGame(data) {
-    console.log('🏁 Game ended:', data);
-    
-    // Clean up current phase
-    if (this.currentPhase) {
-      this.currentPhase.exit();
-      this.currentPhase = null;
+  async handleSocketEvent(event, data) {
+    if (this.currentPhase && this.currentPhase.handleSocketEvent) {
+      return await this.currentPhase.handleSocketEvent(event, data);
     }
-    
-    // Notify UI
-    this.uiManager.showGameOver(data);
-    
-    // Emit game over event
-    this.stateManager.emit('gameEnded', data);
+    // Phase doesn't handle this event, that's ok
   }
 
   /**
-   * Get phase history for debugging
-   */
-  getPhaseHistory() {
-    return this.phaseHistory.map(entry => ({
-      ...entry,
-      duration: entry.timestamp - (this.phaseHistory[this.phaseHistory.indexOf(entry) - 1]?.timestamp || entry.timestamp)
-    }));
-  }
-
-  /**
-   * Reset for new round
-   */
-  resetForNewRound(roundData) {
-    // Let state manager handle the reset
-    this.stateManager.resetForNewRound(roundData);
-    
-    // Clear phase history for new round
-    this.phaseHistory = [];
-    
-    // Start new round flow
-    this.start();
-  }
-
-  /**
-   * Clean up resources
+   * Clean up
    */
   destroy() {
-    if (this.currentPhase) {
+    // Exit current phase
+    if (this.currentPhase && this.currentPhase.exit) {
       this.currentPhase.exit();
-      this.currentPhase = null;
     }
-    
-    // Remove listeners
-    this.stateManager.off('phaseComplete', this.handlePhaseComplete.bind(this));
-    this.stateManager.off('allPlayersDeclarated');
-    this.stateManager.off('roundScoringComplete');
-    
-    this.phaseHistory = [];
+
+    // Clear references
+    this.phases.clear();
+    this.currentPhase = null;
+    this.currentPhaseName = null;
+
+    // Remove all listeners
+    this.removeAllListeners();
+
+    console.log("GamePhaseManager destroyed");
   }
 }
