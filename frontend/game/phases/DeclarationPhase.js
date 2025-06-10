@@ -160,7 +160,7 @@ export class DeclarationPhase extends BasePhase {
       if (result.status === "ok") {
         console.log(`✅ You declared ${value} piles`);
         this.waitingForInput = false;
-        this.uiRenderer.hideDeclarationInput();
+        this.uiRenderer.hideInput();
 
         // The socket event will handle the state update
       } else {
