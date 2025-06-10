@@ -1,11 +1,11 @@
 // frontend/game/phases/RedealPhase.js
 
-import { BasePhase } from './BasePhase.js';
+import { BasePhase } from "./BasePhase.js";
 
 /**
  * Redeal Phase
  * Check if player wants to redeal due to weak hand
- * 
+ *
  * Rules:
  * - Player can request redeal if no pieces > 9 points
  * - Redeal multiplies scores for the round
@@ -14,7 +14,7 @@ import { BasePhase } from './BasePhase.js';
 export class RedealPhase extends BasePhase {
   constructor(stateManager, socketManager, uiManager) {
     super(stateManager, socketManager, uiManager);
-    
+
     this.hasChecked = false;
     this.waitingForResponse = false;
   }
@@ -24,14 +24,14 @@ export class RedealPhase extends BasePhase {
    */
   async enter() {
     await super.enter();
-    
+
     console.log("\n" + "=".repeat(50));
     console.log(`ROUND ${this.stateManager.currentRound}`);
     console.log("=".repeat(50));
-    
+
     // Show round start info
     this.showRoundStartInfo();
-    
+
     // Check if player should be offered redeal
     this.checkRedealEligibility();
   }
@@ -42,20 +42,22 @@ export class RedealPhase extends BasePhase {
   showRoundStartInfo() {
     const starter = this.stateManager.roundStarter;
     let startReason = "Won previous round";
-    
+
     if (this.stateManager.currentRound === 1) {
       // Check if starter has GENERAL_RED
       const starterHand = this.stateManager.gameData.hands?.[starter];
-      if (starterHand?.some(card => card.includes("GENERAL_RED"))) {
+      if (starterHand?.some((card) => card.includes("GENERAL_RED"))) {
         startReason = "Has GENERAL_RED";
       }
     }
-    
+
     console.log(`${starter} starts the game (${startReason})\n`);
-    
+
     // Update UI
     this.uiRenderer.showRedealPhase();
-    this.uiRenderer.updatePhaseIndicator(`Round ${this.stateManager.currentRound} - Redeal Check`);
+    this.uiRenderer.updatePhaseIndicator(
+      `Round ${this.stateManager.currentRound} - Redeal Check`
+    );
   }
 
   /**
@@ -67,13 +69,13 @@ export class RedealPhase extends BasePhase {
       this.skipRedeal();
       return;
     }
-    
+
     // Check hand strength
     const hasStrongPiece = this.stateManager.myHand.some((card) => {
       const match = card.match(/\((\d+)\)/);
       return match && parseInt(match[1]) > 9;
     });
-    
+
     if (!hasStrongPiece) {
       // Eligible for redeal
       this.promptRedeal();
@@ -88,27 +90,27 @@ export class RedealPhase extends BasePhase {
    */
   async promptRedeal() {
     if (this.waitingForResponse) return;
-    
+
     this.waitingForResponse = true;
-    
+
     // Show hand
     this.uiRenderer.displayHand(this.stateManager.myHand);
-    
+
     // Show redeal prompt
     console.log("⚠️ You have no pieces > 9 points. Request redeal?");
-    
+
     const response = await this.uiRenderer.showInput(
       "Request redeal? (y/n):",
       (input) => {
         const lower = input.toLowerCase();
         return {
-          valid: lower === 'y' || lower === 'n',
-          message: "Please enter 'y' or 'n'"
+          valid: lower === "y" || lower === "n",
+          message: "Please enter 'y' or 'n'",
         };
       }
     );
-    
-    if (response.toLowerCase() === 'y') {
+
+    if (response.toLowerCase() === "y") {
       await this.requestRedeal();
     } else {
       this.skipRedeal();
@@ -124,16 +126,18 @@ export class RedealPhase extends BasePhase {
         `/api/redeal?room_id=${this.stateManager.roomId}&player_name=${this.stateManager.playerName}`,
         { method: "POST" }
       );
-      
+
       const result = await response.json();
-      
+
       if (result.redeal_allowed) {
-        console.log(`\n🔄 ${this.stateManager.playerName} has requested a redeal!`);
+        console.log(
+          `\n🔄 ${this.stateManager.playerName} has requested a redeal!`
+        );
         console.log(`Score multiplier: x${result.multiplier}`);
-        
+
         // Update state
         this.stateManager.redealMultiplier = result.multiplier;
-        
+
         // Server will handle dealing new cards
         // Wait for new hand via socket
       } else {
@@ -153,9 +157,9 @@ export class RedealPhase extends BasePhase {
    */
   skipRedeal() {
     if (this.hasChecked) return;
-    
+
     this.hasChecked = true;
-    
+
     // Short delay before moving to declaration
     setTimeout(() => {
       this.completePhase();
@@ -167,8 +171,23 @@ export class RedealPhase extends BasePhase {
    */
   registerEventHandlers() {
     // Listen for redeal events
-    this.addEventHandler('redeal', this.handleRedeal);
-    this.addEventHandler('new_hand', this.handleNewHand);
+    this.addEventHandler("redeal", this.handleRedeal);
+    this.addEventHandler("new_hand", this.handleNewHand);
+    this.addEventHandler("new_round", this.handleNewRound);
+  }
+
+  handleNewRound(data) {
+    // Update hand
+    this.stateManager.updateHand(data.hands[this.stateManager.playerName]);
+    this.stateManager.currentRound = data.round;
+    this.stateManager.roundStarter = data.starter;
+
+    console.log("✅ New round after redeal!");
+
+    // ไป declaration phase
+    setTimeout(() => {
+      this.completePhase({ nextPhase: "declaration" });
+    }, 1500);
   }
 
   /**
@@ -177,12 +196,14 @@ export class RedealPhase extends BasePhase {
   handleRedeal(data) {
     console.log(`\n🔄 ${data.player} has requested a redeal!`);
     console.log(`Score multiplier is now x${data.multiplier}`);
-    
+
     // Update multiplier
     this.stateManager.redealMultiplier = data.multiplier;
-    
+
     // Show in UI
-    this.uiRenderer.showSuccess(`${data.player} requested redeal. Multiplier: x${data.multiplier}`);
+    this.uiRenderer.showSuccess(
+      `${data.player} requested redeal. Multiplier: x${data.multiplier}`
+    );
   }
 
   /**
@@ -193,7 +214,7 @@ export class RedealPhase extends BasePhase {
       // Update our hand
       this.stateManager.updateHand(data.hand);
       console.log("✅ Received new hand after redeal");
-      
+
       // Check again (in case still weak)
       this.hasChecked = false;
       this.waitingForResponse = false;
@@ -205,15 +226,15 @@ export class RedealPhase extends BasePhase {
    * Get next phase
    */
   getNextPhase() {
-    return 'declaration';
+    return "declaration";
   }
 
   /**
    * Handle user input
    */
   async handleUserInput(input) {
-    if (!await super.handleUserInput(input)) return false;
-    
+    if (!(await super.handleUserInput(input))) return false;
+
     // This phase uses the prompt system
     return false;
   }
@@ -224,7 +245,7 @@ export class RedealPhase extends BasePhase {
   async exit() {
     this.hasChecked = false;
     this.waitingForResponse = false;
-    
+
     await super.exit();
   }
 }
