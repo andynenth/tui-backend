@@ -242,9 +242,13 @@ async def start_game(room_id: str = Query(...)):
         # Register game with bot manager
         bot_manager.register_game(room_id, room.game)
         
+        print(f"🔄 DEBUG: Calling game.prepare_round() for room {room_id}")
         game_data = room.game.prepare_round()
+        print(f"🔍 DEBUG: game_data keys: {list(game_data.keys())}")
+        print(f"🔍 DEBUG: need_redeal = {game_data.get('need_redeal', 'NOT_FOUND')}")
+        print(f"🔍 DEBUG: weak_players = {game_data.get('weak_players', 'NOT_FOUND')}")
         
-        await broadcast(room_id, "start_game", {
+        broadcast_data = {
             "message": "Game started",
             "round": game_data["round"],
             "starter": game_data["starter"],
@@ -258,8 +262,17 @@ async def start_game(room_id: str = Query(...)):
                 }
                 for p in room.game.players
             ],
+            # ✅ ADD: Include redeal information
+            "weak_players": game_data.get("weak_players", []),
+            "need_redeal": game_data.get("need_redeal", False),
             "operation_id": result["operation_id"]
-        })
+        }
+        
+        print(f"🔍 DEBUG: Broadcasting data keys: {list(broadcast_data.keys())}")
+        print(f"🔍 DEBUG: Broadcasting need_redeal: {broadcast_data['need_redeal']}")
+        print(f"🔍 DEBUG: Broadcasting weak_players: {broadcast_data['weak_players']}")
+        
+        await broadcast(room_id, "start_game", broadcast_data)
         
         # Notify bot manager about round start
         await bot_manager.handle_game_event(
