@@ -74,6 +74,7 @@ export class GameScene extends Container {
       console.log("✅ GameEventHandler initialized");
 
       // 6. Create input handler
+      // NOT USING RN
       this.inputHandler = new UserInputHandler(
         this.stateManager,
         this.phaseManager,
@@ -133,18 +134,14 @@ export class GameScene extends Container {
    * Start the appropriate initial phase
    */
   _startInitialPhase() {
-    // Determine initial phase based on game state
     const { need_redeal, starter, round } = this.gameData;
 
     if (need_redeal) {
-      console.log("🔄 Starting with redeal phase");
+      console.log("🔄 Some players have weak hands, checking redeal...");
       this.phaseManager.transitionTo("redeal");
-    } else if (starter) {
+    } else {
       console.log("📣 Starting with declaration phase");
       this.phaseManager.transitionTo("declaration");
-    } else {
-      console.log("⚠️ Unknown initial state, starting with waiting phase");
-      this.phaseManager.transitionTo("waiting");
     }
   }
 

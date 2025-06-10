@@ -335,25 +335,30 @@ async def start_round(room_id: str = Query(...)):
 
 @router.post("/redeal")
 async def redeal(room_id: str = Query(...), player_name: str = Query(...)):
-    """
-    Handles a player's request to redeal.
-    Args:
-        room_id (str): The ID of the room.
-        player_name (str): The name of the player requesting redeal.
-    Returns:
-        dict: Result of the redeal request.
-    Raises:
-        HTTPException: If the room or game is not found.
-    """
-    room = room_manager.get_room(room_id) # Get the room.
+    room = room_manager.get_room(room_id)
     if not room or not room.game:
-        raise HTTPException(status_code=404, detail="Game not found") # Check if room and game exist.
+        raise HTTPException(status_code=404, detail="Game not found")
 
-    result = room.game.request_redeal(player_name) # Request redeal in the game.
-    await broadcast(room_id, "redeal", {
-        "player": player_name,
-        "multiplier": room.game.redeal_multiplier # Broadcast redeal details.
-    })
+    result = room.game.request_redeal(player_name)
+    
+    if result["redeal_allowed"]:
+        # Broadcast redeal event
+        await broadcast(room_id, "redeal", {
+            "player": player_name,
+            "multiplier": room.game.redeal_multiplier
+        })
+        
+        await asyncio.sleep(1)  # Small delay
+        new_round_data = room.game.prepare_round()
+        
+        # Broadcast new hands
+        await broadcast(room_id, "new_round", {
+            "round": new_round_data["round"],
+            "starter": player_name,
+            "hands": new_round_data["hands"],
+            "multiplier": room.game.redeal_multiplier
+        })
+    
     return result
 
 @router.post("/declare")

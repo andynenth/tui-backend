@@ -68,7 +68,7 @@ export class GamePhaseManager extends EventEmitter {
   async transitionTo(phaseName) {
     console.log(`🔄 Transitioning to phase: ${phaseName}`);
 
-    // Check if phase exists
+    // Exit the previous phase if phase exists
     if (!this.phases.has(phaseName)) {
       console.error(`Unknown phase: ${phaseName}`);
       return;

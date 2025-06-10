@@ -35,22 +35,31 @@ class Game:
         self.round_number += 1
         self._deal_pieces()
         self._set_round_start_player()
-
+                
         # Initialize pile and score tracking
         self.pile_counts = {p.name: 0 for p in self.players}
         self.round_scores = {p.name: 0 for p in self.players}
-
+        
         # Reset player declarations
         for player in self.players:
             player.declared = 0
 
+        # Check for weak hands
+        weak_players = []
+        for player in self.players:
+            has_strong = any(p.point > 9 for p in player.hand)
+            if not has_strong:
+                weak_players.append(player.name)
+        
         return {
             "round": self.round_number,
             "starter": self.current_order[0].name,
             "hands": {
                 player.name: [str(piece) for piece in player.hand]
                 for player in self.players
-            }
+            },
+            "weak_players": weak_players,
+            "need_redeal": len(weak_players) > 0
         }
 
     def request_redeal(self, player_name: str) -> dict:
