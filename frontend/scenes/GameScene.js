@@ -134,14 +134,72 @@ export class GameScene extends Container {
    * Start the appropriate initial phase
    */
   _startInitialPhase() {
-    const { need_redeal, starter, round } = this.gameData;
+    // Debug: Check what data we have
+    console.log("🔍 DEBUG: Full gameData:", this.gameData);
 
-    if (need_redeal) {
+    const { need_redeal, starter, round, weak_players, players, hands } =
+      this.gameData;
+
+    console.log("🔍 DEBUG: Extracted values:");
+    console.log("  need_redeal:", need_redeal);
+    console.log("  starter:", starter);
+    console.log("  round:", round);
+    console.log("  weak_players:", weak_players);
+    console.log("  hands available:", hands ? Object.keys(hands) : "none");
+
+    // Manual redeal check if backend didn't provide it
+    let shouldCheckRedeal = need_redeal;
+
+    if (need_redeal === undefined && round === 1) {
+      console.log("🔍 DEBUG: need_redeal not provided, checking manually...");
+      console.log("🔍 DEBUG: players array:", players);
+      console.log("🔍 DEBUG: hands object keys:", Object.keys(hands || {}));
+
+      // Check if any player (including ourselves) has weak hand
+      if (hands && players) {
+        shouldCheckRedeal = false; // Initialize to false
+
+        for (const player of players) {
+          console.log(`🔍 DEBUG: Checking player:`, player);
+          const playerName = player.name || player;
+          const playerHand = hands[playerName] || [];
+
+          console.log(`🔍 DEBUG: ${playerName} hand:`, playerHand);
+
+          const hasStrongPiece = playerHand.some((card) => {
+            const match = card.match(/\((\d+)\)/);
+            const points = match ? parseInt(match[1]) : 0;
+            console.log(`🔍 DEBUG: Card "${card}" has ${points} points`);
+            return points > 9;
+          });
+
+          console.log(
+            `🔍 DEBUG: ${playerName} hasStrongPiece:`,
+            hasStrongPiece
+          );
+
+          if (!hasStrongPiece) {
+            console.log(`🔍 DEBUG: ${playerName} has weak hand - NEED REDEAL!`);
+            shouldCheckRedeal = true;
+            break;
+          }
+        }
+      } else {
+        console.log("🔍 DEBUG: Missing hands or players data");
+      }
+    }
+
+    console.log("🔍 DEBUG: Final shouldCheckRedeal:", shouldCheckRedeal);
+
+    if (shouldCheckRedeal) {
       console.log("🔄 Some players have weak hands, checking redeal...");
       this.phaseManager.transitionTo("redeal");
-    } else {
-      console.log("📣 Starting with declaration phase");
+    } else if (starter) {
+      console.log("📣 No redeal needed, starting with declaration phase");
       this.phaseManager.transitionTo("declaration");
+    } else {
+      console.log("⚠️ Unknown initial state, starting with waiting phase");
+      this.phaseManager.transitionTo("waiting");
     }
   }
 

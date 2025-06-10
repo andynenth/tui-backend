@@ -1,5 +1,4 @@
 // frontend/game/handlers/UserInputHandler.js
-
 /**
  * Centralized user input handling
  * Manages keyboard, mouse, and touch inputs for the game
@@ -22,7 +21,7 @@ export class UserInputHandler {
     this.shortcuts = new Map();
     
     // Input mode
-    this.currentInputMode = null; // 'text', 'selection', 'confirmation'
+    this.currentInputMode = null; // 'text', 'selection', 'confirmation', 'redeal', 'declaration'
     this.currentInputCallback = null;
     
     // Key state tracking
@@ -42,9 +41,6 @@ export class UserInputHandler {
     window.addEventListener('keydown', this.handleKeyDown);
     window.addEventListener('keyup', this.handleKeyUp);
     
-    // Mouse events (for card selection)
-    // These would be attached to specific UI elements
-    
     // Register default shortcuts
     this.registerDefaultShortcuts();
     
@@ -57,7 +53,7 @@ export class UserInputHandler {
   registerDefaultShortcuts() {
     // Quick actions
     this.registerShortcut('Enter', () => {
-      if (this.currentInputMode === 'text') {
+      if (this.currentInputMode === 'text' || this.currentInputMode === 'declaration') {
         this.submitTextInput();
       }
     });
@@ -71,11 +67,38 @@ export class UserInputHandler {
     // Number keys for quick selection
     for (let i = 0; i <= 9; i++) {
       this.registerShortcut(i.toString(), () => {
-        if (this.currentInputMode === 'selection') {
+        if (this.currentInputMode === 'selection' || 
+            this.currentInputMode === 'redeal' || 
+            this.currentInputMode === 'declaration') {
           this.handleNumberSelection(i);
         }
       });
     }
+    
+    // Y/N keys for redeal phase
+    this.registerShortcut('y', () => {
+      if (this.currentInputMode === 'redeal') {
+        this.handleRedealShortcut('Yes');
+      }
+    });
+    
+    this.registerShortcut('n', () => {
+      if (this.currentInputMode === 'redeal') {
+        this.handleRedealShortcut('No');
+      }
+    });
+    
+    this.registerShortcut('Y', () => {
+      if (this.currentInputMode === 'redeal') {
+        this.handleRedealShortcut('Yes');
+      }
+    });
+    
+    this.registerShortcut('N', () => {
+      if (this.currentInputMode === 'redeal') {
+        this.handleRedealShortcut('No');
+      }
+    });
     
     // Debug shortcuts
     this.registerShortcut('Ctrl+D', () => {
@@ -108,7 +131,7 @@ export class UserInputHandler {
     }
     
     // Route to current input mode
-    if (this.currentInputMode === 'text') {
+    if (this.currentInputMode === 'text' || this.currentInputMode === 'declaration') {
       // Let the text input component handle it
       return;
     }
@@ -177,6 +200,40 @@ export class UserInputHandler {
   }
 
   /**
+   * Request redeal decision from user
+   */
+  async requestRedealDecision(prompt = "Request redeal?") {
+    return new Promise((resolve) => {
+      this.currentInputMode = 'redeal';
+      this.currentInputCallback = resolve;
+      
+      // Show redeal input UI
+      this.uiRenderer.showRedealInput(['Yes', 'No'], (choice) => {
+        this.currentInputMode = null;
+        this.currentInputCallback = null;
+        resolve(choice);
+      });
+    });
+  }
+
+  /**
+   * Request declaration from user
+   */
+  async requestDeclaration(prompt, validOptions) {
+    return new Promise((resolve) => {
+      this.currentInputMode = 'declaration';
+      this.currentInputCallback = resolve;
+      
+      // Show declaration input UI
+      this.uiRenderer.showDeclarationInput(validOptions, (value) => {
+        this.currentInputMode = null;
+        this.currentInputCallback = null;
+        resolve(value);
+      });
+    });
+  }
+
+  /**
    * Request selection from user (e.g., card indices)
    */
   async requestSelection(prompt, options, multiSelect = false) {
@@ -217,9 +274,26 @@ export class UserInputHandler {
    * Submit current text input
    */
   submitTextInput() {
-    if (this.currentInputMode === 'text') {
+    if (this.currentInputMode === 'text' || this.currentInputMode === 'declaration') {
       // Trigger submit on the input component
       this.uiRenderer.submitCurrentInput();
+    }
+  }
+
+  /**
+   * Handle redeal keyboard shortcuts (Y/N)
+   */
+  handleRedealShortcut(choice) {
+    if (this.currentInputMode === 'redeal' && this.currentInputCallback) {
+      const callback = this.currentInputCallback;
+      this.currentInputMode = null;
+      this.currentInputCallback = null;
+      
+      // Hide input UI
+      this.uiRenderer.hideInput();
+      
+      console.log(`⌨️ Shortcut: ${choice}`);
+      callback(choice);
     }
   }
 
@@ -246,6 +320,16 @@ export class UserInputHandler {
   handleNumberSelection(number) {
     if (this.currentInputMode === 'selection') {
       // Notify the selection UI
+      this.uiRenderer.selectByNumber(number);
+    } else if (this.currentInputMode === 'redeal') {
+      // For redeal: 1=Yes, 2=No
+      if (number === 1) {
+        this.handleRedealShortcut('Yes');
+      } else if (number === 2) {
+        this.handleRedealShortcut('No');
+      }
+    } else if (this.currentInputMode === 'declaration') {
+      // For declaration: direct number input
       this.uiRenderer.selectByNumber(number);
     }
   }
@@ -323,6 +407,20 @@ export class UserInputHandler {
            this.isKeyPressed('Alt');
   }
 
+  /**
+   * Get current input mode
+   */
+  getCurrentInputMode() {
+    return this.currentInputMode;
+  }
+
+  /**
+   * Check if currently waiting for input
+   */
+  isWaitingForInput() {
+    return this.currentInputMode !== null;
+  }
+
   // ===== DEBUG =====
 
   /**
@@ -335,6 +433,7 @@ export class UserInputHandler {
     console.log('- Keys Pressed:', Array.from(this.keysPressed));
     console.log('- Input Queue:', this.inputQueue.length);
     console.log('- Shortcuts:', Array.from(this.shortcuts.keys()));
+    console.log('- Waiting for Input:', this.isWaitingForInput());
   }
 
   // ===== CLEANUP =====
@@ -353,46 +452,3 @@ export class UserInputHandler {
     console.log('🎮 Input handler destroyed');
   }
 }
-
-// ===== PHASE INTEGRATION EXAMPLE =====
-
-/**
- * Example of how phases can use the input handler
- * 
- * In DeclarationPhase:
- * ```javascript
- * async promptDeclaration() {
- *   const validOptions = this.stateManager.getValidDeclarationOptions();
- *   
- *   // Using the input handler
- *   const value = await this.inputHandler.requestTextInput(
- *     'Enter your declaration:',
- *     (input) => {
- *       const num = parseInt(input);
- *       if (!validOptions.includes(num)) {
- *         return { valid: false, message: 'Invalid choice' };
- *       }
- *       return { valid: true };
- *     }
- *   );
- *   
- *   this.handleDeclaration(parseInt(value));
- * }
- * ```
- * 
- * In TurnPhase:
- * ```javascript
- * async promptCardSelection() {
- *   const hand = this.stateManager.myHand;
- *   
- *   // Using the input handler for multi-select
- *   const indices = await this.inputHandler.requestSelection(
- *     'Select pieces to play:',
- *     hand.map((card, i) => ({ index: i, card })),
- *     true // multiSelect
- *   );
- *   
- *   this.playCards(indices);
- * }
- * ```
- */

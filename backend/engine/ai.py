@@ -1,4 +1,4 @@
-# backend/engine/main.py
+# backend/engine/ai.py
 
 from itertools import combinations
 from engine.rules import is_valid_play, get_play_type

@@ -1,105 +1,65 @@
-// frontend/scenes/game/GameUIRenderer.js
+// frontend/scenes/game/GameUIRenderer.js (Updated with Redeal Input)
 
 import { Container, Text, TextStyle } from "pixi.js";
-import { GameTextbox } from "../../components/GameTextbox.js";
 import { GameButton } from "../../components/GameButton.js";
+import { GameTextbox } from "../../components/GameTextbox.js";
 
 /**
- * Handles all UI rendering for the game
- * Separates presentation logic from game logic
- *
- * Responsibilities:
- * - Create and manage UI components
- * - Update UI based on game state
- * - Handle UI animations
- * - Manage layout
+ * Game UI Renderer
+ * Handles all UI rendering for the game scene
  */
 export class GameUIRenderer extends Container {
   constructor(gameScene) {
     super();
-
+    
     this.gameScene = gameScene;
-    this.parentContainer = gameScene;
-
+    this.stateManager = null; // Will be set in initialize()
+    
     // UI containers
-    this.containers = {
-      header: new Container(),
-      main: new Container(),
-      input: new Container(),
-      footer: new Container(),
-    };
-
-    // UI components
-    this.components = {
-      statusText: null,
-      handDisplay: null,
-      inputBox: null,
-      submitButton: null,
-      phaseIndicator: null,
-    };
-
-    // Input state
+    this.containers = {};
+    this.components = {};
     this.currentInputCallback = null;
-    this.inputValidator = null;
-
-    // Add self to parent
-    gameScene.addChild(this);
-
-    this.setupLayout();
-  }
-
-  /**
-   * Initialize UI after all components are ready
-   */
-  async initialize(gameData) {
-    // Now we can safely access stateManager
-    this.stateManager = this.gameScene.stateManager;
+    this.currentValidOptions = [];
+    
+    this.initializeLayout();
     this.createComponents();
-    console.log("UI components created");
   }
 
   /**
-   * Set up container layout
+   * Initialize UI layout containers
    */
-  setupLayout() {
-    // Main layout
-    this.layout = {
+  initializeLayout() {
+    // Create main containers
+    this.containers.header = new Container();
+    this.containers.main = new Container();
+    this.containers.hand = new Container();
+    this.containers.input = new Container();
+    this.containers.footer = new Container();
+
+    // Set basic layout properties
+    this.containers.header.layout = {
       width: "100%",
-      height: "100%",
+      height: 80,
       flexDirection: "column",
       alignItems: "center",
-      justifyContent: "flex-start",
-      padding: 20,
-      gap: 20,
+      justifyContent: "center",
+      gap: 10
     };
 
-    // Header layout
-    this.containers.header.layout = {
+    this.containers.main.layout = {
       width: "100%",
       height: "auto",
       flexDirection: "column",
       alignItems: "center",
-      gap: 10,
-    };
-
-    // Main content layout
-    this.containers.main.layout = {
-      width: "100%",
-      flex: 1,
-      flexDirection: "column",
-      alignItems: "center",
-      justifyContent: "center",
       gap: 20,
     };
 
-    // Input layout
     this.containers.input.layout = {
       flexDirection: "row",
       gap: 8,
       alignItems: "center",
     };
 
-    // Footer layout
     this.containers.footer.layout = {
       width: "100%",
       height: "auto",
@@ -115,9 +75,25 @@ export class GameUIRenderer extends Container {
   }
 
   /**
+   * Initialize UI after all components are ready
+   */
+  async initialize(gameData) {
+    // Now we can safely access stateManager
+    this.stateManager = this.gameScene.stateManager;
+    this.createComponents();
+    console.log("✅ UI components created");
+  }
+
+  /**
    * Create UI components
    */
   createComponents() {
+    // Check if stateManager is available
+    if (!this.stateManager) {
+      console.warn("⚠️ StateManager not available yet");
+      return;
+    }
+
     // Status text
     this.components.statusText = new Text({
       text: `Game Room: ${this.stateManager.roomId}`,
@@ -139,23 +115,6 @@ export class GameUIRenderer extends Container {
     });
     this.containers.header.addChild(this.components.phaseIndicator);
 
-    // Input components
-    this.components.inputBox = new GameTextbox({
-      placeholder: "Your input",
-      width: 300,
-    });
-
-    this.components.submitButton = new GameButton({
-      label: "Enter",
-      width: 80,
-      onClick: () => this.handleSubmit(),
-    });
-
-    this.containers.input.addChild(
-      this.components.inputBox.view,
-      this.components.submitButton.view
-    );
-
     // Hide input by default
     this.containers.input.visible = false;
   }
@@ -168,6 +127,16 @@ export class GameUIRenderer extends Container {
   showRedealPhase() {
     this.updatePhaseIndicator("Redeal Check");
     this.clearMainContent();
+    
+    // Add redeal phase info
+    const infoText = new Text({
+      text: "Checking for weak hands...",
+      style: new TextStyle({
+        fill: "#ffffff",
+        fontSize: 16,
+      }),
+    });
+    this.containers.main.addChild(infoText);
   }
 
   /**
@@ -196,162 +165,319 @@ export class GameUIRenderer extends Container {
     this.clearMainContent();
   }
 
-  /**
-   * Show scoring phase UI
-   */
-  showScoringPhase() {
-    this.updatePhaseIndicator("Scoring");
-    this.clearMainContent();
-  }
-
   // ===== INPUT METHODS =====
 
   /**
-   * Show input prompt
+   * Show redeal input with Yes/No options
    */
-  async showInput(prompt, validator = null) {
-    return new Promise((resolve) => {
-      console.log(`\n${prompt}`);
-
-      this.containers.input.visible = true;
-      this.components.inputBox.setText("");
-      this.components.inputBox.focus();
-
-      this.currentInputCallback = resolve;
-      this.inputValidator = validator;
+  showRedealInput(options, callback) {
+    this.currentInputCallback = callback;
+    this.currentValidOptions = options;
+    
+    // Clear existing input
+    this.clearInputComponents();
+    
+    // Create redeal prompt
+    const promptText = new Text({
+      text: "Request redeal? (You have no pieces > 9 points)",
+      style: new TextStyle({
+        fill: "#ffff00",
+        fontSize: 16,
+        fontWeight: "bold",
+      }),
     });
+    
+    const optionsText = new Text({
+      text: `Options: [${options.join(", ")}]`,
+      style: new TextStyle({
+        fill: "#cccccc",
+        fontSize: 14,
+      }),
+    });
+    
+    // Create choice buttons
+    const buttonContainer = new Container();
+    
+    options.forEach((option, index) => {
+      const button = new GameButton({
+        label: option,
+        width: 100,
+        onClick: () => this.handleRedealChoice(option),
+      });
+      
+      button.view.x = index * 120;
+      buttonContainer.addChild(button.view);
+      
+      // Add keyboard shortcut info
+      const shortcutText = new Text({
+        text: `[${index + 1}]`,
+        style: new TextStyle({
+          fill: "#888888",
+          fontSize: 12,
+        }),
+      });
+      shortcutText.x = button.view.x + button.view.width / 2 - shortcutText.width / 2;
+      shortcutText.y = button.view.height + 5;
+      buttonContainer.addChild(shortcutText);
+    });
+    
+    // Add to input container
+    this.containers.input.addChild(promptText);
+    this.containers.input.addChild(optionsText);
+    this.containers.input.addChild(buttonContainer);
+    
+    // Position elements
+    optionsText.y = promptText.height + 5;
+    buttonContainer.y = optionsText.y + optionsText.height + 10;
+    
+    // Show input container
+    this.containers.input.visible = true;
+    
+    console.log(`🟨 ${this.stateManager?.playerName || 'Player'}, request redeal? [${options.join(", ")}]:`);
   }
 
   /**
-   * Show declaration input
+   * Show declaration input with numeric options
    */
   showDeclarationInput(validOptions, callback) {
-    // Could enhance this with buttons for each option
-    this.showInput(
-      `Enter declaration (${validOptions.join(", ")}):`,
-      (value) => {
-        const num = parseInt(value);
-        if (isNaN(num)) {
-          return { valid: false, message: "Please enter a number" };
-        }
-        if (!validOptions.includes(num)) {
-          return {
-            valid: false,
-            message: `Choose from [${validOptions.join(", ")}]`,
-          };
-        }
-        return { valid: true };
-      }
-    ).then((value) => {
-      callback(parseInt(value));
+    this.currentInputCallback = callback;
+    this.currentValidOptions = validOptions;
+    
+    // Clear existing input
+    this.clearInputComponents();
+    
+    // Create declaration prompt
+    const promptText = new Text({
+      text: `Declare how many piles you want to capture:`,
+      style: new TextStyle({
+        fill: "#ffff00",
+        fontSize: 16,
+        fontWeight: "bold",
+      }),
     });
+    
+    const optionsText = new Text({
+      text: `Valid options: [${validOptions.join(", ")}]`,
+      style: new TextStyle({
+        fill: "#cccccc",
+        fontSize: 14,
+      }),
+    });
+    
+    // Create number input
+    this.components.inputBox = new GameTextbox({
+      placeholder: "Enter number",
+      width: 200,
+    });
+
+    this.components.submitButton = new GameButton({
+      label: "Declare",
+      width: 80,
+      onClick: () => this.handleDeclarationSubmit(),
+    });
+    
+    // Add to input container
+    this.containers.input.addChild(promptText);
+    this.containers.input.addChild(optionsText);
+    this.containers.input.addChild(this.components.inputBox.view);
+    this.containers.input.addChild(this.components.submitButton.view);
+    
+    // Position elements
+    optionsText.y = promptText.height + 5;
+    this.components.inputBox.view.y = optionsText.y + optionsText.height + 10;
+    this.components.submitButton.view.x = this.components.inputBox.view.width + 10;
+    this.components.submitButton.view.y = this.components.inputBox.view.y;
+    
+    // Show input container
+    this.containers.input.visible = true;
+    
+    // Focus on input
+    this.components.inputBox.focus();
   }
 
   /**
-   * Hide input
+   * Handle redeal choice selection
    */
-  hideInput() {
-    this.containers.input.visible = false;
-    this.currentInputCallback = null;
-    this.inputValidator = null;
-  }
-
-  /**
-   * Handle submit button
-   */
-  handleSubmit() {
-    if (!this.currentInputCallback) return;
-
-    const value = this.components.inputBox.getText().trim();
-    if (!value) return;
-
-    // Validate if validator provided
-    if (this.inputValidator) {
-      const result = this.inputValidator(value);
-      if (!result.valid) {
-        this.showError(result.message);
-        return;
-      }
+  handleRedealChoice(choice) {
+    if (this.currentInputCallback && this.currentValidOptions.includes(choice)) {
+      const callback = this.currentInputCallback;
+      this.currentInputCallback = null;
+      this.currentValidOptions = [];
+      
+      callback(choice);
     }
+  }
 
-    // Save callback BEFORE hiding input
+  /**
+   * Handle declaration submit
+   */
+  handleDeclarationSubmit() {
+    if (!this.currentInputCallback || !this.components.inputBox) return;
+    
+    const value = parseInt(this.components.inputBox.getText().trim());
+    
+    if (isNaN(value)) {
+      this.showError("Please enter a valid number");
+      return;
+    }
+    
+    if (!this.currentValidOptions.includes(value)) {
+      this.showError(`Invalid choice. Select from [${this.currentValidOptions.join(", ")}]`);
+      return;
+    }
+    
     const callback = this.currentInputCallback;
-
-    // Now hide and clear
-    this.hideInput();
-
-    // Call the saved callback
+    this.currentInputCallback = null;
+    this.currentValidOptions = [];
+    
     callback(value);
   }
 
-  // ===== DISPLAY METHODS =====
+  /**
+   * Handle keyboard number selection
+   */
+  selectByNumber(number) {
+    if (this.currentValidOptions.includes(number) && this.currentInputCallback) {
+      // For redeal phase (Yes=1, No=2)
+      if (this.currentValidOptions.length === 2 && 
+          this.currentValidOptions.includes('Yes') && 
+          this.currentValidOptions.includes('No')) {
+        const choice = number === 1 ? 'Yes' : number === 2 ? 'No' : null;
+        if (choice) {
+          this.handleRedealChoice(choice);
+        }
+      }
+      // For declaration phase (numeric values)
+      else if (typeof number === 'number') {
+        const callback = this.currentInputCallback;
+        this.currentInputCallback = null;
+        this.currentValidOptions = [];
+        callback(number);
+      }
+    }
+  }
+
+  // ===== UTILITY METHODS =====
 
   /**
-   * Display player's hand
+   * Update phase indicator text
    */
-  displayHand(hand) {
-    console.log("\n🃏 Your hand:");
-    hand.forEach((card, i) => {
-      console.log(`${i}: ${card}`);
-    });
-
-    // TODO: Create visual hand display
+  updatePhaseIndicator(text) {
+    if (this.components.phaseIndicator) {
+      this.components.phaseIndicator.text = text;
+    }
   }
 
   /**
-   * Update declaration for a player
-   */
-  updateDeclaration(playerName, value) {
-    // TODO: Update declaration display
-    console.log(`${playerName} declared ${value}`);
-  }
-
-  /**
-   * Show declaration summary
-   */
-  showDeclarationSummary(declarations) {
-    console.log("\n📋 Declaration Summary:");
-    Object.entries(declarations).forEach(([player, value]) => {
-      console.log(`  ${player}: ${value} piles`);
-    });
-  }
-
-  /**
-   * Update phase indicator
-   */
-  updatePhaseIndicator(phaseName) {
-    this.components.phaseIndicator.text = phaseName;
-  }
-
-  /**
-   * Clear main content
+   * Clear main content area
    */
   clearMainContent() {
     this.containers.main.removeChildren();
   }
 
-  // ===== FEEDBACK METHODS =====
+  /**
+   * Clear input components
+   */
+  clearInputComponents() {
+    this.containers.input.removeChildren();
+    this.components.inputBox = null;
+    this.components.submitButton = null;
+  }
+
+  /**
+   * Hide input container
+   */
+  hideInput() {
+    this.containers.input.visible = false;
+    this.clearInputComponents();
+    this.currentInputCallback = null;
+    this.currentValidOptions = [];
+  }
+
+  /**
+   * Submit current input (called by Enter key)
+   */
+  submitCurrentInput() {
+    if (this.components.submitButton) {
+      // Trigger the submit button click
+      this.components.submitButton.onClick();
+    }
+  }
+
+  /**
+   * Display player hand
+   */
+  displayHand(hand) {
+    this.containers.hand.removeChildren();
+    
+    if (!hand || hand.length === 0) return;
+    
+    const title = new Text({
+      text: "Your Hand:",
+      style: new TextStyle({
+        fill: "#ffffff",
+        fontSize: 16,
+        fontWeight: "bold",
+      }),
+    });
+    
+    this.containers.hand.addChild(title);
+    
+    hand.forEach((card, index) => {
+      const cardText = new Text({
+        text: `${index + 1}. ${card}`,
+        style: new TextStyle({
+          fill: "#cccccc",
+          fontSize: 14,
+        }),
+      });
+      cardText.y = title.height + 5 + (index * 20);
+      this.containers.hand.addChild(cardText);
+    });
+  }
+
+  /**
+   * Show success message
+   */
+  showSuccess(message) {
+    // Create temporary success message
+    const successText = new Text({
+      text: `✅ ${message}`,
+      style: new TextStyle({
+        fill: "#00ff00",
+        fontSize: 14,
+      }),
+    });
+    
+    this.containers.footer.addChild(successText);
+    
+    // Remove after 3 seconds
+    setTimeout(() => {
+      if (successText.parent) {
+        successText.parent.removeChild(successText);
+      }
+    }, 3000);
+  }
 
   /**
    * Show error message
    */
   showError(message) {
-    console.error(`❌ ${message}`);
-
+    // Create temporary error message
     const errorText = new Text({
-      text: message,
+      text: `❌ ${message}`,
       style: new TextStyle({
         fill: "#ff0000",
-        fontSize: 16,
+        fontSize: 14,
       }),
     });
-    errorText.position.set(10, 200);
-    this.containers.main.addChild(errorText);
-
+    
+    this.containers.footer.addChild(errorText);
+    
     // Remove after 3 seconds
     setTimeout(() => {
       if (errorText.parent) {
-        errorText.destroy();
+        errorText.parent.removeChild(errorText);
       }
     }, 3000);
   }
@@ -360,53 +486,86 @@ export class GameUIRenderer extends Container {
    * Show warning message
    */
   showWarning(message) {
-    console.warn(`⚠️ ${message}`);
-    // TODO: Show visual warning
-  }
-
-  /**
-   * Show success message
-   */
-  showSuccess(message) {
-    console.log(`✅ ${message}`);
-    // TODO: Show visual success
-  }
-
-  /**
-   * Show game over screen
-   */
-  showGameResults(data) {
-    this.clearMainContent();
-    this.updatePhaseIndicator("Game Over");
-
-    const gameOverText = new Text({
-      text:
-        data.winners?.length > 0
-          ? `🏆 Winner: ${data.winners.join(", ")}`
-          : "🎮 Game Over!",
+    // Create temporary warning message
+    const warningText = new Text({
+      text: `⚠️ ${message}`,
       style: new TextStyle({
-        fill: "#00ff00",
-        fontSize: 30,
+        fill: "#ffaa00",
+        fontSize: 14,
+      }),
+    });
+    
+    this.containers.footer.addChild(warningText);
+    
+    // Remove after 3 seconds
+    setTimeout(() => {
+      if (warningText.parent) {
+        warningText.parent.removeChild(warningText);
+      }
+    }, 3000);
+  }
+
+  /**
+   * Update declaration progress
+   */
+  updateDeclaration(player, value) {
+    // Find or create declaration display
+    let declarationDisplay = this.containers.main.children.find(
+      child => child.declarationDisplay
+    );
+    
+    if (!declarationDisplay) {
+      declarationDisplay = new Container();
+      declarationDisplay.declarationDisplay = true;
+      this.containers.main.addChild(declarationDisplay);
+    }
+    
+    // Update display logic here
+    // This would show current declarations from all players
+  }
+
+  /**
+   * Show declaration summary
+   */
+  showDeclarationSummary(declarations) {
+    this.clearMainContent();
+    
+    const title = new Text({
+      text: "Declaration Summary:",
+      style: new TextStyle({
+        fill: "#ffffff",
+        fontSize: 18,
         fontWeight: "bold",
       }),
     });
-
-    this.containers.main.addChild(gameOverText);
-  }
-
-  // ===== CLEANUP =====
-
-  /**
-   * Destroy all UI components
-   */
-  destroy(options) {
-    Object.values(this.containers).forEach((container) => {
-      container.destroy({ children: true });
+    
+    this.containers.main.addChild(title);
+    
+    let yOffset = title.height + 10;
+    const total = Object.values(declarations).reduce((sum, value) => sum + value, 0);
+    
+    Object.entries(declarations).forEach(([player, value]) => {
+      const declText = new Text({
+        text: `${player}: ${value} piles`,
+        style: new TextStyle({
+          fill: "#cccccc",
+          fontSize: 14,
+        }),
+      });
+      declText.y = yOffset;
+      this.containers.main.addChild(declText);
+      yOffset += 20;
     });
-
-    this.components = {};
-    this.containers = {};
-
-    super.destroy(options);
+    
+    const totalText = new Text({
+      text: `Total: ${total}`,
+      style: new TextStyle({
+        fill: "#ffff00",
+        fontSize: 16,
+        fontWeight: "bold",
+      }),
+    });
+    totalText.y = yOffset + 10;
+    this.containers.main.addChild(totalText);
   }
 }
