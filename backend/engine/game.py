@@ -36,7 +36,8 @@ class Game:
         
         self.round_number += 1
         # self._deal_pieces()
-        self._deal_weak_hand(1)
+        self._deal_weak_hand(0)
+        # self._deal_guaranteed_no_redeal()
         self._set_round_start_player()
                 
         # Initialize pile and score tracking

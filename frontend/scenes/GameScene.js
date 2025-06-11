@@ -32,6 +32,7 @@ export class GameScene extends Container {
     console.log("📊 Game data:", gameData);
 
     this._initialize();
+    
   }
 
   /**
