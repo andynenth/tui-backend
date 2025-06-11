@@ -10,8 +10,9 @@ export class GameEventHandler {
     this.phaseManager = phaseManager;
     this.socketManager = socketManager;
 
-    // Bind event handlers
+    // Bind event handlers - เพิ่ม redeal events
     this.eventHandlers = {
+      // Existing handlers
       declare: this.handleDeclare.bind(this),
       all_declared: this.handleAllDeclared.bind(this),
       play: this.handlePlay.bind(this),
@@ -21,6 +22,12 @@ export class GameEventHandler {
       player_quit: this.handlePlayerQuit.bind(this),
       room_closed: this.handleRoomClosed.bind(this),
       error: this.handleError.bind(this),
+
+      // ✅ เพิ่ม redeal event handlers
+      redeal_response: this.handleRedealResponse.bind(this),
+      new_hand: this.handleNewHand.bind(this),
+      redeal_complete: this.handleRedealComplete.bind(this),
+      weak_hands_check: this.handleWeakHandsCheck.bind(this),
     };
 
     console.log("GameEventHandler initialized");
@@ -41,6 +48,71 @@ export class GameEventHandler {
     });
 
     console.log("✅ Game event handlers connected");
+  }
+
+  /**
+   * Handle redeal response from players (including bots)
+   */
+  handleRedealResponse(data) {
+    console.log("🔄 Redeal response received:", data);
+
+    // Forward to current phase if it's redeal phase
+    const currentPhase = this.phaseManager.getCurrentPhase();
+    if (currentPhase && currentPhase.name === "redeal") {
+      currentPhase.handleRedealResponse(data);
+    }
+  }
+
+  /**
+   * Handle new hand after redeal
+   */
+  handleNewHand(data) {
+    console.log("✨ New hand received:", data);
+
+    if (data.player === this.stateManager.playerName) {
+      // Update our hand
+      this.stateManager.updateHand(data.hand);
+      console.log("✅ Updated player hand after redeal");
+    }
+
+    // Forward to current phase
+    const currentPhase = this.phaseManager.getCurrentPhase();
+    if (currentPhase && currentPhase.handleNewHand) {
+      currentPhase.handleNewHand(data);
+    }
+  }
+
+  /**
+   * Handle redeal completion
+   */
+  handleRedealComplete(data) {
+    console.log("🎯 Redeal complete:", data);
+
+    // Update game state
+    if (data.new_round_data) {
+      this.stateManager.updateFromRoundData(data.new_round_data);
+    }
+
+    // Transition to next phase
+    setTimeout(() => {
+      this.phaseManager.transitionTo("declaration");
+    }, 1000);
+  }
+
+  /**
+   * Handle weak hands check from server
+   */
+  handleWeakHandsCheck(data) {
+    console.log("🔍 Weak hands check:", data);
+
+    // If we have weak hand, go to redeal phase
+    if (
+      data.weak_players &&
+      data.weak_players.includes(this.stateManager.playerName)
+    ) {
+      console.log("⚠️ Player has weak hand, entering redeal phase");
+      this.phaseManager.transitionTo("redeal");
+    }
   }
 
   /**
