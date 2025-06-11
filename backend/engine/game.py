@@ -36,8 +36,10 @@ class Game:
         
         self.round_number += 1
         # self._deal_pieces()
-        self._deal_weak_hand(0)
+        # self._deal_weak_hand(0)
         # self._deal_guaranteed_no_redeal()
+        self._deal_red_general_no_redeal(0)
+        
         self._set_round_start_player()
                 
         # Initialize pile and score tracking
@@ -404,33 +406,40 @@ class Game:
         self._verify_and_report_hands()
 
     def _deal_guaranteed_no_redeal(self):
-        """Guarantee NO redeal by ensuring everyone has at least 1 piece > 9 points."""
-        print(f"🔧 DEBUG: Dealing guaranteed NO redeal hands")
+        """Alternative implementation using same pattern as _deal_weak_hand"""
+        print(f"🔧 DEBUG: Dealing guaranteed NO redeal hands (v2)")
         
-        # Use helper methods
+        # Use helper methods  
         deck = self._prepare_deck_and_hands()
         categories = self._categorize_pieces(deck)
         
         strong_pieces = categories['strong_pieces']
         if categories['red_general']:
             strong_pieces.append(categories['red_general'])
-        other_pieces = categories['weak_pieces']
+        weak_pieces = categories['weak_pieces']
         
-        print(f"🔧 DEBUG: Found {len(strong_pieces)} pieces >9 points")
-        print(f"🔧 DEBUG: Found {len(other_pieces)} pieces ≤9 points")
+        print(f"🔧 DEBUG: Found {len(weak_pieces)} weak pieces (≤9), {len(strong_pieces)} strong pieces (>9)")
         
-        # Give each player exactly 1 strong piece + 7 other pieces
+        # Check if we have enough strong pieces
+        if len(strong_pieces) < len(self.players):
+            print(f"❌ ERROR: Not enough strong pieces for all players! Falling back to regular deal.")
+            self._deal_pieces()
+            return
+        
+        # Give each player 1 strong piece + 7 weak pieces (if available)
         for i, player in enumerate(self.players):
-            if i < len(strong_pieces):
-                # Give 1 strong piece
-                player.hand.append(strong_pieces[i])
-                
-                # Fill with 7 other pieces
-                start_idx = i * 7
-                end_idx = min(start_idx + 7, len(other_pieces))
-                player.hand.extend(other_pieces[start_idx:end_idx])
-            else:
-                print(f"⚠️ WARNING: Not enough strong pieces for {player.name}!")
+            # Give 1 strong piece
+            player.hand.append(strong_pieces[i])
+            
+            # Fill with weak pieces (up to 7 more)
+            pieces_to_take = min(7, len(weak_pieces))
+            if pieces_to_take > 0:
+                player.hand.extend(weak_pieces[:pieces_to_take])
+                weak_pieces = weak_pieces[pieces_to_take:]
+        
+        # If anyone doesn't have 8 pieces yet, use remaining pieces
+        remaining_pieces = strong_pieces[len(self.players):] + weak_pieces
+        self._fill_remaining_slots(remaining_pieces)
         
         # Verify results
         self._verify_and_report_hands()
@@ -449,19 +458,32 @@ class Game:
         
         if not red_general:
             print(f"❌ ERROR: RED_GENERAL not found in deck!")
+            # Fallback to regular dealing
+            self._deal_pieces()
             return
         
         print(f"🔧 DEBUG: Found RED_GENERAL: {red_general}")
         print(f"🔧 DEBUG: Other strong pieces: {len(strong_pieces)}")
         print(f"🔧 DEBUG: Other pieces: {len(other_pieces)}")
         
-        # Give RED_GENERAL to starter
-        if 0 <= starter_player < len(self.players):
-            self.players[starter_player].hand.append(red_general)
-            print(f"🔧 DEBUG: {self.players[starter_player].name} gets RED_GENERAL")
-        else:
+        # Validate starter_player index
+        if not (0 <= starter_player < len(self.players)):
             print(f"❌ ERROR: Invalid starter_player index: {starter_player}")
+            # Fallback to regular dealing
+            self._deal_pieces()
             return
+        
+        # Check if we have enough strong pieces for non-starter players
+        other_players_count = len(self.players) - 1
+        if len(strong_pieces) < other_players_count:
+            print(f"⚠️ WARNING: Not enough strong pieces! Have {len(strong_pieces)}, need {other_players_count}")
+            print("🔄 Falling back to regular dealing to ensure fairness")
+            self._deal_pieces()
+            return
+        
+        # Give RED_GENERAL to starter
+        self.players[starter_player].hand.append(red_general)
+        print(f"🔧 DEBUG: {self.players[starter_player].name} gets RED_GENERAL")
         
         # Give 1 strong piece to each OTHER player
         strong_pieces_used = 0
@@ -469,16 +491,21 @@ class Game:
             if i != starter_player:
                 if strong_pieces_used < len(strong_pieces):
                     player.hand.append(strong_pieces[strong_pieces_used])
+                    print(f"🔧 DEBUG: {player.name} gets strong piece: {strong_pieces[strong_pieces_used]}")
                     strong_pieces_used += 1
                 else:
-                    # Give strongest available weak piece
-                    if other_pieces:
-                        other_pieces.sort(key=lambda p: p.point, reverse=True)
-                        player.hand.append(other_pieces.pop(0))
+                    # This shouldn't happen due to our check above, but just in case
+                    print(f"❌ ERROR: Ran out of strong pieces for {player.name}!")
+                    # Fallback to regular dealing
+                    self._deal_pieces()
+                    return
         
-        # Fill remaining slots
-        remaining_pieces = strong_pieces[strong_pieces_used:] + other_pieces
-        self._fill_remaining_slots(remaining_pieces)
+        # Prepare remaining pieces for distribution
+        remaining_strong = strong_pieces[strong_pieces_used:]
+        all_remaining = remaining_strong + other_pieces
+        
+        # Fill remaining slots using helper method
+        self._fill_remaining_slots(all_remaining)
         
         # Verify results
         self._verify_and_report_hands(expected_starter=starter_player)

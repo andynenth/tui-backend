@@ -1,347 +1,123 @@
-// frontend/scenes/game/GameUIRenderer.js - Fixed positioning and debugging
+// frontend/scenes/game/GameUIRenderer.js
 
-import { Container, Text, TextStyle, Graphics } from "pixi.js";
-import { GameButton } from "../../components/GameButton.js";
+import { Container, Text, TextStyle } from "pixi.js";
 import { GameTextbox } from "../../components/GameTextbox.js";
+import { GameButton } from "../../components/GameButton.js";
 
 /**
- * Game UI Renderer - Fixed version with proper positioning
+ * Handles all UI rendering for the game
+ * Separates presentation logic from game logic
+ *
+ * Responsibilities:
+ * - Create and manage UI components
+ * - Update UI based on game state
+ * - Handle UI animations
+ * - Manage layout
  */
 export class GameUIRenderer extends Container {
   constructor(gameScene) {
     super();
-    
+
     this.gameScene = gameScene;
-    this.stateManager = null;
-    
+    this.parentContainer = gameScene;
+
     // UI containers
-    this.containers = {};
-    this.components = {};
+    this.containers = {
+      header: new Container(),
+      main: new Container(),
+      input: new Container(),
+      footer: new Container(),
+    };
+
+    // UI components
+    this.components = {
+      statusText: null,
+      handDisplay: null,
+      inputBox: null,
+      submitButton: null,
+      phaseIndicator: null,
+    };
+
+    // Input state
     this.currentInputCallback = null;
-    this.currentValidOptions = [];
-    
-    // Get screen dimensions
-    this.screenWidth = window.innerWidth;
-    this.screenHeight = window.innerHeight;
-    
-    console.log(`🖥️ Screen size: ${this.screenWidth}x${this.screenHeight}`);
-    
-    this.initializeLayout();
-    this.createComponents();
+    this.inputValidator = null;
+
+    // Add self to parent
+    gameScene.addChild(this);
+
+    this.setupLayout();
   }
 
   /**
-   * Initialize UI layout containers with proper positioning
+   * Initialize UI after all components are ready
    */
-  initializeLayout() {
-    console.log("🎨 Initializing UI layout...");
-    
-    // Create main containers
-    this.containers.header = new Container();
-    this.containers.main = new Container();
-    this.containers.hand = new Container();
-    this.containers.input = new Container();
-    this.containers.footer = new Container();
-
-    // Position containers on screen
-    this.containers.header.x = 0;
-    this.containers.header.y = 0;
-    
-    this.containers.main.x = 0;
-    this.containers.main.y = 100;
-    
-    this.containers.hand.x = 20;
-    this.containers.hand.y = 200;
-    
-    // ⭐ FIX: Position input in center of screen
-    this.containers.input.x = this.screenWidth / 2; // Center horizontally
-    this.containers.input.y = this.screenHeight / 2; // Center vertically
-    
-    // EMERGENCY: Also try absolute positioning
-    console.log(`🎯 EMERGENCY: Input positioned at ${this.containers.input.x}, ${this.containers.input.y}`);
-    
-    // Backup positioning - top-left for testing
-    this.containers.inputBackup = new Container();
-    this.containers.inputBackup.x = 50;
-    this.containers.inputBackup.y = 50;
-    this.containers.inputBackup.visible = false;
-    
-    this.containers.footer.x = 0;
-    this.containers.footer.y = this.screenHeight - 100;
-
-    // Make all containers visible by default
-    Object.values(this.containers).forEach((container) => {
-      container.visible = true;
-      this.addChild(container);
-    });
-    
-    // Hide input initially
-    this.containers.input.visible = false;
-    
-    console.log("✅ UI layout initialized");
-    console.log(`📍 Input container position: x=${this.containers.input.x}, y=${this.containers.input.y}`);
-  }
-
-  // ===== FIXED INPUT METHODS =====
-
-  /**
-   * Show redeal input with Yes/No options - FIXED VERSION
-   */
-  showRedealInput(options, callback) {
-    console.log("🎨 GameUIRenderer: showRedealInput called");
-    console.log("  Options:", options);
-    console.log("  Callback:", !!callback);
-    
-    this.currentInputCallback = callback;
-    this.currentValidOptions = options;
-    
-    // Clear existing input first
-    this.clearInputComponents();
-    
-    // EMERGENCY: Reset position to center
-    this.containers.input.x = this.screenWidth / 2;
-    this.containers.input.y = this.screenHeight / 2;
-    
-    console.log(`🎯 EMERGENCY: Reset input position to ${this.containers.input.x}, ${this.containers.input.y}`);
-    
-    try {
-      // Create redeal prompt
-      const promptText = new Text({
-        text: "⚠️ REQUEST REDEAL?",
-        style: new TextStyle({
-          fill: "#ff6600",
-          fontSize: 24,
-          fontWeight: "bold",
-          align: "center",
-        }),
-      });
-      
-      const descText = new Text({
-        text: "You have no pieces > 9 points",
-        style: new TextStyle({
-          fill: "#ffffff",
-          fontSize: 16,
-          align: "center",
-        }),
-      });
-      
-      const optionsText = new Text({
-        text: `Options: [${options.join(", ")}]`,
-        style: new TextStyle({
-          fill: "#cccccc",
-          fontSize: 14,
-          align: "center",
-        }),
-      });
-      
-      // Create buttons container
-      const buttonContainer = new Container();
-      
-      options.forEach((option, index) => {
-        console.log(`🔘 Creating button: ${option}`);
-        
-        const button = new GameButton({
-          label: option,
-          width: 120,
-          height: 50,
-          onClick: () => {
-            console.log(`🎯 Button clicked: ${option}`);
-            this.handleRedealChoice(option);
-          },
-        });
-        
-        // Position buttons side by side
-        button.view.x = index * 140;
-        button.view.y = 0;
-        
-        buttonContainer.addChild(button.view);
-        
-        // Add keyboard shortcut info
-        const shortcutText = new Text({
-          text: `Press [${index + 1}]`,
-          style: new TextStyle({
-            fill: "#888888",
-            fontSize: 12,
-            align: "center",
-          }),
-        });
-        shortcutText.x = button.view.x + 60 - shortcutText.width / 2;
-        shortcutText.y = button.view.height + 5;
-        buttonContainer.addChild(shortcutText);
-      });
-      
-      // Position all elements vertically
-      promptText.x = -promptText.width / 2;
-      promptText.y = -100;
-      
-      descText.x = -descText.width / 2;
-      descText.y = promptText.y + 40;
-      
-      optionsText.x = -optionsText.width / 2;
-      optionsText.y = descText.y + 30;
-      
-      buttonContainer.x = -buttonContainer.width / 2;
-      buttonContainer.y = optionsText.y + 40;
-      
-      // Add all to input container
-      this.containers.input.addChild(promptText);
-      this.containers.input.addChild(descText);
-      this.containers.input.addChild(optionsText);
-      this.containers.input.addChild(buttonContainer);
-      
-      // Show input container
-      this.containers.input.visible = true;
-      
-      console.log("✅ Redeal UI created and displayed");
-      console.log(`📍 Container visible: ${this.containers.input.visible}`);
-      console.log(`📍 Container position: x=${this.containers.input.x}, y=${this.containers.input.y}`);
-      console.log(`📍 Container children: ${this.containers.input.children.length}`);
-      
-      // Force render update
-      this.gameScene.app?.renderer?.render(this.gameScene);
-      
-    } catch (error) {
-      console.error("❌ Error creating redeal UI:", error);
-      console.error(error.stack);
-    }
-  }
-
-  /**
-   * Handle redeal choice selection - FIXED VERSION
-   */
-  handleRedealChoice(choice) {
-    console.log(`🎯 GameUIRenderer: handleRedealChoice(${choice})`);
-    
-    if (!this.currentInputCallback) {
-      console.error("❌ No callback available");
-      return;
-    }
-    
-    if (!this.currentValidOptions.includes(choice)) {
-      console.error(`❌ Invalid choice: ${choice}. Valid: ${this.currentValidOptions}`);
-      return;
-    }
-    
-    // Store callback before clearing
-    const callback = this.currentInputCallback;
-    
-    // Clear state first
-    this.currentInputCallback = null;
-    this.currentValidOptions = [];
-    
-    // Hide input
-    this.hideInput();
-    
-    // Call callback
-    try {
-      console.log(`📞 Calling callback with choice: ${choice}`);
-      callback(choice);
-    } catch (error) {
-      console.error("❌ Error in callback:", error);
-    }
-  }
-
-  /**
-   * Clear input components - FIXED VERSION
-   */
-  clearInputComponents() {
-    console.log("🧹 Clearing input components");
-    console.log(`   Children before: ${this.containers.input.children.length}`);
-    
-    this.containers.input.removeChildren();
-    this.components.inputBox = null;
-    this.components.submitButton = null;
-    
-    console.log(`   Children after: ${this.containers.input.children.length}`);
-  }
-
-  /**
-   * Hide input container - FIXED VERSION
-   */
-  hideInput() {
-    console.log("👻 Hiding input container");
-    
-    this.containers.input.visible = false;
-    this.clearInputComponents();
-    this.currentInputCallback = null;
-    this.currentValidOptions = [];
-    
-    console.log(`📍 Container visible after hide: ${this.containers.input.visible}`);
-  }
-
-  // ===== DEBUGGING METHODS =====
-
-  /**
-   * Debug UI state - call from console
-   */
-  debugUI() {
-    console.log("🔍 UI DEBUG INFO:");
-    console.log("  Screen size:", this.screenWidth, "x", this.screenHeight);
-    console.log("  Input container:");
-    console.log("    - Visible:", this.containers.input.visible);
-    console.log("    - Position:", this.containers.input.x, this.containers.input.y);
-    console.log("    - Children:", this.containers.input.children.length);
-    console.log("    - Callback:", !!this.currentInputCallback);
-    console.log("    - Options:", this.currentValidOptions);
-    
-    // List all children
-    this.containers.input.children.forEach((child, index) => {
-      console.log(`    Child ${index}:`, child.constructor.name, child.x, child.y);
-    });
-  }
-
-  /**
-   * Force show test UI - for debugging
-   */
-  showTestUI() {
-    console.log("🧪 Showing test UI");
-    
-    this.clearInputComponents();
-    
-    const testText = new Text({
-      text: "🧪 TEST UI - CAN YOU SEE THIS?",
-      style: new TextStyle({
-        fill: "#ff0000",
-        fontSize: 32,
-        fontWeight: "bold",
-      }),
-    });
-    
-    testText.x = -testText.width / 2;
-    testText.y = -testText.height / 2;
-    
-    this.containers.input.addChild(testText);
-    this.containers.input.visible = true;
-    
-    // EMERGENCY: Also try absolute positioning
-    this.containers.input.x = 100;
-    this.containers.input.y = 100;
-    
-    console.log("✅ Test UI shown");
-    console.log(`📍 Position: ${this.containers.input.x}, ${this.containers.input.y}`);
-    
-    // Try backup position if needed
-    setTimeout(() => {
-      console.log("🔄 Trying backup position...");
-      this.containers.input.x = 50;
-      this.containers.input.y = 50;
-    }, 1000);
-  }
-
-  // ===== EXISTING METHODS (keep unchanged) =====
-
   async initialize(gameData) {
+    // Now we can safely access stateManager
     this.stateManager = this.gameScene.stateManager;
     this.createComponents();
-    console.log("✅ UI components created");
+    console.log("UI components created");
   }
 
-  createComponents() {
-    if (!this.stateManager) {
-      console.warn("⚠️ StateManager not available yet");
-      return;
-    }
+  /**
+   * Set up container layout
+   */
+  setupLayout() {
+    // Main layout
+    this.layout = {
+      width: "100%",
+      height: "100%",
+      flexDirection: "column",
+      alignItems: "center",
+      justifyContent: "flex-start",
+      padding: 20,
+      gap: 20,
+    };
 
+    // Header layout
+    this.containers.header.layout = {
+      width: "100%",
+      height: "auto",
+      flexDirection: "column",
+      alignItems: "center",
+      gap: 10,
+    };
+
+    // Main content layout
+    this.containers.main.layout = {
+      width: "100%",
+      flex: 1,
+      flexDirection: "column",
+      alignItems: "center",
+      justifyContent: "center",
+      gap: 20,
+    };
+
+    // Input layout
+    this.containers.input.layout = {
+      flexDirection: "row",
+      gap: 8,
+      alignItems: "center",
+    };
+
+    // Footer layout
+    this.containers.footer.layout = {
+      width: "100%",
+      height: "auto",
+      flexDirection: "row",
+      justifyContent: "space-between",
+      alignItems: "center",
+    };
+
+    // Add containers to self
+    Object.values(this.containers).forEach((container) => {
+      this.addChild(container);
+    });
+  }
+
+  /**
+   * Create UI components
+   */
+  createComponents() {
     // Status text
     this.components.statusText = new Text({
       text: `Game Room: ${this.stateManager.roomId}`,
@@ -362,94 +138,275 @@ export class GameUIRenderer extends Container {
       }),
     });
     this.containers.header.addChild(this.components.phaseIndicator);
+
+    // Input components
+    this.components.inputBox = new GameTextbox({
+      placeholder: "Your input",
+      width: 300,
+    });
+
+    this.components.submitButton = new GameButton({
+      label: "Enter",
+      width: 80,
+      onClick: () => this.handleSubmit(),
+    });
+
+    this.containers.input.addChild(
+      this.components.inputBox.view,
+      this.components.submitButton.view
+    );
+
+    // Hide input by default
+    this.containers.input.visible = false;
   }
 
+  // ===== PHASE UI METHODS =====
+
+  /**
+   * Show redeal phase UI
+   */
   showRedealPhase() {
     this.updatePhaseIndicator("Redeal Check");
     this.clearMainContent();
-    
-    const infoText = new Text({
-      text: "Checking for weak hands...",
+  }
+
+  /**
+   * Show declaration phase UI
+   */
+  showDeclarationPhase() {
+    this.updatePhaseIndicator("Declaration Phase");
+    this.clearMainContent();
+
+    // Show declaration progress
+    const progressText = new Text({
+      text: "Waiting for declarations...",
       style: new TextStyle({
         fill: "#ffffff",
         fontSize: 16,
       }),
     });
-    this.containers.main.addChild(infoText);
+    this.containers.main.addChild(progressText);
   }
 
-  updatePhaseIndicator(text) {
-    if (this.components.phaseIndicator) {
-      this.components.phaseIndicator.text = text;
+  /**
+   * Show turn phase UI
+   */
+  showTurnPhase() {
+    this.updatePhaseIndicator("Turn Phase");
+    this.clearMainContent();
+  }
+
+  /**
+   * Show scoring phase UI
+   */
+  showScoringPhase() {
+    this.updatePhaseIndicator("Scoring");
+    this.clearMainContent();
+  }
+
+  // ===== INPUT METHODS =====
+
+  /**
+   * Show input prompt
+   */
+  async showInput(prompt, validator = null) {
+    return new Promise((resolve) => {
+      console.log(`\n${prompt}`);
+
+      this.containers.input.visible = true;
+      this.components.inputBox.setText("");
+      this.components.inputBox.focus();
+
+      this.currentInputCallback = resolve;
+      this.inputValidator = validator;
+    });
+  }
+
+  /**
+   * Show declaration input
+   */
+  showDeclarationInput(validOptions, callback) {
+    // Could enhance this with buttons for each option
+    this.showInput(
+      `Enter declaration (${validOptions.join(", ")}):`,
+      (value) => {
+        const num = parseInt(value);
+        if (isNaN(num)) {
+          return { valid: false, message: "Please enter a number" };
+        }
+        if (!validOptions.includes(num)) {
+          return {
+            valid: false,
+            message: `Choose from [${validOptions.join(", ")}]`,
+          };
+        }
+        return { valid: true };
+      }
+    ).then((value) => {
+      callback(parseInt(value));
+    });
+  }
+
+  /**
+   * Hide input
+   */
+  hideInput() {
+    this.containers.input.visible = false;
+    this.currentInputCallback = null;
+    this.inputValidator = null;
+  }
+
+  /**
+   * Handle submit button
+   */
+  handleSubmit() {
+    if (!this.currentInputCallback) return;
+
+    const value = this.components.inputBox.getText().trim();
+    if (!value) return;
+
+    // Validate if validator provided
+    if (this.inputValidator) {
+      const result = this.inputValidator(value);
+      if (!result.valid) {
+        this.showError(result.message);
+        return;
+      }
     }
+
+    // Save callback BEFORE hiding input
+    const callback = this.currentInputCallback;
+
+    // Now hide and clear
+    this.hideInput();
+
+    // Call the saved callback
+    callback(value);
   }
 
+  // ===== DISPLAY METHODS =====
+
+  /**
+   * Display player's hand
+   */
+  displayHand(hand) {
+    console.log("\n🃏 Your hand:");
+    hand.forEach((card, i) => {
+      console.log(`${i}: ${card}`);
+    });
+
+    // TODO: Create visual hand display
+  }
+
+  /**
+   * Update declaration for a player
+   */
+  updateDeclaration(playerName, value) {
+    // TODO: Update declaration display
+    console.log(`${playerName} declared ${value}`);
+  }
+
+  /**
+   * Show declaration summary
+   */
+  showDeclarationSummary(declarations) {
+    console.log("\n📋 Declaration Summary:");
+    Object.entries(declarations).forEach(([player, value]) => {
+      console.log(`  ${player}: ${value} piles`);
+    });
+  }
+
+  /**
+   * Update phase indicator
+   */
+  updatePhaseIndicator(phaseName) {
+    this.components.phaseIndicator.text = phaseName;
+  }
+
+  /**
+   * Clear main content
+   */
   clearMainContent() {
     this.containers.main.removeChildren();
   }
 
-  displayHand(hand) {
-    this.containers.hand.removeChildren();
-    
-    if (!hand || hand.length === 0) return;
-    
-    const title = new Text({
-      text: "Your Hand:",
+  // ===== FEEDBACK METHODS =====
+
+  /**
+   * Show error message
+   */
+  showError(message) {
+    console.error(`❌ ${message}`);
+
+    const errorText = new Text({
+      text: message,
       style: new TextStyle({
-        fill: "#ffffff",
+        fill: "#ff0000",
         fontSize: 16,
+      }),
+    });
+    errorText.position.set(10, 200);
+    this.containers.main.addChild(errorText);
+
+    // Remove after 3 seconds
+    setTimeout(() => {
+      if (errorText.parent) {
+        errorText.destroy();
+      }
+    }, 3000);
+  }
+
+  /**
+   * Show warning message
+   */
+  showWarning(message) {
+    console.warn(`⚠️ ${message}`);
+    // TODO: Show visual warning
+  }
+
+  /**
+   * Show success message
+   */
+  showSuccess(message) {
+    console.log(`✅ ${message}`);
+    // TODO: Show visual success
+  }
+
+  /**
+   * Show game over screen
+   */
+  showGameResults(data) {
+    this.clearMainContent();
+    this.updatePhaseIndicator("Game Over");
+
+    const gameOverText = new Text({
+      text:
+        data.winners?.length > 0
+          ? `🏆 Winner: ${data.winners.join(", ")}`
+          : "🎮 Game Over!",
+      style: new TextStyle({
+        fill: "#00ff00",
+        fontSize: 30,
         fontWeight: "bold",
       }),
     });
-    
-    this.containers.hand.addChild(title);
-    
-    hand.forEach((card, index) => {
-      const cardText = new Text({
-        text: `${index + 1}. ${card}`,
-        style: new TextStyle({
-          fill: "#cccccc",
-          fontSize: 14,
-        }),
-      });
-      cardText.y = title.height + 5 + (index * 20);
-      this.containers.hand.addChild(cardText);
-    });
+
+    this.containers.main.addChild(gameOverText);
   }
 
-  showSuccess(message) {
-    const successText = new Text({
-      text: `✅ ${message}`,
-      style: new TextStyle({
-        fill: "#00ff00",
-        fontSize: 14,
-      }),
-    });
-    
-    this.containers.footer.addChild(successText);
-    
-    setTimeout(() => {
-      if (successText.parent) {
-        successText.parent.removeChild(successText);
-      }
-    }, 3000);
-  }
+  // ===== CLEANUP =====
 
-  showError(message) {
-    const errorText = new Text({
-      text: `❌ ${message}`,
-      style: new TextStyle({
-        fill: "#ff0000",
-        fontSize: 14,
-      }),
+  /**
+   * Destroy all UI components
+   */
+  destroy(options) {
+    Object.values(this.containers).forEach((container) => {
+      container.destroy({ children: true });
     });
-    
-    this.containers.footer.addChild(errorText);
-    
-    setTimeout(() => {
-      if (errorText.parent) {
-        errorText.parent.removeChild(errorText);
-      }
-    }, 3000);
+
+    this.components = {};
+    this.containers = {};
+
+    super.destroy(options);
   }
 }
