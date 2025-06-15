@@ -13,8 +13,6 @@ export class BasePhase {
     this.isActive = false;
     this.name = this.constructor.name.replace('Phase', '').toLowerCase();
     this.eventHandlers = {};
-    
-    console.log(`${this.constructor.name} created`);
   }
 
   /**

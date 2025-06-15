@@ -12,22 +12,33 @@ import { BasePhase } from "./BasePhase.js";
  * - Players who declared 0 twice must declare at least 1
  */
 export class DeclarationPhase extends BasePhase {
+  
+  // ===============================
+  // CONSTRUCTOR & INITIALIZATION
+  // ===============================
+  
   constructor(stateManager, socketManager, uiRenderer) {
     super(stateManager, socketManager, uiRenderer);
 
+    // Input state management
     this.waitingForInput = false;
     this.hasPromptedUser = false;
   }
 
+  // ===============================
+  // PHASE LIFECYCLE
+  // ===============================
+
   /**
    * Enter declaration phase
+   * Sets up UI and checks if it's player's turn
    */
   async enter() {
     await super.enter();
 
     console.log("🔸 --- Declare Phase ---");
 
-    // Show declaration UI
+    // Initialize phase UI
     this.uiRenderer.showDeclarationPhase();
 
     // Check if it's our turn to declare
@@ -35,47 +46,72 @@ export class DeclarationPhase extends BasePhase {
   }
 
   /**
-   * Register socket event handlers
+   * Exit declaration phase
+   * Clean up state and resources
+   */
+  async exit() {
+    // Reset input state
+    this.waitingForInput = false;
+    this.hasPromptedUser = false;
+
+    await super.exit();
+  }
+
+  // ===============================
+  // EVENT HANDLERS SETUP
+  // ===============================
+
+  /**
+   * Register socket event handlers for this phase
    */
   registerEventHandlers() {
-    // Listen for declaration events
     this.addEventHandler("declare", this.handleDeclare);
   }
 
+  // ===============================
+  // SOCKET EVENT HANDLERS
+  // ===============================
+
   /**
-   * Handle declaration from any player
+   * Handle declaration from any player (including bots)
+   * @param {Object} data - Declaration data from server
+   * @param {string} data.player - Player name
+   * @param {number} data.value - Declaration value
+   * @param {boolean} data.is_bot - Whether it's a bot
    */
   handleDeclare(data) {
     const { player, value, is_bot } = data;
 
-    // Update state
+    // Update game state
     this.stateManager.addDeclaration(player, value);
 
-    // Show in UI
-    if (is_bot) {
-      console.log(`🤖 ${player} declares ${value} piles.`);
-    } else if (player !== this.stateManager.playerName) {
-      console.log(`👤 ${player} declares ${value} piles.`);
-    }
+    // Log declaration
+    this._logDeclaration(player, value, is_bot);
 
     // Update UI
     this.uiRenderer.updateDeclaration(player, value);
 
-    // Check if all players have declared
+    // Check game progression
     if (this.stateManager.areAllPlayersDeclarated()) {
       this.handleAllDeclarationComplete();
     } else {
-      // Check if it's now our turn
       this.checkDeclarationTurn();
     }
   }
 
+  // ===============================
+  // TURN MANAGEMENT
+  // ===============================
+
   /**
    * Check if it's the player's turn to declare
+   * Prevents multiple prompts and handles turn flow
    */
   checkDeclarationTurn() {
-    // Don't check if we're waiting for input
-    if (this.waitingForInput || this.hasPromptedUser) return;
+    // Guard: Don't check if already waiting for input
+    if (this.waitingForInput || this.hasPromptedUser) {
+      return;
+    }
 
     // Check if it's our turn
     if (this.stateManager.isMyTurnToDeclare()) {
@@ -83,41 +119,33 @@ export class DeclarationPhase extends BasePhase {
     }
   }
 
+  // ===============================
+  // USER INPUT HANDLING
+  // ===============================
+
   /**
-   * Prompt user for declaration
+   * Prompt user for declaration input
+   * Shows hand, calculates options, and displays input UI
    */
   async promptUserDeclaration() {
+    // Guard: Prevent multiple prompts
     if (this.waitingForInput) return;
 
+    // Set input state
     this.waitingForInput = true;
     this.hasPromptedUser = true;
 
-    // Show hand
+    // Display current hand
     this.uiRenderer.displayHand(this.stateManager.myHand);
 
-    // Calculate valid options
-    const declarationProgress = this.stateManager.getDeclarationProgress();
-    const isLastPlayer =
-      declarationProgress.declared === this.stateManager.players.length - 1;
-    const validOptions =
-      this.stateManager.getValidDeclarationOptions(isLastPlayer);
+    // Calculate valid declaration options
+    const { validOptions, isLastPlayer } = this._calculateDeclarationOptions();
 
-    // Show any restrictions
-    const myPlayer = this.stateManager.getMyPlayer();
-    if (myPlayer?.zero_declares_in_a_row >= 2) {
-      console.log(
-        "\n⚠️ You must declare at least 1 (declared 0 twice in a row)"
-      );
-      this.uiRenderer.showWarning(
-        "Must declare at least 1 (zero streak limit)"
-      );
-    }
+    // Show restrictions if any
+    this._showDeclarationRestrictions();
 
-    // Create declaration prompt
-    const prompt = `🟨 ${this.stateManager.playerName}, declare how many piles you want to capture`;
-    const optionsText = `(options: [${validOptions.join(", ")}])`;
-
-    console.log(`\n${prompt} ${optionsText}:`);
+    // Log prompt
+    this._logDeclarationPrompt(validOptions);
 
     // Show input UI
     this.uiRenderer.showDeclarationInput(validOptions, (value) => {
@@ -127,54 +155,25 @@ export class DeclarationPhase extends BasePhase {
 
   /**
    * Handle user's declaration input
+   * Validates input and sends to server
+   * @param {number} value - User's declaration value
    */
   async handleUserDeclaration(value) {
+    // Guard: Only process if waiting for input
     if (!this.waitingForInput) return;
 
     // Validate input
-    const declarationProgress = this.stateManager.getDeclarationProgress();
-    const isLastPlayer =
-      declarationProgress.declared === this.stateManager.players.length - 1;
-    const validOptions =
-      this.stateManager.getValidDeclarationOptions(isLastPlayer);
-
-    if (!validOptions.includes(value)) {
-      console.log(
-        `❌ Invalid declaration. Choose from [${validOptions.join(", ")}]`
-      );
-      this.uiRenderer.showError(
-        `Invalid declaration. Choose from [${validOptions.join(", ")}]`
-      );
-      return;
+    if (!this._validateDeclaration(value)) {
+      return; // Error already shown by validation
     }
 
-    // Send declaration to server
-    try {
-      const response = await fetch(
-        `/api/declare?room_id=${this.stateManager.roomId}&player_name=${this.stateManager.playerName}&value=${value}`,
-        { method: "POST" }
-      );
-
-      const result = await response.json();
-
-      if (result.status === "ok") {
-        console.log(`✅ You declared ${value} piles`);
-        this.waitingForInput = false;
-        this.uiRenderer.hideInput();
-
-        // The socket event will handle the state update
-      } else {
-        console.error("Failed to declare:", result.message);
-        this.uiRenderer.showError(result.message || "Failed to declare");
-      }
-    } catch (err) {
-      console.error("Failed to declare:", err);
-      this.uiRenderer.showError("Network error. Please try again.");
-    }
+    // Send to server
+    await this._sendDeclarationToServer(value);
   }
 
   /**
-   * Handle user input
+   * Handle legacy user input format
+   * For backward compatibility
    */
   async handleUserInput(input) {
     if (!(await super.handleUserInput(input))) return false;
@@ -187,8 +186,13 @@ export class DeclarationPhase extends BasePhase {
     return false;
   }
 
+  // ===============================
+  // PHASE COMPLETION
+  // ===============================
+
   /**
-   * Handle all players declared
+   * Handle completion of all declarations
+   * Shows summary and transitions to next phase
    */
   handleAllDeclarationComplete() {
     const total = Object.values(this.stateManager.declarations).reduce(
@@ -201,7 +205,7 @@ export class DeclarationPhase extends BasePhase {
     // Show summary in UI
     this.uiRenderer.showDeclarationSummary(this.stateManager.declarations);
 
-    // Phase is complete - transition to turn phase
+    // Transition to next phase
     setTimeout(() => {
       this.completePhase({ nextPhase: "turn" });
     }, 1500);
@@ -209,27 +213,132 @@ export class DeclarationPhase extends BasePhase {
 
   /**
    * Check if phase is complete
+   * @returns {boolean} True if all players have declared
    */
   isPhaseComplete() {
     return this.stateManager.areAllPlayersDeclarated();
   }
 
   /**
-   * Get next phase
+   * Get next phase name
+   * @returns {string} Next phase identifier
    */
   getNextPhase() {
     return "turn";
   }
 
-  /**
-   * Exit phase
-   */
-  // In DeclarationPhase.exit()
-  async exit() {
-    // Reset state
-    this.waitingForInput = false;
-    this.hasPromptedUser = false;
+  // ===============================
+  // PRIVATE HELPER METHODS
+  // ===============================
 
-    await super.exit();
+  /**
+   * Calculate valid declaration options for current player
+   * @private
+   * @returns {Object} Options and player info
+   */
+  _calculateDeclarationOptions() {
+    const declarationProgress = this.stateManager.getDeclarationProgress();
+    const isLastPlayer = 
+      declarationProgress.declared === this.stateManager.players.length - 1;
+    const validOptions = 
+      this.stateManager.getValidDeclarationOptions(isLastPlayer);
+
+    return { validOptions, isLastPlayer };
+  }
+
+  /**
+   * Show declaration restrictions if applicable
+   * @private
+   */
+  _showDeclarationRestrictions() {
+    const myPlayer = this.stateManager.getMyPlayer();
+    
+    if (myPlayer?.zero_declares_in_a_row >= 2) {
+      console.log(
+        "\n⚠️ You must declare at least 1 (declared 0 twice in a row)"
+      );
+      this.uiRenderer.showWarning(
+        "Must declare at least 1 (zero streak limit)"
+      );
+    }
+  }
+
+  /**
+   * Log declaration prompt to console
+   * @private
+   * @param {number[]} validOptions - Valid declaration options
+   */
+  _logDeclarationPrompt(validOptions) {
+    const prompt = `🟨 ${this.stateManager.playerName}, declare how many piles you want to capture`;
+    const optionsText = `(options: [${validOptions.join(", ")}])`;
+    console.log(`\n${prompt} ${optionsText}:`);
+  }
+
+  /**
+   * Log declaration from any player
+   * @private
+   * @param {string} player - Player name
+   * @param {number} value - Declaration value
+   * @param {boolean} is_bot - Whether it's a bot
+   */
+  _logDeclaration(player, value, is_bot) {
+    if (is_bot) {
+      console.log(`🤖 ${player} declares ${value} piles.`);
+    } else if (player !== this.stateManager.playerName) {
+      console.log(`👤 ${player} declares ${value} piles.`);
+    }
+  }
+
+  /**
+   * Validate user's declaration input
+   * @private
+   * @param {number} value - Declaration value to validate
+   * @returns {boolean} True if valid
+   */
+  _validateDeclaration(value) {
+    const { validOptions } = this._calculateDeclarationOptions();
+
+    if (!validOptions.includes(value)) {
+      const errorMsg = `❌ Invalid declaration. Choose from [${validOptions.join(", ")}]`;
+      console.log(errorMsg);
+      this.uiRenderer.showError(
+        `Invalid declaration. Choose from [${validOptions.join(", ")}]`
+      );
+      return false;
+    }
+
+    return true;
+  }
+
+  /**
+   * Send declaration to server
+   * @private
+   * @param {number} value - Declaration value
+   */
+  async _sendDeclarationToServer(value) {
+    try {
+      const response = await fetch(
+        `/api/declare?room_id=${this.stateManager.roomId}&player_name=${this.stateManager.playerName}&value=${value}`,
+        { method: "POST" }
+      );
+
+      const result = await response.json();
+
+      if (result.status === "ok") {
+        console.log(`✅ You declared ${value} piles`);
+        
+        // Reset input state
+        this.waitingForInput = false;
+        this.uiRenderer.hideInput();
+
+        // The socket event will handle the state update
+      } else {
+        console.error("Failed to declare:", result.message);
+        this.uiRenderer.showError(result.message || "Failed to declare");
+      }
+    } catch (err) {
+      console.error("Failed to declare:", err);
+      this.uiRenderer.showError("Network error. Please try again.");
+    }
   }
 }
