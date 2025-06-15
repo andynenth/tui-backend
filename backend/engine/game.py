@@ -36,9 +36,9 @@ class Game:
         
         self.round_number += 1
         # self._deal_pieces()
-        # self._deal_weak_hand(0)
+        self._deal_weak_hand(0)
         # self._deal_guaranteed_no_redeal()
-        self._deal_red_general_no_redeal(0)
+        # self._deal_red_general_no_redeal(0)
         
         self._set_round_start_player()
                 
