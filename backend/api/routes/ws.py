@@ -73,6 +73,31 @@ async def websocket_endpoint(websocket: WebSocket, room_id: str):
                         print(f"DEBUG_WS_RECEIVE: Room {room_id} not found for client_ready event.")
                         await registered_ws.send_json({"event": "room_closed", "data": {"message": "Room not found."}})
                         await asyncio.sleep(0)
+                
+                # 🔧 FIX: Add missing redeal decision handler
+                elif event_name == "redeal_decision":
+                    player_name = event_data.get("player_name")
+                    choice = event_data.get("choice")
+                    
+                    if not player_name or not choice:
+                        print(f"❌ Invalid redeal_decision data: {event_data}")
+                        continue
+                        
+                    try:
+                        # Import inside function to avoid circular imports
+                        from .routes import get_redeal_controller
+                        controller = get_redeal_controller(room_id)
+                        
+                        # Handle the player's redeal decision
+                        await controller.handle_player_decision(player_name, choice)
+                        print(f"✅ Processed redeal decision: {player_name} -> {choice}")
+                        
+                    except Exception as e:
+                        print(f"❌ Error processing redeal decision: {e}")
+                        await registered_ws.send_json({
+                            "event": "error",
+                            "data": {"message": "Failed to process redeal decision"}
+                        })
                         
     except WebSocketDisconnect:
         unregister(room_id, websocket)

@@ -12,25 +12,32 @@ from typing import Optional
 import backend.socket_manager
 from ..controllers.RedealController import RedealController
 
-
 print(f"socket_manager id in {__name__}: {id(backend.socket_manager)}")
+
+# Global instances
 redeal_controllers = {}
-router = APIRouter() # Create a new FastAPI APIRouter instance.
-# room_manager = RoomManager() # (Commented out) Direct instantiation of RoomManager.
+router = APIRouter()
 room_manager = shared_room_manager
 bot_manager = shared_bot_manager
 
-
 def get_redeal_controller(room_id: str) -> RedealController:
+    """Get or create a RedealController for the specified room"""
     if room_id not in redeal_controllers:
         redeal_controllers[room_id] = RedealController(room_id)
     return redeal_controllers[room_id]
 
 @router.post("/start-redeal-phase")
 async def start_redeal_phase(room_id: str = Query(...)):
+    """Start the redeal phase for a specific room"""
     controller = get_redeal_controller(room_id)
     success = await controller.start()
     return {"status": "redeal_phase_started" if success else "failed"}
+
+@router.get("/redeal-status")
+async def get_redeal_status(room_id: str = Query(...)):
+    """Get the current status of redeal phase"""
+    controller = get_redeal_controller(room_id)
+    return controller.get_status()
 
 # ---------- ROOM MANAGEMENT ----------
 
@@ -38,19 +45,11 @@ async def start_redeal_phase(room_id: str = Query(...)):
 async def get_room_state(room_id: str = Query(...)):
     """
     Retrieves the current state of a specific game room.
-    Args:
-        room_id (str): The ID of the room to retrieve.
-    Returns:
-        dict: A summary of the room's state, including slots and host_name.
-    Raises:
-        HTTPException: If the room is not found.
     """
-    room = room_manager.get_room(room_id) # Get the room object from the room manager.
+    room = room_manager.get_room(room_id)
     if not room:
-        raise HTTPException(status_code=404, detail="Room not found") # Raise 404 if room doesn't exist.
-    # Return a summary of the room, which includes its slots and host_name.
+        raise HTTPException(status_code=404, detail="Room not found")
     return room.summary()
-
 
 @router.post("/create-room")
 async def create_room(name: str = Query(...)):
@@ -74,7 +73,9 @@ async def create_room(name: str = Query(...)):
 
 @router.post("/join-room")
 async def join_room(room_id: str = Query(...), name: str = Query(...)):
-
+    """
+    ✅ FIXED: Single, complete join_room implementation with enhanced features
+    """
     room = room_manager.get_room(room_id)
     if not room:
         raise HTTPException(status_code=404, detail="Room not found")
@@ -136,9 +137,7 @@ async def join_room(room_id: str = Query(...), name: str = Query(...)):
 
 @router.get("/list-rooms")
 async def list_rooms():
-    """
-    Lists all available rooms (not started and not full)
-    """
+    """Lists all available rooms (not started and not full)"""
     all_rooms = room_manager.list_rooms()
     
     available_rooms = [
@@ -148,51 +147,13 @@ async def list_rooms():
     
     return {"rooms": available_rooms}
 
-async def join_room(room_id: str = Query(...), name: str = Query(...)):
-    """
-    ✅ Enhanced join room with lobby notifications
-    """
-    room = room_manager.get_room(room_id)
-    if not room:
-        raise HTTPException(status_code=404, detail="Room not found")
-    
-    if room.is_full():
-        raise HTTPException(status_code=409, detail="Selected room is already full.")
-    
-    # Store previous occupancy
-    old_occupancy = room.get_occupied_slots()
-    
-    result = await room.join_room_safe(name)
-    
-    if not result["success"]:
-        raise HTTPException(status_code=400, detail=result["reason"])
-    
-    new_occupancy = room.get_occupied_slots()
-    
-    # Broadcast to room
-    await broadcast(room_id, "room_state_update", {
-        "slots": result["room_state"]["slots"], 
-        "host_name": result["room_state"]["host_name"],
-        "operation_id": result["operation_id"]
-    })
-    
-    # Notify lobby about occupancy change
-    if old_occupancy != new_occupancy:
-        await notify_lobby_room_updated(result["room_state"])
-    
-    return {
-        "slots": result["room_state"]["slots"], 
-        "host_name": result["room_state"]["host_name"],
-        "assigned_slot": result["assigned_slot"],
-        "operation_id": result["operation_id"]
-    }
-
 @router.post("/assign-slot")
 async def assign_slot(
     room_id: str = Query(...), 
     slot: int = Query(...),
     name: Optional[str] = Query(None)
 ):
+    """Assign a player or bot to a specific slot"""
     room = room_manager.get_room(room_id)
     if not room:
         raise HTTPException(status_code=404, detail="Room not found")
@@ -219,7 +180,7 @@ async def assign_slot(
             "operation_id": result["operation_id"]
         })
         
-        # ✅ Notify lobby if occupancy changed
+        # Notify lobby if occupancy changed
         if old_occupancy != new_occupancy:
             await notify_lobby_room_updated(updated_summary)
         
@@ -242,6 +203,7 @@ async def assign_slot(
 
 @router.post("/start-game")
 async def start_game(room_id: str = Query(...)):
+    """Start the game in a specific room"""
     room = room_manager.get_room(room_id)
     if not room:
         raise HTTPException(status_code=404, detail="Room not found")
@@ -257,9 +219,6 @@ async def start_game(room_id: str = Query(...)):
         
         print(f"🔄 DEBUG: Calling game.prepare_round() for room {room_id}")
         game_data = room.game.prepare_round()
-        print(f"🔍 DEBUG: game_data keys: {list(game_data.keys())}")
-        print(f"🔍 DEBUG: need_redeal = {game_data.get('need_redeal', 'NOT_FOUND')}")
-        print(f"🔍 DEBUG: weak_players = {game_data.get('weak_players', 'NOT_FOUND')}")
         
         broadcast_data = {
             "message": "Game started",
@@ -275,15 +234,11 @@ async def start_game(room_id: str = Query(...)):
                 }
                 for p in room.game.players
             ],
-            # ✅ ADD: Include redeal information
+            # Include redeal information
             "weak_players": game_data.get("weak_players", []),
             "need_redeal": game_data.get("need_redeal", False),
             "operation_id": result["operation_id"]
         }
-        
-        print(f"🔍 DEBUG: Broadcasting data keys: {list(broadcast_data.keys())}")
-        print(f"🔍 DEBUG: Broadcasting need_redeal: {broadcast_data['need_redeal']}")
-        print(f"🔍 DEBUG: Broadcasting weak_players: {broadcast_data['weak_players']}")
         
         await broadcast(room_id, "start_game", broadcast_data)
         
@@ -304,6 +259,7 @@ async def start_game(room_id: str = Query(...)):
 
 @router.post("/exit-room")
 async def exit_room(room_id: str = Query(...), name: str = Query(...)):
+    """Exit a room (delete if host leaves)"""
     room = room_manager.get_room(room_id)
     if not room:
         return {"ok": True, "message": "Room does not exist"}
@@ -338,57 +294,11 @@ async def exit_room(room_id: str = Query(...), name: str = Query(...)):
         
     return {"ok": True}
 
-# ---------- ROUND PHASES ----------
-
-@router.post("/start-round")
-async def start_round(room_id: str = Query(...)):
-    """
-    Starts a new round in the game.
-    Args:
-        room_id (str): The ID of the room.
-    Returns:
-        dict: Result of preparing the round.
-    Raises:
-        HTTPException: If the room or game is not found.
-    """
-    room = room_manager.get_room(room_id) # Get the room.
-    if not room or not room.game:
-        raise HTTPException(status_code=404, detail="Game not found") # Check if room and game exist.
-
-    result = room.game.prepare_round() # Prepare the game round.
-    await broadcast(room_id, "start_round", result) # Broadcast the start round event.
-    return result
-
-@router.post("/redeal")
-async def redeal(room_id: str = Query(...), player_name: str = Query(...)):
-    room = room_manager.get_room(room_id)
-    if not room or not room.game:
-        raise HTTPException(status_code=404, detail="Game not found")
-
-    result = room.game.request_redeal(player_name)
-    
-    if result["redeal_allowed"]:
-        # Broadcast redeal event
-        await broadcast(room_id, "redeal", {
-            "player": player_name,
-            "multiplier": room.game.redeal_multiplier
-        })
-        
-        await asyncio.sleep(1)  # Small delay
-        new_round_data = room.game.prepare_round()
-        
-        # Broadcast new hands
-        await broadcast(room_id, "new_round", {
-            "round": new_round_data["round"],
-            "starter": player_name,
-            "hands": new_round_data["hands"],
-            "multiplier": room.game.redeal_multiplier
-        })
-    
-    return result
+# ---------- GAME PHASES ----------
 
 @router.post("/declare")
 async def declare(room_id: str = Query(...), player_name: str = Query(...), value: int = Query(...)):
+    """Player declares their expected score for the round"""
     room = room_manager.get_room(room_id)
     if not room or not room.game:
         raise HTTPException(status_code=404, detail="Game not found")
@@ -450,6 +360,7 @@ async def play_turn(
     player_name: str = Query(...), 
     piece_indexes: str = Query(...)
 ):
+    """Player plays pieces on their turn"""
     room = room_manager.get_room(room_id)
     if not room or not room.game:
         raise HTTPException(status_code=404, detail="Game not found")
@@ -527,30 +438,51 @@ async def play_turn(
 
     return result
 
+@router.post("/redeal")
+async def redeal(room_id: str = Query(...), player_name: str = Query(...)):
+    """Handle redeal request from a player"""
+    room = room_manager.get_room(room_id)
+    if not room or not room.game:
+        raise HTTPException(status_code=404, detail="Game not found")
+
+    result = room.game.request_redeal(player_name)
+    
+    if result["redeal_allowed"]:
+        # Broadcast redeal event
+        await broadcast(room_id, "redeal", {
+            "player": player_name,
+            "multiplier": room.game.redeal_multiplier
+        })
+        
+        await asyncio.sleep(1)  # Small delay
+        new_round_data = room.game.prepare_round()
+        
+        # Broadcast new hands
+        await broadcast(room_id, "new_round", {
+            "round": new_round_data["round"],
+            "starter": player_name,
+            "hands": new_round_data["hands"],
+            "multiplier": room.game.redeal_multiplier
+        })
+    
+    return result
+
 @router.post("/score-round")
 async def score_round(room_id: str = Query(...)):
-    """
-    Scores the current round and checks for game over conditions.
-    Args:
-        room_id (str): The ID of the room.
-    Returns:
-        dict: Summary of the round score, game over status, and winners.
-    Raises:
-        HTTPException: If the room or game is not found.
-    """
-    room = room_manager.get_room(room_id) # Get the room.
+    """Score the current round and check for game over conditions"""
+    room = room_manager.get_room(room_id)
     if not room or not room.game:
-        raise HTTPException(status_code=404, detail="Game not found") # Check if room and game exist.
+        raise HTTPException(status_code=404, detail="Game not found")
 
-    game = room.game # Get the game instance.
-    summary = game.score_round() # Score the current round.
-    game_over = is_game_over(game) # Check if the game is over.
-    winners = get_winners(game) if game_over else [] # Get winners if game is over.
+    game = room.game
+    summary = game.score_round()
+    game_over = is_game_over(game)
+    winners = get_winners(game) if game_over else []
 
     await broadcast(room_id, "score", {
         "summary": summary,
         "game_over": game_over,
-        "winners": [p.name for p in winners] # Broadcast score details.
+        "winners": [p.name for p in winners]
     })
 
     return {
@@ -561,91 +493,9 @@ async def score_round(room_id: str = Query(...)):
 
 # ---------- DEBUG / STATUS ----------
 
-@router.get("/check-game-over")
-async def check_game_over(room_id: str = Query(...)):
-    """
-    Checks if the game in a specific room is over.
-    Args:
-        room_id (str): The ID of the room.
-    Returns:
-        dict: Game over status, round number, and current scores.
-    Raises:
-        HTTPException: If the room or game is not found.
-    """
-    room = room_manager.get_room(room_id) # Get the room.
-    if not room or not room.game:
-        raise HTTPException(status_code=404, detail="Game not found") # Check if room and game exist.
-
-    game = room.game # Get the game instance.
-    over = game.is_game_over() # Check game over status.
-
-    return {
-        "game_over": over,
-        "round": game.round_number,
-        "scores": {p.name: p.score for p in game.players} # Return current scores.
-    }
-
-@router.get("/deal")
-async def deal(room_id: str = Query(...)):
-    """
-    Deals pieces for a new round (for debugging/testing).
-    Args:
-        room_id (str): The ID of the room.
-    Returns:
-        dict: Current round number and players' hands.
-    Raises:
-        HTTPException: If the room or game is not found or not started.
-    """
-    room = room_manager.get_room(room_id) # Get the room.
-    if not room or not room.started or not room.game:
-        raise HTTPException(status_code=400, detail="Game not found or not started") # Check game status.
-
-    game = room.game # Get the game instance.
-    game._deal_pieces() # Deal pieces to players.
-    game._set_round_start_player() # Set the starting player for the round.
-
-    hands = {
-        player.name: [str(p) for p in player.hand] # Get string representation of each player's hand.
-        for player in game.players
-    }
-    return {"round": game.round_number, "hands": hands}
-
-@router.post("/play")
-async def play(data: dict):
-    """
-    Validates a play (for debugging/testing).
-    Args:
-        data (dict): Dictionary containing room_id, player_index, and piece_indexes.
-    Returns:
-        dict: Validity of the play, play type, and pieces played.
-    Raises:
-        HTTPException: If data is missing, room/game not found.
-    """
-    room_id = data.get("room_id")
-    player_index = data.get("player_index")
-    piece_indexes = data.get("piece_indexes")
-
-    if room_id is None or player_index is None or piece_indexes is None:
-        raise HTTPException(status_code=400, detail="Missing data") # Check for missing data.
-
-    room = room_manager.get_room(room_id) # Get the room.
-    if not room or not room.game:
-        raise HTTPException(status_code=404, detail="Game not found") # Check if room and game exist.
-
-    player = room.game.players[player_index] # Get the player object.
-    pieces = [player.hand[i] for i in piece_indexes] # Get the actual pieces from player's hand.
-
-    valid = is_valid_play(pieces) # Check if the play is valid.
-    play_type = get_play_type(pieces) if valid else None # Get play type if valid.
-
-    return {
-        "valid": valid,
-        "play_type": play_type,
-        "pieces": [str(p) for p in pieces] # Return string representation of pieces.
-    }
-
 @router.get("/debug/room-stats")
 async def get_room_stats(room_id: Optional[str] = Query(None)):
+    """Get room statistics for debugging"""
     from backend.socket_manager import _socket_manager
     
     stats = _socket_manager.get_room_stats(room_id)
@@ -663,12 +513,11 @@ async def get_room_stats(room_id: Optional[str] = Query(None)):
         "stats": stats
     }
 
+# ---------- LOBBY NOTIFICATION FUNCTIONS ----------
+
 async def notify_lobby_room_created(room_data):
-    """
-    Notify lobby clients about new room creation
-    """
+    """Notify lobby clients about new room creation"""
     try:
-        # Ensure lobby is ready before broadcasting
         from backend.socket_manager import ensure_lobby_ready
         ensure_lobby_ready()
         
@@ -688,15 +537,10 @@ async def notify_lobby_room_created(room_data):
         print(f"✅ Notified lobby about new room: {room_data['room_id']}")
     except Exception as e:
         print(f"❌ Failed to notify lobby about new room: {e}")
-        import traceback
-        traceback.print_exc()
 
 async def notify_lobby_room_updated(room_data):
-    """
-    Notify lobby clients about room updates (occupancy changes)
-    """
+    """Notify lobby clients about room updates (occupancy changes)"""
     try:
-        # Ensure lobby is ready before broadcasting
         from backend.socket_manager import ensure_lobby_ready
         ensure_lobby_ready()
         
@@ -717,13 +561,9 @@ async def notify_lobby_room_updated(room_data):
         print(f"✅ Notified lobby about room update: {room_data['room_id']}")
     except Exception as e:
         print(f"❌ Failed to notify lobby about room update: {e}")
-        import traceback
-        traceback.print_exc()
 
 async def notify_lobby_room_closed(room_id, reason="Room closed"):
-    """
-    Notify lobby clients about room closure
-    """
+    """Notify lobby clients about room closure"""
     try:
         await broadcast("lobby", "room_closed", {
             "room_id": room_id,
