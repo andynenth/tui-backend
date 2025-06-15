@@ -10,14 +10,27 @@ from backend.socket_manager import broadcast
 from backend.shared_instances import shared_room_manager, shared_bot_manager
 from typing import Optional
 import backend.socket_manager
+from ..controllers.RedealController import RedealController
 
 
 print(f"socket_manager id in {__name__}: {id(backend.socket_manager)}")
-
+redeal_controllers = {}
 router = APIRouter() # Create a new FastAPI APIRouter instance.
 # room_manager = RoomManager() # (Commented out) Direct instantiation of RoomManager.
 room_manager = shared_room_manager
 bot_manager = shared_bot_manager
+
+
+def get_redeal_controller(room_id: str) -> RedealController:
+    if room_id not in redeal_controllers:
+        redeal_controllers[room_id] = RedealController(room_id)
+    return redeal_controllers[room_id]
+
+@router.post("/start-redeal-phase")
+async def start_redeal_phase(room_id: str = Query(...)):
+    controller = get_redeal_controller(room_id)
+    success = await controller.start()
+    return {"status": "redeal_phase_started" if success else "failed"}
 
 # ---------- ROOM MANAGEMENT ----------
 
