@@ -32,7 +32,6 @@ export class GameScene extends Container {
     console.log("📊 Game data:", gameData);
 
     this._initialize();
-    
   }
 
   /**
@@ -110,6 +109,14 @@ export class GameScene extends Container {
    * Set up event listeners
    */
   _setupEventListeners() {
+    // Debug: See if events are being received at all
+    this.socketManager.on("redeal_phase_started", (data) => {
+      console.log("🔴 redeal_phase_started received in GameScene!", data);
+      console.log(
+        "Current phase:",
+        this.phaseManager.getCurrentPhase()?.constructor.name
+      );
+    });
     // Listen for game ending events
     this.stateManager.on("gameEnded", (data) => {
       this.handleGameEnd(data);
@@ -128,6 +135,28 @@ export class GameScene extends Container {
     // Listen for phase transitions
     this.phaseManager.on("phaseChanged", (data) => {
       console.log(`🔄 Phase changed: ${data.from} → ${data.to}`);
+    });
+
+    // DEBUG: Monitor all redeal-related events
+    const redealEvents = [
+      "new_hand",
+      "redeal_new_hand",
+      "player_redealt",
+      "hand_updated",
+    ];
+
+    redealEvents.forEach((eventName) => {
+      this.socketManager.on(eventName, (data) => {
+        console.log(`🃏 [DEBUG] ${eventName} event received:`, data);
+      });
+    });
+
+    // Monitor game state updates too
+    this.socketManager.on("game_state_updated", (data) => {
+      console.log("📊 [DEBUG] Game state updated:", data);
+      if (data.hands) {
+        console.log("🃏 New hands in state update:", data.hands);
+      }
     });
   }
 
