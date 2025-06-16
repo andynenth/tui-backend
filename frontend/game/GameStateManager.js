@@ -42,6 +42,16 @@ export class GameStateManager extends EventEmitter {
     // Scoring
     this.scores = {};
     this.roundScores = {};
+    // Extract game-specific data
+    this.round = initialData.round || 1;
+    this.multiplier = initialData.multiplier || 1;
+
+    // Store weak players data
+    this.weakPlayers = initialData.weakPlayers || [];
+    this.needRedeal = initialData.need_redeal || false;
+
+    // Store the full game data for reference
+    this.gameData = initialData;
 
     // Initialize player scores
     this.players.forEach((player) => {
@@ -56,11 +66,13 @@ export class GameStateManager extends EventEmitter {
     };
 
     console.log("GameStateManager initialized with:", {
-      roomId,
-      playerName,
-      round: this.currentRound,
+      roomId: this.roomId,
+      playerName: this.playerName,
+      round: this.round,
       players: this.players.length,
       hand: this.myHand.length,
+      weakPlayers: this.weakPlayers,
+      needRedeal: this.needRedeal,
     });
   }
 
