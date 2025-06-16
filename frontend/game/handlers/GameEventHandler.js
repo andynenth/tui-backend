@@ -28,6 +28,10 @@ export class GameEventHandler {
       new_hand: this.handleNewHand.bind(this),
       redeal_complete: this.handleRedealComplete.bind(this),
       weak_hands_check: this.handleWeakHandsCheck.bind(this),
+      redeal_phase_started: this.handleRedealPhaseStarted.bind(this),
+      redeal_prompt: this.handleRedealPrompt.bind(this),
+      redeal_decision_made: this.handleRedealDecisionMade.bind(this),
+      redeal_phase_complete: this.handleRedealPhaseComplete.bind(this),
     };
 
     console.log("GameEventHandler initialized");
@@ -49,13 +53,13 @@ export class GameEventHandler {
 
     console.log("✅ Game event handlers connected");
 
-    // Request redeal check if needed
-    if (this.stateManager.gameData?.need_redeal) {
-      console.log("📤 Requesting redeal check from backend");
-      this.socketManager.send("request_redeal_check", {
-        room_id: this.stateManager.roomId,
-      });
-    }
+    // Send game_ready signal to backend
+    console.log("📤 Sending game_ready signal to backend");
+    this.socketManager.send("game_ready", {
+      room_id: this.stateManager.roomId,
+      player_name: this.stateManager.playerName,
+      operation_id: this.stateManager.gameData?.operation_id,
+    });
   }
 
   /**
@@ -239,6 +243,29 @@ export class GameEventHandler {
         data.message || "An error occurred"
       );
     }
+  }
+
+  handleRedealPhaseStarted(data) {
+    console.log("🔄 Redeal phase started from backend:", data);
+    // The RedealPhase will handle this
+  }
+
+  handleRedealPrompt(data) {
+    console.log("❓ Redeal prompt from backend:", data);
+    // The RedealPhase will handle this
+  }
+
+  handleRedealDecisionMade(data) {
+    console.log("✅ Redeal decision made:", data);
+    // The RedealPhase will handle this
+  }
+
+  handleRedealPhaseComplete(data) {
+    console.log("🎯 Redeal phase complete:", data);
+    // Transition to declaration phase
+    setTimeout(() => {
+      this.phaseManager.transitionTo("declaration");
+    }, 1000);
   }
 
   /**

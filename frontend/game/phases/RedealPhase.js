@@ -41,12 +41,28 @@ export class RedealPhase extends BasePhase {
     this._logDebugInfo();
     this.uiRenderer.showRedealPhase();
 
-    // ✅ แก้ไข: Register handlers ก่อน check eligibility
     this.registerEventHandlers();
-
-    // ✅ เพิ่ม: Process any buffered events
     this._processBufferedEvents();
 
+    // Add explicit request to backend to start redeal phase
+    if (
+      this.stateManager.weakPlayers &&
+      this.stateManager.weakPlayers.length > 0
+    ) {
+      console.log("📤 Requesting backend to start redeal phase");
+      console.log("   Weak players:", this.stateManager.weakPlayers);
+      console.log("   Room ID:", this.stateManager.roomId);
+
+      // Give a small delay to ensure handlers are ready
+      setTimeout(() => {
+        this.socketManager.send("request_redeal_phase", {
+          room_id: this.stateManager.roomId,
+          weak_players: this.stateManager.weakPlayers,
+        });
+      }, 100);
+    }
+
+    // Keep the existing eligibility check
     setTimeout(() => {
       this.checkRedealEligibility();
     }, 500);

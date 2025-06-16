@@ -87,6 +87,21 @@ export class GameScene extends Container {
       await this.eventHandler.connect();
       console.log("✅ Connected to game socket");
 
+      // Check if we need to request redeal phase
+      if (this.gameData.need_redeal && this.gameData.weak_players?.length > 0) {
+        console.log("📤 Game needs redeal, requesting from backend");
+        console.log("   Weak players:", this.gameData.weak_players);
+
+        // Send request to backend to check/start redeal
+        setTimeout(() => {
+          this.socketManager.send("check_redeal", {
+            room_id: this.roomId,
+            weak_players: this.gameData.weak_players,
+            operation_id: this.gameData.operation_id,
+          });
+        }, 200);
+      }
+
       // 8. Initialize UI
       await this.uiRenderer.initialize(this.gameData);
       console.log("✅ UI initialized");

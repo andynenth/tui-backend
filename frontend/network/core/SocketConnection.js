@@ -30,7 +30,10 @@ export class SocketConnection {
         // Set a connection timeout
         setTimeout(() => {
           if (this.readyState !== WebSocket.OPEN) {
-            this.socket.close();
+            // FIX: Check if socket exists before calling close
+            if (this.socket) {
+              this.socket.close();
+            }
             reject(new Error("Connection timeout"));
           }
         }, 5000);
