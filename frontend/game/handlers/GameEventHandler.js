@@ -48,6 +48,14 @@ export class GameEventHandler {
     });
 
     console.log("✅ Game event handlers connected");
+
+    // Request redeal check if needed
+    if (this.stateManager.gameData?.need_redeal) {
+      console.log("📤 Requesting redeal check from backend");
+      this.socketManager.send("request_redeal_check", {
+        room_id: this.stateManager.roomId,
+      });
+    }
   }
 
   /**
