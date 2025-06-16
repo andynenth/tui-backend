@@ -13,40 +13,30 @@ export class SocketConnection {
   async connect() {
     return new Promise((resolve, reject) => {
       console.log(`🔌 [SocketConnection] Connecting to: ${this.url}`);
+      try {
+        this.socket = new WebSocket(this.url);
 
-      this.socket = new WebSocket(this.url);
+        this.socket.onopen = () => {
+          console.log("✅ [SocketConnection] WebSocket opened");
+          this.readyState = WebSocket.OPEN;
+          resolve(this.socket);
+        };
 
-      this.socket.onopen = () => {
-        console.log("✅ [SocketConnection] WebSocket opened");
-        this.state = ConnectionState.CONNECTED;
-        resolve(this);
-      };
+        this.socket.onerror = (error) => {
+          this.readyState = WebSocket.CLOSED;
+          reject(error);
+        };
 
-      this.socket.onmessage = (event) => {
-        console.log("📨 [SocketConnection] Raw WS message event:", event);
-        console.log(
-          "📦 [SocketConnection] Message data type:",
-          typeof event.data
-        );
-
-        if (this.messageHandler) {
-          let data = event.data;
-
-          // Parse if string
-          if (typeof data === "string") {
-            try {
-              data = JSON.parse(data);
-            } catch (e) {
-              console.error("Failed to parse WebSocket message:", e);
-              return;
-            }
+        // Set a connection timeout
+        setTimeout(() => {
+          if (this.readyState !== WebSocket.OPEN) {
+            this.socket.close();
+            reject(new Error("Connection timeout"));
           }
-
-          this.messageHandler(data);
-        }
-      };
-
-      // ... rest of handlers
+        }, 5000);
+      } catch (error) {
+        reject(error);
+      }
     });
   }
 
@@ -73,6 +63,26 @@ export class SocketConnection {
   onMessage(callback) {
     if (this.socket) {
       this.socket.onmessage = (event) => {
+        console.log("📨 [SocketConnection] Raw WS message event:", event);
+        console.log(
+          "📦 [SocketConnection] Message data type:",
+          typeof event.data
+        );
+        if (this.messageHandler) {
+          let data = event.data;
+
+          // Parse if string
+          if (typeof data === "string") {
+            try {
+              data = JSON.parse(data);
+            } catch (e) {
+              console.error("Failed to parse WebSocket message:", e);
+              return;
+            }
+          }
+
+          this.messageHandler(data);
+        }
         try {
           const data = JSON.parse(event.data);
           callback(data);
