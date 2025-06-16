@@ -243,16 +243,16 @@ export class GameUIRenderer extends Container {
    * Show redeal phase UI
    * Displays interface for redeal checking
    */
-//   showRedealPhase() {
-//     this.updatePhaseIndicator("Redeal Check");
-//     this.clearMainContent();
+  //   showRedealPhase() {
+  //     this.updatePhaseIndicator("Redeal Check");
+  //     this.clearMainContent();
 
-//     const infoText = this._createText("Checking for weak hands...", {
-//       fill: "#ffffff",
-//       fontSize: 16,
-//     });
-//     this.containers.main.addChild(infoText);
-//   }
+  //     const infoText = this._createText("Checking for weak hands...", {
+  //       fill: "#ffffff",
+  //       fontSize: 16,
+  //     });
+  //     this.containers.main.addChild(infoText);
+  //   }
 
   // ===============================
   // PRIVATE REDEAL HELPER METHODS
@@ -454,15 +454,6 @@ export class GameUIRenderer extends Container {
     });
   }
 
-  /**
-   * Hide input interface
-   * Clears input state and hides UI elements
-   */
-  hideInput() {
-    this.containers.input.visible = false;
-    this.currentInputCallback = null;
-    this.inputValidator = null;
-  }
 
   /**
    * Handle input submission
@@ -528,13 +519,6 @@ export class GameUIRenderer extends Container {
     }
   }
 
-  /**
-   * Clear main content area
-   * Removes all children from main container
-   */
-  clearMainContent() {
-    this.containers.main.removeChildren();
-  }
 
   // ===============================
   // FEEDBACK & MESSAGING
@@ -828,5 +812,130 @@ export class GameUIRenderer extends Container {
         element.destroy();
       }
     }, delay);
+  }
+
+  /**
+   * Show waiting message
+   * @param {string} message - Message to display while waiting
+   */
+  showWaitingMessage(message) {
+    console.log(`⏳ ${message}`);
+
+    // Clear any existing waiting messages
+    this._clearWaitingMessages();
+
+    // Create waiting text
+    const waitingText = this._createText(message, {
+      fill: "#ffff00", // Yellow color for waiting
+      fontSize: 18,
+      fontWeight: "bold",
+      align: "center",
+    });
+
+    // Tag it for easy removal later
+    waitingText.name = "waitingMessage";
+
+    // Center it in the main area
+    const screenWidth = window.innerWidth;
+    waitingText.x = (screenWidth - waitingText.width) / 2;
+    waitingText.y = 250;
+
+    // Add to main container
+    this.containers.main.addChild(waitingText);
+
+    // Add a simple loading animation (dots)
+    this._startWaitingAnimation(waitingText);
+  }
+
+  /**
+   * Clear all waiting messages
+   * @private
+   */
+  _clearWaitingMessages() {
+    // Remove all children with name "waitingMessage"
+    const toRemove = this.containers.main.children.filter(
+      (child) => child.name === "waitingMessage"
+    );
+    toRemove.forEach((child) => child.destroy());
+  }
+
+  /**
+   * Start waiting animation (animated dots)
+   * @private
+   * @param {Text} textElement - Text element to animate
+   */
+  _startWaitingAnimation(textElement) {
+    const originalText = textElement.text;
+    let dotCount = 0;
+
+    const animationInterval = setInterval(() => {
+      // Stop if element was destroyed
+      if (!textElement.parent) {
+        clearInterval(animationInterval);
+        return;
+      }
+
+      // Animate dots: . .. ...
+      dotCount = (dotCount + 1) % 4;
+      const dots = ".".repeat(dotCount);
+      textElement.text = originalText + dots;
+    }, 500);
+
+    // Store interval ID for cleanup
+    textElement._animationInterval = animationInterval;
+  }
+
+  /**
+   * Show decision result (optional method for showing who decided what)
+   * @param {string} playerName - Player who made decision
+   * @param {string} choice - Their choice
+   */
+  showDecisionResult(playerName, choice) {
+    console.log(`📊 ${playerName} chose: ${choice}`);
+
+    // Create result text
+    const resultText = this._createText(
+      `${playerName} ${
+        choice === "accept" ? "✅ accepted" : "❌ declined"
+      } redeal`,
+      {
+        fill: choice === "accept" ? "#00ff00" : "#ff9999",
+        fontSize: 16,
+        align: "center",
+      }
+    );
+
+    // Position it
+    const screenWidth = window.innerWidth;
+    resultText.x = (screenWidth - resultText.width) / 2;
+    resultText.y = 300;
+
+    // Add to main container
+    this.containers.main.addChild(resultText);
+
+    // Remove after 2 seconds
+    this._scheduleElementRemoval(resultText, 2000);
+  }
+
+  // Also update the hideInput method to clear waiting messages:
+  hideInput() {
+    this.containers.input.visible = false;
+    this.currentInputCallback = null;
+    this.inputValidator = null;
+
+    // Also clear any waiting messages when hiding input
+    this._clearWaitingMessages();
+  }
+
+  // Update clearMainContent to properly clean up animations:
+  clearMainContent() {
+    // Stop any animations
+    this.containers.main.children.forEach((child) => {
+      if (child._animationInterval) {
+        clearInterval(child._animationInterval);
+      }
+    });
+
+    this.containers.main.removeChildren();
   }
 }

@@ -183,15 +183,21 @@ export class RedealPhase extends BasePhase {
       console.log(`👤 ${data.player} chose: ${data.choice}`);
     }
 
-    // อัพเดต UI แสดงผลลัพธ์
-    this.uiRenderer.showDecisionResult?.(data.player, data.choice);
+    // Safe call to showDecisionResult (check if method exists)
+    if (this.uiRenderer.showDecisionResult) {
+      this.uiRenderer.showDecisionResult(data.player, data.choice);
+    }
 
-    // ถ้าเหลือคนอื่นอีก แสดงสถานะรอ
+    // If there are remaining players, show waiting message
     if (data.remaining_players > 0) {
       this.isWaitingForOthers = true;
-      this.uiRenderer.showWaitingMessage(
-        `${data.remaining_players} players remaining...`
-      );
+
+      // Safe call to showWaitingMessage
+      if (this.uiRenderer.showWaitingMessage) {
+        this.uiRenderer.showWaitingMessage(
+          `${data.remaining_players} players remaining...`
+        );
+      }
     }
   }
 
@@ -438,14 +444,13 @@ export class RedealPhase extends BasePhase {
 
   async _sendRedealDecision(choice) {
     console.log(`📤 RedealPhase: Sending redeal decision: ${choice}`);
-    
+
     const url = `/api/redeal-decision?room_id=${this.stateManager.roomId}&player_name=${this.stateManager.playerName}&choice=${choice}`;
-    
+
     try {
       const response = await fetch(url, { method: "POST" });
       const result = await response.json();
       console.log("📥 Redeal decision sent successfully:", result);
-      
     } catch (error) {
       console.error("❌ Failed to send redeal decision:", error);
       this.showError("Failed to send redeal decision");
