@@ -96,7 +96,7 @@ class GameBotHandler:
                 position_in_order=position,
                 previous_declarations=previous_declarations,
                 must_declare_nonzero=(bot.zero_declares_in_a_row >= 2),
-                verbose=True
+                verbose=False
             )
             
             # Apply last player rule

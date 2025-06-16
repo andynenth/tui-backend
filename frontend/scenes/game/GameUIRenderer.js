@@ -243,16 +243,16 @@ export class GameUIRenderer extends Container {
    * Show redeal phase UI
    * Displays interface for redeal checking
    */
-  showRedealPhase() {
-    this.updatePhaseIndicator("Redeal Check");
-    this.clearMainContent();
+//   showRedealPhase() {
+//     this.updatePhaseIndicator("Redeal Check");
+//     this.clearMainContent();
 
-    const infoText = this._createText("Checking for weak hands...", {
-      fill: "#ffffff",
-      fontSize: 16,
-    });
-    this.containers.main.addChild(infoText);
-  }
+//     const infoText = this._createText("Checking for weak hands...", {
+//       fill: "#ffffff",
+//       fontSize: 16,
+//     });
+//     this.containers.main.addChild(infoText);
+//   }
 
   // ===============================
   // PRIVATE REDEAL HELPER METHODS

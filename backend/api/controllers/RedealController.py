@@ -1,23 +1,15 @@
-# backend/api/controllers/RedealController.py
+# backend/api/controllers/RedealController.py (แก้ไข method name)
 
 import asyncio
-from typing import List, Dict, Any, Optional
+from typing import List, Dict, Any, Optional  # ✅ เพิ่ม Dict, Any
 from backend.socket_manager import broadcast
-
 class RedealController:
-    """
-    Controller for managing the redeal phase of the game.
-    Handles player decisions for redeal requests and coordinates the process.
-    """
-    
     def __init__(self, room_id: str):
         self.room_id = room_id
-        
-        # Redeal state
         self.weak_hand_players: List[str] = []
+        self.current_player_index: int = 0  # ✅ เพิ่ม sequential control
         self.redeal_decisions: Dict[str, str] = {}
         self.phase_active: bool = False
-        self.pending_players: List[str] = []
         
         # Get room manager
         self.room_manager = None
@@ -29,49 +21,41 @@ class RedealController:
             self.room_manager = shared_room_manager
         return self.room_manager
     
-    def _get_room(self):
+    def get_room(self):  # ✅ เปลี่ยนจาก _get_room เป็น get_room
         """Get the current room"""
         room_manager = self._get_room_manager()
         return room_manager.get_room(self.room_id)
     
     async def start(self) -> bool:
-        """
-        Start the redeal phase by identifying players with weak hands
-        and prompting them for redeal decisions.
-        """
+        """Start the redeal phase sequentially"""
         try:
-            room = self._get_room()
+            room = self.get_room()  # ✅ เรียก get_room แทน _get_room
             if not room or not room.game:
                 print(f"❌ RedealController: Room {self.room_id} or game not found")
                 return False
             
-            # Get players with weak hands (assuming this method exists in game)
-            if hasattr(room.game, 'get_weak_hand_players'):
-                weak_players_data = room.game.get_weak_hand_players()
-                self.weak_hand_players = [p['name'] for p in weak_players_data]
-            else:
-                # Fallback: check for players with < 3 pieces
-                self.weak_hand_players = [
-                    p.name for p in room.game.players 
-                    if len(p.hand) < 3 and not p.is_bot
-                ]
+            # Get players with weak hands
+            weak_players_data = room.game.get_weak_hand_players(include_details=True)
+            self.weak_hand_players = [p['name'] for p in weak_players_data]
             
             if not self.weak_hand_players:
                 print(f"✅ No players need redeal in room {self.room_id}")
+                await self._complete_redeal_phase()
                 return True
             
             self.phase_active = True
-            self.pending_players = self.weak_hand_players.copy()
+            self.current_player_index = 0  # ✅ เริ่มจากคนแรก
             self.redeal_decisions = {}
             
-            # Broadcast redeal phase start to all players
+            # Broadcast redeal phase start
             await broadcast(self.room_id, "redeal_phase_started", {
                 "weak_players": self.weak_hand_players,
-                "message": "Players with weak hands can request a redeal"
+                "total_players": len(self.weak_hand_players),
+                "message": "Starting redeal decisions..."
             })
             
-            # Start prompting players for decisions
-            await self._prompt_redeal_decisions()
+            # ✅ เริ่มจากผู้เล่นคนแรก
+            await self._prompt_current_player()
             
             print(f"✅ Redeal phase started for room {self.room_id}, weak players: {self.weak_hand_players}")
             return True
@@ -80,32 +64,58 @@ class RedealController:
             print(f"❌ Error starting redeal phase: {e}")
             return False
     
-    async def _prompt_redeal_decisions(self):
-        """Prompt all weak hand players for their redeal decisions"""
-        for player_name in self.weak_hand_players:
-            await broadcast(self.room_id, "redeal_prompt", {
-                "player": player_name,
-                "message": f"{player_name}, do you want to redeal your hand?",
-                "options": ["accept", "decline"]
-            })
+    async def _prompt_current_player(self):
+        """✅ ใหม่: Prompt ผู้เล่นปัจจุบันเท่านั้น"""
+        if self.current_player_index >= len(self.weak_hand_players):
+            # ครบทุกคนแล้ว
+            await self._process_redeal_decisions()
+            return
+            
+        current_player = self.weak_hand_players[self.current_player_index]
         
-        # Set a timeout for decisions
-        asyncio.create_task(self._handle_timeout())
+        print(f"🎯 Prompting {current_player} for redeal decision ({self.current_player_index + 1}/{len(self.weak_hand_players)})")
+        
+        # ส่ง prompt เฉพาะคนนี้
+        await broadcast(self.room_id, "redeal_prompt", {
+            "target_player": current_player,  # ✅ ระบุชัดเจนว่าเป็นตาใคร
+            "player": current_player,
+            "player_index": self.current_player_index,
+            "total_players": len(self.weak_hand_players),
+            "message": f"{current_player}, do you want to redeal your hand?",
+            "options": ["accept", "decline"]
+        })
+        
+        # ✅ Handle bot automatically
+        await self._handle_bot_decision(current_player)
+    
+    async def _handle_bot_decision(self, player_name: str):
+        """✅ ใหม่: จัดการ bot decision อัตโนมัติ"""
+        room = self.get_room()
+        if not room or not room.game:
+            return
+            
+        player = room.game.get_player(player_name)
+        if player and player.is_bot:
+            # Bot ตัดสินใจอัตโนมัติ
+            await asyncio.sleep(1.5)  # Delay เพื่อให้ดู realistic
+            
+            # Bot logic: ถ้าไม่มีไพ่แรง ให้ redeal
+            has_strong_piece = any(piece.point > 9 for piece in player.hand)
+            bot_choice = "decline" if has_strong_piece else "accept"
+            
+            print(f"🤖 Bot {player_name} auto-deciding: {bot_choice}")
+            await self.handle_player_decision(player_name, bot_choice)
     
     async def handle_player_decision(self, player_name: str, choice: str):
-        """
-        Handle a player's redeal decision.
-        
-        Args:
-            player_name: Name of the player making the decision
-            choice: "accept" or "decline"
-        """
+        """Handle player decision and move to next player"""
         if not self.phase_active:
             print(f"⚠️ Redeal phase not active for {player_name}'s decision")
             return
         
-        if player_name not in self.weak_hand_players:
-            print(f"⚠️ Player {player_name} not eligible for redeal")
+        # ✅ ตรวจสอบว่าเป็นตาของเขาไหม
+        current_player = self.weak_hand_players[self.current_player_index]
+        if player_name != current_player:
+            print(f"⚠️ Not {player_name}'s turn (expecting {current_player})")
             return
         
         if player_name in self.redeal_decisions:
@@ -117,45 +127,46 @@ class RedealController:
             print(f"❌ Invalid choice '{choice}' from {player_name}")
             return
         
-        # Record the decision
+        # ✅ บันทึกการตัดสินใจ
         self.redeal_decisions[player_name] = choice
-        if player_name in self.pending_players:
-            self.pending_players.remove(player_name)
-        
         print(f"✅ {player_name} chose to {choice} redeal")
         
-        # Broadcast the decision
+        # ✅ Broadcast decision
         await broadcast(self.room_id, "redeal_decision_made", {
             "player": player_name,
             "choice": choice,
-            "pending_players": len(self.pending_players)
+            "player_index": self.current_player_index,
+            "remaining_players": len(self.weak_hand_players) - self.current_player_index - 1,
+            "is_bot": player_name.startswith("Bot")
         })
         
-        # Check if all decisions are made
-        if len(self.redeal_decisions) == len(self.weak_hand_players):
-            await self._process_redeal_decisions()
+        # ✅ ไปคนถัดไป
+        self.current_player_index += 1
+        
+        # Small delay before next prompt
+        await asyncio.sleep(0.5)
+        await self._prompt_current_player()
     
     async def _process_redeal_decisions(self):
         """Process all redeal decisions and apply results"""
         try:
-            room = self._get_room()
+            room = self.get_room()
             if not room or not room.game:
                 return
             
             # Count players who want redeal
             redeal_requests = [name for name, choice in self.redeal_decisions.items() if choice == "accept"]
             
+            print(f"📊 Redeal summary: {len(redeal_requests)}/{len(self.weak_hand_players)} players want redeal")
+            
             if redeal_requests:
-                # Apply redeal for requesting players
-                if hasattr(room.game, 'apply_redeal'):
-                    result = room.game.apply_redeal(redeal_requests)
-                else:
-                    # Fallback: redeal entire round
-                    result = room.game.prepare_round()
+                # Apply redeal (simplified)
+                result = room.game.prepare_round()
                 
                 await broadcast(self.room_id, "redeal_applied", {
                     "redeal_players": redeal_requests,
                     "new_hands": result.get("hands", {}),
+                    "multiplier": 2,
                     "message": f"Redeal applied for: {', '.join(redeal_requests)}"
                 })
             else:
@@ -163,42 +174,30 @@ class RedealController:
                     "message": "All players declined redeal. Game continues."
                 })
             
-            # End redeal phase
-            self.phase_active = False
-            self.pending_players = []
-            
-            print(f"✅ Redeal phase completed for room {self.room_id}")
+            # ✅ Complete redeal phase
+            await self._complete_redeal_phase()
             
         except Exception as e:
             print(f"❌ Error processing redeal decisions: {e}")
     
-    async def _handle_timeout(self, timeout_seconds: int = 30):
-        """Handle timeout for redeal decisions"""
-        await asyncio.sleep(timeout_seconds)
+    async def _complete_redeal_phase(self):
+        """✅ ใหม่: จบ redeal phase และไป declaration"""
+        self.phase_active = False
+        self.current_player_index = 0
         
-        if not self.phase_active:
-            return  # Phase already completed
-        
-        # Auto-decline for players who didn't respond
-        for player_name in self.pending_players.copy():
-            self.redeal_decisions[player_name] = "decline"
-            print(f"⏰ Auto-declined redeal for {player_name} (timeout)")
-        
-        self.pending_players = []
-        
-        # Broadcast timeout
-        await broadcast(self.room_id, "redeal_timeout", {
-            "message": "Redeal decision timeout. Continuing game."
+        await broadcast(self.room_id, "redeal_phase_complete", {
+            "next_phase": "declaration",
+            "message": "Redeal phase complete. Starting declarations..."
         })
         
-        # Process decisions
-        await self._process_redeal_decisions()
+        print(f"✅ Redeal phase completed for room {self.room_id}")
     
     def get_status(self) -> Dict[str, Any]:
         """Get current redeal phase status"""
         return {
             "active": self.phase_active,
             "weak_players": self.weak_hand_players,
+            "current_player_index": self.current_player_index,
             "decisions": self.redeal_decisions,
-            "pending": self.pending_players
+            "pending": len(self.weak_hand_players) - self.current_player_index - 1
         }
