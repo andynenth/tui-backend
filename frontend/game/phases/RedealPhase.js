@@ -13,20 +13,17 @@ import { BasePhase } from "./BasePhase.js";
  * - Limited number of redeals per game
  */
 export class RedealPhase extends BasePhase {
-
-  // ===============================
-  // CONSTRUCTOR & INITIALIZATION
-  // ===============================
-
   constructor(stateManager, socketManager, uiRenderer) {
     super(stateManager, socketManager, uiRenderer);
 
-    // Input state management
     this.waitingForInput = false;
     this.hasPromptedUser = false;
     this.hasChecked = false;
+    this.isWaitingForOthers = false;
 
-    console.log("🔄 RedealPhase constructor complete");
+    // ✅ เพิ่ม debug tracking
+    this.receivedEvents = [];
+    this.handlersRegistered = false;
   }
 
   // ===============================
@@ -41,14 +38,15 @@ export class RedealPhase extends BasePhase {
     await super.enter();
 
     console.log("🔸 --- REDEAL PHASE START ---");
-
-    // Debug current state
     this._logDebugInfo();
-
-    // Initialize redeal phase UI
     this.uiRenderer.showRedealPhase();
 
-    // Start redeal check process
+    // ✅ แก้ไข: Register handlers ก่อน check eligibility
+    this.registerEventHandlers();
+
+    // ✅ เพิ่ม: Process any buffered events
+    this._processBufferedEvents();
+
     setTimeout(() => {
       this.checkRedealEligibility();
     }, 500);
@@ -79,17 +77,163 @@ export class RedealPhase extends BasePhase {
    * Register socket event handlers for this phase
    */
   registerEventHandlers() {
-    this.addEventHandler('redeal_response', this.handleRedealResponse);
-    this.addEventHandler('new_hand', this.handleNewHand);
-    this.addEventHandler('redeal_complete', this.handleRedealComplete);
-    this.addEventHandler('new_round', this.handleNewRound);
+    console.log("🔧 RedealPhase: Registering handlers...");
 
-    console.log("✅ RedealPhase: Event handlers registered");
+    // ✅ เพิ่ม debug wrapper
+    this.addEventHandler("redeal_phase_started", (data) => {
+      console.log("🎯 DEBUG: redeal_phase_started received:", data);
+      this.handleRedealPhaseStarted(data);
+    });
+
+    this.addEventHandler("redeal_prompt", (data) => {
+      console.log("🎯 DEBUG: redeal_prompt received:", data);
+      this.handleRedealPrompt(data);
+    });
+
+    this.addEventHandler("redeal_decision_made", (data) => {
+      console.log("🎯 DEBUG: redeal_decision_made received:", data);
+      this.handleRedealDecision(data);
+    });
+
+    this.addEventHandler("redeal_phase_complete", (data) => {
+      console.log("🎯 DEBUG: redeal_phase_complete received:", data);
+      this.handleRedealComplete(data);
+    });
+
+    this.handlersRegistered = true;
+    console.log("✅ RedealPhase: Event handlers registered with debug");
+  }
+
+  _processBufferedEvents() {
+    console.log("🔍 Processing buffered events:", this.receivedEvents.length);
+
+    this.receivedEvents.forEach(({ event, data }) => {
+      console.log(`📦 Processing buffered event: ${event}`, data);
+
+      switch (event) {
+        case "redeal_phase_started":
+          this.handleRedealPhaseStarted(data);
+          break;
+        case "redeal_prompt":
+          this.handleRedealPrompt(data);
+          break;
+        // ... other events
+      }
+    });
+
+    this.receivedEvents = []; // Clear buffer
   }
 
   // ===============================
   // SOCKET EVENT HANDLERS
   // ===============================
+
+  handleRedealPhaseStarted(data) {
+    console.log("🔔 RedealPhase: handleRedealPhaseStarted called with:", data);
+
+    const totalPlayers = data.total_players || 0;
+    console.log(`📊 Total weak players: ${totalPlayers}`);
+
+    if (totalPlayers === 0) {
+      console.log("✅ No redeal needed, waiting for completion...");
+    } else {
+      console.log("⏳ Waiting for sequential redeal decisions...");
+      this.isWaitingForOthers = true;
+
+      // ✅ เพิ่ม check method exists
+      if (this.uiRenderer.showWaitingMessage) {
+        this.uiRenderer.showWaitingMessage("Waiting for redeal decisions...");
+      } else {
+        console.warn("⚠️ uiRenderer.showWaitingMessage not available");
+      }
+    }
+  }
+
+  handleRedealPrompt(data) {
+    console.log("📨 RedealPhase: handleRedealPrompt called with:", data);
+
+    if (data.target_player === this.stateManager.playerName) {
+      console.log(
+        `🎯 It's our turn! (${data.player_index + 1}/${data.total_players})`
+      );
+      this.isWaitingForOthers = false;
+      this.promptRedeal();
+    } else {
+      console.log(
+        `⏳ Waiting for ${data.target_player} (${data.player_index + 1}/${
+          data.total_players
+        })`
+      );
+      this.isWaitingForOthers = true;
+
+      if (this.uiRenderer.showWaitingMessage) {
+        this.uiRenderer.showWaitingMessage(
+          `Waiting for ${data.target_player} to decide...`
+        );
+      }
+    }
+  }
+
+  handleRedealDecision(data) {
+    console.log("📊 Redeal decision made:", data);
+
+    if (data.is_bot) {
+      console.log(`🤖 ${data.player} chose: ${data.choice}`);
+    } else {
+      console.log(`👤 ${data.player} chose: ${data.choice}`);
+    }
+
+    // อัพเดต UI แสดงผลลัพธ์
+    this.uiRenderer.showDecisionResult?.(data.player, data.choice);
+
+    // ถ้าเหลือคนอื่นอีก แสดงสถานะรอ
+    if (data.remaining_players > 0) {
+      this.isWaitingForOthers = true;
+      this.uiRenderer.showWaitingMessage(
+        `${data.remaining_players} players remaining...`
+      );
+    }
+  }
+
+  handleRedealComplete(data) {
+    console.log("✅ Redeal phase complete:", data);
+
+    this.isWaitingForOthers = false;
+
+    // ไป declaration phase
+    setTimeout(() => {
+      this.completePhase({ nextPhase: "declaration" });
+    }, 1000);
+  }
+
+  checkRedealEligibility() {
+    // ✅ แก้ไข: รอ backend แทนที่จะ check local
+    console.log("🔍 RedealPhase: Waiting for backend redeal sequence...");
+
+    // ไม่ต้อง check local แล้ว เพราะ backend จะควบคุม
+    if (this.isWaitingForOthers) {
+      console.log("⏳ Still waiting for backend redeal process...");
+      return;
+    }
+  }
+
+  async _sendRedealRequest() {
+    console.log("📤 RedealPhase: Sending redeal request to backend");
+
+    const choice = "accept"; // or get from UI
+    const url = `/api/redeal-decision?room_id=${this.stateManager.roomId}&player_name=${this.stateManager.playerName}&choice=${choice}`;
+
+    try {
+      const response = await fetch(url, { method: "POST" });
+      const result = await response.json();
+      console.log("📥 Redeal request sent:", result);
+
+      // Backend จะส่ง event กลับมา ไม่ต้อง handle ที่นี่
+    } catch (error) {
+      console.error("❌ Failed to send redeal decision:", error);
+      this.showError("Failed to send redeal decision");
+    }
+  }
 
   /**
    * Handle redeal response from server
@@ -103,7 +247,9 @@ export class RedealPhase extends BasePhase {
     if (data.player === this.stateManager.playerName) {
       console.log("✅ This is our redeal response");
     } else {
-      console.log(`🔄 Another player (${data.player}) made redeal decision: ${data.choice}`);
+      console.log(
+        `🔄 Another player (${data.player}) made redeal decision: ${data.choice}`
+      );
     }
   }
 
@@ -135,19 +281,19 @@ export class RedealPhase extends BasePhase {
    * Handle redeal completion from server
    * @param {Object} data - Completion data
    */
-  handleRedealComplete(data) {
-    console.log("🎯 RedealPhase: Redeal process complete:", data);
+  //   handleRedealComplete(data) {
+  //     console.log("🎯 RedealPhase: Redeal process complete:", data);
 
-    // Update game state if provided
-    if (data.new_round_data) {
-      this.stateManager.updateFromRoundData(data.new_round_data);
-    }
+  //     // Update game state if provided
+  //     if (data.new_round_data) {
+  //       this.stateManager.updateFromRoundData(data.new_round_data);
+  //     }
 
-    console.log("✅ RedealPhase: Moving to declaration phase");
-    setTimeout(() => {
-      this.completePhase();
-    }, 1000);
-  }
+  //     console.log("✅ RedealPhase: Moving to declaration phase");
+  //     setTimeout(() => {
+  //       this.completePhase();
+  //     }, 1000);
+  //   }
 
   /**
    * Handle new round event from server
@@ -179,34 +325,34 @@ export class RedealPhase extends BasePhase {
   /**
    * Check if player is eligible for redeal
    * Analyzes hand strength and prompts if needed
-   */
-  checkRedealEligibility() {
-    console.log("🔍 RedealPhase: Checking redeal eligibility");
+//    */
+  //   checkRedealEligibility() {
+  //     console.log("🔍 RedealPhase: Checking redeal eligibility");
 
-    // Guard: Don't check if already processed
-    if (this.hasChecked || this.waitingForInput || this.hasPromptedUser) {
-      console.log("🚫 Skipping redeal check - already processed");
-      return;
-    }
+  //     // Guard: Don't check if already processed
+  //     if (this.hasChecked || this.waitingForInput || this.hasPromptedUser) {
+  //       console.log("🚫 Skipping redeal check - already processed");
+  //       return;
+  //     }
 
-    // Guard: Skip for bots
-    if (this.stateManager.myPlayerData?.is_bot) {
-      console.log("🤖 Player is bot, skipping redeal");
-      this.skipRedeal();
-      return;
-    }
+  //     // Guard: Skip for bots
+  //     if (this.stateManager.myPlayerData?.is_bot) {
+  //       console.log("🤖 Player is bot, skipping redeal");
+  //       this.skipRedeal();
+  //       return;
+  //     }
 
-    // Analyze hand strength
-    const handAnalysis = this._analyzeHandStrength();
+  //     // Analyze hand strength
+  //     const handAnalysis = this._analyzeHandStrength();
 
-    if (!handAnalysis.hasStrongPiece) {
-      console.log("⚠️ WEAK HAND DETECTED - Eligible for redeal!");
-      this.promptRedeal();
-    } else {
-      console.log("✅ Strong hand - No redeal needed");
-      this.skipRedeal();
-    }
-  }
+  //     if (!handAnalysis.hasStrongPiece) {
+  //       console.log("⚠️ WEAK HAND DETECTED - Eligible for redeal!");
+  //       this.promptRedeal();
+  //     } else {
+  //       console.log("✅ Strong hand - No redeal needed");
+  //       this.skipRedeal();
+  //     }
+  //   }
 
   /**
    * Skip redeal and proceed to declaration
@@ -257,7 +403,7 @@ export class RedealPhase extends BasePhase {
     this._showRedealInformation();
 
     // Show redeal input UI
-    this.uiRenderer.showRedealInput(['Yes', 'No'], (choice) => {
+    this.uiRenderer.showRedealInput(["Yes", "No"], (choice) => {
       this.handleUserRedealDecision(choice);
     });
 
@@ -269,7 +415,6 @@ export class RedealPhase extends BasePhase {
    * @param {string} choice - User's choice ("Yes" or "No")
    */
   async handleUserRedealDecision(choice) {
-    // Guard: Only process if waiting for input
     if (!this.waitingForInput) {
       console.log("🚫 Not waiting for input, ignoring decision");
       return;
@@ -277,17 +422,33 @@ export class RedealPhase extends BasePhase {
 
     console.log(`✅ RedealPhase: User chose "${choice}"`);
 
-    // Reset input state
     this.waitingForInput = false;
     this.uiRenderer.hideInput();
 
-    // Process decision
-    if (choice === 'Yes') {
-      console.log("🔄 User wants to redeal - sending request to server");
-      await this._sendRedealRequest();
+    if (choice === "Yes") {
+      console.log("🔄 User wants to redeal - sending 'accept' to backend");
+      await this._sendRedealDecision("accept");
     } else {
-      console.log("📋 User keeping current hand");
-      this.skipRedeal();
+      console.log(
+        "📋 User keeping current hand - sending 'decline' to backend"
+      );
+      await this._sendRedealDecision("decline");
+    }
+  }
+
+  async _sendRedealDecision(choice) {
+    console.log(`📤 RedealPhase: Sending redeal decision: ${choice}`);
+    
+    const url = `/api/redeal-decision?room_id=${this.stateManager.roomId}&player_name=${this.stateManager.playerName}&choice=${choice}`;
+    
+    try {
+      const response = await fetch(url, { method: "POST" });
+      const result = await response.json();
+      console.log("📥 Redeal decision sent successfully:", result);
+      
+    } catch (error) {
+      console.error("❌ Failed to send redeal decision:", error);
+      this.showError("Failed to send redeal decision");
     }
   }
 
@@ -398,40 +559,14 @@ export class RedealPhase extends BasePhase {
    * Send redeal request to server
    * @private
    */
-  async _sendRedealRequest() {
-    console.log("📤 RedealPhase: Sending redeal request to server");
+  //   async _sendRedealRequest() {
+  //     const choice = "accept"; // or "decline"
+  //     const url = `/api/redeal-decision?room_id=${this.stateManager.roomId}&player_name=${this.stateManager.playerName}&choice=${choice}`;
 
-    try {
-      const url = `/api/redeal?room_id=${this.stateManager.roomId}&player_name=${this.stateManager.playerName}`;
-      console.log("📡 Request URL:", url);
-
-      const response = await fetch(url, { method: "POST" });
-      const result = await response.json();
-
-      console.log("📥 Redeal response:", result);
-
-      if (result.redeal_allowed) {
-        console.log(`🎉 Redeal approved! Multiplier: x${result.multiplier}`);
-
-        // Update state
-        this.stateManager.redealMultiplier = result.multiplier;
-
-        // Show success message
-        this.showSuccess(`Redeal approved! Multiplier: x${result.multiplier}`);
-
-        // Wait for server to send new hand
-        console.log("⏳ Waiting for new hand from server...");
-      } else {
-        console.error("❌ Redeal not allowed:", result.reason);
-        this.showError(result.reason || "Redeal not allowed");
-        this.skipRedeal();
-      }
-    } catch (err) {
-      console.error("❌ Failed to request redeal:", err);
-      this.showError("Failed to request redeal");
-      this.skipRedeal();
-    }
-  }
+  //     const response = await fetch(url, { method: "POST" });
+  //     const result = await response.json();
+  //     // ไม่ต้อง handle response เพราะ backend จะส่ง event กลับมา
+  //   }
 
   /**
    * Reset redeal state for recheck

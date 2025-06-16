@@ -242,6 +242,12 @@ async def start_game(room_id: str = Query(...)):
         
         await broadcast(room_id, "start_game", broadcast_data)
         
+        # ✅ เพิ่ม: เริ่ม redeal phase ถ้าจำเป็น
+        if game_data.get("need_redeal"):
+            print(f"🔄 Starting redeal phase for room {room_id}")
+            controller = get_redeal_controller(room_id)
+            await controller.start()
+        
         # Notify bot manager about round start
         await bot_manager.handle_game_event(
             room_id, 
@@ -256,6 +262,17 @@ async def start_game(room_id: str = Query(...)):
     except Exception as e:
         print(f"❌ Unexpected error in start_game: {str(e)}")
         raise HTTPException(status_code=500, detail="Internal server error")
+
+@router.post("/redeal-decision")
+async def handle_redeal_decision(
+    room_id: str = Query(...), 
+    player_name: str = Query(...), 
+    choice: str = Query(...)
+):
+    """Handle redeal decision from player"""
+    controller = get_redeal_controller(room_id)
+    await controller.handle_player_decision(player_name, choice)
+    return {"status": "ok", "choice": choice}
 
 @router.post("/exit-room")
 async def exit_room(room_id: str = Query(...), name: str = Query(...)):
