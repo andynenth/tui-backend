@@ -10,7 +10,7 @@ import { ConnectionStatus } from "../components/ConnectionStatus.js";
 /**
  * RoomScene class represents the game room screen where players wait for a game to start,
  * join slots, or manage bots (for the host).
- * 
+ *
  * REFACTORED: Now uses the new modular SocketManager instead of legacy functions
  */
 export class RoomScene extends Container {
@@ -164,7 +164,7 @@ export class RoomScene extends Container {
    */
   _setupEventListeners() {
     // ✅ NEW: Using SocketManager's event system
-    
+
     // Connection events
     this.socketManager.on("connected", () => {
       console.log("✅ WebSocket connected to room");
@@ -178,7 +178,9 @@ export class RoomScene extends Container {
     });
 
     this.socketManager.on("reconnecting", (status) => {
-      console.log(`🔄 Reconnecting... (${status.attempts}/${status.maxAttempts})`);
+      console.log(
+        `🔄 Reconnecting... (${status.attempts}/${status.maxAttempts})`
+      );
     });
 
     this.socketManager.on("reconnected", () => {
@@ -219,7 +221,9 @@ export class RoomScene extends Container {
     this.socketManager.on("player_kicked", (data) => {
       if (!this.isActive) return;
       if (data.player === this.playerName) {
-        alert(data.reason || "You have been removed from the room by the host.");
+        alert(
+          data.reason || "You have been removed from the room by the host."
+        );
         this.triggerFSMEvent(GameEvents.EXIT_ROOM);
       }
     });
@@ -232,6 +236,13 @@ export class RoomScene extends Container {
     this.socketManager.on("start_game", (data) => {
       if (!this.isActive) return;
       console.log("🎮 Game started!", data);
+
+      // ADD THIS: Disconnect RoomScene WebSocket before transitioning
+      if (this.socketManager) {
+        console.log("🔌 Disconnecting RoomScene WebSocket before game start");
+        this.socketManager.disconnect();
+      }
+
       this.triggerFSMEvent(GameEvents.GAME_STARTED, {
         roomId: this.roomId,
         gameData: data,

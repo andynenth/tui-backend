@@ -381,16 +381,20 @@ export class GameUIRenderer extends Container {
     const [promptText, descText, optionsText, buttonContainer] = elements;
 
     // Position elements vertically
-    promptText.x = -promptText.width / 2;
+    // promptText.x = -promptText.width / 2;
+    promptText.x = -promptText.width*2;
     promptText.y = -100;
 
-    descText.x = -descText.width / 2;
+    // descText.x = -descText.width / 2;
+    descText.x = -descText.width*2;
     descText.y = promptText.y + 40;
 
-    optionsText.x = -optionsText.width / 2;
+    // optionsText.x = -optionsText.width / 2;
+    optionsText.x = -optionsText.width*2;
     optionsText.y = descText.y + 30;
 
-    buttonContainer.x = -buttonContainer.width / 2;
+    // buttonContainer.x = -buttonContainer.width / 2;
+    buttonContainer.x = -buttonContainer.width*2;
     buttonContainer.y = optionsText.y + 40;
   }
 
@@ -837,7 +841,7 @@ export class GameUIRenderer extends Container {
 
     // Center it in the main area
     const screenWidth = window.innerWidth;
-    waitingText.x = (screenWidth - waitingText.width) / 2;
+    // waitingText.x = (screenWidth - waitingText.width) / 2;
     waitingText.y = 250;
 
     // Add to main container
@@ -907,7 +911,7 @@ export class GameUIRenderer extends Container {
 
     // Position it
     const screenWidth = window.innerWidth;
-    resultText.x = (screenWidth - resultText.width) / 2;
+    // resultText.x = (screenWidth - resultText.width) / 2;
     resultText.y = 300;
 
     // Add to main container
