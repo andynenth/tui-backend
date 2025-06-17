@@ -9,7 +9,26 @@ import uuid
 import logging
 
 class GameEventType(Enum):
-    """Event types สำหรับ game system"""
+
+    
+    # Game lifecycle
+    GAME_STARTED = "game_started"
+    GAME_STATE_UPDATE = "game_state_update"
+    PHASE_TRANSITION = "phase_transition"
+    
+    # Preparation phase
+    PREPARATION_STARTED = "preparation_started"
+    INITIAL_HAND_DEALT = "initial_hand_dealt"
+    WEAK_HAND_CHECK = "weak_hand_check"
+    
+    # Redeal sub-phase
+    REDEAL_DECISION_REQUEST = "redeal_decision_request"
+    REDEAL_EXECUTED = "redeal_executed"
+    
+    # Player actions (from frontend)
+    PLAYER_READY = "player_ready"
+    PLAYER_ACTION = "player_action"
+    REDEAL_DECISION = "redeal_decision"
     
     # Redeal events
     REDEAL_PHASE_STARTED = "redeal_phase_started"

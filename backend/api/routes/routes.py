@@ -11,6 +11,7 @@ from backend.shared_instances import shared_room_manager, shared_bot_manager
 from typing import Optional
 import backend.socket_manager
 from ..controllers.RedealController import RedealController
+from ..controllers.GameController import GameController, active_game_controllers
 
 print(f"socket_manager id in {__name__}: {id(backend.socket_manager)}")
 
@@ -19,6 +20,7 @@ redeal_controllers = {}
 router = APIRouter()
 room_manager = shared_room_manager
 bot_manager = shared_bot_manager
+game_controllers = {}
 
 def get_redeal_controller(room_id: str) -> RedealController:
     """Get or create a RedealController for the specified room"""
@@ -203,65 +205,83 @@ async def assign_slot(
 
 @router.post("/start-game")
 async def start_game(room_id: str = Query(...)):
-    """Start the game in a specific room"""
-    room = room_manager.get_room(room_id)
-    if not room:
-        raise HTTPException(status_code=404, detail="Room not found")
-    
+    """Start game with event-based preparation phase"""
     try:
-        result = await room.start_game_safe()
+        # 1. Get room and validate
+        room = room_manager.get_room(room_id)
+        if not room:
+            raise HTTPException(status_code=404, detail="Room not found")
+            
+        # 2. Create game if not exists
+        if not room.game:
+            room.create_game()
+            
+        game = room.game
         
-        if not result["success"]:
-            raise HTTPException(status_code=400, detail="Failed to start game")
-        
-        # Register game with bot manager
-        bot_manager.register_game(room_id, room.game)
-        
-        print(f"🔄 DEBUG: Calling game.prepare_round() for room {room_id}")
-        game_data = room.game.prepare_round()
-        
-        broadcast_data = {
-            "message": "Game started",
-            "round": game_data["round"],
-            "starter": game_data["starter"],
-            "hands": game_data["hands"],
-            "players": [
-                {
-                    "name": p.name,
-                    "score": p.score,
-                    "is_bot": p.is_bot,
-                    "zero_declares_in_a_row": p.zero_declares_in_a_row
-                }
-                for p in room.game.players
-            ],
-            # Include redeal information
-            "weak_players": game_data.get("weak_players", []),
-            "need_redeal": game_data.get("need_redeal", False),
-            "operation_id": result["operation_id"]
+        # 3. Get initial game state
+        initial_data = {
+            "room_id": room_id,
+            "players": [{
+                "name": p.name,
+                "is_bot": p.is_bot,
+                "hand_count": len(p.hand) if p.hand else 0
+            } for p in game.players],
+            "round_number": 1,
+            "phase": "preparation",
+            "need_redeal": False,  # Will be determined by controller
+            "weak_players": []
         }
         
-        await broadcast(room_id, "start_game", broadcast_data)
+        # 4. Broadcast game started to all players
+        await broadcast(room_id, {
+            "type": "game_started",  # This triggers scene transition
+            "data": initial_data
+        })
         
-        # ✅ เพิ่ม: เริ่ม redeal phase ถ้าจำเป็น
-        if game_data.get("need_redeal"):
-            print(f"🔄 Starting redeal phase for room {room_id}")
-            controller = get_redeal_controller(room_id)
-            await controller.start()
+        # 5. Create and start game controller (async)
+        game_controller = GameController(room_id)
+        active_game_controllers[room_id] = game_controller
         
-        # Notify bot manager about round start
-        await bot_manager.handle_game_event(
-            room_id, 
-            "round_started", 
-            {"starter": game_data["starter"]}
-        )
+        # Start it asynchronously so we don't block the response
+        asyncio.create_task(game_controller.start_game(initial_data))
         
-        return {"ok": True, "operation_id": result["operation_id"]}
+        print(f"✅ Game started for room {room_id}")
+        return {"status": "game_started", "data": initial_data}
         
-    except ValueError as e:
-        raise HTTPException(status_code=400, detail=str(e))
     except Exception as e:
-        print(f"❌ Unexpected error in start_game: {str(e)}")
-        raise HTTPException(status_code=500, detail="Internal server error")
+        print(f"❌ Failed to start game: {e}")
+        import traceback
+        traceback.print_exc()
+        raise HTTPException(status_code=500, detail=str(e))
+
+# Add handler for player actions
+@router.post("/player-action")
+async def handle_player_action(
+    room_id: str = Query(...),
+    action: str = Query(...),
+    player_name: str = Query(...),
+    data: dict = {}
+):
+    """Handle player actions"""
+    try:
+        controller = active_game_controllers.get(room_id)
+        if not controller:
+            raise HTTPException(status_code=404, detail="Game not found")
+            
+        # For now, only handle redeal decisions
+        if action == "redeal_decision" and controller.preparation_controller:
+            decision = data.get("decision", "decline")
+            await controller.preparation_controller.handle_redeal_decision(
+                player_name, 
+                decision
+            )
+            return {"status": "ok"}
+            
+        return {"status": "action_not_handled"}
+        
+    except Exception as e:
+        print(f"❌ Error handling player action: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
 
 @router.post("/redeal-decision")
 async def handle_redeal_decision(
