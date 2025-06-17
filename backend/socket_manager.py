@@ -5,8 +5,10 @@ import json
 import time
 from typing import Dict, Set
 from fastapi.websockets import WebSocket
+from api.controllers.GameController import active_game_controllers
 
 class SocketManager:
+
     def __init__(self):
         self.room_connections: Dict[str, Set[WebSocket]] = {}
         self.broadcast_queues: Dict[str, asyncio.Queue] = {}
@@ -299,3 +301,6 @@ def get_room_stats(room_id: str = None) -> dict:
 
 def ensure_lobby_ready():
     _socket_manager.ensure_lobby_broadcast_task()
+
+async def handle_player_action(sid, data):
+    room_id = data.get('room_id')
