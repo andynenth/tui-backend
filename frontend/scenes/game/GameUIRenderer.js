@@ -124,7 +124,19 @@ export class GameUIRenderer extends Container {
       fill: "#ffffff",
       fontSize: 16,
     });
-    this.containers.main.addChild(progressText);
+    
+    // Wrap in container for layout control
+    const progressContainer = new Container();
+    progressContainer.layout = {
+      width: "auto",
+      height: "auto",
+      justifyContent: "center",
+      alignItems: "center",
+      padding: 20,
+    };
+    progressContainer.addChild(progressText);
+    
+    this.containers.main.addChild(progressContainer);
   }
 
   /**
@@ -162,32 +174,23 @@ export class GameUIRenderer extends Container {
     this.currentInputCallback = callback;
     this.currentValidOptions = options;
 
-    // Clear existing input first
-    this._clearRedealComponents();
-
-    // Reset position to center
-    this._positionInputContainer();
+    // Clear existing content first
+    this.clearMainContent();
 
     try {
-      // Create redeal prompt elements
+      // Use the main container for redeal UI (it's already configured to center content)
+      // The main container already has:
+      // justifyContent: "center" and alignItems: "center"
+      
+      // Create and add elements to main container
       const elements = this._createRedealPromptElements(options);
-
-      // Position all elements
       this._positionRedealElements(elements);
 
-      // Add all to input container
       elements.forEach((element) => {
-        this.containers.input.addChild(element);
+        this.containers.main.addChild(element);
       });
 
-      // Show input container
-      this.containers.input.visible = true;
-
-      console.log("✅ Redeal UI created and displayed");
-      console.log(`📍 Container visible: ${this.containers.input.visible}`);
-      console.log(
-        `📍 Container position: x=${this.containers.input.x}, y=${this.containers.input.y}`
-      );
+      console.log("✅ Redeal UI created and displayed in main container");
 
       // Force render update
       this.gameScene.app?.renderer?.render(this.gameScene);
@@ -236,57 +239,34 @@ export class GameUIRenderer extends Container {
   }
 
   // ===============================
-  // REDEAL PHASE UI METHODS
-  // ===============================
-
-  /**
-   * Show redeal phase UI
-   * Displays interface for redeal checking
-   */
-  //   showRedealPhase() {
-  //     this.updatePhaseIndicator("Redeal Check");
-  //     this.clearMainContent();
-
-  //     const infoText = this._createText("Checking for weak hands...", {
-  //       fill: "#ffffff",
-  //       fontSize: 16,
-  //     });
-  //     this.containers.main.addChild(infoText);
-  //   }
-
-  // ===============================
   // PRIVATE REDEAL HELPER METHODS
   // ===============================
-
-  /**
-   * Clear redeal-specific components
-   * @private
-   */
-  _clearRedealComponents() {
-    console.log("🧹 Clearing redeal components");
-    console.log(`   Children before: ${this.containers.input.children.length}`);
-
-    this.containers.input.removeChildren();
-
-    console.log(`   Children after: ${this.containers.input.children.length}`);
-  }
 
   /**
    * Position input container for redeal
    * @private
    */
   _positionInputContainer() {
-    // Get screen dimensions
     const screenWidth = window.innerWidth;
     const screenHeight = window.innerHeight;
 
-    // Center the input container
+    // IMPORTANT: Disable layout system for manual positioning
+    this.containers.input.layout = null;
+    
+    // Get container bounds AFTER elements are added
+    const bounds = this.containers.input.getLocalBounds();
+    
+    // Set pivot to center of container
+    this.containers.input.pivot.set(bounds.width / 2, bounds.height / 2);
+    
+    // Position container center at screen center
     this.containers.input.x = screenWidth / 2;
     this.containers.input.y = screenHeight / 2;
 
     console.log(
-      `🎯 Input positioned at center: ${this.containers.input.x}, ${this.containers.input.y}`
+      `🎯 Input container centered at: ${this.containers.input.x}, ${this.containers.input.y}`
     );
+    console.log(`📏 Container bounds: width=${bounds.width}, height=${bounds.height}`);
   }
 
   /**
@@ -298,34 +278,73 @@ export class GameUIRenderer extends Container {
   _createRedealPromptElements(options) {
     const elements = [];
 
-    // Main prompt
+    // Main prompt with container for spacing control
     const promptText = this._createText("⚠️ REQUEST REDEAL?", {
       fill: "#ff6600",
       fontSize: 24,
       fontWeight: "bold",
       align: "center",
     });
-    elements.push(promptText);
+    
+    const promptContainer = new Container();
+    promptContainer.layout = {
+      width: "auto",
+      height: "auto",
+      justifyContent: "center",
+      alignItems: "center",
+      marginBottom: 10,
+    };
+    promptContainer.addChild(promptText);
+    elements.push(promptContainer);
 
-    // Description
+    // Description with container
     const descText = this._createText("You have no pieces > 9 points", {
       fill: "#ffffff",
       fontSize: 16,
       align: "center",
     });
-    elements.push(descText);
+    
+    const descContainer = new Container();
+    descContainer.layout = {
+      width: "auto",
+      height: "auto",
+      justifyContent: "center",
+      alignItems: "center",
+      marginBottom: 15,
+    };
+    descContainer.addChild(descText);
+    elements.push(descContainer);
 
-    // Options text
+    // Options text with container
     const optionsText = this._createText(`Options: [${options.join(", ")}]`, {
       fill: "#cccccc",
       fontSize: 14,
       align: "center",
     });
-    elements.push(optionsText);
+    
+    const optionsContainer = new Container();
+    optionsContainer.layout = {
+      width: "auto",
+      height: "auto",
+      justifyContent: "center",
+      alignItems: "center",
+      marginBottom: 20,
+    };
+    optionsContainer.addChild(optionsText);
+    elements.push(optionsContainer);
 
-    // Create buttons container
+    // Create buttons container with its own layout
     const buttonContainer = this._createRedealButtons(options);
-    elements.push(buttonContainer);
+    const buttonWrapper = new Container();
+    buttonWrapper.layout = {
+      width: "auto",
+      height: "auto",
+      justifyContent: "center",
+      alignItems: "center",
+      marginTop: 10,
+    };
+    buttonWrapper.addChild(buttonContainer);
+    elements.push(buttonWrapper);
 
     return elements;
   }
@@ -338,6 +357,14 @@ export class GameUIRenderer extends Container {
    */
   _createRedealButtons(options) {
     const buttonContainer = new Container();
+    
+    // Use layout system for button arrangement
+    buttonContainer.layout = {
+      flexDirection: "row",
+      justifyContent: "center",
+      alignItems: "center",
+      gap: 20,
+    };
 
     options.forEach((option, index) => {
       console.log(`🔘 Creating redeal button: ${option}`);
@@ -352,21 +379,26 @@ export class GameUIRenderer extends Container {
         },
       });
 
-      // Position buttons side by side
-      button.view.x = index * 140;
-      button.view.y = 0;
-
-      buttonContainer.addChild(button.view);
-
-      // Add keyboard shortcut info
+      // Add keyboard shortcut info below the buttons
       const shortcutText = this._createText(`Press [${index + 1}]`, {
         fill: "#888888",
         fontSize: 12,
         align: "center",
       });
-      shortcutText.x = button.view.x + 60 - shortcutText.width / 2;
-      shortcutText.y = button.view.height + 5;
-      buttonContainer.addChild(shortcutText);
+      
+      // Create a wrapper for button + shortcut to keep them together
+      const buttonWrapper = new Container();
+      buttonWrapper.layout = {
+        flexDirection: "column",
+        justifyContent: "center",
+        alignItems: "center",
+        gap: 5,
+      };
+      
+      buttonWrapper.addChild(button.view);
+      buttonWrapper.addChild(shortcutText);
+      
+      buttonContainer.addChild(buttonWrapper);
     });
 
     return buttonContainer;
@@ -378,20 +410,12 @@ export class GameUIRenderer extends Container {
    * @param {DisplayObject[]} elements - UI elements to position
    */
   _positionRedealElements(elements) {
-    const [promptText, descText, optionsText, buttonContainer] = elements;
-
-    // Position elements vertically
-    promptText.x = -promptText.width / 2;
-    promptText.y = -100;
-
-    descText.x = -descText.width / 2;
-    descText.y = promptText.y + 40;
-
-    optionsText.x = -optionsText.width / 2;
-    optionsText.y = descText.y + 30;
-
-    buttonContainer.x = -buttonContainer.width / 2;
-    buttonContainer.y = optionsText.y + 40;
+    // The main container already has perfect centering layout:
+    // justifyContent: "center" (vertical centering)
+    // alignItems: "center" (horizontal centering)  
+    // gap: 20 (spacing between elements)
+    
+    // No positioning needed - the layout system handles everything perfectly!
   }
 
   /**
@@ -453,7 +477,6 @@ export class GameUIRenderer extends Container {
       callback(parseInt(value));
     });
   }
-
 
   /**
    * Handle input submission
@@ -519,7 +542,6 @@ export class GameUIRenderer extends Container {
     }
   }
 
-
   // ===============================
   // FEEDBACK & MESSAGING
   // ===============================
@@ -536,10 +558,20 @@ export class GameUIRenderer extends Container {
       fontSize: 16,
     });
 
-    errorText.position.set(10, 200);
-    this.containers.main.addChild(errorText);
+    // Wrap in container for layout control
+    const errorContainer = new Container();
+    errorContainer.layout = {
+      width: "auto",
+      height: "auto",
+      justifyContent: "center",
+      alignItems: "center",
+      padding: 10,
+      marginTop: 20,
+    };
+    errorContainer.addChild(errorText);
 
-    this._scheduleElementRemoval(errorText, 3000);
+    this.containers.main.addChild(errorContainer);
+    this._scheduleElementRemoval(errorContainer, 3000);
   }
 
   /**
@@ -580,7 +612,18 @@ export class GameUIRenderer extends Container {
       fontWeight: "bold",
     });
 
-    this.containers.main.addChild(gameOverText);
+    // Wrap in container for layout control
+    const gameOverContainer = new Container();
+    gameOverContainer.layout = {
+      width: "auto",
+      height: "auto",
+      justifyContent: "center",
+      alignItems: "center",
+      padding: 30,
+    };
+    gameOverContainer.addChild(gameOverText);
+
+    this.containers.main.addChild(gameOverContainer);
   }
 
   // ===============================
@@ -666,20 +709,41 @@ export class GameUIRenderer extends Container {
    * @private
    */
   _createHeaderComponents() {
-    // Status text
+    // Status text with container
     this.components.statusText = this._createText(
       `Game Room: ${this.stateManager.roomId}`,
       { fill: "#666666", fontSize: 14 }
     );
-    this.containers.header.addChild(this.components.statusText);
+    
+    const statusContainer = new Container();
+    statusContainer.layout = {
+      width: "auto",
+      height: "auto",
+      justifyContent: "center",
+      alignItems: "center",
+      padding: 5,
+    };
+    statusContainer.addChild(this.components.statusText);
+    this.containers.header.addChild(statusContainer);
 
-    // Phase indicator
+    // Phase indicator with container
     this.components.phaseIndicator = this._createText("", {
       fill: "#ffffff",
       fontSize: 20,
       fontWeight: "bold",
     });
-    this.containers.header.addChild(this.components.phaseIndicator);
+    
+    const phaseContainer = new Container();
+    phaseContainer.layout = {
+      width: "auto",
+      height: "auto",
+      justifyContent: "center",
+      alignItems: "center",
+      padding: 8,
+      marginTop: 5,
+    };
+    phaseContainer.addChild(this.components.phaseIndicator);
+    this.containers.header.addChild(phaseContainer);
   }
 
   /**
@@ -832,16 +896,23 @@ export class GameUIRenderer extends Container {
       align: "center",
     });
 
-    // Tag it for easy removal later
-    waitingText.name = "waitingMessage";
+    // Wrap in container for layout control
+    const waitingContainer = new Container();
+    waitingContainer.layout = {
+      width: "auto",
+      height: "auto",
+      justifyContent: "center",
+      alignItems: "center",
+      padding: 15,
+      marginTop: 20,
+    };
+    waitingContainer.addChild(waitingText);
 
-    // Center it in the main area
-    const screenWidth = window.innerWidth;
-    waitingText.x = (screenWidth - waitingText.width) / 2;
-    waitingText.y = 250;
+    // Tag container for easy removal later
+    waitingContainer.name = "waitingMessage";
 
     // Add to main container
-    this.containers.main.addChild(waitingText);
+    this.containers.main.addChild(waitingContainer);
 
     // Add a simple loading animation (dots)
     this._startWaitingAnimation(waitingText);
@@ -852,7 +923,7 @@ export class GameUIRenderer extends Container {
    * @private
    */
   _clearWaitingMessages() {
-    // Remove all children with name "waitingMessage"
+    // Remove all children with name "waitingMessage" (now containers, not text)
     const toRemove = this.containers.main.children.filter(
       (child) => child.name === "waitingMessage"
     );
@@ -905,16 +976,23 @@ export class GameUIRenderer extends Container {
       }
     );
 
-    // Position it
-    const screenWidth = window.innerWidth;
-    resultText.x = (screenWidth - resultText.width) / 2;
-    resultText.y = 300;
+    // Wrap in container for layout control
+    const resultContainer = new Container();
+    resultContainer.layout = {
+      width: "auto",
+      height: "auto",
+      justifyContent: "center",
+      alignItems: "center",
+      padding: 10,
+      marginTop: 15,
+    };
+    resultContainer.addChild(resultText);
 
     // Add to main container
-    this.containers.main.addChild(resultText);
+    this.containers.main.addChild(resultContainer);
 
     // Remove after 2 seconds
-    this._scheduleElementRemoval(resultText, 2000);
+    this._scheduleElementRemoval(resultContainer, 2000);
   }
 
   // Also update the hideInput method to clear waiting messages:
@@ -922,6 +1000,9 @@ export class GameUIRenderer extends Container {
     this.containers.input.visible = false;
     this.currentInputCallback = null;
     this.inputValidator = null;
+
+    // Clear redeal UI from main container if it exists
+    this.clearMainContent();
 
     // Also clear any waiting messages when hiding input
     this._clearWaitingMessages();
