@@ -181,6 +181,13 @@ class RedealController:
                     self.redeal_decisions = {}
                     self.current_player_index = 0
                     
+                    # Notify frontend to reset state
+                    await broadcast(self.room_id, "redeal_phase_restarting", {
+                        "reason": "New weak hands detected after redeal",
+                        "weak_players": self.weak_hand_players,
+                        "multiplier": room.game.redeal_multiplier
+                    })
+                    
                     # Start another redeal phase
                     await self.start()  # This will prompt weak players again
                     return  # Don't complete phase yet!

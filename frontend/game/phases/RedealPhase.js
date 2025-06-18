@@ -119,6 +119,11 @@ export class RedealPhase extends BasePhase {
       this.handleRedealComplete(data);
     });
 
+    this.addEventHandler("redeal_phase_restarting", (data) => {
+      console.log("🔄 Redeal phase restarting:", data);
+      this._resetAllStates();
+    });
+
     console.log("✅ RedealPhase: Event handlers registered with debug");
     this.handlersRegistered = true;
   }
@@ -315,23 +320,22 @@ export class RedealPhase extends BasePhase {
     }
   }
 
-  /**
-   * Handle redeal completion from server
-   * @param {Object} data - Completion data
-   */
-  //   handleRedealComplete(data) {
-  //     console.log("🎯 RedealPhase: Redeal process complete:", data);
+  _resetAllStates() {
+    // Reset ALL waiting states
+    this.isWaitingForOthers = false;
+    this.waitingForInput = false;
+    this.hasPromptedUser = false;
+    this.hasChecked = false;
+    this.processedEvents.clear();
 
-  //     // Update game state if provided
-  //     if (data.new_round_data) {
-  //       this.stateManager.updateFromRoundData(data.new_round_data);
-  //     }
+    // Hide any UI elements
+    if (this.uiRenderer) {
+      this.uiRenderer.hideInput();
+      this.uiRenderer.hideWaitingMessage();
+    }
 
-  //     console.log("✅ RedealPhase: Moving to declaration phase");
-  //     setTimeout(() => {
-  //       this.completePhase();
-  //     }, 1000);
-  //   }
+    console.log("✅ All states reset for phase restart");
+  }
 
   /**
    * Handle new round event from server
