@@ -35,6 +35,13 @@ export class RedealPhase extends BasePhase {
    * Sets up UI and checks redeal eligibility
    */
   async enter() {
+    // Reset all state flags
+    this.waitingForInput = false;
+    this.hasPromptedUser = false;
+    this.hasChecked = false;
+    this.isWaitingForOthers = false;
+    this.processedEvents = new Set();
+    
     await super.enter();
 
     console.log("🔸 --- REDEAL PHASE START ---");
@@ -77,6 +84,10 @@ export class RedealPhase extends BasePhase {
    * Register socket event handlers for this phase
    */
   registerEventHandlers() {
+    if (this.handlersRegistered) {
+      console.log("🚫 Handlers already registered, skipping");
+      return;
+    }
     console.log("🔧 RedealPhase: Registering handlers...");
 
     // ✅ เพิ่ม debug wrapper
@@ -100,8 +111,8 @@ export class RedealPhase extends BasePhase {
       this.handleRedealComplete(data);
     });
 
-    this.handlersRegistered = true;
     console.log("✅ RedealPhase: Event handlers registered with debug");
+    this.handlersRegistered = true;
   }
 
   _processBufferedEvents() {
@@ -175,6 +186,14 @@ export class RedealPhase extends BasePhase {
   }
 
   handleRedealDecision(data) {
+    // Prevent duplicate processing
+    const eventKey = `${data.player}-${data.choice}-${data.timestamp}`;
+    if (this.processedEvents.has(eventKey)) {
+        console.log("🚫 Duplicate event, skipping");
+        return;
+    }
+    this.processedEvents.add(eventKey);
+
     console.log("📊 Redeal decision made:", data);
 
     if (data.is_bot) {
