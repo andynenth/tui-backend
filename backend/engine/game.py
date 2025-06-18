@@ -33,15 +33,40 @@ class Game:
         self.current_phase = None          # Track current phase for controllers
 
 
-    def prepare_round(self) -> dict:
-        """Prepare for a new round: shuffle and deal pieces, determine starting player, reset declarations."""
-        print(f"🔄 DEBUG: Starting prepare_round() - Round {self.round_number + 1}")
+    def prepare_round(self, is_redeal=False) -> dict:
+        """
+        Prepare for a new round: shuffle and deal pieces, determine starting player, reset declarations.
         
-        self.round_number += 1
+        Args:
+            is_redeal (bool): True if this is a redeal of the current round, False for a new round
+        """
+        if is_redeal:
+            # REDEAL: Don't increment round, DO increment multiplier
+            print(f"🔄 DEBUG: REDEAL for Round {self.round_number} (multiplier: {self.redeal_multiplier} → {self.redeal_multiplier + 1})")
+            self.redeal_multiplier += 1
+        else:
+            # NEW ROUND: Increment round, reset multiplier
+            print(f"🔄 DEBUG: Starting NEW ROUND {self.round_number + 1}")
+            self.round_number += 1
+            self.redeal_multiplier = 1  # Reset multiplier for new round
+        
+        # Option 1: Deal weak hand with limit (for testing)
+        # Uncomment the configuration you want:
+        
+        # Single player weak hand with limit:
+        # self._deal_weak_hand([0], limit=1)
+        
+        # Multiple players weak hand with limit:
+        self._deal_weak_hand([0, 2], limit=1)  # Players 0 and 2 get weak hands, max 1 redeal
+        
+        # No limit (always deal weak hands - careful, can cause infinite loops!):
+        # self._deal_weak_hand([0, 2])
+        
+        # Regular dealing (no weak hands):
         # self._deal_pieces()
-        self._deal_weak_hand([0 ,2], limit=3)
+        
+        # Always guarantee no weak hands:
         # self._deal_guaranteed_no_redeal()
-        # self._deal_red_general_no_redeal(0)
         
         self._set_round_start_player()
                 
@@ -55,7 +80,7 @@ class Game:
 
         print(f"🔍 DEBUG: Checking for weak hands...")
         
-        # ✅ ใช้ refactored method แทน duplicate code
+        # ✅ Use refactored method instead of duplicate code
         weak_players = self.get_weak_hand_players(include_details=False)
         need_redeal = self.has_weak_hand_players()
         
@@ -70,11 +95,13 @@ class Game:
                 for player in self.players
             },
             "weak_players": weak_players,  # ✅ backward compatible format
-            "need_redeal": need_redeal
+            "need_redeal": need_redeal,
+            "redeal_multiplier": self.redeal_multiplier,  # Include multiplier in result
+            "is_redeal": is_redeal  # Include whether this was a redeal
         }
         
         print(f"🔍 DEBUG: prepare_round() result keys: {list(result.keys())}")
-        print(f"🔍 DEBUG: prepare_round() returning: {result}")
+        print(f"🔍 DEBUG: Round: {self.round_number}, Multiplier: {self.redeal_multiplier}, Is Redeal: {is_redeal}")
         
         return result
 
@@ -158,10 +185,6 @@ class Game:
         สร้างไพ่ใหม่สำหรับ redeal
         TODO: Implement proper redeal logic based on game rules
         """
-        # ตอนนี้ใช้ placeholder - ต้องปรับตาม game rules จริง
-        # สามารถใช้ existing dealing logic หรือสร้างใหม่
-        
-        # Simple implementation: สุ่มไพ่ใหม่
         deck = Piece.build_deck()
         random.shuffle(deck)
         return deck[:8]  # เอา 8 ใบแรก
@@ -620,7 +643,8 @@ class Game:
             weak_player_indices: List of player indices to receive weak hands (e.g., [0], [0,1], [0,1,2])
                                 If None, defaults to [0]
             max_weak_points: Maximum points for pieces to be considered weak
-            limit: Maximum number of times to deal weak hands before switching to guaranteed no redeal
+            limit: Maximum number of redeals allowed before forcing guaranteed no redeal
+                  (uses redeal_multiplier to track)
         """
         # Default to player 0 if not specified
         if weak_player_indices is None:
@@ -632,19 +656,26 @@ class Game:
             print(f"❌ DEBUG: No valid player indices provided")
             self._deal_pieces()
             return
-            
-        # Check if limit is reached
-        if limit is not None and hasattr(self, 'weak_hand_deal_count') and self.weak_hand_deal_count >= limit:
-            print(f"🚫 DEBUG: Weak hand deal limit ({limit}) reached. Using guaranteed no redeal instead.")
+        
+        # Check if limit is reached using redeal_multiplier
+        # For a new round: multiplier = 1 (no redeals yet)
+        # After 1st redeal: multiplier = 2
+        # After 2nd redeal: multiplier = 3, etc.
+        # So if limit=1, we allow dealing weak hands when multiplier is 1 or 2
+        
+        print(f"🔍 DEBUG: Redeal limit check - multiplier: {self.redeal_multiplier}, limit: {limit}")
+        
+        if limit is not None and self.redeal_multiplier > limit + 1:
+            print(f"🚫 DEBUG: Redeal limit ({limit}) exceeded. Multiplier is {self.redeal_multiplier} (>{limit + 1})")
+            print(f"🔄 DEBUG: Switching to guaranteed no redeal to prevent infinite loop.")
             self._deal_guaranteed_no_redeal()
             return
         
         print(f"🔧 DEBUG: Dealing weak hands to players at indices {weak_player_indices} (max {max_weak_points} points)")
-        
-        # Increment counter if tracking
-        if hasattr(self, 'weak_hand_deal_count'):
-            self.weak_hand_deal_count += 1
-            print(f"📊 DEBUG: Weak hand deal count: {self.weak_hand_deal_count}")
+        if limit is not None:
+            redeals_allowed = limit
+            redeals_so_far = self.redeal_multiplier - 1
+            print(f"📊 DEBUG: Redeals so far: {redeals_so_far}, Max allowed: {redeals_allowed}")
         
         # Use helper methods
         deck = self._prepare_deck_and_hands()
@@ -809,8 +840,16 @@ class Game:
 
     def _set_round_start_player(self):
         """Set the starting player order for the round based on game rules."""
-        if self.last_round_winner:
+        # Check if this is a redeal (multiplier > 1)
+        if self.redeal_multiplier > 1:
+            # Redeal: The player who requested redeal should start
+            # For now, we'll keep the same starter as before
+            # (In a full implementation, track who requested the redeal)
+            print(f"🔧 DEBUG: Redeal - keeping same starter order")
+        elif self.last_round_winner:
+            # Subsequent rounds: Last round winner starts
             start_index = self.players.index(self.last_round_winner)
+            self.current_order = self.players[start_index:] + self.players[:start_index]
         else:
             # First round: find player with RED_GENERAL
             start_index = 0
@@ -818,6 +857,7 @@ class Game:
                 if any("GENERAL_RED" in str(piece) for piece in player.hand):
                     start_index = i
                     break
+            self.current_order = self.players[start_index:] + self.players[:start_index]
         
-        self.current_order = self.players[start_index:] + self.players[:start_index]
         print(f"🔧 DEBUG: Round {self.round_number} starting player: {self.current_order[0].name}")
+        

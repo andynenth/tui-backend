@@ -160,14 +160,15 @@ class RedealController:
             print(f"📊 Redeal summary: {len(redeal_requests)}/{len(self.weak_hand_players)} players want redeal")
             
             if redeal_requests:
-                # Apply redeal - this increments round and deals new cards
-                result = room.game.prepare_round()
+                # Apply redeal - pass is_redeal=True to prepare_round
+                result = room.game.prepare_round(is_redeal=True)  # ← KEY CHANGE
                 
                 # Broadcast new hands
                 await broadcast(self.room_id, "redeal_applied", {
                     "redeal_players": redeal_requests,
                     "new_hands": result.get("hands", {}),
                     "multiplier": room.game.redeal_multiplier,
+                    "round": room.game.round_number,  # Should stay the same
                     "message": f"Redeal applied for: {', '.join(redeal_requests)}"
                 })
                 
@@ -183,7 +184,6 @@ class RedealController:
                     # Start another redeal phase
                     await self.start()  # This will prompt weak players again
                     return  # Don't complete phase yet!
-                
             else:
                 # No one wants redeal
                 await broadcast(self.room_id, "redeal_declined", {
