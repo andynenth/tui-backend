@@ -315,24 +315,6 @@ export class GameUIRenderer extends Container {
     descContainer.addChild(descText);
     elements.push(descContainer);
 
-    // Options text with container
-    const optionsText = this._createText(`Options: [${options.join(", ")}]`, {
-      fill: "#cccccc",
-      fontSize: 14,
-      align: "center",
-    });
-    
-    const optionsContainer = new Container();
-    optionsContainer.layout = {
-      width: "auto",
-      height: "auto",
-      justifyContent: "center",
-      alignItems: "center",
-      marginBottom: 20,
-    };
-    optionsContainer.addChild(optionsText);
-    elements.push(optionsContainer);
-
     // Create buttons container with its own layout
     const buttonContainer = this._createRedealButtons(options);
     const buttonWrapper = new Container();
@@ -378,13 +360,6 @@ export class GameUIRenderer extends Container {
           this.handleRedealChoice(option);
         },
       });
-
-      // Add keyboard shortcut info below the buttons
-      const shortcutText = this._createText(`Press [${index + 1}]`, {
-        fill: "#888888",
-        fontSize: 12,
-        align: "center",
-      });
       
       // Create a wrapper for button + shortcut to keep them together
       const buttonWrapper = new Container();
@@ -395,9 +370,7 @@ export class GameUIRenderer extends Container {
         gap: 5,
       };
       
-      buttonWrapper.addChild(button.view);
-      buttonWrapper.addChild(shortcutText);
-      
+      buttonWrapper.addChild(button.view);      
       buttonContainer.addChild(buttonWrapper);
     });
 
@@ -909,7 +882,7 @@ export class GameUIRenderer extends Container {
     waitingContainer.addChild(waitingText);
 
     // Tag container for easy removal later
-    waitingContainer.name = "waitingMessage";
+    waitingContainer.label = "waitingMessage";
 
     // Add to main container
     this.containers.main.addChild(waitingContainer);
@@ -925,7 +898,7 @@ export class GameUIRenderer extends Container {
   _clearWaitingMessages() {
     // Remove all children with name "waitingMessage" (now containers, not text)
     const toRemove = this.containers.main.children.filter(
-      (child) => child.name === "waitingMessage"
+      (child) => child.label === "waitingMessage"
     );
     toRemove.forEach((child) => child.destroy());
   }
