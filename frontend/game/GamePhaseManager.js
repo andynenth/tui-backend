@@ -50,6 +50,15 @@ export class GamePhaseManager extends EventEmitter {
   async transitionTo(phaseName) {
     console.log(`🔄 Phase transition requested: ${this.currentPhase?.constructor.name || 'null'} → ${phaseName}`);
     
+    // Add debug logging
+    if (this.currentPhase) {
+        console.log("Current phase details:", {
+            constructorName: this.currentPhase.constructor.name,
+            phase: this.currentPhase,
+            isRedealPhase: this.currentPhase instanceof RedealPhase
+        });
+    }
+    
     // Validate phase exists
     if (phaseName !== 'waiting' && !this.phases[phaseName]) {
       console.error(`❌ Unknown phase: ${phaseName}`);

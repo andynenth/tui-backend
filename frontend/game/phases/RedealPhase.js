@@ -41,7 +41,7 @@ export class RedealPhase extends BasePhase {
     this.hasChecked = false;
     this.isWaitingForOthers = false;
     this.processedEvents = new Set();
-    
+
     await super.enter();
 
     console.log("🔸 --- REDEAL PHASE START ---");
@@ -66,13 +66,21 @@ export class RedealPhase extends BasePhase {
   async exit() {
     console.log("🔹 RedealPhase: Exiting phase");
 
-    // Reset input state
+    // Reset ALL state flags for potential re-entry
     this.hasChecked = false;
     this.waitingForInput = false;
     this.hasPromptedUser = false;
+    this.isWaitingForOthers = false;
+    this.processedEvents.clear(); // Clear processed events
+    this.receivedEvents = []; // Clear buffered events
+
+    // Hide any UI elements
+    if (this.uiRenderer) {
+      this.uiRenderer.hideInput();
+      this.uiRenderer.hideWaitingMessage();
+    }
 
     await super.exit();
-
     console.log("✅ RedealPhase: Exit complete");
   }
 
@@ -189,8 +197,8 @@ export class RedealPhase extends BasePhase {
     // Prevent duplicate processing
     const eventKey = `${data.player}-${data.choice}-${data.timestamp}`;
     if (this.processedEvents.has(eventKey)) {
-        console.log("🚫 Duplicate event, skipping");
-        return;
+      console.log("🚫 Duplicate event, skipping");
+      return;
     }
     this.processedEvents.add(eventKey);
 
