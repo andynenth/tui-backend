@@ -665,7 +665,7 @@ class Game:
         
         print(f"🔍 DEBUG: Redeal limit check - multiplier: {self.redeal_multiplier}, limit: {limit}")
         
-        if limit is not None and self.redeal_multiplier > limit + 1:
+        if limit is not None and self.redeal_multiplier > limit:
             print(f"🚫 DEBUG: Redeal limit ({limit}) exceeded. Multiplier is {self.redeal_multiplier} (>{limit + 1})")
             print(f"🔄 DEBUG: Switching to guaranteed no redeal to prevent infinite loop.")
             self._deal_guaranteed_no_redeal()
