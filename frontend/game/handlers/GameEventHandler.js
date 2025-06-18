@@ -23,7 +23,10 @@ export class GameEventHandler {
       room_closed: this.handleRoomClosed.bind(this),
       error: this.handleError.bind(this),
 
-      // ✅ เพิ่ม redeal event handlers
+      redeal_phase_started: this.handleRedealPhaseStarted.bind(this),
+      redeal_prompt: this.handleRedealPrompt.bind(this),
+      redeal_decision_made: this.handleRedealDecisionMade.bind(this),
+
       redeal_response: this.handleRedealResponse.bind(this),
       new_hand: this.handleNewHand.bind(this),
       redeal_complete: this.handleRedealComplete.bind(this),
@@ -229,6 +232,63 @@ export class GameEventHandler {
     if (this.phaseManager.uiRenderer) {
       this.phaseManager.uiRenderer.showError(
         data.message || "An error occurred"
+      );
+    }
+  }
+
+  /**
+   * Handle redeal phase started event
+   * Forward to current phase if it's RedealPhase
+   */
+  handleRedealPhaseStarted(data) {
+    console.log("🔴 GameEventHandler: redeal_phase_started received:", data);
+
+    const currentPhase = this.phaseManager.getCurrentPhase();
+    if (currentPhase && currentPhase.constructor.name === "RedealPhase") {
+      console.log("📨 Forwarding to RedealPhase.handleRedealPhaseStarted");
+      currentPhase.handleRedealPhaseStarted(data);
+    } else {
+      console.warn(
+        "⚠️ Received redeal_phase_started but not in RedealPhase:",
+        currentPhase?.constructor.name
+      );
+    }
+  }
+
+  /**
+   * Handle redeal prompt event
+   * Forward to current phase if it's RedealPhase
+   */
+  handleRedealPrompt(data) {
+    console.log("🔴 GameEventHandler: redeal_prompt received:", data);
+
+    const currentPhase = this.phaseManager.getCurrentPhase();
+    if (currentPhase && currentPhase.constructor.name === "RedealPhase") {
+      console.log("📨 Forwarding to RedealPhase.handleRedealPrompt");
+      currentPhase.handleRedealPrompt(data);
+    } else {
+      console.warn(
+        "⚠️ Received redeal_prompt but not in RedealPhase:",
+        currentPhase?.constructor.name
+      );
+    }
+  }
+
+  /**
+   * Handle redeal decision made event
+   * Forward to current phase if it's RedealPhase
+   */
+  handleRedealDecisionMade(data) {
+    console.log("🔴 GameEventHandler: redeal_decision_made received:", data);
+
+    const currentPhase = this.phaseManager.getCurrentPhase();
+    if (currentPhase && currentPhase.constructor.name === "RedealPhase") {
+      console.log("📨 Forwarding to RedealPhase.handleRedealDecision");
+      currentPhase.handleRedealDecision(data);
+    } else {
+      console.warn(
+        "⚠️ Received redeal_decision_made but not in RedealPhase:",
+        currentPhase?.constructor.name
       );
     }
   }
