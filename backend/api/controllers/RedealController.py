@@ -160,23 +160,39 @@ class RedealController:
             print(f"📊 Redeal summary: {len(redeal_requests)}/{len(self.weak_hand_players)} players want redeal")
             
             if redeal_requests:
-                # Apply redeal (simplified)
+                # Apply redeal - this increments round and deals new cards
                 result = room.game.prepare_round()
                 
+                # Broadcast new hands
                 await broadcast(self.room_id, "redeal_applied", {
                     "redeal_players": redeal_requests,
                     "new_hands": result.get("hands", {}),
-                    "multiplier": 2,
+                    "multiplier": room.game.redeal_multiplier,
                     "message": f"Redeal applied for: {', '.join(redeal_requests)}"
                 })
+                
+                # ✅ CHECK IF NEW HANDS STILL HAVE WEAK HANDS
+                if result.get("need_redeal", False):
+                    print(f"⚠️ New hands still have weak players: {result.get('weak_players')}")
+                    
+                    # Reset controller state for another redeal phase
+                    self.weak_hand_players = result.get("weak_players", [])
+                    self.redeal_decisions = {}
+                    self.current_player_index = 0
+                    
+                    # Start another redeal phase
+                    await self.start()  # This will prompt weak players again
+                    return  # Don't complete phase yet!
+                
             else:
+                # No one wants redeal
                 await broadcast(self.room_id, "redeal_declined", {
                     "message": "All players declined redeal. Game continues."
                 })
             
-            # ✅ Complete redeal phase
+            # Only complete phase if no weak hands remain
             await self._complete_redeal_phase()
-            
+                
         except Exception as e:
             print(f"❌ Error processing redeal decisions: {e}")
     

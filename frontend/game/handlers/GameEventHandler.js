@@ -244,7 +244,7 @@ export class GameEventHandler {
     console.log("🔴 GameEventHandler: redeal_phase_started received:", data);
 
     const currentPhase = this.phaseManager.getCurrentPhase();
-    if (currentPhase && currentPhase.constructor.name === "RedealPhase") {
+    if (currentPhase && currentPhase.name === "RedealPhase") {
       console.log("📨 Forwarding to RedealPhase.handleRedealPhaseStarted");
       currentPhase.handleRedealPhaseStarted(data);
     } else {
@@ -263,7 +263,7 @@ export class GameEventHandler {
     console.log("🔴 GameEventHandler: redeal_prompt received:", data);
 
     const currentPhase = this.phaseManager.getCurrentPhase();
-    if (currentPhase && currentPhase.constructor.name === "RedealPhase") {
+    if (currentPhase && currentPhase.name === "RedealPhase") {
       console.log("📨 Forwarding to RedealPhase.handleRedealPrompt");
       currentPhase.handleRedealPrompt(data);
     } else {
@@ -282,7 +282,7 @@ export class GameEventHandler {
     console.log("🔴 GameEventHandler: redeal_decision_made received:", data);
 
     const currentPhase = this.phaseManager.getCurrentPhase();
-    if (currentPhase && currentPhase.constructor.name === "RedealPhase") {
+    if (currentPhase && currentPhase.name === "RedealPhase") {
       console.log("📨 Forwarding to RedealPhase.handleRedealDecision");
       currentPhase.handleRedealDecision(data);
     } else {
