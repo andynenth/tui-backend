@@ -39,7 +39,7 @@ class Game:
         
         self.round_number += 1
         # self._deal_pieces()
-        self._deal_weak_hand(0)
+        self._deal_weak_hand([0 ,2], limit=3)
         # self._deal_guaranteed_no_redeal()
         # self._deal_red_general_no_redeal(0)
         
@@ -611,48 +611,201 @@ class Game:
             while len(player.hand) < 8 and piece_index < len(available_pieces):
                 player.hand.append(available_pieces[piece_index])
                 piece_index += 1
-
-    # ===== REFACTORED MAIN METHODS =====
-
-    def _deal_weak_hand(self, weak_player_index=0, max_weak_points=9):
-        """Deal weak hand to specific player for testing redeal functionality."""
-        print(f"🔧 DEBUG: Dealing weak hand to player {weak_player_index} (max {max_weak_points} points)")
+    
+    def _deal_weak_hand(self, weak_player_indices=None, max_weak_points=9, limit=None):
+        """
+        Deal weak hand to specific players for testing redeal functionality.
+        
+        Args:
+            weak_player_indices: List of player indices to receive weak hands (e.g., [0], [0,1], [0,1,2])
+                                If None, defaults to [0]
+            max_weak_points: Maximum points for pieces to be considered weak
+            limit: Maximum number of times to deal weak hands before switching to guaranteed no redeal
+        """
+        # Default to player 0 if not specified
+        if weak_player_indices is None:
+            weak_player_indices = [0]
+        
+        # Validate indices
+        weak_player_indices = [i for i in weak_player_indices if 0 <= i < len(self.players)]
+        if not weak_player_indices:
+            print(f"❌ DEBUG: No valid player indices provided")
+            self._deal_pieces()
+            return
+            
+        # Check if limit is reached
+        if limit is not None and hasattr(self, 'weak_hand_deal_count') and self.weak_hand_deal_count >= limit:
+            print(f"🚫 DEBUG: Weak hand deal limit ({limit}) reached. Using guaranteed no redeal instead.")
+            self._deal_guaranteed_no_redeal()
+            return
+        
+        print(f"🔧 DEBUG: Dealing weak hands to players at indices {weak_player_indices} (max {max_weak_points} points)")
+        
+        # Increment counter if tracking
+        if hasattr(self, 'weak_hand_deal_count'):
+            self.weak_hand_deal_count += 1
+            print(f"📊 DEBUG: Weak hand deal count: {self.weak_hand_deal_count}")
         
         # Use helper methods
         deck = self._prepare_deck_and_hands()
         categories = self._categorize_pieces(deck)
         
-        weak_pieces = categories['weak_pieces']
-        strong_pieces = categories['strong_pieces']
+        weak_pieces = categories['weak_pieces'][:]  # Make a copy
+        strong_pieces = categories['strong_pieces'][:]  # Make a copy
         if categories['red_general']:
             strong_pieces.append(categories['red_general'])
         
         print(f"🔧 DEBUG: Found {len(weak_pieces)} weak pieces (≤{max_weak_points}), {len(strong_pieces)} strong pieces (>{max_weak_points})")
         
-        # Deal weak hand to specified player
-        if 0 <= weak_player_index < len(self.players):
-            if len(weak_pieces) >= 8:
-                self.players[weak_player_index].hand = weak_pieces[:8]
-                remaining_pieces = weak_pieces[8:] + strong_pieces
-            else:
-                self.players[weak_player_index].hand = weak_pieces + strong_pieces[:8-len(weak_pieces)]
-                remaining_pieces = strong_pieces[8-len(weak_pieces):]
+        # Shuffle pieces
+        random.shuffle(weak_pieces)
+        random.shuffle(strong_pieces)
+        
+        # Calculate how many weak pieces we need
+        weak_pieces_needed = len(weak_player_indices) * 8
+        
+        # Check if we have enough weak pieces
+        if len(weak_pieces) < weak_pieces_needed:
+            print(f"⚠️ WARNING: Not enough weak pieces ({len(weak_pieces)}) for {len(weak_player_indices)} players")
+            # We'll use all weak pieces and fill with some strong pieces
+        
+        # First, ensure non-weak players get at least one strong piece each
+        non_weak_players = []
+        for i in range(len(self.players)):
+            if i not in weak_player_indices:
+                non_weak_players.append(i)
+        
+        # Reserve strong pieces for non-weak players (at least 1 each)
+        if len(strong_pieces) < len(non_weak_players):
+            print(f"❌ ERROR: Not enough strong pieces for non-weak players!")
+            self._deal_pieces()
+            return
+        
+        # Deal to weak players first
+        weak_piece_index = 0
+        for player_idx in weak_player_indices:
+            player = self.players[player_idx]
+            # Give this player 8 weak pieces (or as many as possible)
+            for _ in range(8):
+                if weak_piece_index < len(weak_pieces):
+                    player.hand.append(weak_pieces[weak_piece_index])
+                    weak_piece_index += 1
+                else:
+                    # Ran out of weak pieces, this shouldn't happen with proper deck
+                    print(f"⚠️ WARNING: Ran out of weak pieces for player {player_idx}")
+                    break
+            print(f"🔧 DEBUG: {player.name} (index {player_idx}) assigned weak hand")
+        
+        # Remove used weak pieces
+        remaining_weak = weak_pieces[weak_piece_index:]
+        
+        # Deal to non-weak players - ensure they get at least 1 strong piece
+        strong_piece_index = 0
+        for player_idx in non_weak_players:
+            player = self.players[player_idx]
             
-            print(f"🔧 DEBUG: {self.players[weak_player_index].name} weak hand assigned")
-        else:
-            print(f"🔧 DEBUG: Invalid player index {weak_player_index}")
-            remaining_pieces = deck
-        
-        # Deal to other players
-        current_piece = 0
-        for i, player in enumerate(self.players):
-            if i != weak_player_index and len(player.hand) == 0:
-                end_idx = min(current_piece + 8, len(remaining_pieces))
-                player.hand = remaining_pieces[current_piece:end_idx]
-                current_piece = end_idx
-        
+            # Give at least one strong piece first
+            if strong_piece_index < len(strong_pieces):
+                player.hand.append(strong_pieces[strong_piece_index])
+                strong_piece_index += 1
+            
+            # Fill rest of hand (7 more pieces)
+            # Combine remaining pieces and shuffle
+            available_for_this_player = remaining_weak + strong_pieces[strong_piece_index:]
+            random.shuffle(available_for_this_player)
+            
+            pieces_added = 1  # Already added 1 strong piece
+            for piece in available_for_this_player:
+                if pieces_added >= 8:
+                    break
+                if piece not in [p for player in self.players for p in player.hand]:  # Not already dealt
+                    player.hand.append(piece)
+                    pieces_added += 1
+                    # Remove from lists
+                    if piece in remaining_weak:
+                        remaining_weak.remove(piece)
+                    else:
+                        strong_pieces[strong_piece_index:] = [p for p in strong_pieces[strong_piece_index:] if p != piece]
+            
+            # Shuffle hand to randomize strong piece position
+            random.shuffle(player.hand)
+            
         # Verify results
         self._verify_and_report_hands()
+
+    def _deal_weak_hand_legacy(self, weak_player_index=0, max_weak_points=9, limit=None):
+        """Legacy method for backward compatibility - calls new method with single index"""
+        self._deal_weak_hand([weak_player_index], max_weak_points, limit)
+
+    def _deal_guaranteed_no_redeal(self):
+        """
+        Deal hands ensuring every player has at least one strong piece (>9 points).
+        This prevents any redeal requests.
+        """
+        print(f"🛡️ DEBUG: Dealing guaranteed no-redeal hands")
+        
+        # Use helper methods
+        deck = self._prepare_deck_and_hands()
+        categories = self._categorize_pieces(deck)
+        
+        strong_pieces = categories['strong_pieces']
+        if categories['red_general']:
+            strong_pieces.append(categories['red_general'])
+        weak_pieces = categories['weak_pieces']
+        
+        print(f"🛡️ DEBUG: Available pieces - Strong: {len(strong_pieces)}, Weak: {len(weak_pieces)}")
+        
+        # Ensure we have enough strong pieces
+        if len(strong_pieces) < len(self.players):
+            print(f"⚠️ WARNING: Not enough strong pieces ({len(strong_pieces)}) for all players ({len(self.players)})")
+            # Fall back to regular dealing
+            self._deal_pieces()
+            return
+        
+        # Shuffle both lists
+        random.shuffle(strong_pieces)
+        random.shuffle(weak_pieces)
+        
+        # Give each player at least one strong piece first
+        for i, player in enumerate(self.players):
+            player.hand.append(strong_pieces[i])
+            print(f"  → {player.name} gets strong piece: {strong_pieces[i]}")
+        
+        # Remove distributed strong pieces
+        distributed_strong = strong_pieces[:len(self.players)]
+        remaining_strong = strong_pieces[len(self.players):]
+        
+        # Combine remaining pieces and shuffle
+        remaining_pieces = remaining_strong + weak_pieces
+        random.shuffle(remaining_pieces)
+        
+        # Distribute remaining pieces to fill hands to 8
+        piece_index = 0
+        for player in self.players:
+            while len(player.hand) < 8 and piece_index < len(remaining_pieces):
+                player.hand.append(remaining_pieces[piece_index])
+                piece_index += 1
+        
+        # Shuffle each player's hand to randomize position
+        for player in self.players:
+            random.shuffle(player.hand)
+        
+        # Verify results
+        print(f"🛡️ DEBUG: Guaranteed no-redeal hands dealt:")
+        self._verify_and_report_hands()
+        
+        # Confirm no weak hands
+        weak_players = self.get_weak_hand_players(include_details=False)
+        if weak_players:
+            print(f"❌ ERROR: Still have weak players after guaranteed deal: {weak_players}")
+        else:
+            print(f"✅ SUCCESS: No weak hands - redeal prevented!")
+    
+    def reset_weak_hand_counter(self):
+        """Reset the weak hand deal counter (useful for new games or rounds)"""
+        self.weak_hand_deal_count = 0
+        print(f"🔄 DEBUG: Weak hand deal counter reset to 0")
+
 
     def _set_round_start_player(self):
         """Set the starting player order for the round based on game rules."""

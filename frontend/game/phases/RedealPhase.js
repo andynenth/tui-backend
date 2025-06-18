@@ -175,7 +175,12 @@ export class RedealPhase extends BasePhase {
       console.log(
         `🎯 It's our turn! (${data.player_index + 1}/${data.total_players})`
       );
+
+      // Reset these flags to allow new prompt
+      this.hasPromptedUser = false;
+      this.waitingForInput = false;
       this.isWaitingForOthers = false;
+
       this.promptRedeal();
     } else {
       console.log(
