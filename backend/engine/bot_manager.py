@@ -1,9 +1,291 @@
 # backend/engine/bot_manager.py
 
 import asyncio
-from typing import Dict, List, Optional
+from typing import Dict, List, Optional, Set
 from engine.player import Player
 import engine.ai as ai
+import random
+import time
+import logging
+
+logger = logging.getLogger(__name__)
+
+class PhaseAwareBotManager:
+    """
+    Bot manager that respects phase boundaries and only acts during appropriate phases
+    """
+    
+    def __init__(self):
+        self.active_bots: Dict[str, Dict] = {}  # room_id -> bot_data
+        self.phase_handlers = {
+            "waiting": self._handle_waiting_phase,
+            "redeal": self._handle_redeal_phase,
+            "declaration": self._handle_declaration_phase,
+            "turn": self._handle_turn_phase,
+            "scoring": self._handle_scoring_phase,
+        }
+        self.pending_actions: Dict[str, List] = {}  # room_id -> actions
+        
+    async def register_room(self, room_id: str, bot_players: List[str]):
+        """Register bots for a room"""
+        self.active_bots[room_id] = {
+            "bots": bot_players,
+            "current_phase": "waiting",
+            "phase_data": {},
+            "action_timers": {},
+        }
+        self.pending_actions[room_id] = []
+        logger.info(f"Registered {len(bot_players)} bots for room {room_id}")
+    
+    async def handle_phase_change(self, room_id: str, new_phase: str, phase_data: Dict = None):
+        """Handle phase transition - main entry point for bot actions"""
+        if room_id not in self.active_bots:
+            return
+        
+        # Cancel any pending actions from previous phase
+        await self._cancel_pending_actions(room_id)
+        
+        # Update phase
+        self.active_bots[room_id]["current_phase"] = new_phase
+        self.active_bots[room_id]["phase_data"] = phase_data or {}
+        
+        logger.info(f"Bots in room {room_id}: Phase changed to {new_phase}")
+        
+        # Execute phase-specific handler
+        handler = self.phase_handlers.get(new_phase)
+        if handler:
+            await handler(room_id, phase_data)
+    
+    # ==================== PHASE HANDLERS ====================
+    
+    async def _handle_waiting_phase(self, room_id: str, phase_data: Dict):
+        """Handle waiting phase - bots do nothing"""
+        logger.info(f"Bots in {room_id}: Waiting phase, no actions needed")
+    
+    async def _handle_redeal_phase(self, room_id: str, phase_data: Dict):
+        """Handle redeal phase - bots respond to redeal prompts"""
+        room_data = self.active_bots[room_id]
+        
+        # Bots wait for redeal prompts, don't act immediately
+        logger.info(f"Bots in {room_id}: Redeal phase started, waiting for prompts")
+        
+        # Set up redeal decision logic
+        room_data["redeal_strategy"] = self._get_redeal_strategy()
+    
+    async def _handle_declaration_phase(self, room_id: str, phase_data: Dict):
+        """Handle declaration phase - bots declare in turn order"""
+        room_data = self.active_bots[room_id]
+        
+        # Important: Add delay to ensure phase transition is complete
+        await asyncio.sleep(0.5)
+        
+        # Get declaration order if provided
+        declaration_order = phase_data.get("declaration_order", [])
+        
+        for bot_name in room_data["bots"]:
+            if bot_name in declaration_order:
+                # Calculate delay based on position
+                position = declaration_order.index(bot_name)
+                delay = 1.0 + (position * 1.5)  # Stagger declarations
+                
+                # Schedule declaration
+                asyncio.create_task(
+                    self._delayed_bot_action(
+                        room_id, bot_name, "declare", delay
+                    )
+                )
+        
+        logger.info(f"Bots in {room_id}: Scheduled declarations for declaration phase")
+    
+    async def _handle_turn_phase(self, room_id: str, phase_data: Dict):
+        """Handle turn phase - bots play when it's their turn"""
+        room_data = self.active_bots[room_id]
+        
+        # Bots will respond to turn prompts
+        logger.info(f"Bots in {room_id}: Turn phase started, waiting for turn prompts")
+        
+        # Set up turn strategy
+        room_data["turn_strategy"] = self._get_turn_strategy()
+    
+    async def _handle_scoring_phase(self, room_id: str, phase_data: Dict):
+        """Handle scoring phase - bots wait for results"""
+        logger.info(f"Bots in {room_id}: Scoring phase, no actions needed")
+    
+    # ==================== BOT ACTIONS ====================
+    
+    async def handle_redeal_prompt(self, room_id: str, bot_name: str, prompt_data: Dict):
+        """Handle redeal prompt for a specific bot"""
+        if not self._validate_bot_action(room_id, bot_name, "redeal"):
+            return
+        
+        room_data = self.active_bots[room_id]
+        strategy = room_data.get("redeal_strategy", "conservative")
+        
+        # Simulate thinking time
+        await asyncio.sleep(random.uniform(1.0, 2.5))
+        
+        # Make decision based on strategy
+        if strategy == "aggressive":
+            choice = "accept" if random.random() < 0.8 else "decline"
+        elif strategy == "conservative":
+            choice = "decline" if random.random() < 0.7 else "accept"
+        else:
+            choice = random.choice(["accept", "decline"])
+        
+        logger.info(f"Bot {bot_name} chose to {choice} redeal")
+        
+        return {
+            "action": "redeal_decision",
+            "player": bot_name,
+            "choice": choice,
+            "timestamp": time.time(),
+        }
+    
+    async def handle_declaration_turn(self, room_id: str, bot_name: str, game_state: Dict):
+        """Handle declaration for a specific bot"""
+        if not self._validate_bot_action(room_id, bot_name, "declaration"):
+            return
+        
+        # Get valid options from game state
+        valid_options = game_state.get("valid_options", list(range(9)))
+        is_last_player = game_state.get("is_last_player", False)
+        
+        # Bot declaration strategy
+        if is_last_player:
+            # Last player must avoid sum of 8
+            current_sum = sum(game_state.get("declarations", {}).values())
+            valid_options = [opt for opt in valid_options if current_sum + opt != 8]
+        
+        # Choose based on bot personality
+        declaration = self._choose_declaration(bot_name, valid_options)
+        
+        logger.info(f"Bot {bot_name} declares {declaration}")
+        
+        return {
+            "action": "declare",
+            "player": bot_name,
+            "value": declaration,
+            "is_bot": True,
+            "timestamp": time.time(),
+        }
+    
+    async def handle_turn_play(self, room_id: str, bot_name: str, turn_data: Dict):
+        """Handle turn play for a specific bot"""
+        if not self._validate_bot_action(room_id, bot_name, "turn"):
+            return
+        
+        # Simulate thinking
+        await asyncio.sleep(random.uniform(1.5, 3.0))
+        
+        hand = turn_data.get("hand", [])
+        required_count = turn_data.get("required_count")
+        is_first_player = turn_data.get("is_first_player", False)
+        
+        if is_first_player:
+            # First player sets the count
+            count = random.randint(1, min(6, len(hand)))
+            pieces = random.sample(hand, count)
+        else:
+            # Must play required count
+            if len(hand) >= required_count:
+                pieces = random.sample(hand, required_count)
+            else:
+                pieces = hand  # Play all remaining
+        
+        logger.info(f"Bot {bot_name} plays {len(pieces)} pieces")
+        
+        return {
+            "action": "play_pieces",
+            "player": bot_name,
+            "pieces": pieces,
+            "is_bot": True,
+            "timestamp": time.time(),
+        }
+    
+    # ==================== UTILITY METHODS ====================
+    
+    def _validate_bot_action(self, room_id: str, bot_name: str, expected_phase: str) -> bool:
+        """Validate that bot can perform action"""
+        if room_id not in self.active_bots:
+            logger.warning(f"Room {room_id} not registered for bots")
+            return False
+        
+        room_data = self.active_bots[room_id]
+        
+        if bot_name not in room_data["bots"]:
+            logger.warning(f"{bot_name} is not a bot in room {room_id}")
+            return False
+        
+        current_phase = room_data["current_phase"]
+        if current_phase != expected_phase:
+            logger.warning(
+                f"Bot {bot_name} tried to act in wrong phase. "
+                f"Expected: {expected_phase}, Current: {current_phase}"
+            )
+            return False
+        
+        return True
+    
+    async def _delayed_bot_action(self, room_id: str, bot_name: str, action: str, delay: float):
+        """Execute bot action after delay"""
+        await asyncio.sleep(delay)
+        
+        # Revalidate phase after delay
+        if room_id not in self.active_bots:
+            return
+        
+        room_data = self.active_bots[room_id]
+        
+        if action == "declare" and room_data["current_phase"] == "declaration":
+            # Trigger declaration through game logic
+            logger.info(f"Bot {bot_name} executing delayed declaration")
+            # Call your game's declaration handler here
+    
+    async def _cancel_pending_actions(self, room_id: str):
+        """Cancel all pending actions for a room"""
+        if room_id in self.active_bots:
+            timers = self.active_bots[room_id].get("action_timers", {})
+            for timer in timers.values():
+                if timer and not timer.done():
+                    timer.cancel()
+            self.active_bots[room_id]["action_timers"] = {}
+    
+    def _get_redeal_strategy(self) -> str:
+        """Get redeal strategy for bots"""
+        return random.choice(["aggressive", "conservative", "balanced"])
+    
+    def _get_turn_strategy(self) -> str:
+        """Get turn play strategy for bots"""
+        return random.choice(["offensive", "defensive", "random"])
+    
+    def _choose_declaration(self, bot_name: str, valid_options: List[int]) -> int:
+        """Choose declaration value based on bot personality"""
+        if not valid_options:
+            return 0
+        
+        # Simple personality based on name hash
+        personality = hash(bot_name) % 3
+        
+        if personality == 0:  # Conservative
+            return min(valid_options)
+        elif personality == 1:  # Aggressive
+            return max(valid_options)
+        else:  # Balanced
+            return valid_options[len(valid_options) // 2]
+    
+    def cleanup_room(self, room_id: str):
+        """Clean up bot data for a room"""
+        if room_id in self.active_bots:
+            asyncio.create_task(self._cancel_pending_actions(room_id))
+            del self.active_bots[room_id]
+        
+        if room_id in self.pending_actions:
+            del self.pending_actions[room_id]
+        
+        logger.info(f"Cleaned up bot data for room {room_id}")
+
+# Global bot manager instance
+bot_manager = PhaseAwareBotManager()
 
 class BotManager:
     """Centralized bot management system"""
@@ -342,3 +624,4 @@ class GameBotHandler:
                 indices.append(idx)
                 hand_copy[idx] = None  # Mark as used
         return indices
+    
