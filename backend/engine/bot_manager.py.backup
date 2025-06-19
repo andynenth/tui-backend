@@ -1,6 +1,5 @@
 # backend/engine/bot_manager.py
 
-from backend.engine.player import Player
 import asyncio
 from typing import Dict, List, Optional
 import logging
