@@ -15,16 +15,16 @@ import { ScoringPhase } from "./phases/ScoringPhase.js";
 export class GamePhaseManager extends EventEmitter {
   constructor(stateManager, socketManager, uiRenderer) {
     super();
-    
+
     this.stateManager = stateManager;
     this.socketManager = socketManager;
     this.uiRenderer = uiRenderer;
-    
+
     this.currentPhase = null;
     this.phases = {};
-    
+
     this.initializePhases();
-    
+
     console.log("GamePhaseManager initialized");
   }
 
@@ -35,12 +35,28 @@ export class GamePhaseManager extends EventEmitter {
     // ✅ Register all phases including RedealPhase
     this.phases = {
       waiting: null, // Simple waiting state
-      redeal: new RedealPhase(this.stateManager, this.socketManager, this.uiRenderer),
-      declaration: new DeclarationPhase(this.stateManager, this.socketManager, this.uiRenderer),
-      turn: new TurnPhase(this.stateManager, this.socketManager, this.uiRenderer),
-      scoring: new ScoringPhase(this.stateManager, this.socketManager, this.uiRenderer),
+      redeal: new RedealPhase(
+        this.stateManager,
+        this.socketManager,
+        this.uiRenderer
+      ),
+      declaration: new DeclarationPhase(
+        this.stateManager,
+        this.socketManager,
+        this.uiRenderer
+      ),
+      turn: new TurnPhase(
+        this.stateManager,
+        this.socketManager,
+        this.uiRenderer
+      ),
+      scoring: new ScoringPhase(
+        this.stateManager,
+        this.socketManager,
+        this.uiRenderer
+      ),
     };
-    
+
     console.log("✅ Initialized phases:", Object.keys(this.phases));
   }
 
@@ -48,34 +64,39 @@ export class GamePhaseManager extends EventEmitter {
    * Transition to a new phase
    */
   async transitionTo(phaseName) {
-    console.log(`🔄 Phase transition requested: ${this.currentPhase?.constructor.name || 'null'} → ${phaseName}`);
-    
+    console.log(
+      `🔄 Phase transition requested: ${
+        this.currentPhase?.constructor.name || "null"
+      } → ${phaseName}`
+    );
+
     // Add debug logging
     if (this.currentPhase) {
-        console.log("Current phase details:", {
-            constructorName: this.currentPhase.constructor.name,
-            phase: this.currentPhase,
-            isRedealPhase: this.currentPhase instanceof RedealPhase
-        });
+      console.log("Current phase details:", {
+        constructorName: this.currentPhase.constructor.name,
+        phase: this.currentPhase,
+        isRedealPhase: this.currentPhase instanceof RedealPhase,
+      });
     }
-    
+
     // Validate phase exists
-    if (phaseName !== 'waiting' && !this.phases[phaseName]) {
+    if (phaseName !== "waiting" && !this.phases[phaseName]) {
       console.error(`❌ Unknown phase: ${phaseName}`);
       return false;
     }
-    
+
     try {
       // Exit current phase
       if (this.currentPhase) {
         console.log(`🚪 Exiting phase: ${this.currentPhase.constructor.name}`);
         await this.currentPhase.exit();
       }
-      
-      const oldPhase = this.currentPhase?.constructor.name || null;
-      
+
+      const oldPhase = this.currentPhase;
+      const oldPhaseName = oldPhase?.name || "waiting";
+
       // Set new phase
-      if (phaseName === 'waiting') {
+      if (phaseName === "waiting") {
         this.currentPhase = null;
         console.log("⏳ Entered waiting state");
       } else {
@@ -83,21 +104,22 @@ export class GamePhaseManager extends EventEmitter {
         console.log(`🚪 Entering phase: ${this.currentPhase.constructor.name}`);
         await this.currentPhase.enter();
       }
-      
-      // Emit phase change event
-      this.emit('phaseChanged', {
-        from: oldPhase,
-        to: this.currentPhase?.constructor.name || 'waiting'
+
+      // Single emission with consistent naming
+      this.emit("phaseChanged", {
+        from: oldPhaseName,
+        to: phaseName,
       });
-      
-      console.log(`✅ Phase transition complete: ${oldPhase} → ${this.currentPhase?.constructor.name || 'waiting'}`);
-      
+
+      console.log(
+        `✅ Phase transition complete: ${oldPhaseName} → ${phaseName}`
+      );
+
       return true;
-      
     } catch (error) {
       console.error(`❌ Phase transition failed:`, error);
       console.error(error.stack);
-      
+
       // Try to recover to waiting state
       this.currentPhase = null;
       return false;
@@ -115,7 +137,10 @@ export class GamePhaseManager extends EventEmitter {
    * Get current phase name
    */
   getCurrentPhaseName() {
-    return this.currentPhase?.constructor.name.replace('Phase', '').toLowerCase() || 'waiting';
+    return (
+      this.currentPhase?.constructor.name.replace("Phase", "").toLowerCase() ||
+      "waiting"
+    );
   }
 
   /**
@@ -146,13 +171,13 @@ export class GamePhaseManager extends EventEmitter {
     if (!this.currentPhase) {
       // Start with appropriate phase based on game state
       const gameState = this.stateManager;
-      
+
       if (gameState.needsRedeal || this.checkForWeakHands()) {
-        await this.transitionTo('redeal');
+        await this.transitionTo("redeal");
       } else if (this.allPlayersDeclaration()) {
-        await this.transitionTo('turn');
+        await this.transitionTo("turn");
       } else {
-        await this.transitionTo('declaration');
+        await this.transitionTo("declaration");
       }
     }
   }
@@ -163,17 +188,17 @@ export class GamePhaseManager extends EventEmitter {
   checkForWeakHands() {
     // Check our own hand
     if (this.stateManager.myHand) {
-      const hasStrongPiece = this.stateManager.myHand.some(card => {
+      const hasStrongPiece = this.stateManager.myHand.some((card) => {
         const match = card.match(/\((\d+)\)/);
         return match && parseInt(match[1]) > 9;
       });
-      
+
       if (!hasStrongPiece) {
         console.log("🔍 Detected weak hand, redeal needed");
         return true;
       }
     }
-    
+
     return false;
   }
 
@@ -183,10 +208,11 @@ export class GamePhaseManager extends EventEmitter {
   allPlayersDeclaration() {
     const declarations = this.stateManager.declarations;
     const players = this.stateManager.players;
-    
-    return players.every(player => 
-      declarations[player.name] !== null && 
-      declarations[player.name] !== undefined
+
+    return players.every(
+      (player) =>
+        declarations[player.name] !== null &&
+        declarations[player.name] !== undefined
     );
   }
 
@@ -195,31 +221,31 @@ export class GamePhaseManager extends EventEmitter {
    */
   async onPhaseComplete(phaseData) {
     console.log("🎯 Phase complete:", phaseData);
-    
+
     const currentPhaseName = this.getCurrentPhaseName();
-    
+
     // Auto-transition to next phase
     switch (currentPhaseName) {
-      case 'redeal':
-        await this.transitionTo('declaration');
+      case "redeal":
+        await this.transitionTo("declaration");
         break;
-      case 'declaration':
-        await this.transitionTo('turn');
+      case "declaration":
+        await this.transitionTo("turn");
         break;
-      case 'turn':
+      case "turn":
         // Check if round is complete
         if (phaseData.roundComplete) {
-          await this.transitionTo('scoring');
+          await this.transitionTo("scoring");
         } else {
           // Stay in turn phase for next turn
         }
         break;
-      case 'scoring':
+      case "scoring":
         // Check if game is complete
         if (phaseData.gameComplete) {
-          this.emit('gameComplete', phaseData);
+          this.emit("gameComplete", phaseData);
         } else {
-          await this.transitionTo('redeal'); // Next round
+          await this.transitionTo("redeal"); // Next round
         }
         break;
     }
@@ -230,7 +256,7 @@ export class GamePhaseManager extends EventEmitter {
    */
   async reset() {
     console.log("🔄 Resetting phase manager");
-    
+
     if (this.currentPhase) {
       try {
         await this.currentPhase.exit();
@@ -238,9 +264,9 @@ export class GamePhaseManager extends EventEmitter {
         console.error("Error exiting phase during reset:", error);
       }
     }
-    
+
     this.currentPhase = null;
-    this.emit('phaseChanged', { from: 'unknown', to: 'waiting' });
+    this.emit("phaseChanged", { from: "unknown", to: "waiting" });
   }
 
   /**
@@ -248,24 +274,24 @@ export class GamePhaseManager extends EventEmitter {
    */
   destroy() {
     console.log("🧹 Destroying GamePhaseManager");
-    
+
     // Exit current phase
     if (this.currentPhase) {
-      this.currentPhase.exit().catch(err => 
-        console.error("Error during phase cleanup:", err)
-      );
+      this.currentPhase
+        .exit()
+        .catch((err) => console.error("Error during phase cleanup:", err));
     }
-    
+
     // Clear all phases
-    Object.values(this.phases).forEach(phase => {
+    Object.values(this.phases).forEach((phase) => {
       if (phase && phase.destroy) {
         phase.destroy();
       }
     });
-    
+
     this.phases = {};
     this.currentPhase = null;
-    
+
     // Clear event listeners
     this.clear();
   }

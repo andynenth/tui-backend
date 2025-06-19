@@ -11,6 +11,7 @@ from backend.shared_instances import shared_room_manager, shared_bot_manager
 from typing import Optional
 import backend.socket_manager
 from ..controllers.RedealController import RedealController
+from backend.engine.game_flow_controller import GameFlowController
 
 print(f"socket_manager id in {__name__}: {id(backend.socket_manager)}")
 
@@ -19,6 +20,11 @@ redeal_controllers = {}
 router = APIRouter()
 room_manager = shared_room_manager
 bot_manager = shared_bot_manager
+game_controllers = {}
+
+def get_game_controller(room_id: str) -> GameFlowController:
+    """Get game controller for room"""
+    return game_controllers.get(room_id)
 
 def get_redeal_controller(room_id: str) -> RedealController:
     """Get or create a RedealController for the specified room"""
@@ -203,65 +209,19 @@ async def assign_slot(
 
 @router.post("/start-game")
 async def start_game(room_id: str = Query(...)):
-    """Start the game in a specific room"""
+    """Start the game with phase management"""
     room = room_manager.get_room(room_id)
     if not room:
         raise HTTPException(status_code=404, detail="Room not found")
     
-    try:
-        result = await room.start_game_safe()
-        
-        if not result["success"]:
-            raise HTTPException(status_code=400, detail="Failed to start game")
-        
-        # Register game with bot manager
-        bot_manager.register_game(room_id, room.game)
-        
-        print(f"🔄 DEBUG: Calling game.prepare_round() for room {room_id}")
-        game_data = room.game.prepare_round()
-        
-        broadcast_data = {
-            "message": "Game started",
-            "round": game_data["round"],
-            "starter": game_data["starter"],
-            "hands": game_data["hands"],
-            "players": [
-                {
-                    "name": p.name,
-                    "score": p.score,
-                    "is_bot": p.is_bot,
-                    "zero_declares_in_a_row": p.zero_declares_in_a_row
-                }
-                for p in room.game.players
-            ],
-            # Include redeal information
-            "weak_players": game_data.get("weak_players", []),
-            "need_redeal": game_data.get("need_redeal", False),
-            "operation_id": result["operation_id"]
-        }
-        
-        await broadcast(room_id, "start_game", broadcast_data)
-        
-        # ✅ เพิ่ม: เริ่ม redeal phase ถ้าจำเป็น
-        if game_data.get("need_redeal"):
-            print(f"🔄 Starting redeal phase for room {room_id}")
-            controller = get_redeal_controller(room_id)
-            await controller.start()
-        
-        # Notify bot manager about round start
-        await bot_manager.handle_game_event(
-            room_id, 
-            "round_started", 
-            {"starter": game_data["starter"]}
-        )
-        
-        return {"ok": True, "operation_id": result["operation_id"]}
-        
-    except ValueError as e:
-        raise HTTPException(status_code=400, detail=str(e))
-    except Exception as e:
-        print(f"❌ Unexpected error in start_game: {str(e)}")
-        raise HTTPException(status_code=500, detail="Internal server error")
+    # Create game flow controller
+    controller = GameFlowController(room_id, room.game)
+    game_controllers[room_id] = controller
+    
+    # Start game through controller
+    asyncio.create_task(controller.start_game())
+    
+    return {"status": "game_starting"}
 
 @router.post("/redeal-decision")
 async def handle_redeal_decision(
@@ -308,6 +268,14 @@ async def exit_room(room_id: str = Query(...), name: str = Query(...)):
         # Notify lobby about occupancy change
         if old_occupancy != new_occupancy:
             await notify_lobby_room_updated(updated_summary)
+    
+    # Clean up game controller if exists
+    if room_id in game_controllers:
+        controller = game_controllers[room_id]
+        if controller and controller.is_active:
+            # Properly end the game before deleting
+            await controller.end_game(error=True)
+        del game_controllers[room_id]
         
     return {"ok": True}
 
