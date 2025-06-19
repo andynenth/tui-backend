@@ -10,6 +10,7 @@ import { GamePhaseManager } from "../game/GamePhaseManager.js";
 import { GameEventHandler } from "../game/handlers/GameEventHandler.js";
 import { UserInputHandler } from "../game/handlers/UserInputHandler.js";
 import { GameUIRenderer } from "./game/GameUIRenderer.js";
+import { installPhaseValidator } from "../game/handlers/PhaseAwareEventHandler.js";
 
 /**
  * GameScene - Clean implementation using only new architecture
@@ -72,6 +73,14 @@ export class GameScene extends Container {
         this.socketManager
       );
       console.log("✅ GameEventHandler initialized");
+
+      // 5.5 Install phase validator (ADD THIS)
+      this.phaseValidator = installPhaseValidator(
+        this.eventHandler,
+        this.phaseManager,
+        this.stateManager
+      );
+      console.log("✅ Phase validator installed");
 
       // 6. Create input handler
       // NOT USING RN

@@ -224,3 +224,20 @@ class RedealController:
             "decisions": self.redeal_decisions,
             "pending": len(self.weak_hand_players) - self.current_player_index - 1
         }
+        
+    async def handle_redeal_decision(self, player: str, choice: str) -> bool:
+        """Handle redeal decision with phase validation"""
+        
+        # Validate phase first
+        from backend.api.routes.routes import get_game_controller
+        controller = get_game_controller(self.room_id)
+        
+        if controller:
+            validation = controller.phase_manager.validate_action("redeal_decision", {
+                "player": player,
+                "choice": choice
+            })
+            
+            if not validation["valid"]:
+                print(f"❌ Redeal decision rejected: {validation['error']}")
+                return False

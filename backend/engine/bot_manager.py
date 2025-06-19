@@ -7,6 +7,7 @@ import engine.ai as ai
 import random
 import time
 import logging
+from backend.engine.game_flow_controller import get_game_controller
 
 logger = logging.getLogger(__name__)
 
@@ -38,23 +39,24 @@ class PhaseAwareBotManager:
         logger.info(f"Registered {len(bot_players)} bots for room {room_id}")
     
     async def handle_phase_change(self, room_id: str, new_phase: str, phase_data: Dict = None):
-        """Handle phase transition - main entry point for bot actions"""
-        if room_id not in self.active_bots:
+        """Handle phase transitions for bot behavior"""
+        if room_id not in self.bot_rooms:
             return
         
-        # Cancel any pending actions from previous phase
-        await self._cancel_pending_actions(room_id)
+        logger.info(f"Bots in room {room_id} notified of phase: {new_phase}")
         
-        # Update phase
-        self.active_bots[room_id]["current_phase"] = new_phase
-        self.active_bots[room_id]["phase_data"] = phase_data or {}
+        # Cancel any pending bot actions
+        if room_id in self.pending_actions:
+            for task in self.pending_actions[room_id]:
+                task.cancel()
+            self.pending_actions[room_id].clear()
         
-        logger.info(f"Bots in room {room_id}: Phase changed to {new_phase}")
-        
-        # Execute phase-specific handler
-        handler = self.phase_handlers.get(new_phase)
-        if handler:
-            await handler(room_id, phase_data)
+        # Schedule phase-appropriate bot actions
+        if new_phase == "declaration":
+            await self._schedule_bot_declarations(room_id, phase_data)
+        elif new_phase == "turn":
+            await self._schedule_bot_turns(room_id, phase_data)
+        # Don't schedule anything for redeal phase - wait for prompts
     
     # ==================== PHASE HANDLERS ====================
     
@@ -204,27 +206,19 @@ class PhaseAwareBotManager:
     
     # ==================== UTILITY METHODS ====================
     
-    def _validate_bot_action(self, room_id: str, bot_name: str, expected_phase: str) -> bool:
-        """Validate that bot can perform action"""
-        if room_id not in self.active_bots:
-            logger.warning(f"Room {room_id} not registered for bots")
-            return False
+    async def validate_bot_action(self, room_id: str, bot_name: str, action: str) -> bool:
+        """Validate if bot can perform action in current phase"""
+        # Import inside function to avoid circular import
+        from backend.engine.game_flow_controller import get_game_controller
+        controller = get_game_controller(room_id)
         
-        room_data = self.active_bots[room_id]
-        
-        if bot_name not in room_data["bots"]:
-            logger.warning(f"{bot_name} is not a bot in room {room_id}")
-            return False
-        
-        current_phase = room_data["current_phase"]
-        if current_phase != expected_phase:
-            logger.warning(
-                f"Bot {bot_name} tried to act in wrong phase. "
-                f"Expected: {expected_phase}, Current: {current_phase}"
-            )
-            return False
-        
-        return True
+        if controller:
+            validation = controller.phase_manager.validate_action(action, {
+                "player": bot_name,
+                "is_bot": True
+            })
+            return validation["valid"]
+        return False
     
     async def _delayed_bot_action(self, room_id: str, bot_name: str, action: str, delay: float):
         """Execute bot action after delay"""

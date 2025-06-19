@@ -4,6 +4,7 @@ from fastapi import WebSocket, WebSocketDisconnect, APIRouter
 from backend.socket_manager import register, unregister, broadcast
 from backend.shared_instances import shared_room_manager
 import asyncio
+from backend.engine.game_flow_controller import handle_websocket_message
 
 import backend.socket_manager
 print(f"socket_manager id in {__name__}: {id(backend.socket_manager)}")
@@ -97,6 +98,38 @@ async def websocket_endpoint(websocket: WebSocket, room_id: str):
                         await registered_ws.send_json({
                             "event": "error",
                             "data": {"message": "Failed to process redeal decision"}
+                        })
+                
+                # Phase-validated game actions
+                elif event_name in ["declare", "play_pieces", "pass_turn"]:
+                    player_name = event_data.get("player_name")
+                    
+                    # Get game controller
+                    from backend.api.routes.routes import get_game_controller
+                    controller = get_game_controller(room_id)
+                    
+                    if controller:
+                        # Route through phase-aware controller
+                        result = await handle_websocket_message(
+                            room_id,
+                            player_name,
+                            {"action": event_name, "data": event_data}
+                        )
+                        
+                        if result.get("error"):
+                            await registered_ws.send_json({
+                                "event": "error",
+                                "data": {
+                                    "message": result["error"],
+                                    "current_phase": result.get("current_phase"),
+                                    "allowed_actions": result.get("allowed_actions", [])
+                                }
+                            })
+                    else:
+                        # No active game controller
+                        await registered_ws.send_json({
+                            "event": "error",
+                            "data": {"message": "No active game"}
                         })
                         
     except WebSocketDisconnect:
