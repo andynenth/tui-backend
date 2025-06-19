@@ -597,17 +597,12 @@ export class RedealPhase extends BasePhase {
   }
 
   /**
-   * Send redeal request to server
-   * @private
+   * Hide any waiting messages
+   * Public wrapper for _clearWaitingMessages
    */
-  //   async _sendRedealRequest() {
-  //     const choice = "accept"; // or "decline"
-  //     const url = `/api/redeal-decision?room_id=${this.stateManager.roomId}&player_name=${this.stateManager.playerName}&choice=${choice}`;
-
-  //     const response = await fetch(url, { method: "POST" });
-  //     const result = await response.json();
-  //     // ไม่ต้อง handle response เพราะ backend จะส่ง event กลับมา
-  //   }
+  hideWaitingMessage() {
+    this._clearWaitingMessages();
+  }
 
   /**
    * Reset redeal state for recheck

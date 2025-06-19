@@ -57,7 +57,7 @@ class Game:
         # self._deal_weak_hand([0], limit=1)
         
         # Multiple players weak hand with limit:
-        self._deal_weak_hand([0, 2], limit=1)  # Players 0 and 2 get weak hands, max 1 redeal
+        self._deal_weak_hand([0, 2], limit=2)  # Players 0 and 2 get weak hands, max 1 redeal
         
         # No limit (always deal weak hands - careful, can cause infinite loops!):
         # self._deal_weak_hand([0, 2])
