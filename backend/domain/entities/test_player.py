@@ -1,7 +1,7 @@
 # domain/entities/test_player.py
 
 """Test for Player entity"""
-from player import Player
+from .player import Player
 
 
 def test_player_creation():
