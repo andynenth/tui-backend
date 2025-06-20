@@ -1,3 +1,5 @@
+# scripts/check_architecture.py
+
 #!/usr/bin/env python3
 """Check architectural boundaries are respected"""
 
