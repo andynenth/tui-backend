@@ -1,3 +1,5 @@
+# backend/domain.entities/game.py
+
 """
 Game Entity - Aggregate Root for Liap Tui Game
 This file should have ZERO external dependencies!
