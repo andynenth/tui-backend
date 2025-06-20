@@ -1,3 +1,5 @@
+# backend/domain/entities/player.py
+
 """
 Player Entity - Core domain object
 This file should have ZERO external dependencies!
