@@ -1,19 +1,27 @@
-# AI_CONTEXT.md - Liap Tui Project Index
+# AI_CONTEXT.md - Project Overview & Index
 
-## ⚠️ READ THIS FIRST
-This project has basic game components but needs architecture design for multiplayer functionality. We're not fixing bugs - we're designing how to build the multiplayer system.
+## ⚠️ Start Here Instead
+For daily work → **Read AI_WORKING_DOC.md**  
+This file is just the overview and historical record.
+
+## Project Status
+- ✅ **Game is playable** - All features work end-to-end
+- 🔧 **Adding structure** - State machine for phase management
 
 ## Project Overview
-Multiplayer board game implementation using FastAPI (backend) and PixiJS (frontend).
-Target: 2-3 concurrent games (MVP), scaling to 5-10.
+**Working** multiplayer board game using FastAPI (backend) and PixiJS (frontend).
+- Core gameplay complete: rooms, turns, scoring, bots
+- Real-time updates via WebSocket
+- Target: 2-3 concurrent games (MVP), scaling to 5-10
+- **Current Focus**: Formalizing architecture for stability
 
 **Current Status: Architecture Design Phase** - Planning implementation, not fixing existing code.
 
 ## 🎯 Current Task
-**We are DESIGNING the state machine architecture**, not debugging existing code.
-- The game engine has basic components (rules.py, ai.py)
-- Now designing how to integrate everything with proper phase management
-- Next: Create state machine design, then WebSocket protocol
+**Organizing existing code with formal state management**
+- The game WORKS - rooms, gameplay, bots all function
+- Now adding state machine to prevent phase violations
+- See **AI_WORKING_DOC.md** for detailed plan and daily tasks
 
 ## Document Map
 
@@ -23,6 +31,10 @@ Target: 2-3 concurrent games (MVP), scaling to 5-10.
 - **`Game Flow - Declaration Phase`** - Declaration order, restrictions, validation
 - **`Game Flow - Turn Phase`** - Turn sequence, play requirements, winner determination
 - **`Game Flow - Scoring Phase`** - Score calculation, multipliers, win conditions
+
+### 🔧 Development Planning
+- **`AI_WORKING_DOC.md`** - Current sprint plan, daily workflow, implementation guide
+- **`AI_CONTEXT.md`** - This file - project overview and index
 
 ### 🔧 Implementation Files
 **Existing Code** (in project - may be restructured):
@@ -62,21 +74,22 @@ These are the challenges our architecture is designed to prevent (not current bu
 
 ## Implementation Status
 
-### ✅ What Exists
-- Basic game engine with rules and AI
-- README and project setup
-- Game flow diagrams and rules documentation
+### ✅ What's Working
+- Complete game engine (rules, AI, scoring)
+- Room system (create, join, host management)
+- WebSocket real-time updates
+- Bot players with AI
+- Full game flow from lobby to scoring
+- Frontend with PixiJS scenes
 
-### 🎨 What We're Designing
-- **State Machine Architecture** - How phases transition with sub-states
-- **WebSocket Protocol** - Message format for full state broadcasts
-- **Integration Plan** - How existing components work together
+### 🔧 What Needs Organization
+- **Phase Management** - Currently spread across multiple files
+- **WebSocket Protocol** - Messages work but need standardization
+- **Bot Timing** - Bots can act during wrong phases
+- **Error Handling** - Needs consistent patterns
 
-### 📅 Implementation Roadmap (After Design Complete)
-1. Core infrastructure (Week 1-2) - State management, phase transitions, timers
-2. Game logic integration (Week 3-4) - Connect existing engine to new architecture
-3. Resilience & monitoring (Week 5) - Reconnection, logging, monitoring
-4. Testing & polish (Week 6) - Automated tests, UI polish
+### 📅 Current Sprint (See AI_WORKING_DOC.md)
+Week 1-2: Create formal state machine and protocol
 
 ## Key Principles
 - **Server Authority**: Server state is always correct
