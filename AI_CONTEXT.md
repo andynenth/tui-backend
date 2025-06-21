@@ -1,115 +1,106 @@
-# # AI_CONTEXT.md - Liap Tui Game Architecture
-# Overview
-This document captures all architectural decisions and planning for the Liap Tui multiplayer board game implementation using FastAPI (backend) and PixiJS (frontend).
-# Core Problems Identified
-**1** **Phase Violations**: Bots declaring during redeal phase
-**2** **Race Conditions**: Multiple actions happening simultaneously
-**3** **State Synchronization**: Keeping all clients in sync
-**4** **Complex Game Flow**: Multiple phases with specific rules and restrictions
+# AI_CONTEXT.md - Liap Tui Project Index
 
-⠀Technology Stack (from README.md)
-* **Backend**: FastAPI (Python 3.11+) with built-in WebSocket support
-* **Frontend**: PixiJS 8.x with @pixi/ui components
-* **Build**: ESBuild for bundling
-* **Language**: Pure JavaScript frontend (no TypeScript)
-* **Deployment**: Single container Docker deployment
+## ⚠️ READ THIS FIRST
+This project has basic game components but needs architecture design for multiplayer functionality. We're not fixing bugs - we're designing how to build the multiplayer system.
 
-⠀Architectural Decisions
-### 1. Phase Transitions
-**Choice: Option B - Transition periods with locked states**
-* Transition periods act as "airlocks" between phases
-* No actions accepted during transitions (450-800ms total)
-* Prevents race conditions at phase boundaries
-* Flow: Current Phase → [LOCK] → Transition Period → [UNLOCK] → Next Phase
+## Project Overview
+Multiplayer board game implementation using FastAPI (backend) and PixiJS (frontend).
+Target: 2-3 concurrent games (MVP), scaling to 5-10.
 
-⠀2. Bot Timing Strategy
-**Choice: Option A - Fixed delays per action type**
-* Quick Actions: 500-1000ms (acknowledging changes)
-* Medium Actions: 1500-3000ms (redeal decisions, declarations)
-* Complex Actions: 2000-4000ms (analyzing plays)
-* Strategic Actions: 3000-5000ms (critical moments)
-* Includes variance to prevent mechanical feel
+**Current Status: Architecture Design Phase** - Planning implementation, not fixing existing code.
 
-⠀3. Conflict Resolution
-**Choice: Option C - Phase-specific rules**
-* Each phase has tailored conflict resolution
-* Key clarifications from user:
-  * Multiple redeal requests: Process by player order (not first-come)
-  * ALL weak players must decide (phase doesn't end on first accept)
-  * Two separate timers: Decision timer (10s) and Disconnection timer (30s)
-  * Invalid plays auto-select random valid pieces (not auto-lose)
-  * Turn winner ambiguity: By game rules (valid > type > points > player order)
+## 🎯 Current Task
+**We are DESIGNING the state machine architecture**, not debugging existing code.
+- The game engine has basic components (rules.py, ai.py)
+- Now designing how to integrate everything with proper phase management
+- Next: Create state machine design, then WebSocket protocol
 
-⠀4. State Synchronization
-**Choice: Option B - Delta/patch updates**
-* Send only changes, not full state
-* Operations: SET, ADD, REMOVE, UPDATE, PATCH
-* Sequence tracking for ordering and recovery
-* Full state only on: join/reconnect, major transitions, errors
-* Target: <500 bytes per delta, <5KB full state
+## Document Map
 
-⠀5. Error Handling
-**Choice: Option A - Fail fast and notify**
-* Immediate error detection and processing stop
-* Clear notifications to affected parties
-* No automatic recovery that could cause inconsistencies
-* Four severity levels: Information, Warning, Error, Critical
-* Complete logging for debugging
+### 📋 Game Design (in Project Knowledge)
+- **`Rules`** - Complete game rules, piece values, play types, scoring formulas
+- **`Game Flow - Preparation Phase`** - Deal, weak hands, redeal logic, starter determination
+- **`Game Flow - Declaration Phase`** - Declaration order, restrictions, validation
+- **`Game Flow - Turn Phase`** - Turn sequence, play requirements, winner determination
+- **`Game Flow - Scoring Phase`** - Score calculation, multipliers, win conditions
 
-⠀Project Requirements
-### Scale & Performance
-* **Concurrent Games**: 5-10 games (small scale launch)
-* **Acceptable Latency**: 200-1000ms for actions
-* **Disconnection Handling**: 30-second reconnection window
-* **Bot Replacement**: After timeout, replace with AI
+### 🔧 Implementation Files
+**Existing Code** (in project - may be restructured):
+- **`README.md`** - Tech stack, installation, project structure
+- **`backend/engine/rules.py`** - Game rule implementations (exists)
+- **`backend/engine/ai.py`** - Bot AI logic (exists)
+- **Other backend files** - Various game engine components
 
-⠀Complexity & Extensibility
-* **Architecture Focus**: Fat Server / Thin Client
-* **Rules**: Data-driven where possible
-* **Testing**: Extensive automated testing
-* **New Features**: Rare - focus on performance and stability
+**Note**: File paths may change during restructuring. When working with code, provide current file versions.
 
-⠀Timer Specifications
-| **Timer Type** | **Duration** | **Timeout Action** |
-|:-:|:-:|:-:|
-| **Decision Timers** |  |  |
-| Redeal Decision | 10 seconds | Auto-decline |
-| Declaration | 15 seconds | Random valid choice |
-| Turn Play | 15 seconds | Random valid pieces |
-| **Disconnection Timer** |  |  |
-| All Phases | 30 seconds | Replace with bot |
-| **Special Timers** |  |  |
-| Game Abandoned | 30 seconds | Archive game |
-# Phase Transition Durations
-* PREPARATION → DECLARATION: ~300ms
-* DECLARATION → TURN: ~400ms
-* TURN → SCORING: ~500ms
-* SCORING → PREPARATION: ~600ms
-* PREPARATION → REDEAL: ~200ms
-* REDEAL → PREPARATION: ~400ms
+## Current Architecture Decisions
 
-⠀Important Game Rule Clarifications
-**1** **Redeal Phase**:
-	* Every weak player must decide (or timeout)
-	* Phase doesn't end on first accept
-	* Process decisions in player order
-**2** **Declaration Phase**:
-	* Last player cannot make total = 8
-	* If system error allows it: alert devs, force reselection
-**3** **Turn Phase**:
-	* Invalid plays get random valid pieces (not auto-lose)
-	* Piece count mismatch: reject and retry
-	* Turn winner by: valid > type > points > player order
+### Design Challenges We're Addressing
+These are the challenges our architecture is designed to prevent (not current bugs):
+1. **Phase Violations**: Preventing bots from acting during wrong phases
+2. **Race Conditions**: Handling simultaneous actions properly
+3. **State Synchronization**: Keeping all clients in sync
+4. **Complex Game Flow**: Managing multiple phases with specific rules
 
-⠀Next Steps
-1 Implementation priorities (to be discussed)
-2 Specific edge case handling
-3 Testing strategy
-4 Deployment planning
+### 1. State Synchronization
+**Decision: Full State Broadcasts** (changed from delta/patch)
+- Send complete game state on every update
+- Version numbers + SHA256 checksums for validation
+- Automatic desync recovery on next broadcast
 
-⠀Key Principles
-* **Server Authority**: Server state is always correct
-* **Phase Integrity**: No actions cross phase boundaries
-* **Fail Safe**: When in doubt, maintain game flow with safe defaults
-* **Clear Communication**: Every error has user-friendly messaging
-* **Performance First**: Optimize for 5-10 concurrent games initially
+### 2. Phase Transitions
+**Decision: Locked transition periods**
+- Flow: PHASE_ACTIVE → PHASE_ENDING → TRANSITION_LOCKED → PHASE_ACTIVE
+- Queue messages during transitions, validate after
+- ~300-600ms transition durations
+
+### 3. Edge Case Handling
+- **In-flight messages**: Queue, then validate for new phase
+- **Mid-transition reconnects**: Full state sync + 2-3s grace period
+- **Bot actions**: Pause immediately, re-evaluate in new phase
+- **Timer conflicts**: Disconnection timer overrides decision timer
+
+## Implementation Status
+
+### ✅ What Exists
+- Basic game engine with rules and AI
+- README and project setup
+- Game flow diagrams and rules documentation
+
+### 🎨 What We're Designing
+- **State Machine Architecture** - How phases transition with sub-states
+- **WebSocket Protocol** - Message format for full state broadcasts
+- **Integration Plan** - How existing components work together
+
+### 📅 Implementation Roadmap (After Design Complete)
+1. Core infrastructure (Week 1-2) - State management, phase transitions, timers
+2. Game logic integration (Week 3-4) - Connect existing engine to new architecture
+3. Resilience & monitoring (Week 5) - Reconnection, logging, monitoring
+4. Testing & polish (Week 6) - Automated tests, UI polish
+
+## Key Principles
+- **Server Authority**: Server state is always correct
+- **Fail Safe**: Maintain game flow with safe defaults
+- **Reference Source**: Game flow diagrams and Rules file are authoritative
+
+## When to Read What
+
+### For Game Mechanics
+→ Read `Rules` and relevant `Game Flow - *` files
+
+### For Technical Implementation
+→ Check actual code files in `backend/` and `frontend/`
+
+### For Architecture Decisions
+→ This file contains the key decisions (full context in our chat history)
+
+## Testing Strategy
+- Unit tests for phase logic
+- Integration tests for transitions
+- Bot vs bot stress testing
+- Network simulation with tc netem
+
+## Next Steps
+1. Design state machine based on game flow diagrams
+2. Design WebSocket protocol for full state broadcasts
+3. Implement phase transition engine with sub-states
