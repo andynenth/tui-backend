@@ -1,8 +1,8 @@
-# backend/engine/state_machine/game_state_machine.py
+# backend/engin/state_machine/game_state_machine.py
 
 import asyncio
 import logging
-from typing import Optional, Dict, Any, Set
+from typing import Optional, Dict, Any, Set, List
 from .core import GamePhase, ActionType, GameAction
 from .action_queue import ActionQueue
 from .states.declaration_state import DeclarationState
@@ -14,6 +14,7 @@ class GameStateMachine:
         self.action_queue = ActionQueue()
         self.transition_lock = asyncio.Lock()
         self.logger = logging.getLogger("game.state_machine")
+        self._processing_task = None
         
         # Initialize states (start with just declaration for testing)
         self.states = {
@@ -22,26 +23,54 @@ class GameStateMachine:
         
     async def start(self, initial_phase: GamePhase = GamePhase.DECLARATION) -> None:
         await self.transition_to(initial_phase)
-        asyncio.create_task(self._process_action_queue())
+        # Start background task for processing actions
+        self._processing_task = asyncio.create_task(self._process_action_queue())
+    
+    async def stop(self) -> None:
+        """Stop the state machine and clean up"""
+        if self._processing_task:
+            self._processing_task.cancel()
+            try:
+                await self._processing_task
+            except asyncio.CancelledError:
+                pass
     
     async def handle_action(self, action: GameAction) -> None:
         await self.action_queue.add_action(action)
+        # Give the processing loop a chance to run
+        await asyncio.sleep(0.01)
+    
+    async def process_pending_actions(self) -> None:
+        """
+        FIX: Synchronously process all pending actions.
+        Useful for testing to ensure all actions are processed.
+        """
+        actions = await self.action_queue.process_actions()
+        for action in actions:
+            try:
+                result = await self._handle_single_action(action)
+                if result:
+                    await self._broadcast_action_result(action, result)
+                
+                await self._check_auto_transition()
+                
+            except Exception as e:
+                self.logger.error(f"Error processing action {action}: {e}")
     
     async def _process_action_queue(self) -> None:
+        """Background task for processing actions"""
         while True:
-            async for action in self.action_queue.process_actions():
-                try:
-                    result = await self._handle_single_action(action)
-                    if result:
-                        await self._broadcast_action_result(action, result)
-                    
-                    await self._check_auto_transition()
-                    
-                except Exception as e:
-                    self.logger.error(f"Error processing action {action}: {e}")
-            
-            # Wait a bit before checking for more actions
-            await asyncio.sleep(0.1)
+            try:
+                if self.action_queue.has_pending_actions():
+                    await self.process_pending_actions()
+                
+                # Wait a bit before checking again
+                await asyncio.sleep(0.1)
+                
+            except asyncio.CancelledError:
+                break
+            except Exception as e:
+                self.logger.error(f"Error in action processing loop: {e}")
     
     async def _handle_single_action(self, action: GameAction) -> Optional[Dict[str, Any]]:
         if self.current_state is None:

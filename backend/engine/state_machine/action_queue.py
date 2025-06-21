@@ -2,7 +2,7 @@
 
 import asyncio
 import logging
-from typing import AsyncGenerator
+from typing import AsyncGenerator, List
 from .core import GameAction
 
 class ActionQueue:
@@ -19,14 +19,26 @@ class ActionQueue:
         await self.queue.put(action)
         self.logger.debug(f"Queued action: {action.action_type.value} from {action.player_name}")
         
-    async def process_actions(self) -> AsyncGenerator[GameAction, None]:
+    async def process_actions(self) -> List[GameAction]:
+        """
+        FIX: Process all queued actions and return them as a list.
+        The previous async generator approach had timing issues.
+        """
         async with self.processing_lock:
             self.processing = True
+            processed_actions = []
             try:
+                # Process all currently queued actions
                 while not self.queue.empty():
                     action = await self.queue.get()
+                    processed_actions.append(action)
                     self.logger.debug(f"Processing action: {action.action_type.value}")
-                    yield action
                     self.queue.task_done()
             finally:
                 self.processing = False
+            
+            return processed_actions
+    
+    def has_pending_actions(self) -> bool:
+        """Check if there are actions waiting to be processed"""
+        return not self.queue.empty()

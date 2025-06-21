@@ -34,22 +34,27 @@ class DeclarationState(GameState):
         })
     
     async def _cleanup_phase(self) -> None:
+        # FIX: Copy declarations to game object during cleanup
         game = self.state_machine.game
         game.player_declarations = self.phase_data['declarations'].copy()
+        self.logger.info(f"Copied declarations to game: {game.player_declarations}")
     
     async def _validate_action(self, action: GameAction) -> bool:
         if action.action_type == ActionType.DECLARE:
             payload = action.payload
             
             if 'value' not in payload:
+                self.logger.warning(f"Declaration missing 'value': {payload}")
                 return False
             
             declared_value = payload['value']
             if not isinstance(declared_value, int) or not (0 <= declared_value <= 8):
+                self.logger.warning(f"Invalid declaration value: {declared_value}")
                 return False
             
             current_player = self._get_current_declarer()
             if action.player_name != current_player:
+                self.logger.warning(f"Wrong player turn: {action.player_name}, expected: {current_player}")
                 return False
             
             return await self._check_declaration_restrictions(action.player_name, declared_value)
@@ -66,9 +71,15 @@ class DeclarationState(GameState):
         player_name = action.player_name
         declared_value = action.payload['value']
         
+        # Record declaration in phase data
         self.phase_data['declarations'][player_name] = declared_value
         self.phase_data['declaration_total'] += declared_value
         self.phase_data['current_declarer_index'] += 1
+        
+        # FIX: Also immediately update game object for real-time access
+        self.state_machine.game.player_declarations[player_name] = declared_value
+        
+        self.logger.info(f"Player {player_name} declared {declared_value}")
         
         return {
             'status': 'declaration_recorded',
@@ -87,6 +98,7 @@ class DeclarationState(GameState):
     
     async def _check_declaration_restrictions(self, player_name: str, value: int) -> bool:
         # Simplified validation - you can add your game-specific rules here
+        # For example, check zero streak, last player total != 8, etc.
         return True
     
     async def check_transition_conditions(self) -> Optional[GamePhase]:
