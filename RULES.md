@@ -37,6 +37,15 @@ A player wins by reaching **50 points**, or having the **highest score after 20 
         - The player who requested the redeal becomes the **starter of the round**.
         - Scores for this round are **doubled** (a 2x multiplier applies).
         - If a player still has a **weak hand** after this redeal, they may request another redeal. For each subsequent redeal request, the score multiplier increases by **1** (e.g., a 3x multiplier for the second redeal, 4x for the third, and so on).
+    ### Redeal and Play Order
+        - When a player accepts redeal, they become the round starter
+        - This changes the play order for the entire round
+        - Example: Original A,B,C,D → B accepts redeal → New order B,C,D,A
+        - The new order affects:
+        - Subsequent weak hand asking order
+        - Declaration order
+        - Turn order
+        - All game mechanics for that round
 
 ### 2. Starter Selection
 - **First Round:** The player holding the **GENERAL_RED** piece starts the round.
