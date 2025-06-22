@@ -10,6 +10,7 @@ from .action_queue import ActionQueue
 from .base_state import GameState
 from .states.declaration_state import DeclarationState
 from .states.preparation_state import PreparationState
+from .states.turn_state import TurnState
 
 logger = logging.getLogger(__name__)
 
@@ -30,10 +31,10 @@ class GameStateMachine:
         
         # Initialize all available states
         self.states: Dict[GamePhase, GameState] = {
-            GamePhase.PREPARATION: PreparationState(self),  # NEW
-            GamePhase.DECLARATION: DeclarationState(self),  # EXISTING
-            # GamePhase.TURN: TurnState(self),  # TODO
-            # GamePhase.SCORING: ScoringState(self)  # TODO
+            GamePhase.PREPARATION: PreparationState(self),
+            GamePhase.DECLARATION: DeclarationState(self),
+            GamePhase.TURN: TurnState(self),  # ✅ NEW - Added Turn State
+            # GamePhase.SCORING: ScoringState(self)  # TODO - Next task
         }
         
         # Transition validation map
@@ -158,4 +159,4 @@ class GameStateMachine:
         """Get current phase-specific data"""
         if not self.current_state:
             return {}
-        return self.current_state.get_phase_data()
+        return self.current_state.phase_data.copy()
