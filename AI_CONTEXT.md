@@ -8,6 +8,171 @@
 - **Current Sprint**: Week 2 - Complete all 4 phase states
 - **Philosophy**: Prevention by design - make bugs impossible
 
+# 📊 Implementation History & Lessons
+
+## ✅ Task 2.1: Preparation State - COMPLETED
+**Time Taken**: ~3 hours  
+**Files Created**:
+- backend/engine/state_machine/states/preparation_state.py
+- backend/tests/test_preparation_state.py (14 tests)
+- backend/tests/test_weak_hand_scenarios.py (6 tests)
+
+**Key Implementations**:
+- ✅ Initial deal of 8 pieces per player
+- ✅ Weak hand detection (no piece > 9 points)
+- ✅ Redeal request/response handling
+- ✅ Play order changes when starter changes
+- ✅ No redeal limit (can continue indefinitely)
+- ✅ Disconnection handling (auto-decline)
+- ✅ Comprehensive test coverage (20 tests total)
+
+**Key Learning**: When a player accepts redeal, they become starter AND the play order rotates (A,B,C,D → B,C,D,A if B accepts).
+
+## ✅ Task 2.2: Turn State - COMPLETED WITH BUG FIX
+**Time Taken**: ~120 minutes (including bug investigation and fix)  
+**Files Created**:
+- backend/engine/state_machine/states/turn_state.py
+- backend/tests/test_turn_state.py (25 tests)
+- backend/run_turn_tests_fixed.py (integration test runner)
+- backend/test_fix.py (bug fix verification)
+- backend/investigate_bug.py (debugging script)
+- Updated backend/engine/state_machine/game_state_machine.py
+- Updated backend/engine/state_machine/states/__init__.py
+
+**Key Implementations**:
+- ✅ Turn sequence management (starter sets piece count, others follow)
+- ✅ Piece count validation (1-6 for starter, must match for others)
+- ✅ Winner determination by play value and play order
+- ✅ Play type filtering (only matching starter's type can win)
+- ✅ Pile distribution to winner
+- ✅ Next turn starter assignment (winner starts next)
+- ✅ Turn completion and hand management
+- ✅ Disconnection/timeout handling with auto-play
+- ✅ State machine integration
+- ✅ Comprehensive test coverage (25 tests)
+
+**Critical Bug Found & Fixed**:
+- **Issue**: Turn completion automatically started next turn, erasing results
+- **Root Cause**: Responsibility boundary violation - Turn State doing too much
+- **Fix**: Removed automatic turn restart, preserved results, added manual control
+- **Lesson**: Single Responsibility Principle prevents complex bugs
+
+**Key Learning**: Winner determination follows priority: play_type match → play_value (descending) → play_order (ascending for ties). Turn State should manage one turn, not turn sequences.
+
+**Proven Testing Approach**:
+- Create debug scripts for investigation (investigate_bug.py)
+- Build fix verification tests (test_fix.py)  
+- Use comprehensive test coverage (25 tests caught the bug)
+- Test-driven development prevents integration issues
+
+## 🧪 Proven Testing Patterns
+**Working Test Commands** (established and verified):
+```bash
+# Quick integration test
+python backend/run_tests.py
+
+# All preparation tests (20 tests)
+./backend/run_preparation_tests.sh
+
+# Turn state tests (25 tests)
+python backend/run_turn_tests_fixed.py
+python backend/test_fix.py  # Bug fix verification
+
+# Full test suite
+pytest backend/tests/ -v
+
+# Individual state tests
+pytest backend/tests/test_preparation_state.py -v
+pytest backend/tests/test_weak_hand_scenarios.py -v
+pytest backend/tests/test_turn_state.py -v
+```
+
+**Successful Test Structure Pattern**:
+```python
+class TestStatePattern:
+    @pytest_asyncio.fixture
+    async def state_fixture(self, mock_game):
+        # Setup pattern that works
+        
+    @pytest.mark.asyncio
+    async def test_enter_phase_setup(self, state_fixture):
+        # Test phase initialization
+        
+    @pytest.mark.asyncio
+    async def test_valid_action_processing(self, state_fixture):
+        # Test successful action flow
+        
+    @pytest.mark.asyncio
+    async def test_invalid_action_rejection(self, state_fixture):
+        # Test validation works
+        
+    @pytest.mark.asyncio
+    async def test_transition_conditions(self, state_fixture):
+        # Test when phase should end
+```
+
+**Successful Test Structure Pattern**:
+```python
+class TestStatePattern:
+    @pytest_asyncio.fixture
+    async def state_fixture(self, mock_game):
+        # Setup pattern that works
+        
+    @pytest.mark.asyncio
+    async def test_enter_phase_setup(self, state_fixture):
+        # Test phase initialization
+        
+    @pytest.mark.asyncio
+    async def test_valid_action_processing(self, state_fixture):
+        # Test successful action flow
+        
+    @pytest.mark.asyncio
+    async def test_invalid_action_rejection(self, state_fixture):
+        # Test validation works
+        
+    @pytest.mark.asyncio
+    async def test_transition_conditions(self, state_fixture):
+        # Test when phase should end
+```
+
+## 🏗️ Proven Implementation Patterns
+**State Class Structure** (working template):
+```python
+class [Phase]State(GameState):
+    @property
+    def phase_name(self) -> GamePhase:
+        return GamePhase.[PHASE]
+    
+    @property  
+    def next_phases(self) -> List[GamePhase]:
+        return [GamePhase.[NEXT_PHASE]]
+    
+    def __init__(self, state_machine):
+        super().__init__(state_machine)
+        self.allowed_actions = {ActionType.[RELEVANT_ACTIONS]}
+        # Phase-specific state variables
+    
+    async def _setup_phase(self) -> None:
+        # Initialize phase-specific data
+    
+    async def _cleanup_phase(self) -> None:
+        # Copy results to game object
+    
+    async def _validate_action(self, action: GameAction) -> bool:
+        # Validate action for this phase
+    
+    async def _process_action(self, action: GameAction) -> Dict[str, Any]:
+        # Process valid actions
+    
+    async def check_transition_conditions(self) -> Optional[GamePhase]:
+        # Check if ready to transition
+```
+
+**Development Velocity Tracking**:
+- Task 2.1 (Preparation): 3 hours (first state, learning curve)
+- Task 2.2 (Turn): 2 hours (including bug fix, pattern established)
+- **Estimated Task 2.3 (Scoring)**: 1 hour (pattern proven, simpler logic)
+
 # 📊 Overall Progress Tracking
 - **Week 1**: ✅ COMPLETE - State machine foundation working
 - **Week 2**: 🔧 75% COMPLETE - 3 of 4 states implemented (Prep, Declaration, Turn)
@@ -27,24 +192,32 @@
 - **Responsibility Boundaries**: Turn state bug caught - each state handles one concern only
 - **Play Order Confusion**: Redeal changes tracked properly
 
+# 📁 Files I've Created (Reference for Future Work)
+
+## Core Architecture (Templates to Copy)
+- `backend/engine/state_machine/core.py` - Enums and data classes ✅ REFERENCE
+- `backend/engine/state_machine/base_state.py` - Abstract state interface ✅ TEMPLATE
+- `backend/engine/state_machine/game_state_machine.py` - Central coordinator ✅ INTEGRATION POINT
+
+## Working State Examples (Copy These Patterns)
+- `backend/engine/state_machine/states/preparation_state.py` ✅ COMPLEX STATE TEMPLATE
+- `backend/engine/state_machine/states/turn_state.py` ✅ LATEST WORKING PATTERN
+- `backend/engine/state_machine/states/__init__.py` ✅ REMEMBER TO UPDATE
+
+## Test Patterns That Work
+- `backend/tests/test_turn_state.py` ✅ COMPREHENSIVE TEST TEMPLATE
+- `backend/run_turn_tests_fixed.py` ✅ INTEGRATION TEST PATTERN
+
+## Debug Tools (For Future Bugs)
+- `backend/test_fix.py` ✅ BUG FIX VERIFICATION PATTERN
+- `backend/investigate_bug.py` ✅ DEBUGGING SCRIPT TEMPLATE
+
+## Files I Don't Need to Track
+- Individual test files (follow the pattern)
+- Simple runners (just copy existing ones)
+- Documentation updates (not code reference)
+
 # 📁 File & Directory Map
-## State Machine Core
-- `backend/engine/state_machine/core.py` - Enums, data classes
-- `backend/engine/state_machine/base_state.py` - Abstract state interface
-- `backend/engine/state_machine/game_state_machine.py` - Central coordinator
-- `backend/engine/state_machine/action_queue.py` - Race condition prevention
-
-## Implemented States (Examples)
-- `backend/engine/state_machine/states/preparation_state.py` ✅ COMPLETE
-- `backend/engine/state_machine/states/declaration_state.py` ✅ COMPLETE  
-- `backend/engine/state_machine/states/turn_state.py` ✅ COMPLETE
-
-## Testing
-- `backend/tests/test_*_state.py` - Individual state tests
-- `backend/run_*_tests.py` - Quick test runners
-- `backend/test_fix.py` - Bug fix verification
-
-## Game Design Reference (Project Knowledge)
 - `Rules` - Complete game mechanics, piece values, scoring
 - `Game Flow - *Phase` - Detailed phase requirements and validation
 
