@@ -1,123 +1,161 @@
-# backend/engin/state_machine/game_state_machine.py
+# backend/engine/state_machine/game_state_machine.py
 
 import asyncio
 import logging
-from typing import Optional, Dict, Any, Set, List
+from typing import Dict, Optional, List, Set
+from datetime import datetime
+
 from .core import GamePhase, ActionType, GameAction
 from .action_queue import ActionQueue
+from .base_state import GameState
 from .states.declaration_state import DeclarationState
+from .states.preparation_state import PreparationState
+
+logger = logging.getLogger(__name__)
+
 
 class GameStateMachine:
+    """
+    Central coordinator for game state management.
+    Manages phase transitions and delegates action handling to appropriate states.
+    """
+    
     def __init__(self, game):
         self.game = game
-        self.current_state = None
         self.action_queue = ActionQueue()
-        self.transition_lock = asyncio.Lock()
-        self.logger = logging.getLogger("game.state_machine")
-        self._processing_task = None
+        self.current_state: Optional[GameState] = None
+        self.current_phase: Optional[GamePhase] = None
+        self.is_running = False
+        self._process_task: Optional[asyncio.Task] = None
         
-        # Initialize states (start with just declaration for testing)
-        self.states = {
-            GamePhase.DECLARATION: DeclarationState(self)
+        # Initialize all available states
+        self.states: Dict[GamePhase, GameState] = {
+            GamePhase.PREPARATION: PreparationState(self),  # NEW
+            GamePhase.DECLARATION: DeclarationState(self),  # EXISTING
+            # GamePhase.TURN: TurnState(self),  # TODO
+            # GamePhase.SCORING: ScoringState(self)  # TODO
         }
         
-    async def start(self, initial_phase: GamePhase = GamePhase.DECLARATION) -> None:
-        await self.transition_to(initial_phase)
-        # Start background task for processing actions
-        self._processing_task = asyncio.create_task(self._process_action_queue())
+        # Transition validation map
+        self._valid_transitions = {
+            GamePhase.PREPARATION: {GamePhase.DECLARATION},
+            GamePhase.DECLARATION: {GamePhase.TURN},
+            GamePhase.TURN: {GamePhase.SCORING},
+            GamePhase.SCORING: {GamePhase.PREPARATION}  # Next round
+        }
     
-    async def stop(self) -> None:
-        """Stop the state machine and clean up"""
-        if self._processing_task:
-            self._processing_task.cancel()
+    async def start(self, initial_phase: GamePhase = GamePhase.PREPARATION):
+        """Start the state machine with initial phase"""
+        if self.is_running:
+            logger.warning("State machine already running")
+            return
+        
+        logger.info(f"🚀 Starting state machine in {initial_phase} phase")
+        self.is_running = True
+        
+        # Start processing loop
+        self._process_task = asyncio.create_task(self._process_loop())
+        
+        # Enter initial phase
+        await self._transition_to(initial_phase)
+    
+    async def stop(self):
+        """Stop the state machine"""
+        logger.info("🛑 Stopping state machine")
+        self.is_running = False
+        
+        # Cancel processing task
+        if self._process_task:
+            self._process_task.cancel()
             try:
-                await self._processing_task
+                await self._process_task
             except asyncio.CancelledError:
                 pass
+        
+        # Exit current state
+        if self.current_state:
+            await self.current_state.on_exit()
     
-    async def handle_action(self, action: GameAction) -> None:
+    async def handle_action(self, action: GameAction) -> Dict:
+        """
+        Add action to queue for processing.
+        Returns immediately with acknowledgment.
+        """
+        if not self.is_running:
+            return {"success": False, "error": "State machine not running"}
+        
         await self.action_queue.add_action(action)
-        # Give the processing loop a chance to run
-        await asyncio.sleep(0.01)
+        return {"success": True, "queued": True}
     
-    async def process_pending_actions(self) -> None:
-        """
-        FIX: Synchronously process all pending actions.
-        Useful for testing to ensure all actions are processed.
-        """
+    async def _process_loop(self):
+        """Main processing loop for queued actions"""
+        while self.is_running:
+            try:
+                # Process any pending actions
+                await self.process_pending_actions()
+                
+                # Check for phase transitions
+                if self.current_state:
+                    next_phase = await self.current_state.check_transition_conditions()
+                    if next_phase:
+                        await self._transition_to(next_phase)
+                
+                # Small delay to prevent busy waiting
+                await asyncio.sleep(0.1)
+                
+            except Exception as e:
+                logger.error(f"Error in process loop: {e}", exc_info=True)
+    
+    async def process_pending_actions(self):
+        """Process all actions in queue"""
+        if not self.current_state:
+            return
+        
         actions = await self.action_queue.process_actions()
         for action in actions:
             try:
-                result = await self._handle_single_action(action)
-                if result:
-                    await self._broadcast_action_result(action, result)
-                
-                await self._check_auto_transition()
-                
+                await self.current_state.handle_action(action)
             except Exception as e:
-                self.logger.error(f"Error processing action {action}: {e}")
+                logger.error(f"Error processing action: {e}", exc_info=True)
     
-    async def _process_action_queue(self) -> None:
-        """Background task for processing actions"""
-        while True:
-            try:
-                if self.action_queue.has_pending_actions():
-                    await self.process_pending_actions()
-                
-                # Wait a bit before checking again
-                await asyncio.sleep(0.1)
-                
-            except asyncio.CancelledError:
-                break
-            except Exception as e:
-                self.logger.error(f"Error in action processing loop: {e}")
-    
-    async def _handle_single_action(self, action: GameAction) -> Optional[Dict[str, Any]]:
-        if self.current_state is None:
-            self.logger.error("No current state to handle action")
-            return None
+    async def _transition_to(self, new_phase: GamePhase):
+        """Transition to a new phase"""
+        # Validate transition (skip validation for initial transition)
+        if self.current_phase and new_phase not in self._valid_transitions.get(self.current_phase, set()):
+            logger.error(f"❌ Invalid transition: {self.current_phase} -> {new_phase}")
+            return
         
-        return await self.current_state.handle_action(action)
-    
-    async def transition_to(self, target_phase: GamePhase) -> bool:
-        async with self.transition_lock:
-            if self.current_state and not self.current_state.can_transition_to(target_phase):
-                self.logger.warning(f"Invalid transition to {target_phase.value}")
-                return False
-            
-            try:
-                if self.current_state:
-                    await self.current_state.on_exit()
-                
-                new_state = self.states[target_phase]
-                await new_state.on_enter()
-                self.current_state = new_state
-                
-                self.logger.info(f"Transitioned to {target_phase.value} phase")
-                await self._broadcast_phase_change(target_phase)
-                
-                return True
-                
-            except Exception as e:
-                self.logger.error(f"Error during transition to {target_phase.value}: {e}")
-                return False
-    
-    async def _check_auto_transition(self) -> None:
+        # Get new state
+        new_state = self.states.get(new_phase)
+        if not new_state:
+            logger.error(f"❌ No state handler for phase: {new_phase}")
+            return
+        
+        logger.info(f"🔄 Transitioning: {self.current_phase} -> {new_phase}")
+        
+        # Exit current state
         if self.current_state:
-            next_phase = await self.current_state.check_transition_conditions()
-            if next_phase and next_phase in self.states:
-                await self.transition_to(next_phase)
-    
-    async def _broadcast_action_result(self, action: GameAction, result: Dict[str, Any]) -> None:
-        # Placeholder - implement based on your WebSocket system
-        self.logger.info(f"Broadcasting result: {result}")
-    
-    async def _broadcast_phase_change(self, new_phase: GamePhase) -> None:
-        # Placeholder - implement based on your WebSocket system  
-        self.logger.info(f"Broadcasting phase change: {new_phase.value}")
+            await self.current_state.on_exit()
+        
+        # Update phase and state
+        self.current_phase = new_phase
+        self.current_state = new_state
+        
+        # Enter new state
+        await self.current_state.on_enter()
     
     def get_current_phase(self) -> Optional[GamePhase]:
-        return self.current_state.phase_name if self.current_state else None
+        """Get current game phase"""
+        return self.current_phase
     
     def get_allowed_actions(self) -> Set[ActionType]:
-        return self.current_state.allowed_actions if self.current_state else set()
+        """Get currently allowed action types"""
+        if not self.current_state:
+            return set()
+        return self.current_state.allowed_actions
+    
+    def get_phase_data(self) -> Dict:
+        """Get current phase-specific data"""
+        if not self.current_state:
+            return {}
+        return self.current_state.get_phase_data()
