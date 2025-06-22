@@ -1,218 +1,201 @@
-# AI_CONTEXT.md - Project Overview & Index
-# ⚠️ Start Here Instead
-For daily work → **Read AI_WORKING_DOC.md**  
-This file is just the overview and historical record.
+# AI_CONTEXT.md - Reference & Historical Record
+**Purpose**: Stable reference information and project history for AI assistant
+**For current work**: → Use AI_WORKING_DOC.md
 
-# Project Status
-* ✅ **Game is playable** - All features work end-to-end
-* ✅ **State machine foundation** - Declaration phase working perfectly
-* ✅ **Preparation phase complete** - Full weak hand/redeal logic implemented
-* ✅ **Turn phase complete** - Turn sequence, winner determination, bug fixed ✅ NEW
-* 🔧 **Adding scoring phase** - Final state machine component
+# 🎯 Project Quick Facts
+- **Type**: Liap Tui multiplayer board game (FastAPI + PixiJS)
+- **Status**: Implementation Phase - State machine architecture 75% complete
+- **Current Sprint**: Week 2 - Complete all 4 phase states
+- **Philosophy**: Prevention by design - make bugs impossible
 
-## Project Overview
-**Working** multiplayer board game using FastAPI (backend) and PixiJS (frontend).
-* Core gameplay complete: rooms, turns, scoring, bots
-* Real-time updates via WebSocket
-* Target: 2-3 concurrent games (MVP), scaling to 5-10
-* **Current Focus**: Completing final state machine phase (Scoring)
+# 📊 Overall Progress Tracking
+- **Week 1**: ✅ COMPLETE - State machine foundation working
+- **Week 2**: 🔧 75% COMPLETE - 3 of 4 states implemented (Prep, Declaration, Turn)
+- **Week 3-4**: 🔧 PLANNED - Integration & refactoring
 
-**Current Status: Implementation Phase** - Building out complete state machine architecture.
+# 🏗️ Architecture Decisions (PROVEN)
+## ✅ Working Design Patterns
+1. **State Pattern**: Each game phase = separate state class
+2. **Action Queue**: Sequential processing prevents race conditions  
+3. **Single Responsibility**: Each state handles only its phase logic
+4. **Test-Driven**: Comprehensive tests before integration
+5. **Phase Validation**: Invalid actions impossible by design
 
-# 🎯 Current Progress
-**Week 1 ✅ COMPLETED** - State machine foundation
-* ✅ State machine foundation built and tested
-* ✅ Declaration phase working with full validation
-* ✅ Action queue preventing race conditions
+## 🔥 Critical Bugs Prevented
+- **Phase Violations**: States only exist during valid phases
+- **Race Conditions**: Action queue processes sequentially
+- **Responsibility Boundaries**: Turn state bug caught - each state handles one concern only
+- **Play Order Confusion**: Redeal changes tracked properly
 
-**Week 2 🔧 IN PROGRESS (75% COMPLETE)** - Complete all phases
-* ✅ Task 2.1: Preparation State - COMPLETE
-  - Weak hand detection
-  - Redeal logic with play order changes
-  - No redeal limit (can continue indefinitely)
-  - Comprehensive test coverage (20 tests)
-* ✅ Task 2.2: Turn State - COMPLETE WITH BUG FIX ✅ NEW
-  - Turn sequence management and piece count validation
-  - Winner determination by play value and order
-  - Pile distribution and next turn assignment
-  - Found and fixed responsibility boundary bug
-  - Comprehensive test coverage (25 tests)
-* 🔧 Task 2.3: Scoring State - NEXT
-* 🔧 Task 2.4: Integration
-* 🔧 Task 2.5: Full game flow test
+# 📁 File & Directory Map
+## State Machine Core
+- `backend/engine/state_machine/core.py` - Enums, data classes
+- `backend/engine/state_machine/base_state.py` - Abstract state interface
+- `backend/engine/state_machine/game_state_machine.py` - Central coordinator
+- `backend/engine/state_machine/action_queue.py` - Race condition prevention
 
-## Document Map
-### 📋 Game Design (in Project Knowledge)
-* Rules - Complete game rules, piece values, play types, scoring formulas
-* Game Flow - Preparation Phase - Deal, weak hands, redeal logic, starter determination ✅ IMPLEMENTED
-* Game Flow - Declaration Phase - Declaration order, restrictions, validation ✅ IMPLEMENTED
-* Game Flow - Turn Phase - Turn sequence, play requirements, winner determination ✅ IMPLEMENTED
-* Game Flow - Scoring Phase - Score calculation, multipliers, win conditions
+## Implemented States (Examples)
+- `backend/engine/state_machine/states/preparation_state.py` ✅ COMPLETE
+- `backend/engine/state_machine/states/declaration_state.py` ✅ COMPLETE  
+- `backend/engine/state_machine/states/turn_state.py` ✅ COMPLETE
 
-### 🔧 Development Planning
-* AI_WORKING_DOC.md - Current sprint plan, daily workflow, implementation guide
-* AI_CONTEXT.md - This file - project overview and index
+## Testing
+- `backend/tests/test_*_state.py` - Individual state tests
+- `backend/run_*_tests.py` - Quick test runners
+- `backend/test_fix.py` - Bug fix verification
 
-### 🔧 Implementation Files
-**✅ State Machine Architecture** (implemented):
-* backend/engine/state_machine/core.py - Core enums and data classes
-* backend/engine/state_machine/action_queue.py - Race condition prevention
-* backend/engine/state_machine/base_state.py - Abstract state interface
-* backend/engine/state_machine/game_state_machine.py - Central coordinator
-* backend/engine/state_machine/states/declaration_state.py - Declaration phase logic ✅
-* backend/engine/state_machine/states/preparation_state.py - Preparation phase logic ✅
-* backend/engine/state_machine/states/turn_state.py - Turn phase logic ✅ NEW
-* backend/tests/test_state_machine.py - Core state machine tests
-* backend/tests/test_preparation_state.py - Basic preparation tests (14 tests)
-* backend/tests/test_weak_hand_scenarios.py - Complex scenarios (6 tests)
-* backend/tests/test_turn_state.py - Turn state tests (25 tests) ✅ NEW
-* backend/run_tests.py - Quick test runner
-* backend/run_preparation_tests.sh - Preparation phase test runner
-* backend/run_turn_tests_fixed.py - Turn state test runner ✅ NEW
-* backend/test_fix.py - Bug fix verification ✅ NEW
+## Game Design Reference (Project Knowledge)
+- `Rules` - Complete game mechanics, piece values, scoring
+- `Game Flow - *Phase` - Detailed phase requirements and validation
 
-**Existing Code** (in project - to be integrated):
-* README.md - Tech stack, installation, project structure
-* backend/engine/rules.py - Game rule implementations (exists)
-* backend/engine/ai.py - Bot AI logic (exists)
-* backend/api/routes/routes.py - Current route handlers (to be refactored)
-* backend/engine/bot_manager.py - Bot management (to be refactored)
-* **Other backend files** - Various game engine components
+## Legacy Code (To Integrate Later)
+- `backend/engine/rules.py` - Game rule implementations
+- `backend/api/routes/routes.py` - Current handlers (Week 3 refactor)
+- `backend/engine/bot_manager.py` - Bot logic (Week 3 integration)
 
-## ✅ Proven Architecture Benefits
-### Bugs That Are Now Impossible:
-1. **Phase Violations**: ✅ States only exist during their phase
-2. **Race Conditions**: ✅ Action queue processes sequentially
-3. **Invalid Transitions**: ✅ Transition validation enforced
-4. **Play Order Confusion**: ✅ Order changes tracked properly
-5. **Responsibility Violations**: ✅ Turn state bug caught and fixed
+# 🧠 Key Learning Points
+## Play Order Management
+**Rule**: When player accepts redeal → becomes starter AND play order rotates
+**Example**: A,B,C,D → B accepts → New order: B,C,D,A
+**Affects**: All subsequent phases (declaration, turns, etc.)
 
-### Development Benefits Achieved:
-* ✅ **Easier Testing**: Each component tested independently
-* ✅ **Clear Boundaries**: Phase logic centralized in state classes
-* ✅ **Type Safety**: Enum-based actions and phases
-* ✅ **Maintainable Code**: Adding features means extending state classes
-* ✅ **Bug Prevention**: Test-driven development catches issues early
+## Winner Determination Logic
+**Priority**: play_type match → play_value (desc) → play_order (asc)
+**Key**: Only matching starter's play type can win
 
-## Current Architecture Decisions
-### ✅ Implemented Decisions
-1. **State Pattern Architecture** - Each phase is a state class ✅ WORKING
-2. **Action Queue System** - Sequential processing prevents races ✅ WORKING
-3. **Transition Locks** - Atomic state changes ✅ WORKING
-4. **Full Validation** - Actions validated before processing ✅ WORKING
+## Responsibility Boundaries  
+**Lesson**: Turn State should complete one turn and stop
+**Anti-pattern**: Automatically starting next turn erases results
+**Fix**: External control of turn sequences
 
-### 🔧 In Progress Decisions
-5. **Complete Phase Coverage** - All 4 phases in state machine (75% complete)
-6. **Bot Integration** - Bots use state machine instead of manual checks
-7. **Route Refactoring** - Replace scattered if/else with state machine calls
+## State Transition Rules
+**Principle**: States only transition when their specific conditions are met
+**Validation**: Transition map prevents invalid phase jumps
 
-### Design Challenges ✅ SOLVED
-1. **Phase Violations**: ✅ State pattern makes impossible
-2. **Race Conditions**: ✅ Action queue solves
-3. **State Synchronization**: ✅ States update game object correctly
-4. **Complex Game Flow**: ✅ State transitions work automatically
-5. **Play Order Changes**: ✅ Redeal starter changes tracked properly
-6. **Responsibility Boundaries**: ✅ Turn state focused on single concern
+# 🎮 Existing Working Systems
+- Complete game engine with rules, AI, scoring
+- Room system (create, join, host management)  
+- WebSocket real-time updates
+- Bot players with AI decision making
+- Frontend with PixiJS scenes and UI
+- Full game flow from lobby to scoring (legacy)
 
-## Implementation Status
-### ✅ What's Working (NEW)
-* **State Machine Foundation**: Core system, action queue, base state class
-* **Declaration Phase**: Complete implementation with validation
-* **Preparation Phase**: Full weak hand/redeal logic with play order changes
-* **Turn Phase**: Complete turn sequence with winner determination ✅ NEW
-* **Action Processing**: Queued, sequential, race-condition-free
-* **Testing Suite**: Comprehensive tests with pytest
-* **Integration**: Proven to work with existing game class
-* **Bug Detection**: Test-driven development catches issues early
+# 📅 Detailed Implementation Roadmap
 
-### ✅ What's Still Working (EXISTING)
-* Complete game engine (rules, AI, scoring)
-* Room system (create, join, host management)
-* WebSocket real-time updates
-* Bot players with AI
-* Full game flow from lobby to scoring
-* Frontend with PixiJS scenes
+## Week 3-4: Integration & Refactoring
+### Phase Logic Extraction
+- Extract phase logic from `routes.py` → State classes
+- Extract bot logic from `bot_manager.py` → State classes  
+- Replace all `if phase ==` checks → State pattern
+- Update WebSocket handlers to use state machine
+- Add comprehensive integration tests
+- Performance test with bots
 
-### 🔧 What's Next (Week 2 Continued)
-* **Scoring State** - Score calculation, win conditions
-* **Complete State Machine** - All 4 phases working together
-* **Bot Integration** - Update bots to use state machine
+### Bot System Integration
+- Update bot decision making to use state machine
+- Implement fixed delay timing strategy (see Architecture Framework)
+- Phase-specific bot behaviors
+- Disconnection/reconnection handling for bots
 
-## 📅 Current Sprint (See AI_WORKING_DOC.md)
-Week 1: ✅ COMPLETED - Foundation architecture working  
-Week 2: 🔧 75% COMPLETE - 3 of 4 phases implemented
+### Route Refactoring
+- Replace manual phase checks with state machine validation
+- Centralize action processing through state machine
+- Update WebSocket message handlers
+- Implement delta/patch state synchronization
 
-# Key Principles (PROVEN)
-* ✅ **Server Authority**: Server state is always correct
-* ✅ **Fail Safe**: Invalid actions ignored, game continues
-* ✅ **Single Source**: State machine is authoritative
-* ✅ **Prevention Over Fixes**: Make bugs impossible, not fix them
-* ✅ **Single Responsibility**: Each state handles one concern only
+### Testing & Validation
+- End-to-end game flow testing
+- Multi-game concurrent testing (5-10 games target)
+- Bot vs human testing scenarios
+- Network disconnection testing
+- Performance benchmarking
 
-## Testing Strategy (IMPLEMENTED)
-* ✅ Unit tests for each state class
-* ✅ Integration tests for state machine
-* ✅ Action queue race condition tests
-* ✅ Invalid action rejection tests
-* ✅ Complex scenario tests (weak hands, play order)
-* ✅ Bug reproduction and fix verification tests
-* 🔧 Bot integration tests (Week 2)
-* 🔧 Full game flow tests (Week 2)
+## 🏗️ Comprehensive Architecture Framework
 
-## Testing Commands (WORKING)
-```bash
-# Quick integration test
-python backend/run_tests.py
+### Core Problem Analysis
+**Primary Challenges:**
+- Phase Violations: Bots declaring during redeal phase
+- Race Conditions: Multiple actions happening simultaneously  
+- State Synchronization: Keeping all clients in sync
+- Complex Game Flow: Multiple phases with specific rules
 
-# All preparation tests
-./backend/run_preparation_tests.sh
+### Architectural Philosophy
+**Guiding Principles:**
+- **Single Source of Truth**: Server owns all game state
+- **Strict Phase Boundaries**: No action crosses phase lines
+- **Event-Driven Design**: Everything is a reaction to events
+- **Fail-Safe Defaults**: When in doubt, reject the action
 
-# Turn state tests ✅ NEW
-python backend/run_turn_tests_fixed.py
-python backend/test_fix.py
+### System Architecture Decisions
 
-# Full test suite
-pytest backend/tests/ -v
+#### 1. Phase Transitions: Locked States
+**Transition Flow**: Current Phase → [LOCK] → Transition Period → [UNLOCK] → Next Phase
+- **Lock Duration**: 450-800ms total
+- **Benefits**: No race conditions, clean state boundaries
+- **Implementation**: Global action lock during transitions
 
-# Individual test files
-pytest backend/tests/test_state_machine.py -v
-pytest backend/tests/test_preparation_state.py -v
-pytest backend/tests/test_weak_hand_scenarios.py -v
-pytest backend/tests/test_turn_state.py -v  # ✅ NEW
+#### 2. Bot Timing Strategy: Fixed Delays
+**Delay Categories:**
+- Quick Actions: 500-1000ms (acknowledging, viewing)
+- Medium Actions: 1500-3000ms (redeal decisions, declarations)
+- Complex Actions: 2000-4000ms (analyzing plays)
+- Strategic Actions: 3000-5000ms (critical moments)
+
+#### 3. Conflict Resolution: Phase-Specific Rules
+**Timer System:**
+- Decision Timer: Time to make game decisions (10-15s)
+- Disconnection Timer: Time to reconnect before bot replacement (30s)
+
+**Key Resolution Patterns:**
+- Redeal: Process by player order, ALL weak players must decide
+- Declaration: Strict turn order, auto-select on timeout
+- Turn: Starter processed first, others auto-matched on timeout
+- Priority: Server authority, deterministic outcomes
+
+#### 4. State Synchronization: Delta/Patch Updates
+**Delta Structure:**
+```javascript
+{
+  type: "state_delta",
+  sequence: 1234,
+  changes: [{
+    path: "players.player1.hand",
+    operation: "remove", 
+    value: [2, 5]
+  }]
+}
 ```
+**Benefits**: 90% bandwidth reduction, smooth updates, audit trail
 
-# Key Learning: Play Order Changes
-**Critical Rule Discovered**: When a player accepts redeal and becomes starter, the play order rotates.
-This affects:
-- Subsequent weak hand asking order
-- Declaration order
-- Turn sequence
-- All game mechanics
+#### 5. Error Handling: Fail Fast and Notify
+**Strategy**: Detect → Log → Stop → Notify → Monitor
+**Categories**: Validation, State, Network, System errors
+**Recovery Boundaries**: Clear what we do/don't attempt to recover
 
-Example: A,B,C,D → B accepts redeal → New order: B,C,D,A
+### Scalability Requirements
+- **Target**: 5-10 concurrent games (small scale launch)
+- **Latency**: 200-1000ms acceptable
+- **Reliability**: 30s reconnection window, bot replacement
+- **Architecture**: Fat Server/Thin Client, data-driven rules
 
-# Key Learning: Responsibility Boundaries ✅ NEW
-**Critical Bug Found & Fixed**: Turn State was automatically starting next turns, erasing results.
-**Root Cause**: Responsibility boundary violation - doing too much in one component.
-**Fix**: Single Responsibility Principle - Turn State manages one turn only.
-**Lesson**: Architecture prevents bugs better than fixing them.
+### Risk Mitigation Strategies
+- **Phase Violation Prevention**: Hard boundaries, explicit protocols
+- **Race Condition Elimination**: Sequential processing, proper locking
+- **State Consistency**: Regular snapshots, reconciliation protocols
 
-# When to Read What
-### For Game Mechanics
-→ Read Rules and relevant Game Flow files
-### For State Machine Implementation
-→ Check backend/engine/state_machine/ files
-### For Current Integration
-→ Check backend/tests/ and backend/run_tests.py
-### For Architecture Decisions
-→ This file contains key decisions and their status
+### Implementation Components
+- **Game Flow Controller**: Orchestrates lifecycle, manages transitions
+- **Phase State Machine**: Enforces transitions, stores phase data
+- **Action Processing System**: Queues, validates, processes in order
+- **Bot Behavior System**: Phase-aware, scheduled actions
+- **Client Sync Layer**: WebSocket management, real-time updates
 
-# Next Steps
-1. ✅ ~~Design state machine based on game flow diagrams~~ COMPLETE
-2. 🔧 Implement remaining phases (Scoring) - 75% complete
-3. 🔧 Replace route handlers with state machine calls
-4. 🔧 Update bot manager to use state machine
-5. 🔧 Full game flow testing
+# 🚫 Out of Scope
+- Tournaments, spectator mode, ranking system
+- Payment/monetization features  
+- Complex social features
+- Fixing existing legacy bugs (we're preventing them with architecture)
 
-**Last Updated**: After Task 2.2 completion with bug fix (Turn State)  
-**Next Review**: After Scoring State implementation
+**Last Updated**: After Turn State completion with bug fix
+**Next Major Update**: After Scoring State implementation
+**Architecture Framework**: Comprehensive 5-aspect system defined
