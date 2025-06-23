@@ -35,7 +35,8 @@ build/
 dist/
 *.bundle.js
 *.map
-backend/static/bundle.js
+backend/static/bundle.*
+backend/static/*.map
 frontend/package-lock.json
 
 # Frontend temp/dev/test files
