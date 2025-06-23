@@ -1,0 +1,48 @@
+/* src/styles/globals.css */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+@layer base {
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+  html {
+    height: 100%;
+  }
+  body {
+    font-family:
+      "Inter",
+      system-ui,
+      -apple-system,
+      sans-serif;
+    background-color: #f9fafb;
+    color: #1f2937;
+    height: 100%;
+    overflow-x: hidden;
+  }
+  #root {
+    height: 100%;
+    min-height: 100vh;
+  }
+  ::-webkit-scrollbar {
+    width: 8px;
+  }
+  ::-webkit-scrollbar-track {
+    background: #f3f4f6;
+    border-radius: 4px;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: #3b82f6;
+    border-radius: 4px;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: theme("colors.blue.600");
+  }
+}
+@layer components {
+  .simple-card {
+    @apply bg-white rounded-lg shadow-sm border border-gray-200 p-4;
+  }
+}
