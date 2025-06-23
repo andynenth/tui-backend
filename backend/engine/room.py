@@ -2,6 +2,8 @@
 
 from engine.game import Game # Import the Game class, representing the core game logic.
 from engine.player import Player # Import the Player class, representing a player in the game.
+from engine.state_machine.game_state_machine import GameStateMachine
+from engine.state_machine.core import GamePhase
 from typing import Optional # Import Optional for type hinting variables that can be None.
 import asyncio
 
@@ -23,6 +25,7 @@ class Room:
         self.players = [None, None, None, None]
         self.started = False # Boolean flag indicating if the game in this room has started.
         self.game: Optional[Game] = None # The Game instance associated with this room, initially None.
+        self.game_state_machine: Optional[GameStateMachine] = None # State machine for game logic
 
         self._assign_lock = asyncio.Lock()  # Prevent concurrent slot assignments
         self._join_lock = asyncio.Lock()    # Prevent concurrent room joins
@@ -151,7 +154,7 @@ class Room:
         finally:
             self._pending_operations.discard(operation_id)
 
-    async def start_game_safe(self) -> dict:
+    async def start_game_safe(self, broadcast_callback=None) -> dict:
         """
         ✅ Thread-safe game starting
         """
@@ -173,14 +176,20 @@ class Room:
                 
                 # สร้าง Game instance
                 self.game = Game(self.players)
+                
+                # Initialize GameStateMachine with WebSocket broadcasting
+                self.game_state_machine = GameStateMachine(self.game, broadcast_callback)
+                await self.game_state_machine.start(GamePhase.PREPARATION)
+                
                 self.started = True
                 
-                print(f"✅ [Room {self.room_id}] Game started successfully: op_id={operation_id}")
+                print(f"✅ [Room {self.room_id}] Game and StateMachine started successfully: op_id={operation_id}")
                 
                 return {
                     "success": True,
                     "operation_id": operation_id,
                     "game_created": True,
+                    "state_machine_initialized": True,
                     "timestamp": asyncio.get_event_loop().time()
                 }
                 

@@ -8,6 +8,7 @@ from engine.rules import is_valid_play, get_play_type
 from engine.win_conditions import is_game_over, get_winners
 from backend.socket_manager import broadcast
 from backend.shared_instances import shared_room_manager, shared_bot_manager
+from engine.state_machine.core import ActionType, GameAction
 from typing import Optional
 import backend.socket_manager
 from ..controllers.RedealController import RedealController
@@ -209,51 +210,23 @@ async def start_game(room_id: str = Query(...)):
         raise HTTPException(status_code=404, detail="Room not found")
     
     try:
-        result = await room.start_game_safe()
+        # Create broadcast callback for this room
+        async def room_broadcast(event_type: str, event_data: dict):
+            await broadcast(room_id, event_type, event_data)
+        
+        # Start game with state machine
+        result = await room.start_game_safe(broadcast_callback=room_broadcast)
         
         if not result["success"]:
             raise HTTPException(status_code=400, detail="Failed to start game")
         
-        # Register game with bot manager
+        # Register game with bot manager  
         bot_manager.register_game(room_id, room.game)
         
-        print(f"🔄 DEBUG: Calling game.prepare_round() for room {room_id}")
-        game_data = room.game.prepare_round()
+        print(f"🎯 Game started with StateMachine for room {room_id}")
         
-        broadcast_data = {
-            "message": "Game started",
-            "round": game_data["round"],
-            "starter": game_data["starter"],
-            "hands": game_data["hands"],
-            "players": [
-                {
-                    "name": p.name,
-                    "score": p.score,
-                    "is_bot": p.is_bot,
-                    "zero_declares_in_a_row": p.zero_declares_in_a_row
-                }
-                for p in room.game.players
-            ],
-            # Include redeal information
-            "weak_players": game_data.get("weak_players", []),
-            "need_redeal": game_data.get("need_redeal", False),
-            "operation_id": result["operation_id"]
-        }
-        
-        await broadcast(room_id, "start_game", broadcast_data)
-        
-        # ✅ เพิ่ม: เริ่ม redeal phase ถ้าจำเป็น
-        if game_data.get("need_redeal"):
-            print(f"🔄 Starting redeal phase for room {room_id}")
-            controller = get_redeal_controller(room_id)
-            await controller.start()
-        
-        # Notify bot manager about round start
-        await bot_manager.handle_game_event(
-            room_id, 
-            "round_started", 
-            {"starter": game_data["starter"]}
-        )
+        # State machine handles all PREPARATION phase logic automatically
+        # including dealing, weak hand detection, redeal logic, etc.
         
         return {"ok": True, "operation_id": result["operation_id"]}
         
@@ -315,61 +288,38 @@ async def exit_room(room_id: str = Query(...), name: str = Query(...)):
 
 @router.post("/declare")
 async def declare(room_id: str = Query(...), player_name: str = Query(...), value: int = Query(...)):
-    """Player declares their expected score for the round"""
+    """Player declares their expected score for the round - STATE MACHINE VERSION"""
     room = room_manager.get_room(room_id)
-    if not room or not room.game:
-        raise HTTPException(status_code=404, detail="Game not found")
+    if not room or not room.game_state_machine:
+        raise HTTPException(status_code=404, detail="Game or state machine not found")
 
-    player = room.game.get_player(player_name)
-    if not player:
-        raise HTTPException(status_code=400, detail=f"Player {player_name} not found in game")
-
-    if player.declared != 0:
-        print(f"⚠️ Player {player_name} already declared {player.declared}")
-        return {"status": "already_declared", "value": player.declared}
-
-    result = room.game.declare(player_name, value)
-    
-    if result["status"] == "ok":
-        # Broadcast player declaration
-        await broadcast(room_id, "declare", {
-            "player": player_name,
-            "value": value,
-            "is_bot": False
-        })
-        
-        print(f"📢 {player_name} declared {value}")
-        
-        # Notify bot manager to handle bot declarations
-        await bot_manager.handle_game_event(
-            room_id,
-            "player_declared", 
-            {"player_name": player_name}
+    try:
+        # Create GameAction for declaration
+        action = GameAction(
+            player_name=player_name,
+            action_type=ActionType.DECLARE,
+            payload={"value": value}
         )
         
-        # Check if all players have declared
-        if room.game.all_players_declared():
-            print(f"✅ All players have declared! Starting turn phase...")
-            
-            # Initialize turn phase
-            turn_info = room.game.start_turn_phase()
-            
-            # Get the first player (starter) for the turn
-            first_player_name = turn_info.get("first_player")
-            if first_player_name:
-                first_player = room.game.get_player(first_player_name)
-                print(f"🎯 First player for turn: {first_player.name} (Bot: {first_player.is_bot})")
-                
-                # If first player is a bot, notify bot manager to start turn
-                if first_player.is_bot:
-                    await asyncio.sleep(1)  # Small delay for UI
-                    await bot_manager.handle_game_event(
-                        room_id,
-                        "turn_started",
-                        {"starter": first_player.name}
-                    )
-    
-    return result
+        # Send action to state machine
+        result = await room.game_state_machine.handle_action(action)
+        
+        if not result.get("success"):
+            raise HTTPException(status_code=400, detail=result.get("error", "Declaration failed"))
+        
+        print(f"🎯 Declaration action queued for {player_name}: {value}")
+        
+        # State machine handles:
+        # - Declaration validation
+        # - Broadcasting to clients  
+        # - Bot notifications
+        # - Transition to TURN phase when all players declared
+        
+        return {"status": "ok", "queued": True}
+        
+    except Exception as e:
+        print(f"❌ Declaration error: {str(e)}")
+        raise HTTPException(status_code=500, detail=str(e))
 
 @router.post("/play-turn")
 async def play_turn(
@@ -377,83 +327,50 @@ async def play_turn(
     player_name: str = Query(...), 
     piece_indexes: str = Query(...)
 ):
-    """Player plays pieces on their turn"""
+    """Player plays pieces on their turn - STATE MACHINE VERSION"""
     room = room_manager.get_room(room_id)
-    if not room or not room.game:
-        raise HTTPException(status_code=404, detail="Game not found")
+    if not room or not room.game_state_machine:
+        raise HTTPException(status_code=404, detail="Game or state machine not found")
 
-    # Parse comma-separated indices
     try:
-        indices = [int(i) for i in piece_indexes.split(',')]
-    except ValueError:
-        raise HTTPException(status_code=400, detail="Invalid piece indices format")
+        # Parse comma-separated indices
+        try:
+            indices = [int(i) for i in piece_indexes.split(',')]
+        except ValueError:
+            raise HTTPException(status_code=400, detail="Invalid piece indices format")
 
-    print(f"🎮 {player_name} playing pieces at indices: {indices}")
+        print(f"🎮 {player_name} playing pieces at indices: {indices}")
 
-    # Process the turn
-    result = room.game.play_turn(player_name, indices)
-
-    # Get the actual pieces for broadcasting
-    player = room.game.get_player(player_name)
-    selected_pieces = []
-    try:
-        if "pieces" in result:
-            selected_pieces = result["pieces"]
-        else:
-            # Get pieces before they're removed from hand
-            selected_pieces = []
-            for i in sorted(indices):
-                if i < len(player.hand):
-                    selected_pieces.append(str(player.hand[i]))
-    except Exception as e:
-        print(f"⚠️ Could not get pieces for broadcast: {e}")
-        selected_pieces = [f"Piece_{i}" for i in indices]
-
-    # Broadcast the play immediately
-    await broadcast(room_id, "play", {
-        "player": player_name,
-        "pieces": selected_pieces,
-        "valid": result.get("is_valid", True),
-        "play_type": result.get("play_type", "UNKNOWN")
-    })
-
-    print(f"📡 Broadcasted {player_name}'s play, result status: {result.get('status')}")
-
-    # Handle different result statuses
-    if result.get("status") == "waiting":
-        # First play of the turn - notify bot manager to handle bot plays
-        print(f"⏳ Turn started by {player_name}, notifying bot manager...")
-        await bot_manager.handle_game_event(
-            room_id,
-            "player_played",
-            {"player_name": player_name}
+        # Create GameAction for piece playing
+        action = GameAction(
+            player_name=player_name,
+            action_type=ActionType.PLAY_PIECES,
+            payload={"piece_indices": indices}
         )
-    elif result.get("status") == "resolved":
-        # Turn is complete
-        print(f"✅ Turn resolved, winner: {result.get('winner')}")
         
-        # Check if round is complete
-        all_hands_empty = all(len(p.hand) == 0 for p in room.game.players)
+        # Send action to state machine
+        result = await room.game_state_machine.handle_action(action)
         
-        if all_hands_empty:
-            print(f"🏁 Round complete - all hands empty")
-            # Bot manager will handle scoring
-        elif result.get("winner"):
-            # More turns to play
-            next_starter = result.get("winner")
-            print(f"🎯 Next turn starter: {next_starter}")
-            
-            # If next starter is a bot, notify bot manager
-            next_player = room.game.get_player(next_starter)
-            if next_player and next_player.is_bot:
-                await asyncio.sleep(0.5)
-                await bot_manager.handle_game_event(
-                    room_id,
-                    "turn_started",
-                    {"starter": next_starter}
-                )
-
-    return result
+        if not result.get("success"):
+            raise HTTPException(status_code=400, detail=result.get("error", "Play failed"))
+        
+        print(f"🎯 Play action queued for {player_name}: {indices}")
+        
+        # State machine handles:
+        # - Turn validation (correct player, piece count, etc.)
+        # - Piece removal from hands
+        # - Winner determination  
+        # - Broadcasting to clients
+        # - Bot notifications
+        # - Transition to next turn or SCORING phase
+        
+        return {"status": "ok", "queued": True}
+        
+    except HTTPException:
+        raise  # Re-raise HTTP exceptions
+    except Exception as e:
+        print(f"❌ Play turn error: {str(e)}")
+        raise HTTPException(status_code=500, detail=str(e))
 
 @router.post("/redeal")
 async def redeal(room_id: str = Query(...), player_name: str = Query(...)):
@@ -486,27 +403,39 @@ async def redeal(room_id: str = Query(...), player_name: str = Query(...)):
 
 @router.post("/score-round")
 async def score_round(room_id: str = Query(...)):
-    """Score the current round and check for game over conditions"""
+    """Score the current round and check for game over conditions - STATE MACHINE VERSION"""
     room = room_manager.get_room(room_id)
-    if not room or not room.game:
-        raise HTTPException(status_code=404, detail="Game not found")
+    if not room or not room.game_state_machine:
+        raise HTTPException(status_code=404, detail="Game or state machine not found")
 
-    game = room.game
-    summary = game.score_round()
-    game_over = is_game_over(game)
-    winners = get_winners(game) if game_over else []
-
-    await broadcast(room_id, "score", {
-        "summary": summary,
-        "game_over": game_over,
-        "winners": [p.name for p in winners]
-    })
-
-    return {
-        "summary": summary,
-        "game_over": game_over,
-        "winners": [p.name for p in winners]
-    }
+    try:
+        # Create GameAction for viewing scores/game state  
+        action = GameAction(
+            player_name="system",  # System-initiated action
+            action_type=ActionType.GAME_STATE_UPDATE,
+            payload={}
+        )
+        
+        # Send action to state machine
+        result = await room.game_state_machine.handle_action(action)
+        
+        if not result.get("success"):
+            raise HTTPException(status_code=400, detail=result.get("error", "Scoring failed"))
+        
+        print(f"🎯 Scoring action queued for room {room_id}")
+        
+        # State machine handles:
+        # - Score calculation for all players
+        # - Redeal multiplier application
+        # - Game over detection  
+        # - Broadcasting results to clients
+        # - Transition to next round (PREPARATION) or game end
+        
+        return {"status": "ok", "queued": True}
+        
+    except Exception as e:
+        print(f"❌ Scoring error: {str(e)}")
+        raise HTTPException(status_code=500, detail=str(e))
 
 # ---------- DEBUG / STATUS ----------
 
