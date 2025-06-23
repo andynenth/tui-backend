@@ -49,7 +49,9 @@ const GamePiece = ({
   const getBaseClasses = () => {
     return `
       relative flex flex-col items-center justify-center rounded-lg border-2 
-      cursor-pointer select-none transition-all duration-200 font-mono
+      cursor-pointer select-none font-mono transform-gpu
+      transition-all duration-300 ease-out
+      ${isPlayable ? 'hover:scale-105 hover:shadow-lg active:scale-95' : ''}
       ${sizeClasses[size]}
     `;
   };
@@ -57,13 +59,13 @@ const GamePiece = ({
   const getColorClasses = () => {
     if (isRed) {
       return `
-        bg-red-50 border-red-300 text-red-800
-        ${isPlayable ? 'hover:bg-red-100 hover:border-red-400' : ''}
+        bg-gradient-to-br from-red-50 to-red-100 border-red-300 text-red-800
+        ${isPlayable ? 'hover:from-red-100 hover:to-red-200 hover:border-red-400 hover:shadow-red-200/50' : ''}
       `;
     } else {
       return `
-        bg-gray-800 border-gray-600 text-gray-100
-        ${isPlayable ? 'hover:bg-gray-700 hover:border-gray-500' : ''}
+        bg-gradient-to-br from-gray-800 to-gray-900 border-gray-600 text-gray-100
+        ${isPlayable ? 'hover:from-gray-700 hover:to-gray-800 hover:border-gray-500 hover:shadow-gray-700/50' : ''}
       `;
     }
   };
@@ -72,15 +74,17 @@ const GamePiece = ({
     let classes = '';
     
     if (isSelected) {
-      classes += ' ring-2 ring-blue-500 bg-blue-100 border-blue-400';
+      classes += ' ring-4 ring-blue-500/70 ring-offset-2 ring-offset-white scale-110 z-10';
+      classes += ' shadow-xl shadow-blue-500/30';
     }
     
     if (isHighlighted) {
-      classes += ' ring-2 ring-yellow-400 shadow-lg';
+      classes += ' ring-4 ring-yellow-400/80 ring-offset-2 shadow-xl shadow-yellow-400/30';
+      classes += ' animate-pulse';
     }
     
     if (!isPlayable) {
-      classes += ' opacity-50 cursor-not-allowed grayscale';
+      classes += ' opacity-50 cursor-not-allowed grayscale filter brightness-75';
     }
     
     return classes;
@@ -116,9 +120,14 @@ const GamePiece = ({
 
       {/* Selection indicator */}
       {isSelected && (
-        <div className="absolute top-0 right-0 w-3 h-3 bg-blue-500 rounded-full transform translate-x-1 -translate-y-1">
-          <div className="w-full h-full bg-white rounded-full scale-50"></div>
+        <div className="absolute top-0 right-0 w-4 h-4 bg-blue-500 rounded-full transform translate-x-2 -translate-y-2 animate-bounce">
+          <div className="w-full h-full bg-white rounded-full scale-50 animate-pulse"></div>
         </div>
+      )}
+      
+      {/* Highlight glow effect */}
+      {(isSelected || isHighlighted) && (
+        <div className="absolute inset-0 rounded-lg bg-gradient-to-br from-transparent via-white/10 to-transparent pointer-events-none"></div>
       )}
     </div>
   );
