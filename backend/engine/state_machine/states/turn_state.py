@@ -91,18 +91,25 @@ class TurnState(GameState):
         """Check if ready to transition to scoring phase"""
         game = self.state_machine.game
         
-        # Only transition when a turn is complete AND all hands are empty
-        if not self.turn_complete:
-            return None
-        
-        # Check if all players have empty hands
+        # Check if all players have empty hands (main condition for scoring)
         if hasattr(game, 'player_hands') and game.player_hands:
             all_hands_empty = all(len(hand) == 0 for hand in game.player_hands.values())
             if all_hands_empty:
-                self.logger.info("🏁 All hands empty and turn complete - transitioning to scoring")
+                self.logger.info("🏁 All hands empty - transitioning to scoring")
                 return GamePhase.SCORING
         
         return None
+    
+    def _update_turn_order_for_new_starter(self, new_starter: str) -> None:
+        """Update turn order to put new starter first"""
+        if new_starter in self.turn_order:
+            # Remove the new starter from current position
+            self.turn_order.remove(new_starter)
+        
+        # Put the new starter at the beginning
+        self.turn_order.insert(0, new_starter)
+        
+        self.logger.info(f"🔄 Updated turn order - new starter first: {self.turn_order}")
     
     async def start_next_turn_if_needed(self) -> bool:
         """
@@ -148,17 +155,17 @@ class TurnState(GameState):
         self.turn_complete = False
         self.winner = None
         
-        self.logger.info(f"🔄 New turn started - order: {self.turn_order}")
-        
         # Update phase data for external access
         self.phase_data.update({
             'current_turn_starter': self.current_turn_starter,
+            'current_player': self.turn_order[0] if self.turn_order else None,
             'turn_order': self.turn_order.copy(),
-            'current_player': self._get_current_player(),
             'required_piece_count': self.required_piece_count,
-            'turn_plays': self.turn_plays.copy(),
-            'turn_complete': self.turn_complete
+            'turn_plays': {},
+            'turn_complete': False
         })
+        
+        self.logger.info(f"🎯 New turn started - order: {self.turn_order}")
     
     def _get_current_player(self) -> Optional[str]:
         """Get the player whose turn it is to play"""
@@ -371,13 +378,14 @@ class TurnState(GameState):
         if all_hands_empty:
             self.logger.info("🏁 All hands are now empty - round complete")
         else:
-            # DO NOT automatically start next turn!
-            # The winner becomes the next turn starter for when a new turn is started
+            # Update starter for next turn
             if self.winner:
                 self.current_turn_starter = self.winner
-                self.logger.info(f"🎯 Next turn starter will be: {self.winner}")
+                # FIX: Also update turn order to put winner first
+                self._update_turn_order_for_new_starter(self.winner)
+                self.logger.info(f"🎯 Next turn starter: {self.winner}")
             else:
-                self.logger.info("🤝 No winner - starter remains: {self.current_turn_starter}")
+                self.logger.info(f"🤝 No winner - starter remains: {self.current_turn_starter}")
         
         # Turn is complete - external logic decides whether to start another turn
     
@@ -445,3 +453,62 @@ class TurnState(GameState):
         
         # Process the auto-play
         await self._handle_play_pieces(auto_action)
+        
+    async def restart_turn_for_testing(self) -> None:
+        """
+        Public method to restart a new turn - primarily for testing integration.
+        In production, this would be called by external game flow logic.
+        """
+        if not self.turn_complete:
+            self.logger.warning("Attempting to restart turn that isn't complete")
+            return
+        
+        # Check if hands are empty (shouldn't restart if empty)
+        game = self.state_machine.game
+        if hasattr(game, 'player_hands') and game.player_hands:
+            all_hands_empty = all(len(hand) == 0 for hand in game.player_hands.values())
+            if all_hands_empty:
+                self.logger.info("Cannot restart turn - all hands are empty")
+                return
+        
+        # Reset turn state for new turn
+        self.turn_complete = False
+        self.winner = None
+        self.turn_plays.clear()
+        self.required_piece_count = None
+        self.current_player_index = 0
+        
+        # Get turn order starting from current starter (winner of last turn)
+        if hasattr(game, 'get_player_order_from'):
+            self.turn_order = game.get_player_order_from(self.current_turn_starter)
+        else:
+            # Fallback: create order from players list
+            players = getattr(game, 'players', [])
+            if isinstance(players[0], str):
+                # Players are strings
+                if self.current_turn_starter in players:
+                    start_idx = players.index(self.current_turn_starter)
+                    self.turn_order = players[start_idx:] + players[:start_idx]
+                else:
+                    self.turn_order = players
+            else:
+                # Players are objects, extract names
+                player_names = [p.name for p in players]
+                if self.current_turn_starter in player_names:
+                    start_idx = player_names.index(self.current_turn_starter)
+                    self.turn_order = player_names[start_idx:] + player_names[:start_idx]
+                else:
+                    self.turn_order = player_names
+        
+        # Update phase data
+        self.phase_data.update({
+            'current_turn_starter': self.current_turn_starter,
+            'current_player': self._get_current_player(),
+            'turn_order': self.turn_order.copy(),
+            'required_piece_count': self.required_piece_count,
+            'turn_plays': {},
+            'turn_complete': False,
+            'winner': None
+        })
+        
+        self.logger.info(f"🔄 Restarted turn - starter: {self.current_turn_starter}, order: {self.turn_order}")
