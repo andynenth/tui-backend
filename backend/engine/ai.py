@@ -124,7 +124,7 @@ def pieces_exist_in_hand(play, hand):
 # ------------------------------------------------------------------
 # Choose the best play (set of 1–6 pieces) based on total point value
 # ------------------------------------------------------------------
-def choose_best_play(hand: list, required_count: int | None, verbose: bool = True) -> list:
+def choose_best_play(hand: list, required_count, verbose: bool = True) -> list:
     best_play = None
     best_score = -1
     best_type = None

@@ -20,13 +20,14 @@ class GameStateMachine:
     Manages phase transitions and delegates action handling to appropriate states.
     """
     
-    def __init__(self, game):
+    def __init__(self, game, broadcast_callback=None):
         self.game = game
         self.action_queue = ActionQueue()
         self.current_state: Optional[GameState] = None
         self.current_phase: Optional[GamePhase] = None
         self.is_running = False
         self._process_task: Optional[asyncio.Task] = None
+        self.broadcast_callback = broadcast_callback  # For WebSocket broadcasting
         
         # Initialize all available states
         self.states: Dict[GamePhase, GameState] = {
@@ -159,3 +160,10 @@ class GameStateMachine:
         if not self.current_state:
             return {}
         return self.current_state.phase_data.copy()
+    
+    async def broadcast_event(self, event_type: str, event_data: Dict):
+        """Broadcast WebSocket event if callback is available"""
+        if self.broadcast_callback:
+            await self.broadcast_callback(event_type, event_data)
+        else:
+            logger.debug(f"No broadcast callback set - event {event_type} not sent")
