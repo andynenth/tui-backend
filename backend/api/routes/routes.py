@@ -11,34 +11,14 @@ from backend.shared_instances import shared_room_manager, shared_bot_manager
 from engine.state_machine.core import ActionType, GameAction
 from typing import Optional
 import backend.socket_manager
-from ..controllers.RedealController import RedealController
-
 print(f"socket_manager id in {__name__}: {id(backend.socket_manager)}")
 
-# Global instances
-redeal_controllers = {}
+# Global instances - REMOVED: RedealController (using state machine instead)
 router = APIRouter()
 room_manager = shared_room_manager
 bot_manager = shared_bot_manager
 
-def get_redeal_controller(room_id: str) -> RedealController:
-    """Get or create a RedealController for the specified room"""
-    if room_id not in redeal_controllers:
-        redeal_controllers[room_id] = RedealController(room_id)
-    return redeal_controllers[room_id]
-
-@router.post("/start-redeal-phase")
-async def start_redeal_phase(room_id: str = Query(...)):
-    """Start the redeal phase for a specific room"""
-    controller = get_redeal_controller(room_id)
-    success = await controller.start()
-    return {"status": "redeal_phase_started" if success else "failed"}
-
-@router.get("/redeal-status")
-async def get_redeal_status(room_id: str = Query(...)):
-    """Get the current status of redeal phase"""
-    controller = get_redeal_controller(room_id)
-    return controller.get_status()
+# REMOVED: All redeal controller endpoints - state machine handles redeal logic
 
 # ---------- ROOM MANAGEMENT ----------
 
@@ -240,12 +220,31 @@ async def start_game(room_id: str = Query(...)):
 async def handle_redeal_decision(
     room_id: str = Query(...), 
     player_name: str = Query(...), 
-    choice: str = Query(...)
+    choice: str = Query(...)  # "accept" or "decline"
 ):
-    """Handle redeal decision from player"""
-    controller = get_redeal_controller(room_id)
-    await controller.handle_player_decision(player_name, choice)
-    return {"status": "ok", "choice": choice}
+    """Handle redeal decision from player - REPLACED: Now uses state machine only"""
+    room = room_manager.get_room(room_id)
+    if not room or not room.game_state_machine:
+        raise HTTPException(status_code=404, detail="Game not found")
+
+    # Convert choice to boolean
+    accept = choice.lower() == "accept"
+    
+    # Create GameAction for redeal decision - NO controller needed
+    action = GameAction(
+        player_name=player_name,
+        action_type=ActionType.REDEAL_RESPONSE,
+        payload={"accept": accept}
+    )
+    
+    try:
+        # Route through state machine ONLY
+        result = await room.game_state_machine.handle_action(action)
+        return {"status": "ok", "choice": choice, "processed": result.get("success", False)}
+        
+    except Exception as e:
+        # Error recovery
+        return {"status": "error", "choice": choice, "error": str(e)}
 
 @router.post("/exit-room")
 async def exit_room(room_id: str = Query(...), name: str = Query(...)):
@@ -374,32 +373,31 @@ async def play_turn(
 
 @router.post("/redeal")
 async def redeal(room_id: str = Query(...), player_name: str = Query(...)):
-    """Handle redeal request from a player"""
+    """Handle redeal request from a player - REPLACED: Now uses state machine only"""
     room = room_manager.get_room(room_id)
-    if not room or not room.game:
+    if not room or not room.game_state_machine:
         raise HTTPException(status_code=404, detail="Game not found")
 
-    result = room.game.request_redeal(player_name)
+    # Create GameAction for redeal request - NO direct game calls
+    action = GameAction(
+        player_name=player_name,
+        action_type=ActionType.REDEAL_REQUEST,
+        payload={"accept": True}  # This endpoint implies acceptance
+    )
     
-    if result["redeal_allowed"]:
-        # Broadcast redeal event
-        await broadcast(room_id, "redeal", {
-            "player": player_name,
-            "multiplier": room.game.redeal_multiplier
-        })
+    try:
+        # Route through state machine ONLY
+        result = await room.game_state_machine.handle_action(action)
         
-        await asyncio.sleep(1)  # Small delay
-        new_round_data = room.game.prepare_round()
+        if not result.get("success"):
+            return {"redeal_allowed": False, "error": result.get("error", "Redeal not allowed")}
+            
+        # State machine handles all broadcasting internally
+        return {"redeal_allowed": True, "message": "Redeal processed by state machine"}
         
-        # Broadcast new hands
-        await broadcast(room_id, "new_round", {
-            "round": new_round_data["round"],
-            "starter": player_name,
-            "hands": new_round_data["hands"],
-            "multiplier": room.game.redeal_multiplier
-        })
-    
-    return result
+    except Exception as e:
+        # Error recovery - never crash the game
+        return {"redeal_allowed": False, "error": f"State machine error: {str(e)}"}
 
 @router.post("/score-round")
 async def score_round(room_id: str = Query(...)):

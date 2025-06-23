@@ -4,8 +4,8 @@
 
 # 🎯 Project Quick Facts
 - **Type**: Liap Tui multiplayer board game (FastAPI + PixiJS)
-- **Status**: Week 2 COMPLETE - State machine architecture 100% functional
-- **Current Sprint**: Week 3 - Integration with existing systems
+- **Status**: Week 3 IN PROGRESS - Complete system replacement with state machine
+- **Current Sprint**: Week 3 - Complete system replacement (removing all direct game calls)
 - **Philosophy**: Prevention by design - make bugs impossible
 
 # 📊 Implementation History & Lessons
@@ -306,6 +306,51 @@
 
 **Key Learning**: Test data must reflect realistic game scenarios to be meaningful. Having all 4 players with weak hands is statistically very unlikely (probability < 1%).
 
-**Last Updated**: Week 2 Complete + Test Data Quality Fixes - All state machine phases implemented and tested
-**Next Major Update**: After Week 3 integration complete
-**Status**: 🎉 STATE MACHINE FOUNDATION COMPLETE - Ready for production integration
+## 🚀 Week 3: Complete System Replacement - IN PROGRESS
+**Decision**: Replace entire system with state machine as single authority  
+**Approach**: Complete replacement rather than incremental integration
+**Goal**: Remove ALL direct game method calls, route everything through GameAction
+
+### Architecture Designed - Phase 1 ✅ COMPLETE
+**New Architecture**: Single Authority Pattern
+- **State Machine**: Only entity that can change game state
+- **GameAction**: Only way to trigger state changes  
+- **Priority Queue**: Human actions processed before bot actions
+- **Sequence Numbers**: All messages ordered to prevent frontend race conditions
+- **Error Boundaries**: Failed actions trigger recovery, never crash game
+
+### Phase 2: Complete Route Replacement ✅ COMPLETE
+**Time Taken**: ~1 hour  
+**Files Modified**:
+- backend/api/routes/routes.py (complete replacement)
+- backend/test_route_replacement.py (new test file)
+
+**Key Implementations**:
+- ✅ Removed ALL direct game method calls from routes
+- ✅ Converted /redeal endpoint to use GameAction(ActionType.REDEAL_REQUEST)
+- ✅ Converted /redeal-decision endpoint to use GameAction(ActionType.REDEAL_RESPONSE)
+- ✅ Eliminated RedealController completely - state machine handles all logic
+- ✅ Added error recovery - failed actions return errors, don't crash
+- ✅ Maintained backward compatibility with existing API contracts
+
+**Testing Results**:
+- ✅ Route replacement test: PASSED
+- ✅ Error handling test: PASSED  
+- ✅ Full game flow test: PASSED
+- ✅ All 78+ state machine tests: PASSED
+- ✅ Zero direct game calls remaining in routes
+
+**Key Learning**: Complete replacement approach works better than incremental - eliminates mixed authority issues.
+
+### Remaining Problems to Address:
+1. ✅ ~~Mixed Authority in Routes~~ - FIXED: All routes use state machine only
+2. **Bot Manager**: Still uses direct game.play_turn(), game.declare() calls (26+ calls)
+3. ✅ ~~Redeal System~~ - FIXED: RedealController eliminated, state machine handles all
+4. **No Message Ordering**: Frontend can receive events out of order
+5. **Error Handling**: Partial - routes have recovery, need system-wide
+
+**Next Phase**: Bot Manager replacement with GameActions
+
+**Last Updated**: Week 3 Phase 2 - Route replacement complete and tested
+**Next Major Update**: After bot manager replacement complete  
+**Status**: 🎯 PHASE 2 COMPLETE - Routes use state machine only, ready for bot integration
