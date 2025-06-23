@@ -8,9 +8,8 @@ from datetime import datetime
 from .core import GamePhase, ActionType, GameAction
 from .action_queue import ActionQueue
 from .base_state import GameState
-from .states.declaration_state import DeclarationState
-from .states.preparation_state import PreparationState
-from .states.turn_state import TurnState
+from .states import PreparationState, DeclarationState, TurnState, ScoringState
+
 
 logger = logging.getLogger(__name__)
 
@@ -33,8 +32,8 @@ class GameStateMachine:
         self.states: Dict[GamePhase, GameState] = {
             GamePhase.PREPARATION: PreparationState(self),
             GamePhase.DECLARATION: DeclarationState(self),
-            GamePhase.TURN: TurnState(self),  # ✅ NEW - Added Turn State
-            # GamePhase.SCORING: ScoringState(self)  # TODO - Next task
+            GamePhase.TURN: TurnState(self), 
+            GamePhase.SCORING: ScoringState(self), 
         }
         
         # Transition validation map

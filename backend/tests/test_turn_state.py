@@ -7,6 +7,8 @@ from unittest.mock import Mock
 
 from engine.state_machine.core import GamePhase, ActionType, GameAction
 from engine.state_machine.states.turn_state import TurnState
+from engine.piece import Piece
+from tests.test_helpers import create_test_hand_realistic, create_test_play_data
 
 
 class MockGame:
@@ -14,12 +16,8 @@ class MockGame:
         self.players = ["Player1", "Player2", "Player3", "Player4"]
         self.round_starter = "Player1"
         self.current_player = "Player1"
-        self.player_hands = {
-            "Player1": [1, 2, 3, 4, 5, 6, 7, 8],
-            "Player2": [9, 10, 11, 12, 13, 14, 15, 16],
-            "Player3": [17, 18, 19, 20, 21, 22, 23, 24],
-            "Player4": [25, 26, 27, 28, 29, 30, 31, 32]
-        }
+        # Use realistic piece data instead of integers
+        self.player_hands = create_test_hand_realistic()
         self.player_piles = {
             "Player1": 0,
             "Player2": 0,
@@ -80,14 +78,21 @@ class TestTurnState:
     @pytest.mark.asyncio
     async def test_starter_sets_piece_count(self, turn_state):
         """Test that starter's play sets the required piece count"""
+        # Get realistic pieces from Player1's hand
+        player1_pieces = turn_state.state_machine.game.player_hands["Player1"]
+        play_pieces = player1_pieces[:3]  # Take first 3 pieces
+        
+        # Calculate realistic play value (sum of piece points)
+        play_value = sum(piece.point for piece in play_pieces)
+        
         # Starter plays 3 pieces
         action = GameAction(
             player_name="Player1",
             action_type=ActionType.PLAY_PIECES,
             payload={
-                'pieces': [1, 2, 3],
+                'pieces': play_pieces,
                 'play_type': 'sequence',
-                'play_value': 6,
+                'play_value': play_value,
                 'is_valid': True
             }
         )
@@ -108,29 +113,41 @@ class TestTurnState:
     @pytest.mark.asyncio
     async def test_other_players_must_match_count(self, turn_state):
         """Test that other players must play same number of pieces as starter"""
+        # Get realistic pieces for starter
+        player1_pieces = turn_state.state_machine.game.player_hands["Player1"]
+        starter_play = player1_pieces[:2]  # Take first 2 pieces
+        starter_value = sum(piece.point for piece in starter_play)
+        
         # Starter plays 2 pieces
         starter_action = GameAction(
             player_name="Player1",
             action_type=ActionType.PLAY_PIECES,
-            payload={'pieces': [1, 2], 'play_type': 'pair', 'play_value': 3}
+            payload={'pieces': starter_play, 'play_type': 'pair', 'play_value': starter_value}
         )
         await turn_state._process_action(starter_action)
         
+        # Get realistic pieces for Player2
+        player2_pieces = turn_state.state_machine.game.player_hands["Player2"]
+        
         # Player2 tries to play 3 pieces (invalid)
+        invalid_play = player2_pieces[:3]
+        invalid_value = sum(piece.point for piece in invalid_play)
         invalid_action = GameAction(
             player_name="Player2",
             action_type=ActionType.PLAY_PIECES,
-            payload={'pieces': [9, 10, 11], 'play_type': 'sequence', 'play_value': 30}
+            payload={'pieces': invalid_play, 'play_type': 'sequence', 'play_value': invalid_value}
         )
         
         is_valid = await turn_state._validate_action(invalid_action)
         assert not is_valid
         
         # Player2 plays correct number (valid)
+        valid_play = player2_pieces[:2]  # Take first 2 pieces
+        valid_value = sum(piece.point for piece in valid_play)
         valid_action = GameAction(
             player_name="Player2",
             action_type=ActionType.PLAY_PIECES,
-            payload={'pieces': [9, 10], 'play_type': 'pair', 'play_value': 19}
+            payload={'pieces': valid_play, 'play_type': 'pair', 'play_value': valid_value}
         )
         
         is_valid = await turn_state._validate_action(valid_action)
@@ -401,12 +418,18 @@ class TestTurnState:
         game = turn_state.state_machine.game
         initial_hand_size = len(game.player_hands["Player1"])
         
-        # Complete a turn
+        # Get realistic pieces for each player
+        player1_pieces = game.player_hands["Player1"][:2]
+        player2_pieces = game.player_hands["Player2"][:2] 
+        player3_pieces = game.player_hands["Player3"][:2]
+        player4_pieces = game.player_hands["Player4"][:2]
+        
+        # Complete a turn with realistic pieces
         plays = [
-            ("Player1", {'pieces': [1, 2], 'play_type': 'pair', 'play_value': 10}),
-            ("Player2", {'pieces': [9, 10], 'play_type': 'pair', 'play_value': 15}),
-            ("Player3", {'pieces': [17, 18], 'play_type': 'pair', 'play_value': 20}),
-            ("Player4", {'pieces': [25, 26], 'play_type': 'pair', 'play_value': 8})
+            ("Player1", {'pieces': player1_pieces, 'play_type': 'pair', 'play_value': sum(p.point for p in player1_pieces)}),
+            ("Player2", {'pieces': player2_pieces, 'play_type': 'pair', 'play_value': sum(p.point for p in player2_pieces)}),
+            ("Player3", {'pieces': player3_pieces, 'play_type': 'pair', 'play_value': sum(p.point for p in player3_pieces)}),
+            ("Player4", {'pieces': player4_pieces, 'play_type': 'pair', 'play_value': sum(p.point for p in player4_pieces)})
         ]
         
         for player, payload in plays:
@@ -415,8 +438,9 @@ class TestTurnState:
         
         # Check that pieces were removed
         assert len(game.player_hands["Player1"]) == initial_hand_size - 2
-        assert 1 not in game.player_hands["Player1"]
-        assert 2 not in game.player_hands["Player1"]
+        # Check that the specific pieces are no longer in the hand
+        for piece in player1_pieces:
+            assert piece not in game.player_hands["Player1"]
     
     @pytest.mark.asyncio
     async def test_transition_to_scoring_when_hands_empty(self, turn_state):

@@ -4,8 +4,8 @@
 
 # 🎯 Project Quick Facts
 - **Type**: Liap Tui multiplayer board game (FastAPI + PixiJS)
-- **Status**: Implementation Phase - State machine architecture 75% complete
-- **Current Sprint**: Week 2 - Complete all 4 phase states
+- **Status**: Week 2 COMPLETE - State machine architecture 100% functional
+- **Current Sprint**: Week 3 - Integration with existing systems
 - **Philosophy**: Prevention by design - make bugs impossible
 
 # 📊 Implementation History & Lessons
@@ -47,6 +47,7 @@
 - ✅ Pile distribution to winner
 - ✅ Next turn starter assignment (winner starts next)
 - ✅ Turn completion and hand management
+- ✅ Multi-turn support with restart functionality
 - ✅ Disconnection/timeout handling with auto-play
 - ✅ State machine integration
 - ✅ Comprehensive test coverage (25 tests)
@@ -57,181 +58,134 @@
 - **Fix**: Removed automatic turn restart, preserved results, added manual control
 - **Lesson**: Single Responsibility Principle prevents complex bugs
 
+**Integration Bug Fixed**:
+- **Issue**: After Turn 1, `_get_current_player()` returned `None`
+- **Root Cause**: `turn_complete` flag not reset for subsequent turns
+- **Fix**: Added `restart_turn_for_testing()` method with proper state reset
+- **Lesson**: Integration testing reveals state management edge cases
+
 **Key Learning**: Winner determination follows priority: play_type match → play_value (descending) → play_order (ascending for ties). Turn State should manage one turn, not turn sequences.
 
-**Proven Testing Approach**:
-- Create debug scripts for investigation (investigate_bug.py)
-- Build fix verification tests (test_fix.py)  
-- Use comprehensive test coverage (25 tests caught the bug)
-- Test-driven development prevents integration issues
+## ✅ Task 2.3: Scoring State - COMPLETED
+**Time Taken**: ~90 minutes (including bug fixes)  
+**Files Created**:
+- backend/engine/state_machine/states/scoring_state.py
+- backend/tests/test_scoring_state.py (28 tests)
 
-## 🧪 Proven Testing Patterns
-**Working Test Commands** (established and verified):
-```bash
-# Quick integration test
-python backend/run_tests.py
+**Key Implementations**:
+- ✅ Base score calculation (perfect/zero/missed targets)
+- ✅ Redeal multiplier application (×2, ×3, ×4, etc.)
+- ✅ Game winner detection (≥50 points)
+- ✅ Round completion and next round preparation
+- ✅ Data structure compatibility fixes
+- ✅ Comprehensive test coverage (28 tests)
 
-# All preparation tests (20 tests)
-./backend/run_preparation_tests.sh
+**Integration Issues Fixed**:
+- **Issue**: `'str' object has no attribute 'score'`
+- **Root Cause**: MockGame using string player names instead of objects
+- **Fix**: Updated data structures for proper object handling
+- **Lesson**: Mock objects must match production data structures exactly
 
-# Turn state tests (25 tests)
-python backend/run_turn_tests_fixed.py
-python backend/test_fix.py  # Bug fix verification
+**Key Learning**: Scoring rules require careful multiplier application order and proper game completion detection.
 
-# Full test suite
-pytest backend/tests/ -v
+## ✅ Task 2.4: State Machine Integration - COMPLETED
+**Time Taken**: ~15 minutes  
+**Files Updated**:
+- backend/engine/state_machine/game_state_machine.py
+- backend/engine/state_machine/states/__init__.py
 
-# Individual state tests
-pytest backend/tests/test_preparation_state.py -v
-pytest backend/tests/test_weak_hand_scenarios.py -v
-pytest backend/tests/test_turn_state.py -v
+**Key Implementations**:
+- ✅ ScoringState registered in state machine
+- ✅ Import cleanup and organization
+- ✅ Transition map includes all 4 phases
+- ✅ Integration verification tests
+
+**Key Learning**: Clean imports and proper state registration critical for state machine functionality.
+
+## ✅ Task 2.5: Full Game Flow Integration Test - COMPLETED
+**Time Taken**: ~3 hours (including integration bug fixes)  
+**Files Created**:
+- backend/test_full_game_flow.py
+
+**Key Implementations**:
+- ✅ Complete cycle: Preparation → Declaration → Turn → Scoring → Next Round
+- ✅ Multi-turn simulation with proper state management
+- ✅ Data flow validation between all phases
+- ✅ Round cycling and game completion testing
+- ✅ Integration bug discovery and fixes
+
+**Critical Integration Bugs Fixed**:
+1. **Declaration Phase**: Player object vs string comparison in validation
+2. **Turn Phase**: Multi-turn state reset not working properly
+3. **Data Flow**: Mock object attribute mismatches
+
+**Final Test Results**:
+```
+🎉 ALL INTEGRATION TESTS PASSED!
+✅ Full Game Flow Test: PASSED
+✅ Multiple Rounds Test: PASSED
+🎯 Week 2 Task 2.5 - COMPLETE
+🚀 State machine fully functional!
 ```
 
-**Successful Test Structure Pattern**:
-```python
-class TestStatePattern:
-    @pytest_asyncio.fixture
-    async def state_fixture(self, mock_game):
-        # Setup pattern that works
-        
-    @pytest.mark.asyncio
-    async def test_enter_phase_setup(self, state_fixture):
-        # Test phase initialization
-        
-    @pytest.mark.asyncio
-    async def test_valid_action_processing(self, state_fixture):
-        # Test successful action flow
-        
-    @pytest.mark.asyncio
-    async def test_invalid_action_rejection(self, state_fixture):
-        # Test validation works
-        
-    @pytest.mark.asyncio
-    async def test_transition_conditions(self, state_fixture):
-        # Test when phase should end
-```
-
-**Successful Test Structure Pattern**:
-```python
-class TestStatePattern:
-    @pytest_asyncio.fixture
-    async def state_fixture(self, mock_game):
-        # Setup pattern that works
-        
-    @pytest.mark.asyncio
-    async def test_enter_phase_setup(self, state_fixture):
-        # Test phase initialization
-        
-    @pytest.mark.asyncio
-    async def test_valid_action_processing(self, state_fixture):
-        # Test successful action flow
-        
-    @pytest.mark.asyncio
-    async def test_invalid_action_rejection(self, state_fixture):
-        # Test validation works
-        
-    @pytest.mark.asyncio
-    async def test_transition_conditions(self, state_fixture):
-        # Test when phase should end
-```
-
-## 🏗️ Proven Implementation Patterns
-**State Class Structure** (working template):
-```python
-class [Phase]State(GameState):
-    @property
-    def phase_name(self) -> GamePhase:
-        return GamePhase.[PHASE]
-    
-    @property  
-    def next_phases(self) -> List[GamePhase]:
-        return [GamePhase.[NEXT_PHASE]]
-    
-    def __init__(self, state_machine):
-        super().__init__(state_machine)
-        self.allowed_actions = {ActionType.[RELEVANT_ACTIONS]}
-        # Phase-specific state variables
-    
-    async def _setup_phase(self) -> None:
-        # Initialize phase-specific data
-    
-    async def _cleanup_phase(self) -> None:
-        # Copy results to game object
-    
-    async def _validate_action(self, action: GameAction) -> bool:
-        # Validate action for this phase
-    
-    async def _process_action(self, action: GameAction) -> Dict[str, Any]:
-        # Process valid actions
-    
-    async def check_transition_conditions(self) -> Optional[GamePhase]:
-        # Check if ready to transition
-```
-
-**Development Velocity Tracking**:
-- Task 2.1 (Preparation): 3 hours (first state, learning curve)
-- Task 2.2 (Turn): 2 hours (including bug fix, pattern established)
-- **Estimated Task 2.3 (Scoring)**: 1 hour (pattern proven, simpler logic)
+**Key Learning**: Integration testing is essential for discovering state management edge cases that unit tests miss.
 
 # 📊 Overall Progress Tracking
 - **Week 1**: ✅ COMPLETE - State machine foundation working
-- **Week 2**: 🔧 75% COMPLETE - 3 of 4 states implemented (Prep, Declaration, Turn)
-- **Week 3-4**: 🔧 PLANNED - Integration & refactoring
+- **Week 2**: ✅ COMPLETE - All 4 state machine phases implemented and tested
+- **Week 3**: 🎯 CURRENT - Integration with existing systems (routes, bots, WebSocket)
+- **Week 4**: 🔜 PLANNED - Performance testing and production readiness
 
 # 🏗️ Architecture Decisions (PROVEN)
 ## ✅ Working Design Patterns
-1. **State Pattern**: Each game phase = separate state class
-2. **Action Queue**: Sequential processing prevents race conditions  
-3. **Single Responsibility**: Each state handles only its phase logic
-4. **Test-Driven**: Comprehensive tests before integration
-5. **Phase Validation**: Invalid actions impossible by design
+1. **State Pattern**: Each game phase = separate state class ✅ PROVEN
+2. **Action Queue**: Sequential processing prevents race conditions ✅ PROVEN
+3. **Single Responsibility**: Each state handles only its phase logic ✅ PROVEN
+4. **Test-Driven**: Comprehensive tests before integration ✅ PROVEN
+5. **Phase Validation**: Invalid actions impossible by design ✅ PROVEN
+6. **Integration Testing**: Full cycle testing catches edge cases ✅ PROVEN
 
 ## 🔥 Critical Bugs Prevented
 - **Phase Violations**: States only exist during valid phases
 - **Race Conditions**: Action queue processes sequentially
 - **Responsibility Boundaries**: Turn state bug caught - each state handles one concern only
 - **Play Order Confusion**: Redeal changes tracked properly
+- **Data Structure Mismatches**: Integration testing caught mock vs production differences
+- **State Reset Issues**: Multi-turn functionality properly implemented
 
-# 📁 Files I've Created (Reference for Future Work)
+# 📁 Files Created (Reference for Future Work)
 
-## Core Architecture (Templates to Copy)
-- `backend/engine/state_machine/core.py` - Enums and data classes ✅ REFERENCE
-- `backend/engine/state_machine/base_state.py` - Abstract state interface ✅ TEMPLATE
-- `backend/engine/state_machine/game_state_machine.py` - Central coordinator ✅ INTEGRATION POINT
+## Core Architecture (Production Ready)
+- `backend/engine/state_machine/core.py` - Enums and data classes ✅ PRODUCTION
+- `backend/engine/state_machine/base_state.py` - Abstract state interface ✅ PRODUCTION
+- `backend/engine/state_machine/game_state_machine.py` - Central coordinator ✅ PRODUCTION
 
-## Working State Examples (Copy These Patterns)
-- `backend/engine/state_machine/states/preparation_state.py` ✅ COMPLEX STATE TEMPLATE
-- `backend/engine/state_machine/states/turn_state.py` ✅ LATEST WORKING PATTERN
-- `backend/engine/state_machine/states/__init__.py` ✅ REMEMBER TO UPDATE
+## Complete State Implementation (All Working)
+- `backend/engine/state_machine/states/preparation_state.py` ✅ PRODUCTION
+- `backend/engine/state_machine/states/declaration_state.py` ✅ PRODUCTION
+- `backend/engine/state_machine/states/turn_state.py` ✅ PRODUCTION
+- `backend/engine/state_machine/states/scoring_state.py` ✅ PRODUCTION
+- `backend/engine/state_machine/states/__init__.py` ✅ PRODUCTION
 
-## Test Patterns That Work
-- `backend/tests/test_turn_state.py` ✅ COMPREHENSIVE TEST TEMPLATE
-- `backend/run_turn_tests_fixed.py` ✅ INTEGRATION TEST PATTERN
+## Comprehensive Test Suite (78+ tests passing)
+- `backend/tests/test_preparation_state.py` ✅ 15 tests
+- `backend/tests/test_turn_state.py` ✅ 25 tests
+- `backend/tests/test_scoring_state.py` ✅ 28 tests
+- `backend/tests/test_weak_hand_scenarios.py` ✅ 6 tests
+- `backend/tests/test_state_machine.py` ✅ 4 tests
+- `backend/test_full_game_flow.py` ✅ Integration tests
 
-## Debug Tools (For Future Bugs)
+## Debug Tools (Proven Effective)
 - `backend/test_fix.py` ✅ BUG FIX VERIFICATION PATTERN
 - `backend/investigate_bug.py` ✅ DEBUGGING SCRIPT TEMPLATE
+- `backend/run_turn_tests_fixed.py` ✅ INTEGRATION TEST PATTERN
 
-## Files I Don't Need to Track
-- Individual test files (follow the pattern)
-- Simple runners (just copy existing ones)
-- Documentation updates (not code reference)
-
-# 📁 File & Directory Map
-- `Rules` - Complete game mechanics, piece values, scoring
-- `Game Flow - *Phase` - Detailed phase requirements and validation
-
-## Legacy Code (To Integrate Later)
-- `backend/engine/rules.py` - Game rule implementations
+## Legacy Code (Week 3 Integration Targets)
 - `backend/api/routes/routes.py` - Current handlers (Week 3 refactor)
 - `backend/engine/bot_manager.py` - Bot logic (Week 3 integration)
+- `backend/engine/rules.py` - Game rule implementations (already working)
 
 # 🧠 Key Learning Points
-## Play Order Management
-**Rule**: When player accepts redeal → becomes starter AND play order rotates
-**Example**: A,B,C,D → B accepts → New order: B,C,D,A
-**Affects**: All subsequent phases (declaration, turns, etc.)
-
 ## Winner Determination Logic
 **Priority**: play_type match → play_value (desc) → play_order (asc)
 **Key**: Only matching starter's play type can win
@@ -245,24 +199,33 @@ class [Phase]State(GameState):
 **Principle**: States only transition when their specific conditions are met
 **Validation**: Transition map prevents invalid phase jumps
 
+## Integration Testing Critical
+**Lesson**: Unit tests catch logic bugs, integration tests catch architecture bugs
+**Pattern**: Mock objects must exactly match production data structures
+**Discovery**: State reset between phases requires careful management
+
+## Play Order Management
+**Rule**: When player accepts redeal → becomes starter AND play order rotates
+**Example**: A,B,C,D → B accepts → New order: B,C,D,A
+**Affects**: All subsequent phases (declaration, turns, etc.)
+
 # 🎮 Existing Working Systems
 - Complete game engine with rules, AI, scoring
 - Room system (create, join, host management)  
 - WebSocket real-time updates
 - Bot players with AI decision making
 - Frontend with PixiJS scenes and UI
-- Full game flow from lobby to scoring (legacy)
+- **NEW**: Complete state machine with all 4 phases working
 
-# 📅 Detailed Implementation Roadmap
+# 📅 Week 3-4 Implementation Roadmap
 
-## Week 3-4: Integration & Refactoring
+## Week 3: Integration & Refactoring (CURRENT)
 ### Phase Logic Extraction
 - Extract phase logic from `routes.py` → State classes
 - Extract bot logic from `bot_manager.py` → State classes  
 - Replace all `if phase ==` checks → State pattern
 - Update WebSocket handlers to use state machine
-- Add comprehensive integration tests
-- Performance test with bots
+- Add state machine to existing game flow
 
 ### Bot System Integration
 - Update bot decision making to use state machine
@@ -277,20 +240,18 @@ class [Phase]State(GameState):
 - Implement delta/patch state synchronization
 
 ### Testing & Validation
-- End-to-end game flow testing
+- End-to-end game flow testing with real routes
 - Multi-game concurrent testing (5-10 games target)
 - Bot vs human testing scenarios
 - Network disconnection testing
-- Performance benchmarking
+
+## Week 4: Performance & Production
+- Performance benchmarking with concurrent games
+- Production deployment preparation
+- Documentation and deployment guides
+- Final integration testing
 
 ## 🏗️ Comprehensive Architecture Framework
-
-### Core Problem Analysis
-**Primary Challenges:**
-- Phase Violations: Bots declaring during redeal phase
-- Race Conditions: Multiple actions happening simultaneously  
-- State Synchronization: Keeping all clients in sync
-- Complex Game Flow: Multiple phases with specific rules
 
 ### Architectural Philosophy
 **Guiding Principles:**
@@ -298,6 +259,7 @@ class [Phase]State(GameState):
 - **Strict Phase Boundaries**: No action crosses phase lines
 - **Event-Driven Design**: Everything is a reaction to events
 - **Fail-Safe Defaults**: When in doubt, reject the action
+- **Prevention by Design**: Architecture makes bugs impossible
 
 ### System Architecture Decisions
 
@@ -314,36 +276,9 @@ class [Phase]State(GameState):
 - Complex Actions: 2000-4000ms (analyzing plays)
 - Strategic Actions: 3000-5000ms (critical moments)
 
-#### 3. Conflict Resolution: Phase-Specific Rules
-**Timer System:**
-- Decision Timer: Time to make game decisions (10-15s)
-- Disconnection Timer: Time to reconnect before bot replacement (30s)
-
-**Key Resolution Patterns:**
-- Redeal: Process by player order, ALL weak players must decide
-- Declaration: Strict turn order, auto-select on timeout
-- Turn: Starter processed first, others auto-matched on timeout
-- Priority: Server authority, deterministic outcomes
-
-#### 4. State Synchronization: Delta/Patch Updates
-**Delta Structure:**
-```javascript
-{
-  type: "state_delta",
-  sequence: 1234,
-  changes: [{
-    path: "players.player1.hand",
-    operation: "remove", 
-    value: [2, 5]
-  }]
-}
-```
+#### 3. State Synchronization: Delta/Patch Updates
+**Strategy**: Minimal data transfer, event-driven updates
 **Benefits**: 90% bandwidth reduction, smooth updates, audit trail
-
-#### 5. Error Handling: Fail Fast and Notify
-**Strategy**: Detect → Log → Stop → Notify → Monitor
-**Categories**: Validation, State, Network, System errors
-**Recovery Boundaries**: Clear what we do/don't attempt to recover
 
 ### Scalability Requirements
 - **Target**: 5-10 concurrent games (small scale launch)
@@ -351,24 +286,12 @@ class [Phase]State(GameState):
 - **Reliability**: 30s reconnection window, bot replacement
 - **Architecture**: Fat Server/Thin Client, data-driven rules
 
-### Risk Mitigation Strategies
-- **Phase Violation Prevention**: Hard boundaries, explicit protocols
-- **Race Condition Elimination**: Sequential processing, proper locking
-- **State Consistency**: Regular snapshots, reconciliation protocols
+# 🚫 Week 3 Focus Areas
+- Integration with existing routes and WebSocket handlers
+- Bot system integration with state machine
+- Performance testing with multiple concurrent games
+- Real-world testing with frontend integration
 
-### Implementation Components
-- **Game Flow Controller**: Orchestrates lifecycle, manages transitions
-- **Phase State Machine**: Enforces transitions, stores phase data
-- **Action Processing System**: Queues, validates, processes in order
-- **Bot Behavior System**: Phase-aware, scheduled actions
-- **Client Sync Layer**: WebSocket management, real-time updates
-
-# 🚫 Out of Scope
-- Tournaments, spectator mode, ranking system
-- Payment/monetization features  
-- Complex social features
-- Fixing existing legacy bugs (we're preventing them with architecture)
-
-**Last Updated**: After Turn State completion with bug fix
-**Next Major Update**: After Scoring State implementation
-**Architecture Framework**: Comprehensive 5-aspect system defined
+**Last Updated**: Week 2 Complete - All state machine phases implemented and tested
+**Next Major Update**: After Week 3 integration complete
+**Status**: 🎉 STATE MACHINE FOUNDATION COMPLETE - Ready for production integration

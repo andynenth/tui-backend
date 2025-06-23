@@ -34,6 +34,9 @@ class ActionType(str, Enum):
     # System actions
     PHASE_TRANSITION = "phase_transition"
     GAME_STATE_UPDATE = "game_state_update"
+    
+    VIEW_SCORES = "view_scores"           
+    CONTINUE_ROUND = "continue_round"     
 
 
 @dataclass
