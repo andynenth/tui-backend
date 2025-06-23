@@ -17,22 +17,23 @@ const PlayerSlot = ({
   const getSlotClasses = () => {
     const baseClasses = `
       flex flex-col items-center justify-center p-4 rounded-lg border-2 min-h-[120px]
-      transition-all duration-200 hover:shadow-md
+      transition-all duration-300 ease-out hover:shadow-lg transform-gpu
+      hover:scale-105
     `;
     
     if (!occupant) {
-      return `${baseClasses} border-dashed border-gray-300 bg-gray-50 hover:border-gray-400`;
+      return `${baseClasses} border-dashed border-gray-300 bg-gradient-to-br from-gray-50 to-gray-100 hover:border-gray-400 hover:from-gray-100 hover:to-gray-200`;
     }
     if (isHost) {
-      return `${baseClasses} border-yellow-400 bg-yellow-50 shadow-sm`;
+      return `${baseClasses} border-yellow-400 bg-gradient-to-br from-yellow-50 to-yellow-100 shadow-lg shadow-yellow-400/20 ring-2 ring-yellow-300/50`;
     }
     if (isCurrentPlayer) {
-      return `${baseClasses} border-blue-500 bg-blue-50 shadow-sm ring-2 ring-blue-200`;
+      return `${baseClasses} border-blue-500 bg-gradient-to-br from-blue-50 to-blue-100 shadow-lg shadow-blue-500/20 ring-4 ring-blue-300/50 animate-pulse`;
     }
     if (occupant.is_bot || occupant.isBot) {
-      return `${baseClasses} border-purple-400 bg-purple-50`;
+      return `${baseClasses} border-purple-400 bg-gradient-to-br from-purple-50 to-purple-100 shadow-lg shadow-purple-400/20`;
     }
-    return `${baseClasses} border-gray-400 bg-white`;
+    return `${baseClasses} border-gray-400 bg-gradient-to-br from-white to-gray-50 shadow-lg shadow-gray-400/10`;
   };
 
   const renderSlotContent = () => {
