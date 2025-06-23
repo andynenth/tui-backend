@@ -4,6 +4,7 @@ import asyncio
 from typing import Dict, List, Optional
 from engine.player import Player
 import engine.ai as ai
+from engine.state_machine.core import GameAction, ActionType
 
 class BotManager:
     """Centralized bot management system"""
@@ -11,9 +12,9 @@ class BotManager:
     def __init__(self):
         self.active_games: Dict[str, GameBotHandler] = {}
         
-    def register_game(self, room_id: str, game):
+    def register_game(self, room_id: str, game, state_machine=None):
         """Register a game for bot management"""
-        self.active_games[room_id] = GameBotHandler(room_id, game)
+        self.active_games[room_id] = GameBotHandler(room_id, game, state_machine)
         
     def unregister_game(self, room_id: str):
         """Remove game from bot management"""
@@ -33,11 +34,18 @@ class BotManager:
 class GameBotHandler:
     """Handles bot actions for a specific game"""
     
-    def __init__(self, room_id: str, game):
+    def __init__(self, room_id: str, game, state_machine=None):
         self.room_id = room_id
         self.game = game
+        self.state_machine = state_machine
         self.processing = False
         self._lock = asyncio.Lock()
+    
+    def _get_game_state(self):
+        """Get current game state from state machine or fallback to direct game access"""
+        if self.state_machine:
+            return self.state_machine.game  # Access game through state machine
+        return self.game  # Fallback to direct access
         
     async def handle_event(self, event: str, data: dict):
         """Process game events and trigger bot actions"""
@@ -82,12 +90,13 @@ class GameBotHandler:
         
         try:
             # Get previous declarations
+            game_state = self._get_game_state()
             previous_declarations = [
-                p.declared for p in self.game.players if p.declared != 0
+                p.declared for p in game_state.players if p.declared != 0
             ]
             
             # Check if last player
-            is_last = position == len(self.game.players) - 1
+            is_last = position == len(game_state.players) - 1
             
             # Calculate declaration
             value = ai.choose_declare(
@@ -101,16 +110,27 @@ class GameBotHandler:
             
             # Apply last player rule
             if is_last:
-                total_so_far = sum(p.declared for p in self.game.players if p.declared != 0)
+                game_state = self._get_game_state()
+                total_so_far = sum(p.declared for p in game_state.players if p.declared != 0)
                 forbidden = 8 - total_so_far
                 if value == forbidden and 0 <= forbidden <= 8:
                     print(f"⚠️ Bot {bot.name} cannot declare {value} (total would be 8)")
                     value = 1 if forbidden != 1 else 2
             
-            # Apply declaration
-            result = self.game.declare(bot.name, value)
+            # Apply declaration via state machine
+            if self.state_machine:
+                action = GameAction(
+                    player_name=bot.name,
+                    action_type=ActionType.DECLARE,
+                    payload={"value": value},
+                    is_bot=True
+                )
+                result = await self.state_machine.handle_action(action)
+            else:
+                # Fallback to direct game call
+                result = self.game.declare(bot.name, value)
             
-            if result["status"] == "ok":
+            if result.get("status") == "ok" or result.get("success", False):
                 # Broadcast to all clients
                 await broadcast(self.room_id, "declare", {
                     "player": bot.name,
@@ -129,7 +149,16 @@ class GameBotHandler:
             traceback.print_exc()
             # Fallback declaration
             try:
-                self.game.declare(bot.name, 1)
+                if self.state_machine:
+                    action = GameAction(
+                        player_name=bot.name,
+                        action_type=ActionType.DECLARE,
+                        payload={"value": 1},
+                        is_bot=True
+                    )
+                    await self.state_machine.handle_action(action)
+                else:
+                    self.game.declare(bot.name, 1)
                 await broadcast(self.room_id, "declare", {
                     "player": bot.name,
                     "value": 1,
@@ -141,7 +170,8 @@ class GameBotHandler:
     async def _handle_round_start(self):
         """Handle start of a new round"""
         # Check if starter is a bot
-        starter = self.game.current_order[0] if self.game.current_order else None
+        game_state = self._get_game_state()
+        starter = game_state.current_order[0] if game_state.current_order else None
         if starter and starter.is_bot:
             print(f"🤖 Round starter is bot: {starter.name}")
             await asyncio.sleep(1)
@@ -151,11 +181,12 @@ class GameBotHandler:
         """Handle bot plays in turn order"""
         from backend.socket_manager import broadcast
         
-        if not self.game.required_piece_count:
+        game_state = self._get_game_state()
+        if not game_state.required_piece_count:
             return  # First player hasn't set the count yet
             
         # Get current turn order
-        turn_order = self.game.turn_order
+        turn_order = game_state.turn_order
         if not turn_order:
             return
             
@@ -166,7 +197,8 @@ class GameBotHandler:
             player = turn_order[i]
             
             # Check if already played this turn
-            if any(play.player == player for play in self.game.current_turn_plays):
+            game_state = self._get_game_state()
+            if any(play.player == player for play in game_state.current_turn_plays):
                 continue
                 
             if not player.is_bot:
@@ -182,17 +214,28 @@ class GameBotHandler:
         
         try:
             # Choose play
+            game_state = self._get_game_state()
             selected = ai.choose_best_play(
                 bot.hand,
-                required_count=self.game.required_piece_count,
+                required_count=game_state.required_piece_count,
                 verbose=True
             )
             
             # Get indices
             indices = self._get_piece_indices(bot.hand, selected)
             
-            # Make play
-            result = self.game.play_turn(bot.name, indices)
+            # Make play via state machine
+            if self.state_machine:
+                action = GameAction(
+                    player_name=bot.name,
+                    action_type=ActionType.PLAY_PIECES,
+                    payload={"piece_indices": indices},
+                    is_bot=True
+                )
+                result = await self.state_machine.handle_action(action)
+            else:
+                # Fallback to direct game call
+                result = self.game.play_turn(bot.name, indices)
             
             # Broadcast play
             await broadcast(self.room_id, "play", {
@@ -222,7 +265,8 @@ class GameBotHandler:
         })
         
         # Check if round is complete
-        if all(len(p.hand) == 0 for p in self.game.players):
+        game_state = self._get_game_state()
+        if all(len(p.hand) == 0 for p in game_state.players):
             await self._handle_round_complete()
         elif result["winner"]:
             # Start next turn with winner
@@ -234,9 +278,17 @@ class GameBotHandler:
         from backend.socket_manager import broadcast
         from engine.win_conditions import is_game_over, get_winners
         
-        summary = self.game.score_round()
-        game_over = is_game_over(self.game)
-        winners = get_winners(self.game) if game_over else []
+        # Handle scoring via state machine or fallback
+        if self.state_machine:
+            # State machine should handle scoring phase
+            # For now, use game directly as state machine may not have scoring methods exposed
+            summary = self.game.score_round()
+            game_over = is_game_over(self.game)
+            winners = get_winners(self.game) if game_over else []
+        else:
+            summary = self.game.score_round()
+            game_over = is_game_over(self.game)
+            winners = get_winners(self.game) if game_over else []
         
         await broadcast(self.room_id, "score", {
             "summary": summary,
@@ -247,7 +299,12 @@ class GameBotHandler:
         if not game_over:
             # Start next round
             await asyncio.sleep(2)
-            round_data = self.game.prepare_round()
+            if self.state_machine:
+                # State machine should handle round preparation
+                # For now, use game directly as state machine may not have round prep methods exposed
+                round_data = self.game.prepare_round()
+            else:
+                round_data = self.game.prepare_round()
             await broadcast(self.room_id, "start_round", {
                 "round": round_data["round"],
                 "starter": round_data["starter"],
@@ -259,7 +316,7 @@ class GameBotHandler:
                         "is_bot": p.is_bot,
                         "zero_declares_in_a_row": p.zero_declares_in_a_row
                     }
-                    for p in self.game.players
+                    for p in self._get_game_state().players
                 ]
             })
             await self._handle_round_start()
@@ -268,7 +325,11 @@ class GameBotHandler:
         """Handle start of a new turn"""
         print(f"🎮 Bot Manager: Handling turn start for {starter_name}")
         
-        starter = self.game.get_player(starter_name)
+        game_state = self._get_game_state()
+        starter = game_state.get_player(starter_name) if hasattr(game_state, 'get_player') else None
+        if not starter:
+            # Fallback: find player in players list
+            starter = next((p for p in game_state.players if p.name == starter_name), None)
         if not starter:
             print(f"❌ Starter {starter_name} not found")
             return
@@ -287,9 +348,8 @@ class GameBotHandler:
         try:
             print(f"🤖 Bot {bot.name} choosing first play...")
             
-            # Reset turn state
-            self.game.current_turn_plays = []
-            self.game.required_piece_count = None
+            # Reset turn state (handled by state machine)
+            # Note: State machine manages turn state internally
             
             # Choose play
             selected = ai.choose_best_play(bot.hand, required_count=None, verbose=True)
@@ -297,8 +357,18 @@ class GameBotHandler:
             
             print(f"🤖 Bot {bot.name} will play {len(selected)} pieces: {[str(p) for p in selected]}")
             
-            # Make the play
-            result = self.game.play_turn(bot.name, indices)
+            # Make the play via state machine
+            if self.state_machine:
+                action = GameAction(
+                    player_name=bot.name,
+                    action_type=ActionType.PLAY_PIECES,
+                    payload={"piece_indices": indices},
+                    is_bot=True
+                )
+                result = await self.state_machine.handle_action(action)
+            else:
+                # Fallback to direct game call
+                result = self.game.play_turn(bot.name, indices)
             
             # Broadcast the play
             await broadcast(self.room_id, "play", {
@@ -323,7 +393,8 @@ class GameBotHandler:
             
     def _get_declaration_order(self) -> List[Player]:
         """Get players in declaration order"""
-        return self.game.current_order
+        game_state = self._get_game_state()
+        return game_state.current_order
         
     def _get_player_index(self, player_name: str, order: List[Player]) -> int:
         """Find player index in order"""
