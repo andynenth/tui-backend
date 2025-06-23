@@ -200,8 +200,8 @@ async def start_game(room_id: str = Query(...)):
         if not result["success"]:
             raise HTTPException(status_code=400, detail="Failed to start game")
         
-        # Register game with bot manager  
-        bot_manager.register_game(room_id, room.game)
+        # Register game with bot manager and state machine  
+        bot_manager.register_game(room_id, room.game, room.game_state_machine)
         
         print(f"🎯 Game started with StateMachine for room {room_id}")
         
