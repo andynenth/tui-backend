@@ -3,9 +3,9 @@
 **For history/reference**: → Use AI_CONTEXT.md
 
 # 🎯 Current Status
-**Active Sprint**: Week 3 - Integration with Existing Systems  
+**Active Sprint**: Week 3 - COMPLETE SYSTEM REPLACEMENT  
 **Week 2**: ✅ COMPLETE - All 4 state machine phases implemented and tested  
-**Next**: Integrate state machine with routes, bots, and WebSocket handlers
+**Decision**: Complete replacement rather than integration - Remove ALL direct game calls
 
 ## Week 2 Final Results ✅ COMPLETE
 - ✅ Task 2.1: Preparation State (3h) 
@@ -17,62 +17,64 @@
 **Total Week 2 Time**: ~9.5 hours  
 **Final Status**: 🎉 ALL INTEGRATION TESTS PASSED - State machine fully functional
 
-# 🎯 CURRENT SPRINT: Week 3 Integration
+# 🎯 CURRENT SPRINT: Week 3 Complete System Replacement
 
-## Sprint Goals
-1. **Route Integration**: Replace manual phase checks with state machine
-2. **Bot Integration**: Update bot decision making to use state machine  
-3. **WebSocket Integration**: Real-time updates through state machine
-4. **Performance Testing**: Multi-game concurrent testing
+## 🚨 CRITICAL DECISION: Complete System Replacement
+**Problem**: Race conditions, inconsistent authority, frontend synchronization issues  
+**Solution**: Make state machine the ONLY authority for all game state changes
 
-## Priority Task List
+## Replacement Strategy: Single Authority Pattern
+```
+State Machine = ONLY authority → GameAction = ONLY way to change state
+```
 
-### 🔧 Task 3.1: Route Integration Analysis
-**File**: `backend/api/routes/routes.py`  
-**Goal**: Analyze existing route handlers and plan state machine integration  
-**Time**: ~2 hours
-**Success Criteria**:
-- ✅ Map current route handlers to state machine actions
-- ✅ Identify `if phase ==` checks to replace
-- ✅ Plan WebSocket message integration
-- ✅ Create integration strategy document
+## 7-Phase Complete Replacement Plan
 
-### 🔧 Task 3.2: State Machine Route Integration  
-**Goal**: Replace manual phase handling with state machine  
-**Time**: ~4 hours
-**Success Criteria**:
-- ✅ Update route handlers to use state machine
-- ✅ Replace `if phase ==` checks with state machine validation
-- ✅ Centralize action processing through state machine
-- ✅ Maintain backward compatibility
+### ✅ Phase 1: Architecture Design - COMPLETED
+**Status**: ✅ COMPLETE  
+**Design**: Single Authority Pattern with priority queue and sequence numbers
+- State machine as single source of truth
+- All actions through GameAction only  
+- Priority queue (humans before bots)
+- Sequence numbers for frontend ordering
+- Error boundaries for recovery
 
-### 🔧 Task 3.3: Bot System Integration
-**File**: `backend/engine/bot_manager.py`  
-**Goal**: Update bot logic to work with state machine  
-**Time**: ~3 hours
-**Success Criteria**:
-- ✅ Phase-specific bot decision making
-- ✅ Integration with state machine action queue
-- ✅ Proper timing and delay implementation
-- ✅ Disconnection/reconnection handling
+### ✅ Phase 2: Complete Route Replacement - COMPLETED
+**Status**: ✅ COMPLETE - ALL routes now use state machine only
+**Time**: ~1 hour
+**Files Modified**: `backend/api/routes/routes.py`, `backend/test_route_replacement.py`
+**Results**: 
+- ✅ Zero direct game method calls remaining
+- ✅ RedealController eliminated completely
+- ✅ Error recovery added to all endpoints
+- ✅ All tests passing (routes, full game flow, 78+ state tests)
+- ✅ Backward compatibility maintained
 
-### 🔧 Task 3.4: WebSocket Integration
-**Goal**: Real-time updates through state machine events  
-**Time**: ~2 hours
-**Success Criteria**:
-- ✅ State change notifications
-- ✅ Action result broadcasting
-- ✅ Delta/patch update implementation
-- ✅ Client synchronization
+### 🔧 Phase 3: Bot Manager Replacement - NEXT UP
+**Goal**: Convert bot manager to use only GameActions
+**Target**: `backend/engine/bot_manager.py` (26+ direct game calls to replace)
+**Challenge**: Preserve bot timing/behavior while routing through state machine
+**Success**: Bots create GameActions, no direct game.play_turn() calls
 
-### 🔧 Task 3.5: Performance Testing
-**Goal**: Multi-game concurrent testing  
-**Time**: ~2 hours
-**Success Criteria**:
-- ✅ 5-10 concurrent games running
-- ✅ Bot vs human testing scenarios
-- ✅ Network disconnection testing
-- ✅ Performance metrics collection
+### 🔧 Phase 4: WebSocket Replacement - PENDING  
+**Goal**: WebSocket events trigger only GameActions
+**Target**: WebSocket handlers
+**Success**: All WS events become GameActions with sequence numbers
+
+### 🔧 Phase 5: Message Ordering System - PENDING
+**Goal**: Add sequence numbers to prevent frontend race conditions
+**Target**: State machine broadcasting
+**Success**: Every message has sequence_id, frontend can reorder
+
+### 🔧 Phase 6: Error Recovery System - PENDING
+**Goal**: Bulletproof error handling and recovery
+**Target**: State machine error boundaries  
+**Success**: Failed actions trigger recovery, game never crashes
+
+### 🔧 Phase 7: Integration Testing - PENDING
+**Goal**: Complete system validation
+**Target**: End-to-end testing
+**Success**: Full game works with only state machine authority
 
 ## Week 3 Reference Files
 
@@ -195,6 +197,6 @@ python run_tests.py
 
 **Key Learning**: Test scenarios must be realistic - having all players with weak hands is statistically < 1% probability.
 
-**Last Updated**: Week 2 complete + Test quality fixes  
-**Next Update**: After Task 3.1 route analysis complete  
-**Status**: 🚀 Ready to begin Week 3 integration work
+**Last Updated**: Week 3 Phase 2 - Route replacement complete and tested
+**Next Update**: After Phase 3 bot manager replacement complete  
+**Status**: 🎯 PHASE 2 COMPLETE - Ready for Phase 3 bot manager replacement
