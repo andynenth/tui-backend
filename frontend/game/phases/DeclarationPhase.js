@@ -20,6 +20,9 @@ export class DeclarationPhase extends BasePhase {
   constructor(stateManager, socketManager, uiRenderer) {
     super(stateManager, socketManager, uiRenderer);
 
+    // Explicitly set phase name (overrides BasePhase constructor.name logic)
+    this.name = 'declaration';
+    
     // Input state management
     this.waitingForInput = false;
     this.hasPromptedUser = false;
@@ -38,8 +41,10 @@ export class DeclarationPhase extends BasePhase {
 
     console.log("🔸 --- Declare Phase ---");
 
-    // Initialize phase UI
-    this.uiRenderer.showDeclarationPhase();
+    // Initialize phase UI (optional)
+    if (this.uiRenderer) {
+      this.uiRenderer.showDeclarationPhase();
+    }
 
     // Check if it's our turn to declare
     this.checkDeclarationTurn();

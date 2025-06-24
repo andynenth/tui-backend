@@ -1,6 +1,7 @@
 # backend/engine/game.py
 
 import random
+from typing import List
 from engine.piece import Piece
 from engine.player import Player
 import engine.ai as ai
@@ -28,6 +29,10 @@ class Game:
         self.required_piece_count = None   # Number of pieces required this turn
         self.turn_order = []               # Player order for current turn
         self.last_turn_winner = None       # Player who won the last turn
+        
+        # Player tracking for state machine
+        self.current_player = None         # Current player (for round start/declarations)
+        self.round_starter = None          # Player who starts the round
         
         # Event-driven support
         self.current_phase = None          # Track current phase for controllers
@@ -444,6 +449,17 @@ class Game:
             if p.name == name:
                 return p
         raise ValueError(f"Player '{name}' not found")
+    
+    def get_player_order_from(self, starting_player_name: str) -> List[Player]:
+        """Get player order starting from a specific player"""
+        try:
+            start_player = self.get_player(starting_player_name)
+            start_index = self.players.index(start_player)
+            return self.players[start_index:] + self.players[:start_index]
+        except (ValueError, AttributeError):
+            # Fallback: return players in original order
+            print(f"⚠️ Warning: Could not find starting player {starting_player_name}, using original order")
+            return self.players
 
     def declare(self, player_name: str, value: int) -> dict:
         """Allow a player to declare how many piles they plan to win this round."""
@@ -557,6 +573,10 @@ class Game:
             player.hand.clear()
         for i in range(32):
             self.players[i % 4].hand.append(deck[i])
+    
+    def deal_pieces(self):
+        """Public method for dealing pieces - used by state machine"""
+        self._deal_pieces()
             
     # ===== SHARED HELPER METHODS =====
 

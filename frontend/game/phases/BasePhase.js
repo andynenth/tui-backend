@@ -20,7 +20,7 @@ export class BasePhase {
    */
   async enter() {
     this.isActive = true;
-    console.log(`🔸 Entering ${this.constructor.name}`);
+    console.log(`🔸 Entering ${this.name || this.constructor.name}`);
     
     // Register event handlers
     this.registerEventHandlers();
@@ -35,7 +35,7 @@ export class BasePhase {
    * Exit this phase
    */
   async exit() {
-    console.log(`🔹 Exiting ${this.constructor.name}`);
+    console.log(`🔹 Exiting ${this.name || this.constructor.name}`);
     
     this.isActive = false;
     
@@ -81,7 +81,7 @@ export class BasePhase {
    */
   async handleUserInput(input) {
     if (!this.isActive) {
-      console.log(`⚠️ Input ignored - ${this.constructor.name} not active`);
+      console.log(`⚠️ Input ignored - ${this.name || this.constructor.name} not active`);
       return false;
     }
     
@@ -95,7 +95,7 @@ export class BasePhase {
    */
   async handleSocketEvent(event, data) {
     if (!this.isActive) {
-      console.log(`⚠️ Socket event ignored - ${this.constructor.name} not active`);
+      console.log(`⚠️ Socket event ignored - ${this.name || this.constructor.name} not active`);
       return false;
     }
     
@@ -107,7 +107,7 @@ export class BasePhase {
    * Complete this phase and move to next
    */
   completePhase(data = {}) {
-    console.log(`✅ ${this.constructor.name} complete`);
+    console.log(`✅ ${this.name || this.constructor.name} complete`);
     
     if (this.stateManager) {
       this.stateManager.emit('phaseComplete', {
@@ -130,14 +130,14 @@ export class BasePhase {
    * Get display name for this phase
    */
   getPhaseDisplayName() {
-    return this.constructor.name.replace('Phase', ' Phase');
+    return (this.name || this.constructor.name).replace('Phase', ' Phase');
   }
 
   /**
    * Show error message
    */
   showError(message) {
-    console.error(`❌ ${this.constructor.name}: ${message}`);
+    console.error(`❌ ${this.name || this.constructor.name}: ${message}`);
     if (this.uiRenderer) {
       this.uiRenderer.showError(message);
     }
@@ -147,7 +147,7 @@ export class BasePhase {
    * Show success message
    */
   showSuccess(message) {
-    console.log(`✅ ${this.constructor.name}: ${message}`);
+    console.log(`✅ ${this.name || this.constructor.name}: ${message}`);
     if (this.uiRenderer) {
       this.uiRenderer.showSuccess(message);
     }
@@ -157,7 +157,7 @@ export class BasePhase {
    * Show warning message
    */
   showWarning(message) {
-    console.warn(`⚠️ ${this.constructor.name}: ${message}`);
+    console.warn(`⚠️ ${this.name || this.constructor.name}: ${message}`);
     if (this.uiRenderer) {
       this.uiRenderer.showWarning(message);
     }

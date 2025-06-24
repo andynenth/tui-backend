@@ -48,16 +48,8 @@ export class GamePhaseManager extends EventEmitter {
    * Transition to a new phase
    */
   async transitionTo(phaseName) {
-    console.log(`🔄 Phase transition requested: ${this.currentPhase?.constructor.name || 'null'} → ${phaseName}`);
+    console.log(`🔄 Phase transition requested: ${this.currentPhase?.name || 'null'} → ${phaseName}`);
     
-    // Add debug logging
-    if (this.currentPhase) {
-        console.log("Current phase details:", {
-            constructorName: this.currentPhase.constructor.name,
-            phase: this.currentPhase,
-            isRedealPhase: this.currentPhase instanceof RedealPhase
-        });
-    }
     
     // Validate phase exists
     if (phaseName !== 'waiting' && !this.phases[phaseName]) {
@@ -68,11 +60,11 @@ export class GamePhaseManager extends EventEmitter {
     try {
       // Exit current phase
       if (this.currentPhase) {
-        console.log(`🚪 Exiting phase: ${this.currentPhase.constructor.name}`);
+        console.log(`🚪 Exiting phase: ${this.currentPhase.name || this.currentPhase.constructor.name}`);
         await this.currentPhase.exit();
       }
       
-      const oldPhase = this.currentPhase?.constructor.name || null;
+      const oldPhase = this.currentPhase?.name || this.currentPhase?.constructor.name || null;
       
       // Set new phase
       if (phaseName === 'waiting') {
@@ -80,17 +72,17 @@ export class GamePhaseManager extends EventEmitter {
         console.log("⏳ Entered waiting state");
       } else {
         this.currentPhase = this.phases[phaseName];
-        console.log(`🚪 Entering phase: ${this.currentPhase.constructor.name}`);
+        console.log(`🚪 Entering phase: ${this.currentPhase.name}`);
         await this.currentPhase.enter();
       }
       
       // Emit phase change event
       this.emit('phaseChanged', {
         from: oldPhase,
-        to: this.currentPhase?.constructor.name || 'waiting'
+        to: this.currentPhase?.name || 'waiting'
       });
       
-      console.log(`✅ Phase transition complete: ${oldPhase} → ${this.currentPhase?.constructor.name || 'waiting'}`);
+      console.log(`✅ Phase transition complete: ${oldPhase} → ${this.currentPhase?.name || 'waiting'}`);
       
       return true;
       
@@ -115,6 +107,12 @@ export class GamePhaseManager extends EventEmitter {
    * Get current phase name
    */
   getCurrentPhaseName() {
+    // Use the phase's name property instead of constructor.name (more reliable)
+    if (this.currentPhase && this.currentPhase.name) {
+      return this.currentPhase.name;
+    }
+    
+    // Fallback to constructor.name approach
     return this.currentPhase?.constructor.name.replace('Phase', '').toLowerCase() || 'waiting';
   }
 

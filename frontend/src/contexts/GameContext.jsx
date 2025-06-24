@@ -1,6 +1,6 @@
 // frontend/src/contexts/GameContext.jsx
 
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import React, { createContext, useContext, useState, useEffect, useMemo } from 'react';
 import { useGameState } from '../hooks/useGameState';
 import { usePhaseManager } from '../hooks/usePhaseManager';
 import { useSocket } from '../hooks/useSocket';
@@ -24,41 +24,45 @@ export const GameProvider = ({
   const [isInitialized, setIsInitialized] = useState(false);
   const [error, setError] = useState(null);
 
-  // Initialize core hooks
-  const socket = useSocket(roomId);
-  const gameState = useGameState(roomId, playerName, initialData);
-  const phaseManager = usePhaseManager(gameState.manager, socket.manager, null);
+  // Memoize initialData to prevent unnecessary re-renders
+  const memoizedInitialData = useMemo(() => initialData, [JSON.stringify(initialData)]);
 
-  // Initialize connections and state
+  // Initialize core hooks with memoization to prevent re-creation
+  const socket = useSocket(roomId);
+  const gameState = useGameState(roomId, playerName, memoizedInitialData);
+  
+  // Memoize phaseManager to prevent constant recreation
+  const stableGameStateManager = useMemo(() => gameState.manager, [gameState.manager]);
+  const stableSocketManager = useMemo(() => socket.manager, [socket.manager]);
+  const phaseManager = usePhaseManager(stableGameStateManager, stableSocketManager, null);
+
+  // Wait for socket connection, then initialize
   useEffect(() => {
     if (!roomId || !playerName) return;
+    if (isInitialized) return; // Prevent re-initialization
+    if (!socket.isConnected) return; // Wait for socket to be connected
 
-    const initialize = async () => {
-      try {
-        setError(null);
-        
-        // Wait for socket connection
-        if (!socket.isConnected && !socket.isConnecting) {
-          await socket.connect();
-        }
+    console.log('🚀 GAME_CONTEXT: Socket connected, initializing game context for room', roomId);
+    
+    try {
+      setError(null);
+      
+      // Set up game event handlers
+      const unsubscribers = setupGameEventHandlers();
 
-        // Set up game event handlers
-        const unsubscribers = setupGameEventHandlers();
+      setIsInitialized(true);
+      console.log('✅ GAME_CONTEXT: Game context initialized successfully');
 
-        setIsInitialized(true);
-
-        // Cleanup function
-        return () => {
-          unsubscribers.forEach(unsub => unsub());
-        };
-      } catch (err) {
-        console.error('Failed to initialize game:', err);
-        setError(err);
-      }
-    };
-
-    initialize();
-  }, [roomId, playerName, socket.isConnected]);
+      // Cleanup function
+      return () => {
+        console.log('🧹 GAME_CONTEXT: Cleaning up game context');
+        unsubscribers.forEach(unsub => unsub());
+      };
+    } catch (err) {
+      console.error('❌ GAME_CONTEXT: Failed to initialize game:', err);
+      setError(err);
+    }
+  }, [roomId, playerName, socket.isConnected]); // Wait for socket connection
 
   // Set up game-specific event handlers
   const setupGameEventHandlers = () => {
@@ -72,7 +76,24 @@ export const GameProvider = ({
 
     // Phase transitions
     const unsubPhaseChange = socket.on('phase_change', async (data) => {
-      await phaseManager.transitionTo(data.phase.toLowerCase());
+      console.log('🎯 GAME_CONTEXT: Received phase_change event:', data);
+      
+      // Update game state with player data if available
+      if (data.players && gameState.manager) {
+        const playerData = data.players[playerName];
+        if (playerData && playerData.hand) {
+          console.log('🃏 GAME_CONTEXT: Updating hand data:', playerData.hand);
+          gameState.manager.updateHand(playerData.hand);
+        }
+      }
+      
+      if (phaseManager && data.phase) {
+        const phaseName = data.phase.toLowerCase();
+        console.log('🎯 GAME_CONTEXT: Transitioning to phase:', phaseName);
+        await phaseManager.transitionTo(phaseName);
+      } else {
+        console.error('❌ GAME_CONTEXT: Invalid phase change data or no phase manager:', { data, phaseManager });
+      }
     });
     unsubscribers.push(unsubPhaseChange);
 
@@ -120,35 +141,35 @@ export const GameProvider = ({
   const actions = {
     // Declaration actions
     makeDeclaration: (value) => {
-      socket.send('declare', { declaration: value });
+      socket.send('declare', { player_name: playerName, declaration: value });
     },
 
     // Turn actions
     playPieces: (indices) => {
       const pieces = gameState.removeFromHand(indices);
-      socket.send('play_pieces', { pieces, indices });
+      socket.send('play_pieces', { player_name: playerName, pieces, indices });
     },
 
     // Redeal actions
     requestRedeal: () => {
-      socket.send('request_redeal');
+      socket.send('request_redeal', { player_name: playerName });
     },
 
     acceptRedeal: () => {
-      socket.send('accept_redeal');
+      socket.send('accept_redeal', { player_name: playerName });
     },
 
     declineRedeal: () => {
-      socket.send('decline_redeal');
+      socket.send('decline_redeal', { player_name: playerName });
     },
 
     // General actions
     sendReady: () => {
-      socket.send('player_ready');
+      socket.send('player_ready', { player_name: playerName });
     },
 
     leaveGame: () => {
-      socket.send('leave_game');
+      socket.send('leave_game', { player_name: playerName });
       socket.disconnect();
     }
   };

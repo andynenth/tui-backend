@@ -224,6 +224,41 @@ async def websocket_endpoint(websocket: WebSocket, room_id: str):
                             "event": "room_state_update",
                             "data": {"slots": updated_summary["slots"], "host_name": updated_summary["host_name"]}
                         })
+                        
+                        # Send current game phase if game is running
+                        if room.started and room.game_state_machine:
+                            current_phase = room.game_state_machine.get_current_phase()
+                            if current_phase:
+                                phase_data = room.game_state_machine.get_phase_data()
+                                allowed_actions = [action.value for action in room.game_state_machine.get_allowed_actions()]
+                                
+                                # Add player hands data
+                                players_data = {}
+                                if room.game and hasattr(room.game, 'players'):
+                                    for player in room.game.players:
+                                        player_name = getattr(player, 'name', str(player))
+                                        player_hand = []
+                                        
+                                        # Get player's hand
+                                        if hasattr(player, 'hand') and player.hand:
+                                            player_hand = [str(piece) for piece in player.hand]
+                                        
+                                        players_data[player_name] = {
+                                            'hand': player_hand,
+                                            'hand_size': len(player_hand)
+                                        }
+                                
+                                await registered_ws.send_json({
+                                    "event": "phase_change",
+                                    "data": {
+                                        "phase": current_phase.value,
+                                        "allowed_actions": allowed_actions,
+                                        "phase_data": phase_data,
+                                        "players": players_data
+                                    }
+                                })
+                                print(f"DEBUG_WS_RECEIVE: Sent current game phase {current_phase.value} to client in room {room_id}")
+                        
                         await asyncio.sleep(0)
                         print(f"DEBUG_WS_RECEIVE: Sent initial room state to client in room {room_id} after client_ready.")
                     else:
@@ -454,6 +489,390 @@ async def websocket_endpoint(websocket: WebSocket, room_id: str):
                         await registered_ws.send_json({
                             "event": "error",
                             "data": {"message": "Failed to process redeal decision"}
+                        })
+
+                # ✅ ADD: Missing game WebSocket handlers
+                elif event_name == "declare":
+                    # Handle player declaration
+                    player_name = event_data.get("player_name")
+                    value = event_data.get("declaration")
+                    
+                    if not player_name or value is None:
+                        await registered_ws.send_json({
+                            "event": "error",
+                            "data": {"message": "Player name and declaration value required"}
+                        })
+                        continue
+                        
+                    try:
+                        room = room_manager.get_room(room_id)
+                        if not room or not room.game_state_machine:
+                            await registered_ws.send_json({
+                                "event": "error", 
+                                "data": {"message": "Game not found"}
+                            })
+                            continue
+                            
+                        # Create GameAction for declaration (same as REST endpoint)
+                        from engine.state_machine.core import GameAction, ActionType
+                        action = GameAction(
+                            player_name=player_name,
+                            action_type=ActionType.DECLARE,
+                            payload={"value": value}
+                        )
+                        
+                        result = await room.game_state_machine.handle_action(action)
+                        
+                        if result.get("success"):
+                            await registered_ws.send_json({
+                                "event": "declare_success",
+                                "data": {"player_name": player_name, "value": value}
+                            })
+                            print(f"✅ Declaration queued: {player_name} -> {value}")
+                        else:
+                            await registered_ws.send_json({
+                                "event": "error",
+                                "data": {"message": result.get("error", "Declaration failed")}
+                            })
+                            
+                    except Exception as e:
+                        print(f"❌ Declaration error: {e}")
+                        await registered_ws.send_json({
+                            "event": "error",
+                            "data": {"message": "Failed to process declaration"}
+                        })
+
+                elif event_name == "play_pieces":
+                    # Handle piece playing
+                    player_name = event_data.get("player_name")
+                    indices = event_data.get("indices", [])
+                    
+                    if not player_name or not indices:
+                        await registered_ws.send_json({
+                            "event": "error",
+                            "data": {"message": "Player name and piece indices required"}
+                        })
+                        continue
+                        
+                    try:
+                        room = room_manager.get_room(room_id)
+                        if not room or not room.game_state_machine:
+                            await registered_ws.send_json({
+                                "event": "error",
+                                "data": {"message": "Game not found"}
+                            })
+                            continue
+                            
+                        # Create GameAction for piece playing (same as REST endpoint)
+                        from engine.state_machine.core import GameAction, ActionType
+                        action = GameAction(
+                            player_name=player_name,
+                            action_type=ActionType.PLAY_PIECES,
+                            payload={"piece_indices": indices}
+                        )
+                        
+                        result = await room.game_state_machine.handle_action(action)
+                        
+                        if result.get("success"):
+                            await registered_ws.send_json({
+                                "event": "play_success",
+                                "data": {"player_name": player_name, "indices": indices}
+                            })
+                            print(f"✅ Play queued: {player_name} -> {indices}")
+                        else:
+                            await registered_ws.send_json({
+                                "event": "error",
+                                "data": {"message": result.get("error", "Play failed")}
+                            })
+                            
+                    except Exception as e:
+                        print(f"❌ Play pieces error: {e}")
+                        await registered_ws.send_json({
+                            "event": "error",
+                            "data": {"message": "Failed to process piece play"}
+                        })
+
+                elif event_name == "request_redeal":
+                    # Handle redeal request
+                    player_name = event_data.get("player_name")
+                    
+                    if not player_name:
+                        await registered_ws.send_json({
+                            "event": "error",
+                            "data": {"message": "Player name required"}
+                        })
+                        continue
+                        
+                    try:
+                        room = room_manager.get_room(room_id)
+                        if not room or not room.game_state_machine:
+                            await registered_ws.send_json({
+                                "event": "error",
+                                "data": {"message": "Game not found"}
+                            })
+                            continue
+                            
+                        # Create GameAction for redeal request (same as REST endpoint)
+                        from engine.state_machine.core import GameAction, ActionType
+                        action = GameAction(
+                            player_name=player_name,
+                            action_type=ActionType.REDEAL_REQUEST,
+                            payload={"accept": True}
+                        )
+                        
+                        result = await room.game_state_machine.handle_action(action)
+                        
+                        if result.get("success"):
+                            await registered_ws.send_json({
+                                "event": "redeal_success",
+                                "data": {"player_name": player_name}
+                            })
+                            print(f"✅ Redeal request queued: {player_name}")
+                        else:
+                            await registered_ws.send_json({
+                                "event": "error",
+                                "data": {"message": result.get("error", "Redeal request failed")}
+                            })
+                            
+                    except Exception as e:
+                        print(f"❌ Redeal request error: {e}")
+                        await registered_ws.send_json({
+                            "event": "error",
+                            "data": {"message": "Failed to process redeal request"}
+                        })
+
+                elif event_name == "accept_redeal":
+                    # Handle redeal acceptance
+                    player_name = event_data.get("player_name")
+                    
+                    if not player_name:
+                        await registered_ws.send_json({
+                            "event": "error",
+                            "data": {"message": "Player name required"}
+                        })
+                        continue
+                        
+                    try:
+                        room = room_manager.get_room(room_id)
+                        if not room or not room.game_state_machine:
+                            await registered_ws.send_json({
+                                "event": "error",
+                                "data": {"message": "Game not found"}
+                            })
+                            continue
+                            
+                        # Create GameAction for redeal acceptance
+                        from engine.state_machine.core import GameAction, ActionType
+                        action = GameAction(
+                            player_name=player_name,
+                            action_type=ActionType.REDEAL_RESPONSE,
+                            payload={"accept": True}
+                        )
+                        
+                        result = await room.game_state_machine.handle_action(action)
+                        
+                        if result.get("success"):
+                            await registered_ws.send_json({
+                                "event": "redeal_response_success",
+                                "data": {"player_name": player_name, "choice": "accept"}
+                            })
+                            print(f"✅ Redeal accept queued: {player_name}")
+                        else:
+                            await registered_ws.send_json({
+                                "event": "error",
+                                "data": {"message": result.get("error", "Redeal response failed")}
+                            })
+                            
+                    except Exception as e:
+                        print(f"❌ Accept redeal error: {e}")
+                        await registered_ws.send_json({
+                            "event": "error",
+                            "data": {"message": "Failed to process redeal acceptance"}
+                        })
+
+                elif event_name == "decline_redeal":
+                    # Handle redeal decline
+                    player_name = event_data.get("player_name")
+                    
+                    if not player_name:
+                        await registered_ws.send_json({
+                            "event": "error",
+                            "data": {"message": "Player name required"}
+                        })
+                        continue
+                        
+                    try:
+                        room = room_manager.get_room(room_id)
+                        if not room or not room.game_state_machine:
+                            await registered_ws.send_json({
+                                "event": "error",
+                                "data": {"message": "Game not found"}
+                            })
+                            continue
+                            
+                        # Create GameAction for redeal decline
+                        from engine.state_machine.core import GameAction, ActionType
+                        action = GameAction(
+                            player_name=player_name,
+                            action_type=ActionType.REDEAL_RESPONSE,
+                            payload={"accept": False}
+                        )
+                        
+                        result = await room.game_state_machine.handle_action(action)
+                        
+                        if result.get("success"):
+                            await registered_ws.send_json({
+                                "event": "redeal_response_success", 
+                                "data": {"player_name": player_name, "choice": "decline"}
+                            })
+                            print(f"✅ Redeal decline queued: {player_name}")
+                        else:
+                            await registered_ws.send_json({
+                                "event": "error",
+                                "data": {"message": result.get("error", "Redeal response failed")}
+                            })
+                            
+                    except Exception as e:
+                        print(f"❌ Decline redeal error: {e}")
+                        await registered_ws.send_json({
+                            "event": "error",
+                            "data": {"message": "Failed to process redeal decline"}
+                        })
+
+                elif event_name == "player_ready":
+                    # Handle player ready (used in multiple phases)
+                    player_name = event_data.get("player_name")
+                    
+                    if not player_name:
+                        await registered_ws.send_json({
+                            "event": "error",
+                            "data": {"message": "Player name required"}
+                        })
+                        continue
+                        
+                    try:
+                        room = room_manager.get_room(room_id)
+                        if not room or not room.game_state_machine:
+                            await registered_ws.send_json({
+                                "event": "error",
+                                "data": {"message": "Game not found"}
+                            })
+                            continue
+                            
+                        # Create GameAction for player ready
+                        from engine.state_machine.core import GameAction, ActionType
+                        action = GameAction(
+                            player_name=player_name,
+                            action_type=ActionType.PLAYER_READY,
+                            payload={}
+                        )
+                        
+                        result = await room.game_state_machine.handle_action(action)
+                        
+                        if result.get("success"):
+                            await registered_ws.send_json({
+                                "event": "ready_success",
+                                "data": {"player_name": player_name}
+                            })
+                            print(f"✅ Player ready queued: {player_name}")
+                        else:
+                            await registered_ws.send_json({
+                                "event": "error",
+                                "data": {"message": result.get("error", "Ready signal failed")}
+                            })
+                            
+                    except Exception as e:
+                        print(f"❌ Player ready error: {e}")
+                        await registered_ws.send_json({
+                            "event": "error",
+                            "data": {"message": "Failed to process ready signal"}
+                        })
+
+                elif event_name == "leave_game":
+                    # Handle leaving game (different from leave_room)
+                    player_name = event_data.get("player_name")
+                    
+                    if not player_name:
+                        await registered_ws.send_json({
+                            "event": "error",
+                            "data": {"message": "Player name required"}
+                        })
+                        continue
+                        
+                    try:
+                        # For now, treat leave_game same as leave_room
+                        # Future: might need separate logic for mid-game leaving
+                        room = room_manager.get_room(room_id)
+                        if room:
+                            is_host_leaving = (player_name == room.host_name)
+                            
+                            if is_host_leaving:
+                                # Host leaving - close entire room/game
+                                await broadcast(room_id, "game_ended", {
+                                    "reason": "host_left",
+                                    "message": f"Game ended - host {player_name} left"
+                                })
+                                room_manager.delete_room(room_id)
+                                print(f"✅ Game ended: host {player_name} left room {room_id}")
+                            else:
+                                # Regular player leaving game
+                                room.exit_room(player_name)
+                                updated_summary = room.summary()
+                                await broadcast(room_id, "room_update", {
+                                    "players": updated_summary["slots"],
+                                    "host_name": updated_summary["host_name"],
+                                    "room_id": room_id,
+                                    "started": updated_summary.get("started", False)
+                                })
+                                print(f"✅ Player {player_name} left game in room {room_id}")
+                        
+                        await registered_ws.send_json({
+                            "event": "leave_game_success",
+                            "data": {"player_name": player_name}
+                        })
+                        
+                    except Exception as e:
+                        print(f"❌ Leave game error: {e}")
+                        await registered_ws.send_json({
+                            "event": "error",
+                            "data": {"message": "Failed to leave game"}
+                        })
+
+                elif event_name == "start_game":
+                    # Handle start game request
+                    try:
+                        room = room_manager.get_room(room_id)
+                        if not room:
+                            await registered_ws.send_json({
+                                "event": "error",
+                                "data": {"message": "Room not found"}
+                            })
+                            continue
+                            
+                        # Create broadcast callback for this room
+                        async def room_broadcast(event_type: str, event_data: dict):
+                            await broadcast(room_id, event_type, event_data)
+                        
+                        # Start the game (same logic as REST endpoint)
+                        result = await room.start_game_safe(room_broadcast)
+                        
+                        if result.get("success"):
+                            await registered_ws.send_json({
+                                "event": "game_started",
+                                "data": {"room_id": room_id, "success": True}
+                            })
+                            print(f"✅ Game started in room {room_id}")
+                        else:
+                            await registered_ws.send_json({
+                                "event": "error",
+                                "data": {"message": "Failed to start game"}
+                            })
+                            
+                    except Exception as e:
+                        print(f"❌ Start game error: {e}")
+                        await registered_ws.send_json({
+                            "event": "error",
+                            "data": {"message": "Failed to start game"}
                         })
                         
     except WebSocketDisconnect:
