@@ -90,6 +90,12 @@ cd frontend && npm run lint  # (if available)
 ## Development Best Practices
 
 - Always run python in venv
+- **🐛 DEBUGGING REMINDER**: When encountering bugs, ALWAYS check `JOURNEY.md` first! It contains:
+  - Previously solved bugs with root causes and fixes
+  - Common bug patterns and debugging templates  
+  - Step-by-step troubleshooting guides
+  - Testing checklists and debug commands
+  - This can save significant debugging time by reusing proven solutions
 
 ## Game State Management ✅ PRODUCTION READY
 

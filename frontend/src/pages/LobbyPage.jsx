@@ -26,8 +26,8 @@ const LobbyPage = () => {
     const unsubscribers = [];
 
     // Room list updates
-    const unsubRoomList = socket.on('room_list', (data) => {
-      console.log('Received room_list:', data);
+    const unsubRoomList = socket.on('room_list_update', (data) => {
+      console.log('Received room_list_update:', data);
       setRooms(data.rooms || []);
     });
     unsubscribers.push(unsubRoomList);
@@ -108,10 +108,10 @@ const LobbyPage = () => {
   };
 
   const getRoomStatusText = (room) => {
-    const playerCount = room.players?.length || 0;
-    const maxPlayers = 4;
+    const playerCount = room.occupied_slots || 0;
+    const maxPlayers = room.total_slots || 4;
     
-    if (room.status === 'playing') {
+    if (room.started || room.status === 'playing') {
       return `🎮 In Game (${playerCount}/${maxPlayers})`;
     }
     
@@ -123,7 +123,7 @@ const LobbyPage = () => {
   };
 
   const canJoinRoom = (room) => {
-    return room.status === 'waiting' && (room.players?.length || 0) < 4;
+    return !room.started && (room.occupied_slots || 0) < (room.total_slots || 4);
   };
 
   return (
