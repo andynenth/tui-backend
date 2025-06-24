@@ -107,7 +107,7 @@ const RoomPage = () => {
   };
 
   const leaveRoom = () => {
-    socket.send('leave_room');
+    socket.send('leave_room', { player_name: app.playerName });
     app.leaveRoom();
     navigate('/lobby');
   };

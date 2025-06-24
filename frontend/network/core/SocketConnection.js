@@ -28,7 +28,9 @@ export class SocketConnection {
                 // Set a connection timeout
                 setTimeout(() => {
                     if (this.readyState !== WebSocket.OPEN) {
-                        this.socket.close();
+                        if (this.socket) {
+                            this.socket.close();
+                        }
                         reject(new Error('Connection timeout'));
                     }
                 }, 5000);
