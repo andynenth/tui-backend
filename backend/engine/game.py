@@ -33,6 +33,7 @@ class Game:
         # Player tracking for state machine
         self.current_player = None         # Current player (for round start/declarations)
         self.round_starter = None          # Player who starts the round
+        self.player_declarations = {}      # Track player declarations for state machine
         
         # Event-driven support
         self.current_phase = None          # Track current phase for controllers
@@ -788,43 +789,70 @@ class Game:
         """Legacy method for backward compatibility - calls new method with single index"""
         self._deal_weak_hand([weak_player_index], max_weak_points, limit)
 
-    def _deal_guaranteed_no_redeal(self):
+    def _deal_guaranteed_no_redeal(self, red_general_player_index=None):
         """
         Deal hands ensuring every player has at least one strong piece (>9 points).
         This prevents any redeal requests.
+        
+        Args:
+            red_general_player_index (int, optional): Index of player who should get RED_GENERAL.
+                                                    If None, RED_GENERAL is distributed randomly.
         """
-        print(f"🛡️ DEBUG: Dealing guaranteed no-redeal hands")
+        if red_general_player_index is not None:
+            print(f"🛡️ DEBUG: Dealing guaranteed no-redeal hands with RED_GENERAL assigned to player {red_general_player_index}")
+        else:
+            print(f"🛡️ DEBUG: Dealing guaranteed no-redeal hands")
         
         # Use helper methods
         deck = self._prepare_deck_and_hands()
         categories = self._categorize_pieces(deck)
         
         strong_pieces = categories['strong_pieces']
-        if categories['red_general']:
-            strong_pieces.append(categories['red_general'])
+        red_general = categories['red_general']
         weak_pieces = categories['weak_pieces']
         
         print(f"🛡️ DEBUG: Available pieces - Strong: {len(strong_pieces)}, Weak: {len(weak_pieces)}")
         
-        # Ensure we have enough strong pieces
-        if len(strong_pieces) < len(self.players):
-            print(f"⚠️ WARNING: Not enough strong pieces ({len(strong_pieces)}) for all players ({len(self.players)})")
+        # Handle RED_GENERAL assignment
+        if red_general and red_general_player_index is not None:
+            # Validate index
+            if 0 <= red_general_player_index < len(self.players):
+                target_player = self.players[red_general_player_index]
+                target_player.hand.append(red_general)
+                print(f"  → {target_player.name} gets RED_GENERAL: {red_general}")
+                
+                # Mark this player as already having a strong piece
+                players_needing_strong = [i for i in range(len(self.players)) if i != red_general_player_index]
+            else:
+                print(f"⚠️ WARNING: Invalid red_general_player_index {red_general_player_index}, adding to strong pieces")
+                strong_pieces.append(red_general)
+                players_needing_strong = list(range(len(self.players)))
+        else:
+            # Add RED_GENERAL to strong pieces for random distribution
+            if red_general:
+                strong_pieces.append(red_general)
+            players_needing_strong = list(range(len(self.players)))
+        
+        # Ensure we have enough strong pieces for remaining players
+        if len(strong_pieces) < len(players_needing_strong):
+            print(f"⚠️ WARNING: Not enough strong pieces ({len(strong_pieces)}) for remaining players ({len(players_needing_strong)})")
             # Fall back to regular dealing
             self._deal_pieces()
             return
         
-        # Shuffle both lists
+        # Shuffle strong pieces for random distribution
         random.shuffle(strong_pieces)
         random.shuffle(weak_pieces)
         
-        # Give each player at least one strong piece first
-        for i, player in enumerate(self.players):
+        # Give each remaining player at least one strong piece
+        for i, player_index in enumerate(players_needing_strong):
+            player = self.players[player_index]
             player.hand.append(strong_pieces[i])
             print(f"  → {player.name} gets strong piece: {strong_pieces[i]}")
         
         # Remove distributed strong pieces
-        distributed_strong = strong_pieces[:len(self.players)]
-        remaining_strong = strong_pieces[len(self.players):]
+        distributed_strong = strong_pieces[:len(players_needing_strong)]
+        remaining_strong = strong_pieces[len(players_needing_strong):]
         
         # Combine remaining pieces and shuffle
         remaining_pieces = remaining_strong + weak_pieces

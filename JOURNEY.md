@@ -297,6 +297,65 @@ When adding new room features, test these scenarios:
 **Root Cause**: Three cascading issues:
 1. **Event Name Mismatch**: Frontend listened for `room_list` but backend sent `room_list_update`
 2. **WebSocket Handler Mismatch**: Frontend sent `get_rooms` but backend only handled `request_room_list`
+
+---
+
+## 🎯 Bot Declaration Phase Integration (Week 3 - Current Issue)
+
+### 12. Declaration Phase Stopping Issue 🔄 IN PROGRESS
+**Problem**: Game reaches Declaration phase but bots don't make declarations, causing game to stop waiting for player input
+
+#### Root Cause Analysis (Completed):
+1. ✅ **RED_GENERAL Starter Detection Failed**: Bot 2 has RED_GENERAL but Andy was being chosen as starter
+   - **Fixed**: `preparation_state.py:351` - Changed `getattr(piece, 'name', str(piece))` to `str(piece)` for piece detection
+   
+2. ✅ **Bot Manager Not Triggered**: State machine didn't notify bot manager when transitioning to Declaration phase  
+   - **Fixed**: Added `_notify_bot_manager()` method in `game_state_machine.py:161` to trigger bot actions on phase changes
+
+3. ✅ **Declaration Order Mismatch**: Bot manager looked for `game.current_order` but state machine stored order in `phase_data['declaration_order']`
+   - **Fixed**: Updated `bot_manager.py:443` `_get_declaration_order()` to read from state machine phase data
+
+4. ✅ **String vs Player Object Type Error**: Declaration order contained strings but bot manager expected Player objects
+   - **Fixed**: Updated `bot_manager.py:456` `_get_player_index()` to handle both strings and Player objects
+   - **Fixed**: Updated `bot_manager.py:102` `_handle_declaration_phase()` to find Player objects from strings
+
+5. ✅ **Missing Game Attribute**: Declaration state tried to access `game.player_declarations` which didn't exist
+   - **Fixed**: Added `player_declarations = {}` to `game.py:36` in Game `__init__` method
+
+6. ✅ **Declaration Validation Error**: `_get_current_declarer()` returned Player objects but validation expected strings
+   - **Fixed**: Updated `declaration_state.py:103` to return player names as strings
+
+#### Current Status:
+- ✅ Bot 2 correctly identified as starter (has RED_GENERAL)
+- ✅ Bot manager receives "round_started" event 
+- ✅ Declaration order properly retrieved: ['Bot 2', 'Bot 3', 'Bot 4', 'Andy']
+- ✅ Bots successfully make declarations: Bot 2→3, Bot 3→1, Bot 4→1
+- ❌ **INFINITE LOOP**: Bots keep re-declaring because `declared` value remains 0
+
+#### Current Issue - Bot Infinite Declaration Loop:
+**Symptom**: Bots continuously re-declare because they think their previous declarations weren't processed
+**Evidence**: 
+```
+🔍 DECL_PHASE_DEBUG: Player Bot 4 declared value: 0  (should be 1 after declaration)
+✅ Bot Bot 4 declared 1  (bot successfully declares)
+Wrong player turn: Bot 4, expected: Andy  (validation error - should be expecting Andy)
+```
+
+**Root Cause**: Two interlinked issues:
+1. **Declaration Not Persisted**: Player objects' `declared` attribute not being updated when declarations are processed
+2. **State Machine Validation Out of Sync**: Current declarer index advances but Player objects don't reflect successful declarations
+
+#### Next Steps:
+1. **Fix Declaration Persistence**: Ensure `player.declared` attribute is updated when declarations are processed in `declaration_state.py:_handle_declaration()`
+2. **Debug State Machine Validation**: The validation shows "expected: Andy" after bots declare, but then rejects declarations from bots - need to debug the `current_declarer_index` logic
+3. **Test End-to-End Flow**: Verify that once all bots declare, the game properly waits for human player Andy to declare
+4. **Fix Frontend Integration**: Address frontend errors about null `updateDeclaration` method
+
+#### Implementation Strategy:
+- **Priority 1**: Fix the bot loop (declaration persistence + validation sync) 
+- **Priority 2**: Test human player declaration integration
+- **Priority 3**: Phase transition to Turn phase after all declarations complete
+- **Priority 4**: Frontend declaration UI fixes
 3. **Data Structure Mismatch**: Frontend used `room.players?.length` but backend sent `room.occupied_slots`
 
 **Fix**: Updated frontend-backend communication in multiple files:
@@ -748,42 +807,116 @@ export class DeclarationPhase extends BasePhase {
 - ✅ **Data Flow Working**: Console shows hand data being received: `🃏 GAME_CONTEXT: Updating hand data: (8) ['ADVISOR_BLACK(11)', 'HORSE_RED(6)', ...]`
 - ❌ **Remaining Issues**: Cards still not visible in UI, declaration cannot proceed
 
-### 19. Declaration Phase UI Not Showing Cards ⏳ **IN PROGRESS**
+### 19. Declaration Phase UI Not Showing Cards ✅ **COMPLETED**
 **Bug**: Hand count is correct (8 pieces) but individual cards are not displayed in the UI
-**Status**: **PARTIAL FIX** - Backend data reaches frontend correctly, but UI rendering incomplete
+**Status**: **FIXED** - Individual cards now display correctly using GamePiece components
 
-**Current Symptoms**:
+**Solution Applied**:
+1. **Added GamePiece Import**: Updated `DeclarationPhase.jsx` to import `GamePiece` component
+2. **Created renderHand() Function**: Added function following TurnPhase pattern to display individual cards
+3. **Replaced Static Text**: Changed "Your hand: 8 pieces" to visual card grid with individual pieces
+4. **Made Cards Non-Interactive**: Cards display for reference only (no selection during declaration)
+
+**Files Modified**:
+- `frontend/src/phases/DeclarationPhase.jsx` - Added card rendering functionality
+
+**Result**: 
+- ✅ **Individual Cards Displayed**: Players now see visual representations of their 8 pieces
+- ✅ **Proper Grid Layout**: Cards arranged in 4-column grid with GamePiece styling
+- ✅ **Hand Data Integration**: Successfully uses hand data received from backend via WebSocket
+- ✅ **Declaration Input Working**: Bots successfully make declarations and UI updates
+
+**Before Fix**:
 ```
-Declaration Phase
-Each player declares how many piles they expect to win this round.
-
-Your hand:
-8 pieces
+Your hand: 8 pieces
 Declaration Progress (0/0)
 ```
 
-**Investigation**:
-- ✅ Backend correctly deals cards: `Andy: ['ADVISOR_BLACK(11)', 'HORSE_RED(6)', 'CHARIOT_BLACK(7)', ...]`
-- ✅ Frontend receives hand data: `🃏 GAME_CONTEXT: Updating hand data: (8) ['ADVISOR_BLACK(11)', ...]`
-- ✅ GameStateManager updated: Hand count shows as 8 pieces
-- ❌ UI component not displaying individual cards
-- ❌ Declaration input not appearing (shows "Declaration Progress (0/0)")
-
-**Next Steps**:
-1. Check if DeclarationPhase component is calling `this.stateManager.myHand` correctly
-2. Verify UI renderer is displaying the hand data received from GameStateManager
-3. Check if declaration input UI is being triggered for the current player (Andy is round starter)
-
-**Backend Logs Confirm Proper Game Flow**:
+**After Fix**:
 ```
-📢 DECL_STATE_DEBUG: Using round_starter: Andy
-✅ [Room C21310] Game and StateMachine started successfully
+Your hand:
+[🎴ELEPHANT_BLACK(9)] [🎴GENERAL_BLACK(13)] [🎴SOLDIER_BLACK(1)] [🎴CHARIOT_BLACK(7)]
+[🎴CANNON_BLACK(3)]   [🎴HORSE_RED(6)]     [🎴CHARIOT_RED(8)]   [🎴ELEPHANT_RED(10)]
+8 pieces total
+
+Declaration Progress (3/4)
+Bot 2: 3 piles | Bot 3: 1 piles | Bot 4: 1 piles
 ```
 
-**Frontend Logs Show Successful Data Reception**:
+---
+
+## Recent Issues (Session 7) - Bot Declaration Infinite Loop
+
+### 20. Bot Infinite Declaration Loop ✅ **COMPLETED**
+**Bug**: Bots continuously re-declare instead of stopping after successful declarations
+**Status**: **FIXED** - Recursive call removed, single-pass declaration system working
+
+**Root Cause Identified**:
+1. **Recursive Call Issue**: After each bot declaration, `_bot_declare()` called `await self._handle_declaration_phase(bot.name)` recursively
+2. **Loop Restart**: This restarted the entire declaration sequence, causing bots to declare multiple times
+3. **Timing Race Condition**: State machine actions were queued (`{'success': True, 'queued': True}`) but bot manager immediately checked phase data before processing
+
+**Solution Applied**:
+1. **Removed Recursive Call**: Eliminated `await self._handle_declaration_phase(bot.name)` from `_bot_declare()` method
+2. **Single-Pass Logic**: Let the natural for-loop in `_handle_declaration_phase()` process all bots sequentially in one pass
+3. **Added Debug Logging**: Added `🔧 BOT_DECLARE_DEBUG: State machine result:` to track action processing
+4. **Improved Phase Data Checking**: Enhanced logging with `All phase declarations: {}` for better debugging
+
+**Files Modified**:
+- `backend/engine/bot_manager.py` - Removed recursive call on line ~199, added debugging
+
+**Result**: 
+- ✅ **Single Bot Declarations**: Each bot declares exactly once: Bot 2→2 piles, Bot 3→1 pile, Bot 4→1 pile
+- ✅ **Clean Termination**: "Player Andy is human, stopping bot declarations" - no infinite loops
+- ✅ **No Validation Errors**: Eliminated "Wrong player turn" and "Invalid action" errors
+- ✅ **Proper State Flow**: Declaration order ['Bot 2', 'Bot 3', 'Bot 4', 'Andy'] processes correctly
+
+**Before Fix**:
 ```
-GameContext.jsx:85 🃏 GAME_CONTEXT: Updating hand data: (8) ['ADVISOR_BLACK(11)', 'HORSE_RED(6)', ...]
-DeclarationPhase.js:42 🔸 --- Declare Phase ---
+✅ Bot Bot 2 declared 3
+✅ Bot Bot 3 declared 1  
+✅ Bot Bot 4 declared 1
+[INFINITE LOOP - bots keep re-declaring]
+Wrong player turn: Bot 4, expected: Andy
 ```
 
-**Root Cause**: UI rendering layer not connected to updated GameStateManager hand data
+**After Fix**:
+```
+✅ Bot Bot 2 declared 2
+✅ Bot Bot 3 declared 1  
+✅ Bot Bot 4 declared 1
+🔍 DECL_PHASE_DEBUG: Player Andy is human, stopping bot declarations
+[CLEAN STOP - waiting for Andy's input]
+```
+
+### 21. Frontend Declaration Handler Null Error ⏳ **IN PROGRESS**
+**Bug**: Frontend throws null pointer error when handling bot declarations, preventing Andy's declaration input
+**Status**: **CRITICAL FRONTEND ISSUE** - Blocks human player interaction
+
+**Symptoms**:
+```
+DeclarationPhase.js:291 🤖 Bot 2 declares 2 piles.
+TypeError: Cannot read properties of null (reading 'updateDeclaration')
+    at to.handleDeclare (DeclarationPhase.js:97:21)
+```
+
+**Impact**:
+- ✅ **Bot declarations work**: Backend successfully processes Bot 2→2, Bot 3→1, Bot 4→1
+- ✅ **Individual cards display**: Andy can see his 8 cards in the Declaration UI
+- ❌ **Andy's declaration input missing**: No buttons/interface for Andy to make his declaration
+- ❌ **Declaration progress broken**: Bot declarations trigger null errors in frontend
+
+**Root Cause**: 
+- `DeclarationPhase.js:97` calls `updateDeclaration` on a null object when processing bot declaration events
+- This prevents the declaration state from updating properly, which blocks Andy's input interface
+
+**Investigation Strategy**:
+1. Examine `DeclarationPhase.js:97` to identify the null object
+2. Check if `this.stateManager` or `this.uiRenderer` is null during bot declaration handling
+3. Verify declaration event flow: WebSocket → Phase → State Manager → UI update
+4. Add null guards and proper initialization order
+
+**Backend Status**: ✅ Working perfectly - bots declare and stop, waiting for Andy
+**Frontend Status**: ❌ Broken - can't process declarations or show Andy's input
+
+**Priority**: High (blocks game progression after bot declarations complete)

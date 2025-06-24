@@ -87,23 +87,55 @@ class GameBotHandler:
         """Handle bot declarations in order"""
         from backend.socket_manager import broadcast
         
+        print(f"🔍 DECL_PHASE_DEBUG: _handle_declaration_phase called with last_declarer: '{last_declarer}'")
+        
         # Get declaration order
         declaration_order = self._get_declaration_order()
+        print(f"🔍 DECL_PHASE_DEBUG: Declaration order: {[getattr(p, 'name', str(p)) for p in declaration_order] if declaration_order else 'None'}")
         
         # Find next bot to declare
         last_index = self._get_player_index(last_declarer, declaration_order)
+        print(f"🔍 DECL_PHASE_DEBUG: Last declarer '{last_declarer}' index: {last_index}")
+        
+        print(f"🔍 DECL_PHASE_DEBUG: Starting loop from index {last_index + 1} to {len(declaration_order)}")
+        
+        # Get actual Player objects from game state
+        game_state = self._get_game_state()
         
         for i in range(last_index + 1, len(declaration_order)):
-            player = declaration_order[i]
+            player_name = declaration_order[i] if isinstance(declaration_order[i], str) else getattr(declaration_order[i], 'name', str(declaration_order[i]))
             
-            if not player.is_bot:
+            # Find the actual Player object
+            player_obj = None
+            for p in game_state.players:
+                if getattr(p, 'name', str(p)) == player_name:
+                    player_obj = p
+                    break
+            
+            if not player_obj:
+                print(f"❌ DECL_PHASE_DEBUG: Could not find Player object for {player_name}")
+                continue
+            
+            print(f"🔍 DECL_PHASE_DEBUG: Checking player {i} ({player_name}), is_bot: {getattr(player_obj, 'is_bot', 'unknown')}")
+            
+            if not getattr(player_obj, 'is_bot', False):
+                print(f"🔍 DECL_PHASE_DEBUG: Player {player_name} is human, stopping bot declarations")
                 break  # Wait for human player
                 
-            if player.declared != 0:
+            # Check if player has already declared in current phase (use state machine data)
+            phase_declarations = self.state_machine.get_phase_data().get('declarations', {}) if self.state_machine else {}
+            already_declared = player_name in phase_declarations
+            declared_value = phase_declarations.get(player_name, 0)
+            print(f"🔍 DECL_PHASE_DEBUG: Player {player_name} declared value: {declared_value} (from phase data)")
+            print(f"🔍 DECL_PHASE_DEBUG: All phase declarations: {phase_declarations}")
+            
+            if already_declared:
+                print(f"🔍 DECL_PHASE_DEBUG: Player {player_name} already declared {declared_value}, skipping")
                 continue  # Already declared
                 
             # Bot declares
-            await self._bot_declare(player, i)
+            print(f"🤖 DECL_PHASE_DEBUG: Bot {player_name} will now declare!")
+            await self._bot_declare(player_obj, i)
             
             # Small delay for UI
             await asyncio.sleep(0.5)
@@ -150,11 +182,15 @@ class GameBotHandler:
                     is_bot=True
                 )
                 result = await self.state_machine.handle_action(action)
+                print(f"🔧 BOT_DECLARE_DEBUG: State machine result: {result}")
+                
+                # Wait a moment for action to be fully processed
+                await asyncio.sleep(0.05)
             else:
                 # Fallback to direct game call
                 result = self.game.declare(bot.name, value)
             
-            if result.get("status") == "ok" or result.get("success", False):
+            if result.get("status") == "ok" or result.get("success", False) or result.get("status") == "declaration_recorded":
                 # Broadcast to all clients
                 await broadcast(self.room_id, "declare", {
                     "player": bot.name,
@@ -164,8 +200,7 @@ class GameBotHandler:
                 
                 print(f"✅ Bot {bot.name} declared {value}")
                 
-                # Check if more bots need to declare
-                await self._handle_declaration_phase(bot.name)
+                # Don't recursively call - let the declaration sequence complete naturally
                 
         except Exception as e:
             print(f"❌ Bot {bot.name} declaration error: {e}")
@@ -193,13 +228,23 @@ class GameBotHandler:
                 
     async def _handle_round_start(self):
         """Handle start of a new round"""
-        # Check if starter is a bot
         game_state = self._get_game_state()
+        
+        print(f"🔍 BOT_ROUND_DEBUG: Game state current_order: {[getattr(p, 'name', str(p)) for p in game_state.current_order] if game_state.current_order else 'None'}")
+        print(f"🔍 BOT_ROUND_DEBUG: Game round_starter: {getattr(game_state, 'round_starter', 'None')}")
+        print(f"🔍 BOT_ROUND_DEBUG: Game current_player: {getattr(game_state, 'current_player', 'None')}")
+        
+        # Check if starter is a bot
         starter = game_state.current_order[0] if game_state.current_order else None
         if starter and starter.is_bot:
             print(f"🤖 Round starter is bot: {starter.name}")
             await asyncio.sleep(1)
             await self._handle_declaration_phase("")  # Empty string to start from beginning
+        else:
+            print(f"👤 Round starter is human or None: {starter.name if starter else 'None'}")
+            # Still need to handle bot declarations even if human starts
+            await asyncio.sleep(0.5)
+            await self._handle_declaration_phase("")  # Check for bot declarations
             
     async def _handle_play_phase(self, last_player: str):
         """Handle bot plays in turn order"""
@@ -417,13 +462,27 @@ class GameBotHandler:
             
     def _get_declaration_order(self) -> List[Player]:
         """Get players in declaration order"""
-        game_state = self._get_game_state()
-        return game_state.current_order
+        if self.state_machine:
+            # Get declaration order from state machine phase data
+            phase_data = self.state_machine.get_phase_data()
+            declaration_order = phase_data.get('declaration_order', [])
+            print(f"🔍 BOT_DEBUG: Got declaration order from state machine: {[getattr(p, 'name', str(p)) for p in declaration_order] if declaration_order else 'None'}")
+            return declaration_order
+        else:
+            # Fallback to game state
+            game_state = self._get_game_state()
+            return game_state.current_order
         
-    def _get_player_index(self, player_name: str, order: List[Player]) -> int:
+    def _get_player_index(self, player_name: str, order: List) -> int:
         """Find player index in order"""
         for i, p in enumerate(order):
-            if p.name == player_name:
+            # Handle both Player objects and string names
+            if hasattr(p, 'name'):
+                current_name = p.name
+            else:
+                current_name = str(p)
+            
+            if current_name == player_name:
                 return i
         return -1
         
