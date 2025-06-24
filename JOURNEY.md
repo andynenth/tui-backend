@@ -178,19 +178,237 @@ The Issue: The "Create Room" button appeared to do nothing when clicked.
   The end result is a fully functional room management system where all buttons work correctly with real-time
   UI updates and proper WebSocket communication.
 
-  ---
-  Summary of Fixes
+---
 
-  1. Host leaving room not deleting room ✅
-    - Fixed room_manager.remove_room() to room_manager.delete_room() in backend/api/routes/ws.py:262
-  2. Room ID not showing in lobby ✅
-    - Updated lobby to use room.room_id || room.id for consistent room ID display in
-  frontend/src/pages/LobbyPage.jsx
-  3. Leave room button not working ✅
-    - Root cause: Modal was not rendering due to Tailwind CSS class issues (bg-opacity-50, backdrop-blur-sm)
-    - Fix: Replaced problematic CSS classes with explicit inline styles for the modal overlay
-    - Added proper modal state management and confirmation response handling
-  4. Modal rendering fixed ✅
-    - Modal now displays properly with a semi-transparent black overlay
-    - Leave room functionality works correctly for both hosts and regular players
-    - Hosts leaving properly closes the room and updates the lobby
+## Recent Fixes (Session 4) - Room Management Polish
+
+### 7. Host Leaving Room Not Deleting Room ✅
+**Bug**: When host left room, room remained visible in lobby
+**Root Cause**: Code called non-existent `room_manager.remove_room()` instead of `delete_room()`
+**Fix**: Updated method call in `backend/api/routes/ws.py:262`
+```python
+# Before
+room_manager.remove_room(room_id)
+
+# After  
+room_manager.delete_room(room_id)
+```
+
+### 8. Room ID Not Showing in Lobby ✅
+**Bug**: Lobby showed "Room undefined" instead of actual room IDs
+**Root Cause**: Frontend used `room.id` but backend returns `room.room_id` in summary
+**Fix**: Updated lobby to use fallback pattern in `frontend/src/pages/LobbyPage.jsx`
+```javascript
+// Before
+Room {room.id}
+
+// After
+Room {room.room_id || room.id}
+```
+
+### 9. Leave Room Modal Not Appearing ✅
+**Bug**: Leave Room button clicked but no modal appeared
+**Root Cause**: Tailwind CSS classes `bg-opacity-50` and `backdrop-blur-sm` not working properly
+**Fix**: Replaced problematic CSS with explicit inline styles in `frontend/src/components/Modal.jsx`
+```javascript
+// Before
+className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 backdrop-blur-sm"
+
+// After
+className="fixed inset-0 z-50 flex items-center justify-center bg-black"
+style={{ 
+  zIndex: 9999, 
+  backgroundColor: 'rgba(0, 0, 0, 0.5)',
+  position: 'fixed',
+  top: 0, left: 0, right: 0, bottom: 0
+}}
+```
+
+### 10. Host Leave Room Confirmation Missing ✅
+**Bug**: Host leaving room closed room but didn't get navigation confirmation
+**Root Cause**: Backend sent room closure broadcast but no direct response to leaving host
+**Fix**: Added confirmation response in `backend/api/routes/ws.py`
+```python
+# Added after room deletion
+await registered_ws.send_json({
+    "event": "player_left",
+    "data": {"player_name": player_name, "success": True, "room_closed": True}
+})
+```
+
+## 🔧 Common Bug Patterns & Solutions
+
+### WebSocket Event Handler Pattern
+**Problem**: Frontend sends events but backend doesn't handle them
+**Solution**: Always add backend handlers following this pattern:
+```python
+elif event_name == "your_event":
+    # 1. Validate input data
+    data = event_data.get("required_field")
+    if not data:
+        await registered_ws.send_json({"event": "error", "data": {"message": "Missing field"}})
+        continue
+    
+    # 2. Process with thread-safe operations
+    result = await room.some_safe_operation(data)
+    
+    # 3. Broadcast updates
+    if result["success"]:
+        updated_summary = room.summary()
+        await broadcast(room_id, "room_update", updated_summary)
+    
+    # 4. Send confirmation to sender
+    await registered_ws.send_json({"event": "operation_result", "data": result})
+```
+
+### CSS/Tailwind Issues Pattern
+**Problem**: Tailwind classes not working as expected
+**Debugging**: Add explicit inline styles to test if CSS is the issue
+**Solution**: Either fix Tailwind config or use inline styles for critical UI elements
+
+### Modal Rendering Issues
+**Problem**: Modal state updates but doesn't appear
+**Debugging Steps**:
+1. Add `console.log` to track state changes
+2. Add `console.log` in modal render function
+3. Test with simplified CSS (remove complex classes)
+4. Use explicit positioning and z-index
+
+### Frontend-Backend Data Structure Mismatch
+**Problem**: Frontend expects different data format than backend provides
+**Solution**: Use fallback patterns: `room.room_id || room.id`
+**Best Practice**: Always check backend API responses and align frontend expectations
+
+## 📋 Testing Checklist for Room Management
+
+When adding new room features, test these scenarios:
+- [ ] Create room as host
+- [ ] Add/remove bots in all slots  
+- [ ] Join room as regular player
+- [ ] Leave room as regular player (should remove from slot)
+- [ ] Leave room as host (should close entire room)
+- [ ] Check lobby updates after room changes
+- [ ] Verify room IDs display correctly
+- [ ] Test modals appear and function properly
+- [ ] Check WebSocket error handling
+
+### 11. Lobby Not Updating When Room Availability Changes ✅
+**Bug**: When removing bots from rooms, lobby doesn't show room as available again
+**Root Cause**: Three cascading issues:
+1. **Event Name Mismatch**: Frontend listened for `room_list` but backend sent `room_list_update`
+2. **WebSocket Handler Mismatch**: Frontend sent `get_rooms` but backend only handled `request_room_list`
+3. **Data Structure Mismatch**: Frontend used `room.players?.length` but backend sent `room.occupied_slots`
+
+**Fix**: Updated frontend-backend communication in multiple files:
+```javascript
+// frontend/src/pages/LobbyPage.jsx - Fixed event listener
+socket.on('room_list_update', (data) => { // was: 'room_list'
+
+// Fixed data structure usage
+const playerCount = room.occupied_slots || 0; // was: room.players?.length || 0
+const canJoin = (room.occupied_slots || 0) < (room.total_slots || 4); // was: room.players?.length
+```
+
+```python
+# backend/api/routes/ws.py - Fixed event handler
+if event_name == "request_room_list" or event_name == "get_rooms": # was: only "request_room_list"
+```
+
+**Result**: Lobby now correctly shows real-time availability: "🔒 Full (4/4)" → "⏳ Waiting (3/4)" when bots are removed
+
+### 12. Join Button in Lobby Not Working ✅
+**Bug**: Clicking "Join" button on rooms in lobby did nothing - no error, no navigation
+**Root Cause**: Missing WebSocket event handler for `join_room` events from lobby
+**Investigation**: 
+- Frontend correctly sends `join_room` WebSocket message with `room_id` and `player_name`
+- Backend lobby handler only supported `create_room`, `get_rooms`, but not `join_room`
+- Missing handler meant messages were ignored silently
+
+**Fix**: Added complete `join_room` handler in `backend/api/routes/ws.py` lobby section:
+```python
+elif event_name == "join_room":
+    room_id_to_join = event_data.get("room_id")
+    player_name = event_data.get("player_name", "Unknown Player")
+    
+    # Validate room exists, not full, not started
+    room = room_manager.get_room(room_id_to_join)
+    if not room or room.is_full() or room.started:
+        await registered_ws.send_json({"event": "error", "data": {...}})
+        continue
+    
+    # Try to join
+    result = await room.join_room_safe(player_name)
+    if result["success"]:
+        await registered_ws.send_json({"event": "room_joined", "data": {...}})
+```
+
+### 13. Host Not Seeing Player Join Real-Time ✅  
+**Bug**: When player joins room from lobby, host doesn't see slot update immediately
+**Root Cause**: Event name inconsistency in room broadcasting
+**Investigation**:
+- Player joins successfully and gets navigated to room
+- But existing room clients (host) don't get real-time updates
+- Join events work but leave events show updates immediately
+
+**Fix**: Two-part fix in `backend/api/routes/ws.py`:
+
+**Part 1 - Missing Room Broadcast**: Added broadcast to room clients after successful join:
+```python
+# After successful join, notify ALL clients in the room
+await broadcast(room_id_to_join, "room_update", {
+    "players": room_summary["slots"],
+    "host_name": room_summary["host_name"],
+    "room_id": room_id_to_join,
+    "started": room_summary.get("started", False)
+})
+```
+
+**Part 2 - Event Name Mismatch**: 
+- ❌ Join events used: `room_state_update` with `slots` field
+- ✅ Other events used: `room_update` with `players` field  
+- ❌ Frontend expects: `room_update` events only
+
+**Fix**: Changed join broadcast to match other room operations:
+```python
+# Before (inconsistent)
+await broadcast(room_id, "room_state_update", {"slots": ...})
+
+# After (consistent)  
+await broadcast(room_id, "room_update", {"players": ...})
+```
+
+**Result**: Host now sees new players join instantly with real-time slot updates
+
+## 🔧 WebSocket Event Consistency Pattern
+
+**Key Learning**: All room events must use identical event names and data structures:
+
+```python
+# ✅ CONSISTENT PATTERN - All room operations use this
+await broadcast(room_id, "room_update", {
+    "players": room_summary["slots"],    # Always "players", never "slots" 
+    "host_name": room_summary["host_name"],
+    "room_id": room_id,
+    "started": room_summary.get("started", False)
+})
+```
+
+**Events that follow this pattern**:
+- `add_bot` ✅
+- `remove_player` ✅  
+- `leave_room` ✅
+- `join_room` ✅ (now fixed)
+
+## 🚨 Quick Debug Commands
+
+```javascript
+// In browser console - check modal state
+console.log('Modal state:', document.querySelector('[role="dialog"]'));
+
+// Check WebSocket events  
+// Add to useSocket hook temporarily:
+socket.onmessage = (event) => console.log('WS received:', JSON.parse(event.data));
+
+// Check room data structure
+console.log('Room data:', roomData);
+```

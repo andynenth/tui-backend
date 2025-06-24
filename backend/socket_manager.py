@@ -62,6 +62,12 @@ class SocketManager:
                 
                 for ws in active_websockets:
                     try:
+                        # Check if WebSocket is still active before sending
+                        if hasattr(ws, 'client_state') and ws.client_state.name in ['DISCONNECTED', 'CLOSED']:
+                            print(f"DEBUG_WS: Skipping send to closed WebSocket in room {room_id}")
+                            failed_websockets.append(ws)
+                            continue
+                            
                         await ws.send_json({"event": event, "data": data})
                         success_count += 1
                         print(f"DEBUG_WS: Successfully sent '{event}' to a client in room {room_id}.")

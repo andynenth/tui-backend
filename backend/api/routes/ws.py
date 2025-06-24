@@ -29,7 +29,7 @@ async def websocket_endpoint(websocket: WebSocket, room_id: str):
 
             # ✅ Handle lobby-specific events
             if room_id == "lobby":
-                if event_name == "request_room_list":
+                if event_name == "request_room_list" or event_name == "get_rooms":
                     # Get available rooms and send to client
                     available_rooms = room_manager.list_rooms()
                     
@@ -107,6 +107,113 @@ async def websocket_endpoint(websocket: WebSocket, room_id: str):
                     })
                     print(f"DEBUG_LOBBY_WS: Sent room list with {len(available_rooms)} rooms")
 
+                elif event_name == "join_room":
+                    # Handle room joining from lobby
+                    room_id_to_join = event_data.get("room_id")
+                    player_name = event_data.get("player_name", "Unknown Player")
+                    
+                    if not room_id_to_join:
+                        await registered_ws.send_json({
+                            "event": "error",
+                            "data": {
+                                "message": "Room ID is required",
+                                "type": "join_room_error"
+                            }
+                        })
+                        print(f"DEBUG_LOBBY_WS: Join room failed - no room_id provided")
+                        continue
+                    
+                    try:
+                        # Get the room
+                        room = room_manager.get_room(room_id_to_join)
+                        if not room:
+                            await registered_ws.send_json({
+                                "event": "error",
+                                "data": {
+                                    "message": "Room not found",
+                                    "type": "join_room_error"
+                                }
+                            })
+                            print(f"DEBUG_LOBBY_WS: Room {room_id_to_join} not found")
+                            continue
+                        
+                        # Check if room is full
+                        if room.is_full():
+                            await registered_ws.send_json({
+                                "event": "error",
+                                "data": {
+                                    "message": "Room is full",
+                                    "type": "join_room_error"
+                                }
+                            })
+                            print(f"DEBUG_LOBBY_WS: Room {room_id_to_join} is full")
+                            continue
+                        
+                        # Check if room has started
+                        if room.started:
+                            await registered_ws.send_json({
+                                "event": "error",
+                                "data": {
+                                    "message": "Room has already started",
+                                    "type": "join_room_error"
+                                }
+                            })
+                            print(f"DEBUG_LOBBY_WS: Room {room_id_to_join} has already started")
+                            continue
+                        
+                        # Try to join the room
+                        result = await room.join_room_safe(player_name)
+                        
+                        if result["success"]:
+                            # Send success response to the client
+                            await registered_ws.send_json({
+                                "event": "room_joined",
+                                "data": {
+                                    "room_id": room_id_to_join,
+                                    "player_name": player_name,
+                                    "assigned_slot": result["assigned_slot"],
+                                    "success": True
+                                }
+                            })
+                            print(f"DEBUG_LOBBY_WS: Player {player_name} joined room {room_id_to_join}")
+                            
+                            # Broadcast room update to all clients in the room
+                            room_summary = result["room_state"]
+                            await broadcast(room_id_to_join, "room_update", {
+                                "players": room_summary["slots"],
+                                "host_name": room_summary["host_name"],
+                                "operation_id": result["operation_id"],
+                                "room_id": room_id_to_join,
+                                "started": room_summary.get("started", False)
+                            })
+                            print(f"DEBUG_LOBBY_WS: Broadcasted room state update to all clients in room {room_id_to_join}")
+                            
+                            # Notify all lobby clients about room update
+                            from .routes import notify_lobby_room_updated
+                            await notify_lobby_room_updated(result["room_state"])
+                            
+                        else:
+                            # Send error response
+                            await registered_ws.send_json({
+                                "event": "error",
+                                "data": {
+                                    "message": result.get("reason", "Failed to join room"),
+                                    "type": "join_room_error"
+                                }
+                            })
+                            print(f"DEBUG_LOBBY_WS: Failed to join room {room_id_to_join}: {result.get('reason', 'Unknown error')}")
+                        
+                    except Exception as e:
+                        # Send error response
+                        await registered_ws.send_json({
+                            "event": "error",
+                            "data": {
+                                "message": f"Failed to join room: {str(e)}",
+                                "type": "join_room_error"
+                            }
+                        })
+                        print(f"DEBUG_LOBBY_WS: Exception while joining room {room_id_to_join}: {str(e)}")
+
             # ✅ Handle room-specific events
             else:
                 if event_name == "client_ready":
@@ -166,6 +273,14 @@ async def websocket_endpoint(websocket: WebSocket, room_id: str):
                                     "room_id": room_id,
                                     "started": updated_summary.get("started", False)
                                 })
+                                
+                                # Update lobby with room list (room may now be available)
+                                available_rooms = room_manager.list_rooms()
+                                await broadcast("lobby", "room_list_update", {
+                                    "rooms": available_rooms,
+                                    "timestamp": asyncio.get_event_loop().time()
+                                })
+                                
                                 print(f"DEBUG_WS_RECEIVE: Successfully removed player from slot {slot_id} in room {room_id}")
                             else:
                                 await registered_ws.send_json({
@@ -212,6 +327,14 @@ async def websocket_endpoint(websocket: WebSocket, room_id: str):
                                     "room_id": room_id,
                                     "started": updated_summary.get("started", False)
                                 })
+                                
+                                # Update lobby with room list (room may now be full)
+                                available_rooms = room_manager.list_rooms()
+                                await broadcast("lobby", "room_list_update", {
+                                    "rooms": available_rooms,
+                                    "timestamp": asyncio.get_event_loop().time()
+                                })
+                                
                                 print(f"DEBUG_WS_RECEIVE: Successfully added bot to slot {slot_id} in room {room_id}")
                             else:
                                 await registered_ws.send_json({
