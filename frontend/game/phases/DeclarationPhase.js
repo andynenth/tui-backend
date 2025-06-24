@@ -94,7 +94,9 @@ export class DeclarationPhase extends BasePhase {
     this._logDeclaration(player, value, is_bot);
 
     // Update UI
-    this.uiRenderer.updateDeclaration(player, value);
+    if (this.uiRenderer) {
+      this.uiRenderer.updateDeclaration(player, value);
+    }
 
     // Check game progression
     if (this.stateManager.areAllPlayersDeclarated()) {
@@ -141,7 +143,9 @@ export class DeclarationPhase extends BasePhase {
     this.hasPromptedUser = true;
 
     // Display current hand
-    this.uiRenderer.displayHand(this.stateManager.myHand);
+    if (this.uiRenderer) {
+      this.uiRenderer.displayHand(this.stateManager.myHand);
+    }
 
     // Calculate valid declaration options
     const { validOptions, isLastPlayer } = this._calculateDeclarationOptions();
@@ -153,9 +157,11 @@ export class DeclarationPhase extends BasePhase {
     this._logDeclarationPrompt(validOptions);
 
     // Show input UI
-    this.uiRenderer.showDeclarationInput(validOptions, (value) => {
-      this.handleUserDeclaration(value);
-    });
+    if (this.uiRenderer) {
+      this.uiRenderer.showDeclarationInput(validOptions, (value) => {
+        this.handleUserDeclaration(value);
+      });
+    }
   }
 
   /**
@@ -208,7 +214,9 @@ export class DeclarationPhase extends BasePhase {
     console.log(`\n✅ All players declared! Total: ${total}`);
 
     // Show summary in UI
-    this.uiRenderer.showDeclarationSummary(this.stateManager.declarations);
+    if (this.uiRenderer) {
+      this.uiRenderer.showDeclarationSummary(this.stateManager.declarations);
+    }
 
     // Transition to next phase
     setTimeout(() => {
@@ -262,9 +270,11 @@ export class DeclarationPhase extends BasePhase {
       console.log(
         "\n⚠️ You must declare at least 1 (declared 0 twice in a row)"
       );
-      this.uiRenderer.showWarning(
-        "Must declare at least 1 (zero streak limit)"
-      );
+      if (this.uiRenderer) {
+        this.uiRenderer.showWarning(
+          "Must declare at least 1 (zero streak limit)"
+        );
+      }
     }
   }
 
@@ -306,9 +316,11 @@ export class DeclarationPhase extends BasePhase {
     if (!validOptions.includes(value)) {
       const errorMsg = `❌ Invalid declaration. Choose from [${validOptions.join(", ")}]`;
       console.log(errorMsg);
-      this.uiRenderer.showError(
-        `Invalid declaration. Choose from [${validOptions.join(", ")}]`
-      );
+      if (this.uiRenderer) {
+        this.uiRenderer.showError(
+          `Invalid declaration. Choose from [${validOptions.join(", ")}]`
+        );
+      }
       return false;
     }
 
@@ -334,16 +346,22 @@ export class DeclarationPhase extends BasePhase {
         
         // Reset input state
         this.waitingForInput = false;
-        this.uiRenderer.hideInput();
+        if (this.uiRenderer) {
+          this.uiRenderer.hideInput();
+        }
 
         // The socket event will handle the state update
       } else {
         console.error("Failed to declare:", result.message);
-        this.uiRenderer.showError(result.message || "Failed to declare");
+        if (this.uiRenderer) {
+          this.uiRenderer.showError(result.message || "Failed to declare");
+        }
       }
     } catch (err) {
       console.error("Failed to declare:", err);
-      this.uiRenderer.showError("Network error. Please try again.");
+      if (this.uiRenderer) {
+        this.uiRenderer.showError("Network error. Please try again.");
+      }
     }
   }
 }

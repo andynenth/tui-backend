@@ -103,6 +103,13 @@ export const GameProvider = ({
     });
     unsubscribers.push(unsubDeclaration);
 
+    // Declaration events (from bots)
+    const unsubDeclare = socket.on('declare', (data) => {
+      console.log('🎯 GAME_CONTEXT: Received declare event:', data);
+      gameState.addDeclaration(data.player, data.value);
+    });
+    unsubscribers.push(unsubDeclare);
+
     // Turn events
     const unsubTurnStart = socket.on('turn_started', (data) => {
       gameState.startNewTurn(data.starter);
