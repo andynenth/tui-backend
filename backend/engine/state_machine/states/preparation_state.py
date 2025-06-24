@@ -78,7 +78,9 @@ class PreparationState(GameState):
         # Use guaranteed no redeal for testing (no weak hands)
         if hasattr(game, '_deal_guaranteed_no_redeal'):
             print(f"🎴 PREP_STATE_DEBUG: Using guaranteed no redeal dealing")
-            game._deal_guaranteed_no_redeal()
+            # For testing: uncomment the line below to force player 1 (Bot 2) to get RED_GENERAL
+            game._deal_guaranteed_no_redeal(red_general_player_index=1)
+            # game._deal_guaranteed_no_redeal()
         elif hasattr(game, 'deal_pieces'):
             print(f"🎴 PREP_STATE_DEBUG: Using normal dealing")
             game.deal_pieces()
@@ -346,8 +348,7 @@ class PreparationState(GameState):
                     if hasattr(player, 'hand'):
                         print(f"🔍 STARTER_DEBUG: Player {player_name} hand: {[str(p) for p in player.hand]}")
                         for piece in player.hand:
-                            piece_name = getattr(piece, 'name', str(piece))
-                            piece_str = str(piece_name)
+                            piece_str = str(piece)
                             print(f"🔍 STARTER_DEBUG: Checking piece '{piece_str}' for GENERAL_RED")
                             if "GENERAL_RED" in piece_str:
                                 print(f"✅ STARTER_DEBUG: Found GENERAL_RED in {player_name}'s hand!")

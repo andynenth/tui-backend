@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { useGame } from '../contexts/GameContext';
-import { Button } from '../components';
+import { Button, GamePiece } from '../components';
 
 const DeclarationPhase = () => {
   const game = useGame();
@@ -81,8 +81,8 @@ const DeclarationPhase = () => {
         <div className="text-xs text-gray-500 max-w-md mx-auto">
           <p className="mb-1">Rules:</p>
           <ul className="list-disc list-inside space-y-1">
-            <li>Declare how many piles you think you'll win</li>
-            <li>Total declarations cannot equal 8 (if you're last player)</li>
+            <li>Declare how many piles you think you&apos;ll win</li>
+            <li>Total declarations cannot equal 8 (if you&apos;re last player)</li>
             <li>If you declared 0 twice in a row, you must declare at least 1</li>
           </ul>
         </div>
@@ -142,6 +142,37 @@ const DeclarationPhase = () => {
     return Object.values(declarations).reduce((sum, val) => sum + (val || 0), 0);
   };
 
+  const renderHand = () => {
+    if (!game.myHand || game.myHand.length === 0) {
+      return (
+        <div className="text-center py-4">
+          <div className="text-gray-500">No pieces in hand</div>
+        </div>
+      );
+    }
+
+    return (
+      <div className="space-y-3">
+        <h4 className="text-center font-medium text-gray-900">Your hand:</h4>
+        <div className="grid grid-cols-4 gap-3 max-w-2xl mx-auto">
+          {game.myHand.map((piece, index) => (
+            <GamePiece
+              key={index}
+              piece={piece}
+              size="md"
+              isSelected={false}
+              isPlayable={false}
+              onSelect={() => {}} // No selection during declaration phase
+            />
+          ))}
+        </div>
+        <p className="text-center text-sm text-gray-600">
+          {game.myHand.length} pieces total
+        </p>
+      </div>
+    );
+  };
+
   return (
     <div className="p-6">
       <div className="text-center mb-8">
@@ -153,14 +184,9 @@ const DeclarationPhase = () => {
         </p>
       </div>
 
-      {/* Hand reminder */}
-      <div className="text-center mb-6">
-        <div className="inline-flex items-center bg-gray-100 rounded-lg px-4 py-2">
-          <span className="text-sm text-gray-600">Your hand: </span>
-          <span className="font-medium text-gray-900 ml-1">
-            {game.myHand?.length || 0} pieces
-          </span>
-        </div>
+      {/* Hand display */}
+      <div className="mb-8">
+        {renderHand()}
       </div>
 
       {/* Declaration interface */}

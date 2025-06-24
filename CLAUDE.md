@@ -80,16 +80,24 @@ docker build -t liap-tui .
 
 ### Code Quality
 ```bash
-# Python formatting (Poetry dev dependency)
-cd backend && black .
+# Python formatting and linting (ALWAYS in venv)
+source venv/bin/activate && cd backend && black .
+source venv/bin/activate && cd backend && pylint engine/ api/ tests/
 
-# Frontend linting via npm scripts in package.json
-cd frontend && npm run lint  # (if available)
+# Frontend TypeScript checking and linting  
+cd frontend && npm run type-check
+cd frontend && npm run lint
+cd frontend && npm run lint:fix  # Auto-fix issues
 ```
 
 ## Development Best Practices
 
-- Always run python in venv
+- **CRITICAL**: Always run Python commands in venv: `source venv/bin/activate`
+- **CRITICAL FOR CLAUDE**: Before making code changes, run quality checks:
+  - `cd frontend && npm run lint` to catch constructor.name and type issues
+  - `source venv/bin/activate && cd backend && pylint [files]` to catch import/attribute errors
+  - `cd frontend && npm run type-check` for TypeScript validation
+- **CLAUDE REMINDER**: Use these tools especially when debugging issues similar to those in JOURNEY.md
 - **🐛 DEBUGGING REMINDER**: When encountering bugs, ALWAYS check `JOURNEY.md` first! It contains:
   - Previously solved bugs with root causes and fixes
   - Common bug patterns and debugging templates  

@@ -91,6 +91,12 @@ class DeclarationState(GameState):
         # FIX: Also immediately update game object for real-time access
         self.state_machine.game.player_declarations[player_name] = declared_value
         
+        # Update the player object's declared attribute
+        for player in self.state_machine.game.players:
+            if getattr(player, 'name', str(player)) == player_name:
+                player.declared = declared_value
+                break
+        
         self.logger.info(f"Player {player_name} declared {declared_value}")
         
         return {
@@ -105,7 +111,12 @@ class DeclarationState(GameState):
         index = self.phase_data['current_declarer_index']
         
         if index < len(order):
-            return order[index]
+            player = order[index]
+            # Return player name as string
+            if hasattr(player, 'name'):
+                return player.name
+            else:
+                return str(player)
         return None
     
     async def _check_declaration_restrictions(self, player_name: str, value: int) -> bool:
