@@ -57,6 +57,56 @@ async def websocket_endpoint(websocket: WebSocket, room_id: str):
                     })
                     print(f"DEBUG_LOBBY_WS: Sent initial room list to new lobby client")
 
+                elif event_name == "create_room":
+                    # Create new room
+                    player_name = event_data.get("player_name", "Unknown Player")
+                    
+                    try:
+                        # Create the room
+                        room_id = room_manager.create_room(player_name)
+                        
+                        # Send success response to the client
+                        await registered_ws.send_json({
+                            "event": "room_created",
+                            "data": {
+                                "room_id": room_id,
+                                "host_name": player_name,
+                                "success": True
+                            }
+                        })
+                        print(f"DEBUG_LOBBY_WS: Created room {room_id} for player {player_name}")
+                        
+                        # Notify all lobby clients about the new room
+                        from .routes import notify_lobby_room_created
+                        await notify_lobby_room_created({
+                            "room_id": room_id,
+                            "host_name": player_name
+                        })
+                        
+                    except Exception as e:
+                        # Send error response
+                        await registered_ws.send_json({
+                            "event": "error",
+                            "data": {
+                                "message": f"Failed to create room: {str(e)}",
+                                "type": "room_creation_error"
+                            }
+                        })
+                        print(f"DEBUG_LOBBY_WS: Failed to create room for {player_name}: {str(e)}")
+
+                elif event_name == "get_rooms":
+                    # Send current room list
+                    available_rooms = room_manager.list_rooms()
+                    
+                    await registered_ws.send_json({
+                        "event": "room_list",
+                        "data": {
+                            "rooms": available_rooms,
+                            "timestamp": asyncio.get_event_loop().time()
+                        }
+                    })
+                    print(f"DEBUG_LOBBY_WS: Sent room list with {len(available_rooms)} rooms")
+
             # ✅ Handle room-specific events
             else:
                 if event_name == "client_ready":
@@ -73,6 +123,24 @@ async def websocket_endpoint(websocket: WebSocket, room_id: str):
                         print(f"DEBUG_WS_RECEIVE: Room {room_id} not found for client_ready event.")
                         await registered_ws.send_json({"event": "room_closed", "data": {"message": "Room not found."}})
                         await asyncio.sleep(0)
+
+                elif event_name == "get_room_state":
+                    room = room_manager.get_room(room_id)
+                    if room:
+                        updated_summary = room.summary()
+                        await registered_ws.send_json({
+                            "event": "room_update",
+                            "data": {
+                                "players": updated_summary["slots"],
+                                "host_name": updated_summary["host_name"],
+                                "room_id": room_id,
+                                "started": updated_summary.get("started", False)
+                            }
+                        })
+                        print(f"DEBUG_WS_RECEIVE: Sent room state to client in room {room_id}")
+                    else:
+                        await registered_ws.send_json({"event": "room_closed", "data": {"message": "Room not found."}})
+                        print(f"DEBUG_WS_RECEIVE: Room {room_id} not found for get_room_state")
                 
                 # 🔧 FIX: Add missing redeal decision handler
                 elif event_name == "redeal_decision":
