@@ -177,3 +177,20 @@ The Issue: The "Create Room" button appeared to do nothing when clicked.
 
   The end result is a fully functional room management system where all buttons work correctly with real-time
   UI updates and proper WebSocket communication.
+
+  ---
+  Summary of Fixes
+
+  1. Host leaving room not deleting room ✅
+    - Fixed room_manager.remove_room() to room_manager.delete_room() in backend/api/routes/ws.py:262
+  2. Room ID not showing in lobby ✅
+    - Updated lobby to use room.room_id || room.id for consistent room ID display in
+  frontend/src/pages/LobbyPage.jsx
+  3. Leave room button not working ✅
+    - Root cause: Modal was not rendering due to Tailwind CSS class issues (bg-opacity-50, backdrop-blur-sm)
+    - Fix: Replaced problematic CSS classes with explicit inline styles for the modal overlay
+    - Added proper modal state management and confirmation response handling
+  4. Modal rendering fixed ✅
+    - Modal now displays properly with a semi-transparent black overlay
+    - Leave room functionality works correctly for both hosts and regular players
+    - Hosts leaving properly closes the room and updates the lobby

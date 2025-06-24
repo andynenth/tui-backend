@@ -199,12 +199,12 @@ const LobbyPage = () => {
                 </div>
               ) : (
                 rooms.map((room) => (
-                  <div key={room.id} className="px-6 py-4 hover:bg-gray-50">
+                  <div key={room.room_id || room.id} className="px-6 py-4 hover:bg-gray-50">
                     <div className="flex items-center justify-between">
                       <div className="flex-1">
                         <div className="flex items-center space-x-3">
                           <h3 className="font-medium text-gray-900">
-                            Room {room.id}
+                            Room {room.room_id || room.id}
                           </h3>
                           <span className="text-sm text-gray-500">
                             {getRoomStatusText(room)}
@@ -229,7 +229,7 @@ const LobbyPage = () => {
                         {canJoinRoom(room) ? (
                           <Button
                             size="sm"
-                            onClick={() => joinRoom(room.id)}
+                            onClick={() => joinRoom(room.room_id || room.id)}
                             disabled={!socket.isConnected}
                           >
                             Join
