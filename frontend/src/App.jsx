@@ -4,6 +4,7 @@ import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { AppProvider, useApp } from './contexts/AppContext';
 import { GameProvider } from './contexts/GameContext';
+import { ErrorBoundary } from './components';
 
 // Import scene components (to be created)
 import StartPage from './pages/StartPage';
@@ -103,11 +104,13 @@ const AppRouter = () => {
 // Main App component
 const App = () => {
   return (
-    <AppProvider>
-      <div className="App">
-        <AppRouter />
-      </div>
-    </AppProvider>
+    <ErrorBoundary>
+      <AppProvider>
+        <div className="App">
+          <AppRouter />
+        </div>
+      </AppProvider>
+    </ErrorBoundary>
   );
 };
 
