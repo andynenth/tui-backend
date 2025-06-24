@@ -87,6 +87,10 @@ cd backend && black .
 cd frontend && npm run lint  # (if available)
 ```
 
+## Development Best Practices
+
+- Always run python in venv
+
 ## Game State Management ✅ PRODUCTION READY
 
 The game uses a sophisticated state machine (`GameStateMachine`) **FULLY IMPLEMENTED** that:  

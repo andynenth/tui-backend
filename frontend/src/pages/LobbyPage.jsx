@@ -7,12 +7,27 @@ import { useSocket } from '../hooks/useSocket';
 import { Layout, Button, Input, Modal, LoadingOverlay } from '../components';
 
 const LobbyPage = () => {
+  console.log('LobbyPage component re-rendering');
   const navigate = useNavigate();
   const app = useApp();
   const socket = useSocket('lobby'); // Connect to lobby socket
   
+  // Debug logging for socket state
+  useEffect(() => {
+    console.log('Socket state:', {
+      isConnected: socket.isConnected,
+      isConnecting: socket.isConnecting,
+      connectionError: socket.connectionError
+    });
+  }, [socket.isConnected, socket.isConnecting, socket.connectionError]);
+  
   const [rooms, setRooms] = useState([]);
   const [showCreateModal, setShowCreateModal] = useState(false);
+  
+  // Debug logging for modal state
+  useEffect(() => {
+    console.log('showCreateModal changed to:', showCreateModal);
+  }, [showCreateModal]);
   const [showJoinModal, setShowJoinModal] = useState(false);
   const [isCreatingRoom, setIsCreatingRoom] = useState(false);
   const [isJoiningRoom, setIsJoiningRoom] = useState(false);
@@ -20,18 +35,21 @@ const LobbyPage = () => {
 
   // Set up socket event listeners
   useEffect(() => {
+    console.log('Setting up socket event listeners, connected:', socket.isConnected);
     if (!socket.isConnected) return;
 
     const unsubscribers = [];
 
     // Room list updates
     const unsubRoomList = socket.on('room_list', (data) => {
+      console.log('Received room_list:', data);
       setRooms(data.rooms || []);
     });
     unsubscribers.push(unsubRoomList);
 
     // Room created successfully
     const unsubRoomCreated = socket.on('room_created', (data) => {
+      console.log('Received room_created:', data);
       setIsCreatingRoom(false);
       setShowCreateModal(false);
       app.goToRoom(data.room_id);
@@ -62,9 +80,10 @@ const LobbyPage = () => {
 
     // Cleanup
     return () => {
+      console.log('Cleaning up socket event listeners');
       unsubscribers.forEach(unsub => unsub());
     };
-  }, [socket.isConnected, app, navigate]);
+  }, [socket.isConnected]); // Removed app and navigate from dependencies
 
   // Refresh room list
   const refreshRooms = () => {
@@ -152,7 +171,13 @@ const LobbyPage = () => {
             <div className="flex items-center space-x-4">
               <Button
                 variant="primary"
-                onClick={() => setShowCreateModal(true)}
+                onClick={() => {
+                  console.log('Create Room button clicked');
+                  console.log('Socket connected:', socket.isConnected);
+                  console.log('Current showCreateModal:', showCreateModal);
+                  setShowCreateModal(true);
+                  console.log('setShowCreateModal(true) called');
+                }}
                 disabled={!socket.isConnected}
               >
                 Create Room
@@ -258,78 +283,80 @@ const LobbyPage = () => {
         </div>
       </Layout>
 
-      {/* Create Room Modal */}
-      <Modal
-        isOpen={showCreateModal}
-        onClose={() => setShowCreateModal(false)}
-        title="Create New Room"
-        size="sm"
-      >
-        <div className="space-y-4">
-          <p className="text-gray-600">
-            Create a new game room as host. You'll be able to manage players and start the game.
-          </p>
-          
-          <div className="flex space-x-3">
-            <Button
-              fullWidth
-              onClick={createRoom}
-              loading={isCreatingRoom}
-              disabled={!socket.isConnected}
-            >
-              Create Room
-            </Button>
-            <Button
-              variant="ghost"
-              fullWidth
-              onClick={() => setShowCreateModal(false)}
-              disabled={isCreatingRoom}
-            >
-              Cancel
-            </Button>
-          </div>
-        </div>
-      </Modal>
-
-      {/* Join Room Modal */}
-      <Modal
-        isOpen={showJoinModal}
-        onClose={() => setShowJoinModal(false)}
-        title="Join Room by ID"
-        size="sm"
-      >
-        <div className="space-y-4">
-          <Input
-            label="Room ID"
-            placeholder="Enter room ID..."
-            value={joinRoomId}
-            onChange={(e) => setJoinRoomId(e.target.value)}
-            fullWidth
-          />
-          
-          <div className="flex space-x-3">
-            <Button
-              fullWidth
-              onClick={joinRoomById}
-              loading={isJoiningRoom}
-              disabled={!joinRoomId.trim() || !socket.isConnected}
-            >
-              Join Room
-            </Button>
-            <Button
-              variant="ghost"
-              fullWidth
-              onClick={() => {
-                setShowJoinModal(false);
-                setJoinRoomId('');
+      {/* SIMPLE MODAL TEST */}
+      {showCreateModal && (
+        <div 
+          className="fixed inset-0 flex items-center justify-center"
+          style={{ 
+            backgroundColor: 'rgba(255, 0, 0, 0.8)', // Bright red background 
+            zIndex: 999999,
+            position: 'fixed',
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0
+          }}
+          onClick={() => {
+            console.log('🔍 DEBUG: Modal overlay clicked, closing modal');
+            setShowCreateModal(false);
+          }}
+        >
+          <div 
+            style={{
+              backgroundColor: 'white',
+              padding: '20px',
+              borderRadius: '8px',
+              border: '5px solid blue', // Obvious blue border
+              maxWidth: '400px',
+              width: '90%'
+            }}
+            onClick={(e) => {
+              console.log('🔍 DEBUG: Modal content clicked, preventing close');
+              e.stopPropagation();
+            }}
+          >
+            <h2 style={{ fontSize: '24px', marginBottom: '20px', color: 'red' }}>
+              🚨 TEST MODAL - Create New Room
+            </h2>
+            <p style={{ marginBottom: '20px' }}>
+              This is a test modal with obvious styling. If you can see this, the modal is working!
+            </p>
+            <button 
+              style={{ 
+                background: 'green', 
+                color: 'white', 
+                padding: '10px 20px', 
+                border: 'none', 
+                borderRadius: '4px',
+                marginRight: '10px'
               }}
-              disabled={isJoiningRoom}
+              onClick={() => {
+                console.log('🔍 DEBUG: Create Room clicked');
+                createRoom();
+              }}
             >
-              Cancel
-            </Button>
+              CREATE ROOM
+            </button>
+            <button 
+              style={{ 
+                background: 'red', 
+                color: 'white', 
+                padding: '10px 20px', 
+                border: 'none', 
+                borderRadius: '4px' 
+              }}
+              onClick={() => {
+                console.log('🔍 DEBUG: Cancel clicked');
+                setShowCreateModal(false);
+              }}
+            >
+              CANCEL
+            </button>
           </div>
         </div>
-      </Modal>
+      )}
+
+      {/* Join Room Modal - Temporarily Removed for Debugging */}
 
       <LoadingOverlay
         isVisible={isCreatingRoom || isJoiningRoom}

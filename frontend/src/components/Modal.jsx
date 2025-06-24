@@ -65,12 +65,18 @@ const Modal = ({
     full: 'max-w-full mx-4'
   };
 
-  if (!isOpen) return null;
+  if (!isOpen) {
+    console.log('Modal not rendering - isOpen is false');
+    return null;
+  }
+
+  console.log('Modal rendering with isOpen:', isOpen);
 
   return (
     <div
       ref={overlayRef}
       className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 backdrop-blur-sm"
+      style={{ zIndex: 9999 }} // Force high z-index for debugging
       onClick={handleOverlayClick}
     >
       <div

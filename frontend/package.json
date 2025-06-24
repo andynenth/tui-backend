@@ -115,7 +115,7 @@
   },
   "scripts": {
     "dev": "node esbuild.config.cjs",
-    "build": "esbuild main.js --bundle --outfile=../backend/static/bundle.js --loader:.js=jsx --loader:.css=css --jsx=automatic",
+    "build": "esbuild main.js --bundle --outdir=../backend/static --entry-names=bundle --loader:.js=jsx --loader:.css=css --jsx=automatic",
     "test": "node --experimental-vm-modules test-runner.js",
     "test:manual": "echo 'Running manual verification tests...' && node manual-tests.js",
     "test:react": "node --experimental-vm-modules react-test-runner.js"
