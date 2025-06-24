@@ -16,6 +16,9 @@ export class ScoringPhase extends BasePhase {
   constructor(stateManager, socketManager, uiManager) {
     super(stateManager, socketManager, uiManager);
     
+    // Explicitly set phase name (overrides BasePhase constructor.name logic)
+    this.name = 'scoring';
+    
     this.scoringComplete = false;
     this.gameOver = false;
     this.winners = [];

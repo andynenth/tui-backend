@@ -121,9 +121,12 @@ class GameStateMachine:
     
     async def _transition_to(self, new_phase: GamePhase):
         """Transition to a new phase"""
+        print(f"🔄 STATE_MACHINE_DEBUG: Attempting transition from {self.current_phase} to {new_phase}")
+        
         # Validate transition (skip validation for initial transition)
         if self.current_phase and new_phase not in self._valid_transitions.get(self.current_phase, set()):
             logger.error(f"❌ Invalid transition: {self.current_phase} -> {new_phase}")
+            print(f"❌ STATE_MACHINE_DEBUG: Invalid transition blocked!")
             return
         
         # Get new state
@@ -133,17 +136,29 @@ class GameStateMachine:
             return
         
         logger.info(f"🔄 Transitioning: {self.current_phase} -> {new_phase}")
+        print(f"✅ STATE_MACHINE_DEBUG: Transition validated, proceeding...")
         
         # Exit current state
         if self.current_state:
+            print(f"🚪 STATE_MACHINE_DEBUG: Exiting current state: {self.current_state}")
             await self.current_state.on_exit()
         
         # Update phase and state
+        old_phase = self.current_phase
         self.current_phase = new_phase
         self.current_state = new_state
         
+        print(f"🎯 STATE_MACHINE_DEBUG: Phase updated: {old_phase} -> {self.current_phase}")
+        print(f"🎯 STATE_MACHINE_DEBUG: Entering new state: {self.current_state}")
+        
         # Enter new state
         await self.current_state.on_enter()
+        
+        # 🔧 FIX: Broadcast phase change with player-specific data
+        await self._broadcast_phase_change_with_hands(new_phase)
+        
+        # 🤖 Trigger bot manager for phase changes
+        await self._notify_bot_manager(new_phase)
     
     def get_current_phase(self) -> Optional[GamePhase]:
         """Get current game phase"""
@@ -156,10 +171,57 @@ class GameStateMachine:
         return self.current_state.allowed_actions
     
     def get_phase_data(self) -> Dict:
-        """Get current phase-specific data"""
+        """Get current phase-specific data (JSON serializable)"""
         if not self.current_state:
             return {}
-        return self.current_state.phase_data.copy()
+        
+        # Get raw phase data
+        raw_data = self.current_state.phase_data.copy()
+        
+        # Convert Player objects to serializable format
+        serializable_data = {}
+        for key, value in raw_data.items():
+            if key == 'declaration_order' and isinstance(value, list):
+                # Convert Player objects to player names
+                serializable_data[key] = [
+                    getattr(player, 'name', str(player)) for player in value
+                ]
+            elif hasattr(value, '__dict__'):
+                # Convert complex objects to string representation
+                serializable_data[key] = str(value)
+            else:
+                serializable_data[key] = value
+        
+        return serializable_data
+    
+    async def _broadcast_phase_change_with_hands(self, phase: GamePhase):
+        """Broadcast phase change with all player hand data"""
+        base_data = {
+            "phase": phase.value,
+            "allowed_actions": [action.value for action in self.get_allowed_actions()],
+            "phase_data": self.get_phase_data()
+        }
+        
+        # Add player hands to the data
+        if hasattr(self, 'game') and self.game and hasattr(self.game, 'players'):
+            players_data = {}
+            for player in self.game.players:
+                player_name = getattr(player, 'name', str(player))
+                player_hand = []
+                
+                # Get player's hand
+                if hasattr(player, 'hand') and player.hand:
+                    player_hand = [str(piece) for piece in player.hand]
+                
+                players_data[player_name] = {
+                    'hand': player_hand,
+                    'hand_size': len(player_hand)
+                }
+            
+            base_data['players'] = players_data
+        
+        # Send to all players
+        await self.broadcast_event("phase_change", base_data)
     
     async def broadcast_event(self, event_type: str, event_data: Dict):
         """Broadcast WebSocket event if callback is available"""
@@ -167,3 +229,28 @@ class GameStateMachine:
             await self.broadcast_callback(event_type, event_data)
         else:
             logger.debug(f"No broadcast callback set - event {event_type} not sent")
+    
+    async def _notify_bot_manager(self, new_phase: GamePhase):
+        """Notify bot manager about phase changes to trigger bot actions"""
+        try:
+            from ..bot_manager import BotManager
+            bot_manager = BotManager()
+            room_id = getattr(self, 'room_id', 'unknown')
+            
+            print(f"🤖 STATE_MACHINE_DEBUG: Notifying bot manager about phase {new_phase.value} for room {room_id}")
+            
+            if new_phase == GamePhase.DECLARATION:
+                # Trigger bot declarations
+                await bot_manager.handle_game_event(room_id, "round_started", {
+                    "phase": new_phase.value,
+                    "starter": getattr(self.game, 'round_starter', self.game.players[0].name if self.game.players else 'unknown')
+                })
+            elif new_phase == GamePhase.TURN:
+                # Trigger turn start
+                starter = self.game.current_player or (self.game.players[0].name if self.game.players else 'unknown')
+                await bot_manager.handle_game_event(room_id, "turn_started", {
+                    "starter": starter
+                })
+                
+        except Exception as e:
+            logger.error(f"Failed to notify bot manager: {e}", exc_info=True)

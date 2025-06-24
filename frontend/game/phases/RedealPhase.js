@@ -16,6 +16,9 @@ export class RedealPhase extends BasePhase {
   constructor(stateManager, socketManager, uiRenderer) {
     super(stateManager, socketManager, uiRenderer);
 
+    // Explicitly set phase name (overrides BasePhase constructor.name logic)
+    this.name = 'redeal';
+    
     this.waitingForInput = false;
     this.hasPromptedUser = false;
     this.hasChecked = false;

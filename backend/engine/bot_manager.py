@@ -9,8 +9,17 @@ from engine.state_machine.core import GameAction, ActionType
 class BotManager:
     """Centralized bot management system"""
     
+    _instance = None
+    
+    def __new__(cls):
+        if cls._instance is None:
+            cls._instance = super().__new__(cls)
+            cls._instance.active_games = {}
+        return cls._instance
+    
     def __init__(self):
-        self.active_games: Dict[str, GameBotHandler] = {}
+        if not hasattr(self, 'active_games'):
+            self.active_games: Dict[str, GameBotHandler] = {}
         
     def register_game(self, room_id: str, game, state_machine=None):
         """Register a game for bot management"""
@@ -23,11 +32,13 @@ class BotManager:
             
     async def handle_game_event(self, room_id: str, event: str, data: dict):
         """Handle game events that might need bot actions"""
-        print(f"🔔 Bot Manager: Received event '{event}' for room {room_id} with data: {data}")
+        print(f"🔔 BOT_MANAGER_DEBUG: Received event '{event}' for room {room_id} with data: {data}")
         if room_id not in self.active_games:
+            print(f"❌ BOT_MANAGER_DEBUG: Room {room_id} not found in active games: {list(self.active_games.keys())}")
             return
             
         handler = self.active_games[room_id]
+        print(f"✅ BOT_MANAGER_DEBUG: Found handler for room {room_id}, delegating to handler...")
         await handler.handle_event(event, data)
 
 
@@ -49,15 +60,28 @@ class GameBotHandler:
         
     async def handle_event(self, event: str, data: dict):
         """Process game events and trigger bot actions"""
+        print(f"🎮 BOT_HANDLER_DEBUG: Room {self.room_id} handling event '{event}' with data: {data}")
         async with self._lock:  # Prevent concurrent bot actions
             if event == "player_declared":
+                print(f"📢 BOT_HANDLER_DEBUG: Handling declaration phase")
                 await self._handle_declaration_phase(data["player_name"])
             elif event == "player_played":
+                print(f"🎯 BOT_HANDLER_DEBUG: Handling play phase")
                 await self._handle_play_phase(data["player_name"])
             elif event == "turn_started":
+                print(f"🚀 BOT_HANDLER_DEBUG: Handling turn start")
                 await self._handle_turn_start(data["starter"])
             elif event == "round_started":
+                print(f"🎪 BOT_HANDLER_DEBUG: Handling round start")
                 await self._handle_round_start()
+            elif event == "weak_hands_found":
+                print(f"🃏 BOT_HANDLER_DEBUG: Handling weak hands found")
+                await self._handle_weak_hands(data)
+            elif event == "redeal_decision_needed":
+                print(f"🔄 BOT_HANDLER_DEBUG: Handling redeal decision needed")
+                await self._handle_redeal_decision(data)
+            else:
+                print(f"⚠️ BOT_HANDLER_DEBUG: Unknown event '{event}' - ignoring")
                 
     async def _handle_declaration_phase(self, last_declarer: str):
         """Handle bot declarations in order"""
@@ -413,3 +437,90 @@ class GameBotHandler:
                 indices.append(idx)
                 hand_copy[idx] = None  # Mark as used
         return indices
+
+    async def _handle_weak_hands(self, data: dict):
+        """Handle weak hands found event - auto-decide for bots"""
+        weak_players = data.get("weak_players", [])
+        current_weak_player = data.get("current_weak_player")
+        
+        # Auto-decide for current bot if it's a bot
+        if current_weak_player:
+            game_state = self._get_game_state()
+            player = None
+            for p in game_state.players:
+                if p.name == current_weak_player:
+                    player = p
+                    break
+            
+            if player and player.is_bot:
+                print(f"🤖 Auto-deciding redeal for bot {current_weak_player}")
+                await asyncio.sleep(0.5)  # Small delay for realism
+                await self._bot_redeal_decision(player)
+
+    async def _handle_redeal_decision(self, data: dict):
+        """Handle redeal decision needed event"""
+        current_weak_player = data.get("current_weak_player")
+        
+        if current_weak_player:
+            game_state = self._get_game_state()
+            player = None
+            for p in game_state.players:
+                if p.name == current_weak_player:
+                    player = p
+                    break
+            
+            if player and player.is_bot:
+                print(f"🤖 Bot {current_weak_player} needs to make redeal decision")
+                await asyncio.sleep(0.5)  # Small delay for realism
+                await self._bot_redeal_decision(player)
+
+    async def _bot_redeal_decision(self, bot: Player):
+        """Make redeal decision for bot"""
+        try:
+            # Simple strategy: decline redeal 70% of the time to avoid infinite loops
+            import random
+            decline_probability = 0.7
+            should_decline = random.random() < decline_probability
+            
+            if should_decline:
+                # Decline redeal
+                if self.state_machine:
+                    action = GameAction(
+                        player_name=bot.name,
+                        action_type=ActionType.REDEAL_RESPONSE,
+                        payload={"accept": False},
+                        is_bot=True
+                    )
+                    result = await self.state_machine.handle_action(action)
+                    print(f"✅ Bot {bot.name} DECLINED redeal")
+                else:
+                    print(f"❌ No state machine available for bot {bot.name} redeal decision")
+            else:
+                # Accept redeal
+                if self.state_machine:
+                    action = GameAction(
+                        player_name=bot.name,
+                        action_type=ActionType.REDEAL_REQUEST,
+                        payload={"accept": True},
+                        is_bot=True
+                    )
+                    result = await self.state_machine.handle_action(action)
+                    print(f"✅ Bot {bot.name} ACCEPTED redeal")
+                else:
+                    print(f"❌ No state machine available for bot {bot.name} redeal decision")
+                    
+        except Exception as e:
+            print(f"❌ Bot {bot.name} redeal decision error: {e}")
+            # Fallback: auto-decline to avoid hanging
+            if self.state_machine:
+                try:
+                    action = GameAction(
+                        player_name=bot.name,
+                        action_type=ActionType.REDEAL_RESPONSE,
+                        payload={"accept": False},
+                        is_bot=True
+                    )
+                    await self.state_machine.handle_action(action)
+                    print(f"🔧 Bot {bot.name} auto-declined as fallback")
+                except:
+                    pass

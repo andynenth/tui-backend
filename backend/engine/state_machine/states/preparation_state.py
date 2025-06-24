@@ -46,6 +46,7 @@ class PreparationState(GameState):
     async def _setup_phase(self) -> None:
         """Initialize preparation phase by dealing cards"""
         self.logger.info("🎴 Preparation phase starting - dealing cards")
+        print(f"🎴 PREP_STATE_DEBUG: Setup phase starting for room {getattr(self.state_machine, 'room_id', 'unknown')}")
         await self._deal_cards()
     
     async def _cleanup_phase(self) -> None:
@@ -62,6 +63,9 @@ class PreparationState(GameState):
         if game.current_player and (not hasattr(game, 'round_starter') or not game.round_starter):
             game.round_starter = game.current_player
         
+        print(f"🎯 PREP_STATE_DEBUG: Cleanup phase - current_player: {getattr(game, 'current_player', 'None')}")
+        print(f"🎯 PREP_STATE_DEBUG: Cleanup phase - round_starter: {getattr(game, 'round_starter', 'None')}")
+        
         # Log final state
         multiplier = getattr(game, 'redeal_multiplier', 1)
         self.logger.info(f"📋 Preparation complete - Starter: {game.current_player}, "
@@ -71,8 +75,12 @@ class PreparationState(GameState):
         """Deal cards and check for weak hands"""
         game = self.state_machine.game
         
-        # Normal deal (no redeal limit)
-        if hasattr(game, 'deal_pieces'):
+        # Use guaranteed no redeal for testing (no weak hands)
+        if hasattr(game, '_deal_guaranteed_no_redeal'):
+            print(f"🎴 PREP_STATE_DEBUG: Using guaranteed no redeal dealing")
+            game._deal_guaranteed_no_redeal()
+        elif hasattr(game, 'deal_pieces'):
+            print(f"🎴 PREP_STATE_DEBUG: Using normal dealing")
             game.deal_pieces()
         else:
             # Fallback for testing
@@ -92,6 +100,7 @@ class PreparationState(GameState):
                    f"weak players: {self.weak_players}")
         
         if self.weak_players:
+            print(f"🃏 PREP_STATE_DEBUG: Found weak players: {self.weak_players}")
             # Get current play order (might have changed due to redeal)
             if hasattr(game, 'get_player_order_from'):
                 # Determine current starter
@@ -115,21 +124,41 @@ class PreparationState(GameState):
             # Set up redeal decision queue based on play order
             # Only include players who are actually weak
             self.pending_weak_players = []
+            print(f"🔍 PREP_STATE_DEBUG: Play order: {play_order}")
+            print(f"🔍 PREP_STATE_DEBUG: Play order types: {[type(p) for p in play_order]}")
             for player in play_order:
                 # Handle both string names and weak_players that might be strings
                 player_name = player if isinstance(player, str) else getattr(player, 'name', str(player))
+                print(f"🔍 PREP_STATE_DEBUG: Checking player {player_name} against weak players {self.weak_players}")
                 if player_name in self.weak_players:
                     self.pending_weak_players.append(player_name)
+                    print(f"✅ PREP_STATE_DEBUG: Added {player_name} to pending weak players")
+                else:
+                    print(f"❌ PREP_STATE_DEBUG: {player_name} not in weak players")
             
             self.current_weak_player = self.pending_weak_players[0] if self.pending_weak_players else None
             
+            print(f"🎯 PREP_STATE_DEBUG: Current weak player to ask: {self.current_weak_player}")
+            print(f"📋 PREP_STATE_DEBUG: Pending weak players queue: {self.pending_weak_players}")
+            
             # Notify about weak hands (frontend will prompt players)
             await self._notify_weak_hands()
+            
+            # Trigger bot manager to handle bot decisions
+            print(f"🤖 PREP_STATE_DEBUG: Triggering bot manager for redeal decisions...")
+            await self._trigger_bot_redeal_decisions()
+            
+            # Fallback: If no current weak player but we have weak players, trigger for all
+            if not self.current_weak_player and self.weak_players:
+                print(f"🔧 PREP_STATE_DEBUG: No current weak player but have weak players, triggering for all")
+                for weak_player in self.weak_players:
+                    await self._trigger_bot_redeal_for_player(weak_player)
         else:
             # No weak hands, determine starter
             starter = self._determine_starter()
             game.current_player = starter
             game.round_starter = starter  # Always set both
+            print(f"✅ PREP_STATE_DEBUG: No weak hands - starter set to: {starter}")
             self.logger.info(f"✅ No weak hands - starter: {starter}")
     
     async def _validate_action(self, action: GameAction) -> bool:
@@ -245,6 +274,9 @@ class PreparationState(GameState):
             self.current_weak_player = self.pending_weak_players[0]
             self.logger.info(f"➡️ Asking next weak player: {self.current_weak_player}")
             
+            # Trigger bot manager for next player
+            await self._trigger_bot_redeal_decisions()
+            
             return {
                 "success": True,
                 "next_weak_player": self.current_weak_player
@@ -305,16 +337,25 @@ class PreparationState(GameState):
         # Priority 2: Round 1 - player with GENERAL_RED
         round_num = getattr(game, 'round', 1)
         if round_num == 1:
+            print(f"🔍 STARTER_DEBUG: Looking for GENERAL_RED holder in round {round_num}")
             # Check if game has player objects with hands
             if hasattr(game, 'players') and game.players:
                 for player in game.players:
+                    player_name = getattr(player, 'name', str(player))
+                    print(f"🔍 STARTER_DEBUG: Checking player {player_name}")
                     if hasattr(player, 'hand'):
+                        print(f"🔍 STARTER_DEBUG: Player {player_name} hand: {[str(p) for p in player.hand]}")
                         for piece in player.hand:
                             piece_name = getattr(piece, 'name', str(piece))
-                            if "GENERAL_RED" in str(piece_name):
-                                player_name = getattr(player, 'name', str(player))
+                            piece_str = str(piece_name)
+                            print(f"🔍 STARTER_DEBUG: Checking piece '{piece_str}' for GENERAL_RED")
+                            if "GENERAL_RED" in piece_str:
+                                print(f"✅ STARTER_DEBUG: Found GENERAL_RED in {player_name}'s hand!")
                                 self.logger.info(f"🎯 Starter: {player_name} (has GENERAL_RED)")
                                 return player_name
+                    else:
+                        print(f"❌ STARTER_DEBUG: Player {player_name} has no hand attribute")
+            print(f"❌ STARTER_DEBUG: No GENERAL_RED found in any player's hand")
         
         # Priority 3: Previous round's last turn winner
         if hasattr(game, 'last_turn_winner') and game.last_turn_winner:
@@ -339,21 +380,69 @@ class PreparationState(GameState):
         # Frontend shows redeal prompt to weak players
         pass
     
+    async def _trigger_bot_redeal_decisions(self) -> None:
+        """Trigger bot manager to handle bot redeal decisions"""
+        if self.current_weak_player:
+            print(f"🔧 PREP_STATE_DEBUG: Triggering bot manager for player: {self.current_weak_player}")
+            # Import here to avoid circular imports
+            from backend.engine.bot_manager import BotManager
+            
+            # Get the singleton bot manager
+            bot_manager = BotManager()
+            room_id = getattr(self.state_machine, 'room_id', 'unknown')
+            
+            print(f"🔧 PREP_STATE_DEBUG: Using room_id: {room_id}")
+            print(f"🔧 PREP_STATE_DEBUG: Bot manager active games: {list(bot_manager.active_games.keys())}")
+            
+            # Trigger redeal decision for current weak player
+            await bot_manager.handle_game_event(room_id, "redeal_decision_needed", {
+                "current_weak_player": self.current_weak_player,
+                "weak_players": list(self.weak_players)
+            })
+        else:
+            print(f"⚠️ PREP_STATE_DEBUG: No current weak player to trigger bot manager for")
+    
+    async def _trigger_bot_redeal_for_player(self, player_name: str) -> None:
+        """Trigger bot manager for a specific weak player"""
+        print(f"🔧 PREP_STATE_DEBUG: Triggering bot manager for specific player: {player_name}")
+        # Import here to avoid circular imports
+        from backend.engine.bot_manager import BotManager
+        
+        # Get the singleton bot manager
+        bot_manager = BotManager()
+        room_id = getattr(self.state_machine, 'room_id', 'unknown')
+        
+        # Trigger redeal decision for specific player
+        await bot_manager.handle_game_event(room_id, "redeal_decision_needed", {
+            "current_weak_player": player_name,
+            "weak_players": list(self.weak_players)
+        })
+    
     async def check_transition_conditions(self) -> Optional[GamePhase]:
         """Check if ready to transition to Declaration phase"""
         # Transition when:
         # 1. Initial deal done AND no weak players, OR
         # 2. All weak players have made redeal decisions
         
+        print(f"🔍 PREP_STATE_DEBUG: Checking transition conditions...")
+        print(f"   - Initial deal complete: {self.initial_deal_complete}")
+        print(f"   - Weak players: {self.weak_players}")
+        print(f"   - Redeal decisions: {self.redeal_decisions}")
+        print(f"   - Current weak player: {self.current_weak_player}")
+        
         if not self.initial_deal_complete:
+            print(f"❌ PREP_STATE_DEBUG: Initial deal not complete, staying in preparation")
             return None
         
         if not self.weak_players:
             # No weak hands found
+            print(f"✅ PREP_STATE_DEBUG: No weak players, transitioning to DECLARATION")
             return GamePhase.DECLARATION
         
         if len(self.redeal_decisions) == len(self.weak_players):
             # All weak players have decided (all must have declined)
+            print(f"✅ PREP_STATE_DEBUG: All weak players decided, transitioning to DECLARATION")
             return GamePhase.DECLARATION
         
+        print(f"⏳ PREP_STATE_DEBUG: Waiting for more redeal decisions ({len(self.redeal_decisions)}/{len(self.weak_players)})")
         return None

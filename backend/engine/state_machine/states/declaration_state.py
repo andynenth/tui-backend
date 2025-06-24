@@ -24,7 +24,19 @@ class DeclarationState(GameState):
     
     async def _setup_phase(self) -> None:
         game = self.state_machine.game
-        declaration_order = game.get_player_order_from(game.round_starter)
+        
+        # Get round starter, fallback to current_player or first player
+        round_starter = getattr(game, 'round_starter', None)
+        if not round_starter:
+            round_starter = getattr(game, 'current_player', None)
+        if not round_starter and game.players:
+            # Fallback to first player name
+            first_player = game.players[0]
+            round_starter = getattr(first_player, 'name', str(first_player))
+            print(f"⚠️ DECL_STATE_DEBUG: No round_starter found, using first player: {round_starter}")
+        
+        print(f"📢 DECL_STATE_DEBUG: Using round_starter: {round_starter}")
+        declaration_order = game.get_player_order_from(round_starter)
         
         self.phase_data.update({
             'declaration_order': declaration_order,

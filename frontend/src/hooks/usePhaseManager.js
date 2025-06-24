@@ -18,7 +18,25 @@ export function usePhaseManager(stateManager, socketManager, uiRenderer) {
   // Initialize GamePhaseManager
   useEffect(() => {
     if (!stateManager || !socketManager) return;
+    
+    // Store current refs to check if they actually changed
+    const currentStateManager = phaseManagerRef.current?.stateManager;
+    const currentSocketManager = phaseManagerRef.current?.socketManager;
+    
+    // If we already have a manager with the same instances, don't recreate
+    if (phaseManagerRef.current && 
+        currentStateManager === stateManager && 
+        currentSocketManager === socketManager) {
+      return;
+    }
 
+    // Clean up existing manager first
+    if (phaseManagerRef.current) {
+      console.log('🧹 Cleaning up existing GamePhaseManager');
+      phaseManagerRef.current.destroy();
+    }
+
+    console.log('🚀 Creating GamePhaseManager instance');
     const manager = new GamePhaseManager(stateManager, socketManager, uiRenderer);
     phaseManagerRef.current = manager;
 
@@ -46,7 +64,11 @@ export function usePhaseManager(stateManager, socketManager, uiRenderer) {
 
     // Cleanup
     return () => {
-      manager.destroy();
+      console.log('🧹 Destroying GamePhaseManager instance');
+      if (phaseManagerRef.current === manager) {
+        manager.destroy();
+        phaseManagerRef.current = null;
+      }
     };
   }, [stateManager, socketManager, uiRenderer]);
 

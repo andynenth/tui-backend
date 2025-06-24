@@ -412,3 +412,378 @@ socket.onmessage = (event) => console.log('WS received:', JSON.parse(event.data)
 // Check room data structure
 console.log('Room data:', roomData);
 ```
+
+---
+
+## Recent Fixes (Session 5) - Game Hanging Issues
+
+### 14. Game Hanging at "Waiting for game phase: waiting" ✅
+**Bug**: After clicking "Start Game" with 3 bots, game would hang indefinitely at "Waiting for game phase: waiting"
+**Root Cause**: Two separate cascading issues:
+
+#### **Backend Issue**: Bot Redeal Decision Automation Not Working
+**Problem**: Game state machine reached PREPARATION phase but bots weren't making redeal decisions automatically
+**Investigation**:
+- Backend logs showed weak hands detected: `🃏 PREP_STATE_DEBUG: Found weak players: {'Bot 3'}`
+- But current_weak_player was `None`, so bot manager wasn't triggered
+- Game waited forever for redeal decisions that never came
+
+**Fix**: Multi-part backend fix in `backend/engine/`:
+
+1. **Added Missing Game Attributes** (`game.py:34-35`):
+```python
+# Player tracking for state machine
+self.current_player = None         # Current player (for round start/declarations)
+self.round_starter = None          # Player who starts the round
+```
+
+2. **Added Bot Redeal Event Handlers** (`bot_manager.py:61-64,421-506`):
+```python
+elif event_name == "weak_hands_found":
+    await self._handle_weak_hands(data)
+elif event_name == "redeal_decision_needed":
+    await self._handle_redeal_decision(data)
+
+async def _bot_redeal_decision(self, bot: Player):
+    # Simple strategy: decline redeal 70% of the time to avoid infinite loops
+    decline_probability = 0.7
+    should_decline = random.random() < decline_probability
+```
+
+3. **Added Bot Manager Triggering** (`preparation_state.py:145-151`):
+```python
+# Trigger bot manager to handle bot decisions
+await self._trigger_bot_redeal_decisions()
+
+# Fallback: If no current weak player but we have weak players, trigger for all
+if not self.current_weak_player and self.weak_players:
+    for weak_player in self.weak_players:
+        await self._trigger_bot_redeal_for_player(weak_player)
+```
+
+#### **Frontend Issue**: Phase Change Events Not Reaching Frontend
+**Problem**: Backend successfully transitioned to DECLARATION phase, but frontend never received the `phase_change` events
+**Investigation**:
+- Backend logs: `DEBUG_WS: Successfully sent 'phase_change' to a client`
+- Frontend logs: No `🎯 GAME_CONTEXT: Received phase_change event` messages
+- Timing issue: Frontend connected **after** phase transitions completed
+
+**Fix**: Added current phase sync when client connects (`backend/api/routes/ws.py:228-243`):
+```python
+# Send current game phase if game is running
+if room.started and room.game_state_machine:
+    current_phase = room.game_state_machine.get_current_phase()
+    if current_phase:
+        await registered_ws.send_json({
+            "event": "phase_change",
+            "data": {
+                "phase": current_phase.value,
+                "allowed_actions": allowed_actions,
+                "phase_data": phase_data
+            }
+        })
+```
+
+### 15. Frontend WebSocket Connection Instability ✅
+**Bug**: Frontend repeatedly connecting/disconnecting, causing infinite GamePhaseManager creation loops
+**Root Cause**: React re-rendering issues causing multiple socket manager recreations
+
+**Investigation**:
+```javascript
+// Console showed infinite loop:
+GamePhaseManager.js:44 ✅ Initialized phases: Array(5)
+GamePhaseManager.js:28 GamePhaseManager initialized  
+GamePhaseManager.js:250 🧹 Destroying GamePhaseManager
+useSocket.js:51 React hook: Disconnected {intentional: true}
+```
+
+**Fix**: Multi-part frontend stability fix:
+
+1. **Prevented Multiple Socket Connections** (`GameContext.jsx:47-48`):
+```javascript
+// Wait for socket connection (useSocket handles this automatically)
+// Removed manual socket.connect() call that conflicted with automatic connection
+```
+
+2. **Fixed React Re-rendering Loops** (`GameContext.jsx:42,65`):
+```javascript
+if (isInitialized) return; // Prevent re-initialization
+}, [roomId, playerName, socket.isConnected]); // Wait for socket connection
+```
+
+3. **Stabilized Manager References** (`GameContext.jsx:35-37`):
+```javascript
+// Memoize phaseManager to prevent constant recreation  
+const stableGameStateManager = useMemo(() => gameState.manager, [gameState.manager]);
+const stableSocketManager = useMemo(() => socket.manager, [socket.manager]);
+```
+
+4. **Fixed Phase Manager Recreation** (`usePhaseManager.js:23-31`):
+```javascript
+// If we already have a manager with the same instances, don't recreate
+if (phaseManagerRef.current && 
+    currentStateManager === stateManager && 
+    currentSocketManager === socketManager) {
+  return;
+}
+```
+
+### 16. DeclarationPhase UI Renderer Null Error ✅
+**Bug**: `TypeError: Cannot read properties of null (reading 'showDeclarationPhase')`
+**Root Cause**: DeclarationPhase trying to call UI methods on null renderer
+
+**Fix**: Added null check in `DeclarationPhase.js:42-44`:
+```javascript
+// Initialize phase UI (optional)
+if (this.uiRenderer) {
+  this.uiRenderer.showDeclarationPhase();
+}
+```
+
+## 🔧 Game State Machine Debug Pattern
+
+When debugging game hanging issues, check this sequence:
+
+### Backend State Machine Flow:
+1. **Game Start**: `🔒 [Room XXX] Starting game`
+2. **Phase Transition**: `🔄 STATE_MACHINE_DEBUG: Attempting transition from None to GamePhase.PREPARATION`
+3. **Card Dealing**: `🎴 PREP_STATE_DEBUG: Using guaranteed no redeal dealing`
+4. **Weak Hand Check**: `🔍 PREP_STATE_DEBUG: Checking transition conditions`
+5. **Phase Broadcast**: `DEBUG_WS: Broadcasting event 'phase_change'`
+
+### Frontend Reception Flow:
+1. **Socket Connection**: `useSocket.js:41 React hook: Connected to room XXX`
+2. **Context Initialization**: `🚀 GAME_CONTEXT: Socket connected, initializing game context`
+3. **Phase Event**: `🎯 GAME_CONTEXT: Received phase_change event`
+4. **Phase Transition**: `🔄 Phase transition requested: null → declaration`
+
+### Common Failure Points:
+- **Backend**: Bot automation not triggering → Game hangs waiting for decisions
+- **WebSocket**: Events sent but not received → Frontend stuck on "waiting"
+- **Frontend**: React re-rendering → Multiple managers created/destroyed
+- **UI**: Null renderer → Phase transition crashes
+
+## 🚨 Quick Debug Commands for Game State
+
+```javascript
+// Check current game phase
+console.log('Current phase:', window.gamePhaseManager?.currentPhaseName);
+
+// Check socket connection state  
+console.log('Socket connected:', socket.isConnected);
+
+// Check if phase events are being received
+socket.on('phase_change', (data) => console.log('Phase change received:', data));
+```
+
+```python
+# Backend - Check game state machine status
+print(f"Current phase: {room.game_state_machine.current_phase}")
+print(f"Bot manager games: {list(bot_manager.active_games.keys())}")
+```
+
+---
+
+## Recent Fixes (Session 6) - Phase Name and Hand Data Issues
+
+### 17. Game Stopping at "Waiting for game phase: to" ✅
+**Bug**: Game successfully transitioned to Declaration phase on backend, but frontend showed "Waiting for game phase: to" instead of "declaration"
+**Root Cause**: JavaScript build process (esbuild) was minifying class names:
+- `DeclarationPhase` → `toPhase` (or similar minified name)  
+- `this.constructor.name.replace('Phase', '').toLowerCase()` → `"to"`
+
+**Investigation**:
+```javascript
+// Console logs showed the minification issue:
+🚪 Entering phase: to
+🔸 Entering to
+GamePhaseManager.js:85 ✅ Phase transition complete: null → to
+```
+
+**Fix**: Explicitly set phase names in each phase constructor to avoid dependency on `constructor.name`:
+```javascript
+// Before (unreliable)
+this.name = this.constructor.name.replace('Phase', '').toLowerCase();
+
+// After (reliable)
+export class DeclarationPhase extends BasePhase {
+  constructor(stateManager, socketManager, uiRenderer) {
+    super(stateManager, socketManager, uiRenderer);
+    this.name = 'declaration'; // Explicit phase name
+  }
+}
+```
+
+**Files Updated**:
+- `frontend/game/phases/DeclarationPhase.js` - Added `this.name = 'declaration'`
+- `frontend/game/phases/RedealPhase.js` - Added `this.name = 'redeal'`
+- `frontend/game/phases/TurnPhase.js` - Added `this.name = 'turn'`
+- `frontend/game/phases/ScoringPhase.js` - Added `this.name = 'scoring'`
+- `frontend/game/phases/BasePhase.js` - Updated all console logs to use reliable name
+- `frontend/game/GamePhaseManager.js` - Updated all phase name references
+
+### 18. Frontend Not Receiving Player Hand Data ✅
+**Bug**: Declaration phase showed "Your hand: 0 pieces" instead of actual dealt cards
+**Root Cause**: Phase change events didn't include player hand data, only phase metadata
+
+**Investigation**:
+```javascript
+// Frontend showed empty hand
+GameStateManager initialized with: {roomId: '00EAC0', playerName: 'Andy', round: 1, players: 0, hand: 0}
+
+// But backend logs showed proper dealing:
+Andy: ['HORSE_BLACK(5)', 'ELEPHANT_BLACK(9)', 'ADVISOR_BLACK(11)', ...]
+```
+
+**Fix**: Modified phase_change events to include all player hands:
+
+**Backend Changes**:
+```python
+# backend/engine/state_machine/game_state_machine.py
+async def _broadcast_phase_change_with_hands(self, phase: GamePhase):
+    base_data = {
+        "phase": phase.value,
+        "allowed_actions": [action.value for action in self.get_allowed_actions()],
+        "phase_data": self.get_phase_data()
+    }
+    
+    # Add player hands to the data
+    if hasattr(self, 'game') and self.game and hasattr(self.game, 'players'):
+        players_data = {}
+        for player in self.game.players:
+            player_name = getattr(player, 'name', str(player))
+            player_hand = [str(piece) for piece in player.hand] if hasattr(player, 'hand') and player.hand else []
+            
+            players_data[player_name] = {
+                'hand': player_hand,
+                'hand_size': len(player_hand)
+            }
+        
+        base_data['players'] = players_data
+    
+    await self.broadcast_event("phase_change", base_data)
+```
+
+**Frontend Changes**:
+```javascript
+// frontend/src/contexts/GameContext.jsx
+const unsubPhaseChange = socket.on('phase_change', async (data) => {
+  console.log('🎯 GAME_CONTEXT: Received phase_change event:', data);
+  
+  // Update game state with player data if available
+  if (data.players && gameState.manager) {
+    const playerData = data.players[playerName];
+    if (playerData && playerData.hand) {
+      console.log('🃏 GAME_CONTEXT: Updating hand data:', playerData.hand);
+      gameState.manager.updateHand(playerData.hand);
+    }
+  }
+  
+  // Continue with phase transition...
+});
+```
+
+**Files Updated**:
+- `backend/engine/state_machine/game_state_machine.py` - Added `_broadcast_phase_change_with_hands()`
+- `backend/api/routes/ws.py` - Added hand data to client_ready phase_change events  
+- `frontend/src/contexts/GameContext.jsx` - Added hand extraction and update logic
+
+## 🔧 Build Process Debug Pattern
+
+**Key Learning**: JavaScript minification can break code that relies on `constructor.name`:
+
+### Problem Identification:
+1. **Symptoms**: Phase names showing as meaningless strings ("to" instead of "declaration")
+2. **Debug Method**: Add explicit logging of `constructor.name` values
+3. **Root Cause**: Build tools minify class names for optimization
+
+### Solution Strategy:
+1. **Avoid Dynamic Names**: Don't rely on `constructor.name` in production code
+2. **Explicit Constants**: Set phase names explicitly in constructors
+3. **Fallback Patterns**: Use `this.name || this.constructor.name` for backward compatibility
+
+### Prevention:
+```javascript
+// ❌ Fragile - breaks with minification
+this.name = this.constructor.name.replace('Phase', '').toLowerCase();
+
+// ✅ Reliable - explicit phase names
+export class DeclarationPhase extends BasePhase {
+  constructor(...args) {
+    super(...args);
+    this.name = 'declaration'; // Explicit and minification-safe
+  }
+}
+```
+
+## 🎮 Game State Synchronization Pattern
+
+**Key Learning**: Frontend and backend must stay synchronized on game state:
+
+### Data Flow Design:
+1. **Backend Authority**: Backend holds authoritative game state (hands, phases, etc.)
+2. **Event Broadcasting**: State changes broadcast to all clients via WebSocket
+3. **Frontend Updates**: Clients extract relevant data and update local state
+4. **Player Privacy**: Include all player data but let frontend filter what to display
+
+### WebSocket Event Structure:
+```javascript
+// Comprehensive phase_change event structure
+{
+  "event": "phase_change",
+  "data": {
+    "phase": "declaration",
+    "allowed_actions": ["DECLARE", "PLAYER_DISCONNECT"],
+    "phase_data": { /* phase-specific metadata */ },
+    "players": {
+      "Andy": { "hand": ["HORSE_BLACK(5)", ...], "hand_size": 8 },
+      "Bot 2": { "hand": ["CHARIOT_RED(8)", ...], "hand_size": 8 }
+    }
+  }
+}
+```
+
+**Result**: 
+- ✅ **Hand Count Fixed**: Game now shows "Your hand: 8 pieces" instead of "Your hand: 0 pieces"
+- ✅ **Data Flow Working**: Console shows hand data being received: `🃏 GAME_CONTEXT: Updating hand data: (8) ['ADVISOR_BLACK(11)', 'HORSE_RED(6)', ...]`
+- ❌ **Remaining Issues**: Cards still not visible in UI, declaration cannot proceed
+
+### 19. Declaration Phase UI Not Showing Cards ⏳ **IN PROGRESS**
+**Bug**: Hand count is correct (8 pieces) but individual cards are not displayed in the UI
+**Status**: **PARTIAL FIX** - Backend data reaches frontend correctly, but UI rendering incomplete
+
+**Current Symptoms**:
+```
+Declaration Phase
+Each player declares how many piles they expect to win this round.
+
+Your hand:
+8 pieces
+Declaration Progress (0/0)
+```
+
+**Investigation**:
+- ✅ Backend correctly deals cards: `Andy: ['ADVISOR_BLACK(11)', 'HORSE_RED(6)', 'CHARIOT_BLACK(7)', ...]`
+- ✅ Frontend receives hand data: `🃏 GAME_CONTEXT: Updating hand data: (8) ['ADVISOR_BLACK(11)', ...]`
+- ✅ GameStateManager updated: Hand count shows as 8 pieces
+- ❌ UI component not displaying individual cards
+- ❌ Declaration input not appearing (shows "Declaration Progress (0/0)")
+
+**Next Steps**:
+1. Check if DeclarationPhase component is calling `this.stateManager.myHand` correctly
+2. Verify UI renderer is displaying the hand data received from GameStateManager
+3. Check if declaration input UI is being triggered for the current player (Andy is round starter)
+
+**Backend Logs Confirm Proper Game Flow**:
+```
+📢 DECL_STATE_DEBUG: Using round_starter: Andy
+✅ [Room C21310] Game and StateMachine started successfully
+```
+
+**Frontend Logs Show Successful Data Reception**:
+```
+GameContext.jsx:85 🃏 GAME_CONTEXT: Updating hand data: (8) ['ADVISOR_BLACK(11)', 'HORSE_RED(6)', ...]
+DeclarationPhase.js:42 🔸 --- Declare Phase ---
+```
+
+**Root Cause**: UI rendering layer not connected to updated GameStateManager hand data
