@@ -16,6 +16,7 @@ const RoomPage = () => {
   const [isHost, setIsHost] = useState(false);
   const [isStartingGame, setIsStartingGame] = useState(false);
   const [showLeaveModal, setShowLeaveModal] = useState(false);
+  
 
   // Set up socket event listeners
   useEffect(() => {
@@ -107,6 +108,7 @@ const RoomPage = () => {
   };
 
   const leaveRoom = () => {
+    setShowLeaveModal(false);
     socket.send('leave_room', { player_name: app.playerName });
     app.leaveRoom();
     navigate('/lobby');

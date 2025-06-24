@@ -259,8 +259,14 @@ async def websocket_endpoint(websocket: WebSocket, room_id: str):
                                 })
                                 
                                 # Remove the room from the manager
-                                room_manager.remove_room(room_id)
+                                room_manager.delete_room(room_id)
                                 print(f"DEBUG_WS_RECEIVE: Host {player_name} left, room {room_id} closed")
+                                
+                                # Send confirmation to the leaving host
+                                await registered_ws.send_json({
+                                    "event": "player_left",
+                                    "data": {"player_name": player_name, "success": True, "room_closed": True}
+                                })
                                 
                                 # Update lobby with room list
                                 available_rooms = room_manager.list_rooms()
