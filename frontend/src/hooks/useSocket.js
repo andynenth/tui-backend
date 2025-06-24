@@ -1,6 +1,6 @@
 // frontend/src/hooks/useSocket.js
 
-import { useState, useEffect, useRef, useCallback } from 'react';
+import { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import { SocketManager } from '../../network/SocketManager.js';
 
 /**
@@ -183,7 +183,8 @@ export function useSocket(roomId, options = {}) {
     return socketManagerRef.current.getStatus();
   }, []);
 
-  return {
+  // Memoize the return object to prevent unnecessary re-renders
+  return useMemo(() => ({
     // Connection state
     isConnected,
     isConnecting,
@@ -202,7 +203,7 @@ export function useSocket(roomId, options = {}) {
     
     // Direct access to manager (for advanced usage)
     manager: socketManagerRef.current
-  };
+  }), [isConnected, isConnecting, isReconnecting, connectionError, connectionStatus, lastMessage, send, connect, disconnect, on, off, getStatus]);
 }
 
 /**

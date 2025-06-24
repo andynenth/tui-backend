@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Debug Button Test</title>
+    <script>
+        function testCreateRoom() {
+            console.log('Create Room button clicked!');
+            alert('Create Room button is working!');
+        }
+        
+        function testSocketConnection() {
+            const ws = new WebSocket('ws://localhost:5050/ws/lobby');
+            
+            ws.onopen = function() {
+                console.log('WebSocket connected to lobby');
+                alert('WebSocket connection successful!');
+                ws.close();
+            };
+            
+            ws.onerror = function(error) {
+                console.error('WebSocket error:', error);
+                alert('WebSocket connection failed!');
+            };
+            
+            ws.onclose = function() {
+                console.log('WebSocket disconnected');
+            };
+        }
+    </script>
+</head>
+<body>
+    <h1>Debug Test</h1>
+    
+    <button onclick="testCreateRoom()">Test Create Room Button</button>
+    <br><br>
+    <button onclick="testSocketConnection()">Test WebSocket Connection</button>
+    
+    <div id="console" style="margin-top: 20px; padding: 10px; background: #f0f0f0; font-family: monospace;">
+        <p>Open browser console (F12) to see detailed logs</p>
+    </div>
+</body>
+</html>

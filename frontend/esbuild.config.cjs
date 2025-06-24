@@ -35,7 +35,8 @@ const cssPlugin = {
 esbuild.context({
   entryPoints: [entry],
   bundle: true,
-  outfile,
+  outdir: '../backend/static',
+  entryNames: 'bundle',
   loader: { 
     '.js': 'jsx',
     '.jsx': 'jsx',
@@ -48,5 +49,5 @@ esbuild.context({
 }).then(ctx => {
   return ctx.watch();
 }).then(() => {
-  console.log(`👀 Watching for changes to ${entry}, output to ${outfile}`);
+  console.log(`👀 Watching for changes to ${entry}, output to ../backend/static/`);
 }).catch(() => process.exit(1));
