@@ -285,19 +285,21 @@ class Room:
             dict: A dictionary containing room_id, host_name, started status,
                   slot information, occupied slots count, and total slots count.
         """
-        def slot_info(player: Optional[Player]):
+        def slot_info(player: Optional[Player], slot_index: int):
             """
             Helper function to get simplified information for a player slot.
             Args:
                 player (Optional[Player]): The Player object or None if the slot is empty.
+                slot_index (int): The slot index (0-3) to determine if this is the host slot.
             Returns:
-                dict or None: A dictionary with player name and bot status, or None if the slot is empty.
+                dict or None: A dictionary with player name, bot status, and host status, or None if the slot is empty.
             """
             if player is None:
                 return None # Return None if the slot is empty.
             return {
                 "name": player.name, # Always use player.name, regardless of whether it's a bot or human.
-                "is_bot": player.is_bot
+                "is_bot": player.is_bot,
+                "is_host": slot_index == 0  # Host is always in slot 0 (P1)
             }
 
         return {
@@ -306,7 +308,7 @@ class Room:
             "started": self.started,
             "slots": {
                 # Create a dictionary mapping slot names (P1, P2, etc.) to their info.
-                f"P{i+1}": slot_info(p) for i, p in enumerate(self.players)
+                f"P{i+1}": slot_info(p, i) for i, p in enumerate(self.players)
             },
             "occupied_slots": self.get_occupied_slots(),  # ✅ Added occupied slots count.
             "total_slots": self.get_total_slots()         # ✅ Added total slots count.

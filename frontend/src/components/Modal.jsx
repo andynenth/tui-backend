@@ -66,11 +66,8 @@ const Modal = ({
   };
 
   if (!isOpen) {
-    console.log('Modal not rendering - isOpen is false');
     return null;
   }
-
-  console.log('Modal rendering with isOpen:', isOpen);
 
   return (
     <div

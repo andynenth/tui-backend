@@ -26,8 +26,18 @@ const RoomPage = () => {
     // Room state updates
     const unsubRoomUpdate = socket.on('room_update', (data) => {
       setRoomData(data);
-      // Check if current player is host
-      const currentPlayer = data.players?.find(p => p.name === app.playerName);
+      // Check if current player is host - handle object format {P1: ..., P2: ...}
+      const playersObj = data.players || data.slots || {};
+      
+      // Find current player in P1-P4 slots
+      let currentPlayer = null;
+      for (const slot of ['P1', 'P2', 'P3', 'P4']) {
+        const player = playersObj[slot];
+        if (player && player.name === app.playerName) {
+          currentPlayer = player;
+          break;
+        }
+      }
       setIsHost(currentPlayer?.is_host || false);
     });
     unsubscribers.push(unsubRoomUpdate);
@@ -105,11 +115,14 @@ const RoomPage = () => {
   // Get player slots (4 slots total)
   const getPlayerSlots = () => {
     const slots = [];
+    const playersObj = roomData?.players || roomData?.slots || {};
+    
     for (let i = 1; i <= 4; i++) {
-      const player = roomData?.players?.find(p => p.slot_id === i);
+      // Handle object format {P1: ..., P2: ..., P3: ..., P4: ...}
+      const player = playersObj[`P${i}`] || null;
       slots.push({
         slotId: i,
-        occupant: player || null
+        occupant: player
       });
     }
     return slots;
@@ -117,13 +130,15 @@ const RoomPage = () => {
 
   const canStartGame = () => {
     if (!isHost || !roomData) return false;
-    const playerCount = roomData.players?.length || 0;
+    const playersObj = roomData?.players || roomData?.slots || {};
+    const playerCount = Object.values(playersObj).filter(p => p !== null).length;
     return playerCount === 4; // Need exactly 4 players to start
   };
 
   const getGameStartTooltip = () => {
     if (!isHost) return 'Only the host can start the game';
-    const playerCount = roomData?.players?.length || 0;
+    const playersObj = roomData?.players || roomData?.slots || {};
+    const playerCount = Object.values(playersObj).filter(p => p !== null).length;
     if (playerCount < 4) return `Need ${4 - playerCount} more players to start`;
     return 'Start the game';
   };
@@ -162,7 +177,11 @@ const RoomPage = () => {
               Room {roomId}
             </h1>
             <p className="text-gray-600">
-              {roomData?.players?.length || 0} / 4 players
+              {(() => {
+                const playersObj = roomData?.players || roomData?.slots || {};
+                const count = Object.values(playersObj).filter(p => p !== null).length;
+                return `${count} / 4 players`;
+              })()} 
               {isHost && ' • You are the host'}
             </p>
           </div>
@@ -204,11 +223,15 @@ const RoomPage = () => {
             ) : (
               <div className="text-gray-600">
                 <p>Waiting for the host to start the game...</p>
-                {roomData?.players?.length < 4 && (
-                  <p className="text-sm mt-1">
-                    Need {4 - (roomData?.players?.length || 0)} more players
-                  </p>
-                )}
+                {(() => {
+                  const playersObj = roomData?.players || roomData?.slots || {};
+                  const count = Object.values(playersObj).filter(p => p !== null).length;
+                  return count < 4 ? (
+                    <p className="text-sm mt-1">
+                      Need {4 - count} more players
+                    </p>
+                  ) : null;
+                })()}
               </div>
             )}
           </div>
