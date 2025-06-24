@@ -1,11 +1,11 @@
 // frontend/src/hooks/useGameState.js
 
-import { useState, useEffect, useRef, useCallback } from 'react';
+import { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import { GameStateManager } from '../../game/GameStateManager.js';
 
 /**
  * React hook for interfacing with existing GameStateManager
- * Provides state synchronization between PixiJS and React systems
+ * Provides state synchronization for React components
  */
 export function useGameState(roomId, playerName, initialData) {
   const [gameState, setGameState] = useState(null);
@@ -122,16 +122,16 @@ export function useGameState(roomId, playerName, initialData) {
     return gameStateManagerRef.current?.removeFromHand(indices) || [];
   }, []);
 
-  // Computed state
-  const isMyTurnToDeclare = useCallback(() => {
+  // Computed state - memoized for performance
+  const isMyTurnToDeclare = useMemo(() => {
     return gameStateManagerRef.current?.isMyTurnToDeclare() || false;
   }, [declarations]);
 
-  const areAllPlayersDeclarated = useCallback(() => {
+  const areAllPlayersDeclarated = useMemo(() => {
     return gameStateManagerRef.current?.areAllPlayersDeclarated() || false;
   }, [declarations]);
 
-  const isMyTurnToPlay = useCallback(() => {
+  const isMyTurnToPlay = useMemo(() => {
     return gameStateManagerRef.current?.isMyTurnToPlay() || false;
   }, [currentTurnPlays]);
 

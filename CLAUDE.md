@@ -27,11 +27,13 @@ Liap Tui is a real-time multiplayer board game inspired by traditional Chinese-T
 - **API Layer** (`backend/api/`) provides REST and WebSocket endpoints **[WEEK 3 INTEGRATION TARGET]**
 
 ### Frontend Structure
-- **PixiJS** for graphics rendering with scene-based architecture
+- **React 19.1.0** with React Router DOM for modern UI architecture
 - **ESBuild** for bundling and hot reload during development
-- **Scene Management** (`frontend/scenes/`) handles different game states
-- **Game Phases** (`frontend/game/phases/`) mirror backend state machine
+- **Component Architecture** (`frontend/src/components/`) with reusable UI components
+- **Page Components** (`frontend/src/pages/`) handle different application states
+- **React Game Phases** (`frontend/src/phases/`) mirror backend state machine
 - **Network Layer** (`frontend/network/`) manages WebSocket communication
+- **React Hooks** (`frontend/src/hooks/`) bridge existing game managers
 
 ## Development Commands
 
