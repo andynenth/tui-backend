@@ -448,28 +448,26 @@ export function GameContainer() {
 
 ---
 
-### **TASK 3.2: Remove Legacy Code (30 minutes)**
-**Files to remove completely**:
-- `/src/contexts/GameContext.jsx` (REMOVE - source of competing state)
-- `/src/hooks/usePhaseManager.js` (REMOVE - causes infinite loops)
-- `/game/` directory (REMOVE - entire old JavaScript system)
-- `/game/phases/DeclarationPhase.js` (REMOVE - null pointer source)
-- `/game/phases/BasePhase.js` (REMOVE - constructor.name issues)
-- `/game/GamePhaseManager.js` (REMOVE - recreation loops)
-- `/game/GameStateManager.js` (REMOVE - state competition)
+### **TASK 3.2: Remove Legacy Code (30 minutes) - REVISED**
+**Files to remove completely** (Updated based on analysis):
+- Legacy files already removed during cleanup phase
+- No major competing systems found - architecture is cleaner than expected
 
-**Files to replace**:
-- `/src/hooks/useGameState.js` (REPLACE with new service-based hook)
+**Files to migrate/enhance** (Instead of removing):
+- `/src/contexts/GameContext.jsx` (ENHANCE - currently active, used by GamePage)
+- `/src/hooks/usePhaseManager.js` (ENHANCE - currently active, no infinite loops found)
+- `/game/` directory (ENHANCE - currently active, used by React components)
+- `/src/hooks/useGameState.js` (ENHANCE with new service integration)
 
-**Implementation Checklist**:
-- [ ] **Critical**: Remove all `/game/` directory files to prevent confusion
-- [ ] Remove GameContext provider completely 
-- [ ] Remove old GameStateManager class
-- [ ] Remove old GamePhaseManager class
-- [ ] Remove old JavaScript phase components (null error sources)
-- [ ] Clean up all imports referencing deleted files
-- [ ] Update package.json if needed
-- [ ] Verify no remaining references to old system
+**Implementation Checklist** (Revised):
+- [ ] **Migration approach**: Enhance existing systems rather than wholesale removal
+- [ ] Gradually replace GameContext with new services
+- [ ] Enhance existing hooks with new service integration
+- [ ] Keep working `/game/` directory components during transition
+- [ ] Add new services alongside existing systems
+- [ ] Test incremental migration page by page
+- [ ] Remove old systems only after new ones are proven
+- [ ] Verify no regressions during migration
 
 ---
 
@@ -609,17 +607,24 @@ export function GameContainer() {
 
 ## **🔧 PROGRESS TRACKING**
 
-### **Current Status**: ⏸️ **Ready to Begin Implementation**
-- [ ] **Phase 1**: Foundation Services (0/4 tasks)
+### **Current Status**: 🚀 **Ready for Implementation - Cleanup Complete**
+- [ ] **Phase 1**: Foundation Services (0/4 tasks) ← **NEXT: Task 1.1**
 - [ ] **Phase 2**: React Integration (0/3 tasks)  
 - [ ] **Phase 3**: Migration and Cleanup (0/3 tasks)
 - [ ] **Phase 4**: Backend Robustness (0/3 tasks)
 
-### **Completed Tasks**: 0/13
-### **Critical Files for Removal**: 
-- `/game/` directory (entire legacy system)
-- `/src/contexts/GameContext.jsx` (competing state source)
-- Old phase managers (loop/null error sources)
+### **Completed Tasks**: 0/13 tasks + **Comprehensive Cleanup Complete**
+### **✅ Cleanup Accomplished**: 
+- ✅ Backend cleanup: Removed 10+ dead code files, 26 production files remain
+- ✅ Frontend cleanup: Removed 10+ obsolete files, 41 active files remain  
+- ✅ Architecture analysis: DATAFLOW_ANALYSIS.md and BACKEND_ANALYSIS.md created
+- ✅ Integration documentation: BACKEND_INTEGRATION_REFERENCE.md (port 5050)
+
+### **Critical Updates Based on Analysis**:
+- **`/game/` directory**: ✅ Still exists but confirmed ACTIVE (used by React components)
+- **`/src/contexts/GameContext.jsx`**: ✅ Still exists but confirmed ACTIVE (used by GamePage)
+- **Phase managers**: ✅ Confirmed ACTIVE and serving clear purposes
+- **No major competing systems found** - Architecture is cleaner than expected
 
 ### **Estimated Completion**: 2 days (no rollback needed)
 ### **Last Updated**: 2025-06-25
