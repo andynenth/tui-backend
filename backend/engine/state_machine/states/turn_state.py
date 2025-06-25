@@ -50,8 +50,12 @@ class TurnState(GameState):
         # Set initial turn starter (should be the round starter)
         self.current_turn_starter = getattr(game, 'round_starter', None) or getattr(game, 'current_player', None)
         if not self.current_turn_starter:
-            # Fallback to first player
-            self.current_turn_starter = game.players[0] if hasattr(game, 'players') and game.players else None
+            # Fallback to first player (ensure it's a string)
+            if hasattr(game, 'players') and game.players:
+                first_player = game.players[0]
+                self.current_turn_starter = getattr(first_player, 'name', str(first_player))
+            else:
+                self.current_turn_starter = None
         
         self.logger.info(f"🎯 Turn phase starting - {self.current_turn_starter} starts first turn")
         await self._start_new_turn()
@@ -140,13 +144,14 @@ class TurnState(GameState):
         if hasattr(game, 'get_player_order_from'):
             self.turn_order = game.get_player_order_from(self.current_turn_starter)
         else:
-            # Fallback: create order from players list
+            # Fallback: create order from players list (ensure strings)
             players = getattr(game, 'players', [])
-            if self.current_turn_starter in players:
-                start_idx = players.index(self.current_turn_starter)
-                self.turn_order = players[start_idx:] + players[:start_idx]
+            player_names = [getattr(p, 'name', str(p)) for p in players]
+            if self.current_turn_starter in player_names:
+                start_idx = player_names.index(self.current_turn_starter)
+                self.turn_order = player_names[start_idx:] + player_names[:start_idx]
             else:
-                self.turn_order = players
+                self.turn_order = player_names
         
         # Reset turn state
         self.turn_plays.clear()
