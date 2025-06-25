@@ -10,3 +10,6 @@ export { default as PlayerSlot } from './PlayerSlot';
 export { default as GamePiece } from './GamePiece';
 export { default as ErrorBoundary } from './ErrorBoundary';
 export { default as LazyRoute } from './LazyRoute';
+
+// Game components
+export * from './game';

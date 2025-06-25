@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RecoveryService Test</title>
+    <style>
+        body { font-family: monospace; padding: 20px; background: #1a1a1a; color: #00ff00; }
+        .container { max-width: 1200px; margin: 0 auto; }
+        .test-section { margin: 20px 0; padding: 15px; border: 1px solid #333; background: #222; }
+        .test-result { margin: 10px 0; padding: 10px; border-radius: 4px; }
+        .success { background: #2d5a2d; border: 1px solid #4a8a4a; }
+        .error { background: #5a2d2d; border: 1px solid #8a4a4a; }
+        .info { background: #2d2d5a; border: 1px solid #4a4a8a; }
+        button { padding: 10px 20px; margin: 5px; background: #333; color: #00ff00; border: 1px solid #555; cursor: pointer; }
+        button:hover { background: #444; }
+        pre { background: #111; padding: 10px; overflow-x: auto; border: 1px solid #333; }
+        .status { margin: 10px 0; padding: 5px; font-size: 12px; background: #333; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔄 RecoveryService Test Suite</h1>
+        <p>Testing event sequence tracking, gap detection, and recovery functionality</p>
+
+        <div class="test-section">
+            <h2>Service Status</h2>
+            <div id="service-status" class="status">Initializing...</div>
+            <button onclick="checkStatus()">Check Status</button>
+            <button onclick="clearTests()">Clear Tests</button>
+        </div>
+
+        <div class="test-section">
+            <h2>Test 1: Basic Initialization</h2>
+            <button onclick="testInitialization()">Run Test</button>
+            <div id="test-1-results"></div>
+        </div>
+
+        <div class="test-section">
+            <h2>Test 2: Event Recording</h2>
+            <button onclick="testEventRecording()">Run Test</button>
+            <div id="test-2-results"></div>
+        </div>
+
+        <div class="test-section">
+            <h2>Test 3: Sequence Gap Detection</h2>
+            <button onclick="testGapDetection()">Run Test</button>
+            <div id="test-3-results"></div>
+        </div>
+
+        <div class="test-section">
+            <h2>Test 4: Snapshot Creation</h2>
+            <button onclick="testSnapshots()">Run Test</button>
+            <div id="test-4-results"></div>
+        </div>
+
+        <div class="test-section">
+            <h2>Test 5: Persistence</h2>
+            <button onclick="testPersistence()">Run Test</button>
+            <div id="test-5-results"></div>
+        </div>
+
+        <div class="test-section">
+            <h2>Test 6: Recovery Process</h2>
+            <button onclick="testRecovery()">Run Test</button>
+            <div id="test-6-results"></div>
+        </div>
+
+        <div class="test-section">
+            <h2>Live Events</h2>
+            <div id="live-events" style="height: 200px; overflow-y: scroll; background: #111; padding: 10px; border: 1px solid #333;"></div>
+        </div>
+    </div>
+
+    <script type="module">
+        // Import our services
+        import { recoveryService } from './src/services/RecoveryService.js';
+        import { networkService } from './src/services/NetworkService.js';
+        import { gameService } from './src/services/GameService.js';
+
+        // Make services available globally for testing
+        window.recoveryService = recoveryService;
+        window.networkService = networkService;
+        window.gameService = gameService;
+
+        let testRoomId = 'test-room-123';
+        let eventCounter = 0;
+
+        // Setup event listeners for live monitoring
+        recoveryService.addEventListener('sequenceGap', (event) => {
+            addLiveEvent(`⚠️ Sequence Gap: ${event.detail.gap.start}-${event.detail.gap.end}`, 'error');
+        });
+
+        recoveryService.addEventListener('recoveryStarted', (event) => {
+            addLiveEvent(`🔄 Recovery Started (attempt ${event.detail.attempt})`, 'info');
+        });
+
+        recoveryService.addEventListener('recoveryCompleted', (event) => {
+            addLiveEvent(`✅ Recovery Completed`, 'success');
+        });
+
+        recoveryService.addEventListener('recoveryFailed', (event) => {
+            addLiveEvent(`❌ Recovery Failed: ${event.detail.error}`, 'error');
+        });
+
+        function addLiveEvent(message, type = 'info') {
+            const liveEvents = document.getElementById('live-events');
+            const timestamp = new Date().toLocaleTimeString();
+            const div = document.createElement('div');
+            div.className = type;
+            div.textContent = `[${timestamp}] ${message}`;
+            liveEvents.appendChild(div);
+            liveEvents.scrollTop = liveEvents.scrollHeight;
+        }
+
+        // Test functions
+        window.checkStatus = function() {
+            const status = recoveryService.getRecoveryStatus(testRoomId);
+            document.getElementById('service-status').innerHTML = 
+                `<pre>${JSON.stringify(status, null, 2)}</pre>`;
+        };
+
+        window.clearTests = function() {
+            for (let i = 1; i <= 6; i++) {
+                document.getElementById(`test-${i}-results`).innerHTML = '';
+            }
+            document.getElementById('live-events').innerHTML = '';
+            
+            // Reset room state
+            recoveryService.cleanupRoom(testRoomId);
+            recoveryService.initializeRoom(testRoomId);
+            eventCounter = 0;
+            
+            addResult('test-1-results', 'Tests cleared and room reset', 'info');
+        };
+
+        window.testInitialization = function() {
+            try {
+                // Initialize room
+                recoveryService.initializeRoom(testRoomId);
+                
+                const status = recoveryService.getRecoveryStatus(testRoomId);
+                
+                if (status.initialized && status.lastSequence === 0 && status.expectedSequence === 1) {
+                    addResult('test-1-results', '✅ Room initialized successfully', 'success');
+                    addResult('test-1-results', `Status: ${JSON.stringify(status, null, 2)}`, 'info');
+                } else {
+                    addResult('test-1-results', '❌ Room initialization failed', 'error');
+                }
+            } catch (error) {
+                addResult('test-1-results', `❌ Error: ${error.message}`, 'error');
+            }
+        };
+
+        window.testEventRecording = function() {
+            try {
+                // Ensure room is initialized
+                recoveryService.initializeRoom(testRoomId);
+                
+                // Record some events
+                const events = [
+                    { sequence: 1, type: 'test_event_1', data: { test: 'data1' }, timestamp: Date.now(), id: 'evt1' },
+                    { sequence: 2, type: 'test_event_2', data: { test: 'data2' }, timestamp: Date.now(), id: 'evt2' },
+                    { sequence: 3, type: 'test_event_3', data: { test: 'data3' }, timestamp: Date.now(), id: 'evt3' }
+                ];
+                
+                events.forEach(event => {
+                    recoveryService.recordEvent(testRoomId, event);
+                });
+                
+                const status = recoveryService.getRecoveryStatus(testRoomId);
+                
+                if (status.lastSequence === 3 && status.expectedSequence === 4 && status.eventBufferSize === 3) {
+                    addResult('test-2-results', '✅ Events recorded successfully', 'success');
+                    addResult('test-2-results', `Final status: Last=${status.lastSequence}, Expected=${status.expectedSequence}, Buffer=${status.eventBufferSize}`, 'info');
+                } else {
+                    addResult('test-2-results', '❌ Event recording failed', 'error');
+                    addResult('test-2-results', `Status: ${JSON.stringify(status, null, 2)}`, 'info');
+                }
+            } catch (error) {
+                addResult('test-2-results', `❌ Error: ${error.message}`, 'error');
+            }
+        };
+
+        window.testGapDetection = function() {
+            try {
+                // Reset room
+                recoveryService.cleanupRoom(testRoomId);
+                recoveryService.initializeRoom(testRoomId);
+                
+                // Record events with gaps
+                const events = [
+                    { sequence: 1, type: 'event_1', data: {}, timestamp: Date.now(), id: 'evt1' },
+                    { sequence: 2, type: 'event_2', data: {}, timestamp: Date.now(), id: 'evt2' },
+                    // Gap: missing sequence 3, 4, 5
+                    { sequence: 6, type: 'event_6', data: {}, timestamp: Date.now(), id: 'evt6' }
+                ];
+                
+                events.forEach(event => {
+                    recoveryService.recordEvent(testRoomId, event);
+                });
+                
+                const status = recoveryService.getRecoveryStatus(testRoomId);
+                
+                if (status.gapsDetected > 0) {
+                    addResult('test-3-results', '✅ Sequence gap detected successfully', 'success');
+                    addResult('test-3-results', `Gaps detected: ${status.gapsDetected}`, 'info');
+                } else {
+                    addResult('test-3-results', '❌ Gap detection failed', 'error');
+                }
+                
+                addResult('test-3-results', `Status: ${JSON.stringify(status, null, 2)}`, 'info');
+            } catch (error) {
+                addResult('test-3-results', `❌ Error: ${error.message}`, 'error');
+            }
+        };
+
+        window.testSnapshots = function() {
+            try {
+                // Reset room
+                recoveryService.cleanupRoom(testRoomId);
+                recoveryService.initializeRoom(testRoomId);
+                
+                // Manually create a snapshot
+                const success = recoveryService.createSnapshot(testRoomId);
+                
+                const status = recoveryService.getRecoveryStatus(testRoomId);
+                
+                if (success && status.snapshotCount > 0) {
+                    addResult('test-4-results', '✅ Snapshot created successfully', 'success');
+                    addResult('test-4-results', `Snapshots: ${status.snapshotCount}`, 'info');
+                } else {
+                    addResult('test-4-results', '❌ Snapshot creation failed', 'error');
+                }
+                
+                addResult('test-4-results', `Status: ${JSON.stringify(status, null, 2)}`, 'info');
+            } catch (error) {
+                addResult('test-4-results', `❌ Error: ${error.message}`, 'error');
+            }
+        };
+
+        window.testPersistence = function() {
+            try {
+                // Clear any existing data
+                localStorage.removeItem(`recovery_${testRoomId}`);
+                
+                // Reset and initialize room
+                recoveryService.cleanupRoom(testRoomId);
+                recoveryService.initializeRoom(testRoomId);
+                
+                // Record some events to create persistent state
+                const events = [
+                    { sequence: 1, type: 'persist_test_1', data: { persist: true }, timestamp: Date.now(), id: 'p1' },
+                    { sequence: 2, type: 'persist_test_2', data: { persist: true }, timestamp: Date.now(), id: 'p2' }
+                ];
+                
+                events.forEach(event => {
+                    recoveryService.recordEvent(testRoomId, event);
+                });
+                
+                // Check if data was persisted
+                const persistedData = localStorage.getItem(`recovery_${testRoomId}`);
+                
+                if (persistedData) {
+                    const parsed = JSON.parse(persistedData);
+                    addResult('test-5-results', '✅ State persisted to localStorage', 'success');
+                    addResult('test-5-results', `Persisted data length: ${persistedData.length} chars`, 'info');
+                    addResult('test-5-results', `Contains recoveryState: ${!!parsed.recoveryState}`, 'info');
+                    addResult('test-5-results', `Contains eventBuffer: ${!!parsed.eventBuffer}`, 'info');
+                } else {
+                    addResult('test-5-results', '❌ No data persisted', 'error');
+                }
+            } catch (error) {
+                addResult('test-5-results', `❌ Error: ${error.message}`, 'error');
+            }
+        };
+
+        window.testRecovery = function() {
+            try {
+                // Reset room and create gap scenario
+                recoveryService.cleanupRoom(testRoomId);
+                recoveryService.initializeRoom(testRoomId);
+                
+                // Create events with gaps to trigger recovery
+                const events = [
+                    { sequence: 1, type: 'recovery_test_1', data: {}, timestamp: Date.now(), id: 'r1' },
+                    // Large gap to trigger auto-recovery
+                    { sequence: 10, type: 'recovery_test_10', data: {}, timestamp: Date.now(), id: 'r10' }
+                ];
+                
+                events.forEach(event => {
+                    recoveryService.recordEvent(testRoomId, event);
+                });
+                
+                // Check if recovery was triggered
+                const status = recoveryService.getRecoveryStatus(testRoomId);
+                
+                if (status.gapsDetected > 0) {
+                    addResult('test-6-results', '✅ Recovery scenario created', 'success');
+                    addResult('test-6-results', `Gaps detected: ${status.gapsDetected}`, 'info');
+                    
+                    // Note: Actual recovery would require backend communication
+                    addResult('test-6-results', '📝 Note: Full recovery test requires backend connection', 'info');
+                } else {
+                    addResult('test-6-results', '❌ Recovery scenario failed', 'error');
+                }
+                
+                addResult('test-6-results', `Status: ${JSON.stringify(status, null, 2)}`, 'info');
+            } catch (error) {
+                addResult('test-6-results', `❌ Error: ${error.message}`, 'error');
+            }
+        };
+
+        function addResult(containerId, message, type = 'info') {
+            const container = document.getElementById(containerId);
+            const div = document.createElement('div');
+            div.className = `test-result ${type}`;
+            div.innerHTML = message.includes('{') ? `<pre>${message}</pre>` : message;
+            container.appendChild(div);
+        }
+
+        // Initialize on load
+        addLiveEvent('🔄 RecoveryService Test Suite Loaded', 'success');
+        
+        // Auto-initialize the test room
+        setTimeout(() => {
+            recoveryService.initializeRoom(testRoomId);
+            addLiveEvent(`📍 Test room ${testRoomId} initialized`, 'info');
+            checkStatus();
+        }, 100);
+    </script>
+</body>
+</html>

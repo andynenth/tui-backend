@@ -94,7 +94,7 @@ export const GameProvider = ({
         
         // Create player objects from names
         const players = playerNames.map(name => ({
-          name: name,
+          name,
           score: 0,
           is_bot: name !== playerName
         }));
