@@ -3,37 +3,58 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useApp } from '../contexts/AppContext';
-import { useSocket } from '../hooks/useSocket';
 import { Layout, Button, Input, Modal, LoadingOverlay } from '../components';
+// Phase 1-4 Enterprise Architecture
+import { networkService } from '../services';
 
 const LobbyPage = () => {
   const navigate = useNavigate();
   const app = useApp();
-  const socket = useSocket('lobby'); // Connect to lobby socket
-  
   
   const [rooms, setRooms] = useState([]);
+  const [isConnected, setIsConnected] = useState(false);
+  const [isConnecting, setIsConnecting] = useState(false);
+  const [connectionError, setConnectionError] = useState(null);
   
   const [showJoinModal, setShowJoinModal] = useState(false);
   const [isCreatingRoom, setIsCreatingRoom] = useState(false);
   const [isJoiningRoom, setIsJoiningRoom] = useState(false);
   const [joinRoomId, setJoinRoomId] = useState('');
 
-  // Set up socket event listeners
+  // Initialize lobby connection and event listeners
   useEffect(() => {
-    if (!socket.isConnected) return;
+    const initializeLobby = async () => {
+      setIsConnecting(true);
+      try {
+        // Connect to lobby WebSocket
+        await networkService.connect('lobby');
+        setIsConnected(true);
+        setConnectionError(null);
+      } catch (error) {
+        console.error('Failed to connect to lobby:', error);
+        setConnectionError(error.message);
+        setIsConnected(false);
+      } finally {
+        setIsConnecting(false);
+      }
+    };
+
+    initializeLobby();
 
     const unsubscribers = [];
 
     // Room list updates
-    const unsubRoomList = socket.on('room_list_update', (data) => {
+    const handleRoomListUpdate = (event) => {
+      const data = event.detail;
       console.log('Received room_list_update:', data);
       setRooms(data.rooms || []);
-    });
-    unsubscribers.push(unsubRoomList);
+    };
+    networkService.addEventListener('room_list_update', handleRoomListUpdate);
+    unsubscribers.push(() => networkService.removeEventListener('room_list_update', handleRoomListUpdate));
 
     // Room created successfully
-    const unsubRoomCreated = socket.on('room_created', (data) => {
+    const handleRoomCreated = (event) => {
+      const data = event.detail;
       console.log('Received room_created:', data);
       console.log('🟢 Navigation: room_id =', data.room_id, 'navigating to:', `/room/${data.room_id}`);
       
@@ -43,47 +64,54 @@ const LobbyPage = () => {
         app.goToRoom(data.room_id);
         navigate(`/room/${data.room_id}`);
       }
-    });
-    unsubscribers.push(unsubRoomCreated);
+    };
+    networkService.addEventListener('room_created', handleRoomCreated);
+    unsubscribers.push(() => networkService.removeEventListener('room_created', handleRoomCreated));
 
     // Room joined successfully
-    const unsubRoomJoined = socket.on('room_joined', (data) => {
+    const handleRoomJoined = (event) => {
+      const data = event.detail;
       setIsJoiningRoom(false);
       setShowJoinModal(false);
       app.goToRoom(data.room_id);
       navigate(`/room/${data.room_id}`);
-    });
-    unsubscribers.push(unsubRoomJoined);
+    };
+    networkService.addEventListener('room_joined', handleRoomJoined);
+    unsubscribers.push(() => networkService.removeEventListener('room_joined', handleRoomJoined));
 
     // Error handling
-    const unsubError = socket.on('error', (data) => {
+    const handleError = (event) => {
+      const data = event.detail;
       setIsCreatingRoom(false);
       setIsJoiningRoom(false);
       console.error('Lobby error:', data);
       alert(data.message || 'An error occurred');
-    });
-    unsubscribers.push(unsubError);
+    };
+    networkService.addEventListener('error', handleError);
+    unsubscribers.push(() => networkService.removeEventListener('error', handleError));
 
     // Request initial room list
-    socket.send('get_rooms');
+    if (isConnected) {
+      networkService.send('lobby', 'get_rooms', {});
+    }
 
     // Cleanup
     return () => {
       unsubscribers.forEach(unsub => unsub());
     };
-  }, [socket.isConnected]); // Removed app and navigate from dependencies
+  }, [isConnected]);
 
   // Refresh room list
   const refreshRooms = () => {
-    if (socket.isConnected) {
-      socket.send('get_rooms');
+    if (isConnected) {
+      networkService.send('lobby', 'get_rooms', {});
     }
   };
 
   // Create new room
   const createRoom = () => {
     setIsCreatingRoom(true);
-    socket.send('create_room', {
+    networkService.send('lobby', 'create_room', {
       player_name: app.playerName
     });
   };
@@ -93,7 +121,7 @@ const LobbyPage = () => {
     if (!joinRoomId.trim()) return;
     
     setIsJoiningRoom(true);
-    socket.send('join_room', {
+    networkService.send('lobby', 'join_room', {
       room_id: joinRoomId.trim(),
       player_name: app.playerName
     });
@@ -101,7 +129,7 @@ const LobbyPage = () => {
 
   // Join room from list
   const joinRoom = (roomId) => {
-    socket.send('join_room', {
+    networkService.send('lobby', 'join_room', {
       room_id: roomId,
       player_name: app.playerName
     });
@@ -132,10 +160,10 @@ const LobbyPage = () => {
         title="Game Lobby"
         showConnection={true}
         connectionProps={{
-          isConnected: socket.isConnected,
-          isConnecting: socket.isConnecting,
-          isReconnecting: socket.isReconnecting,
-          error: socket.connectionError,
+          isConnected,
+          isConnecting,
+          isReconnecting: false,
+          error: connectionError,
           roomId: 'lobby'
         }}
         headerContent={
@@ -160,7 +188,7 @@ const LobbyPage = () => {
               <Button
                 variant="primary"
                 onClick={createRoom}
-                disabled={!socket.isConnected || isCreatingRoom}
+                disabled={!isConnected || isCreatingRoom}
               >
                 {isCreatingRoom ? 'Creating...' : 'Create Room'}
               </Button>
@@ -168,7 +196,7 @@ const LobbyPage = () => {
               <Button
                 variant="outline"
                 onClick={() => setShowJoinModal(true)}
-                disabled={!socket.isConnected}
+                disabled={!isConnected}
               >
                 Join by ID
               </Button>
@@ -177,7 +205,7 @@ const LobbyPage = () => {
             <Button
               variant="ghost"
               onClick={refreshRooms}
-              disabled={!socket.isConnected}
+              disabled={!isConnected}
             >
               🔄 Refresh
             </Button>
@@ -230,7 +258,7 @@ const LobbyPage = () => {
                           <Button
                             size="sm"
                             onClick={() => joinRoom(room.room_id || room.id)}
-                            disabled={!socket.isConnected}
+                            disabled={!isConnected}
                           >
                             Join
                           </Button>
@@ -252,12 +280,12 @@ const LobbyPage = () => {
           </div>
 
           {/* Connection status */}
-          {!socket.isConnected && (
+          {!isConnected && (
             <div className="mt-8 bg-yellow-50 border border-yellow-200 rounded-lg p-4">
               <div className="flex items-center">
                 <span className="text-yellow-600 mr-2">⚠️</span>
                 <p className="text-yellow-800">
-                  {socket.isConnecting ? 'Connecting to lobby...' : 'Not connected to lobby'}
+                  {isConnecting ? 'Connecting to lobby...' : 'Not connected to lobby'}
                 </p>
               </div>
             </div>
