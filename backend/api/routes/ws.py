@@ -27,6 +27,25 @@ async def websocket_endpoint(websocket: WebSocket, room_id: str):
 
             print(f"DEBUG_WS_RECEIVE: Received event '{event_name}' from client in room {room_id} with data: {event_data}")
 
+            # Handle reliable message delivery events
+            if event_name == "ack":
+                # Handle message acknowledgment
+                sequence = event_data.get("sequence")
+                client_id = event_data.get("client_id", "unknown")
+                
+                if sequence is not None:
+                    from backend.socket_manager import socket_manager
+                    await socket_manager.handle_ack(room_id, sequence, client_id)
+                continue
+                
+            elif event_name == "sync_request":
+                # Handle client synchronization request
+                client_id = event_data.get("client_id", "unknown")
+                
+                from backend.socket_manager import socket_manager
+                await socket_manager.request_client_sync(room_id, registered_ws, client_id)
+                continue
+
             # ✅ Handle lobby-specific events
             if room_id == "lobby":
                 if event_name == "request_room_list" or event_name == "get_rooms":

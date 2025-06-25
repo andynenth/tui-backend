@@ -13,8 +13,8 @@
 
 import React from 'react';
 import PropTypes from 'prop-types';
-import { LoadingOverlay } from '../LoadingOverlay';
-import { ConnectionIndicator } from '../ConnectionIndicator';
+import LoadingOverlay from '../LoadingOverlay';
+import ConnectionIndicator from '../ConnectionIndicator';
 
 /**
  * Pure UI component for waiting states

@@ -114,7 +114,7 @@ const AppWithServices = () => {
       try {
         await initializeServices();
         setServicesInitialized(true);
-        console.log('🎮 Global services initialized');
+        console.log('🎮 Phase 1-4 Enterprise Architecture - Global services initialized');
       } catch (error) {
         console.error('Failed to initialize global services:', error);
         setInitializationError(error.message);
@@ -149,10 +149,21 @@ const AppWithServices = () => {
 
   if (!servicesInitialized) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
-          <p className="text-gray-600">Initializing services...</p>
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-purple-50">
+        <div className="text-center bg-white p-8 rounded-lg shadow-lg">
+          <div className="mb-4">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+            <div className="bg-gradient-to-r from-blue-600 to-purple-600 text-white px-4 py-2 rounded-lg mb-2">
+              <span className="font-semibold">🚀 Phase 1-4 Enterprise Architecture</span>
+            </div>
+            <p className="text-gray-600">Initializing advanced services...</p>
+          </div>
+          <div className="text-xs text-gray-500 space-y-1">
+            <div>• State Machine Engine</div>
+            <div>• TypeScript Service Layer</div>
+            <div>• Enterprise Monitoring</div>
+            <div>• Auto-Recovery Systems</div>
+          </div>
         </div>
       </div>
     );

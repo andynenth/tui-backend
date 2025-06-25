@@ -17,11 +17,3 @@ export { default as ScoringUI } from './ScoringUI';
 
 // Smart Container Components (Phase 2, Task 2.3)
 export { default as GameContainer } from './GameContainer';
-
-// Re-export named exports for convenience
-export { WaitingUI } from './WaitingUI';
-export { PreparationUI } from './PreparationUI';
-export { DeclarationUI } from './DeclarationUI';
-export { TurnUI } from './TurnUI';
-export { ScoringUI } from './ScoringUI';
-export { GameContainer } from './GameContainer';
