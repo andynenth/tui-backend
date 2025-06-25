@@ -158,9 +158,9 @@ export class UserInputHandler {
   getShortcutKey(event) {
     let key = event.key;
     
-    if (event.ctrlKey) key = 'Ctrl+' + key;
-    if (event.shiftKey) key = 'Shift+' + key;
-    if (event.altKey) key = 'Alt+' + key;
+    if (event.ctrlKey) key = `Ctrl+${  key}`;
+    if (event.shiftKey) key = `Shift+${  key}`;
+    if (event.altKey) key = `Alt+${  key}`;
     
     return key;
   }

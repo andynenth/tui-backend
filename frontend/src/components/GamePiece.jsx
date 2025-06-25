@@ -135,20 +135,20 @@ const GamePiece = ({
 
 const getPieceSymbol = (kind) => {
   const symbols = {
-    'GENERAL_RED': '将',
-    'GENERAL_BLACK': '將', 
-    'ADVISOR_RED': '士',
-    'ADVISOR_BLACK': '仕',
-    'ELEPHANT_RED': '相',
-    'ELEPHANT_BLACK': '象',
-    'CHARIOT_RED': '車',
-    'CHARIOT_BLACK': '車',
-    'HORSE_RED': '馬',
-    'HORSE_BLACK': '馬',
-    'CANNON_RED': '炮',
-    'CANNON_BLACK': '砲',
-    'SOLDIER_RED': '兵',
-    'SOLDIER_BLACK': '卒'
+    GENERAL_RED: '将',
+    GENERAL_BLACK: '將', 
+    ADVISOR_RED: '士',
+    ADVISOR_BLACK: '仕',
+    ELEPHANT_RED: '相',
+    ELEPHANT_BLACK: '象',
+    CHARIOT_RED: '車',
+    CHARIOT_BLACK: '車',
+    HORSE_RED: '馬',
+    HORSE_BLACK: '馬',
+    CANNON_RED: '炮',
+    CANNON_BLACK: '砲',
+    SOLDIER_RED: '兵',
+    SOLDIER_BLACK: '卒'
   };
   
   return symbols[kind] || '?';

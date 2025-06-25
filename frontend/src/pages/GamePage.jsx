@@ -82,12 +82,12 @@ const GamePage = () => {
 
   const getPhaseDisplayName = (phase) => {
     const names = {
-      'preparation': 'Preparation',
-      'redeal': 'Redeal',
-      'declaration': 'Declaration',
-      'turn': 'Turn Play',
-      'scoring': 'Scoring',
-      'waiting': 'Waiting'
+      preparation: 'Preparation',
+      redeal: 'Redeal',
+      declaration: 'Declaration',
+      turn: 'Turn Play',
+      scoring: 'Scoring',
+      waiting: 'Waiting'
     };
     return names[phase] || phase;
   };
@@ -102,7 +102,7 @@ const GamePage = () => {
           isConnecting: game.socket?.isConnecting,
           isReconnecting: game.socket?.isReconnecting,
           error: game.socket?.connectionError,
-          roomId: roomId
+          roomId
         }}
         headerContent={
           <div className="flex items-center space-x-4">

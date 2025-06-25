@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NetworkService Testing</title>
+    <style>
+        body {
+            font-family: 'Courier New', monospace;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #1a1a1a;
+            color: #00ff00;
+        }
+        .container {
+            background: #000;
+            padding: 20px;
+            border-radius: 8px;
+            border: 1px solid #333;
+        }
+        .test-button {
+            background: #333;
+            color: #00ff00;
+            border: 1px solid #555;
+            padding: 10px 20px;
+            margin: 5px;
+            cursor: pointer;
+            border-radius: 4px;
+        }
+        .test-button:hover {
+            background: #555;
+        }
+        .test-results {
+            background: #111;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 4px;
+            border-left: 4px solid #00ff00;
+        }
+        .status-display {
+            background: #222;
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 4px;
+            font-size: 12px;
+        }
+        pre {
+            background: #111;
+            padding: 10px;
+            border-radius: 4px;
+            overflow-x: auto;
+            font-size: 12px;
+        }
+        .log-output {
+            background: #111;
+            color: #ccc;
+            padding: 15px;
+            border-radius: 4px;
+            max-height: 300px;
+            overflow-y: auto;
+            margin: 10px 0;
+            font-size: 12px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🧪 NetworkService Testing Suite</h1>
+        <p>Testing Phase 1, Task 1.1 requirements:</p>
+        
+        <div class="test-results">
+            <h3>📋 Testing Criteria</h3>
+            <ul>
+                <li id="test-refresh">❓ Survives browser refresh</li>
+                <li id="test-reconnect">❓ Reconnects after network interruption</li>
+                <li id="test-queue">❓ Queues messages when disconnected</li>
+                <li id="test-events">❓ Emits proper connection events</li>
+            </ul>
+        </div>
+
+        <div>
+            <h3>🎮 Test Controls</h3>
+            <button class="test-button" onclick="runAllTests()">🚀 Run All Tests</button>
+            <button class="test-button" onclick="testConnectionEvents()">📡 Test Events</button>
+            <button class="test-button" onclick="testMessageQueue()">📤 Test Queue</button>
+            <button class="test-button" onclick="testBrowserRefresh()">🔄 Test Refresh</button>
+            <button class="test-button" onclick="showStatus()">📊 Show Status</button>
+            <button class="test-button" onclick="clearLogs()">🧹 Clear Logs</button>
+        </div>
+
+        <div class="status-display">
+            <h4>📊 Current Status</h4>
+            <pre id="status-output">Loading...</pre>
+        </div>
+
+        <div class="log-output">
+            <h4>📝 Test Logs</h4>
+            <div id="log-output">Starting NetworkService tests...<br></div>
+        </div>
+    </div>
+
+    <script type="module">
+        import { NetworkService, networkService } from './src/services/NetworkService.js';
+        import NetworkServiceTester from './src/services/NetworkService.test.js';
+
+        // Global variables for testing
+        window.networkService = networkService;
+        window.tester = new NetworkServiceTester();
+        
+        // Override console.log to capture output
+        const originalConsoleLog = console.log;
+        const originalConsoleError = console.error;
+        const logOutput = document.getElementById('log-output');
+        
+        function addLog(message, type = 'log') {
+            const timestamp = new Date().toLocaleTimeString();
+            const color = type === 'error' ? '#ff4444' : 
+                         type === 'warn' ? '#ffaa00' : '#00ff00';
+            logOutput.innerHTML += `<span style="color: #666">[${timestamp}]</span> <span style="color: ${color}">${message}</span><br>`;
+            logOutput.scrollTop = logOutput.scrollHeight;
+        }
+        
+        console.log = (...args) => {
+            originalConsoleLog(...args);
+            addLog(args.join(' '), 'log');
+        };
+        
+        console.error = (...args) => {
+            originalConsoleError(...args);
+            addLog(args.join(' '), 'error');
+        };
+
+        // Test functions
+        window.runAllTests = async () => {
+            console.log('🧪 Starting comprehensive NetworkService tests...');
+            await window.tester.runAllTests();
+            updateTestResults();
+        };
+
+        window.testConnectionEvents = async () => {
+            console.log('🔍 Testing connection events...');
+            await window.tester.testConnectionEvents();
+            updateTestResults();
+        };
+
+        window.testMessageQueue = async () => {
+            console.log('🔍 Testing message queuing...');
+            await window.tester.testMessageQueuing();
+            updateTestResults();
+        };
+
+        window.testBrowserRefresh = () => {
+            console.log('🔍 Testing browser refresh...');
+            window.tester.testBrowserRefresh();
+            updateTestResults();
+        };
+
+        window.showStatus = () => {
+            const status = window.tester.getServiceStatus();
+            document.getElementById('status-output').textContent = JSON.stringify(status, null, 2);
+            console.log('📊 Service Status:', status);
+        };
+
+        window.clearLogs = () => {
+            document.getElementById('log-output').innerHTML = 'Logs cleared...<br>';
+        };
+
+        function updateTestResults() {
+            const results = window.tester.testResults;
+            
+            document.getElementById('test-refresh').innerHTML = 
+                `${results.browserRefresh ? '✅' : '❌'} Survives browser refresh`;
+            document.getElementById('test-reconnect').innerHTML = 
+                `${results.networkInterruption ? '✅' : '❌'} Reconnects after network interruption`;
+            document.getElementById('test-queue').innerHTML = 
+                `${results.messageQueuing ? '✅' : '❌'} Queues messages when disconnected`;
+            document.getElementById('test-events').innerHTML = 
+                `${results.connectionEvents ? '✅' : '❌'} Emits proper connection events`;
+        }
+
+        // Auto-update status
+        setInterval(() => {
+            if (document.getElementById('status-output').textContent !== 'Loading...') {
+                window.showStatus();
+            }
+        }, 5000);
+
+        // Initial status load
+        setTimeout(() => {
+            window.showStatus();
+            console.log('🎯 NetworkService test page loaded');
+            console.log('📋 Click "Run All Tests" to begin testing');
+        }, 1000);
+
+        // Handle page refresh test
+        window.addEventListener('beforeunload', () => {
+            const testState = {
+                timestamp: Date.now(),
+                testInProgress: true
+            };
+            sessionStorage.setItem('networkservice_refresh_test', JSON.stringify(testState));
+        });
+
+        window.addEventListener('load', () => {
+            const savedState = sessionStorage.getItem('networkservice_refresh_test');
+            if (savedState) {
+                const state = JSON.parse(savedState);
+                if (Date.now() - state.timestamp < 10000) { // 10 seconds
+                    console.log('✅ Browser refresh test passed - page state restored');
+                    window.tester.testResults.browserRefresh = true;
+                    updateTestResults();
+                }
+                sessionStorage.removeItem('networkservice_refresh_test');
+            }
+        });
+    </script>
+</body>
+</html>

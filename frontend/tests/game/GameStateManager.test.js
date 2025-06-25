@@ -15,7 +15,7 @@ describe('GameStateManager', () => {
       { name: 'Bot4', score: 0, is_bot: true }
     ],
     hands: {
-      'Player1': ['GENERAL_RED(14)', 'SOLDIER_RED(2)', 'HORSE_BLACK(5)']
+      Player1: ['GENERAL_RED(14)', 'SOLDIER_RED(2)', 'HORSE_BLACK(5)']
     }
   };
   
@@ -48,7 +48,7 @@ describe('GameStateManager', () => {
   describe('Declaration Management', () => {
     test('should track player declarations', () => {
       stateManager.addDeclaration('Player1', 3);
-      expect(stateManager.declarations['Player1']).toBe(3);
+      expect(stateManager.declarations.Player1).toBe(3);
     });
     
     test('should emit event when declaration added', (done) => {
@@ -185,7 +185,7 @@ describe('GameStateManager', () => {
         round: 2,
         starter: 'Player2',
         hands: {
-          'Player1': ['CANNON_RED(4)', 'ELEPHANT_BLACK(9)']
+          Player1: ['CANNON_RED(4)', 'ELEPHANT_BLACK(9)']
         }
       });
       

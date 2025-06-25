@@ -37,13 +37,13 @@ module.exports = {
         game: ['Inter', 'system-ui', 'sans-serif']
       },
       spacing: {
-        '18': '4.5rem',
-        '22': '5.5rem',
-        '88': '22rem',
-        '96': '24rem'
+        18: '4.5rem',
+        22: '5.5rem',
+        88: '22rem',
+        96: '24rem'
       },
       animation: {
-        'deal': 'deal 0.5s ease-out',
+        deal: 'deal 0.5s ease-out',
         'piece-select': 'pieceSelect 0.2s ease-out',
         'phase-transition': 'fadeInUp 0.3s ease-out',
         'pulse-glow': 'pulseGlow 2s infinite',
@@ -79,19 +79,19 @@ module.exports = {
         }
       },
       boxShadow: {
-        'game': '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)',
+        game: '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)',
         'game-lg': '0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)',
-        'piece': '0 2px 8px rgba(0, 0, 0, 0.15)',
+        piece: '0 2px 8px rgba(0, 0, 0, 0.15)',
         'piece-hover': '0 4px 12px rgba(0, 0, 0, 0.2)',
-        'glow': '0 0 20px rgba(59, 130, 246, 0.6)'
+        glow: '0 0 20px rgba(59, 130, 246, 0.6)'
       },
       gridTemplateColumns: {
         'game-layout': '1fr 2fr 1fr',
-        'slots': 'repeat(2, 1fr)',
-        'pieces': 'repeat(auto-fit, minmax(4rem, 1fr))'
+        slots: 'repeat(2, 1fr)',
+        pieces: 'repeat(auto-fit, minmax(4rem, 1fr))'
       },
       backdropBlur: {
-        'game': '8px'
+        game: '8px'
       }
     },
   },

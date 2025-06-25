@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GameService Testing</title>
+    <style>
+        body {
+            font-family: 'Courier New', monospace;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #1a1a1a;
+            color: #00ff00;
+        }
+        .container {
+            background: #000;
+            padding: 20px;
+            border-radius: 8px;
+            border: 1px solid #333;
+        }
+        .test-button {
+            background: #333;
+            color: #00ff00;
+            border: 1px solid #555;
+            padding: 10px 20px;
+            margin: 5px;
+            cursor: pointer;
+            border-radius: 4px;
+        }
+        .test-button:hover {
+            background: #555;
+        }
+        .test-results {
+            background: #111;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 4px;
+            border-left: 4px solid #00ff00;
+        }
+        .status-display {
+            background: #222;
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 4px;
+            font-size: 12px;
+        }
+        pre {
+            background: #111;
+            padding: 10px;
+            border-radius: 4px;
+            overflow-x: auto;
+            font-size: 12px;
+        }
+        .log-output {
+            background: #111;
+            color: #ccc;
+            padding: 15px;
+            border-radius: 4px;
+            max-height: 400px;
+            overflow-y: auto;
+            margin: 10px 0;
+            font-size: 12px;
+        }
+        .error { color: #ff4444; }
+        .success { color: #44ff44; }
+        .warning { color: #ffaa00; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎮 GameService Testing Suite</h1>
+        <p>Testing Phase 1, Task 1.2 requirements:</p>
+        
+        <div class="test-results">
+            <h3>📋 Testing Criteria</h3>
+            <ul>
+                <li id="test-singleton">❓ Single source of truth</li>
+                <li id="test-events">❓ Centralized event handling</li>
+                <li id="test-observable">❓ Observable pattern</li>
+                <li id="test-immutable">❓ Immutable state updates</li>
+                <li id="test-actions">❓ Action dispatching</li>
+                <li id="test-derived">❓ Derived state calculations</li>
+                <li id="test-debugging">❓ Event history and debugging</li>
+            </ul>
+        </div>
+
+        <div>
+            <h3>🎮 Test Controls</h3>
+            <button class="test-button" onclick="runAllTests()">🚀 Run All Tests</button>
+            <button class="test-button" onclick="testStateStructure()">📊 Test State Structure</button>
+            <button class="test-button" onclick="testActionValidation()">⚡ Test Action Validation</button>
+            <button class="test-button" onclick="testEventProcessing()">📡 Test Event Processing</button>
+            <button class="test-button" onclick="testObservablePattern()">👁️ Test Observable Pattern</button>
+            <button class="test-button" onclick="simulateGameFlow()">🎯 Simulate Game Flow</button>
+            <button class="test-button" onclick="showCurrentState()">📋 Show State</button>
+            <button class="test-button" onclick="clearLogs()">🧹 Clear Logs</button>
+        </div>
+
+        <div class="status-display">
+            <h4>📊 Current GameService State</h4>
+            <pre id="state-output">Loading...</pre>
+        </div>
+
+        <div class="log-output">
+            <h4>📝 Test Logs</h4>
+            <div id="log-output">Starting GameService tests...<br></div>
+        </div>
+    </div>
+
+    <script type="module">
+        import { GameService, gameService } from './src/services/GameService.js';
+        import { NetworkService, networkService } from './src/services/NetworkService.js';
+        import GameServiceTester from './src/services/GameService.test.js';
+
+        // Global variables for testing
+        window.gameService = gameService;
+        window.networkService = networkService;
+        window.tester = new GameServiceTester();
+        
+        // Override console methods to capture output
+        const originalConsoleLog = console.log;
+        const originalConsoleError = console.error;
+        const originalConsoleWarn = console.warn;
+        const logOutput = document.getElementById('log-output');
+        
+        function addLog(message, type = 'log') {
+            const timestamp = new Date().toLocaleTimeString();
+            const color = type === 'error' ? '#ff4444' : 
+                         type === 'warn' ? '#ffaa00' : 
+                         type === 'success' ? '#44ff44' : '#00ff00';
+            logOutput.innerHTML += `<span style="color: #666">[${timestamp}]</span> <span style="color: ${color}">${message}</span><br>`;
+            logOutput.scrollTop = logOutput.scrollHeight;
+        }
+        
+        console.log = (...args) => {
+            originalConsoleLog(...args);
+            addLog(args.join(' '), 'log');
+        };
+        
+        console.error = (...args) => {
+            originalConsoleError(...args);
+            addLog(args.join(' '), 'error');
+        };
+
+        console.warn = (...args) => {
+            originalConsoleWarn(...args);
+            addLog(args.join(' '), 'warn');
+        };
+
+        // Test functions
+        window.runAllTests = async () => {
+            console.log('🧪 Starting comprehensive GameService tests...');
+            await window.tester.runAllTests();
+            updateTestResults();
+        };
+
+        window.testStateStructure = () => {
+            console.log('🔍 Testing state structure...');
+            const state = gameService.getState();
+            
+            console.log('📊 Current state:', state);
+            console.log('🔧 State keys:', Object.keys(state));
+            
+            // Test required fields
+            const requiredFields = [
+                'isConnected', 'roomId', 'playerName', 'phase', 'currentRound',
+                'players', 'myHand', 'declarations', 'declarationOrder',
+                'currentDeclarer', 'turnOrder', 'currentTurnPlays',
+                'roundScores', 'totalScores', 'isMyTurn', 'allowedActions',
+                'validOptions', 'error', 'gameOver'
+            ];
+            
+            const missingFields = requiredFields.filter(field => !(field in state));
+            
+            if (missingFields.length === 0) {
+                console.log('✅ All required state fields present');
+                document.getElementById('test-singleton').innerHTML = '✅ Single source of truth';
+            } else {
+                console.log('❌ Missing fields:', missingFields);
+                document.getElementById('test-singleton').innerHTML = '❌ Single source of truth';
+            }
+        };
+
+        window.testActionValidation = () => {
+            console.log('🔍 Testing action validation...');
+            
+            try {
+                // Test invalid action (should fail)
+                gameService.makeDeclaration(5);
+                console.log('❌ Action validation failed - should have thrown error');
+                document.getElementById('test-actions').innerHTML = '❌ Action dispatching';
+            } catch (error) {
+                console.log('✅ Action validation working:', error.message);
+                document.getElementById('test-actions').innerHTML = '✅ Action dispatching';
+            }
+            
+            // Test action methods exist
+            const actionMethods = ['acceptRedeal', 'declineRedeal', 'makeDeclaration', 'playPieces', 'startNextRound'];
+            const methodsExist = actionMethods.every(method => typeof gameService[method] === 'function');
+            
+            console.log('📋 Action methods exist:', methodsExist ? '✅' : '❌');
+        };
+
+        window.testEventProcessing = () => {
+            console.log('🔍 Testing event processing...');
+            
+            // Simulate joining a room
+            try {
+                gameService.joinRoom('test-room-123', 'TestPlayer');
+                console.log('✅ Room join initiated');
+                
+                // Check if state updated
+                const state = gameService.getState();
+                if (state.roomId === 'test-room-123' && state.playerName === 'TestPlayer') {
+                    console.log('✅ State updated correctly after joinRoom');
+                    document.getElementById('test-events').innerHTML = '✅ Centralized event handling';
+                } else {
+                    console.log('❌ State not updated correctly');
+                    document.getElementById('test-events').innerHTML = '❌ Centralized event handling';
+                }
+            } catch (error) {
+                console.log('⚠️ Room join failed (expected without backend):', error.message);
+                document.getElementById('test-events').innerHTML = '⚠️ Centralized event handling (no backend)';
+            }
+        };
+
+        window.testObservablePattern = () => {
+            console.log('🔍 Testing observable pattern...');
+            
+            let listenerCalled = false;
+            let receivedState = null;
+            
+            // Add listener
+            const removeListener = gameService.addListener((state) => {
+                listenerCalled = true;
+                receivedState = state;
+                console.log('📡 Listener received state update');
+            });
+            
+            // Try to trigger state change
+            try {
+                gameService.joinRoom('observer-test', 'ObserverPlayer');
+            } catch (error) {
+                console.log('⚠️ Join failed (expected):', error.message);
+            }
+            
+            // Check if listener was called (may be async)
+            setTimeout(() => {
+                if (listenerCalled) {
+                    console.log('✅ Observable pattern working');
+                    document.getElementById('test-observable').innerHTML = '✅ Observable pattern';
+                } else {
+                    console.log('⚠️ Observable pattern not triggered (may need backend)');
+                    document.getElementById('test-observable').innerHTML = '⚠️ Observable pattern (no trigger)';
+                }
+                
+                // Remove listener
+                removeListener();
+            }, 500);
+        };
+
+        window.simulateGameFlow = () => {
+            console.log('🔍 Simulating game flow...');
+            
+            // Test state transitions
+            const state = gameService.getState();
+            console.log('🎮 Initial phase:', state.phase);
+            
+            // Test derived state calculations
+            console.log('🎯 isMyTurn:', state.isMyTurn);
+            console.log('⚡ allowedActions:', state.allowedActions);
+            console.log('🎲 validOptions:', state.validOptions);
+            
+            // Test immutability
+            const state1 = gameService.getState();
+            const state2 = gameService.getState();
+            
+            const immutable = state1 !== state2;
+            console.log('🔒 States are different objects (immutable):', immutable ? '✅' : '❌');
+            
+            if (immutable) {
+                document.getElementById('test-immutable').innerHTML = '✅ Immutable state updates';
+            } else {
+                document.getElementById('test-immutable').innerHTML = '❌ Immutable state updates';
+            }
+            
+            // Test derived state
+            const hasDerivedFields = state.hasOwnProperty('isMyTurn') && 
+                state.hasOwnProperty('allowedActions') && 
+                state.hasOwnProperty('validOptions');
+            
+            if (hasDerivedFields) {
+                console.log('✅ Derived state fields present');
+                document.getElementById('test-derived').innerHTML = '✅ Derived state calculations';
+            } else {
+                console.log('❌ Missing derived state fields');
+                document.getElementById('test-derived').innerHTML = '❌ Derived state calculations';
+            }
+        };
+
+        window.showCurrentState = () => {
+            const state = gameService.getState();
+            document.getElementById('state-output').textContent = JSON.stringify(state, null, 2);
+            console.log('📊 Current GameService state:', state);
+        };
+
+        window.clearLogs = () => {
+            document.getElementById('log-output').innerHTML = 'Logs cleared...<br>';
+        };
+
+        function updateTestResults() {
+            // This would be called after running comprehensive tests
+            console.log('📊 Test results updated');
+        }
+
+        // Test debugging features
+        window.testDebugging = () => {
+            console.log('🔍 Testing debugging features...');
+            
+            // Test event history
+            const history = gameService.getEventHistory();
+            console.log('📚 Event history length:', history.length);
+            
+            // Test replay method
+            const hasReplay = typeof gameService.replayToSequence === 'function';
+            console.log('⏪ Replay method exists:', hasReplay ? '✅' : '❌');
+            
+            // Test browser debugging integration
+            const hasBrowserDebugging = typeof window.__GAME_STATE_HISTORY__ !== 'undefined';
+            console.log('🌐 Browser debugging integration:', hasBrowserDebugging ? '✅' : '❌');
+            
+            if (hasReplay && hasBrowserDebugging) {
+                document.getElementById('test-debugging').innerHTML = '✅ Event history and debugging';
+            } else {
+                document.getElementById('test-debugging').innerHTML = '⚠️ Event history and debugging (partial)';
+            }
+        };
+
+        // Auto-run basic tests on load
+        setTimeout(() => {
+            console.log('🎯 GameService test page loaded');
+            console.log('📋 Running basic validation tests...');
+            
+            testStateStructure();
+            testActionValidation();
+            simulateGameFlow();
+            testDebugging();
+            showCurrentState();
+            
+            console.log('✅ Basic tests complete - click "Run All Tests" for comprehensive testing');
+        }, 1000);
+
+        // Auto-update state display
+        setInterval(() => {
+            showCurrentState();
+        }, 5000);
+    </script>
+</body>
+</html>

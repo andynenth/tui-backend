@@ -265,7 +265,7 @@ export class PlayValidator {
     });
     
     // Must have exactly these pieces
-    const required = { 'CHARIOT': 2, 'HORSE': 2, 'CANNON': 2 };
+    const required = { CHARIOT: 2, HORSE: 2, CANNON: 2 };
     
     return Object.keys(required).every(name => counts[name] === required[name]) &&
            Object.keys(counts).length === 3;

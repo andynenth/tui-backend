@@ -155,7 +155,7 @@ const RoomPage = () => {
           isConnecting: socket.isConnecting,
           isReconnecting: socket.isReconnecting,
           error: socket.connectionError,
-          roomId: roomId
+          roomId
         }}
         headerContent={
           <div className="flex items-center space-x-4">
