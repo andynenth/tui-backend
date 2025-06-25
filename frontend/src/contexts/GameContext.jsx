@@ -87,6 +87,23 @@ export const GameProvider = ({
         }
       }
       
+      // Update player list from phase_data if available
+      if (data.phase_data && data.phase_data.declaration_order && gameState.manager) {
+        const playerNames = data.phase_data.declaration_order;
+        console.log('👥 GAME_CONTEXT: Updating player list:', playerNames);
+        
+        // Create player objects from names
+        const players = playerNames.map(name => ({
+          name: name,
+          score: 0,
+          is_bot: name !== playerName
+        }));
+        
+        // Update GameStateManager players
+        gameState.manager.players = players;
+        console.log('👥 GAME_CONTEXT: GameStateManager now has', players.length, 'players');
+      }
+      
       if (phaseManager && data.phase) {
         const phaseName = data.phase.toLowerCase();
         console.log('🎯 GAME_CONTEXT: Transitioning to phase:', phaseName);
@@ -148,6 +165,7 @@ export const GameProvider = ({
   const actions = {
     // Declaration actions
     makeDeclaration: (value) => {
+      console.log('🎯 GAME_ACTIONS: Making declaration:', value);
       socket.send('declare', { player_name: playerName, declaration: value });
     },
 
