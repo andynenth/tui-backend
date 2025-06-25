@@ -1,4 +1,5 @@
 // frontend/src/phases/PreparationPhase.jsx
+// Enhanced for Phase 3 Task 3.2: Works with both legacy and new service architecture
 
 import React, { useState, useEffect } from 'react';
 import { useGame } from '../contexts/GameContext';
@@ -9,19 +10,30 @@ const PreparationPhase = () => {
   const [hasWeakHand, setHasWeakHand] = useState(false);
   const [redealRequested, setRedealRequested] = useState(false);
 
-  // Check for weak hand (no piece > 9 points)
+  // Check for weak hand (enhanced to work with both service types)
   useEffect(() => {
     if (!game.myHand || game.myHand.length === 0) return;
 
+    // If using new services, use the computed state
+    if (game.useNewServices && game.isMyHandWeak !== undefined) {
+      setHasWeakHand(game.isMyHandWeak);
+      return;
+    }
+
+    // Legacy calculation for backward compatibility
     const hasStrongPiece = game.myHand.some(piece => {
-      // Parse point value from piece string
+      // Handle both new service format and legacy format
+      if (typeof piece === 'object' && piece.value) {
+        return piece.value > 9; // New service format
+      }
+      // Parse point value from piece string (legacy format)
       const match = piece.match(/\((\d+)\)/);
       const points = match ? parseInt(match[1]) : 0;
       return points > 9;
     });
 
     setHasWeakHand(!hasStrongPiece);
-  }, [game.myHand]);
+  }, [game.myHand, game.useNewServices, game.isMyHandWeak]);
 
   const requestRedeal = () => {
     game.actions.requestRedeal();

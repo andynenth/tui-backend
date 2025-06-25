@@ -1,4 +1,6 @@
 // frontend/src/hooks/useGameState.js
+// Enhanced for Phase 3 Task 3.2: Maintains legacy GameStateManager compatibility
+// while preparing for service integration
 
 import { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import { GameStateManager } from '../../game/GameStateManager.js';
@@ -6,6 +8,7 @@ import { GameStateManager } from '../../game/GameStateManager.js';
 /**
  * React hook for interfacing with existing GameStateManager
  * Provides state synchronization for React components
+ * Enhanced to work alongside new service architecture
  */
 export function useGameState(roomId, playerName, initialData) {
   const [gameState, setGameState] = useState(null);

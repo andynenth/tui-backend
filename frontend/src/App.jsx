@@ -1,6 +1,6 @@
 // frontend/src/App.jsx
 
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { AppProvider, useApp } from './contexts/AppContext';
 import { GameProvider } from './contexts/GameContext';
@@ -11,6 +11,9 @@ import StartPage from './pages/StartPage';
 import LobbyPage from './pages/LobbyPage';
 import RoomPage from './pages/RoomPage';
 import GamePage from './pages/GamePage';
+
+// Service initialization
+import { initializeServices, cleanupServices } from './services';
 
 // Protected Route component
 const ProtectedRoute = ({ children, requiredData = [] }) => {
@@ -101,14 +104,73 @@ const AppRouter = () => {
   );
 };
 
+// Service-aware App component
+const AppWithServices = () => {
+  const [servicesInitialized, setServicesInitialized] = useState(false);
+  const [initializationError, setInitializationError] = useState(null);
+
+  useEffect(() => {
+    const initServices = async () => {
+      try {
+        await initializeServices();
+        setServicesInitialized(true);
+        console.log('🎮 Global services initialized');
+      } catch (error) {
+        console.error('Failed to initialize global services:', error);
+        setInitializationError(error.message);
+      }
+    };
+
+    initServices();
+
+    // Cleanup on unmount
+    return () => {
+      cleanupServices();
+      console.log('🎮 Global services cleaned up');
+    };
+  }, []);
+
+  if (initializationError) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+        <div className="text-center">
+          <h1 className="text-2xl font-bold text-red-600 mb-4">Service Initialization Failed</h1>
+          <p className="text-gray-600 mb-4">{initializationError}</p>
+          <button 
+            onClick={() => window.location.reload()} 
+            className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+          >
+            Retry
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  if (!servicesInitialized) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+          <p className="text-gray-600">Initializing services...</p>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="App">
+      <AppRouter />
+    </div>
+  );
+};
+
 // Main App component
 const App = () => {
   return (
     <ErrorBoundary>
       <AppProvider>
-        <div className="App">
-          <AppRouter />
-        </div>
+        <AppWithServices />
       </AppProvider>
     </ErrorBoundary>
   );

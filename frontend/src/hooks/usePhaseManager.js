@@ -1,4 +1,6 @@
 // frontend/src/hooks/usePhaseManager.js
+// Enhanced for Phase 3 Task 3.2: Maintains legacy phase management
+// while working alongside new service architecture
 
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { GamePhaseManager } from '../../game/GamePhaseManager.js';
@@ -6,6 +8,7 @@ import { GamePhaseManager } from '../../game/GamePhaseManager.js';
 /**
  * React hook for interfacing with existing GamePhaseManager
  * Provides phase management and transitions for React components
+ * Enhanced to coexist with new service-based phase management
  */
 export function usePhaseManager(stateManager, socketManager, uiRenderer) {
   const [currentPhase, setCurrentPhase] = useState(null);

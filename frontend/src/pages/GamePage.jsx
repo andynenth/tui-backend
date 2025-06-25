@@ -5,11 +5,11 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { useGame } from '../contexts/GameContext';
 import { Layout, Button, Modal, LoadingOverlay } from '../components';
 
-// Game phase components (to be implemented)
-import PreparationPhase from '../phases/PreparationPhase';
-import DeclarationPhase from '../phases/DeclarationPhase';
-import TurnPhase from '../phases/TurnPhase';
-import ScoringPhase from '../phases/ScoringPhase';
+// New Smart Container
+import { GameContainer } from '../components/game/GameContainer';
+
+// Service integration
+import { connectToRoom, disconnectFromRoom, getServicesHealth } from '../services';
 
 const GamePage = () => {
   const navigate = useNavigate();
@@ -18,15 +18,39 @@ const GamePage = () => {
   
   const [showLeaveModal, setShowLeaveModal] = useState(false);
   const [gameError, setGameError] = useState(null);
+  const [isUsingNewServices, setIsUsingNewServices] = useState(false);
 
-  // Handle game errors
+  // Connect to room using new services (services already initialized globally)
+  useEffect(() => {
+    const connectToGame = async () => {
+      try {
+        if (roomId && game.playerName) {
+          await connectToRoom(roomId, game.playerName);
+          setIsUsingNewServices(true);
+          console.log('🎮 Connected to room via new services');
+        }
+      } catch (error) {
+        console.error('Failed to connect to room:', error);
+        setGameError(`Connection failed: ${error.message}`);
+      }
+    };
+
+    connectToGame();
+
+    // Cleanup on unmount
+    return () => {
+      disconnectFromRoom().catch(console.error);
+    };
+  }, [roomId, game.playerName]);
+
+  // Handle game errors (legacy and new)
   useEffect(() => {
     if (game.error) {
       setGameError(game.error);
     }
   }, [game.error]);
 
-  // Handle game completion
+  // Handle game completion (legacy system)
   useEffect(() => {
     const unsubscriber = game.gameState?.manager?.on('gameEnded', (data) => {
       // Show game results and navigate back to lobby
@@ -41,12 +65,27 @@ const GamePage = () => {
     };
   }, [game.gameState?.manager, navigate]);
 
-  const leaveGame = () => {
-    game.actions.leaveGame();
+  const leaveGame = async () => {
+    // Use new services if available, otherwise fall back to legacy
+    if (isUsingNewServices) {
+      await disconnectFromRoom();
+    } else {
+      game.actions.leaveGame();
+    }
     navigate('/lobby');
   };
 
-  const renderCurrentPhase = () => {
+  const renderGameContent = () => {
+    // If we're using new services, render GameContainer
+    if (isUsingNewServices) {
+      return <GameContainer roomId={roomId} />;
+    }
+    
+    // Fall back to legacy system
+    return renderLegacyPhase();
+  };
+
+  const renderLegacyPhase = () => {
     if (!game.isInitialized) {
       return (
         <div className="text-center py-12">
@@ -55,29 +94,54 @@ const GamePage = () => {
       );
     }
 
-    switch (game.currentPhase) {
-      case 'preparation':
-      case 'redeal':
-        return <PreparationPhase />;
-      
-      case 'declaration':
-        return <DeclarationPhase />;
-      
-      case 'turn':
-        return <TurnPhase />;
-      
-      case 'scoring':
-        return <ScoringPhase />;
-      
-      default:
-        return (
-          <div className="text-center py-12">
-            <div className="text-lg text-gray-600">
-              Waiting for game phase: {game.currentPhase}
+    // Import legacy components dynamically to avoid import errors
+    const LegacyPhaseRenderer = () => {
+      switch (game.currentPhase) {
+        case 'preparation':
+        case 'redeal':
+          return (
+            <div className="text-center py-12">
+              <div className="text-lg text-gray-600">Preparation Phase (Legacy)</div>
+              <p className="text-sm text-gray-500 mt-2">Phase: {game.currentPhase}</p>
             </div>
-          </div>
-        );
-    }
+          );
+        
+        case 'declaration':
+          return (
+            <div className="text-center py-12">
+              <div className="text-lg text-gray-600">Declaration Phase (Legacy)</div>
+              <p className="text-sm text-gray-500 mt-2">Phase: {game.currentPhase}</p>
+            </div>
+          );
+        
+        case 'turn':
+          return (
+            <div className="text-center py-12">
+              <div className="text-lg text-gray-600">Turn Phase (Legacy)</div>
+              <p className="text-sm text-gray-500 mt-2">Phase: {game.currentPhase}</p>
+            </div>
+          );
+        
+        case 'scoring':
+          return (
+            <div className="text-center py-12">
+              <div className="text-lg text-gray-600">Scoring Phase (Legacy)</div>
+              <p className="text-sm text-gray-500 mt-2">Phase: {game.currentPhase}</p>
+            </div>
+          );
+        
+        default:
+          return (
+            <div className="text-center py-12">
+              <div className="text-lg text-gray-600">
+                Waiting for game phase: {game.currentPhase}
+              </div>
+            </div>
+          );
+      }
+    };
+
+    return <LegacyPhaseRenderer />;
   };
 
   const getPhaseDisplayName = (phase) => {
@@ -175,8 +239,19 @@ const GamePage = () => {
 
           {/* Phase content */}
           <div className="bg-white rounded-lg shadow-sm border border-gray-200 min-h-[400px]">
-            {renderCurrentPhase()}
+            {renderGameContent()}
           </div>
+          
+          {/* Service status indicator (development) */}
+          {process.env.NODE_ENV === 'development' && (
+            <div className="mt-4 bg-gray-50 border border-gray-200 rounded-lg p-3">
+              <div className="text-xs text-gray-600">
+                <div>Services: ✅ Initialized (Global)</div>
+                <div>Mode: {isUsingNewServices ? '🚀 New Architecture' : '🔧 Legacy System'}</div>
+                <div>Health: {JSON.stringify(getServicesHealth().overall.healthy)}</div>
+              </div>
+            </div>
+          )}
 
           {/* Connection status */}
           {!game.isConnected && (
