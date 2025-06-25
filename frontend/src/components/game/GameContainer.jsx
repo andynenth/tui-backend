@@ -12,17 +12,17 @@
 
 import React, { useMemo } from 'react';
 import PropTypes from 'prop-types';
-import { useGameState } from '../../hooks/useGameState';
-import { useGameActions } from '../../hooks/useGameActions';
-import { useConnectionStatus } from '../../hooks/useConnectionStatus';
+import useGameState from "../../hooks/useGameState";
+import useGameActions from "../../hooks/useGameActions";
+import useConnectionStatus from "../../hooks/useConnectionStatus";
 
 // Import Pure UI Components
-import { WaitingUI } from './WaitingUI';
-import { PreparationUI } from './PreparationUI';
-import { DeclarationUI } from './DeclarationUI';
-import { TurnUI } from './TurnUI';
-import { ScoringUI } from './ScoringUI';
-import { ErrorBoundary } from '../ErrorBoundary';
+import WaitingUI from './WaitingUI';
+import PreparationUI from './PreparationUI';
+import DeclarationUI from './DeclarationUI';
+import TurnUI from './TurnUI';
+import ScoringUI from './ScoringUI';
+import ErrorBoundary from "../ErrorBoundary";
 
 /**
  * Smart container that connects pure UI components to game state

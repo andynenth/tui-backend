@@ -13,8 +13,8 @@
 
 import React from 'react';
 import PropTypes from 'prop-types';
-import { PlayerSlot } from '../PlayerSlot';
-import { Button } from '../Button';
+import PlayerSlot from "../PlayerSlot";
+import Button from "../Button";
 
 /**
  * Pure UI component for scoring phase

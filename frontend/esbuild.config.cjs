@@ -40,6 +40,8 @@ esbuild.context({
   loader: { 
     '.js': 'jsx',
     '.jsx': 'jsx',
+    '.ts': 'ts',
+    '.tsx': 'tsx',
     '.css': 'css'
   },
   jsx: 'automatic',

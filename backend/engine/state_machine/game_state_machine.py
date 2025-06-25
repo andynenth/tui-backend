@@ -22,7 +22,9 @@ class GameStateMachine:
     
     def __init__(self, game, broadcast_callback=None):
         self.game = game
-        self.action_queue = ActionQueue()
+        # Pass room_id to ActionQueue for event storage
+        room_id = getattr(game, 'room_id', None) if game else None
+        self.action_queue = ActionQueue(room_id=room_id)
         self.current_state: Optional[GameState] = None
         self.current_phase: Optional[GamePhase] = None
         self.is_running = False
@@ -154,6 +156,9 @@ class GameStateMachine:
         # Enter new state
         await self.current_state.on_enter()
         
+        # Store phase change event for replay capability
+        await self._store_phase_change_event(old_phase, new_phase)
+        
         # 🔧 FIX: Broadcast phase change with player-specific data
         await self._broadcast_phase_change_with_hands(new_phase)
         
@@ -254,3 +259,53 @@ class GameStateMachine:
                 
         except Exception as e:
             logger.error(f"Failed to notify bot manager: {e}", exc_info=True)
+    
+    async def _store_phase_change_event(self, old_phase: Optional[GamePhase], new_phase: GamePhase):
+        """
+        Store phase change event for replay capability
+        
+        Args:
+            old_phase: Previous phase (can be None for initial transition)
+            new_phase: New phase being entered
+        """
+        try:
+            payload = {
+                'old_phase': old_phase.value if old_phase else None,
+                'new_phase': new_phase.value,
+                'timestamp': datetime.now().isoformat(),
+                'game_state': self.get_serializable_state() if hasattr(self, 'get_serializable_state') else {}
+            }
+            
+            # Add game-specific context if available
+            if hasattr(self, 'game') and self.game:
+                payload['game_context'] = {
+                    'round_number': getattr(self.game, 'round_number', 0),
+                    'player_count': len(getattr(self.game, 'players', [])),
+                    'current_player': getattr(self.game, 'current_player', None)
+                }
+            
+            # Store via action queue which has access to event store
+            await self.action_queue.store_state_event(
+                event_type='phase_change',
+                payload=payload
+            )
+            
+            logger.info(f"Stored phase change event: {old_phase} -> {new_phase}")
+            
+        except Exception as e:
+            # Don't let event storage failures break the game
+            logger.error(f"Failed to store phase change event: {e}")
+    
+    async def store_game_event(self, event_type: str, payload: dict, player_id: Optional[str] = None):
+        """
+        Public method to store arbitrary game events
+        
+        Args:
+            event_type: Type of event (e.g., 'game_started', 'round_complete')
+            payload: Event data
+            player_id: Optional player identifier
+        """
+        try:
+            await self.action_queue.store_state_event(event_type, payload, player_id)
+        except Exception as e:
+            logger.error(f"Failed to store game event {event_type}: {e}")

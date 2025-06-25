@@ -13,8 +13,8 @@
 
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
-import { GamePiece } from '../GamePiece';
-import { Button } from '../Button';
+import GamePiece from "../GamePiece";
+import Button from "../Button";
 
 /**
  * Pure UI component for turn phase

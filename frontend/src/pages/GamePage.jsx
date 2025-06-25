@@ -1,171 +1,131 @@
-// frontend/src/pages/GamePage.jsx
+/**
+ * 🎮 **GamePage Component** - Updated Game Page with New Architecture
+ * 
+ * Phase 2, Task 2.3: Smart Container Components
+ * 
+ * Features:
+ * ✅ Uses new GameContainer for game state management
+ * ✅ Service integration for robust connection handling
+ * ✅ Error boundary integration
+ * ✅ Maintains compatibility with existing routing
+ */
 
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { useGame } from '../contexts/GameContext';
-import { Layout, Button, Modal, LoadingOverlay } from '../components';
+import { useGameState } from '../hooks/useGameState';
+import { useGameActions } from '../hooks/useGameActions';
+import { useConnectionStatus } from '../hooks/useConnectionStatus';
+import { serviceIntegration } from '../services/ServiceIntegration';
 
-// New Smart Container
+// Import components
 import { GameContainer } from '../components/game/GameContainer';
-
-// Service integration
-import { connectToRoom, disconnectFromRoom, getServicesHealth } from '../services';
+import { Layout, Button, Modal, LoadingOverlay } from '../components';
+import ErrorBoundary from '../components/ErrorBoundary';
 
 const GamePage = () => {
   const navigate = useNavigate();
   const { roomId } = useParams();
-  const game = useGame();
+  
+  // New service-based state management
+  const gameState = useGameState();
+  const gameActions = useGameActions();
+  const connectionStatus = useConnectionStatus(roomId);
   
   const [showLeaveModal, setShowLeaveModal] = useState(false);
-  const [gameError, setGameError] = useState(null);
-  const [isUsingNewServices, setIsUsingNewServices] = useState(false);
+  const [isInitialized, setIsInitialized] = useState(false);
 
-  // Connect to room using new services (services already initialized globally)
+  // Initialize services and connect to room
   useEffect(() => {
-    const connectToGame = async () => {
+    const initializeGame = async () => {
       try {
-        if (roomId && game.playerName) {
-          await connectToRoom(roomId, game.playerName);
-          setIsUsingNewServices(true);
-          console.log('🎮 Connected to room via new services');
+        // Get player name from URL params or session storage
+        const playerName = sessionStorage.getItem('playerName') || 'Player';
+        
+        if (roomId) {
+          await serviceIntegration.connectToRoom(roomId, playerName);
+          setIsInitialized(true);
         }
       } catch (error) {
-        console.error('Failed to connect to room:', error);
-        setGameError(`Connection failed: ${error.message}`);
+        console.error('Failed to initialize game:', error);
+        // Could redirect back to lobby on critical errors
+        if (error.message.includes('Room not found')) {
+          navigate('/lobby');
+        }
       }
     };
 
-    connectToGame();
+    initializeGame();
+  }, [roomId, navigate]);
 
-    // Cleanup on unmount
-    return () => {
-      disconnectFromRoom().catch(console.error);
-    };
-  }, [roomId, game.playerName]);
-
-  // Handle game errors (legacy and new)
+  // Handle game completion
   useEffect(() => {
-    if (game.error) {
-      setGameError(game.error);
-    }
-  }, [game.error]);
-
-  // Handle game completion (legacy system)
-  useEffect(() => {
-    const unsubscriber = game.gameState?.manager?.on('gameEnded', (data) => {
-      // Show game results and navigate back to lobby
-      alert(`Game ended! Winner: ${data.winner || 'None'}`);
+    if (gameState.gameOver && gameState.winners.length > 0) {
+      // Show game results
+      const winnerText = gameState.winners.length === 1 
+        ? `Winner: ${gameState.winners[0]}` 
+        : `Winners: ${gameState.winners.join(', ')}`;
+        
+      // Could show a modal instead of alert
+      alert(`Game ended! ${winnerText}`);
+      
+      // Navigate back to lobby after a delay
       setTimeout(() => {
         navigate('/lobby');
-      }, 2000);
-    });
+      }, 3000);
+    }
+  }, [gameState.gameOver, gameState.winners, navigate]);
 
-    return () => {
-      if (unsubscriber) unsubscriber();
-    };
-  }, [game.gameState?.manager, navigate]);
+  // Handle critical connection errors
+  useEffect(() => {
+    if (connectionStatus.error && !connectionStatus.isConnecting) {
+      console.error('Critical connection error:', connectionStatus.error);
+      // Could show error modal or redirect to lobby
+    }
+  }, [connectionStatus.error, connectionStatus.isConnecting]);
 
   const leaveGame = async () => {
-    // Use new services if available, otherwise fall back to legacy
-    if (isUsingNewServices) {
-      await disconnectFromRoom();
-    } else {
-      game.actions.leaveGame();
+    try {
+      await gameActions.disconnectFromRoom();
+      navigate('/lobby');
+    } catch (error) {
+      console.error('Error leaving game:', error);
+      // Force navigation even if disconnect fails
+      navigate('/lobby');
     }
-    navigate('/lobby');
-  };
-
-  const renderGameContent = () => {
-    // If we're using new services, render GameContainer
-    if (isUsingNewServices) {
-      return <GameContainer roomId={roomId} />;
-    }
-    
-    // Fall back to legacy system
-    return renderLegacyPhase();
-  };
-
-  const renderLegacyPhase = () => {
-    if (!game.isInitialized) {
-      return (
-        <div className="text-center py-12">
-          <div className="text-lg text-gray-600">Initializing game...</div>
-        </div>
-      );
-    }
-
-    // Import legacy components dynamically to avoid import errors
-    const LegacyPhaseRenderer = () => {
-      switch (game.currentPhase) {
-        case 'preparation':
-        case 'redeal':
-          return (
-            <div className="text-center py-12">
-              <div className="text-lg text-gray-600">Preparation Phase (Legacy)</div>
-              <p className="text-sm text-gray-500 mt-2">Phase: {game.currentPhase}</p>
-            </div>
-          );
-        
-        case 'declaration':
-          return (
-            <div className="text-center py-12">
-              <div className="text-lg text-gray-600">Declaration Phase (Legacy)</div>
-              <p className="text-sm text-gray-500 mt-2">Phase: {game.currentPhase}</p>
-            </div>
-          );
-        
-        case 'turn':
-          return (
-            <div className="text-center py-12">
-              <div className="text-lg text-gray-600">Turn Phase (Legacy)</div>
-              <p className="text-sm text-gray-500 mt-2">Phase: {game.currentPhase}</p>
-            </div>
-          );
-        
-        case 'scoring':
-          return (
-            <div className="text-center py-12">
-              <div className="text-lg text-gray-600">Scoring Phase (Legacy)</div>
-              <p className="text-sm text-gray-500 mt-2">Phase: {game.currentPhase}</p>
-            </div>
-          );
-        
-        default:
-          return (
-            <div className="text-center py-12">
-              <div className="text-lg text-gray-600">
-                Waiting for game phase: {game.currentPhase}
-              </div>
-            </div>
-          );
-      }
-    };
-
-    return <LegacyPhaseRenderer />;
   };
 
   const getPhaseDisplayName = (phase) => {
     const names = {
+      waiting: 'Waiting',
       preparation: 'Preparation',
-      redeal: 'Redeal',
       declaration: 'Declaration',
       turn: 'Turn Play',
-      scoring: 'Scoring',
-      waiting: 'Waiting'
+      scoring: 'Scoring'
     };
     return names[phase] || phase;
   };
 
+  // Show loading overlay during initialization
+  if (!isInitialized && !gameState.error) {
+    return (
+      <LoadingOverlay
+        isVisible={true}
+        message="Connecting to game..."
+        subtitle="Initializing game state and connecting to server"
+      />
+    );
+  }
+
   return (
-    <>
+    <ErrorBoundary>
       <Layout
         title={`Game - Room ${roomId}`}
         showConnection={true}
         connectionProps={{
-          isConnected: game.isConnected,
-          isConnecting: game.socket?.isConnecting,
-          isReconnecting: game.socket?.isReconnecting,
-          error: game.socket?.connectionError,
+          isConnected: connectionStatus.isConnected,
+          isConnecting: connectionStatus.isConnecting,
+          isReconnecting: connectionStatus.isReconnecting,
+          error: connectionStatus.error,
           roomId
         }}
         headerContent={
@@ -174,14 +134,21 @@ const GamePage = () => {
             <div className="text-sm">
               <span className="text-gray-600">Phase: </span>
               <span className="font-medium text-blue-600">
-                {getPhaseDisplayName(game.currentPhase)}
+                {getPhaseDisplayName(gameState.phase)}
               </span>
             </div>
 
             {/* Player info */}
             <div className="text-sm text-gray-600">
-              {game.playerName}
+              {gameState.playerName}
             </div>
+
+            {/* Round info */}
+            {gameState.currentRound && (
+              <div className="text-sm text-gray-600">
+                Round {gameState.currentRound}
+              </div>
+            )}
 
             {/* Leave game button */}
             <Button
@@ -194,98 +161,55 @@ const GamePage = () => {
           </div>
         }
       >
-        <div className="max-w-6xl mx-auto px-4 py-6">
-          {/* Game status bar */}
-          <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4 mb-6">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center space-x-6">
-                {/* Current phase */}
-                <div>
-                  <div className="text-sm text-gray-500">Current Phase</div>
-                  <div className="font-medium text-gray-900">
-                    {getPhaseDisplayName(game.currentPhase)}
-                  </div>
-                </div>
-
-                {/* Hand size */}
-                <div>
-                  <div className="text-sm text-gray-500">Your Hand</div>
-                  <div className="font-medium text-gray-900">
-                    {game.myHand?.length || 0} pieces
-                  </div>
-                </div>
-
-                {/* Your turn indicator */}
-                {game.isMyTurn && (
-                  <div className="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm font-medium">
-                    Your Turn
-                  </div>
-                )}
-              </div>
-
-              {/* Scores */}
-              <div className="flex items-center space-x-4">
-                <div className="text-sm text-gray-500">Scores:</div>
-                {Object.entries(game.scores || {}).map(([player, score]) => (
-                  <div key={player} className="text-sm">
-                    <span className={player === game.playerName ? 'font-bold' : ''}>
-                      {player}: {score}
-                    </span>
-                  </div>
-                ))}
-              </div>
+        {/* Phase 1-4 Architecture Indicator */}
+        <div className="bg-gradient-to-r from-blue-600 to-purple-600 text-white px-4 py-2 text-sm">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center space-x-2">
+              <span className="bg-white bg-opacity-20 px-2 py-1 rounded text-xs font-medium">
+                🚀 Phase 1-4 Enterprise Architecture
+              </span>
+              <span className="text-blue-100">
+                State Machine • TypeScript Services • Event Sourcing • Auto-Recovery
+              </span>
+            </div>
+            <div className="text-xs text-blue-100">
+              v2.0 Enterprise Ready
             </div>
           </div>
-
-          {/* Phase content */}
-          <div className="bg-white rounded-lg shadow-sm border border-gray-200 min-h-[400px]">
-            {renderGameContent()}
-          </div>
-          
-          {/* Service status indicator (development) */}
-          {process.env.NODE_ENV === 'development' && (
-            <div className="mt-4 bg-gray-50 border border-gray-200 rounded-lg p-3">
-              <div className="text-xs text-gray-600">
-                <div>Services: ✅ Initialized (Global)</div>
-                <div>Mode: {isUsingNewServices ? '🚀 New Architecture' : '🔧 Legacy System'}</div>
-                <div>Health: {JSON.stringify(getServicesHealth().overall.healthy)}</div>
-              </div>
-            </div>
-          )}
-
-          {/* Connection status */}
-          {!game.isConnected && (
-            <div className="mt-6 bg-yellow-50 border border-yellow-200 rounded-lg p-4">
-              <div className="flex items-center">
-                <span className="text-yellow-600 mr-2">⚠️</span>
-                <p className="text-yellow-800">
-                  Connection lost. Attempting to reconnect...
-                </p>
-              </div>
-            </div>
-          )}
-
-          {/* Game error */}
-          {gameError && (
-            <div className="mt-6 bg-red-50 border border-red-200 rounded-lg p-4">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center">
-                  <span className="text-red-600 mr-2">❌</span>
-                  <p className="text-red-800">
-                    Game error: {gameError.message || gameError}
-                  </p>
-                </div>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => setGameError(null)}
-                >
-                  Dismiss
-                </Button>
-              </div>
-            </div>
-          )}
         </div>
+
+        {/* Full-screen game container */}
+        <div className="h-full">
+          <GameContainer roomId={roomId} />
+        </div>
+
+        {/* Connection status overlay */}
+        {!connectionStatus.isConnected && !connectionStatus.isConnecting && (
+          <div className="fixed bottom-4 right-4 bg-yellow-500 text-white px-4 py-2 rounded-lg shadow-lg">
+            <div className="flex items-center">
+              <span className="mr-2">⚠️</span>
+              <span>Connection lost. Retrying...</span>
+            </div>
+          </div>
+        )}
+
+        {/* Game error overlay */}
+        {gameState.error && (
+          <div className="fixed top-4 right-4 bg-red-500 text-white px-4 py-2 rounded-lg shadow-lg max-w-sm">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center">
+                <span className="mr-2">❌</span>
+                <span className="text-sm">{gameState.error}</span>
+              </div>
+              <button
+                onClick={() => gameActions.triggerRecovery()}
+                className="ml-2 text-xs underline hover:no-underline"
+              >
+                Retry
+              </button>
+            </div>
+          </div>
+        )}
       </Layout>
 
       {/* Leave game confirmation */}
@@ -319,13 +243,7 @@ const GamePage = () => {
           </div>
         </div>
       </Modal>
-
-      <LoadingOverlay
-        isVisible={!game.isInitialized && !game.error}
-        message="Loading game..."
-        subtitle="Connecting to game server and initializing state"
-      />
-    </>
+    </ErrorBoundary>
   );
 };
 
