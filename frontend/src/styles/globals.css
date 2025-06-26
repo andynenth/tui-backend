@@ -1,8 +1,7 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+/* frontend/src/styles/globals.css */
+@import 'tailwindcss';
 
-/* Base styles */
+/* Your custom styles */
 @layer base {
   * {
     margin: 0;
@@ -47,9 +46,8 @@
   }
 }
 
-/* Component styles - simplified for now */
+/* Component styles */
 @layer components {
-  /* Simple component styles using direct CSS */
   .simple-card {
     background-color: #ffffff;
     border-radius: 0.5rem;
@@ -58,4 +56,3 @@
     padding: 1rem;
   }
 }
-
