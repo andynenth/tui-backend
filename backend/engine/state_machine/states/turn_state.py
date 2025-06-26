@@ -142,7 +142,9 @@ class TurnState(GameState):
         
         # Get turn order starting from current starter
         if hasattr(game, 'get_player_order_from'):
-            self.turn_order = game.get_player_order_from(self.current_turn_starter)
+            # Convert Player objects to strings
+            player_objects = game.get_player_order_from(self.current_turn_starter)
+            self.turn_order = [p.name for p in player_objects]
         else:
             # Fallback: create order from players list (ensure strings)
             players = getattr(game, 'players', [])
@@ -485,7 +487,9 @@ class TurnState(GameState):
         
         # Get turn order starting from current starter (winner of last turn)
         if hasattr(game, 'get_player_order_from'):
-            self.turn_order = game.get_player_order_from(self.current_turn_starter)
+            # Convert Player objects to strings
+            player_objects = game.get_player_order_from(self.current_turn_starter)
+            self.turn_order = [p.name for p in player_objects]
         else:
             # Fallback: create order from players list
             players = getattr(game, 'players', [])

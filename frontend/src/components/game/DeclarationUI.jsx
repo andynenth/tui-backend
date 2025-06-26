@@ -49,6 +49,8 @@ export function DeclarationUI({
       declarationProgress,
       isLastPlayer
     });
+    console.log('🎯 DECLARATION_UI_DEBUG: Full players array:', players);
+    console.log('🎯 DECLARATION_UI_DEBUG: Full declarations object:', declarations);
   }, []);
   const [selectedDeclaration, setSelectedDeclaration] = useState(null);
   const [showConfirmation, setShowConfirmation] = useState(false);
@@ -143,7 +145,7 @@ export function DeclarationUI({
                   `}
                 >
                   <PlayerSlot
-                    player={player}
+                    occupant={player}
                     isActive={!isComplete && !declarations[player.name]}
                     className="mb-3"
                   />

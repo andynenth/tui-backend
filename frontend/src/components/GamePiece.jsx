@@ -28,13 +28,18 @@ const GamePiece = ({
   };
 
   const parsePieceInfo = () => {
+    // Handle undefined/null pieces
+    if (!piece) {
+      return { color: 'RED', point: 0, kind: 'UNKNOWN' };
+    }
+    
     if (typeof piece === 'string') {
       const color = piece.includes('RED') ? 'RED' : 'BLACK';
       const point = parsePointFromString(piece);
       const kind = piece.split('(')[0].trim();
       return { color, point, kind };
     }
-    return piece;
+    return piece || { color: 'RED', point: 0, kind: 'UNKNOWN' };
   };
 
   const pieceInfo = parsePieceInfo();
