@@ -44,6 +44,8 @@ class DeclarationState(GameState):
             'declarations': {},
             'declaration_total': 0
         })
+        # Set current_declarer after phase_data is initialized
+        self.phase_data['current_declarer'] = self._get_current_declarer()
     
     async def _cleanup_phase(self) -> None:
         # FIX: Copy declarations to game object during cleanup
@@ -87,6 +89,7 @@ class DeclarationState(GameState):
         self.phase_data['declarations'][player_name] = declared_value
         self.phase_data['declaration_total'] += declared_value
         self.phase_data['current_declarer_index'] += 1
+        self.phase_data['current_declarer'] = self._get_current_declarer()
         
         # FIX: Also immediately update game object for real-time access
         self.state_machine.game.player_declarations[player_name] = declared_value

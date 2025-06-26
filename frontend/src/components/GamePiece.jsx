@@ -110,7 +110,7 @@ const GamePiece = ({
     >
       {/* Piece symbol */}
       <div className={`font-bold ${size === 'lg' ? 'text-xl' : size === 'sm' ? 'text-xs' : 'text-sm'}`}>
-        {getPieceSymbol(pieceInfo.kind)}
+        {getPieceSymbol(pieceInfo.kind, pieceInfo.color)}
       </div>
       
       {/* Point value */}
@@ -133,7 +133,13 @@ const GamePiece = ({
   );
 };
 
-const getPieceSymbol = (kind) => {
+const getPieceSymbol = (kind, color) => {
+  // Handle both combined keys (GENERAL_RED) and separate kind+color
+  let symbolKey = kind;
+  if (color && !kind.includes('_')) {
+    symbolKey = `${kind}_${color}`;
+  }
+  
   const symbols = {
     GENERAL_RED: '将',
     GENERAL_BLACK: '將', 
@@ -151,7 +157,7 @@ const getPieceSymbol = (kind) => {
     SOLDIER_BLACK: '卒'
   };
   
-  return symbols[kind] || '?';
+  return symbols[symbolKey] || '?';
 };
 
 export default GamePiece;
