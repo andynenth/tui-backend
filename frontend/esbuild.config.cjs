@@ -1,12 +1,12 @@
 // frontend/esbuild.config.cjs
 const esbuild = require('esbuild');
 const postcss = require('postcss');
-const tailwindcss = require('@tailwindcss/postcss');
+const tailwindcss = require('@tailwindcss/postcss'); // This is correct for Tailwind v4
 const autoprefixer = require('autoprefixer');
 const fs = require('fs');
 const path = require('path');
 
-require('dotenv').config({ path: '../.env' }); // 👈 โหลด .env จาก root
+require('dotenv').config({ path: '../.env' });
 
 const entry = process.env.ESBUILD_ENTRY || './main.js';
 const outfile = process.env.ESBUILD_OUT || '../backend/static/bundle.js';
@@ -20,7 +20,7 @@ const cssPlugin = {
       
       // Process CSS with PostCSS and Tailwind
       const result = await postcss([
-        tailwindcss,
+        tailwindcss,  // Pass the imported module directly, not as a function call
         autoprefixer
       ]).process(css, { from: args.path });
       
