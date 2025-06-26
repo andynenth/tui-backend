@@ -61,12 +61,25 @@ const RoomPage = () => {
       navigate(`/game/${roomId}`);
     };
 
+    const handleRoomClosed = (event) => {
+      const eventData = event.detail;
+      const closeData = eventData.data;
+      console.log('🏠 ROOM_CLOSED: Room was closed, navigating to lobby');
+      console.log('🏠 ROOM_CLOSED: Reason:', closeData.reason);
+      console.log('🏠 ROOM_CLOSED: Message:', closeData.message);
+      
+      // Navigate back to lobby when room is closed
+      navigate('/lobby');
+    };
+
     networkService.addEventListener('room_update', handleRoomUpdate);
     networkService.addEventListener('game_started', handleGameStarted);
+    networkService.addEventListener('room_closed', handleRoomClosed);
 
     return () => {
       networkService.removeEventListener('room_update', handleRoomUpdate);
       networkService.removeEventListener('game_started', handleGameStarted);
+      networkService.removeEventListener('room_closed', handleRoomClosed);
     };
   }, [isConnected, roomId, navigate]);
 
