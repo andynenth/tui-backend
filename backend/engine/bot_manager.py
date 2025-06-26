@@ -133,12 +133,17 @@ class GameBotHandler:
                 print(f"🔍 DECL_PHASE_DEBUG: Player {player_name} already declared {declared_value}, skipping")
                 continue  # Already declared
                 
-            # Bot declares
+            # Bot declares with random delay (500-1500ms for realism)
+            import random
+            delay = random.uniform(0.5, 1.5)
+            print(f"🤖 DECL_PHASE_DEBUG: Bot {player_name} will declare in {delay:.1f}s...")
+            await asyncio.sleep(delay)
+            
             print(f"🤖 DECL_PHASE_DEBUG: Bot {player_name} will now declare!")
             await self._bot_declare(player_obj, i)
             
-            # Small delay for UI
-            await asyncio.sleep(0.5)
+            # Small delay for UI processing
+            await asyncio.sleep(0.2)
             
     async def _bot_declare(self, bot: Player, position: int):
         """Make a bot declaration"""

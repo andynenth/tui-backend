@@ -38,6 +38,18 @@ export function DeclarationUI({
   // Action props
   onDeclare
 }) {
+  // Debug props only once per component mount
+  React.useEffect(() => {
+    console.log('🎯 DECLARATION_UI_DEBUG: Props received:', {
+      myHandLength: myHand?.length,
+      declarations,
+      playersLength: players?.length,
+      currentTotal,
+      isMyTurn,
+      declarationProgress,
+      isLastPlayer
+    });
+  }, []);
   const [selectedDeclaration, setSelectedDeclaration] = useState(null);
   const [showConfirmation, setShowConfirmation] = useState(false);
   
@@ -174,9 +186,9 @@ export function DeclarationUI({
             <div className="flex flex-wrap justify-center gap-2">
               {myHand.map((card, index) => (
                 <GamePiece
-                  key={`${card.suit}-${card.value}`}
-                  card={card}
-                  size="medium"
+                  key={`${card.color}-${card.point}-${index}`}
+                  piece={card}
+                  size="md"
                   className="transform hover:scale-105 transition-transform"
                 />
               ))}
@@ -314,8 +326,9 @@ export function DeclarationUI({
 DeclarationUI.propTypes = {
   // Data props
   myHand: PropTypes.arrayOf(PropTypes.shape({
-    suit: PropTypes.string.isRequired,
-    value: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired
+    color: PropTypes.string.isRequired,
+    point: PropTypes.number.isRequired,
+    kind: PropTypes.string.isRequired
   })),
   declarations: PropTypes.objectOf(PropTypes.number),
   players: PropTypes.arrayOf(PropTypes.shape({

@@ -468,11 +468,39 @@ export class GameService extends EventTarget {
     newState.phase = data.phase;
     newState.currentRound = data.round || state.currentRound;
     
+    console.log(`🔄 PHASE_CHANGE_DEBUG: Phase: ${data.phase}`);
+    console.log(`🔄 PHASE_CHANGE_DEBUG: Data players:`, data.players);
+    console.log(`🔄 PHASE_CHANGE_DEBUG: Data phase_data:`, data.phase_data);
+    
+    // Extract my hand from players data (sent by backend)
+    if (data.players && state.playerName && data.players[state.playerName]) {
+      const myPlayerData = data.players[state.playerName];
+      if (myPlayerData.hand) {
+        // Convert string pieces back to objects for frontend
+        newState.myHand = myPlayerData.hand.map((pieceStr: string) => {
+          // Parse piece strings like "ELEPHANT_RED(10)" into objects
+          const match = pieceStr.match(/^(.+)\((\d+)\)$/);
+          if (match) {
+            const [, name, value] = match;
+            const [piece, color] = name.split('_');
+            return {
+              color: color, // Use 'color' property that GamePiece expects
+              point: parseInt(value),
+              kind: piece,
+              name: piece.toLowerCase(),
+              displayName: `${piece} ${color}`
+            };
+          }
+          return { color: 'UNKNOWN', point: 0, kind: 'UNKNOWN', name: pieceStr, displayName: pieceStr };
+        });
+      }
+    }
+    
     // Extract phase-specific data
     if (data.phase_data) {
       const phaseData: PhaseData = data.phase_data;
       
-      // Update players list
+      // Update players list (prefer backend phase_data over data.players for player metadata)
       if (phaseData.players) {
         newState.players = phaseData.players;
       }
@@ -480,17 +508,20 @@ export class GameService extends EventTarget {
       // Phase-specific updates
       switch (data.phase) {
         case 'preparation':
-          if (phaseData.my_hand) newState.myHand = phaseData.my_hand;
+          // Fallback to phase_data.my_hand if data.players doesn't have it
+          if (phaseData.my_hand && !newState.myHand.length) {
+            newState.myHand = phaseData.my_hand;
+          }
           if (phaseData.round_starter) newState.roundStarter = phaseData.round_starter;
           newState.redealMultiplier = phaseData.redeal_multiplier || 1;
           if (phaseData.weak_hands) newState.weakHands = phaseData.weak_hands;
           if (phaseData.current_weak_player) newState.currentWeakPlayer = phaseData.current_weak_player;
           
           // Calculate preparation-specific UI state
-          if (phaseData.my_hand) {
-            newState.isMyHandWeak = this.calculateWeakHand(phaseData.my_hand);
-            newState.handValue = this.calculateHandValue(phaseData.my_hand);
-            newState.highestCardValue = this.calculateHighestCardValue(phaseData.my_hand);
+          if (newState.myHand.length > 0) {
+            newState.isMyHandWeak = this.calculateWeakHand(newState.myHand);
+            newState.handValue = this.calculateHandValue(newState.myHand);
+            newState.highestCardValue = this.calculateHighestCardValue(newState.myHand);
           }
           if (phaseData.current_weak_player && newState.playerName) {
             newState.isMyDecision = phaseData.current_weak_player === newState.playerName;
@@ -498,7 +529,10 @@ export class GameService extends EventTarget {
           break;
           
         case 'declaration':
-          if (phaseData.my_hand) newState.myHand = phaseData.my_hand;
+          // Fallback to phase_data.my_hand if data.players doesn't have it
+          if (phaseData.my_hand && !newState.myHand.length) {
+            newState.myHand = phaseData.my_hand;
+          }
           if (phaseData.declaration_order) newState.declarationOrder = phaseData.declaration_order;
           if (phaseData.current_declarer) newState.currentDeclarer = phaseData.current_declarer;
           newState.declarations = phaseData.declarations || {};
@@ -512,9 +546,9 @@ export class GameService extends EventTarget {
             };
             newState.isLastPlayer = Object.keys(phaseData.declarations).length === phaseData.players.length - 1;
           }
-          if (phaseData.my_hand) {
-            newState.estimatedPiles = this.calculateEstimatedPiles(phaseData.my_hand);
-            newState.handStrength = this.calculateHandStrength(phaseData.my_hand);
+          if (newState.myHand.length > 0) {
+            newState.estimatedPiles = this.calculateEstimatedPiles(newState.myHand);
+            newState.handStrength = this.calculateHandStrength(newState.myHand);
           }
           break;
           
@@ -605,12 +639,36 @@ export class GameService extends EventTarget {
     const nextDeclarer = nextIndex < state.declarationOrder.length ? 
       state.declarationOrder[nextIndex] : null;
     
-    return {
+    console.log(`🎯 DECLARE_DEBUG: Player ${data.player} declared ${data.value}`);
+    console.log(`🎯 DECLARE_DEBUG: New declarations:`, newDeclarations);
+    console.log(`🎯 DECLARE_DEBUG: Declaration total: ${declarationTotal}`);
+    console.log(`🎯 DECLARE_DEBUG: Next declarer: ${nextDeclarer}`);
+    
+    // Calculate derived state for declaration phase
+    const newState = {
       ...state,
       declarations: newDeclarations,
       declarationTotal,
-      currentDeclarer: nextDeclarer
+      currentDeclarer: nextDeclarer,
+      currentTotal: declarationTotal, // Add this for UI
     };
+    
+    // Update declaration progress - use declarationOrder length if players not available
+    const totalPlayers = (state.players && state.players.length > 0) 
+      ? state.players.length 
+      : (state.declarationOrder && state.declarationOrder.length > 0)
+        ? state.declarationOrder.length
+        : 4; // fallback to 4 players
+        
+    newState.declarationProgress = {
+      declared: Object.keys(newDeclarations).length,
+      total: totalPlayers
+    };
+    
+    console.log(`🎯 DECLARE_DEBUG: Updated state currentTotal: ${newState.currentTotal}`);
+    console.log(`🎯 DECLARE_DEBUG: Updated declarationProgress:`, newState.declarationProgress);
+    
+    return newState;
   }
 
   /**

@@ -12,6 +12,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
+import { useApp } from '../contexts/AppContext';
 import { useGameState } from '../hooks/useGameState';
 import { useGameActions } from '../hooks/useGameActions';
 import { useConnectionStatus } from '../hooks/useConnectionStatus';
@@ -25,6 +26,7 @@ import ErrorBoundary from '../components/ErrorBoundary';
 const GamePage = () => {
   const navigate = useNavigate();
   const { roomId } = useParams();
+  const app = useApp();
   
   // New service-based state management
   const gameState = useGameState();
@@ -38,8 +40,14 @@ const GamePage = () => {
   useEffect(() => {
     const initializeGame = async () => {
       try {
-        // Get player name from URL params or session storage
-        const playerName = sessionStorage.getItem('playerName') || 'Player';
+        // Get player name from AppContext
+        const playerName = app.playerName;
+        
+        if (!playerName) {
+          console.error('No player name found, redirecting to start page');
+          navigate('/');
+          return;
+        }
         
         if (roomId) {
           await serviceIntegration.connectToRoom(roomId, playerName);
@@ -55,7 +63,7 @@ const GamePage = () => {
     };
 
     initializeGame();
-  }, [roomId, navigate]);
+  }, [roomId, navigate, app.playerName]);
 
   // Handle game completion
   useEffect(() => {
