@@ -199,7 +199,7 @@ async def websocket_endpoint(websocket: WebSocket, room_id: str):
                             # Broadcast room update to all clients in the room
                             room_summary = result["room_state"]
                             await broadcast(room_id_to_join, "room_update", {
-                                "players": room_summary["slots"],
+                                "players": room_summary["players"],
                                 "host_name": room_summary["host_name"],
                                 "operation_id": result["operation_id"],
                                 "room_id": room_id_to_join,
@@ -292,7 +292,7 @@ async def websocket_endpoint(websocket: WebSocket, room_id: str):
                         await registered_ws.send_json({
                             "event": "room_update",
                             "data": {
-                                "players": updated_summary["slots"],
+                                "players": updated_summary["players"],
                                 "host_name": updated_summary["host_name"],
                                 "room_id": room_id,
                                 "started": updated_summary.get("started", False)
@@ -322,7 +322,7 @@ async def websocket_endpoint(websocket: WebSocket, room_id: str):
                                 # Broadcast room update to all clients in the room
                                 updated_summary = room.summary()
                                 await broadcast(room_id, "room_update", {
-                                    "players": updated_summary["slots"],
+                                    "players": updated_summary["players"],
                                     "host_name": updated_summary["host_name"],
                                     "room_id": room_id,
                                     "started": updated_summary.get("started", False)
@@ -376,7 +376,7 @@ async def websocket_endpoint(websocket: WebSocket, room_id: str):
                                 # Broadcast room update to all clients in the room
                                 updated_summary = room.summary()
                                 await broadcast(room_id, "room_update", {
-                                    "players": updated_summary["slots"],
+                                    "players": updated_summary["players"],
                                     "host_name": updated_summary["host_name"],
                                     "room_id": room_id,
                                     "started": updated_summary.get("started", False)
@@ -459,7 +459,7 @@ async def websocket_endpoint(websocket: WebSocket, room_id: str):
                                 # Broadcast room update to remaining clients
                                 updated_summary = room.summary()
                                 await broadcast(room_id, "room_update", {
-                                    "players": updated_summary["slots"],
+                                    "players": updated_summary["players"],
                                     "host_name": updated_summary["host_name"],
                                     "room_id": room_id,
                                     "started": updated_summary.get("started", False)
@@ -838,7 +838,7 @@ async def websocket_endpoint(websocket: WebSocket, room_id: str):
                                 room.exit_room(player_name)
                                 updated_summary = room.summary()
                                 await broadcast(room_id, "room_update", {
-                                    "players": updated_summary["slots"],
+                                    "players": updated_summary["players"],
                                     "host_name": updated_summary["host_name"],
                                     "room_id": room_id,
                                     "started": updated_summary.get("started", False)

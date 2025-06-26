@@ -277,6 +277,33 @@ elif event_name == "your_event":
 ### Frontend-Backend Data Structure Mismatch
 **Problem**: Frontend expects different data format than backend provides
 **Solution**: Use fallback patterns: `room.room_id || room.id`
+
+---
+
+## Issue 14: Room Creation Timing Bug - Connection Lost During Navigation (June 26, 2025)
+
+  Bug: "Create Room" button appeared to work (room created on backend) but frontend stayed on lobby page instead of navigating to new room
+  Root Cause: Race condition between room creation request and WebSocket connection stability - frontend disconnecting/reconnecting immediately after button click caused missed room_created response event
+  Fix: Added 100ms delay before sending create_room message + fixed useEffect dependencies for stale closure prevention
+  
+  Before:
+  ```javascript
+  const createRoom = () => {
+    setIsCreatingRoom(true);
+    networkService.send('lobby', 'create_room', { player_name: app.playerName });
+  };
+  ```
+  
+  After:
+  ```javascript
+  const createRoom = () => {
+    setIsCreatingRoom(true);
+    setTimeout(() => {
+      networkService.send('lobby', 'create_room', { player_name: app.playerName });
+    }, 100);
+  };
+  // Fixed dependency array: }, [isConnected, isCreatingRoom, app, navigate]);
+  ```
 **Best Practice**: Always check backend API responses and align frontend expectations
 
 ## 📋 Testing Checklist for Room Management
@@ -920,3 +947,64 @@ TypeError: Cannot read properties of null (reading 'updateDeclaration')
 **Frontend Status**: ❌ Broken - can't process declarations or show Andy's input
 
 **Priority**: High (blocks game progression after bot declarations complete)
+
+---
+
+## Phase 1-4 Enterprise Architecture Integration Issues (June 25, 2025)
+
+  11. Undefined 'socket' Variable in LobbyPage.jsx
+
+  Bug: 'socket' is not defined.eslint error preventing build
+  Root Cause: LobbyPage.jsx was using undefined socket object instead of Phase 1-4 NetworkService
+  Fix: Replaced all socket references with NetworkService
+  // Before
+  import { useApp } from '../contexts/AppContext';
+  // socket was undefined
+
+  // After
+  import { useApp } from '../contexts/AppContext';
+  import { networkService } from '../services';
+  
+  // Replace socket properties with local state
+  const [isConnected, setIsConnected] = useState(false);
+  const [isConnecting, setIsConnecting] = useState(false);
+  const [connectionError, setConnectionError] = useState(null);
+
+  // Replace event handlers
+  socket.on('room_created', callback) → networkService.addEventListener('room_created', callback)
+  socket.send('create_room', data) → networkService.send('lobby', 'create_room', data)
+
+  12. Incorrect NetworkService Method Call
+
+  Bug: Y.connect is not a function runtime error in lobby connection
+  Root Cause: Called networkService.connect('lobby') instead of correct API method
+  Fix: Updated to use correct NetworkService API
+  // Before
+  await networkService.connect('lobby');
+
+  // After
+  await networkService.connectToRoom('lobby');
+
+  13. Room Creation Navigation Failure
+
+  Bug: "Create Room" button stuck on "Creating room..." and navigated to /game/lobby instead of actual room
+  Root Cause: Event data structure mismatch + duplicate room_created events
+  Fix: Corrected event data access and added duplicate filtering
+  // Before
+  const data = event.detail;
+  const roomId = data.room_id; // undefined - wrong path
+
+  // After
+  const eventData = event.detail;
+  const roomData = eventData.data; // NetworkService wraps data here
+  const roomId = roomData.room_id; // correct path
+
+  // Added filtering to prevent duplicate events
+  if (roomData.room_id && roomData.room_id !== 'lobby' && isCreatingRoom) {
+    setIsCreatingRoom(false);
+    app.goToRoom(roomData.room_id);
+    networkService.disconnectFromRoom('lobby'); // Prevent connection conflicts
+    navigate(`/room/${roomData.room_id}`);
+  }
+
+  Key Pattern: NetworkService wraps backend data in event.detail.data, not directly in event.detail
