@@ -145,7 +145,7 @@ export function TurnUI({
                       {play.cards.map((card, cardIndex) => (
                         <GamePiece
                           key={`${play.player}-${cardIndex}`}
-                          card={card}
+                          piece={card}
                           size="small"
                           className="opacity-90"
                         />
@@ -191,7 +191,7 @@ export function TurnUI({
               {myHand.map((card, index) => (
                 <GamePiece
                   key={`${card.suit}-${card.value}-${index}`}
-                  card={card}
+                  piece={card}
                   size="medium"
                   isSelected={selectedIndices.includes(index)}
                   isSelectable={isMyTurn}
@@ -269,7 +269,7 @@ export function TurnUI({
                           {selectedCards.map((card, index) => (
                             <GamePiece
                               key={`selected-${index}`}
-                              card={card}
+                              piece={card}
                               size="small"
                               className="ring-1 ring-blue-400"
                             />
@@ -322,7 +322,7 @@ export function TurnUI({
                         {selectedCards.map((card, index) => (
                           <GamePiece
                             key={`confirm-${index}`}
-                            card={card}
+                            piece={card}
                             size="medium"
                             className="ring-2 ring-green-400"
                           />

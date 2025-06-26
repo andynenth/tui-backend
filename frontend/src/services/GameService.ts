@@ -164,7 +164,7 @@ export class GameService extends EventTarget {
       }
     }
 
-    this.sendAction('declare', { value });
+    this.sendAction('declare', { value, player_name: this.state.playerName });
   }
 
   /**
@@ -471,6 +471,7 @@ export class GameService extends EventTarget {
     console.log(`🔄 PHASE_CHANGE_DEBUG: Phase: ${data.phase}`);
     console.log(`🔄 PHASE_CHANGE_DEBUG: Data players:`, data.players);
     console.log(`🔄 PHASE_CHANGE_DEBUG: Data phase_data:`, data.phase_data);
+    console.log(`🔄 PHASE_CHANGE_DEBUG: First player raw:`, Object.keys(data.players)[0], data.players[Object.keys(data.players)[0]]);
     
     // Extract my hand from players data (sent by backend)
     if (data.players && state.playerName && data.players[state.playerName]) {
@@ -494,6 +495,18 @@ export class GameService extends EventTarget {
           return { color: 'UNKNOWN', point: 0, kind: 'UNKNOWN', name: pieceStr, displayName: pieceStr };
         });
       }
+    }
+    
+    // Convert players dictionary to array for UI components
+    if (data.players) {
+      newState.players = Object.entries(data.players).map(([playerName, playerData]: [string, any]) => ({
+        name: playerName, // Use the key as the name
+        is_bot: playerData.is_bot || false,
+        is_host: playerData.is_host || false,
+        zero_declares_in_a_row: playerData.zero_declares_in_a_row || 0
+      }));
+      console.log(`🔄 PHASE_CHANGE_DEBUG: Converted players array:`, newState.players);
+      console.log(`🔄 PHASE_CHANGE_DEBUG: Sample player object:`, newState.players[0]);
     }
     
     // Extract phase-specific data
@@ -626,6 +639,7 @@ export class GameService extends EventTarget {
    * Handle declare event
    */
   private handleDeclare(state: GameState, data: any): GameState {
+    console.log(`🎯 DECLARE_DEBUG: RECEIVED declare event!`, data);
     const newDeclarations = {
       ...state.declarations,
       [data.player]: data.value
@@ -675,14 +689,29 @@ export class GameService extends EventTarget {
    * Handle play event
    */
   private handlePlay(state: GameState, data: any): GameState {
+    console.log(`🎲 PLAY_DEBUG: Received play event!`, data);
+    console.log(`🎲 PLAY_DEBUG: Pieces data:`, data.pieces);
+    
     const newTurnPlays = [...state.currentTurnPlays];
+    
+    // Transform backend data structure to frontend format
+    const playData = {
+      player: data.player,
+      cards: data.pieces || [], // Backend sends 'pieces', frontend expects 'cards'
+      isValid: data.is_valid,
+      playType: data.play_type,
+      totalValue: data.play_value || 0
+    };
+    
+    console.log(`🎲 PLAY_DEBUG: Transformed play data:`, playData);
+    console.log(`🎲 PLAY_DEBUG: Cards array:`, playData.cards);
     
     // Add or update player's play
     const existingIndex = newTurnPlays.findIndex(play => play.player === data.player);
     if (existingIndex >= 0) {
-      newTurnPlays[existingIndex] = data;
+      newTurnPlays[existingIndex] = playData;
     } else {
-      newTurnPlays.push(data);
+      newTurnPlays.push(playData);
     }
     
     // Set required piece count from first player

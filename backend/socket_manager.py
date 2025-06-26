@@ -80,6 +80,7 @@ class SocketManager:
         }
         
         print(f"DEBUG_WS: Starting enhanced broadcast queue processor for room {room_id}.")
+        print(f"DEBUG_WS_QUEUE_START: Room {room_id} processor task starting, queue exists: {room_id in self.broadcast_queues}")
         
         while True:
             try:
@@ -87,6 +88,7 @@ class SocketManager:
                 # ✅ FIXED: Reduce timeout for lobby to make it more responsive
                 timeout = 0.5 if room_id == "lobby" else 1.0
                 message = await asyncio.wait_for(queue.get(), timeout=timeout)
+                print(f"DEBUG_WS_QUEUE: Room {room_id} got message: {message['event']}")
                 
                 event = message["event"]
                 data = message["data"]
@@ -97,8 +99,20 @@ class SocketManager:
                     active_websockets = list(self.room_connections.get(room_id, set()))
 
                 if not active_websockets:
-                    print(f"DEBUG_WS: No active connections found for room {room_id} during queue processing.")
-                    continue
+                    print(f"DEBUG_WS: No active connections found for room {room_id} during queue processing. Waiting for reconnection...")
+                    # Wait for connections to return instead of re-queueing
+                    await asyncio.sleep(0.5)  # Wait for potential reconnection
+                    
+                    # Check again for connections
+                    async with self.lock:
+                        active_websockets = list(self.room_connections.get(room_id, set()))
+                    
+                    if not active_websockets:
+                        print(f"DEBUG_WS: Still no connections for room {room_id}. Re-queueing message and continuing to wait.")
+                        await self.broadcast_queues[room_id].put(message)
+                        continue
+                    else:
+                        print(f"DEBUG_WS: Connection restored for room {room_id}! Processing queued message.")
 
                 print(f"DEBUG_WS: Broadcasting event '{event}' (op_id: {operation_id}) to {len(active_websockets)} clients in room {room_id}.")
 
@@ -119,6 +133,16 @@ class SocketManager:
                         print(f"DEBUG_WS: Successfully sent '{event}' to a client in room {room_id}.")
                     except Exception as e:
                         print(f"DEBUG_WS: Error sending to client in room {room_id}: {e}")
+                        if "not JSON serializable" in str(e):
+                            print(f"DEBUG_WS: JSON error data keys: {list(data.keys()) if isinstance(data, dict) else type(data)}")
+                            # Try to identify which field has the issue
+                            if isinstance(data, dict):
+                                for key, value in data.items():
+                                    try:
+                                        import json
+                                        json.dumps(value)
+                                    except:
+                                        print(f"DEBUG_WS: Non-serializable field '{key}': {type(value)}")
                         failed_websockets.append(ws)
 
                 # Clean up failed connections
@@ -138,15 +162,21 @@ class SocketManager:
                 stats["last_failure_count"] = len(failed_websockets)
                 
             except asyncio.TimeoutError:
+                # Only log timeouts for debugging specific issues, not normal operation
                 # For lobby, be more aggressive about keeping the processor alive
                 if room_id == "lobby":
                     continue  # Keep processing for lobby even if no messages
                     
                 # Check if we should continue processing
                 async with self.lock:
-                    if room_id not in self.room_connections or not self.room_connections[room_id]:
-                        print(f"DEBUG_WS: No connections for room {room_id}, stopping queue processor.")
+                    connections_exist = room_id in self.room_connections and bool(self.room_connections[room_id])
+                    queue_has_messages = queue.qsize() > 0
+                    
+                    if not connections_exist and not queue_has_messages:
+                        print(f"DEBUG_WS: No connections and no messages for room {room_id}, stopping queue processor.")
                         break
+                    elif not connections_exist:
+                        print(f"DEBUG_WS: No connections but {queue.qsize()} messages queued for room {room_id}, continuing processor")
                 continue
             except Exception as e:
                 print(f"DEBUG_WS: Queue processor error in room {room_id}: {e}")
@@ -231,8 +261,19 @@ class SocketManager:
             
             print(f"DEBUG_WS: Unregistered connection for room {room_id}. Remaining connections: {len(self.room_connections[room_id])}")
             
-            # Clean up empty rooms
+            # Clean up empty rooms - BUT PROTECT ACTIVE GAMES
             if not self.room_connections[room_id]:
+                # Check if room has an active game before cleanup
+                from backend.shared_instances import shared_room_manager
+                room = shared_room_manager.get_room(room_id)
+                
+                if room and room.game and not room.game._is_game_over():
+                    print(f"DEBUG_WS: Room {room_id} has active game - keeping broadcast queue alive")
+                    # Keep the room in connections dict but empty, so queue stays alive
+                    # Don't delete the broadcast task
+                    return
+                
+                # Safe to clean up - no active game
                 del self.room_connections[room_id]
                 if room_id in self.broadcast_tasks:
                     self.broadcast_tasks[room_id].cancel()

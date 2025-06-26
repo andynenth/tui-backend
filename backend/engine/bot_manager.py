@@ -436,7 +436,7 @@ class GameBotHandler:
                 action = GameAction(
                     player_name=bot.name,
                     action_type=ActionType.PLAY_PIECES,
-                    payload={"piece_indices": indices},
+                    payload={"pieces": selected},  # Send actual piece objects, not indices
                     is_bot=True
                 )
                 result = await self.state_machine.handle_action(action)

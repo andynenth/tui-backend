@@ -514,7 +514,7 @@ async def websocket_endpoint(websocket: WebSocket, room_id: str):
                 elif event_name == "declare":
                     # Handle player declaration
                     player_name = event_data.get("player_name")
-                    value = event_data.get("declaration")
+                    value = event_data.get("value")  # Fixed: Frontend sends "value", not "declaration"
                     
                     if not player_name or value is None:
                         await registered_ws.send_json({
@@ -543,10 +543,7 @@ async def websocket_endpoint(websocket: WebSocket, room_id: str):
                         result = await room.game_state_machine.handle_action(action)
                         
                         if result.get("success"):
-                            await registered_ws.send_json({
-                                "event": "declare_success",
-                                "data": {"player_name": player_name, "value": value}
-                            })
+                            # Don't send declare_success - let state machine broadcast 'declare' event like bots
                             print(f"✅ Declaration queued: {player_name} -> {value}")
                         else:
                             await registered_ws.send_json({
@@ -582,12 +579,23 @@ async def websocket_endpoint(websocket: WebSocket, room_id: str):
                             })
                             continue
                             
-                        # Create GameAction for piece playing (same as REST endpoint)
+                        # Create GameAction for piece playing (convert indices to pieces)
                         from engine.state_machine.core import GameAction, ActionType
+                        
+                        # Convert indices to actual pieces
+                        pieces = []
+                        if hasattr(room.game, 'players'):
+                            # Find the player and get pieces from their hand by indices
+                            player = next((p for p in room.game.players if getattr(p, 'name', str(p)) == player_name), None)
+                            if player and hasattr(player, 'hand'):
+                                for idx in indices:
+                                    if 0 <= idx < len(player.hand):
+                                        pieces.append(player.hand[idx])
+                        
                         action = GameAction(
                             player_name=player_name,
                             action_type=ActionType.PLAY_PIECES,
-                            payload={"piece_indices": indices}
+                            payload={"pieces": pieces}  # Send actual pieces, not indices
                         )
                         
                         result = await room.game_state_machine.handle_action(action)

@@ -349,11 +349,20 @@ async def play_turn(
 
         print(f"🎮 {player_name} playing pieces at indices: {indices}")
 
-        # Create GameAction for piece playing
+        # Create GameAction for piece playing (convert indices to pieces)
+        pieces = []
+        if hasattr(room.game, 'players'):
+            # Find the player and get pieces from their hand by indices
+            player = next((p for p in room.game.players if getattr(p, 'name', str(p)) == player_name), None)
+            if player and hasattr(player, 'hand'):
+                for idx in indices:
+                    if 0 <= idx < len(player.hand):
+                        pieces.append(player.hand[idx])
+        
         action = GameAction(
             player_name=player_name,
             action_type=ActionType.PLAY_PIECES,
-            payload={"piece_indices": indices}
+            payload={"pieces": pieces}  # Send actual pieces, not indices
         )
         
         # Send action to state machine
