@@ -27,7 +27,7 @@ const LobbyPage = () => {
       setIsConnecting(true);
       try {
         // Connect to lobby WebSocket
-        await networkService.connect('lobby');
+        await networkService.connectToRoom('lobby');
         setIsConnected(true);
         setConnectionError(null);
       } catch (error) {
@@ -45,24 +45,35 @@ const LobbyPage = () => {
 
     // Room list updates
     const handleRoomListUpdate = (event) => {
-      const data = event.detail;
-      console.log('Received room_list_update:', data);
-      setRooms(data.rooms || []);
+      const eventData = event.detail;
+      const roomListData = eventData.data; // The actual room_list_update data from backend
+      console.log('Received room_list_update:', eventData);
+      setRooms(roomListData.rooms || []);
     };
     networkService.addEventListener('room_list_update', handleRoomListUpdate);
     unsubscribers.push(() => networkService.removeEventListener('room_list_update', handleRoomListUpdate));
 
     // Room created successfully
     const handleRoomCreated = (event) => {
-      const data = event.detail;
-      console.log('Received room_created:', data);
-      console.log('🟢 Navigation: room_id =', data.room_id, 'navigating to:', `/room/${data.room_id}`);
+      const eventData = event.detail;
+      const roomData = eventData.data; // The actual room_created data from backend
+      console.log('Received room_created:', eventData);
+      console.log('🟢 Navigation: room_id =', roomData.room_id, 'navigating to:', `/room/${roomData.room_id}`);
       
-      // Only navigate if this is the direct response (has success field), not lobby broadcast
-      if (data.success === true) {
+      // Only navigate if this is a real room ID (not 'lobby') and we're currently creating a room
+      if (roomData.room_id && roomData.room_id !== 'lobby' && isCreatingRoom) {
+        console.log('✅ Navigating to new room:', roomData.room_id);
         setIsCreatingRoom(false);
-        app.goToRoom(data.room_id);
-        navigate(`/room/${data.room_id}`);
+        app.goToRoom(roomData.room_id);
+        // Disconnect from lobby before navigating to room
+        networkService.disconnectFromRoom('lobby');
+        navigate(`/room/${roomData.room_id}`);
+      } else {
+        console.log('⏭️ Ignoring room_created event:', { 
+          roomId: roomData.room_id, 
+          isCreatingRoom, 
+          reason: roomData.room_id === 'lobby' ? 'lobby event' : 'not creating room'
+        });
       }
     };
     networkService.addEventListener('room_created', handleRoomCreated);
@@ -70,22 +81,26 @@ const LobbyPage = () => {
 
     // Room joined successfully
     const handleRoomJoined = (event) => {
-      const data = event.detail;
+      const eventData = event.detail;
+      const joinData = eventData.data; // The actual room_joined data from backend
       setIsJoiningRoom(false);
       setShowJoinModal(false);
-      app.goToRoom(data.room_id);
-      navigate(`/room/${data.room_id}`);
+      if (joinData.room_id) {
+        app.goToRoom(joinData.room_id);
+        navigate(`/room/${joinData.room_id}`);
+      }
     };
     networkService.addEventListener('room_joined', handleRoomJoined);
     unsubscribers.push(() => networkService.removeEventListener('room_joined', handleRoomJoined));
 
     // Error handling
     const handleError = (event) => {
-      const data = event.detail;
+      const eventData = event.detail;
+      const errorData = eventData.data; // The actual error data from backend
       setIsCreatingRoom(false);
       setIsJoiningRoom(false);
-      console.error('Lobby error:', data);
-      alert(data.message || 'An error occurred');
+      console.error('Lobby error:', eventData);
+      alert(errorData?.message || 'An error occurred');
     };
     networkService.addEventListener('error', handleError);
     unsubscribers.push(() => networkService.removeEventListener('error', handleError));
@@ -99,7 +114,7 @@ const LobbyPage = () => {
     return () => {
       unsubscribers.forEach(unsub => unsub());
     };
-  }, [isConnected]);
+  }, [isConnected, isCreatingRoom, app, navigate]);
 
   // Refresh room list
   const refreshRooms = () => {
@@ -111,9 +126,13 @@ const LobbyPage = () => {
   // Create new room
   const createRoom = () => {
     setIsCreatingRoom(true);
-    networkService.send('lobby', 'create_room', {
-      player_name: app.playerName
-    });
+    
+    // Add delay to ensure connection stability before sending
+    setTimeout(() => {
+      networkService.send('lobby', 'create_room', {
+        player_name: app.playerName
+      });
+    }, 100);
   };
 
   // Join room by ID
@@ -136,7 +155,10 @@ const LobbyPage = () => {
   };
 
   const getRoomStatusText = (room) => {
-    const playerCount = room.occupied_slots || 0;
+    // Use players array if available, fallback to occupied_slots
+    const playerCount = room.players 
+      ? room.players.filter(player => player !== null).length 
+      : (room.occupied_slots || 0);
     const maxPlayers = room.total_slots || 4;
     
     if (room.started || room.status === 'playing') {
@@ -151,7 +173,13 @@ const LobbyPage = () => {
   };
 
   const canJoinRoom = (room) => {
-    return !room.started && (room.occupied_slots || 0) < (room.total_slots || 4);
+    // Use players array if available, fallback to occupied_slots
+    const playerCount = room.players 
+      ? room.players.filter(player => player !== null).length 
+      : (room.occupied_slots || 0);
+    const maxPlayers = room.total_slots || 4;
+    
+    return !room.started && playerCount < maxPlayers;
   };
 
   return (
@@ -241,7 +269,7 @@ const LobbyPage = () => {
                         
                         {room.players && room.players.length > 0 && (
                           <div className="mt-2 flex flex-wrap gap-2">
-                            {room.players.map((player, index) => (
+                            {room.players.filter(player => player !== null).map((player, index) => (
                               <span
                                 key={index}
                                 className="inline-flex items-center px-2 py-1 text-xs font-medium bg-blue-100 text-blue-800 rounded-full"

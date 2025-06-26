@@ -169,10 +169,10 @@ class Room:
                 if self.started:
                     raise ValueError("Game already started")
                 
-                # ตรวจสอบว่าทุก slot มีคนหรือ bot
+                # Validate all slots are filled
                 empty_slots = [i for i, p in enumerate(self.players) if p is None]
                 if empty_slots:
-                    raise ValueError(f"Slots {empty_slots} are empty. All slots must be filled before starting")
+                    raise ValueError(f"Cannot start game: slots {empty_slots} are empty. All slots must be filled.")
                 
                 # สร้าง Game instance
                 self.game = Game(self.players)
@@ -317,6 +317,7 @@ class Room:
                 # Create a dictionary mapping slot names (P1, P2, etc.) to their info.
                 f"P{i+1}": slot_info(p, i) for i, p in enumerate(self.players)
             },
+            "players": [slot_info(p, i) for i, p in enumerate(self.players)],  # ✅ Added players array for frontend
             "occupied_slots": self.get_occupied_slots(),  # ✅ Added occupied slots count.
             "total_slots": self.get_total_slots()         # ✅ Added total slots count.
         }
@@ -411,8 +412,10 @@ class Room:
         if self.started:
             raise ValueError("Game already started")
         
-        if any(p is None for p in self.players):
-            raise ValueError("All slots must be filled before starting")
+        # Validate all slots are filled
+        empty_slots = [i for i, p in enumerate(self.players) if p is None]
+        if empty_slots:
+            raise ValueError(f"Cannot start game: slots {empty_slots} are empty. All slots must be filled.")
         
         self.game = Game(self.players)
         self.started = True
