@@ -6,9 +6,6 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 Liap Tui is a real-time multiplayer board game inspired by traditional Chinese-Thai gameplay. The project uses a Python FastAPI backend with a JavaScript/PixiJS frontend, packaged in a single Docker container.
 
-**Current Status**: Week 3 - Integration Phase  
-**Week 2 Complete**: Full state machine architecture implemented and tested (78+ tests passing)  
-**Current Focus**: Integrating state machine with existing routes, bots, and WebSocket handlers
 
 ## Key Architecture
 
@@ -49,25 +46,6 @@ docker-compose -f docker-compose.dev.yml up backend
 cd frontend && npm run dev
 ```
 
-### Testing (Week 2 Complete - All Passing)
-```bash
-# State machine verification (integration test)
-cd backend && python test_full_game_flow.py
-
-# Run all backend tests (78+ tests)
-cd backend && python -m pytest tests/ -v
-
-# Individual state tests
-cd backend && python -m pytest tests/test_preparation_state.py -v
-cd backend && python -m pytest tests/test_turn_state.py -v  
-cd backend && python -m pytest tests/test_scoring_state.py -v
-
-# Quick state machine test
-cd backend && python run_tests.py
-
-# Frontend tests
-cd frontend && npm test
-```
 
 ### Building
 ```bash
@@ -97,16 +75,8 @@ cd frontend && npm run lint:fix  # Auto-fix issues
   - `cd frontend && npm run lint` to catch constructor.name and type issues
   - `source venv/bin/activate && cd backend && pylint [files]` to catch import/attribute errors
   - `cd frontend && npm run type-check` for TypeScript validation
-- **CLAUDE REMINDER**: Use these tools especially when debugging issues similar to those in JOURNEY.md
-- **🐛 DEBUGGING REMINDER**: When encountering bugs, ALWAYS check `JOURNEY.md` first! It contains:
-  - Previously solved bugs with root causes and fixes
-  - Common bug patterns and debugging templates  
-  - Step-by-step troubleshooting guides
-  - Testing checklists and debug commands
-  - This can save significant debugging time by reusing proven solutions
 
 ## Game State Management ✅ PRODUCTION READY
-
 The game uses a sophisticated state machine (`GameStateMachine`) **FULLY IMPLEMENTED** that:  
 - Processes actions asynchronously through an action queue ✅ TESTED
 - Validates actions based on current game phase ✅ TESTED  
@@ -117,8 +87,6 @@ Key classes **ALL WORKING**:
 - `GameAction`: Represents player/system actions with payloads
 - `GamePhase`: Enum defining the four main game phases  
 - `ActionType`: All possible action types in the game
-
-**Week 3 Focus**: Integration with existing routes (`backend/api/routes/routes.py`) and bot system (`backend/engine/bot_manager.py`)
 
 ## Game Rules Summary
 
@@ -133,24 +101,8 @@ Key classes **ALL WORKING**:
 
 - The project uses both `requirements.txt` and `pyproject.toml` (Poetry) for Python dependencies
 - Frontend uses ESBuild for fast compilation and bundling  
-- **State machine is COMPLETE** - 78+ tests passing, full integration test working
-- **Week 3 Integration Targets**: Replace `if phase ==` checks in routes with state machine validation
 - WebSocket communication follows a specific protocol defined in the API layer **[INTEGRATION TARGET]**
 - The `start.sh` script sets up the full development environment automatically
-
-## Week 3 Integration Strategy
-
-**Current Phase**: Integrating complete state machine with existing systems
-**Priority**: 
-1. `backend/api/routes/routes.py` - Replace manual phase checks
-2. `backend/engine/bot_manager.py` - Bot decision making integration  
-3. WebSocket handlers - Real-time state synchronization
-4. Performance testing - Multi-game concurrent testing
-
-**Key Patterns Applied**:
-- State Pattern: Each phase = separate state class ✅ PROVEN
-- Action Queue: Sequential processing prevents race conditions ✅ PROVEN  
-- Single Responsibility: Each state handles only its phase logic ✅ PROVEN
 
 ## File Locations
 

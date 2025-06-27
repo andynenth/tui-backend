@@ -295,28 +295,56 @@ class GameBotHandler:
                 verbose=True
             )
             
-            # Get indices
+            # Get indices and play type
             indices = self._get_piece_indices(bot.hand, selected)
+            from engine.rules import get_play_type
+            play_type = get_play_type(selected) if selected else "UNKNOWN"
             
             # Make play via state machine
             if self.state_machine:
                 action = GameAction(
                     player_name=bot.name,
                     action_type=ActionType.PLAY_PIECES,
-                    payload={"piece_indices": indices},
+                    payload={"pieces": selected},  # Send actual piece objects, not indices
                     is_bot=True
                 )
                 result = await self.state_machine.handle_action(action)
+                
+                # Wait for action to be fully processed by state machine
+                print(f"🎯 BOT_PLAY_DEBUG: Waiting for state machine to process action...")
+                
+                # The state machine processes actions in its main loop every 0.1s
+                # Wait for at least one full processing cycle plus some buffer
+                await asyncio.sleep(0.15)
+                
+                # Get the updated phase data (should be immediate now)
+                phase_data = self.state_machine.get_phase_data()
+                current_player = phase_data.get("current_player")
+                print(f"🎯 BOT_PLAY_DEBUG: Action processed, current_player = {current_player}")
+                print(f"🎯 BOT_PLAY_DEBUG: Final phase data: {phase_data}")
+                
+                # Extract turn state information
+                result = {
+                    "status": "play_accepted" if result.get("success") else "failed",
+                    "is_valid": True,
+                    "play_type": play_type,  # Use actual play type from AI
+                    "next_player": phase_data.get("current_player"),
+                    "required_count": phase_data.get("required_piece_count"),
+                    "turn_complete": phase_data.get("turn_complete", False)
+                }
             else:
                 # Fallback to direct game call
                 result = self.game.play_turn(bot.name, indices)
             
-            # Broadcast play
+            # Broadcast play with enhanced turn state
             await broadcast(self.room_id, "play", {
                 "player": bot.name,
                 "pieces": [str(p) for p in selected],
                 "valid": result.get("is_valid", True),
-                "play_type": result.get("play_type", "UNKNOWN")
+                "play_type": result.get("play_type", "UNKNOWN"),
+                "next_player": result.get("next_player"),
+                "required_count": result.get("required_count"),
+                "turn_complete": result.get("turn_complete", False)
             })
             
             # Handle turn resolution if complete
@@ -429,7 +457,12 @@ class GameBotHandler:
             selected = ai.choose_best_play(bot.hand, required_count=None, verbose=True)
             indices = self._get_piece_indices(bot.hand, selected)
             
+            # Get the play type for the selected pieces
+            from engine.rules import get_play_type
+            play_type = get_play_type(selected) if selected else "UNKNOWN"
+            
             print(f"🤖 Bot {bot.name} will play {len(selected)} pieces: {[str(p) for p in selected]}")
+            print(f"🎯 BOT_MANAGER_DEBUG: state_machine exists: {self.state_machine is not None}")
             
             # Make the play via state machine
             if self.state_machine:
@@ -440,17 +473,45 @@ class GameBotHandler:
                     is_bot=True
                 )
                 result = await self.state_machine.handle_action(action)
+                print(f"🎯 BOT_PLAY_DEBUG: State machine result: {result}")
+                
+                # Wait for action to be fully processed by state machine
+                print(f"🎯 BOT_PLAY_DEBUG: Waiting for state machine to process action...")
+                
+                # The state machine processes actions in its main loop every 0.1s
+                # Wait for at least one full processing cycle plus some buffer
+                await asyncio.sleep(0.15)
+                
+                # Get the updated phase data (should be immediate now)
+                phase_data = self.state_machine.get_phase_data()
+                current_player = phase_data.get("current_player")
+                print(f"🎯 BOT_PLAY_DEBUG: Action processed, current_player = {current_player}")
+                print(f"🎯 BOT_PLAY_DEBUG: Final phase data: {phase_data}")
+                
+                # Extract turn state information
+                result = {
+                    "status": "play_accepted" if result.get("success") else "failed",
+                    "is_valid": True,
+                    "play_type": play_type,  # Use actual play type from AI
+                    "next_player": phase_data.get("current_player"),
+                    "required_count": phase_data.get("required_piece_count"),
+                    "turn_complete": phase_data.get("turn_complete", False)
+                }
             else:
                 # Fallback to direct game call
                 result = self.game.play_turn(bot.name, indices)
             
-            # Broadcast the play
+            # Broadcast the play with updated turn state
             await broadcast(self.room_id, "play", {
                 "player": bot.name,
                 "pieces": [str(p) for p in selected],
                 "valid": result.get("is_valid", True),
-                "play_type": result.get("play_type", "UNKNOWN")
+                "play_type": result.get("play_type", "UNKNOWN"),
+                "next_player": result.get("next_player"),  # Include updated current player
+                "required_count": result.get("required_count"),
+                "turn_complete": result.get("turn_complete", False)
             })
+            print(f"🎯 BOT_PLAY_DEBUG: Broadcast data - next_player: {result.get('next_player')}, turn_complete: {result.get('turn_complete')}")
             
             print(f"✅ Bot {bot.name} played, status: {result.get('status')}")
             

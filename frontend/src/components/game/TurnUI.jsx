@@ -43,17 +43,22 @@ export function TurnUI({
   const selectedCards = selectedIndices.map(index => myHand[index]);
   
   const handleCardSelect = (index) => {
+    console.log(`🎯 TURN_UI: Card clicked at index ${index}, isMyTurn: ${isMyTurn}`);
     setSelectedIndices(prev => {
       if (prev.includes(index)) {
+        console.log(`🎯 TURN_UI: Deselecting card ${index}`);
         return prev.filter(i => i !== index);
       } else {
         const newSelection = [...prev, index];
+        console.log(`🎯 TURN_UI: Selecting card ${index}, new selection:`, newSelection);
         // If required count is set, limit selection
         if (requiredPieceCount !== null && newSelection.length > requiredPieceCount) {
+          console.log(`🎯 TURN_UI: Limited to required count ${requiredPieceCount}, replacing selection`);
           return [index]; // Replace with single selection
         }
         // First player can play 1-6 pieces
         if (isFirstPlayer && newSelection.length > 6) {
+          console.log(`🎯 TURN_UI: Too many cards selected for first player, keeping previous selection`);
           return prev; // Don't allow more than 6
         }
         return newSelection;
@@ -194,8 +199,8 @@ export function TurnUI({
                   piece={card}
                   size="medium"
                   isSelected={selectedIndices.includes(index)}
-                  isSelectable={isMyTurn}
-                  onClick={() => isMyTurn && handleCardSelect(index)}
+                  isPlayable={isMyTurn}
+                  onSelect={(piece) => isMyTurn && handleCardSelect(index)}
                   className={`
                     transform transition-all duration-200
                     ${isMyTurn ? 'hover:scale-105 cursor-pointer' : 'cursor-not-allowed opacity-75'}

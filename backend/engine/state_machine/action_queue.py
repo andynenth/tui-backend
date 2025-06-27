@@ -26,6 +26,7 @@ class ActionQueue:
         action.sequence_id = self.sequence_counter
         self.sequence_counter += 1
         await self.queue.put(action)
+        print(f"🔍 ACTION_QUEUE_DEBUG: Queued action: {action.action_type.value} from {action.player_name} (queue size: {self.queue.qsize()})")
         self.logger.debug(f"Queued action: {action.action_type.value} from {action.player_name}")
         
     async def process_actions(self) -> List[GameAction]:
@@ -39,9 +40,11 @@ class ActionQueue:
             processed_actions = []
             try:
                 # Process all currently queued actions
+                print(f"🔍 ACTION_QUEUE_DEBUG: Processing actions, queue size: {self.queue.qsize()}")
                 while not self.queue.empty():
                     action = await self.queue.get()
                     processed_actions.append(action)
+                    print(f"🔍 ACTION_QUEUE_DEBUG: Dequeued action: {action.action_type.value} from {action.player_name}")
                     self.logger.debug(f"Processing action: {action.action_type.value}")
                     
                     # Store action in EventStore for persistence and replay
