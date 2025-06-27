@@ -3,6 +3,7 @@
 from typing import Dict, Any, Optional, List, Set
 from ..core import GamePhase, ActionType, GameAction
 from ..base_state import GameState
+import asyncio
 
 
 class TurnState(GameState):
@@ -149,57 +150,53 @@ class TurnState(GameState):
     
     async def _start_new_turn(self) -> None:
         """Start a new turn with current starter"""
-        print(f"🎯 NEW_TURN_DEBUG: _start_new_turn() called with starter: {self.current_turn_starter}")
         game = self.state_machine.game
+        
+        # Increment turn number for new turn
+        game.turn_number += 1
+        print(f"🎯 NEW_TURN_DEBUG: Turn number incremented to: {game.turn_number}")
         
         # Get turn order starting from current starter
         if hasattr(game, 'get_player_order_from'):
             # Convert Player objects to strings
             player_objects = game.get_player_order_from(self.current_turn_starter)
             self.turn_order = [getattr(p, 'name', str(p)) for p in player_objects]
-            print(f"🎯 NEW_TURN_DEBUG: Got turn order from game.get_player_order_from: {self.turn_order}")
         else:
             # Fallback: create order from players list (ensure strings)
             players = getattr(game, 'players', [])
             player_names = [getattr(p, 'name', str(p)) for p in players]
-            print(f"🎯 NEW_TURN_DEBUG: Using fallback, player_names: {player_names}")
             if self.current_turn_starter in player_names:
                 start_idx = player_names.index(self.current_turn_starter)
                 self.turn_order = player_names[start_idx:] + player_names[:start_idx]
-                print(f"🎯 NEW_TURN_DEBUG: Reordered from index {start_idx}: {self.turn_order}")
             else:
                 self.turn_order = player_names
-                print(f"🎯 NEW_TURN_DEBUG: Starter not found, using original order: {self.turn_order}")
         
         # Reset turn state
-        print(f"🎯 NEW_TURN_DEBUG: Resetting turn state")
         self.turn_plays.clear()
         self.required_piece_count = None
         self.current_player_index = 0
         self.turn_complete = False
         self.winner = None
         
-        # Update phase data for external access
-        self.phase_data.update({
+        # 🚀 ENTERPRISE: Use automatic broadcasting system instead of manual phase_data updates
+        current_turn_number = game.turn_number
+        
+        print(f"🔢 TURN_NUMBER_DEBUG: Backend game.turn_number = {current_turn_number}")
+        
+        await self.update_phase_data({
             'current_turn_starter': self.current_turn_starter,
             'current_player': self.turn_order[0] if self.turn_order else None,
             'turn_order': self.turn_order.copy(),
             'required_piece_count': self.required_piece_count,
             'turn_plays': {},
-            'turn_complete': False
-        })
-        print(f"🎯 NEW_TURN_DEBUG: Updated phase data - current_player: {self.turn_order[0] if self.turn_order else None}")
+            'turn_complete': False,
+            'current_turn_number': current_turn_number
+        }, f"New turn {current_turn_number} started with starter {self.current_turn_starter}")
         
         self.logger.info(f"🎯 New turn started - order: {self.turn_order}")
-        print(f"🎯 NEW_TURN_DEBUG: _start_new_turn() completed")
         
-        # Notify bot manager about new turn
-        if self.turn_order and len(self.turn_order) > 0:
-            starter = self.turn_order[0]
-            print(f"🎯 NEW_TURN_DEBUG: Notifying bot manager about new turn starter: {starter}")
-            await self._notify_bot_manager_new_turn(starter)
-        else:
-            print(f"🎯 NEW_TURN_DEBUG: No turn order available, cannot notify bot manager")
+        # 🚀 ENTERPRISE: Bot manager notification handled by GameStateMachine to prevent duplicates
+        # Removed duplicate _notify_bot_manager_new_turn() call
     
     def _get_current_player(self) -> Optional[str]:
         """Get the player whose turn it is to play"""
@@ -295,18 +292,20 @@ class TurnState(GameState):
             print(f"🎯 TURN_STATE_DEBUG: Turn complete! Calling _complete_turn()")
             await self._complete_turn()
         
-        # Update phase data
-        print(f"🎯 TURN_STATE_DEBUG: Updating phase data...")
-        self.phase_data.update({
+        # 🚀 ENTERPRISE: Use automatic broadcasting system
+        game = self.state_machine.game
+        current_turn_number = game.turn_number
+        
+        await self.update_phase_data({
             'current_player': self._get_current_player(),
             'required_piece_count': self.required_piece_count,
             'turn_plays': self.turn_plays.copy(),
-            'turn_complete': self.turn_complete
-        })
-        print(f"🎯 TURN_STATE_DEBUG: Phase data updated - current_player: {self.phase_data.get('current_player')}")
+            'turn_complete': self.turn_complete,
+            'current_turn_number': current_turn_number
+        }, f"Player {action.player_name} played {piece_count} pieces")
         
-        # Broadcast the play event with correct state
-        await self._broadcast_play_event(action.player_name, pieces, piece_count)
+        # 🚀 ENTERPRISE: Use centralized custom event broadcasting
+        await self._broadcast_play_event_enterprise(action.player_name, pieces, piece_count)
         
         # Notify bot manager about the play to trigger next bot
         await self._notify_bot_manager_play(action.player_name)
@@ -345,14 +344,14 @@ class TurnState(GameState):
             self.logger.info("🤝 No winner this turn")
             print(f"🎯 TURN_COMPLETE_DEBUG: No winner determined")
         
-        # Update phase data with final results
-        self.phase_data.update({
+        # 🚀 ENTERPRISE: Use automatic broadcasting for turn completion
+        await self.update_phase_data({
             'turn_complete': True,
             'winner': self.winner,
             'piles_won': self.required_piece_count if self.winner else 0,
             'turn_plays': self.turn_plays.copy(),  # Preserve the completed turn data
             'next_turn_starter': self.winner or self.current_turn_starter
-        })
+        }, f"Turn completed - winner: {self.winner}")
         print(f"🎯 TURN_COMPLETE_DEBUG: Phase data updated with turn completion")
         
         await self._process_turn_completion()
@@ -438,6 +437,9 @@ class TurnState(GameState):
                 if len(player.hand) > 0:
                     all_hands_empty = False
         
+        # 🚀 ENTERPRISE: Broadcast turn completion using centralized system
+        await self._broadcast_turn_completion_enterprise()
+        
         if all_hands_empty:
             self.logger.info("🏁 All hands are now empty - round complete")
             # The main process loop will handle the actual transition
@@ -449,8 +451,15 @@ class TurnState(GameState):
                 self._update_turn_order_for_new_starter(self.winner)
                 self.logger.info(f"🎯 Next turn starter: {self.winner}")
                 
-                # Try to start next turn immediately
-                await self.start_next_turn_if_needed()
+                # Auto-start next turn after 1.5 second delay
+                self.logger.info(f"🎯 Turn complete - auto-starting next turn in 1.5 seconds")
+                await asyncio.sleep(1.5)
+                turn_started = await self.start_next_turn_if_needed()
+                
+                # 🚀 ENTERPRISE: New turn auto-start automatically broadcasts via update_phase_data
+                # No manual broadcast needed - the update_phase_data in _start_new_turn handles this
+                if turn_started:
+                    self.logger.info("🚀 Enterprise: New turn auto-started with automatic broadcasting")
             else:
                 self.logger.info(f"🤝 No winner - starter remains: {self.current_turn_starter}")
     
@@ -567,8 +576,8 @@ class TurnState(GameState):
                 else:
                     self.turn_order = player_names
         
-        # Update phase data
-        self.phase_data.update({
+        # 🚀 ENTERPRISE: Use automatic broadcasting system even in testing methods
+        await self.update_phase_data({
             'current_turn_starter': self.current_turn_starter,
             'current_player': self._get_current_player(),
             'turn_order': self.turn_order.copy(),
@@ -576,37 +585,38 @@ class TurnState(GameState):
             'turn_plays': {},
             'turn_complete': False,
             'winner': None
-        })
+        }, f"Turn restarted for testing - starter: {self.current_turn_starter}")
         
         self.logger.info(f"🔄 Restarted turn - starter: {self.current_turn_starter}, order: {self.turn_order}")
     
-    async def _broadcast_play_event(self, player_name: str, pieces: List, piece_count: int):
-        """Broadcast play event with correct current player information"""
+    async def _broadcast_play_event_enterprise(self, player_name: str, pieces: List, piece_count: int):
+        """🚀 ENTERPRISE: Broadcast play event using centralized system"""
         try:
-            # Import here to avoid circular imports
-            from backend.socket_manager import broadcast  
             from engine.rules import get_play_type
-            
-            room_id = getattr(self.state_machine, 'room_id', 'unknown')
             
             # Get play type
             play_type = get_play_type(pieces) if pieces else "UNKNOWN"
             
-            # Broadcast with correct state information
-            await broadcast(room_id, "play", {
+            # Use enterprise broadcasting system
+            await self.broadcast_custom_event("play", {
                 "player": player_name,
                 "pieces": [str(p) for p in pieces],
                 "valid": True,
                 "play_type": play_type,
-                "next_player": self._get_current_player(),  # This is now correct!
+                "next_player": self._get_current_player(),
                 "required_count": self.required_piece_count,
                 "turn_complete": self.turn_complete
-            })
+            }, f"Player {player_name} played {piece_count} pieces")
             
-            print(f"🎯 TURN_STATE_DEBUG: Broadcasted play event - next_player: {self._get_current_player()}")
+            print(f"🎯 TURN_STATE_DEBUG: Enterprise broadcast play event - next_player: {self._get_current_player()}")
             
         except Exception as e:
             self.logger.error(f"Failed to broadcast play event: {e}", exc_info=True)
+    
+    # Legacy method for backward compatibility - will be removed
+    async def _broadcast_play_event(self, player_name: str, pieces: List, piece_count: int):
+        """DEPRECATED: Use _broadcast_play_event_enterprise instead"""
+        await self._broadcast_play_event_enterprise(player_name, pieces, piece_count)
 
     async def _notify_bot_manager_play(self, player_name: str):
         """Notify bot manager about a player's play to trigger next bot actions"""
@@ -641,3 +651,62 @@ class TurnState(GameState):
             
         except Exception as e:
             self.logger.error(f"Failed to notify bot manager about new turn: {e}", exc_info=True)
+    
+    async def _broadcast_turn_completion_enterprise(self):
+        """🚀 ENTERPRISE: Broadcast turn completion using centralized system"""
+        try:
+            game = self.state_machine.game
+            
+            # Get winning play details
+            winning_play = None
+            if self.winner and self.winner in self.turn_plays:
+                winner_play_data = self.turn_plays[self.winner]
+                winning_play = {
+                    'pieces': [str(p) for p in winner_play_data.get('pieces', [])],
+                    'value': winner_play_data.get('play_value', 0),
+                    'type': winner_play_data.get('play_type', 'unknown'),
+                    'pilesWon': self.required_piece_count or 1
+                }
+            
+            # Get current pile counts
+            player_piles = {}
+            if hasattr(game, 'player_piles') and game.player_piles:
+                player_piles = game.player_piles.copy()
+            
+            # Get player list
+            players = []
+            if hasattr(game, 'players') and game.players:
+                players = [{'name': player.name} for player in game.players]
+            
+            # Check if all hands are empty (determines next phase)
+            all_hands_empty = True
+            if hasattr(game, 'players') and game.players:
+                all_hands_empty = all(len(player.hand) == 0 for player in game.players)
+            
+            # Get actual turn number from game state
+            turn_number = game.turn_number
+            
+            # Use enterprise broadcasting system
+            await self.broadcast_custom_event("turn_complete", {
+                "winner": self.winner,
+                "winning_play": winning_play,
+                "player_piles": player_piles,
+                "players": players,
+                "turn_number": turn_number,
+                "next_starter": self.winner or self.current_turn_starter,
+                "all_hands_empty": all_hands_empty,
+                "will_continue": not all_hands_empty
+            }, f"Turn {turn_number} completed - winner: {self.winner}")
+            
+            self.logger.info(f"🚀 Enterprise broadcast turn completion - winner: {self.winner}, piles: {player_piles}")
+            
+        except Exception as e:
+            self.logger.error(f"Failed to broadcast turn completion: {e}", exc_info=True)
+    
+    # Legacy method for backward compatibility
+    async def _broadcast_turn_completion(self):
+        """DEPRECATED: Use _broadcast_turn_completion_enterprise instead"""
+        await self._broadcast_turn_completion_enterprise()
+
+    # REMOVED: _broadcast_new_turn_started() - no longer needed
+    # 🚀 ENTERPRISE: New turn broadcasting is handled automatically by update_phase_data() in _start_new_turn()

@@ -29,6 +29,7 @@ class Game:
         self.required_piece_count = None   # Number of pieces required this turn
         self.turn_order = []               # Player order for current turn
         self.last_turn_winner = None       # Player who won the last turn
+        self.turn_number = 0               # Current turn number within the round
         
         # Player tracking for state machine
         self.current_player = None         # Current player (for round start/declarations)
@@ -55,6 +56,9 @@ class Game:
             print(f"🔄 DEBUG: Starting NEW ROUND {self.round_number + 1}")
             self.round_number += 1
             self.redeal_multiplier = 1  # Reset multiplier for new round
+        
+        # Reset turn counter for new round or redeal
+        self.turn_number = 0
         
         # Option 1: Deal weak hand with limit (for testing)
         # Uncomment the configuration you want:

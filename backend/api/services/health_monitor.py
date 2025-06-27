@@ -143,10 +143,13 @@ class HealthMonitor:
         print("🔍 HEALTH_MONITOR: Stopped monitoring")
     
     async def _monitor_system_resources(self):
-        """Monitor CPU, memory, and disk usage"""
+        """Monitor CPU, memory, and disk usage - Event-driven with adaptive intervals"""
+        check_interval = 30  # Start with 30 seconds
+        consecutive_healthy = 0
+        
         while self.monitoring_active:
             try:
-                await asyncio.sleep(30)  # Check every 30 seconds
+                await asyncio.sleep(check_interval)
                 
                 # Get system metrics
                 memory = psutil.virtual_memory()
@@ -162,6 +165,7 @@ class HealthMonitor:
                 }
                 
                 # Check thresholds and log warnings
+                has_warnings = False
                 for metric_name, value in metrics.items():
                     if metric_name in self.thresholds:
                         threshold = self.thresholds[metric_name]
@@ -170,10 +174,21 @@ class HealthMonitor:
                             # For "available" metrics, warn if below threshold
                             if value < threshold:
                                 await self._handle_resource_warning(metric_name, value, threshold)
+                                has_warnings = True
                         else:
                             # For usage metrics, warn if above threshold
                             if value > threshold:
                                 await self._handle_resource_warning(metric_name, value, threshold)
+                                has_warnings = True
+                
+                # Adaptive monitoring: Check more frequently if issues detected
+                if has_warnings:
+                    check_interval = max(10, check_interval / 2)  # Check more frequently
+                    consecutive_healthy = 0
+                else:
+                    consecutive_healthy += 1
+                    if consecutive_healthy > 5:  # After 5 healthy checks, slow down
+                        check_interval = min(120, check_interval * 1.2)  # Up to 2 minutes
                 
                 if LOGGING_AVAILABLE and game_logger:
                     game_logger.log_performance("system_resources_check", 0, **metrics)
@@ -182,12 +197,16 @@ class HealthMonitor:
                 if LOGGING_AVAILABLE and game_logger:
                     game_logger.log_error(e, "system_resources_monitoring")
                 print(f"❌ HEALTH_MONITOR: Error monitoring system resources: {e}")
+                check_interval = 30  # Reset to default on error
     
     async def _monitor_websocket_health(self):
-        """Monitor WebSocket connection health"""
+        """Monitor WebSocket connection health - Event-driven with adaptive intervals"""
+        check_interval = 60  # Start with 1 minute
+        consecutive_healthy = 0
+        
         while self.monitoring_active:
             try:
-                await asyncio.sleep(60)  # Check every minute
+                await asyncio.sleep(check_interval)
                 
                 # Get WebSocket statistics
                 import sys
@@ -225,15 +244,28 @@ class HealthMonitor:
                     "total_messages_sent": total_sent
                 }
                 
-                # Check thresholds
+                # Check thresholds and adapt monitoring frequency
+                has_issues = False
                 if total_connections > self.thresholds["active_connections"]:
                     await self._handle_websocket_warning("too_many_connections", total_connections)
+                    has_issues = True
                 
                 if total_pending > self.thresholds["pending_messages"]:
                     await self._handle_websocket_warning("too_many_pending", total_pending)
+                    has_issues = True
                 
                 if delivery_rate < self.thresholds["message_delivery_rate"]:
                     await self._handle_websocket_warning("low_delivery_rate", delivery_rate)
+                    has_issues = True
+                
+                # Adaptive monitoring based on connection health
+                if has_issues or total_connections > 100:
+                    check_interval = max(15, check_interval / 2)  # More frequent when busy or issues
+                    consecutive_healthy = 0
+                else:
+                    consecutive_healthy += 1
+                    if consecutive_healthy > 3:
+                        check_interval = min(300, check_interval * 1.5)  # Up to 5 minutes when healthy
                 
                 if LOGGING_AVAILABLE and game_logger:
                     game_logger.log_websocket_event("system", "health_check", **metrics)
@@ -242,12 +274,16 @@ class HealthMonitor:
                 if LOGGING_AVAILABLE and game_logger:
                     game_logger.log_error(e, "websocket_health_monitoring")
                 print(f"❌ HEALTH_MONITOR: Error monitoring WebSocket health: {e}")
+                check_interval = 60  # Reset to default on error
     
     async def _monitor_database_health(self):
-        """Monitor database connectivity and performance"""
+        """Monitor database connectivity and performance - Event-driven with adaptive intervals"""
+        check_interval = 120  # Start with 2 minutes
+        consecutive_healthy = 0
+        
         while self.monitoring_active:
             try:
-                await asyncio.sleep(120)  # Check every 2 minutes
+                await asyncio.sleep(check_interval)
                 
                 # Test database connectivity and response time
                 start_time = time.time()
@@ -271,12 +307,24 @@ class HealthMonitor:
                     "database_response_ms": response_time_ms
                 }
                 
-                # Check thresholds
+                # Check thresholds and adapt monitoring frequency
+                has_issues = False
                 if response_time_ms > self.thresholds["database_response_ms"]:
                     await self._handle_database_warning("slow_response", response_time_ms)
+                    has_issues = True
                 
                 if not database_healthy:
                     await self._handle_database_warning("connection_failed", response_time_ms)
+                    has_issues = True
+                
+                # Adaptive monitoring based on database health
+                if has_issues:
+                    check_interval = max(30, check_interval / 2)  # Check more frequently on issues
+                    consecutive_healthy = 0
+                else:
+                    consecutive_healthy += 1
+                    if consecutive_healthy > 5:
+                        check_interval = min(600, check_interval * 1.3)  # Up to 10 minutes when healthy
                 
                 if LOGGING_AVAILABLE and game_logger:
                     game_logger.log_performance("database_health_check", response_time_ms, **metrics)
@@ -285,12 +333,16 @@ class HealthMonitor:
                 if LOGGING_AVAILABLE and game_logger:
                     game_logger.log_error(e, "database_health_monitoring")
                 print(f"❌ HEALTH_MONITOR: Error monitoring database health: {e}")
+                check_interval = 120  # Reset to default on error
     
     async def _monitor_game_performance(self):
-        """Monitor game-specific performance metrics"""
+        """Monitor game-specific performance metrics - Event-driven with adaptive intervals"""
+        check_interval = 90  # Start with 90 seconds
+        last_total_rooms = 0
+        
         while self.monitoring_active:
             try:
-                await asyncio.sleep(90)  # Check every 90 seconds
+                await asyncio.sleep(check_interval)
                 
                 # Get room and game statistics
                 import sys
@@ -313,6 +365,17 @@ class HealthMonitor:
                     "rooms_per_game_ratio": total_rooms / max(active_games, 1)
                 }
                 
+                # Adaptive monitoring based on activity
+                rooms_changed = abs(total_rooms - last_total_rooms) > 0
+                high_activity = total_rooms > 10 or active_games > 5
+                
+                if rooms_changed or high_activity:
+                    check_interval = max(30, check_interval * 0.8)  # More frequent when active
+                else:
+                    check_interval = min(300, check_interval * 1.2)  # Less frequent when idle
+                
+                last_total_rooms = total_rooms
+                
                 if LOGGING_AVAILABLE and game_logger:
                     game_logger.log_game_event("performance_check", **metrics)
                     
@@ -320,24 +383,37 @@ class HealthMonitor:
                 if LOGGING_AVAILABLE and game_logger:
                     game_logger.log_error(e, "game_performance_monitoring")
                 print(f"❌ HEALTH_MONITOR: Error monitoring game performance: {e}")
+                check_interval = 90  # Reset to default on error
     
     async def _cleanup_old_health_data(self):
-        """Clean up old health check data"""
+        """Clean up old health check data - Event-driven with adaptive intervals"""
+        check_interval = 3600  # Start with 1 hour
+        
         while self.monitoring_active:
             try:
-                await asyncio.sleep(3600)  # Run every hour
+                await asyncio.sleep(check_interval)
                 
                 # Keep only recent health history
+                records_cleaned = 0
                 if len(self.health_history) > self.max_history:
+                    records_cleaned = len(self.health_history) - self.max_history
                     self.health_history = self.health_history[-self.max_history:]
+                
+                # Adaptive cleanup: More frequent if accumulating data quickly
+                if records_cleaned > 20:
+                    check_interval = max(1800, check_interval * 0.7)  # More frequent cleanup
+                else:
+                    check_interval = min(7200, check_interval * 1.1)  # Less frequent when stable
                     
                 if LOGGING_AVAILABLE and game_logger:
                     game_logger.log_game_event("health_data_cleanup", 
-                                             records_kept=len(self.health_history))
+                                             records_kept=len(self.health_history),
+                                             records_cleaned=records_cleaned)
                     
             except Exception as e:
                 if LOGGING_AVAILABLE and game_logger:
                     game_logger.log_error(e, "health_data_cleanup")
+                check_interval = 3600  # Reset to default on error
     
     async def get_health_status(self) -> SystemHealth:
         """Get current system health status"""

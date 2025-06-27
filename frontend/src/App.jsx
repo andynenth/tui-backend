@@ -11,6 +11,7 @@ import StartPage from './pages/StartPage';
 import LobbyPage from './pages/LobbyPage';
 import RoomPage from './pages/RoomPage';
 import GamePage from './pages/GamePage';
+import DemoPage from './pages/DemoPage';
 
 // Service initialization
 import { initializeServices, cleanupServices } from './services';
@@ -66,6 +67,9 @@ const AppRouter = () => {
       <Routes>
         {/* Start page - no requirements */}
         <Route path="/" element={<StartPage />} />
+        
+        {/* Demo page - standalone UI demonstration */}
+        <Route path="/demo" element={<DemoPage />} />
         
         {/* Lobby - requires player name */}
         <Route 

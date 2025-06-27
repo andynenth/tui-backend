@@ -38,14 +38,20 @@ class DeclarationState(GameState):
         print(f"📢 DECL_STATE_DEBUG: Using round_starter: {round_starter}")
         declaration_order = game.get_player_order_from(round_starter)
         
-        self.phase_data.update({
+        # 🚀 ENTERPRISE: Use automatic broadcasting system instead of manual phase_data updates
+        # First set basic data
+        await self.update_phase_data({
             'declaration_order': declaration_order,
             'current_declarer_index': 0,
             'declarations': {},
             'declaration_total': 0
-        })
-        # Set current_declarer after phase_data is initialized
-        self.phase_data['current_declarer'] = self._get_current_declarer()
+        }, "Declaration phase setup - basic data")
+        
+        # Then set current declarer after the order is established
+        current_declarer = self._get_current_declarer()
+        await self.update_phase_data({
+            'current_declarer': current_declarer
+        }, f"Declaration phase setup complete - current declarer: {current_declarer}")
     
     async def _cleanup_phase(self) -> None:
         # FIX: Copy declarations to game object during cleanup
@@ -85,11 +91,24 @@ class DeclarationState(GameState):
         player_name = action.player_name
         declared_value = action.payload['value']
         
-        # Record declaration in phase data
-        self.phase_data['declarations'][player_name] = declared_value
-        self.phase_data['declaration_total'] += declared_value
-        self.phase_data['current_declarer_index'] += 1
-        self.phase_data['current_declarer'] = self._get_current_declarer()
+        # 🚀 ENTERPRISE: Use automatic broadcasting system for declaration updates
+        current_declarations = self.phase_data.get('declarations', {})
+        updated_declarations = current_declarations.copy()
+        updated_declarations[player_name] = declared_value
+        
+        current_total = self.phase_data.get('declaration_total', 0)
+        current_index = self.phase_data.get('current_declarer_index', 0)
+        
+        # Calculate next declarer BEFORE updating the index
+        next_index = current_index + 1
+        next_declarer = self._get_next_declarer(next_index)
+        
+        await self.update_phase_data({
+            'declarations': updated_declarations,
+            'declaration_total': current_total + declared_value,
+            'current_declarer_index': next_index,
+            'current_declarer': next_declarer
+        }, f"Player {player_name} declared {declared_value}")
         
         # FIX: Also immediately update game object for real-time access
         self.state_machine.game.player_declarations[player_name] = declared_value
@@ -115,6 +134,19 @@ class DeclarationState(GameState):
         
         if index < len(order):
             player = order[index]
+            # Return player name as string
+            if hasattr(player, 'name'):
+                return player.name
+            else:
+                return str(player)
+        return None
+    
+    def _get_next_declarer(self, next_index: int) -> Optional[str]:
+        """Get the declarer at a specific index"""
+        order = self.phase_data['declaration_order']
+        
+        if next_index < len(order):
+            player = order[next_index]
             # Return player name as string
             if hasattr(player, 'name'):
                 return player.name
