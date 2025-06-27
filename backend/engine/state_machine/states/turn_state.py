@@ -80,8 +80,11 @@ class TurnState(GameState):
     
     async def _process_action(self, action: GameAction) -> Dict[str, Any]:
         """Process valid actions"""
+        print(f"🎯 TURN_STATE_DEBUG: Processing action {action.action_type.value} from {action.player_name}")
         if action.action_type == ActionType.PLAY_PIECES:
-            return await self._handle_play_pieces(action)
+            result = await self._handle_play_pieces(action)
+            print(f"🎯 TURN_STATE_DEBUG: Play pieces result: {result}")
+            return result
         elif action.action_type == ActionType.PLAYER_DISCONNECT:
             return await self._handle_player_disconnect(action)
         elif action.action_type == ActionType.PLAYER_RECONNECT:
@@ -144,7 +147,7 @@ class TurnState(GameState):
         if hasattr(game, 'get_player_order_from'):
             # Convert Player objects to strings
             player_objects = game.get_player_order_from(self.current_turn_starter)
-            self.turn_order = [p.name for p in player_objects]
+            self.turn_order = [getattr(p, 'name', str(p)) for p in player_objects]
         else:
             # Fallback: create order from players list (ensure strings)
             players = getattr(game, 'players', [])
@@ -226,13 +229,19 @@ class TurnState(GameState):
     
     async def _handle_play_pieces(self, action: GameAction) -> Dict[str, Any]:
         """Handle a valid play pieces action"""
+        print(f"🎯 TURN_STATE_DEBUG: _handle_play_pieces called for {action.player_name}")
+        print(f"🎯 TURN_STATE_DEBUG: Current state - player_index: {self.current_player_index}, turn_order: {self.turn_order}")
+        
         payload = action.payload
         pieces = payload['pieces']
         piece_count = len(pieces)
         
+        print(f"🎯 TURN_STATE_DEBUG: Player {action.player_name} playing {piece_count} pieces: {[str(p) for p in pieces]}")
+        
         # If this is the starter, set the required piece count
         if self.required_piece_count is None:
             self.required_piece_count = piece_count
+            print(f"🎯 TURN_STATE_DEBUG: Setting required piece count to {piece_count}")
             self.logger.info(f"🎲 {action.player_name} (starter) plays {piece_count} pieces - setting required count")
         
         # Store the play
@@ -249,20 +258,28 @@ class TurnState(GameState):
         
         self.logger.info(f"🎲 {action.player_name} plays: {pieces} (value: {play_data['play_value']})")
         
+        print(f"🎯 TURN_STATE_DEBUG: Before advancing - current_player_index: {self.current_player_index}")
+        
         # Move to next player
         self.current_player_index += 1
         
+        print(f"🎯 TURN_STATE_DEBUG: After advancing - current_player_index: {self.current_player_index}")
+        print(f"🎯 TURN_STATE_DEBUG: Next player: {self._get_current_player()}")
+        
         # Check if turn is complete
         if self.current_player_index >= len(self.turn_order):
+            print(f"🎯 TURN_STATE_DEBUG: Turn complete! Calling _complete_turn()")
             await self._complete_turn()
         
         # Update phase data
+        print(f"🎯 TURN_STATE_DEBUG: Updating phase data...")
         self.phase_data.update({
             'current_player': self._get_current_player(),
             'required_piece_count': self.required_piece_count,
             'turn_plays': self.turn_plays.copy(),
             'turn_complete': self.turn_complete
         })
+        print(f"🎯 TURN_STATE_DEBUG: Phase data updated - current_player: {self.phase_data.get('current_player')}")
         
         return {
             'status': 'play_accepted',

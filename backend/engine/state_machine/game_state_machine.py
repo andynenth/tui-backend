@@ -92,8 +92,14 @@ class GameStateMachine:
     
     async def _process_loop(self):
         """Main processing loop for queued actions"""
+        print(f"🔍 STATE_MACHINE_DEBUG: Process loop started, is_running: {self.is_running}")
+        loop_count = 0
         while self.is_running:
             try:
+                loop_count += 1
+                if loop_count % 50 == 0:  # Log every 5 seconds
+                    print(f"🔍 STATE_MACHINE_DEBUG: Process loop iteration {loop_count}")
+                
                 # Process any pending actions
                 await self.process_pending_actions()
                 
@@ -107,18 +113,27 @@ class GameStateMachine:
                 await asyncio.sleep(0.1)
                 
             except Exception as e:
+                print(f"❌ STATE_MACHINE_DEBUG: Error in process loop: {e}")
                 logger.error(f"Error in process loop: {e}", exc_info=True)
+        
+        print(f"🔍 STATE_MACHINE_DEBUG: Process loop ended")
     
     async def process_pending_actions(self):
         """Process all actions in queue"""
         if not self.current_state:
+            print(f"🔍 STATE_MACHINE_DEBUG: No current state, skipping action processing")
             return
         
         actions = await self.action_queue.process_actions()
+        if actions:
+            print(f"🔍 STATE_MACHINE_DEBUG: Processing {len(actions)} actions")
         for action in actions:
             try:
+                print(f"🔍 STATE_MACHINE_DEBUG: Processing action: {action.action_type.value} from {action.player_name}")
                 await self.current_state.handle_action(action)
+                print(f"✅ STATE_MACHINE_DEBUG: Action processed successfully")
             except Exception as e:
+                print(f"❌ STATE_MACHINE_DEBUG: Error processing action: {e}")
                 logger.error(f"Error processing action: {e}", exc_info=True)
     
     async def _transition_to(self, new_phase: GamePhase):

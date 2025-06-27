@@ -568,6 +568,7 @@ export class GameService extends EventTarget {
         case 'turn':
           if (phaseData.turn_order) newState.turnOrder = phaseData.turn_order;
           if (phaseData.current_turn_starter) newState.currentTurnStarter = phaseData.current_turn_starter;
+          if (phaseData.current_player) newState.currentPlayer = phaseData.current_player;
           newState.currentTurnPlays = phaseData.current_turn_plays || [];
           newState.currentTurnNumber = phaseData.current_turn_number || 0;
           
@@ -720,10 +721,18 @@ export class GameService extends EventTarget {
       requiredPieceCount = data.pieces.length;
     }
     
+    // Update current player from the play event
+    let newCurrentPlayer = state.currentPlayer;
+    if (data.next_player) {
+      newCurrentPlayer = data.next_player;
+      console.log(`🎯 PLAY_DEBUG: Updated currentPlayer from ${state.currentPlayer} to ${data.next_player}`);
+    }
+    
     return {
       ...state,
       currentTurnPlays: newTurnPlays,
-      requiredPieceCount
+      requiredPieceCount,
+      currentPlayer: newCurrentPlayer
     };
   }
 
@@ -805,9 +814,12 @@ export class GameService extends EventTarget {
         return state.currentDeclarer === state.playerName;
         
       case 'turn': {
-        // Check if player hasn't played yet in current turn
-        const hasPlayed = state.currentTurnPlays.some(play => play.player === state.playerName);
-        return !hasPlayed && state.turnOrder.length > 0;
+        // Check if it's specifically this player's turn
+        const isMyTurnCalc = state.currentPlayer === state.playerName;
+        console.log(`🎯 TURN_DEBUG: currentPlayer: ${state.currentPlayer}, playerName: ${state.playerName}, isMyTurn: ${isMyTurnCalc}`);
+        console.log(`🎯 TURN_DEBUG: turnOrder:`, state.turnOrder);
+        console.log(`🎯 TURN_DEBUG: currentTurnPlays:`, state.currentTurnPlays);
+        return isMyTurnCalc;
       }
         
       case 'scoring':
