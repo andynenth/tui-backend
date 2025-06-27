@@ -191,7 +191,7 @@ export class GameService extends EventTarget {
       throw new Error(`Must play exactly ${this.state.requiredPieceCount} pieces`);
     }
 
-    this.sendAction('play', { piece_indices: indices });
+    this.sendAction('play', { piece_indices: indices, player_name: this.state.playerName });
   }
 
   /**
@@ -384,8 +384,13 @@ export class GameService extends EventTarget {
     const customEvent = event as CustomEvent<NetworkEventDetail>;
     const { roomId, data } = customEvent.detail;
     
+    console.log(`🌐 FRONTEND_EVENT_DEBUG: Received ${event.type} event for room ${roomId}`, data);
+    
     // Only process events for our room
-    if (roomId !== this.state.roomId) return;
+    if (roomId !== this.state.roomId) {
+      console.log(`🌐 FRONTEND_EVENT_DEBUG: Ignoring event for different room (ours: ${this.state.roomId})`);
+      return;
+    }
     
     try {
       const newState = this.processGameEvent(event.type, data);
@@ -429,10 +434,12 @@ export class GameService extends EventTarget {
         break;
         
       case 'play':
+        console.log(`🌐 PROCESS_EVENT_DEBUG: Handling play event`);
         newState = this.handlePlay(newState, data);
         break;
         
       case 'turn_resolved':
+        console.log(`🌐 PROCESS_EVENT_DEBUG: Handling turn_resolved event`);
         newState = this.handleTurnResolved(newState, data);
         break;
         
@@ -449,13 +456,15 @@ export class GameService extends EventTarget {
         break;
         
       default:
-        console.warn(`Unknown game event: ${eventType}`);
+        console.warn(`🌐 PROCESS_EVENT_DEBUG: Unknown game event: ${eventType}`, data);
         return newState;
     }
     
+    console.log(`🌐 PROCESS_EVENT_DEBUG: Event ${eventType} processed, updating derived state`);
     // Update derived state
     newState = this.updateDerivedState(newState);
     
+    console.log(`🌐 PROCESS_EVENT_DEBUG: Finished processing ${eventType} event`);
     return newState;
   }
 
@@ -692,6 +701,8 @@ export class GameService extends EventTarget {
   private handlePlay(state: GameState, data: any): GameState {
     console.log(`🎲 PLAY_DEBUG: Received play event!`, data);
     console.log(`🎲 PLAY_DEBUG: Pieces data:`, data.pieces);
+    console.log(`🎲 PLAY_DEBUG: turn_complete from backend:`, data.turn_complete);
+    console.log(`🎲 PLAY_DEBUG: next_player from backend:`, data.next_player);
     
     const newTurnPlays = [...state.currentTurnPlays];
     
@@ -726,6 +737,15 @@ export class GameService extends EventTarget {
     if (data.next_player) {
       newCurrentPlayer = data.next_player;
       console.log(`🎯 PLAY_DEBUG: Updated currentPlayer from ${state.currentPlayer} to ${data.next_player}`);
+    } else if (data.turn_complete) {
+      console.log(`🎯 PLAY_DEBUG: Turn is complete but no next_player - turn should be finishing`);
+    }
+    
+    // Check if turn is complete
+    if (data.turn_complete) {
+      console.log(`🎯 TURN_COMPLETE_FRONTEND: Turn marked as complete by backend`);
+      console.log(`🎯 TURN_COMPLETE_FRONTEND: Current turn plays count:`, newTurnPlays.length);
+      console.log(`🎯 TURN_COMPLETE_FRONTEND: All plays:`, newTurnPlays.map(p => `${p.player}: ${p.cards.join(', ')}`));
     }
     
     return {
