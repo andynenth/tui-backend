@@ -255,32 +255,82 @@ class GameBotHandler:
         """Handle bot plays in turn order"""
         from backend.socket_manager import broadcast
         
-        game_state = self._get_game_state()
-        if not game_state.required_piece_count:
+        # Get turn data from state machine if available
+        if self.state_machine:
+            phase_data = self.state_machine.get_phase_data()
+            required_piece_count = phase_data.get('required_piece_count')
+            turn_order = phase_data.get('turn_order', [])
+            
+            print(f"🎯 PLAY_PHASE_DEBUG: Got from state machine - required_count: {required_piece_count}, turn_order: {turn_order}")
+        else:
+            # Fallback to game state
+            game_state = self._get_game_state()
+            required_piece_count = getattr(game_state, 'required_piece_count', None)
+            turn_order = getattr(game_state, 'turn_order', [])
+            
+        if not required_piece_count:
+            print(f"🎯 PLAY_PHASE_DEBUG: No required piece count set yet, skipping bot plays")
             return  # First player hasn't set the count yet
             
-        # Get current turn order
-        turn_order = game_state.turn_order
         if not turn_order:
+            print(f"🎯 PLAY_PHASE_DEBUG: No turn order available, skipping bot plays")
             return
             
         # Find next players to play
         last_index = self._get_player_index(last_player, turn_order)
         
-        for i in range(last_index + 1, len(turn_order)):
-            player = turn_order[i]
+        print(f"🎯 PLAY_PHASE_DEBUG: Last player: {last_player}, last_index: {last_index}")
+        
+        # FIX: Only process the NEXT player, not all remaining players
+        # This prevents duplicate bot actions when multiple player_played events cascade
+        next_player_index = last_index + 1
+        if next_player_index >= len(turn_order):
+            print(f"🎯 PLAY_PHASE_DEBUG: No more players after {last_player}, turn should be complete")
+            return
             
-            # Check if already played this turn
+        next_player_name = turn_order[next_player_index]
+        print(f"🎯 PLAY_PHASE_DEBUG: Checking next player {next_player_index}: {next_player_name}")
+        
+        # Check if next player already played this turn using state machine data
+        if self.state_machine:
+            phase_data = self.state_machine.get_phase_data()
+            turn_plays = phase_data.get('turn_plays', {})
+            if next_player_name in turn_plays:
+                print(f"🎯 PLAY_PHASE_DEBUG: Player {next_player_name} already played this turn")
+                return
+        else:
+            # Fallback to game state check
             game_state = self._get_game_state()
-            if any(play.player == player for play in game_state.current_turn_plays):
-                continue
-                
-            if not player.is_bot:
-                break  # Wait for human
-                
-            # Bot plays
-            await self._bot_play(player)
-            await asyncio.sleep(0.5)
+            if any(play.player == next_player_name for play in getattr(game_state, 'current_turn_plays', [])):
+                print(f"🎯 PLAY_PHASE_DEBUG: Player {next_player_name} already played this turn (fallback check)")
+                return
+        
+        # Get the actual Player object for the next player
+        game_state = self._get_game_state()
+        next_player_obj = None
+        for p in game_state.players:
+            if getattr(p, 'name', str(p)) == next_player_name:
+                next_player_obj = p
+                break
+        
+        if not next_player_obj:
+            print(f"❌ PLAY_PHASE_DEBUG: Could not find Player object for {next_player_name}")
+            return
+            
+        if not getattr(next_player_obj, 'is_bot', False):
+            print(f"🎯 PLAY_PHASE_DEBUG: Next player {next_player_name} is human, waiting for their play")
+            return  # Wait for human player
+            
+        print(f"🤖 PLAY_PHASE_DEBUG: Triggering bot play for {next_player_name}")
+        
+        # Add realistic delay for bot decision (500-1000ms)
+        import random
+        delay = random.uniform(0.5, 1.0)
+        print(f"🤖 PLAY_PHASE_DEBUG: Bot {next_player_name} thinking for {delay:.1f}s...")
+        await asyncio.sleep(delay)
+        
+        # Bot plays
+        await self._bot_play(next_player_obj)
             
     async def _bot_play(self, bot: Player):
         """Make a bot play"""
@@ -288,12 +338,36 @@ class GameBotHandler:
         
         try:
             # Choose play
-            game_state = self._get_game_state()
+            # Get required piece count from state machine if available
+            if self.state_machine:
+                phase_data = self.state_machine.get_phase_data()
+                required_piece_count = phase_data.get('required_piece_count')
+                print(f"🎯 BOT_PLAY_DEBUG: Got required_piece_count from state machine: {required_piece_count}")
+            else:
+                # Fallback to game state
+                game_state = self._get_game_state()
+                required_piece_count = getattr(game_state, 'required_piece_count', None)
+                print(f"🎯 BOT_PLAY_DEBUG: Got required_piece_count from game state: {required_piece_count}")
+                
             selected = ai.choose_best_play(
                 bot.hand,
-                required_count=game_state.required_piece_count,
+                required_count=required_piece_count,
                 verbose=True
             )
+            
+            # Validate that bot respects required piece count
+            if required_piece_count is not None and len(selected) != required_piece_count:
+                print(f"❌ BOT_PLAY_DEBUG: Bot {bot.name} selected {len(selected)} pieces but required {required_piece_count}")
+                print(f"🔧 BOT_PLAY_DEBUG: Forcing bot to select {required_piece_count} pieces")
+                # Force bot to select valid number of pieces
+                if len(selected) > required_piece_count:
+                    selected = selected[:required_piece_count]
+                else:
+                    # Add more pieces if needed (should not happen with proper AI)
+                    remaining = [p for p in bot.hand if p not in selected]
+                    selected.extend(remaining[:required_piece_count - len(selected)])
+            
+            print(f"🎯 BOT_PLAY_DEBUG: Final selection - {len(selected)} pieces: {[str(p) for p in selected]}")
             
             # Get indices and play type
             indices = self._get_piece_indices(bot.hand, selected)
@@ -310,42 +384,27 @@ class GameBotHandler:
                 )
                 result = await self.state_machine.handle_action(action)
                 
-                # Wait for action to be fully processed by state machine
-                print(f"🎯 BOT_PLAY_DEBUG: Waiting for state machine to process action...")
+                # Action is queued - state machine will process it and handle broadcasting
+                print(f"🎯 BOT_PLAY_DEBUG: Action queued successfully, state machine will handle updates and broadcasting")
+                print(f"✅ Bot {bot.name} action queued - state machine will broadcast with correct next_player")
                 
-                # The state machine processes actions in its main loop every 0.1s
-                # Wait for at least one full processing cycle plus some buffer
-                await asyncio.sleep(0.15)
-                
-                # Get the updated phase data (should be immediate now)
-                phase_data = self.state_machine.get_phase_data()
-                current_player = phase_data.get("current_player")
-                print(f"🎯 BOT_PLAY_DEBUG: Action processed, current_player = {current_player}")
-                print(f"🎯 BOT_PLAY_DEBUG: Final phase data: {phase_data}")
-                
-                # Extract turn state information
-                result = {
-                    "status": "play_accepted" if result.get("success") else "failed",
-                    "is_valid": True,
-                    "play_type": play_type,  # Use actual play type from AI
-                    "next_player": phase_data.get("current_player"),
-                    "required_count": phase_data.get("required_piece_count"),
-                    "turn_complete": phase_data.get("turn_complete", False)
-                }
+                # Return early - state machine handles the rest
+                return
             else:
-                # Fallback to direct game call
+                # Fallback to direct game call (no state machine)
                 result = self.game.play_turn(bot.name, indices)
-            
-            # Broadcast play with enhanced turn state
-            await broadcast(self.room_id, "play", {
-                "player": bot.name,
-                "pieces": [str(p) for p in selected],
-                "valid": result.get("is_valid", True),
-                "play_type": result.get("play_type", "UNKNOWN"),
-                "next_player": result.get("next_player"),
-                "required_count": result.get("required_count"),
-                "turn_complete": result.get("turn_complete", False)
-            })
+                
+                # Broadcast for fallback case only
+                await broadcast(self.room_id, "play", {
+                    "player": bot.name,
+                    "pieces": [str(p) for p in selected],
+                    "valid": result.get("is_valid", True),
+                    "play_type": result.get("play_type", "UNKNOWN"),
+                    "next_player": result.get("next_player"),
+                    "required_count": result.get("required_count"),
+                    "turn_complete": result.get("turn_complete", False)
+                })
+                print(f"🎯 BOT_PLAY_DEBUG: Fallback broadcast completed")
             
             # Handle turn resolution if complete
             if result.get("status") == "resolved":
@@ -438,6 +497,13 @@ class GameBotHandler:
             
         if starter.is_bot and len(starter.hand) > 0:
             print(f"🤖 Bot {starter_name} will play first")
+            
+            # Add realistic delay for bot decision (500-1000ms)
+            import random
+            delay = random.uniform(0.5, 1.0)
+            print(f"🤖 Bot {starter_name} thinking for {delay:.1f}s...")
+            await asyncio.sleep(delay)
+            
             # Bot starts the turn
             await self._bot_play_first(starter)
         else:
@@ -475,43 +541,27 @@ class GameBotHandler:
                 result = await self.state_machine.handle_action(action)
                 print(f"🎯 BOT_PLAY_DEBUG: State machine result: {result}")
                 
-                # Wait for action to be fully processed by state machine
-                print(f"🎯 BOT_PLAY_DEBUG: Waiting for state machine to process action...")
+                # Action is queued - state machine will process it and handle broadcasting
+                print(f"🎯 BOT_PLAY_DEBUG: Action queued successfully, state machine will handle updates and broadcasting")
+                print(f"✅ Bot {bot.name} first play action queued - state machine will broadcast with correct next_player")
                 
-                # The state machine processes actions in its main loop every 0.1s
-                # Wait for at least one full processing cycle plus some buffer
-                await asyncio.sleep(0.15)
-                
-                # Get the updated phase data (should be immediate now)
-                phase_data = self.state_machine.get_phase_data()
-                current_player = phase_data.get("current_player")
-                print(f"🎯 BOT_PLAY_DEBUG: Action processed, current_player = {current_player}")
-                print(f"🎯 BOT_PLAY_DEBUG: Final phase data: {phase_data}")
-                
-                # Extract turn state information
-                result = {
-                    "status": "play_accepted" if result.get("success") else "failed",
-                    "is_valid": True,
-                    "play_type": play_type,  # Use actual play type from AI
-                    "next_player": phase_data.get("current_player"),
-                    "required_count": phase_data.get("required_piece_count"),
-                    "turn_complete": phase_data.get("turn_complete", False)
-                }
+                # Return early - state machine handles the rest
+                return
             else:
-                # Fallback to direct game call
+                # Fallback to direct game call (no state machine)
                 result = self.game.play_turn(bot.name, indices)
-            
-            # Broadcast the play with updated turn state
-            await broadcast(self.room_id, "play", {
-                "player": bot.name,
-                "pieces": [str(p) for p in selected],
-                "valid": result.get("is_valid", True),
-                "play_type": result.get("play_type", "UNKNOWN"),
-                "next_player": result.get("next_player"),  # Include updated current player
-                "required_count": result.get("required_count"),
-                "turn_complete": result.get("turn_complete", False)
-            })
-            print(f"🎯 BOT_PLAY_DEBUG: Broadcast data - next_player: {result.get('next_player')}, turn_complete: {result.get('turn_complete')}")
+                
+                # Broadcast for fallback case only
+                await broadcast(self.room_id, "play", {
+                    "player": bot.name,
+                    "pieces": [str(p) for p in selected],
+                    "valid": result.get("is_valid", True),
+                    "play_type": result.get("play_type", "UNKNOWN"),
+                    "next_player": result.get("next_player"),
+                    "required_count": result.get("required_count"),
+                    "turn_complete": result.get("turn_complete", False)
+                })
+                print(f"🎯 BOT_PLAY_DEBUG: Fallback broadcast completed")
             
             print(f"✅ Bot {bot.name} played, status: {result.get('status')}")
             
