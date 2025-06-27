@@ -11,17 +11,23 @@ Liap Tui is a real-time multiplayer board game inspired by traditional Chinese-T
 
 ### Backend Structure
 - **FastAPI** with WebSocket support for real-time gameplay
-- **State Machine Pattern** (`backend/engine/state_machine/`) **COMPLETE** - manages game flow through phases:
-  - `PREPARATION`: Deal cards, handle weak hands and redeals ✅ PRODUCTION READY
-  - `DECLARATION`: Players declare target pile counts ✅ PRODUCTION READY  
-  - `TURN`: Turn-based piece playing ✅ PRODUCTION READY
-  - `SCORING`: Calculate scores and check win conditions ✅ PRODUCTION READY
+- **🚀 ENTERPRISE ARCHITECTURE** (`backend/engine/state_machine/`) **FULLY IMPLEMENTED** - production-ready enterprise patterns:
+  - **Automatic Broadcasting System**: All state changes trigger automatic phase_change broadcasts
+  - **Centralized State Management**: `update_phase_data()` ensures consistent state updates
+  - **Event Sourcing**: Complete change history with sequence numbers and timestamps
+  - **JSON-Safe Serialization**: Automatic conversion of game objects for WebSocket broadcasting
+  - **Single Source of Truth**: No manual broadcast calls - all automatic and guaranteed
+- **State Machine Phases** - All using enterprise architecture:
+  - `PREPARATION`: Deal cards, handle weak hands ✅ ENTERPRISE ARCHITECTURE
+  - `DECLARATION`: Players declare target pile counts ✅ ENTERPRISE ARCHITECTURE  
+  - `TURN`: Turn-based piece playing ✅ ENTERPRISE ARCHITECTURE
+  - `SCORING`: Calculate scores and check win conditions ✅ ENTERPRISE ARCHITECTURE
 - **Game Engine** (`backend/engine/`) contains core game logic:
   - `game.py`: Main Game class with round management
   - `rules.py`: Play validation and game rules
   - `scoring.py`: Score calculation
   - `player.py`, `piece.py`: Core game entities
-- **API Layer** (`backend/api/`) provides REST and WebSocket endpoints **[WEEK 3 INTEGRATION TARGET]**
+- **API Layer** (`backend/api/`) provides REST and WebSocket endpoints
 
 ### Frontend Structure
 - **React 19.1.0** with React Router DOM for modern UI architecture
@@ -76,17 +82,76 @@ cd frontend && npm run lint:fix  # Auto-fix issues
   - `source venv/bin/activate && cd backend && pylint [files]` to catch import/attribute errors
   - `cd frontend && npm run type-check` for TypeScript validation
 
-## Game State Management ✅ PRODUCTION READY
-The game uses a sophisticated state machine (`GameStateMachine`) **FULLY IMPLEMENTED** that:  
-- Processes actions asynchronously through an action queue ✅ TESTED
-- Validates actions based on current game phase ✅ TESTED  
-- Manages player turns and game flow transitions ✅ TESTED
-- Handles disconnections and reconnections ✅ TESTED
+### **🚀 Enterprise Architecture Guidelines (MANDATORY)**
 
-Key classes **ALL WORKING**:
+**For State Machine Development:**
+- **✅ ALWAYS USE**: `await self.update_phase_data()` for state changes
+- **❌ NEVER USE**: Direct `self.phase_data.update()` or `self.phase_data[key] = value`
+- **✅ ALWAYS USE**: `await self.broadcast_custom_event()` for game events  
+- **❌ NEVER USE**: Manual `broadcast()` function calls
+- **✅ ALWAYS INCLUDE**: Human-readable reason parameter for debugging
+
+**Enterprise Pattern Examples:**
+```python
+# ✅ CORRECT - Enterprise pattern
+await self.update_phase_data({
+    'current_player': next_player,
+    'required_piece_count': count
+}, f"Player {player_name} played {count} pieces")
+
+# ❌ WRONG - Manual pattern (causes sync bugs)
+self.phase_data['current_player'] = next_player
+self.phase_data['required_piece_count'] = count
+await broadcast(room_id, "play", data)  # This will cause sync issues!
+```
+
+**Testing Enterprise Architecture:**
+- Run `python test_enterprise_architecture.py` to validate enterprise features
+- Run `python test_turn_number_sync.py` to verify sync bug prevention
+- All state changes must go through enterprise methods (no exceptions)
+
+## 🚀 Enterprise Architecture Implementation ✅ PRODUCTION READY
+
+### **Automatic Broadcasting System**
+The backend now implements a **guaranteed automatic broadcasting system** that eliminates sync bugs:
+
+```python
+# 🚀 ENTERPRISE PATTERN - All state changes use this:
+await self.update_phase_data({
+    'current_player': next_player,
+    'turn_number': game.turn_number,
+    'phase_data': updated_data
+}, "Human-readable reason for change")
+# ↑ Automatically broadcasts phase_change event to all clients
+```
+
+### **Key Enterprise Features IMPLEMENTED:**
+- **✅ Automatic Broadcasting**: No manual `broadcast()` calls needed - all automatic
+- **✅ Event Sourcing**: Complete change history with sequence numbers and timestamps  
+- **✅ JSON-Safe Serialization**: Game objects automatically converted for WebSocket transmission
+- **✅ Centralized State Management**: Single `update_phase_data()` method for all state changes
+- **✅ Custom Event Broadcasting**: `broadcast_custom_event()` for game-specific events
+- **✅ Change History Tracking**: `get_change_history()` for debugging and audit trails
+
+### **Enterprise Architecture Benefits DELIVERED:**
+1. **🔒 Sync Bug Prevention**: Impossible to forget broadcasting - it's automatic
+2. **🔍 Complete Debugging**: Every state change logged with reason and sequence
+3. **⚡ Performance**: JSON serialization optimized for WebSocket transmission
+4. **🏗️ Maintainability**: Single source of truth for all state management
+5. **🧪 Testability**: Predictable state changes with full history tracking
+
+### **Backend State Machine ✅ ENTERPRISE READY**
+All phases now use enterprise architecture:
+- **`PreparationState`**: ✅ Enterprise automatic broadcasting
+- **`DeclarationState`**: ✅ Enterprise automatic broadcasting  
+- **`TurnState`**: ✅ Enterprise automatic broadcasting
+- **`ScoringState`**: ✅ Enterprise automatic broadcasting
+
+Key classes **ALL ENTERPRISE**:
 - `GameAction`: Represents player/system actions with payloads
 - `GamePhase`: Enum defining the four main game phases  
 - `ActionType`: All possible action types in the game
+- `GameState`: Base class with enterprise `update_phase_data()` and `broadcast_custom_event()`
 
 ## Game Rules Summary
 

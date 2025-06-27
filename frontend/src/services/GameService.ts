@@ -202,6 +202,7 @@ export class GameService extends EventTarget {
     this.sendAction('start_next_round', {});
   }
 
+
   // ===== STATE MANAGEMENT =====
 
   /**
@@ -311,6 +312,15 @@ export class GameService extends EventTarget {
       totalScores: {},
       winners: [],
       
+      // Turn results phase state
+      turnWinner: null,
+      winningPlay: null,
+      playerPiles: {},
+      turnNumber: 1,
+      nextStarter: null,
+      allHandsEmpty: false,
+      willContinue: false,
+      
       // UI state
       isMyTurn: false,
       allowedActions: [],
@@ -339,6 +349,7 @@ export class GameService extends EventTarget {
       'redeal_executed',
       'declare',
       'play',
+      'turn_complete',
       'turn_resolved',
       'score_update',
       'round_complete',
@@ -441,6 +452,11 @@ export class GameService extends EventTarget {
       case 'turn_resolved':
         console.log(`🌐 PROCESS_EVENT_DEBUG: Handling turn_resolved event`);
         newState = this.handleTurnResolved(newState, data);
+        break;
+        
+      case 'turn_complete':
+        console.log(`🌐 PROCESS_EVENT_DEBUG: Handling turn_complete event`);
+        newState = this.handleTurnComplete(newState, data);
         break;
         
       case 'score_update':
@@ -579,6 +595,8 @@ export class GameService extends EventTarget {
           if (phaseData.current_turn_starter) newState.currentTurnStarter = phaseData.current_turn_starter;
           if (phaseData.current_player) newState.currentPlayer = phaseData.current_player;
           newState.currentTurnPlays = phaseData.current_turn_plays || [];
+          
+          console.log(`🔢 FRONTEND_TURN_DEBUG: phaseData.current_turn_number = ${phaseData.current_turn_number}`);
           newState.currentTurnNumber = phaseData.current_turn_number || 0;
           
           // Calculate turn-specific UI state
@@ -704,7 +722,16 @@ export class GameService extends EventTarget {
     console.log(`🎲 PLAY_DEBUG: turn_complete from backend:`, data.turn_complete);
     console.log(`🎲 PLAY_DEBUG: next_player from backend:`, data.next_player);
     
-    const newTurnPlays = [...state.currentTurnPlays];
+    // Check if we need to transition from turn_results back to turn phase
+    let newPhase = state.phase;
+    let newTurnPlays = [...state.currentTurnPlays];
+    
+    if (state.phase === 'turn_results') {
+      // We're getting a play event while in turn_results, this means a new turn has started
+      console.log(`🎯 PHASE_TRANSITION_DEBUG: Transitioning from turn_results to turn (new turn started)`);
+      newPhase = 'turn';
+      newTurnPlays = []; // Clear previous turn results
+    }
     
     // Transform backend data structure to frontend format
     const playData = {
@@ -728,8 +755,16 @@ export class GameService extends EventTarget {
     
     // Set required piece count from first player
     let requiredPieceCount = state.requiredPieceCount;
+    
+    // Reset required piece count when starting new turn
+    if (newPhase === 'turn' && state.phase === 'turn_results') {
+      requiredPieceCount = null;
+      console.log(`🎯 PHASE_TRANSITION_DEBUG: Reset requiredPieceCount for new turn`);
+    }
+    
     if (requiredPieceCount === null && data.pieces) {
       requiredPieceCount = data.pieces.length;
+      console.log(`🎯 PHASE_TRANSITION_DEBUG: Set requiredPieceCount to ${requiredPieceCount} from first play`);
     }
     
     // Update current player from the play event
@@ -750,9 +785,15 @@ export class GameService extends EventTarget {
     
     return {
       ...state,
+      phase: newPhase,
       currentTurnPlays: newTurnPlays,
       requiredPieceCount,
-      currentPlayer: newCurrentPlayer
+      currentPlayer: newCurrentPlayer,
+      // Clear turn results data when transitioning to new turn
+      ...(newPhase === 'turn' && state.phase === 'turn_results' ? {
+        turnWinner: null,
+        winningPlay: null
+      } : {})
     };
   }
 
@@ -766,6 +807,25 @@ export class GameService extends EventTarget {
       requiredPieceCount: null,
       myHand: data.my_hand || state.myHand,
       currentTurnNumber: state.currentTurnNumber + 1
+    };
+  }
+
+  /**
+   * Handle turn complete event - show turn results
+   */
+  private handleTurnComplete(state: GameState, data: any): GameState {
+    console.log(`🏆 TURN_COMPLETE_DEBUG: Received turn_complete event!`, data);
+    
+    return {
+      ...state,
+      phase: 'turn_results',
+      turnWinner: data.winner || null,
+      winningPlay: data.winning_play || null,
+      playerPiles: data.player_piles || {},
+      turnNumber: data.turn_number || state.currentTurnNumber || 1,
+      nextStarter: data.next_starter || null,
+      allHandsEmpty: data.all_hands_empty || false,
+      willContinue: data.will_continue || false
     };
   }
 
@@ -842,6 +902,9 @@ export class GameService extends EventTarget {
         return isMyTurnCalc;
       }
         
+      case 'turn_results':
+        return false; // No player-specific actions in turn results - everyone can continue
+        
       case 'scoring':
         return false; // No player actions in scoring
         
@@ -873,6 +936,10 @@ export class GameService extends EventTarget {
         if (this.calculateIsMyTurn(state)) {
           actions.push('playPieces');
         }
+        break;
+        
+      case 'turn_results':
+        // No actions needed - backend auto-continues
         break;
         
       case 'scoring':

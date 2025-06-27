@@ -99,6 +99,10 @@ export function TurnUI({
           <p className="text-red-200 text-lg">
             Turn {turnNumber} - {isMyTurn ? "Your turn to play" : "Waiting for other players"}
           </p>
+          {/* Debug output */}
+          <div className="text-xs text-yellow-300 mt-1">
+            🔢 DEBUG: TurnUI received turnNumber = {turnNumber}
+          </div>
           
           {requiredPieceCount !== null && (
             <div className="mt-2 inline-block bg-blue-500/20 border border-blue-500/30 rounded-lg px-3 py-1">

@@ -95,7 +95,7 @@ export interface GameState {
   playerName: string | null;
   
   // Game state
-  phase: 'waiting' | 'preparation' | 'declaration' | 'turn' | 'scoring';
+  phase: 'waiting' | 'preparation' | 'declaration' | 'turn' | 'turn_results' | 'scoring';
   currentRound: number;
   players: Player[];
   roundStarter: string | null;
@@ -150,6 +150,20 @@ export interface GameState {
   
   // Scoring phase
   playersWithScores?: any[];
+  
+  // Turn results phase
+  turnWinner?: string | null;
+  winningPlay?: {
+    pieces: string[];
+    value: number;
+    type: string;
+    pilesWon: number;
+  } | null;
+  playerPiles?: Record<string, number>;
+  turnNumber?: number;
+  nextStarter?: string | null;
+  allHandsEmpty?: boolean;
+  willContinue?: boolean;
   
   // Meta state
   lastEventSequence: number;
@@ -209,6 +223,7 @@ export type GameEventType =
   | 'redeal_executed'
   | 'declare'
   | 'play'
+  | 'turn_complete'
   | 'turn_resolved'
   | 'score_update'
   | 'round_complete'

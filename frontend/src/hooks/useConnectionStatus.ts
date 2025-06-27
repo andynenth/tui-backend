@@ -132,8 +132,9 @@ export function useConnectionStatus(roomId?: string): ConnectionState {
     serviceIntegration.addEventListener('healthIssue', handleNetworkEvent);
     serviceIntegration.addEventListener('initialized', handleNetworkEvent);
 
-    // Set up periodic updates for metrics that change over time
-    const metricsInterval = setInterval(updateConnectionState, 5000); // Update every 5 seconds
+    // Set up event listeners for metrics that change over time
+    serviceIntegration.addEventListener('metricsUpdated', handleNetworkEvent);
+    networkService.addEventListener('metricsUpdated', handleNetworkEvent);
 
     return () => {
       // Cleanup event listeners
@@ -143,8 +144,8 @@ export function useConnectionStatus(roomId?: string): ConnectionState {
       
       serviceIntegration.removeEventListener('healthIssue', handleNetworkEvent);
       serviceIntegration.removeEventListener('initialized', handleNetworkEvent);
-      
-      clearInterval(metricsInterval);
+      serviceIntegration.removeEventListener('metricsUpdated', handleNetworkEvent);
+      networkService.removeEventListener('metricsUpdated', handleNetworkEvent);
     };
   }, [updateConnectionState]);
 
@@ -177,14 +178,16 @@ export function useNetworkStatus(): NetworkStatus {
       networkService.addEventListener(eventType, updateNetworkStatus);
     });
 
-    // Periodic updates
-    const statusInterval = setInterval(updateNetworkStatus, 3000);
+    // Event-driven updates for service health changes
+    serviceIntegration.addEventListener('healthStatusChanged', updateNetworkStatus);
+    networkService.addEventListener('statusChanged', updateNetworkStatus);
 
     return () => {
       eventTypes.forEach(eventType => {
         networkService.removeEventListener(eventType, updateNetworkStatus);
       });
-      clearInterval(statusInterval);
+      serviceIntegration.removeEventListener('healthStatusChanged', updateNetworkStatus);
+      networkService.removeEventListener('statusChanged', updateNetworkStatus);
     };
   }, []);
 

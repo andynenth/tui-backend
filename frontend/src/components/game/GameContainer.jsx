@@ -21,6 +21,7 @@ import WaitingUI from './WaitingUI';
 import PreparationUI from './PreparationUI';
 import DeclarationUI from './DeclarationUI';
 import TurnUI from './TurnUI';
+import TurnResultsUI from './TurnResultsUI';
 import ScoringUI from './ScoringUI';
 import ErrorBoundary from "../ErrorBoundary";
 
@@ -82,6 +83,8 @@ export function GameContainer({ roomId }) {
   const turnProps = useMemo(() => {
     if (gameState.phase !== 'turn') return null;
     
+    console.log(`🔢 GAMECONTAINER_DEBUG: gameState.currentTurnNumber = ${gameState.currentTurnNumber}`);
+    
     return {
       // Data from backend
       myHand: gameState.myHand || [],
@@ -96,6 +99,20 @@ export function GameContainer({ roomId }) {
       
       // Actions
       onPlayPieces: gameActions.playPieces
+    };
+  }, [gameState, gameActions]);
+
+  const turnResultsProps = useMemo(() => {
+    if (gameState.phase !== 'turn_results') return null;
+    
+    return {
+      // Data from backend
+      winner: gameState.turnWinner || null,
+      winningPlay: gameState.winningPlay || null,
+      playerPiles: gameState.playerPiles || {},
+      players: gameState.players || [],
+      turnNumber: gameState.turnNumber || 1,
+      nextStarter: gameState.nextStarter || null
     };
   }, [gameState, gameActions]);
 
@@ -182,6 +199,9 @@ export function GameContainer({ roomId }) {
           case 'turn':
             return <TurnUI {...turnProps} />;
             
+          case 'turn_results':
+            return <TurnResultsUI {...turnResultsProps} />;
+            
           case 'scoring':
             return <ScoringUI {...scoringProps} />;
             
@@ -213,6 +233,8 @@ function getWaitingMessage(gameState, connectionStatus) {
       return "Declaration phase in progress...";
     case 'turn':
       return "Turn phase in progress...";
+    case 'turn_results':
+      return "Showing turn results...";
     case 'scoring':
       return "Calculating scores...";
     default:
