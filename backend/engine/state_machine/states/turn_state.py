@@ -281,6 +281,12 @@ class TurnState(GameState):
         })
         print(f"🎯 TURN_STATE_DEBUG: Phase data updated - current_player: {self.phase_data.get('current_player')}")
         
+        # Broadcast the play event with correct state
+        await self._broadcast_play_event(action.player_name, pieces, piece_count)
+        
+        # Notify bot manager about the play to trigger next bot
+        await self._notify_bot_manager_play(action.player_name)
+        
         return {
             'status': 'play_accepted',
             'player': action.player_name,
@@ -538,3 +544,48 @@ class TurnState(GameState):
         })
         
         self.logger.info(f"🔄 Restarted turn - starter: {self.current_turn_starter}, order: {self.turn_order}")
+    
+    async def _broadcast_play_event(self, player_name: str, pieces: List, piece_count: int):
+        """Broadcast play event with correct current player information"""
+        try:
+            # Import here to avoid circular imports
+            from backend.socket_manager import broadcast  
+            from engine.rules import get_play_type
+            
+            room_id = getattr(self.state_machine, 'room_id', 'unknown')
+            
+            # Get play type
+            play_type = get_play_type(pieces) if pieces else "UNKNOWN"
+            
+            # Broadcast with correct state information
+            await broadcast(room_id, "play", {
+                "player": player_name,
+                "pieces": [str(p) for p in pieces],
+                "valid": True,
+                "play_type": play_type,
+                "next_player": self._get_current_player(),  # This is now correct!
+                "required_count": self.required_piece_count,
+                "turn_complete": self.turn_complete
+            })
+            
+            print(f"🎯 TURN_STATE_DEBUG: Broadcasted play event - next_player: {self._get_current_player()}")
+            
+        except Exception as e:
+            self.logger.error(f"Failed to broadcast play event: {e}", exc_info=True)
+
+    async def _notify_bot_manager_play(self, player_name: str):
+        """Notify bot manager about a player's play to trigger next bot actions"""
+        try:
+            from ...bot_manager import BotManager
+            bot_manager = BotManager()
+            room_id = getattr(self.state_machine, 'room_id', 'unknown')
+            
+            print(f"🤖 TURN_STATE_DEBUG: Notifying bot manager about {player_name}'s play for room {room_id}")
+            
+            # Trigger bot manager to handle the next player's turn
+            await bot_manager.handle_game_event(room_id, "player_played", {
+                "player_name": player_name
+            })
+            
+        except Exception as e:
+            self.logger.error(f"Failed to notify bot manager about play: {e}", exc_info=True)
