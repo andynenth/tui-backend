@@ -99,8 +99,8 @@ class TurnState(GameState):
         game = self.state_machine.game
         
         # Check if all players have empty hands (main condition for scoring)
-        if hasattr(game, 'player_hands') and game.player_hands:
-            all_hands_empty = all(len(hand) == 0 for hand in game.player_hands.values())
+        if hasattr(game, 'players') and game.players:
+            all_hands_empty = all(len(player.hand) == 0 for player in game.players)
             if all_hands_empty:
                 self.logger.info("🏁 All hands empty - transitioning to scoring")
                 return GamePhase.SCORING
@@ -123,7 +123,11 @@ class TurnState(GameState):
         Start a new turn if the current turn is complete and hands are not empty.
         Returns True if a new turn was started, False if no action taken.
         """
+        print(f"🎯 START_NEXT_DEBUG: start_next_turn_if_needed() called")
+        print(f"🎯 START_NEXT_DEBUG: turn_complete: {self.turn_complete}")
+        
         if not self.turn_complete:
+            print(f"🎯 START_NEXT_DEBUG: Turn not complete, returning False")
             return False
         
         game = self.state_machine.game
@@ -131,16 +135,21 @@ class TurnState(GameState):
         # Check if any hands are empty
         if hasattr(game, 'player_hands') and game.player_hands:
             all_hands_empty = all(len(hand) == 0 for hand in game.player_hands.values())
+            print(f"🎯 START_NEXT_DEBUG: all_hands_empty: {all_hands_empty}")
             if all_hands_empty:
                 # Don't start new turn - should transition to scoring
+                print(f"🎯 START_NEXT_DEBUG: All hands empty, not starting new turn (should transition to scoring)")
                 return False
         
         # Start new turn
+        print(f"🎯 START_NEXT_DEBUG: Starting new turn with starter: {self.current_turn_starter}")
         await self._start_new_turn()
+        print(f"🎯 START_NEXT_DEBUG: _start_new_turn() completed")
         return True
     
     async def _start_new_turn(self) -> None:
         """Start a new turn with current starter"""
+        print(f"🎯 NEW_TURN_DEBUG: _start_new_turn() called with starter: {self.current_turn_starter}")
         game = self.state_machine.game
         
         # Get turn order starting from current starter
@@ -148,17 +157,22 @@ class TurnState(GameState):
             # Convert Player objects to strings
             player_objects = game.get_player_order_from(self.current_turn_starter)
             self.turn_order = [getattr(p, 'name', str(p)) for p in player_objects]
+            print(f"🎯 NEW_TURN_DEBUG: Got turn order from game.get_player_order_from: {self.turn_order}")
         else:
             # Fallback: create order from players list (ensure strings)
             players = getattr(game, 'players', [])
             player_names = [getattr(p, 'name', str(p)) for p in players]
+            print(f"🎯 NEW_TURN_DEBUG: Using fallback, player_names: {player_names}")
             if self.current_turn_starter in player_names:
                 start_idx = player_names.index(self.current_turn_starter)
                 self.turn_order = player_names[start_idx:] + player_names[:start_idx]
+                print(f"🎯 NEW_TURN_DEBUG: Reordered from index {start_idx}: {self.turn_order}")
             else:
                 self.turn_order = player_names
+                print(f"🎯 NEW_TURN_DEBUG: Starter not found, using original order: {self.turn_order}")
         
         # Reset turn state
+        print(f"🎯 NEW_TURN_DEBUG: Resetting turn state")
         self.turn_plays.clear()
         self.required_piece_count = None
         self.current_player_index = 0
@@ -174,8 +188,18 @@ class TurnState(GameState):
             'turn_plays': {},
             'turn_complete': False
         })
+        print(f"🎯 NEW_TURN_DEBUG: Updated phase data - current_player: {self.turn_order[0] if self.turn_order else None}")
         
         self.logger.info(f"🎯 New turn started - order: {self.turn_order}")
+        print(f"🎯 NEW_TURN_DEBUG: _start_new_turn() completed")
+        
+        # Notify bot manager about new turn
+        if self.turn_order and len(self.turn_order) > 0:
+            starter = self.turn_order[0]
+            print(f"🎯 NEW_TURN_DEBUG: Notifying bot manager about new turn starter: {starter}")
+            await self._notify_bot_manager_new_turn(starter)
+        else:
+            print(f"🎯 NEW_TURN_DEBUG: No turn order available, cannot notify bot manager")
     
     def _get_current_player(self) -> Optional[str]:
         """Get the player whose turn it is to play"""
@@ -299,10 +323,12 @@ class TurnState(GameState):
     
     async def _complete_turn(self) -> None:
         """Complete the current turn and determine winner"""
+        print(f"🎯 TURN_COMPLETE_DEBUG: _complete_turn() called")
         self.turn_complete = True
         
         # Determine winner
         self.winner = self._determine_turn_winner()
+        print(f"🎯 TURN_COMPLETE_DEBUG: Winner determined: {self.winner}")
         
         if self.winner:
             # Award piles to winner
@@ -310,11 +336,14 @@ class TurnState(GameState):
             await self._award_piles(self.winner, piles_won)
             
             self.logger.info(f"🏆 {self.winner} wins turn and gets {piles_won} piles")
+            print(f"🎯 TURN_COMPLETE_DEBUG: Awarded {piles_won} piles to {self.winner}")
             
             # Winner starts next turn
             self.current_turn_starter = self.winner
+            print(f"🎯 TURN_COMPLETE_DEBUG: Next turn starter set to: {self.winner}")
         else:
             self.logger.info("🤝 No winner this turn")
+            print(f"🎯 TURN_COMPLETE_DEBUG: No winner determined")
         
         # Update phase data with final results
         self.phase_data.update({
@@ -324,8 +353,10 @@ class TurnState(GameState):
             'turn_plays': self.turn_plays.copy(),  # Preserve the completed turn data
             'next_turn_starter': self.winner or self.current_turn_starter
         })
+        print(f"🎯 TURN_COMPLETE_DEBUG: Phase data updated with turn completion")
         
         await self._process_turn_completion()
+        print(f"🎯 TURN_COMPLETE_DEBUG: _process_turn_completion() finished")
     
     def _determine_turn_winner(self) -> Optional[str]:
         """Determine the winner of the current turn"""
@@ -388,25 +419,28 @@ class TurnState(GameState):
         game = self.state_machine.game
         
         # Remove played pieces from player hands
-        if hasattr(game, 'player_hands') and game.player_hands:
-            for player, play_data in self.turn_plays.items():
-                if player in game.player_hands:
+        if hasattr(game, 'players') and game.players:
+            for player in game.players:
+                player_name = player.name
+                if player_name in self.turn_plays:
+                    play_data = self.turn_plays[player_name]
                     pieces_to_remove = play_data['pieces']
+                    
                     # Remove each piece from player's hand
                     for piece in pieces_to_remove:
-                        if piece in game.player_hands[player]:
-                            game.player_hands[player].remove(piece)
+                        if piece in player.hand:
+                            player.hand.remove(piece)
         
         # Check if any hands are empty - this affects transition conditions
         all_hands_empty = True
-        if hasattr(game, 'player_hands') and game.player_hands:
-            for player, hand in game.player_hands.items():
-                if len(hand) > 0:
+        if hasattr(game, 'players') and game.players:
+            for player in game.players:
+                if len(player.hand) > 0:
                     all_hands_empty = False
-                    break
         
         if all_hands_empty:
             self.logger.info("🏁 All hands are now empty - round complete")
+            # The main process loop will handle the actual transition
         else:
             # Update starter for next turn
             if self.winner:
@@ -414,10 +448,11 @@ class TurnState(GameState):
                 # FIX: Also update turn order to put winner first
                 self._update_turn_order_for_new_starter(self.winner)
                 self.logger.info(f"🎯 Next turn starter: {self.winner}")
+                
+                # Try to start next turn immediately
+                await self.start_next_turn_if_needed()
             else:
                 self.logger.info(f"🤝 No winner - starter remains: {self.current_turn_starter}")
-        
-        # Turn is complete - external logic decides whether to start another turn
     
     async def _handle_player_disconnect(self, action: GameAction) -> Dict[str, Any]:
         """Handle player disconnection during turn"""
@@ -589,3 +624,20 @@ class TurnState(GameState):
             
         except Exception as e:
             self.logger.error(f"Failed to notify bot manager about play: {e}", exc_info=True)
+    
+    async def _notify_bot_manager_new_turn(self, starter: str):
+        """Notify bot manager about a new turn starting"""
+        try:
+            from ...bot_manager import BotManager
+            bot_manager = BotManager()
+            room_id = getattr(self.state_machine, 'room_id', 'unknown')
+            
+            print(f"🤖 NEW_TURN_DEBUG: Notifying bot manager about new turn starter {starter} for room {room_id}")
+            
+            # Trigger bot manager to handle the new turn
+            await bot_manager.handle_game_event(room_id, "turn_started", {
+                "starter": starter
+            })
+            
+        except Exception as e:
+            self.logger.error(f"Failed to notify bot manager about new turn: {e}", exc_info=True)

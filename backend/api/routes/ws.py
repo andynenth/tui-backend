@@ -558,8 +558,75 @@ async def websocket_endpoint(websocket: WebSocket, room_id: str):
                             "data": {"message": "Failed to process declaration"}
                         })
 
+                elif event_name == "play":
+                    # Handle piece playing (frontend sends 'play' event)
+                    player_name = event_data.get("player_name")
+                    indices = event_data.get("piece_indices", [])
+                    
+                    print(f"🎯 WS_PLAY_DEBUG: Received play event - player: {player_name}, indices: {indices}")
+                    
+                    if not player_name or not indices:
+                        await registered_ws.send_json({
+                            "event": "error",
+                            "data": {"message": "Player name and piece indices required"}
+                        })
+                        continue
+                        
+                    try:
+                        room = room_manager.get_room(room_id)
+                        if not room or not room.game_state_machine:
+                            await registered_ws.send_json({
+                                "event": "error",
+                                "data": {"message": "Game not found"}
+                            })
+                            continue
+                            
+                        # Create GameAction for piece playing (convert indices to pieces)
+                        from engine.state_machine.core import GameAction, ActionType
+                        
+                        # Convert indices to actual pieces
+                        pieces = []
+                        if hasattr(room.game, 'players'):
+                            # Find the player and get pieces from their hand by indices
+                            player = next((p for p in room.game.players if getattr(p, 'name', str(p)) == player_name), None)
+                            if player and hasattr(player, 'hand'):
+                                print(f"🎯 WS_PLAY_DEBUG: Found player {player_name} with hand size {len(player.hand)}")
+                                for idx in indices:
+                                    if 0 <= idx < len(player.hand):
+                                        pieces.append(player.hand[idx])
+                                        print(f"🎯 WS_PLAY_DEBUG: Added piece at index {idx}: {player.hand[idx]}")
+                        
+                        print(f"🎯 WS_PLAY_DEBUG: Final pieces to play: {[str(p) for p in pieces]}")
+                        
+                        action = GameAction(
+                            player_name=player_name,
+                            action_type=ActionType.PLAY_PIECES,
+                            payload={"pieces": pieces}  # Send actual pieces, not indices
+                        )
+                        
+                        print(f"🎯 WS_PLAY_DEBUG: Queuing action for state machine...")
+                        result = await room.game_state_machine.handle_action(action)
+                        print(f"🎯 WS_PLAY_DEBUG: State machine result: {result}")
+                        
+                        if result.get("success"):
+                            print(f"✅ Play queued: {player_name} -> {indices}")
+                        else:
+                            await registered_ws.send_json({
+                                "event": "error",
+                                "data": {"message": result.get("error", "Play failed")}
+                            })
+                            
+                    except Exception as e:
+                        print(f"❌ Play error: {e}")
+                        import traceback
+                        traceback.print_exc()
+                        await registered_ws.send_json({
+                            "event": "error",
+                            "data": {"message": "Failed to process piece play"}
+                        })
+
                 elif event_name == "play_pieces":
-                    # Handle piece playing
+                    # Handle piece playing (legacy handler)
                     player_name = event_data.get("player_name")
                     indices = event_data.get("indices", [])
                     
