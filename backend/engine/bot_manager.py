@@ -72,6 +72,9 @@ class GameBotHandler:
             if event == "player_declared":
                 print(f"📢 BOT_HANDLER_DEBUG: Handling declaration phase")
                 await self._handle_declaration_phase(data["player_name"])
+            elif event == "phase_change":
+                print(f"🚀 BOT_HANDLER_DEBUG: Handling enterprise phase change")
+                await self._handle_enterprise_phase_change(data)
             elif event == "player_played":
                 print(f"🎯 BOT_HANDLER_DEBUG: Handling play phase")
                 await self._handle_play_phase(data["player_name"])
@@ -89,6 +92,60 @@ class GameBotHandler:
                 await self._handle_redeal_decision(data)
             else:
                 print(f"⚠️ BOT_HANDLER_DEBUG: Unknown event '{event}' - ignoring")
+    
+    async def _handle_enterprise_phase_change(self, data: dict):
+        """
+        🚀 ENTERPRISE: Handle automatic phase change events from enterprise broadcasting
+        
+        This implements the proper enterprise architecture where bot manager automatically
+        reacts to phase data changes without manual calls from state machine.
+        """
+        phase = data.get("phase")
+        phase_data = data.get("phase_data", {})
+        reason = data.get("reason", "")
+        
+        print(f"🚀 ENTERPRISE_BOT_DEBUG: Processing phase change - phase: {phase}, reason: {reason}")
+        
+        if phase == "declaration":
+            current_declarer = data.get("current_declarer") or phase_data.get("current_declarer")
+            if current_declarer:
+                print(f"🚀 ENTERPRISE_BOT_DEBUG: Declaration phase - checking if {current_declarer} is a bot")
+                
+                # Check if current declarer is a bot
+                game_state = self._get_game_state()
+                if hasattr(game_state, 'players'):
+                    for player in game_state.players:
+                        if getattr(player, 'name', str(player)) == current_declarer:
+                            if getattr(player, 'is_bot', False):
+                                print(f"🤖 ENTERPRISE_BOT_DEBUG: Current declarer {current_declarer} is a bot - triggering declaration")
+                                # Get last declarer to continue sequence
+                                declarations = phase_data.get('declarations', {})
+                                declared_players = list(declarations.keys())
+                                last_declarer = declared_players[-1] if declared_players else ""
+                                await self._handle_declaration_phase(last_declarer)
+                            else:
+                                print(f"👤 ENTERPRISE_BOT_DEBUG: Current declarer {current_declarer} is human - waiting")
+                            break
+                            
+        elif phase == "turn":
+            current_player = data.get("current_player") or phase_data.get("current_player")
+            if current_player:
+                print(f"🚀 ENTERPRISE_BOT_DEBUG: Turn phase - checking if {current_player} is a bot")
+                
+                # Check if current player is a bot
+                game_state = self._get_game_state()
+                if hasattr(game_state, 'players'):
+                    for player in game_state.players:
+                        if getattr(player, 'name', str(player)) == current_player:
+                            if getattr(player, 'is_bot', False):
+                                print(f"🤖 ENTERPRISE_BOT_DEBUG: Current player {current_player} is a bot - triggering play")
+                                # Get last player to continue sequence
+                                turn_plays = phase_data.get('turn_plays', [])
+                                last_player = turn_plays[-1]['player'] if turn_plays else ""
+                                await self._handle_play_phase(last_player)
+                            else:
+                                print(f"👤 ENTERPRISE_BOT_DEBUG: Current player {current_player} is human - waiting")
+                            break
                 
     async def _handle_declaration_phase(self, last_declarer: str):
         """Handle bot declarations in order"""
@@ -445,18 +502,10 @@ class GameBotHandler:
         print(f"🚀 ENTERPRISE: Scoring completed - automatic broadcasting active")
         
         if not game_over:
-            # Start next round
-            await asyncio.sleep(2)
-            if self.state_machine:
-                # State machine should handle round preparation
-                # For now, use game directly as state machine may not have round prep methods exposed
-                round_data = self.game.prepare_round()
-            else:
-                round_data = self.game.prepare_round()
-            # 🚀 ENTERPRISE: Manual broadcast removed - state machine handles this automatically  
-            # All round start broadcasts are handled by enterprise architecture via update_phase_data()
-            print(f"🚀 ENTERPRISE: Round start completed - automatic broadcasting active")
-            await self._handle_round_start()
+            # 🚀 ENTERPRISE: State machine handles round preparation automatically
+            # No manual round preparation needed - transition to PREPARATION phase handles everything
+            print(f"🚀 ENTERPRISE: State machine will handle next round preparation automatically")
+            # The state machine's SCORING -> PREPARATION transition handles all round setup
             
     async def _handle_turn_start(self, starter_name: str):
         """Handle start of a new turn"""

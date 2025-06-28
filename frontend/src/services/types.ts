@@ -116,6 +116,7 @@ export interface GameState {
   // Turn phase state
   currentTurnStarter: string | null;
   turnOrder: string[];
+  currentPlayer: string | null;
   currentTurnPlays: TurnPlay[];
   requiredPieceCount: number | null;
   currentTurnNumber: number;
@@ -187,10 +188,12 @@ export interface PhaseData {
   declaration_order?: string[];
   current_declarer?: string;
   declarations?: Record<string, number>;
+  declaration_total?: number;
   
   // Turn phase
   turn_order?: string[];
   current_turn_starter?: string;
+  current_player?: string;
   current_turn_plays?: TurnPlay[];
   current_turn_number?: number;
   

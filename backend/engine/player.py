@@ -6,6 +6,7 @@ class Player:
         self.hand = []                    # List of current pieces in hand (max 8 at the start of each round)
         self.score = 0                    # Total score accumulated throughout the game
         self.declared = 0                 # Number of piles the player declared for this round
+        self.captured_piles = 0           # Number of pieces captured this round (reset each round)
         self.is_bot = is_bot              # Whether this player is AI-controlled
         self.zero_declares_in_a_row = 0   # Counter for how many rounds this player has declared 0 in a row
 
@@ -34,4 +35,5 @@ class Player:
     
     def reset_for_next_round(self):
         self.declared = 0
+        self.captured_piles = 0
         self.hand.clear()
