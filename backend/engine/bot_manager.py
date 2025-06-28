@@ -140,8 +140,18 @@ class GameBotHandler:
                             if getattr(player, 'is_bot', False):
                                 print(f"🤖 ENTERPRISE_BOT_DEBUG: Current player {current_player} is a bot - triggering play")
                                 # Get last player to continue sequence
-                                turn_plays = phase_data.get('turn_plays', [])
-                                last_player = turn_plays[-1]['player'] if turn_plays else ""
+                                turn_plays = phase_data.get('turn_plays', {})
+                                if isinstance(turn_plays, dict) and turn_plays:
+                                    # Get the last player from the dictionary (most recent timestamp)
+                                    last_play_time = 0
+                                    last_player = ""
+                                    for player_name, play_data in turn_plays.items():
+                                        timestamp = play_data.get('timestamp', 0)
+                                        if timestamp > last_play_time:
+                                            last_play_time = timestamp
+                                            last_player = player_name
+                                else:
+                                    last_player = ""
                                 await self._handle_play_phase(last_player)
                             else:
                                 print(f"👤 ENTERPRISE_BOT_DEBUG: Current player {current_player} is human - waiting")
