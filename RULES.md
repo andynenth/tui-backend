@@ -4,7 +4,7 @@
 
 Players aim to **accumulate points** by capturing piece sets ("piles") across multiple rounds.
 
-A player wins by reaching **50 points**, or having the **highest score after 20 rounds**.
+A player wins by reaching **50 points**.
 
 ---
 

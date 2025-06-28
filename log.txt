@@ -1,3 +1,148 @@
-Where did you get data for these blocks
-<div class="font-bold text-sm">相</div>
-<div class="font-medium leading-none text-xs">10</div>
+🤖 ENTERPRISE_DATA_DEBUG: Notifying bot manager about data change - reason: Player Bot 2 played 2 pieces
+🤖 ENTERPRISE_DATA_DEBUG: Turn phase - current player: Bot 3
+🔔 BOT_MANAGER_DEBUG: Received event 'phase_change' for room C067EC with data: {'phase': 'turn', 'phase_data': {'current_turn_starter': 'Andy', 'current_player': 'Bot 3', 'turn_order': ['Andy', 'Bot 2', 'Bot 3', 'Bot 4'], 'required_piece_count': 2, 'turn_plays': {'Andy': {'pieces': ['CANNON_BLACK(3)', 'CANNON_BLACK(3)'], 'piece_count': 2, 'play_type': 'unknown', 'play_value': 0, 'is_valid': True, 'timestamp': 1751127042.651711}, 'Bot 2': {'pieces': ['SOLDIER_BLACK(1)', 'SOLDIER_BLACK(1)'], 'piece_count': 2, 'play_type': 'unknown', 'play_value': 0, 'is_valid': True, 'timestamp': 1751127043.224046}}, 'turn_complete': False, 'current_turn_number': 1}, 'current_player': 'Bot 3', 'reason': 'Player Bot 2 played 2 pieces'}
+✅ BOT_MANAGER_DEBUG: Found handler for room C067EC, delegating to handler...
+🎮 BOT_HANDLER_DEBUG: Room C067EC handling event 'phase_change' with data: {'phase': 'turn', 'phase_data': {'current_turn_starter': 'Andy', 'current_player': 'Bot 3', 'turn_order': ['Andy', 'Bot 2', 'Bot 3', 'Bot 4'], 'required_piece_count': 2, 'turn_plays': {'Andy': {'pieces': ['CANNON_BLACK(3)', 'CANNON_BLACK(3)'], 'piece_count': 2, 'play_type': 'unknown', 'play_value': 0, 'is_valid': True, 'timestamp': 1751127042.651711}, 'Bot 2': {'pieces': ['SOLDIER_BLACK(1)', 'SOLDIER_BLACK(1)'], 'piece_count': 2, 'play_type': 'unknown', 'play_value': 0, 'is_valid': True, 'timestamp': 1751127043.224046}}, 'turn_complete': False, 'current_turn_number': 1}, 'current_player': 'Bot 3', 'reason': 'Player Bot 2 played 2 pieces'}
+🚀 BOT_HANDLER_DEBUG: Handling enterprise phase change
+🚀 ENTERPRISE_BOT_DEBUG: Processing phase change - phase: turn, reason: Player Bot 2 played 2 pieces
+🚀 ENTERPRISE_BOT_DEBUG: Turn phase - checking if Bot 3 is a bot
+🤖 ENTERPRISE_BOT_DEBUG: Current player Bot 3 is a bot - triggering play
+Failed to notify bot manager about data change: -1
+Traceback (most recent call last):
+  File "/Users/nrw/python/tui-project/liap-tui/backend/engine/state_machine/game_state_machine.py", line 312, in _notify_bot_manager_data_change
+    await bot_manager.handle_game_event(room_id, "phase_change", {
+  File "/Users/nrw/python/tui-project/liap-tui/backend/engine/bot_manager.py", line 49, in handle_game_event
+    await handler.handle_event(event, data)
+  File "/Users/nrw/python/tui-project/liap-tui/backend/engine/bot_manager.py", line 77, in handle_event
+    await self._handle_enterprise_phase_change(data)
+  File "/Users/nrw/python/tui-project/liap-tui/backend/engine/bot_manager.py", line 144, in _handle_enterprise_phase_change
+    last_player = turn_plays[-1]['player'] if turn_plays else ""
+                  ~~~~~~~~~~^^^^
+KeyError: -1
+🎯 UPDATE_DEBUG: Phase data updated - next_player should be: Bot 3
+DEBUG_WS: Message for event 'play' added to queue for room C067EC.
+🎯 TURN_STATE_DEBUG: Enterprise broadcast play event - next_player: Bot 3
+🤖 TURN_STATE_DEBUG: Notifying bot manager about Bot 2's play for room C067EC
+🔔 BOT_MANAGER_DEBUG: Received event 'player_played' for room C067EC with data: {'player_name': 'Bot 2'}
+✅ BOT_MANAGER_DEBUG: Found handler for room C067EC, delegating to handler...
+🎮 BOT_HANDLER_DEBUG: Room C067EC handling event 'player_played' with data: {'player_name': 'Bot 2'}
+🎯 BOT_HANDLER_DEBUG: Handling play phase
+🎯 PLAY_PHASE_DEBUG: Got from state machine - required_count: 2, turn_order: ['Andy', 'Bot 2', 'Bot 3', 'Bot 4']
+🎯 PLAY_PHASE_DEBUG: Last player: Bot 2, last_index: 1
+🎯 PLAY_PHASE_DEBUG: Checking next player 2: Bot 3
+🤖 PLAY_PHASE_DEBUG: Triggering bot play for Bot 3
+🤖 PLAY_PHASE_DEBUG: Bot Bot 3 thinking for 1.0s...
+DEBUG_WS_QUEUE: Room C067EC got message: phase_change
+DEBUG_WS: Broadcasting event 'phase_change' (op_id: unknown) to 1 clients in room C067EC.
+DEBUG_WS: Successfully sent 'phase_change' to a client in room C067EC.
+DEBUG_WS_QUEUE: Room C067EC got message: play
+DEBUG_WS: Broadcasting event 'play' (op_id: unknown) to 1 clients in room C067EC.
+DEBUG_WS: Successfully sent 'play' to a client in room C067EC.
+🎯 BOT_PLAY_DEBUG: Got required_piece_count from state machine: 2
+🤖 BOT chooses to play PAIR (4 pts): SOLDIER, SOLDIER
+🎯 BOT_PLAY_DEBUG: Final selection - 2 pieces: ['SOLDIER_RED(2)', 'SOLDIER_RED(2)']
+🔍 ACTION_QUEUE_DEBUG: Queued action: play_pieces from Bot 3 (queue size: 1)
+🎯 BOT_PLAY_DEBUG: Action queued successfully, state machine will handle updates and broadcasting
+✅ Bot Bot 3 action queued - state machine will broadcast with correct next_player
+🎯 TURN_STATE_DEBUG: Play pieces result: {'status': 'play_accepted', 'player': 'Bot 2', 'pieces': [SOLDIER_BLACK(1), SOLDIER_BLACK(1)], 'piece_count': 2, 'required_count': 2, 'next_player': 'Bot 3', 'turn_complete': False}
+✅ STATE_MACHINE_DEBUG: Action processed successfully
+🔍 ACTION_QUEUE_DEBUG: Dequeued action: play_pieces from Bot 3
+🔍 STATE_MACHINE_DEBUG: Processing 1 actions
+🔍 STATE_MACHINE_DEBUG: Processing action: play_pieces from Bot 3
+🎯 TURN_STATE_DEBUG: Processing action play_pieces from Bot 3
+🎯 TURN_STATE_DEBUG: _handle_play_pieces called for Bot 3
+🎯 TURN_STATE_DEBUG: Current state - player_index: 2, turn_order: ['Andy', 'Bot 2', 'Bot 3', 'Bot 4']
+🎯 TURN_STATE_DEBUG: Player Bot 3 playing 2 pieces: ['SOLDIER_RED(2)', 'SOLDIER_RED(2)']
+🎯 TURN_STATE_DEBUG: Before advancing - current_player_index: 2
+🎯 TURN_STATE_DEBUG: After advancing - current_player_index: 3
+🎯 TURN_STATE_DEBUG: Next player: Bot 4
+🎯 TURN_STATE_DEBUG: Round 2, Turn 1 - Bot 3 played, next: Bot 4
+🎯 UPDATE_DEBUG: About to update phase data with current_player: Bot 4, required_piece_count: 2
+DEBUG_WS: Message for event 'phase_change' added to queue for room C067EC.
+🤖 ENTERPRISE_DATA_DEBUG: Notifying bot manager about data change - reason: Player Bot 3 played 2 pieces
+🤖 ENTERPRISE_DATA_DEBUG: Turn phase - current player: Bot 4
+🔔 BOT_MANAGER_DEBUG: Received event 'phase_change' for room C067EC with data: {'phase': 'turn', 'phase_data': {'current_turn_starter': 'Andy', 'current_player': 'Bot 4', 'turn_order': ['Andy', 'Bot 2', 'Bot 3', 'Bot 4'], 'required_piece_count': 2, 'turn_plays': {'Andy': {'pieces': ['CANNON_BLACK(3)', 'CANNON_BLACK(3)'], 'piece_count': 2, 'play_type': 'unknown', 'play_value': 0, 'is_valid': True, 'timestamp': 1751127042.651711}, 'Bot 2': {'pieces': ['SOLDIER_BLACK(1)', 'SOLDIER_BLACK(1)'], 'piece_count': 2, 'play_type': 'unknown', 'play_value': 0, 'is_valid': True, 'timestamp': 1751127043.224046}, 'Bot 3': {'pieces': ['SOLDIER_RED(2)', 'SOLDIER_RED(2)'], 'piece_count': 2, 'play_type': 'unknown', 'play_value': 0, 'is_valid': True, 'timestamp': 1751127044.297668}}, 'turn_complete': False, 'current_turn_number': 1}, 'current_player': 'Bot 4', 'reason': 'Player Bot 3 played 2 pieces'}
+✅ BOT_MANAGER_DEBUG: Found handler for room C067EC, delegating to handler...
+🎮 BOT_HANDLER_DEBUG: Room C067EC handling event 'phase_change' with data: {'phase': 'turn', 'phase_data': {'current_turn_starter': 'Andy', 'current_player': 'Bot 4', 'turn_order': ['Andy', 'Bot 2', 'Bot 3', 'Bot 4'], 'required_piece_count': 2, 'turn_plays': {'Andy': {'pieces': ['CANNON_BLACK(3)', 'CANNON_BLACK(3)'], 'piece_count': 2, 'play_type': 'unknown', 'play_value': 0, 'is_valid': True, 'timestamp': 1751127042.651711}, 'Bot 2': {'pieces': ['SOLDIER_BLACK(1)', 'SOLDIER_BLACK(1)'], 'piece_count': 2, 'play_type': 'unknown', 'play_value': 0, 'is_valid': True, 'timestamp': 1751127043.224046}, 'Bot 3': {'pieces': ['SOLDIER_RED(2)', 'SOLDIER_RED(2)'], 'piece_count': 2, 'play_type': 'unknown', 'play_value': 0, 'is_valid': True, 'timestamp': 1751127044.297668}}, 'turn_complete': False, 'current_turn_number': 1}, 'current_player': 'Bot 4', 'reason': 'Player Bot 3 played 2 pieces'}
+🚀 BOT_HANDLER_DEBUG: Handling enterprise phase change
+🚀 ENTERPRISE_BOT_DEBUG: Processing phase change - phase: turn, reason: Player Bot 3 played 2 pieces
+🚀 ENTERPRISE_BOT_DEBUG: Turn phase - checking if Bot 4 is a bot
+🤖 ENTERPRISE_BOT_DEBUG: Current player Bot 4 is a bot - triggering play
+Failed to notify bot manager about data change: -1
+Traceback (most recent call last):
+  File "/Users/nrw/python/tui-project/liap-tui/backend/engine/state_machine/game_state_machine.py", line 312, in _notify_bot_manager_data_change
+    await bot_manager.handle_game_event(room_id, "phase_change", {
+  File "/Users/nrw/python/tui-project/liap-tui/backend/engine/bot_manager.py", line 49, in handle_game_event
+    await handler.handle_event(event, data)
+  File "/Users/nrw/python/tui-project/liap-tui/backend/engine/bot_manager.py", line 77, in handle_event
+    await self._handle_enterprise_phase_change(data)
+  File "/Users/nrw/python/tui-project/liap-tui/backend/engine/bot_manager.py", line 144, in _handle_enterprise_phase_change
+    last_player = turn_plays[-1]['player'] if turn_plays else ""
+                  ~~~~~~~~~~^^^^
+KeyError: -1
+🎯 UPDATE_DEBUG: Phase data updated - next_player should be: Bot 4
+DEBUG_WS: Message for event 'play' added to queue for room C067EC.
+🎯 TURN_STATE_DEBUG: Enterprise broadcast play event - next_player: Bot 4
+🤖 TURN_STATE_DEBUG: Notifying bot manager about Bot 3's play for room C067EC
+🔔 BOT_MANAGER_DEBUG: Received event 'player_played' for room C067EC with data: {'player_name': 'Bot 3'}
+✅ BOT_MANAGER_DEBUG: Found handler for room C067EC, delegating to handler...
+🎮 BOT_HANDLER_DEBUG: Room C067EC handling event 'player_played' with data: {'player_name': 'Bot 3'}
+🎯 BOT_HANDLER_DEBUG: Handling play phase
+🎯 PLAY_PHASE_DEBUG: Got from state machine - required_count: 2, turn_order: ['Andy', 'Bot 2', 'Bot 3', 'Bot 4']
+🎯 PLAY_PHASE_DEBUG: Last player: Bot 3, last_index: 2
+🎯 PLAY_PHASE_DEBUG: Checking next player 3: Bot 4
+🤖 PLAY_PHASE_DEBUG: Triggering bot play for Bot 4
+🤖 PLAY_PHASE_DEBUG: Bot Bot 4 thinking for 0.8s...
+DEBUG_WS_QUEUE: Room C067EC got message: phase_change
+DEBUG_WS: Broadcasting event 'phase_change' (op_id: unknown) to 1 clients in room C067EC.
+DEBUG_WS: Successfully sent 'phase_change' to a client in room C067EC.
+DEBUG_WS_QUEUE: Room C067EC got message: play
+DEBUG_WS: Broadcasting event 'play' (op_id: unknown) to 1 clients in room C067EC.
+DEBUG_WS: Successfully sent 'play' to a client in room C067EC.
+🎯 BOT_PLAY_DEBUG: Got required_piece_count from state machine: 2
+🤖 BOT chooses to play PAIR (8 pts): CANNON, CANNON
+🎯 BOT_PLAY_DEBUG: Final selection - 2 pieces: ['CANNON_RED(4)', 'CANNON_RED(4)']
+🔍 ACTION_QUEUE_DEBUG: Queued action: play_pieces from Bot 4 (queue size: 1)
+🎯 BOT_PLAY_DEBUG: Action queued successfully, state machine will handle updates and broadcasting
+✅ Bot Bot 4 action queued - state machine will broadcast with correct next_player
+🎯 TURN_STATE_DEBUG: Play pieces result: {'status': 'play_accepted', 'player': 'Bot 3', 'pieces': [SOLDIER_RED(2), SOLDIER_RED(2)], 'piece_count': 2, 'required_count': 2, 'next_player': 'Bot 4', 'turn_complete': False}
+✅ STATE_MACHINE_DEBUG: Action processed successfully
+🔍 ACTION_QUEUE_DEBUG: Dequeued action: play_pieces from Bot 4
+🔍 STATE_MACHINE_DEBUG: Processing 1 actions
+🔍 STATE_MACHINE_DEBUG: Processing action: play_pieces from Bot 4
+🎯 TURN_STATE_DEBUG: Processing action play_pieces from Bot 4
+🎯 TURN_STATE_DEBUG: _handle_play_pieces called for Bot 4
+🎯 TURN_STATE_DEBUG: Current state - player_index: 3, turn_order: ['Andy', 'Bot 2', 'Bot 3', 'Bot 4']
+🎯 TURN_STATE_DEBUG: Player Bot 4 playing 2 pieces: ['CANNON_RED(4)', 'CANNON_RED(4)']
+🎯 TURN_STATE_DEBUG: Before advancing - current_player_index: 3
+🎯 TURN_STATE_DEBUG: After advancing - current_player_index: 4
+🎯 TURN_STATE_DEBUG: Next player: None
+🎯 TURN_STATE_DEBUG: Round 2, Turn 1 - Bot 4 played, next: None
+🎯 TURN_STATE_DEBUG: Turn complete! Calling _complete_turn()
+🎯 TURN_COMPLETE_DEBUG: Round 2, Turn 1 _complete_turn() called
+🎯 TURN_COMPLETE_DEBUG: Round 2, Turn 1 Winner determined: Bot 4
+🎯 CAPTURED_PILES_DEBUG: Bot 4 captured_piles += 2 = 2
+🎯 TURN_COMPLETE_DEBUG: Awarded 2 piles to Bot 4
+🎯 TURN_COMPLETE_DEBUG: Next turn starter set to: Bot 4
+DEBUG_WS: Message for event 'phase_change' added to queue for room C067EC.
+🤖 ENTERPRISE_DATA_DEBUG: Notifying bot manager about data change - reason: Turn completed - winner: Bot 4
+🤖 ENTERPRISE_DATA_DEBUG: Turn phase - current player: Bot 4
+🔔 BOT_MANAGER_DEBUG: Received event 'phase_change' for room C067EC with data: {'phase': 'turn', 'phase_data': {'current_turn_starter': 'Andy', 'current_player': 'Bot 4', 'turn_order': ['Andy', 'Bot 2', 'Bot 3', 'Bot 4'], 'required_piece_count': 2, 'turn_plays': {'Andy': {'pieces': ['CANNON_BLACK(3)', 'CANNON_BLACK(3)'], 'piece_count': 2, 'play_type': 'unknown', 'play_value': 0, 'is_valid': True, 'timestamp': 1751127042.651711}, 'Bot 2': {'pieces': ['SOLDIER_BLACK(1)', 'SOLDIER_BLACK(1)'], 'piece_count': 2, 'play_type': 'unknown', 'play_value': 0, 'is_valid': True, 'timestamp': 1751127043.224046}, 'Bot 3': {'pieces': ['SOLDIER_RED(2)', 'SOLDIER_RED(2)'], 'piece_count': 2, 'play_type': 'unknown', 'play_value': 0, 'is_valid': True, 'timestamp': 1751127044.297668}, 'Bot 4': {'pieces': ['CANNON_RED(4)', 'CANNON_RED(4)'], 'piece_count': 2, 'play_type': 'unknown', 'play_value': 0, 'is_valid': True, 'timestamp': 1751127045.224878}}, 'turn_complete': True, 'current_turn_number': 1, 'winner': 'Bot 4', 'piles_won': 2, 'next_turn_starter': 'Bot 4'}, 'current_player': 'Bot 4', 'reason': 'Turn completed - winner: Bot 4'}
+✅ BOT_MANAGER_DEBUG: Found handler for room C067EC, delegating to handler...
+🎮 BOT_HANDLER_DEBUG: Room C067EC handling event 'phase_change' with data: {'phase': 'turn', 'phase_data': {'current_turn_starter': 'Andy', 'current_player': 'Bot 4', 'turn_order': ['Andy', 'Bot 2', 'Bot 3', 'Bot 4'], 'required_piece_count': 2, 'turn_plays': {'Andy': {'pieces': ['CANNON_BLACK(3)', 'CANNON_BLACK(3)'], 'piece_count': 2, 'play_type': 'unknown', 'play_value': 0, 'is_valid': True, 'timestamp': 1751127042.651711}, 'Bot 2': {'pieces': ['SOLDIER_BLACK(1)', 'SOLDIER_BLACK(1)'], 'piece_count': 2, 'play_type': 'unknown', 'play_value': 0, 'is_valid': True, 'timestamp': 1751127043.224046}, 'Bot 3': {'pieces': ['SOLDIER_RED(2)', 'SOLDIER_RED(2)'], 'piece_count': 2, 'play_type': 'unknown', 'play_value': 0, 'is_valid': True, 'timestamp': 1751127044.297668}, 'Bot 4': {'pieces': ['CANNON_RED(4)', 'CANNON_RED(4)'], 'piece_count': 2, 'play_type': 'unknown', 'play_value': 0, 'is_valid': True, 'timestamp': 1751127045.224878}}, 'turn_complete': True, 'current_turn_number': 1, 'winner': 'Bot 4', 'piles_won': 2, 'next_turn_starter': 'Bot 4'}, 'current_player': 'Bot 4', 'reason': 'Turn completed - winner: Bot 4'}
+🚀 BOT_HANDLER_DEBUG: Handling enterprise phase change
+🚀 ENTERPRISE_BOT_DEBUG: Processing phase change - phase: turn, reason: Turn completed - winner: Bot 4
+🚀 ENTERPRISE_BOT_DEBUG: Turn phase - checking if Bot 4 is a bot
+🤖 ENTERPRISE_BOT_DEBUG: Current player Bot 4 is a bot - triggering play
+Failed to notify bot manager about data change: -1
+Traceback (most recent call last):
+  File "/Users/nrw/python/tui-project/liap-tui/backend/engine/state_machine/game_state_machine.py", line 312, in _notify_bot_manager_data_change
+    await bot_manager.handle_game_event(room_id, "phase_change", {
+  File "/Users/nrw/python/tui-project/liap-tui/backend/engine/bot_manager.py", line 49, in handle_game_event
+    await handler.handle_event(event, data)
+  File "/Users/nrw/python/tui-project/liap-tui/backend/engine/bot_manager.py", line 77, in handle_event
+    await self._handle_enterprise_phase_change(data)
+  File "/Users/nrw/python/tui-project/liap-tui/backend/engine/bot_manager.py", line 144, in _handle_enterprise_phase_change
+    last_player = turn_plays[-1]['player'] if turn_plays else ""
+                  ~~~~~~~~~~^^^^
+KeyError: -1
