@@ -191,7 +191,15 @@ export class GameService extends EventTarget {
       throw new Error(`Must play exactly ${this.state.requiredPieceCount} pieces`);
     }
 
-    this.sendAction('play', { piece_indices: indices, player_name: this.state.playerName });
+    // Calculate total value of selected pieces
+    const selectedPieces = indices.map(i => this.state.myHand[i]);
+    const totalValue = selectedPieces.reduce((sum, piece) => sum + (piece.point || piece.value || 0), 0);
+
+    this.sendAction('play', { 
+      piece_indices: indices, 
+      player_name: this.state.playerName,
+      play_value: totalValue
+    });
   }
 
   /**
@@ -303,6 +311,7 @@ export class GameService extends EventTarget {
       // Turn phase state
       currentTurnStarter: null,
       turnOrder: [],
+      currentPlayer: null,
       currentTurnPlays: [],
       requiredPieceCount: null,
       currentTurnNumber: 0,
@@ -510,7 +519,7 @@ export class GameService extends EventTarget {
             const [, name, value] = match;
             const [piece, color] = name.split('_');
             return {
-              color: color, // Use 'color' property that GamePiece expects
+              color, // Use 'color' property that GamePiece expects
               point: parseInt(value),
               kind: piece,
               name: piece.toLowerCase(),
@@ -576,13 +585,22 @@ export class GameService extends EventTarget {
           newState.declarations = phaseData.declarations || {};
           
           // Calculate declaration-specific UI state
-          if (phaseData.declarations && phaseData.players) {
-            newState.currentTotal = Object.values(phaseData.declarations).reduce((sum: number, val: number) => sum + val, 0);
+          // Use backend's calculated values first, fallback to frontend calculation
+          newState.currentTotal = phaseData.declaration_total ?? 
+            Object.values(phaseData.declarations || {}).reduce((sum: number, val: number) => sum + val, 0);
+          
+          if (phaseData.declaration_order) {
             newState.declarationProgress = {
-              declared: Object.keys(phaseData.declarations).length,
+              declared: Object.keys(phaseData.declarations || {}).length,
+              total: phaseData.declaration_order.length
+            };
+            newState.isLastPlayer = Object.keys(phaseData.declarations || {}).length === phaseData.declaration_order.length - 1;
+          } else if (phaseData.players) {
+            newState.declarationProgress = {
+              declared: Object.keys(phaseData.declarations || {}).length,
               total: phaseData.players.length
             };
-            newState.isLastPlayer = Object.keys(phaseData.declarations).length === phaseData.players.length - 1;
+            newState.isLastPlayer = Object.keys(phaseData.declarations || {}).length === phaseData.players.length - 1;
           }
           if (newState.myHand.length > 0) {
             newState.estimatedPiles = this.calculateEstimatedPiles(newState.myHand);
@@ -594,7 +612,43 @@ export class GameService extends EventTarget {
           if (phaseData.turn_order) newState.turnOrder = phaseData.turn_order;
           if (phaseData.current_turn_starter) newState.currentTurnStarter = phaseData.current_turn_starter;
           if (phaseData.current_player) newState.currentPlayer = phaseData.current_player;
-          newState.currentTurnPlays = phaseData.current_turn_plays || [];
+          
+          // 🚀 ENTERPRISE FIX: Use backend's required_piece_count as single source of truth
+          if (phaseData.required_piece_count !== undefined) {
+            newState.requiredPieceCount = phaseData.required_piece_count;
+            console.log(`🎯 REQUIRED_COUNT_FIX: Set requiredPieceCount to ${phaseData.required_piece_count} from backend phase_data`);
+          }
+          
+          // 🎯 ROUND/TURN TRACKING DEBUG: Log comprehensive turn state
+          const roundNum = newState.currentRound || 0;
+          const turnNum = phaseData.current_turn_number || 0;
+          const starter = phaseData.current_turn_starter || 'unknown';
+          const currentPlayer = phaseData.current_player || 'unknown';
+          const requiredCount = phaseData.required_piece_count;
+          const playsCount = phaseData.turn_plays ? Object.keys(phaseData.turn_plays).length : 0;
+          
+          console.log(`🔢 FRONTEND_ROUND_TURN_DEBUG: Round ${roundNum}, Turn ${turnNum}`);
+          console.log(`🎯 FRONTEND_TURN_STATE: Starter: ${starter}, Current: ${currentPlayer}, Required: ${requiredCount}, Plays: ${playsCount}`);
+          
+          // Convert backend's turn_plays dictionary to frontend's currentTurnPlays array
+          if (phaseData.turn_plays && typeof phaseData.turn_plays === 'object') {
+            newState.currentTurnPlays = Object.entries(phaseData.turn_plays).map(([playerName, playData]: [string, any]) => {
+              const playType = playData.play_type || 'UNKNOWN';
+              // A play is invalid if explicitly marked as invalid OR if play_type is 'INVALID'
+              const isValid = playData.is_valid !== false && playType !== 'INVALID';
+              
+              return {
+                player: playerName,
+                cards: playData.pieces || [],
+                isValid,
+                playType,
+                totalValue: playData.play_value || 0
+              };
+            });
+            console.log(`🎲 TURN_PLAYS_DEBUG: Converted ${Object.keys(phaseData.turn_plays).length} plays to currentTurnPlays:`, newState.currentTurnPlays);
+          } else {
+            newState.currentTurnPlays = phaseData.current_turn_plays || [];
+          }
           
           console.log(`🔢 FRONTEND_TURN_DEBUG: phaseData.current_turn_number = ${phaseData.current_turn_number}`);
           newState.currentTurnNumber = phaseData.current_turn_number || 0;
@@ -605,11 +659,68 @@ export class GameService extends EventTarget {
           break;
           
         case 'scoring':
-          newState.roundScores = phaseData.round_scores || {};
-          newState.totalScores = phaseData.total_scores || {};
+          console.log('🏆 SCORING_FRONTEND_DEBUG: Processing scoring phase data');
+          console.log('📊 Raw phase data:', phaseData);
+          console.log('👥 Available players in newState:', newState.players);
+          
+          // Process backend scoring objects to extract numeric values
+          const processedRoundScores: Record<string, number> = {};
+          const rawRoundScores = phaseData.round_scores || {};
+          
+          console.log('📊 SCORING_DEBUG: Raw round scores:', rawRoundScores);
+          
+          Object.entries(rawRoundScores).forEach(([playerName, scoreData]) => {
+            // Handle backend scoring objects vs simple numbers
+            if (typeof scoreData === 'object' && scoreData !== null) {
+              if (scoreData.final_score !== undefined) {
+                processedRoundScores[playerName] = scoreData.final_score;
+              } else {
+                // Object without final_score - default to 0
+                processedRoundScores[playerName] = 0;
+              }
+            } else {
+              // Simple number or null
+              processedRoundScores[playerName] = scoreData || 0;
+            }
+          });
+          
+          newState.roundScores = processedRoundScores;
+          
+          // Also process total_scores in case they're objects
+          const processedTotalScores: Record<string, number> = {};
+          const rawTotalScores = phaseData.total_scores || {};
+          
+          Object.entries(rawTotalScores).forEach(([playerName, scoreData]) => {
+            // Handle backend scoring objects vs simple numbers
+            if (typeof scoreData === 'object' && scoreData !== null) {
+              if (scoreData.total_score !== undefined) {
+                processedTotalScores[playerName] = scoreData.total_score;
+              } else {
+                // Object without total_score - default to 0
+                processedTotalScores[playerName] = 0;
+              }
+            } else {
+              // Simple number or null
+              processedTotalScores[playerName] = scoreData || 0;
+            }
+          });
+          
+          newState.totalScores = processedTotalScores;
+          
+          // Set scoring-specific state
+          newState.gameOver = phaseData.game_complete || false;
+          newState.winners = phaseData.winners || [];
+          newState.redealMultiplier = phaseData.redeal_multiplier || 1;
+          
+          console.log('✅ SCORING_DEBUG: Processed round scores:', processedRoundScores);
+          console.log('✅ SCORING_DEBUG: Processed total scores:', processedTotalScores);
+          console.log('✅ SCORING_DEBUG: Game over:', newState.gameOver);
+          console.log('✅ SCORING_DEBUG: Winners:', newState.winners);
+          console.log('✅ SCORING_DEBUG: Redeal multiplier:', newState.redealMultiplier);
           
           // Calculate scoring-specific UI state
           if (phaseData.players && phaseData.round_scores && phaseData.total_scores) {
+            console.log('🧮 SCORING_DEBUG: Calculating playersWithScores...');
             newState.playersWithScores = this.calculatePlayersWithScores(
               phaseData.players, 
               phaseData.round_scores, 
@@ -617,6 +728,27 @@ export class GameService extends EventTarget {
               phaseData.redeal_multiplier || 1,
               phaseData.winners || []
             );
+            console.log('🧮 SCORING_DEBUG: Generated playersWithScores:', newState.playersWithScores);
+          } else {
+            console.log('⚠️ SCORING_DEBUG: Missing data for playersWithScores calculation');
+            console.log('   players available:', !!phaseData.players, phaseData.players);
+            console.log('   round_scores available:', !!phaseData.round_scores, Object.keys(phaseData.round_scores || {}));
+            console.log('   total_scores available:', !!phaseData.total_scores, phaseData.total_scores);
+            
+            // Fallback: try to use newState.players if phaseData.players is missing
+            if (!phaseData.players && newState.players && newState.players.length > 0) {
+              console.log('🔧 SCORING_DEBUG: Using newState.players as fallback...');
+              if (phaseData.round_scores && phaseData.total_scores) {
+                newState.playersWithScores = this.calculatePlayersWithScores(
+                  newState.players,
+                  phaseData.round_scores,
+                  phaseData.total_scores,
+                  phaseData.redeal_multiplier || 1,
+                  phaseData.winners || []
+                );
+                console.log('🧮 SCORING_DEBUG: Generated playersWithScores with fallback:', newState.playersWithScores);
+              }
+            }
           }
           break;
       }
@@ -717,23 +849,28 @@ export class GameService extends EventTarget {
    * Handle play event
    */
   private handlePlay(state: GameState, data: any): GameState {
-    console.log(`🎲 PLAY_DEBUG: Received play event!`, data);
+    // 🎯 ROUND/TURN TRACKING DEBUG: Log play event with round/turn context
+    const roundNum = state.currentRound || 0;
+    const turnNum = state.currentTurnNumber || 0;
+    const requiredCount = data.required_count || state.requiredPieceCount;
+    
+    console.log(`🎲 PLAY_DEBUG: Round ${roundNum}, Turn ${turnNum} - ${data.player} played ${data.pieces?.length || 0} pieces`);
+    console.log(`🎲 PLAY_DEBUG: Required count: ${requiredCount}, Turn complete: ${data.turn_complete}, Next: ${data.next_player}`);
     console.log(`🎲 PLAY_DEBUG: Pieces data:`, data.pieces);
-    console.log(`🎲 PLAY_DEBUG: turn_complete from backend:`, data.turn_complete);
-    console.log(`🎲 PLAY_DEBUG: next_player from backend:`, data.next_player);
+    
+    // 🚀 ENTERPRISE: With enterprise architecture, phase_change events contain complete turn_plays data
+    // Individual play events are only used for immediate UI feedback, phase_change has authoritative data
     
     // Check if we need to transition from turn_results back to turn phase
     let newPhase = state.phase;
-    let newTurnPlays = [...state.currentTurnPlays];
     
     if (state.phase === 'turn_results') {
       // We're getting a play event while in turn_results, this means a new turn has started
       console.log(`🎯 PHASE_TRANSITION_DEBUG: Transitioning from turn_results to turn (new turn started)`);
       newPhase = 'turn';
-      newTurnPlays = []; // Clear previous turn results
     }
     
-    // Transform backend data structure to frontend format
+    // Transform backend data structure to frontend format for immediate feedback
     const playData = {
       player: data.player,
       cards: data.pieces || [], // Backend sends 'pieces', frontend expects 'cards'
@@ -745,26 +882,19 @@ export class GameService extends EventTarget {
     console.log(`🎲 PLAY_DEBUG: Transformed play data:`, playData);
     console.log(`🎲 PLAY_DEBUG: Cards array:`, playData.cards);
     
-    // Add or update player's play
-    const existingIndex = newTurnPlays.findIndex(play => play.player === data.player);
-    if (existingIndex >= 0) {
-      newTurnPlays[existingIndex] = playData;
-    } else {
-      newTurnPlays.push(playData);
-    }
+    // Note: We don't update currentTurnPlays here anymore since enterprise phase_change events
+    // contain the authoritative turn_plays data. This prevents conflicts and ensures consistency.
     
-    // Set required piece count from first player
+    // 🚀 ENTERPRISE FIX: Don't set requiredPieceCount from play events
+    // The backend phase_change events contain the authoritative required_piece_count
+    // Setting it here from play events can cause stale data conflicts
+    console.log(`🎯 PLAY_EVENT_DEBUG: NOT setting requiredPieceCount from play event (backend phase_change is authoritative)`);
+    
+    // Reset required piece count when starting new turn  
     let requiredPieceCount = state.requiredPieceCount;
-    
-    // Reset required piece count when starting new turn
     if (newPhase === 'turn' && state.phase === 'turn_results') {
       requiredPieceCount = null;
       console.log(`🎯 PHASE_TRANSITION_DEBUG: Reset requiredPieceCount for new turn`);
-    }
-    
-    if (requiredPieceCount === null && data.pieces) {
-      requiredPieceCount = data.pieces.length;
-      console.log(`🎯 PHASE_TRANSITION_DEBUG: Set requiredPieceCount to ${requiredPieceCount} from first play`);
     }
     
     // Update current player from the play event
@@ -779,20 +909,20 @@ export class GameService extends EventTarget {
     // Check if turn is complete
     if (data.turn_complete) {
       console.log(`🎯 TURN_COMPLETE_FRONTEND: Turn marked as complete by backend`);
-      console.log(`🎯 TURN_COMPLETE_FRONTEND: Current turn plays count:`, newTurnPlays.length);
-      console.log(`🎯 TURN_COMPLETE_FRONTEND: All plays:`, newTurnPlays.map(p => `${p.player}: ${p.cards.join(', ')}`));
     }
     
     return {
       ...state,
       phase: newPhase,
-      currentTurnPlays: newTurnPlays,
+      // Don't override currentTurnPlays - let phase_change events be authoritative 
+      // currentTurnPlays: managed by phase_change events in enterprise architecture
       requiredPieceCount,
       currentPlayer: newCurrentPlayer,
       // Clear turn results data when transitioning to new turn
       ...(newPhase === 'turn' && state.phase === 'turn_results' ? {
         turnWinner: null,
-        winningPlay: null
+        winningPlay: null,
+        currentTurnPlays: [] // Clear turn plays when transitioning to new turn
       } : {})
     };
   }
@@ -814,7 +944,14 @@ export class GameService extends EventTarget {
    * Handle turn complete event - show turn results
    */
   private handleTurnComplete(state: GameState, data: any): GameState {
-    console.log(`🏆 TURN_COMPLETE_DEBUG: Received turn_complete event!`, data);
+    // 🎯 ROUND/TURN TRACKING DEBUG: Log turn complete with round/turn context
+    const roundNum = state.currentRound || 0;
+    const turnNum = data.turn_number || state.currentTurnNumber || 0;
+    const winner = data.winner || 'No winner';
+    
+    console.log(`🏆 TURN_COMPLETE_DEBUG: Round ${roundNum}, Turn ${turnNum} completed!`);
+    console.log(`🏆 TURN_WINNER_DEBUG: Winner: ${winner}, Next starter: ${data.next_starter || 'Unknown'}`);
+    console.log(`🏆 TURN_COMPLETE_DATA:`, data);
     
     return {
       ...state,
@@ -1239,20 +1376,45 @@ export class GameService extends EventTarget {
    */
   private calculatePlayersWithScores(
     players: any[], 
-    roundScores: Record<string, number>, 
+    roundScores: Record<string, any>, // Changed from number to any to handle backend objects
     totalScores: Record<string, number>,
     redealMultiplier: number,
     winners: string[]
   ): any[] {
-    return players.map(player => ({
-      ...player,
-      roundScore: roundScores[player.name] || 0,
-      totalScore: totalScores[player.name] || 0,
-      baseScore: Math.round((roundScores[player.name] || 0) / Math.max(1, redealMultiplier)),
-      actualPiles: this.deriveActualPiles(player, roundScores[player.name] || 0),
-      scoreExplanation: this.generateScoreExplanation(player, roundScores[player.name] || 0, redealMultiplier),
-      isWinner: winners.includes(player.name)
-    })).sort((a, b) => b.totalScore - a.totalScore);
+    return players.map(player => {
+      // Handle backend scoring objects vs simple numbers
+      const playerRoundScore = roundScores[player.name];
+      const roundScore = (typeof playerRoundScore === 'object' && playerRoundScore?.final_score !== undefined) 
+        ? playerRoundScore.final_score 
+        : (playerRoundScore || 0);
+      
+      const baseScore = (typeof playerRoundScore === 'object' && playerRoundScore?.base_score !== undefined)
+        ? playerRoundScore.base_score
+        : Math.round(roundScore / Math.max(1, redealMultiplier));
+      
+      const actualPiles = (typeof playerRoundScore === 'object' && playerRoundScore?.actual !== undefined)
+        ? playerRoundScore.actual
+        : this.deriveActualPiles(player, roundScore);
+      
+      const declaredPiles = (typeof playerRoundScore === 'object' && playerRoundScore?.declared !== undefined)
+        ? playerRoundScore.declared
+        : (player.pile_count || 0);
+      
+      const totalScore = (typeof playerRoundScore === 'object' && playerRoundScore?.total_score !== undefined)
+        ? playerRoundScore.total_score
+        : (totalScores[player.name] || 0);
+      
+      return {
+        ...player,
+        roundScore,
+        totalScore,
+        baseScore,
+        actualPiles,
+        pile_count: declaredPiles,  // Add declared value for ScoringUI
+        scoreExplanation: this.generateScoreExplanation(player, roundScore, redealMultiplier),
+        isWinner: winners.includes(player.name)
+      };
+    }).sort((a, b) => b.totalScore - a.totalScore);
   }
 
   /**

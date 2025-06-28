@@ -151,20 +151,13 @@ class GameState(ABC):
                             'hand_size': len(player_hand)
                         }
             
-            # Convert phase_data to JSON-safe format
-            json_safe_phase_data = {}
-            for key, value in self.phase_data.items():
-                try:
-                    # Convert non-serializable objects to strings
-                    if hasattr(value, '__iter__') and not isinstance(value, (str, dict)):
-                        if isinstance(value, list):
-                            json_safe_phase_data[key] = [str(item) for item in value]
-                        else:
-                            json_safe_phase_data[key] = str(value)
-                    else:
-                        json_safe_phase_data[key] = value
-                except (TypeError, AttributeError):
-                    json_safe_phase_data[key] = str(value)
+            # Convert phase_data to JSON-safe format with recursive handling
+            json_safe_phase_data = self._make_json_safe(self.phase_data)
+            
+            # Get current round number from game
+            current_round = 1  # Default to round 1
+            if hasattr(self.state_machine, 'game') and self.state_machine.game:
+                current_round = getattr(self.state_machine.game, 'round_number', 1)
             
             # Broadcast complete phase change event
             broadcast_data = {
@@ -172,6 +165,7 @@ class GameState(ABC):
                 "allowed_actions": [action.value for action in self.allowed_actions],
                 "phase_data": json_safe_phase_data,
                 "players": players_data,
+                "round": current_round,  # 🔢 ROUND_FIX: Add round number to broadcast data
                 "reason": reason,
                 "sequence": self._sequence_number,
                 "timestamp": time.time()
@@ -181,12 +175,40 @@ class GameState(ABC):
             
             self.logger.info(f"📤 Auto-broadcast: phase_change to room {room_id} - {reason}")
             
+            # 🚀 ENTERPRISE: Notify bot manager about phase data changes for automatic bot triggering
+            if hasattr(self.state_machine, '_notify_bot_manager_data_change'):
+                await self.state_machine._notify_bot_manager_data_change(json_safe_phase_data, reason)
+            
         except Exception as e:
             self.logger.error(f"❌ Auto-broadcast failed: {e}", exc_info=True)
     
     def get_change_history(self) -> List[Dict[str, Any]]:
         """Get phase data change history for debugging"""
         return self._change_history.copy()
+    
+    def _make_json_safe(self, data: Any) -> Any:
+        """
+        🚀 ENTERPRISE: Recursively convert data to JSON-safe format
+        
+        Handles nested dictionaries, lists, Piece objects, and datetime objects that can't be JSON serialized.
+        """
+        from datetime import datetime
+        
+        if isinstance(data, dict):
+            # Recursively handle dictionary values
+            return {key: self._make_json_safe(value) for key, value in data.items()}
+        elif isinstance(data, list):
+            # Recursively handle list items
+            return [self._make_json_safe(item) for item in data]
+        elif isinstance(data, datetime):
+            # Convert datetime objects to timestamps
+            return data.timestamp()
+        elif hasattr(data, '__dict__') and not isinstance(data, (str, int, float, bool, type(None))):
+            # Convert objects with attributes (like Piece objects) to string
+            return str(data)
+        else:
+            # Already JSON-safe (str, int, float, bool, None)
+            return data
     
     def enable_auto_broadcast(self, enabled: bool = True) -> None:
         """Enable or disable automatic broadcasting"""
@@ -211,10 +233,10 @@ class GameState(ABC):
             
             room_id = getattr(self.state_machine, 'room_id', 'unknown')
             
-            # Add enterprise metadata
+            # Add enterprise metadata and make JSON-safe
             self._sequence_number += 1
             enhanced_data = {
-                **data,
+                **self._make_json_safe(data),
                 "phase": self.phase_name.value,
                 "sequence": self._sequence_number,
                 "timestamp": time.time(),

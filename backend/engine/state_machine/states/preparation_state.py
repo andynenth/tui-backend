@@ -53,11 +53,13 @@ class PreparationState(GameState):
         """Finalize preparation results before transition"""
         game = self.state_machine.game
         
-        # Ensure starter is set
+        # Ensure starter is set (but only if not already set by previous round's winner)
         if not hasattr(game, 'current_player') or not game.current_player:
             starter = self._determine_starter()
             game.current_player = starter
             self.logger.info(f"🎯 Round starter set to: {starter}")
+        else:
+            self.logger.info(f"🎯 Round starter already set: {game.current_player}")
         
         # Ensure round_starter is also set (some code uses this)
         if game.current_player and (not hasattr(game, 'round_starter') or not game.round_starter):
@@ -74,6 +76,12 @@ class PreparationState(GameState):
     async def _deal_cards(self) -> None:
         """Deal cards and check for weak hands"""
         game = self.state_machine.game
+        
+        # Reset player round data before dealing
+        for player in game.players:
+            player.declared = 0
+            player.captured_piles = 0
+            print(f"🔄 PREP_RESET_DEBUG: Reset {player.name} - declared: 0, captured_piles: 0")
         
         # Use guaranteed no redeal for testing (no weak hands)
         if hasattr(game, '_deal_guaranteed_no_redeal'):
@@ -156,12 +164,20 @@ class PreparationState(GameState):
                 for weak_player in self.weak_players:
                     await self._trigger_bot_redeal_for_player(weak_player)
         else:
-            # No weak hands, determine starter
-            starter = self._determine_starter()
-            game.current_player = starter
-            game.round_starter = starter  # Always set both
-            print(f"✅ PREP_STATE_DEBUG: No weak hands - starter set to: {starter}")
-            self.logger.info(f"✅ No weak hands - starter: {starter}")
+            # No weak hands, keep existing starter or determine new one
+            if hasattr(game, 'current_player') and game.current_player:
+                # Starter already set (e.g., by scoring state for next round)
+                starter = game.current_player
+                game.round_starter = starter  # Ensure both are set
+                print(f"✅ PREP_STATE_DEBUG: No weak hands - keeping existing starter: {starter}")
+                self.logger.info(f"✅ No weak hands - keeping existing starter: {starter}")
+            else:
+                # No starter set, determine one
+                starter = self._determine_starter()
+                game.current_player = starter
+                game.round_starter = starter  # Always set both
+                print(f"✅ PREP_STATE_DEBUG: No weak hands - determined new starter: {starter}")
+                self.logger.info(f"✅ No weak hands - determined new starter: {starter}")
     
     async def _validate_action(self, action: GameAction) -> bool:
         """Validate action is allowed in current state"""
@@ -337,7 +353,8 @@ class PreparationState(GameState):
             return self.redeal_requester
         
         # Priority 2: Round 1 - player with GENERAL_RED
-        round_num = getattr(game, 'round', 1)
+        round_num = getattr(game, 'round_number', 1)
+        self.logger.info(f"🔍 STARTER_DEBUG: Current round number: {round_num}")
         if round_num == 1:
             print(f"🔍 STARTER_DEBUG: Looking for GENERAL_RED holder in round {round_num}")
             # Check if game has player objects with hands

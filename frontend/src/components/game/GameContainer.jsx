@@ -119,7 +119,7 @@ export function GameContainer({ roomId }) {
   const scoringProps = useMemo(() => {
     if (gameState.phase !== 'scoring') return null;
     
-    return {
+    const props = {
       // Data from backend (all calculated)
       players: gameState.players || [],
       roundScores: gameState.roundScores || {},
@@ -135,6 +135,17 @@ export function GameContainer({ roomId }) {
       onStartNextRound: gameState.gameOver ? null : gameActions.startNextRound,
       onEndGame: gameState.gameOver ? () => window.location.href = '/lobby' : null
     };
+    
+    console.log('🎮 GAME_CONTAINER_DEBUG: Passing props to ScoringUI:');
+    console.log('  👥 players:', props.players);
+    console.log('  📊 roundScores:', props.roundScores);
+    console.log('  💯 totalScores:', props.totalScores);
+    console.log('  🧮 playersWithScores:', props.playersWithScores);
+    console.log('  ⚗️ redealMultiplier:', props.redealMultiplier);
+    console.log('  🏁 gameOver:', props.gameOver);
+    console.log('  🏆 winners:', props.winners);
+    
+    return props;
   }, [gameState, gameActions]);
 
   const waitingProps = useMemo(() => ({

@@ -275,6 +275,50 @@ class GameStateMachine:
         except Exception as e:
             logger.error(f"Failed to notify bot manager: {e}", exc_info=True)
     
+    async def _notify_bot_manager_data_change(self, phase_data: dict, reason: str):
+        """
+        🚀 ENTERPRISE: Notify bot manager about phase data changes for automatic bot actions
+        
+        This implements the enterprise principle of automatic bot triggering on data updates,
+        not just phase transitions. Called from base_state enterprise broadcasting.
+        """
+        try:
+            from ..bot_manager import BotManager
+            bot_manager = BotManager()
+            room_id = getattr(self, 'room_id', 'unknown')
+            
+            print(f"🤖 ENTERPRISE_DATA_DEBUG: Notifying bot manager about data change - reason: {reason}")
+            
+            # Check if it's declaration phase and if there's a current declarer
+            if self.current_phase == GamePhase.DECLARATION:
+                current_declarer = phase_data.get('current_declarer')
+                if current_declarer:
+                    print(f"🤖 ENTERPRISE_DATA_DEBUG: Declaration phase - current declarer: {current_declarer}")
+                    
+                    # Send phase_change event with full data for bot to decide action
+                    await bot_manager.handle_game_event(room_id, "phase_change", {
+                        "phase": "declaration",
+                        "phase_data": phase_data,
+                        "current_declarer": current_declarer,
+                        "reason": reason
+                    })
+                    
+            elif self.current_phase == GamePhase.TURN:
+                current_player = phase_data.get('current_player')
+                if current_player:
+                    print(f"🤖 ENTERPRISE_DATA_DEBUG: Turn phase - current player: {current_player}")
+                    
+                    # Send phase_change event with full data for bot to decide action
+                    await bot_manager.handle_game_event(room_id, "phase_change", {
+                        "phase": "turn", 
+                        "phase_data": phase_data,
+                        "current_player": current_player,
+                        "reason": reason
+                    })
+                    
+        except Exception as e:
+            logger.error(f"Failed to notify bot manager about data change: {e}", exc_info=True)
+    
     async def _store_phase_change_event(self, old_phase: Optional[GamePhase], new_phase: GamePhase):
         """
         Store phase change event for replay capability

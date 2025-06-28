@@ -94,25 +94,25 @@ const DEMO_DATA = {
 
   // Declarations data
   declarations: {
-    "Alice": 3,
-    "Bot_Charlie": 1,
-    "Bot_David": 2
+    Alice: 3,
+    Bot_Charlie: 1,
+    Bot_David: 2
   },
 
   // Player pile counts throughout the game
   playerPiles: {
-    "Alice": 7,
-    "Bot_Charlie": 4,
-    "Bot_David": 6,
-    "Bot_Eve": 3
+    Alice: 7,
+    Bot_Charlie: 4,
+    Bot_David: 6,
+    Bot_Eve: 3
   },
 
   // Final scores
   finalScores: {
-    "Alice": 42,
-    "Bot_Charlie": 28,
-    "Bot_David": 35,
-    "Bot_Eve": 18
+    Alice: 42,
+    Bot_Charlie: 28,
+    Bot_David: 35,
+    Bot_Eve: 18
   }
 };
 
@@ -258,7 +258,7 @@ export function GameFlowDemo() {
         return (
           <DeclarationUI
             myHand={DEMO_DATA.strongHand}
-            declarations={{ ...DEMO_DATA.declarations, "Bot_Eve": 1 }} // Total = 7 (not 8)
+            declarations={{ ...DEMO_DATA.declarations, Bot_Eve: 1 }} // Total = 7 (not 8)
             players={DEMO_DATA.players}
             currentTotal={7}
             isMyTurn={false}
@@ -337,10 +337,10 @@ export function GameFlowDemo() {
               pilesWon: 3
             }}
             playerPiles={{
-              "Alice": 3,
-              "Bot_Charlie": 0,
-              "Bot_David": 0,
-              "Bot_Eve": 0
+              Alice: 3,
+              Bot_Charlie: 0,
+              Bot_David: 0,
+              Bot_Eve: 0
             }}
             players={DEMO_DATA.players}
             turnNumber={1}
@@ -372,16 +372,16 @@ export function GameFlowDemo() {
           <ScoringUI
             players={DEMO_DATA.players}
             roundScores={{
-              "Alice": 12, // 3 declared, 7 actual, difference 4, multiplied by redeal multiplier 2 + bonus
-              "Bot_Charlie": 6,
-              "Bot_David": 8,
-              "Bot_Eve": 4
+              Alice: 12, // 3 declared, 7 actual, difference 4, multiplied by redeal multiplier 2 + bonus
+              Bot_Charlie: 6,
+              Bot_David: 8,
+              Bot_Eve: 4
             }}
             totalScores={{
-              "Alice": 28,
-              "Bot_Charlie": 15,
-              "Bot_David": 20,
-              "Bot_Eve": 12
+              Alice: 28,
+              Bot_Charlie: 15,
+              Bot_David: 20,
+              Bot_Eve: 12
             }}
             redealMultiplier={2}
             playersWithScores={[
@@ -430,10 +430,10 @@ export function GameFlowDemo() {
           <ScoringUI
             players={DEMO_DATA.players}
             roundScores={{
-              "Alice": 14,
-              "Bot_Charlie": 13,
-              "Bot_David": 15,
-              "Bot_Eve": 6
+              Alice: 14,
+              Bot_Charlie: 13,
+              Bot_David: 15,
+              Bot_Eve: 6
             }}
             totalScores={DEMO_DATA.finalScores}
             redealMultiplier={1}
@@ -564,19 +564,19 @@ export function GameFlowDemo() {
 
 function getPhaseDescription(phase) {
   const descriptions = {
-    'preparation_weak': 'Alice receives a weak hand (no cards greater than 9 points) and must decide whether to request a redeal.',
-    'preparation_redeal_decision': 'System processes the redeal request and shuffles new cards.',
-    'preparation_redealt': 'Alice receives a strong new hand. Redeal multiplier is now 2x for scoring.',
-    'declaration_start': 'Declaration phase begins. Alice (with strong hand) declares target pile count.',
-    'declaration_progress': 'Other players make their declarations. Total cannot equal 8.',
-    'declaration_complete': 'All players have declared. Total is 7 (valid). Ready for turn phase.',
-    'turn_start': 'Turn phase begins. Alice starts first and can play 1-6 pieces to set the turn requirement.',
-    'turn_in_progress': 'Players take turns playing pieces. Must match starter\'s piece count (3 pieces).',
-    'turn_waiting': 'All players have played. Alice wins with highest straight (K-Q-J = 36 points).',
-    'turn_results': 'Turn results show Alice as winner, earning 3 piles. Next turn will start with Alice.',
-    'turn_multiple': 'Multiple turns later (Turn 8), Bot_David wins with a pair. Pile counts have accumulated.',
-    'scoring_round': 'Round 1 scoring: Compare declared vs actual piles. Alice gets bonus for accuracy.',
-    'scoring_final': 'Final game results: Alice wins with 42 points after multiple rounds!'
+    preparation_weak: 'Alice receives a weak hand (no cards greater than 9 points) and must decide whether to request a redeal.',
+    preparation_redeal_decision: 'System processes the redeal request and shuffles new cards.',
+    preparation_redealt: 'Alice receives a strong new hand. Redeal multiplier is now 2x for scoring.',
+    declaration_start: 'Declaration phase begins. Alice (with strong hand) declares target pile count.',
+    declaration_progress: 'Other players make their declarations. Total cannot equal 8.',
+    declaration_complete: 'All players have declared. Total is 7 (valid). Ready for turn phase.',
+    turn_start: 'Turn phase begins. Alice starts first and can play 1-6 pieces to set the turn requirement.',
+    turn_in_progress: 'Players take turns playing pieces. Must match starter\'s piece count (3 pieces).',
+    turn_waiting: 'All players have played. Alice wins with highest straight (K-Q-J = 36 points).',
+    turn_results: 'Turn results show Alice as winner, earning 3 piles. Next turn will start with Alice.',
+    turn_multiple: 'Multiple turns later (Turn 8), Bot_David wins with a pair. Pile counts have accumulated.',
+    scoring_round: 'Round 1 scoring: Compare declared vs actual piles. Alice gets bonus for accuracy.',
+    scoring_final: 'Final game results: Alice wins with 42 points after multiple rounds!'
   };
   
   return descriptions[phase] || 'Unknown phase';

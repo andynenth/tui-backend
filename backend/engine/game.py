@@ -17,7 +17,7 @@ class Game:
         self.players = players
         self.interface = interface  # Adapter for CLI, GUI, or API
         self.current_order = []     # Player order for each round
-        self.round_number = 0
+        self.round_number = 1
         self.max_score = 50
         self.max_rounds = 20
         self.win_condition_type = win_condition_type
@@ -40,80 +40,6 @@ class Game:
         self.current_phase = None          # Track current phase for controllers
 
 
-    def prepare_round(self, is_redeal=False) -> dict:
-        """
-        Prepare for a new round: shuffle and deal pieces, determine starting player, reset declarations.
-        
-        Args:
-            is_redeal (bool): True if this is a redeal of the current round, False for a new round
-        """
-        if is_redeal:
-            # REDEAL: Don't increment round, DO increment multiplier
-            print(f"🔄 DEBUG: REDEAL for Round {self.round_number} (multiplier: {self.redeal_multiplier} → {self.redeal_multiplier + 1})")
-            self.redeal_multiplier += 1
-        else:
-            # NEW ROUND: Increment round, reset multiplier
-            print(f"🔄 DEBUG: Starting NEW ROUND {self.round_number + 1}")
-            self.round_number += 1
-            self.redeal_multiplier = 1  # Reset multiplier for new round
-        
-        # Reset turn counter for new round or redeal
-        self.turn_number = 0
-        
-        # Option 1: Deal weak hand with limit (for testing)
-        # Uncomment the configuration you want:
-        
-        # Single player weak hand with limit:
-        # self._deal_weak_hand([0], limit=1)
-        
-        # Multiple players weak hand with limit:
-        self._deal_weak_hand([0, 2], limit=2)  # Players 0 and 2 get weak hands, max 1 redeal
-        
-        # No limit (always deal weak hands - careful, can cause infinite loops!):
-        # self._deal_weak_hand([0, 2])
-        
-        # Regular dealing (no weak hands):
-        # self._deal_pieces()
-        
-        # Always guarantee no weak hands:
-        # self._deal_guaranteed_no_redeal()
-        
-        self._set_round_start_player()
-                
-        # Initialize pile and score tracking
-        self.pile_counts = {p.name: 0 for p in self.players}
-        self.round_scores = {p.name: 0 for p in self.players}
-        
-        # Reset player declarations
-        for player in self.players:
-            player.declared = 0
-
-        print(f"🔍 DEBUG: Checking for weak hands...")
-        
-        # ✅ Use refactored method instead of duplicate code
-        weak_players = self.get_weak_hand_players(include_details=False)
-        need_redeal = self.has_weak_hand_players()
-        
-        print(f"🔍 DEBUG: weak_players: {weak_players}")
-        print(f"🔍 DEBUG: need_redeal: {need_redeal}")
-        
-        result = {
-            "round": self.round_number,
-            "starter": self.current_order[0].name,
-            "hands": {
-                player.name: [str(piece) for piece in player.hand]
-                for player in self.players
-            },
-            "weak_players": weak_players,  # ✅ backward compatible format
-            "need_redeal": need_redeal,
-            "redeal_multiplier": self.redeal_multiplier,  # Include multiplier in result
-            "is_redeal": is_redeal  # Include whether this was a redeal
-        }
-        
-        print(f"🔍 DEBUG: prepare_round() result keys: {list(result.keys())}")
-        print(f"🔍 DEBUG: Round: {self.round_number}, Multiplier: {self.redeal_multiplier}, Is Redeal: {is_redeal}")
-        
-        return result
 
     # ======================================
     # ✨ NEW: EVENT-DRIVEN METHODS

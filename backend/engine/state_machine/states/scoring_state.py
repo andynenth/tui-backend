@@ -3,6 +3,7 @@
 from typing import Dict, Any, Optional, List
 from ..base_state import GameState
 from ..core import GamePhase, ActionType, GameAction
+from ...scoring import calculate_score
 
 
 class ScoringState(GameState):
@@ -38,6 +39,7 @@ class ScoringState(GameState):
         self.game_complete: bool = False
         self.winners: List[str] = []
         self.scores_calculated: bool = False
+        self.display_delay_complete: bool = False
         
     async def _setup_phase(self) -> None:
         """Initialize scoring phase - calculate all scores"""
@@ -51,6 +53,46 @@ class ScoringState(GameState):
             await self._check_game_winner()
             
             self.scores_calculated = True
+            
+            # 🚀 ENTERPRISE: Use automatic broadcasting system to update scoring UI
+            print(f"🚀 SCORING_BROADCAST_DEBUG: Broadcasting scoring data:")
+            print(f"   📊 Round scores: {self.round_scores}")
+            print(f"   🏁 Game complete: {self.game_complete}")
+            print(f"   🏆 Winners: {self.winners}")
+            
+            # Prepare total scores and player data for frontend
+            game = self.state_machine.game
+            total_scores = {}
+            players_data = []
+            
+            if hasattr(game, 'players') and game.players:
+                for player in game.players:
+                    total_scores[player.name] = player.score
+                    players_data.append({
+                        'name': player.name,
+                        'is_bot': player.name.startswith('Bot'),  # Simple bot detection
+                        'pile_count': getattr(player, 'declared', 0),  # Fix: use 'declared' not 'declared_piles'
+                        'captured_piles': getattr(player, 'captured_piles', 0)
+                    })
+            
+            print(f"🚀 SCORING_BROADCAST_DEBUG: Also sending:")
+            print(f"   💯 Total scores: {total_scores}")
+            print(f"   👥 Players data: {players_data}")
+            
+            await self.update_phase_data({
+                'round_scores': self.round_scores,
+                'total_scores': total_scores,
+                'players': players_data,
+                'game_complete': self.game_complete,
+                'winners': self.winners,
+                'scores_calculated': True,
+                'redeal_multiplier': getattr(game, 'redeal_multiplier', 1)
+            }, f"Scoring calculated for round {getattr(self.state_machine.game, 'round_number', 1)}")
+            
+            # Start display delay (3 seconds to show scoring results)
+            import asyncio
+            asyncio.create_task(self._start_display_delay())
+            
             self.logger.info(f"Scoring complete. Game over: {self.game_complete}")
             
         except Exception as e:
@@ -114,6 +156,10 @@ class ScoringState(GameState):
     async def check_transition_conditions(self) -> Optional[GamePhase]:
         """Check if ready to transition to next phase"""
         if not self.scores_calculated:
+            return None
+        
+        # Wait for display delay to complete (give users time to see scoring)
+        if not self.display_delay_complete:
             return None
         
         if self.game_complete:
@@ -197,12 +243,18 @@ class ScoringState(GameState):
             self.logger.warning("Game has no players attribute")
             return
         
+        print(f"🗳️ DECLARATION_DEBUG: game.player_declarations = {getattr(game, 'player_declarations', {})}")
+        
         for player in game.players:
-            declared = getattr(player, 'declared_piles', 0)
+            # Get declaration from game.player_declarations or player.declared
+            declared = game.player_declarations.get(player.name, getattr(player, 'declared', 0))
+            # Get actual piles from player's captured_piles (much simpler!)
             actual = getattr(player, 'captured_piles', 0)
             
-            # Calculate base score
-            base_score = self._calculate_base_score(declared, actual)
+            print(f"📋 SCORING_FIX_DEBUG: {player.name} - declared: {declared}, actual: {actual}")
+            
+            # Calculate base score using dedicated scoring module
+            base_score = calculate_score(declared, actual)
             
             # Apply redeal multiplier
             multiplier = getattr(game, 'redeal_multiplier', 1)
@@ -222,30 +274,15 @@ class ScoringState(GameState):
                 "total_score": player.score
             }
             
+            print(f"🏆 SCORING_DEBUG: {player.name} scoring data:")
+            print(f"   📋 Declared: {declared}, Actual: {actual}")
+            print(f"   📊 Base Score: {base_score}, Multiplier: {multiplier}x, Final: {final_score}")
+            print(f"   💯 Total Score: {player.score}")
+            
             self.logger.info(f"Player {player.name}: declared {declared}, actual {actual}, "
                            f"base {base_score}, final {final_score} (×{multiplier}), "
                            f"total {player.score}")
     
-    def _calculate_base_score(self, declared: int, actual: int) -> int:
-        """
-        Calculate base score before multiplier.
-        
-        Rules:
-        - Declared 0, got 0: +3 bonus
-        - Declared 0, got >0: -actual (penalty)
-        - Declared X, got X: X + 5 bonus (perfect)
-        - Declared X, got ≠X: -|difference| (missed target)
-        """
-        if declared == 0:
-            if actual == 0:
-                return 3  # Perfect zero declaration
-            else:
-                return -actual  # Broke zero declaration
-        else:
-            if actual == declared:
-                return declared + 5  # Perfect prediction
-            else:
-                return -abs(declared - actual)  # Missed target penalty
     
     async def _check_game_winner(self) -> None:
         """Check if any player has won the game (≥50 points)"""
@@ -284,18 +321,33 @@ class ScoringState(GameState):
         current_round = getattr(game, 'round_number', 1)
         game.round_number = current_round + 1
         
-        # Reset round-specific data
+        # Reset round-specific data (declarations and captured_piles reset by preparation_state)
         if hasattr(game, 'players'):
             for player in game.players:
                 player.hand = []
-                player.captured_piles = 0
-                player.declared_piles = 0
         
         # Reset redeal multiplier for next round
         game.redeal_multiplier = 1
         
+        # Set round starter for next round (winner of last turn becomes starter)
+        if hasattr(game, 'last_turn_winner') and game.last_turn_winner:
+            game.round_starter = game.last_turn_winner
+            game.current_player = game.last_turn_winner
+            self.logger.info(f"🎯 Next round starter set to last turn winner: {game.last_turn_winner}")
+        else:
+            # Fallback: if no last turn winner, keep current starter
+            self.logger.warning("No last turn winner found, keeping current round starter")
+        
         # Clear turn-related data
         game.turn_results = []
         game.current_turn_starter = None
+        game.turn_number = 0  # Reset turn number for new round
         
         self.logger.info(f"Prepared for round {game.round_number}")
+    
+    async def _start_display_delay(self) -> None:
+        """Give users 7 seconds to view scoring results before transitioning"""
+        import asyncio
+        await asyncio.sleep(7.0)  # 7 second delay for users to see scores
+        self.display_delay_complete = True
+        self.logger.info("Scoring display delay complete - ready to transition")

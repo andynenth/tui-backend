@@ -16,6 +16,24 @@ import PropTypes from 'prop-types';
 import GamePiece from "../GamePiece";
 import Button from "../Button";
 
+// Helper function to calculate piece value (same logic as GamePiece)
+const calculatePieceValue = (piece) => {
+  if (!piece) return 0;
+  
+  if (typeof piece === 'string') {
+    const match = piece.match(/\((\d+)\)/);
+    return match ? parseInt(match[1]) : 0;
+  }
+  
+  return piece.point || piece.value || 0;
+};
+
+// Helper function to calculate total value of pieces array
+const calculateTotalValue = (pieces) => {
+  if (!Array.isArray(pieces)) return 0;
+  return pieces.reduce((sum, piece) => sum + calculatePieceValue(piece), 0);
+};
+
 /**
  * Pure UI component for turn phase
  */
@@ -29,7 +47,7 @@ export function TurnUI({
   // State props (calculated by backend)
   isMyTurn = false,
   canPlayAnyCount = false, // true for first player in turn
-  selectedPlayValue = 0, // value of currently selected pieces
+  selectedPlayValue = 0, // value of currently selected pieces (DEPRECATED - calculate locally)
   
   // Action props
   onPlayPieces
@@ -41,6 +59,9 @@ export function TurnUI({
   const isFirstPlayer = canPlayAnyCount;
   const isStarterValidationRequired = isFirstPlayer && !hasActiveTurn;
   const selectedCards = selectedIndices.map(index => myHand[index]);
+  
+  // Calculate selected play value locally using same logic as GamePiece
+  const calculatedSelectedValue = calculateTotalValue(selectedCards);
   
   const handleCardSelect = (index) => {
     console.log(`🎯 TURN_UI: Card clicked at index ${index}, isMyTurn: ${isMyTurn}`);
@@ -162,7 +183,7 @@ export function TurnUI({
                     </div>
                     
                     <div className="text-sm text-gray-400">
-                      Total Value: {play.totalValue || 0}
+                      Total Value: {calculateTotalValue(play.cards)}
                       {play.playType && (
                         <span className="ml-3">Type: {play.playType}</span>
                       )}
@@ -233,7 +254,7 @@ export function TurnUI({
               </div>
               {selectedCards.length > 0 && (
                 <div className="mt-1">
-                  Total Value: {selectedPlayValue}
+                  Total Value: {calculatedSelectedValue}
                 </div>
               )}
             </div>
@@ -285,7 +306,7 @@ export function TurnUI({
                           ))}
                         </div>
                         <div className="text-sm text-gray-300 text-center">
-                          Total Value: {selectedPlayValue}
+                          Total Value: {calculatedSelectedValue}
                         </div>
                       </div>
                     </div>
@@ -339,7 +360,7 @@ export function TurnUI({
                       </div>
                       <div className="text-white font-medium">
                         Playing {selectedCards.length} card{selectedCards.length !== 1 ? 's' : ''} 
-                        (Total Value: {selectedPlayValue})
+                        (Total Value: {calculatedSelectedValue})
                       </div>
                       {isFirstPlayer && (
                         <div className="text-yellow-300 text-sm mt-2">

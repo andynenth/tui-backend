@@ -3,6 +3,8 @@
 from typing import Dict, Any, Optional, List, Set
 from ..core import GamePhase, ActionType, GameAction
 from ..base_state import GameState
+from ...turn_resolution import resolve_turn, TurnPlay, TurnResult
+from ...player import Player
 import asyncio
 
 
@@ -43,6 +45,7 @@ class TurnState(GameState):
         self.current_player_index: int = 0
         self.turn_complete: bool = False
         self.winner: Optional[str] = None
+        self._turn_resolution_cache: Optional[Dict[str, Any]] = None  # Cache to avoid duplicate resolve_turn calls
     
     async def _setup_phase(self) -> None:
         """Initialize turn phase"""
@@ -154,7 +157,8 @@ class TurnState(GameState):
         
         # Increment turn number for new turn
         game.turn_number += 1
-        print(f"🎯 NEW_TURN_DEBUG: Turn number incremented to: {game.turn_number}")
+        current_round = getattr(game, 'round_number', 1)
+        print(f"🎯 NEW_TURN_DEBUG: Round {current_round}, Turn {game.turn_number} starting with starter {self.current_turn_starter}")
         
         # Get turn order starting from current starter
         if hasattr(game, 'get_player_order_from'):
@@ -177,8 +181,12 @@ class TurnState(GameState):
         self.current_player_index = 0
         self.turn_complete = False
         self.winner = None
+        self._turn_resolution_cache = None  # Clear cache for new turn
         
-        # 🚀 ENTERPRISE: Use automatic broadcasting system instead of manual phase_data updates
+        # 🤖 CRITICAL: Notify bot manager FIRST before any state updates to ensure bot actions are queued immediately
+        await self._notify_bot_manager_new_turn(self.current_turn_starter)
+        
+        # 🚀 ENTERPRISE: Use automatic broadcasting system after bot notification
         current_turn_number = game.turn_number
         
         print(f"🔢 TURN_NUMBER_DEBUG: Backend game.turn_number = {current_turn_number}")
@@ -194,9 +202,6 @@ class TurnState(GameState):
         }, f"New turn {current_turn_number} started with starter {self.current_turn_starter}")
         
         self.logger.info(f"🎯 New turn started - order: {self.turn_order}")
-        
-        # 🚀 ENTERPRISE: Bot manager notification handled by GameStateMachine to prevent duplicates
-        # Removed duplicate _notify_bot_manager_new_turn() call
     
     def _get_current_player(self) -> Optional[str]:
         """Get the player whose turn it is to play"""
@@ -263,6 +268,8 @@ class TurnState(GameState):
         if self.required_piece_count is None:
             self.required_piece_count = piece_count
             print(f"🎯 TURN_STATE_DEBUG: Setting required piece count to {piece_count}")
+            print(f"🎯 TURN_STATE_DEBUG: Before setting - required_piece_count was: None")
+            print(f"🎯 TURN_STATE_DEBUG: After setting - required_piece_count is: {self.required_piece_count}")
             self.logger.info(f"🎲 {action.player_name} (starter) plays {piece_count} pieces - setting required count")
         
         # Store the play
@@ -287,6 +294,10 @@ class TurnState(GameState):
         print(f"🎯 TURN_STATE_DEBUG: After advancing - current_player_index: {self.current_player_index}")
         print(f"🎯 TURN_STATE_DEBUG: Next player: {self._get_current_player()}")
         
+        current_round = getattr(self.state_machine.game, 'round_number', 1)
+        turn_number = getattr(self.state_machine.game, 'turn_number', 0)
+        print(f"🎯 TURN_STATE_DEBUG: Round {current_round}, Turn {turn_number} - {action.player_name} played, next: {self._get_current_player()}")
+        
         # Check if turn is complete
         if self.current_player_index >= len(self.turn_order):
             print(f"🎯 TURN_STATE_DEBUG: Turn complete! Calling _complete_turn()")
@@ -296,13 +307,18 @@ class TurnState(GameState):
         game = self.state_machine.game
         current_turn_number = game.turn_number
         
+        next_player = self._get_current_player()
+        print(f"🎯 UPDATE_DEBUG: About to update phase data with current_player: {next_player}, required_piece_count: {self.required_piece_count}")
+        
         await self.update_phase_data({
-            'current_player': self._get_current_player(),
+            'current_player': next_player,
             'required_piece_count': self.required_piece_count,
             'turn_plays': self.turn_plays.copy(),
             'turn_complete': self.turn_complete,
             'current_turn_number': current_turn_number
         }, f"Player {action.player_name} played {piece_count} pieces")
+        
+        print(f"🎯 UPDATE_DEBUG: Phase data updated - next_player should be: {next_player}")
         
         # 🚀 ENTERPRISE: Use centralized custom event broadcasting
         await self._broadcast_play_event_enterprise(action.player_name, pieces, piece_count)
@@ -322,12 +338,14 @@ class TurnState(GameState):
     
     async def _complete_turn(self) -> None:
         """Complete the current turn and determine winner"""
-        print(f"🎯 TURN_COMPLETE_DEBUG: _complete_turn() called")
+        current_round = getattr(self.state_machine.game, 'round_number', 1)
+        turn_number = getattr(self.state_machine.game, 'turn_number', 0)
+        print(f"🎯 TURN_COMPLETE_DEBUG: Round {current_round}, Turn {turn_number} _complete_turn() called")
         self.turn_complete = True
         
         # Determine winner
         self.winner = self._determine_turn_winner()
-        print(f"🎯 TURN_COMPLETE_DEBUG: Winner determined: {self.winner}")
+        print(f"🎯 TURN_COMPLETE_DEBUG: Round {current_round}, Turn {turn_number} Winner determined: {self.winner}")
         
         if self.winner:
             # Award piles to winner
@@ -358,45 +376,99 @@ class TurnState(GameState):
         print(f"🎯 TURN_COMPLETE_DEBUG: _process_turn_completion() finished")
     
     def _determine_turn_winner(self) -> Optional[str]:
-        """Determine the winner of the current turn"""
+        """Determine the winner of the current turn using turn_resolution.py"""
+        # Get turn resolution data (this will call resolve_turn once and cache the result)
+        turn_result_data = self._get_turn_resolution_data()
+        
+        if turn_result_data and turn_result_data.get('winner'):
+            winner_name = turn_result_data['winner']
+            winner_play_data = self.turn_plays.get(winner_name, {})
+            
+            current_round = getattr(self.state_machine.game, 'round_number', 1)
+            turn_number = getattr(self.state_machine.game, 'turn_number', 0)
+            self.logger.info(f"🎯 Round {current_round}, Turn {turn_number} winner: {winner_name} with {winner_play_data.get('play_type', 'unknown')} value {winner_play_data.get('play_value', 0)}")
+            return winner_name
+        
+        self.logger.info("🤝 No valid winner determined by turn resolution")
+        return None
+    
+    def _get_turn_resolution_data(self) -> Optional[Dict[str, Any]]:
+        """Get comprehensive turn resolution data for frontend display"""
         if not self.turn_plays:
             return None
         
-        # Get the starter's play type to determine what we're comparing
-        starter_play = self.turn_plays.get(self.current_turn_starter)
-        if not starter_play:
-            return None
+        # Return cached result if available
+        if self._turn_resolution_cache is not None:
+            return self._turn_resolution_cache
         
-        target_play_type = starter_play.get('play_type', 'unknown')
+        # Convert turn_plays to TurnPlay objects for turn_resolution
+        turn_play_objects = []
+        game = self.state_machine.game
         
-        # Find all players who played the same type as starter
-        valid_plays = []
-        for player, play_data in self.turn_plays.items():
-            # Only consider plays of the same type and that are valid
-            if (play_data.get('play_type') == target_play_type and 
-                play_data.get('is_valid', True)):
-                valid_plays.append((player, play_data))
+        # Get player objects
+        player_map = {}
+        if hasattr(game, 'players') and game.players:
+            for player in game.players:
+                player_name = getattr(player, 'name', str(player))
+                player_map[player_name] = player
         
-        if not valid_plays:
-            # No valid plays of the correct type
-            return None
+        # Create TurnPlay objects in turn order
+        for player_name in self.turn_order:
+            if player_name in self.turn_plays:
+                play_data = self.turn_plays[player_name]
+                pieces = play_data.get('pieces', [])
+                is_valid = play_data.get('is_valid', True)
+                
+                # Get player object or create minimal one
+                player_obj = player_map.get(player_name)
+                if not player_obj:
+                    player_obj = type('Player', (), {'name': player_name})()
+                
+                turn_play = TurnPlay(
+                    player=player_obj,
+                    pieces=pieces,
+                    is_valid=is_valid
+                )
+                turn_play_objects.append(turn_play)
         
-        # Sort by play value (descending), then by play order (ascending for ties)
-        def sort_key(play_tuple):
-            player, play_data = play_tuple
-            play_value = play_data.get('play_value', 0)
-            # Earlier players have lower index in turn_order
-            play_order = self.turn_order.index(player) if player in self.turn_order else 999
-            return (-play_value, play_order)  # Negative value for descending sort
+        # Use turn_resolution to get complete result
+        turn_result = resolve_turn(turn_play_objects)
         
-        valid_plays.sort(key=sort_key)
+        # Convert to JSON-serializable format
+        result_data = {
+            'all_plays': [],
+            'winner': None,
+            'winner_play': None
+        }
         
-        # Winner is the first after sorting
-        winner, winner_play = valid_plays[0]
+        # Add all plays
+        for turn_play in turn_result.plays:
+            player_name = getattr(turn_play.player, 'name', str(turn_play.player))
+            play_info = {
+                'player': player_name,
+                'pieces': [str(p) for p in turn_play.pieces],
+                'is_valid': turn_play.is_valid,
+                'play_type': self.turn_plays.get(player_name, {}).get('play_type', 'unknown'),
+                'play_value': self.turn_plays.get(player_name, {}).get('play_value', 0)
+            }
+            result_data['all_plays'].append(play_info)
         
-        self.logger.info(f"🎯 Turn winner: {winner} with {winner_play.get('play_type')} value {winner_play.get('play_value')}")
+        # Add winner information
+        if turn_result.winner:
+            winner_name = getattr(turn_result.winner.player, 'name', str(turn_result.winner.player))
+            winner_play_data = self.turn_plays.get(winner_name, {})
+            
+            result_data['winner'] = winner_name
+            result_data['winner_play'] = {
+                'pieces': [str(p) for p in turn_result.winner.pieces],
+                'value': winner_play_data.get('play_value', 0),
+                'type': winner_play_data.get('play_type', 'unknown'),
+                'pilesWon': self.required_piece_count or 1
+            }
         
-        return winner
+        # Cache the result
+        self._turn_resolution_cache = result_data
+        return result_data
     
     async def _award_piles(self, winner: str, pile_count: int) -> None:
         """Award piles to the winner"""
@@ -410,6 +482,13 @@ class TurnState(GameState):
             game.player_piles[winner] = 0
         
         game.player_piles[winner] += pile_count
+        
+        # 🎯 NEW: Also increment the player's captured_piles for scoring
+        for player in game.players:
+            if player.name == winner:
+                player.captured_piles += pile_count
+                print(f"🎯 CAPTURED_PILES_DEBUG: {winner} captured_piles += {pile_count} = {player.captured_piles}")
+                break
         
         self.logger.info(f"💰 {winner} now has {game.player_piles[winner]} piles total")
     
@@ -441,7 +520,12 @@ class TurnState(GameState):
         await self._broadcast_turn_completion_enterprise()
         
         if all_hands_empty:
-            self.logger.info("🏁 All hands are now empty - round complete")
+            # Store the last turn winner for the next round's starter
+            if self.winner:
+                game.last_turn_winner = self.winner
+                self.logger.info(f"🏁 All hands are now empty - round complete. Last turn winner: {self.winner}")
+            else:
+                self.logger.info("🏁 All hands are now empty - round complete")
             # The main process loop will handle the actual transition
         else:
             # Update starter for next turn
@@ -451,9 +535,9 @@ class TurnState(GameState):
                 self._update_turn_order_for_new_starter(self.winner)
                 self.logger.info(f"🎯 Next turn starter: {self.winner}")
                 
-                # Auto-start next turn after 1.5 second delay
-                self.logger.info(f"🎯 Turn complete - auto-starting next turn in 1.5 seconds")
-                await asyncio.sleep(1.5)
+                # Auto-start next turn after 7 second delay (give users time to see TurnResultsUI)
+                self.logger.info(f"🎯 Turn complete - auto-starting next turn in 7 seconds")
+                await asyncio.sleep(7.0)
                 turn_started = await self.start_next_turn_if_needed()
                 
                 # 🚀 ENTERPRISE: New turn auto-start automatically broadcasts via update_phase_data
@@ -657,16 +741,13 @@ class TurnState(GameState):
         try:
             game = self.state_machine.game
             
-            # Get winning play details
+            # Get full turn resolution data using turn_resolution.py
+            turn_result_data = self._get_turn_resolution_data()
+            
+            # Get winning play details from resolution data
             winning_play = None
-            if self.winner and self.winner in self.turn_plays:
-                winner_play_data = self.turn_plays[self.winner]
-                winning_play = {
-                    'pieces': [str(p) for p in winner_play_data.get('pieces', [])],
-                    'value': winner_play_data.get('play_value', 0),
-                    'type': winner_play_data.get('play_type', 'unknown'),
-                    'pilesWon': self.required_piece_count or 1
-                }
+            if turn_result_data and turn_result_data.get('winner_play'):
+                winning_play = turn_result_data['winner_play']
             
             # Get current pile counts
             player_piles = {}
@@ -686,10 +767,11 @@ class TurnState(GameState):
             # Get actual turn number from game state
             turn_number = game.turn_number
             
-            # Use enterprise broadcasting system
+            # Use enterprise broadcasting system with full turn resolution data
             await self.broadcast_custom_event("turn_complete", {
                 "winner": self.winner,
                 "winning_play": winning_play,
+                "turn_resolution": turn_result_data,  # Full resolution data for TurnResultsUI
                 "player_piles": player_piles,
                 "players": players,
                 "turn_number": turn_number,
