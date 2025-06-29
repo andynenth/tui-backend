@@ -130,11 +130,20 @@ class GameStateMachine:
         for action in actions:
             try:
                 print(f"🔍 STATE_MACHINE_DEBUG: Processing action: {action.action_type.value} from {action.player_name}")
-                await self.current_state.handle_action(action)
-                print(f"✅ STATE_MACHINE_DEBUG: Action processed successfully")
+                result = await self.current_state.handle_action(action)
+                
+                # 🔧 FIX: Validate action result and notify bot manager of failures
+                if result is None:
+                    print(f"❌ STATE_MACHINE_DEBUG: Action rejected: {action.action_type.value} from {action.player_name}")
+                    await self._notify_bot_manager_action_rejected(action)
+                else:
+                    print(f"✅ STATE_MACHINE_DEBUG: Action processed successfully")
+                    await self._notify_bot_manager_action_accepted(action, result)
+                    
             except Exception as e:
                 print(f"❌ STATE_MACHINE_DEBUG: Error processing action: {e}")
                 logger.error(f"Error processing action: {e}", exc_info=True)
+                await self._notify_bot_manager_action_failed(action, str(e))
     
     async def _transition_to(self, new_phase: GamePhase):
         """Transition to a new phase"""
@@ -368,3 +377,65 @@ class GameStateMachine:
             await self.action_queue.store_state_event(event_type, payload, player_id)
         except Exception as e:
             logger.error(f"Failed to store game event {event_type}: {e}")
+    
+    # 🔧 FIX: Bot Manager Validation Feedback Methods
+    
+    async def _notify_bot_manager_action_rejected(self, action: GameAction):
+        """Notify bot manager that an action was rejected by state machine"""
+        try:
+            from backend.engine.bot_manager import BotManager
+            bot_manager = BotManager()
+            room_id = getattr(self.game, 'room_id', 'unknown') if self.game else 'unknown'
+            
+            print(f"🚫 BOT_VALIDATION_DEBUG: Notifying bot manager of rejected action from {action.player_name}")
+            
+            await bot_manager.handle_game_event(room_id, "action_rejected", {
+                "player_name": action.player_name,
+                "action_type": action.action_type.value,
+                "reason": "Invalid action for current game state",
+                "payload": action.payload,
+                "is_bot": action.is_bot
+            })
+            
+        except Exception as e:
+            logger.error(f"Failed to notify bot manager of rejected action: {e}", exc_info=True)
+    
+    async def _notify_bot_manager_action_accepted(self, action: GameAction, result: dict):
+        """Notify bot manager that an action was accepted and processed"""
+        try:
+            from backend.engine.bot_manager import BotManager
+            bot_manager = BotManager()
+            room_id = getattr(self.game, 'room_id', 'unknown') if self.game else 'unknown'
+            
+            print(f"✅ BOT_VALIDATION_DEBUG: Notifying bot manager of accepted action from {action.player_name}")
+            
+            await bot_manager.handle_game_event(room_id, "action_accepted", {
+                "player_name": action.player_name,
+                "action_type": action.action_type.value,
+                "result": result,
+                "payload": action.payload,
+                "is_bot": action.is_bot
+            })
+            
+        except Exception as e:
+            logger.error(f"Failed to notify bot manager of accepted action: {e}", exc_info=True)
+    
+    async def _notify_bot_manager_action_failed(self, action: GameAction, error_message: str):
+        """Notify bot manager that an action failed during processing"""
+        try:
+            from backend.engine.bot_manager import BotManager
+            bot_manager = BotManager()
+            room_id = getattr(self.game, 'room_id', 'unknown') if self.game else 'unknown'
+            
+            print(f"💥 BOT_VALIDATION_DEBUG: Notifying bot manager of failed action from {action.player_name}")
+            
+            await bot_manager.handle_game_event(room_id, "action_failed", {
+                "player_name": action.player_name,
+                "action_type": action.action_type.value,
+                "error": error_message,
+                "payload": action.payload,
+                "is_bot": action.is_bot
+            })
+            
+        except Exception as e:
+            logger.error(f"Failed to notify bot manager of failed action: {e}", exc_info=True)

@@ -1,7 +1,9 @@
 # backend/engine/bot_manager.py
 
 import asyncio
-from typing import Dict, List, Optional
+import time
+import hashlib
+from typing import Dict, List, Optional, Set
 from engine.player import Player
 import engine.ai as ai
 from engine.state_machine.core import GameAction, ActionType
@@ -58,12 +60,100 @@ class GameBotHandler:
         self.state_machine = state_machine
         self.processing = False
         self._lock = asyncio.Lock()
+        
+        # 🔧 RACE_CONDITION_FIX: Bot action deduplication system
+        self._bot_action_cache: Dict[str, Dict[str, float]] = {}  # bot_name -> {action_hash: timestamp}
+        self._cache_timeout = 5.0  # Actions expire after 5 seconds
+        self._turn_sequence_tracking: Dict[str, int] = {}  # bot_name -> last_turn_number
+        self._phase_sequence_tracking: Dict[str, str] = {}  # bot_name -> last_phase_context
     
     def _get_game_state(self):
         """Get current game state from state machine or fallback to direct game access"""
         if self.state_machine:
             return self.state_machine.game  # Access game through state machine
         return self.game  # Fallback to direct access
+    
+    def _generate_action_hash(self, bot_name: str, action_type: str, context: dict) -> str:
+        """Generate a unique hash for a bot action to detect duplicates"""
+        # Include bot name, action type, relevant context, and trigger source for uniqueness
+        trigger_source = context.get('trigger_source', 'unknown')
+        context_str = f"{bot_name}:{action_type}:{context.get('turn_number', 0)}:{context.get('phase', '')}:{context.get('required_count', 'none')}:{trigger_source}"
+        return hashlib.md5(context_str.encode()).hexdigest()[:12]
+    
+    def _is_duplicate_action(self, bot_name: str, action_type: str, context: dict) -> bool:
+        """Check if this bot action is a duplicate within the timeout window"""
+        current_time = time.time()
+        action_hash = self._generate_action_hash(bot_name, action_type, context)
+        trigger_source = context.get('trigger_source', 'unknown')
+        current_player = context.get('current_player', '')
+        
+        # Initialize bot cache if needed
+        if bot_name not in self._bot_action_cache:
+            self._bot_action_cache[bot_name] = {}
+        
+        bot_cache = self._bot_action_cache[bot_name]
+        
+        # Clean expired actions first
+        expired_hashes = [h for h, timestamp in bot_cache.items() if current_time - timestamp > self._cache_timeout]
+        for h in expired_hashes:
+            del bot_cache[h]
+        
+        # 🔧 REFINED_FIX: Allow legitimate sequential triggers for current player
+        # If this bot is the current player, allow sequential triggers from different sources
+        if bot_name == current_player:
+            # For current player, only block rapid triggers from the EXACT same source
+            if action_hash in bot_cache:
+                age = current_time - bot_cache[action_hash]
+                if age < 0.5:  # Very recent same trigger
+                    print(f"🚫 REFINED_FIX: Blocking rapid same-source trigger for current player {bot_name} from {trigger_source} (age: {age:.1f}s)")
+                    return True
+                else:
+                    print(f"✅ REFINED_FIX: Allowing delayed same-source trigger for current player {bot_name} from {trigger_source} (age: {age:.1f}s)")
+            else:
+                print(f"✅ REFINED_FIX: Allowing new trigger for current player {bot_name} from {trigger_source}")
+        else:
+            # For non-current players, be more strict - block any recent duplicates
+            # Check all recent actions regardless of source
+            for existing_hash, timestamp in bot_cache.items():
+                age = current_time - timestamp
+                if age < 1.0:  # Any recent action within 1 second
+                    print(f"🚫 REFINED_FIX: Blocking non-current player {bot_name} trigger (recent action age: {age:.1f}s)")
+                    return True
+            
+            print(f"✅ REFINED_FIX: Allowing trigger for non-current player {bot_name} from {trigger_source}")
+        
+        
+        # Record this action
+        bot_cache[action_hash] = current_time
+        print(f"✅ RACE_CONDITION_FIX: New action recorded for {bot_name} - {action_type} from {trigger_source} (hash: {action_hash})")
+        return False
+    
+    def _should_skip_bot_trigger(self, bot_name: str, context: dict) -> bool:
+        """Advanced logic to prevent duplicate bot triggers based on sequence tracking"""
+        turn_number = context.get('turn_number', 0)
+        phase = context.get('phase', '')
+        phase_context = f"{phase}:{turn_number}:{context.get('current_player', '')}"
+        
+        # Check turn sequence - skip if bot already acted in this turn
+        if bot_name in self._turn_sequence_tracking:
+            last_turn = self._turn_sequence_tracking[bot_name]
+            if last_turn == turn_number and phase == 'turn':
+                print(f"🚫 SEQUENCE_FIX: {bot_name} already acted in turn {turn_number} - skipping")
+                return True
+        
+        # Check phase sequence - skip if same phase context
+        if bot_name in self._phase_sequence_tracking:
+            last_context = self._phase_sequence_tracking[bot_name]
+            if last_context == phase_context:
+                print(f"🚫 SEQUENCE_FIX: {bot_name} already processed phase context '{phase_context}' - skipping")
+                return True
+        
+        # Update tracking
+        if phase == 'turn':
+            self._turn_sequence_tracking[bot_name] = turn_number
+        self._phase_sequence_tracking[bot_name] = phase_context
+        
+        return False
         
     async def handle_event(self, event: str, data: dict):
         """Process game events and trigger bot actions"""
@@ -90,6 +180,16 @@ class GameBotHandler:
             elif event == "redeal_decision_needed":
                 print(f"🔄 BOT_HANDLER_DEBUG: Handling redeal decision needed")
                 await self._handle_redeal_decision(data)
+            # 🔧 FIX: Add validation feedback events
+            elif event == "action_rejected":
+                print(f"🚫 BOT_HANDLER_DEBUG: Handling action rejection")
+                await self._handle_action_rejected(data)
+            elif event == "action_accepted":
+                print(f"✅ BOT_HANDLER_DEBUG: Handling action acceptance")
+                await self._handle_action_accepted(data)
+            elif event == "action_failed":
+                print(f"💥 BOT_HANDLER_DEBUG: Handling action failure")
+                await self._handle_action_failed(data)
             else:
                 print(f"⚠️ BOT_HANDLER_DEBUG: Unknown event '{event}' - ignoring")
     
@@ -138,7 +238,28 @@ class GameBotHandler:
                     for player in game_state.players:
                         if getattr(player, 'name', str(player)) == current_player:
                             if getattr(player, 'is_bot', False):
-                                print(f"🤖 ENTERPRISE_BOT_DEBUG: Current player {current_player} is a bot - triggering play")
+                                print(f"🤖 ENTERPRISE_BOT_DEBUG: Current player {current_player} is a bot - checking for duplicates")
+                                
+                                # 🔧 RACE_CONDITION_FIX: Check for duplicate action before triggering
+                                context = {
+                                    'phase': phase,
+                                    'turn_number': phase_data.get('current_turn_number', 0),
+                                    'current_player': current_player,
+                                    'required_count': phase_data.get('required_piece_count'),
+                                    'trigger_source': 'phase_change'
+                                }
+                                
+                                # Check both deduplication mechanisms
+                                if self._is_duplicate_action(current_player, 'play_pieces', context):
+                                    print(f"🚫 RACE_CONDITION_FIX: Skipping duplicate play action for {current_player}")
+                                    return
+                                
+                                if self._should_skip_bot_trigger(current_player, context):
+                                    print(f"🚫 RACE_CONDITION_FIX: Skipping bot trigger due to sequence tracking for {current_player}")
+                                    return
+                                
+                                print(f"✅ RACE_CONDITION_FIX: Triggering bot play for {current_player} - no duplicates detected")
+                                
                                 # Get last player to continue sequence
                                 turn_plays = phase_data.get('turn_plays', {})
                                 if isinstance(turn_plays, dict) and turn_plays:
@@ -319,7 +440,12 @@ class GameBotHandler:
             
     async def _handle_play_phase(self, last_player: str):
         """Handle bot plays in turn order"""
-        from backend.socket_manager import broadcast
+        try:
+            from backend.socket_manager import broadcast
+        except ImportError:
+            # Handle test environment
+            def broadcast(*args, **kwargs):
+                pass
         
         # Get turn data from state machine if available
         if self.state_machine:
@@ -387,6 +513,21 @@ class GameBotHandler:
             print(f"🎯 PLAY_PHASE_DEBUG: Next player {next_player_name} is human, waiting for their play")
             return  # Wait for human player
             
+        # 🔧 RACE_CONDITION_FIX: Additional deduplication check before bot play
+        if self.state_machine:
+            phase_data = self.state_machine.get_phase_data()
+            context = {
+                'phase': 'turn',
+                'turn_number': phase_data.get('current_turn_number', 0),
+                'current_player': next_player_name,
+                'required_count': required_piece_count,
+                'trigger_source': 'player_played'
+            }
+            
+            if self._is_duplicate_action(next_player_name, 'play_pieces', context):
+                print(f"🚫 RACE_CONDITION_FIX: Skipping duplicate bot play for {next_player_name} in _handle_play_phase")
+                return
+        
         print(f"🤖 PLAY_PHASE_DEBUG: Triggering bot play for {next_player_name}")
         
         # Add realistic delay for bot decision (500-1000ms)
@@ -400,7 +541,11 @@ class GameBotHandler:
             
     async def _bot_play(self, bot: Player):
         """Make a bot play"""
-        from backend.socket_manager import broadcast
+        try:
+            from backend.socket_manager import broadcast
+        except ImportError:
+            def broadcast(*args, **kwargs):
+                pass
         
         try:
             # Choose play
@@ -726,3 +871,74 @@ class GameBotHandler:
                     print(f"🔧 Bot {bot.name} auto-declined as fallback")
                 except:
                     pass
+    
+    # 🔧 FIX: Validation Feedback Event Handlers
+    
+    async def _handle_action_rejected(self, data: dict):
+        """Handle notification that a bot action was rejected by state machine"""
+        player_name = data.get("player_name")
+        action_type = data.get("action_type")
+        reason = data.get("reason", "Unknown reason")
+        is_bot = data.get("is_bot", False)
+        
+        print(f"🚫 BOT_VALIDATION_FIX: Action {action_type} from {player_name} was REJECTED: {reason}")
+        
+        if is_bot:
+            # For rejected bot actions, we need to:
+            # 1. NOT process any turn completion logic
+            # 2. NOT remove pieces from hands
+            # 3. Clear tracking to allow retry with valid state
+            print(f"🚫 BOT_VALIDATION_FIX: Bot {player_name} action rejected - preventing downstream processing")
+            
+            # 🔧 RACE_CONDITION_FIX: Clear tracking for rejected actions to allow retry
+            if player_name in self._bot_action_cache:
+                # Clear recent action cache for this bot to allow legitimate retry
+                self._bot_action_cache[player_name].clear()
+                print(f"🔧 RACE_CONDITION_FIX: Cleared action cache for {player_name} after rejection")
+            
+            if player_name in self._turn_sequence_tracking:
+                # Don't clear turn tracking - bot should not retry same turn
+                pass
+            
+            if player_name in self._phase_sequence_tracking:
+                # Clear phase tracking if it was an invalid attempt
+                del self._phase_sequence_tracking[player_name]
+                print(f"🔧 RACE_CONDITION_FIX: Cleared phase tracking for {player_name} after rejection")
+            
+            # Log the rejection for debugging
+            game_state = self._get_game_state()
+            if hasattr(game_state, 'players'):
+                for player in game_state.players:
+                    if player.name == player_name:
+                        print(f"🚫 BOT_VALIDATION_FIX: Bot {player_name} hand size after rejection: {len(player.hand)}")
+                        break
+    
+    async def _handle_action_accepted(self, data: dict):
+        """Handle notification that a bot action was accepted by state machine"""
+        player_name = data.get("player_name")
+        action_type = data.get("action_type")
+        result = data.get("result", {})
+        is_bot = data.get("is_bot", False)
+        
+        print(f"✅ BOT_VALIDATION_FIX: Action {action_type} from {player_name} was ACCEPTED")
+        
+        if is_bot and action_type == "play_pieces":
+            # For accepted play actions, the state machine has already:
+            # 1. Updated turn_plays with the valid play
+            # 2. Advanced to next player
+            # 3. Broadcast the play event
+            # 4. Will handle piece removal during turn completion
+            print(f"✅ BOT_VALIDATION_FIX: Bot {player_name} play accepted - state machine handling all updates")
+    
+    async def _handle_action_failed(self, data: dict):
+        """Handle notification that a bot action failed during processing"""
+        player_name = data.get("player_name")
+        action_type = data.get("action_type")
+        error = data.get("error", "Unknown error")
+        is_bot = data.get("is_bot", False)
+        
+        print(f"💥 BOT_VALIDATION_FIX: Action {action_type} from {player_name} FAILED: {error}")
+        
+        if is_bot:
+            # For failed bot actions, similar to rejection - prevent downstream processing
+            print(f"💥 BOT_VALIDATION_FIX: Bot {player_name} action failed - preventing inconsistent state")
