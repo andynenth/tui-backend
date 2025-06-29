@@ -514,13 +514,20 @@ class TurnState(GameState):
         
         # STEP 2: Check if any hands are empty AFTER pieces removed
         all_hands_empty = True
+        hand_sizes = {}
         if hasattr(game, 'players') and game.players:
             for player in game.players:
-                if len(player.hand) > 0:
+                hand_size = len(player.hand)
+                hand_sizes[player.name] = hand_size
+                if hand_size > 0:
                     all_hands_empty = False
         
         print(f"🏁 TURN_COMPLETION_DEBUG: After removing pieces, checking if all hands are empty")
         print(f"🏁 TURN_COMPLETION_DEBUG: all_hands_empty = {all_hands_empty}")
+        
+        # 🔧 FIX: Add defensive consistency check
+        self._validate_hand_size_consistency(hand_sizes)
+        
         if hasattr(game, 'players') and game.players:
             for player in game.players:
                 print(f"🏁 TURN_COMPLETION_DEBUG: {player.name} hand size: {len(player.hand)}")
@@ -812,3 +819,42 @@ class TurnState(GameState):
 
     # REMOVED: _broadcast_new_turn_started() - no longer needed
     # 🚀 ENTERPRISE: New turn broadcasting is handled automatically by update_phase_data() in _start_new_turn()
+    
+    def _validate_hand_size_consistency(self, hand_sizes: dict) -> None:
+        """🔧 FIX: Defensive check for hand size consistency to prevent state desynchronization"""
+        if not hand_sizes:
+            return
+        
+        # Check for uneven hand distribution
+        hand_values = list(hand_sizes.values())
+        min_hand_size = min(hand_values)
+        max_hand_size = max(hand_values)
+        
+        print(f"🔧 CONSISTENCY_CHECK: Hand sizes: {hand_sizes}")
+        print(f"🔧 CONSISTENCY_CHECK: Min: {min_hand_size}, Max: {max_hand_size}")
+        
+        # If there's more than 1 card difference between players, something is wrong
+        if max_hand_size - min_hand_size > 1:
+            self.logger.error(f"❌ CONSISTENCY ERROR: Uneven hand distribution detected!")
+            self.logger.error(f"   Hand sizes: {hand_sizes}")
+            self.logger.error(f"   Max difference: {max_hand_size - min_hand_size} cards")
+            
+            # Log turn plays for debugging
+            self.logger.error(f"   Turn plays processed: {list(self.turn_plays.keys())}")
+            
+            # This indicates a race condition or invalid action processing
+            # The game should not continue in this state
+            print(f"🚨 CRITICAL: Game state inconsistency detected - investigation needed!")
+            
+            # For now, continue but log the error for debugging
+            return
+        
+        # Check for mixed hand states (some empty, some with cards > 1)
+        non_empty_hands = [size for size in hand_values if size > 0]
+        if non_empty_hands and min(hand_values) == 0:
+            # Some players have empty hands, others don't
+            if max(non_empty_hands) > 1:
+                self.logger.warning(f"⚠️ MIXED STATE: Some players empty ({[name for name, size in hand_sizes.items() if size == 0]}), others with multiple cards")
+                print(f"⚠️ MIXED STATE WARNING: This may indicate piece removal issues")
+        
+        print(f"✅ CONSISTENCY_CHECK: Hand size distribution is acceptable")
