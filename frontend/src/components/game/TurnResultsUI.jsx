@@ -27,11 +27,27 @@ export function TurnResultsUI({
   turnNumber = 1,
   nextStarter = null
 }) {
+  // Debug logging for turn results
+  console.log('🏆 TURN_RESULTS_UI_DEBUG: TurnResultsUI component rendered with props:');
+  console.log('  🏅 winner:', winner);
+  console.log('  🎯 winningPlay:', winningPlay);
+  console.log('  📊 playerPiles:', playerPiles);
+  console.log('  👥 players:', players);
+  console.log('  🔢 turnNumber:', turnNumber);
+  console.log('  🎪 nextStarter:', nextStarter);
+  
   const hasWinner = !!winner;
   const winningPieces = winningPlay?.pieces || [];
   const winningValue = winningPlay?.value || 0;
   const winningType = winningPlay?.type || 'unknown';
   const pilesWon = winningPlay?.pilesWon || 0;
+  
+  console.log('🏆 TURN_RESULTS_UI_DEBUG: Computed values:');
+  console.log('  ✅ hasWinner:', hasWinner);
+  console.log('  🃏 winningPieces:', winningPieces);
+  console.log('  💎 winningValue:', winningValue);
+  console.log('  🎲 winningType:', winningType);
+  console.log('  🏆 pilesWon:', pilesWon);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-green-900 to-emerald-900 p-4">

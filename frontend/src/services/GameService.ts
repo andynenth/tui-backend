@@ -464,7 +464,8 @@ export class GameService extends EventTarget {
         break;
         
       case 'turn_complete':
-        console.log(`🌐 PROCESS_EVENT_DEBUG: Handling turn_complete event`);
+        console.log(`🌐 PROCESS_EVENT_DEBUG: Handling turn_complete event with data:`, data);
+        console.log(`🏆 TURN_COMPLETE_RAW_DEBUG: Event data received:`, JSON.stringify(data, null, 2));
         newState = this.handleTurnComplete(newState, data);
         break;
         
@@ -953,7 +954,7 @@ export class GameService extends EventTarget {
     console.log(`🏆 TURN_WINNER_DEBUG: Winner: ${winner}, Next starter: ${data.next_starter || 'Unknown'}`);
     console.log(`🏆 TURN_COMPLETE_DATA:`, data);
     
-    return {
+    const newState = {
       ...state,
       phase: 'turn_results',
       turnWinner: data.winner || null,
@@ -964,6 +965,17 @@ export class GameService extends EventTarget {
       allHandsEmpty: data.all_hands_empty || false,
       willContinue: data.will_continue || false
     };
+    
+    console.log(`🏆 TURN_COMPLETE_DEBUG: Transitioning to turn_results phase with state:`, {
+      phase: newState.phase,
+      turnWinner: newState.turnWinner,
+      winningPlay: newState.winningPlay,
+      playerPiles: newState.playerPiles,
+      turnNumber: newState.turnNumber,
+      nextStarter: newState.nextStarter
+    });
+    
+    return newState;
   }
 
   /**

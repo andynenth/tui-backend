@@ -105,7 +105,16 @@ export function GameContainer({ roomId }) {
   const turnResultsProps = useMemo(() => {
     if (gameState.phase !== 'turn_results') return null;
     
-    return {
+    console.log('🏆 GAMECONTAINER_DEBUG: Building turnResultsProps with gameState:');
+    console.log('  🎮 gameState.phase:', gameState.phase);
+    console.log('  🏅 gameState.turnWinner:', gameState.turnWinner);
+    console.log('  🎯 gameState.winningPlay:', gameState.winningPlay);
+    console.log('  📊 gameState.playerPiles:', gameState.playerPiles);
+    console.log('  👥 gameState.players:', gameState.players);
+    console.log('  🔢 gameState.turnNumber:', gameState.turnNumber);
+    console.log('  🎪 gameState.nextStarter:', gameState.nextStarter);
+    
+    const props = {
       // Data from backend
       winner: gameState.turnWinner || null,
       winningPlay: gameState.winningPlay || null,
@@ -114,6 +123,9 @@ export function GameContainer({ roomId }) {
       turnNumber: gameState.turnNumber || 1,
       nextStarter: gameState.nextStarter || null
     };
+    
+    console.log('🏆 GAMECONTAINER_DEBUG: Final turnResultsProps:', props);
+    return props;
   }, [gameState, gameActions]);
 
   const scoringProps = useMemo(() => {
@@ -211,6 +223,7 @@ export function GameContainer({ roomId }) {
             return <TurnUI {...turnProps} />;
             
           case 'turn_results':
+            console.log('🏆 GAMECONTAINER_DEBUG: Rendering TurnResultsUI with props:', turnResultsProps);
             return <TurnResultsUI {...turnResultsProps} />;
             
           case 'scoring':

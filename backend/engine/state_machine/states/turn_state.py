@@ -136,9 +136,9 @@ class TurnState(GameState):
         
         game = self.state_machine.game
         
-        # Check if any hands are empty
-        if hasattr(game, 'player_hands') and game.player_hands:
-            all_hands_empty = all(len(hand) == 0 for hand in game.player_hands.values())
+        # Check if any hands are empty (use same logic as check_transition_conditions)
+        if hasattr(game, 'players') and game.players:
+            all_hands_empty = all(len(player.hand) == 0 for player in game.players)
             print(f"🎯 START_NEXT_DEBUG: all_hands_empty: {all_hands_empty}")
             if all_hands_empty:
                 # Don't start new turn - should transition to scoring
@@ -496,7 +496,9 @@ class TurnState(GameState):
         """Process the completion of a turn"""
         game = self.state_machine.game
         
-        # Remove played pieces from player hands
+        print(f"🏁 TURN_COMPLETION_DEBUG: Starting turn completion processing")
+        
+        # STEP 1: Remove played pieces from player hands FIRST
         if hasattr(game, 'players') and game.players:
             for player in game.players:
                 player_name = player.name
@@ -504,21 +506,29 @@ class TurnState(GameState):
                     play_data = self.turn_plays[player_name]
                     pieces_to_remove = play_data['pieces']
                     
+                    print(f"🏁 TURN_COMPLETION_DEBUG: Removing {len(pieces_to_remove)} pieces from {player_name}")
                     # Remove each piece from player's hand
                     for piece in pieces_to_remove:
                         if piece in player.hand:
                             player.hand.remove(piece)
         
-        # Check if any hands are empty - this affects transition conditions
+        # STEP 2: Check if any hands are empty AFTER pieces removed
         all_hands_empty = True
         if hasattr(game, 'players') and game.players:
             for player in game.players:
                 if len(player.hand) > 0:
                     all_hands_empty = False
         
-        # 🚀 ENTERPRISE: Broadcast turn completion using centralized system
+        print(f"🏁 TURN_COMPLETION_DEBUG: After removing pieces, checking if all hands are empty")
+        print(f"🏁 TURN_COMPLETION_DEBUG: all_hands_empty = {all_hands_empty}")
+        if hasattr(game, 'players') and game.players:
+            for player in game.players:
+                print(f"🏁 TURN_COMPLETION_DEBUG: {player.name} hand size: {len(player.hand)}")
+        
+        # STEP 3: Broadcast turn completion using centralized system
         await self._broadcast_turn_completion_enterprise()
         
+        # STEP 4: Decide next action based on whether hands are empty
         if all_hands_empty:
             # Store the last turn winner for the next round's starter
             if self.winner:
@@ -526,6 +536,7 @@ class TurnState(GameState):
                 self.logger.info(f"🏁 All hands are now empty - round complete. Last turn winner: {self.winner}")
             else:
                 self.logger.info("🏁 All hands are now empty - round complete")
+            print(f"🏁 TURN_COMPLETION_DEBUG: Round complete - will transition to scoring")
             # The main process loop will handle the actual transition
         else:
             # Update starter for next turn
@@ -535,6 +546,7 @@ class TurnState(GameState):
                 self._update_turn_order_for_new_starter(self.winner)
                 self.logger.info(f"🎯 Next turn starter: {self.winner}")
                 
+                print(f"🏁 TURN_COMPLETION_DEBUG: Hands not empty - will start next turn after delay")
                 # Auto-start next turn after 7 second delay (give users time to see TurnResultsUI)
                 self.logger.info(f"🎯 Turn complete - auto-starting next turn in 7 seconds")
                 await asyncio.sleep(7.0)
@@ -749,10 +761,18 @@ class TurnState(GameState):
             if turn_result_data and turn_result_data.get('winner_play'):
                 winning_play = turn_result_data['winner_play']
             
-            # Get current pile counts
+            # Get current turn's pile awards (not accumulated round totals)
             player_piles = {}
-            if hasattr(game, 'player_piles') and game.player_piles:
-                player_piles = game.player_piles.copy()
+            if self.winner and self.required_piece_count:
+                # Only show the piles won in THIS turn, not accumulated totals
+                player_piles[self.winner] = self.required_piece_count
+                
+                # Initialize all other players to 0 for this turn
+                if hasattr(game, 'players') and game.players:
+                    for player in game.players:
+                        player_name = getattr(player, 'name', str(player))
+                        if player_name != self.winner:
+                            player_piles[player_name] = 0
             
             # Get player list
             players = []
@@ -780,7 +800,7 @@ class TurnState(GameState):
                 "will_continue": not all_hands_empty
             }, f"Turn {turn_number} completed - winner: {self.winner}")
             
-            self.logger.info(f"🚀 Enterprise broadcast turn completion - winner: {self.winner}, piles: {player_piles}")
+            self.logger.info(f"🚀 Enterprise broadcast turn completion - winner: {self.winner}, turn piles awarded: {player_piles}")
             
         except Exception as e:
             self.logger.error(f"Failed to broadcast turn completion: {e}", exc_info=True)
