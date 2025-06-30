@@ -209,10 +209,8 @@ async def start_game(room_id: str = Query(...)):
         if not result["success"]:
             raise HTTPException(status_code=400, detail="Failed to start game")
         
-        # Register game with bot manager and state machine  
-        bot_manager.register_game(room_id, room.game, room.game_state_machine)
-        
-        print(f"🎯 Game started with StateMachine for room {room_id}")
+        # Bot manager is now registered inside start_game_safe before state machine starts
+        print(f"✅ Game started in room {room_id}")
         
         # State machine handles all PREPARATION phase logic automatically
         # including dealing, weak hand detection, redeal logic, etc.

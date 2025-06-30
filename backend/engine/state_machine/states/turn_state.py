@@ -26,7 +26,7 @@ class TurnState(GameState):
     
     @property
     def next_phases(self) -> List[GamePhase]:
-        return [GamePhase.SCORING]
+        return [GamePhase.TURN_RESULTS]  # Always show turn results after turn
     
     def __init__(self, state_machine):
         super().__init__(state_machine)
@@ -46,6 +46,7 @@ class TurnState(GameState):
         self.turn_complete: bool = False
         self.winner: Optional[str] = None
         self._turn_resolution_cache: Optional[Dict[str, Any]] = None  # Cache to avoid duplicate resolve_turn calls
+        self._transition_lock = asyncio.Lock()  # 🚀 TIMING SAFETY: Prevent concurrent transitions
     
     async def _setup_phase(self) -> None:
         """Initialize turn phase"""
@@ -68,11 +69,12 @@ class TurnState(GameState):
         """Finalize turn phase results before transition"""
         game = self.state_machine.game
         
-        # Ensure any final turn results are processed
+        # Just log final state - don't re-process turn completion
+        # The _process_turn_completion() already ran and triggered this transition
         if self.turn_complete and self.winner:
-            await self._process_turn_completion()
+            self.logger.info(f"🏁 Turn phase cleanup - winner: {self.winner}, all hands empty")
         
-        self.logger.info("🏁 Turn phase complete - all hands empty")
+        self.logger.info("🏁 Turn phase complete - transitioning to scoring")
     
     async def _validate_action(self, action: GameAction) -> bool:
         """Validate play pieces action"""
@@ -99,14 +101,17 @@ class TurnState(GameState):
             return {'status': 'handled', 'action': action.action_type.value}
     
     async def check_transition_conditions(self) -> Optional[GamePhase]:
-        """Check if ready to transition to scoring phase"""
+        """🚀 ENTERPRISE: Event-driven transitions - this method is NO LONGER POLLED
+        
+        This method is kept for compatibility but transitions are now event-driven.
+        The turn state triggers its own transition when hands become empty.
+        """
+        # 🚀 ENTERPRISE: No more polling - transitions are event-driven in _process_turn_completion
         game = self.state_machine.game
         
-        # Check if all players have empty hands (main condition for scoring)
         if hasattr(game, 'players') and game.players:
             all_hands_empty = all(len(player.hand) == 0 for player in game.players)
             if all_hands_empty:
-                self.logger.info("🏁 All hands empty - transitioning to scoring")
                 return GamePhase.SCORING
         
         return None
@@ -299,32 +304,40 @@ class TurnState(GameState):
         print(f"🎯 TURN_STATE_DEBUG: Round {current_round}, Turn {turn_number} - {action.player_name} played, next: {self._get_current_player()}")
         
         # Check if turn is complete
+        print(f"🔍 TURN_COMPLETION_CHECK: current_player_index={self.current_player_index}, turn_order_length={len(self.turn_order)}")
+        print(f"🔍 TURN_COMPLETION_CHECK: turn_plays_count={len(self.turn_plays)}, expected_players={len(self.turn_order)}")
+        print(f"🔍 TURN_COMPLETION_CHECK: players_who_played={list(self.turn_plays.keys())}")
+        print(f"🔍 TURN_COMPLETION_CHECK: expected_players={self.turn_order}")
+        
         if self.current_player_index >= len(self.turn_order):
             print(f"🎯 TURN_STATE_DEBUG: Turn complete! Calling _complete_turn()")
             await self._complete_turn()
+            # 🚀 RACE_CONDITION_FIX: Don't send update_phase_data after turn completion
+            # This was causing phase_change(turn) events to override turn_results display
+            print(f"🎯 RACE_CONDITION_FIX: Skipping phase update after turn completion to prevent override")
+        else:
+            # 🚀 ENTERPRISE: Use automatic broadcasting system (only for ongoing turns)
+            game = self.state_machine.game
+            current_turn_number = game.turn_number
+            
+            next_player = self._get_current_player()
+            print(f"🎯 UPDATE_DEBUG: About to update phase data with current_player: {next_player}, required_piece_count: {self.required_piece_count}")
+            
+            await self.update_phase_data({
+                'current_player': next_player,
+                'required_piece_count': self.required_piece_count,
+                'turn_plays': self.turn_plays.copy(),
+                'turn_complete': self.turn_complete,
+                'current_turn_number': current_turn_number
+            }, f"Player {action.player_name} played {piece_count} pieces")
         
-        # 🚀 ENTERPRISE: Use automatic broadcasting system
-        game = self.state_machine.game
-        current_turn_number = game.turn_number
-        
-        next_player = self._get_current_player()
-        print(f"🎯 UPDATE_DEBUG: About to update phase data with current_player: {next_player}, required_piece_count: {self.required_piece_count}")
-        
-        await self.update_phase_data({
-            'current_player': next_player,
-            'required_piece_count': self.required_piece_count,
-            'turn_plays': self.turn_plays.copy(),
-            'turn_complete': self.turn_complete,
-            'current_turn_number': current_turn_number
-        }, f"Player {action.player_name} played {piece_count} pieces")
-        
-        print(f"🎯 UPDATE_DEBUG: Phase data updated - next_player should be: {next_player}")
-        
-        # 🚀 ENTERPRISE: Use centralized custom event broadcasting
-        await self._broadcast_play_event_enterprise(action.player_name, pieces, piece_count)
-        
-        # Notify bot manager about the play to trigger next bot
-        await self._notify_bot_manager_play(action.player_name)
+            print(f"🎯 UPDATE_DEBUG: Phase data updated - next_player should be: {next_player}")
+            
+            # 🚀 ENTERPRISE: Use centralized custom event broadcasting (only for ongoing turns)
+            await self._broadcast_play_event_enterprise(action.player_name, pieces, piece_count)
+            
+            # Notify bot manager about the play to trigger next bot (only for ongoing turns)
+            await self._notify_bot_manager_play(action.player_name)
         
         return {
             'status': 'play_accepted',
@@ -362,15 +375,10 @@ class TurnState(GameState):
             self.logger.info("🤝 No winner this turn")
             print(f"🎯 TURN_COMPLETE_DEBUG: No winner determined")
         
-        # 🚀 ENTERPRISE: Use automatic broadcasting for turn completion
-        await self.update_phase_data({
-            'turn_complete': True,
-            'winner': self.winner,
-            'piles_won': self.required_piece_count if self.winner else 0,
-            'turn_plays': self.turn_plays.copy(),  # Preserve the completed turn data
-            'next_turn_starter': self.winner or self.current_turn_starter
-        }, f"Turn completed - winner: {self.winner}")
-        print(f"🎯 TURN_COMPLETE_DEBUG: Phase data updated with turn completion")
+        # 🚀 RACE_CONDITION_FIX: Remove this update_phase_data call that causes race condition
+        # This was sending phase_change(turn) events AFTER turn_complete events, overriding turn_results display
+        # The _broadcast_turn_completion_enterprise() method already handles turn completion notification
+        print(f"🎯 TURN_COMPLETE_DEBUG: Skipping phase data update to prevent race condition - using enterprise broadcast instead")
         
         await self._process_turn_completion()
         print(f"🎯 TURN_COMPLETE_DEBUG: _process_turn_completion() finished")
@@ -535,36 +543,34 @@ class TurnState(GameState):
         # STEP 3: Broadcast turn completion using centralized system
         await self._broadcast_turn_completion_enterprise()
         
-        # STEP 4: Decide next action based on whether hands are empty
-        if all_hands_empty:
-            # Store the last turn winner for the next round's starter
-            if self.winner:
-                game.last_turn_winner = self.winner
-                self.logger.info(f"🏁 All hands are now empty - round complete. Last turn winner: {self.winner}")
-            else:
-                self.logger.info("🏁 All hands are now empty - round complete")
-            print(f"🏁 TURN_COMPLETION_DEBUG: Round complete - will transition to scoring")
-            # The main process loop will handle the actual transition
+        # STEP 4: Store turn result data and transition to TURN_RESULTS (no delays!)
+        # Store turn result data for TURN_RESULTS phase to display
+        game.last_turn_winner = self.winner
+        game.last_turn_pieces = self.turn_plays.get(self.winner, {}).get('pieces', []) if self.winner else []
+        game.last_turn_plays = self.turn_plays.copy()
+        
+        # Store whether hands are empty for TURN_RESULTS to decide next transition
+        setattr(game, 'hands_empty_after_turn', all_hands_empty)
+        
+        print(f"🏁 TURN_COMPLETION_DEBUG: Turn complete - transitioning to TURN_RESULTS")
+        if self.winner:
+            self.logger.info(f"🏁 Turn complete. Winner: {self.winner}")
         else:
-            # Update starter for next turn
-            if self.winner:
-                self.current_turn_starter = self.winner
-                # FIX: Also update turn order to put winner first
-                self._update_turn_order_for_new_starter(self.winner)
-                self.logger.info(f"🎯 Next turn starter: {self.winner}")
-                
-                print(f"🏁 TURN_COMPLETION_DEBUG: Hands not empty - will start next turn after delay")
-                # Auto-start next turn after 7 second delay (give users time to see TurnResultsUI)
-                self.logger.info(f"🎯 Turn complete - auto-starting next turn in 7 seconds")
-                await asyncio.sleep(7.0)
-                turn_started = await self.start_next_turn_if_needed()
-                
-                # 🚀 ENTERPRISE: New turn auto-start automatically broadcasts via update_phase_data
-                # No manual broadcast needed - the update_phase_data in _start_new_turn handles this
-                if turn_started:
-                    self.logger.info("🚀 Enterprise: New turn auto-started with automatic broadcasting")
-            else:
-                self.logger.info(f"🤝 No winner - starter remains: {self.current_turn_starter}")
+            self.logger.info("🏁 Turn complete - no winner")
+        
+        # Update starter for next turn (if applicable)
+        if self.winner:
+            self.current_turn_starter = self.winner
+            # FIX: Also update turn order to put winner first
+            self._update_turn_order_for_new_starter(self.winner)
+            self.logger.info(f"🎯 Next turn starter: {self.winner}")
+        
+        # 🚀 ENTERPRISE: Immediate transition to TURN_RESULTS (no asyncio.sleep delays!)
+        print(f"🎆 ENTERPRISE_TRANSITION: Turn complete - auto-transitioning to TURN_RESULTS")
+        await self.state_machine.trigger_transition(
+            GamePhase.TURN_RESULTS,
+            f"Turn {game.turn_number} complete - winner: {self.winner or 'none'}"
+        )
     
     async def _handle_player_disconnect(self, action: GameAction) -> Dict[str, Any]:
         """Handle player disconnection during turn"""

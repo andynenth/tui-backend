@@ -8,7 +8,7 @@ from datetime import datetime
 from .core import GamePhase, ActionType, GameAction
 from .action_queue import ActionQueue
 from .base_state import GameState
-from .states import PreparationState, DeclarationState, TurnState, ScoringState
+from .states import PreparationState, DeclarationState, TurnState, TurnResultsState, ScoringState, ScoringDisplayState, GameEndState
 
 
 logger = logging.getLogger(__name__)
@@ -20,11 +20,11 @@ class GameStateMachine:
     Manages phase transitions and delegates action handling to appropriate states.
     """
     
-    def __init__(self, game, broadcast_callback=None):
+    def __init__(self, game, broadcast_callback=None, room_id=None):
         self.game = game
-        # Pass room_id to ActionQueue for event storage
-        room_id = getattr(game, 'room_id', None) if game else None
-        self.action_queue = ActionQueue(room_id=room_id)
+        # 🔧 FIX: Use explicit room_id parameter or fallback to game attribute
+        self.room_id = room_id or getattr(game, 'room_id', None) if game else None
+        self.action_queue = ActionQueue(room_id=self.room_id)
         self.current_state: Optional[GameState] = None
         self.current_phase: Optional[GamePhase] = None
         self.is_running = False
@@ -36,15 +36,21 @@ class GameStateMachine:
             GamePhase.PREPARATION: PreparationState(self),
             GamePhase.DECLARATION: DeclarationState(self),
             GamePhase.TURN: TurnState(self), 
-            GamePhase.SCORING: ScoringState(self), 
+            GamePhase.TURN_RESULTS: TurnResultsState(self),
+            GamePhase.SCORING: ScoringState(self),
+            GamePhase.SCORING_DISPLAY: ScoringDisplayState(self),
+            GamePhase.GAME_END: GameEndState(self),
         }
         
         # Transition validation map
         self._valid_transitions = {
             GamePhase.PREPARATION: {GamePhase.DECLARATION},
             GamePhase.DECLARATION: {GamePhase.TURN},
-            GamePhase.TURN: {GamePhase.SCORING},
-            GamePhase.SCORING: {GamePhase.PREPARATION}  # Next round
+            GamePhase.TURN: {GamePhase.TURN_RESULTS},  # Always show results after turn
+            GamePhase.TURN_RESULTS: {GamePhase.TURN, GamePhase.SCORING},  # Next turn or scoring
+            GamePhase.SCORING: {GamePhase.SCORING_DISPLAY},  # Always show score breakdown
+            GamePhase.SCORING_DISPLAY: {GamePhase.PREPARATION, GamePhase.GAME_END},  # Next round or game end
+            GamePhase.GAME_END: set()  # No automatic transitions from game end
         }
     
     async def start(self, initial_phase: GamePhase = GamePhase.PREPARATION):
@@ -91,32 +97,34 @@ class GameStateMachine:
         return {"success": True, "queued": True}
     
     async def _process_loop(self):
-        """Main processing loop for queued actions"""
-        print(f"🔍 STATE_MACHINE_DEBUG: Process loop started, is_running: {self.is_running}")
+        """🚀 ENTERPRISE: Event-driven action processing loop (NO POLLING)"""
+        print(f"🔍 STATE_MACHINE_DEBUG: Event-driven process loop started, is_running: {self.is_running}")
         loop_count = 0
         while self.is_running:
             try:
                 loop_count += 1
-                if loop_count % 50 == 0:  # Log every 5 seconds
+                if loop_count % 1000 == 0:  # Log every 10 seconds (1000 * 0.01s)
                     print(f"🔍 STATE_MACHINE_DEBUG: Process loop iteration {loop_count}")
                 
-                # Process any pending actions
+                # 🚀 ENTERPRISE: Only process pending actions - NO transition polling
                 await self.process_pending_actions()
                 
-                # Check for phase transitions
-                if self.current_state:
-                    next_phase = await self.current_state.check_transition_conditions()
-                    if next_phase:
-                        await self._transition_to(next_phase)
+                # 🚀 ENTERPRISE: Transitions are now event-driven, triggered by states themselves
+                # NO MORE: check_transition_conditions() polling - violates enterprise architecture
                 
-                # Small delay to prevent busy waiting
-                await asyncio.sleep(0.1)
+                # Very small delay only for action queue processing
+                await asyncio.sleep(0.01)  # 10ms instead of 100ms - only for action queue
                 
             except Exception as e:
                 print(f"❌ STATE_MACHINE_DEBUG: Error in process loop: {e}")
                 logger.error(f"Error in process loop: {e}", exc_info=True)
         
-        print(f"🔍 STATE_MACHINE_DEBUG: Process loop ended")
+        print(f"🔍 STATE_MACHINE_DEBUG: Event-driven process loop ended")
+    
+    async def trigger_transition(self, new_phase: GamePhase, reason: str = "Event-driven transition"):
+        """🚀 ENTERPRISE: Allow states to trigger their own transitions (event-driven)"""
+        print(f"🎯 ENTERPRISE_TRANSITION: {reason} - triggering {self.current_phase} -> {new_phase}")
+        await self._transition_to(new_phase)
     
     async def process_pending_actions(self):
         """Process all actions in queue"""
@@ -174,6 +182,10 @@ class GameStateMachine:
         self.current_phase = new_phase
         self.current_state = new_state
         
+        # 🔧 CRITICAL FIX: Sync game object phase with state machine phase
+        if self.game:
+            self.game.current_phase = new_phase.value  # Store as string for API compatibility
+        
         print(f"🎯 STATE_MACHINE_DEBUG: Phase updated: {old_phase} -> {self.current_phase}")
         print(f"🎯 STATE_MACHINE_DEBUG: Entering new state: {self.current_state}")
         
@@ -184,6 +196,7 @@ class GameStateMachine:
         await self._store_phase_change_event(old_phase, new_phase)
         
         # 🔧 FIX: Broadcast phase change with player-specific data
+        print(f"🔍 TRANSITION_DEBUG: About to broadcast new_phase={new_phase.value}, current_phase={self.current_phase.value if self.current_phase else 'None'}")
         await self._broadcast_phase_change_with_hands(new_phase)
         
         # 🤖 Trigger bot manager for phase changes
@@ -225,6 +238,8 @@ class GameStateMachine:
     
     async def _broadcast_phase_change_with_hands(self, phase: GamePhase):
         """Broadcast phase change with all player hand data"""
+        print(f"🔍 STATE_MACHINE_BROADCAST_DEBUG: Broadcasting phase {phase.value} - current machine phase: {self.current_phase.value if self.current_phase else 'None'}")
+        
         base_data = {
             "phase": phase.value,
             "allowed_actions": [action.value for action in self.get_allowed_actions()],
@@ -262,6 +277,11 @@ class GameStateMachine:
     async def _notify_bot_manager(self, new_phase: GamePhase):
         """Notify bot manager about phase changes to trigger bot actions"""
         try:
+            # 🚀 RACE_CONDITION_FIX: Only notify if we're still in the expected phase
+            if self.current_phase != new_phase:
+                print(f"🚀 BOT_NOTIFY_FIX: Phase mismatch - current: {self.current_phase}, expected: {new_phase}, skipping notification")
+                return
+            
             from ..bot_manager import BotManager
             bot_manager = BotManager()
             room_id = getattr(self, 'room_id', 'unknown')
@@ -383,9 +403,10 @@ class GameStateMachine:
     async def _notify_bot_manager_action_rejected(self, action: GameAction):
         """Notify bot manager that an action was rejected by state machine"""
         try:
-            from backend.engine.bot_manager import BotManager
+            from engine.bot_manager import BotManager
             bot_manager = BotManager()
-            room_id = getattr(self.game, 'room_id', 'unknown') if self.game else 'unknown'
+            # 🔧 FIX: Use stored room_id instead of 'unknown'
+            room_id = self.room_id or 'unknown'
             
             print(f"🚫 BOT_VALIDATION_DEBUG: Notifying bot manager of rejected action from {action.player_name}")
             
@@ -403,9 +424,10 @@ class GameStateMachine:
     async def _notify_bot_manager_action_accepted(self, action: GameAction, result: dict):
         """Notify bot manager that an action was accepted and processed"""
         try:
-            from backend.engine.bot_manager import BotManager
+            from engine.bot_manager import BotManager
             bot_manager = BotManager()
-            room_id = getattr(self.game, 'room_id', 'unknown') if self.game else 'unknown'
+            # 🔧 FIX: Use stored room_id instead of 'unknown'
+            room_id = self.room_id or 'unknown'
             
             print(f"✅ BOT_VALIDATION_DEBUG: Notifying bot manager of accepted action from {action.player_name}")
             
@@ -423,9 +445,10 @@ class GameStateMachine:
     async def _notify_bot_manager_action_failed(self, action: GameAction, error_message: str):
         """Notify bot manager that an action failed during processing"""
         try:
-            from backend.engine.bot_manager import BotManager
+            from engine.bot_manager import BotManager
             bot_manager = BotManager()
-            room_id = getattr(self.game, 'room_id', 'unknown') if self.game else 'unknown'
+            # 🔧 FIX: Use stored room_id instead of 'unknown'
+            room_id = self.room_id or 'unknown'
             
             print(f"💥 BOT_VALIDATION_DEBUG: Notifying bot manager of failed action from {action.player_name}")
             

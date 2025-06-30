@@ -1,6 +1,7 @@
 # backend/engine/game.py
 
 import random
+import time
 from typing import List
 from engine.piece import Piece
 from engine.player import Player
@@ -21,6 +22,7 @@ class Game:
         self.max_score = 50
         self.max_rounds = 20
         self.win_condition_type = win_condition_type
+        self.start_time = time.time()  # Track game start time for duration calculation
 
         # Round-specific state
         self.last_round_winner = None      # Player who won the last round

@@ -329,7 +329,11 @@ class SocketManager:
                 "event": event, 
                 "data": enhanced_data
             })
-            print(f"DEBUG_WS: Message for event '{event}' added to queue for room {room_id}.")
+            # 🔍 DEBUG: Show phase in phase_change events
+            phase_info = ""
+            if event == "phase_change" and "phase" in enhanced_data:
+                phase_info = f" (phase: {enhanced_data['phase']})"
+            print(f"DEBUG_WS: Message for event '{event}'{phase_info} added to queue for room {room_id}.")
             
             if room_id == "lobby":
                 print(f"🔔 LOBBY_BROADCAST: Message added to lobby queue. New queue size: {self.broadcast_queues[room_id].qsize()}")

@@ -23,7 +23,7 @@ class ScoringState(GameState):
     
     @property
     def next_phases(self) -> List[GamePhase]:
-        return [GamePhase.PREPARATION]  # Next round or game end
+        return [GamePhase.SCORING_DISPLAY]  # Always show score breakdown
     
     def __init__(self, state_machine):
         super().__init__(state_machine)
@@ -39,15 +39,10 @@ class ScoringState(GameState):
         self.game_complete: bool = False
         self.winners: List[str] = []
         self.scores_calculated: bool = False
-        self.display_delay_complete: bool = False
         
     async def _setup_phase(self) -> None:
         """Initialize scoring phase - calculate all scores"""
         try:
-            # Reset delay flag for new scoring phase
-            self.display_delay_complete = False
-            print(f"🔄 SCORING_SETUP_DEBUG: Reset display_delay_complete = False")
-            
             self.logger.info("Setting up Scoring Phase")
             
             # Calculate scores for all players
@@ -93,11 +88,14 @@ class ScoringState(GameState):
                 'redeal_multiplier': getattr(game, 'redeal_multiplier', 1)
             }, f"Scoring calculated for round {getattr(self.state_machine.game, 'round_number', 1)}")
             
-            # Start display delay (7 seconds to show scoring results)
-            import asyncio
-            asyncio.create_task(self._start_display_delay())
-            
             self.logger.info(f"Scoring complete. Game over: {self.game_complete}")
+            
+            # 🚀 ENTERPRISE: Immediate transition to SCORING_DISPLAY (no asyncio.sleep delays!)
+            print(f"🎆 ENTERPRISE_TRANSITION: Scoring complete - auto-transitioning to SCORING_DISPLAY")
+            await self.state_machine.trigger_transition(
+                GamePhase.SCORING_DISPLAY,
+                f"Scoring calculation complete for round {getattr(game, 'round_number', 1)}"
+            )
             
         except Exception as e:
             self.logger.error(f"Error setting up Scoring Phase: {e}")
@@ -158,29 +156,19 @@ class ScoringState(GameState):
         return result
     
     async def check_transition_conditions(self) -> Optional[GamePhase]:
-        """Check if ready to transition to next phase"""
-        print(f"🔍 SCORING_TRANSITION_DEBUG: Checking transition conditions:")
-        print(f"  📊 scores_calculated: {self.scores_calculated}")
-        print(f"  ⏰ display_delay_complete: {self.display_delay_complete}")
-        print(f"  🏁 game_complete: {self.game_complete}")
+        """🚀 ENTERPRISE: Event-driven transitions - auto-triggered after scoring calculation
+        
+        This method is kept for compatibility but transitions are now event-driven.
+        The scoring state triggers its own transition immediately after calculation.
+        """
+        # 🚀 ENTERPRISE: No more polling - transitions happen immediately after setup
+        # This method should rarely be called since transitions are event-driven
         
         if not self.scores_calculated:
-            print(f"🔍 SCORING_TRANSITION_DEBUG: Not ready - scores not calculated")
             return None
         
-        # Wait for display delay to complete (give users time to see scoring)
-        if not self.display_delay_complete:
-            print(f"🔍 SCORING_TRANSITION_DEBUG: Not ready - display delay not complete")
-            return None
-        
-        if self.game_complete:
-            # Game is over, no transition
-            print(f"🔍 SCORING_TRANSITION_DEBUG: Game complete - no transition")
-            return None
-        
-        # Can transition to next round (Preparation)
-        print(f"🔍 SCORING_TRANSITION_DEBUG: Ready to transition to PREPARATION")
-        return GamePhase.PREPARATION
+        # Always transition to SCORING_DISPLAY to show results
+        return GamePhase.SCORING_DISPLAY
     
     # Action Handlers
     
@@ -358,11 +346,3 @@ class ScoringState(GameState):
         
         self.logger.info(f"Prepared for round {game.round_number}")
     
-    async def _start_display_delay(self) -> None:
-        """Give users 7 seconds to view scoring results before transitioning"""
-        import asyncio
-        print(f"⏰ SCORING_DELAY_DEBUG: Starting 7-second display delay...")
-        await asyncio.sleep(7.0)  # 7 second delay for users to see scores
-        self.display_delay_complete = True
-        print(f"⏰ SCORING_DELAY_DEBUG: 7-second delay complete - setting display_delay_complete = True")
-        self.logger.info("Scoring display delay complete - ready to transition")

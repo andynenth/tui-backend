@@ -117,6 +117,10 @@ class GameState(ABC):
         # Automatic broadcasting (enterprise guarantee)
         if broadcast and self._auto_broadcast_enabled:
             await self._auto_broadcast_phase_change(reason)
+        
+        # 🚀 ENTERPRISE: Automatic transition checking after state changes
+        # This implements Option B - state changes automatically trigger condition checks
+        await self._check_and_trigger_transitions(reason)
     
     async def _auto_broadcast_phase_change(self, reason: str) -> None:
         """
@@ -143,12 +147,18 @@ class GameState(ABC):
             if hasattr(self.state_machine, 'game') and self.state_machine.game:
                 game = self.state_machine.game
                 if hasattr(game, 'players') and game.players:
-                    for player in game.players:
+                    for i, player in enumerate(game.players):
                         player_name = getattr(player, 'name', str(player))
                         player_hand = getattr(player, 'hand', [])
+                        # 🔧 FIX: Include all player properties needed by frontend
                         players_data[player_name] = {
                             'hand': [str(piece) for piece in player_hand],
-                            'hand_size': len(player_hand)
+                            'hand_size': len(player_hand),
+                            'is_bot': getattr(player, 'is_bot', False),
+                            'is_host': i == 0,  # First player is always host
+                            'declared': getattr(player, 'declared', 0),
+                            'captured_piles': getattr(player, 'captured_piles', 0),
+                            'zero_declares_in_a_row': getattr(player, 'zero_declares_in_a_row', 0)
                         }
             
             # Convert phase_data to JSON-safe format with recursive handling
@@ -159,9 +169,17 @@ class GameState(ABC):
             if hasattr(self.state_machine, 'game') and self.state_machine.game:
                 current_round = getattr(self.state_machine.game, 'round_number', 1)
             
+            # 🚀 RACE_CONDITION_FIX: Use state machine's current phase, not this state's phase name
+            current_machine_phase = getattr(self.state_machine, 'current_phase', self.phase_name)
+            print(f"🔍 BROADCAST_DEBUG: State {self.phase_name.value} attempting broadcast - machine phase: {current_machine_phase.value if current_machine_phase else 'None'}")
+            
+            if current_machine_phase != self.phase_name:
+                print(f"🚀 BROADCAST_FIX: State {self.phase_name.value} skipping broadcast - machine is in {current_machine_phase.value}")
+                return
+            
             # Broadcast complete phase change event
             broadcast_data = {
-                "phase": self.phase_name.value,
+                "phase": current_machine_phase.value,
                 "allowed_actions": [action.value for action in self.allowed_actions],
                 "phase_data": json_safe_phase_data,
                 "players": players_data,
@@ -249,3 +267,79 @@ class GameState(ABC):
             
         except Exception as e:
             self.logger.error(f"❌ Custom broadcast failed: {e}", exc_info=True)
+    
+    async def _check_and_trigger_transitions(self, reason: str) -> None:
+        """
+        🚀 ENTERPRISE: Automatic transition checking after state changes (Option B)
+        
+        This implements the fail-safe event-driven transition system where any state change
+        automatically triggers a check for transition conditions. This ensures transitions
+        happen reliably without developers having to remember to trigger them manually.
+        
+        Args:
+            reason: The reason for the state change that triggered this check
+        """
+        try:
+            # 🚀 TIMING SAFETY: Check if external systems are ready before auto-transitions
+            if not await self._are_external_systems_ready():
+                self.logger.info(f"⏳ Auto-transition delayed - external systems not ready yet")
+                return
+            
+            # Check if this state should transition to another phase
+            next_phase = await self.check_transition_conditions()
+            
+            if next_phase:
+                transition_reason = f"Auto-transition triggered by: {reason}"
+                self.logger.info(f"🔄 Auto-transition detected: {self.phase_name.value} → {next_phase.value}")
+                self.logger.info(f"   Trigger: {reason}")
+                
+                # Trigger the transition through the state machine
+                await self.state_machine.trigger_transition(next_phase, transition_reason)
+                
+        except Exception as e:
+            self.logger.error(f"❌ Auto-transition check failed: {e}", exc_info=True)
+            # Don't let transition failures break the main flow
+            pass
+    
+    async def _are_external_systems_ready(self) -> bool:
+        """
+        🚀 TIMING SAFETY: Check if external systems are ready for auto-transitions
+        
+        This prevents race conditions where auto-transitions happen before
+        external dependencies (like bot manager) are properly initialized.
+        
+        Returns:
+            bool: True if all external systems are ready, False otherwise
+        """
+        try:
+            # Check if bot manager is properly registered (most critical dependency)
+            room_id = getattr(self.state_machine, 'room_id', None)
+            if room_id:
+                # Import bot manager to check registration
+                try:
+                    from engine.bot_manager import BotManager
+                    bot_manager = BotManager()
+                    
+                    # Check if room is registered in bot manager
+                    if room_id not in bot_manager.active_games:
+                        self.logger.debug(f"🔍 Bot manager not ready: room {room_id} not registered")
+                        return False
+                        
+                except Exception as e:
+                    self.logger.debug(f"🔍 Bot manager check failed: {e}")
+                    # If we can't check bot manager, proceed anyway (might be in test)
+                    pass
+            
+            # Check if state machine is fully initialized
+            if not hasattr(self.state_machine, 'is_running') or not self.state_machine.is_running:
+                self.logger.debug(f"🔍 State machine not running yet")
+                return False
+            
+            # Add more readiness checks here as needed
+            
+            return True
+            
+        except Exception as e:
+            self.logger.debug(f"🔍 External systems readiness check failed: {e}")
+            # Default to ready if we can't check (fail open for robustness)
+            return True

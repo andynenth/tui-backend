@@ -98,19 +98,22 @@ class GameBotHandler:
         for h in expired_hashes:
             del bot_cache[h]
         
-        # 🔧 REFINED_FIX: Allow legitimate sequential triggers for current player
-        # If this bot is the current player, allow sequential triggers from different sources
+        # 🔧 HAND_SIZE_FIX: Allow legitimate bot flow while preventing excessive duplicates
+        # Current player needs phase_change (to record) + player_played (to execute) triggers
         if bot_name == current_player:
-            # For current player, only block rapid triggers from the EXACT same source
-            if action_hash in bot_cache:
-                age = current_time - bot_cache[action_hash]
-                if age < 0.5:  # Very recent same trigger
-                    print(f"🚫 REFINED_FIX: Blocking rapid same-source trigger for current player {bot_name} from {trigger_source} (age: {age:.1f}s)")
-                    return True
-                else:
-                    print(f"✅ REFINED_FIX: Allowing delayed same-source trigger for current player {bot_name} from {trigger_source} (age: {age:.1f}s)")
+            # Allow the first two triggers (phase_change + player_played), but block excessive duplicates
+            recent_action_count = 0
+            for existing_hash, timestamp in bot_cache.items():
+                age = current_time - timestamp
+                if age < 3.0:  # Count recent actions within 3 seconds
+                    recent_action_count += 1
+            
+            if recent_action_count >= 2:  # Already had both triggers
+                print(f"🚫 HAND_SIZE_FIX: Blocking excessive action for current player {bot_name} from {trigger_source} (already has {recent_action_count} recent actions)")
+                return True
             else:
-                print(f"✅ REFINED_FIX: Allowing new trigger for current player {bot_name} from {trigger_source}")
+                print(f"✅ HAND_SIZE_FIX: Allowing action {recent_action_count + 1}/2 for current player {bot_name} from {trigger_source}")
+                # Allow this action
         else:
             # For non-current players, be more strict - block any recent duplicates
             # Check all recent actions regardless of source
@@ -279,70 +282,75 @@ class GameBotHandler:
                             break
                 
     async def _handle_declaration_phase(self, last_declarer: str):
-        """Handle bot declarations in order"""
-        from backend.socket_manager import broadcast
+        """Handle bot declarations in order - SINGLE EXECUTION ONLY"""
+        # 🔧 CRITICAL FIX: Prevent duplicate/cascade declaration processing
+        if hasattr(self, '_declaration_phase_processing') and self._declaration_phase_processing:
+            print(f"🚫 DECL_PHASE_FIX: Declaration phase already processing, skipping duplicate call")
+            return
         
-        print(f"🔍 DECL_PHASE_DEBUG: _handle_declaration_phase called with last_declarer: '{last_declarer}'")
+        self._declaration_phase_processing = True
         
-        # Get declaration order
-        declaration_order = self._get_declaration_order()
-        print(f"🔍 DECL_PHASE_DEBUG: Declaration order: {[getattr(p, 'name', str(p)) for p in declaration_order] if declaration_order else 'None'}")
-        
-        # Find next bot to declare
-        last_index = self._get_player_index(last_declarer, declaration_order)
-        print(f"🔍 DECL_PHASE_DEBUG: Last declarer '{last_declarer}' index: {last_index}")
-        
-        print(f"🔍 DECL_PHASE_DEBUG: Starting loop from index {last_index + 1} to {len(declaration_order)}")
-        
-        # Get actual Player objects from game state
-        game_state = self._get_game_state()
-        
-        for i in range(last_index + 1, len(declaration_order)):
-            player_name = declaration_order[i] if isinstance(declaration_order[i], str) else getattr(declaration_order[i], 'name', str(declaration_order[i]))
+        try:
+            print(f"🔍 DECL_PHASE_DEBUG: _handle_declaration_phase called with last_declarer: '{last_declarer}'")
             
-            # Find the actual Player object
-            player_obj = None
-            for p in game_state.players:
-                if getattr(p, 'name', str(p)) == player_name:
-                    player_obj = p
-                    break
+            # Get declaration order
+            declaration_order = self._get_declaration_order()
+            print(f"🔍 DECL_PHASE_DEBUG: Declaration order: {[getattr(p, 'name', str(p)) for p in declaration_order] if declaration_order else 'None'}")
             
-            if not player_obj:
-                print(f"❌ DECL_PHASE_DEBUG: Could not find Player object for {player_name}")
-                continue
+            # Find next bot to declare
+            last_index = self._get_player_index(last_declarer, declaration_order)
+            print(f"🔍 DECL_PHASE_DEBUG: Last declarer '{last_declarer}' index: {last_index}")
             
-            print(f"🔍 DECL_PHASE_DEBUG: Checking player {i} ({player_name}), is_bot: {getattr(player_obj, 'is_bot', 'unknown')}")
-            
-            if not getattr(player_obj, 'is_bot', False):
-                print(f"🔍 DECL_PHASE_DEBUG: Player {player_name} is human, stopping bot declarations")
-                break  # Wait for human player
-                
-            # Check if player has already declared in current phase (use state machine data)
+            # Get current phase data to check who needs to declare
             phase_declarations = self.state_machine.get_phase_data().get('declarations', {}) if self.state_machine else {}
-            already_declared = player_name in phase_declarations
-            declared_value = phase_declarations.get(player_name, 0)
-            print(f"🔍 DECL_PHASE_DEBUG: Player {player_name} declared value: {declared_value} (from phase data)")
-            print(f"🔍 DECL_PHASE_DEBUG: All phase declarations: {phase_declarations}")
+            current_declarer = self.state_machine.get_phase_data().get('current_declarer') if self.state_machine else None
             
-            if already_declared:
-                print(f"🔍 DECL_PHASE_DEBUG: Player {player_name} already declared {declared_value}, skipping")
-                continue  # Already declared
+            print(f"🔍 DECL_PHASE_DEBUG: Current declarer from state: {current_declarer}")
+            print(f"🔍 DECL_PHASE_DEBUG: Current declarations: {phase_declarations}")
+            
+            # Only process the CURRENT declarer if they're a bot and haven't declared
+            if current_declarer and current_declarer not in phase_declarations:
+                # Get actual Player objects from game state
+                game_state = self._get_game_state()
                 
-            # Bot declares with random delay (500-1500ms for realism)
-            import random
-            delay = random.uniform(0.5, 1.5)
-            print(f"🤖 DECL_PHASE_DEBUG: Bot {player_name} will declare in {delay:.1f}s...")
-            await asyncio.sleep(delay)
-            
-            print(f"🤖 DECL_PHASE_DEBUG: Bot {player_name} will now declare!")
-            await self._bot_declare(player_obj, i)
-            
-            # Small delay for UI processing
-            await asyncio.sleep(0.2)
+                # Find the current declarer
+                player_obj = None
+                for p in game_state.players:
+                    if getattr(p, 'name', str(p)) == current_declarer:
+                        player_obj = p
+                        break
+                
+                if player_obj and getattr(player_obj, 'is_bot', False):
+                    print(f"🤖 DECL_PHASE_DEBUG: Current declarer {current_declarer} is a bot and needs to declare")
+                    
+                    # Bot declares with random delay (500-1500ms for realism)
+                    import random
+                    delay = random.uniform(0.5, 1.5)
+                    print(f"🤖 DECL_PHASE_DEBUG: Bot {current_declarer} will declare in {delay:.1f}s...")
+                    await asyncio.sleep(delay)
+                    
+                    print(f"🤖 DECL_PHASE_DEBUG: Bot {current_declarer} will now declare!")
+                    position = self._get_player_index(current_declarer, declaration_order)
+                    await self._bot_declare(player_obj, position)
+                else:
+                    print(f"👤 DECL_PHASE_DEBUG: Current declarer {current_declarer} is human or already declared, waiting")
+            else:
+                print(f"🔍 DECL_PHASE_DEBUG: No bot declaration needed - current_declarer: {current_declarer}, already declared: {current_declarer in phase_declarations if current_declarer else 'N/A'}")
+        
+        finally:
+            # Always clear the processing flag
+            self._declaration_phase_processing = False
             
     async def _bot_declare(self, bot: Player, position: int):
         """Make a bot declaration"""
-        from backend.socket_manager import broadcast
+        try:
+            from backend.socket_manager import broadcast
+        except ImportError:
+            # Handle different import paths
+            import sys
+            import os
+            sys.path.append(os.path.dirname(os.path.dirname(__file__)))
+            from socket_manager import broadcast
         
         try:
             # Get previous declarations
@@ -402,21 +410,18 @@ class GameBotHandler:
             import traceback
             traceback.print_exc()
             # Fallback declaration
-            try:
-                if self.state_machine:
-                    action = GameAction(
-                        player_name=bot.name,
-                        action_type=ActionType.DECLARE,
-                        payload={"value": 1},
-                        is_bot=True
-                    )
-                    await self.state_machine.handle_action(action)
-                else:
-                    self.game.declare(bot.name, 1)
+            if self.state_machine:
+                action = GameAction(
+                    player_name=bot.name,
+                    action_type=ActionType.DECLARE,
+                    payload={"value": 1},
+                    is_bot=True
+                )
+                await self.state_machine.handle_action(action)
+            else:
+                self.game.declare(bot.name, 1)
                 # 🚀 ENTERPRISE: State machine already handled broadcasting automatically
                 # No manual broadcast needed - enterprise architecture handles this
-            except:
-                pass
                 
     async def _handle_round_start(self):
         """Handle start of a new round"""
@@ -443,9 +448,11 @@ class GameBotHandler:
         try:
             from backend.socket_manager import broadcast
         except ImportError:
-            # Handle test environment
-            def broadcast(*args, **kwargs):
-                pass
+            # Handle different import paths
+            import sys
+            import os
+            sys.path.append(os.path.dirname(os.path.dirname(__file__)))
+            from socket_manager import broadcast
         
         # Get turn data from state machine if available
         if self.state_machine:
@@ -542,10 +549,14 @@ class GameBotHandler:
     async def _bot_play(self, bot: Player):
         """Make a bot play"""
         try:
+
             from backend.socket_manager import broadcast
         except ImportError:
-            def broadcast(*args, **kwargs):
-                pass
+            # Handle different import paths
+            import sys
+            import os
+            sys.path.append(os.path.dirname(os.path.dirname(__file__)))
+            from socket_manager import broadcast
         
         try:
             # Choose play
@@ -620,7 +631,14 @@ class GameBotHandler:
             
     async def _handle_turn_resolved(self, result: dict):
         """Handle end of turn"""
-        from backend.socket_manager import broadcast
+        try:
+            from backend.socket_manager import broadcast
+        except ImportError:
+            # Handle different import paths
+            import sys
+            import os
+            sys.path.append(os.path.dirname(os.path.dirname(__file__)))
+            from socket_manager import broadcast
         
         # 🚀 ENTERPRISE: This should go through state machine, not manual broadcast
         # State machine automatically handles turn_resolved broadcasting via update_phase_data()
@@ -637,7 +655,14 @@ class GameBotHandler:
             
     async def _handle_round_complete(self):
         """Handle round scoring"""
-        from backend.socket_manager import broadcast
+        try:
+            from backend.socket_manager import broadcast
+        except ImportError:
+            # Handle different import paths
+            import sys
+            import os
+            sys.path.append(os.path.dirname(os.path.dirname(__file__)))
+            from socket_manager import broadcast
         from engine.win_conditions import is_game_over, get_winners
         
         # Handle scoring via state machine or fallback
@@ -691,7 +716,14 @@ class GameBotHandler:
             
     async def _bot_play_first(self, bot: Player):
         """Bot plays as first player"""
-        from backend.socket_manager import broadcast
+        try:
+            from backend.socket_manager import broadcast
+        except ImportError:
+            # Handle different import paths
+            import sys
+            import os
+            sys.path.append(os.path.dirname(os.path.dirname(__file__)))
+            from socket_manager import broadcast
         
         try:
             print(f"🤖 Bot {bot.name} choosing first play...")
@@ -860,17 +892,14 @@ class GameBotHandler:
             print(f"❌ Bot {bot.name} redeal decision error: {e}")
             # Fallback: auto-decline to avoid hanging
             if self.state_machine:
-                try:
-                    action = GameAction(
-                        player_name=bot.name,
-                        action_type=ActionType.REDEAL_RESPONSE,
-                        payload={"accept": False},
-                        is_bot=True
-                    )
-                    await self.state_machine.handle_action(action)
-                    print(f"🔧 Bot {bot.name} auto-declined as fallback")
-                except:
-                    pass
+                action = GameAction(
+                    player_name=bot.name,
+                    action_type=ActionType.REDEAL_RESPONSE,
+                    payload={"accept": False},
+                    is_bot=True
+                )
+                await self.state_machine.handle_action(action)
+                print(f"🔧 Bot {bot.name} auto-declined as fallback")
     
     # 🔧 FIX: Validation Feedback Event Handlers
     
