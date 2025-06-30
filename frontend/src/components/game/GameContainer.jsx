@@ -23,6 +23,7 @@ import DeclarationUI from './DeclarationUI';
 import TurnUI from './TurnUI';
 import TurnResultsUI from './TurnResultsUI';
 import ScoringUI from './ScoringUI';
+import GameEndUI from './GameEndUI';
 import ErrorBoundary from "../ErrorBoundary";
 
 /**
@@ -224,10 +225,18 @@ export function GameContainer({ roomId }) {
             
           case 'turn_results':
             console.log('🏆 GAMECONTAINER_DEBUG: Rendering TurnResultsUI with props:', turnResultsProps);
+            console.log('🎬 GAMECONTAINER_DISPLAY_DEBUG: *** ROUTING TO TURN_RESULTS PHASE ***');
+            console.log('🎬 GAMECONTAINER_DISPLAY_DEBUG: Current timestamp:', new Date().toISOString());
             return <TurnResultsUI {...turnResultsProps} />;
             
           case 'scoring':
+            console.log('🏆 GAMECONTAINER_DEBUG: Rendering ScoringUI with props:', scoringProps);
+            console.log('🎬 GAMECONTAINER_DISPLAY_DEBUG: *** ROUTING TO SCORING PHASE ***');
+            console.log('🎬 GAMECONTAINER_DISPLAY_DEBUG: Current timestamp:', new Date().toISOString());
             return <ScoringUI {...scoringProps} />;
+            
+          case 'game_end':
+            return <GameEndUI gameState={gameState} />;
             
           case 'waiting':
           default:

@@ -8,10 +8,13 @@ from datetime import datetime
 
 class GamePhase(str, Enum):
     """Game phases in order"""
-    PREPARATION = "preparation"  # Deal cards, check weak hands, redeals
-    DECLARATION = "declaration"  # Players declare target piles
-    TURN = "turn"               # Players play pieces in turns
-    SCORING = "scoring"         # Calculate scores, check for winner
+    PREPARATION = "preparation"        # Deal cards, check weak hands, redeals
+    DECLARATION = "declaration"        # Players declare target piles
+    TURN = "turn"                     # Players play pieces in turns
+    TURN_RESULTS = "turn_results"     # Show turn winner & pieces won
+    SCORING = "scoring"               # Calculate scores, check for winner
+    SCORING_DISPLAY = "scoring_display"  # Show score breakdown to players
+    GAME_END = "game_end"             # Show final results when game complete
 
 
 class ActionType(str, Enum):
@@ -30,6 +33,9 @@ class ActionType(str, Enum):
     PLAYER_DISCONNECT = "player_disconnect"
     PLAYER_RECONNECT = "player_reconnect"
     TIMEOUT = "timeout"                 # Action timeout
+    
+    # Game end actions
+    NAVIGATE_TO_LOBBY = "navigate_to_lobby"  # Back to lobby from game end
     
     # System actions
     PHASE_TRANSITION = "phase_transition"

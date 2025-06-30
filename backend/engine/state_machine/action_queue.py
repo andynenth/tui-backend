@@ -71,12 +71,13 @@ class ActionQueue:
             return
         
         try:
-            # Convert action to event payload
+            # Convert action to event payload with JSON-safe conversion
+            safe_payload = self._make_json_safe(action.payload) if hasattr(action, 'payload') else {}
             payload = {
                 'action_type': action.action_type.value,
                 'player_name': action.player_name,
                 'sequence_id': action.sequence_id,
-                'payload': action.payload if hasattr(action, 'payload') else {}
+                'payload': safe_payload
             }
             
             # Store event
@@ -118,3 +119,22 @@ class ActionQueue:
         except Exception as e:
             # Don't let event storage failures break the game
             self.logger.error(f"Failed to store state event: {e}")
+    
+    def _make_json_safe(self, data):
+        """
+        Convert data to JSON-safe format, handling Piece objects and other non-serializable types
+        """
+        from datetime import datetime
+        
+        if isinstance(data, dict):
+            return {key: self._make_json_safe(value) for key, value in data.items()}
+        elif isinstance(data, list):
+            return [self._make_json_safe(item) for item in data]
+        elif isinstance(data, datetime):
+            return data.timestamp()
+        elif hasattr(data, '__dict__') and not isinstance(data, (str, int, float, bool, type(None))):
+            # Convert objects with attributes (like Piece objects) to string representation
+            return str(data)
+        else:
+            # Already JSON-safe
+            return data

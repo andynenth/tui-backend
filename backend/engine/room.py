@@ -180,12 +180,15 @@ class Room:
                 # Initialize GameStateMachine with WebSocket broadcasting
                 self.game_state_machine = GameStateMachine(self.game, broadcast_callback)
                 self.game_state_machine.room_id = self.room_id  # Add room_id for bot manager
-                await self.game_state_machine.start(GamePhase.PREPARATION)
                 
-                # Register with bot manager (required for bot participation)
+                # 🚀 TIMING FIX: Register with bot manager BEFORE starting state machine
+                # This ensures bot manager is ready when auto-transitions trigger immediately
                 from .bot_manager import BotManager
                 bot_manager = BotManager()
                 bot_manager.register_game(self.room_id, self.game, self.game_state_machine)
+                
+                # Now start state machine - bot manager is ready for immediate notifications
+                await self.game_state_machine.start(GamePhase.PREPARATION)
                 
                 self.started = True
                 
@@ -419,6 +422,68 @@ class Room:
         
         self.game = Game(self.players)
         self.started = True
+
+    async def start_game_safe(self, broadcast_callback=None) -> dict:
+        """
+        ✅ Thread-safe game starting with state machine
+        """
+        operation_id = self._generate_operation_id()
+        
+        try:
+            self._pending_operations.add(operation_id)
+            
+            async with self._state_lock:
+                print(f"🔒 [Room {self.room_id}] Starting game: op_id={operation_id}")
+                
+                if self.started:
+                    raise ValueError("Game already started")
+                
+                # Validate all slots are filled
+                empty_slots = [i for i, p in enumerate(self.players) if p is None]
+                if empty_slots:
+                    raise ValueError(f"Cannot start game: slots {empty_slots} are empty. All slots must be filled.")
+                
+                # Create Game instance
+                self.game = Game(self.players)
+                
+                # 🔧 FIX: Pass room_id to state machine during creation
+                self.game_state_machine = GameStateMachine(
+                    game=self.game,
+                    room_id=self.room_id,  # ✅ Pass room_id for proper tracking
+                    broadcast_callback=broadcast_callback
+                )
+                
+                # 🔧 FIX: Register with bot manager BEFORE starting state machine
+                # This ensures external systems are ready for auto-transitions
+                try:
+                    from engine.bot_manager import BotManager
+                    bot_manager = BotManager()
+                    bot_manager.register_game(self.room_id, self.game, self.game_state_machine)
+                    print(f"✅ [Room {self.room_id}] Bot manager registered for 3 bots")
+                except Exception as e:
+                    print(f"⚠️ [Room {self.room_id}] Bot manager registration failed: {e}")
+                
+                # Start state machine (this handles PREPARATION phase automatically)
+                await self.game_state_machine.start()
+                
+                self.started = True
+                
+                print(f"✅ [Room {self.room_id}] Game and StateMachine started successfully: op_id={operation_id}")
+                
+                return {
+                    "success": True,
+                    "operation_id": operation_id
+                }
+                
+        except Exception as e:
+            print(f"❌ [Room {self.room_id}] Game start failed: {str(e)}: op_id={operation_id}")
+            return {
+                "success": False,
+                "error": str(e),
+                "operation_id": operation_id
+            }
+        finally:
+            self._pending_operations.discard(operation_id)
 
     def get_kicked_player(self, slot: int, new_assignment: Optional[str]) -> Optional[str]:
         """

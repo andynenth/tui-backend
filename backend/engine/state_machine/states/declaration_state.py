@@ -23,33 +23,43 @@ class DeclarationState(GameState):
         }
     
     async def _setup_phase(self) -> None:
-        game = self.state_machine.game
+        try:
+            print(f"🔍 DECLARATION_SETUP_DEBUG: Starting declaration phase setup")
+            game = self.state_machine.game
+            
+            # Get round starter, fallback to current_player or first player
+            round_starter = getattr(game, 'round_starter', None)
+            print(f"🔍 DECLARATION_SETUP_DEBUG: Initial round_starter: {round_starter}")
+            
+            if not round_starter:
+                round_starter = getattr(game, 'current_player', None)
+                print(f"🔍 DECLARATION_SETUP_DEBUG: Fallback to current_player: {round_starter}")
+                
+            if not round_starter and game.players:
+                # Fallback to first player name
+                first_player = game.players[0]
+                round_starter = getattr(first_player, 'name', str(first_player))
+                print(f"⚠️ DECL_STATE_DEBUG: No round_starter found, using first player: {round_starter}")
+            
+            print(f"📢 DECL_STATE_DEBUG: Using round_starter: {round_starter}")
+            
+            if not round_starter:
+                print(f"❌ DECLARATION_SETUP_ERROR: No valid round_starter found!")
+                raise ValueError("No valid round_starter found for declaration phase")
+                
+            declaration_order = game.get_player_order_from(round_starter)
+            print(f"🔍 DECLARATION_SETUP_DEBUG: Declaration order: {[p.name for p in declaration_order]}")
+        except Exception as e:
+            print(f"❌ DECLARATION_SETUP_ERROR: Setup failed: {e}")
+            raise
         
-        # Get round starter, fallback to current_player or first player
-        round_starter = getattr(game, 'round_starter', None)
-        if not round_starter:
-            round_starter = getattr(game, 'current_player', None)
-        if not round_starter and game.players:
-            # Fallback to first player name
-            first_player = game.players[0]
-            round_starter = getattr(first_player, 'name', str(first_player))
-            print(f"⚠️ DECL_STATE_DEBUG: No round_starter found, using first player: {round_starter}")
-        
-        print(f"📢 DECL_STATE_DEBUG: Using round_starter: {round_starter}")
-        declaration_order = game.get_player_order_from(round_starter)
-        
-        # 🚀 ENTERPRISE: Use automatic broadcasting system instead of manual phase_data updates
-        # First set basic data
+        # 🚀 TIMING SAFETY: Calculate current declarer directly from order to avoid race condition
+        current_declarer = declaration_order[0].name if declaration_order else None
         await self.update_phase_data({
             'declaration_order': declaration_order,
             'current_declarer_index': 0,
             'declarations': {},
-            'declaration_total': 0
-        }, "Declaration phase setup - basic data")
-        
-        # Then set current declarer after the order is established
-        current_declarer = self._get_current_declarer()
-        await self.update_phase_data({
+            'declaration_total': 0,
             'current_declarer': current_declarer
         }, f"Declaration phase setup complete - current declarer: {current_declarer}")
     
@@ -125,7 +135,7 @@ class DeclarationState(GameState):
             'status': 'declaration_recorded',
             'player': player_name,
             'value': declared_value,
-            'total': self.phase_data['declaration_total']
+            'total': self.phase_data.get('declaration_total', 0)
         }
     
     def _get_current_declarer(self) -> Optional[str]:

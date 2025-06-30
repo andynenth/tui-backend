@@ -35,7 +35,14 @@ export function ScoringUI({
   onStartNextRound,
   onEndGame
 }) {
-  // Debug logging
+  // Debug logging - Component render confirmation
+  console.log('🏆 SCORING_UI_DEBUG: *** SCORING SCREEN NOW DISPLAYING TO USER ***');
+  console.log('🏆 SCORING_UI_DEBUG: Timestamp:', new Date().toLocaleTimeString());
+  
+  // 🚨 FRONTEND DISPLAY CONFIRMATION 🚨
+  console.log('🎬 FRONTEND_DISPLAY_DEBUG: *** SCORING SCREEN IS NOW VISIBLE ***');
+  console.log('🎬 FRONTEND_DISPLAY_DEBUG: User should see scoring for 7 seconds');
+  console.log('🎬 FRONTEND_DISPLAY_DEBUG: Current timestamp:', new Date().toISOString());
   console.log('🏆 SCORING_UI_DEBUG: ScoringUI props received:');
   console.log('  👥 players:', players);
   console.log('  📊 roundScores:', roundScores);
@@ -59,6 +66,7 @@ export function ScoringUI({
     }).sort((a, b) => b.totalScore - a.totalScore);
   
   console.log('🎯 SCORING_UI_DEBUG: Final sortedPlayers:', sortedPlayers);
+  console.log('🏆 SCORING_UI_DEBUG: *** RENDERING SCORING SCREEN UI NOW ***');
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-yellow-900 to-purple-900 p-3">

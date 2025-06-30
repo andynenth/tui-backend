@@ -42,6 +42,7 @@ class PreparationState(GameState):
         self.current_weak_player: Optional[str] = None  # Currently being asked
         self.redeal_requester: Optional[str] = None
         self.initial_deal_complete: bool = False
+        self.setup_complete: bool = False  # 🚀 TIMING SAFETY: Track setup completion
     
     async def _setup_phase(self) -> None:
         """Initialize preparation phase by dealing cards"""
@@ -96,8 +97,6 @@ class PreparationState(GameState):
             # Fallback for testing
             self.logger.info("Using fallback dealing method")
         
-        self.initial_deal_complete = True
-        
         # Check for weak hands
         if hasattr(game, 'get_weak_hand_players'):
             weak_players = game.get_weak_hand_players()
@@ -108,6 +107,28 @@ class PreparationState(GameState):
         
         self.logger.info(f"🔍 Weak hand check - Found {len(self.weak_players)} "
                    f"weak players: {self.weak_players}")
+        
+        # Set the instance variable first so check_transition_conditions() can see it
+        self.initial_deal_complete = True
+        
+        # 🚀 TIMING SAFETY: Only mark setup complete if no weak players need handling
+        if not self.weak_players:
+            self.setup_complete = True
+            
+            # 🔧 FIX: Determine starter immediately when no weak players
+            starter = self._determine_starter()
+            game.current_player = starter
+            game.round_starter = starter
+            print(f"✅ PREP_STATE_DEBUG: No weak hands - determined new starter: {starter}")
+        
+        # 🚀 ENTERPRISE: Use update_phase_data to trigger auto-transition check
+        await self.update_phase_data({
+            'initial_deal_complete': True,
+            'setup_complete': self.setup_complete,
+            'weak_players_count': len(self.weak_players),
+            'weak_players': list(self.weak_players),
+            'starter': getattr(game, 'current_player', None) if not self.weak_players else None
+        }, "Initial card dealing completed")
         
         if self.weak_players:
             print(f"🃏 PREP_STATE_DEBUG: Found weak players: {self.weak_players}")
@@ -151,7 +172,10 @@ class PreparationState(GameState):
             print(f"🎯 PREP_STATE_DEBUG: Current weak player to ask: {self.current_weak_player}")
             print(f"📋 PREP_STATE_DEBUG: Pending weak players queue: {self.pending_weak_players}")
             
-            # Notify about weak hands (frontend will prompt players)
+            # 🚀 TIMING SAFETY: Mark setup as complete BEFORE triggering events
+            self.setup_complete = True
+            
+            # Now safely trigger events after setup is complete
             await self._notify_weak_hands()
             
             # Trigger bot manager to handle bot decisions
@@ -164,7 +188,14 @@ class PreparationState(GameState):
                 for weak_player in self.weak_players:
                     await self._trigger_bot_redeal_for_player(weak_player)
         else:
+            # 🚀 RACE_CONDITION_FIX: Don't execute if we're no longer the active state
+            current_phase = self.state_machine.current_phase
+            if current_phase != GamePhase.PREPARATION:
+                print(f"🚀 PREP_STARTER_FIX: Not active state (current: {current_phase}), skipping starter logic")
+                return
+            
             # No weak hands, keep existing starter or determine new one
+            # (setup_complete already set to True above for this case)
             if hasattr(game, 'current_player') and game.current_player:
                 # Starter already set (e.g., by scoring state for next round)
                 starter = game.current_player
@@ -292,6 +323,13 @@ class PreparationState(GameState):
             self.current_weak_player = self.pending_weak_players[0]
             self.logger.info(f"➡️ Asking next weak player: {self.current_weak_player}")
             
+            # 🚀 ENTERPRISE: Update phase data to track progress
+            await self.update_phase_data({
+                "redeal_decisions": self.redeal_decisions.copy(),
+                "current_weak_player": self.current_weak_player,
+                "pending_weak_players": self.pending_weak_players.copy()
+            }, f"{player_name} declined redeal - asking next player {self.current_weak_player}")
+            
             # Trigger bot manager for next player
             await self._trigger_bot_redeal_decisions()
             
@@ -307,6 +345,13 @@ class PreparationState(GameState):
             starter = self._determine_starter()
             self.state_machine.game.current_player = starter
             self.state_machine.game.round_starter = starter  # Set both
+            
+            # 🚀 ENTERPRISE: Update phase data - this will trigger auto-transition check
+            await self.update_phase_data({
+                "redeal_decisions": self.redeal_decisions.copy(),
+                "all_decisions_complete": True,
+                "starter": starter
+            }, f"All weak players declined redeal - starter determined: {starter}")
             
             return {
                 "success": True,
@@ -400,6 +445,12 @@ class PreparationState(GameState):
     
     async def _trigger_bot_redeal_decisions(self) -> None:
         """Trigger bot manager to handle bot redeal decisions"""
+        # 🚀 RACE_CONDITION_FIX: Don't trigger if we're no longer the active state
+        current_phase = self.state_machine.current_phase
+        if current_phase != GamePhase.PREPARATION:
+            print(f"🚀 PREP_BOT_FIX: Not active state (current: {current_phase}), skipping bot trigger")
+            return
+            
         if self.current_weak_player:
             print(f"🔧 PREP_STATE_DEBUG: Triggering bot manager for player: {self.current_weak_player}")
             # Import here to avoid circular imports
@@ -437,16 +488,28 @@ class PreparationState(GameState):
         })
     
     async def check_transition_conditions(self) -> Optional[GamePhase]:
-        """Check if ready to transition to Declaration phase"""
+        """🚀 TRANSITION_FIX: Check if ready to transition to Declaration phase"""
+        # 🚀 RACE_CONDITION_FIX: Don't check transitions if we're not the active state
+        current_phase = self.state_machine.current_phase
+        if current_phase != GamePhase.PREPARATION:
+            print(f"🚀 PREP_TRANSITION_FIX: Not active state (current: {current_phase}), ignoring transition check")
+            return None
+            
         # Transition when:
-        # 1. Initial deal done AND no weak players, OR
-        # 2. All weak players have made redeal decisions
+        # 1. Setup complete AND initial deal done AND no weak players, OR
+        # 2. Setup complete AND all weak players have made redeal decisions
         
         print(f"🔍 PREP_STATE_DEBUG: Checking transition conditions...")
+        print(f"   - Setup complete: {self.setup_complete}")
         print(f"   - Initial deal complete: {self.initial_deal_complete}")
         print(f"   - Weak players: {self.weak_players}")
         print(f"   - Redeal decisions: {self.redeal_decisions}")
         print(f"   - Current weak player: {self.current_weak_player}")
+        
+        # 🚀 TIMING SAFETY: Don't transition until setup is complete
+        if not self.setup_complete:
+            print(f"❌ PREP_STATE_DEBUG: Setup not complete, staying in preparation")
+            return None
         
         if not self.initial_deal_complete:
             print(f"❌ PREP_STATE_DEBUG: Initial deal not complete, staying in preparation")

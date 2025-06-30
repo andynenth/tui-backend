@@ -36,6 +36,11 @@ export function TurnResultsUI({
   console.log('  🔢 turnNumber:', turnNumber);
   console.log('  🎪 nextStarter:', nextStarter);
   
+  // 🚨 FRONTEND DISPLAY CONFIRMATION 🚨
+  console.log('🎬 FRONTEND_DISPLAY_DEBUG: *** TURN RESULTS SCREEN IS NOW VISIBLE ***');
+  console.log('🎬 FRONTEND_DISPLAY_DEBUG: User should see turn results for 7 seconds');
+  console.log('🎬 FRONTEND_DISPLAY_DEBUG: Current timestamp:', new Date().toISOString());
+  
   const hasWinner = !!winner;
   const winningPieces = winningPlay?.pieces || [];
   const winningValue = winningPlay?.value || 0;
