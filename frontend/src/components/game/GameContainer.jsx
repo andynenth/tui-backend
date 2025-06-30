@@ -121,7 +121,18 @@ export function GameContainer({ roomId }) {
       playerPiles: gameState.playerPiles || {},
       players: gameState.players || [],
       turnNumber: gameState.turnNumber || 1,
-      nextStarter: gameState.nextStarter || null
+      nextStarter: gameState.nextStarter || null,
+      
+      // 🚀 EVENT-DRIVEN: Display timing props
+      displayMetadata: gameState.displayMetadata || null,
+      onAutoAdvance: () => {
+        console.log('🚀 TURN_RESULTS: Auto-advance triggered');
+        // Let backend handle the timing - frontend just reports completion
+      },
+      onSkip: () => {
+        console.log('🚀 TURN_RESULTS: Skip triggered');
+        // Let backend handle the timing - frontend just reports completion
+      }
     };
     
     console.log('🏆 GAMECONTAINER_DEBUG: Final turnResultsProps:', props);
@@ -145,7 +156,22 @@ export function GameContainer({ roomId }) {
       
       // Actions
       onStartNextRound: gameState.gameOver ? null : gameActions.startNextRound,
-      onEndGame: gameState.gameOver ? () => window.location.href = '/lobby' : null
+      onEndGame: gameState.gameOver ? () => window.location.href = '/lobby' : null,
+      
+      // 🚀 EVENT-DRIVEN: Display timing props
+      displayMetadata: gameState.displayMetadata || null,
+      onAutoAdvance: () => {
+        console.log('🚀 SCORING: Auto-advance triggered');
+        if (!gameState.gameOver && gameActions.startNextRound) {
+          gameActions.startNextRound();
+        }
+      },
+      onSkip: () => {
+        console.log('🚀 SCORING: Skip triggered');
+        if (!gameState.gameOver && gameActions.startNextRound) {
+          gameActions.startNextRound();
+        }
+      }
     };
     
     console.log('🎮 GAME_CONTAINER_DEBUG: Passing props to ScoringUI:');

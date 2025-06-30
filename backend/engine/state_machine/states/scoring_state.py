@@ -93,9 +93,8 @@ class ScoringState(GameState):
                 'redeal_multiplier': getattr(game, 'redeal_multiplier', 1)
             }, f"Scoring calculated for round {getattr(self.state_machine.game, 'round_number', 1)}")
             
-            # Start display delay (7 seconds to show scoring results)
-            import asyncio
-            asyncio.create_task(self._start_display_delay())
+            # 🚀 EVENT-DRIVEN: No backend delays - frontend handles display timing
+            self.display_delay_complete = True  # Immediate transition - frontend controls timing
             
             self.logger.info(f"Scoring complete. Game over: {self.game_complete}")
             
@@ -358,11 +357,5 @@ class ScoringState(GameState):
         
         self.logger.info(f"Prepared for round {game.round_number}")
     
-    async def _start_display_delay(self) -> None:
-        """Give users 7 seconds to view scoring results before transitioning"""
-        import asyncio
-        print(f"⏰ SCORING_DELAY_DEBUG: Starting 7-second display delay...")
-        await asyncio.sleep(7.0)  # 7 second delay for users to see scores
-        self.display_delay_complete = True
-        print(f"⏰ SCORING_DELAY_DEBUG: 7-second delay complete - setting display_delay_complete = True")
-        self.logger.info("Scoring display delay complete - ready to transition")
+    # 🚀 EVENT-DRIVEN: REMOVED - No backend display delays
+    # Frontend controls all display timing via display metadata in phase_change events

@@ -3,20 +3,21 @@
  * 
  * Features:
  * ✅ Pure functional component (props in, JSX out)
- * ✅ No hooks except local UI state
+ * ✅ Display timing controls with auto-advance and skip functionality
  * ✅ Comprehensive prop interfaces
  * ✅ Accessible and semantic HTML
  * ✅ Tailwind CSS styling
+ * 🚀 EVENT-DRIVEN: Frontend display timing control
  */
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import GamePiece from "../GamePiece";
 import PlayerSlot from "../PlayerSlot";
 import Button from "../Button";
 
 /**
- * Pure UI component for turn completion results
+ * UI component for turn completion results with display timing control
  */
 export function TurnResultsUI({
   // Data props
@@ -25,8 +26,51 @@ export function TurnResultsUI({
   playerPiles = {},
   players = [],
   turnNumber = 1,
-  nextStarter = null
+  nextStarter = null,
+  
+  // 🚀 EVENT-DRIVEN: Display timing props
+  displayMetadata = null,
+  onAutoAdvance = null,
+  onSkip = null
 }) {
+  // 🚀 EVENT-DRIVEN: Display timing state
+  const [timeRemaining, setTimeRemaining] = useState(null);
+  const [isSkipped, setIsSkipped] = useState(false);
+  
+  // Extract display configuration from metadata
+  const showForSeconds = displayMetadata?.show_for_seconds || 7.0;
+  const autoAdvance = displayMetadata?.auto_advance !== false;
+  const canSkip = displayMetadata?.can_skip !== false;
+  // 🚀 EVENT-DRIVEN: Auto-advance timer
+  useEffect(() => {
+    if (!autoAdvance || isSkipped) return;
+    
+    // Initialize countdown
+    setTimeRemaining(showForSeconds);
+    
+    const timer = setInterval(() => {
+      setTimeRemaining(prev => {
+        if (prev <= 1) {
+          clearInterval(timer);
+          console.log('🚀 AUTO_ADVANCE: Timer expired, triggering auto-advance');
+          if (onAutoAdvance) onAutoAdvance();
+          return 0;
+        }
+        return prev - 1;
+      });
+    }, 1000);
+    
+    return () => clearInterval(timer);
+  }, [autoAdvance, showForSeconds, isSkipped, onAutoAdvance]);
+  
+  // Handle skip button
+  const handleSkip = () => {
+    console.log('🚀 SKIP: User requested skip');
+    setIsSkipped(true);
+    setTimeRemaining(0);
+    if (onSkip) onSkip();
+  };
+  
   // Debug logging for turn results
   console.log('🏆 TURN_RESULTS_UI_DEBUG: TurnResultsUI component rendered with props:');
   console.log('  🏅 winner:', winner);
@@ -35,6 +79,8 @@ export function TurnResultsUI({
   console.log('  👥 players:', players);
   console.log('  🔢 turnNumber:', turnNumber);
   console.log('  🎪 nextStarter:', nextStarter);
+  console.log('  🚀 displayMetadata:', displayMetadata);
+  console.log('  ⏰ timeRemaining:', timeRemaining);
   
   const hasWinner = !!winner;
   const winningPieces = winningPlay?.pieces || [];
@@ -216,15 +262,37 @@ export function TurnResultsUI({
           </div>
         )}
 
-        {/* Auto-Continue Info */}
+        {/* 🚀 EVENT-DRIVEN: Display Timing Controls */}
         <div className="text-center">
           <div className="bg-blue-500/10 border border-blue-500/20 rounded-xl p-6">
-            <div className="text-blue-200 text-lg font-medium mb-2">
-              🔄 Auto-continuing to next turn...
-            </div>
-            <div className="text-blue-300 text-sm">
-              Next turn will start automatically
-            </div>
+            {autoAdvance && timeRemaining > 0 && !isSkipped ? (
+              <>
+                <div className="text-blue-200 text-lg font-medium mb-2">
+                  🔄 Auto-continuing to next turn...
+                </div>
+                <div className="text-blue-300 text-sm mb-4">
+                  Next turn starts in <span className="font-bold text-blue-200">{timeRemaining}</span> seconds
+                </div>
+                {canSkip && (
+                  <Button
+                    onClick={handleSkip}
+                    variant="secondary"
+                    className="bg-blue-600 hover:bg-blue-700 text-white"
+                  >
+                    Skip Wait ⏭️
+                  </Button>
+                )}
+              </>
+            ) : (
+              <>
+                <div className="text-blue-200 text-lg font-medium mb-2">
+                  {isSkipped ? '⏭️ Skipped' : '✅ Ready to continue'}
+                </div>
+                <div className="text-blue-300 text-sm">
+                  Next turn will start automatically
+                </div>
+              </>
+            )}
           </div>
         </div>
       </div>
@@ -253,7 +321,18 @@ TurnResultsUI.propTypes = {
     })
   ])).isRequired,
   turnNumber: PropTypes.number,
-  nextStarter: PropTypes.string
+  nextStarter: PropTypes.string,
+  
+  // 🚀 EVENT-DRIVEN: Display timing props
+  displayMetadata: PropTypes.shape({
+    type: PropTypes.string,
+    show_for_seconds: PropTypes.number,
+    auto_advance: PropTypes.bool,
+    can_skip: PropTypes.bool,
+    next_phase: PropTypes.string
+  }),
+  onAutoAdvance: PropTypes.func,
+  onSkip: PropTypes.func
 };
 
 TurnResultsUI.defaultProps = {
@@ -261,7 +340,12 @@ TurnResultsUI.defaultProps = {
   winningPlay: null,
   playerPiles: {},
   turnNumber: 1,
-  nextStarter: null
+  nextStarter: null,
+  
+  // 🚀 EVENT-DRIVEN: Display timing defaults
+  displayMetadata: null,
+  onAutoAdvance: null,
+  onSkip: null
 };
 
 export default TurnResultsUI;

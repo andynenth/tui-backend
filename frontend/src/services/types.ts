@@ -166,6 +166,15 @@ export interface GameState {
   allHandsEmpty?: boolean;
   willContinue?: boolean;
   
+  // 🚀 EVENT-DRIVEN: Display timing metadata
+  displayMetadata?: {
+    type?: string;
+    show_for_seconds?: number;
+    auto_advance?: boolean;
+    can_skip?: boolean;
+    next_phase?: string;
+  } | null;
+  
   // Meta state
   lastEventSequence: number;
   error: string | null;
