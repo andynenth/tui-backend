@@ -70,7 +70,45 @@ class GameState(ABC):
     
     @abstractmethod
     async def check_transition_conditions(self) -> Optional[GamePhase]:
+        """Legacy polling-based transition check - TO BE REMOVED in Phase 3.2"""
         pass
+    
+    # ===== EVENT-DRIVEN ARCHITECTURE METHODS =====
+    
+    async def process_event(self, event) -> "EventResult":
+        """
+        Process event and return immediate result - REPLACES POLLING
+        
+        This method should be implemented by states converted to event-driven architecture.
+        States not yet converted will fall back to legacy action processing.
+        """
+        # Import here to avoid circular imports
+        from .events.event_types import EventResult
+        
+        # Default implementation: not yet converted to event-driven
+        return EventResult(
+            success=False,
+            reason=f"State {self.__class__.__name__} not yet converted to event-driven processing"
+        )
+    
+    def get_immediate_transition_conditions(self) -> Dict[str, callable]:
+        """
+        Return conditions that trigger immediate transitions - REPLACES POLLING
+        
+        Returns:
+            Dict mapping event triggers to condition functions
+        """
+        return {}
+    
+    def get_valid_system_events(self) -> List[str]:
+        """Return list of valid system events for this state"""
+        return [
+            "turn_complete",
+            "round_complete", 
+            "all_declared",
+            "scores_calculated",
+            "game_complete"
+        ]
     
     def can_transition_to(self, target_phase: GamePhase) -> bool:
         return target_phase in self.next_phases

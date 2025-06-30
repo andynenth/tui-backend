@@ -338,7 +338,10 @@ export class GameService extends EventTarget {
       // Meta state
       lastEventSequence: 0,
       error: null,
-      gameOver: false
+      gameOver: false,
+      
+      // 🚀 EVENT-DRIVEN: Display timing metadata
+      displayMetadata: null
     };
   }
 
@@ -719,6 +722,16 @@ export class GameService extends EventTarget {
           console.log('✅ SCORING_DEBUG: Winners:', newState.winners);
           console.log('✅ SCORING_DEBUG: Redeal multiplier:', newState.redealMultiplier);
           
+          // 🚀 EVENT-DRIVEN: Extract display timing metadata from backend
+          newState.displayMetadata = data.display || data.display_metadata || null;
+          
+          // 🚀 EVENT-DRIVEN: Log display metadata extraction
+          if (newState.displayMetadata) {
+            console.log(`🚀 SCORING_DISPLAY_METADATA_DEBUG: Extracted timing metadata:`, newState.displayMetadata);
+          } else {
+            console.log(`🚀 SCORING_DISPLAY_METADATA_DEBUG: No display metadata in event, using defaults`);
+          }
+          
           // Calculate scoring-specific UI state
           if (phaseData.players && phaseData.round_scores && phaseData.total_scores) {
             console.log('🧮 SCORING_DEBUG: Calculating playersWithScores...');
@@ -963,7 +976,10 @@ export class GameService extends EventTarget {
       turnNumber: data.turn_number || state.currentTurnNumber || 1,
       nextStarter: data.next_starter || null,
       allHandsEmpty: data.all_hands_empty || false,
-      willContinue: data.will_continue || false
+      willContinue: data.will_continue || false,
+      
+      // 🚀 EVENT-DRIVEN: Extract display timing metadata from backend
+      displayMetadata: data.display || data.display_metadata || null
     };
     
     console.log(`🏆 TURN_COMPLETE_DEBUG: Transitioning to turn_results phase with state:`, {
@@ -972,8 +988,16 @@ export class GameService extends EventTarget {
       winningPlay: newState.winningPlay,
       playerPiles: newState.playerPiles,
       turnNumber: newState.turnNumber,
-      nextStarter: newState.nextStarter
+      nextStarter: newState.nextStarter,
+      displayMetadata: newState.displayMetadata
     });
+    
+    // 🚀 EVENT-DRIVEN: Log display metadata extraction
+    if (newState.displayMetadata) {
+      console.log(`🚀 DISPLAY_METADATA_DEBUG: Extracted timing metadata:`, newState.displayMetadata);
+    } else {
+      console.log(`🚀 DISPLAY_METADATA_DEBUG: No display metadata in event, using defaults`);
+    }
     
     return newState;
   }

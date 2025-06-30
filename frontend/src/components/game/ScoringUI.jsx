@@ -1,23 +1,22 @@
 /**
  * 🏆 **ScoringUI Component** - Pure Scoring Phase Interface
  * 
- * Phase 2, Task 2.2: Pure UI Components
- * 
  * Features:
  * ✅ Pure functional component (props in, JSX out)
- * ✅ No hooks except local UI state
+ * ✅ Display timing controls with auto-advance and skip functionality
  * ✅ Comprehensive prop interfaces
  * ✅ Accessible and semantic HTML
  * ✅ Tailwind CSS styling
+ * 🚀 EVENT-DRIVEN: Frontend display timing control
  */
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import PlayerSlot from "../PlayerSlot";
 import Button from "../Button";
 
 /**
- * Pure UI component for scoring phase
+ * UI component for scoring phase with display timing control
  */
 export function ScoringUI({
   // Data props (all calculated by backend)
@@ -33,8 +32,51 @@ export function ScoringUI({
   
   // Action props
   onStartNextRound,
-  onEndGame
+  onEndGame,
+  
+  // 🚀 EVENT-DRIVEN: Display timing props
+  displayMetadata = null,
+  onAutoAdvance = null,
+  onSkip = null
 }) {
+  // 🚀 EVENT-DRIVEN: Display timing state
+  const [timeRemaining, setTimeRemaining] = useState(null);
+  const [isSkipped, setIsSkipped] = useState(false);
+  
+  // Extract display configuration from metadata
+  const showForSeconds = displayMetadata?.show_for_seconds || 7.0;
+  const autoAdvance = displayMetadata?.auto_advance !== false;
+  const canSkip = displayMetadata?.can_skip !== false;
+  // 🚀 EVENT-DRIVEN: Auto-advance timer
+  useEffect(() => {
+    if (!autoAdvance || isSkipped || gameOver) return;
+    
+    // Initialize countdown
+    setTimeRemaining(showForSeconds);
+    
+    const timer = setInterval(() => {
+      setTimeRemaining(prev => {
+        if (prev <= 1) {
+          clearInterval(timer);
+          console.log('🚀 AUTO_ADVANCE: Timer expired, triggering auto-advance');
+          if (onAutoAdvance) onAutoAdvance();
+          return 0;
+        }
+        return prev - 1;
+      });
+    }, 1000);
+    
+    return () => clearInterval(timer);
+  }, [autoAdvance, showForSeconds, isSkipped, gameOver, onAutoAdvance]);
+  
+  // Handle skip button
+  const handleSkip = () => {
+    console.log('🚀 SKIP: User requested skip');
+    setIsSkipped(true);
+    setTimeRemaining(0);
+    if (onSkip) onSkip();
+  };
+  
   // Debug logging
   console.log('🏆 SCORING_UI_DEBUG: ScoringUI props received:');
   console.log('  👥 players:', players);
@@ -44,6 +86,8 @@ export function ScoringUI({
   console.log('  🧮 playersWithScores:', playersWithScores);
   console.log('  🏁 gameOver:', gameOver);
   console.log('  🏆 winners:', winners);
+  console.log('  🚀 displayMetadata:', displayMetadata);
+  console.log('  ⏰ timeRemaining:', timeRemaining);
   const hasWinners = winners.length > 0;
   // Use backend-provided sorted players, or fallback to manual sort if needed
   const sortedPlayers = playersWithScores.length > 0 ? playersWithScores : 
@@ -241,16 +285,55 @@ export function ScoringUI({
                     <div className="text-sm text-gray-300">Game ends at 50 points or after 20 rounds</div>
                   </div>
                   
-                  {onStartNextRound && (
-                    <Button
-                      onClick={onStartNextRound}
-                      variant="success"
-                      size="large"
-                      className="px-6"
-                      aria-label="Start next round"
-                    >
-                      🎮 Start Next Round
-                    </Button>
+                  {/* 🚀 EVENT-DRIVEN: Display Timing Controls */}
+                  {autoAdvance && timeRemaining > 0 && !isSkipped ? (
+                    <div className="space-y-3">
+                      <div className="text-blue-200 font-medium">
+                        🔄 Auto-starting next round...
+                      </div>
+                      <div className="text-blue-300 text-sm">
+                        Next round starts in <span className="font-bold text-blue-200">{timeRemaining}</span> seconds
+                      </div>
+                      <div className="flex gap-3 justify-center">
+                        {canSkip && (
+                          <Button
+                            onClick={handleSkip}
+                            variant="secondary"
+                            className="bg-blue-600 hover:bg-blue-700 text-white"
+                          >
+                            Skip Wait ⏭️
+                          </Button>
+                        )}
+                        {onStartNextRound && (
+                          <Button
+                            onClick={onStartNextRound}
+                            variant="success"
+                            size="large"
+                            className="px-6"
+                            aria-label="Start next round manually"
+                          >
+                            🎮 Start Now
+                          </Button>
+                        )}
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="space-y-3">
+                      <div className="text-blue-200 font-medium">
+                        {isSkipped ? '⏭️ Skipped' : '✅ Ready to continue'}
+                      </div>
+                      {onStartNextRound && (
+                        <Button
+                          onClick={onStartNextRound}
+                          variant="success"
+                          size="large"
+                          className="px-6"
+                          aria-label="Start next round"
+                        >
+                          🎮 Start Next Round
+                        </Button>
+                      )}
+                    </div>
                   )}
                 </div>
               )}
@@ -302,7 +385,18 @@ ScoringUI.propTypes = {
   
   // Action props
   onStartNextRound: PropTypes.func,
-  onEndGame: PropTypes.func
+  onEndGame: PropTypes.func,
+  
+  // 🚀 EVENT-DRIVEN: Display timing props
+  displayMetadata: PropTypes.shape({
+    type: PropTypes.string,
+    show_for_seconds: PropTypes.number,
+    auto_advance: PropTypes.bool,
+    can_skip: PropTypes.bool,
+    next_phase: PropTypes.string
+  }),
+  onAutoAdvance: PropTypes.func,
+  onSkip: PropTypes.func
 };
 
 ScoringUI.defaultProps = {
@@ -314,7 +408,12 @@ ScoringUI.defaultProps = {
   gameOver: false,
   winners: [],
   onStartNextRound: null,
-  onEndGame: null
+  onEndGame: null,
+  
+  // 🚀 EVENT-DRIVEN: Display timing defaults
+  displayMetadata: null,
+  onAutoAdvance: null,
+  onSkip: null
 };
 
 export default ScoringUI;

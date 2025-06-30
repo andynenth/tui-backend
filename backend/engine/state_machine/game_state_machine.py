@@ -2,6 +2,7 @@
 
 import asyncio
 import logging
+import time
 from typing import Dict, Optional, List, Set
 from datetime import datetime
 
@@ -28,8 +29,16 @@ class GameStateMachine:
         self.current_state: Optional[GameState] = None
         self.current_phase: Optional[GamePhase] = None
         self.is_running = False
-        self._process_task: Optional[asyncio.Task] = None
         self.broadcast_callback = broadcast_callback  # For WebSocket broadcasting
+        
+        # 🚀 EVENT-DRIVEN ARCHITECTURE: Replace polling with immediate processing
+        from .events import EventProcessor
+        self.event_processor = EventProcessor(self)
+        self.transition_lock = asyncio.Lock()  # Prevent race conditions
+        self.active_tasks = set()              # Managed task lifecycle
+        
+        # Legacy support during transition
+        self._process_task: Optional[asyncio.Task] = None  # Will be removed
         
         # Initialize all available states
         self.states: Dict[GamePhase, GameState] = {
@@ -48,26 +57,29 @@ class GameStateMachine:
         }
     
     async def start(self, initial_phase: GamePhase = GamePhase.PREPARATION):
-        """Start the state machine with initial phase"""
+        """Start the event-driven state machine"""
         if self.is_running:
             logger.warning("State machine already running")
             return
         
-        logger.info(f"🚀 Starting state machine in {initial_phase} phase")
+        logger.info(f"🚀 Starting EVENT-DRIVEN state machine in {initial_phase} phase")
         self.is_running = True
         
-        # Start processing loop
-        self._process_task = asyncio.create_task(self._process_loop())
+        # 🚀 EVENT-DRIVEN: No more background polling task
+        # Actions are processed immediately when received
         
         # Enter initial phase
-        await self._transition_to(initial_phase)
+        await self._immediate_transition_to(initial_phase, "Initial state machine start")
     
     async def stop(self):
-        """Stop the state machine"""
-        logger.info("🛑 Stopping state machine")
+        """Stop the event-driven state machine"""
+        logger.info("🛑 Stopping EVENT-DRIVEN state machine")
         self.is_running = False
         
-        # Cancel processing task
+        # 🚀 EVENT-DRIVEN: Clean up managed async tasks
+        await self.cleanup_all_tasks()
+        
+        # Cancel legacy processing task if still exists
         if self._process_task:
             self._process_task.cancel()
             try:
@@ -81,78 +93,89 @@ class GameStateMachine:
     
     async def handle_action(self, action: GameAction) -> Dict:
         """
-        Add action to queue for processing.
-        Returns immediately with acknowledgment.
+        🚀 EVENT-DRIVEN: Process action immediately - NO QUEUING, NO POLLING
         """
         if not self.is_running:
             return {"success": False, "error": "State machine not running"}
         
-        await self.action_queue.add_action(action)
-        return {"success": True, "queued": True}
-    
-    async def _process_loop(self):
-        """Main processing loop for queued actions"""
-        print(f"🔍 STATE_MACHINE_DEBUG: Process loop started, is_running: {self.is_running}")
-        loop_count = 0
-        while self.is_running:
-            try:
-                loop_count += 1
-                if loop_count % 50 == 0:  # Log every 5 seconds
-                    print(f"🔍 STATE_MACHINE_DEBUG: Process loop iteration {loop_count}")
-                
-                # Process any pending actions
-                await self.process_pending_actions()
-                
-                # Check for phase transitions
-                if self.current_state:
-                    next_phase = await self.current_state.check_transition_conditions()
-                    if next_phase:
-                        await self._transition_to(next_phase)
-                
-                # Small delay to prevent busy waiting
-                await asyncio.sleep(0.1)
-                
-            except Exception as e:
-                print(f"❌ STATE_MACHINE_DEBUG: Error in process loop: {e}")
-                logger.error(f"Error in process loop: {e}", exc_info=True)
+        # Convert action to event and process immediately
+        from .events.event_types import GameEvent
         
-        print(f"🔍 STATE_MACHINE_DEBUG: Process loop ended")
-    
-    async def process_pending_actions(self):
-        """Process all actions in queue"""
-        if not self.current_state:
-            print(f"🔍 STATE_MACHINE_DEBUG: No current state, skipping action processing")
-            return
+        event = GameEvent.from_action(action, immediate=True)
         
-        actions = await self.action_queue.process_actions()
-        if actions:
-            print(f"🔍 STATE_MACHINE_DEBUG: Processing {len(actions)} actions")
-        for action in actions:
-            try:
-                print(f"🔍 STATE_MACHINE_DEBUG: Processing action: {action.action_type.value} from {action.player_name}")
-                result = await self.current_state.handle_action(action)
-                
-                # 🔧 FIX: Validate action result and notify bot manager of failures
-                if result is None:
-                    print(f"❌ STATE_MACHINE_DEBUG: Action rejected: {action.action_type.value} from {action.player_name}")
-                    await self._notify_bot_manager_action_rejected(action)
-                else:
-                    print(f"✅ STATE_MACHINE_DEBUG: Action processed successfully")
-                    await self._notify_bot_manager_action_accepted(action, result)
-                    
-            except Exception as e:
-                print(f"❌ STATE_MACHINE_DEBUG: Error processing action: {e}")
-                logger.error(f"Error processing action: {e}", exc_info=True)
-                await self._notify_bot_manager_action_failed(action, str(e))
+        # Process immediately - NO POLLING DELAYS
+        start_time = time.time()
+        result = await self.event_processor.handle_event(event)
+        processing_time = time.time() - start_time
+        
+        logger.info(f"🚀 EVENT-DRIVEN: Processed {action.action_type.value} from {action.player_name} in {processing_time:.3f}s")
+        
+        return {
+            "success": result.success,
+            "immediate": True,
+            "transition": result.triggers_transition,
+            "processing_time": processing_time,
+            "reason": result.reason,
+            "data": result.data
+        }
     
-    async def _transition_to(self, new_phase: GamePhase):
-        """Transition to a new phase"""
-        print(f"🔄 STATE_MACHINE_DEBUG: Attempting transition from {self.current_phase} to {new_phase}")
+    # 🚀 EVENT-DRIVEN ARCHITECTURE: Async Task Lifecycle Management
+    
+    async def create_managed_task(self, coro, task_name: str) -> asyncio.Task:
+        """Create task with proper lifecycle management"""
+        task = asyncio.create_task(coro, name=task_name)
+        self.active_tasks.add(task)
+        
+        # Auto-cleanup when task completes
+        task.add_done_callback(lambda t: self.active_tasks.discard(t))
+        return task
+    
+    async def cleanup_all_tasks(self):
+        """Clean up all active tasks during state transitions"""
+        if self.active_tasks:
+            logger.info(f"🧹 Cleaning up {len(self.active_tasks)} active tasks")
+            
+            # Cancel all active tasks
+            for task in self.active_tasks.copy():
+                if not task.done():
+                    task.cancel()
+            
+            # Wait for cancellation to complete
+            if self.active_tasks:
+                await asyncio.gather(*self.active_tasks, return_exceptions=True)
+            
+            self.active_tasks.clear()
+    
+    # 🚀 EVENT-DRIVEN: Immediate state transitions replace polling
+    
+    async def trigger_immediate_transition(self, event, target_state: GamePhase, reason: str) -> bool:
+        """Immediate state transition based on event - NO POLLING"""
+        async with self.transition_lock:  # Prevent concurrent transitions
+            
+            # Validate transition
+            if not self._validate_transition_for_event(target_state):
+                logger.warning(f"Invalid transition to {target_state} from {self.current_phase}")
+                return False
+            
+            # Immediate transition - NO DELAYS
+            await self._immediate_transition_to(target_state, reason)
+            return True
+    
+    def _validate_transition_for_event(self, target_state: GamePhase) -> bool:
+        """Validate transition is allowed"""
+        if not self.current_phase:
+            return True  # Initial transition
+        
+        return target_state in self._valid_transitions.get(self.current_phase, set())
+    
+    async def _immediate_transition_to(self, new_phase: GamePhase, reason: str):
+        """🚀 EVENT-DRIVEN: Immediate atomic state transition with proper cleanup"""
+        
+        logger.info(f"🚀 EVENT-DRIVEN transition: {self.current_phase} -> {new_phase} ({reason})")
         
         # Validate transition (skip validation for initial transition)
         if self.current_phase and new_phase not in self._valid_transitions.get(self.current_phase, set()):
             logger.error(f"❌ Invalid transition: {self.current_phase} -> {new_phase}")
-            print(f"❌ STATE_MACHINE_DEBUG: Invalid transition blocked!")
             return
         
         # Get new state
@@ -161,32 +184,30 @@ class GameStateMachine:
             logger.error(f"❌ No state handler for phase: {new_phase}")
             return
         
-        logger.info(f"🔄 Transitioning: {self.current_phase} -> {new_phase}")
-        print(f"✅ STATE_MACHINE_DEBUG: Transition validated, proceeding...")
+        # 1. Cleanup current state tasks (prevent resource leaks)
+        await self.cleanup_all_tasks()
         
-        # Exit current state
+        # 2. Exit current state
         if self.current_state:
-            print(f"🚪 STATE_MACHINE_DEBUG: Exiting current state: {self.current_state}")
+            logger.debug(f"🚪 Exiting current state: {self.current_state.__class__.__name__}")
             await self.current_state.on_exit()
         
-        # Update phase and state
+        # 3. Atomic state update
         old_phase = self.current_phase
         self.current_phase = new_phase
         self.current_state = new_state
         
-        print(f"🎯 STATE_MACHINE_DEBUG: Phase updated: {old_phase} -> {self.current_phase}")
-        print(f"🎯 STATE_MACHINE_DEBUG: Entering new state: {self.current_state}")
-        
-        # Enter new state
+        # 4. Enter new state
+        logger.debug(f"🎯 Entering new state: {self.current_state.__class__.__name__}")
         await self.current_state.on_enter()
         
-        # Store phase change event for replay capability
+        # 5. Store event for replay capability
         await self._store_phase_change_event(old_phase, new_phase)
         
-        # 🔧 FIX: Broadcast phase change with player-specific data
-        await self._broadcast_phase_change_with_hands(new_phase)
+        # 6. Broadcast change with immediate frontend instructions
+        await self._broadcast_phase_change_with_display_metadata(new_phase, reason)
         
-        # 🤖 Trigger bot manager for phase changes
+        # 7. Trigger bot manager for phase changes
         await self._notify_bot_manager(new_phase)
     
     def get_current_phase(self) -> Optional[GamePhase]:
@@ -251,6 +272,141 @@ class GameStateMachine:
         
         # Send to all players
         await self.broadcast_event("phase_change", base_data)
+    
+    async def _broadcast_phase_change_with_display_metadata(self, phase: GamePhase, reason: str):
+        """🚀 EVENT-DRIVEN: Broadcast phase change with frontend display instructions"""
+        
+        base_data = {
+            "phase": phase.value,
+            "allowed_actions": [action.value for action in self.get_allowed_actions()],
+            "phase_data": self.get_phase_data(),
+            "immediate": True,
+            "reason": reason
+        }
+        
+        # 🚀 MANDATORY: Add frontend display instructions (NO backend timing)
+        display_config = self._get_display_config_for_phase(phase)
+        if display_config:
+            base_data["display"] = display_config
+        
+        # Add player hands to the data
+        if hasattr(self, 'game') and self.game and hasattr(self.game, 'players'):
+            players_data = {}
+            for player in self.game.players:
+                player_name = getattr(player, 'name', str(player))
+                player_hand = []
+                
+                # Get player's hand
+                if hasattr(player, 'hand') and player.hand:
+                    player_hand = [str(piece) for piece in player.hand]
+                
+                players_data[player_name] = {
+                    'hand': player_hand,
+                    'hand_size': len(player_hand)
+                }
+            
+            base_data['players'] = players_data
+        
+        # Send immediate update to all players
+        await self.broadcast_event("phase_change", base_data)
+    
+    def _get_display_config_for_phase(self, phase: GamePhase) -> Optional[Dict]:
+        """Get frontend display configuration for phase"""
+        
+        # 🚀 MANDATORY: Frontend display timing only - NO backend delays
+        display_configs = {
+            GamePhase.TURN: {
+                "type": "turn_active",
+                "show_for_seconds": None,  # No auto-advance for active phases
+                "auto_advance": False,
+                "can_skip": False
+            },
+            GamePhase.PREPARATION: {
+                "type": "preparation", 
+                "show_for_seconds": None,
+                "auto_advance": False,
+                "can_skip": False
+            },
+            GamePhase.DECLARATION: {
+                "type": "declaration",
+                "show_for_seconds": None,
+                "auto_advance": False, 
+                "can_skip": False
+            },
+            GamePhase.SCORING: {
+                "type": "scoring",
+                "show_for_seconds": None,
+                "auto_advance": False,
+                "can_skip": False
+            }
+        }
+        
+        return display_configs.get(phase)
+    
+    async def broadcast_turn_completion(self, turn_data: Dict):
+        """🚀 MANDATORY: Broadcast turn completion with frontend display delegation"""
+        
+        # Determine next phase based on game state
+        next_phase = GamePhase.SCORING if self._all_hands_empty() else GamePhase.TURN
+        
+        event_data = {
+            "winner": turn_data.get("winner"),
+            "pieces_transferred": turn_data.get("pieces_transferred", 0),
+            "turn_results": turn_data.get("turn_results", {}),
+            
+            # 🚀 MANDATORY: Frontend display instructions (NO backend delays)
+            "display": {
+                "type": "turn_results",
+                "show_for_seconds": 7.0,
+                "auto_advance": True,
+                "can_skip": True,
+                "next_phase": next_phase.value
+            },
+            
+            # Logic state
+            "logic_complete": True,
+            "immediate": True
+        }
+        
+        await self.broadcast_event("turn_completed", event_data)
+    
+    async def broadcast_scoring_completion(self, scores: Dict):
+        """🚀 MANDATORY: Broadcast scoring completion with frontend display delegation"""
+        
+        # Determine next phase
+        game_complete = scores.get("game_complete", False)
+        next_phase = "game_end" if game_complete else GamePhase.PREPARATION.value
+        
+        event_data = {
+            "scores": scores.get("final_scores", {}),
+            "round_number": scores.get("round_number", 0),
+            "game_complete": game_complete,
+            
+            # 🚀 MANDATORY: Frontend display instructions (NO backend timing)
+            "display": {
+                "type": "scoring_display",
+                "show_for_seconds": 7.0,
+                "auto_advance": True,
+                "can_skip": True,
+                "next_phase": next_phase
+            },
+            
+            "logic_complete": True,
+            "immediate": True
+        }
+        
+        await self.broadcast_event("scoring_completed", event_data)
+    
+    def _all_hands_empty(self) -> bool:
+        """Check if all player hands are empty"""
+        if not hasattr(self, 'game') or not self.game or not hasattr(self.game, 'players'):
+            return False
+        
+        for player in self.game.players:
+            if hasattr(player, 'hand') and player.hand:
+                return False
+        
+        return True
     
     async def broadcast_event(self, event_type: str, event_data: Dict):
         """Broadcast WebSocket event if callback is available"""

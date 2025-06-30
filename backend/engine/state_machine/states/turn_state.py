@@ -553,10 +553,9 @@ class TurnState(GameState):
                 self._update_turn_order_for_new_starter(self.winner)
                 self.logger.info(f"🎯 Next turn starter: {self.winner}")
                 
-                print(f"🏁 TURN_COMPLETION_DEBUG: Hands not empty - will start next turn after delay")
-                # Auto-start next turn after 7 second delay (give users time to see TurnResultsUI)
-                self.logger.info(f"🎯 Turn complete - auto-starting next turn in 7 seconds")
-                await asyncio.sleep(7.0)
+                print(f"🏁 TURN_COMPLETION_DEBUG: Hands not empty - will start next turn immediately")
+                # 🚀 EVENT-DRIVEN: No backend delays - frontend handles display timing
+                self.logger.info(f"🎯 Turn complete - starting next turn immediately (frontend controls display)")
                 turn_started = await self.start_next_turn_if_needed()
                 
                 # 🚀 ENTERPRISE: New turn auto-start automatically broadcasts via update_phase_data
