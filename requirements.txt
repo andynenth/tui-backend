@@ -3,3 +3,4 @@ uvicorn[standard]==0.34.2
 websockets==15.0.1
 python-dotenv==1.1.0
 PyYAML==6.0.2
+psutil==7.0.0

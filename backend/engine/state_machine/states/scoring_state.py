@@ -25,6 +25,38 @@ class ScoringState(GameState):
     def next_phases(self) -> List[GamePhase]:
         return [GamePhase.PREPARATION]  # Next round or game end
     
+    async def process_event(self, event) -> "EventResult":
+        """Convert ScoringState to event-driven architecture"""
+        from ..events.event_types import EventResult
+        from ..core import GameAction, ActionType
+        
+        try:
+            # Convert event to action for legacy processing
+            action_type = ActionType(event.trigger)
+            action = GameAction(
+                action_type=action_type,
+                player_name=event.player_name,
+                payload=event.data
+            )
+            
+            # Use legacy handle_action method
+            result = await self.handle_action(action)
+            
+            if result is None:
+                return EventResult(success=False, reason="Scoring action rejected")
+            
+            # Check for transition to next round (Preparation) or game end
+            next_phase = await self.check_transition_conditions()
+            
+            return EventResult(
+                success=True,
+                reason="Scoring action processed successfully",
+                triggers_transition=next_phase is not None,
+                data=result if isinstance(result, dict) else {}
+            )
+        except Exception as e:
+            return EventResult(success=False, reason=f"Scoring processing error: {e}")
+    
     def __init__(self, state_machine):
         super().__init__(state_machine)
         self.allowed_actions = {
@@ -97,6 +129,12 @@ class ScoringState(GameState):
             self.display_delay_complete = True  # Immediate transition - frontend controls timing
             
             self.logger.info(f"Scoring complete. Game over: {self.game_complete}")
+            
+            # Check for auto-transition to next round
+            if not self.game_complete and self.scores_calculated and self.display_delay_complete:
+                print(f"🎯 SCORING_DEBUG: Scores complete - auto-transitioning to next round (Preparation)")
+                await self.state_machine._immediate_transition_to(GamePhase.PREPARATION, 
+                                                                 "Scoring complete - starting next round")
             
         except Exception as e:
             self.logger.error(f"Error setting up Scoring Phase: {e}")

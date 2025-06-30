@@ -157,14 +157,24 @@ class GameBotHandler:
         
     async def handle_event(self, event: str, data: dict):
         """Process game events and trigger bot actions"""
-        print(f"🎮 BOT_HANDLER_DEBUG: Room {self.room_id} handling event '{event}' with data: {data}")
+        print(f"🎮 BOT_HANDLER_DEBUG: Room {self.room_id} handling event '{event}' with data keys: {list(data.keys())}")
+        print(f"🔍 BOT_HANDLER_DEBUG: Event type check - event == 'phase_change': {event == 'phase_change'}")
+        print(f"🔍 BOT_HANDLER_DEBUG: Event value repr: {repr(event)}")
+        print(f"🔍 BOT_HANDLER_DEBUG: Attempting to acquire lock...")
+        
         async with self._lock:  # Prevent concurrent bot actions
+            print(f"🔍 BOT_HANDLER_DEBUG: Lock acquired, processing event...")
             if event == "player_declared":
                 print(f"📢 BOT_HANDLER_DEBUG: Handling declaration phase")
                 await self._handle_declaration_phase(data["player_name"])
             elif event == "phase_change":
                 print(f"🚀 BOT_HANDLER_DEBUG: Handling enterprise phase change")
-                await self._handle_enterprise_phase_change(data)
+                try:
+                    await self._handle_enterprise_phase_change(data)
+                except Exception as e:
+                    print(f"❌ BOT_HANDLER_DEBUG: Error in _handle_enterprise_phase_change: {e}")
+                    import traceback
+                    traceback.print_exc()
             elif event == "player_played":
                 print(f"🎯 BOT_HANDLER_DEBUG: Handling play phase")
                 await self._handle_play_phase(data["player_name"])
@@ -214,18 +224,25 @@ class GameBotHandler:
                 # Check if current declarer is a bot
                 game_state = self._get_game_state()
                 if hasattr(game_state, 'players'):
+                    player_found = False
                     for player in game_state.players:
-                        if getattr(player, 'name', str(player)) == current_declarer:
+                        player_name = getattr(player, 'name', str(player))
+                        print(f"🔍 ENTERPRISE_BOT_DEBUG: Checking player {player_name} vs target {current_declarer}")
+                        if player_name == current_declarer:
+                            player_found = True
                             if getattr(player, 'is_bot', False):
                                 print(f"🤖 ENTERPRISE_BOT_DEBUG: Current declarer {current_declarer} is a bot - triggering declaration")
-                                # Get last declarer to continue sequence
-                                declarations = phase_data.get('declarations', {})
-                                declared_players = list(declarations.keys())
-                                last_declarer = declared_players[-1] if declared_players else ""
-                                await self._handle_declaration_phase(last_declarer)
+                                # Schedule bot declaration without holding the lock
+                                asyncio.create_task(self._handle_single_bot_declaration(player))
                             else:
                                 print(f"👤 ENTERPRISE_BOT_DEBUG: Current declarer {current_declarer} is human - waiting")
                             break
+                    
+                    if not player_found:
+                        print(f"❌ ENTERPRISE_BOT_DEBUG: Player {current_declarer} not found in game state!")
+                        print(f"🔍 ENTERPRISE_BOT_DEBUG: Available players: {[getattr(p, 'name', str(p)) for p in game_state.players]}")
+                else:
+                    print(f"❌ ENTERPRISE_BOT_DEBUG: Game state has no players attribute!")
                             
         elif phase == "turn":
             current_player = data.get("current_player") or phase_data.get("current_player")
@@ -278,9 +295,43 @@ class GameBotHandler:
                                 print(f"👤 ENTERPRISE_BOT_DEBUG: Current player {current_player} is human - waiting")
                             break
                 
+    async def _handle_single_bot_declaration(self, bot_player):
+        """Handle declaration for a specific bot player"""
+        print(f"🤖 BOT_SINGLE_DECLARE: Handling declaration for {bot_player.name}")
+        
+        # Check if this bot has already declared
+        phase_declarations = self.state_machine.get_phase_data().get('declarations', {}) if self.state_machine else {}
+        if bot_player.name in phase_declarations:
+            print(f"🔍 BOT_SINGLE_DECLARE: {bot_player.name} already declared {phase_declarations[bot_player.name]}, skipping")
+            return
+            
+        # Check if this bot is the current declarer
+        current_declarer = self.state_machine.get_phase_data().get('current_declarer') if self.state_machine else None
+        if current_declarer != bot_player.name:
+            print(f"🔍 BOT_SINGLE_DECLARE: {bot_player.name} is not the current declarer (current: {current_declarer}), skipping")
+            return
+            
+        # Bot declares with random delay for realism
+        import random
+        delay = random.uniform(0.5, 1.5)
+        print(f"🤖 BOT_SINGLE_DECLARE: Bot {bot_player.name} will declare in {delay:.1f}s...")
+        await asyncio.sleep(delay)
+        
+        # Get position in declaration order for AI calculation
+        declaration_order = self._get_declaration_order()
+        position = 0
+        for i, p in enumerate(declaration_order):
+            player_name = p if isinstance(p, str) else getattr(p, 'name', str(p))
+            if player_name == bot_player.name:
+                position = i
+                break
+                
+        print(f"🤖 BOT_SINGLE_DECLARE: Bot {bot_player.name} declaring at position {position}")
+        await self._bot_declare(bot_player, position)
+
     async def _handle_declaration_phase(self, last_declarer: str):
         """Handle bot declarations in order"""
-        from backend.socket_manager import broadcast
+        from socket_manager import broadcast
         
         print(f"🔍 DECL_PHASE_DEBUG: _handle_declaration_phase called with last_declarer: '{last_declarer}'")
         
@@ -342,7 +393,7 @@ class GameBotHandler:
             
     async def _bot_declare(self, bot: Player, position: int):
         """Make a bot declaration"""
-        from backend.socket_manager import broadcast
+        from socket_manager import broadcast
         
         try:
             # Get previous declarations
@@ -426,22 +477,13 @@ class GameBotHandler:
         print(f"🔍 BOT_ROUND_DEBUG: Game round_starter: {getattr(game_state, 'round_starter', 'None')}")
         print(f"🔍 BOT_ROUND_DEBUG: Game current_player: {getattr(game_state, 'current_player', 'None')}")
         
-        # Check if starter is a bot
-        starter = game_state.current_order[0] if game_state.current_order else None
-        if starter and starter.is_bot:
-            print(f"🤖 Round starter is bot: {starter.name}")
-            await asyncio.sleep(1)
-            await self._handle_declaration_phase("")  # Empty string to start from beginning
-        else:
-            print(f"👤 Round starter is human or None: {starter.name if starter else 'None'}")
-            # Still need to handle bot declarations even if human starts
-            await asyncio.sleep(0.5)
-            await self._handle_declaration_phase("")  # Check for bot declarations
+        # 🔧 FIX: Don't handle declarations here anymore - enterprise phase change handles this
+        print(f"🔧 BOT_ROUND_DEBUG: Declarations now handled by enterprise phase change - skipping old path")
             
     async def _handle_play_phase(self, last_player: str):
         """Handle bot plays in turn order"""
         try:
-            from backend.socket_manager import broadcast
+            from socket_manager import broadcast
         except ImportError:
             # Handle test environment
             def broadcast(*args, **kwargs):
@@ -542,7 +584,7 @@ class GameBotHandler:
     async def _bot_play(self, bot: Player):
         """Make a bot play"""
         try:
-            from backend.socket_manager import broadcast
+            from socket_manager import broadcast
         except ImportError:
             def broadcast(*args, **kwargs):
                 pass
@@ -620,7 +662,7 @@ class GameBotHandler:
             
     async def _handle_turn_resolved(self, result: dict):
         """Handle end of turn"""
-        from backend.socket_manager import broadcast
+        from socket_manager import broadcast
         
         # 🚀 ENTERPRISE: This should go through state machine, not manual broadcast
         # State machine automatically handles turn_resolved broadcasting via update_phase_data()
@@ -637,7 +679,7 @@ class GameBotHandler:
             
     async def _handle_round_complete(self):
         """Handle round scoring"""
-        from backend.socket_manager import broadcast
+        from socket_manager import broadcast
         from engine.win_conditions import is_game_over, get_winners
         
         # Handle scoring via state machine or fallback
@@ -691,7 +733,7 @@ class GameBotHandler:
             
     async def _bot_play_first(self, bot: Player):
         """Bot plays as first player"""
-        from backend.socket_manager import broadcast
+        from socket_manager import broadcast
         
         try:
             print(f"🤖 Bot {bot.name} choosing first play...")

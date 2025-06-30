@@ -67,20 +67,92 @@ class GameLogger:
         
     def setup_loggers(self):
         """Set up specialized loggers with JSON formatting"""
+        import os
+        from logging.handlers import RotatingFileHandler
+        
         # Create formatters
         json_formatter = JsonFormatter()
+        
+        # Determine if we're in production or development
+        log_to_files = os.getenv("LOG_TO_FILES", "false").lower() == "true"
+        log_directory = os.getenv("LOG_DIRECTORY", "logs")
+        
+        # Create log directory if it doesn't exist
+        if log_to_files:
+            os.makedirs(log_directory, exist_ok=True)
         
         # Console handler for development
         console_handler = logging.StreamHandler()
         console_handler.setFormatter(json_formatter)
         console_handler.setLevel(logging.INFO)
         
-        # Create specialized loggers
-        self.game_logger = self._create_logger('game', console_handler)
-        self.websocket_logger = self._create_logger('websocket', console_handler)
-        self.performance_logger = self._create_logger('performance', console_handler)
-        self.security_logger = self._create_logger('security', console_handler)
-        self.error_logger = self._create_logger('error', console_handler)
+        # Create handlers list (always include console for now)
+        handlers = [console_handler]
+        
+        # Add file handlers for production
+        if log_to_files:
+            # Game events log file
+            game_file_handler = RotatingFileHandler(
+                os.path.join(log_directory, "game_events.log"),
+                maxBytes=50*1024*1024,  # 50MB
+                backupCount=5
+            )
+            game_file_handler.setFormatter(json_formatter)
+            game_file_handler.setLevel(logging.INFO)
+            
+            # WebSocket events log file
+            websocket_file_handler = RotatingFileHandler(
+                os.path.join(log_directory, "websocket.log"),
+                maxBytes=50*1024*1024,
+                backupCount=5
+            )
+            websocket_file_handler.setFormatter(json_formatter)
+            websocket_file_handler.setLevel(logging.INFO)
+            
+            # Performance log file
+            performance_file_handler = RotatingFileHandler(
+                os.path.join(log_directory, "performance.log"),
+                maxBytes=50*1024*1024,
+                backupCount=5
+            )
+            performance_file_handler.setFormatter(json_formatter)
+            performance_file_handler.setLevel(logging.INFO)
+            
+            # Security log file
+            security_file_handler = RotatingFileHandler(
+                os.path.join(log_directory, "security.log"),
+                maxBytes=50*1024*1024,
+                backupCount=5
+            )
+            security_file_handler.setFormatter(json_formatter)
+            security_file_handler.setLevel(logging.WARNING)
+            
+            # Error log file
+            error_file_handler = RotatingFileHandler(
+                os.path.join(log_directory, "errors.log"),
+                maxBytes=50*1024*1024,
+                backupCount=5
+            )
+            error_file_handler.setFormatter(json_formatter)
+            error_file_handler.setLevel(logging.ERROR)
+            
+            # Create specialized loggers with both console and file handlers
+            self.game_logger = self._create_logger('game', [console_handler, game_file_handler])
+            self.websocket_logger = self._create_logger('websocket', [console_handler, websocket_file_handler])
+            self.performance_logger = self._create_logger('performance', [console_handler, performance_file_handler])
+            self.security_logger = self._create_logger('security', [console_handler, security_file_handler])
+            self.error_logger = self._create_logger('error', [console_handler, error_file_handler])
+            
+            print(f"📁 LOGGING: File logging enabled - logs saved to {log_directory}/")
+        else:
+            # Development mode - console only
+            self.game_logger = self._create_logger('game', [console_handler])
+            self.websocket_logger = self._create_logger('websocket', [console_handler])
+            self.performance_logger = self._create_logger('performance', [console_handler])
+            self.security_logger = self._create_logger('security', [console_handler])
+            self.error_logger = self._create_logger('error', [console_handler])
+            
+            print("📺 LOGGING: Console logging only (set LOG_TO_FILES=true for file logging)")
         
         # Set levels
         self.game_logger.setLevel(logging.INFO)
@@ -89,11 +161,20 @@ class GameLogger:
         self.security_logger.setLevel(logging.WARNING)
         self.error_logger.setLevel(logging.ERROR)
         
-    def _create_logger(self, name: str, handler: logging.Handler) -> logging.Logger:
-        """Create a logger with the specified handler"""
+    def _create_logger(self, name: str, handlers) -> logging.Logger:
+        """Create a logger with the specified handler(s)"""
+        from typing import List
+        
         logger = logging.getLogger(name)
         logger.handlers.clear()  # Remove existing handlers
-        logger.addHandler(handler)
+        
+        # Handle both single handler and list of handlers
+        if isinstance(handlers, list):
+            for handler in handlers:
+                logger.addHandler(handler)
+        else:
+            logger.addHandler(handlers)
+            
         logger.propagate = False
         return logger
     

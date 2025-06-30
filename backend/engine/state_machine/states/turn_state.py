@@ -28,6 +28,38 @@ class TurnState(GameState):
     def next_phases(self) -> List[GamePhase]:
         return [GamePhase.SCORING]
     
+    async def process_event(self, event) -> "EventResult":
+        """Convert TurnState to event-driven architecture"""
+        from ..events.event_types import EventResult
+        from ..core import GameAction, ActionType
+        
+        try:
+            # Convert event to action for legacy processing
+            action_type = ActionType(event.trigger)
+            action = GameAction(
+                action_type=action_type,
+                player_name=event.player_name,
+                payload=event.data
+            )
+            
+            # Use legacy handle_action method
+            result = await self.handle_action(action)
+            
+            if result is None:
+                return EventResult(success=False, reason="Turn action rejected")
+            
+            # Check for transition to Scoring phase
+            next_phase = await self.check_transition_conditions()
+            
+            return EventResult(
+                success=True,
+                reason="Turn action processed successfully",
+                triggers_transition=next_phase is not None,
+                data=result if isinstance(result, dict) else {}
+            )
+        except Exception as e:
+            return EventResult(success=False, reason=f"Turn processing error: {e}")
+    
     def __init__(self, state_machine):
         super().__init__(state_machine)
         self.allowed_actions = {
@@ -543,8 +575,9 @@ class TurnState(GameState):
                 self.logger.info(f"🏁 All hands are now empty - round complete. Last turn winner: {self.winner}")
             else:
                 self.logger.info("🏁 All hands are now empty - round complete")
-            print(f"🏁 TURN_COMPLETION_DEBUG: Round complete - will transition to scoring")
-            # The main process loop will handle the actual transition
+            print(f"🏁 TURN_COMPLETION_DEBUG: Round complete - auto-transitioning to Scoring phase")
+            await self.state_machine._immediate_transition_to(GamePhase.SCORING, 
+                                                             "All hands empty - round complete")
         else:
             # Update starter for next turn
             if self.winner:

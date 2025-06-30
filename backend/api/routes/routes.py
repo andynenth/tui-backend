@@ -734,35 +734,52 @@ async def cleanup_old_events(older_than_hours: int = Query(24, description="Remo
 async def health_check():
     """
     Basic health check for load balancers and monitoring systems
+    Works with or without advanced monitoring system
     
     Returns:
         Dict: Basic health status
     """
     try:
-        # Import health monitor
-        from api.services.health_monitor import health_monitor
-        
-        health_status = await health_monitor.get_health_status()
-        
-        # Determine HTTP status code
-        if health_status.status.value == "healthy":
-            status_code = 200
-        elif health_status.status.value == "warning":
-            status_code = 200  # Still operational
-        else:  # critical or unknown
-            status_code = 503  # Service unavailable
-        
-        response_data = {
-            "status": health_status.status.value,
-            "timestamp": health_status.last_check,
-            "uptime_seconds": health_status.uptime_seconds,
-            "uptime_formatted": health_status._format_uptime(),
-            "version": "1.0.0",
-            "service": "liap-tui-backend"
-        }
-        
-        from fastapi.responses import JSONResponse
-        return JSONResponse(content=response_data, status_code=status_code)
+        # Try to use advanced health monitor if available
+        try:
+            from api.services.health_monitor import health_monitor
+            
+            health_status = await health_monitor.get_health_status()
+            
+            # Determine HTTP status code
+            if health_status.status.value == "healthy":
+                status_code = 200
+            elif health_status.status.value == "warning":
+                status_code = 200  # Still operational
+            else:  # critical or unknown
+                status_code = 503  # Service unavailable
+            
+            response_data = {
+                "status": health_status.status.value,
+                "timestamp": health_status.last_check,
+                "uptime_seconds": health_status.uptime_seconds,
+                "uptime_formatted": health_status._format_uptime(),
+                "version": "1.0.0",
+                "service": "liap-tui-backend",
+                "monitoring": "advanced"
+            }
+            
+            from fastapi.responses import JSONResponse
+            return JSONResponse(content=response_data, status_code=status_code)
+            
+        except Exception:
+            # Fall back to basic health check if monitoring system isn't available
+            response_data = {
+                "status": "healthy",
+                "timestamp": time.time(),
+                "version": "1.0.0",
+                "service": "liap-tui-backend",
+                "monitoring": "basic",
+                "message": "API is responding (advanced monitoring unavailable)"
+            }
+            
+            from fastapi.responses import JSONResponse
+            return JSONResponse(content=response_data, status_code=200)
         
     except Exception as e:
         from fastapi.responses import JSONResponse
@@ -771,7 +788,8 @@ async def health_check():
                 "status": "critical",
                 "error": str(e),
                 "timestamp": time.time(),
-                "service": "liap-tui-backend"
+                "service": "liap-tui-backend",
+                "monitoring": "error"
             },
             status_code=503
         )

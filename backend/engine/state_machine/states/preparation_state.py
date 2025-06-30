@@ -26,6 +26,38 @@ class PreparationState(GameState):
     def next_phases(self) -> List[GamePhase]:
         return [GamePhase.DECLARATION]
     
+    async def process_event(self, event) -> "EventResult":
+        """Convert PreparationState to event-driven architecture"""
+        from ..events.event_types import EventResult
+        from ..core import GameAction, ActionType
+        
+        try:
+            # Convert event to action for legacy processing
+            action_type = ActionType(event.trigger)
+            action = GameAction(
+                action_type=action_type,
+                player_name=event.player_name,
+                payload=event.data
+            )
+            
+            # Use legacy handle_action method
+            result = await self.handle_action(action)
+            
+            if result is None:
+                return EventResult(success=False, reason="Preparation action rejected")
+            
+            # Check for transition to Declaration phase
+            next_phase = await self.check_transition_conditions()
+            
+            return EventResult(
+                success=True,
+                reason="Preparation action processed successfully",
+                triggers_transition=next_phase is not None,
+                data=result if isinstance(result, dict) else {}
+            )
+        except Exception as e:
+            return EventResult(success=False, reason=f"Preparation processing error: {e}")
+    
     def __init__(self, state_machine):
         super().__init__(state_machine)
         self.allowed_actions = {
@@ -178,6 +210,13 @@ class PreparationState(GameState):
                 game.round_starter = starter  # Always set both
                 print(f"✅ PREP_STATE_DEBUG: No weak hands - determined new starter: {starter}")
                 self.logger.info(f"✅ No weak hands - determined new starter: {starter}")
+        
+        # Auto-transition to Declaration phase when no weak hands
+        if not self.weak_players:
+            print(f"🎯 PREP_STATE_DEBUG: No weak hands detected - auto-transitioning to Declaration phase")
+            self.logger.info(f"🎯 No weak hands detected - transitioning to Declaration phase")
+            await self.state_machine._immediate_transition_to(GamePhase.DECLARATION, 
+                                                             "No weak hands detected - preparation complete")
     
     async def _validate_action(self, action: GameAction) -> bool:
         """Validate action is allowed in current state"""
