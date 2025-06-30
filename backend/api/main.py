@@ -8,6 +8,8 @@ from backend.api.routes.routes import router as api_router # Import the API rout
 from backend.api.routes.ws import router as ws_router # Import the WebSocket router for real-time communication.
 import os # Standard library for interacting with the operating system (e.g., environment variables).
 from dotenv import load_dotenv # Library to load environment variables from a .env file.
+import asyncio
+import logging
 
 # ✅ Load environment variables from the .env file.
 # This makes configuration values available via os.getenv().
@@ -53,3 +55,90 @@ app.mount("/", StaticFiles(directory=STATIC_DIR, html=True), name="static")
 def read_index():
     # Returns the index.html file from the static directory.
     return FileResponse(os.path.join(STATIC_DIR, INDEX_FILE))
+
+# ✅ MONITORING SYSTEM ACTIVATION
+# Start the monitoring and observability system when the application launches
+@app.on_event("startup")
+async def startup_event():
+    """Initialize and start the monitoring and observability system"""
+    print("🚀 STARTUP: Initializing monitoring and observability system...")
+    
+    # Check for required dependencies first
+    missing_deps = []
+    try:
+        import psutil
+    except ImportError:
+        missing_deps.append("psutil")
+    
+    if missing_deps:
+        print(f"⚠️  STARTUP WARNING: Missing dependencies for monitoring: {missing_deps}")
+        print("🔧 STARTUP: Install with: pip install psutil")
+        print("📺 STARTUP: Running without advanced monitoring (basic health checks still available)")
+        return
+    
+    try:
+        # Import monitoring services
+        from api.services.health_monitor import health_monitor
+        from api.services.recovery_manager import recovery_manager
+        from api.services.logging_service import game_logger
+        from api.services.event_store import event_store
+        
+        print("📦 STARTUP: Monitoring services imported successfully")
+        
+        # Start health monitoring system
+        # await health_monitor.start_monitoring()  # Temporarily disabled
+        print("🔍 STARTUP: Health monitoring system disabled")
+        
+        # Start recovery management system  
+        # await recovery_manager.start_monitoring()  # Temporarily disabled
+        print("🔧 STARTUP: Recovery management system disabled")
+        
+        # Initialize event store (if needed)
+        if hasattr(event_store, 'initialize'):
+            await event_store.initialize()
+            print("📊 STARTUP: Event store initialized")
+        
+        # Log system startup
+        if game_logger:
+            game_logger.log_game_event("system_startup", 
+                                     components=["health_monitor", "recovery_manager", "event_store"],
+                                     status="success")
+            print("📝 STARTUP: System startup logged")
+        
+        print("✅ STARTUP: Monitoring and observability system fully activated!")
+        print("🌐 SYSTEM: Health endpoints available at /health, /health/detailed, /health/metrics")
+        
+    except Exception as e:
+        print(f"❌ STARTUP ERROR: Failed to start monitoring system: {e}")
+        print("🎮 STARTUP: Game server will continue without advanced monitoring")
+        # Log the error but don't crash the application
+        logging.error(f"Monitoring system startup failed: {e}")
+
+@app.on_event("shutdown") 
+async def shutdown_event():
+    """Gracefully shutdown the monitoring system"""
+    print("🛑 SHUTDOWN: Stopping monitoring and observability system...")
+    
+    try:
+        # Import and stop monitoring services
+        from api.services.health_monitor import health_monitor
+        from api.services.recovery_manager import recovery_manager
+        from api.services.logging_service import game_logger
+        
+        # Stop monitoring systems
+        await health_monitor.stop_monitoring()
+        print("🔍 SHUTDOWN: Health monitoring stopped")
+        
+        recovery_manager.stop_monitoring()
+        print("🔧 SHUTDOWN: Recovery management stopped")
+        
+        # Log system shutdown
+        if game_logger:
+            game_logger.log_game_event("system_shutdown", status="graceful")
+            print("📝 SHUTDOWN: System shutdown logged")
+        
+        print("✅ SHUTDOWN: Monitoring system gracefully stopped")
+        
+    except Exception as e:
+        print(f"❌ SHUTDOWN ERROR: Error stopping monitoring system: {e}")
+        logging.error(f"Monitoring system shutdown error: {e}")

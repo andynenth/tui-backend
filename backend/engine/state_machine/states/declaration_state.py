@@ -12,6 +12,38 @@ class DeclarationState(GameState):
     @property
     def next_phases(self) -> List[GamePhase]:
         return [GamePhase.TURN]
+        
+    async def process_event(self, event) -> "EventResult":
+        """Override to use legacy action processing for now"""
+        from ..events.event_types import EventResult
+        from ..core import GameAction, ActionType
+        
+        try:
+            # Convert event to action for legacy processing
+            action_type = ActionType(event.trigger)
+            action = GameAction(
+                action_type=action_type,
+                player_name=event.player_name,
+                payload=event.data
+            )
+            
+            # Use legacy handle_action method
+            result = await self.handle_action(action)
+            
+            if result is None:
+                return EventResult(success=False, reason="Declaration action rejected")
+            
+            # Check for transition to Turn phase
+            next_phase = await self.check_transition_conditions()
+            
+            return EventResult(
+                success=True,
+                reason="Declaration processed successfully",
+                triggers_transition=next_phase is not None,
+                data=result if isinstance(result, dict) else {}
+            )
+        except Exception as e:
+            return EventResult(success=False, reason=f"Declaration processing error: {e}")
     
     def __init__(self, state_machine):
         super().__init__(state_machine)
@@ -52,6 +84,9 @@ class DeclarationState(GameState):
         await self.update_phase_data({
             'current_declarer': current_declarer
         }, f"Declaration phase setup complete - current declarer: {current_declarer}")
+        
+        # Notify bot manager about declaration phase
+        await self._trigger_bot_declarations()
     
     async def _cleanup_phase(self) -> None:
         # FIX: Copy declarations to game object during cleanup
@@ -121,6 +156,19 @@ class DeclarationState(GameState):
         
         self.logger.info(f"Player {player_name} declared {declared_value}")
         
+        # Check if all declarations are complete and auto-transition
+        order = self.phase_data['declaration_order']
+        declarations = self.phase_data['declarations']
+        
+        if len(declarations) >= len(order):
+            print(f"🎯 DECLARATION_DEBUG: All declarations complete - auto-transitioning to Turn phase")
+            self.logger.info(f"🎯 All declarations complete - transitioning to Turn phase")
+            await self.state_machine._immediate_transition_to(GamePhase.TURN, 
+                                                             "All player declarations complete")
+        else:
+            # Trigger bot manager for next declarer after this player's declaration
+            await self._trigger_bot_after_declaration(player_name)
+        
         return {
             'status': 'declaration_recorded',
             'player': player_name,
@@ -166,3 +214,57 @@ class DeclarationState(GameState):
         if len(declarations) >= len(order):
             return GamePhase.TURN
         return None
+    
+    async def _trigger_bot_declarations(self) -> None:
+        """Trigger bot manager to handle bot declarations"""
+        try:
+            print(f"🤖 DECLARATION_DEBUG: Triggering bot manager for declaration phase")
+            
+            from ...bot_manager import BotManager
+            
+            # Get the singleton bot manager
+            bot_manager = BotManager()
+            
+            # Get room ID from game
+            room_id = getattr(self.state_machine.game, 'room_id', None)
+            print(f"🔧 DECLARATION_DEBUG: Bot manager active games: {list(bot_manager.active_games.keys())}")
+            
+            if room_id:
+                # Notify bot manager about declaration phase starting
+                # Pass empty string to start from beginning of declaration order
+                await bot_manager.handle_game_event(room_id, "player_declared", {
+                    'player_name': '',  # Empty to start from beginning
+                    'phase': 'declaration'
+                })
+            else:
+                print(f"⚠️ DECLARATION_DEBUG: No room_id found to trigger bot manager")
+                
+        except Exception as e:
+            print(f"❌ DECLARATION_DEBUG: Error triggering bot manager: {e}")
+            self.logger.error(f"Error triggering bot manager for declarations: {e}")
+    
+    async def _trigger_bot_after_declaration(self, last_declarer: str) -> None:
+        """Trigger bot manager after a player makes a declaration"""
+        try:
+            print(f"🤖 DECLARATION_DEBUG: Triggering bot manager after {last_declarer} declared")
+            
+            from ...bot_manager import BotManager
+            
+            # Get the singleton bot manager
+            bot_manager = BotManager()
+            
+            # Get room ID from game
+            room_id = getattr(self.state_machine.game, 'room_id', None)
+            
+            if room_id:
+                # Notify bot manager that someone declared (so next bot can declare)
+                await bot_manager.handle_game_event(room_id, "player_declared", {
+                    'player_name': last_declarer,
+                    'phase': 'declaration'
+                })
+            else:
+                print(f"⚠️ DECLARATION_DEBUG: No room_id found to trigger bot manager")
+                
+        except Exception as e:
+            print(f"❌ DECLARATION_DEBUG: Error triggering bot manager after declaration: {e}")
+            self.logger.error(f"Error triggering bot manager after declaration: {e}")

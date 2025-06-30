@@ -75,7 +75,7 @@ export function PreparationUI({
             {players.map((player) => (
               <PlayerSlot
                 key={player.name}
-                player={player}
+                occupant={player}
                 isActive={player.name === currentWeakPlayer}
                 hasWeakHand={weakHands.includes(player.name)}
                 className={`
@@ -102,8 +102,8 @@ export function PreparationUI({
             <div className="flex flex-wrap justify-center gap-2">
               {myHand.map((card, index) => (
                 <GamePiece
-                  key={`${card.suit}-${card.value}`}
-                  card={card}
+                  key={`${card.color}-${card.point}-${index}`}
+                  piece={card}
                   size="medium"
                   isHighlighted={isMyHandWeak}
                   className="transform hover:scale-105 transition-transform"
@@ -233,8 +233,9 @@ export function PreparationUI({
 PreparationUI.propTypes = {
   // Data props
   myHand: PropTypes.arrayOf(PropTypes.shape({
-    suit: PropTypes.string.isRequired,
-    value: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired
+    color: PropTypes.string.isRequired,
+    point: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
+    kind: PropTypes.string.isRequired
   })),
   players: PropTypes.arrayOf(PropTypes.shape({
     name: PropTypes.string.isRequired,

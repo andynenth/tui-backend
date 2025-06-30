@@ -525,7 +525,7 @@ export class GameService extends EventTarget {
             return {
               color, // Use 'color' property that GamePiece expects
               point: parseInt(value),
-              kind: piece,
+              kind: `${piece}_${color}`, // GamePiece expects combined kind like "ELEPHANT_RED"
               name: piece.toLowerCase(),
               displayName: `${piece} ${color}`
             };

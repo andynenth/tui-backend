@@ -220,7 +220,7 @@ export function TurnUI({
             <div className="flex flex-wrap justify-center gap-2">
               {myHand.map((card, index) => (
                 <GamePiece
-                  key={`${card.suit}-${card.value}-${index}`}
+                  key={`${card.color}-${card.point}-${index}`}
                   piece={card}
                   size="medium"
                   isSelected={selectedIndices.includes(index)}
@@ -436,14 +436,16 @@ export function TurnUI({
 TurnUI.propTypes = {
   // Data props
   myHand: PropTypes.arrayOf(PropTypes.shape({
-    suit: PropTypes.string.isRequired,
-    value: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired
+    color: PropTypes.string.isRequired,
+    point: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
+    kind: PropTypes.string.isRequired
   })),
   currentTurnPlays: PropTypes.arrayOf(PropTypes.shape({
     player: PropTypes.string.isRequired,
     cards: PropTypes.arrayOf(PropTypes.shape({
-      suit: PropTypes.string.isRequired,
-      value: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired
+      color: PropTypes.string.isRequired,
+      point: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
+      kind: PropTypes.string.isRequired
     })).isRequired,
     isValid: PropTypes.bool,
     playType: PropTypes.string,
