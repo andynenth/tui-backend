@@ -283,6 +283,7 @@ class SocketManager:
         """
         Enhanced broadcast with debugging specifically for lobby
         """
+        print(f"DEBUG_WS: Entering broadcast method for room {room_id}, event {event}")
         # Add extra debugging for lobby
         if room_id == "lobby":
             print(f"🔔 LOBBY_BROADCAST: Attempting to broadcast '{event}' to lobby")
@@ -291,7 +292,7 @@ class SocketManager:
         async with self.lock:
             # Check if we have connections for this room
             if room_id not in self.room_connections or not self.room_connections[room_id]:
-                print(f"DEBUG_WS: No connections for room {room_id}. Cannot broadcast event '{event}'.")
+                print(f"DEBUG_WS: No connections for room {room_id}. Cannot broadcast event '{event}'. Returning.")
                 if room_id == "lobby":
                     print(f"🔔 LOBBY_BROADCAST: No lobby connections found!")
                     print(f"🔔 LOBBY_BROADCAST: Available rooms: {list(self.room_connections.keys())}")
@@ -299,7 +300,7 @@ class SocketManager:
             
             # Check if broadcast queue exists
             if room_id not in self.broadcast_queues:
-                print(f"DEBUG_WS: No broadcast queue for room {room_id}. This should not happen!")
+                print(f"DEBUG_WS: No broadcast queue for room {room_id}. This should not happen! Returning.")
                 if room_id == "lobby":
                     print(f"🔔 LOBBY_BROADCAST: No lobby broadcast queue!")
                     print(f"🔔 LOBBY_BROADCAST: Available queues: {list(self.broadcast_queues.keys())}")
@@ -307,7 +308,7 @@ class SocketManager:
             
             # Validate message
             if not isinstance(data, dict):
-                print(f"DEBUG_WS: Invalid data type for broadcast. Expected dict, got {type(data)}")
+                print(f"DEBUG_WS: Invalid data type for broadcast. Expected dict, got {type(data)}. Returning.")
                 return
             
             # Show lobby connection count
@@ -325,17 +326,54 @@ class SocketManager:
         
         # Add message to queue
         try:
+            print(f"DEBUG_WS: Attempting to queue event '{event}' for room {room_id} with data: {enhanced_data}")
+            
+            # 🔧 SERIALIZATION_DEBUG: Test JSON serialization BEFORE queuing
+            print(f"🔧 SERIALIZATION_DEBUG: Testing JSON serialization for event '{event}'")
+            try:
+                import json
+                test_data = {
+                    "event": event, 
+                    "data": enhanced_data
+                }
+                json_str = json.dumps(test_data)
+                print(f"🔧 SERIALIZATION_DEBUG: JSON serialization test PASSED for event '{event}' - {len(json_str)} chars")
+            except Exception as json_error:
+                print(f"❌ SERIALIZATION_DEBUG: JSON serialization test FAILED for event '{event}': {json_error}")
+                print(f"❌ SERIALIZATION_DEBUG: enhanced_data keys: {list(enhanced_data.keys()) if isinstance(enhanced_data, dict) else type(enhanced_data)}")
+                
+                # Try to identify which field is problematic
+                if isinstance(enhanced_data, dict):
+                    for key, value in enhanced_data.items():
+                        try:
+                            json.dumps(value)
+                        except Exception as field_error:
+                            print(f"❌ SERIALIZATION_DEBUG: Non-serializable field '{key}': {type(value)} - {field_error}")
+                            # Try to show the problematic object structure
+                            if hasattr(value, '__dict__'):
+                                print(f"❌ SERIALIZATION_DEBUG: Object structure for '{key}': {vars(value)}")
+                
+                # Don't queue if serialization fails
+                raise json_error
+            
+            print(f"🔧 SERIALIZATION_DEBUG: About to call queue.put() for event '{event}'")
+            
             await self.broadcast_queues[room_id].put({
                 "event": event, 
                 "data": enhanced_data
             })
+            
+            print(f"✅ SERIALIZATION_DEBUG: queue.put() completed successfully for event '{event}'")
             print(f"DEBUG_WS: Message for event '{event}' added to queue for room {room_id}.")
             
             if room_id == "lobby":
                 print(f"🔔 LOBBY_BROADCAST: Message added to lobby queue. New queue size: {self.broadcast_queues[room_id].qsize()}")
                 
         except Exception as e:
-            print(f"DEBUG_WS: Failed to queue message for room {room_id}: {e}")
+            print(f"❌ SERIALIZATION_DEBUG: Exception during queue operation for event '{event}': {e}")
+            print(f"DEBUG_WS: FAILED to queue message for room {room_id}: {e}")
+            import traceback
+            traceback.print_exc()
             if room_id == "lobby":
                 print(f"🔔 LOBBY_BROADCAST: Failed to add message to lobby queue: {e}")
         

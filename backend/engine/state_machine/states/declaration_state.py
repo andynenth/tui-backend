@@ -126,7 +126,7 @@ class DeclarationState(GameState):
         player_name = action.player_name
         declared_value = action.payload['value']
         
-        # 🚀 ENTERPRISE: Use automatic broadcasting system for declaration updates
+        # Calculate updated declaration state
         current_declarations = self.phase_data.get('declarations', {})
         updated_declarations = current_declarations.copy()
         updated_declarations[player_name] = declared_value
@@ -138,42 +138,65 @@ class DeclarationState(GameState):
         next_index = current_index + 1
         next_declarer = self._get_next_declarer(next_index)
         
-        await self.update_phase_data({
-            'declarations': updated_declarations,
-            'declaration_total': current_total + declared_value,
-            'current_declarer_index': next_index,
-            'current_declarer': next_declarer
-        }, f"Player {player_name} declared {declared_value}")
-        
-        # FIX: Also immediately update game object for real-time access
-        self.state_machine.game.player_declarations[player_name] = declared_value
-        
-        # Update the player object's declared attribute
-        for player in self.state_machine.game.players:
-            if getattr(player, 'name', str(player)) == player_name:
-                player.declared = declared_value
-                break
-        
-        self.logger.info(f"Player {player_name} declared {declared_value}")
-        
-        # Check if all declarations are complete and auto-transition
+        # Check if all declarations will be complete after this one
         order = self.phase_data['declaration_order']
-        declarations = self.phase_data['declarations']
+        will_be_complete = len(updated_declarations) >= len(order)
         
-        if len(declarations) >= len(order):
-            print(f"🎯 DECLARATION_DEBUG: All declarations complete - auto-transitioning to Turn phase")
-            self.logger.info(f"🎯 All declarations complete - transitioning to Turn phase")
+        if will_be_complete:
+            # 🚀 ATOMIC FIX: Final declaration - update local state only, no broadcast
+            print(f"🎯 DECLARATION_DEBUG: Final declaration by {player_name} - atomic transition to Turn phase")
+            self.logger.info(f"🎯 Final declaration by {player_name} - atomic transition to Turn phase")
+
+            # Update remaining phase data locally (no broadcast)
+            self.phase_data.update({
+                'declarations': updated_declarations,
+                'declaration_total': current_total + declared_value
+            })
+            # Explicitly remove declaration-specific fields that are no longer relevant
+            # for the next phase's broadcast.
+            self.phase_data.pop('current_declarer_index', None)
+            self.phase_data.pop('current_declarer', None)
+
+            # Update game object for real-time access
+            self.state_machine.game.player_declarations[player_name] = declared_value
+            
+            # Update the player object's declared attribute
+            for player in self.state_machine.game.players:
+                if getattr(player, 'name', str(player)) == player_name:
+                    player.declared = declared_value
+                    break
+            
+            # Single atomic transition with all final data included
             await self.state_machine._immediate_transition_to(GamePhase.TURN, 
-                                                             "All player declarations complete")
+                                                             f"All player declarations complete - final: {player_name} declared {declared_value}")
         else:
+            # 🚀 ENTERPRISE: Non-final declaration - complete the normal update
+            await self.update_phase_data({
+                'declarations': updated_declarations,
+                'declaration_total': current_total + declared_value,
+                'current_declarer_index': next_index,
+                'current_declarer': next_declarer
+            }, f"Player {player_name} declared {declared_value}")
+            
+            # Update game object for real-time access
+            self.state_machine.game.player_declarations[player_name] = declared_value
+            
+            # Update the player object's declared attribute
+            for player in self.state_machine.game.players:
+                if getattr(player, 'name', str(player)) == player_name:
+                    player.declared = declared_value
+                    break
+            
             # Trigger bot manager for next declarer after this player's declaration
             await self._trigger_bot_after_declaration(player_name)
+        
+        self.logger.info(f"Player {player_name} declared {declared_value}")
         
         return {
             'status': 'declaration_recorded',
             'player': player_name,
             'value': declared_value,
-            'total': self.phase_data['declaration_total']
+            'total': current_total + declared_value
         }
     
     def _get_current_declarer(self) -> Optional[str]:

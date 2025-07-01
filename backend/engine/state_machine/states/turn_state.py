@@ -81,20 +81,38 @@ class TurnState(GameState):
     
     async def _setup_phase(self) -> None:
         """Initialize turn phase"""
-        game = self.state_machine.game
+        print(f"🔧 TURN_STATE_DEBUG: _setup_phase() called")
         
-        # Set initial turn starter (should be the round starter)
-        self.current_turn_starter = getattr(game, 'round_starter', None) or getattr(game, 'current_player', None)
-        if not self.current_turn_starter:
-            # Fallback to first player (ensure it's a string)
-            if hasattr(game, 'players') and game.players:
-                first_player = game.players[0]
-                self.current_turn_starter = getattr(first_player, 'name', str(first_player))
-            else:
-                self.current_turn_starter = None
-        
-        self.logger.info(f"🎯 Turn phase starting - {self.current_turn_starter} starts first turn")
-        await self._start_new_turn()
+        try:
+            game = self.state_machine.game
+            print(f"🔧 TURN_STATE_DEBUG: Got game object: {game}")
+            
+            # Set initial turn starter (should be the round starter)
+            self.current_turn_starter = getattr(game, 'round_starter', None) or getattr(game, 'current_player', None)
+            print(f"🔧 TURN_STATE_DEBUG: Initial turn starter from game: {self.current_turn_starter}")
+            
+            if not self.current_turn_starter:
+                # Fallback to first player (ensure it's a string)
+                if hasattr(game, 'players') and game.players:
+                    first_player = game.players[0]
+                    self.current_turn_starter = getattr(first_player, 'name', str(first_player))
+                    print(f"🔧 TURN_STATE_DEBUG: Using first player as starter: {self.current_turn_starter}")
+                else:
+                    self.current_turn_starter = None
+                    print(f"🔧 TURN_STATE_DEBUG: No players found, starter is None")
+            
+            print(f"🔧 TURN_STATE_DEBUG: Final turn starter: {self.current_turn_starter}")
+            self.logger.info(f"🎯 Turn phase starting - {self.current_turn_starter} starts first turn")
+            
+            print(f"🔧 TURN_STATE_DEBUG: About to call _start_new_turn()")
+            await self._start_new_turn()
+            print(f"🔧 TURN_STATE_DEBUG: _start_new_turn() completed successfully")
+            
+        except Exception as e:
+            print(f"❌ TURN_STATE_DEBUG: Exception in _setup_phase: {e}")
+            import traceback
+            traceback.print_exc()
+            raise
     
     async def _cleanup_phase(self) -> None:
         """Finalize turn phase results before transition"""
@@ -215,23 +233,45 @@ class TurnState(GameState):
         self.winner = None
         self._turn_resolution_cache = None  # Clear cache for new turn
         
-        # 🤖 CRITICAL: Notify bot manager FIRST before any state updates to ensure bot actions are queued immediately
-        await self._notify_bot_manager_new_turn(self.current_turn_starter)
+        # 🤖 CRITICAL: Notify bot manager with fire-and-forget to prevent async deadlock
+        print(f"🔧 NEW_TURN_DEBUG: About to notify bot manager for {self.current_turn_starter}")
+        try:
+            # 🔧 DEADLOCK_FIX: Use fire-and-forget to prevent circular async dependency
+            bot_notification_task = asyncio.create_task(
+                self._notify_bot_manager_new_turn(self.current_turn_starter)
+            )
+            # Don't await - let it run in background to prevent deadlock
+            print(f"🔧 NEW_TURN_DEBUG: Bot manager notification task created (fire-and-forget)")
+            print(f"🔧 NEW_TURN_DEBUG: Bot manager notification completed (non-blocking)")
+        except Exception as e:
+            print(f"❌ NEW_TURN_DEBUG: Bot manager notification task creation failed: {e}")
+            import traceback
+            traceback.print_exc()
         
         # 🚀 ENTERPRISE: Use automatic broadcasting system after bot notification
+        print(f"🔧 NEW_TURN_DEBUG: Getting current_turn_number from game.turn_number")
         current_turn_number = game.turn_number
+        print(f"🔧 NEW_TURN_DEBUG: Got current_turn_number: {current_turn_number}")
         
         print(f"🔢 TURN_NUMBER_DEBUG: Backend game.turn_number = {current_turn_number}")
+        print(f"🔧 NEW_TURN_DEBUG: About to call update_phase_data")
         
-        await self.update_phase_data({
-            'current_turn_starter': self.current_turn_starter,
-            'current_player': self.turn_order[0] if self.turn_order else None,
-            'turn_order': self.turn_order.copy(),
-            'required_piece_count': self.required_piece_count,
-            'turn_plays': {},
-            'turn_complete': False,
-            'current_turn_number': current_turn_number
-        }, f"New turn {current_turn_number} started with starter {self.current_turn_starter}")
+        try:
+            await self.update_phase_data({
+                'current_turn_starter': self.current_turn_starter,
+                'current_player': self.turn_order[0] if self.turn_order else None,
+                'turn_order': self.turn_order.copy(),
+                'required_piece_count': self.required_piece_count,
+                'turn_plays': {},
+                'turn_complete': False,
+                'current_turn_number': current_turn_number
+            }, f"New turn {current_turn_number} started with starter {self.current_turn_starter}")
+            print(f"🔧 NEW_TURN_DEBUG: update_phase_data completed successfully")
+        except Exception as e:
+            print(f"❌ NEW_TURN_DEBUG: update_phase_data failed: {e}")
+            import traceback
+            traceback.print_exc()
+            raise
         
         self.logger.info(f"🎯 New turn started - order: {self.turn_order}")
     
