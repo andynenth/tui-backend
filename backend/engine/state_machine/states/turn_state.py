@@ -285,43 +285,63 @@ class TurnState(GameState):
         """Validate a play pieces action"""
         payload = action.payload
         
+        print(f"🔧 VALIDATION_DEBUG: Validating bot {action.player_name} action")
+        print(f"🔧 VALIDATION_DEBUG: Current player: {self._get_current_player()}")
+        print(f"🔧 VALIDATION_DEBUG: Turn plays: {list(self.turn_plays.keys())}")
+        print(f"🔧 VALIDATION_DEBUG: Payload: {payload}")
+        print(f"🔧 VALIDATION_DEBUG: Required piece count: {self.required_piece_count}")
+        
         # Check if it's this player's turn
         current_player = self._get_current_player()
         if action.player_name != current_player:
+            print(f"❌ VALIDATION_DEBUG: Turn validation FAILED - {action.player_name} != {current_player}")
             self.logger.warning(f"Not {action.player_name}'s turn - expected {current_player}")
             return False
+        print(f"✅ VALIDATION_DEBUG: Turn validation PASSED - {action.player_name} == {current_player}")
         
         # Check if player already played this turn
         if action.player_name in self.turn_plays:
+            print(f"❌ VALIDATION_DEBUG: Already played validation FAILED - {action.player_name} already in turn_plays")
             self.logger.warning(f"{action.player_name} already played this turn")
             return False
+        print(f"✅ VALIDATION_DEBUG: Already played validation PASSED - {action.player_name} not in turn_plays")
         
         # Validate payload structure
         if 'pieces' not in payload:
+            print(f"❌ VALIDATION_DEBUG: Payload validation FAILED - missing 'pieces': {payload}")
             self.logger.warning(f"Play missing 'pieces': {payload}")
             return False
+        print(f"✅ VALIDATION_DEBUG: Payload validation PASSED - 'pieces' found in payload")
         
         pieces = payload['pieces']
         if not isinstance(pieces, list) or not pieces:
+            print(f"❌ VALIDATION_DEBUG: Pieces format validation FAILED - {pieces}")
             self.logger.warning(f"Invalid pieces format: {pieces}")
             return False
+        print(f"✅ VALIDATION_DEBUG: Pieces format validation PASSED - {len(pieces)} pieces")
         
         # Validate piece count
         piece_count = len(pieces)
+        print(f"🔧 VALIDATION_DEBUG: Piece count: {piece_count}, Required: {self.required_piece_count}")
         
         if self.required_piece_count is None:
             # This is the starter - they set the count (1-6 pieces)
             if not (1 <= piece_count <= 6):
+                print(f"❌ VALIDATION_DEBUG: Starter piece count validation FAILED - {piece_count} not in 1-6 range")
                 self.logger.warning(f"Starter must play 1-6 pieces, got {piece_count}")
                 return False
+            print(f"✅ VALIDATION_DEBUG: Starter piece count validation PASSED - {piece_count} in 1-6 range")
         else:
             # Other players must match the required count
             if piece_count != self.required_piece_count:
+                print(f"❌ VALIDATION_DEBUG: Required piece count validation FAILED - {piece_count} != {self.required_piece_count}")
                 self.logger.warning(f"Must play {self.required_piece_count} pieces, got {piece_count}")
                 return False
+            print(f"✅ VALIDATION_DEBUG: Required piece count validation PASSED - {piece_count} == {self.required_piece_count}")
         
         # TODO: Add piece validity checks (valid combinations, player has pieces, etc.)
         # For now, assume pieces are valid
+        print(f"✅ VALIDATION_DEBUG: All validation checks PASSED for {action.player_name}")
         
         return True
     
@@ -395,8 +415,15 @@ class TurnState(GameState):
         # 🚀 ENTERPRISE: Use centralized custom event broadcasting
         await self._broadcast_play_event_enterprise(action.player_name, pieces, piece_count)
         
-        # Notify bot manager about the play to trigger next bot
-        await self._notify_bot_manager_play(action.player_name)
+        # 🔧 DEADLOCK_FIX: Notify bot manager about the play with fire-and-forget to prevent blocking
+        try:
+            bot_play_notification_task = asyncio.create_task(
+                self._notify_bot_manager_play(action.player_name)
+            )
+            # Don't await - let it run in background to prevent EventProcessor deadlock
+            print(f"🔧 PLAY_NOTIFY_DEBUG: Bot manager play notification task created (fire-and-forget)")
+        except Exception as e:
+            print(f"❌ PLAY_NOTIFY_DEBUG: Bot manager play notification task creation failed: {e}")
         
         return {
             'status': 'play_accepted',

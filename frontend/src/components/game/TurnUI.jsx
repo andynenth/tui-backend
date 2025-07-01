@@ -57,7 +57,7 @@ export function TurnUI({
   
   const hasActiveTurn = currentTurnPlays.length > 0;
   const isFirstPlayer = canPlayAnyCount;
-  const isStarterValidationRequired = isFirstPlayer && !hasActiveTurn;
+  const isStarterValidationRequired = isFirstPlayer && !hasActiveTurn && isMyTurn;
   const selectedCards = selectedIndices.map(index => myHand[index]);
   
   // Calculate selected play value locally using same logic as GamePiece

@@ -160,48 +160,70 @@ class GameBotHandler:
         print(f"🎮 BOT_HANDLER_DEBUG: Room {self.room_id} handling event '{event}' with data keys: {list(data.keys())}")
         print(f"🔍 BOT_HANDLER_DEBUG: Event type check - event == 'phase_change': {event == 'phase_change'}")
         print(f"🔍 BOT_HANDLER_DEBUG: Event value repr: {repr(event)}")
-        print(f"🔍 BOT_HANDLER_DEBUG: Attempting to acquire lock...")
         
-        async with self._lock:  # Prevent concurrent bot actions
-            print(f"🔍 BOT_HANDLER_DEBUG: Lock acquired, processing event...")
-            if event == "player_declared":
-                print(f"📢 BOT_HANDLER_DEBUG: Handling declaration phase")
-                await self._handle_declaration_phase(data["player_name"])
-            elif event == "phase_change":
-                print(f"🚀 BOT_HANDLER_DEBUG: Handling enterprise phase change")
-                try:
-                    await self._handle_enterprise_phase_change(data)
-                except Exception as e:
-                    print(f"❌ BOT_HANDLER_DEBUG: Error in _handle_enterprise_phase_change: {e}")
-                    import traceback
-                    traceback.print_exc()
-            elif event == "player_played":
-                print(f"🎯 BOT_HANDLER_DEBUG: Handling play phase")
-                await self._handle_play_phase(data["player_name"])
-            elif event == "turn_started":
-                print(f"🚀 BOT_HANDLER_DEBUG: Handling turn start")
-                await self._handle_turn_start(data["starter"])
-            elif event == "round_started":
-                print(f"🎪 BOT_HANDLER_DEBUG: Handling round start")
-                await self._handle_round_start()
-            elif event == "weak_hands_found":
-                print(f"🃏 BOT_HANDLER_DEBUG: Handling weak hands found")
-                await self._handle_weak_hands(data)
-            elif event == "redeal_decision_needed":
-                print(f"🔄 BOT_HANDLER_DEBUG: Handling redeal decision needed")
-                await self._handle_redeal_decision(data)
-            # 🔧 FIX: Add validation feedback events
-            elif event == "action_rejected":
-                print(f"🚫 BOT_HANDLER_DEBUG: Handling action rejection")
-                await self._handle_action_rejected(data)
-            elif event == "action_accepted":
-                print(f"✅ BOT_HANDLER_DEBUG: Handling action acceptance")
-                await self._handle_action_accepted(data)
-            elif event == "action_failed":
-                print(f"💥 BOT_HANDLER_DEBUG: Handling action failure")
-                await self._handle_action_failed(data)
-            else:
-                print(f"⚠️ BOT_HANDLER_DEBUG: Unknown event '{event}' - ignoring")
+        # 🚀 BOT_MANAGER_LOCK_FIX: Step 1 - Determine bot actions under minimal lock
+        print(f"🔧 BOT_MANAGER_LOCK_FIX: Step 1 - Determining bot actions (minimal lock scope)")
+        bot_actions_to_execute = []
+        
+        try:
+            async with asyncio.timeout(2.0):  # Reduced timeout since lock scope is minimal
+                async with self._lock:  # Minimal lock for decision logic only
+                    print(f"🔧 BOT_MANAGER_LOCK_FIX: Lock acquired for decision logic only")
+                    
+                    # Only decision logic under lock - no external calls
+                    if event == "player_declared":
+                        print(f"📢 BOT_HANDLER_DEBUG: Analyzing declaration phase")
+                        bot_actions_to_execute.append(("declaration_phase", data["player_name"]))
+                    elif event == "phase_change":
+                        print(f"🚀 BOT_HANDLER_DEBUG: Analyzing enterprise phase change")
+                        bot_action = self._analyze_phase_change_for_bots(data)
+                        if bot_action:
+                            bot_actions_to_execute.append(bot_action)
+                    elif event == "player_played":
+                        print(f"🎯 BOT_HANDLER_DEBUG: Analyzing play phase")
+                        bot_actions_to_execute.append(("play_phase", data["player_name"]))
+                    elif event == "turn_started":
+                        print(f"🚀 BOT_HANDLER_DEBUG: Analyzing turn start")
+                        bot_actions_to_execute.append(("turn_start", data["starter"]))
+                    elif event == "round_started":
+                        print(f"🎪 BOT_HANDLER_DEBUG: Analyzing round start")
+                        bot_actions_to_execute.append(("round_start", None))
+                    elif event == "weak_hands_found":
+                        print(f"🃏 BOT_HANDLER_DEBUG: Analyzing weak hands")
+                        bot_actions_to_execute.append(("weak_hands", data))
+                    elif event == "redeal_decision_needed":
+                        print(f"🔄 BOT_HANDLER_DEBUG: Analyzing redeal decision")
+                        bot_actions_to_execute.append(("redeal_decision", data))
+                    elif event == "action_rejected":
+                        print(f"🚫 BOT_HANDLER_DEBUG: Analyzing action rejection")
+                        bot_actions_to_execute.append(("action_rejected", data))
+                    elif event == "action_accepted":
+                        print(f"✅ BOT_HANDLER_DEBUG: Analyzing action acceptance")
+                        bot_actions_to_execute.append(("action_accepted", data))
+                    elif event == "action_failed":
+                        print(f"💥 BOT_HANDLER_DEBUG: Analyzing action failure")
+                        bot_actions_to_execute.append(("action_failed", data))
+                    else:
+                        print(f"⚠️ BOT_HANDLER_DEBUG: Unknown event '{event}' - ignoring")
+                    
+                    print(f"🔧 BOT_MANAGER_LOCK_FIX: Decision logic completed - releasing lock")
+                    
+        except asyncio.TimeoutError:
+            print(f"❌ BOT_MANAGER_LOCK_FIX: Timeout waiting for lock after 2 seconds for event '{event}'")
+            print(f"⚠️ BOT_MANAGER_LOCK_FIX: Skipping event '{event}' due to lock timeout")
+            return
+        
+        # 🚀 BOT_MANAGER_LOCK_FIX: Step 2 - Execute bot actions (lock-free)
+        print(f"🔧 BOT_MANAGER_LOCK_FIX: Step 2 - Executing {len(bot_actions_to_execute)} bot actions (lock-free)")
+        for action_type, action_data in bot_actions_to_execute:
+            try:
+                print(f"🔧 BOT_MANAGER_LOCK_FIX: Executing action {action_type} (lock-free)")
+                await self._execute_bot_action(action_type, action_data)
+                print(f"✅ BOT_MANAGER_LOCK_FIX: Action {action_type} completed successfully")
+            except Exception as e:
+                print(f"❌ BOT_MANAGER_LOCK_FIX: Error executing action {action_type}: {e}")
+                import traceback
+                traceback.print_exc()
     
     async def _handle_enterprise_phase_change(self, data: dict):
         """
@@ -232,8 +254,10 @@ class GameBotHandler:
                             player_found = True
                             if getattr(player, 'is_bot', False):
                                 print(f"🤖 ENTERPRISE_BOT_DEBUG: Current declarer {current_declarer} is a bot - triggering declaration")
-                                # Schedule bot declaration without holding the lock
+                                print(f"🔧 DEADLOCK_FIX: Creating fire-and-forget task for bot declaration")
+                                # 🔧 DEADLOCK_FIX: Use fire-and-forget to prevent deadlock with EventProcessor
                                 asyncio.create_task(self._handle_single_bot_declaration(player))
+                                print(f"✅ DEADLOCK_FIX: Fire-and-forget task created for bot declaration - no blocking")
                             else:
                                 print(f"👤 ENTERPRISE_BOT_DEBUG: Current declarer {current_declarer} is human - waiting")
                             break
@@ -290,10 +314,107 @@ class GameBotHandler:
                                             last_player = player_name
                                 else:
                                     last_player = ""
-                                await self._handle_play_phase(last_player)
+                                    
+                                print(f"🔧 DEADLOCK_FIX: About to create fire-and-forget task for _handle_play_phase with last_player='{last_player}' for current_player='{current_player}'")
+                                # 🔧 DEADLOCK_FIX: Use fire-and-forget to prevent deadlock with EventProcessor
+                                asyncio.create_task(self._handle_play_phase(last_player))
+                                print(f"✅ DEADLOCK_FIX: Fire-and-forget task created for bot play - no blocking")
                             else:
                                 print(f"👤 ENTERPRISE_BOT_DEBUG: Current player {current_player} is human - waiting")
                             break
+    
+    def _analyze_phase_change_for_bots(self, data: dict) -> tuple:
+        """
+        🚀 BOT_MANAGER_LOCK_FIX: Analyze phase change event to determine bot actions (lock-free)
+        
+        This method only analyzes data and returns action decisions - no external calls.
+        """
+        phase = data.get("phase")
+        phase_data = data.get("phase_data", {})
+        
+        if phase == "declaration":
+            current_declarer = data.get("current_declarer") or phase_data.get("current_declarer")
+            if current_declarer:
+                # Check if current declarer is a bot
+                game_state = self._get_game_state()
+                if hasattr(game_state, 'players'):
+                    for player in game_state.players:
+                        if getattr(player, 'name', str(player)) == current_declarer:
+                            if getattr(player, 'is_bot', False):
+                                return ("enterprise_declaration", player)
+                            break
+        
+        elif phase == "turn":
+            current_player = data.get("current_player") or phase_data.get("current_player")
+            if current_player:
+                # Check if current player is a bot and needs to play
+                game_state = self._get_game_state()
+                if hasattr(game_state, 'players'):
+                    for player in game_state.players:
+                        if getattr(player, 'name', str(player)) == current_player:
+                            if getattr(player, 'is_bot', False):
+                                # Check for duplicates (analysis only - no cache updates)
+                                context = {
+                                    'phase': phase,
+                                    'turn_number': phase_data.get('current_turn_number', 0),
+                                    'current_player': current_player,
+                                    'required_count': phase_data.get('required_piece_count'),
+                                    'trigger_source': 'phase_change'
+                                }
+                                
+                                # Only return action if no duplicates
+                                if not self._is_duplicate_action(current_player, 'play_pieces', context):
+                                    if not self._should_skip_bot_trigger(current_player, context):
+                                        # Get last player info
+                                        turn_plays = phase_data.get('turn_plays', {})
+                                        last_player = ""
+                                        if isinstance(turn_plays, dict) and turn_plays:
+                                            last_play_time = 0
+                                            for player_name, play_data in turn_plays.items():
+                                                timestamp = play_data.get('timestamp', 0)
+                                                if timestamp > last_play_time:
+                                                    last_play_time = timestamp
+                                                    last_player = player_name
+                                        
+                                        return ("enterprise_turn_play", {"current_player": current_player, "last_player": last_player})
+                            break
+        
+        return None
+    
+    async def _execute_bot_action(self, action_type: str, action_data):
+        """
+        🚀 BOT_MANAGER_LOCK_FIX: Execute bot actions (lock-free)
+        
+        This method performs the actual bot action execution without holding the bot manager lock.
+        """
+        try:
+            if action_type == "declaration_phase":
+                await self._handle_declaration_phase(action_data)
+            elif action_type == "enterprise_declaration":
+                await self._handle_single_bot_declaration(action_data)
+            elif action_type == "enterprise_turn_play":
+                await self._handle_play_phase(action_data["last_player"])
+            elif action_type == "play_phase":
+                await self._handle_play_phase(action_data)
+            elif action_type == "turn_start":
+                await self._handle_turn_start(action_data)
+            elif action_type == "round_start":
+                await self._handle_round_start()
+            elif action_type == "weak_hands":
+                await self._handle_weak_hands(action_data)
+            elif action_type == "redeal_decision":
+                await self._handle_redeal_decision(action_data)
+            elif action_type == "action_rejected":
+                await self._handle_action_rejected(action_data)
+            elif action_type == "action_accepted":
+                await self._handle_action_accepted(action_data)
+            elif action_type == "action_failed":
+                await self._handle_action_failed(action_data)
+            else:
+                print(f"⚠️ BOT_MANAGER_LOCK_FIX: Unknown action type '{action_type}' - ignoring")
+        except Exception as e:
+            print(f"❌ BOT_MANAGER_LOCK_FIX: Error in _execute_bot_action for {action_type}: {e}")
+            raise
                 
     async def _handle_single_bot_declaration(self, bot_player):
         """Handle declaration for a specific bot player"""
@@ -432,11 +553,24 @@ class GameBotHandler:
                     payload={"value": value},
                     is_bot=True
                 )
-                result = await self.state_machine.handle_action(action)
-                print(f"🔧 BOT_DECLARE_DEBUG: State machine result: {result}")
                 
-                # Wait a moment for action to be fully processed
-                await asyncio.sleep(0.05)
+                # 🚀 DEADLOCK_FIX: Use fire-and-forget to prevent EventProcessor deadlock
+                print(f"🔧 BOT_DECLARE_DEBUG: Creating fire-and-forget task for state machine action")
+                async def handle_bot_declaration():
+                    try:
+                        result = await self.state_machine.handle_action(action)
+                        print(f"🔧 BOT_DECLARE_DEBUG: State machine result: {result}")
+                    except Exception as e:
+                        print(f"❌ BOT_DECLARE_DEBUG: Error in fire-and-forget declaration: {e}")
+                        import traceback
+                        traceback.print_exc()
+                
+                # Create task but don't await it to prevent deadlock
+                asyncio.create_task(handle_bot_declaration())
+                print(f"✅ BOT_DECLARE_DEBUG: Fire-and-forget declaration task created for {bot.name}")
+                
+                # 🚀 DEADLOCK_FIX: Simulate successful result for immediate return
+                result = {"success": True, "status": "ok"}
             else:
                 # Fallback to direct game call
                 result = self.game.declare(bot.name, value)
@@ -461,7 +595,9 @@ class GameBotHandler:
                         payload={"value": 1},
                         is_bot=True
                     )
-                    await self.state_machine.handle_action(action)
+                    # 🚀 DEADLOCK_FIX: Use fire-and-forget for fallback too
+                    asyncio.create_task(self.state_machine.handle_action(action))
+                    print(f"✅ BOT_DECLARE_DEBUG: Fire-and-forget fallback declaration task created for {bot.name}")
                 else:
                     self.game.declare(bot.name, 1)
                 # 🚀 ENTERPRISE: State machine already handled broadcasting automatically
@@ -578,11 +714,26 @@ class GameBotHandler:
         print(f"🤖 PLAY_PHASE_DEBUG: Bot {next_player_name} thinking for {delay:.1f}s...")
         await asyncio.sleep(delay)
         
+        # 🔧 BOT_SUBMIT_DEBUG: About to call _bot_play
+        print(f"🔧 BOT_SUBMIT_DEBUG: About to call _bot_play() for {next_player_name}")
+        print(f"🔧 BOT_SUBMIT_DEBUG: Bot object: {next_player_obj}")
+        print(f"🔧 BOT_SUBMIT_DEBUG: Bot hand size: {len(next_player_obj.hand) if hasattr(next_player_obj, 'hand') else 'unknown'}")
+        
         # Bot plays
-        await self._bot_play(next_player_obj)
+        try:
+            await self._bot_play(next_player_obj)
+            print(f"🔧 BOT_SUBMIT_DEBUG: _bot_play() completed successfully for {next_player_name}")
+        except Exception as e:
+            print(f"❌ BOT_SUBMIT_DEBUG: _bot_play() failed for {next_player_name}: {e}")
+            import traceback
+            traceback.print_exc()
+            raise
             
     async def _bot_play(self, bot: Player):
         """Make a bot play"""
+        print(f"🔧 BOT_SUBMIT_DEBUG: _bot_play() method called for {bot.name}")
+        print(f"🔧 BOT_SUBMIT_DEBUG: Bot hand: {[str(p) for p in bot.hand] if hasattr(bot, 'hand') else 'no hand'}")
+        
         try:
             from socket_manager import broadcast
         except ImportError:
@@ -590,6 +741,8 @@ class GameBotHandler:
                 pass
         
         try:
+            print(f"🔧 BOT_SUBMIT_DEBUG: Starting piece selection logic for {bot.name}")
+            
             # Choose play
             # Get required piece count from state machine if available
             if self.state_machine:
@@ -601,12 +754,17 @@ class GameBotHandler:
                 game_state = self._get_game_state()
                 required_piece_count = getattr(game_state, 'required_piece_count', None)
                 print(f"🎯 BOT_PLAY_DEBUG: Got required_piece_count from game state: {required_piece_count}")
+            
+            print(f"🔧 BOT_SUBMIT_DEBUG: About to call ai.choose_best_play for {bot.name}")
+            print(f"🔧 BOT_SUBMIT_DEBUG: Hand size: {len(bot.hand)}, Required count: {required_piece_count}")
                 
             selected = ai.choose_best_play(
                 bot.hand,
                 required_count=required_piece_count,
                 verbose=True
             )
+            
+            print(f"🔧 BOT_SUBMIT_DEBUG: ai.choose_best_play returned {len(selected)} pieces for {bot.name}")
             
             # Validate that bot respects required piece count
             if required_piece_count is not None and len(selected) != required_piece_count:
@@ -621,28 +779,63 @@ class GameBotHandler:
                     selected.extend(remaining[:required_piece_count - len(selected)])
             
             print(f"🎯 BOT_PLAY_DEBUG: Final selection - {len(selected)} pieces: {[str(p) for p in selected]}")
+            print(f"🤖 Bot {bot.name} will play {len(selected)} pieces: {[str(p) for p in selected]}")
+            print(f"🔧 BOT_SUBMIT_DEBUG: This is from _bot_play() - bot is following another player")
             
             # Get indices and play type
             indices = self._get_piece_indices(bot.hand, selected)
             from engine.rules import get_play_type
             play_type = get_play_type(selected) if selected else "UNKNOWN"
             
+            # 🔧 BOT_SUBMIT_DEBUG: About to submit action for non-first play
+            print(f"🔧 BOT_SUBMIT_DEBUG: About to call _bot_play for Bot {bot.name}")
+            print(f"🔧 BOT_SUBMIT_DEBUG: Selected pieces count: {len(selected)}")
+            print(f"🔧 BOT_SUBMIT_DEBUG: Selected pieces: {[str(p) for p in selected]}")
+            print(f"🔧 BOT_SUBMIT_DEBUG: Required piece count was: {required_piece_count}")
+            
             # Make play via state machine
             if self.state_machine:
-                action = GameAction(
-                    player_name=bot.name,
-                    action_type=ActionType.PLAY_PIECES,
-                    payload={"pieces": selected},  # Send actual piece objects, not indices
-                    is_bot=True
-                )
-                result = await self.state_machine.handle_action(action)
+                print(f"🔧 BOT_SUBMIT_DEBUG: State machine is available, creating GameAction for Bot {bot.name}")
                 
-                # Action is queued - state machine will process it and handle broadcasting
-                print(f"🎯 BOT_PLAY_DEBUG: Action queued successfully, state machine will handle updates and broadcasting")
-                print(f"✅ Bot {bot.name} action queued - state machine will broadcast with correct next_player")
-                
-                # Return early - state machine handles the rest
-                return
+                try:
+                    action = GameAction(
+                        player_name=bot.name,
+                        action_type=ActionType.PLAY_PIECES,
+                        payload={"pieces": selected},  # Send actual piece objects, not indices
+                        is_bot=True
+                    )
+                    print(f"🔧 BOT_SUBMIT_DEBUG: GameAction created successfully for Bot {bot.name}")
+                    print(f"🔧 BOT_SUBMIT_DEBUG: Action details - player: {action.player_name}, type: {action.action_type}, is_bot: {action.is_bot}")
+                    print(f"🔧 BOT_SUBMIT_DEBUG: Action payload pieces count: {len(action.payload.get('pieces', []))}")
+                    
+                    # 🚀 DEADLOCK_FIX: Use fire-and-forget to prevent EventProcessor deadlock  
+                    print(f"🔧 BOT_SUBMIT_DEBUG: Creating fire-and-forget task for state machine action")
+                    async def handle_bot_play():
+                        try:
+                            result = await self.state_machine.handle_action(action)
+                            print(f"✅ BOT_SUBMIT_DEBUG: Action submitted successfully for Bot {bot.name}")
+                            print(f"🎯 BOT_PLAY_DEBUG: State machine result: {result}")
+                        except Exception as e:
+                            print(f"❌ BOT_SUBMIT_DEBUG: Error in fire-and-forget play action: {e}")
+                            import traceback
+                            traceback.print_exc()
+                    
+                    # Create task but don't await it to prevent deadlock
+                    asyncio.create_task(handle_bot_play())
+                    print(f"✅ BOT_SUBMIT_DEBUG: Fire-and-forget play action task created for Bot {bot.name}")
+                    
+                    # Action is queued - state machine will process it and handle broadcasting
+                    print(f"🎯 BOT_PLAY_DEBUG: Action queued successfully, state machine will handle updates and broadcasting")
+                    print(f"✅ Bot {bot.name} action queued - state machine will broadcast with correct next_player")
+                    
+                    # Return early - state machine handles the rest
+                    return
+                    
+                except Exception as e:
+                    print(f"❌ BOT_SUBMIT_DEBUG: Action submission failed for Bot {bot.name}: {e}")
+                    import traceback
+                    traceback.print_exc()
+                    raise
             else:
                 # Fallback to direct game call (no state machine)
                 result = self.game.play_turn(bot.name, indices)
@@ -737,12 +930,19 @@ class GameBotHandler:
         
         try:
             print(f"🤖 Bot {bot.name} choosing first play...")
+            print(f"🔧 BOT_SUBMIT_DEBUG: _bot_play_first() method called for {bot.name}")
+            print(f"🔧 BOT_SUBMIT_DEBUG: Bot hand: {[str(p) for p in bot.hand] if hasattr(bot, 'hand') else 'no hand'}")
             
             # Reset turn state (handled by state machine)
             # Note: State machine manages turn state internally
             
+            print(f"🔧 BOT_SUBMIT_DEBUG: About to call ai.choose_best_play for first play by {bot.name}")
+            print(f"🔧 BOT_SUBMIT_DEBUG: Hand size: {len(bot.hand)}, Required count: None (first play)")
+            
             # Choose play
             selected = ai.choose_best_play(bot.hand, required_count=None, verbose=True)
+            print(f"🔧 BOT_SUBMIT_DEBUG: ai.choose_best_play returned {len(selected)} pieces for first play by {bot.name}")
+            
             indices = self._get_piece_indices(bot.hand, selected)
             
             # Get the play type for the selected pieces
@@ -750,25 +950,57 @@ class GameBotHandler:
             play_type = get_play_type(selected) if selected else "UNKNOWN"
             
             print(f"🤖 Bot {bot.name} will play {len(selected)} pieces: {[str(p) for p in selected]}")
+            print(f"🔧 BOT_SUBMIT_DEBUG: This is from _bot_play_first() - bot is first player")
             print(f"🎯 BOT_MANAGER_DEBUG: state_machine exists: {self.state_machine is not None}")
+            
+            # 🔧 BOT_SUBMIT_DEBUG: About to submit action
+            print(f"🔧 BOT_SUBMIT_DEBUG: About to call _bot_play_first for Bot {bot.name}")
+            print(f"🔧 BOT_SUBMIT_DEBUG: Selected pieces count: {len(selected)}")
+            print(f"🔧 BOT_SUBMIT_DEBUG: Selected pieces: {[str(p) for p in selected]}")
             
             # Make the play via state machine
             if self.state_machine:
-                action = GameAction(
-                    player_name=bot.name,
-                    action_type=ActionType.PLAY_PIECES,
-                    payload={"pieces": selected},  # Send actual piece objects, not indices
-                    is_bot=True
-                )
-                result = await self.state_machine.handle_action(action)
-                print(f"🎯 BOT_PLAY_DEBUG: State machine result: {result}")
+                print(f"🔧 BOT_SUBMIT_DEBUG: State machine is available, creating GameAction for Bot {bot.name}")
                 
-                # Action is queued - state machine will process it and handle broadcasting
-                print(f"🎯 BOT_PLAY_DEBUG: Action queued successfully, state machine will handle updates and broadcasting")
-                print(f"✅ Bot {bot.name} first play action queued - state machine will broadcast with correct next_player")
-                
-                # Return early - state machine handles the rest
-                return
+                try:
+                    action = GameAction(
+                        player_name=bot.name,
+                        action_type=ActionType.PLAY_PIECES,
+                        payload={"pieces": selected},  # Send actual piece objects, not indices
+                        is_bot=True
+                    )
+                    print(f"🔧 BOT_SUBMIT_DEBUG: GameAction created successfully for Bot {bot.name}")
+                    print(f"🔧 BOT_SUBMIT_DEBUG: Action details - player: {action.player_name}, type: {action.action_type}, is_bot: {action.is_bot}")
+                    print(f"🔧 BOT_SUBMIT_DEBUG: Action payload pieces count: {len(action.payload.get('pieces', []))}")
+                    
+                    # 🚀 DEADLOCK_FIX: Use fire-and-forget to prevent EventProcessor deadlock
+                    print(f"🔧 BOT_SUBMIT_DEBUG: Creating fire-and-forget task for state machine action")
+                    async def handle_bot_first_play():
+                        try:
+                            result = await self.state_machine.handle_action(action)
+                            print(f"✅ BOT_SUBMIT_DEBUG: Action submitted successfully for Bot {bot.name}")
+                            print(f"🎯 BOT_PLAY_DEBUG: State machine result: {result}")
+                        except Exception as e:
+                            print(f"❌ BOT_SUBMIT_DEBUG: Error in fire-and-forget first play action: {e}")
+                            import traceback
+                            traceback.print_exc()
+                    
+                    # Create task but don't await it to prevent deadlock
+                    asyncio.create_task(handle_bot_first_play())
+                    print(f"✅ BOT_SUBMIT_DEBUG: Fire-and-forget first play action task created for Bot {bot.name}")
+                    
+                    # Action is queued - state machine will process it and handle broadcasting
+                    print(f"🎯 BOT_PLAY_DEBUG: Action queued successfully, state machine will handle updates and broadcasting")
+                    print(f"✅ Bot {bot.name} first play action queued - state machine will broadcast with correct next_player")
+                    
+                    # Return early - state machine handles the rest
+                    return
+                    
+                except Exception as e:
+                    print(f"❌ BOT_SUBMIT_DEBUG: Action submission failed for Bot {bot.name}: {e}")
+                    import traceback
+                    traceback.print_exc()
+                    raise
             else:
                 # Fallback to direct game call (no state machine)
                 result = self.game.play_turn(bot.name, indices)

@@ -95,29 +95,60 @@ class GameStateMachine:
         """
         🚀 EVENT-DRIVEN: Process action immediately - NO QUEUING, NO POLLING
         """
-        if not self.is_running:
-            return {"success": False, "error": "State machine not running"}
+        print(f"🔧 HANDLE_ACTION_DEBUG: handle_action called for {action.player_name} {action.action_type.value}")
         
-        # Convert action to event and process immediately
-        from .events.event_types import GameEvent
-        
-        event = GameEvent.from_action(action, immediate=True)
-        
-        # Process immediately - NO POLLING DELAYS
-        start_time = time.time()
-        result = await self.event_processor.handle_event(event)
-        processing_time = time.time() - start_time
-        
-        logger.info(f"🚀 EVENT-DRIVEN: Processed {action.action_type.value} from {action.player_name} in {processing_time:.3f}s")
-        
-        return {
-            "success": result.success,
-            "immediate": True,
-            "transition": result.triggers_transition,
-            "processing_time": processing_time,
-            "reason": result.reason,
-            "data": result.data
-        }
+        try:
+            print(f"🔧 HANDLE_ACTION_DEBUG: State machine running check: {self.is_running}")
+            if not self.is_running:
+                print(f"🔧 HANDLE_ACTION_DEBUG: State machine not running - returning error")
+                return {"success": False, "error": "State machine not running"}
+            
+            # Convert action to event and process immediately
+            print(f"🔧 HANDLE_ACTION_DEBUG: Converting action to event")
+            from .events.event_types import GameEvent
+            
+            print(f"🔧 HANDLE_ACTION_DEBUG: Creating GameEvent from action")
+            event = GameEvent.from_action(action, immediate=True)
+            print(f"🔧 HANDLE_ACTION_DEBUG: GameEvent created successfully")
+            
+            # Process immediately - NO POLLING DELAYS
+            print(f"🔧 HANDLE_ACTION_DEBUG: About to call event_processor.handle_event")
+            start_time = time.time()
+            result = await self.event_processor.handle_event(event)
+            processing_time = time.time() - start_time
+            print(f"🔧 HANDLE_ACTION_DEBUG: event_processor.handle_event completed in {processing_time:.3f}s")
+            
+            print(f"🔧 HANDLE_ACTION_DEBUG: Processing result")
+            logger.info(f"🚀 EVENT-DRIVEN: Processed {action.action_type.value} from {action.player_name} in {processing_time:.3f}s")
+            
+            final_result = {
+                "success": result.success,
+                "immediate": True,
+                "transition": result.triggers_transition,
+                "processing_time": processing_time,
+                "reason": result.reason,
+                "data": result.data
+            }
+            
+            print(f"✅ HANDLE_ACTION_DEBUG: handle_action returning result: {final_result}")
+            return final_result
+            
+        except Exception as e:
+            print(f"❌ HANDLE_ACTION_DEBUG: Exception in handle_action: {e}")
+            import traceback
+            traceback.print_exc()
+            
+            # Return error result
+            error_result = {
+                "success": False,
+                "error": str(e),
+                "immediate": True,
+                "processing_time": 0,
+                "reason": f"Exception during action processing: {e}",
+                "data": {}
+            }
+            print(f"❌ HANDLE_ACTION_DEBUG: Returning error result: {error_result}")
+            return error_result
     
     # 🚀 EVENT-DRIVEN ARCHITECTURE: Async Task Lifecycle Management
     
@@ -512,11 +543,9 @@ class GameStateMachine:
                     "starter": getattr(self.game, 'round_starter', self.game.players[0].name if self.game.players else 'unknown')
                 })
             elif new_phase == GamePhase.TURN:
-                # Trigger turn start
-                starter = self.game.current_player or (self.game.players[0].name if self.game.players else 'unknown')
-                await bot_manager.handle_game_event(room_id, "turn_started", {
-                    "starter": starter
-                })
+                # 🔧 DUPLICATE_FIX: Turn state already handles turn_started notification
+                # Don't send duplicate turn_started event here - turn state handles it in _start_new_turn()
+                print(f"🔧 DUPLICATE_FIX: Skipping duplicate turn_started event - turn state handles this")
                 
         except Exception as e:
             logger.error(f"Failed to notify bot manager: {e}", exc_info=True)
