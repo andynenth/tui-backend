@@ -31,9 +31,22 @@ class GameState(ABC):
     
     # Lifecycle methods
     async def on_enter(self) -> None:
-        self.logger.info(f"Entering {self.phase_name.value} phase")
-        self.phase_data.clear()
-        await self._setup_phase()
+        print(f"🔧 BASE_STATE_DEBUG: on_enter() called for {self.phase_name.value} phase")
+        
+        try:
+            self.logger.info(f"Entering {self.phase_name.value} phase")
+            print(f"🔧 BASE_STATE_DEBUG: Clearing phase_data")
+            self.phase_data.clear()
+            
+            print(f"🔧 BASE_STATE_DEBUG: About to call _setup_phase() for {self.phase_name.value}")
+            await self._setup_phase()
+            print(f"🔧 BASE_STATE_DEBUG: _setup_phase() completed successfully for {self.phase_name.value}")
+            
+        except Exception as e:
+            print(f"❌ BASE_STATE_DEBUG: Exception in on_enter() for {self.phase_name.value}: {e}")
+            import traceback
+            traceback.print_exc()
+            raise
         
     async def on_exit(self) -> None:
         self.logger.info(f"Exiting {self.phase_name.value} phase")

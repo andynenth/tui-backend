@@ -171,44 +171,100 @@ class GameStateMachine:
     async def _immediate_transition_to(self, new_phase: GamePhase, reason: str):
         """🚀 EVENT-DRIVEN: Immediate atomic state transition with proper cleanup"""
         
+        print(f"🔧 TRANSITION_DEBUG: _immediate_transition_to called: {self.current_phase} -> {new_phase}")
         logger.info(f"🚀 EVENT-DRIVEN transition: {self.current_phase} -> {new_phase} ({reason})")
         
-        # Validate transition (skip validation for initial transition)
-        if self.current_phase and new_phase not in self._valid_transitions.get(self.current_phase, set()):
-            logger.error(f"❌ Invalid transition: {self.current_phase} -> {new_phase}")
-            return
+        # Debug async context
+        import threading
+        print(f"🔧 ASYNC_DEBUG: Thread: {threading.current_thread().name}")
+        print(f"🔧 ASYNC_DEBUG: Is running: {self.is_running}")
+        print(f"🔧 ASYNC_DEBUG: Transition lock acquired: {self.transition_lock.locked()}")
         
-        # Get new state
-        new_state = self.states.get(new_phase)
-        if not new_state:
-            logger.error(f"❌ No state handler for phase: {new_phase}")
-            return
-        
-        # 1. Cleanup current state tasks (prevent resource leaks)
-        await self.cleanup_all_tasks()
-        
-        # 2. Exit current state
-        if self.current_state:
-            logger.debug(f"🚪 Exiting current state: {self.current_state.__class__.__name__}")
-            await self.current_state.on_exit()
-        
-        # 3. Atomic state update
-        old_phase = self.current_phase
-        self.current_phase = new_phase
-        self.current_state = new_state
-        
-        # 4. Enter new state
-        logger.debug(f"🎯 Entering new state: {self.current_state.__class__.__name__}")
-        await self.current_state.on_enter()
-        
-        # 5. Store event for replay capability
-        await self._store_phase_change_event(old_phase, new_phase)
-        
-        # 6. Broadcast change with immediate frontend instructions
-        await self._broadcast_phase_change_with_display_metadata(new_phase, reason)
-        
-        # 7. Trigger bot manager for phase changes
-        await self._notify_bot_manager(new_phase)
+        try:
+            # Validate transition (skip validation for initial transition)
+            if self.current_phase and new_phase not in self._valid_transitions.get(self.current_phase, set()):
+                print(f"❌ TRANSITION_DEBUG: Invalid transition rejected: {self.current_phase} -> {new_phase}")
+                logger.error(f"❌ Invalid transition: {self.current_phase} -> {new_phase}")
+                return
+            
+            # Get new state
+            new_state = self.states.get(new_phase)
+            if not new_state:
+                print(f"❌ TRANSITION_DEBUG: No state handler for phase: {new_phase}")
+                logger.error(f"❌ No state handler for phase: {new_phase}")
+                return
+            
+            print(f"🔧 TRANSITION_DEBUG: Starting transition steps...")
+            
+            # 1. Cleanup current state tasks (prevent resource leaks)
+            print(f"🔧 TRANSITION_DEBUG: Step 1 - Cleanup tasks")
+            await self.cleanup_all_tasks()
+            
+            # 2. Exit current state
+            print(f"🔧 TRANSITION_DEBUG: Step 2 - Exit current state")
+            if self.current_state:
+                logger.debug(f"🚪 Exiting current state: {self.current_state.__class__.__name__}")
+                await self.current_state.on_exit()
+            
+            # 3. Atomic state update
+            print(f"🔧 TRANSITION_DEBUG: Step 3 - Atomic state update")
+            old_phase = self.current_phase
+            self.current_phase = new_phase
+            self.current_state = new_state
+            
+            # 4. Enter new state
+            print(f"🔧 TRANSITION_DEBUG: Step 4 - Enter new state")
+            logger.debug(f"🎯 Entering new state: {self.current_state.__class__.__name__}")
+            print(f"🔧 TRANSITION_DEBUG: Step 4a - About to call on_enter() for {new_phase.value}")
+            await self.current_state.on_enter()
+            print(f"🔧 TRANSITION_DEBUG: Step 4b - on_enter() completed for {new_phase.value}")
+            
+            print(f"🔧 TRANSITION_DEBUG: Step 4c - Checking current state after on_enter()")
+            print(f"🔧 TRANSITION_DEBUG: Current phase: {self.current_phase}")
+            print(f"🔧 TRANSITION_DEBUG: Current state: {self.current_state}")
+            print(f"🔧 TRANSITION_DEBUG: Is running: {self.is_running}")
+            
+            # 5. Store event for replay capability
+            print(f"🔧 TRANSITION_DEBUG: Step 5 - About to store event")
+            try:
+                await self._store_phase_change_event(old_phase, new_phase)
+                print(f"🔧 TRANSITION_DEBUG: Step 5 - Store event completed")
+            except Exception as e:
+                print(f"❌ TRANSITION_DEBUG: Step 5 failed: {e}")
+                import traceback
+                traceback.print_exc()
+                raise
+            
+            # 6. Broadcast change with immediate frontend instructions
+            print(f"🔧 TRANSITION_DEBUG: Step 6 - About to broadcast")
+            print(f"🚀 STATE_MACHINE_DEBUG: Broadcasting phase change to {new_phase.value} with reason: {reason}")
+            try:
+                await self._broadcast_phase_change_with_display_metadata(new_phase, reason)
+                print(f"✅ STATE_MACHINE_DEBUG: Phase change broadcast completed for {new_phase.value}")
+            except Exception as e:
+                print(f"❌ TRANSITION_DEBUG: Step 6 failed: {e}")
+                import traceback
+                traceback.print_exc()
+                raise
+            
+            # 7. Trigger bot manager for phase changes
+            print(f"🔧 TRANSITION_DEBUG: Step 7 - About to notify bot manager")
+            try:
+                await self._notify_bot_manager(new_phase)
+                print(f"🔧 TRANSITION_DEBUG: Step 7 - Bot manager notification completed")
+            except Exception as e:
+                print(f"❌ TRANSITION_DEBUG: Step 7 failed: {e}")
+                import traceback
+                traceback.print_exc()
+                raise
+            
+            print(f"✅ TRANSITION_DEBUG: All transition steps completed successfully: {old_phase} -> {new_phase}")
+            
+        except Exception as e:
+            print(f"❌ TRANSITION_DEBUG: Exception in _immediate_transition_to: {e}")
+            logger.error(f"❌ Transition failed with exception: {e}", exc_info=True)
+            import traceback
+            traceback.print_exc()
     
     def get_current_phase(self) -> Optional[GamePhase]:
         """Get current game phase"""
@@ -276,39 +332,53 @@ class GameStateMachine:
     async def _broadcast_phase_change_with_display_metadata(self, phase: GamePhase, reason: str):
         """🚀 EVENT-DRIVEN: Broadcast phase change with frontend display instructions"""
         
-        base_data = {
-            "phase": phase.value,
-            "allowed_actions": [action.value for action in self.get_allowed_actions()],
-            "phase_data": self.get_phase_data(),
-            "immediate": True,
-            "reason": reason
-        }
+        print(f"🔧 BROADCAST_DEBUG: _broadcast_phase_change_with_display_metadata called for {phase.value}")
         
-        # 🚀 MANDATORY: Add frontend display instructions (NO backend timing)
-        display_config = self._get_display_config_for_phase(phase)
-        if display_config:
-            base_data["display"] = display_config
-        
-        # Add player hands to the data
-        if hasattr(self, 'game') and self.game and hasattr(self.game, 'players'):
-            players_data = {}
-            for player in self.game.players:
-                player_name = getattr(player, 'name', str(player))
-                player_hand = []
-                
-                # Get player's hand
-                if hasattr(player, 'hand') and player.hand:
-                    player_hand = [str(piece) for piece in player.hand]
-                
-                players_data[player_name] = {
-                    'hand': player_hand,
-                    'hand_size': len(player_hand)
-                }
+        try:
+            base_data = {
+                "phase": phase.value,
+                "allowed_actions": [action.value for action in self.get_allowed_actions()],
+                "phase_data": self.get_phase_data(),
+                "immediate": True,
+                "reason": reason
+            }
+            print(f"🔧 BROADCAST_DEBUG: Prepared base_data: {base_data}")
             
-            base_data['players'] = players_data
-        
-        # Send immediate update to all players
-        await self.broadcast_event("phase_change", base_data)
+            # 🚀 MANDATORY: Add frontend display instructions (NO backend timing)
+            display_config = self._get_display_config_for_phase(phase)
+            if display_config:
+                base_data["display"] = display_config
+                print(f"🔧 BROADCAST_DEBUG: Added display config: {display_config}")
+            
+            # Add player hands to the data
+            if hasattr(self, 'game') and self.game and hasattr(self.game, 'players'):
+                players_data = {}
+                for player in self.game.players:
+                    player_name = getattr(player, 'name', str(player))
+                    player_hand = []
+                    
+                    # Get player's hand
+                    if hasattr(player, 'hand') and player.hand:
+                        player_hand = [str(piece) for piece in player.hand]
+                    
+                    players_data[player_name] = {
+                        'hand': player_hand,
+                        'hand_size': len(player_hand)
+                    }
+                
+                base_data['players'] = players_data
+                print(f"🔧 BROADCAST_DEBUG: Added players data: {list(players_data.keys())}")
+            
+            # Send immediate update to all players
+            print(f"🔧 BROADCAST_DEBUG: About to call broadcast_event with phase_change")
+            await self.broadcast_event("phase_change", base_data)
+            print(f"🔧 BROADCAST_DEBUG: broadcast_event completed successfully")
+            
+        except Exception as e:
+            print(f"❌ BROADCAST_DEBUG: Exception in _broadcast_phase_change_with_display_metadata: {e}")
+            import traceback
+            traceback.print_exc()
+            raise
     
     def _get_display_config_for_phase(self, phase: GamePhase) -> Optional[Dict]:
         """Get frontend display configuration for phase"""
@@ -410,9 +480,20 @@ class GameStateMachine:
     
     async def broadcast_event(self, event_type: str, event_data: Dict):
         """Broadcast WebSocket event if callback is available"""
+        print(f"🔧 BROADCAST_EVENT_DEBUG: broadcast_event called with type: {event_type}")
+        
         if self.broadcast_callback:
-            await self.broadcast_callback(event_type, event_data)
+            print(f"🔧 BROADCAST_EVENT_DEBUG: Callback available, calling broadcast_callback")
+            try:
+                await self.broadcast_callback(event_type, event_data)
+                print(f"🔧 BROADCAST_EVENT_DEBUG: broadcast_callback completed successfully")
+            except Exception as e:
+                print(f"❌ BROADCAST_EVENT_DEBUG: Exception in broadcast_callback: {e}")
+                import traceback
+                traceback.print_exc()
+                raise
         else:
+            print(f"⚠️ BROADCAST_EVENT_DEBUG: No broadcast callback set - event {event_type} not sent")
             logger.debug(f"No broadcast callback set - event {event_type} not sent")
     
     async def _notify_bot_manager(self, new_phase: GamePhase):
@@ -492,6 +573,8 @@ class GameStateMachine:
             old_phase: Previous phase (can be None for initial transition)
             new_phase: New phase being entered
         """
+        print(f"🔧 STORE_EVENT_DEBUG: _store_phase_change_event called: {old_phase} -> {new_phase}")
+        
         try:
             payload = {
                 'old_phase': old_phase.value if old_phase else None,
@@ -499,6 +582,7 @@ class GameStateMachine:
                 'timestamp': datetime.now().isoformat(),
                 'game_state': self.get_serializable_state() if hasattr(self, 'get_serializable_state') else {}
             }
+            print(f"🔧 STORE_EVENT_DEBUG: Prepared payload: {payload}")
             
             # Add game-specific context if available
             if hasattr(self, 'game') and self.game:
@@ -507,17 +591,24 @@ class GameStateMachine:
                     'player_count': len(getattr(self.game, 'players', [])),
                     'current_player': getattr(self.game, 'current_player', None)
                 }
+                print(f"🔧 STORE_EVENT_DEBUG: Added game context: {payload['game_context']}")
             
             # Store via action queue which has access to event store
+            print(f"🔧 STORE_EVENT_DEBUG: About to call action_queue.store_state_event")
             await self.action_queue.store_state_event(
                 event_type='phase_change',
                 payload=payload
             )
+            print(f"🔧 STORE_EVENT_DEBUG: action_queue.store_state_event completed")
             
             logger.info(f"Stored phase change event: {old_phase} -> {new_phase}")
+            print(f"🔧 STORE_EVENT_DEBUG: Event storage successful")
             
         except Exception as e:
             # Don't let event storage failures break the game
+            print(f"❌ STORE_EVENT_DEBUG: Exception in _store_phase_change_event: {e}")
+            import traceback
+            traceback.print_exc()
             logger.error(f"Failed to store phase change event: {e}")
     
     async def store_game_event(self, event_type: str, payload: dict, player_id: Optional[str] = None):

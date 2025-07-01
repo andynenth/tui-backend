@@ -1,193 +1,95 @@
-RecoveryService.ts:66 🔄 RecoveryService: Initialized
-ServiceIntegration.ts:79 🔗 ServiceIntegration: Initialized
-ServiceIntegration.ts:98 
-ServiceIntegration.ts:99 🎯 =============================================
-ServiceIntegration.ts:100 🚀 PHASE 1-4 ENTERPRISE ARCHITECTURE STARTING
-ServiceIntegration.ts:101 🎯 =============================================
-ServiceIntegration.ts:102 🔧 Initializing integrated service layer...
-ServiceIntegration.ts:567 ✅ NetworkService integrated
-ServiceIntegration.ts:575 ✅ GameService integrated
-ServiceIntegration.ts:583 ✅ RecoveryService integrated
-ServiceIntegration.ts:594 🩺 Health monitoring started (30000ms interval)
-ServiceIntegration.ts:124 
-ServiceIntegration.ts:125 ✅ =============================================
-ServiceIntegration.ts:126 🎉 PHASE 1-4 ARCHITECTURE FULLY OPERATIONAL!
-ServiceIntegration.ts:127 ✅ =============================================
-ServiceIntegration.ts:128 🔗 NetworkService: Advanced WebSocket with auto-reconnection
-ServiceIntegration.ts:129 🎮 GameService: React hooks with TypeScript state management
-ServiceIntegration.ts:130 🛠️ RecoveryService: Automatic error recovery and health monitoring
-ServiceIntegration.ts:131 🏢 Enterprise Features: Event sourcing, logging, metrics
-ServiceIntegration.ts:132 ✅ Service integration layer initialized successfully
-ServiceIntegration.ts:133 
-App.jsx:121 🎮 Phase 1-4 Enterprise Architecture - Global services initialized
-NetworkService.ts:337 🔗 Connection opened to room lobby
-GameService.ts:1282 🎮 State Change: NETWORK_CONNECTED
-GameService.ts:1283 Previous: {isConnected: false, roomId: null, playerName: null, phase: 'waiting', currentRound: 0, …}
-GameService.ts:1284 New: {isConnected: true, roomId: null, playerName: null, phase: 'waiting', currentRound: 0, …}
-GameService.ts:1285 Diff: {isConnected: {…}, lastEventSequence: {…}}
-NetworkService.ts:129 🌐 NetworkService: Connected to room lobby
-GameService.ts:1282 🎮 State Change: NETWORK_DISCONNECTED
-GameService.ts:1283 Previous: {isConnected: true, roomId: null, playerName: null, phase: 'waiting', currentRound: 0, …}
-GameService.ts:1284 New: {isConnected: false, roomId: null, playerName: null, phase: 'waiting', currentRound: 0, …}
-GameService.ts:1285 Diff: {isConnected: {…}, lastEventSequence: {…}}
-NetworkService.ts:171 🌐 NetworkService: Disconnected from room lobby
-NetworkService.ts:214 📤 Queued message for lobby: get_rooms (1 queued)
-NetworkService.ts:337 🔗 Connection opened to room lobby
-GameService.ts:1282 🎮 State Change: NETWORK_CONNECTED
-GameService.ts:1283 Previous: {isConnected: false, roomId: null, playerName: null, phase: 'waiting', currentRound: 0, …}
-GameService.ts:1284 New: {isConnected: true, roomId: null, playerName: null, phase: 'waiting', currentRound: 0, …}
-GameService.ts:1285 Diff: {isConnected: {…}, lastEventSequence: {…}}
-NetworkService.ts:129 🌐 NetworkService: Connected to room lobby
-LobbyPage.jsx:50 Received room_list_update: {roomId: 'lobby', data: {…}, message: {…}, timestamp: 1751349601878}
-GameService.ts:1282 🎮 State Change: NETWORK_DISCONNECTED
-GameService.ts:1283 Previous: {isConnected: true, roomId: null, playerName: null, phase: 'waiting', currentRound: 0, …}
-GameService.ts:1284 New: {isConnected: false, roomId: null, playerName: null, phase: 'waiting', currentRound: 0, …}
-GameService.ts:1285 Diff: {isConnected: {…}, lastEventSequence: {…}}
-NetworkService.ts:171 🌐 NetworkService: Disconnected from room lobby
-NetworkService.ts:214 📤 Queued message for lobby: get_rooms (1 queued)
-NetworkService.ts:337 🔗 Connection opened to room lobby
-GameService.ts:1282 🎮 State Change: NETWORK_CONNECTED
-GameService.ts:1283 Previous: {isConnected: false, roomId: null, playerName: null, phase: 'waiting', currentRound: 0, …}
-GameService.ts:1284 New: {isConnected: true, roomId: null, playerName: null, phase: 'waiting', currentRound: 0, …}
-GameService.ts:1285 Diff: {isConnected: {…}, lastEventSequence: {…}}
-NetworkService.ts:129 🌐 NetworkService: Connected to room lobby
-LobbyPage.jsx:50 Received room_list_update: {roomId: 'lobby', data: {…}, message: {…}, timestamp: 1751349603170}
-LobbyPage.jsx:60 Received room_created: {roomId: 'lobby', data: {…}, message: {…}, timestamp: 1751349603260}
-LobbyPage.jsx:61 🟢 Navigation: room_id = FD6DD3 navigating to: /room/FD6DD3
-LobbyPage.jsx:65 ✅ Navigating to new room: FD6DD3
-GameService.ts:1282 🎮 State Change: NETWORK_DISCONNECTED
-GameService.ts:1283 Previous: {isConnected: true, roomId: null, playerName: null, phase: 'waiting', currentRound: 0, …}
-GameService.ts:1284 New: {isConnected: false, roomId: null, playerName: null, phase: 'waiting', currentRound: 0, …}
-GameService.ts:1285 Diff: {isConnected: {…}, lastEventSequence: {…}}
-NetworkService.ts:171 🌐 NetworkService: Disconnected from room lobby
-NetworkService.ts:214 📤 Queued message for lobby: get_rooms (1 queued)
-RoomPage.jsx:181 🎯 SLOT_1: player= undefined isEmpty= true
-RoomPage.jsx:181 🎯 SLOT_2: player= undefined isEmpty= true
-RoomPage.jsx:181 🎯 SLOT_3: player= undefined isEmpty= true
-RoomPage.jsx:181 🎯 SLOT_4: player= undefined isEmpty= true
-NetworkService.ts:337 🔗 Connection opened to room lobby
-GameService.ts:1282 🎮 State Change: NETWORK_CONNECTED
-GameService.ts:1283 Previous: {isConnected: false, roomId: null, playerName: null, phase: 'waiting', currentRound: 0, …}
-GameService.ts:1284 New: {isConnected: true, roomId: null, playerName: null, phase: 'waiting', currentRound: 0, …}
-GameService.ts:1285 Diff: {isConnected: {…}, lastEventSequence: {…}}
-NetworkService.ts:129 🌐 NetworkService: Connected to room lobby
-NetworkService.ts:337 🔗 Connection opened to room FD6DD3
-GameService.ts:1282 🎮 State Change: NETWORK_CONNECTED
-GameService.ts:1283 Previous: {isConnected: true, roomId: null, playerName: null, phase: 'waiting', currentRound: 0, …}
-GameService.ts:1284 New: {isConnected: true, roomId: null, playerName: null, phase: 'waiting', currentRound: 0, …}
-GameService.ts:1285 Diff: {lastEventSequence: {…}}
-NetworkService.ts:129 🌐 NetworkService: Connected to room FD6DD3
-RoomPage.jsx:181 🎯 SLOT_1: player= undefined isEmpty= true
-RoomPage.jsx:181 🎯 SLOT_2: player= undefined isEmpty= true
-RoomPage.jsx:181 🎯 SLOT_3: player= undefined isEmpty= true
-RoomPage.jsx:181 🎯 SLOT_4: player= undefined isEmpty= true
-RoomPage.jsx:49 🏠 ROOM_UPDATE: Full data received: {players: Array(4), host_name: 'Andy', room_id: 'FD6DD3', started: false}
-RoomPage.jsx:50 🏠 ROOM_UPDATE: Players array: (4) [{…}, {…}, {…}, {…}]
-RoomPage.jsx:51 🏠 ROOM_UPDATE: Players array type: object
-RoomPage.jsx:52 🏠 ROOM_UPDATE: Players array length: 4
-RoomPage.jsx:53 🏠 ROOM_UPDATE: Players array entries: (4) [Array(2), Array(2), Array(2), Array(2)]
-RoomPage.jsx:181 🎯 SLOT_1: player= {name: 'Andy', is_bot: false, is_host: true} isEmpty= false
-RoomPage.jsx:181 🎯 SLOT_2: player= {name: 'Bot 2', is_bot: true, is_host: false} isEmpty= false
-RoomPage.jsx:181 🎯 SLOT_3: player= {name: 'Bot 3', is_bot: true, is_host: false} isEmpty= false
-RoomPage.jsx:181 🎯 SLOT_4: player= {name: 'Bot 4', is_bot: true, is_host: false} isEmpty= false
-RoomPage.jsx:87 🎮 START_GAME: Button clicked
-RoomPage.jsx:88 🎮 START_GAME: Room ID: FD6DD3
-RoomPage.jsx:181 🎯 SLOT_1: player= {name: 'Andy', is_bot: false, is_host: true} isEmpty= false
-RoomPage.jsx:181 🎯 SLOT_2: player= {name: 'Bot 2', is_bot: true, is_host: false} isEmpty= false
-RoomPage.jsx:181 🎯 SLOT_3: player= {name: 'Bot 3', is_bot: true, is_host: false} isEmpty= false
-RoomPage.jsx:181 🎯 SLOT_4: player= {name: 'Bot 4', is_bot: true, is_host: false} isEmpty= false
-GameService.ts:410 🌐 FRONTEND_EVENT_DEBUG: Received phase_change event for room FD6DD3 {phase: 'declaration', allowed_actions: Array(4), phase_data: {…}, players: {…}, round: 1, …}
-GameService.ts:414 🌐 FRONTEND_EVENT_DEBUG: Ignoring event for different room (ours: null)
-GameService.ts:410 🌐 FRONTEND_EVENT_DEBUG: Received phase_change event for room FD6DD3 {phase: 'declaration', allowed_actions: Array(4), phase_data: {…}, players: {…}, round: 1, …}
-GameService.ts:414 🌐 FRONTEND_EVENT_DEBUG: Ignoring event for different room (ours: null)
-GameService.ts:410 🌐 FRONTEND_EVENT_DEBUG: Received phase_change event for room FD6DD3 {phase: 'declaration', allowed_actions: Array(4), phase_data: {…}, players: {…}, round: 1, …}
-GameService.ts:414 🌐 FRONTEND_EVENT_DEBUG: Ignoring event for different room (ours: null)
-GameService.ts:410 🌐 FRONTEND_EVENT_DEBUG: Received phase_change event for room FD6DD3 {phase: 'declaration', allowed_actions: Array(4), phase_data: {…}, players: {…}, round: 1, …}
-GameService.ts:414 🌐 FRONTEND_EVENT_DEBUG: Ignoring event for different room (ours: null)
-GameService.ts:410 🌐 FRONTEND_EVENT_DEBUG: Received phase_change event for room FD6DD3 {phase: 'declaration', allowed_actions: Array(4), phase_data: {…}, players: {…}, round: 1, …}
-GameService.ts:414 🌐 FRONTEND_EVENT_DEBUG: Ignoring event for different room (ours: null)
-
----
-
-INFO:     127.0.0.1:65262 - "GET / HTTP/1.1" 200 OK
-INFO:     127.0.0.1:65262 - "GET /bundle.css HTTP/1.1" 200 OK
-INFO:     127.0.0.1:65263 - "GET /bundle.js HTTP/1.1" 200 OK
-INFO:     127.0.0.1:65262 - "GET /.well-known/appspecific/com.chrome.devtools.json HTTP/1.1" 404 Not Found
-INFO:     127.0.0.1:65263 - "GET /bundle.css.map HTTP/1.1" 200 OK
-INFO:     127.0.0.1:65263 - "GET /bundle.js.map HTTP/1.1" 200 OK
-INFO:     ('127.0.0.1', 65273) - "WebSocket /ws/lobby" [accepted]
+INFO:     ('127.0.0.1', 55766) - "WebSocket /ws/lobby" [accepted]
 DEBUG_WS: Created new enhanced broadcast queue and task for room lobby.
 DEBUG_WS: Registered new connection for room lobby. Total connections: 1
 INFO:     connection open
 DEBUG_WS: Starting enhanced broadcast queue processor for room lobby.
 DEBUG_WS_QUEUE_START: Room lobby processor task starting, queue exists: True
 DEBUG_WS_RECEIVE: Received event 'client_ready' from client in room lobby with data: {'room_id': 'lobby'}
-DEBUG_LOBBY_WS: Sent initial room list to new lobby client
+INFO:     ('127.0.0.1', 55768) - "WebSocket /ws/lobby" [accepted]
+DEBUG_WS: Registered new connection for room lobby. Total connections: 2
+INFO:     connection open
 DEBUG_LOBBY_WS: Client disconnected from lobby
 INFO:     connection closed
-DEBUG_WS: Unregistered connection for room lobby. Remaining connections: 0
-DEBUG_WS: Cleaned up empty room lobby
-INFO:     ('127.0.0.1', 65275) - "WebSocket /ws/lobby" [accepted]
-DEBUG_WS: Registered new connection for room lobby. Total connections: 1
-INFO:     connection open
+DEBUG_WS: Unregistered connection for room lobby. Remaining connections: 1
 DEBUG_WS_RECEIVE: Received event 'client_ready' from client in room lobby with data: {'room_id': 'lobby'}
 DEBUG_LOBBY_WS: Sent initial room list to new lobby client
+INFO:     ('127.0.0.1', 55774) - "WebSocket /ws/lobby" [accepted]
+DEBUG_WS: Registered new connection for room lobby. Total connections: 2
+INFO:     connection open
 DEBUG_LOBBY_WS: Client disconnected from lobby
 INFO:     connection closed
-DEBUG_WS: Unregistered connection for room lobby. Remaining connections: 0
-DEBUG_WS: Cleaned up empty room lobby
-INFO:     ('127.0.0.1', 65281) - "WebSocket /ws/lobby" [accepted]
-DEBUG_WS: Restarting lobby broadcast task...
-DEBUG_WS: Registered new connection for room lobby. Total connections: 1
-INFO:     connection open
-DEBUG_WS: Starting enhanced broadcast queue processor for room lobby.
-DEBUG_WS_QUEUE_START: Room lobby processor task starting, queue exists: True
+DEBUG_WS: Unregistered connection for room lobby. Remaining connections: 1
 DEBUG_WS_RECEIVE: Received event 'client_ready' from client in room lobby with data: {'room_id': 'lobby'}
 DEBUG_LOBBY_WS: Sent initial room list to new lobby client
 DEBUG_WS_RECEIVE: Received event 'create_room' from client in room lobby with data: {'player_name': 'Andy'}
-DEBUG_LOBBY_WS: Created room FD6DD3 for player Andy
+DEBUG_LOBBY_WS: Created room 54FC0D for player Andy
+DEBUG_WS: Entering broadcast method for room lobby, event room_created
 🔔 LOBBY_BROADCAST: Attempting to broadcast 'room_created' to lobby
 🔔 LOBBY_BROADCAST: Data keys: ['room_id', 'host_name', 'timestamp']
 🔔 LOBBY_BROADCAST: Found 1 lobby connections
 🔔 LOBBY_BROADCAST: Queue size: 0
+DEBUG_WS: Attempting to queue event 'room_created' for room lobby with data: {'room_id': 'lobby', 'host_name': 'Andy', 'timestamp': 1751383345.701479}
+🔧 SERIALIZATION_DEBUG: Testing JSON serialization for event 'room_created'
+🔧 SERIALIZATION_DEBUG: JSON serialization test PASSED for event 'room_created' - 108 chars
+🔧 SERIALIZATION_DEBUG: About to call queue.put() for event 'room_created'
+✅ SERIALIZATION_DEBUG: queue.put() completed successfully for event 'room_created'
 DEBUG_WS: Message for event 'room_created' added to queue for room lobby.
 🔔 LOBBY_BROADCAST: Message added to lobby queue. New queue size: 1
+DEBUG_WS: Entering broadcast method for room lobby, event room_list_update
 🔔 LOBBY_BROADCAST: Attempting to broadcast 'room_list_update' to lobby
 🔔 LOBBY_BROADCAST: Data keys: ['rooms', 'timestamp', 'reason']
 🔔 LOBBY_BROADCAST: Found 1 lobby connections
 🔔 LOBBY_BROADCAST: Queue size: 0
+DEBUG_WS: Attempting to queue event 'room_list_update' for room lobby with data: {'rooms': [{'room_id': '54FC0D', 'host_name': 'Andy', 'started': False, 'slots': {'P1': {'name': 'Andy', 'is_bot': False, 'is_host': True}, 'P2': {'name': 'Bot 2', 'is_bot': True, 'is_host': False}, 'P3': {'name': 'Bot 3', 'is_bot': True, 'is_host': False}, 'P4': {'name': 'Bot 4', 'is_bot': True, 'is_host': False}}, 'players': [{'name': 'Andy', 'is_bot': False, 'is_host': True}, {'name': 'Bot 2', 'is_bot': True, 'is_host': False}, {'name': 'Bot 3', 'is_bot': True, 'is_host': False}, {'name': 'Bot 4', 'is_bot': True, 'is_host': False}], 'occupied_slots': 4, 'total_slots': 4}], 'timestamp': 1751383345.701973, 'reason': 'new_room_created', 'room_id': 'lobby'}
+🔧 SERIALIZATION_DEBUG: Testing JSON serialization for event 'room_list_update'
+🔧 SERIALIZATION_DEBUG: JSON serialization test PASSED for event 'room_list_update' - 703 chars
+🔧 SERIALIZATION_DEBUG: About to call queue.put() for event 'room_list_update'
+✅ SERIALIZATION_DEBUG: queue.put() completed successfully for event 'room_list_update'
 DEBUG_WS: Message for event 'room_list_update' added to queue for room lobby.
 🔔 LOBBY_BROADCAST: Message added to lobby queue. New queue size: 1
-✅ Notified lobby about new room: FD6DD3
+✅ Notified lobby about new room: 54FC0D
 DEBUG_WS_QUEUE: Room lobby got message: room_created
 DEBUG_WS: Broadcasting event 'room_created' (op_id: unknown) to 1 clients in room lobby.
 DEBUG_WS: Successfully sent 'room_created' to a client in room lobby.
 DEBUG_WS_QUEUE: Room lobby got message: room_list_update
 DEBUG_WS: Broadcasting event 'room_list_update' (op_id: unknown) to 1 clients in room lobby.
-DEBUG_WS: Error sending to client in room lobby: 
-DEBUG_WS_DISCONNECT: WebSocket client disconnected from room FD6DD3.
-INFO:     connection closed
-DEBUG_WS: Attempted to unregister from non-existent room FD6DD3
-INFO:     ('127.0.0.1', 65283) - "WebSocket /ws/lobby" [accepted]
-DEBUG_WS: Registered new connection for room lobby. Total connections: 1
+INFO:     ('127.0.0.1', 55776) - "WebSocket /ws/lobby" [accepted]
+DEBUG_WS: Registered new connection for room lobby. Total connections: 2
 INFO:     connection open
+DEBUG_WS_DISCONNECT: WebSocket client disconnected from room 54FC0D.
+DEBUG_WS: Error sending to client in room lobby: 
+INFO:     connection closed
+DEBUG_WS: Attempted to unregister from non-existent room 54FC0D
 DEBUG_WS_RECEIVE: Received event 'client_ready' from client in room lobby with data: {'room_id': 'lobby'}
 DEBUG_LOBBY_WS: Sent initial room list to new lobby client
-INFO:     ('127.0.0.1', 65289) - "WebSocket /ws/FD6DD3" [accepted]
-DEBUG_WS: Created new enhanced broadcast queue and task for room FD6DD3.
-DEBUG_WS: Registered new connection for room FD6DD3. Total connections: 1
+INFO:     ('127.0.0.1', 55778) - "WebSocket /ws/54FC0D" [accepted]
+DEBUG_WS: Created new enhanced broadcast queue and task for room 54FC0D.
+DEBUG_WS: Registered new connection for room 54FC0D. Total connections: 1
 INFO:     connection open
-DEBUG_WS: Starting enhanced broadcast queue processor for room FD6DD3.
-DEBUG_WS_QUEUE_START: Room FD6DD3 processor task starting, queue exists: True
-DEBUG_WS_RECEIVE: Received event 'client_ready' from client in room FD6DD3 with data: {'room_id': 'FD6DD3'}
-DEBUG_WS_RECEIVE: Sent initial room state to client in room FD6DD3 after client_ready.
-DEBUG_WS_RECEIVE: Received event 'get_room_state' from client in room FD6DD3 with data: {}
-DEBUG_WS_RECEIVE: Sent room state to client in room FD6DD3
-DEBUG_WS_RECEIVE: Received event 'start_game' from client in room FD6DD3 with data: {}
-🔒 [Room FD6DD3] Starting game: op_id=FD6DD3_1
-{"timestamp": "2025-07-01T06:00:04.628467Z", "level": "INFO", "logger": "game.state.preparation", "message": "Entering preparation phase", "module": "base_state", "function": "on_enter", "line": 34}
-{"timestamp": "2025-07-01T06:00:04.628579Z", "level": "INFO", "logger": "game.state.preparation", "message": "\ud83c\udfb4 Preparation phase starting - dealing cards", "module": "preparation_state", "function": "_setup_phase", "line": 80}
-🎴 PREP_STATE_DEBUG: Setup phase starting for room FD6DD3
+DEBUG_WS: Starting enhanced broadcast queue processor for room 54FC0D.
+DEBUG_WS_QUEUE_START: Room 54FC0D processor task starting, queue exists: True
+DEBUG_WS_RECEIVE: Received event 'client_ready' from client in room 54FC0D with data: {'room_id': '54FC0D'}
+DEBUG_WS_RECEIVE: Sent initial room state to client in room 54FC0D after client_ready.
+DEBUG_WS_RECEIVE: Received event 'get_room_state' from client in room 54FC0D with data: {}
+DEBUG_WS_RECEIVE: Sent room state to client in room 54FC0D
+DEBUG_WS_RECEIVE: Received event 'start_game' from client in room 54FC0D with data: {}
+🔒 [Room 54FC0D] Starting game: op_id=54FC0D_1
+🔧 TRANSITION_DEBUG: _immediate_transition_to called: None -> GamePhase.PREPARATION
+🔧 ASYNC_DEBUG: Thread: MainThread
+🔧 ASYNC_DEBUG: Is running: True
+🔧 ASYNC_DEBUG: Transition lock acquired: False
+🔧 TRANSITION_DEBUG: Starting transition steps...
+🔧 TRANSITION_DEBUG: Step 1 - Cleanup tasks
+🔧 TRANSITION_DEBUG: Step 2 - Exit current state
+🔧 TRANSITION_DEBUG: Step 3 - Atomic state update
+🔧 TRANSITION_DEBUG: Step 4 - Enter new state
+🔧 TRANSITION_DEBUG: Step 4a - About to call on_enter() for preparation
+🔧 BASE_STATE_DEBUG: on_enter() called for preparation phase
+{"timestamp": "2025-07-01T15:22:26.853044Z", "level": "INFO", "logger": "game.state.preparation", "message": "Entering preparation phase", "module": "base_state", "function": "on_enter", "line": 37}
+🔧 BASE_STATE_DEBUG: Clearing phase_data
+🔧 BASE_STATE_DEBUG: About to call _setup_phase() for preparation
+{"timestamp": "2025-07-01T15:22:26.853165Z", "level": "INFO", "logger": "game.state.preparation", "message": "\ud83c\udfb4 Preparation phase starting - dealing cards", "module": "preparation_state", "function": "_setup_phase", "line": 80}
+🎴 PREP_STATE_DEBUG: Setup phase starting for room 54FC0D
 🔄 PREP_RESET_DEBUG: Reset Andy - declared: 0, captured_piles: 0
 🔄 PREP_RESET_DEBUG: Reset Bot 2 - declared: 0, captured_piles: 0
 🔄 PREP_RESET_DEBUG: Reset Bot 3 - declared: 0, captured_piles: 0
@@ -197,67 +99,89 @@ DEBUG_WS_RECEIVE: Received event 'start_game' from client in room FD6DD3 with da
 🛡️ DEBUG: Available pieces - Strong: 7, Weak: 24
   → Bot 2 gets RED_GENERAL: GENERAL_RED(14)
   → Andy gets strong piece: GENERAL_BLACK(13)
-  → Bot 3 gets strong piece: ELEPHANT_RED(10)
-  → Bot 4 gets strong piece: ADVISOR_BLACK(11)
+  → Bot 3 gets strong piece: ADVISOR_RED(12)
+  → Bot 4 gets strong piece: ELEPHANT_RED(10)
 🛡️ DEBUG: Guaranteed no-redeal hands dealt:
 🔧 DEBUG: Final hands verification:
-  Andy: ['ELEPHANT_RED(10)', 'CHARIOT_RED(8)', 'GENERAL_BLACK(13)', 'HORSE_RED(6)', 'CANNON_BLACK(3)', 'CANNON_RED(4)', 'HORSE_RED(6)', 'SOLDIER_RED(2)']
-    → Strong pieces (>9): 2
-    → Has RED_GENERAL: False
-  Bot 2: ['ELEPHANT_BLACK(9)', 'SOLDIER_BLACK(1)', 'SOLDIER_BLACK(1)', 'GENERAL_RED(14)', 'CHARIOT_BLACK(7)', 'ADVISOR_RED(12)', 'CHARIOT_RED(8)', 'SOLDIER_RED(2)']
-    → Strong pieces (>9): 2
-    → Has RED_GENERAL: True
-  Bot 3: ['ADVISOR_RED(12)', 'SOLDIER_RED(2)', 'ADVISOR_BLACK(11)', 'CHARIOT_BLACK(7)', 'SOLDIER_BLACK(1)', 'SOLDIER_BLACK(1)', 'SOLDIER_RED(2)', 'ELEPHANT_RED(10)']
-    → Strong pieces (>9): 3
-    → Has RED_GENERAL: False
-  Bot 4: ['SOLDIER_RED(2)', 'ADVISOR_BLACK(11)', 'HORSE_BLACK(5)', 'SOLDIER_BLACK(1)', 'ELEPHANT_BLACK(9)', 'HORSE_BLACK(5)', 'CANNON_RED(4)', 'CANNON_BLACK(3)']
+  Andy: ['GENERAL_BLACK(13)', 'SOLDIER_BLACK(1)', 'SOLDIER_BLACK(1)', 'HORSE_RED(6)', 'CHARIOT_BLACK(7)', 'CANNON_BLACK(3)', 'HORSE_BLACK(5)', 'SOLDIER_RED(2)']
     → Strong pieces (>9): 1
     → Has RED_GENERAL: False
+  Bot 2: ['GENERAL_RED(14)', 'CANNON_BLACK(3)', 'ADVISOR_RED(12)', 'SOLDIER_BLACK(1)', 'ELEPHANT_BLACK(9)', 'HORSE_BLACK(5)', 'CHARIOT_RED(8)', 'SOLDIER_BLACK(1)']
+    → Strong pieces (>9): 2
+    → Has RED_GENERAL: True
+  Bot 3: ['ELEPHANT_BLACK(9)', 'CANNON_RED(4)', 'CHARIOT_BLACK(7)', 'SOLDIER_BLACK(1)', 'SOLDIER_RED(2)', 'SOLDIER_RED(2)', 'ADVISOR_BLACK(11)', 'ADVISOR_RED(12)']
+    → Strong pieces (>9): 2
+    → Has RED_GENERAL: False
+  Bot 4: ['SOLDIER_RED(2)', 'ELEPHANT_RED(10)', 'SOLDIER_RED(2)', 'CANNON_RED(4)', 'ELEPHANT_RED(10)', 'ADVISOR_BLACK(11)', 'CHARIOT_RED(8)', 'HORSE_RED(6)']
+    → Strong pieces (>9): 3
+    → Has RED_GENERAL: False
 ✅ SUCCESS: No weak hands - redeal prevented!
-{"timestamp": "2025-07-01T06:00:04.629246Z", "level": "INFO", "logger": "game.state.preparation", "message": "\ud83d\udd0d Weak hand check - Found 0 weak players: set()", "module": "preparation_state", "function": "_deal_cards", "line": 141}
-{"timestamp": "2025-07-01T06:00:04.629352Z", "level": "INFO", "logger": "game.state.preparation", "message": "\ud83d\udd0d STARTER_DEBUG: Current round number: 1", "module": "preparation_state", "function": "_determine_starter", "line": 396}
+{"timestamp": "2025-07-01T15:22:26.854321Z", "level": "INFO", "logger": "game.state.preparation", "message": "\ud83d\udd0d Weak hand check - Found 0 weak players: set()", "module": "preparation_state", "function": "_deal_cards", "line": 141}
+{"timestamp": "2025-07-01T15:22:26.854400Z", "level": "INFO", "logger": "game.state.preparation", "message": "\ud83d\udd0d STARTER_DEBUG: Current round number: 1", "module": "preparation_state", "function": "_determine_starter", "line": 396}
 🔍 STARTER_DEBUG: Looking for GENERAL_RED holder in round 1
 🔍 STARTER_DEBUG: Checking player Andy
-🔍 STARTER_DEBUG: Player Andy hand: ['ELEPHANT_RED(10)', 'CHARIOT_RED(8)', 'GENERAL_BLACK(13)', 'HORSE_RED(6)', 'CANNON_BLACK(3)', 'CANNON_RED(4)', 'HORSE_RED(6)', 'SOLDIER_RED(2)']
-🔍 STARTER_DEBUG: Checking piece 'ELEPHANT_RED(10)' for GENERAL_RED
-🔍 STARTER_DEBUG: Checking piece 'CHARIOT_RED(8)' for GENERAL_RED
+🔍 STARTER_DEBUG: Player Andy hand: ['GENERAL_BLACK(13)', 'SOLDIER_BLACK(1)', 'SOLDIER_BLACK(1)', 'HORSE_RED(6)', 'CHARIOT_BLACK(7)', 'CANNON_BLACK(3)', 'HORSE_BLACK(5)', 'SOLDIER_RED(2)']
 🔍 STARTER_DEBUG: Checking piece 'GENERAL_BLACK(13)' for GENERAL_RED
+🔍 STARTER_DEBUG: Checking piece 'SOLDIER_BLACK(1)' for GENERAL_RED
+🔍 STARTER_DEBUG: Checking piece 'SOLDIER_BLACK(1)' for GENERAL_RED
 🔍 STARTER_DEBUG: Checking piece 'HORSE_RED(6)' for GENERAL_RED
+🔍 STARTER_DEBUG: Checking piece 'CHARIOT_BLACK(7)' for GENERAL_RED
 🔍 STARTER_DEBUG: Checking piece 'CANNON_BLACK(3)' for GENERAL_RED
-🔍 STARTER_DEBUG: Checking piece 'CANNON_RED(4)' for GENERAL_RED
-🔍 STARTER_DEBUG: Checking piece 'HORSE_RED(6)' for GENERAL_RED
+🔍 STARTER_DEBUG: Checking piece 'HORSE_BLACK(5)' for GENERAL_RED
 🔍 STARTER_DEBUG: Checking piece 'SOLDIER_RED(2)' for GENERAL_RED
 🔍 STARTER_DEBUG: Checking player Bot 2
-🔍 STARTER_DEBUG: Player Bot 2 hand: ['ELEPHANT_BLACK(9)', 'SOLDIER_BLACK(1)', 'SOLDIER_BLACK(1)', 'GENERAL_RED(14)', 'CHARIOT_BLACK(7)', 'ADVISOR_RED(12)', 'CHARIOT_RED(8)', 'SOLDIER_RED(2)']
-🔍 STARTER_DEBUG: Checking piece 'ELEPHANT_BLACK(9)' for GENERAL_RED
-🔍 STARTER_DEBUG: Checking piece 'SOLDIER_BLACK(1)' for GENERAL_RED
-🔍 STARTER_DEBUG: Checking piece 'SOLDIER_BLACK(1)' for GENERAL_RED
+🔍 STARTER_DEBUG: Player Bot 2 hand: ['GENERAL_RED(14)', 'CANNON_BLACK(3)', 'ADVISOR_RED(12)', 'SOLDIER_BLACK(1)', 'ELEPHANT_BLACK(9)', 'HORSE_BLACK(5)', 'CHARIOT_RED(8)', 'SOLDIER_BLACK(1)']
 🔍 STARTER_DEBUG: Checking piece 'GENERAL_RED(14)' for GENERAL_RED
 ✅ STARTER_DEBUG: Found GENERAL_RED in Bot 2's hand!
-{"timestamp": "2025-07-01T06:00:04.629844Z", "level": "INFO", "logger": "game.state.preparation", "message": "\ud83c\udfaf Starter: Bot 2 (has GENERAL_RED)", "module": "preparation_state", "function": "_determine_starter", "line": 411}
+{"timestamp": "2025-07-01T15:22:26.854538Z", "level": "INFO", "logger": "game.state.preparation", "message": "\ud83c\udfaf Starter: Bot 2 (has GENERAL_RED)", "module": "preparation_state", "function": "_determine_starter", "line": 411}
 ✅ PREP_STATE_DEBUG: No weak hands - determined new starter: Bot 2
-{"timestamp": "2025-07-01T06:00:04.630187Z", "level": "INFO", "logger": "game.state.preparation", "message": "\u2705 No weak hands - determined new starter: Bot 2", "module": "preparation_state", "function": "_deal_cards", "line": 212}
+{"timestamp": "2025-07-01T15:22:26.854594Z", "level": "INFO", "logger": "game.state.preparation", "message": "\u2705 No weak hands - determined new starter: Bot 2", "module": "preparation_state", "function": "_deal_cards", "line": 212}
 🎯 PREP_STATE_DEBUG: No weak hands detected - auto-transitioning to Declaration phase
-{"timestamp": "2025-07-01T06:00:04.630346Z", "level": "INFO", "logger": "game.state.preparation", "message": "\ud83c\udfaf No weak hands detected - transitioning to Declaration phase", "module": "preparation_state", "function": "_deal_cards", "line": 217}
-{"timestamp": "2025-07-01T06:00:04.630521Z", "level": "INFO", "logger": "game.state.preparation", "message": "Exiting preparation phase", "module": "base_state", "function": "on_exit", "line": 39}
-{"timestamp": "2025-07-01T06:00:04.630595Z", "level": "INFO", "logger": "game.state.preparation", "message": "\ud83c\udfaf Round starter already set: Bot 2", "module": "preparation_state", "function": "_cleanup_phase", "line": 94}
+{"timestamp": "2025-07-01T15:22:26.854638Z", "level": "INFO", "logger": "game.state.preparation", "message": "\ud83c\udfaf No weak hands detected - transitioning to Declaration phase", "module": "preparation_state", "function": "_deal_cards", "line": 217}
+🔧 TRANSITION_DEBUG: _immediate_transition_to called: GamePhase.PREPARATION -> GamePhase.DECLARATION
+🔧 ASYNC_DEBUG: Thread: MainThread
+🔧 ASYNC_DEBUG: Is running: True
+🔧 ASYNC_DEBUG: Transition lock acquired: False
+🔧 TRANSITION_DEBUG: Starting transition steps...
+🔧 TRANSITION_DEBUG: Step 1 - Cleanup tasks
+🔧 TRANSITION_DEBUG: Step 2 - Exit current state
+{"timestamp": "2025-07-01T15:22:26.854751Z", "level": "INFO", "logger": "game.state.preparation", "message": "Exiting preparation phase", "module": "base_state", "function": "on_exit", "line": 52}
+{"timestamp": "2025-07-01T15:22:26.854793Z", "level": "INFO", "logger": "game.state.preparation", "message": "\ud83c\udfaf Round starter already set: Bot 2", "module": "preparation_state", "function": "_cleanup_phase", "line": 94}
 🎯 PREP_STATE_DEBUG: Cleanup phase - current_player: Bot 2
 🎯 PREP_STATE_DEBUG: Cleanup phase - round_starter: Bot 2
-{"timestamp": "2025-07-01T06:00:04.630678Z", "level": "INFO", "logger": "game.state.preparation", "message": "\ud83d\udccb Preparation complete - Starter: Bot 2, Multiplier: 1x", "module": "preparation_state", "function": "_cleanup_phase", "line": 105}
-{"timestamp": "2025-07-01T06:00:04.630771Z", "level": "INFO", "logger": "game.state.declaration", "message": "Entering declaration phase", "module": "base_state", "function": "on_enter", "line": 34}
+{"timestamp": "2025-07-01T15:22:26.854843Z", "level": "INFO", "logger": "game.state.preparation", "message": "\ud83d\udccb Preparation complete - Starter: Bot 2, Multiplier: 1x", "module": "preparation_state", "function": "_cleanup_phase", "line": 105}
+🔧 TRANSITION_DEBUG: Step 3 - Atomic state update
+🔧 TRANSITION_DEBUG: Step 4 - Enter new state
+🔧 TRANSITION_DEBUG: Step 4a - About to call on_enter() for declaration
+🔧 BASE_STATE_DEBUG: on_enter() called for declaration phase
+{"timestamp": "2025-07-01T15:22:26.854913Z", "level": "INFO", "logger": "game.state.declaration", "message": "Entering declaration phase", "module": "base_state", "function": "on_enter", "line": 37}
+🔧 BASE_STATE_DEBUG: Clearing phase_data
+🔧 BASE_STATE_DEBUG: About to call _setup_phase() for declaration
 📢 DECL_STATE_DEBUG: Using round_starter: Bot 2
-{"timestamp": "2025-07-01T06:00:04.630870Z", "level": "INFO", "logger": "game.state.declaration", "message": "\ud83c\udfae Phase Data Update: Declaration phase setup - basic data", "module": "base_state", "function": "update_phase_data", "line": 152}
-DEBUG_WS: Message for event 'phase_change' added to queue for room FD6DD3.
-{"timestamp": "2025-07-01T06:00:04.631225Z", "level": "INFO", "logger": "game.state.declaration", "message": "\ud83d\udce4 Auto-broadcast: phase_change to room FD6DD3 - Declaration phase setup - basic data", "module": "base_state", "function": "_auto_broadcast_phase_change", "line": 214}
+{"timestamp": "2025-07-01T15:22:26.854980Z", "level": "INFO", "logger": "game.state.declaration", "message": "\ud83c\udfae Phase Data Update: Declaration phase setup - basic data", "module": "base_state", "function": "update_phase_data", "line": 165}
+DEBUG_WS: Entering broadcast method for room 54FC0D, event phase_change
+DEBUG_WS: Attempting to queue event 'phase_change' for room 54FC0D with data: {'phase': 'declaration', 'allowed_actions': ['player_disconnect', 'declare', 'player_reconnect', 'timeout'], 'phase_data': {'declaration_order': ['Bot 2 - 0 pts', 'Bot 3 - 0 pts', 'Bot 4 - 0 pts', 'Andy - 0 pts'], 'current_declarer_index': 0, 'declarations': {}, 'declaration_total': 0}, 'players': {'Andy': {'hand': ['GENERAL_BLACK(13)', 'SOLDIER_BLACK(1)', 'SOLDIER_BLACK(1)', 'HORSE_RED(6)', 'CHARIOT_BLACK(7)', 'CANNON_BLACK(3)', 'HORSE_BLACK(5)', 'SOLDIER_RED(2)'], 'hand_size': 8}, 'Bot 2': {'hand': ['GENERAL_RED(14)', 'CANNON_BLACK(3)', 'ADVISOR_RED(12)', 'SOLDIER_BLACK(1)', 'ELEPHANT_BLACK(9)', 'HORSE_BLACK(5)', 'CHARIOT_RED(8)', 'SOLDIER_BLACK(1)'], 'hand_size': 8}, 'Bot 3': {'hand': ['ELEPHANT_BLACK(9)', 'CANNON_RED(4)', 'CHARIOT_BLACK(7)', 'SOLDIER_BLACK(1)', 'SOLDIER_RED(2)', 'SOLDIER_RED(2)', 'ADVISOR_BLACK(11)', 'ADVISOR_RED(12)'], 'hand_size': 8}, 'Bot 4': {'hand': ['SOLDIER_RED(2)', 'ELEPHANT_RED(10)', 'SOLDIER_RED(2)', 'CANNON_RED(4)', 'ELEPHANT_RED(10)', 'ADVISOR_BLACK(11)', 'CHARIOT_RED(8)', 'HORSE_RED(6)'], 'hand_size': 8}}, 'round': 1, 'reason': 'Declaration phase setup - basic data', 'sequence': 1, 'timestamp': 1751383346.855108, 'room_id': '54FC0D'}
+🔧 SERIALIZATION_DEBUG: Testing JSON serialization for event 'phase_change'
+🔧 SERIALIZATION_DEBUG: JSON serialization test PASSED for event 'phase_change' - 1220 chars
+🔧 SERIALIZATION_DEBUG: About to call queue.put() for event 'phase_change'
+✅ SERIALIZATION_DEBUG: queue.put() completed successfully for event 'phase_change'
+DEBUG_WS: Message for event 'phase_change' added to queue for room 54FC0D.
+{"timestamp": "2025-07-01T15:22:26.855392Z", "level": "INFO", "logger": "game.state.declaration", "message": "\ud83d\udce4 Auto-broadcast: phase_change to room 54FC0D - Declaration phase setup - basic data", "module": "base_state", "function": "_auto_broadcast_phase_change", "line": 227}
 🤖 ENTERPRISE_DATA_DEBUG: Notifying bot manager about data change - reason: Declaration phase setup - basic data
-{"timestamp": "2025-07-01T06:00:04.631388Z", "level": "INFO", "logger": "game.state.declaration", "message": "\ud83c\udfae Phase Data Update: Declaration phase setup complete - current declarer: Bot 2", "module": "base_state", "function": "update_phase_data", "line": 152}
-DEBUG_WS: Message for event 'phase_change' added to queue for room FD6DD3.
-{"timestamp": "2025-07-01T06:00:04.631710Z", "level": "INFO", "logger": "game.state.declaration", "message": "\ud83d\udce4 Auto-broadcast: phase_change to room FD6DD3 - Declaration phase setup complete - current declarer: Bot 2", "module": "base_state", "function": "_auto_broadcast_phase_change", "line": 214}
+{"timestamp": "2025-07-01T15:22:26.855470Z", "level": "INFO", "logger": "game.state.declaration", "message": "\ud83c\udfae Phase Data Update: Declaration phase setup complete - current declarer: Bot 2", "module": "base_state", "function": "update_phase_data", "line": 165}
+DEBUG_WS: Entering broadcast method for room 54FC0D, event phase_change
+DEBUG_WS: Attempting to queue event 'phase_change' for room 54FC0D with data: {'phase': 'declaration', 'allowed_actions': ['player_disconnect', 'declare', 'player_reconnect', 'timeout'], 'phase_data': {'declaration_order': ['Bot 2 - 0 pts', 'Bot 3 - 0 pts', 'Bot 4 - 0 pts', 'Andy - 0 pts'], 'current_declarer_index': 0, 'declarations': {}, 'declaration_total': 0, 'current_declarer': 'Bot 2'}, 'players': {'Andy': {'hand': ['GENERAL_BLACK(13)', 'SOLDIER_BLACK(1)', 'SOLDIER_BLACK(1)', 'HORSE_RED(6)', 'CHARIOT_BLACK(7)', 'CANNON_BLACK(3)', 'HORSE_BLACK(5)', 'SOLDIER_RED(2)'], 'hand_size': 8}, 'Bot 2': {'hand': ['GENERAL_RED(14)', 'CANNON_BLACK(3)', 'ADVISOR_RED(12)', 'SOLDIER_BLACK(1)', 'ELEPHANT_BLACK(9)', 'HORSE_BLACK(5)', 'CHARIOT_RED(8)', 'SOLDIER_BLACK(1)'], 'hand_size': 8}, 'Bot 3': {'hand': ['ELEPHANT_BLACK(9)', 'CANNON_RED(4)', 'CHARIOT_BLACK(7)', 'SOLDIER_BLACK(1)', 'SOLDIER_RED(2)', 'SOLDIER_RED(2)', 'ADVISOR_BLACK(11)', 'ADVISOR_RED(12)'], 'hand_size': 8}, 'Bot 4': {'hand': ['SOLDIER_RED(2)', 'ELEPHANT_RED(10)', 'SOLDIER_RED(2)', 'CANNON_RED(4)', 'ELEPHANT_RED(10)', 'ADVISOR_BLACK(11)', 'CHARIOT_RED(8)', 'HORSE_RED(6)'], 'hand_size': 8}}, 'round': 1, 'reason': 'Declaration phase setup complete - current declarer: Bot 2', 'sequence': 2, 'timestamp': 1751383346.855582, 'room_id': '54FC0D'}
+🔧 SERIALIZATION_DEBUG: Testing JSON serialization for event 'phase_change'
+🔧 SERIALIZATION_DEBUG: JSON serialization test PASSED for event 'phase_change' - 1271 chars
+🔧 SERIALIZATION_DEBUG: About to call queue.put() for event 'phase_change'
+✅ SERIALIZATION_DEBUG: queue.put() completed successfully for event 'phase_change'
+DEBUG_WS: Message for event 'phase_change' added to queue for room 54FC0D.
+{"timestamp": "2025-07-01T15:22:26.855801Z", "level": "INFO", "logger": "game.state.declaration", "message": "\ud83d\udce4 Auto-broadcast: phase_change to room 54FC0D - Declaration phase setup complete - current declarer: Bot 2", "module": "base_state", "function": "_auto_broadcast_phase_change", "line": 227}
 🤖 ENTERPRISE_DATA_DEBUG: Notifying bot manager about data change - reason: Declaration phase setup complete - current declarer: Bot 2
 🤖 ENTERPRISE_DATA_DEBUG: Declaration phase - current declarer: Bot 2
-🔔 BOT_MANAGER_DEBUG: Received event 'phase_change' for room FD6DD3 with data: {'phase': 'declaration', 'phase_data': {'declaration_order': ['Bot 2 - 0 pts', 'Bot 3 - 0 pts', 'Bot 4 - 0 pts', 'Andy - 0 pts'], 'current_declarer_index': 0, 'declarations': {}, 'declaration_total': 0, 'current_declarer': 'Bot 2'}, 'current_declarer': 'Bot 2', 'reason': 'Declaration phase setup complete - current declarer: Bot 2'}
-✅ BOT_MANAGER_DEBUG: Found handler for room FD6DD3, delegating to handler...
-🎮 BOT_HANDLER_DEBUG: Room FD6DD3 handling event 'phase_change' with data keys: ['phase', 'phase_data', 'current_declarer', 'reason']
+🔔 BOT_MANAGER_DEBUG: Received event 'phase_change' for room 54FC0D with data: {'phase': 'declaration', 'phase_data': {'declaration_order': ['Bot 2 - 0 pts', 'Bot 3 - 0 pts', 'Bot 4 - 0 pts', 'Andy - 0 pts'], 'current_declarer_index': 0, 'declarations': {}, 'declaration_total': 0, 'current_declarer': 'Bot 2'}, 'current_declarer': 'Bot 2', 'reason': 'Declaration phase setup complete - current declarer: Bot 2'}
+✅ BOT_MANAGER_DEBUG: Found handler for room 54FC0D, delegating to handler...
+🎮 BOT_HANDLER_DEBUG: Room 54FC0D handling event 'phase_change' with data keys: ['phase', 'phase_data', 'current_declarer', 'reason']
 🔍 BOT_HANDLER_DEBUG: Event type check - event == 'phase_change': True
 🔍 BOT_HANDLER_DEBUG: Event value repr: 'phase_change'
 🔍 BOT_HANDLER_DEBUG: Attempting to acquire lock...
@@ -269,29 +193,137 @@ DEBUG_WS: Message for event 'phase_change' added to queue for room FD6DD3.
 🔍 ENTERPRISE_BOT_DEBUG: Checking player Bot 2 vs target Bot 2
 🤖 ENTERPRISE_BOT_DEBUG: Current declarer Bot 2 is a bot - triggering declaration
 🤖 DECLARATION_DEBUG: Triggering bot manager for declaration phase
-🔧 DECLARATION_DEBUG: Bot manager active games: ['FD6DD3']
+🔧 DECLARATION_DEBUG: Bot manager active games: ['54FC0D']
 ⚠️ DECLARATION_DEBUG: No room_id found to trigger bot manager
-❌ [Room FD6DD3] Game start failed: op_id=FD6DD3_1, error=websocket_endpoint.<locals>.room_broadcast() takes 2 positional arguments but 3 were given
-❌ Start game error: websocket_endpoint.<locals>.room_broadcast() takes 2 positional arguments but 3 were given
-DEBUG_WS_QUEUE: Room FD6DD3 got message: phase_change
-DEBUG_WS: Broadcasting event 'phase_change' (op_id: unknown) to 1 clients in room FD6DD3.
-DEBUG_WS: Successfully sent 'phase_change' to a client in room FD6DD3.
+🔧 BASE_STATE_DEBUG: _setup_phase() completed successfully for declaration
+🔧 TRANSITION_DEBUG: Step 4b - on_enter() completed for declaration
+🔧 TRANSITION_DEBUG: Step 4c - Checking current state after on_enter()
+🔧 TRANSITION_DEBUG: Current phase: GamePhase.DECLARATION
+🔧 TRANSITION_DEBUG: Current state: <engine.state_machine.states.declaration_state.DeclarationState object at 0x1036b4250>
+🔧 TRANSITION_DEBUG: Is running: True
+🔧 TRANSITION_DEBUG: Step 5 - About to store event
+🔧 STORE_EVENT_DEBUG: _store_phase_change_event called: GamePhase.PREPARATION -> GamePhase.DECLARATION
+🔧 STORE_EVENT_DEBUG: Prepared payload: {'old_phase': 'preparation', 'new_phase': 'declaration', 'timestamp': '2025-07-01T08:22:26.856446', 'game_state': {}}
+🔧 STORE_EVENT_DEBUG: Added game context: {'round_number': 1, 'player_count': 4, 'current_player': 'Bot 2'}
+🔧 STORE_EVENT_DEBUG: About to call action_queue.store_state_event
+🔧 STORE_EVENT_DEBUG: action_queue.store_state_event completed
+🔧 STORE_EVENT_DEBUG: Event storage successful
+🔧 TRANSITION_DEBUG: Step 5 - Store event completed
+🔧 TRANSITION_DEBUG: Step 6 - About to broadcast
+🚀 STATE_MACHINE_DEBUG: Broadcasting phase change to declaration with reason: No weak hands detected - preparation complete
+🔧 BROADCAST_DEBUG: _broadcast_phase_change_with_display_metadata called for declaration
+🔧 BROADCAST_DEBUG: Prepared base_data: {'phase': 'declaration', 'allowed_actions': ['player_disconnect', 'declare', 'player_reconnect', 'timeout'], 'phase_data': {'declaration_order': ['Bot 2', 'Bot 3', 'Bot 4', 'Andy'], 'current_declarer_index': 0, 'declarations': {}, 'declaration_total': 0, 'current_declarer': 'Bot 2'}, 'immediate': True, 'reason': 'No weak hands detected - preparation complete'}
+🔧 BROADCAST_DEBUG: Added display config: {'type': 'declaration', 'show_for_seconds': None, 'auto_advance': False, 'can_skip': False}
+🔧 BROADCAST_DEBUG: Added players data: ['Andy', 'Bot 2', 'Bot 3', 'Bot 4']
+🔧 BROADCAST_DEBUG: About to call broadcast_event with phase_change
+🔧 BROADCAST_EVENT_DEBUG: broadcast_event called with type: phase_change
+🔧 BROADCAST_EVENT_DEBUG: Callback available, calling broadcast_callback
+DEBUG_WS: Entering broadcast method for room 54FC0D, event phase_change
+DEBUG_WS: Attempting to queue event 'phase_change' for room 54FC0D with data: {'phase': 'declaration', 'allowed_actions': ['player_disconnect', 'declare', 'player_reconnect', 'timeout'], 'phase_data': {'declaration_order': ['Bot 2', 'Bot 3', 'Bot 4', 'Andy'], 'current_declarer_index': 0, 'declarations': {}, 'declaration_total': 0, 'current_declarer': 'Bot 2'}, 'immediate': True, 'reason': 'No weak hands detected - preparation complete', 'display': {'type': 'declaration', 'show_for_seconds': None, 'auto_advance': False, 'can_skip': False}, 'players': {'Andy': {'hand': ['GENERAL_BLACK(13)', 'SOLDIER_BLACK(1)', 'SOLDIER_BLACK(1)', 'HORSE_RED(6)', 'CHARIOT_BLACK(7)', 'CANNON_BLACK(3)', 'HORSE_BLACK(5)', 'SOLDIER_RED(2)'], 'hand_size': 8}, 'Bot 2': {'hand': ['GENERAL_RED(14)', 'CANNON_BLACK(3)', 'ADVISOR_RED(12)', 'SOLDIER_BLACK(1)', 'ELEPHANT_BLACK(9)', 'HORSE_BLACK(5)', 'CHARIOT_RED(8)', 'SOLDIER_BLACK(1)'], 'hand_size': 8}, 'Bot 3': {'hand': ['ELEPHANT_BLACK(9)', 'CANNON_RED(4)', 'CHARIOT_BLACK(7)', 'SOLDIER_BLACK(1)', 'SOLDIER_RED(2)', 'SOLDIER_RED(2)', 'ADVISOR_BLACK(11)', 'ADVISOR_RED(12)'], 'hand_size': 8}, 'Bot 4': {'hand': ['SOLDIER_RED(2)', 'ELEPHANT_RED(10)', 'SOLDIER_RED(2)', 'CANNON_RED(4)', 'ELEPHANT_RED(10)', 'ADVISOR_BLACK(11)', 'CHARIOT_RED(8)', 'HORSE_RED(6)'], 'hand_size': 8}}, 'timestamp': 1751383346.8568692, 'room_id': '54FC0D'}
+🔧 SERIALIZATION_DEBUG: Testing JSON serialization for event 'phase_change'
+🔧 SERIALIZATION_DEBUG: JSON serialization test PASSED for event 'phase_change' - 1323 chars
+🔧 SERIALIZATION_DEBUG: About to call queue.put() for event 'phase_change'
+✅ SERIALIZATION_DEBUG: queue.put() completed successfully for event 'phase_change'
+DEBUG_WS: Message for event 'phase_change' added to queue for room 54FC0D.
+DEBUG_WS_QUEUE: Room 54FC0D got message: phase_change
+DEBUG_WS: Broadcasting event 'phase_change' (op_id: unknown) to 1 clients in room 54FC0D.
+DEBUG_WS: Successfully sent 'phase_change' to a client in room 54FC0D.
 🤖 BOT_SINGLE_DECLARE: Handling declaration for Bot 2
-🤖 BOT_SINGLE_DECLARE: Bot Bot 2 will declare in 0.8s...
-DEBUG_WS_QUEUE: Room FD6DD3 got message: phase_change
-DEBUG_WS: Broadcasting event 'phase_change' (op_id: unknown) to 1 clients in room FD6DD3.
-DEBUG_WS: Successfully sent 'phase_change' to a client in room FD6DD3.
+🤖 BOT_SINGLE_DECLARE: Bot Bot 2 will declare in 1.0s...
+🔧 BROADCAST_EVENT_DEBUG: broadcast_callback completed successfully
+🔧 BROADCAST_DEBUG: broadcast_event completed successfully
+✅ STATE_MACHINE_DEBUG: Phase change broadcast completed for declaration
+🔧 TRANSITION_DEBUG: Step 7 - About to notify bot manager
+🤖 STATE_MACHINE_DEBUG: Notifying bot manager about phase declaration for room 54FC0D
+🔔 BOT_MANAGER_DEBUG: Received event 'round_started' for room 54FC0D with data: {'phase': 'declaration', 'starter': 'Bot 2'}
+✅ BOT_MANAGER_DEBUG: Found handler for room 54FC0D, delegating to handler...
+🎮 BOT_HANDLER_DEBUG: Room 54FC0D handling event 'round_started' with data keys: ['phase', 'starter']
+🔍 BOT_HANDLER_DEBUG: Event type check - event == 'phase_change': False
+🔍 BOT_HANDLER_DEBUG: Event value repr: 'round_started'
+🔍 BOT_HANDLER_DEBUG: Attempting to acquire lock...
+🔍 BOT_HANDLER_DEBUG: Lock acquired, processing event...
+🎪 BOT_HANDLER_DEBUG: Handling round start
+🔍 BOT_ROUND_DEBUG: Game state current_order: None
+🔍 BOT_ROUND_DEBUG: Game round_starter: Bot 2
+🔍 BOT_ROUND_DEBUG: Game current_player: Bot 2
+🔧 BOT_ROUND_DEBUG: Declarations now handled by enterprise phase change - skipping old path
+🔧 TRANSITION_DEBUG: Step 7 - Bot manager notification completed
+✅ TRANSITION_DEBUG: All transition steps completed successfully: GamePhase.PREPARATION -> GamePhase.DECLARATION
+🔧 BASE_STATE_DEBUG: _setup_phase() completed successfully for preparation
+🔧 TRANSITION_DEBUG: Step 4b - on_enter() completed for preparation
+🔧 TRANSITION_DEBUG: Step 4c - Checking current state after on_enter()
+🔧 TRANSITION_DEBUG: Current phase: GamePhase.DECLARATION
+🔧 TRANSITION_DEBUG: Current state: <engine.state_machine.states.declaration_state.DeclarationState object at 0x1036b4250>
+🔧 TRANSITION_DEBUG: Is running: True
+🔧 TRANSITION_DEBUG: Step 5 - About to store event
+🔧 STORE_EVENT_DEBUG: _store_phase_change_event called: None -> GamePhase.PREPARATION
+🔧 STORE_EVENT_DEBUG: Prepared payload: {'old_phase': None, 'new_phase': 'preparation', 'timestamp': '2025-07-01T08:22:26.858948', 'game_state': {}}
+🔧 STORE_EVENT_DEBUG: Added game context: {'round_number': 1, 'player_count': 4, 'current_player': 'Bot 2'}
+🔧 STORE_EVENT_DEBUG: About to call action_queue.store_state_event
+🔧 STORE_EVENT_DEBUG: action_queue.store_state_event completed
+🔧 STORE_EVENT_DEBUG: Event storage successful
+🔧 TRANSITION_DEBUG: Step 5 - Store event completed
+🔧 TRANSITION_DEBUG: Step 6 - About to broadcast
+🚀 STATE_MACHINE_DEBUG: Broadcasting phase change to preparation with reason: Initial state machine start
+🔧 BROADCAST_DEBUG: _broadcast_phase_change_with_display_metadata called for preparation
+🔧 BROADCAST_DEBUG: Prepared base_data: {'phase': 'preparation', 'allowed_actions': ['player_disconnect', 'declare', 'player_reconnect', 'timeout'], 'phase_data': {'declaration_order': ['Bot 2', 'Bot 3', 'Bot 4', 'Andy'], 'current_declarer_index': 0, 'declarations': {}, 'declaration_total': 0, 'current_declarer': 'Bot 2'}, 'immediate': True, 'reason': 'Initial state machine start'}
+🔧 BROADCAST_DEBUG: Added display config: {'type': 'preparation', 'show_for_seconds': None, 'auto_advance': False, 'can_skip': False}
+🔧 BROADCAST_DEBUG: Added players data: ['Andy', 'Bot 2', 'Bot 3', 'Bot 4']
+🔧 BROADCAST_DEBUG: About to call broadcast_event with phase_change
+🔧 BROADCAST_EVENT_DEBUG: broadcast_event called with type: phase_change
+🔧 BROADCAST_EVENT_DEBUG: Callback available, calling broadcast_callback
+DEBUG_WS: Entering broadcast method for room 54FC0D, event phase_change
+DEBUG_WS: Attempting to queue event 'phase_change' for room 54FC0D with data: {'phase': 'preparation', 'allowed_actions': ['player_disconnect', 'declare', 'player_reconnect', 'timeout'], 'phase_data': {'declaration_order': ['Bot 2', 'Bot 3', 'Bot 4', 'Andy'], 'current_declarer_index': 0, 'declarations': {}, 'declaration_total': 0, 'current_declarer': 'Bot 2'}, 'immediate': True, 'reason': 'Initial state machine start', 'display': {'type': 'preparation', 'show_for_seconds': None, 'auto_advance': False, 'can_skip': False}, 'players': {'Andy': {'hand': ['GENERAL_BLACK(13)', 'SOLDIER_BLACK(1)', 'SOLDIER_BLACK(1)', 'HORSE_RED(6)', 'CHARIOT_BLACK(7)', 'CANNON_BLACK(3)', 'HORSE_BLACK(5)', 'SOLDIER_RED(2)'], 'hand_size': 8}, 'Bot 2': {'hand': ['GENERAL_RED(14)', 'CANNON_BLACK(3)', 'ADVISOR_RED(12)', 'SOLDIER_BLACK(1)', 'ELEPHANT_BLACK(9)', 'HORSE_BLACK(5)', 'CHARIOT_RED(8)', 'SOLDIER_BLACK(1)'], 'hand_size': 8}, 'Bot 3': {'hand': ['ELEPHANT_BLACK(9)', 'CANNON_RED(4)', 'CHARIOT_BLACK(7)', 'SOLDIER_BLACK(1)', 'SOLDIER_RED(2)', 'SOLDIER_RED(2)', 'ADVISOR_BLACK(11)', 'ADVISOR_RED(12)'], 'hand_size': 8}, 'Bot 4': {'hand': ['SOLDIER_RED(2)', 'ELEPHANT_RED(10)', 'SOLDIER_RED(2)', 'CANNON_RED(4)', 'ELEPHANT_RED(10)', 'ADVISOR_BLACK(11)', 'CHARIOT_RED(8)', 'HORSE_RED(6)'], 'hand_size': 8}}, 'timestamp': 1751383346.85917, 'room_id': '54FC0D'}
+🔧 SERIALIZATION_DEBUG: Testing JSON serialization for event 'phase_change'
+🔧 SERIALIZATION_DEBUG: JSON serialization test PASSED for event 'phase_change' - 1303 chars
+🔧 SERIALIZATION_DEBUG: About to call queue.put() for event 'phase_change'
+✅ SERIALIZATION_DEBUG: queue.put() completed successfully for event 'phase_change'
+DEBUG_WS: Message for event 'phase_change' added to queue for room 54FC0D.
+🔧 BROADCAST_EVENT_DEBUG: broadcast_callback completed successfully
+🔧 BROADCAST_DEBUG: broadcast_event completed successfully
+✅ STATE_MACHINE_DEBUG: Phase change broadcast completed for preparation
+🔧 TRANSITION_DEBUG: Step 7 - About to notify bot manager
+🤖 STATE_MACHINE_DEBUG: Notifying bot manager about phase preparation for room 54FC0D
+🔧 TRANSITION_DEBUG: Step 7 - Bot manager notification completed
+✅ TRANSITION_DEBUG: All transition steps completed successfully: None -> GamePhase.PREPARATION
+✅ [Room 54FC0D] Game and StateMachine started successfully: op_id=54FC0D_1
+✅ [Room 54FC0D] Bot manager registered for 3 bots
+✅ Game started in room 54FC0D
+DEBUG_WS_QUEUE: Room 54FC0D got message: phase_change
+DEBUG_WS: Broadcasting event 'phase_change' (op_id: unknown) to 1 clients in room 54FC0D.
+DEBUG_WS: Successfully sent 'phase_change' to a client in room 54FC0D.
+DEBUG_WS_QUEUE: Room 54FC0D got message: phase_change
+DEBUG_WS: Broadcasting event 'phase_change' (op_id: unknown) to 1 clients in room 54FC0D.
+DEBUG_WS: Successfully sent 'phase_change' to a client in room 54FC0D.
+DEBUG_WS_QUEUE: Room 54FC0D got message: phase_change
+DEBUG_WS: Broadcasting event 'phase_change' (op_id: unknown) to 1 clients in room 54FC0D.
+INFO:     ('127.0.0.1', 55788) - "WebSocket /ws/54FC0D" [accepted]
+DEBUG_WS: Registered new connection for room 54FC0D. Total connections: 2
+INFO:     connection open
+DEBUG_WS: Error sending to client in room 54FC0D: 
+DEBUG_WS_DISCONNECT: WebSocket client disconnected from room 54FC0D.
+INFO:     connection closed
+DEBUG_WS: Unregistered connection for room 54FC0D. Remaining connections: 1
+DEBUG_WS_RECEIVE: Received event 'client_ready' from client in room 54FC0D with data: {'room_id': '54FC0D'}
+DEBUG_WS_RECEIVE: Sent current game phase declaration to client in room 54FC0D
+DEBUG_WS_RECEIVE: Sent initial room state to client in room 54FC0D after client_ready.
 🔍 BOT_DEBUG: Got declaration order from state machine: ['Bot 2', 'Bot 3', 'Bot 4', 'Andy']
 🤖 BOT_SINGLE_DECLARE: Bot Bot 2 declaring at position 0
-{"timestamp": "2025-07-01T06:00:05.481235Z", "level": "INFO", "logger": "game.state.declaration", "message": "\ud83c\udfae Phase Data Update: Player Bot 2 declared 2", "module": "base_state", "function": "update_phase_data", "line": 152}
-DEBUG_WS: Message for event 'phase_change' added to queue for room FD6DD3.
+{"timestamp": "2025-07-01T15:22:27.904592Z", "level": "INFO", "logger": "game.state.declaration", "message": "\ud83c\udfae Phase Data Update: Player Bot 2 declared 2", "module": "base_state", "function": "update_phase_data", "line": 165}
+DEBUG_WS: Entering broadcast method for room 54FC0D, event phase_change
+DEBUG_WS: Attempting to queue event 'phase_change' for room 54FC0D with data: {'phase': 'declaration', 'allowed_actions': ['player_disconnect', 'declare', 'player_reconnect', 'timeout'], 'phase_data': {'declaration_order': ['Bot 2 - 0 pts', 'Bot 3 - 0 pts', 'Bot 4 - 0 pts', 'Andy - 0 pts'], 'current_declarer_index': 1, 'declarations': {'Bot 2': 2}, 'declaration_total': 2, 'current_declarer': 'Bot 3'}, 'players': {'Andy': {'hand': ['GENERAL_BLACK(13)', 'SOLDIER_BLACK(1)', 'SOLDIER_BLACK(1)', 'HORSE_RED(6)', 'CHARIOT_BLACK(7)', 'CANNON_BLACK(3)', 'HORSE_BLACK(5)', 'SOLDIER_RED(2)'], 'hand_size': 8}, 'Bot 2': {'hand': ['GENERAL_RED(14)', 'CANNON_BLACK(3)', 'ADVISOR_RED(12)', 'SOLDIER_BLACK(1)', 'ELEPHANT_BLACK(9)', 'HORSE_BLACK(5)', 'CHARIOT_RED(8)', 'SOLDIER_BLACK(1)'], 'hand_size': 8}, 'Bot 3': {'hand': ['ELEPHANT_BLACK(9)', 'CANNON_RED(4)', 'CHARIOT_BLACK(7)', 'SOLDIER_BLACK(1)', 'SOLDIER_RED(2)', 'SOLDIER_RED(2)', 'ADVISOR_BLACK(11)', 'ADVISOR_RED(12)'], 'hand_size': 8}, 'Bot 4': {'hand': ['SOLDIER_RED(2)', 'ELEPHANT_RED(10)', 'SOLDIER_RED(2)', 'CANNON_RED(4)', 'ELEPHANT_RED(10)', 'ADVISOR_BLACK(11)', 'CHARIOT_RED(8)', 'HORSE_RED(6)'], 'hand_size': 8}}, 'round': 1, 'reason': 'Player Bot 2 declared 2', 'sequence': 3, 'timestamp': 1751383347.904717, 'room_id': '54FC0D'}
+🔧 SERIALIZATION_DEBUG: Testing JSON serialization for event 'phase_change'
+🔧 SERIALIZATION_DEBUG: JSON serialization test PASSED for event 'phase_change' - 1246 chars
+🔧 SERIALIZATION_DEBUG: About to call queue.put() for event 'phase_change'
+✅ SERIALIZATION_DEBUG: queue.put() completed successfully for event 'phase_change'
+DEBUG_WS: Message for event 'phase_change' added to queue for room 54FC0D.
 🔄 RELIABLE_MSG: Message retry worker started
-{"timestamp": "2025-07-01T06:00:05.481641Z", "level": "INFO", "logger": "game.state.declaration", "message": "\ud83d\udce4 Auto-broadcast: phase_change to room FD6DD3 - Player Bot 2 declared 2", "module": "base_state", "function": "_auto_broadcast_phase_change", "line": 214}
+{"timestamp": "2025-07-01T15:22:27.905041Z", "level": "INFO", "logger": "game.state.declaration", "message": "\ud83d\udce4 Auto-broadcast: phase_change to room 54FC0D - Player Bot 2 declared 2", "module": "base_state", "function": "_auto_broadcast_phase_change", "line": 227}
 🤖 ENTERPRISE_DATA_DEBUG: Notifying bot manager about data change - reason: Player Bot 2 declared 2
 🤖 ENTERPRISE_DATA_DEBUG: Declaration phase - current declarer: Bot 3
-🔔 BOT_MANAGER_DEBUG: Received event 'phase_change' for room FD6DD3 with data: {'phase': 'declaration', 'phase_data': {'declaration_order': ['Bot 2 - 0 pts', 'Bot 3 - 0 pts', 'Bot 4 - 0 pts', 'Andy - 0 pts'], 'current_declarer_index': 1, 'declarations': {'Bot 2': 2}, 'declaration_total': 2, 'current_declarer': 'Bot 3'}, 'current_declarer': 'Bot 3', 'reason': 'Player Bot 2 declared 2'}
-✅ BOT_MANAGER_DEBUG: Found handler for room FD6DD3, delegating to handler...
-🎮 BOT_HANDLER_DEBUG: Room FD6DD3 handling event 'phase_change' with data keys: ['phase', 'phase_data', 'current_declarer', 'reason']
+🔔 BOT_MANAGER_DEBUG: Received event 'phase_change' for room 54FC0D with data: {'phase': 'declaration', 'phase_data': {'declaration_order': ['Bot 2 - 0 pts', 'Bot 3 - 0 pts', 'Bot 4 - 0 pts', 'Andy - 0 pts'], 'current_declarer_index': 1, 'declarations': {'Bot 2': 2}, 'declaration_total': 2, 'current_declarer': 'Bot 3'}, 'current_declarer': 'Bot 3', 'reason': 'Player Bot 2 declared 2'}
+✅ BOT_MANAGER_DEBUG: Found handler for room 54FC0D, delegating to handler...
+🎮 BOT_HANDLER_DEBUG: Room 54FC0D handling event 'phase_change' with data keys: ['phase', 'phase_data', 'current_declarer', 'reason']
 🔍 BOT_HANDLER_DEBUG: Event type check - event == 'phase_change': True
 🔍 BOT_HANDLER_DEBUG: Event value repr: 'phase_change'
 🔍 BOT_HANDLER_DEBUG: Attempting to acquire lock...
@@ -303,26 +335,32 @@ DEBUG_WS: Message for event 'phase_change' added to queue for room FD6DD3.
 🔍 ENTERPRISE_BOT_DEBUG: Checking player Bot 2 vs target Bot 3
 🔍 ENTERPRISE_BOT_DEBUG: Checking player Bot 3 vs target Bot 3
 🤖 ENTERPRISE_BOT_DEBUG: Current declarer Bot 3 is a bot - triggering declaration
-{"timestamp": "2025-07-01T06:00:05.481953Z", "level": "INFO", "logger": "game.state.declaration", "message": "Player Bot 2 declared 2", "module": "declaration_state", "function": "_handle_declaration", "line": 157}
 🤖 DECLARATION_DEBUG: Triggering bot manager after Bot 2 declared
 ⚠️ DECLARATION_DEBUG: No room_id found to trigger bot manager
-🔧 BOT_DECLARE_DEBUG: State machine result: {'success': True, 'immediate': True, 'transition': False, 'processing_time': 0.000982046127319336, 'reason': 'Declaration processed successfully', 'data': {'status': 'declaration_recorded', 'player': 'Bot 2', 'value': 2, 'total': 2}}
+{"timestamp": "2025-07-01T15:22:27.905233Z", "level": "INFO", "logger": "game.state.declaration", "message": "Player Bot 2 declared 2", "module": "declaration_state", "function": "_handle_declaration", "line": 193}
+🔧 BOT_DECLARE_DEBUG: State machine result: {'success': True, 'immediate': True, 'transition': False, 'processing_time': 0.0007658004760742188, 'reason': 'Declaration processed successfully', 'data': {'status': 'declaration_recorded', 'player': 'Bot 2', 'value': 2, 'total': 2}}
 🤖 BOT_SINGLE_DECLARE: Handling declaration for Bot 3
-🤖 BOT_SINGLE_DECLARE: Bot Bot 3 will declare in 1.0s...
-DEBUG_WS_QUEUE: Room FD6DD3 got message: phase_change
-DEBUG_WS: Broadcasting event 'phase_change' (op_id: unknown) to 1 clients in room FD6DD3.
-DEBUG_WS: Successfully sent 'phase_change' to a client in room FD6DD3.
+🤖 BOT_SINGLE_DECLARE: Bot Bot 3 will declare in 1.3s...
+DEBUG_WS_QUEUE: Room 54FC0D got message: phase_change
+DEBUG_WS: Broadcasting event 'phase_change' (op_id: unknown) to 1 clients in room 54FC0D.
+DEBUG_WS: Successfully sent 'phase_change' to a client in room 54FC0D.
 ✅ Bot Bot 2 declared 2
 🔍 BOT_DEBUG: Got declaration order from state machine: ['Bot 2', 'Bot 3', 'Bot 4', 'Andy']
 🤖 BOT_SINGLE_DECLARE: Bot Bot 3 declaring at position 1
-{"timestamp": "2025-07-01T06:00:06.493969Z", "level": "INFO", "logger": "game.state.declaration", "message": "\ud83c\udfae Phase Data Update: Player Bot 3 declared 1", "module": "base_state", "function": "update_phase_data", "line": 152}
-DEBUG_WS: Message for event 'phase_change' added to queue for room FD6DD3.
-{"timestamp": "2025-07-01T06:00:06.494513Z", "level": "INFO", "logger": "game.state.declaration", "message": "\ud83d\udce4 Auto-broadcast: phase_change to room FD6DD3 - Player Bot 3 declared 1", "module": "base_state", "function": "_auto_broadcast_phase_change", "line": 214}
+{"timestamp": "2025-07-01T15:22:29.238063Z", "level": "INFO", "logger": "game.state.declaration", "message": "\ud83c\udfae Phase Data Update: Player Bot 3 declared 1", "module": "base_state", "function": "update_phase_data", "line": 165}
+DEBUG_WS: Entering broadcast method for room 54FC0D, event phase_change
+DEBUG_WS: Attempting to queue event 'phase_change' for room 54FC0D with data: {'phase': 'declaration', 'allowed_actions': ['player_disconnect', 'declare', 'player_reconnect', 'timeout'], 'phase_data': {'declaration_order': ['Bot 2 - 0 pts', 'Bot 3 - 0 pts', 'Bot 4 - 0 pts', 'Andy - 0 pts'], 'current_declarer_index': 2, 'declarations': {'Bot 2': 2, 'Bot 3': 1}, 'declaration_total': 3, 'current_declarer': 'Bot 4'}, 'players': {'Andy': {'hand': ['GENERAL_BLACK(13)', 'SOLDIER_BLACK(1)', 'SOLDIER_BLACK(1)', 'HORSE_RED(6)', 'CHARIOT_BLACK(7)', 'CANNON_BLACK(3)', 'HORSE_BLACK(5)', 'SOLDIER_RED(2)'], 'hand_size': 8}, 'Bot 2': {'hand': ['GENERAL_RED(14)', 'CANNON_BLACK(3)', 'ADVISOR_RED(12)', 'SOLDIER_BLACK(1)', 'ELEPHANT_BLACK(9)', 'HORSE_BLACK(5)', 'CHARIOT_RED(8)', 'SOLDIER_BLACK(1)'], 'hand_size': 8}, 'Bot 3': {'hand': ['ELEPHANT_BLACK(9)', 'CANNON_RED(4)', 'CHARIOT_BLACK(7)', 'SOLDIER_BLACK(1)', 'SOLDIER_RED(2)', 'SOLDIER_RED(2)', 'ADVISOR_BLACK(11)', 'ADVISOR_RED(12)'], 'hand_size': 8}, 'Bot 4': {'hand': ['SOLDIER_RED(2)', 'ELEPHANT_RED(10)', 'SOLDIER_RED(2)', 'CANNON_RED(4)', 'ELEPHANT_RED(10)', 'ADVISOR_BLACK(11)', 'CHARIOT_RED(8)', 'HORSE_RED(6)'], 'hand_size': 8}}, 'round': 1, 'reason': 'Player Bot 3 declared 1', 'sequence': 4, 'timestamp': 1751383349.238379, 'room_id': '54FC0D'}
+🔧 SERIALIZATION_DEBUG: Testing JSON serialization for event 'phase_change'
+🔧 SERIALIZATION_DEBUG: JSON serialization test PASSED for event 'phase_change' - 1258 chars
+🔧 SERIALIZATION_DEBUG: About to call queue.put() for event 'phase_change'
+✅ SERIALIZATION_DEBUG: queue.put() completed successfully for event 'phase_change'
+DEBUG_WS: Message for event 'phase_change' added to queue for room 54FC0D.
+{"timestamp": "2025-07-01T15:22:29.239066Z", "level": "INFO", "logger": "game.state.declaration", "message": "\ud83d\udce4 Auto-broadcast: phase_change to room 54FC0D - Player Bot 3 declared 1", "module": "base_state", "function": "_auto_broadcast_phase_change", "line": 227}
 🤖 ENTERPRISE_DATA_DEBUG: Notifying bot manager about data change - reason: Player Bot 3 declared 1
 🤖 ENTERPRISE_DATA_DEBUG: Declaration phase - current declarer: Bot 4
-🔔 BOT_MANAGER_DEBUG: Received event 'phase_change' for room FD6DD3 with data: {'phase': 'declaration', 'phase_data': {'declaration_order': ['Bot 2 - 0 pts', 'Bot 3 - 0 pts', 'Bot 4 - 0 pts', 'Andy - 0 pts'], 'current_declarer_index': 2, 'declarations': {'Bot 2': 2, 'Bot 3': 1}, 'declaration_total': 3, 'current_declarer': 'Bot 4'}, 'current_declarer': 'Bot 4', 'reason': 'Player Bot 3 declared 1'}
-✅ BOT_MANAGER_DEBUG: Found handler for room FD6DD3, delegating to handler...
-🎮 BOT_HANDLER_DEBUG: Room FD6DD3 handling event 'phase_change' with data keys: ['phase', 'phase_data', 'current_declarer', 'reason']
+🔔 BOT_MANAGER_DEBUG: Received event 'phase_change' for room 54FC0D with data: {'phase': 'declaration', 'phase_data': {'declaration_order': ['Bot 2 - 0 pts', 'Bot 3 - 0 pts', 'Bot 4 - 0 pts', 'Andy - 0 pts'], 'current_declarer_index': 2, 'declarations': {'Bot 2': 2, 'Bot 3': 1}, 'declaration_total': 3, 'current_declarer': 'Bot 4'}, 'current_declarer': 'Bot 4', 'reason': 'Player Bot 3 declared 1'}
+✅ BOT_MANAGER_DEBUG: Found handler for room 54FC0D, delegating to handler...
+🎮 BOT_HANDLER_DEBUG: Room 54FC0D handling event 'phase_change' with data keys: ['phase', 'phase_data', 'current_declarer', 'reason']
 🔍 BOT_HANDLER_DEBUG: Event type check - event == 'phase_change': True
 🔍 BOT_HANDLER_DEBUG: Event value repr: 'phase_change'
 🔍 BOT_HANDLER_DEBUG: Attempting to acquire lock...
@@ -335,26 +373,32 @@ DEBUG_WS: Message for event 'phase_change' added to queue for room FD6DD3.
 🔍 ENTERPRISE_BOT_DEBUG: Checking player Bot 3 vs target Bot 4
 🔍 ENTERPRISE_BOT_DEBUG: Checking player Bot 4 vs target Bot 4
 🤖 ENTERPRISE_BOT_DEBUG: Current declarer Bot 4 is a bot - triggering declaration
-{"timestamp": "2025-07-01T06:00:06.495088Z", "level": "INFO", "logger": "game.state.declaration", "message": "Player Bot 3 declared 1", "module": "declaration_state", "function": "_handle_declaration", "line": 157}
 🤖 DECLARATION_DEBUG: Triggering bot manager after Bot 3 declared
 ⚠️ DECLARATION_DEBUG: No room_id found to trigger bot manager
-🔧 BOT_DECLARE_DEBUG: State machine result: {'success': True, 'immediate': True, 'transition': False, 'processing_time': 0.001497030258178711, 'reason': 'Declaration processed successfully', 'data': {'status': 'declaration_recorded', 'player': 'Bot 3', 'value': 1, 'total': 3}}
+{"timestamp": "2025-07-01T15:22:29.239618Z", "level": "INFO", "logger": "game.state.declaration", "message": "Player Bot 3 declared 1", "module": "declaration_state", "function": "_handle_declaration", "line": 193}
+🔧 BOT_DECLARE_DEBUG: State machine result: {'success': True, 'immediate': True, 'transition': False, 'processing_time': 0.0018582344055175781, 'reason': 'Declaration processed successfully', 'data': {'status': 'declaration_recorded', 'player': 'Bot 3', 'value': 1, 'total': 3}}
 🤖 BOT_SINGLE_DECLARE: Handling declaration for Bot 4
-🤖 BOT_SINGLE_DECLARE: Bot Bot 4 will declare in 1.1s...
-DEBUG_WS_QUEUE: Room FD6DD3 got message: phase_change
-DEBUG_WS: Broadcasting event 'phase_change' (op_id: unknown) to 1 clients in room FD6DD3.
-DEBUG_WS: Successfully sent 'phase_change' to a client in room FD6DD3.
+🤖 BOT_SINGLE_DECLARE: Bot Bot 4 will declare in 0.7s...
+DEBUG_WS_QUEUE: Room 54FC0D got message: phase_change
+DEBUG_WS: Broadcasting event 'phase_change' (op_id: unknown) to 1 clients in room 54FC0D.
+DEBUG_WS: Successfully sent 'phase_change' to a client in room 54FC0D.
 ✅ Bot Bot 3 declared 1
 🔍 BOT_DEBUG: Got declaration order from state machine: ['Bot 2', 'Bot 3', 'Bot 4', 'Andy']
 🤖 BOT_SINGLE_DECLARE: Bot Bot 4 declaring at position 2
-{"timestamp": "2025-07-01T06:00:07.557512Z", "level": "INFO", "logger": "game.state.declaration", "message": "\ud83c\udfae Phase Data Update: Player Bot 4 declared 1", "module": "base_state", "function": "update_phase_data", "line": 152}
-DEBUG_WS: Message for event 'phase_change' added to queue for room FD6DD3.
-{"timestamp": "2025-07-01T06:00:07.558081Z", "level": "INFO", "logger": "game.state.declaration", "message": "\ud83d\udce4 Auto-broadcast: phase_change to room FD6DD3 - Player Bot 4 declared 1", "module": "base_state", "function": "_auto_broadcast_phase_change", "line": 214}
+{"timestamp": "2025-07-01T15:22:29.914602Z", "level": "INFO", "logger": "game.state.declaration", "message": "\ud83c\udfae Phase Data Update: Player Bot 4 declared 1", "module": "base_state", "function": "update_phase_data", "line": 165}
+DEBUG_WS: Entering broadcast method for room 54FC0D, event phase_change
+DEBUG_WS: Attempting to queue event 'phase_change' for room 54FC0D with data: {'phase': 'declaration', 'allowed_actions': ['player_disconnect', 'declare', 'player_reconnect', 'timeout'], 'phase_data': {'declaration_order': ['Bot 2 - 0 pts', 'Bot 3 - 0 pts', 'Bot 4 - 0 pts', 'Andy - 0 pts'], 'current_declarer_index': 3, 'declarations': {'Bot 2': 2, 'Bot 3': 1, 'Bot 4': 1}, 'declaration_total': 4, 'current_declarer': 'Andy'}, 'players': {'Andy': {'hand': ['GENERAL_BLACK(13)', 'SOLDIER_BLACK(1)', 'SOLDIER_BLACK(1)', 'HORSE_RED(6)', 'CHARIOT_BLACK(7)', 'CANNON_BLACK(3)', 'HORSE_BLACK(5)', 'SOLDIER_RED(2)'], 'hand_size': 8}, 'Bot 2': {'hand': ['GENERAL_RED(14)', 'CANNON_BLACK(3)', 'ADVISOR_RED(12)', 'SOLDIER_BLACK(1)', 'ELEPHANT_BLACK(9)', 'HORSE_BLACK(5)', 'CHARIOT_RED(8)', 'SOLDIER_BLACK(1)'], 'hand_size': 8}, 'Bot 3': {'hand': ['ELEPHANT_BLACK(9)', 'CANNON_RED(4)', 'CHARIOT_BLACK(7)', 'SOLDIER_BLACK(1)', 'SOLDIER_RED(2)', 'SOLDIER_RED(2)', 'ADVISOR_BLACK(11)', 'ADVISOR_RED(12)'], 'hand_size': 8}, 'Bot 4': {'hand': ['SOLDIER_RED(2)', 'ELEPHANT_RED(10)', 'SOLDIER_RED(2)', 'CANNON_RED(4)', 'ELEPHANT_RED(10)', 'ADVISOR_BLACK(11)', 'CHARIOT_RED(8)', 'HORSE_RED(6)'], 'hand_size': 8}}, 'round': 1, 'reason': 'Player Bot 4 declared 1', 'sequence': 5, 'timestamp': 1751383349.9148512, 'room_id': '54FC0D'}
+🔧 SERIALIZATION_DEBUG: Testing JSON serialization for event 'phase_change'
+🔧 SERIALIZATION_DEBUG: JSON serialization test PASSED for event 'phase_change' - 1270 chars
+🔧 SERIALIZATION_DEBUG: About to call queue.put() for event 'phase_change'
+✅ SERIALIZATION_DEBUG: queue.put() completed successfully for event 'phase_change'
+DEBUG_WS: Message for event 'phase_change' added to queue for room 54FC0D.
+{"timestamp": "2025-07-01T15:22:29.915392Z", "level": "INFO", "logger": "game.state.declaration", "message": "\ud83d\udce4 Auto-broadcast: phase_change to room 54FC0D - Player Bot 4 declared 1", "module": "base_state", "function": "_auto_broadcast_phase_change", "line": 227}
 🤖 ENTERPRISE_DATA_DEBUG: Notifying bot manager about data change - reason: Player Bot 4 declared 1
 🤖 ENTERPRISE_DATA_DEBUG: Declaration phase - current declarer: Andy
-🔔 BOT_MANAGER_DEBUG: Received event 'phase_change' for room FD6DD3 with data: {'phase': 'declaration', 'phase_data': {'declaration_order': ['Bot 2 - 0 pts', 'Bot 3 - 0 pts', 'Bot 4 - 0 pts', 'Andy - 0 pts'], 'current_declarer_index': 3, 'declarations': {'Bot 2': 2, 'Bot 3': 1, 'Bot 4': 1}, 'declaration_total': 4, 'current_declarer': 'Andy'}, 'current_declarer': 'Andy', 'reason': 'Player Bot 4 declared 1'}
-✅ BOT_MANAGER_DEBUG: Found handler for room FD6DD3, delegating to handler...
-🎮 BOT_HANDLER_DEBUG: Room FD6DD3 handling event 'phase_change' with data keys: ['phase', 'phase_data', 'current_declarer', 'reason']
+🔔 BOT_MANAGER_DEBUG: Received event 'phase_change' for room 54FC0D with data: {'phase': 'declaration', 'phase_data': {'declaration_order': ['Bot 2 - 0 pts', 'Bot 3 - 0 pts', 'Bot 4 - 0 pts', 'Andy - 0 pts'], 'current_declarer_index': 3, 'declarations': {'Bot 2': 2, 'Bot 3': 1, 'Bot 4': 1}, 'declaration_total': 4, 'current_declarer': 'Andy'}, 'current_declarer': 'Andy', 'reason': 'Player Bot 4 declared 1'}
+✅ BOT_MANAGER_DEBUG: Found handler for room 54FC0D, delegating to handler...
+🎮 BOT_HANDLER_DEBUG: Room 54FC0D handling event 'phase_change' with data keys: ['phase', 'phase_data', 'current_declarer', 'reason']
 🔍 BOT_HANDLER_DEBUG: Event type check - event == 'phase_change': True
 🔍 BOT_HANDLER_DEBUG: Event value repr: 'phase_change'
 🔍 BOT_HANDLER_DEBUG: Attempting to acquire lock...
@@ -364,12 +408,54 @@ DEBUG_WS: Message for event 'phase_change' added to queue for room FD6DD3.
 🚀 ENTERPRISE_BOT_DEBUG: Declaration phase - checking if Andy is a bot
 🔍 ENTERPRISE_BOT_DEBUG: Checking player Andy vs target Andy
 👤 ENTERPRISE_BOT_DEBUG: Current declarer Andy is human - waiting
-{"timestamp": "2025-07-01T06:00:07.558472Z", "level": "INFO", "logger": "game.state.declaration", "message": "Player Bot 4 declared 1", "module": "declaration_state", "function": "_handle_declaration", "line": 157}
 🤖 DECLARATION_DEBUG: Triggering bot manager after Bot 4 declared
 ⚠️ DECLARATION_DEBUG: No room_id found to trigger bot manager
-🔧 BOT_DECLARE_DEBUG: State machine result: {'success': True, 'immediate': True, 'transition': False, 'processing_time': 0.0012860298156738281, 'reason': 'Declaration processed successfully', 'data': {'status': 'declaration_recorded', 'player': 'Bot 4', 'value': 1, 'total': 4}}
-DEBUG_WS_QUEUE: Room FD6DD3 got message: phase_change
-DEBUG_WS: Broadcasting event 'phase_change' (op_id: unknown) to 1 clients in room FD6DD3.
-DEBUG_WS: Successfully sent 'phase_change' to a client in room FD6DD3.
+{"timestamp": "2025-07-01T15:22:29.915767Z", "level": "INFO", "logger": "game.state.declaration", "message": "Player Bot 4 declared 1", "module": "declaration_state", "function": "_handle_declaration", "line": 193}
+🔧 BOT_DECLARE_DEBUG: State machine result: {'success': True, 'immediate': True, 'transition': False, 'processing_time': 0.0014011859893798828, 'reason': 'Declaration processed successfully', 'data': {'status': 'declaration_recorded', 'player': 'Bot 4', 'value': 1, 'total': 4}}
+DEBUG_WS_QUEUE: Room 54FC0D got message: phase_change
+DEBUG_WS: Broadcasting event 'phase_change' (op_id: unknown) to 1 clients in room 54FC0D.
+DEBUG_WS: Successfully sent 'phase_change' to a client in room 54FC0D.
 ✅ Bot Bot 4 declared 1
-DEBUG_WS_RECEIVE: Received event 'ping' from client in room lobby with data: {'timestamp': 1751349633274}
+DEBUG_WS_RECEIVE: Received event 'declare' from client in room 54FC0D with data: {'value': 3, 'player_name': 'Andy'}
+🎯 DECLARATION_DEBUG: Final declaration by Andy - atomic transition to Turn phase
+{"timestamp": "2025-07-01T15:22:34.860011Z", "level": "INFO", "logger": "game.state.declaration", "message": "\ud83c\udfaf Final declaration by Andy - atomic transition to Turn phase", "module": "declaration_state", "function": "_handle_declaration", "line": 148}
+🔧 TRANSITION_DEBUG: _immediate_transition_to called: GamePhase.DECLARATION -> GamePhase.TURN
+🔧 ASYNC_DEBUG: Thread: MainThread
+🔧 ASYNC_DEBUG: Is running: True
+🔧 ASYNC_DEBUG: Transition lock acquired: False
+🔧 TRANSITION_DEBUG: Starting transition steps...
+🔧 TRANSITION_DEBUG: Step 1 - Cleanup tasks
+🔧 TRANSITION_DEBUG: Step 2 - Exit current state
+{"timestamp": "2025-07-01T15:22:34.860338Z", "level": "INFO", "logger": "game.state.declaration", "message": "Exiting declaration phase", "module": "base_state", "function": "on_exit", "line": 52}
+{"timestamp": "2025-07-01T15:22:34.860480Z", "level": "INFO", "logger": "game.state.declaration", "message": "Copied declarations to game: {'Bot 2': 2, 'Bot 3': 1, 'Bot 4': 1, 'Andy': 3}", "module": "declaration_state", "function": "_cleanup_phase", "line": 95}
+🔧 TRANSITION_DEBUG: Step 3 - Atomic state update
+🔧 TRANSITION_DEBUG: Step 4 - Enter new state
+🔧 TRANSITION_DEBUG: Step 4a - About to call on_enter() for turn
+🔧 BASE_STATE_DEBUG: on_enter() called for turn phase
+{"timestamp": "2025-07-01T15:22:34.860648Z", "level": "INFO", "logger": "game.state.turn", "message": "Entering turn phase", "module": "base_state", "function": "on_enter", "line": 37}
+🔧 BASE_STATE_DEBUG: Clearing phase_data
+🔧 BASE_STATE_DEBUG: About to call _setup_phase() for turn
+🔧 TURN_STATE_DEBUG: _setup_phase() called
+🔧 TURN_STATE_DEBUG: Got game object: <engine.game.Game object at 0x10380a590>
+🔧 TURN_STATE_DEBUG: Initial turn starter from game: Bot 2
+🔧 TURN_STATE_DEBUG: Final turn starter: Bot 2
+{"timestamp": "2025-07-01T15:22:34.860813Z", "level": "INFO", "logger": "game.state.turn", "message": "\ud83c\udfaf Turn phase starting - Bot 2 starts first turn", "module": "turn_state", "function": "_setup_phase", "line": 105}
+🔧 TURN_STATE_DEBUG: About to call _start_new_turn()
+🎯 NEW_TURN_DEBUG: Round 1, Turn 1 starting with starter Bot 2
+🔧 NEW_TURN_DEBUG: About to notify bot manager for Bot 2
+🤖 NEW_TURN_DEBUG: Notifying bot manager about new turn starter Bot 2 for room 54FC0D
+🔔 BOT_MANAGER_DEBUG: Received event 'turn_started' for room 54FC0D with data: {'starter': 'Bot 2'}
+✅ BOT_MANAGER_DEBUG: Found handler for room 54FC0D, delegating to handler...
+🎮 BOT_HANDLER_DEBUG: Room 54FC0D handling event 'turn_started' with data keys: ['starter']
+🔍 BOT_HANDLER_DEBUG: Event type check - event == 'phase_change': False
+🔍 BOT_HANDLER_DEBUG: Event value repr: 'turn_started'
+🔍 BOT_HANDLER_DEBUG: Attempting to acquire lock...
+🔍 BOT_HANDLER_DEBUG: Lock acquired, processing event...
+🚀 BOT_HANDLER_DEBUG: Handling turn start
+🎮 Bot Manager: Handling turn start for Bot 2
+🤖 Bot Bot 2 will play first
+🤖 Bot Bot 2 thinking for 0.5s...
+🤖 Bot Bot 2 choosing first play...
+🤖 BOT chooses to play SINGLE (14 pts): GENERAL
+🤖 Bot Bot 2 will play 1 pieces: ['GENERAL_RED(14)']
+🎯 BOT_MANAGER_DEBUG: state_machine exists: True
