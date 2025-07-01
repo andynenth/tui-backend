@@ -411,8 +411,7 @@ class GameStateMachine:
     async def broadcast_event(self, event_type: str, event_data: Dict):
         """Broadcast WebSocket event if callback is available"""
         if self.broadcast_callback:
-            room_id = getattr(self, 'room_id', 'unknown')
-            await self.broadcast_callback(room_id, event_type, event_data)
+            await self.broadcast_callback(event_type, event_data)
         else:
             logger.debug(f"No broadcast callback set - event {event_type} not sent")
     
