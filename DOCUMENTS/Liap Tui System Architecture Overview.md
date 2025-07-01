@@ -264,7 +264,7 @@ class GameAction:
 - **TypeScript** - Type safety
 - **ESBuild** - Fast bundling
 - **Tailwind CSS** - Styling
-- **PixiJS** - Game graphics
+
 
 ### Backend
 - **Python 3.9+** - Core language

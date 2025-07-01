@@ -294,7 +294,10 @@ class GameState(ABC):
                 "reason": reason
             }
             
-            await broadcast(room_id, event_type, enhanced_data)
+            # 🔧 DEADLOCK_FIX: Use fire-and-forget to prevent EventProcessor blocking
+            import asyncio
+            broadcast_task = asyncio.create_task(broadcast(room_id, event_type, enhanced_data))
+            # Don't await - let broadcast run in background to prevent deadlock
             
             self.logger.info(f"📤 Custom broadcast: {event_type} to room {room_id} - {reason}")
             
