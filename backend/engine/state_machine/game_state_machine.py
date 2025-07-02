@@ -9,6 +9,7 @@ from .core import GamePhase, ActionType, GameAction
 from .action_queue import ActionQueue
 from .base_state import GameState
 from .states import PreparationState, DeclarationState, TurnState, ScoringState
+from ..circuit_breaker import get_circuit, CircuitConfig, CircuitBreakerException
 
 
 logger = logging.getLogger(__name__)
@@ -31,6 +32,9 @@ class GameStateMachine:
         self._process_task: Optional[asyncio.Task] = None
         self.broadcast_callback = broadcast_callback  # For WebSocket broadcasting
         
+        # FFD Safety: Circuit breakers to prevent infinite loops
+        self._setup_circuit_breakers()
+        
         # Initialize all available states
         self.states: Dict[GamePhase, GameState] = {
             GamePhase.PREPARATION: PreparationState(self),
@@ -46,6 +50,42 @@ class GameStateMachine:
             GamePhase.TURN: {GamePhase.SCORING},
             GamePhase.SCORING: {GamePhase.PREPARATION}  # Next round
         }
+    
+    def _setup_circuit_breakers(self):
+        """Setup circuit breakers for FFD safety"""
+        room_id = getattr(self.game, 'room_id', 'unknown') if self.game else 'unknown'
+        
+        # Action processing circuit breaker
+        action_config = CircuitConfig(
+            failure_threshold=5,           # 5 failures before opening
+            success_threshold=3,           # 3 successes to close
+            timeout=10.0,                 # 10 second timeout
+            window_size=30.0,             # 30 second failure window
+            max_operations_per_second=20  # Reasonable action rate
+        )
+        self.action_circuit = get_circuit(f"actions_{room_id}", action_config)
+        
+        # Transition circuit breaker (prevent rapid transitions)
+        transition_config = CircuitConfig(
+            failure_threshold=3,           # 3 failures before opening
+            success_threshold=2,           # 2 successes to close  
+            timeout=5.0,                  # 5 second timeout
+            window_size=15.0,             # 15 second failure window
+            max_operations_per_second=2   # Max 2 transitions per second
+        )
+        self.transition_circuit = get_circuit(f"transitions_{room_id}", transition_config)
+        
+        # Broadcast circuit breaker (prevent broadcast storms)
+        broadcast_config = CircuitConfig(
+            failure_threshold=10,          # 10 failures before opening
+            success_threshold=3,           # 3 successes to close
+            timeout=15.0,                 # 15 second timeout  
+            window_size=60.0,             # 60 second failure window
+            max_operations_per_second=10  # Max 10 broadcasts per second
+        )
+        self.broadcast_circuit = get_circuit(f"broadcast_{room_id}", broadcast_config)
+        
+        logger.info(f"🔌 Circuit breakers initialized for room {room_id}")
     
     async def start(self, initial_phase: GamePhase = GamePhase.PREPARATION):
         """Start the state machine with initial phase"""
@@ -119,7 +159,7 @@ class GameStateMachine:
         print(f"🔍 STATE_MACHINE_DEBUG: Process loop ended")
     
     async def process_pending_actions(self):
-        """Process all actions in queue"""
+        """Process all actions in queue with circuit breaker protection"""
         if not self.current_state:
             print(f"🔍 STATE_MACHINE_DEBUG: No current state, skipping action processing")
             return
@@ -127,33 +167,60 @@ class GameStateMachine:
         actions = await self.action_queue.process_actions()
         if actions:
             print(f"🔍 STATE_MACHINE_DEBUG: Processing {len(actions)} actions")
+        
         for action in actions:
             try:
-                print(f"🔍 STATE_MACHINE_DEBUG: Processing action: {action.action_type.value} from {action.player_name}")
-                result = await self.current_state.handle_action(action)
-                
-                # 🔧 FIX: Validate action result and notify bot manager of failures
-                if result is None:
-                    print(f"❌ STATE_MACHINE_DEBUG: Action rejected: {action.action_type.value} from {action.player_name}")
-                    await self._notify_bot_manager_action_rejected(action)
-                else:
-                    print(f"✅ STATE_MACHINE_DEBUG: Action processed successfully")
-                    await self._notify_bot_manager_action_accepted(action, result)
+                # FFD Safety: Use circuit breaker for action processing
+                async with self.action_circuit:
+                    print(f"🔍 STATE_MACHINE_DEBUG: Processing action: {action.action_type.value} from {action.player_name}")
+                    result = await self.current_state.handle_action(action)
                     
+                    # 🔧 FIX: Validate action result and notify bot manager of failures
+                    if result is None:
+                        print(f"❌ STATE_MACHINE_DEBUG: Action rejected: {action.action_type.value} from {action.player_name}")
+                        await self._notify_bot_manager_action_rejected(action)
+                        # Don't raise exception for rejected actions - this is normal
+                    else:
+                        print(f"✅ STATE_MACHINE_DEBUG: Action processed successfully")
+                        await self._notify_bot_manager_action_accepted(action, result)
+                        
+            except CircuitBreakerException as e:
+                print(f"🚨 STATE_MACHINE_DEBUG: Circuit breaker blocked action: {e}")
+                logger.warning(f"Action processing circuit breaker activated: {e}")
+                # Skip this action but continue processing others
             except Exception as e:
                 print(f"❌ STATE_MACHINE_DEBUG: Error processing action: {e}")
                 logger.error(f"Error processing action: {e}", exc_info=True)
                 await self._notify_bot_manager_action_failed(action, str(e))
+                # Let circuit breaker handle this as a failure
     
     async def _transition_to(self, new_phase: GamePhase):
-        """Transition to a new phase"""
+        """Transition to a new phase with circuit breaker protection"""
         print(f"🔄 STATE_MACHINE_DEBUG: Attempting transition from {self.current_phase} to {new_phase}")
         
-        # Validate transition (skip validation for initial transition)
-        if self.current_phase and new_phase not in self._valid_transitions.get(self.current_phase, set()):
-            logger.error(f"❌ Invalid transition: {self.current_phase} -> {new_phase}")
-            print(f"❌ STATE_MACHINE_DEBUG: Invalid transition blocked!")
-            return
+        try:
+            # FFD Safety: Use circuit breaker for transitions
+            async with self.transition_circuit:
+                # Validate transition (skip validation for initial transition)
+                if self.current_phase and new_phase not in self._valid_transitions.get(self.current_phase, set()):
+                    logger.error(f"❌ Invalid transition: {self.current_phase} -> {new_phase}")
+                    print(f"❌ STATE_MACHINE_DEBUG: Invalid transition blocked!")
+                    raise ValueError(f"Invalid transition: {self.current_phase} -> {new_phase}")
+                
+                await self._perform_transition(new_phase)
+                
+        except CircuitBreakerException as e:
+            print(f"🚨 STATE_MACHINE_DEBUG: Transition circuit breaker blocked: {e}")
+            logger.warning(f"Transition circuit breaker activated: {e}")
+            # Don't perform transition
+        except Exception as e:
+            print(f"❌ STATE_MACHINE_DEBUG: Transition failed: {e}")
+            logger.error(f"Transition failed: {e}", exc_info=True)
+            # Circuit breaker will handle this as a failure
+            raise
+    
+    async def _perform_transition(self, new_phase: GamePhase):
+        """Perform the actual transition logic"""
         
         # Get new state
         new_state = self.states.get(new_phase)
@@ -249,8 +316,24 @@ class GameStateMachine:
             
             base_data['players'] = players_data
         
-        # Send to all players
-        await self.broadcast_event("phase_change", base_data)
+        # Send to all players with circuit breaker protection
+        await self._protected_broadcast("phase_change", base_data)
+    
+    async def _protected_broadcast(self, event_type: str, event_data: Dict):
+        """Broadcast event with circuit breaker protection"""
+        try:
+            # FFD Safety: Use circuit breaker for broadcasts
+            async with self.broadcast_circuit:
+                await self.broadcast_event(event_type, event_data)
+        except CircuitBreakerException as e:
+            print(f"🚨 STATE_MACHINE_DEBUG: Broadcast circuit breaker blocked: {e}")
+            logger.warning(f"Broadcast circuit breaker activated: {e}")
+            # Continue without broadcasting
+        except Exception as e:
+            print(f"❌ STATE_MACHINE_DEBUG: Broadcast failed: {e}")
+            logger.error(f"Broadcast failed: {e}", exc_info=True)
+            # Circuit breaker will handle this as a failure
+            raise
     
     async def broadcast_event(self, event_type: str, event_data: Dict):
         """Broadcast WebSocket event if callback is available"""
@@ -327,6 +410,21 @@ class GameStateMachine:
                     
         except Exception as e:
             logger.error(f"Failed to notify bot manager about data change: {e}", exc_info=True)
+    
+    def get_circuit_breaker_stats(self) -> Dict[str, Any]:
+        """Get circuit breaker statistics for monitoring"""
+        return {
+            "action_circuit": self.action_circuit.get_stats(),
+            "transition_circuit": self.transition_circuit.get_stats(), 
+            "broadcast_circuit": self.broadcast_circuit.get_stats()
+        }
+    
+    def reset_circuit_breakers(self):
+        """Reset all circuit breakers (emergency recovery)"""
+        logger.warning("🔄 Manual reset of all circuit breakers")
+        self.action_circuit.reset()
+        self.transition_circuit.reset()
+        self.broadcast_circuit.reset()
     
     async def _store_phase_change_event(self, old_phase: Optional[GamePhase], new_phase: GamePhase):
         """
