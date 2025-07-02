@@ -536,8 +536,16 @@ class GameStateMachine:
             
             print(f"🤖 STATE_MACHINE_DEBUG: Notifying bot manager about phase {new_phase.value} for room {room_id}")
             
-            # 🚀 AUTOMATIC_SYSTEM: All bot manager notifications now handled automatically via enterprise phase_change events
-            print(f"🔧 AUTOMATIC_SYSTEM_DEBUG: Manual bot manager notifications removed for {new_phase.value} - using automatic enterprise system")
+            if new_phase == GamePhase.DECLARATION:
+                # Trigger bot declarations
+                await bot_manager.handle_game_event(room_id, "round_started", {
+                    "phase": new_phase.value,
+                    "starter": getattr(self.game, 'round_starter', self.game.players[0].name if self.game.players else 'unknown')
+                })
+            elif new_phase == GamePhase.TURN:
+                # 🔧 DUPLICATE_FIX: Turn state already handles turn_started notification
+                # Don't send duplicate turn_started event here - turn state handles it in _start_new_turn()
+                print(f"🔧 DUPLICATE_FIX: Skipping duplicate turn_started event - turn state handles this")
                 
         except Exception as e:
             logger.error(f"Failed to notify bot manager: {e}", exc_info=True)
