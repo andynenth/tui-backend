@@ -140,6 +140,13 @@ class GameState(ABC):
             reason: Human-readable reason for the change (for debugging)
             broadcast: Whether to automatically broadcast (default True)
         """
+        # 🔧 SOLUTION 2: Validate that we're still in the expected phase
+        if self.state_machine.current_phase != self.phase_name:
+            self.logger.warning(f"Phase mismatch: current={self.state_machine.current_phase}, expected={self.phase_name}")
+            self.logger.warning(f"Skipping update to prevent conflicting broadcasts. Reason: {reason}")
+            print(f"🔧 PHASE_MISMATCH_DEBUG: Blocked update - current phase {self.state_machine.current_phase} != {self.phase_name}")
+            return  # Don't broadcast if phase has changed
+        
         old_data = self.phase_data.copy()
         
         # Apply updates

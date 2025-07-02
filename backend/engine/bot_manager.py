@@ -554,23 +554,34 @@ class GameBotHandler:
                     is_bot=True
                 )
                 
-                # 🚀 DEADLOCK_FIX: Use fire-and-forget to prevent EventProcessor deadlock
-                print(f"🔧 BOT_DECLARE_DEBUG: Creating fire-and-forget task for state machine action")
-                async def handle_bot_declaration():
+                # 🚀 HYBRID_FIX: Validate first (synchronous), then execute (fire-and-forget)
+                print(f"🔧 BOT_DECLARE_DEBUG: Step 1 - Validating action synchronously")
+                validation_result = await self.state_machine.validate_action(action)
+                
+                if not validation_result.get("valid", False):
+                    print(f"❌ BOT_DECLARE_DEBUG: Action validation failed for {bot.name}: {validation_result.get('reason')}")
+                    # Return immediately - don't retry invalid actions
+                    return {"success": False, "reason": validation_result.get("reason"), "status": "validation_failed"}
+                
+                print(f"✅ BOT_DECLARE_DEBUG: Action validation passed for {bot.name}")
+                print(f"🔧 BOT_DECLARE_DEBUG: Step 2 - Executing action via fire-and-forget")
+                
+                # Fire-and-forget execution to prevent deadlocks
+                async def execute_valid_declaration():
                     try:
-                        result = await self.state_machine.handle_action(action)
-                        print(f"🔧 BOT_DECLARE_DEBUG: State machine result: {result}")
+                        result = await self.state_machine.execute_action(action)
+                        print(f"🔧 BOT_DECLARE_DEBUG: Execution result: {result}")
                     except Exception as e:
-                        print(f"❌ BOT_DECLARE_DEBUG: Error in fire-and-forget declaration: {e}")
+                        print(f"❌ BOT_DECLARE_DEBUG: Error in fire-and-forget execution: {e}")
                         import traceback
                         traceback.print_exc()
                 
-                # Create task but don't await it to prevent deadlock
-                asyncio.create_task(handle_bot_declaration())
-                print(f"✅ BOT_DECLARE_DEBUG: Fire-and-forget declaration task created for {bot.name}")
+                # Execute asynchronously to prevent deadlock
+                asyncio.create_task(execute_valid_declaration())
+                print(f"✅ BOT_DECLARE_DEBUG: Fire-and-forget execution task created for {bot.name}")
                 
-                # 🚀 DEADLOCK_FIX: Simulate successful result for immediate return
-                result = {"success": True, "status": "ok"}
+                # Return successful validation result immediately
+                result = {"success": True, "status": "validated_and_queued"}
             else:
                 # Fallback to direct game call
                 result = self.game.declare(bot.name, value)
@@ -595,9 +606,13 @@ class GameBotHandler:
                         payload={"value": 1},
                         is_bot=True
                     )
-                    # 🚀 DEADLOCK_FIX: Use fire-and-forget for fallback too
-                    asyncio.create_task(self.state_machine.handle_action(action))
-                    print(f"✅ BOT_DECLARE_DEBUG: Fire-and-forget fallback declaration task created for {bot.name}")
+                    # 🚀 HYBRID_FIX: Use validation + fire-and-forget for fallback too
+                    validation_result = await self.state_machine.validate_action(action)
+                    if validation_result.get("valid", False):
+                        asyncio.create_task(self.state_machine.execute_action(action))
+                        print(f"✅ BOT_DECLARE_DEBUG: Fallback declaration validated and queued for {bot.name}")
+                    else:
+                        print(f"❌ BOT_DECLARE_DEBUG: Fallback declaration validation failed for {bot.name}: {validation_result.get('reason')}")
                 else:
                     self.game.declare(bot.name, 1)
                 # 🚀 ENTERPRISE: State machine already handled broadcasting automatically
@@ -618,6 +633,12 @@ class GameBotHandler:
             
     async def _handle_play_phase(self, last_player: str):
         """Handle bot plays in turn order"""
+        
+        # 🔧 INFINITE_LOOP_FIX: Circuit breaker to prevent processing invalid game states
+        if not last_player:
+            print(f"🔧 CIRCUIT_BREAKER_DEBUG: No last_player provided - stopping bot processing")
+            return
+            
         try:
             from socket_manager import broadcast
         except ImportError:
@@ -630,17 +651,32 @@ class GameBotHandler:
             phase_data = self.state_machine.get_phase_data()
             required_piece_count = phase_data.get('required_piece_count')
             turn_order = phase_data.get('turn_order', [])
+            current_turn_starter = phase_data.get('current_turn_starter')
+            current_player = phase_data.get('current_player')
             
             print(f"🎯 PLAY_PHASE_DEBUG: Got from state machine - required_count: {required_piece_count}, turn_order: {turn_order}")
+            print(f"🎯 PLAY_PHASE_DEBUG: Current player: {current_player}, starter: {current_turn_starter}")
+            
+            # 🔧 INFINITE_LOOP_FIX: Additional circuit breaker for None states at end of round
+            if not turn_order:
+                print(f"🔧 CIRCUIT_BREAKER_DEBUG: No turn order available - likely end of round, stopping bot processing")
+                return
         else:
             # Fallback to game state
             game_state = self._get_game_state()
             required_piece_count = getattr(game_state, 'required_piece_count', None)
             turn_order = getattr(game_state, 'turn_order', [])
+            current_turn_starter = getattr(game_state, 'current_turn_starter', None)
+            current_player = getattr(game_state, 'current_player', None)
             
+        # 🚀 STARTER_FIX: Allow starter to play even when required_piece_count is None
+        # 🔧 INFINITE_LOOP_FIX: Add null checks to prevent None == None comparison
         if not required_piece_count:
-            print(f"🎯 PLAY_PHASE_DEBUG: No required piece count set yet, skipping bot plays")
-            return  # First player hasn't set the count yet
+            if current_player and current_turn_starter and current_player == current_turn_starter:
+                print(f"✅ PLAY_PHASE_DEBUG: No required count set but {current_player} is starter - allowing play")
+            else:
+                print(f"🎯 PLAY_PHASE_DEBUG: No required piece count set yet and {current_player} is not starter ({current_turn_starter}) - skipping bot plays")
+                return  # Only starter can play when count is not set
             
         if not turn_order:
             print(f"🎯 PLAY_PHASE_DEBUG: No turn order available, skipping bot plays")
@@ -808,21 +844,32 @@ class GameBotHandler:
                     print(f"🔧 BOT_SUBMIT_DEBUG: Action details - player: {action.player_name}, type: {action.action_type}, is_bot: {action.is_bot}")
                     print(f"🔧 BOT_SUBMIT_DEBUG: Action payload pieces count: {len(action.payload.get('pieces', []))}")
                     
-                    # 🚀 DEADLOCK_FIX: Use fire-and-forget to prevent EventProcessor deadlock  
-                    print(f"🔧 BOT_SUBMIT_DEBUG: Creating fire-and-forget task for state machine action")
-                    async def handle_bot_play():
+                    # 🚀 HYBRID_FIX: Validate first (synchronous), then execute (fire-and-forget)
+                    print(f"🔧 BOT_SUBMIT_DEBUG: Step 1 - Validating play action synchronously")
+                    validation_result = await self.state_machine.validate_action(action)
+                    
+                    if not validation_result.get("valid", False):
+                        print(f"❌ BOT_SUBMIT_DEBUG: Play action validation failed for {bot.name}: {validation_result.get('reason')}")
+                        # Return immediately - don't retry invalid actions
+                        return
+                    
+                    print(f"✅ BOT_SUBMIT_DEBUG: Play action validation passed for {bot.name}")
+                    print(f"🔧 BOT_SUBMIT_DEBUG: Step 2 - Executing play action via fire-and-forget")
+                    
+                    # Fire-and-forget execution to prevent deadlocks
+                    async def execute_valid_play():
                         try:
-                            result = await self.state_machine.handle_action(action)
+                            result = await self.state_machine.execute_action(action)
                             print(f"✅ BOT_SUBMIT_DEBUG: Action submitted successfully for Bot {bot.name}")
                             print(f"🎯 BOT_PLAY_DEBUG: State machine result: {result}")
                         except Exception as e:
-                            print(f"❌ BOT_SUBMIT_DEBUG: Error in fire-and-forget play action: {e}")
+                            print(f"❌ BOT_SUBMIT_DEBUG: Error in fire-and-forget play execution: {e}")
                             import traceback
                             traceback.print_exc()
                     
-                    # Create task but don't await it to prevent deadlock
-                    asyncio.create_task(handle_bot_play())
-                    print(f"✅ BOT_SUBMIT_DEBUG: Fire-and-forget play action task created for Bot {bot.name}")
+                    # Execute asynchronously to prevent deadlock
+                    asyncio.create_task(execute_valid_play())
+                    print(f"✅ BOT_SUBMIT_DEBUG: Fire-and-forget play execution task created for Bot {bot.name}")
                     
                     # Action is queued - state machine will process it and handle broadcasting
                     print(f"🎯 BOT_PLAY_DEBUG: Action queued successfully, state machine will handle updates and broadcasting")
@@ -973,21 +1020,32 @@ class GameBotHandler:
                     print(f"🔧 BOT_SUBMIT_DEBUG: Action details - player: {action.player_name}, type: {action.action_type}, is_bot: {action.is_bot}")
                     print(f"🔧 BOT_SUBMIT_DEBUG: Action payload pieces count: {len(action.payload.get('pieces', []))}")
                     
-                    # 🚀 DEADLOCK_FIX: Use fire-and-forget to prevent EventProcessor deadlock
-                    print(f"🔧 BOT_SUBMIT_DEBUG: Creating fire-and-forget task for state machine action")
-                    async def handle_bot_first_play():
+                    # 🚀 HYBRID_FIX: Validate first (synchronous), then execute (fire-and-forget)
+                    print(f"🔧 BOT_SUBMIT_DEBUG: Step 1 - Validating first play action synchronously")
+                    validation_result = await self.state_machine.validate_action(action)
+                    
+                    if not validation_result.get("valid", False):
+                        print(f"❌ BOT_SUBMIT_DEBUG: First play action validation failed for {bot.name}: {validation_result.get('reason')}")
+                        # Return immediately - don't retry invalid actions
+                        return
+                    
+                    print(f"✅ BOT_SUBMIT_DEBUG: First play action validation passed for {bot.name}")
+                    print(f"🔧 BOT_SUBMIT_DEBUG: Step 2 - Executing first play action via fire-and-forget")
+                    
+                    # Fire-and-forget execution to prevent deadlocks
+                    async def execute_valid_first_play():
                         try:
-                            result = await self.state_machine.handle_action(action)
+                            result = await self.state_machine.execute_action(action)
                             print(f"✅ BOT_SUBMIT_DEBUG: Action submitted successfully for Bot {bot.name}")
                             print(f"🎯 BOT_PLAY_DEBUG: State machine result: {result}")
                         except Exception as e:
-                            print(f"❌ BOT_SUBMIT_DEBUG: Error in fire-and-forget first play action: {e}")
+                            print(f"❌ BOT_SUBMIT_DEBUG: Error in fire-and-forget first play execution: {e}")
                             import traceback
                             traceback.print_exc()
                     
-                    # Create task but don't await it to prevent deadlock
-                    asyncio.create_task(handle_bot_first_play())
-                    print(f"✅ BOT_SUBMIT_DEBUG: Fire-and-forget first play action task created for Bot {bot.name}")
+                    # Execute asynchronously to prevent deadlock
+                    asyncio.create_task(execute_valid_first_play())
+                    print(f"✅ BOT_SUBMIT_DEBUG: Fire-and-forget first play execution task created for Bot {bot.name}")
                     
                     # Action is queued - state machine will process it and handle broadcasting
                     print(f"🎯 BOT_PLAY_DEBUG: Action queued successfully, state machine will handle updates and broadcasting")
