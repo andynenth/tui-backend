@@ -49,6 +49,10 @@ class SocketManager:
         self.connection_stats = {}
         self.rate_limiters = {}  # Rate limiting per room
         
+        # 🔧 SOLUTION 3: Broadcast deduplication
+        self._last_broadcast = {}  # Track last broadcast per room
+        self._broadcast_cooldown = 0.1  # 100ms cooldown
+        
         # Reliable message delivery features
         self.pending_messages: Dict[str, Dict[int, PendingMessage]] = {}  # room_id -> {seq -> message}
         self.message_sequences: Dict[str, int] = {}  # room_id -> current sequence
@@ -284,6 +288,21 @@ class SocketManager:
         Enhanced broadcast with debugging specifically for lobby
         """
         print(f"DEBUG_WS: Entering broadcast method for room {room_id}, event {event}")
+        
+        # 🔧 SOLUTION 3: Implement broadcast deduplication
+        # Create hash of event type and key data
+        phase = data.get('phase', '')
+        sequence = data.get('sequence', '')
+        event_hash = f"{event}:{phase}:{sequence}"
+        
+        # Check if this is a duplicate broadcast
+        last_time = self._last_broadcast.get(f"{room_id}:{event_hash}", 0)
+        if time.time() - last_time < self._broadcast_cooldown:
+            print(f"🔧 DEDUP_DEBUG: Skipping duplicate broadcast: {event_hash}")
+            return
+        
+        # Update last broadcast time
+        self._last_broadcast[f"{room_id}:{event_hash}"] = time.time()
         # Add extra debugging for lobby
         if room_id == "lobby":
             print(f"🔔 LOBBY_BROADCAST: Attempting to broadcast '{event}' to lobby")

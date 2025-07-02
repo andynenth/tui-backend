@@ -35,6 +35,9 @@ class GameStateMachine:
         from .events import EventProcessor
         self.event_processor = EventProcessor(self)
         self.transition_lock = asyncio.Lock()  # Prevent race conditions
+        self._transition_depth = 0  # Track nested transitions to prevent deadlock
+        self._last_transition_time = 0  # 🔧 SOLUTION 4: Track last transition time
+        self._transition_cooldown = 0.5  # 500ms minimum between transitions
         self.active_tasks = set()              # Managed task lifecycle
         
         # Legacy support during transition
@@ -91,6 +94,65 @@ class GameStateMachine:
         if self.current_state:
             await self.current_state.on_exit()
     
+    async def validate_action(self, action: GameAction) -> Dict:
+        """
+        🚀 HYBRID_FIX: Validate action without executing or broadcasting (prevents action spam)
+        """
+        print(f"🔧 VALIDATE_ACTION_DEBUG: validate_action called for {action.player_name} {action.action_type.value}")
+        
+        try:
+            if not self.is_running:
+                return {"valid": False, "reason": "State machine not running"}
+            
+            if not self.current_state:
+                return {"valid": False, "reason": "No current state"}
+            
+            # Validate action using current state's validation method
+            is_valid = await self.current_state._validate_action(action)
+            
+            if is_valid:
+                print(f"✅ VALIDATE_ACTION_DEBUG: Action validation passed for {action.player_name}")
+                return {"valid": True, "reason": "Action is valid"}
+            else:
+                print(f"❌ VALIDATE_ACTION_DEBUG: Action validation failed for {action.player_name}")
+                return {"valid": False, "reason": "Action rejected by current state"}
+                
+        except Exception as e:
+            print(f"❌ VALIDATE_ACTION_DEBUG: Exception during validation: {e}")
+            return {"valid": False, "reason": f"Validation error: {e}"}
+    
+    async def execute_action(self, action: GameAction) -> Dict:
+        """
+        🚀 HYBRID_FIX: Execute pre-validated action (assumes validation already passed)
+        """
+        print(f"🔧 EXECUTE_ACTION_DEBUG: execute_action called for {action.player_name} {action.action_type.value}")
+        
+        try:
+            if not self.is_running:
+                return {"success": False, "error": "State machine not running"}
+            
+            # Convert action to event and process immediately
+            from .events.event_types import GameEvent
+            event = GameEvent.from_action(action, immediate=True)
+            
+            # Process immediately - action already validated
+            start_time = time.time()
+            result = await self.event_processor.handle_event(event)
+            processing_time = time.time() - start_time
+            
+            return {
+                "success": result.success,
+                "immediate": True,
+                "transition": result.triggers_transition,
+                "processing_time": processing_time,
+                "reason": result.reason,
+                "data": result.data
+            }
+            
+        except Exception as e:
+            print(f"❌ EXECUTE_ACTION_DEBUG: Exception during execution: {e}")
+            return {"success": False, "error": str(e), "reason": f"Execution error: {e}"}
+
     async def handle_action(self, action: GameAction) -> Dict:
         """
         🚀 EVENT-DRIVEN: Process action immediately - NO QUEUING, NO POLLING
@@ -210,8 +272,42 @@ class GameStateMachine:
         print(f"🔧 ASYNC_DEBUG: Thread: {threading.current_thread().name}")
         print(f"🔧 ASYNC_DEBUG: Is running: {self.is_running}")
         print(f"🔧 ASYNC_DEBUG: Transition lock acquired: {self.transition_lock.locked()}")
+        print(f"🔧 ASYNC_DEBUG: Transition depth: {self._transition_depth}")
         
+        # 🔧 CONCURRENCY_FIX: Handle reentrant transitions to prevent deadlock
+        if self._transition_depth > 0:
+            print(f"🔧 REENTRANT_FIX: Already in transition (depth={self._transition_depth}), proceeding without lock")
+            return await self._do_transition(new_phase, reason)
+        
+        # 🔧 CONCURRENCY_FIX: Add transition lock to prevent state machine corruption
+        async with self.transition_lock:
+            print(f"🔧 CONCURRENCY_FIX: Acquired transition lock for {self.current_phase} -> {new_phase}")
+            self._transition_depth += 1
+            try:
+                return await self._do_transition(new_phase, reason)
+            finally:
+                self._transition_depth -= 1
+    
+    async def _do_transition(self, new_phase: GamePhase, reason: str):
+        """Internal transition logic (can be called with or without lock)"""
         try:
+            # 🔧 SOLUTION 4: Prevent rapid transitions
+            current_time = time.time()
+            if self._last_transition_time > 0:
+                time_since_last = current_time - self._last_transition_time
+                if time_since_last < self._transition_cooldown:
+                    logger.warning(f"Transition too rapid: {self.current_phase} -> {new_phase} (only {time_since_last:.3f}s since last)")
+                    print(f"🔧 CIRCUIT_BREAKER_DEBUG: Blocked rapid transition - only {time_since_last:.3f}s since last transition")
+                    return
+            
+            # 🔧 SOLUTION 4: Validate transition logic for SCORING
+            if new_phase == GamePhase.SCORING:
+                # Double-check that hands are actually empty
+                if not await self._verify_all_hands_empty():
+                    logger.error(f"Invalid transition to SCORING: hands not empty")
+                    print(f"🔧 CIRCUIT_BREAKER_DEBUG: Blocked invalid SCORING transition - hands not empty")
+                    return
+            
             # Validate transition (skip validation for initial transition)
             if self.current_phase and new_phase not in self._valid_transitions.get(self.current_phase, set()):
                 print(f"❌ TRANSITION_DEBUG: Invalid transition rejected: {self.current_phase} -> {new_phase}")
@@ -291,11 +387,27 @@ class GameStateMachine:
             
             print(f"✅ TRANSITION_DEBUG: All transition steps completed successfully: {old_phase} -> {new_phase}")
             
+            # 🔧 SOLUTION 4: Update last transition time
+            self._last_transition_time = current_time
+            
         except Exception as e:
-            print(f"❌ TRANSITION_DEBUG: Exception in _immediate_transition_to: {e}")
+            print(f"❌ TRANSITION_DEBUG: Exception in _do_transition: {e}")
             logger.error(f"❌ Transition failed with exception: {e}", exc_info=True)
             import traceback
             traceback.print_exc()
+    
+    async def _verify_all_hands_empty(self) -> bool:
+        """🔧 SOLUTION 4: Verify all hands are actually empty before SCORING transition"""
+        if not hasattr(self, 'game') or not self.game:
+            return False
+            
+        for player in self.game.players:
+            if hasattr(player, 'hand') and player.hand and len(player.hand) > 0:
+                print(f"🔧 VERIFY_DEBUG: Player {player.name} still has {len(player.hand)} pieces")
+                return False
+        
+        print(f"🔧 VERIFY_DEBUG: All hands verified empty")
+        return True
     
     def get_current_phase(self) -> Optional[GamePhase]:
         """Get current game phase"""

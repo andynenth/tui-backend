@@ -593,9 +593,12 @@ class TurnState(GameState):
     
     async def _process_turn_completion(self) -> None:
         """Process the completion of a turn"""
+        # 🔧 SOLUTION 5: Store current state before any transitions
+        current_phase = self.state_machine.current_phase
         game = self.state_machine.game
         
         print(f"🏁 TURN_COMPLETION_DEBUG: Starting turn completion processing")
+        print(f"🔧 SOLUTION_5_DEBUG: Current phase at start: {current_phase}")
         
         # STEP 1: Remove played pieces from player hands FIRST
         if hasattr(game, 'players') and game.players:
@@ -624,6 +627,10 @@ class TurnState(GameState):
         print(f"🏁 TURN_COMPLETION_DEBUG: After removing pieces, checking if all hands are empty")
         print(f"🏁 TURN_COMPLETION_DEBUG: all_hands_empty = {all_hands_empty}")
         
+        # 🔧 SOLUTION 1: Enhanced debugging for hand empty detection
+        for player_name, hand_size in hand_sizes.items():
+            print(f"🔧 HAND_CHECK_DEBUG: {player_name} has {hand_size} pieces remaining")
+        
         # 🔧 FIX: Add defensive consistency check
         self._validate_hand_size_consistency(hand_sizes)
         
@@ -634,6 +641,13 @@ class TurnState(GameState):
         # STEP 3: Broadcast turn completion using centralized system
         await self._broadcast_turn_completion_enterprise()
         
+        # 🔧 SOLUTION 5: Only update phase data if we're still in TURN phase
+        if current_phase == GamePhase.TURN and self.state_machine.current_phase == GamePhase.TURN:
+            print(f"🔧 SOLUTION_5_DEBUG: Still in TURN phase, safe to update phase data")
+        else:
+            print(f"🔧 SOLUTION_5_DEBUG: Phase changed during processing, skipping phase data update")
+            print(f"🔧 SOLUTION_5_DEBUG: Was {current_phase}, now {self.state_machine.current_phase}")
+        
         # STEP 4: Decide next action based on whether hands are empty
         if all_hands_empty:
             # Store the last turn winner for the next round's starter
@@ -643,8 +657,12 @@ class TurnState(GameState):
             else:
                 self.logger.info("🏁 All hands are now empty - round complete")
             print(f"🏁 TURN_COMPLETION_DEBUG: Round complete - auto-transitioning to Scoring phase")
-            await self.state_machine._immediate_transition_to(GamePhase.SCORING, 
-                                                             "All hands empty - round complete")
+            # 🔧 SOLUTION 5: Check for round completion AFTER turn processing
+            if current_phase == GamePhase.TURN and self.state_machine.current_phase == GamePhase.TURN:
+                await self.state_machine._immediate_transition_to(GamePhase.SCORING, 
+                                                                 "All hands empty - round complete")
+            else:
+                print(f"🔧 SOLUTION_5_DEBUG: Skipping transition - phase already changed")
         else:
             # Update starter for next turn
             if self.winner:
