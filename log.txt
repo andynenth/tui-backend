@@ -1,757 +1,45 @@
-DEBUG_WS: Starting enhanced broadcast queue processor for room lobby.
-DEBUG_WS_QUEUE_START: Room lobby processor task starting, queue exists: True
-DEBUG_WS_RECEIVE: Received event 'client_ready' from client in room lobby with data: {'room_id': 'lobby'}
-DEBUG_LOBBY_WS: Sent initial room list to new lobby client
-DEBUG_WS_RECEIVE: Received event 'create_room' from client in room lobby with data: {'player_name': 'Andy'}
-DEBUG_LOBBY_WS: Created room D68EE5 for player Andy
-DEBUG_WS: Entering broadcast method for room lobby, event room_created
-🔔 LOBBY_BROADCAST: Attempting to broadcast 'room_created' to lobby
-🔔 LOBBY_BROADCAST: Data keys: ['room_id', 'host_name', 'timestamp']
-🔔 LOBBY_BROADCAST: Found 1 lobby connections
-🔔 LOBBY_BROADCAST: Queue size: 0
-DEBUG_WS: Attempting to queue event 'room_created' for room lobby with data: {'room_id': 'lobby', 'host_name': 'Andy', 'timestamp': 1751410007.0989592}
-🔧 SERIALIZATION_DEBUG: Testing JSON serialization for event 'room_created'
-🔧 SERIALIZATION_DEBUG: JSON serialization test PASSED for event 'room_created' - 109 chars
-🔧 SERIALIZATION_DEBUG: About to call queue.put() for event 'room_created'
-✅ SERIALIZATION_DEBUG: queue.put() completed successfully for event 'room_created'
-DEBUG_WS: Message for event 'room_created' added to queue for room lobby.
-🔔 LOBBY_BROADCAST: Message added to lobby queue. New queue size: 1
-DEBUG_WS: Entering broadcast method for room lobby, event room_list_update
-🔔 LOBBY_BROADCAST: Attempting to broadcast 'room_list_update' to lobby
-🔔 LOBBY_BROADCAST: Data keys: ['rooms', 'timestamp', 'reason']
-🔔 LOBBY_BROADCAST: Found 1 lobby connections
-🔔 LOBBY_BROADCAST: Queue size: 0
-DEBUG_WS: Attempting to queue event 'room_list_update' for room lobby with data: {'rooms': [{'room_id': 'D68EE5', 'host_name': 'Andy', 'started': False, 'slots': {'P1': {'name': 'Andy', 'is_bot': False, 'is_host': True}, 'P2': {'name': 'Bot 2', 'is_bot': True, 'is_host': False}, 'P3': {'name': 'Bot 3', 'is_bot': True, 'is_host': False}, 'P4': {'name': 'Bot 4', 'is_bot': True, 'is_host': False}}, 'players': [{'name': 'Andy', 'is_bot': False, 'is_host': True}, {'name': 'Bot 2', 'is_bot': True, 'is_host': False}, {'name': 'Bot 3', 'is_bot': True, 'is_host': False}, {'name': 'Bot 4', 'is_bot': True, 'is_host': False}], 'occupied_slots': 4, 'total_slots': 4}], 'timestamp': 1751410007.141172, 'reason': 'new_room_created', 'room_id': 'lobby'}
-🔧 SERIALIZATION_DEBUG: Testing JSON serialization for event 'room_list_update'
-🔧 SERIALIZATION_DEBUG: JSON serialization test PASSED for event 'room_list_update' - 703 chars
-🔧 SERIALIZATION_DEBUG: About to call queue.put() for event 'room_list_update'
-✅ SERIALIZATION_DEBUG: queue.put() completed successfully for event 'room_list_update'
-DEBUG_WS: Message for event 'room_list_update' added to queue for room lobby.
-🔔 LOBBY_BROADCAST: Message added to lobby queue. New queue size: 1
-✅ Notified lobby about new room: D68EE5
-DEBUG_WS_QUEUE: Room lobby got message: room_created
-DEBUG_WS: Broadcasting event 'room_created' (op_id: unknown) to 1 clients in room lobby.
-INFO:     ('127.0.0.1', 52296) - "WebSocket /ws/lobby" [accepted]
-DEBUG_WS: Registered new connection for room lobby. Total connections: 2
-INFO:     connection open
-DEBUG_WS: Error sending to client in room lobby: 
-DEBUG_WS_DISCONNECT: WebSocket client disconnected from room D68EE5.
-INFO:     connection closed
-DEBUG_WS: Attempted to unregister from non-existent room D68EE5
-DEBUG_WS_QUEUE: Room lobby got message: room_list_update
-DEBUG_WS: Broadcasting event 'room_list_update' (op_id: unknown) to 1 clients in room lobby.
-DEBUG_WS: Successfully sent 'room_list_update' to a client in room lobby.
-DEBUG_WS_RECEIVE: Received event 'client_ready' from client in room lobby with data: {'room_id': 'lobby'}
-DEBUG_LOBBY_WS: Sent initial room list to new lobby client
-INFO:     ('127.0.0.1', 52302) - "WebSocket /ws/D68EE5" [accepted]
-DEBUG_WS: Created new enhanced broadcast queue and task for room D68EE5.
-DEBUG_WS: Registered new connection for room D68EE5. Total connections: 1
-INFO:     connection open
-DEBUG_WS: Starting enhanced broadcast queue processor for room D68EE5.
-DEBUG_WS_QUEUE_START: Room D68EE5 processor task starting, queue exists: True
-DEBUG_WS_RECEIVE: Received event 'client_ready' from client in room D68EE5 with data: {'room_id': 'D68EE5'}
-DEBUG_WS_RECEIVE: Sent initial room state to client in room D68EE5 after client_ready.
-DEBUG_WS_RECEIVE: Received event 'get_room_state' from client in room D68EE5 with data: {}
-DEBUG_WS_RECEIVE: Sent room state to client in room D68EE5
-DEBUG_WS_RECEIVE: Received event 'start_game' from client in room D68EE5 with data: {}
-🔒 [Room D68EE5] Starting game: op_id=D68EE5_1
-🔧 TRANSITION_DEBUG: _immediate_transition_to called: None -> GamePhase.PREPARATION
-🔧 ASYNC_DEBUG: Thread: MainThread
-🔧 ASYNC_DEBUG: Is running: True
-🔧 ASYNC_DEBUG: Transition lock acquired: False
-🔧 TRANSITION_DEBUG: Starting transition steps...
-🔧 TRANSITION_DEBUG: Step 1 - Cleanup tasks
-🔧 TRANSITION_DEBUG: Step 2 - Exit current state
-🔧 TRANSITION_DEBUG: Step 3 - Atomic state update
-🔧 TRANSITION_DEBUG: Step 4 - Enter new state
-🔧 TRANSITION_DEBUG: Step 4a - About to call on_enter() for preparation
-🔧 BASE_STATE_DEBUG: on_enter() called for preparation phase
-{"timestamp": "2025-07-01T22:46:48.029991Z", "level": "INFO", "logger": "game.state.preparation", "message": "Entering preparation phase", "module": "base_state", "function": "on_enter", "line": 37}
-🔧 BASE_STATE_DEBUG: Clearing phase_data
-🔧 BASE_STATE_DEBUG: About to call _setup_phase() for preparation
-{"timestamp": "2025-07-01T22:46:48.030165Z", "level": "INFO", "logger": "game.state.preparation", "message": "\ud83c\udfb4 Preparation phase starting - dealing cards", "module": "preparation_state", "function": "_setup_phase", "line": 80}
-🎴 PREP_STATE_DEBUG: Setup phase starting for room D68EE5
-🔄 PREP_RESET_DEBUG: Reset Andy - declared: 0, captured_piles: 0
-🔄 PREP_RESET_DEBUG: Reset Bot 2 - declared: 0, captured_piles: 0
-🔄 PREP_RESET_DEBUG: Reset Bot 3 - declared: 0, captured_piles: 0
-🔄 PREP_RESET_DEBUG: Reset Bot 4 - declared: 0, captured_piles: 0
-🎴 PREP_STATE_DEBUG: Using guaranteed no redeal dealing
-🛡️ DEBUG: Dealing guaranteed no-redeal hands with RED_GENERAL assigned to player 1
-🛡️ DEBUG: Available pieces - Strong: 7, Weak: 24
-  → Bot 2 gets RED_GENERAL: GENERAL_RED(14)
-  → Andy gets strong piece: ELEPHANT_RED(10)
-  → Bot 3 gets strong piece: ADVISOR_RED(12)
-  → Bot 4 gets strong piece: ADVISOR_BLACK(11)
-🛡️ DEBUG: Guaranteed no-redeal hands dealt:
-🔧 DEBUG: Final hands verification:
-  Andy: ['HORSE_BLACK(5)', 'ELEPHANT_RED(10)', 'ELEPHANT_RED(10)', 'ELEPHANT_BLACK(9)', 'CHARIOT_RED(8)', 'HORSE_RED(6)', 'HORSE_BLACK(5)', 'GENERAL_BLACK(13)']
-    → Strong pieces (>9): 3
-    → Has RED_GENERAL: False
-  Bot 2: ['CANNON_RED(4)', 'SOLDIER_RED(2)', 'SOLDIER_BLACK(1)', 'SOLDIER_RED(2)', 'GENERAL_RED(14)', 'SOLDIER_BLACK(1)', 'CHARIOT_RED(8)', 'ADVISOR_BLACK(11)']
-    → Strong pieces (>9): 2
-    → Has RED_GENERAL: True
-  Bot 3: ['SOLDIER_RED(2)', 'SOLDIER_BLACK(1)', 'CHARIOT_BLACK(7)', 'ADVISOR_RED(12)', 'CANNON_BLACK(3)', 'CANNON_RED(4)', 'CHARIOT_BLACK(7)', 'ELEPHANT_BLACK(9)']
-    → Strong pieces (>9): 1
-    → Has RED_GENERAL: False
-  Bot 4: ['HORSE_RED(6)', 'ADVISOR_BLACK(11)', 'CANNON_BLACK(3)', 'ADVISOR_RED(12)', 'SOLDIER_RED(2)', 'SOLDIER_BLACK(1)', 'SOLDIER_RED(2)', 'SOLDIER_BLACK(1)']
-    → Strong pieces (>9): 2
-    → Has RED_GENERAL: False
-✅ SUCCESS: No weak hands - redeal prevented!
-{"timestamp": "2025-07-01T22:46:48.030880Z", "level": "INFO", "logger": "game.state.preparation", "message": "\ud83d\udd0d Weak hand check - Found 0 weak players: set()", "module": "preparation_state", "function": "_deal_cards", "line": 141}
-{"timestamp": "2025-07-01T22:46:48.030951Z", "level": "INFO", "logger": "game.state.preparation", "message": "\ud83d\udd0d STARTER_DEBUG: Current round number: 1", "module": "preparation_state", "function": "_determine_starter", "line": 396}
-🔍 STARTER_DEBUG: Looking for GENERAL_RED holder in round 1
-🔍 STARTER_DEBUG: Checking player Andy
-🔍 STARTER_DEBUG: Player Andy hand: ['HORSE_BLACK(5)', 'ELEPHANT_RED(10)', 'ELEPHANT_RED(10)', 'ELEPHANT_BLACK(9)', 'CHARIOT_RED(8)', 'HORSE_RED(6)', 'HORSE_BLACK(5)', 'GENERAL_BLACK(13)']
-🔍 STARTER_DEBUG: Checking piece 'HORSE_BLACK(5)' for GENERAL_RED
-🔍 STARTER_DEBUG: Checking piece 'ELEPHANT_RED(10)' for GENERAL_RED
-🔍 STARTER_DEBUG: Checking piece 'ELEPHANT_RED(10)' for GENERAL_RED
-🔍 STARTER_DEBUG: Checking piece 'ELEPHANT_BLACK(9)' for GENERAL_RED
-🔍 STARTER_DEBUG: Checking piece 'CHARIOT_RED(8)' for GENERAL_RED
-🔍 STARTER_DEBUG: Checking piece 'HORSE_RED(6)' for GENERAL_RED
-🔍 STARTER_DEBUG: Checking piece 'HORSE_BLACK(5)' for GENERAL_RED
-🔍 STARTER_DEBUG: Checking piece 'GENERAL_BLACK(13)' for GENERAL_RED
-🔍 STARTER_DEBUG: Checking player Bot 2
-🔍 STARTER_DEBUG: Player Bot 2 hand: ['CANNON_RED(4)', 'SOLDIER_RED(2)', 'SOLDIER_BLACK(1)', 'SOLDIER_RED(2)', 'GENERAL_RED(14)', 'SOLDIER_BLACK(1)', 'CHARIOT_RED(8)', 'ADVISOR_BLACK(11)']
-🔍 STARTER_DEBUG: Checking piece 'CANNON_RED(4)' for GENERAL_RED
-🔍 STARTER_DEBUG: Checking piece 'SOLDIER_RED(2)' for GENERAL_RED
-🔍 STARTER_DEBUG: Checking piece 'SOLDIER_BLACK(1)' for GENERAL_RED
-🔍 STARTER_DEBUG: Checking piece 'SOLDIER_RED(2)' for GENERAL_RED
-🔍 STARTER_DEBUG: Checking piece 'GENERAL_RED(14)' for GENERAL_RED
-✅ STARTER_DEBUG: Found GENERAL_RED in Bot 2's hand!
-{"timestamp": "2025-07-01T22:46:48.031489Z", "level": "INFO", "logger": "game.state.preparation", "message": "\ud83c\udfaf Starter: Bot 2 (has GENERAL_RED)", "module": "preparation_state", "function": "_determine_starter", "line": 411}
-✅ PREP_STATE_DEBUG: No weak hands - determined new starter: Bot 2
-{"timestamp": "2025-07-01T22:46:48.031574Z", "level": "INFO", "logger": "game.state.preparation", "message": "\u2705 No weak hands - determined new starter: Bot 2", "module": "preparation_state", "function": "_deal_cards", "line": 212}
-🎯 PREP_STATE_DEBUG: No weak hands detected - auto-transitioning to Declaration phase
-{"timestamp": "2025-07-01T22:46:48.031646Z", "level": "INFO", "logger": "game.state.preparation", "message": "\ud83c\udfaf No weak hands detected - transitioning to Declaration phase", "module": "preparation_state", "function": "_deal_cards", "line": 217}
-🔧 TRANSITION_DEBUG: _immediate_transition_to called: GamePhase.PREPARATION -> GamePhase.DECLARATION
-🔧 ASYNC_DEBUG: Thread: MainThread
-🔧 ASYNC_DEBUG: Is running: True
-🔧 ASYNC_DEBUG: Transition lock acquired: False
-🔧 TRANSITION_DEBUG: Starting transition steps...
-🔧 TRANSITION_DEBUG: Step 1 - Cleanup tasks
-🔧 TRANSITION_DEBUG: Step 2 - Exit current state
-{"timestamp": "2025-07-01T22:46:48.031797Z", "level": "INFO", "logger": "game.state.preparation", "message": "Exiting preparation phase", "module": "base_state", "function": "on_exit", "line": 52}
-{"timestamp": "2025-07-01T22:46:48.031878Z", "level": "INFO", "logger": "game.state.preparation", "message": "\ud83c\udfaf Round starter already set: Bot 2", "module": "preparation_state", "function": "_cleanup_phase", "line": 94}
-🎯 PREP_STATE_DEBUG: Cleanup phase - current_player: Bot 2
-🎯 PREP_STATE_DEBUG: Cleanup phase - round_starter: Bot 2
-{"timestamp": "2025-07-01T22:46:48.032042Z", "level": "INFO", "logger": "game.state.preparation", "message": "\ud83d\udccb Preparation complete - Starter: Bot 2, Multiplier: 1x", "module": "preparation_state", "function": "_cleanup_phase", "line": 105}
-🔧 TRANSITION_DEBUG: Step 3 - Atomic state update
-🔧 TRANSITION_DEBUG: Step 4 - Enter new state
-🔧 TRANSITION_DEBUG: Step 4a - About to call on_enter() for declaration
-🔧 BASE_STATE_DEBUG: on_enter() called for declaration phase
-{"timestamp": "2025-07-01T22:46:48.032141Z", "level": "INFO", "logger": "game.state.declaration", "message": "Entering declaration phase", "module": "base_state", "function": "on_enter", "line": 37}
-🔧 BASE_STATE_DEBUG: Clearing phase_data
-🔧 BASE_STATE_DEBUG: About to call _setup_phase() for declaration
-📢 DECL_STATE_DEBUG: Using round_starter: Bot 2
-{"timestamp": "2025-07-01T22:46:48.032225Z", "level": "INFO", "logger": "game.state.declaration", "message": "\ud83c\udfae Phase Data Update: Declaration phase setup - basic data", "module": "base_state", "function": "update_phase_data", "line": 165}
-DEBUG_WS: Entering broadcast method for room D68EE5, event phase_change
-DEBUG_WS: Attempting to queue event 'phase_change' for room D68EE5 with data: {'phase': 'declaration', 'allowed_actions': ['declare', 'timeout', 'player_disconnect', 'player_reconnect'], 'phase_data': {'declaration_order': ['Bot 2 - 0 pts', 'Bot 3 - 0 pts', 'Bot 4 - 0 pts', 'Andy - 0 pts'], 'current_declarer_index': 0, 'declarations': {}, 'declaration_total': 0}, 'players': {'Andy': {'hand': ['HORSE_BLACK(5)', 'ELEPHANT_RED(10)', 'ELEPHANT_RED(10)', 'ELEPHANT_BLACK(9)', 'CHARIOT_RED(8)', 'HORSE_RED(6)', 'HORSE_BLACK(5)', 'GENERAL_BLACK(13)'], 'hand_size': 8}, 'Bot 2': {'hand': ['CANNON_RED(4)', 'SOLDIER_RED(2)', 'SOLDIER_BLACK(1)', 'SOLDIER_RED(2)', 'GENERAL_RED(14)', 'SOLDIER_BLACK(1)', 'CHARIOT_RED(8)', 'ADVISOR_BLACK(11)'], 'hand_size': 8}, 'Bot 3': {'hand': ['SOLDIER_RED(2)', 'SOLDIER_BLACK(1)', 'CHARIOT_BLACK(7)', 'ADVISOR_RED(12)', 'CANNON_BLACK(3)', 'CANNON_RED(4)', 'CHARIOT_BLACK(7)', 'ELEPHANT_BLACK(9)'], 'hand_size': 8}, 'Bot 4': {'hand': ['HORSE_RED(6)', 'ADVISOR_BLACK(11)', 'CANNON_BLACK(3)', 'ADVISOR_RED(12)', 'SOLDIER_RED(2)', 'SOLDIER_BLACK(1)', 'SOLDIER_RED(2)', 'SOLDIER_BLACK(1)'], 'hand_size': 8}}, 'round': 1, 'reason': 'Declaration phase setup - basic data', 'sequence': 1, 'timestamp': 1751410008.0324638, 'room_id': 'D68EE5'}
-🔧 SERIALIZATION_DEBUG: Testing JSON serialization for event 'phase_change'
-🔧 SERIALIZATION_DEBUG: JSON serialization test PASSED for event 'phase_change' - 1221 chars
-🔧 SERIALIZATION_DEBUG: About to call queue.put() for event 'phase_change'
-✅ SERIALIZATION_DEBUG: queue.put() completed successfully for event 'phase_change'
-DEBUG_WS: Message for event 'phase_change' added to queue for room D68EE5.
-{"timestamp": "2025-07-01T22:46:48.032712Z", "level": "INFO", "logger": "game.state.declaration", "message": "\ud83d\udce4 Auto-broadcast: phase_change to room D68EE5 - Declaration phase setup - basic data", "module": "base_state", "function": "_auto_broadcast_phase_change", "line": 227}
-🤖 ENTERPRISE_DATA_DEBUG: Notifying bot manager about data change - reason: Declaration phase setup - basic data
-{"timestamp": "2025-07-01T22:46:48.032818Z", "level": "INFO", "logger": "game.state.declaration", "message": "\ud83c\udfae Phase Data Update: Declaration phase setup complete - current declarer: Bot 2", "module": "base_state", "function": "update_phase_data", "line": 165}
-DEBUG_WS: Entering broadcast method for room D68EE5, event phase_change
-DEBUG_WS: Attempting to queue event 'phase_change' for room D68EE5 with data: {'phase': 'declaration', 'allowed_actions': ['declare', 'timeout', 'player_disconnect', 'player_reconnect'], 'phase_data': {'declaration_order': ['Bot 2 - 0 pts', 'Bot 3 - 0 pts', 'Bot 4 - 0 pts', 'Andy - 0 pts'], 'current_declarer_index': 0, 'declarations': {}, 'declaration_total': 0, 'current_declarer': 'Bot 2'}, 'players': {'Andy': {'hand': ['HORSE_BLACK(5)', 'ELEPHANT_RED(10)', 'ELEPHANT_RED(10)', 'ELEPHANT_BLACK(9)', 'CHARIOT_RED(8)', 'HORSE_RED(6)', 'HORSE_BLACK(5)', 'GENERAL_BLACK(13)'], 'hand_size': 8}, 'Bot 2': {'hand': ['CANNON_RED(4)', 'SOLDIER_RED(2)', 'SOLDIER_BLACK(1)', 'SOLDIER_RED(2)', 'GENERAL_RED(14)', 'SOLDIER_BLACK(1)', 'CHARIOT_RED(8)', 'ADVISOR_BLACK(11)'], 'hand_size': 8}, 'Bot 3': {'hand': ['SOLDIER_RED(2)', 'SOLDIER_BLACK(1)', 'CHARIOT_BLACK(7)', 'ADVISOR_RED(12)', 'CANNON_BLACK(3)', 'CANNON_RED(4)', 'CHARIOT_BLACK(7)', 'ELEPHANT_BLACK(9)'], 'hand_size': 8}, 'Bot 4': {'hand': ['HORSE_RED(6)', 'ADVISOR_BLACK(11)', 'CANNON_BLACK(3)', 'ADVISOR_RED(12)', 'SOLDIER_RED(2)', 'SOLDIER_BLACK(1)', 'SOLDIER_RED(2)', 'SOLDIER_BLACK(1)'], 'hand_size': 8}}, 'round': 1, 'reason': 'Declaration phase setup complete - current declarer: Bot 2', 'sequence': 2, 'timestamp': 1751410008.03298, 'room_id': 'D68EE5'}
-🔧 SERIALIZATION_DEBUG: Testing JSON serialization for event 'phase_change'
-🔧 SERIALIZATION_DEBUG: JSON serialization test PASSED for event 'phase_change' - 1270 chars
-🔧 SERIALIZATION_DEBUG: About to call queue.put() for event 'phase_change'
-✅ SERIALIZATION_DEBUG: queue.put() completed successfully for event 'phase_change'
-DEBUG_WS: Message for event 'phase_change' added to queue for room D68EE5.
-{"timestamp": "2025-07-01T22:46:48.033245Z", "level": "INFO", "logger": "game.state.declaration", "message": "\ud83d\udce4 Auto-broadcast: phase_change to room D68EE5 - Declaration phase setup complete - current declarer: Bot 2", "module": "base_state", "function": "_auto_broadcast_phase_change", "line": 227}
-🤖 ENTERPRISE_DATA_DEBUG: Notifying bot manager about data change - reason: Declaration phase setup complete - current declarer: Bot 2
-🤖 ENTERPRISE_DATA_DEBUG: Declaration phase - current declarer: Bot 2
-🔔 BOT_MANAGER_DEBUG: Received event 'phase_change' for room D68EE5 with data: {'phase': 'declaration', 'phase_data': {'declaration_order': ['Bot 2 - 0 pts', 'Bot 3 - 0 pts', 'Bot 4 - 0 pts', 'Andy - 0 pts'], 'current_declarer_index': 0, 'declarations': {}, 'declaration_total': 0, 'current_declarer': 'Bot 2'}, 'current_declarer': 'Bot 2', 'reason': 'Declaration phase setup complete - current declarer: Bot 2'}
-✅ BOT_MANAGER_DEBUG: Found handler for room D68EE5, delegating to handler...
-🎮 BOT_HANDLER_DEBUG: Room D68EE5 handling event 'phase_change' with data keys: ['phase', 'phase_data', 'current_declarer', 'reason']
-🔍 BOT_HANDLER_DEBUG: Event type check - event == 'phase_change': True
-🔍 BOT_HANDLER_DEBUG: Event value repr: 'phase_change'
-🔧 BOT_MANAGER_LOCK_FIX: Step 1 - Determining bot actions (minimal lock scope)
-🔧 BOT_MANAGER_LOCK_FIX: Lock acquired for decision logic only
-🚀 BOT_HANDLER_DEBUG: Analyzing enterprise phase change
-🔧 BOT_MANAGER_LOCK_FIX: Decision logic completed - releasing lock
-🔧 BOT_MANAGER_LOCK_FIX: Step 2 - Executing 1 bot actions (lock-free)
-🔧 BOT_MANAGER_LOCK_FIX: Executing action enterprise_declaration (lock-free)
-🤖 BOT_SINGLE_DECLARE: Handling declaration for Bot 2
-🤖 BOT_SINGLE_DECLARE: Bot Bot 2 will declare in 0.6s...
-DEBUG_WS_QUEUE: Room D68EE5 got message: phase_change
-DEBUG_WS: Broadcasting event 'phase_change' (op_id: unknown) to 1 clients in room D68EE5.
-DEBUG_WS: Successfully sent 'phase_change' to a client in room D68EE5.
-DEBUG_WS_QUEUE: Room D68EE5 got message: phase_change
-DEBUG_WS: Broadcasting event 'phase_change' (op_id: unknown) to 1 clients in room D68EE5.
-DEBUG_WS: Successfully sent 'phase_change' to a client in room D68EE5.
-🔍 BOT_DEBUG: Got declaration order from state machine: ['Bot 2', 'Bot 3', 'Bot 4', 'Andy']
-🤖 BOT_SINGLE_DECLARE: Bot Bot 2 declaring at position 0
-🔧 BOT_DECLARE_DEBUG: Creating fire-and-forget task for state machine action
-✅ BOT_DECLARE_DEBUG: Fire-and-forget declaration task created for Bot 2
-✅ Bot Bot 2 declared 2
-✅ BOT_MANAGER_LOCK_FIX: Action enterprise_declaration completed successfully
-🤖 DECLARATION_DEBUG: Triggering bot manager for declaration phase
-🔧 DECLARATION_DEBUG: Bot manager active games: ['D68EE5']
-⚠️ DECLARATION_DEBUG: No room_id found to trigger bot manager
-🔧 BASE_STATE_DEBUG: _setup_phase() completed successfully for declaration
-🔧 TRANSITION_DEBUG: Step 4b - on_enter() completed for declaration
-🔧 TRANSITION_DEBUG: Step 4c - Checking current state after on_enter()
-🔧 TRANSITION_DEBUG: Current phase: GamePhase.DECLARATION
-🔧 TRANSITION_DEBUG: Current state: <engine.state_machine.states.declaration_state.DeclarationState object at 0x10c750ed0>
-🔧 TRANSITION_DEBUG: Is running: True
-🔧 TRANSITION_DEBUG: Step 5 - About to store event
-🔧 STORE_EVENT_DEBUG: _store_phase_change_event called: GamePhase.PREPARATION -> GamePhase.DECLARATION
-🔧 STORE_EVENT_DEBUG: Prepared payload: {'old_phase': 'preparation', 'new_phase': 'declaration', 'timestamp': '2025-07-01T15:46:48.612440', 'game_state': {}}
-🔧 STORE_EVENT_DEBUG: Added game context: {'round_number': 1, 'player_count': 4, 'current_player': 'Bot 2'}
-🔧 STORE_EVENT_DEBUG: About to call action_queue.store_state_event
-🔧 STORE_EVENT_DEBUG: action_queue.store_state_event completed
-🔧 STORE_EVENT_DEBUG: Event storage successful
-🔧 TRANSITION_DEBUG: Step 5 - Store event completed
-🔧 TRANSITION_DEBUG: Step 6 - About to broadcast
-🚀 STATE_MACHINE_DEBUG: Broadcasting phase change to declaration with reason: No weak hands detected - preparation complete
-🔧 BROADCAST_DEBUG: _broadcast_phase_change_with_display_metadata called for declaration
-🔧 BROADCAST_DEBUG: Prepared base_data: {'phase': 'declaration', 'allowed_actions': ['declare', 'timeout', 'player_disconnect', 'player_reconnect'], 'phase_data': {'declaration_order': ['Bot 2', 'Bot 3', 'Bot 4', 'Andy'], 'current_declarer_index': 0, 'declarations': {}, 'declaration_total': 0, 'current_declarer': 'Bot 2'}, 'immediate': True, 'reason': 'No weak hands detected - preparation complete'}
-🔧 BROADCAST_DEBUG: Added display config: {'type': 'declaration', 'show_for_seconds': None, 'auto_advance': False, 'can_skip': False}
-🔧 BROADCAST_DEBUG: Added players data: ['Andy', 'Bot 2', 'Bot 3', 'Bot 4']
-🔧 BROADCAST_DEBUG: About to call broadcast_event with phase_change
-🔧 BROADCAST_EVENT_DEBUG: broadcast_event called with type: phase_change
-🔧 BROADCAST_EVENT_DEBUG: Callback available, calling broadcast_callback
-DEBUG_WS: Entering broadcast method for room D68EE5, event phase_change
-DEBUG_WS: Attempting to queue event 'phase_change' for room D68EE5 with data: {'phase': 'declaration', 'allowed_actions': ['declare', 'timeout', 'player_disconnect', 'player_reconnect'], 'phase_data': {'declaration_order': ['Bot 2', 'Bot 3', 'Bot 4', 'Andy'], 'current_declarer_index': 0, 'declarations': {}, 'declaration_total': 0, 'current_declarer': 'Bot 2'}, 'immediate': True, 'reason': 'No weak hands detected - preparation complete', 'display': {'type': 'declaration', 'show_for_seconds': None, 'auto_advance': False, 'can_skip': False}, 'players': {'Andy': {'hand': ['HORSE_BLACK(5)', 'ELEPHANT_RED(10)', 'ELEPHANT_RED(10)', 'ELEPHANT_BLACK(9)', 'CHARIOT_RED(8)', 'HORSE_RED(6)', 'HORSE_BLACK(5)', 'GENERAL_BLACK(13)'], 'hand_size': 8}, 'Bot 2': {'hand': ['CANNON_RED(4)', 'SOLDIER_RED(2)', 'SOLDIER_BLACK(1)', 'SOLDIER_RED(2)', 'GENERAL_RED(14)', 'SOLDIER_BLACK(1)', 'CHARIOT_RED(8)', 'ADVISOR_BLACK(11)'], 'hand_size': 8}, 'Bot 3': {'hand': ['SOLDIER_RED(2)', 'SOLDIER_BLACK(1)', 'CHARIOT_BLACK(7)', 'ADVISOR_RED(12)', 'CANNON_BLACK(3)', 'CANNON_RED(4)', 'CHARIOT_BLACK(7)', 'ELEPHANT_BLACK(9)'], 'hand_size': 8}, 'Bot 4': {'hand': ['HORSE_RED(6)', 'ADVISOR_BLACK(11)', 'CANNON_BLACK(3)', 'ADVISOR_RED(12)', 'SOLDIER_RED(2)', 'SOLDIER_BLACK(1)', 'SOLDIER_RED(2)', 'SOLDIER_BLACK(1)'], 'hand_size': 8}}, 'timestamp': 1751410008.61271, 'room_id': 'D68EE5'}
-🔧 SERIALIZATION_DEBUG: Testing JSON serialization for event 'phase_change'
-🔧 SERIALIZATION_DEBUG: JSON serialization test PASSED for event 'phase_change' - 1321 chars
-🔧 SERIALIZATION_DEBUG: About to call queue.put() for event 'phase_change'
-✅ SERIALIZATION_DEBUG: queue.put() completed successfully for event 'phase_change'
-DEBUG_WS: Message for event 'phase_change' added to queue for room D68EE5.
-🔄 RELIABLE_MSG: Message retry worker started
-🔧 HANDLE_ACTION_DEBUG: handle_action called for Bot 2 declare
-🔧 HANDLE_ACTION_DEBUG: State machine running check: True
-🔧 HANDLE_ACTION_DEBUG: Converting action to event
-🔧 HANDLE_ACTION_DEBUG: Creating GameEvent from action
-🔧 HANDLE_ACTION_DEBUG: GameEvent created successfully
-🔧 HANDLE_ACTION_DEBUG: About to call event_processor.handle_event
-🔧 EVENT_PROCESSOR_DEBUG: handle_event called for declare from Bot 2
-🔧 EVENT_PROCESSOR_DEBUG: Step 1 - Validating event for current state (no lock)
-✅ EVENT_PROCESSOR_DEBUG: Event validation passed
-🔧 EVENT_PROCESSOR_DEBUG: Step 2 - About to acquire processing_lock for critical section only
-🔧 EVENT_PROCESSOR_DEBUG: Processing_lock acquired for critical section
-🔧 EVENT_PROCESSOR_DEBUG: Processing event in current state
-🔧 PROCESS_EVENT_DEBUG: _process_event_in_state called for declare
-🔧 PROCESS_EVENT_DEBUG: Current state: <engine.state_machine.states.declaration_state.DeclarationState object at 0x10c750ed0>
-🔧 PROCESS_EVENT_DEBUG: Checking if state has process_event method
-🔧 PROCESS_EVENT_DEBUG: Using state's process_event method
-{"timestamp": "2025-07-01T22:46:48.613675Z", "level": "INFO", "logger": "game.state.declaration", "message": "\ud83c\udfae Phase Data Update: Player Bot 2 declared 2", "module": "base_state", "function": "update_phase_data", "line": 165}
-DEBUG_WS: Entering broadcast method for room D68EE5, event phase_change
-DEBUG_WS: Attempting to queue event 'phase_change' for room D68EE5 with data: {'phase': 'declaration', 'allowed_actions': ['declare', 'timeout', 'player_disconnect', 'player_reconnect'], 'phase_data': {'declaration_order': ['Bot 2 - 0 pts', 'Bot 3 - 0 pts', 'Bot 4 - 0 pts', 'Andy - 0 pts'], 'current_declarer_index': 1, 'declarations': {'Bot 2': 2}, 'declaration_total': 2, 'current_declarer': 'Bot 3'}, 'players': {'Andy': {'hand': ['HORSE_BLACK(5)', 'ELEPHANT_RED(10)', 'ELEPHANT_RED(10)', 'ELEPHANT_BLACK(9)', 'CHARIOT_RED(8)', 'HORSE_RED(6)', 'HORSE_BLACK(5)', 'GENERAL_BLACK(13)'], 'hand_size': 8}, 'Bot 2': {'hand': ['CANNON_RED(4)', 'SOLDIER_RED(2)', 'SOLDIER_BLACK(1)', 'SOLDIER_RED(2)', 'GENERAL_RED(14)', 'SOLDIER_BLACK(1)', 'CHARIOT_RED(8)', 'ADVISOR_BLACK(11)'], 'hand_size': 8}, 'Bot 3': {'hand': ['SOLDIER_RED(2)', 'SOLDIER_BLACK(1)', 'CHARIOT_BLACK(7)', 'ADVISOR_RED(12)', 'CANNON_BLACK(3)', 'CANNON_RED(4)', 'CHARIOT_BLACK(7)', 'ELEPHANT_BLACK(9)'], 'hand_size': 8}, 'Bot 4': {'hand': ['HORSE_RED(6)', 'ADVISOR_BLACK(11)', 'CANNON_BLACK(3)', 'ADVISOR_RED(12)', 'SOLDIER_RED(2)', 'SOLDIER_BLACK(1)', 'SOLDIER_RED(2)', 'SOLDIER_BLACK(1)'], 'hand_size': 8}}, 'round': 1, 'reason': 'Player Bot 2 declared 2', 'sequence': 3, 'timestamp': 1751410008.6138759, 'room_id': 'D68EE5'}
-🔧 SERIALIZATION_DEBUG: Testing JSON serialization for event 'phase_change'
-🔧 SERIALIZATION_DEBUG: JSON serialization test PASSED for event 'phase_change' - 1247 chars
-🔧 SERIALIZATION_DEBUG: About to call queue.put() for event 'phase_change'
-✅ SERIALIZATION_DEBUG: queue.put() completed successfully for event 'phase_change'
-DEBUG_WS: Message for event 'phase_change' added to queue for room D68EE5.
-🔧 BROADCAST_EVENT_DEBUG: broadcast_callback completed successfully
-🔧 BROADCAST_DEBUG: broadcast_event completed successfully
-✅ STATE_MACHINE_DEBUG: Phase change broadcast completed for declaration
-🔧 TRANSITION_DEBUG: Step 7 - About to notify bot manager
-🤖 STATE_MACHINE_DEBUG: Notifying bot manager about phase declaration for room D68EE5
-🔔 BOT_MANAGER_DEBUG: Received event 'round_started' for room D68EE5 with data: {'phase': 'declaration', 'starter': 'Bot 2'}
-✅ BOT_MANAGER_DEBUG: Found handler for room D68EE5, delegating to handler...
-🎮 BOT_HANDLER_DEBUG: Room D68EE5 handling event 'round_started' with data keys: ['phase', 'starter']
-🔍 BOT_HANDLER_DEBUG: Event type check - event == 'phase_change': False
-🔍 BOT_HANDLER_DEBUG: Event value repr: 'round_started'
-🔧 BOT_MANAGER_LOCK_FIX: Step 1 - Determining bot actions (minimal lock scope)
-🔧 BOT_MANAGER_LOCK_FIX: Lock acquired for decision logic only
-🎪 BOT_HANDLER_DEBUG: Analyzing round start
-🔧 BOT_MANAGER_LOCK_FIX: Decision logic completed - releasing lock
-🔧 BOT_MANAGER_LOCK_FIX: Step 2 - Executing 1 bot actions (lock-free)
-🔧 BOT_MANAGER_LOCK_FIX: Executing action round_start (lock-free)
-🔍 BOT_ROUND_DEBUG: Game state current_order: None
-🔍 BOT_ROUND_DEBUG: Game round_starter: Bot 2
-🔍 BOT_ROUND_DEBUG: Game current_player: Bot 2
-🔧 BOT_ROUND_DEBUG: Declarations now handled by enterprise phase change - skipping old path
-✅ BOT_MANAGER_LOCK_FIX: Action round_start completed successfully
-🔧 TRANSITION_DEBUG: Step 7 - Bot manager notification completed
-✅ TRANSITION_DEBUG: All transition steps completed successfully: GamePhase.PREPARATION -> GamePhase.DECLARATION
-🔧 BASE_STATE_DEBUG: _setup_phase() completed successfully for preparation
-🔧 TRANSITION_DEBUG: Step 4b - on_enter() completed for preparation
-🔧 TRANSITION_DEBUG: Step 4c - Checking current state after on_enter()
-🔧 TRANSITION_DEBUG: Current phase: GamePhase.DECLARATION
-🔧 TRANSITION_DEBUG: Current state: <engine.state_machine.states.declaration_state.DeclarationState object at 0x10c750ed0>
-🔧 TRANSITION_DEBUG: Is running: True
-🔧 TRANSITION_DEBUG: Step 5 - About to store event
-🔧 STORE_EVENT_DEBUG: _store_phase_change_event called: None -> GamePhase.PREPARATION
-🔧 STORE_EVENT_DEBUG: Prepared payload: {'old_phase': None, 'new_phase': 'preparation', 'timestamp': '2025-07-01T15:46:48.614635', 'game_state': {}}
-🔧 STORE_EVENT_DEBUG: Added game context: {'round_number': 1, 'player_count': 4, 'current_player': 'Bot 2'}
-🔧 STORE_EVENT_DEBUG: About to call action_queue.store_state_event
-🔧 STORE_EVENT_DEBUG: action_queue.store_state_event completed
-🔧 STORE_EVENT_DEBUG: Event storage successful
-🔧 TRANSITION_DEBUG: Step 5 - Store event completed
-🔧 TRANSITION_DEBUG: Step 6 - About to broadcast
-🚀 STATE_MACHINE_DEBUG: Broadcasting phase change to preparation with reason: Initial state machine start
-🔧 BROADCAST_DEBUG: _broadcast_phase_change_with_display_metadata called for preparation
-🔧 BROADCAST_DEBUG: Prepared base_data: {'phase': 'preparation', 'allowed_actions': ['declare', 'timeout', 'player_disconnect', 'player_reconnect'], 'phase_data': {'declaration_order': ['Bot 2', 'Bot 3', 'Bot 4', 'Andy'], 'current_declarer_index': 1, 'declarations': {'Bot 2': 2}, 'declaration_total': 2, 'current_declarer': 'Bot 3'}, 'immediate': True, 'reason': 'Initial state machine start'}
-🔧 BROADCAST_DEBUG: Added display config: {'type': 'preparation', 'show_for_seconds': None, 'auto_advance': False, 'can_skip': False}
-🔧 BROADCAST_DEBUG: Added players data: ['Andy', 'Bot 2', 'Bot 3', 'Bot 4']
-🔧 BROADCAST_DEBUG: About to call broadcast_event with phase_change
-🔧 BROADCAST_EVENT_DEBUG: broadcast_event called with type: phase_change
-🔧 BROADCAST_EVENT_DEBUG: Callback available, calling broadcast_callback
-DEBUG_WS: Entering broadcast method for room D68EE5, event phase_change
-DEBUG_WS: Attempting to queue event 'phase_change' for room D68EE5 with data: {'phase': 'preparation', 'allowed_actions': ['declare', 'timeout', 'player_disconnect', 'player_reconnect'], 'phase_data': {'declaration_order': ['Bot 2', 'Bot 3', 'Bot 4', 'Andy'], 'current_declarer_index': 1, 'declarations': {'Bot 2': 2}, 'declaration_total': 2, 'current_declarer': 'Bot 3'}, 'immediate': True, 'reason': 'Initial state machine start', 'display': {'type': 'preparation', 'show_for_seconds': None, 'auto_advance': False, 'can_skip': False}, 'players': {'Andy': {'hand': ['HORSE_BLACK(5)', 'ELEPHANT_RED(10)', 'ELEPHANT_RED(10)', 'ELEPHANT_BLACK(9)', 'CHARIOT_RED(8)', 'HORSE_RED(6)', 'HORSE_BLACK(5)', 'GENERAL_BLACK(13)'], 'hand_size': 8}, 'Bot 2': {'hand': ['CANNON_RED(4)', 'SOLDIER_RED(2)', 'SOLDIER_BLACK(1)', 'SOLDIER_RED(2)', 'GENERAL_RED(14)', 'SOLDIER_BLACK(1)', 'CHARIOT_RED(8)', 'ADVISOR_BLACK(11)'], 'hand_size': 8}, 'Bot 3': {'hand': ['SOLDIER_RED(2)', 'SOLDIER_BLACK(1)', 'CHARIOT_BLACK(7)', 'ADVISOR_RED(12)', 'CANNON_BLACK(3)', 'CANNON_RED(4)', 'CHARIOT_BLACK(7)', 'ELEPHANT_BLACK(9)'], 'hand_size': 8}, 'Bot 4': {'hand': ['HORSE_RED(6)', 'ADVISOR_BLACK(11)', 'CANNON_BLACK(3)', 'ADVISOR_RED(12)', 'SOLDIER_RED(2)', 'SOLDIER_BLACK(1)', 'SOLDIER_RED(2)', 'SOLDIER_BLACK(1)'], 'hand_size': 8}}, 'timestamp': 1751410008.6151512, 'room_id': 'D68EE5'}
-🔧 SERIALIZATION_DEBUG: Testing JSON serialization for event 'phase_change'
-🔧 SERIALIZATION_DEBUG: JSON serialization test PASSED for event 'phase_change' - 1315 chars
-🔧 SERIALIZATION_DEBUG: About to call queue.put() for event 'phase_change'
-✅ SERIALIZATION_DEBUG: queue.put() completed successfully for event 'phase_change'
-DEBUG_WS: Message for event 'phase_change' added to queue for room D68EE5.
-{"timestamp": "2025-07-01T22:46:48.615570Z", "level": "INFO", "logger": "game.state.declaration", "message": "\ud83d\udce4 Auto-broadcast: phase_change to room D68EE5 - Player Bot 2 declared 2", "module": "base_state", "function": "_auto_broadcast_phase_change", "line": 227}
-🤖 ENTERPRISE_DATA_DEBUG: Notifying bot manager about data change - reason: Player Bot 2 declared 2
-🤖 ENTERPRISE_DATA_DEBUG: Declaration phase - current declarer: Bot 3
-🔔 BOT_MANAGER_DEBUG: Received event 'phase_change' for room D68EE5 with data: {'phase': 'declaration', 'phase_data': {'declaration_order': ['Bot 2 - 0 pts', 'Bot 3 - 0 pts', 'Bot 4 - 0 pts', 'Andy - 0 pts'], 'current_declarer_index': 1, 'declarations': {'Bot 2': 2}, 'declaration_total': 2, 'current_declarer': 'Bot 3'}, 'current_declarer': 'Bot 3', 'reason': 'Player Bot 2 declared 2'}
-✅ BOT_MANAGER_DEBUG: Found handler for room D68EE5, delegating to handler...
-🎮 BOT_HANDLER_DEBUG: Room D68EE5 handling event 'phase_change' with data keys: ['phase', 'phase_data', 'current_declarer', 'reason']
-🔍 BOT_HANDLER_DEBUG: Event type check - event == 'phase_change': True
-🔍 BOT_HANDLER_DEBUG: Event value repr: 'phase_change'
-🔧 BOT_MANAGER_LOCK_FIX: Step 1 - Determining bot actions (minimal lock scope)
-🔧 BOT_MANAGER_LOCK_FIX: Lock acquired for decision logic only
-🚀 BOT_HANDLER_DEBUG: Analyzing enterprise phase change
-🔧 BOT_MANAGER_LOCK_FIX: Decision logic completed - releasing lock
-🔧 BOT_MANAGER_LOCK_FIX: Step 2 - Executing 1 bot actions (lock-free)
-🔧 BOT_MANAGER_LOCK_FIX: Executing action enterprise_declaration (lock-free)
-🤖 BOT_SINGLE_DECLARE: Handling declaration for Bot 3
-🤖 BOT_SINGLE_DECLARE: Bot Bot 3 will declare in 0.8s...
-🔧 BROADCAST_EVENT_DEBUG: broadcast_callback completed successfully
-🔧 BROADCAST_DEBUG: broadcast_event completed successfully
-✅ STATE_MACHINE_DEBUG: Phase change broadcast completed for preparation
-🔧 TRANSITION_DEBUG: Step 7 - About to notify bot manager
-🤖 STATE_MACHINE_DEBUG: Notifying bot manager about phase preparation for room D68EE5
-🔧 TRANSITION_DEBUG: Step 7 - Bot manager notification completed
-✅ TRANSITION_DEBUG: All transition steps completed successfully: None -> GamePhase.PREPARATION
-✅ [Room D68EE5] Game and StateMachine started successfully: op_id=D68EE5_1
-✅ [Room D68EE5] Bot manager registered for 3 bots
-✅ Game started in room D68EE5
-DEBUG_WS_QUEUE: Room D68EE5 got message: phase_change
-DEBUG_WS: Broadcasting event 'phase_change' (op_id: unknown) to 1 clients in room D68EE5.
-DEBUG_WS: Successfully sent 'phase_change' to a client in room D68EE5.
-DEBUG_WS_QUEUE: Room D68EE5 got message: phase_change
-DEBUG_WS: Broadcasting event 'phase_change' (op_id: unknown) to 1 clients in room D68EE5.
-DEBUG_WS: Successfully sent 'phase_change' to a client in room D68EE5.
-DEBUG_WS_QUEUE: Room D68EE5 got message: phase_change
-DEBUG_WS: Broadcasting event 'phase_change' (op_id: unknown) to 1 clients in room D68EE5.
-DEBUG_WS: Successfully sent 'phase_change' to a client in room D68EE5.
-DEBUG_WS_DISCONNECT: WebSocket client disconnected from room D68EE5.
-INFO:     connection closed
-DEBUG_WS: Unregistered connection for room D68EE5. Remaining connections: 0
-DEBUG_WS: Room D68EE5 has active game - keeping broadcast queue alive
-INFO:     ('127.0.0.1', 52308) - "WebSocket /ws/D68EE5" [accepted]
-DEBUG_WS: Registered new connection for room D68EE5. Total connections: 1
-INFO:     connection open
-DEBUG_WS_RECEIVE: Received event 'client_ready' from client in room D68EE5 with data: {'room_id': 'D68EE5'}
-DEBUG_WS_RECEIVE: Sent current game phase declaration to client in room D68EE5
-DEBUG_WS_RECEIVE: Sent initial room state to client in room D68EE5 after client_ready.
-🔍 BOT_DEBUG: Got declaration order from state machine: ['Bot 2', 'Bot 3', 'Bot 4', 'Andy']
-🤖 BOT_SINGLE_DECLARE: Bot Bot 3 declaring at position 1
-🔧 BOT_DECLARE_DEBUG: Creating fire-and-forget task for state machine action
-✅ BOT_DECLARE_DEBUG: Fire-and-forget declaration task created for Bot 3
-✅ Bot Bot 3 declared 1
-✅ BOT_MANAGER_LOCK_FIX: Action enterprise_declaration completed successfully
-🤖 DECLARATION_DEBUG: Triggering bot manager after Bot 2 declared
-⚠️ DECLARATION_DEBUG: No room_id found to trigger bot manager
-{"timestamp": "2025-07-01T22:46:49.454534Z", "level": "INFO", "logger": "game.state.declaration", "message": "Player Bot 2 declared 2", "module": "declaration_state", "function": "_handle_declaration", "line": 193}
-✅ PROCESS_EVENT_DEBUG: State process_event completed: True
-✅ EVENT_PROCESSOR_DEBUG: _process_event_in_state completed: True
-🔧 EVENT_PROCESSOR_DEBUG: Checking transitions: False
-🔧 EVENT_PROCESSOR_DEBUG: Critical section completed - releasing lock
-🔧 EVENT_PROCESSOR_DEBUG: Step 3 - Lock-free operations (stats, history)
-🔧 EVENT_PROCESSOR_DEBUG: Updating stats (lock-free)
-🔧 EVENT_PROCESSOR_DEBUG: Storing event history (lock-free)
-✅ EVENT_PROCESSOR_DEBUG: handle_event completed successfully
-🔧 HANDLE_ACTION_DEBUG: event_processor.handle_event completed in 0.841s
-🔧 HANDLE_ACTION_DEBUG: Processing result
-✅ HANDLE_ACTION_DEBUG: handle_action returning result: {'success': True, 'immediate': True, 'transition': False, 'processing_time': 0.8413870334625244, 'reason': 'Declaration processed successfully', 'data': {'status': 'declaration_recorded', 'player': 'Bot 2', 'value': 2, 'total': 2}}
-🔧 BOT_DECLARE_DEBUG: State machine result: {'success': True, 'immediate': True, 'transition': False, 'processing_time': 0.8413870334625244, 'reason': 'Declaration processed successfully', 'data': {'status': 'declaration_recorded', 'player': 'Bot 2', 'value': 2, 'total': 2}}
-🔧 HANDLE_ACTION_DEBUG: handle_action called for Bot 3 declare
-🔧 HANDLE_ACTION_DEBUG: State machine running check: True
-🔧 HANDLE_ACTION_DEBUG: Converting action to event
-🔧 HANDLE_ACTION_DEBUG: Creating GameEvent from action
-🔧 HANDLE_ACTION_DEBUG: GameEvent created successfully
-🔧 HANDLE_ACTION_DEBUG: About to call event_processor.handle_event
-🔧 EVENT_PROCESSOR_DEBUG: handle_event called for declare from Bot 3
-🔧 EVENT_PROCESSOR_DEBUG: Step 1 - Validating event for current state (no lock)
-✅ EVENT_PROCESSOR_DEBUG: Event validation passed
-🔧 EVENT_PROCESSOR_DEBUG: Step 2 - About to acquire processing_lock for critical section only
-🔧 EVENT_PROCESSOR_DEBUG: Processing_lock acquired for critical section
-🔧 EVENT_PROCESSOR_DEBUG: Processing event in current state
-🔧 PROCESS_EVENT_DEBUG: _process_event_in_state called for declare
-🔧 PROCESS_EVENT_DEBUG: Current state: <engine.state_machine.states.declaration_state.DeclarationState object at 0x10c750ed0>
-🔧 PROCESS_EVENT_DEBUG: Checking if state has process_event method
-🔧 PROCESS_EVENT_DEBUG: Using state's process_event method
-{"timestamp": "2025-07-01T22:46:49.455244Z", "level": "INFO", "logger": "game.state.declaration", "message": "\ud83c\udfae Phase Data Update: Player Bot 3 declared 1", "module": "base_state", "function": "update_phase_data", "line": 165}
-DEBUG_WS: Entering broadcast method for room D68EE5, event phase_change
-DEBUG_WS: Attempting to queue event 'phase_change' for room D68EE5 with data: {'phase': 'declaration', 'allowed_actions': ['declare', 'timeout', 'player_disconnect', 'player_reconnect'], 'phase_data': {'declaration_order': ['Bot 2 - 0 pts', 'Bot 3 - 0 pts', 'Bot 4 - 0 pts', 'Andy - 0 pts'], 'current_declarer_index': 2, 'declarations': {'Bot 2': 2, 'Bot 3': 1}, 'declaration_total': 3, 'current_declarer': 'Bot 4'}, 'players': {'Andy': {'hand': ['HORSE_BLACK(5)', 'ELEPHANT_RED(10)', 'ELEPHANT_RED(10)', 'ELEPHANT_BLACK(9)', 'CHARIOT_RED(8)', 'HORSE_RED(6)', 'HORSE_BLACK(5)', 'GENERAL_BLACK(13)'], 'hand_size': 8}, 'Bot 2': {'hand': ['CANNON_RED(4)', 'SOLDIER_RED(2)', 'SOLDIER_BLACK(1)', 'SOLDIER_RED(2)', 'GENERAL_RED(14)', 'SOLDIER_BLACK(1)', 'CHARIOT_RED(8)', 'ADVISOR_BLACK(11)'], 'hand_size': 8}, 'Bot 3': {'hand': ['SOLDIER_RED(2)', 'SOLDIER_BLACK(1)', 'CHARIOT_BLACK(7)', 'ADVISOR_RED(12)', 'CANNON_BLACK(3)', 'CANNON_RED(4)', 'CHARIOT_BLACK(7)', 'ELEPHANT_BLACK(9)'], 'hand_size': 8}, 'Bot 4': {'hand': ['HORSE_RED(6)', 'ADVISOR_BLACK(11)', 'CANNON_BLACK(3)', 'ADVISOR_RED(12)', 'SOLDIER_RED(2)', 'SOLDIER_BLACK(1)', 'SOLDIER_RED(2)', 'SOLDIER_BLACK(1)'], 'hand_size': 8}}, 'round': 1, 'reason': 'Player Bot 3 declared 1', 'sequence': 4, 'timestamp': 1751410009.455439, 'room_id': 'D68EE5'}
-🔧 SERIALIZATION_DEBUG: Testing JSON serialization for event 'phase_change'
-🔧 SERIALIZATION_DEBUG: JSON serialization test PASSED for event 'phase_change' - 1258 chars
-🔧 SERIALIZATION_DEBUG: About to call queue.put() for event 'phase_change'
-✅ SERIALIZATION_DEBUG: queue.put() completed successfully for event 'phase_change'
-DEBUG_WS: Message for event 'phase_change' added to queue for room D68EE5.
-{"timestamp": "2025-07-01T22:46:49.455957Z", "level": "INFO", "logger": "game.state.declaration", "message": "\ud83d\udce4 Auto-broadcast: phase_change to room D68EE5 - Player Bot 3 declared 1", "module": "base_state", "function": "_auto_broadcast_phase_change", "line": 227}
-🤖 ENTERPRISE_DATA_DEBUG: Notifying bot manager about data change - reason: Player Bot 3 declared 1
-🤖 ENTERPRISE_DATA_DEBUG: Declaration phase - current declarer: Bot 4
-🔔 BOT_MANAGER_DEBUG: Received event 'phase_change' for room D68EE5 with data: {'phase': 'declaration', 'phase_data': {'declaration_order': ['Bot 2 - 0 pts', 'Bot 3 - 0 pts', 'Bot 4 - 0 pts', 'Andy - 0 pts'], 'current_declarer_index': 2, 'declarations': {'Bot 2': 2, 'Bot 3': 1}, 'declaration_total': 3, 'current_declarer': 'Bot 4'}, 'current_declarer': 'Bot 4', 'reason': 'Player Bot 3 declared 1'}
-✅ BOT_MANAGER_DEBUG: Found handler for room D68EE5, delegating to handler...
-🎮 BOT_HANDLER_DEBUG: Room D68EE5 handling event 'phase_change' with data keys: ['phase', 'phase_data', 'current_declarer', 'reason']
-🔍 BOT_HANDLER_DEBUG: Event type check - event == 'phase_change': True
-🔍 BOT_HANDLER_DEBUG: Event value repr: 'phase_change'
-🔧 BOT_MANAGER_LOCK_FIX: Step 1 - Determining bot actions (minimal lock scope)
-🔧 BOT_MANAGER_LOCK_FIX: Lock acquired for decision logic only
-🚀 BOT_HANDLER_DEBUG: Analyzing enterprise phase change
-🔧 BOT_MANAGER_LOCK_FIX: Decision logic completed - releasing lock
-🔧 BOT_MANAGER_LOCK_FIX: Step 2 - Executing 1 bot actions (lock-free)
-🔧 BOT_MANAGER_LOCK_FIX: Executing action enterprise_declaration (lock-free)
-🤖 BOT_SINGLE_DECLARE: Handling declaration for Bot 4
-🤖 BOT_SINGLE_DECLARE: Bot Bot 4 will declare in 0.6s...
-DEBUG_WS_QUEUE: Room D68EE5 got message: phase_change
-DEBUG_WS: Broadcasting event 'phase_change' (op_id: unknown) to 1 clients in room D68EE5.
-DEBUG_WS: Successfully sent 'phase_change' to a client in room D68EE5.
-🔍 BOT_DEBUG: Got declaration order from state machine: ['Bot 2', 'Bot 3', 'Bot 4', 'Andy']
-🤖 BOT_SINGLE_DECLARE: Bot Bot 4 declaring at position 2
-🔧 BOT_DECLARE_DEBUG: Creating fire-and-forget task for state machine action
-✅ BOT_DECLARE_DEBUG: Fire-and-forget declaration task created for Bot 4
-✅ Bot Bot 4 declared 1
-✅ BOT_MANAGER_LOCK_FIX: Action enterprise_declaration completed successfully
-🤖 DECLARATION_DEBUG: Triggering bot manager after Bot 3 declared
-⚠️ DECLARATION_DEBUG: No room_id found to trigger bot manager
-{"timestamp": "2025-07-01T22:46:50.098117Z", "level": "INFO", "logger": "game.state.declaration", "message": "Player Bot 3 declared 1", "module": "declaration_state", "function": "_handle_declaration", "line": 193}
-✅ PROCESS_EVENT_DEBUG: State process_event completed: True
-✅ EVENT_PROCESSOR_DEBUG: _process_event_in_state completed: True
-🔧 EVENT_PROCESSOR_DEBUG: Checking transitions: False
-🔧 EVENT_PROCESSOR_DEBUG: Critical section completed - releasing lock
-🔧 EVENT_PROCESSOR_DEBUG: Step 3 - Lock-free operations (stats, history)
-🔧 EVENT_PROCESSOR_DEBUG: Updating stats (lock-free)
-🔧 EVENT_PROCESSOR_DEBUG: Storing event history (lock-free)
-✅ EVENT_PROCESSOR_DEBUG: handle_event completed successfully
-🔧 HANDLE_ACTION_DEBUG: event_processor.handle_event completed in 0.643s
-🔧 HANDLE_ACTION_DEBUG: Processing result
-✅ HANDLE_ACTION_DEBUG: handle_action returning result: {'success': True, 'immediate': True, 'transition': False, 'processing_time': 0.6431999206542969, 'reason': 'Declaration processed successfully', 'data': {'status': 'declaration_recorded', 'player': 'Bot 3', 'value': 1, 'total': 3}}
-🔧 BOT_DECLARE_DEBUG: State machine result: {'success': True, 'immediate': True, 'transition': False, 'processing_time': 0.6431999206542969, 'reason': 'Declaration processed successfully', 'data': {'status': 'declaration_recorded', 'player': 'Bot 3', 'value': 1, 'total': 3}}
-🔧 HANDLE_ACTION_DEBUG: handle_action called for Bot 4 declare
-🔧 HANDLE_ACTION_DEBUG: State machine running check: True
-🔧 HANDLE_ACTION_DEBUG: Converting action to event
-🔧 HANDLE_ACTION_DEBUG: Creating GameEvent from action
-🔧 HANDLE_ACTION_DEBUG: GameEvent created successfully
-🔧 HANDLE_ACTION_DEBUG: About to call event_processor.handle_event
-🔧 EVENT_PROCESSOR_DEBUG: handle_event called for declare from Bot 4
-🔧 EVENT_PROCESSOR_DEBUG: Step 1 - Validating event for current state (no lock)
-✅ EVENT_PROCESSOR_DEBUG: Event validation passed
-🔧 EVENT_PROCESSOR_DEBUG: Step 2 - About to acquire processing_lock for critical section only
-🔧 EVENT_PROCESSOR_DEBUG: Processing_lock acquired for critical section
-🔧 EVENT_PROCESSOR_DEBUG: Processing event in current state
-🔧 PROCESS_EVENT_DEBUG: _process_event_in_state called for declare
-🔧 PROCESS_EVENT_DEBUG: Current state: <engine.state_machine.states.declaration_state.DeclarationState object at 0x10c750ed0>
-🔧 PROCESS_EVENT_DEBUG: Checking if state has process_event method
-🔧 PROCESS_EVENT_DEBUG: Using state's process_event method
-{"timestamp": "2025-07-01T22:46:50.098503Z", "level": "INFO", "logger": "game.state.declaration", "message": "\ud83c\udfae Phase Data Update: Player Bot 4 declared 1", "module": "base_state", "function": "update_phase_data", "line": 165}
-DEBUG_WS: Entering broadcast method for room D68EE5, event phase_change
-DEBUG_WS: Attempting to queue event 'phase_change' for room D68EE5 with data: {'phase': 'declaration', 'allowed_actions': ['declare', 'timeout', 'player_disconnect', 'player_reconnect'], 'phase_data': {'declaration_order': ['Bot 2 - 0 pts', 'Bot 3 - 0 pts', 'Bot 4 - 0 pts', 'Andy - 0 pts'], 'current_declarer_index': 3, 'declarations': {'Bot 2': 2, 'Bot 3': 1, 'Bot 4': 1}, 'declaration_total': 4, 'current_declarer': 'Andy'}, 'players': {'Andy': {'hand': ['HORSE_BLACK(5)', 'ELEPHANT_RED(10)', 'ELEPHANT_RED(10)', 'ELEPHANT_BLACK(9)', 'CHARIOT_RED(8)', 'HORSE_RED(6)', 'HORSE_BLACK(5)', 'GENERAL_BLACK(13)'], 'hand_size': 8}, 'Bot 2': {'hand': ['CANNON_RED(4)', 'SOLDIER_RED(2)', 'SOLDIER_BLACK(1)', 'SOLDIER_RED(2)', 'GENERAL_RED(14)', 'SOLDIER_BLACK(1)', 'CHARIOT_RED(8)', 'ADVISOR_BLACK(11)'], 'hand_size': 8}, 'Bot 3': {'hand': ['SOLDIER_RED(2)', 'SOLDIER_BLACK(1)', 'CHARIOT_BLACK(7)', 'ADVISOR_RED(12)', 'CANNON_BLACK(3)', 'CANNON_RED(4)', 'CHARIOT_BLACK(7)', 'ELEPHANT_BLACK(9)'], 'hand_size': 8}, 'Bot 4': {'hand': ['HORSE_RED(6)', 'ADVISOR_BLACK(11)', 'CANNON_BLACK(3)', 'ADVISOR_RED(12)', 'SOLDIER_RED(2)', 'SOLDIER_BLACK(1)', 'SOLDIER_RED(2)', 'SOLDIER_BLACK(1)'], 'hand_size': 8}}, 'round': 1, 'reason': 'Player Bot 4 declared 1', 'sequence': 5, 'timestamp': 1751410010.098607, 'room_id': 'D68EE5'}
-🔧 SERIALIZATION_DEBUG: Testing JSON serialization for event 'phase_change'
-🔧 SERIALIZATION_DEBUG: JSON serialization test PASSED for event 'phase_change' - 1269 chars
-🔧 SERIALIZATION_DEBUG: About to call queue.put() for event 'phase_change'
-✅ SERIALIZATION_DEBUG: queue.put() completed successfully for event 'phase_change'
-DEBUG_WS: Message for event 'phase_change' added to queue for room D68EE5.
-{"timestamp": "2025-07-01T22:46:50.098881Z", "level": "INFO", "logger": "game.state.declaration", "message": "\ud83d\udce4 Auto-broadcast: phase_change to room D68EE5 - Player Bot 4 declared 1", "module": "base_state", "function": "_auto_broadcast_phase_change", "line": 227}
-🤖 ENTERPRISE_DATA_DEBUG: Notifying bot manager about data change - reason: Player Bot 4 declared 1
-🤖 ENTERPRISE_DATA_DEBUG: Declaration phase - current declarer: Andy
-🔔 BOT_MANAGER_DEBUG: Received event 'phase_change' for room D68EE5 with data: {'phase': 'declaration', 'phase_data': {'declaration_order': ['Bot 2 - 0 pts', 'Bot 3 - 0 pts', 'Bot 4 - 0 pts', 'Andy - 0 pts'], 'current_declarer_index': 3, 'declarations': {'Bot 2': 2, 'Bot 3': 1, 'Bot 4': 1}, 'declaration_total': 4, 'current_declarer': 'Andy'}, 'current_declarer': 'Andy', 'reason': 'Player Bot 4 declared 1'}
-✅ BOT_MANAGER_DEBUG: Found handler for room D68EE5, delegating to handler...
-🎮 BOT_HANDLER_DEBUG: Room D68EE5 handling event 'phase_change' with data keys: ['phase', 'phase_data', 'current_declarer', 'reason']
-🔍 BOT_HANDLER_DEBUG: Event type check - event == 'phase_change': True
-🔍 BOT_HANDLER_DEBUG: Event value repr: 'phase_change'
-🔧 BOT_MANAGER_LOCK_FIX: Step 1 - Determining bot actions (minimal lock scope)
-🔧 BOT_MANAGER_LOCK_FIX: Lock acquired for decision logic only
-🚀 BOT_HANDLER_DEBUG: Analyzing enterprise phase change
-🔧 BOT_MANAGER_LOCK_FIX: Decision logic completed - releasing lock
-🔧 BOT_MANAGER_LOCK_FIX: Step 2 - Executing 0 bot actions (lock-free)
-🤖 DECLARATION_DEBUG: Triggering bot manager after Bot 4 declared
-⚠️ DECLARATION_DEBUG: No room_id found to trigger bot manager
-{"timestamp": "2025-07-01T22:46:50.099160Z", "level": "INFO", "logger": "game.state.declaration", "message": "Player Bot 4 declared 1", "module": "declaration_state", "function": "_handle_declaration", "line": 193}
-✅ PROCESS_EVENT_DEBUG: State process_event completed: True
-✅ EVENT_PROCESSOR_DEBUG: _process_event_in_state completed: True
-🔧 EVENT_PROCESSOR_DEBUG: Checking transitions: False
-🔧 EVENT_PROCESSOR_DEBUG: Critical section completed - releasing lock
-🔧 EVENT_PROCESSOR_DEBUG: Step 3 - Lock-free operations (stats, history)
-🔧 EVENT_PROCESSOR_DEBUG: Updating stats (lock-free)
-🔧 EVENT_PROCESSOR_DEBUG: Storing event history (lock-free)
-✅ EVENT_PROCESSOR_DEBUG: handle_event completed successfully
-🔧 HANDLE_ACTION_DEBUG: event_processor.handle_event completed in 0.001s
-🔧 HANDLE_ACTION_DEBUG: Processing result
-✅ HANDLE_ACTION_DEBUG: handle_action returning result: {'success': True, 'immediate': True, 'transition': False, 'processing_time': 0.0008990764617919922, 'reason': 'Declaration processed successfully', 'data': {'status': 'declaration_recorded', 'player': 'Bot 4', 'value': 1, 'total': 4}}
-🔧 BOT_DECLARE_DEBUG: State machine result: {'success': True, 'immediate': True, 'transition': False, 'processing_time': 0.0008990764617919922, 'reason': 'Declaration processed successfully', 'data': {'status': 'declaration_recorded', 'player': 'Bot 4', 'value': 1, 'total': 4}}
-DEBUG_WS_QUEUE: Room D68EE5 got message: phase_change
-DEBUG_WS: Broadcasting event 'phase_change' (op_id: unknown) to 1 clients in room D68EE5.
-DEBUG_WS: Successfully sent 'phase_change' to a client in room D68EE5.
-DEBUG_WS_RECEIVE: Received event 'declare' from client in room D68EE5 with data: {'value': 3, 'player_name': 'Andy'}
-🔧 HANDLE_ACTION_DEBUG: handle_action called for Andy declare
-🔧 HANDLE_ACTION_DEBUG: State machine running check: True
-🔧 HANDLE_ACTION_DEBUG: Converting action to event
-🔧 HANDLE_ACTION_DEBUG: Creating GameEvent from action
-🔧 HANDLE_ACTION_DEBUG: GameEvent created successfully
-🔧 HANDLE_ACTION_DEBUG: About to call event_processor.handle_event
-🔧 EVENT_PROCESSOR_DEBUG: handle_event called for declare from Andy
-🔧 EVENT_PROCESSOR_DEBUG: Step 1 - Validating event for current state (no lock)
-✅ EVENT_PROCESSOR_DEBUG: Event validation passed
-🔧 EVENT_PROCESSOR_DEBUG: Step 2 - About to acquire processing_lock for critical section only
-🔧 EVENT_PROCESSOR_DEBUG: Processing_lock acquired for critical section
-🔧 EVENT_PROCESSOR_DEBUG: Processing event in current state
-🔧 PROCESS_EVENT_DEBUG: _process_event_in_state called for declare
-🔧 PROCESS_EVENT_DEBUG: Current state: <engine.state_machine.states.declaration_state.DeclarationState object at 0x10c750ed0>
-🔧 PROCESS_EVENT_DEBUG: Checking if state has process_event method
-🔧 PROCESS_EVENT_DEBUG: Using state's process_event method
-🎯 DECLARATION_DEBUG: Final declaration by Andy - atomic transition to Turn phase
-{"timestamp": "2025-07-01T22:46:54.853364Z", "level": "INFO", "logger": "game.state.declaration", "message": "\ud83c\udfaf Final declaration by Andy - atomic transition to Turn phase", "module": "declaration_state", "function": "_handle_declaration", "line": 148}
-🔧 TRANSITION_DEBUG: _immediate_transition_to called: GamePhase.DECLARATION -> GamePhase.TURN
-🔧 ASYNC_DEBUG: Thread: MainThread
-🔧 ASYNC_DEBUG: Is running: True
-🔧 ASYNC_DEBUG: Transition lock acquired: False
-🔧 TRANSITION_DEBUG: Starting transition steps...
-🔧 TRANSITION_DEBUG: Step 1 - Cleanup tasks
-🔧 TRANSITION_DEBUG: Step 2 - Exit current state
-{"timestamp": "2025-07-01T22:46:54.853554Z", "level": "INFO", "logger": "game.state.declaration", "message": "Exiting declaration phase", "module": "base_state", "function": "on_exit", "line": 52}
-{"timestamp": "2025-07-01T22:46:54.853632Z", "level": "INFO", "logger": "game.state.declaration", "message": "Copied declarations to game: {'Bot 2': 2, 'Bot 3': 1, 'Bot 4': 1, 'Andy': 3}", "module": "declaration_state", "function": "_cleanup_phase", "line": 95}
-🔧 TRANSITION_DEBUG: Step 3 - Atomic state update
-🔧 TRANSITION_DEBUG: Step 4 - Enter new state
-🔧 TRANSITION_DEBUG: Step 4a - About to call on_enter() for turn
-🔧 BASE_STATE_DEBUG: on_enter() called for turn phase
-{"timestamp": "2025-07-01T22:46:54.853743Z", "level": "INFO", "logger": "game.state.turn", "message": "Entering turn phase", "module": "base_state", "function": "on_enter", "line": 37}
-🔧 BASE_STATE_DEBUG: Clearing phase_data
-🔧 BASE_STATE_DEBUG: About to call _setup_phase() for turn
-🔧 TURN_STATE_DEBUG: _setup_phase() called
-🔧 TURN_STATE_DEBUG: Got game object: <engine.game.Game object at 0x10c3534d0>
-🔧 TURN_STATE_DEBUG: Initial turn starter from game: Bot 2
-🔧 TURN_STATE_DEBUG: Final turn starter: Bot 2
-{"timestamp": "2025-07-01T22:46:54.853853Z", "level": "INFO", "logger": "game.state.turn", "message": "\ud83c\udfaf Turn phase starting - Bot 2 starts first turn", "module": "turn_state", "function": "_setup_phase", "line": 105}
-🔧 TURN_STATE_DEBUG: About to call _start_new_turn()
-🎯 NEW_TURN_DEBUG: Round 1, Turn 1 starting with starter Bot 2
-🔧 NEW_TURN_DEBUG: About to notify bot manager for Bot 2
-🔧 NEW_TURN_DEBUG: Bot manager notification task created (fire-and-forget)
-🔧 NEW_TURN_DEBUG: Bot manager notification completed (non-blocking)
-🔧 NEW_TURN_DEBUG: Getting current_turn_number from game.turn_number
-🔧 NEW_TURN_DEBUG: Got current_turn_number: 1
-🔢 TURN_NUMBER_DEBUG: Backend game.turn_number = 1
-🔧 NEW_TURN_DEBUG: About to call update_phase_data
-{"timestamp": "2025-07-01T22:46:54.854023Z", "level": "INFO", "logger": "game.state.turn", "message": "\ud83c\udfae Phase Data Update: New turn 1 started with starter Bot 2", "module": "base_state", "function": "update_phase_data", "line": 165}
-DEBUG_WS: Entering broadcast method for room D68EE5, event phase_change
-DEBUG_WS: Attempting to queue event 'phase_change' for room D68EE5 with data: {'phase': 'turn', 'allowed_actions': ['play_pieces', 'timeout', 'player_disconnect', 'player_reconnect'], 'phase_data': {'current_turn_starter': 'Bot 2', 'current_player': 'Bot 2', 'turn_order': ['Bot 2', 'Bot 3', 'Bot 4', 'Andy'], 'required_piece_count': None, 'turn_plays': {}, 'turn_complete': False, 'current_turn_number': 1}, 'players': {'Andy': {'hand': ['HORSE_BLACK(5)', 'ELEPHANT_RED(10)', 'ELEPHANT_RED(10)', 'ELEPHANT_BLACK(9)', 'CHARIOT_RED(8)', 'HORSE_RED(6)', 'HORSE_BLACK(5)', 'GENERAL_BLACK(13)'], 'hand_size': 8}, 'Bot 2': {'hand': ['CANNON_RED(4)', 'SOLDIER_RED(2)', 'SOLDIER_BLACK(1)', 'SOLDIER_RED(2)', 'GENERAL_RED(14)', 'SOLDIER_BLACK(1)', 'CHARIOT_RED(8)', 'ADVISOR_BLACK(11)'], 'hand_size': 8}, 'Bot 3': {'hand': ['SOLDIER_RED(2)', 'SOLDIER_BLACK(1)', 'CHARIOT_BLACK(7)', 'ADVISOR_RED(12)', 'CANNON_BLACK(3)', 'CANNON_RED(4)', 'CHARIOT_BLACK(7)', 'ELEPHANT_BLACK(9)'], 'hand_size': 8}, 'Bot 4': {'hand': ['HORSE_RED(6)', 'ADVISOR_BLACK(11)', 'CANNON_BLACK(3)', 'ADVISOR_RED(12)', 'SOLDIER_RED(2)', 'SOLDIER_BLACK(1)', 'SOLDIER_RED(2)', 'SOLDIER_BLACK(1)'], 'hand_size': 8}}, 'round': 1, 'reason': 'New turn 1 started with starter Bot 2', 'sequence': 1, 'timestamp': 1751410014.854471, 'room_id': 'D68EE5'}
-🔧 SERIALIZATION_DEBUG: Testing JSON serialization for event 'phase_change'
-🔧 SERIALIZATION_DEBUG: JSON serialization test PASSED for event 'phase_change' - 1264 chars
-🔧 SERIALIZATION_DEBUG: About to call queue.put() for event 'phase_change'
-✅ SERIALIZATION_DEBUG: queue.put() completed successfully for event 'phase_change'
-DEBUG_WS: Message for event 'phase_change' added to queue for room D68EE5.
-🤖 NEW_TURN_DEBUG: Notifying bot manager about new turn starter Bot 2 for room D68EE5
-🔔 BOT_MANAGER_DEBUG: Received event 'turn_started' for room D68EE5 with data: {'starter': 'Bot 2'}
-✅ BOT_MANAGER_DEBUG: Found handler for room D68EE5, delegating to handler...
-🎮 BOT_HANDLER_DEBUG: Room D68EE5 handling event 'turn_started' with data keys: ['starter']
-🔍 BOT_HANDLER_DEBUG: Event type check - event == 'phase_change': False
-🔍 BOT_HANDLER_DEBUG: Event value repr: 'turn_started'
-🔧 BOT_MANAGER_LOCK_FIX: Step 1 - Determining bot actions (minimal lock scope)
-🔧 BOT_MANAGER_LOCK_FIX: Lock acquired for decision logic only
-🚀 BOT_HANDLER_DEBUG: Analyzing turn start
-🔧 BOT_MANAGER_LOCK_FIX: Decision logic completed - releasing lock
-🔧 BOT_MANAGER_LOCK_FIX: Step 2 - Executing 1 bot actions (lock-free)
-🔧 BOT_MANAGER_LOCK_FIX: Executing action turn_start (lock-free)
-🎮 Bot Manager: Handling turn start for Bot 2
-🤖 Bot Bot 2 will play first
-🤖 Bot Bot 2 thinking for 0.6s...
-{"timestamp": "2025-07-01T22:46:54.855073Z", "level": "INFO", "logger": "game.state.turn", "message": "\ud83d\udce4 Auto-broadcast: phase_change to room D68EE5 - New turn 1 started with starter Bot 2", "module": "base_state", "function": "_auto_broadcast_phase_change", "line": 227}
-🤖 ENTERPRISE_DATA_DEBUG: Notifying bot manager about data change - reason: New turn 1 started with starter Bot 2
-🤖 ENTERPRISE_DATA_DEBUG: Turn phase - current player: Bot 2
-🔔 BOT_MANAGER_DEBUG: Received event 'phase_change' for room D68EE5 with data: {'phase': 'turn', 'phase_data': {'current_turn_starter': 'Bot 2', 'current_player': 'Bot 2', 'turn_order': ['Bot 2', 'Bot 3', 'Bot 4', 'Andy'], 'required_piece_count': None, 'turn_plays': {}, 'turn_complete': False, 'current_turn_number': 1}, 'current_player': 'Bot 2', 'reason': 'New turn 1 started with starter Bot 2'}
-✅ BOT_MANAGER_DEBUG: Found handler for room D68EE5, delegating to handler...
-🎮 BOT_HANDLER_DEBUG: Room D68EE5 handling event 'phase_change' with data keys: ['phase', 'phase_data', 'current_player', 'reason']
-🔍 BOT_HANDLER_DEBUG: Event type check - event == 'phase_change': True
-🔍 BOT_HANDLER_DEBUG: Event value repr: 'phase_change'
-🔧 BOT_MANAGER_LOCK_FIX: Step 1 - Determining bot actions (minimal lock scope)
-🔧 BOT_MANAGER_LOCK_FIX: Lock acquired for decision logic only
-🚀 BOT_HANDLER_DEBUG: Analyzing enterprise phase change
-✅ REFINED_FIX: Allowing new trigger for current player Bot 2 from phase_change
-✅ RACE_CONDITION_FIX: New action recorded for Bot 2 - play_pieces from phase_change (hash: 36a22356f55e)
-🔧 BOT_MANAGER_LOCK_FIX: Decision logic completed - releasing lock
-🔧 BOT_MANAGER_LOCK_FIX: Step 2 - Executing 1 bot actions (lock-free)
-🔧 BOT_MANAGER_LOCK_FIX: Executing action enterprise_turn_play (lock-free)
-🎯 PLAY_PHASE_DEBUG: Got from state machine - required_count: None, turn_order: ['Bot 2', 'Bot 3', 'Bot 4', 'Andy']
-🎯 PLAY_PHASE_DEBUG: No required piece count set yet, skipping bot plays
-✅ BOT_MANAGER_LOCK_FIX: Action enterprise_turn_play completed successfully
-🔧 NEW_TURN_DEBUG: update_phase_data completed successfully
-{"timestamp": "2025-07-01T22:46:54.855713Z", "level": "INFO", "logger": "game.state.turn", "message": "\ud83c\udfaf New turn started - order: ['Bot 2', 'Bot 3', 'Bot 4', 'Andy']", "module": "turn_state", "function": "_start_new_turn", "line": 276}
-🔧 TURN_STATE_DEBUG: _start_new_turn() completed successfully
-🔧 BASE_STATE_DEBUG: _setup_phase() completed successfully for turn
-🔧 TRANSITION_DEBUG: Step 4b - on_enter() completed for turn
-🔧 TRANSITION_DEBUG: Step 4c - Checking current state after on_enter()
-🔧 TRANSITION_DEBUG: Current phase: GamePhase.TURN
-🔧 TRANSITION_DEBUG: Current state: <engine.state_machine.states.turn_state.TurnState object at 0x10c5830d0>
-🔧 TRANSITION_DEBUG: Is running: True
-🔧 TRANSITION_DEBUG: Step 5 - About to store event
-🔧 STORE_EVENT_DEBUG: _store_phase_change_event called: GamePhase.DECLARATION -> GamePhase.TURN
-🔧 STORE_EVENT_DEBUG: Prepared payload: {'old_phase': 'declaration', 'new_phase': 'turn', 'timestamp': '2025-07-01T15:46:54.856377', 'game_state': {}}
-🔧 STORE_EVENT_DEBUG: Added game context: {'round_number': 1, 'player_count': 4, 'current_player': 'Bot 2'}
-🔧 STORE_EVENT_DEBUG: About to call action_queue.store_state_event
-🔧 STORE_EVENT_DEBUG: action_queue.store_state_event completed
-🔧 STORE_EVENT_DEBUG: Event storage successful
-🔧 TRANSITION_DEBUG: Step 5 - Store event completed
-🔧 TRANSITION_DEBUG: Step 6 - About to broadcast
-🚀 STATE_MACHINE_DEBUG: Broadcasting phase change to turn with reason: All player declarations complete - final: Andy declared 3
-🔧 BROADCAST_DEBUG: _broadcast_phase_change_with_display_metadata called for turn
-🔧 BROADCAST_DEBUG: Prepared base_data: {'phase': 'turn', 'allowed_actions': ['play_pieces', 'timeout', 'player_disconnect', 'player_reconnect'], 'phase_data': {'current_turn_starter': 'Bot 2', 'current_player': 'Bot 2', 'turn_order': ['Bot 2', 'Bot 3', 'Bot 4', 'Andy'], 'required_piece_count': None, 'turn_plays': {}, 'turn_complete': False, 'current_turn_number': 1}, 'immediate': True, 'reason': 'All player declarations complete - final: Andy declared 3'}
-🔧 BROADCAST_DEBUG: Added display config: {'type': 'turn_active', 'show_for_seconds': None, 'auto_advance': False, 'can_skip': False}
-🔧 BROADCAST_DEBUG: Added players data: ['Andy', 'Bot 2', 'Bot 3', 'Bot 4']
-🔧 BROADCAST_DEBUG: About to call broadcast_event with phase_change
-🔧 BROADCAST_EVENT_DEBUG: broadcast_event called with type: phase_change
-🔧 BROADCAST_EVENT_DEBUG: Callback available, calling broadcast_callback
-DEBUG_WS: Entering broadcast method for room D68EE5, event phase_change
-DEBUG_WS: Attempting to queue event 'phase_change' for room D68EE5 with data: {'phase': 'turn', 'allowed_actions': ['play_pieces', 'timeout', 'player_disconnect', 'player_reconnect'], 'phase_data': {'current_turn_starter': 'Bot 2', 'current_player': 'Bot 2', 'turn_order': ['Bot 2', 'Bot 3', 'Bot 4', 'Andy'], 'required_piece_count': None, 'turn_plays': {}, 'turn_complete': False, 'current_turn_number': 1}, 'immediate': True, 'reason': 'All player declarations complete - final: Andy declared 3', 'display': {'type': 'turn_active', 'show_for_seconds': None, 'auto_advance': False, 'can_skip': False}, 'players': {'Andy': {'hand': ['HORSE_BLACK(5)', 'ELEPHANT_RED(10)', 'ELEPHANT_RED(10)', 'ELEPHANT_BLACK(9)', 'CHARIOT_RED(8)', 'HORSE_RED(6)', 'HORSE_BLACK(5)', 'GENERAL_BLACK(13)'], 'hand_size': 8}, 'Bot 2': {'hand': ['CANNON_RED(4)', 'SOLDIER_RED(2)', 'SOLDIER_BLACK(1)', 'SOLDIER_RED(2)', 'GENERAL_RED(14)', 'SOLDIER_BLACK(1)', 'CHARIOT_RED(8)', 'ADVISOR_BLACK(11)'], 'hand_size': 8}, 'Bot 3': {'hand': ['SOLDIER_RED(2)', 'SOLDIER_BLACK(1)', 'CHARIOT_BLACK(7)', 'ADVISOR_RED(12)', 'CANNON_BLACK(3)', 'CANNON_RED(4)', 'CHARIOT_BLACK(7)', 'ELEPHANT_BLACK(9)'], 'hand_size': 8}, 'Bot 4': {'hand': ['HORSE_RED(6)', 'ADVISOR_BLACK(11)', 'CANNON_BLACK(3)', 'ADVISOR_RED(12)', 'SOLDIER_RED(2)', 'SOLDIER_BLACK(1)', 'SOLDIER_RED(2)', 'SOLDIER_BLACK(1)'], 'hand_size': 8}}, 'timestamp': 1751410014.856822, 'room_id': 'D68EE5'}
-🔧 SERIALIZATION_DEBUG: Testing JSON serialization for event 'phase_change'
-🔧 SERIALIZATION_DEBUG: JSON serialization test PASSED for event 'phase_change' - 1380 chars
-🔧 SERIALIZATION_DEBUG: About to call queue.put() for event 'phase_change'
-✅ SERIALIZATION_DEBUG: queue.put() completed successfully for event 'phase_change'
-DEBUG_WS: Message for event 'phase_change' added to queue for room D68EE5.
-🔧 BROADCAST_EVENT_DEBUG: broadcast_callback completed successfully
-🔧 BROADCAST_DEBUG: broadcast_event completed successfully
-✅ STATE_MACHINE_DEBUG: Phase change broadcast completed for turn
-🔧 TRANSITION_DEBUG: Step 7 - About to notify bot manager
-🤖 STATE_MACHINE_DEBUG: Notifying bot manager about phase turn for room D68EE5
-🔧 DUPLICATE_FIX: Skipping duplicate turn_started event - turn state handles this
-🔧 TRANSITION_DEBUG: Step 7 - Bot manager notification completed
-✅ TRANSITION_DEBUG: All transition steps completed successfully: GamePhase.DECLARATION -> GamePhase.TURN
-{"timestamp": "2025-07-01T22:46:54.857381Z", "level": "INFO", "logger": "game.state.declaration", "message": "Player Andy declared 3", "module": "declaration_state", "function": "_handle_declaration", "line": 193}
-✅ PROCESS_EVENT_DEBUG: State process_event completed: False
-✅ EVENT_PROCESSOR_DEBUG: _process_event_in_state completed: False
-🔧 EVENT_PROCESSOR_DEBUG: Checking transitions: False
-🔧 EVENT_PROCESSOR_DEBUG: Critical section completed - releasing lock
-🔧 EVENT_PROCESSOR_DEBUG: Step 3 - Lock-free operations (stats, history)
-🔧 EVENT_PROCESSOR_DEBUG: Updating stats (lock-free)
-🔧 EVENT_PROCESSOR_DEBUG: Storing event history (lock-free)
-✅ EVENT_PROCESSOR_DEBUG: handle_event completed successfully
-🔧 HANDLE_ACTION_DEBUG: event_processor.handle_event completed in 0.004s
-🔧 HANDLE_ACTION_DEBUG: Processing result
-✅ HANDLE_ACTION_DEBUG: handle_action returning result: {'success': False, 'immediate': True, 'transition': False, 'processing_time': 0.004458904266357422, 'reason': "Declaration processing error: 'declaration_order'", 'data': {}}
-DEBUG_WS_QUEUE: Room D68EE5 got message: phase_change
-DEBUG_WS: Broadcasting event 'phase_change' (op_id: unknown) to 1 clients in room D68EE5.
-DEBUG_WS: Successfully sent 'phase_change' to a client in room D68EE5.
-DEBUG_WS_QUEUE: Room D68EE5 got message: phase_change
-DEBUG_WS: Broadcasting event 'phase_change' (op_id: unknown) to 1 clients in room D68EE5.
-DEBUG_WS: Successfully sent 'phase_change' to a client in room D68EE5.
-🤖 Bot Bot 2 choosing first play...
-🔧 BOT_SUBMIT_DEBUG: _bot_play_first() method called for Bot 2
-🔧 BOT_SUBMIT_DEBUG: Bot hand: ['CANNON_RED(4)', 'SOLDIER_RED(2)', 'SOLDIER_BLACK(1)', 'SOLDIER_RED(2)', 'GENERAL_RED(14)', 'SOLDIER_BLACK(1)', 'CHARIOT_RED(8)', 'ADVISOR_BLACK(11)']
-🔧 BOT_SUBMIT_DEBUG: About to call ai.choose_best_play for first play by Bot 2
-🔧 BOT_SUBMIT_DEBUG: Hand size: 8, Required count: None (first play)
-🤖 BOT chooses to play SINGLE (14 pts): GENERAL
-🔧 BOT_SUBMIT_DEBUG: ai.choose_best_play returned 1 pieces for first play by Bot 2
-🤖 Bot Bot 2 will play 1 pieces: ['GENERAL_RED(14)']
+DEBUG_WS_QUEUE: Room F2C5D7 got message: phase_change
+DEBUG_WS: Broadcasting event 'phase_change' (op_id: unknown) to 1 clients in room F2C5D7.
+DEBUG_WS: Successfully sent 'phase_change' to a client in room F2C5D7.
+DEBUG_WS_QUEUE: Room F2C5D7 got message: turn_complete
+DEBUG_WS: Broadcasting event 'turn_complete' (op_id: unknown) to 1 clients in room F2C5D7.
+DEBUG_WS: Successfully sent 'turn_complete' to a client in room F2C5D7.
+🤖 Bot Bot 3 choosing first play...
+🔧 BOT_SUBMIT_DEBUG: _bot_play_first() method called for Bot 3
+🔧 BOT_SUBMIT_DEBUG: Bot hand: ['HORSE_RED(6)', 'ADVISOR_BLACK(11)', 'CHARIOT_BLACK(7)', 'ELEPHANT_BLACK(9)', 'SOLDIER_RED(2)', 'CANNON_BLACK(3)']
+🔧 BOT_SUBMIT_DEBUG: About to call ai.choose_best_play for first play by Bot 3
+🔧 BOT_SUBMIT_DEBUG: Hand size: 6, Required count: None (first play)
+🤖 BOT chooses to play SINGLE (11 pts): ADVISOR
+🔧 BOT_SUBMIT_DEBUG: ai.choose_best_play returned 1 pieces for first play by Bot 3
+🤖 Bot Bot 3 will play 1 pieces: ['ADVISOR_BLACK(11)']
 🔧 BOT_SUBMIT_DEBUG: This is from _bot_play_first() - bot is first player
 🎯 BOT_MANAGER_DEBUG: state_machine exists: True
-🔧 BOT_SUBMIT_DEBUG: About to call _bot_play_first for Bot Bot 2
+🔧 BOT_SUBMIT_DEBUG: About to call _bot_play_first for Bot Bot 3
 🔧 BOT_SUBMIT_DEBUG: Selected pieces count: 1
-🔧 BOT_SUBMIT_DEBUG: Selected pieces: ['GENERAL_RED(14)']
-🔧 BOT_SUBMIT_DEBUG: State machine is available, creating GameAction for Bot Bot 2
-🔧 BOT_SUBMIT_DEBUG: GameAction created successfully for Bot Bot 2
-🔧 BOT_SUBMIT_DEBUG: Action details - player: Bot 2, type: ActionType.PLAY_PIECES, is_bot: True
-🔧 BOT_SUBMIT_DEBUG: Action payload pieces count: 1
-🔧 BOT_SUBMIT_DEBUG: Calling state_machine.handle_action for Bot Bot 2
-🔧 HANDLE_ACTION_DEBUG: handle_action called for Bot 2 play_pieces
-🔧 HANDLE_ACTION_DEBUG: State machine running check: True
-🔧 HANDLE_ACTION_DEBUG: Converting action to event
-🔧 HANDLE_ACTION_DEBUG: Creating GameEvent from action
-🔧 HANDLE_ACTION_DEBUG: GameEvent created successfully
-🔧 HANDLE_ACTION_DEBUG: About to call event_processor.handle_event
-🔧 EVENT_PROCESSOR_DEBUG: handle_event called for play_pieces from Bot 2
-🔧 EVENT_PROCESSOR_DEBUG: Step 1 - Validating event for current state (no lock)
-✅ EVENT_PROCESSOR_DEBUG: Event validation passed
-🔧 EVENT_PROCESSOR_DEBUG: Step 2 - About to acquire processing_lock for critical section only
-🔧 EVENT_PROCESSOR_DEBUG: Processing_lock acquired for critical section
-🔧 EVENT_PROCESSOR_DEBUG: Processing event in current state
-🔧 PROCESS_EVENT_DEBUG: _process_event_in_state called for play_pieces
-🔧 PROCESS_EVENT_DEBUG: Current state: <engine.state_machine.states.turn_state.TurnState object at 0x10c5830d0>
-🔧 PROCESS_EVENT_DEBUG: Checking if state has process_event method
-🔧 PROCESS_EVENT_DEBUG: Using state's process_event method
-🔧 VALIDATION_DEBUG: Validating bot Bot 2 action
-🔧 VALIDATION_DEBUG: Current player: Bot 2
-🔧 VALIDATION_DEBUG: Turn plays: []
-🔧 VALIDATION_DEBUG: Payload: {'pieces': [GENERAL_RED(14)]}
-🔧 VALIDATION_DEBUG: Required piece count: None
-✅ VALIDATION_DEBUG: Turn validation PASSED - Bot 2 == Bot 2
-✅ VALIDATION_DEBUG: Already played validation PASSED - Bot 2 not in turn_plays
-✅ VALIDATION_DEBUG: Payload validation PASSED - 'pieces' found in payload
-✅ VALIDATION_DEBUG: Pieces format validation PASSED - 1 pieces
-🔧 VALIDATION_DEBUG: Piece count: 1, Required: None
-✅ VALIDATION_DEBUG: Starter piece count validation PASSED - 1 in 1-6 range
-✅ VALIDATION_DEBUG: All validation checks PASSED for Bot 2
-🎯 TURN_STATE_DEBUG: Processing action play_pieces from Bot 2
-🎯 TURN_STATE_DEBUG: _handle_play_pieces called for Bot 2
-🎯 TURN_STATE_DEBUG: Current state - player_index: 0, turn_order: ['Bot 2', 'Bot 3', 'Bot 4', 'Andy']
-🎯 TURN_STATE_DEBUG: Player Bot 2 playing 1 pieces: ['GENERAL_RED(14)']
-🎯 TURN_STATE_DEBUG: Setting required piece count to 1
-🎯 TURN_STATE_DEBUG: Before setting - required_piece_count was: None
-🎯 TURN_STATE_DEBUG: After setting - required_piece_count is: 1
-{"timestamp": "2025-07-01T22:46:55.492468Z", "level": "INFO", "logger": "game.state.turn", "message": "\ud83c\udfb2 Bot 2 (starter) plays 1 pieces - setting required count", "module": "turn_state", "function": "_handle_play_pieces", "line": 365}
-{"timestamp": "2025-07-01T22:46:55.492567Z", "level": "INFO", "logger": "game.state.turn", "message": "\ud83c\udfb2 Bot 2 plays: [GENERAL_RED(14)] (value: 0)", "module": "turn_state", "function": "_handle_play_pieces", "line": 379}
-🎯 TURN_STATE_DEBUG: Before advancing - current_player_index: 0
-🎯 TURN_STATE_DEBUG: After advancing - current_player_index: 1
-🎯 TURN_STATE_DEBUG: Next player: Bot 3
-🎯 TURN_STATE_DEBUG: Round 1, Turn 1 - Bot 2 played, next: Bot 3
-🎯 UPDATE_DEBUG: About to update phase data with current_player: Bot 3, required_piece_count: 1
-{"timestamp": "2025-07-01T22:46:55.492671Z", "level": "INFO", "logger": "game.state.turn", "message": "\ud83c\udfae Phase Data Update: Player Bot 2 played 1 pieces", "module": "base_state", "function": "update_phase_data", "line": 165}
-DEBUG_WS: Entering broadcast method for room D68EE5, event phase_change
-DEBUG_WS: Attempting to queue event 'phase_change' for room D68EE5 with data: {'phase': 'turn', 'allowed_actions': ['play_pieces', 'timeout', 'player_disconnect', 'player_reconnect'], 'phase_data': {'current_turn_starter': 'Bot 2', 'current_player': 'Bot 3', 'turn_order': ['Bot 2', 'Bot 3', 'Bot 4', 'Andy'], 'required_piece_count': 1, 'turn_plays': {'Bot 2': {'pieces': ['GENERAL_RED(14)'], 'piece_count': 1, 'play_type': 'unknown', 'play_value': 0, 'is_valid': True, 'timestamp': 1751410015.49217}}, 'turn_complete': False, 'current_turn_number': 1}, 'players': {'Andy': {'hand': ['HORSE_BLACK(5)', 'ELEPHANT_RED(10)', 'ELEPHANT_RED(10)', 'ELEPHANT_BLACK(9)', 'CHARIOT_RED(8)', 'HORSE_RED(6)', 'HORSE_BLACK(5)', 'GENERAL_BLACK(13)'], 'hand_size': 8}, 'Bot 2': {'hand': ['CANNON_RED(4)', 'SOLDIER_RED(2)', 'SOLDIER_BLACK(1)', 'SOLDIER_RED(2)', 'GENERAL_RED(14)', 'SOLDIER_BLACK(1)', 'CHARIOT_RED(8)', 'ADVISOR_BLACK(11)'], 'hand_size': 8}, 'Bot 3': {'hand': ['SOLDIER_RED(2)', 'SOLDIER_BLACK(1)', 'CHARIOT_BLACK(7)', 'ADVISOR_RED(12)', 'CANNON_BLACK(3)', 'CANNON_RED(4)', 'CHARIOT_BLACK(7)', 'ELEPHANT_BLACK(9)'], 'hand_size': 8}, 'Bot 4': {'hand': ['HORSE_RED(6)', 'ADVISOR_BLACK(11)', 'CANNON_BLACK(3)', 'ADVISOR_RED(12)', 'SOLDIER_RED(2)', 'SOLDIER_BLACK(1)', 'SOLDIER_RED(2)', 'SOLDIER_BLACK(1)'], 'hand_size': 8}}, 'round': 1, 'reason': 'Player Bot 2 played 1 pieces', 'sequence': 2, 'timestamp': 1751410015.4928489, 'room_id': 'D68EE5'}
-🔧 SERIALIZATION_DEBUG: Testing JSON serialization for event 'phase_change'
-🔧 SERIALIZATION_DEBUG: JSON serialization test PASSED for event 'phase_change' - 1401 chars
-🔧 SERIALIZATION_DEBUG: About to call queue.put() for event 'phase_change'
-✅ SERIALIZATION_DEBUG: queue.put() completed successfully for event 'phase_change'
-DEBUG_WS: Message for event 'phase_change' added to queue for room D68EE5.
-{"timestamp": "2025-07-01T22:46:55.493260Z", "level": "INFO", "logger": "game.state.turn", "message": "\ud83d\udce4 Auto-broadcast: phase_change to room D68EE5 - Player Bot 2 played 1 pieces", "module": "base_state", "function": "_auto_broadcast_phase_change", "line": 227}
-🤖 ENTERPRISE_DATA_DEBUG: Notifying bot manager about data change - reason: Player Bot 2 played 1 pieces
-🤖 ENTERPRISE_DATA_DEBUG: Turn phase - current player: Bot 3
-🔔 BOT_MANAGER_DEBUG: Received event 'phase_change' for room D68EE5 with data: {'phase': 'turn', 'phase_data': {'current_turn_starter': 'Bot 2', 'current_player': 'Bot 3', 'turn_order': ['Bot 2', 'Bot 3', 'Bot 4', 'Andy'], 'required_piece_count': 1, 'turn_plays': {'Bot 2': {'pieces': ['GENERAL_RED(14)'], 'piece_count': 1, 'play_type': 'unknown', 'play_value': 0, 'is_valid': True, 'timestamp': 1751410015.49217}}, 'turn_complete': False, 'current_turn_number': 1}, 'current_player': 'Bot 3', 'reason': 'Player Bot 2 played 1 pieces'}
-✅ BOT_MANAGER_DEBUG: Found handler for room D68EE5, delegating to handler...
-🎮 BOT_HANDLER_DEBUG: Room D68EE5 handling event 'phase_change' with data keys: ['phase', 'phase_data', 'current_player', 'reason']
-🔍 BOT_HANDLER_DEBUG: Event type check - event == 'phase_change': True
-🔍 BOT_HANDLER_DEBUG: Event value repr: 'phase_change'
-🔧 BOT_MANAGER_LOCK_FIX: Step 1 - Determining bot actions (minimal lock scope)
-🔧 BOT_MANAGER_LOCK_FIX: Lock acquired for decision logic only
-🚀 BOT_HANDLER_DEBUG: Analyzing enterprise phase change
-✅ REFINED_FIX: Allowing new trigger for current player Bot 3 from phase_change
-✅ RACE_CONDITION_FIX: New action recorded for Bot 3 - play_pieces from phase_change (hash: ac20a113e367)
-🔧 BOT_MANAGER_LOCK_FIX: Decision logic completed - releasing lock
-🔧 BOT_MANAGER_LOCK_FIX: Step 2 - Executing 1 bot actions (lock-free)
-🔧 BOT_MANAGER_LOCK_FIX: Executing action enterprise_turn_play (lock-free)
-🎯 PLAY_PHASE_DEBUG: Got from state machine - required_count: 1, turn_order: ['Bot 2', 'Bot 3', 'Bot 4', 'Andy']
-🎯 PLAY_PHASE_DEBUG: Last player: Bot 2, last_index: 0
-🎯 PLAY_PHASE_DEBUG: Checking next player 1: Bot 3
-✅ REFINED_FIX: Allowing new trigger for current player Bot 3 from player_played
-✅ RACE_CONDITION_FIX: New action recorded for Bot 3 - play_pieces from player_played (hash: 7f32b05165ac)
-🤖 PLAY_PHASE_DEBUG: Triggering bot play for Bot 3
-🤖 PLAY_PHASE_DEBUG: Bot Bot 3 thinking for 0.8s...
-DEBUG_WS_QUEUE: Room D68EE5 got message: phase_change
-DEBUG_WS: Broadcasting event 'phase_change' (op_id: unknown) to 1 clients in room D68EE5.
-DEBUG_WS: Successfully sent 'phase_change' to a client in room D68EE5.
-🔧 BOT_SUBMIT_DEBUG: About to call _bot_play() for Bot 3
-🔧 BOT_SUBMIT_DEBUG: Bot object: Bot 3 - 0 pts
-🔧 BOT_SUBMIT_DEBUG: Bot hand size: 8
-🔧 BOT_SUBMIT_DEBUG: _bot_play() method called for Bot 3
-🔧 BOT_SUBMIT_DEBUG: Bot hand: ['SOLDIER_RED(2)', 'SOLDIER_BLACK(1)', 'CHARIOT_BLACK(7)', 'ADVISOR_RED(12)', 'CANNON_BLACK(3)', 'CANNON_RED(4)', 'CHARIOT_BLACK(7)', 'ELEPHANT_BLACK(9)']
-🔧 BOT_SUBMIT_DEBUG: Starting piece selection logic for Bot 3
-🎯 BOT_PLAY_DEBUG: Got required_piece_count from state machine: 1
-🔧 BOT_SUBMIT_DEBUG: About to call ai.choose_best_play for Bot 3
-🔧 BOT_SUBMIT_DEBUG: Hand size: 8, Required count: 1
-🤖 BOT chooses to play SINGLE (12 pts): ADVISOR
-🔧 BOT_SUBMIT_DEBUG: ai.choose_best_play returned 1 pieces for Bot 3
-🎯 BOT_PLAY_DEBUG: Final selection - 1 pieces: ['ADVISOR_RED(12)']
-🤖 Bot Bot 3 will play 1 pieces: ['ADVISOR_RED(12)']
-🔧 BOT_SUBMIT_DEBUG: This is from _bot_play() - bot is following another player
-🔧 BOT_SUBMIT_DEBUG: About to call _bot_play for Bot Bot 3
-🔧 BOT_SUBMIT_DEBUG: Selected pieces count: 1
-🔧 BOT_SUBMIT_DEBUG: Selected pieces: ['ADVISOR_RED(12)']
-🔧 BOT_SUBMIT_DEBUG: Required piece count was: 1
+🔧 BOT_SUBMIT_DEBUG: Selected pieces: ['ADVISOR_BLACK(11)']
 🔧 BOT_SUBMIT_DEBUG: State machine is available, creating GameAction for Bot Bot 3
 🔧 BOT_SUBMIT_DEBUG: GameAction created successfully for Bot Bot 3
 🔧 BOT_SUBMIT_DEBUG: Action details - player: Bot 3, type: ActionType.PLAY_PIECES, is_bot: True
 🔧 BOT_SUBMIT_DEBUG: Action payload pieces count: 1
-🔧 BOT_SUBMIT_DEBUG: Calling state_machine.handle_action for Bot Bot 3
+🔧 BOT_SUBMIT_DEBUG: Creating fire-and-forget task for state machine action
+✅ BOT_SUBMIT_DEBUG: Fire-and-forget first play action task created for Bot Bot 3
+🎯 BOT_PLAY_DEBUG: Action queued successfully, state machine will handle updates and broadcasting
+✅ Bot Bot 3 first play action queued - state machine will broadcast with correct next_player
+✅ BOT_MANAGER_LOCK_FIX: Action enterprise_turn_start completed successfully
+🔧 NEW_TURN_DEBUG: update_phase_data completed successfully
+{"timestamp": "2025-07-02T01:04:54.316755Z", "level": "INFO", "logger": "game.state.turn", "message": "\ud83c\udfaf New turn started - order: ['Bot 3', 'Bot 4', 'Andy', 'Bot 2']", "module": "turn_state", "function": "_start_new_turn", "line": 264}
+🎯 START_NEXT_DEBUG: _start_new_turn() completed
+{"timestamp": "2025-07-02T01:04:54.316969Z", "level": "INFO", "logger": "game.state.turn", "message": "\ud83d\ude80 Enterprise: New turn auto-started with automatic broadcasting", "module": "turn_state", "function": "_process_turn_completion", "line": 645}
+🎯 TURN_COMPLETE_DEBUG: _process_turn_completion() finished
+🎯 UPDATE_DEBUG: About to update phase data with current_player: Bot 3, required_piece_count: None
+{"timestamp": "2025-07-02T01:04:54.317140Z", "level": "INFO", "logger": "game.state.turn", "message": "\ud83c\udfae Phase Data Update: Player Andy played 1 pieces", "module": "base_state", "function": "update_phase_data", "line": 165}
+DEBUG_WS: Entering broadcast method for room F2C5D7, event phase_change
+DEBUG_WS: Attempting to queue event 'phase_change' for room F2C5D7 with data: {'phase': 'turn', 'allowed_actions': ['play_pieces', 'player_disconnect', 'timeout', 'player_reconnect'], 'phase_data': {'current_turn_starter': 'Bot 3', 'current_player': 'Bot 3', 'turn_order': ['Bot 3', 'Bot 4', 'Andy', 'Bot 2'], 'required_piece_count': None, 'turn_plays': {}, 'turn_complete': False, 'current_turn_number': 3, 'winner': 'Bot 3', 'piles_won': 1, 'next_turn_starter': 'Bot 3'}, 'players': {'Andy': {'hand': ['SOLDIER_RED(2)', 'CHARIOT_RED(8)', 'ADVISOR_RED(12)', 'CHARIOT_RED(8)', 'CANNON_RED(4)', 'SOLDIER_RED(2)'], 'hand_size': 6}, 'Bot 2': {'hand': ['SOLDIER_BLACK(1)', 'SOLDIER_BLACK(1)', 'SOLDIER_RED(2)', 'CANNON_RED(4)', 'SOLDIER_BLACK(1)', 'HORSE_RED(6)'], 'hand_size': 6}, 'Bot 3': {'hand': ['HORSE_RED(6)', 'ADVISOR_BLACK(11)', 'CHARIOT_BLACK(7)', 'ELEPHANT_BLACK(9)', 'SOLDIER_RED(2)', 'CANNON_BLACK(3)'], 'hand_size': 6}, 'Bot 4': {'hand': ['SOLDIER_BLACK(1)', 'HORSE_BLACK(5)', 'SOLDIER_RED(2)', 'HORSE_BLACK(5)', 'SOLDIER_BLACK(1)', 'CANNON_BLACK(3)'], 'hand_size': 6}}, 'round': 1, 'reason': 'Player Andy played 1 pieces', 'sequence': 22, 'timestamp': 1751418294.3174112, 'room_id': 'F2C5D7'}
+🔧 SERIALIZATION_DEBUG: Testing JSON serialization for event 'phase_change'
+🔧 SERIALIZATION_DEBUG: JSON serialization test PASSED for event 'phase_change' - 1160 chars
+🔧 SERIALIZATION_DEBUG: About to call queue.put() for event 'phase_change'
+✅ SERIALIZATION_DEBUG: queue.put() completed successfully for event 'phase_change'
+DEBUG_WS: Message for event 'phase_change' added to queue for room F2C5D7.
 🔧 HANDLE_ACTION_DEBUG: handle_action called for Bot 3 play_pieces
 🔧 HANDLE_ACTION_DEBUG: State machine running check: True
 🔧 HANDLE_ACTION_DEBUG: Converting action to event
@@ -762,14 +50,266 @@ DEBUG_WS: Successfully sent 'phase_change' to a client in room D68EE5.
 🔧 EVENT_PROCESSOR_DEBUG: Step 1 - Validating event for current state (no lock)
 ✅ EVENT_PROCESSOR_DEBUG: Event validation passed
 🔧 EVENT_PROCESSOR_DEBUG: Step 2 - About to acquire processing_lock for critical section only
-❌ EVENT_PROCESSOR_DEBUG: Timeout waiting for processing_lock after 5 seconds
-EventProcessor timeout for event play_pieces from Bot 2
-🔧 HANDLE_ACTION_DEBUG: event_processor.handle_event completed in 5.002s
+{"timestamp": "2025-07-02T01:04:54.318847Z", "level": "INFO", "logger": "game.state.turn", "message": "\ud83d\udce4 Auto-broadcast: phase_change to room F2C5D7 - Player Andy played 1 pieces", "module": "base_state", "function": "_auto_broadcast_phase_change", "line": 227}
+🤖 ENTERPRISE_DATA_DEBUG: Notifying bot manager about data change - reason: Player Andy played 1 pieces
+🤖 ENTERPRISE_DATA_DEBUG: Turn phase - current player: Bot 3
+🔔 BOT_MANAGER_DEBUG: Received event 'phase_change' for room F2C5D7 with data: {'phase': 'turn', 'phase_data': {'current_turn_starter': 'Bot 3', 'current_player': 'Bot 3', 'turn_order': ['Bot 3', 'Bot 4', 'Andy', 'Bot 2'], 'required_piece_count': None, 'turn_plays': {}, 'turn_complete': False, 'current_turn_number': 3, 'winner': 'Bot 3', 'piles_won': 1, 'next_turn_starter': 'Bot 3'}, 'current_player': 'Bot 3', 'reason': 'Player Andy played 1 pieces'}
+✅ BOT_MANAGER_DEBUG: Found handler for room F2C5D7, delegating to handler...
+🎮 BOT_HANDLER_DEBUG: Room F2C5D7 handling event 'phase_change' with data keys: ['phase', 'phase_data', 'current_player', 'reason']
+🔍 BOT_HANDLER_DEBUG: Event type check - event == 'phase_change': True
+🔍 BOT_HANDLER_DEBUG: Event value repr: 'phase_change'
+🔧 BOT_MANAGER_LOCK_FIX: Step 1 - Determining bot actions (minimal lock scope)
+🔧 BOT_MANAGER_LOCK_FIX: Lock acquired for decision logic only
+🚀 BOT_HANDLER_DEBUG: Analyzing enterprise phase change
+🚀 STARTER_DEBUG: Bot Bot 3 - is_starter: True, required_count: None
+✅ REFINED_FIX: Allowing delayed same-source trigger for current player Bot 3 from phase_change (age: 0.7s)
+✅ RACE_CONDITION_FIX: New action recorded for Bot 3 - play_pieces from phase_change (hash: 97ffd8e1b89f)
+🚫 SEQUENCE_FIX: Bot 3 already acted in turn 3 - skipping
+🔧 BOT_MANAGER_LOCK_FIX: Decision logic completed - releasing lock
+🔧 BOT_MANAGER_LOCK_FIX: Step 2 - Executing 0 bot actions (lock-free)
+🎯 UPDATE_DEBUG: Phase data updated - next_player should be: Bot 3
+{"timestamp": "2025-07-02T01:04:54.319578Z", "level": "INFO", "logger": "game.state.turn", "message": "\ud83d\udce4 Custom broadcast: play to room F2C5D7 - Player Andy played 1 pieces", "module": "base_state", "function": "broadcast_custom_event", "line": 302}
+🎯 TURN_STATE_DEBUG: Enterprise broadcast play event - next_player: Bot 3
+🔧 PLAY_NOTIFY_DEBUG: Manual bot manager notification removed - using automatic enterprise system
+🎯 TURN_STATE_DEBUG: Play pieces result: {'status': 'play_accepted', 'player': 'Andy', 'pieces': [CHARIOT_BLACK(7)], 'piece_count': 1, 'required_count': None, 'next_player': 'Bot 3', 'turn_complete': False}
+✅ PROCESS_EVENT_DEBUG: State process_event completed: True
+✅ EVENT_PROCESSOR_DEBUG: _process_event_in_state completed: True
+🔧 EVENT_PROCESSOR_DEBUG: Checking transitions: False
+🔧 EVENT_PROCESSOR_DEBUG: Critical section completed - releasing lock
+🔧 EVENT_PROCESSOR_DEBUG: Step 3 - Lock-free operations (stats, history)
+🔧 EVENT_PROCESSOR_DEBUG: Updating stats (lock-free)
+🔧 EVENT_PROCESSOR_DEBUG: Storing event history (lock-free)
+✅ EVENT_PROCESSOR_DEBUG: handle_event completed successfully
+🔧 HANDLE_ACTION_DEBUG: event_processor.handle_event completed in 0.700s
 🔧 HANDLE_ACTION_DEBUG: Processing result
-✅ HANDLE_ACTION_DEBUG: handle_action returning result: {'success': False, 'immediate': True, 'transition': False, 'processing_time': 5.0022430419921875, 'reason': 'EventProcessor timeout - possible deadlock', 'data': {}}
-✅ BOT_SUBMIT_DEBUG: Action submitted successfully for Bot Bot 2
-🎯 BOT_PLAY_DEBUG: State machine result: {'success': False, 'immediate': True, 'transition': False, 'processing_time': 5.0022430419921875, 'reason': 'EventProcessor timeout - possible deadlock', 'data': {}}
+✅ HANDLE_ACTION_DEBUG: handle_action returning result: {'success': True, 'immediate': True, 'transition': False, 'processing_time': 0.6998090744018555, 'reason': 'Turn action processed successfully', 'data': {'status': 'play_accepted', 'player': 'Andy', 'pieces': [CHARIOT_BLACK(7)], 'piece_count': 1, 'required_count': None, 'next_player': 'Bot 3', 'turn_complete': False}}
+🎯 WS_PLAY_DEBUG: State machine result: {'success': True, 'immediate': True, 'transition': False, 'processing_time': 0.6998090744018555, 'reason': 'Turn action processed successfully', 'data': {'status': 'play_accepted', 'player': 'Andy', 'pieces': [CHARIOT_BLACK(7)], 'piece_count': 1, 'required_count': None, 'next_player': 'Bot 3', 'turn_complete': False}}
+✅ Play queued: Andy -> [6]
+DEBUG_WS: Entering broadcast method for room F2C5D7, event play
+DEBUG_WS: Attempting to queue event 'play' for room F2C5D7 with data: {'player': 'Andy', 'pieces': ['CHARIOT_BLACK(7)'], 'valid': True, 'play_type': 'SINGLE', 'next_player': 'Bot 3', 'required_count': None, 'turn_complete': False, 'phase': 'turn', 'sequence': 23, 'timestamp': 1751418294.320298, 'reason': 'Player Andy played 1 pieces', 'room_id': 'F2C5D7'}
+🔧 SERIALIZATION_DEBUG: Testing JSON serialization for event 'play'
+🔧 SERIALIZATION_DEBUG: JSON serialization test PASSED for event 'play' - 314 chars
+🔧 SERIALIZATION_DEBUG: About to call queue.put() for event 'play'
+✅ SERIALIZATION_DEBUG: queue.put() completed successfully for event 'play'
+DEBUG_WS: Message for event 'play' added to queue for room F2C5D7.
+🔧 EVENT_PROCESSOR_DEBUG: Processing_lock acquired for critical section
+🔧 EVENT_PROCESSOR_DEBUG: Processing event in current state
+🔧 PROCESS_EVENT_DEBUG: _process_event_in_state called for play_pieces
+🔧 PROCESS_EVENT_DEBUG: Current state: <engine.state_machine.states.turn_state.TurnState object at 0x109195650>
+🔧 PROCESS_EVENT_DEBUG: Checking if state has process_event method
+🔧 PROCESS_EVENT_DEBUG: Using state's process_event method
+🔧 VALIDATION_DEBUG: Validating bot Bot 3 action
+🔧 VALIDATION_DEBUG: Current player: Bot 3
+🔧 VALIDATION_DEBUG: Turn plays: []
+🔧 VALIDATION_DEBUG: Payload: {'pieces': [ADVISOR_BLACK(11)]}
+🔧 VALIDATION_DEBUG: Required piece count: None
+✅ VALIDATION_DEBUG: Turn validation PASSED - Bot 3 == Bot 3
+✅ VALIDATION_DEBUG: Already played validation PASSED - Bot 3 not in turn_plays
+✅ VALIDATION_DEBUG: Payload validation PASSED - 'pieces' found in payload
+✅ VALIDATION_DEBUG: Pieces format validation PASSED - 1 pieces
+🔧 VALIDATION_DEBUG: Piece count: 1, Required: None
+✅ VALIDATION_DEBUG: Starter piece count validation PASSED - 1 in 1-6 range
+✅ VALIDATION_DEBUG: All validation checks PASSED for Bot 3
+🎯 TURN_STATE_DEBUG: Processing action play_pieces from Bot 3
+🎯 TURN_STATE_DEBUG: _handle_play_pieces called for Bot 3
+🎯 TURN_STATE_DEBUG: Current state - player_index: 0, turn_order: ['Bot 3', 'Bot 4', 'Andy', 'Bot 2']
+🎯 TURN_STATE_DEBUG: Player Bot 3 playing 1 pieces: ['ADVISOR_BLACK(11)']
+🎯 TURN_STATE_DEBUG: Setting required piece count to 1
+🎯 TURN_STATE_DEBUG: Before setting - required_piece_count was: None
+🎯 TURN_STATE_DEBUG: After setting - required_piece_count is: 1
+{"timestamp": "2025-07-02T01:04:54.320974Z", "level": "INFO", "logger": "game.state.turn", "message": "\ud83c\udfb2 Bot 3 (starter) plays 1 pieces - setting required count", "module": "turn_state", "function": "_handle_play_pieces", "line": 353}
+{"timestamp": "2025-07-02T01:04:54.321121Z", "level": "INFO", "logger": "game.state.turn", "message": "\ud83c\udfb2 Bot 3 plays: [ADVISOR_BLACK(11)] (value: 0)", "module": "turn_state", "function": "_handle_play_pieces", "line": 367}
+🎯 TURN_STATE_DEBUG: Before advancing - current_player_index: 0
+🎯 TURN_STATE_DEBUG: After advancing - current_player_index: 1
+🎯 TURN_STATE_DEBUG: Next player: Bot 4
+🎯 TURN_STATE_DEBUG: Round 1, Turn 3 - Bot 3 played, next: Bot 4
+🎯 UPDATE_DEBUG: About to update phase data with current_player: Bot 4, required_piece_count: 1
+{"timestamp": "2025-07-02T01:04:54.321308Z", "level": "INFO", "logger": "game.state.turn", "message": "\ud83c\udfae Phase Data Update: Player Bot 3 played 1 pieces", "module": "base_state", "function": "update_phase_data", "line": 165}
+DEBUG_WS: Entering broadcast method for room F2C5D7, event phase_change
+DEBUG_WS: Attempting to queue event 'phase_change' for room F2C5D7 with data: {'phase': 'turn', 'allowed_actions': ['play_pieces', 'player_disconnect', 'timeout', 'player_reconnect'], 'phase_data': {'current_turn_starter': 'Bot 3', 'current_player': 'Bot 4', 'turn_order': ['Bot 3', 'Bot 4', 'Andy', 'Bot 2'], 'required_piece_count': 1, 'turn_plays': {'Bot 3': {'pieces': ['ADVISOR_BLACK(11)'], 'piece_count': 1, 'play_type': 'unknown', 'play_value': 0, 'is_valid': True, 'timestamp': 1751418294.320679}}, 'turn_complete': False, 'current_turn_number': 3, 'winner': 'Bot 3', 'piles_won': 1, 'next_turn_starter': 'Bot 3'}, 'players': {'Andy': {'hand': ['SOLDIER_RED(2)', 'CHARIOT_RED(8)', 'ADVISOR_RED(12)', 'CHARIOT_RED(8)', 'CANNON_RED(4)', 'SOLDIER_RED(2)'], 'hand_size': 6}, 'Bot 2': {'hand': ['SOLDIER_BLACK(1)', 'SOLDIER_BLACK(1)', 'SOLDIER_RED(2)', 'CANNON_RED(4)', 'SOLDIER_BLACK(1)', 'HORSE_RED(6)'], 'hand_size': 6}, 'Bot 3': {'hand': ['HORSE_RED(6)', 'ADVISOR_BLACK(11)', 'CHARIOT_BLACK(7)', 'ELEPHANT_BLACK(9)', 'SOLDIER_RED(2)', 'CANNON_BLACK(3)'], 'hand_size': 6}, 'Bot 4': {'hand': ['SOLDIER_BLACK(1)', 'HORSE_BLACK(5)', 'SOLDIER_RED(2)', 'HORSE_BLACK(5)', 'SOLDIER_BLACK(1)', 'CANNON_BLACK(3)'], 'hand_size': 6}}, 'round': 1, 'reason': 'Player Bot 3 played 1 pieces', 'sequence': 24, 'timestamp': 1751418294.3216221, 'room_id': 'F2C5D7'}
+🔧 SERIALIZATION_DEBUG: Testing JSON serialization for event 'phase_change'
+🔧 SERIALIZATION_DEBUG: JSON serialization test PASSED for event 'phase_change' - 1309 chars
+🔧 SERIALIZATION_DEBUG: About to call queue.put() for event 'phase_change'
+✅ SERIALIZATION_DEBUG: queue.put() completed successfully for event 'phase_change'
+DEBUG_WS: Message for event 'phase_change' added to queue for room F2C5D7.
+DEBUG_WS_QUEUE: Room F2C5D7 got message: phase_change
+DEBUG_WS: Broadcasting event 'phase_change' (op_id: unknown) to 1 clients in room F2C5D7.
+DEBUG_WS: Successfully sent 'phase_change' to a client in room F2C5D7.
+{"timestamp": "2025-07-02T01:04:54.322822Z", "level": "INFO", "logger": "game.state.turn", "message": "\ud83d\udce4 Auto-broadcast: phase_change to room F2C5D7 - Player Bot 3 played 1 pieces", "module": "base_state", "function": "_auto_broadcast_phase_change", "line": 227}
+🤖 ENTERPRISE_DATA_DEBUG: Notifying bot manager about data change - reason: Player Bot 3 played 1 pieces
+🤖 ENTERPRISE_DATA_DEBUG: Turn phase - current player: Bot 4
+🔔 BOT_MANAGER_DEBUG: Received event 'phase_change' for room F2C5D7 with data: {'phase': 'turn', 'phase_data': {'current_turn_starter': 'Bot 3', 'current_player': 'Bot 4', 'turn_order': ['Bot 3', 'Bot 4', 'Andy', 'Bot 2'], 'required_piece_count': 1, 'turn_plays': {'Bot 3': {'pieces': ['ADVISOR_BLACK(11)'], 'piece_count': 1, 'play_type': 'unknown', 'play_value': 0, 'is_valid': True, 'timestamp': 1751418294.320679}}, 'turn_complete': False, 'current_turn_number': 3, 'winner': 'Bot 3', 'piles_won': 1, 'next_turn_starter': 'Bot 3'}, 'current_player': 'Bot 4', 'reason': 'Player Bot 3 played 1 pieces'}
+✅ BOT_MANAGER_DEBUG: Found handler for room F2C5D7, delegating to handler...
+🎮 BOT_HANDLER_DEBUG: Room F2C5D7 handling event 'phase_change' with data keys: ['phase', 'phase_data', 'current_player', 'reason']
+🔍 BOT_HANDLER_DEBUG: Event type check - event == 'phase_change': True
+🔍 BOT_HANDLER_DEBUG: Event value repr: 'phase_change'
+🔧 BOT_MANAGER_LOCK_FIX: Step 1 - Determining bot actions (minimal lock scope)
+🔧 BOT_MANAGER_LOCK_FIX: Lock acquired for decision logic only
+🚀 BOT_HANDLER_DEBUG: Analyzing enterprise phase change
+🚀 STARTER_DEBUG: Bot Bot 4 - is_starter: False, required_count: 1
+✅ REFINED_FIX: Allowing new trigger for current player Bot 4 from phase_change
+✅ RACE_CONDITION_FIX: New action recorded for Bot 4 - play_pieces from phase_change (hash: 886426ae838a)
+🚀 STARTER_DEBUG: Bot 4 is follower - using turn_play action
+🔧 BOT_MANAGER_LOCK_FIX: Decision logic completed - releasing lock
+🔧 BOT_MANAGER_LOCK_FIX: Step 2 - Executing 1 bot actions (lock-free)
+🔧 BOT_MANAGER_LOCK_FIX: Executing action enterprise_turn_play (lock-free)
+🎯 PLAY_PHASE_DEBUG: Got from state machine - required_count: 1, turn_order: ['Bot 3', 'Bot 4', 'Andy', 'Bot 2']
+🎯 PLAY_PHASE_DEBUG: Last player: Bot 3, last_index: 0
+🎯 PLAY_PHASE_DEBUG: Checking next player 1: Bot 4
+✅ REFINED_FIX: Allowing new trigger for current player Bot 4 from player_played
+✅ RACE_CONDITION_FIX: New action recorded for Bot 4 - play_pieces from player_played (hash: 8d30f6383664)
+🤖 PLAY_PHASE_DEBUG: Triggering bot play for Bot 4
+🤖 PLAY_PHASE_DEBUG: Bot Bot 4 thinking for 0.8s...
+DEBUG_WS_QUEUE: Room F2C5D7 got message: play
+DEBUG_WS: Broadcasting event 'play' (op_id: unknown) to 1 clients in room F2C5D7.
+DEBUG_WS: Successfully sent 'play' to a client in room F2C5D7.
+DEBUG_WS_QUEUE: Room F2C5D7 got message: phase_change
+DEBUG_WS: Broadcasting event 'phase_change' (op_id: unknown) to 1 clients in room F2C5D7.
+DEBUG_WS: Successfully sent 'phase_change' to a client in room F2C5D7.
+🔧 BOT_SUBMIT_DEBUG: About to call _bot_play() for Bot 4
+🔧 BOT_SUBMIT_DEBUG: Bot object: Bot 4 - 0 pts
+🔧 BOT_SUBMIT_DEBUG: Bot hand size: 6
+🔧 BOT_SUBMIT_DEBUG: _bot_play() method called for Bot 4
+🔧 BOT_SUBMIT_DEBUG: Bot hand: ['SOLDIER_BLACK(1)', 'HORSE_BLACK(5)', 'SOLDIER_RED(2)', 'HORSE_BLACK(5)', 'SOLDIER_BLACK(1)', 'CANNON_BLACK(3)']
+🔧 BOT_SUBMIT_DEBUG: Starting piece selection logic for Bot 4
+🎯 BOT_PLAY_DEBUG: Got required_piece_count from state machine: 1
+🔧 BOT_SUBMIT_DEBUG: About to call ai.choose_best_play for Bot 4
+🔧 BOT_SUBMIT_DEBUG: Hand size: 6, Required count: 1
+🤖 BOT chooses to play SINGLE (5 pts): HORSE
+🔧 BOT_SUBMIT_DEBUG: ai.choose_best_play returned 1 pieces for Bot 4
+🎯 BOT_PLAY_DEBUG: Final selection - 1 pieces: ['HORSE_BLACK(5)']
+🤖 Bot Bot 4 will play 1 pieces: ['HORSE_BLACK(5)']
+🔧 BOT_SUBMIT_DEBUG: This is from _bot_play() - bot is following another player
+🔧 BOT_SUBMIT_DEBUG: About to call _bot_play for Bot Bot 4
+🔧 BOT_SUBMIT_DEBUG: Selected pieces count: 1
+🔧 BOT_SUBMIT_DEBUG: Selected pieces: ['HORSE_BLACK(5)']
+🔧 BOT_SUBMIT_DEBUG: Required piece count was: 1
+🔧 BOT_SUBMIT_DEBUG: State machine is available, creating GameAction for Bot Bot 4
+🔧 BOT_SUBMIT_DEBUG: GameAction created successfully for Bot Bot 4
+🔧 BOT_SUBMIT_DEBUG: Action details - player: Bot 4, type: ActionType.PLAY_PIECES, is_bot: True
+🔧 BOT_SUBMIT_DEBUG: Action payload pieces count: 1
+🔧 BOT_SUBMIT_DEBUG: Creating fire-and-forget task for state machine action
+✅ BOT_SUBMIT_DEBUG: Fire-and-forget play action task created for Bot Bot 4
 🎯 BOT_PLAY_DEBUG: Action queued successfully, state machine will handle updates and broadcasting
-✅ Bot Bot 2 first play action queued - state machine will broadcast with correct next_player
-✅ BOT_MANAGER_LOCK_FIX: Action turn_start completed successfully
-DEBUG_WS_RECEIVE: Received event 'ping' from client in room lobby with data: {'timestamp': 1751410037151}
+✅ Bot Bot 4 action queued - state machine will broadcast with correct next_player
+🔧 BOT_SUBMIT_DEBUG: _bot_play() completed successfully for Bot 4
+✅ BOT_MANAGER_LOCK_FIX: Action enterprise_turn_play completed successfully
+🎯 UPDATE_DEBUG: Phase data updated - next_player should be: Bot 4
+{"timestamp": "2025-07-02T01:04:55.105715Z", "level": "INFO", "logger": "game.state.turn", "message": "\ud83d\udce4 Custom broadcast: play to room F2C5D7 - Player Bot 3 played 1 pieces", "module": "base_state", "function": "broadcast_custom_event", "line": 302}
+🎯 TURN_STATE_DEBUG: Enterprise broadcast play event - next_player: Bot 4
+🔧 PLAY_NOTIFY_DEBUG: Manual bot manager notification removed - using automatic enterprise system
+🎯 TURN_STATE_DEBUG: Play pieces result: {'status': 'play_accepted', 'player': 'Bot 3', 'pieces': [ADVISOR_BLACK(11)], 'piece_count': 1, 'required_count': 1, 'next_player': 'Bot 4', 'turn_complete': False}
+✅ PROCESS_EVENT_DEBUG: State process_event completed: True
+✅ EVENT_PROCESSOR_DEBUG: _process_event_in_state completed: True
+🔧 EVENT_PROCESSOR_DEBUG: Checking transitions: False
+🔧 EVENT_PROCESSOR_DEBUG: Critical section completed - releasing lock
+🔧 EVENT_PROCESSOR_DEBUG: Step 3 - Lock-free operations (stats, history)
+🔧 EVENT_PROCESSOR_DEBUG: Updating stats (lock-free)
+🔧 EVENT_PROCESSOR_DEBUG: Storing event history (lock-free)
+✅ EVENT_PROCESSOR_DEBUG: handle_event completed successfully
+🔧 HANDLE_ACTION_DEBUG: event_processor.handle_event completed in 0.787s
+🔧 HANDLE_ACTION_DEBUG: Processing result
+✅ HANDLE_ACTION_DEBUG: handle_action returning result: {'success': True, 'immediate': True, 'transition': False, 'processing_time': 0.7872321605682373, 'reason': 'Turn action processed successfully', 'data': {'status': 'play_accepted', 'player': 'Bot 3', 'pieces': [ADVISOR_BLACK(11)], 'piece_count': 1, 'required_count': 1, 'next_player': 'Bot 4', 'turn_complete': False}}
+✅ BOT_SUBMIT_DEBUG: Action submitted successfully for Bot Bot 3
+🎯 BOT_PLAY_DEBUG: State machine result: {'success': True, 'immediate': True, 'transition': False, 'processing_time': 0.7872321605682373, 'reason': 'Turn action processed successfully', 'data': {'status': 'play_accepted', 'player': 'Bot 3', 'pieces': [ADVISOR_BLACK(11)], 'piece_count': 1, 'required_count': 1, 'next_player': 'Bot 4', 'turn_complete': False}}
+🔧 HANDLE_ACTION_DEBUG: handle_action called for Bot 4 play_pieces
+🔧 HANDLE_ACTION_DEBUG: State machine running check: True
+🔧 HANDLE_ACTION_DEBUG: Converting action to event
+🔧 HANDLE_ACTION_DEBUG: Creating GameEvent from action
+🔧 HANDLE_ACTION_DEBUG: GameEvent created successfully
+🔧 HANDLE_ACTION_DEBUG: About to call event_processor.handle_event
+🔧 EVENT_PROCESSOR_DEBUG: handle_event called for play_pieces from Bot 4
+🔧 EVENT_PROCESSOR_DEBUG: Step 1 - Validating event for current state (no lock)
+✅ EVENT_PROCESSOR_DEBUG: Event validation passed
+🔧 EVENT_PROCESSOR_DEBUG: Step 2 - About to acquire processing_lock for critical section only
+🔧 EVENT_PROCESSOR_DEBUG: Processing_lock acquired for critical section
+🔧 EVENT_PROCESSOR_DEBUG: Processing event in current state
+🔧 PROCESS_EVENT_DEBUG: _process_event_in_state called for play_pieces
+🔧 PROCESS_EVENT_DEBUG: Current state: <engine.state_machine.states.turn_state.TurnState object at 0x109195650>
+🔧 PROCESS_EVENT_DEBUG: Checking if state has process_event method
+🔧 PROCESS_EVENT_DEBUG: Using state's process_event method
+🔧 VALIDATION_DEBUG: Validating bot Bot 4 action
+🔧 VALIDATION_DEBUG: Current player: Bot 4
+🔧 VALIDATION_DEBUG: Turn plays: ['Bot 3']
+🔧 VALIDATION_DEBUG: Payload: {'pieces': [HORSE_BLACK(5)]}
+🔧 VALIDATION_DEBUG: Required piece count: 1
+✅ VALIDATION_DEBUG: Turn validation PASSED - Bot 4 == Bot 4
+✅ VALIDATION_DEBUG: Already played validation PASSED - Bot 4 not in turn_plays
+✅ VALIDATION_DEBUG: Payload validation PASSED - 'pieces' found in payload
+✅ VALIDATION_DEBUG: Pieces format validation PASSED - 1 pieces
+🔧 VALIDATION_DEBUG: Piece count: 1, Required: 1
+✅ VALIDATION_DEBUG: Required piece count validation PASSED - 1 == 1
+✅ VALIDATION_DEBUG: All validation checks PASSED for Bot 4
+🎯 TURN_STATE_DEBUG: Processing action play_pieces from Bot 4
+🎯 TURN_STATE_DEBUG: _handle_play_pieces called for Bot 4
+🎯 TURN_STATE_DEBUG: Current state - player_index: 1, turn_order: ['Bot 3', 'Bot 4', 'Andy', 'Bot 2']
+🎯 TURN_STATE_DEBUG: Player Bot 4 playing 1 pieces: ['HORSE_BLACK(5)']
+{"timestamp": "2025-07-02T01:04:55.106248Z", "level": "INFO", "logger": "game.state.turn", "message": "\ud83c\udfb2 Bot 4 plays: [HORSE_BLACK(5)] (value: 0)", "module": "turn_state", "function": "_handle_play_pieces", "line": 367}
+🎯 TURN_STATE_DEBUG: Before advancing - current_player_index: 1
+🎯 TURN_STATE_DEBUG: After advancing - current_player_index: 2
+🎯 TURN_STATE_DEBUG: Next player: Andy
+🎯 TURN_STATE_DEBUG: Round 1, Turn 3 - Bot 4 played, next: Andy
+🎯 UPDATE_DEBUG: About to update phase data with current_player: Andy, required_piece_count: 1
+{"timestamp": "2025-07-02T01:04:55.106342Z", "level": "INFO", "logger": "game.state.turn", "message": "\ud83c\udfae Phase Data Update: Player Bot 4 played 1 pieces", "module": "base_state", "function": "update_phase_data", "line": 165}
+DEBUG_WS: Entering broadcast method for room F2C5D7, event phase_change
+DEBUG_WS: Attempting to queue event 'phase_change' for room F2C5D7 with data: {'phase': 'turn', 'allowed_actions': ['play_pieces', 'player_disconnect', 'timeout', 'player_reconnect'], 'phase_data': {'current_turn_starter': 'Bot 3', 'current_player': 'Andy', 'turn_order': ['Bot 3', 'Bot 4', 'Andy', 'Bot 2'], 'required_piece_count': 1, 'turn_plays': {'Bot 3': {'pieces': ['ADVISOR_BLACK(11)'], 'piece_count': 1, 'play_type': 'unknown', 'play_value': 0, 'is_valid': True, 'timestamp': 1751418294.320679}, 'Bot 4': {'pieces': ['HORSE_BLACK(5)'], 'piece_count': 1, 'play_type': 'unknown', 'play_value': 0, 'is_valid': True, 'timestamp': 1751418295.106129}}, 'turn_complete': False, 'current_turn_number': 3, 'winner': 'Bot 3', 'piles_won': 1, 'next_turn_starter': 'Bot 3'}, 'players': {'Andy': {'hand': ['SOLDIER_RED(2)', 'CHARIOT_RED(8)', 'ADVISOR_RED(12)', 'CHARIOT_RED(8)', 'CANNON_RED(4)', 'SOLDIER_RED(2)'], 'hand_size': 6}, 'Bot 2': {'hand': ['SOLDIER_BLACK(1)', 'SOLDIER_BLACK(1)', 'SOLDIER_RED(2)', 'CANNON_RED(4)', 'SOLDIER_BLACK(1)', 'HORSE_RED(6)'], 'hand_size': 6}, 'Bot 3': {'hand': ['HORSE_RED(6)', 'ADVISOR_BLACK(11)', 'CHARIOT_BLACK(7)', 'ELEPHANT_BLACK(9)', 'SOLDIER_RED(2)', 'CANNON_BLACK(3)'], 'hand_size': 6}, 'Bot 4': {'hand': ['SOLDIER_BLACK(1)', 'HORSE_BLACK(5)', 'SOLDIER_RED(2)', 'HORSE_BLACK(5)', 'SOLDIER_BLACK(1)', 'CANNON_BLACK(3)'], 'hand_size': 6}}, 'round': 1, 'reason': 'Player Bot 4 played 1 pieces', 'sequence': 26, 'timestamp': 1751418295.106522, 'room_id': 'F2C5D7'}
+🔧 SERIALIZATION_DEBUG: Testing JSON serialization for event 'phase_change'
+🔧 SERIALIZATION_DEBUG: JSON serialization test PASSED for event 'phase_change' - 1457 chars
+🔧 SERIALIZATION_DEBUG: About to call queue.put() for event 'phase_change'
+✅ SERIALIZATION_DEBUG: queue.put() completed successfully for event 'phase_change'
+DEBUG_WS: Message for event 'phase_change' added to queue for room F2C5D7.
+DEBUG_WS: Entering broadcast method for room F2C5D7, event play
+DEBUG_WS: Attempting to queue event 'play' for room F2C5D7 with data: {'player': 'Bot 3', 'pieces': ['ADVISOR_BLACK(11)'], 'valid': True, 'play_type': 'SINGLE', 'next_player': 'Bot 4', 'required_count': 1, 'turn_complete': False, 'phase': 'turn', 'sequence': 25, 'timestamp': 1751418295.106774, 'reason': 'Player Bot 3 played 1 pieces', 'room_id': 'F2C5D7'}
+🔧 SERIALIZATION_DEBUG: Testing JSON serialization for event 'play'
+🔧 SERIALIZATION_DEBUG: JSON serialization test PASSED for event 'play' - 314 chars
+🔧 SERIALIZATION_DEBUG: About to call queue.put() for event 'play'
+✅ SERIALIZATION_DEBUG: queue.put() completed successfully for event 'play'
+DEBUG_WS: Message for event 'play' added to queue for room F2C5D7.
+{"timestamp": "2025-07-02T01:04:55.106894Z", "level": "INFO", "logger": "game.state.turn", "message": "\ud83d\udce4 Auto-broadcast: phase_change to room F2C5D7 - Player Bot 4 played 1 pieces", "module": "base_state", "function": "_auto_broadcast_phase_change", "line": 227}
+🤖 ENTERPRISE_DATA_DEBUG: Notifying bot manager about data change - reason: Player Bot 4 played 1 pieces
+🤖 ENTERPRISE_DATA_DEBUG: Turn phase - current player: Andy
+🔔 BOT_MANAGER_DEBUG: Received event 'phase_change' for room F2C5D7 with data: {'phase': 'turn', 'phase_data': {'current_turn_starter': 'Bot 3', 'current_player': 'Andy', 'turn_order': ['Bot 3', 'Bot 4', 'Andy', 'Bot 2'], 'required_piece_count': 1, 'turn_plays': {'Bot 3': {'pieces': ['ADVISOR_BLACK(11)'], 'piece_count': 1, 'play_type': 'unknown', 'play_value': 0, 'is_valid': True, 'timestamp': 1751418294.320679}, 'Bot 4': {'pieces': ['HORSE_BLACK(5)'], 'piece_count': 1, 'play_type': 'unknown', 'play_value': 0, 'is_valid': True, 'timestamp': 1751418295.106129}}, 'turn_complete': False, 'current_turn_number': 3, 'winner': 'Bot 3', 'piles_won': 1, 'next_turn_starter': 'Bot 3'}, 'current_player': 'Andy', 'reason': 'Player Bot 4 played 1 pieces'}
+✅ BOT_MANAGER_DEBUG: Found handler for room F2C5D7, delegating to handler...
+🎮 BOT_HANDLER_DEBUG: Room F2C5D7 handling event 'phase_change' with data keys: ['phase', 'phase_data', 'current_player', 'reason']
+🔍 BOT_HANDLER_DEBUG: Event type check - event == 'phase_change': True
+🔍 BOT_HANDLER_DEBUG: Event value repr: 'phase_change'
+🔧 BOT_MANAGER_LOCK_FIX: Step 1 - Determining bot actions (minimal lock scope)
+🔧 BOT_MANAGER_LOCK_FIX: Lock acquired for decision logic only
+🚀 BOT_HANDLER_DEBUG: Analyzing enterprise phase change
+🔧 BOT_MANAGER_LOCK_FIX: Decision logic completed - releasing lock
+🔧 BOT_MANAGER_LOCK_FIX: Step 2 - Executing 0 bot actions (lock-free)
+🎯 UPDATE_DEBUG: Phase data updated - next_player should be: Andy
+{"timestamp": "2025-07-02T01:04:55.107165Z", "level": "INFO", "logger": "game.state.turn", "message": "\ud83d\udce4 Custom broadcast: play to room F2C5D7 - Player Bot 4 played 1 pieces", "module": "base_state", "function": "broadcast_custom_event", "line": 302}
+🎯 TURN_STATE_DEBUG: Enterprise broadcast play event - next_player: Andy
+🔧 PLAY_NOTIFY_DEBUG: Manual bot manager notification removed - using automatic enterprise system
+🎯 TURN_STATE_DEBUG: Play pieces result: {'status': 'play_accepted', 'player': 'Bot 4', 'pieces': [HORSE_BLACK(5)], 'piece_count': 1, 'required_count': 1, 'next_player': 'Andy', 'turn_complete': False}
+✅ PROCESS_EVENT_DEBUG: State process_event completed: True
+✅ EVENT_PROCESSOR_DEBUG: _process_event_in_state completed: True
+🔧 EVENT_PROCESSOR_DEBUG: Checking transitions: False
+🔧 EVENT_PROCESSOR_DEBUG: Critical section completed - releasing lock
+🔧 EVENT_PROCESSOR_DEBUG: Step 3 - Lock-free operations (stats, history)
+🔧 EVENT_PROCESSOR_DEBUG: Updating stats (lock-free)
+🔧 EVENT_PROCESSOR_DEBUG: Storing event history (lock-free)
+✅ EVENT_PROCESSOR_DEBUG: handle_event completed successfully
+🔧 HANDLE_ACTION_DEBUG: event_processor.handle_event completed in 0.001s
+🔧 HANDLE_ACTION_DEBUG: Processing result
+✅ HANDLE_ACTION_DEBUG: handle_action returning result: {'success': True, 'immediate': True, 'transition': False, 'processing_time': 0.00127410888671875, 'reason': 'Turn action processed successfully', 'data': {'status': 'play_accepted', 'player': 'Bot 4', 'pieces': [HORSE_BLACK(5)], 'piece_count': 1, 'required_count': 1, 'next_player': 'Andy', 'turn_complete': False}}
+✅ BOT_SUBMIT_DEBUG: Action submitted successfully for Bot Bot 4
+🎯 BOT_PLAY_DEBUG: State machine result: {'success': True, 'immediate': True, 'transition': False, 'processing_time': 0.00127410888671875, 'reason': 'Turn action processed successfully', 'data': {'status': 'play_accepted', 'player': 'Bot 4', 'pieces': [HORSE_BLACK(5)], 'piece_count': 1, 'required_count': 1, 'next_player': 'Andy', 'turn_complete': False}}
+DEBUG_WS: Entering broadcast method for room F2C5D7, event play
+DEBUG_WS: Attempting to queue event 'play' for room F2C5D7 with data: {'player': 'Bot 4', 'pieces': ['HORSE_BLACK(5)'], 'valid': True, 'play_type': 'SINGLE', 'next_player': 'Andy', 'required_count': 1, 'turn_complete': False, 'phase': 'turn', 'sequence': 27, 'timestamp': 1751418295.1075132, 'reason': 'Player Bot 4 played 1 pieces', 'room_id': 'F2C5D7'}
+🔧 SERIALIZATION_DEBUG: Testing JSON serialization for event 'play'
+🔧 SERIALIZATION_DEBUG: JSON serialization test PASSED for event 'play' - 311 chars
+🔧 SERIALIZATION_DEBUG: About to call queue.put() for event 'play'
+✅ SERIALIZATION_DEBUG: queue.put() completed successfully for event 'play'
+DEBUG_WS: Message for event 'play' added to queue for room F2C5D7.
+DEBUG_WS_QUEUE: Room F2C5D7 got message: phase_change
+DEBUG_WS: Broadcasting event 'phase_change' (op_id: unknown) to 1 clients in room F2C5D7.
+DEBUG_WS: Successfully sent 'phase_change' to a client in room F2C5D7.
+DEBUG_WS_QUEUE: Room F2C5D7 got message: play
+DEBUG_WS: Broadcasting event 'play' (op_id: unknown) to 1 clients in room F2C5D7.
+DEBUG_WS: Successfully sent 'play' to a client in room F2C5D7.
+DEBUG_WS_QUEUE: Room F2C5D7 got message: play
+DEBUG_WS: Broadcasting event 'play' (op_id: unknown) to 1 clients in room F2C5D7.
+DEBUG_WS: Successfully sent 'play' to a client in room F2C5D7.
+DEBUG_WS_RECEIVE: Received event 'ping' from client in room lobby with data: {'timestamp': 1751418303493}
