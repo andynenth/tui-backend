@@ -233,20 +233,8 @@ class TurnState(GameState):
         self.winner = None
         self._turn_resolution_cache = None  # Clear cache for new turn
         
-        # 🤖 CRITICAL: Notify bot manager with fire-and-forget to prevent async deadlock
-        print(f"🔧 NEW_TURN_DEBUG: About to notify bot manager for {self.current_turn_starter}")
-        try:
-            # 🔧 DEADLOCK_FIX: Use fire-and-forget to prevent circular async dependency
-            bot_notification_task = asyncio.create_task(
-                self._notify_bot_manager_new_turn(self.current_turn_starter)
-            )
-            # Don't await - let it run in background to prevent deadlock
-            print(f"🔧 NEW_TURN_DEBUG: Bot manager notification task created (fire-and-forget)")
-            print(f"🔧 NEW_TURN_DEBUG: Bot manager notification completed (non-blocking)")
-        except Exception as e:
-            print(f"❌ NEW_TURN_DEBUG: Bot manager notification task creation failed: {e}")
-            import traceback
-            traceback.print_exc()
+        # 🚀 AUTOMATIC_SYSTEM: Bot manager will be notified automatically via enterprise phase_change events
+        print(f"🔧 NEW_TURN_DEBUG: Manual bot manager notification removed - using automatic enterprise system")
         
         # 🚀 ENTERPRISE: Use automatic broadcasting system after bot notification
         print(f"🔧 NEW_TURN_DEBUG: Getting current_turn_number from game.turn_number")
@@ -415,15 +403,8 @@ class TurnState(GameState):
         # 🚀 ENTERPRISE: Use centralized custom event broadcasting
         await self._broadcast_play_event_enterprise(action.player_name, pieces, piece_count)
         
-        # 🔧 DEADLOCK_FIX: Notify bot manager about the play with fire-and-forget to prevent blocking
-        try:
-            bot_play_notification_task = asyncio.create_task(
-                self._notify_bot_manager_play(action.player_name)
-            )
-            # Don't await - let it run in background to prevent EventProcessor deadlock
-            print(f"🔧 PLAY_NOTIFY_DEBUG: Bot manager play notification task created (fire-and-forget)")
-        except Exception as e:
-            print(f"❌ PLAY_NOTIFY_DEBUG: Bot manager play notification task creation failed: {e}")
+        # 🚀 AUTOMATIC_SYSTEM: Bot manager will be notified automatically via enterprise phase_change events
+        print(f"🔧 PLAY_NOTIFY_DEBUG: Manual bot manager notification removed - using automatic enterprise system")
         
         return {
             'status': 'play_accepted',
@@ -820,39 +801,8 @@ class TurnState(GameState):
         """DEPRECATED: Use _broadcast_play_event_enterprise instead"""
         await self._broadcast_play_event_enterprise(player_name, pieces, piece_count)
 
-    async def _notify_bot_manager_play(self, player_name: str):
-        """Notify bot manager about a player's play to trigger next bot actions"""
-        try:
-            from ...bot_manager import BotManager
-            bot_manager = BotManager()
-            room_id = getattr(self.state_machine, 'room_id', 'unknown')
-            
-            print(f"🤖 TURN_STATE_DEBUG: Notifying bot manager about {player_name}'s play for room {room_id}")
-            
-            # Trigger bot manager to handle the next player's turn
-            await bot_manager.handle_game_event(room_id, "player_played", {
-                "player_name": player_name
-            })
-            
-        except Exception as e:
-            self.logger.error(f"Failed to notify bot manager about play: {e}", exc_info=True)
-    
-    async def _notify_bot_manager_new_turn(self, starter: str):
-        """Notify bot manager about a new turn starting"""
-        try:
-            from ...bot_manager import BotManager
-            bot_manager = BotManager()
-            room_id = getattr(self.state_machine, 'room_id', 'unknown')
-            
-            print(f"🤖 NEW_TURN_DEBUG: Notifying bot manager about new turn starter {starter} for room {room_id}")
-            
-            # Trigger bot manager to handle the new turn
-            await bot_manager.handle_game_event(room_id, "turn_started", {
-                "starter": starter
-            })
-            
-        except Exception as e:
-            self.logger.error(f"Failed to notify bot manager about new turn: {e}", exc_info=True)
+    # 🚀 AUTOMATIC_SYSTEM: Manual bot manager notification methods removed
+    # Bot manager now gets all notifications automatically via enterprise phase_change events
     
     async def _broadcast_turn_completion_enterprise(self):
         """🚀 ENTERPRISE: Broadcast turn completion using centralized system"""
