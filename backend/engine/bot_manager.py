@@ -170,14 +170,41 @@ class GameBotHandler:
                 async with self._lock:  # Minimal lock for decision logic only
                     print(f"🔧 BOT_MANAGER_LOCK_FIX: Lock acquired for decision logic only")
                     
-                    # 🚀 AUTOMATIC_SYSTEM: Only handle phase_change events - all other events are automatic
-                    if event == "phase_change":
+                    # Only decision logic under lock - no external calls
+                    if event == "player_declared":
+                        print(f"📢 BOT_HANDLER_DEBUG: Analyzing declaration phase")
+                        bot_actions_to_execute.append(("declaration_phase", data["player_name"]))
+                    elif event == "phase_change":
                         print(f"🚀 BOT_HANDLER_DEBUG: Analyzing enterprise phase change")
                         bot_action = self._analyze_phase_change_for_bots(data)
                         if bot_action:
                             bot_actions_to_execute.append(bot_action)
+                    elif event == "player_played":
+                        print(f"🎯 BOT_HANDLER_DEBUG: Analyzing play phase")
+                        bot_actions_to_execute.append(("play_phase", data["player_name"]))
+                    elif event == "turn_started":
+                        print(f"🚀 BOT_HANDLER_DEBUG: Analyzing turn start")
+                        bot_actions_to_execute.append(("turn_start", data["starter"]))
+                    elif event == "round_started":
+                        print(f"🎪 BOT_HANDLER_DEBUG: Analyzing round start")
+                        bot_actions_to_execute.append(("round_start", None))
+                    elif event == "weak_hands_found":
+                        print(f"🃏 BOT_HANDLER_DEBUG: Analyzing weak hands")
+                        bot_actions_to_execute.append(("weak_hands", data))
+                    elif event == "redeal_decision_needed":
+                        print(f"🔄 BOT_HANDLER_DEBUG: Analyzing redeal decision")
+                        bot_actions_to_execute.append(("redeal_decision", data))
+                    elif event == "action_rejected":
+                        print(f"🚫 BOT_HANDLER_DEBUG: Analyzing action rejection")
+                        bot_actions_to_execute.append(("action_rejected", data))
+                    elif event == "action_accepted":
+                        print(f"✅ BOT_HANDLER_DEBUG: Analyzing action acceptance")
+                        bot_actions_to_execute.append(("action_accepted", data))
+                    elif event == "action_failed":
+                        print(f"💥 BOT_HANDLER_DEBUG: Analyzing action failure")
+                        bot_actions_to_execute.append(("action_failed", data))
                     else:
-                        print(f"🚀 AUTOMATIC_SYSTEM_DEBUG: Ignoring manual event '{event}' - using automatic phase_change system only")
+                        print(f"⚠️ BOT_HANDLER_DEBUG: Unknown event '{event}' - ignoring")
                     
                     print(f"🔧 BOT_MANAGER_LOCK_FIX: Decision logic completed - releasing lock")
                     
@@ -319,7 +346,6 @@ class GameBotHandler:
         
         elif phase == "turn":
             current_player = data.get("current_player") or phase_data.get("current_player")
-            current_turn_starter = data.get("current_turn_starter") or phase_data.get("current_turn_starter")
             if current_player:
                 # Check if current player is a bot and needs to play
                 game_state = self._get_game_state()
@@ -327,49 +353,30 @@ class GameBotHandler:
                     for player in game_state.players:
                         if getattr(player, 'name', str(player)) == current_player:
                             if getattr(player, 'is_bot', False):
-                                # 🚀 STARTER_FIX: Check if this bot is the turn starter
-                                is_starter = (current_player == current_turn_starter)
-                                required_count = phase_data.get('required_piece_count')
-                                
-                                print(f"🚀 STARTER_DEBUG: Bot {current_player} - is_starter: {is_starter}, required_count: {required_count}")
-                                
                                 # Check for duplicates (analysis only - no cache updates)
                                 context = {
                                     'phase': phase,
                                     'turn_number': phase_data.get('current_turn_number', 0),
                                     'current_player': current_player,
-                                    'required_count': required_count,
-                                    'trigger_source': 'phase_change',
-                                    'is_starter': is_starter
+                                    'required_count': phase_data.get('required_piece_count'),
+                                    'trigger_source': 'phase_change'
                                 }
                                 
                                 # Only return action if no duplicates
                                 if not self._is_duplicate_action(current_player, 'play_pieces', context):
                                     if not self._should_skip_bot_trigger(current_player, context):
+                                        # Get last player info
+                                        turn_plays = phase_data.get('turn_plays', {})
+                                        last_player = ""
+                                        if isinstance(turn_plays, dict) and turn_plays:
+                                            last_play_time = 0
+                                            for player_name, play_data in turn_plays.items():
+                                                timestamp = play_data.get('timestamp', 0)
+                                                if timestamp > last_play_time:
+                                                    last_play_time = timestamp
+                                                    last_player = player_name
                                         
-                                        # 🚀 STARTER_FIX: Use different actions for starters vs followers
-                                        if is_starter:
-                                            print(f"🚀 STARTER_DEBUG: {current_player} is starter - using turn_start action")
-                                            return ("enterprise_turn_start", {"starter": current_player})
-                                        else:
-                                            # Only followers need to check required count
-                                            if required_count is None:
-                                                print(f"🚀 STARTER_DEBUG: {current_player} is follower but no required count set - skipping")
-                                                return None
-                                            
-                                            # Get last player info for followers
-                                            turn_plays = phase_data.get('turn_plays', {})
-                                            last_player = ""
-                                            if isinstance(turn_plays, dict) and turn_plays:
-                                                last_play_time = 0
-                                                for player_name, play_data in turn_plays.items():
-                                                    timestamp = play_data.get('timestamp', 0)
-                                                    if timestamp > last_play_time:
-                                                        last_play_time = timestamp
-                                                        last_player = player_name
-                                            
-                                            print(f"🚀 STARTER_DEBUG: {current_player} is follower - using turn_play action")
-                                            return ("enterprise_turn_play", {"current_player": current_player, "last_player": last_player})
+                                        return ("enterprise_turn_play", {"current_player": current_player, "last_player": last_player})
                             break
         
         return None
@@ -381,13 +388,18 @@ class GameBotHandler:
         This method performs the actual bot action execution without holding the bot manager lock.
         """
         try:
-            # 🚀 AUTOMATIC_SYSTEM: Only handle enterprise actions from phase_change events
-            if action_type == "enterprise_declaration":
+            if action_type == "declaration_phase":
+                await self._handle_declaration_phase(action_data)
+            elif action_type == "enterprise_declaration":
                 await self._handle_single_bot_declaration(action_data)
-            elif action_type == "enterprise_turn_start":
-                await self._handle_turn_start(action_data["starter"])
             elif action_type == "enterprise_turn_play":
                 await self._handle_play_phase(action_data["last_player"])
+            elif action_type == "play_phase":
+                await self._handle_play_phase(action_data)
+            elif action_type == "turn_start":
+                await self._handle_turn_start(action_data)
+            elif action_type == "round_start":
+                await self._handle_round_start()
             elif action_type == "weak_hands":
                 await self._handle_weak_hands(action_data)
             elif action_type == "redeal_decision":
@@ -399,7 +411,7 @@ class GameBotHandler:
             elif action_type == "action_failed":
                 await self._handle_action_failed(action_data)
             else:
-                print(f"🚀 AUTOMATIC_SYSTEM_DEBUG: Ignoring deprecated manual action type '{action_type}' - using automatic enterprise actions only")
+                print(f"⚠️ BOT_MANAGER_LOCK_FIX: Unknown action type '{action_type}' - ignoring")
         except Exception as e:
             print(f"❌ BOT_MANAGER_LOCK_FIX: Error in _execute_bot_action for {action_type}: {e}")
             raise
