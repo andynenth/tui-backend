@@ -2,13 +2,14 @@
 
 import asyncio
 import logging
-from typing import Dict, Optional, List, Set
+from typing import Dict, Optional, List, Set, Any
 from datetime import datetime
 
 from .core import GamePhase, ActionType, GameAction
 from .action_queue import ActionQueue
 from .base_state import GameState
 from .states import PreparationState, DeclarationState, TurnState, ScoringState
+from .transition_validator import TransitionValidator
 from ..circuit_breaker import get_circuit, CircuitConfig, CircuitBreakerException
 
 
@@ -34,6 +35,9 @@ class GameStateMachine:
         
         # FFD Safety: Circuit breakers to prevent infinite loops
         self._setup_circuit_breakers()
+        
+        # FFD Safety: Enhanced transition validation
+        self.transition_validator = TransitionValidator()
         
         # Initialize all available states
         self.states: Dict[GamePhase, GameState] = {
@@ -201,7 +205,18 @@ class GameStateMachine:
         try:
             # FFD Safety: Use circuit breaker for transitions
             async with self.transition_circuit:
-                # Validate transition (skip validation for initial transition)
+                # FFD Safety: Enhanced transition validation
+                validation_result = await self.transition_validator.validate_transition(
+                    self.current_phase, new_phase, self
+                )
+                
+                if not validation_result.valid:
+                    error_msg = f"Transition validation failed: {validation_result.reason}"
+                    logger.error(f"❌ {error_msg}")
+                    print(f"❌ STATE_MACHINE_DEBUG: {error_msg}")
+                    raise ValueError(error_msg)
+                
+                # Additional basic validation (keep as backup)
                 if self.current_phase and new_phase not in self._valid_transitions.get(self.current_phase, set()):
                     logger.error(f"❌ Invalid transition: {self.current_phase} -> {new_phase}")
                     print(f"❌ STATE_MACHINE_DEBUG: Invalid transition blocked!")
@@ -425,6 +440,49 @@ class GameStateMachine:
         self.action_circuit.reset()
         self.transition_circuit.reset()
         self.broadcast_circuit.reset()
+    
+    def get_transition_validation_stats(self) -> Dict[str, Any]:
+        """Get transition validation statistics"""
+        return self.transition_validator.get_validation_stats()
+    
+    def get_transition_validation_history(self, limit: int = 10) -> List[Dict[str, Any]]:
+        """Get recent transition validation history"""
+        return self.transition_validator.get_validation_history(limit)
+    
+    def get_safety_status(self) -> Dict[str, Any]:
+        """Get comprehensive safety system status"""
+        circuit_stats = self.get_circuit_breaker_stats()
+        validation_stats = self.get_transition_validation_stats()
+        
+        # Determine overall health
+        open_circuits = sum(1 for stats in circuit_stats.values() if stats["state"] == "open")
+        validation_success_rate = validation_stats.get("success_rate", 1.0)
+        
+        health_score = 100.0
+        if open_circuits > 0:
+            health_score -= open_circuits * 30  # 30 points per open circuit
+        if validation_success_rate < 0.9:
+            health_score -= (0.9 - validation_success_rate) * 100
+        
+        health_score = max(0, health_score)
+        
+        if health_score >= 90:
+            health_status = "excellent"
+        elif health_score >= 70:
+            health_status = "good"
+        elif health_score >= 50:
+            health_status = "fair"
+        else:
+            health_status = "critical"
+        
+        return {
+            "health_status": health_status,
+            "health_score": health_score,
+            "circuit_breakers": circuit_stats,
+            "transition_validation": validation_stats,
+            "open_circuits": open_circuits,
+            "system_operational": health_score > 0
+        }
     
     async def _store_phase_change_event(self, old_phase: Optional[GamePhase], new_phase: GamePhase):
         """
