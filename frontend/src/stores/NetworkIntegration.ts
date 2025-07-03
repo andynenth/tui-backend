@@ -153,6 +153,14 @@ export class NetworkIntegration {
       server_timestamp
     } = detail.data;
     
+    console.log('🔄 PHASE_CHANGE_DEBUG: Received phase_change event:', {
+      phase,
+      phase_data: Object.keys(phase_data || {}),
+      reason: detail.data.reason,
+      reconnect_sync: detail.data.reconnect_sync,
+      round: detail.data.round
+    });
+    
     // Handle versioned update from backend
     if (version && checksum) {
       gameStore.handleBackendUpdate(version, checksum, {

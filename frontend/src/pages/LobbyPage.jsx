@@ -127,10 +127,12 @@ const LobbyPage = () => {
   const createRoom = () => {
     setIsCreatingRoom(true);
     
-    // Phase 5.2: Remove artificial delay for <50ms state sync optimization
-    networkService.send('lobby', 'create_room', {
-      player_name: app.playerName
-    });
+    // Add delay to ensure connection stability before sending
+    setTimeout(() => {
+      networkService.send('lobby', 'create_room', {
+        player_name: app.playerName
+      });
+    }, 100);
   };
 
   // Join room by ID

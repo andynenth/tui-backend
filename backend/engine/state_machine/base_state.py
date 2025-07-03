@@ -86,6 +86,10 @@ class GameState(ABC):
         """Legacy polling-based transition check - TO BE REMOVED in Phase 3.2"""
         pass
     
+    def get_allowed_actions(self) -> Set[ActionType]:
+        """Get actions allowed in current state."""
+        return self.allowed_actions
+    
     # ===== EVENT-DRIVEN ARCHITECTURE METHODS =====
     
     async def process_event(self, event) -> "EventResult":
@@ -235,8 +239,8 @@ class GameState(ABC):
             self.logger.info(f"📤 Auto-broadcast: phase_change to room {room_id} - {reason}")
             
             # 🚀 ENTERPRISE: Notify bot manager about phase data changes for automatic bot triggering
-            if hasattr(self.state_machine, '_notify_bot_manager_data_change'):
-                await self.state_machine._notify_bot_manager_data_change(json_safe_phase_data, reason)
+            if hasattr(self.state_machine, 'event_broadcaster'):
+                await self.state_machine.event_broadcaster._notify_bot_manager_data_change(json_safe_phase_data, reason)
             
         except Exception as e:
             self.logger.error(f"❌ Auto-broadcast failed: {e}", exc_info=True)

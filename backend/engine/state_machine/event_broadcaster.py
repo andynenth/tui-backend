@@ -96,7 +96,7 @@ class EventBroadcaster:
             
             # Broadcast the phase change
             await self.broadcast_event("phase_change", {
-                "phase": phase.name,
+                "phase": phase.value,
                 "phase_data": phase_data
             })
             
@@ -259,11 +259,10 @@ class EventBroadcaster:
                 # Filter sensitive data for bot manager
                 filtered_data = self._filter_data_for_bots(phase_data)
                 
-                await bot_manager.notify_data_change(
-                    room_id=room_id,
-                    data=filtered_data,
-                    reason=reason
-                )
+                await bot_manager.handle_game_event(room_id, "data_change", {
+                    "data": filtered_data,
+                    "reason": reason
+                })
                 
                 logger.debug(f"🤖 BOT_DATA_SYNC: Synchronized bot manager - {reason}")
             else:
