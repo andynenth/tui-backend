@@ -347,6 +347,15 @@ class TurnState(GameState):
     
     async def _handle_play_pieces(self, action: GameAction) -> Dict[str, Any]:
         """Handle a valid play pieces action"""
+        # 🔧 FIX: Verify we're still in TURN phase before processing
+        if self.state_machine.current_phase != GamePhase.TURN:
+            self.logger.error(f"PHASE ERROR: Attempting to handle play pieces in {self.state_machine.current_phase} phase")
+            return {
+                'status': 'rejected',
+                'reason': f'Not in TURN phase (current: {self.state_machine.current_phase})',
+                'player': action.player_name
+            }
+        
         print(f"🎯 TURN_STATE_DEBUG: _handle_play_pieces called for {action.player_name}")
         print(f"🎯 TURN_STATE_DEBUG: Current state - player_index: {self.current_player_index}, turn_order: {self.turn_order}")
         
@@ -377,6 +386,25 @@ class TurnState(GameState):
         self.turn_plays[action.player_name] = play_data
         
         self.logger.info(f"🎲 {action.player_name} plays: {pieces} (value: {play_data['play_value']})")
+        
+        # 🚀 IMMEDIATE CARD REMOVAL: Remove pieces from player's hand immediately
+        game = self.state_machine.game
+        if hasattr(game, 'players') and game.players:
+            for player in game.players:
+                if player.name == action.player_name:
+                    print(f"🎯 IMMEDIATE_REMOVAL_DEBUG: Removing {len(pieces)} pieces from {player.name}'s hand")
+                    print(f"🎯 IMMEDIATE_REMOVAL_DEBUG: Hand before: {len(player.hand)} pieces")
+                    
+                    # Remove each piece from player's hand
+                    for piece in pieces:
+                        if piece in player.hand:
+                            player.hand.remove(piece)
+                            print(f"🎯 IMMEDIATE_REMOVAL_DEBUG: Removed {piece} from {player.name}")
+                        else:
+                            print(f"⚠️ IMMEDIATE_REMOVAL_WARNING: Piece {piece} not found in {player.name}'s hand")
+                    
+                    print(f"🎯 IMMEDIATE_REMOVAL_DEBUG: Hand after: {len(player.hand)} pieces")
+                    break
         
         print(f"🎯 TURN_STATE_DEBUG: Before advancing - current_player_index: {self.current_player_index}")
         
@@ -437,6 +465,12 @@ class TurnState(GameState):
     
     async def _complete_turn(self) -> None:
         """Complete the current turn and determine winner"""
+        # 🔧 FIX: Verify we're still in TURN phase before completing
+        if self.state_machine.current_phase != GamePhase.TURN:
+            self.logger.error(f"PHASE ERROR: Attempting to complete turn in {self.state_machine.current_phase} phase")
+            print(f"🔧 PHASE_CHECK_DEBUG: Blocked turn completion - not in TURN phase")
+            return
+        
         current_round = getattr(self.state_machine.game, 'round_number', 1)
         turn_number = getattr(self.state_machine.game, 'turn_number', 0)
         print(f"🎯 TURN_COMPLETE_DEBUG: Round {current_round}, Turn {turn_number} _complete_turn() called")
@@ -600,19 +634,18 @@ class TurnState(GameState):
         print(f"🏁 TURN_COMPLETION_DEBUG: Starting turn completion processing")
         print(f"🔧 SOLUTION_5_DEBUG: Current phase at start: {current_phase}")
         
-        # STEP 1: Remove played pieces from player hands FIRST
+        # STEP 1: Pieces already removed immediately when played - skip double removal
+        # 🚀 IMMEDIATE_REMOVAL_FIX: Cards are now removed in _handle_play_pieces, not here
+        print(f"🏁 TURN_COMPLETION_DEBUG: Skipping card removal - already done immediately when played")
         if hasattr(game, 'players') and game.players:
             for player in game.players:
                 player_name = player.name
                 if player_name in self.turn_plays:
                     play_data = self.turn_plays[player_name]
-                    pieces_to_remove = play_data['pieces']
-                    
-                    print(f"🏁 TURN_COMPLETION_DEBUG: Removing {len(pieces_to_remove)} pieces from {player_name}")
-                    # Remove each piece from player's hand
-                    for piece in pieces_to_remove:
-                        if piece in player.hand:
-                            player.hand.remove(piece)
+                    pieces_count = len(play_data['pieces'])
+                    current_hand_size = len(player.hand)
+                    print(f"🏁 TURN_COMPLETION_DEBUG: {player_name} played {pieces_count} pieces, current hand: {current_hand_size}")
+                    # Note: Pieces were already removed immediately in _handle_play_pieces
         
         # STEP 2: Check if any hands are empty AFTER pieces removed
         all_hands_empty = True
