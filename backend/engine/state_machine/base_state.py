@@ -226,7 +226,8 @@ class GameState(ABC):
                 "round": current_round,  # 🔢 ROUND_FIX: Add round number to broadcast data
                 "reason": reason,
                 "sequence": self._sequence_number,
-                "timestamp": time.time()
+                "timestamp": time.time(),
+                "operation_id": f"{self.phase_name.value}_phase_change_{self._sequence_number}"
             }
             
             await broadcast(room_id, "phase_change", broadcast_data)
@@ -298,7 +299,8 @@ class GameState(ABC):
                 "phase": self.phase_name.value,
                 "sequence": self._sequence_number,
                 "timestamp": time.time(),
-                "reason": reason
+                "reason": reason,
+                "operation_id": f"{self.phase_name.value}_{event_type}_{self._sequence_number}"
             }
             
             # 🔧 DEADLOCK_FIX: Use fire-and-forget to prevent EventProcessor blocking
