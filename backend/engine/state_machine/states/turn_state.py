@@ -5,6 +5,7 @@ from ..core import GamePhase, ActionType, GameAction
 from ..base_state import GameState
 from ...turn_resolution import resolve_turn, TurnPlay, TurnResult
 from ...player import Player
+from ...rules import get_play_type, is_valid_play
 import asyncio
 
 
@@ -373,13 +374,18 @@ class TurnState(GameState):
             print(f"🎯 TURN_STATE_DEBUG: After setting - required_piece_count is: {self.required_piece_count}")
             self.logger.info(f"🎲 {action.player_name} (starter) plays {piece_count} pieces - setting required count")
         
+        # Calculate play type and value from actual pieces
+        play_type = get_play_type(pieces)
+        play_value = sum(piece.point for piece in pieces)
+        is_valid = is_valid_play(pieces)
+        
         # Store the play
         play_data = {
             'pieces': pieces.copy(),
             'piece_count': piece_count,
-            'play_type': payload.get('play_type', 'unknown'),
-            'play_value': payload.get('play_value', 0),
-            'is_valid': payload.get('is_valid', True),
+            'play_type': play_type,
+            'play_value': play_value,
+            'is_valid': is_valid,
             'timestamp': action.timestamp
         }
         
@@ -497,6 +503,7 @@ class TurnState(GameState):
         
         # 🚀 ENTERPRISE: Use automatic broadcasting for turn completion
         await self.update_phase_data({
+            'current_player': self.winner or self.current_turn_starter,  # Next turn starter
             'turn_complete': True,
             'winner': self.winner,
             'piles_won': self.required_piece_count if self.winner else 0,
