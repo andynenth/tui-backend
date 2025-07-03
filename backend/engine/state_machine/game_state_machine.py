@@ -187,7 +187,7 @@ class GameStateMachine:
                 "payload": payload,
                 "player_id": player_id,
                 "timestamp": datetime.now().isoformat(),
-                "phase": self.current_phase.name if self.current_phase else None,
+                "phase": self.current_phase.value if self.current_phase else None,
                 "round": getattr(self.game, 'round_number', 0) if self.game else 0
             }
             

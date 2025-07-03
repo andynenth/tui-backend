@@ -220,8 +220,8 @@ class PhaseManager:
         """Store phase change event for debugging and analytics."""
         try:
             phase_change_data = {
-                "old_phase": old_phase.name if old_phase else None,
-                "new_phase": new_phase.name,
+                "old_phase": old_phase.value if old_phase else None,
+                "new_phase": new_phase.value,
                 "timestamp": datetime.now().isoformat(),
                 "game_round": getattr(self.state_machine.game, 'round_number', 0),
                 "players": [
@@ -250,8 +250,11 @@ class PhaseManager:
             
             if room_id:
                 phase_data = self.state_machine.get_phase_data()
-                await bot_manager.notify_phase_change(room_id, new_phase.name, phase_data)
-                logger.debug(f"🤖 BOT_NOTIFICATION: Notified bot manager of phase change to {new_phase.name}")
+                await bot_manager.handle_game_event(room_id, "phase_change", {
+                    "phase": new_phase.value,
+                    "phase_data": phase_data
+                })
+                logger.debug(f"🤖 BOT_NOTIFICATION: Notified bot manager of phase change to {new_phase.value}")
             else:
                 logger.warning(f"⚠️ BOT_NOTIFICATION: No room_id available for bot notification")
                 
@@ -276,7 +279,7 @@ class PhaseManager:
             else:
                 # Fallback to basic state info
                 return {
-                    "phase": self.state_machine.current_phase.name if self.state_machine.current_phase else None,
+                    "phase": self.state_machine.current_phase.value if self.state_machine.current_phase else None,
                     "game_round": getattr(self.state_machine.game, 'round_number', 0) if self.state_machine.game else 0
                 }
         except Exception as e:

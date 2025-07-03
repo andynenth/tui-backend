@@ -141,9 +141,9 @@ class SocketManager:
                 phase = event_data.get('phase', '')
                 is_immediate = event_data.get('immediate', False)
                 
-                if event_type == 'phase_change' and (phase == 'declaration' or is_immediate):
-                    # Allow declaration updates and immediate phase transitions through
-                    print(f"🔧 QUEUE_DEDUP: Allowing critical phase_change through (phase={phase}, immediate={is_immediate})")
+                if event_type == 'phase_change':
+                    # Always allow phase_change events through - they're critical for game state sync
+                    print(f"🔧 QUEUE_DEDUP: Allowing phase_change through (phase={phase}, immediate={is_immediate}, reconnect_sync={event_data.get('reconnect_sync')})")
                 else:
                     # Apply deduplication for other events (especially turn_complete to prevent loops)
                     event_hash = self._create_event_hash(event_type, event_data)
@@ -381,9 +381,9 @@ class SocketManager:
         phase = data.get('phase', '')
         is_immediate = data.get('immediate', False)
         
-        if event == 'phase_change' and (phase == 'declaration' or is_immediate):
-            # Allow declaration updates and immediate phase transitions through
-            print(f"🔧 BROADCAST_DEDUP: Allowing critical phase_change through (phase={phase}, immediate={is_immediate})")
+        if event == 'phase_change':
+            # Always allow phase_change events through - they're critical for game state sync
+            print(f"🔧 BROADCAST_DEDUP: Allowing phase_change through (phase={phase}, immediate={is_immediate}, reconnect_sync={data.get('reconnect_sync')})")
         else:
             # Apply deduplication for other events
             event_hash = self._create_event_hash(event, data)

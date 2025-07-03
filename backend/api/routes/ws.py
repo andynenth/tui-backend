@@ -317,7 +317,10 @@ async def websocket_endpoint(websocket: WebSocket, room_id: str):
                                         "phase": current_phase.value,
                                         "allowed_actions": allowed_actions,
                                         "phase_data": phase_data,
-                                        "players": players_data
+                                        "players": players_data,
+                                        "round": room.game.round_number if room.game else 1,
+                                        "reconnect_sync": True,
+                                        "reason": "Client reconnection sync"
                                     }
                                 })
                                 print(f"DEBUG_WS_RECEIVE: Sent current game phase {current_phase.value} to client in room {room_id}")

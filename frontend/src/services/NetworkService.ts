@@ -333,13 +333,13 @@ export class NetworkService extends EventTarget {
   private handleConnectionOpen(roomId: string): void {
     console.log(`🔗 Connection opened to room ${roomId}`);
     
-    // Request current game state after connection/reconnection
+    // Note: Game rooms use 'client_ready' event for state sync, not 'sync_request'
+    // The backend responds to client_ready with a phase_change event containing reconnect_sync: true
     const reconnectState = this.reconnectStates.get(roomId);
-    if (reconnectState && reconnectState.attempts > 0) {
-      console.log(`🔄 Requesting state sync after reconnection for room ${roomId}`);
-      this.send(roomId, 'sync_request', { 
-        reason: 'reconnection',
-        room_id: roomId 
+    if (reconnectState) {
+      console.log(`🔧 RECONNECT_DEBUG: Room ${roomId} reconnect state:`, {
+        isReconnecting: reconnectState.isReconnecting,
+        attempts: reconnectState.attempts
       });
     }
   }
@@ -363,6 +363,17 @@ export class NetworkService extends EventTarget {
         this.queueMessage(roomId, message);
         return;
       }
+      
+      // Debug logging for phase_change events
+      if (message.event === 'phase_change') {
+        console.log(`🔧 PHASE_CHANGE_DEBUG: Received phase_change in NetworkService:`, {
+          roomId,
+          phase: message.data?.phase,
+          reconnect_sync: message.data?.reconnect_sync,
+          sync_response: message.data?.sync_response,
+          isReconnecting: reconnectState?.isReconnecting
+        });
+      }
 
       // Handle heartbeat response
       if (message.event === 'pong' && message.data?.timestamp) {
@@ -380,9 +391,9 @@ export class NetworkService extends EventTarget {
         detail: { roomId, message, timestamp: Date.now() }
       }));
       
-      // If this is a sync response, mark reconnection as complete and process queued messages
-      if (message.event === 'phase_change' && message.data?.sync_response) {
-        console.log(`🔄 Received sync response, processing queued messages for room ${roomId}`);
+      // If this is a sync response OR reconnect sync, mark reconnection as complete and process queued messages
+      if (message.event === 'phase_change' && (message.data?.sync_response || message.data?.reconnect_sync)) {
+        console.log(`🔄 Received sync/reconnect response, processing queued messages for room ${roomId}`);
         if (reconnectState) {
           reconnectState.isReconnecting = false;
         }
