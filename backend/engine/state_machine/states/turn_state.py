@@ -320,11 +320,11 @@ class TurnState(GameState):
         
         print(f"🎯 UPDATE_DEBUG: Phase data updated - next_player should be: {next_player}")
         
-        # 🚀 ENTERPRISE: Use centralized custom event broadcasting
-        await self._broadcast_play_event_enterprise(action.player_name, pieces, piece_count)
+        # 🚀 ENTERPRISE: Enterprise architecture handles all broadcasting automatically via update_phase_data()
+        # Manual play event broadcasting removed to prevent bot race condition
         
-        # Notify bot manager about the play to trigger next bot
-        await self._notify_bot_manager_play(action.player_name)
+        # 🚀 ENTERPRISE: Bot triggering handled automatically by enterprise architecture via phase_change events
+        # Manual bot manager notification removed to prevent race condition (bots were triggered twice)
         
         return {
             'status': 'play_accepted',
