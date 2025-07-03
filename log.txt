@@ -1,173 +1,618 @@
-🎯 NEW_TURN_DEBUG: Round 1, Turn 1 starting with starter Bot 2
-🤖 NEW_TURN_DEBUG: Notifying bot manager about new turn starter Bot 2 for room F8EE60
-🤖 Bot Bot 2 will play first
-🤖 Bot Bot 2 thinking for 1.1s...
-🤖 Bot Bot 2 choosing first play...
-🤖 BOT chooses to play SINGLE (14 pts): GENERAL
-🤖 Bot Bot 2 will play 1 pieces: ['GENERAL_RED(14)']
+🎯 NEW_TURN_DEBUG: Round 1, Turn 5 starting with starter Bot 3
+🤖 NEW_TURN_DEBUG: Notifying bot manager about new turn starter Bot 3 for room 1F6768
+🔍 DUPLICATE_DEBUG: Received turn_started event for Bot 3 from unknown
+🤖 Bot Bot 3 will play first
+🤖 Bot Bot 3 thinking for 1.7s...
+🤖 Bot Bot 3 choosing first play...
+🤖 BOT chooses to play THREE_OF_A_KIND (6 pts): SOLDIER, SOLDIER, SOLDIER
+🤖 Bot Bot 3 will play 3 pieces: ['SOLDIER_RED(2)', 'SOLDIER_RED(2)', 'SOLDIER_RED(2)']
 🎯 BOT_MANAGER_DEBUG: state_machine exists: True
 🎯 BOT_PLAY_DEBUG: State machine result: {'success': True, 'queued': True}
 🎯 BOT_PLAY_DEBUG: Action queued successfully, state machine will handle updates and broadcasting
-✅ Bot Bot 2 first play action queued - state machine will broadcast with correct next_player
-🔢 TURN_NUMBER_DEBUG: Backend game.turn_number = 1
-DEBUG_WS: Message for event 'phase_change' added to queue for room F8EE60.
-🔄 PHASE_TRACKING_FIX: New phase detected declaration -> turn
-🚀 ENTERPRISE_BOT_DEBUG: Turn phase - checking if Bot 2 is a bot
-🤖 ENTERPRISE_BOT_DEBUG: Current player Bot 2 is a bot - checking for duplicates
-✅ REFINED_FIX: Allowing new trigger for current player Bot 2 from phase_change
-✅ RACE_CONDITION_FIX: New action recorded for Bot 2 - play_pieces from phase_change (hash: 36a22356f55e)
-✅ RACE_CONDITION_FIX: Triggering bot play for Bot 2 - no duplicates detected
-🎯 PLAY_PHASE_DEBUG: Got from state machine - required_count: None, turn_order: ['Bot 2', 'Bot 3', 'Bot 4', 'Andy']
-🎯 PLAY_PHASE_DEBUG: No required piece count set yet, skipping bot plays
-DEBUG_WS: Message for event 'phase_change' added to queue for room F8EE60.
-🤖 Bot Bot 2 will play first
-🤖 Bot Bot 2 thinking for 1.1s...
-🤖 Bot Bot 2 choosing first play...
-🤖 BOT chooses to play SINGLE (14 pts): GENERAL
-🤖 Bot Bot 2 will play 1 pieces: ['GENERAL_RED(14)']
-🎯 BOT_MANAGER_DEBUG: state_machine exists: True
-🎯 BOT_PLAY_DEBUG: State machine result: {'success': True, 'queued': True}
-🎯 BOT_PLAY_DEBUG: Action queued successfully, state machine will handle updates and broadcasting
-✅ Bot Bot 2 first play action queued - state machine will broadcast with correct next_player
-🎯 TURN_STATE_DEBUG: Processing action play_pieces from Bot 2
-🎯 TURN_STATE_DEBUG: _handle_play_pieces called for Bot 2
-🎯 TURN_STATE_DEBUG: Current state - player_index: 0, turn_order: ['Bot 2', 'Bot 3', 'Bot 4', 'Andy']
-🎯 TURN_STATE_DEBUG: Player Bot 2 playing 1 pieces: ['GENERAL_RED(14)']
-🎯 TURN_STATE_DEBUG: Setting required piece count to 1
-🎯 TURN_STATE_DEBUG: Before setting - required_piece_count was: None
-🎯 TURN_STATE_DEBUG: After setting - required_piece_count is: 1
-🎯 TURN_STATE_DEBUG: Before advancing - current_player_index: 0
-🎯 TURN_STATE_DEBUG: After advancing - current_player_index: 1
-🎯 TURN_STATE_DEBUG: Next player: Bot 3
-🎯 TURN_STATE_DEBUG: Round 1, Turn 1 - Bot 2 played, next: Bot 3
-🎯 UPDATE_DEBUG: About to update phase data with current_player: Bot 3, required_piece_count: 1
-DEBUG_WS: Message for event 'phase_change' added to queue for room F8EE60.
+✅ Bot Bot 3 first play action queued - state machine will broadcast with correct next_player
+🔢 TURN_NUMBER_DEBUG: Backend game.turn_number = 5
+DEBUG_WS: Message for event 'phase_change' added to queue for room 1F6768.
 🔍 PHASE_TRACKING_FIX: Same phase update: turn
 🚀 ENTERPRISE_BOT_DEBUG: Turn phase - checking if Bot 3 is a bot
 🤖 ENTERPRISE_BOT_DEBUG: Current player Bot 3 is a bot - checking for duplicates
 ✅ REFINED_FIX: Allowing new trigger for current player Bot 3 from phase_change
-✅ RACE_CONDITION_FIX: New action recorded for Bot 3 - play_pieces from phase_change (hash: ac20a113e367)
-✅ RACE_CONDITION_FIX: Triggering bot play for Bot 3 - no duplicates detected
-🎯 PLAY_PHASE_DEBUG: Got from state machine - required_count: 1, turn_order: ['Bot 2', 'Bot 3', 'Bot 4', 'Andy']
-🎯 PLAY_PHASE_DEBUG: Last player: Bot 2, last_index: 0
-🎯 PLAY_PHASE_DEBUG: Checking next player 1: Bot 3
-✅ REFINED_FIX: Allowing new trigger for current player Bot 3 from player_played
-✅ RACE_CONDITION_FIX: New action recorded for Bot 3 - play_pieces from player_played (hash: 7f32b05165ac)
-🤖 PLAY_PHASE_DEBUG: Triggering bot play for Bot 3
-🤖 PLAY_PHASE_DEBUG: Bot Bot 3 thinking for 0.7s...
-🎯 BOT_PLAY_DEBUG: Got required_piece_count from state machine: 1
-🤖 BOT chooses to play SINGLE (13 pts): GENERAL
-🎯 BOT_PLAY_DEBUG: Final selection - 1 pieces: ['GENERAL_BLACK(13)']
-🎯 BOT_PLAY_DEBUG: Action queued successfully, state machine will handle updates and broadcasting
-✅ Bot Bot 3 action queued - state machine will broadcast with correct next_player
+✅ RACE_CONDITION_FIX: New action recorded for Bot 3 - play_pieces from phase_change (hash: 1f87a3d80306)
+🚫 RACE_CONDITION_FIX: Skipping enterprise trigger for Bot 3 - turn starter already triggered by turn_started event
+🎯 START_NEXT_DEBUG: _start_new_turn() completed
+🎯 TURN_COMPLETE_DEBUG: _process_turn_completion() finished
+🎯 UPDATE_DEBUG: About to update phase data with current_player: Bot 3, required_piece_count: None
+DEBUG_WS: Message for event 'phase_change' added to queue for room 1F6768.
+🔍 PHASE_TRACKING_FIX: Same phase update: turn
+🚀 ENTERPRISE_BOT_DEBUG: Turn phase - checking if Bot 3 is a bot
+🤖 ENTERPRISE_BOT_DEBUG: Current player Bot 3 is a bot - checking for duplicates
+🚫 REFINED_FIX: Blocking rapid same-source trigger for current player Bot 3 from phase_change (age: 0.0s)
+🚫 RACE_CONDITION_FIX: Skipping duplicate play action for Bot 3
 🎯 UPDATE_DEBUG: Phase data updated - next_player should be: Bot 3
-DEBUG_WS: Message for event 'play' added to queue for room F8EE60.
-🎯 TURN_STATE_DEBUG: Enterprise broadcast play event - next_player: Bot 3
-🤖 TURN_STATE_DEBUG: Notifying bot manager about Bot 2's play for room F8EE60
-🎯 PLAY_PHASE_DEBUG: Got from state machine - required_count: 1, turn_order: ['Bot 2', 'Bot 3', 'Bot 4', 'Andy']
-🎯 PLAY_PHASE_DEBUG: Last player: Bot 2, last_index: 0
-🎯 PLAY_PHASE_DEBUG: Checking next player 1: Bot 3
-✅ REFINED_FIX: Allowing delayed same-source trigger for current player Bot 3 from player_played (age: 0.7s)
-✅ RACE_CONDITION_FIX: New action recorded for Bot 3 - play_pieces from player_played (hash: 7f32b05165ac)
-🤖 PLAY_PHASE_DEBUG: Triggering bot play for Bot 3
-🤖 PLAY_PHASE_DEBUG: Bot Bot 3 thinking for 0.9s...
-🎯 BOT_PLAY_DEBUG: Got required_piece_count from state machine: 1
-🤖 BOT chooses to play SINGLE (13 pts): GENERAL
-🎯 BOT_PLAY_DEBUG: Final selection - 1 pieces: ['GENERAL_BLACK(13)']
-🎯 BOT_PLAY_DEBUG: Action queued successfully, state machine will handle updates and broadcasting
-✅ Bot Bot 3 action queued - state machine will broadcast with correct next_player
-🎯 TURN_STATE_DEBUG: Play pieces result: {'status': 'play_accepted', 'player': 'Bot 2', 'pieces': [GENERAL_RED(14)], 'piece_count': 1, 'required_count': 1, 'next_player': 'Bot 3', 'turn_complete': False}
-✅ BOT_VALIDATION_FIX: Bot Bot 2 play accepted - state machine handling all updates
-Not Bot 2's turn - expected Bot 3
-Invalid action: GameAction(player_name='Bot 2', action_type=<ActionType.PLAY_PIECES: 'play_pieces'>, payload={'pieces': [GENERAL_RED(14)]}, timestamp=datetime.datetime(2025, 7, 3, 13, 37, 7, 412085), sequence_id=5, is_bot=True)
-🚫 BOT_HANDLER_DEBUG: Handling action rejection
-🚫 BOT_VALIDATION_FIX: Action play_pieces from Bot 2 was REJECTED: Invalid action for current game state
-🚫 BOT_VALIDATION_FIX: Bot Bot 2 action rejected - preventing downstream processing
-🔧 RACE_CONDITION_FIX: Cleared action cache for Bot 2 after rejection
-🔧 RACE_CONDITION_FIX: Cleared phase tracking for Bot 2 after rejection
-🚫 BOT_VALIDATION_FIX: Bot Bot 2 hand size after rejection: 8
+🎯 TURN_STATE_DEBUG: Play pieces result: {'status': 'play_accepted', 'player': 'Bot 3', 'pieces': [HORSE_RED(6), HORSE_RED(6)], 'piece_count': 2, 'required_count': None, 'next_player': 'Bot 3', 'turn_complete': False}
+✅ BOT_VALIDATION_FIX: Bot Bot 3 play accepted - state machine handling all updates
 🎯 TURN_STATE_DEBUG: Processing action play_pieces from Bot 3
 🎯 TURN_STATE_DEBUG: _handle_play_pieces called for Bot 3
-🎯 TURN_STATE_DEBUG: Current state - player_index: 1, turn_order: ['Bot 2', 'Bot 3', 'Bot 4', 'Andy']
-🎯 TURN_STATE_DEBUG: Player Bot 3 playing 1 pieces: ['GENERAL_BLACK(13)']
-🎯 TURN_STATE_DEBUG: Before advancing - current_player_index: 1
-🎯 TURN_STATE_DEBUG: After advancing - current_player_index: 2
+🎯 TURN_STATE_DEBUG: Current state - player_index: 0, turn_order: ['Bot 3', 'Bot 4', 'Andy', 'Bot 2']
+🎯 TURN_STATE_DEBUG: Player Bot 3 playing 3 pieces: ['SOLDIER_RED(2)', 'SOLDIER_RED(2)', 'SOLDIER_RED(2)']
+🎯 TURN_STATE_DEBUG: Setting required piece count to 3
+🎯 TURN_STATE_DEBUG: Before setting - required_piece_count was: None
+🎯 TURN_STATE_DEBUG: After setting - required_piece_count is: 3
+🎯 TURN_STATE_DEBUG: Before advancing - current_player_index: 0
+🎯 TURN_STATE_DEBUG: After advancing - current_player_index: 1
 🎯 TURN_STATE_DEBUG: Next player: Bot 4
-🎯 TURN_STATE_DEBUG: Round 1, Turn 1 - Bot 3 played, next: Bot 4
-🎯 UPDATE_DEBUG: About to update phase data with current_player: Bot 4, required_piece_count: 1
-DEBUG_WS: Message for event 'phase_change' added to queue for room F8EE60.
+🎯 TURN_STATE_DEBUG: Round 1, Turn 5 - Bot 3 played, next: Bot 4
+🎯 UPDATE_DEBUG: About to update phase data with current_player: Bot 4, required_piece_count: 3
+DEBUG_WS: Message for event 'phase_change' added to queue for room 1F6768.
 🔍 PHASE_TRACKING_FIX: Same phase update: turn
 🚀 ENTERPRISE_BOT_DEBUG: Turn phase - checking if Bot 4 is a bot
 🤖 ENTERPRISE_BOT_DEBUG: Current player Bot 4 is a bot - checking for duplicates
 ✅ REFINED_FIX: Allowing new trigger for current player Bot 4 from phase_change
-✅ RACE_CONDITION_FIX: New action recorded for Bot 4 - play_pieces from phase_change (hash: d2d760f0daf4)
+✅ RACE_CONDITION_FIX: New action recorded for Bot 4 - play_pieces from phase_change (hash: 8e15932d4739)
 ✅ RACE_CONDITION_FIX: Triggering bot play for Bot 4 - no duplicates detected
-🎯 PLAY_PHASE_DEBUG: Got from state machine - required_count: 1, turn_order: ['Bot 2', 'Bot 3', 'Bot 4', 'Andy']
-🎯 PLAY_PHASE_DEBUG: Last player: Bot 3, last_index: 1
-🎯 PLAY_PHASE_DEBUG: Checking next player 2: Bot 4
-✅ REFINED_FIX: Allowing new trigger for current player Bot 4 from player_played
-✅ RACE_CONDITION_FIX: New action recorded for Bot 4 - play_pieces from player_played (hash: d39afe4115b6)
-🤖 PLAY_PHASE_DEBUG: Triggering bot play for Bot 4
-🤖 PLAY_PHASE_DEBUG: Bot Bot 4 thinking for 0.7s...
-🎯 BOT_PLAY_DEBUG: Got required_piece_count from state machine: 1
-🤖 BOT chooses to play SINGLE (12 pts): ADVISOR
-🎯 BOT_PLAY_DEBUG: Final selection - 1 pieces: ['ADVISOR_RED(12)']
+🎯 BOT_PLAY_DEBUG: Got required_piece_count from state machine: 3
+🤖 BOT has no valid play. Discards lowest pieces: SOLDIER, CANNON, ELEPHANT
+    🔍 Final play: ['SOLDIER', 'CANNON', 'ELEPHANT']
+    🧠 Hand left: ['CANNON', 'SOLDIER', 'ELEPHANT']
+🎯 BOT_PLAY_DEBUG: Final selection - 3 pieces: ['SOLDIER_BLACK(1)', 'CANNON_RED(4)', 'ELEPHANT_BLACK(9)']
 🎯 BOT_PLAY_DEBUG: Action queued successfully, state machine will handle updates and broadcasting
 ✅ Bot Bot 4 action queued - state machine will broadcast with correct next_player
 🎯 UPDATE_DEBUG: Phase data updated - next_player should be: Bot 4
-DEBUG_WS: Message for event 'play' added to queue for room F8EE60.
-🎯 TURN_STATE_DEBUG: Enterprise broadcast play event - next_player: Bot 4
-🤖 TURN_STATE_DEBUG: Notifying bot manager about Bot 3's play for room F8EE60
-🎯 PLAY_PHASE_DEBUG: Got from state machine - required_count: 1, turn_order: ['Bot 2', 'Bot 3', 'Bot 4', 'Andy']
-🎯 PLAY_PHASE_DEBUG: Last player: Bot 3, last_index: 1
-🎯 PLAY_PHASE_DEBUG: Checking next player 2: Bot 4
-✅ REFINED_FIX: Allowing delayed same-source trigger for current player Bot 4 from player_played (age: 0.7s)
-✅ RACE_CONDITION_FIX: New action recorded for Bot 4 - play_pieces from player_played (hash: d39afe4115b6)
-🤖 PLAY_PHASE_DEBUG: Triggering bot play for Bot 4
-🤖 PLAY_PHASE_DEBUG: Bot Bot 4 thinking for 0.9s...
-🎯 BOT_PLAY_DEBUG: Got required_piece_count from state machine: 1
-🤖 BOT chooses to play SINGLE (12 pts): ADVISOR
-🎯 BOT_PLAY_DEBUG: Final selection - 1 pieces: ['ADVISOR_RED(12)']
-🎯 BOT_PLAY_DEBUG: Action queued successfully, state machine will handle updates and broadcasting
-✅ Bot Bot 4 action queued - state machine will broadcast with correct next_player
-🎯 TURN_STATE_DEBUG: Play pieces result: {'status': 'play_accepted', 'player': 'Bot 3', 'pieces': [GENERAL_BLACK(13)], 'piece_count': 1, 'required_count': 1, 'next_player': 'Bot 4', 'turn_complete': False}
+🎯 TURN_STATE_DEBUG: Play pieces result: {'status': 'play_accepted', 'player': 'Bot 3', 'pieces': [SOLDIER_RED(2), SOLDIER_RED(2), SOLDIER_RED(2)], 'piece_count': 3, 'required_count': 3, 'next_player': 'Bot 4', 'turn_complete': False}
 ✅ BOT_VALIDATION_FIX: Bot Bot 3 play accepted - state machine handling all updates
-Not Bot 3's turn - expected Bot 4
-Invalid action: GameAction(player_name='Bot 3', action_type=<ActionType.PLAY_PIECES: 'play_pieces'>, payload={'pieces': [GENERAL_BLACK(13)]}, timestamp=datetime.datetime(2025, 7, 3, 13, 37, 9, 114714), sequence_id=7, is_bot=True)
-🚫 BOT_HANDLER_DEBUG: Handling action rejection
-🚫 BOT_VALIDATION_FIX: Action play_pieces from Bot 3 was REJECTED: Invalid action for current game state
-🚫 BOT_VALIDATION_FIX: Bot Bot 3 action rejected - preventing downstream processing
-🔧 RACE_CONDITION_FIX: Cleared action cache for Bot 3 after rejection
-🔧 RACE_CONDITION_FIX: Cleared phase tracking for Bot 3 after rejection
-🚫 BOT_VALIDATION_FIX: Bot Bot 3 hand size after rejection: 8
 🎯 TURN_STATE_DEBUG: Processing action play_pieces from Bot 4
 🎯 TURN_STATE_DEBUG: _handle_play_pieces called for Bot 4
-🎯 TURN_STATE_DEBUG: Current state - player_index: 2, turn_order: ['Bot 2', 'Bot 3', 'Bot 4', 'Andy']
-🎯 TURN_STATE_DEBUG: Player Bot 4 playing 1 pieces: ['ADVISOR_RED(12)']
-🎯 TURN_STATE_DEBUG: Before advancing - current_player_index: 2
-🎯 TURN_STATE_DEBUG: After advancing - current_player_index: 3
+🎯 TURN_STATE_DEBUG: Current state - player_index: 1, turn_order: ['Bot 3', 'Bot 4', 'Andy', 'Bot 2']
+🎯 TURN_STATE_DEBUG: Player Bot 4 playing 3 pieces: ['SOLDIER_BLACK(1)', 'CANNON_RED(4)', 'ELEPHANT_BLACK(9)']
+🎯 TURN_STATE_DEBUG: Before advancing - current_player_index: 1
+🎯 TURN_STATE_DEBUG: After advancing - current_player_index: 2
 🎯 TURN_STATE_DEBUG: Next player: Andy
-🎯 TURN_STATE_DEBUG: Round 1, Turn 1 - Bot 4 played, next: Andy
-🎯 UPDATE_DEBUG: About to update phase data with current_player: Andy, required_piece_count: 1
-DEBUG_WS: Message for event 'phase_change' added to queue for room F8EE60.
+🎯 TURN_STATE_DEBUG: Round 1, Turn 5 - Bot 4 played, next: Andy
+🎯 UPDATE_DEBUG: About to update phase data with current_player: Andy, required_piece_count: 3
+DEBUG_WS: Message for event 'phase_change' added to queue for room 1F6768.
 🔍 PHASE_TRACKING_FIX: Same phase update: turn
 🚀 ENTERPRISE_BOT_DEBUG: Turn phase - checking if Andy is a bot
 👤 ENTERPRISE_BOT_DEBUG: Current player Andy is human - waiting
 🎯 UPDATE_DEBUG: Phase data updated - next_player should be: Andy
-DEBUG_WS: Message for event 'play' added to queue for room F8EE60.
-🎯 TURN_STATE_DEBUG: Enterprise broadcast play event - next_player: Andy
-🤖 TURN_STATE_DEBUG: Notifying bot manager about Bot 4's play for room F8EE60
-🎯 PLAY_PHASE_DEBUG: Got from state machine - required_count: 1, turn_order: ['Bot 2', 'Bot 3', 'Bot 4', 'Andy']
-🎯 PLAY_PHASE_DEBUG: Last player: Bot 4, last_index: 2
-🎯 PLAY_PHASE_DEBUG: Checking next player 3: Andy
-🎯 PLAY_PHASE_DEBUG: Next player Andy is human, waiting for their play
-🎯 TURN_STATE_DEBUG: Play pieces result: {'status': 'play_accepted', 'player': 'Bot 4', 'pieces': [ADVISOR_RED(12)], 'piece_count': 1, 'required_count': 1, 'next_player': 'Andy', 'turn_complete': False}
+🎯 TURN_STATE_DEBUG: Play pieces result: {'status': 'play_accepted', 'player': 'Bot 4', 'pieces': [SOLDIER_BLACK(1), CANNON_RED(4), ELEPHANT_BLACK(9)], 'piece_count': 3, 'required_count': 3, 'next_player': 'Andy', 'turn_complete': False}
 ✅ BOT_VALIDATION_FIX: Bot Bot 4 play accepted - state machine handling all updates
-Not Bot 4's turn - expected Andy
-Invalid action: GameAction(player_name='Bot 4', action_type=<ActionType.PLAY_PIECES: 'play_pieces'>, payload={'pieces': [ADVISOR_RED(12)]}, timestamp=datetime.datetime(2025, 7, 3, 13, 37, 10, 782630), sequence_id=9, is_bot=True)
-🚫 BOT_HANDLER_DEBUG: Handling action rejection
-🚫 BOT_VALIDATION_FIX: Action play_pieces from Bot 4 was REJECTED: Invalid action for current game state
-🚫 BOT_VALIDATION_FIX: Bot Bot 4 action rejected - preventing downstream processing
-🔧 RACE_CONDITION_FIX: Cleared action cache for Bot 4 after rejection
-🔧 RACE_CONDITION_FIX: Cleared phase tracking for Bot 4 after rejection
-🚫 BOT_VALIDATION_FIX: Bot Bot 4 hand size after rejection: 8
+DEBUG_WS_RECEIVE: Received event 'play' from client in room 1F6768 with data: {'piece_indices': [0, 1, 2], 'player_name': 'Andy', 'play_value': 16}
+🎯 WS_PLAY_DEBUG: Received play event - player: Andy, indices: [0, 1, 2]
+🎯 WS_PLAY_DEBUG: Found player Andy with hand size 3
+🎯 WS_PLAY_DEBUG: Added piece at index 0: ADVISOR_RED(12)
+🎯 WS_PLAY_DEBUG: Added piece at index 1: SOLDIER_RED(2)
+🎯 WS_PLAY_DEBUG: Added piece at index 2: SOLDIER_RED(2)
+🎯 WS_PLAY_DEBUG: Final pieces to play: ['ADVISOR_RED(12)', 'SOLDIER_RED(2)', 'SOLDIER_RED(2)']
+🎯 WS_PLAY_DEBUG: Queuing action for state machine...
+🎯 WS_PLAY_DEBUG: State machine result: {'success': True, 'queued': True}
+✅ Play queued: Andy -> [0, 1, 2]
+🎯 TURN_STATE_DEBUG: Processing action play_pieces from Andy
+🎯 TURN_STATE_DEBUG: _handle_play_pieces called for Andy
+🎯 TURN_STATE_DEBUG: Current state - player_index: 2, turn_order: ['Bot 3', 'Bot 4', 'Andy', 'Bot 2']
+🎯 TURN_STATE_DEBUG: Player Andy playing 3 pieces: ['ADVISOR_RED(12)', 'SOLDIER_RED(2)', 'SOLDIER_RED(2)']
+🎯 TURN_STATE_DEBUG: Before advancing - current_player_index: 2
+🎯 TURN_STATE_DEBUG: After advancing - current_player_index: 3
+🎯 TURN_STATE_DEBUG: Next player: Bot 2
+🎯 TURN_STATE_DEBUG: Round 1, Turn 5 - Andy played, next: Bot 2
+🎯 UPDATE_DEBUG: About to update phase data with current_player: Bot 2, required_piece_count: 3
+DEBUG_WS: Message for event 'phase_change' added to queue for room 1F6768.
+🔍 PHASE_TRACKING_FIX: Same phase update: turn
+🚀 ENTERPRISE_BOT_DEBUG: Turn phase - checking if Bot 2 is a bot
+🤖 ENTERPRISE_BOT_DEBUG: Current player Bot 2 is a bot - checking for duplicates
+✅ REFINED_FIX: Allowing new trigger for current player Bot 2 from phase_change
+✅ RACE_CONDITION_FIX: New action recorded for Bot 2 - play_pieces from phase_change (hash: 88c56dbc46df)
+✅ RACE_CONDITION_FIX: Triggering bot play for Bot 2 - no duplicates detected
+🎯 BOT_PLAY_DEBUG: Got required_piece_count from state machine: 3
+🤖 BOT has no valid play. Discards lowest pieces: SOLDIER, CANNON, CANNON
+    🔍 Final play: ['SOLDIER', 'CANNON', 'CANNON']
+    🧠 Hand left: ['CANNON', 'CANNON', 'SOLDIER']
+🎯 BOT_PLAY_DEBUG: Final selection - 3 pieces: ['SOLDIER_BLACK(1)', 'CANNON_BLACK(3)', 'CANNON_RED(4)']
+🎯 BOT_PLAY_DEBUG: Action queued successfully, state machine will handle updates and broadcasting
+✅ Bot Bot 2 action queued - state machine will broadcast with correct next_player
+🎯 UPDATE_DEBUG: Phase data updated - next_player should be: Bot 2
+🎯 TURN_STATE_DEBUG: Play pieces result: {'status': 'play_accepted', 'player': 'Andy', 'pieces': [ADVISOR_RED(12), SOLDIER_RED(2), SOLDIER_RED(2)], 'piece_count': 3, 'required_count': 3, 'next_player': 'Bot 2', 'turn_complete': False}
+🎯 TURN_STATE_DEBUG: Processing action play_pieces from Bot 2
+🎯 TURN_STATE_DEBUG: _handle_play_pieces called for Bot 2
+🎯 TURN_STATE_DEBUG: Current state - player_index: 3, turn_order: ['Bot 3', 'Bot 4', 'Andy', 'Bot 2']
+🎯 TURN_STATE_DEBUG: Player Bot 2 playing 3 pieces: ['SOLDIER_BLACK(1)', 'CANNON_BLACK(3)', 'CANNON_RED(4)']
+🎯 TURN_STATE_DEBUG: Before advancing - current_player_index: 3
+🎯 TURN_STATE_DEBUG: After advancing - current_player_index: 4
+🎯 TURN_STATE_DEBUG: Next player: None
+🎯 TURN_STATE_DEBUG: Round 1, Turn 5 - Bot 2 played, next: None
+🎯 TURN_STATE_DEBUG: Turn complete! Calling _complete_turn()
+🎯 TURN_COMPLETE_DEBUG: Round 1, Turn 5 _complete_turn() called
+🎯 TURN_COMPLETE_DEBUG: Round 1, Turn 5 Winner determined: Bot 3
+🎯 CAPTURED_PILES_DEBUG: Bot 3 captured_piles += 3 = 5
+🎯 TURN_COMPLETE_DEBUG: Awarded 3 piles to Bot 3
+🎯 TURN_COMPLETE_DEBUG: Next turn starter set to: Bot 3
+DEBUG_WS: Message for event 'phase_change' added to queue for room 1F6768.
+🔍 PHASE_TRACKING_FIX: Same phase update: turn
+🚀 ENTERPRISE_BOT_DEBUG: Turn phase - checking if Bot 2 is a bot
+🤖 ENTERPRISE_BOT_DEBUG: Current player Bot 2 is a bot - checking for duplicates
+🚫 REFINED_FIX: Blocking rapid same-source trigger for current player Bot 2 from phase_change (age: 0.1s)
+🚫 RACE_CONDITION_FIX: Skipping duplicate play action for Bot 2
+🎯 TURN_COMPLETE_DEBUG: Phase data updated with turn completion
+🏁 TURN_COMPLETION_DEBUG: Starting turn completion processing
+🏁 TURN_COMPLETION_DEBUG: Removing 3 pieces from Andy
+🏁 TURN_COMPLETION_DEBUG: Removing 3 pieces from Bot 2
+🏁 TURN_COMPLETION_DEBUG: Removing 3 pieces from Bot 3
+🏁 TURN_COMPLETION_DEBUG: Removing 3 pieces from Bot 4
+🏁 TURN_COMPLETION_DEBUG: After removing pieces, checking if all hands are empty
+🏁 TURN_COMPLETION_DEBUG: all_hands_empty = True
+🔧 CONSISTENCY_CHECK: Hand sizes: {'Andy': 0, 'Bot 2': 0, 'Bot 3': 0, 'Bot 4': 0}
+🔧 CONSISTENCY_CHECK: Min: 0, Max: 0
+✅ CONSISTENCY_CHECK: Hand size distribution is acceptable
+🏁 TURN_COMPLETION_DEBUG: Andy hand size: 0
+🏁 TURN_COMPLETION_DEBUG: Bot 2 hand size: 0
+🏁 TURN_COMPLETION_DEBUG: Bot 3 hand size: 0
+🏁 TURN_COMPLETION_DEBUG: Bot 4 hand size: 0
+DEBUG_WS: Message for event 'turn_complete' added to queue for room 1F6768.
+🏁 TURN_COMPLETION_DEBUG: Round complete - will transition to scoring
+🎯 TURN_COMPLETE_DEBUG: _process_turn_completion() finished
+🎯 UPDATE_DEBUG: About to update phase data with current_player: None, required_piece_count: 3
+DEBUG_WS: Message for event 'phase_change' added to queue for room 1F6768.
+🎯 UPDATE_DEBUG: Phase data updated - next_player should be: None
+🎯 TURN_STATE_DEBUG: Play pieces result: {'status': 'play_accepted', 'player': 'Bot 2', 'pieces': [SOLDIER_BLACK(1), CANNON_BLACK(3), CANNON_RED(4)], 'piece_count': 3, 'required_count': 3, 'next_player': None, 'turn_complete': True}
+✅ BOT_VALIDATION_FIX: Bot Bot 2 play accepted - state machine handling all updates
+🏁 TURN_COMPLETION_DEBUG: Starting turn completion processing
+🏁 TURN_COMPLETION_DEBUG: Removing 3 pieces from Andy
+🏁 TURN_COMPLETION_DEBUG: Removing 3 pieces from Bot 2
+🏁 TURN_COMPLETION_DEBUG: Removing 3 pieces from Bot 3
+🏁 TURN_COMPLETION_DEBUG: Removing 3 pieces from Bot 4
+🏁 TURN_COMPLETION_DEBUG: After removing pieces, checking if all hands are empty
+🏁 TURN_COMPLETION_DEBUG: all_hands_empty = True
+🔧 CONSISTENCY_CHECK: Hand sizes: {'Andy': 0, 'Bot 2': 0, 'Bot 3': 0, 'Bot 4': 0}
+🔧 CONSISTENCY_CHECK: Min: 0, Max: 0
+✅ CONSISTENCY_CHECK: Hand size distribution is acceptable
+🏁 TURN_COMPLETION_DEBUG: Andy hand size: 0
+🏁 TURN_COMPLETION_DEBUG: Bot 2 hand size: 0
+🏁 TURN_COMPLETION_DEBUG: Bot 3 hand size: 0
+🏁 TURN_COMPLETION_DEBUG: Bot 4 hand size: 0
+DEBUG_WS: Message for event 'turn_complete' added to queue for room 1F6768.
+🏁 TURN_COMPLETION_DEBUG: Round complete - will transition to scoring
+🔄 SCORING_SETUP_DEBUG: Reset display_delay_complete = False
+🗳️ DECLARATION_DEBUG: game.player_declarations = {'Bot 2': 3, 'Bot 3': 2, 'Bot 4': 1, 'Andy': 1}
+📋 SCORING_FIX_DEBUG: Andy - declared: 1, actual: 0
+🏆 SCORING_DEBUG: Andy scoring data:
+   📋 Declared: 1, Actual: 0
+   📊 Base Score: -1, Multiplier: 1x, Final: -1
+   💯 Total Score: -1
+📋 SCORING_FIX_DEBUG: Bot 2 - declared: 3, actual: 2
+🏆 SCORING_DEBUG: Bot 2 scoring data:
+   📋 Declared: 3, Actual: 2
+   📊 Base Score: -1, Multiplier: 1x, Final: -1
+   💯 Total Score: -1
+📋 SCORING_FIX_DEBUG: Bot 3 - declared: 2, actual: 5
+🏆 SCORING_DEBUG: Bot 3 scoring data:
+   📋 Declared: 2, Actual: 5
+   📊 Base Score: -3, Multiplier: 1x, Final: -3
+   💯 Total Score: -3
+📋 SCORING_FIX_DEBUG: Bot 4 - declared: 1, actual: 1
+🏆 SCORING_DEBUG: Bot 4 scoring data:
+   📋 Declared: 1, Actual: 1
+   📊 Base Score: 6, Multiplier: 1x, Final: 6
+   💯 Total Score: 6
+🚀 SCORING_BROADCAST_DEBUG: Broadcasting scoring data:
+   📊 Round scores: {'Andy': {'declared': 1, 'actual': 0, 'base_score': -1, 'multiplier': 1, 'final_score': -1, 'total_score': -1}, 'Bot 2': {'declared': 3, 'actual': 2, 'base_score': -1, 'multiplier': 1, 'final_score': -1, 'total_score': -1}, 'Bot 3': {'declared': 2, 'actual': 5, 'base_score': -3, 'multiplier': 1, 'final_score': -3, 'total_score': -3}, 'Bot 4': {'declared': 1, 'actual': 1, 'base_score': 6, 'multiplier': 1, 'final_score': 6, 'total_score': 6}}
+   🏁 Game complete: False
+   🏆 Winners: []
+🚀 SCORING_BROADCAST_DEBUG: Also sending:
+   💯 Total scores: {'Andy': -1, 'Bot 2': -1, 'Bot 3': -3, 'Bot 4': 6}
+   👥 Players data: [{'name': 'Andy', 'is_bot': False, 'pile_count': 1, 'captured_piles': 0}, {'name': 'Bot 2', 'is_bot': True, 'pile_count': 3, 'captured_piles': 2}, {'name': 'Bot 3', 'is_bot': True, 'pile_count': 2, 'captured_piles': 5}, {'name': 'Bot 4', 'is_bot': True, 'pile_count': 1, 'captured_piles': 1}]
+DEBUG_WS: Message for event 'phase_change' added to queue for room 1F6768.
+DEBUG_WS: Message for event 'phase_change' added to queue for room 1F6768.
+⏰ SCORING_DELAY_DEBUG: Starting 7-second display delay...
+🔍 SCORING_TRANSITION_DEBUG: Checking transition conditions:
+  📊 scores_calculated: True
+  ⏰ display_delay_complete: False
+  🏁 game_complete: False
+🔍 SCORING_TRANSITION_DEBUG: Not ready - display delay not complete
+🔍 SCORING_TRANSITION_DEBUG: Checking transition conditions:
+  📊 scores_calculated: True
+  ⏰ display_delay_complete: False
+  🏁 game_complete: False
+🔍 SCORING_TRANSITION_DEBUG: Not ready - display delay not complete
+🔍 SCORING_TRANSITION_DEBUG: Checking transition conditions:
+  📊 scores_calculated: True
+  ⏰ display_delay_complete: False
+  🏁 game_complete: False
+🔍 SCORING_TRANSITION_DEBUG: Not ready - display delay not complete
+🔍 SCORING_TRANSITION_DEBUG: Checking transition conditions:
+  📊 scores_calculated: True
+  ⏰ display_delay_complete: False
+  🏁 game_complete: False
+🔍 SCORING_TRANSITION_DEBUG: Not ready - display delay not complete
+🔍 SCORING_TRANSITION_DEBUG: Checking transition conditions:
+  📊 scores_calculated: True
+  ⏰ display_delay_complete: False
+  🏁 game_complete: False
+🔍 SCORING_TRANSITION_DEBUG: Not ready - display delay not complete
+🔍 SCORING_TRANSITION_DEBUG: Checking transition conditions:
+  📊 scores_calculated: True
+  ⏰ display_delay_complete: False
+  🏁 game_complete: False
+🔍 SCORING_TRANSITION_DEBUG: Not ready - display delay not complete
+🔍 SCORING_TRANSITION_DEBUG: Checking transition conditions:
+  📊 scores_calculated: True
+  ⏰ display_delay_complete: False
+  🏁 game_complete: False
+🔍 SCORING_TRANSITION_DEBUG: Not ready - display delay not complete
+🔍 SCORING_TRANSITION_DEBUG: Checking transition conditions:
+  📊 scores_calculated: True
+  ⏰ display_delay_complete: False
+  🏁 game_complete: False
+🔍 SCORING_TRANSITION_DEBUG: Not ready - display delay not complete
+🔍 SCORING_TRANSITION_DEBUG: Checking transition conditions:
+  📊 scores_calculated: True
+  ⏰ display_delay_complete: False
+  🏁 game_complete: False
+🔍 SCORING_TRANSITION_DEBUG: Not ready - display delay not complete
+🔍 SCORING_TRANSITION_DEBUG: Checking transition conditions:
+  📊 scores_calculated: True
+  ⏰ display_delay_complete: False
+  🏁 game_complete: False
+🔍 SCORING_TRANSITION_DEBUG: Not ready - display delay not complete
+🔍 SCORING_TRANSITION_DEBUG: Checking transition conditions:
+  📊 scores_calculated: True
+  ⏰ display_delay_complete: False
+  🏁 game_complete: False
+🔍 SCORING_TRANSITION_DEBUG: Not ready - display delay not complete
+🔍 SCORING_TRANSITION_DEBUG: Checking transition conditions:
+  📊 scores_calculated: True
+  ⏰ display_delay_complete: False
+  🏁 game_complete: False
+🔍 SCORING_TRANSITION_DEBUG: Not ready - display delay not complete
+🔍 SCORING_TRANSITION_DEBUG: Checking transition conditions:
+  📊 scores_calculated: True
+  ⏰ display_delay_complete: False
+  🏁 game_complete: False
+🔍 SCORING_TRANSITION_DEBUG: Not ready - display delay not complete
+🔍 SCORING_TRANSITION_DEBUG: Checking transition conditions:
+  📊 scores_calculated: True
+  ⏰ display_delay_complete: False
+  🏁 game_complete: False
+🔍 SCORING_TRANSITION_DEBUG: Not ready - display delay not complete
+🔍 SCORING_TRANSITION_DEBUG: Checking transition conditions:
+  📊 scores_calculated: True
+  ⏰ display_delay_complete: False
+  🏁 game_complete: False
+🔍 SCORING_TRANSITION_DEBUG: Not ready - display delay not complete
+🔍 SCORING_TRANSITION_DEBUG: Checking transition conditions:
+  📊 scores_calculated: True
+  ⏰ display_delay_complete: False
+  🏁 game_complete: False
+🔍 SCORING_TRANSITION_DEBUG: Not ready - display delay not complete
+🔍 SCORING_TRANSITION_DEBUG: Checking transition conditions:
+  📊 scores_calculated: True
+  ⏰ display_delay_complete: False
+  🏁 game_complete: False
+🔍 SCORING_TRANSITION_DEBUG: Not ready - display delay not complete
+🔍 SCORING_TRANSITION_DEBUG: Checking transition conditions:
+  📊 scores_calculated: True
+  ⏰ display_delay_complete: False
+  🏁 game_complete: False
+🔍 SCORING_TRANSITION_DEBUG: Not ready - display delay not complete
+🔍 SCORING_TRANSITION_DEBUG: Checking transition conditions:
+  📊 scores_calculated: True
+  ⏰ display_delay_complete: False
+  🏁 game_complete: False
+🔍 SCORING_TRANSITION_DEBUG: Not ready - display delay not complete
+🔍 SCORING_TRANSITION_DEBUG: Checking transition conditions:
+  📊 scores_calculated: True
+  ⏰ display_delay_complete: False
+  🏁 game_complete: False
+🔍 SCORING_TRANSITION_DEBUG: Not ready - display delay not complete
+🔍 SCORING_TRANSITION_DEBUG: Checking transition conditions:
+  📊 scores_calculated: True
+  ⏰ display_delay_complete: False
+  🏁 game_complete: False
+🔍 SCORING_TRANSITION_DEBUG: Not ready - display delay not complete
+🔍 SCORING_TRANSITION_DEBUG: Checking transition conditions:
+  📊 scores_calculated: True
+  ⏰ display_delay_complete: False
+  🏁 game_complete: False
+🔍 SCORING_TRANSITION_DEBUG: Not ready - display delay not complete
+🔍 SCORING_TRANSITION_DEBUG: Checking transition conditions:
+  📊 scores_calculated: True
+  ⏰ display_delay_complete: False
+  🏁 game_complete: False
+🔍 SCORING_TRANSITION_DEBUG: Not ready - display delay not complete
+🔍 SCORING_TRANSITION_DEBUG: Checking transition conditions:
+  📊 scores_calculated: True
+  ⏰ display_delay_complete: False
+  🏁 game_complete: False
+🔍 SCORING_TRANSITION_DEBUG: Not ready - display delay not complete
+🔍 SCORING_TRANSITION_DEBUG: Checking transition conditions:
+  📊 scores_calculated: True
+  ⏰ display_delay_complete: False
+  🏁 game_complete: False
+🔍 SCORING_TRANSITION_DEBUG: Not ready - display delay not complete
+🔍 SCORING_TRANSITION_DEBUG: Checking transition conditions:
+  📊 scores_calculated: True
+  ⏰ display_delay_complete: False
+  🏁 game_complete: False
+🔍 SCORING_TRANSITION_DEBUG: Not ready - display delay not complete
+🔍 SCORING_TRANSITION_DEBUG: Checking transition conditions:
+  📊 scores_calculated: True
+  ⏰ display_delay_complete: False
+  🏁 game_complete: False
+🔍 SCORING_TRANSITION_DEBUG: Not ready - display delay not complete
+🔍 SCORING_TRANSITION_DEBUG: Checking transition conditions:
+  📊 scores_calculated: True
+  ⏰ display_delay_complete: False
+  🏁 game_complete: False
+🔍 SCORING_TRANSITION_DEBUG: Not ready - display delay not complete
+🔍 SCORING_TRANSITION_DEBUG: Checking transition conditions:
+  📊 scores_calculated: True
+  ⏰ display_delay_complete: False
+  🏁 game_complete: False
+🔍 SCORING_TRANSITION_DEBUG: Not ready - display delay not complete
+🔍 SCORING_TRANSITION_DEBUG: Checking transition conditions:
+  📊 scores_calculated: True
+  ⏰ display_delay_complete: False
+  🏁 game_complete: False
+🔍 SCORING_TRANSITION_DEBUG: Not ready - display delay not complete
+🔍 SCORING_TRANSITION_DEBUG: Checking transition conditions:
+  📊 scores_calculated: True
+  ⏰ display_delay_complete: False
+  🏁 game_complete: False
+🔍 SCORING_TRANSITION_DEBUG: Not ready - display delay not complete
+🔍 SCORING_TRANSITION_DEBUG: Checking transition conditions:
+  📊 scores_calculated: True
+  ⏰ display_delay_complete: False
+  🏁 game_complete: False
+🔍 SCORING_TRANSITION_DEBUG: Not ready - display delay not complete
+🔍 SCORING_TRANSITION_DEBUG: Checking transition conditions:
+  📊 scores_calculated: True
+  ⏰ display_delay_complete: False
+  🏁 game_complete: False
+🔍 SCORING_TRANSITION_DEBUG: Not ready - display delay not complete
+🔍 SCORING_TRANSITION_DEBUG: Checking transition conditions:
+  📊 scores_calculated: True
+  ⏰ display_delay_complete: False
+  🏁 game_complete: False
+🔍 SCORING_TRANSITION_DEBUG: Not ready - display delay not complete
+🔍 SCORING_TRANSITION_DEBUG: Checking transition conditions:
+  📊 scores_calculated: True
+  ⏰ display_delay_complete: False
+  🏁 game_complete: False
+🔍 SCORING_TRANSITION_DEBUG: Not ready - display delay not complete
+🔍 SCORING_TRANSITION_DEBUG: Checking transition conditions:
+  📊 scores_calculated: True
+  ⏰ display_delay_complete: False
+  🏁 game_complete: False
+🔍 SCORING_TRANSITION_DEBUG: Not ready - display delay not complete
+🔍 SCORING_TRANSITION_DEBUG: Checking transition conditions:
+  📊 scores_calculated: True
+  ⏰ display_delay_complete: False
+  🏁 game_complete: False
+🔍 SCORING_TRANSITION_DEBUG: Not ready - display delay not complete
+🔍 SCORING_TRANSITION_DEBUG: Checking transition conditions:
+  📊 scores_calculated: True
+  ⏰ display_delay_complete: False
+  🏁 game_complete: False
+🔍 SCORING_TRANSITION_DEBUG: Not ready - display delay not complete
+DEBUG_WS_RECEIVE: Received event 'ping' from client in room lobby with data: {'timestamp': 1751579797772}
+🔍 SCORING_TRANSITION_DEBUG: Checking transition conditions:
+  📊 scores_calculated: True
+  ⏰ display_delay_complete: False
+  🏁 game_complete: False
+🔍 SCORING_TRANSITION_DEBUG: Not ready - display delay not complete
+🔍 SCORING_TRANSITION_DEBUG: Checking transition conditions:
+  📊 scores_calculated: True
+  ⏰ display_delay_complete: False
+  🏁 game_complete: False
+🔍 SCORING_TRANSITION_DEBUG: Not ready - display delay not complete
+🔍 SCORING_TRANSITION_DEBUG: Checking transition conditions:
+  📊 scores_calculated: True
+  ⏰ display_delay_complete: False
+  🏁 game_complete: False
+🔍 SCORING_TRANSITION_DEBUG: Not ready - display delay not complete
+🔍 SCORING_TRANSITION_DEBUG: Checking transition conditions:
+  📊 scores_calculated: True
+  ⏰ display_delay_complete: False
+  🏁 game_complete: False
+🔍 SCORING_TRANSITION_DEBUG: Not ready - display delay not complete
+🔍 SCORING_TRANSITION_DEBUG: Checking transition conditions:
+  📊 scores_calculated: True
+  ⏰ display_delay_complete: False
+  🏁 game_complete: False
+🔍 SCORING_TRANSITION_DEBUG: Not ready - display delay not complete
+🔍 SCORING_TRANSITION_DEBUG: Checking transition conditions:
+  📊 scores_calculated: True
+  ⏰ display_delay_complete: False
+  🏁 game_complete: False
+🔍 SCORING_TRANSITION_DEBUG: Not ready - display delay not complete
+🔍 SCORING_TRANSITION_DEBUG: Checking transition conditions:
+  📊 scores_calculated: True
+  ⏰ display_delay_complete: False
+  🏁 game_complete: False
+🔍 SCORING_TRANSITION_DEBUG: Not ready - display delay not complete
+🔍 SCORING_TRANSITION_DEBUG: Checking transition conditions:
+  📊 scores_calculated: True
+  ⏰ display_delay_complete: False
+  🏁 game_complete: False
+🔍 SCORING_TRANSITION_DEBUG: Not ready - display delay not complete
+DEBUG_WS_RECEIVE: Received event 'ping' from client in room 1F6768 with data: {'timestamp': 1751579798543}
+🔍 SCORING_TRANSITION_DEBUG: Checking transition conditions:
+  📊 scores_calculated: True
+  ⏰ display_delay_complete: False
+  🏁 game_complete: False
+🔍 SCORING_TRANSITION_DEBUG: Not ready - display delay not complete
+🔍 SCORING_TRANSITION_DEBUG: Checking transition conditions:
+  📊 scores_calculated: True
+  ⏰ display_delay_complete: False
+  🏁 game_complete: False
+🔍 SCORING_TRANSITION_DEBUG: Not ready - display delay not complete
+🔍 SCORING_TRANSITION_DEBUG: Checking transition conditions:
+  📊 scores_calculated: True
+  ⏰ display_delay_complete: False
+  🏁 game_complete: False
+🔍 SCORING_TRANSITION_DEBUG: Not ready - display delay not complete
+🔍 SCORING_TRANSITION_DEBUG: Checking transition conditions:
+  📊 scores_calculated: True
+  ⏰ display_delay_complete: False
+  🏁 game_complete: False
+🔍 SCORING_TRANSITION_DEBUG: Not ready - display delay not complete
+🔍 SCORING_TRANSITION_DEBUG: Checking transition conditions:
+  📊 scores_calculated: True
+  ⏰ display_delay_complete: False
+  🏁 game_complete: False
+🔍 SCORING_TRANSITION_DEBUG: Not ready - display delay not complete
+🔍 SCORING_TRANSITION_DEBUG: Checking transition conditions:
+  📊 scores_calculated: True
+  ⏰ display_delay_complete: False
+  🏁 game_complete: False
+🔍 SCORING_TRANSITION_DEBUG: Not ready - display delay not complete
+🔍 SCORING_TRANSITION_DEBUG: Checking transition conditions:
+  📊 scores_calculated: True
+  ⏰ display_delay_complete: False
+  🏁 game_complete: False
+🔍 SCORING_TRANSITION_DEBUG: Not ready - display delay not complete
+🔍 SCORING_TRANSITION_DEBUG: Checking transition conditions:
+  📊 scores_calculated: True
+  ⏰ display_delay_complete: False
+  🏁 game_complete: False
+🔍 SCORING_TRANSITION_DEBUG: Not ready - display delay not complete
+🔍 SCORING_TRANSITION_DEBUG: Checking transition conditions:
+  📊 scores_calculated: True
+  ⏰ display_delay_complete: False
+  🏁 game_complete: False
+🔍 SCORING_TRANSITION_DEBUG: Not ready - display delay not complete
+🔍 SCORING_TRANSITION_DEBUG: Checking transition conditions:
+  📊 scores_calculated: True
+  ⏰ display_delay_complete: False
+  🏁 game_complete: False
+🔍 SCORING_TRANSITION_DEBUG: Not ready - display delay not complete
+🔍 SCORING_TRANSITION_DEBUG: Checking transition conditions:
+  📊 scores_calculated: True
+  ⏰ display_delay_complete: False
+  🏁 game_complete: False
+🔍 SCORING_TRANSITION_DEBUG: Not ready - display delay not complete
+🔍 SCORING_TRANSITION_DEBUG: Checking transition conditions:
+  📊 scores_calculated: True
+  ⏰ display_delay_complete: False
+  🏁 game_complete: False
+🔍 SCORING_TRANSITION_DEBUG: Not ready - display delay not complete
+🔍 SCORING_TRANSITION_DEBUG: Checking transition conditions:
+  📊 scores_calculated: True
+  ⏰ display_delay_complete: False
+  🏁 game_complete: False
+🔍 SCORING_TRANSITION_DEBUG: Not ready - display delay not complete
+🔍 SCORING_TRANSITION_DEBUG: Checking transition conditions:
+  📊 scores_calculated: True
+  ⏰ display_delay_complete: False
+  🏁 game_complete: False
+🔍 SCORING_TRANSITION_DEBUG: Not ready - display delay not complete
+🔍 SCORING_TRANSITION_DEBUG: Checking transition conditions:
+  📊 scores_calculated: True
+  ⏰ display_delay_complete: False
+  🏁 game_complete: False
+🔍 SCORING_TRANSITION_DEBUG: Not ready - display delay not complete
+🔍 SCORING_TRANSITION_DEBUG: Checking transition conditions:
+  📊 scores_calculated: True
+  ⏰ display_delay_complete: False
+  🏁 game_complete: False
+🔍 SCORING_TRANSITION_DEBUG: Not ready - display delay not complete
+🔍 SCORING_TRANSITION_DEBUG: Checking transition conditions:
+  📊 scores_calculated: True
+  ⏰ display_delay_complete: False
+  🏁 game_complete: False
+🔍 SCORING_TRANSITION_DEBUG: Not ready - display delay not complete
+🔍 SCORING_TRANSITION_DEBUG: Checking transition conditions:
+  📊 scores_calculated: True
+  ⏰ display_delay_complete: False
+  🏁 game_complete: False
+🔍 SCORING_TRANSITION_DEBUG: Not ready - display delay not complete
+🔍 SCORING_TRANSITION_DEBUG: Checking transition conditions:
+  📊 scores_calculated: True
+  ⏰ display_delay_complete: False
+  🏁 game_complete: False
+🔍 SCORING_TRANSITION_DEBUG: Not ready - display delay not complete
+🔍 SCORING_TRANSITION_DEBUG: Checking transition conditions:
+  📊 scores_calculated: True
+  ⏰ display_delay_complete: False
+  🏁 game_complete: False
+🔍 SCORING_TRANSITION_DEBUG: Not ready - display delay not complete
+🔍 SCORING_TRANSITION_DEBUG: Checking transition conditions:
+  📊 scores_calculated: True
+  ⏰ display_delay_complete: False
+  🏁 game_complete: False
+🔍 SCORING_TRANSITION_DEBUG: Not ready - display delay not complete
+🔍 SCORING_TRANSITION_DEBUG: Checking transition conditions:
+  📊 scores_calculated: True
+  ⏰ display_delay_complete: False
+  🏁 game_complete: False
+🔍 SCORING_TRANSITION_DEBUG: Not ready - display delay not complete
+🔍 SCORING_TRANSITION_DEBUG: Checking transition conditions:
+  📊 scores_calculated: True
+  ⏰ display_delay_complete: False
+  🏁 game_complete: False
+🔍 SCORING_TRANSITION_DEBUG: Not ready - display delay not complete
+⏰ SCORING_DELAY_DEBUG: 7-second delay complete - setting display_delay_complete = True
+🔍 SCORING_TRANSITION_DEBUG: Checking transition conditions:
+  📊 scores_calculated: True
+  ⏰ display_delay_complete: True
+  🏁 game_complete: False
+🔍 SCORING_TRANSITION_DEBUG: Ready to transition to PREPARATION
+🛡️ DEBUG: Dealing guaranteed no-redeal hands with RED_GENERAL assigned to player 1
+🛡️ DEBUG: Available pieces - Strong: 7, Weak: 24
+  → Bot 2 gets RED_GENERAL: GENERAL_RED(14)
+  → Andy gets strong piece: GENERAL_BLACK(13)
+  → Bot 3 gets strong piece: ADVISOR_RED(12)
+  → Bot 4 gets strong piece: ADVISOR_BLACK(11)
+🛡️ DEBUG: Guaranteed no-redeal hands dealt:
+🔧 DEBUG: Final hands verification:
+  Andy: ['CHARIOT_RED(8)', 'SOLDIER_RED(2)', 'GENERAL_BLACK(13)', 'ADVISOR_RED(12)', 'HORSE_RED(6)', 'SOLDIER_BLACK(1)', 'SOLDIER_RED(2)', 'SOLDIER_BLACK(1)']
+    → Strong pieces (>9): 2
+    → Has RED_GENERAL: False
+  Bot 2: ['CHARIOT_BLACK(7)', 'HORSE_BLACK(5)', 'CANNON_RED(4)', 'GENERAL_RED(14)', 'CANNON_BLACK(3)', 'CANNON_RED(4)', 'HORSE_RED(6)', 'SOLDIER_RED(2)']
+    → Strong pieces (>9): 1
+    → Has RED_GENERAL: True
+  Bot 3: ['SOLDIER_BLACK(1)', 'CANNON_BLACK(3)', 'CHARIOT_BLACK(7)', 'ADVISOR_RED(12)', 'CHARIOT_RED(8)', 'ADVISOR_BLACK(11)', 'SOLDIER_RED(2)', 'SOLDIER_RED(2)']
+    → Strong pieces (>9): 2
+    → Has RED_GENERAL: False
+  Bot 4: ['ELEPHANT_BLACK(9)', 'ELEPHANT_BLACK(9)', 'ADVISOR_BLACK(11)', 'HORSE_BLACK(5)', 'SOLDIER_BLACK(1)', 'SOLDIER_BLACK(1)', 'ELEPHANT_RED(10)', 'ELEPHANT_RED(10)']
+    → Strong pieces (>9): 3
+    → Has RED_GENERAL: False
+✅ SUCCESS: No weak hands - redeal prevented!
+✅ PREP_STATE_DEBUG: No weak hands - keeping existing starter: Bot 3
+DEBUG_WS: Message for event 'phase_change' added to queue for room 1F6768.
+🔍 PREP_STATE_DEBUG: Checking transition conditions...
+   - Initial deal complete: True
+   - Weak players: set()
+   - Redeal decisions: {}
+   - Current weak player: None
+✅ PREP_STATE_DEBUG: No weak players, transitioning to DECLARATION
+📢 DECL_STATE_DEBUG: Using round_starter: Bot 3
+DEBUG_WS: Message for event 'phase_change' added to queue for room 1F6768.
+DEBUG_WS: Message for event 'phase_change' added to queue for room 1F6768.
+🔄 PHASE_TRACKING_FIX: New phase detected turn -> declaration
+✅ PHASE_TRACKING_FIX: Marked declaration phase as triggered
+🔍 DECL_PHASE_DEBUG: _handle_declaration_phase called with last_declarer: ''
+🔍 BOT_DEBUG: Got declaration order from state machine: ['Bot 3', 'Bot 4', 'Andy', 'Bot 2']
+🔍 DECL_PHASE_DEBUG: Declaration order: ['Bot 3', 'Bot 4', 'Andy', 'Bot 2']
+🔍 DECL_PHASE_DEBUG: Last declarer '' index: -1
+🔍 DECL_PHASE_DEBUG: Starting loop from index 0 to 4
+🔍 DECL_PHASE_DEBUG: Checking player 0 (Bot 3), is_bot: True
+🔍 DECL_PHASE_DEBUG: Player Bot 3 declared value: 0 (from phase data)
+🔍 DECL_PHASE_DEBUG: All phase declarations: {}
+🤖 DECL_PHASE_DEBUG: Bot Bot 3 will now declare!
+🔧 BOT_DECLARE_DEBUG: State machine result: {'success': True, 'queued': True}
+✅ Bot Bot 3 declared 1
+🔍 DECL_PHASE_DEBUG: Checking player 1 (Bot 4), is_bot: True
+🔍 DECL_PHASE_DEBUG: Player Bot 4 declared value: 0 (from phase data)
+🔍 DECL_PHASE_DEBUG: All phase declarations: {}
+🤖 DECL_PHASE_DEBUG: Bot Bot 4 will now declare!
+🔧 BOT_DECLARE_DEBUG: State machine result: {'success': True, 'queued': True}
+✅ Bot Bot 4 declared 1
+🔍 DECL_PHASE_DEBUG: Checking player 2 (Andy), is_bot: False
+🔍 DECL_PHASE_DEBUG: Player Andy is human, stopping bot declarations
+DEBUG_WS: Message for event 'phase_change' added to queue for room 1F6768.
+🚫 PHASE_TRACKING_FIX: Already triggered actions for declaration phase via round_started - skipping
+DEBUG_WS: Message for event 'phase_change' added to queue for room 1F6768.
+🔍 PHASE_TRACKING_FIX: Same phase update: declaration
+🚫 PHASE_TRACKING_FIX: Already triggered actions for declaration phase - skipping
+DEBUG_WS: Message for event 'phase_change' added to queue for room 1F6768.
+🔍 PHASE_TRACKING_FIX: Same phase update: declaration
+🚫 PHASE_TRACKING_FIX: Already triggered actions for declaration phase - skipping
+DEBUG_WS_RECEIVE: Received event 'ping' from client in room lobby with data: {'timestamp': 1751579827773}

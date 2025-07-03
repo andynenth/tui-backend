@@ -67,6 +67,9 @@ class GameBotHandler:
         # 🔧 PHASE_TRACKING_FIX: Prevent duplicate phase action triggers
         self._last_processed_phase: Optional[str] = None
         self._phase_action_triggered: Dict[str, bool] = {}  # phase -> triggered
+        
+        # 🔧 TURN_START_FIX: Prevent duplicate turn_started events
+        self._last_turn_start: Optional[Dict[str, Any]] = None  # {turn_number, starter, timestamp}
     
     def _get_game_state(self):
         """Get current game state from state machine or fallback to direct game access"""
@@ -175,9 +178,12 @@ class GameBotHandler:
                 await self._handle_declaration_phase(data["player_name"])
             elif event == "phase_change":
                 await self._handle_enterprise_phase_change(data)
-            elif event == "player_played":
-                await self._handle_play_phase(data["player_name"])
+            # 🚀 ENTERPRISE: Legacy player_played handler removed to prevent race condition
+            # Enterprise architecture handles all bot triggering via phase_change events
+            # elif event == "player_played":
+            #     await self._handle_play_phase(data["player_name"])
             elif event == "turn_started":
+                print(f"🔍 DUPLICATE_DEBUG: Received turn_started event for {data.get('starter')} from {data.get('source', 'unknown')}")
                 await self._handle_turn_start(data["starter"])
             elif event == "round_started":
                 
@@ -272,22 +278,16 @@ class GameBotHandler:
                                     print(f"🚫 RACE_CONDITION_FIX: Skipping bot trigger due to sequence tracking for {current_player}")
                                     return
                                 
+                                # 🚀 ENTERPRISE: Check if this is a new turn start (bot already triggered by turn_started event)
+                                turn_plays = phase_data.get('turn_plays', {})
+                                if not turn_plays or len(turn_plays) == 0:
+                                    print(f"🚫 RACE_CONDITION_FIX: Skipping enterprise trigger for {current_player} - turn starter already triggered by turn_started event")
+                                    return
+                                
                                 print(f"✅ RACE_CONDITION_FIX: Triggering bot play for {current_player} - no duplicates detected")
                                 
-                                # Get last player to continue sequence
-                                turn_plays = phase_data.get('turn_plays', {})
-                                if isinstance(turn_plays, dict) and turn_plays:
-                                    # Get the last player from the dictionary (most recent timestamp)
-                                    last_play_time = 0
-                                    last_player = ""
-                                    for player_name, play_data in turn_plays.items():
-                                        timestamp = play_data.get('timestamp', 0)
-                                        if timestamp > last_play_time:
-                                            last_play_time = timestamp
-                                            last_player = player_name
-                                else:
-                                    last_player = ""
-                                await self._handle_play_phase(last_player)
+                                # 🚀 ENTERPRISE: Direct bot triggering for current player (single-source triggering)
+                                await self._bot_play(player)
                             else:
                                 print(f"👤 ENTERPRISE_BOT_DEBUG: Current player {current_player} is human - waiting")
                             break
@@ -676,7 +676,28 @@ class GameBotHandler:
     async def _handle_turn_start(self, starter_name: str):
         """Handle start of a new turn"""
         
+        # 🔧 TURN_START_FIX: Check for duplicate turn_started events
         game_state = self._get_game_state()
+        current_turn = getattr(game_state, 'turn_number', 0)
+        current_time = time.time()
+        
+        if self._last_turn_start:
+            last_turn = self._last_turn_start.get('turn_number', -1)
+            last_starter = self._last_turn_start.get('starter', '')
+            last_time = self._last_turn_start.get('timestamp', 0)
+            
+            # If same turn and starter within 2 seconds, it's a duplicate
+            if last_turn == current_turn and last_starter == starter_name and (current_time - last_time) < 2.0:
+                print(f"🚫 TURN_START_FIX: Skipping duplicate turn_started event for {starter_name} turn {current_turn}")
+                return
+        
+        # Record this turn start
+        self._last_turn_start = {
+            'turn_number': current_turn,
+            'starter': starter_name,
+            'timestamp': current_time
+        }
+        
         starter = game_state.get_player(starter_name) if hasattr(game_state, 'get_player') else None
         if not starter:
             # Fallback: find player in players list
