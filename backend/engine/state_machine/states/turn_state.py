@@ -68,9 +68,8 @@ class TurnState(GameState):
         """Finalize turn phase results before transition"""
         game = self.state_machine.game
         
-        # Ensure any final turn results are processed
-        if self.turn_complete and self.winner:
-            await self._process_turn_completion()
+        # Turn completion processing is already handled by _complete_turn()
+        # No need to call _process_turn_completion() again here
         
         self.logger.info("🏁 Turn phase complete - all hands empty")
     
