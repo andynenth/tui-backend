@@ -180,12 +180,13 @@ class Room:
                 # Initialize GameStateMachine with WebSocket broadcasting
                 self.game_state_machine = GameStateMachine(self.game, broadcast_callback)
                 self.game_state_machine.room_id = self.room_id  # Add room_id for bot manager
-                await self.game_state_machine.start(GamePhase.PREPARATION)
                 
-                # Register with bot manager (required for bot participation)
+                # Register with bot manager BEFORE starting state machine to avoid race conditions
                 from .bot_manager import BotManager
                 bot_manager = BotManager()
                 bot_manager.register_game(self.room_id, self.game, self.game_state_machine)
+                
+                await self.game_state_machine.start(GamePhase.PREPARATION)
                 
                 self.started = True
                 

@@ -403,7 +403,7 @@ class PreparationState(GameState):
         if self.current_weak_player:
             print(f"🔧 PREP_STATE_DEBUG: Triggering bot manager for player: {self.current_weak_player}")
             # Import here to avoid circular imports
-            from engine.bot_manager import BotManager
+            from ...bot_manager import BotManager
             
             # Get the singleton bot manager
             bot_manager = BotManager()
@@ -424,7 +424,7 @@ class PreparationState(GameState):
         """Trigger bot manager for a specific weak player"""
         print(f"🔧 PREP_STATE_DEBUG: Triggering bot manager for specific player: {player_name}")
         # Import here to avoid circular imports
-        from backend.engine.bot_manager import BotManager
+        from ...bot_manager import BotManager
         
         # Get the singleton bot manager
         bot_manager = BotManager()
