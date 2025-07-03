@@ -201,7 +201,6 @@ class GameBotHandler:
                 await self._handle_action_accepted(data)
             elif event == "action_failed":
                 await self._handle_action_failed(data)
-            else:
     
     async def _handle_enterprise_phase_change(self, data: dict):
         """
@@ -673,7 +672,7 @@ class GameBotHandler:
             # 🚀 ENTERPRISE: State machine handles round preparation automatically
             # No manual round preparation needed - transition to PREPARATION phase handles everything
             # The state machine's SCORING -> PREPARATION transition handles all round setup
-            
+            pass
     async def _handle_turn_start(self, starter_name: str):
         """Handle start of a new turn"""
         
