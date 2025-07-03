@@ -159,27 +159,25 @@ class ScoringState(GameState):
     
     async def check_transition_conditions(self) -> Optional[GamePhase]:
         """Check if ready to transition to next phase"""
-        print(f"🔍 SCORING_TRANSITION_DEBUG: Checking transition conditions:")
-        print(f"  📊 scores_calculated: {self.scores_calculated}")
-        print(f"  ⏰ display_delay_complete: {self.display_delay_complete}")
-        print(f"  🏁 game_complete: {self.game_complete}")
         
         if not self.scores_calculated:
-            print(f"🔍 SCORING_TRANSITION_DEBUG: Not ready - scores not calculated")
             return None
         
         # Wait for display delay to complete (give users time to see scoring)
         if not self.display_delay_complete:
-            print(f"🔍 SCORING_TRANSITION_DEBUG: Not ready - display delay not complete")
             return None
         
         if self.game_complete:
-            # Game is over, no transition
-            print(f"🔍 SCORING_TRANSITION_DEBUG: Game complete - no transition")
+            # Game is over, no transition (only log once)
+            if not hasattr(self, '_game_complete_logged'):
+                self.logger.info("🔍 SCORING_TRANSITION_DEBUG: Game complete - no transition")
+                self._game_complete_logged = True
             return None
         
-        # Can transition to next round (Preparation)
-        print(f"🔍 SCORING_TRANSITION_DEBUG: Ready to transition to PREPARATION")
+        # Can transition to next round (only log once)
+        if not hasattr(self, '_ready_to_transition_logged'):
+            self.logger.info("🔍 SCORING_TRANSITION_DEBUG: Ready to transition to PREPARATION")
+            self._ready_to_transition_logged = True
         return GamePhase.PREPARATION
     
     # Action Handlers

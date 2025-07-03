@@ -544,7 +544,6 @@ class TurnState(GameState):
             else:
                 self.logger.info("🏁 All hands are now empty - round complete")
             print(f"🏁 TURN_COMPLETION_DEBUG: Round complete - will transition to scoring")
-            # The main process loop will handle the actual transition
         else:
             # Update starter for next turn
             if self.winner:

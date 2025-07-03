@@ -93,7 +93,7 @@ class GameStateMachine:
         return {"success": True, "queued": True}
     
     async def _process_loop(self):
-        """Main processing loop for queued actions"""
+        """Main processing loop for queued actions and polling-based transitions"""
         logger.info("State machine process loop started")
         while self.is_running:
             try:
@@ -101,14 +101,14 @@ class GameStateMachine:
                 # Process any pending actions
                 await self.process_pending_actions()
                 
-                # Check for phase transitions
+                # Check for phase transitions (polling-based approach)
                 if self.current_state:
                     next_phase = await self.current_state.check_transition_conditions()
                     if next_phase:
                         await self._transition_to(next_phase)
                 
-                # Small delay to prevent busy waiting
-                await asyncio.sleep(0.1)
+                # Improved delay: 0.5s instead of original 100ms for better performance
+                await asyncio.sleep(0.5)
                 
             except Exception as e:
                 print(f"❌ STATE_MACHINE_DEBUG: Error in process loop: {e}")
@@ -178,6 +178,7 @@ class GameStateMachine:
     def get_current_phase(self) -> Optional[GamePhase]:
         """Get current game phase"""
         return self.current_phase
+    
     
     def get_allowed_actions(self) -> Set[ActionType]:
         """Get currently allowed action types"""

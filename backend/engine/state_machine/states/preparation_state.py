@@ -171,6 +171,7 @@ class PreparationState(GameState):
                 game.round_starter = starter  # Always set both
                 print(f"✅ PREP_STATE_DEBUG: No weak hands - determined new starter: {starter}")
                 self.logger.info(f"✅ No weak hands - determined new starter: {starter}")
+            
     
     async def _validate_action(self, action: GameAction) -> bool:
         """Validate action is allowed in current state"""
@@ -300,6 +301,7 @@ class PreparationState(GameState):
             starter = self._determine_starter()
             self.state_machine.game.current_player = starter
             self.state_machine.game.round_starter = starter  # Set both
+            
             
             return {
                 "success": True,
