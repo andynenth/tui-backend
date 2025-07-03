@@ -343,10 +343,10 @@ class GameBotHandler:
                 continue  # Already declared
                 
             # Bot declares with random delay (500-1500ms for realism)
-            import random
-            delay = random.uniform(0.5, 1.5)
-            print(f"🤖 DECL_PHASE_DEBUG: Bot {player_name} will declare in {delay:.1f}s...")
-            await asyncio.sleep(delay)
+            # import random
+            # delay = random.uniform(0.5, 1.5)
+            # print(f"🤖 DECL_PHASE_DEBUG: Bot {player_name} will declare in {delay:.1f}s...")
+            # await asyncio.sleep(delay)
             
             print(f"🤖 DECL_PHASE_DEBUG: Bot {player_name} will now declare!")
             await self._bot_declare(player_obj, i)
@@ -688,9 +688,9 @@ class GameBotHandler:
         if starter.is_bot and len(starter.hand) > 0:
             print(f"🤖 Bot {starter_name} will play first")
             
-            # Add realistic delay for bot decision (500-1000ms)
+            # Add realistic delay for bot decision if the starter is a bot
             import random
-            delay = random.uniform(0.5, 1.0)
+            delay = random.uniform(1.0, 2.0)
             print(f"🤖 Bot {starter_name} thinking for {delay:.1f}s...")
             await asyncio.sleep(delay)
             
