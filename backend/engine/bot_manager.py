@@ -66,6 +66,10 @@ class GameBotHandler:
         self._cache_timeout = 5.0  # Actions expire after 5 seconds
         self._turn_sequence_tracking: Dict[str, int] = {}  # bot_name -> last_turn_number
         self._phase_sequence_tracking: Dict[str, str] = {}  # bot_name -> last_phase_context
+        
+        # 🔧 PHASE_TRACKING_FIX: Prevent duplicate phase action triggers
+        self._last_processed_phase: Optional[str] = None
+        self._phase_action_triggered: Dict[str, bool] = {}  # phase -> triggered
     
     def _get_game_state(self):
         """Get current game state from state machine or fallback to direct game access"""
@@ -158,6 +162,18 @@ class GameBotHandler:
     async def handle_event(self, event: str, data: dict):
         """Process game events and trigger bot actions"""
         print(f"🎮 BOT_HANDLER_DEBUG: Room {self.room_id} handling event '{event}' with data: {data}")
+        
+        # 🔧 PHASE_TRACKING_FIX: Detect actual phase transitions and reset tracking
+        if event == "phase_change":
+            new_phase = data.get("phase")
+            if new_phase != self._last_processed_phase:
+                print(f"🔄 PHASE_TRACKING_FIX: New phase detected {self._last_processed_phase} -> {new_phase}")
+                # Clear action tracking for new phase
+                self._phase_action_triggered.clear()
+                self._last_processed_phase = new_phase
+            else:
+                print(f"🔍 PHASE_TRACKING_FIX: Same phase update: {new_phase}")
+        
         async with self._lock:  # Prevent concurrent bot actions
             if event == "player_declared":
                 print(f"📢 BOT_HANDLER_DEBUG: Handling declaration phase")
@@ -206,6 +222,11 @@ class GameBotHandler:
         
         print(f"🚀 ENTERPRISE_BOT_DEBUG: Processing phase change - phase: {phase}, reason: {reason}")
         
+        # 🔧 PHASE_TRACKING_FIX: Check if we already triggered actions for this phase
+        if phase in self._phase_action_triggered and self._phase_action_triggered[phase]:
+            print(f"🚫 PHASE_TRACKING_FIX: Already triggered actions for {phase} phase - skipping")
+            return
+        
         if phase == "declaration":
             current_declarer = data.get("current_declarer") or phase_data.get("current_declarer")
             if current_declarer:
@@ -218,6 +239,9 @@ class GameBotHandler:
                         if getattr(player, 'name', str(player)) == current_declarer:
                             if getattr(player, 'is_bot', False):
                                 print(f"🤖 ENTERPRISE_BOT_DEBUG: Current declarer {current_declarer} is a bot - triggering declaration")
+                                # 🔧 PHASE_TRACKING_FIX: Mark this phase as having triggered actions
+                                self._phase_action_triggered[phase] = True
+                                print(f"✅ PHASE_TRACKING_FIX: Marked {phase} phase as triggered")
                                 # Get last declarer to continue sequence
                                 declarations = phase_data.get('declarations', {})
                                 declared_players = list(declarations.keys())
