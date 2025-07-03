@@ -41,13 +41,10 @@ class BotManager:
             
     async def handle_game_event(self, room_id: str, event: str, data: dict):
         """Handle game events that might need bot actions"""
-        print(f"🔔 BOT_MANAGER_DEBUG: Received event '{event}' for room {room_id} with data: {data}")
         if room_id not in self.active_games:
-            print(f"❌ BOT_MANAGER_DEBUG: Room {room_id} not found in active games: {list(self.active_games.keys())}")
             return
             
         handler = self.active_games[room_id]
-        print(f"✅ BOT_MANAGER_DEBUG: Found handler for room {room_id}, delegating to handler...")
         await handler.handle_event(event, data)
 
 
@@ -161,7 +158,6 @@ class GameBotHandler:
         
     async def handle_event(self, event: str, data: dict):
         """Process game events and trigger bot actions"""
-        print(f"🎮 BOT_HANDLER_DEBUG: Room {self.room_id} handling event '{event}' with data: {data}")
         
         # 🔧 PHASE_TRACKING_FIX: Detect actual phase transitions and reset tracking
         if event == "phase_change":
@@ -176,19 +172,14 @@ class GameBotHandler:
         
         async with self._lock:  # Prevent concurrent bot actions
             if event == "player_declared":
-                print(f"📢 BOT_HANDLER_DEBUG: Handling declaration phase")
                 await self._handle_declaration_phase(data["player_name"])
             elif event == "phase_change":
-                print(f"🚀 BOT_HANDLER_DEBUG: Handling enterprise phase change")
                 await self._handle_enterprise_phase_change(data)
             elif event == "player_played":
-                print(f"🎯 BOT_HANDLER_DEBUG: Handling play phase")
                 await self._handle_play_phase(data["player_name"])
             elif event == "turn_started":
-                print(f"🚀 BOT_HANDLER_DEBUG: Handling turn start")
                 await self._handle_turn_start(data["starter"])
             elif event == "round_started":
-                print(f"🎪 BOT_HANDLER_DEBUG: Handling round start")
                 
                 # 🔧 PHASE_TRACKING_FIX: Check if we already triggered actions for this phase
                 current_phase = data.get("phase", "unknown")
@@ -198,7 +189,6 @@ class GameBotHandler:
                 
                 await self._handle_round_start()
             elif event == "weak_hands_found":
-                print(f"🃏 BOT_HANDLER_DEBUG: Handling weak hands found")
                 await self._handle_weak_hands(data)
             elif event == "redeal_decision_needed":
                 print(f"🔄 BOT_HANDLER_DEBUG: Handling redeal decision needed")
@@ -208,13 +198,10 @@ class GameBotHandler:
                 print(f"🚫 BOT_HANDLER_DEBUG: Handling action rejection")
                 await self._handle_action_rejected(data)
             elif event == "action_accepted":
-                print(f"✅ BOT_HANDLER_DEBUG: Handling action acceptance")
                 await self._handle_action_accepted(data)
             elif event == "action_failed":
-                print(f"💥 BOT_HANDLER_DEBUG: Handling action failure")
                 await self._handle_action_failed(data)
             else:
-                print(f"⚠️ BOT_HANDLER_DEBUG: Unknown event '{event}' - ignoring")
     
     async def _handle_enterprise_phase_change(self, data: dict):
         """
@@ -227,7 +214,6 @@ class GameBotHandler:
         phase_data = data.get("phase_data", {})
         reason = data.get("reason", "")
         
-        print(f"🚀 ENTERPRISE_BOT_DEBUG: Processing phase change - phase: {phase}, reason: {reason}")
         
         # 🔧 PHASE_TRACKING_FIX: Check if we already triggered actions for this phase
         if phase in self._phase_action_triggered and self._phase_action_triggered[phase]:
@@ -237,7 +223,6 @@ class GameBotHandler:
         if phase == "declaration":
             current_declarer = data.get("current_declarer") or phase_data.get("current_declarer")
             if current_declarer:
-                print(f"🚀 ENTERPRISE_BOT_DEBUG: Declaration phase - checking if {current_declarer} is a bot")
                 
                 # Check if current declarer is a bot
                 game_state = self._get_game_state()
@@ -245,7 +230,6 @@ class GameBotHandler:
                     for player in game_state.players:
                         if getattr(player, 'name', str(player)) == current_declarer:
                             if getattr(player, 'is_bot', False):
-                                print(f"🤖 ENTERPRISE_BOT_DEBUG: Current declarer {current_declarer} is a bot - triggering declaration")
                                 # 🔧 PHASE_TRACKING_FIX: Mark this phase as having triggered actions
                                 self._phase_action_triggered[phase] = True
                                 print(f"✅ PHASE_TRACKING_FIX: Marked {phase} phase as triggered")
@@ -638,8 +622,7 @@ class GameBotHandler:
                 
                 # 🚀 ENTERPRISE: Manual broadcast removed - state machine handles this automatically
                 # All broadcasting is handled by enterprise architecture via update_phase_data()
-                print(f"🚀 ENTERPRISE: Bot play completed - automatic broadcasting active")
-            
+                            
             # Handle turn resolution if complete
             if result.get("status") == "resolved":
                 await self._handle_turn_resolved(result)
@@ -685,17 +668,14 @@ class GameBotHandler:
         
         # 🚀 ENTERPRISE: Manual broadcast removed - state machine handles this automatically
         # All scoring broadcasts are handled by enterprise architecture via update_phase_data()
-        print(f"🚀 ENTERPRISE: Scoring completed - automatic broadcasting active")
         
         if not game_over:
             # 🚀 ENTERPRISE: State machine handles round preparation automatically
             # No manual round preparation needed - transition to PREPARATION phase handles everything
-            print(f"🚀 ENTERPRISE: State machine will handle next round preparation automatically")
             # The state machine's SCORING -> PREPARATION transition handles all round setup
             
     async def _handle_turn_start(self, starter_name: str):
         """Handle start of a new turn"""
-        print(f"🎮 Bot Manager: Handling turn start for {starter_name}")
         
         game_state = self._get_game_state()
         starter = game_state.get_player(starter_name) if hasattr(game_state, 'get_player') else None
@@ -764,8 +744,7 @@ class GameBotHandler:
                 
                 # 🚀 ENTERPRISE: Manual broadcast removed - state machine handles this automatically
                 # All broadcasting is handled by enterprise architecture via update_phase_data()
-                print(f"🚀 ENTERPRISE: Bot play completed - automatic broadcasting active")
-            
+                            
             print(f"✅ Bot {bot.name} played, status: {result.get('status')}")
             
             # If waiting for other players, trigger their plays
@@ -951,7 +930,6 @@ class GameBotHandler:
         result = data.get("result", {})
         is_bot = data.get("is_bot", False)
         
-        print(f"✅ BOT_VALIDATION_FIX: Action {action_type} from {player_name} was ACCEPTED")
         
         if is_bot and action_type == "play_pieces":
             # For accepted play actions, the state machine has already:
