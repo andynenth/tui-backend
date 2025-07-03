@@ -59,8 +59,9 @@ class SocketManager:
         self.message_stats: Dict[str, MessageStats] = {}  # room_id -> stats
         self.client_last_seen_sequence: Dict[str, Dict[str, int]] = {}  # room_id -> {client_id -> sequence}
         
-        # Start background retry task
-        self._retry_task = asyncio.create_task(self._message_retry_worker())
+        # Start background retry task (will be created when first needed)
+        self._retry_task = None
+        self._retry_task_started = False
         
     def __del__(self):
         """Cleanup background tasks"""
@@ -69,7 +70,7 @@ class SocketManager:
 
     async def _process_broadcast_queue(self, room_id: str):
         """
-        Enhanced broadcast queue processor with monitoring
+        Enhanced broadcast queue processor with monitoring and cleanup
         """
         queue = self.broadcast_queues.get(room_id)
         if not queue:
@@ -86,13 +87,70 @@ class SocketManager:
         print(f"DEBUG_WS: Starting enhanced broadcast queue processor for room {room_id}.")
         print(f"DEBUG_WS_QUEUE_START: Room {room_id} processor task starting, queue exists: {room_id in self.broadcast_queues}")
         
+        # 🔧 FIX: Queue cleanup settings
+        MAX_QUEUE_SIZE = 50
+        CLEANUP_THRESHOLD = 30
+        last_cleanup_time = time.time()
+        
         while True:
             try:
+                # 🔧 FIX: Queue cleanup - check and clean if queue is too large
+                current_queue_size = queue.qsize()
+                if current_queue_size > CLEANUP_THRESHOLD:
+                    # Clean old messages but keep recent ones
+                    messages_to_keep = []
+                    cleaned_count = 0
+                    
+                    # Drain queue and filter messages
+                    while not queue.empty() and len(messages_to_keep) < MAX_QUEUE_SIZE // 2:
+                        try:
+                            msg = queue.get_nowait()
+                            # Keep only recent messages (less than 5 seconds old)
+                            if msg.get('data', {}).get('timestamp', 0) > time.time() - 5:
+                                messages_to_keep.append(msg)
+                            else:
+                                cleaned_count += 1
+                        except asyncio.QueueEmpty:
+                            break
+                    
+                    # Put back the messages we want to keep
+                    for msg in messages_to_keep:
+                        await queue.put(msg)
+                    
+                    if cleaned_count > 0:
+                        print(f"🧹 QUEUE_CLEANUP: Cleaned {cleaned_count} old messages from room {room_id}, kept {len(messages_to_keep)}")
+                        last_cleanup_time = time.time()
+                
+                # Periodic cleanup check (every 30 seconds)
+                elif time.time() - last_cleanup_time > 30:
+                    if current_queue_size > 10:
+                        print(f"🔍 QUEUE_CHECK: Room {room_id} has {current_queue_size} messages queued")
+                    last_cleanup_time = time.time()
+                
                 start_time = time.time()
                 # ✅ FIXED: Reduce timeout for lobby to make it more responsive
                 timeout = 0.5 if room_id == "lobby" else 1.0
                 message = await asyncio.wait_for(queue.get(), timeout=timeout)
                 print(f"DEBUG_WS_QUEUE: Room {room_id} got message: {message['event']}")
+                
+                # 🔧 FIX: Additional deduplication check at processing time
+                event_type = message.get('event', '')
+                event_data = message.get('data', {})
+                
+                # Skip queue deduplication for critical phase transitions and updates
+                phase = event_data.get('phase', '')
+                is_immediate = event_data.get('immediate', False)
+                
+                if event_type == 'phase_change' and (phase == 'declaration' or is_immediate):
+                    # Allow declaration updates and immediate phase transitions through
+                    print(f"🔧 QUEUE_DEDUP: Allowing critical phase_change through (phase={phase}, immediate={is_immediate})")
+                else:
+                    # Apply deduplication for other events (especially turn_complete to prevent loops)
+                    event_hash = self._create_event_hash(event_type, event_data)
+                    last_processed = self._last_broadcast.get(f"{room_id}:{event_hash}", 0)
+                    if time.time() - last_processed < self._broadcast_cooldown:
+                        print(f"🔧 QUEUE_DEDUP: Skipping already processed {event_type} message")
+                        continue
                 
                 event = message["event"]
                 data = message["data"]
@@ -200,11 +258,20 @@ class SocketManager:
                 
         print(f"DEBUG_WS: Stopped enhanced broadcast queue processor for room {room_id}.")
 
+    async def _ensure_retry_task_started(self):
+        """Ensure the retry task is started (only when event loop is running)"""
+        if not self._retry_task_started:
+            self._retry_task = asyncio.create_task(self._message_retry_worker())
+            self._retry_task_started = True
+    
     async def register(self, room_id: str, websocket: WebSocket) -> WebSocket:
         """
         Enhanced WebSocket registration with connection tracking
         """
         await websocket.accept()
+        
+        # Ensure retry task is started now that we have an event loop
+        await self._ensure_retry_task_started()
         
         async with self.lock:
             # Initialize room connections set if it doesn't exist
@@ -283,26 +350,59 @@ class SocketManager:
                     self.broadcast_tasks[room_id].cancel()
                 print(f"DEBUG_WS: Cleaned up empty room {room_id}")
 
+    def _create_event_hash(self, event_type: str, data: dict) -> str:
+        """Create unique hash for any event type to prevent duplicates"""
+        if event_type == 'phase_change':
+            return f"{event_type}:{data.get('phase', '')}:{data.get('sequence', '')}"
+        elif event_type == 'turn_complete':
+            # Use turn number and winner to identify unique turn completions
+            return f"{event_type}:{data.get('turn_number', '')}:{data.get('winner', '')}:{data.get('timestamp', '')}"
+        elif event_type == 'play':
+            return f"{event_type}:{data.get('player', '')}:{data.get('sequence', '')}:{data.get('timestamp', '')}"
+        elif event_type == 'declaration':
+            return f"{event_type}:{data.get('player', '')}:{data.get('value', '')}:{data.get('sequence', '')}"
+        else:
+            # Generic hash for other events using key data points
+            import hashlib
+            # Create a stable hash from the most important data fields
+            key_fields = ['player', 'round', 'turn_number', 'phase', 'sequence', 'timestamp']
+            hash_data = {k: data.get(k, '') for k in key_fields if k in data}
+            data_str = f"{event_type}:{str(sorted(hash_data.items()))}"
+            return hashlib.md5(data_str.encode()).hexdigest()[:16]
+    
     async def broadcast(self, room_id: str, event: str, data: dict):
         """
         Enhanced broadcast with debugging specifically for lobby
         """
         print(f"DEBUG_WS: Entering broadcast method for room {room_id}, event {event}")
         
-        # 🔧 SOLUTION 3: Implement broadcast deduplication
-        # Create hash of event type and key data
+        # 🔧 SOLUTION 3 ENHANCED: Comprehensive broadcast deduplication with critical message bypass
+        # Skip deduplication for critical phase transitions and updates
         phase = data.get('phase', '')
-        sequence = data.get('sequence', '')
-        event_hash = f"{event}:{phase}:{sequence}"
+        is_immediate = data.get('immediate', False)
         
-        # Check if this is a duplicate broadcast
-        last_time = self._last_broadcast.get(f"{room_id}:{event_hash}", 0)
-        if time.time() - last_time < self._broadcast_cooldown:
-            print(f"🔧 DEDUP_DEBUG: Skipping duplicate broadcast: {event_hash}")
-            return
+        if event == 'phase_change' and (phase == 'declaration' or is_immediate):
+            # Allow declaration updates and immediate phase transitions through
+            print(f"🔧 BROADCAST_DEDUP: Allowing critical phase_change through (phase={phase}, immediate={is_immediate})")
+        else:
+            # Apply deduplication for other events
+            event_hash = self._create_event_hash(event, data)
+            
+            # Check if this is a duplicate broadcast
+            last_time = self._last_broadcast.get(f"{room_id}:{event_hash}", 0)
+            if time.time() - last_time < self._broadcast_cooldown:
+                print(f"🔧 DEDUP_DEBUG: Skipping duplicate {event} broadcast: {event_hash}")
+                return
+            
+            # Update last broadcast time
+            self._last_broadcast[f"{room_id}:{event_hash}"] = time.time()
         
-        # Update last broadcast time
-        self._last_broadcast[f"{room_id}:{event_hash}"] = time.time()
+        # Clean up old deduplication entries (older than 10 seconds)
+        current_time = time.time()
+        self._last_broadcast = {
+            k: v for k, v in self._last_broadcast.items() 
+            if current_time - v < 10.0
+        }
         # Add extra debugging for lobby
         if room_id == "lobby":
             print(f"🔔 LOBBY_BROADCAST: Attempting to broadcast '{event}' to lobby")
@@ -421,6 +521,8 @@ class SocketManager:
         Returns:
             bool: True if message was sent (not necessarily acknowledged)
         """
+        # Ensure retry task is started
+        await self._ensure_retry_task_started()
         # Generate sequence number
         sequence = self._next_sequence(room_id)
         
@@ -703,10 +805,46 @@ class SocketManager:
         if "lobby" not in self.broadcast_tasks or self.broadcast_tasks["lobby"].done():
             self.broadcast_tasks["lobby"] = asyncio.create_task(self._process_broadcast_queue("lobby"))
             print(f"🔔 LOBBY_BROADCAST: Created/restarted lobby broadcast task")
+    
+    async def clear_room_queue(self, room_id: str, event_types: list = None):
+        """
+        Clear specific event types from a room's broadcast queue
+        🔧 FIX: Method to clear stale messages from queue
+        """
+        if room_id not in self.broadcast_queues:
+            return
+        
+        queue = self.broadcast_queues[room_id]
+        messages_to_keep = []
+        cleared_count = 0
+        
+        # Drain the queue
+        while not queue.empty():
+            try:
+                msg = queue.get_nowait()
+                # Keep message if event_types not specified or event not in types to clear
+                if event_types is None or msg.get('event') not in event_types:
+                    messages_to_keep.append(msg)
+                else:
+                    cleared_count += 1
+            except asyncio.QueueEmpty:
+                break
+        
+        # Put back messages we want to keep
+        for msg in messages_to_keep:
+            await queue.put(msg)
+        
+        if cleared_count > 0:
+            print(f"🧹 QUEUE_CLEAR: Cleared {cleared_count} {event_types or 'all'} messages from room {room_id}")
+        
+        return cleared_count
 
 
 # CREATE SINGLETON INSTANCE
 _socket_manager = SocketManager()
+
+# Track state managers by room_id for version/checksum injection
+room_state_managers = {}
 
 # EXPORT MODULE-LEVEL FUNCTIONS (THIS WAS MISSING!)
 async def register(room_id: str, websocket: WebSocket) -> WebSocket:
@@ -716,6 +854,14 @@ def unregister(room_id: str, websocket: WebSocket):
     _socket_manager.unregister(room_id, websocket)
 
 async def broadcast(room_id: str, event: str, data: dict):
+    # Add version/checksum to phase_change events
+    if event == "phase_change" and room_id in room_state_managers:
+        state_manager = room_state_managers[room_id]
+        if state_manager and state_manager.current_snapshot:
+            data['version'] = state_manager.current_snapshot.version
+            data['checksum'] = state_manager.current_snapshot.checksum
+            data['server_timestamp'] = state_manager.current_snapshot.timestamp
+    
     await _socket_manager.broadcast(room_id, event, data)
 
 def get_room_stats(room_id: str = None) -> dict:
@@ -723,3 +869,7 @@ def get_room_stats(room_id: str = None) -> dict:
 
 def ensure_lobby_ready():
     _socket_manager.ensure_lobby_broadcast_task()
+
+async def clear_room_queue(room_id: str, event_types: list = None):
+    """Clear specific event types from a room's broadcast queue"""
+    return await _socket_manager.clear_room_queue(room_id, event_types)

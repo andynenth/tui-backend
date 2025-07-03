@@ -1,3 +1,5 @@
+// frontend/src/services/GameService.ts
+
 /**
  * 🎮 **GameService** - Single Source of Truth for Game State (TypeScript)
  * 
@@ -657,8 +659,7 @@ export class GameService extends EventTarget {
           console.log(`🔢 FRONTEND_TURN_DEBUG: phaseData.current_turn_number = ${phaseData.current_turn_number}`);
           newState.currentTurnNumber = phaseData.current_turn_number || 0;
           
-          // Calculate turn-specific UI state
-          newState.canPlayAnyCount = !newState.requiredPieceCount && newState.isMyTurn;
+          // Note: canPlayAnyCount will be calculated in updateDerivedState after isMyTurn is properly set
           newState.selectedPlayValue = 0; // Will be updated when player selects pieces
           break;
           
@@ -896,8 +897,20 @@ export class GameService extends EventTarget {
     console.log(`🎲 PLAY_DEBUG: Transformed play data:`, playData);
     console.log(`🎲 PLAY_DEBUG: Cards array:`, playData.cards);
     
-    // Note: We don't update currentTurnPlays here anymore since enterprise phase_change events
-    // contain the authoritative turn_plays data. This prevents conflicts and ensures consistency.
+    // Update currentTurnPlays with the new play
+    // Since backend sends individual play events, we need to accumulate them
+    const existingPlays = state.currentTurnPlays || [];
+    const updatedPlays = [...existingPlays];
+    
+    // Check if this player already has a play (replace if so, add if not)
+    const existingIndex = updatedPlays.findIndex(play => play.player === data.player);
+    if (existingIndex >= 0) {
+      updatedPlays[existingIndex] = playData;
+      console.log(`🎲 PLAY_UPDATE_DEBUG: Updated existing play for ${data.player}`);
+    } else {
+      updatedPlays.push(playData);
+      console.log(`🎲 PLAY_UPDATE_DEBUG: Added new play for ${data.player}, total plays: ${updatedPlays.length}`);
+    }
     
     // 🚀 ENTERPRISE FIX: Don't set requiredPieceCount from play events
     // The backend phase_change events contain the authoritative required_piece_count
@@ -928,8 +941,7 @@ export class GameService extends EventTarget {
     return {
       ...state,
       phase: newPhase,
-      // Don't override currentTurnPlays - let phase_change events be authoritative 
-      // currentTurnPlays: managed by phase_change events in enterprise architecture
+      currentTurnPlays: updatedPlays, // Include the updated plays
       requiredPieceCount,
       currentPlayer: newCurrentPlayer,
       // Clear turn results data when transitioning to new turn
@@ -1045,6 +1057,26 @@ export class GameService extends EventTarget {
     
     // Calculate isMyTurn
     newState.isMyTurn = this.calculateIsMyTurn(state);
+    
+    // Calculate turn-specific UI state (needs to happen after isMyTurn is calculated)
+    if (state.phase === 'turn') {
+      const isTurnStarter = state.currentTurnStarter === state.playerName;
+      
+      // Check if this is the first play by counting how many players have played
+      const isFirstPlay = state.currentTurnPlays.length === 0;
+      
+      newState.canPlayAnyCount = isTurnStarter && isFirstPlay && newState.isMyTurn;
+      
+      // Debug logging for turn starter calculation
+      console.log(`🎯 TURN_STARTER_DEBUG: Player ${state.playerName}`);
+      console.log(`🎯 TURN_STARTER_DEBUG: currentTurnStarter = ${state.currentTurnStarter}`);
+      console.log(`🎯 TURN_STARTER_DEBUG: currentPlayer = ${state.currentPlayer}`);
+      console.log(`🎯 TURN_STARTER_DEBUG: currentTurnPlays.length = ${state.currentTurnPlays.length}`);
+      console.log(`🎯 TURN_STARTER_DEBUG: isTurnStarter = ${isTurnStarter}`);
+      console.log(`🎯 TURN_STARTER_DEBUG: isFirstPlay = ${isFirstPlay} (no plays yet)`);
+      console.log(`🎯 TURN_STARTER_DEBUG: isMyTurn = ${newState.isMyTurn}`);
+      console.log(`🎯 TURN_STARTER_DEBUG: canPlayAnyCount = ${newState.canPlayAnyCount}`);
+    }
     
     // Calculate allowed actions
     newState.allowedActions = this.calculateAllowedActions(state);

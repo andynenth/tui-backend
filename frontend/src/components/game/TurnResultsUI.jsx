@@ -38,7 +38,8 @@ export function TurnResultsUI({
   const [isSkipped, setIsSkipped] = useState(false);
   
   // Extract display configuration from metadata
-  const showForSeconds = displayMetadata?.show_for_seconds || 7.0;
+  // Phase 5.2: Reduce auto-advance timer for <50ms state sync optimization
+  const showForSeconds = displayMetadata?.show_for_seconds || 3.0; // Reduced from 7.0s to 3.0s
   const autoAdvance = displayMetadata?.auto_advance !== false;
   const canSkip = displayMetadata?.can_skip !== false;
   // 🚀 EVENT-DRIVEN: Auto-advance timer

@@ -56,8 +56,8 @@ export function TurnUI({
   const [showConfirmation, setShowConfirmation] = useState(false);
   
   const hasActiveTurn = currentTurnPlays.length > 0;
-  const isFirstPlayer = canPlayAnyCount;
-  const isStarterValidationRequired = isFirstPlayer && !hasActiveTurn && isMyTurn;
+  const isTurnStarter = canPlayAnyCount; // canPlayAnyCount is true only for the turn starter on their first play
+  const isStarterValidationRequired = isTurnStarter && !hasActiveTurn && isMyTurn;
   const selectedCards = selectedIndices.map(index => myHand[index]);
   
   // Calculate selected play value locally using same logic as GamePiece
@@ -78,7 +78,7 @@ export function TurnUI({
           return [index]; // Replace with single selection
         }
         // First player can play 1-6 pieces
-        if (isFirstPlayer && newSelection.length > 6) {
+        if (isTurnStarter && newSelection.length > 6) {
           console.log(`🎯 TURN_UI: Too many cards selected for first player, keeping previous selection`);
           return prev; // Don't allow more than 6
         }
@@ -106,7 +106,7 @@ export function TurnUI({
   
   const canPlay = selectedIndices.length > 0 && 
     (requiredPieceCount === null || selectedIndices.length === requiredPieceCount) &&
-    (isFirstPlayer ? selectedIndices.length >= 1 && selectedIndices.length <= 6 : true);
+    (isTurnStarter ? selectedIndices.length >= 1 && selectedIndices.length <= 6 : true);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-red-900 to-orange-900 p-4">
@@ -195,7 +195,7 @@ export function TurnUI({
               <div className="text-center text-gray-400 py-8">
                 <div className="text-4xl mb-2">🎯</div>
                 <p>No plays yet this turn</p>
-                {isFirstPlayer && (
+                {isTurnStarter && (
                   <p className="text-sm mt-1 text-yellow-300">
                     You set the piece count for this turn (1-6 pieces)
                   </p>
@@ -248,7 +248,7 @@ export function TurnUI({
                 Selected: {selectedIndices.length} card{selectedIndices.length !== 1 ? 's' : ''}
                 {requiredPieceCount !== null ? (
                   <span className="ml-2">(Need {requiredPieceCount})</span>
-                ) : isFirstPlayer ? (
+                ) : isTurnStarter ? (
                   <span className="ml-2">(Choose 1-6)</span>
                 ) : null}
               </div>
@@ -268,11 +268,11 @@ export function TurnUI({
               {!showConfirmation ? (
                 <div>
                   <h3 className="text-lg font-semibold text-blue-200 mb-4 text-center">
-                    {isFirstPlayer ? "Set the Turn" : "Play Your Cards"}
+                    {isTurnStarter ? "Set the Turn" : "Play Your Cards"}
                   </h3>
                   
                   <div className="text-center mb-6">
-                    {isFirstPlayer ? (
+                    {isTurnStarter ? (
                       <div className="space-y-2">
                         <p className="text-blue-100">
                           As the first player, you can play 1-6 pieces and set the count for this turn.
@@ -323,7 +323,7 @@ export function TurnUI({
                     >
                       {canPlay ? "🎯 Play Cards" : 
                         selectedIndices.length === 0 ? "Select Cards to Play" :
-                        isFirstPlayer && selectedIndices.length > 6 ? "Too Many Cards (Max 6)" :
+                        isTurnStarter && selectedIndices.length > 6 ? "Too Many Cards (Max 6)" :
                         requiredPieceCount && selectedIndices.length !== requiredPieceCount ? 
                           `Need ${requiredPieceCount} Cards` : "Invalid Selection"
                       }
@@ -362,7 +362,7 @@ export function TurnUI({
                         Playing {selectedCards.length} card{selectedCards.length !== 1 ? 's' : ''} 
                         (Total Value: {calculatedSelectedValue})
                       </div>
-                      {isFirstPlayer && (
+                      {isTurnStarter && (
                         <div className="text-yellow-300 text-sm mt-2">
                           This will set the piece count to {selectedCards.length} for all players this turn
                         </div>
@@ -421,7 +421,7 @@ export function TurnUI({
           {requiredPieceCount !== null && (
             <div>Required pieces: {requiredPieceCount}</div>
           )}
-          {isFirstPlayer && !hasActiveTurn && (
+          {isTurnStarter && !hasActiveTurn && (
             <div className="text-yellow-300">You must make a valid play to start the turn</div>
           )}
         </div>

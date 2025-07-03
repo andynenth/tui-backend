@@ -1,0 +1,368 @@
+# 🎯 Liap Tui - Target Architecture Vision
+
+## What You'll Have After Refactoring
+
+This document shows the clean, maintainable architecture you'll have after completing the 6-week refactoring plan.
+
+## 1. State Management - Single Source of Truth
+
+### Before (Current Problems)
+```
+Player clicks "Play Cards" → Frontend updates optimistically → 
+Backend processes → Frontend receives update → State mismatch → 
+User sees cards still in hand → "Bug report: cards not removed!"
+```
+
+### After (Clean Solution)
+```
+Player clicks "Play Cards" → Action dispatched to backend → 
+Backend updates state → Versioned snapshot broadcast → 
+All clients update atomically → Everyone sees same state instantly
+```
+
+### Code Example - Clean State Flow
+```typescript
+// Frontend - Simple and predictable
+class GamePage {
+  const { gameState } = useUnifiedGameStore();  // Single source
+  
+  handlePlayCards(indices: number[]) {
+    // Just dispatch - no local state manipulation
+    gameActions.playCards(indices);
+    // UI automatically updates when backend confirms
+  }
+}
+
+// Backend - Authoritative state
+class GameStateManager {
+  async handlePlayCards(player: string, cards: Card[]) {
+    // Validate
+    if (!this.validatePlay(player, cards)) return;
+    
+    // Update state atomically
+    this.state = {
+      ...this.state,
+      version: this.state.version + 1,
+      players: this.updatePlayerHand(player, cards),
+      lastAction: { type: 'PLAY_CARDS', player, cards }
+    };
+    
+    // Broadcast versioned snapshot
+    await this.broadcast(this.state);
+  }
+}
+```
+
+## 2. Clean Component Architecture
+
+### Backend Structure
+```
+backend/
+├── domain/                 # Pure business logic (no dependencies)
+│   ├── entities/
+│   │   ├── Game.py        # 50 lines - just game data
+│   │   ├── Player.py      # 30 lines - just player data
+│   │   └── Card.py        # 20 lines - just card data
+│   ├── rules/
+│   │   ├── PlayValidator.py     # 80 lines - validation only
+│   │   └── ScoreCalculator.py   # 60 lines - scoring only
+│   └── value_objects/
+│       └── GamePhase.py         # 15 lines - phase enum
+│
+├── application/           # Use cases (depends only on domain)
+│   ├── services/
+│   │   ├── GameService.py       # 100 lines - game coordination
+│   │   ├── StateTransitions.py  # 80 lines - phase changes
+│   │   └── BotService.py        # 90 lines - AI decisions
+│   └── ports/            # Interfaces for infrastructure
+│       ├── EventBus.py          # 20 lines - interface
+│       └── StateStore.py        # 15 lines - interface
+│
+└── infrastructure/       # External concerns (implements ports)
+    ├── websocket/
+    │   └── ConnectionManager.py  # 150 lines - WebSocket only
+    ├── events/
+    │   └── UnifiedEventBus.py    # 120 lines - event handling
+    └── monitoring/
+        └── MetricsCollector.py   # 80 lines - monitoring
+```
+
+### Frontend Structure
+```
+frontend/src/
+├── stores/                # State management
+│   ├── UnifiedGameStore.ts      # 100 lines - single source
+│   └── ConnectionStore.ts       # 50 lines - connection state
+│
+├── services/             # Backend communication
+│   ├── GameActions.ts          # 80 lines - action dispatching
+│   └── NetworkService.ts       # 150 lines - WebSocket handling
+│
+├── components/           # Pure UI components
+│   ├── game/
+│   │   ├── GameBoard.tsx       # 60 lines - display only
+│   │   ├── PlayerHand.tsx      # 40 lines - display only
+│   │   └── ActionButtons.tsx   # 50 lines - user inputs
+│   └── shared/
+│       └── LoadingStates.tsx   # 30 lines - loading UI
+│
+└── pages/               # Page orchestration
+    └── GamePage.tsx            # 120 lines - composition only
+```
+
+## 3. Event Flow - Simple and Predictable
+
+### Single Event Pipeline
+```
+User Action → GameActions.dispatch() → WebSocket → Backend receives →
+→ Validate → Update State → UnifiedEventBus.publish() →
+→ [Event Store, WebSocket Broadcast, Monitoring] → Clients update
+```
+
+### Event Examples
+```python
+# All events follow same pattern
+@dataclass
+class GameEvent:
+    id: str = field(default_factory=lambda: uuid4())
+    timestamp: float = field(default_factory=time.time)
+    room_id: str
+    type: EventType
+    data: dict
+    version: int
+    correlation_id: str
+
+# Clean event handling
+class UnifiedEventBus:
+    async def publish(self, event: GameEvent):
+        # Single pipeline for ALL events
+        await self.store_event(event)      # For replay/debugging
+        await self.broadcast_event(event)  # To all clients
+        await self.monitor_event(event)    # For metrics
+```
+
+## 4. Dependency Flow - Clean and Testable
+
+### Dependency Graph (No Circles!)
+```
+Domain Layer
+    ↓ (depends on nothing)
+Application Layer  
+    ↓ (depends only on Domain)
+Infrastructure Layer
+    ↓ (depends on Application interfaces)
+External Systems (WebSocket, Database, etc.)
+```
+
+### Example - Clean Dependencies
+```python
+# Domain - Pure business logic
+class Game:
+    def play_cards(self, player: Player, cards: List[Card]) -> PlayResult:
+        # Pure logic - no external dependencies
+        if not self.is_valid_play(cards):
+            return PlayResult(success=False, reason="Invalid play")
+        
+        player.remove_cards(cards)
+        return PlayResult(success=True, cards_played=cards)
+
+# Application - Orchestrates domain
+class PlayCardsUseCase:
+    def __init__(self, event_bus: EventBusPort, store: GameStorePort):
+        self.event_bus = event_bus  # Interface, not implementation
+        self.store = store
+    
+    async def execute(self, room_id: str, player_id: str, card_indices: List[int]):
+        game = await self.store.get_game(room_id)
+        result = game.play_cards(player_id, card_indices)
+        
+        if result.success:
+            await self.store.save_game(game)
+            await self.event_bus.publish(
+                CardsPlayedEvent(room_id, player_id, result.cards_played)
+            )
+        
+        return result
+
+# Infrastructure - Implements interfaces
+class WebSocketEventBus(EventBusPort):
+    async def publish(self, event: Event):
+        # WebSocket-specific implementation
+        await broadcast(event.room_id, event.type, event.data)
+```
+
+## 5. Monitoring Integration - Built-in Observability
+
+### Every Component Self-Reports
+```python
+class StateTransitionManager:
+    def __init__(self, monitor: HealthMonitor):
+        self.monitor = monitor
+    
+    async def transition_to(self, phase: GamePhase):
+        with self.monitor.track_operation("state_transition") as op:
+            # Transition logic
+            op.add_context({"from": self.current_phase, "to": phase})
+            result = await self._perform_transition(phase)
+            op.set_success(result.success)
+            return result
+```
+
+### Real-time Dashboards
+```
+┌─────────────────────────────────────────────────────────┐
+│                  System Health Dashboard                 │
+├──────────────────────┬──────────────────────────────────┤
+│ State Sync Health    │ ████████████████████ 99.9%      │
+│ Desyncs/hour: 0.1    │ Last desync: 3 hours ago        │
+├──────────────────────┼──────────────────────────────────┤
+│ Component Performance │ All methods < 50ms              │
+│ Slowest: BotService  │ ████████░░░░░░░░░░░ 45ms       │
+├──────────────────────┼──────────────────────────────────┤
+│ Memory Usage         │ ████████░░░░░░░░░░░ 42%         │
+│ Trend: Stable        │ No leaks detected               │
+├──────────────────────┼──────────────────────────────────┤
+│ Event Flow           │ 2,341 events/minute             │
+│ Delivery Rate: 100%  │ ████████████████████            │
+└──────────────────────┴──────────────────────────────────┘
+```
+
+## 6. Developer Experience - Joy to Work With
+
+### Clear Error Messages
+```python
+# Before: "KeyError: 'player'"
+# After:
+raise GameStateError(
+    f"Player '{player_name}' not found in room '{room_id}'. "
+    f"Available players: {', '.join(self.get_player_names())}"
+)
+```
+
+### Self-Documenting Code
+```python
+class PlayValidator:
+    """Validates card plays according to Liap Tui rules.
+    
+    A valid play must be:
+    - 1-6 cards of the same type (e.g., all CANNON)
+    - From the player's hand
+    - Matching the required count (if set by first player)
+    """
+    
+    def is_valid_play(self, cards: List[Card], required_count: int = None) -> ValidationResult:
+        """Check if a set of cards forms a valid play.
+        
+        Args:
+            cards: Cards the player wants to play
+            required_count: Number of cards required (None for first play)
+            
+        Returns:
+            ValidationResult with success flag and detailed reason
+        """
+```
+
+### Easy Testing
+```python
+# Unit tests are now possible!
+def test_play_validator():
+    validator = PlayValidator()
+    
+    # Test valid play
+    cards = [Card("CANNON_RED"), Card("CANNON_BLACK")]
+    result = validator.is_valid_play(cards)
+    assert result.success
+    
+    # Test invalid play
+    cards = [Card("CANNON_RED"), Card("HORSE_BLACK")]
+    result = validator.is_valid_play(cards)
+    assert not result.success
+    assert "different types" in result.reason
+```
+
+## 7. Production Operations - Confidence
+
+### Health Checks
+```bash
+curl http://localhost:5050/health/detailed
+
+{
+  "status": "healthy",
+  "components": {
+    "state_sync": "healthy - 0 desyncs in last hour",
+    "game_engine": "healthy - all games responsive",
+    "websocket": "healthy - 142 active connections",
+    "event_bus": "healthy - 100% delivery rate"
+  }
+}
+```
+
+### Debugging Tools
+```bash
+# Replay game from events
+python tools/replay_game.py --room-id ROOM123 --from-event 500
+
+# Analyze performance
+python tools/analyze_performance.py --component GameService --last-hour
+
+# Check architecture compliance
+python tools/check_architecture.py
+✅ No circular dependencies
+✅ All classes under 200 lines
+✅ All methods under 50ms
+✅ 94% test coverage
+```
+
+## What This Means For You
+
+### As a Developer
+- **Find bugs in minutes**, not hours
+- **Add features without breaking things**
+- **Understand any component in 5 minutes**
+- **Write tests easily**
+- **Sleep well** knowing monitoring will alert you
+
+### As a Player
+- **Instant UI updates** - no more confusion
+- **Consistent game state** - everyone sees the same thing
+- **Smooth gameplay** - no lag or delays
+- **Reliable connections** - automatic recovery
+- **Fair play** - authoritative backend prevents cheating
+
+### As a Project Owner
+- **Fast feature delivery** - clean architecture = fast development
+- **Low bug count** - most bugs prevented by design
+- **Easy onboarding** - new developers productive in days
+- **Scalable** - ready for more players and game modes
+- **Maintainable** - changes don't cascade into bugs
+
+## Migration Path
+
+You don't have to stop everything. The refactoring plan allows:
+- **Incremental migration** - one component at a time
+- **Parallel running** - old and new code side by side
+- **Feature flags** - gradual rollout
+- **Instant rollback** - if metrics degrade
+
+## Success Metrics Summary
+
+| Metric | Current | Target | Impact |
+|--------|---------|--------|--------|
+| State sync delays | 500-2000ms | < 50ms | No more "phantom bugs" |
+| Bug location time | 4-8 hours | < 30 min | Fast fixes |
+| Memory usage | 85%+ | < 60% | Stable performance |
+| Code complexity | 855 lines/class | < 200 lines | Easy to understand |
+| Test coverage | ~40% | > 90% | Confidence in changes |
+| Circular dependencies | Many | Zero | Clean architecture |
+
+## Final Vision
+
+After refactoring, Liap Tui will have:
+- **Architecture** that makes sense at first glance
+- **Code** that's a pleasure to work with
+- **Performance** that scales smoothly
+- **Monitoring** that catches issues before users
+- **Testing** that gives confidence
+- **Documentation** that's always up to date (it's the code!)
+
+The best part? This isn't a rewrite. It's a careful, monitored evolution of your existing system, preserving all the game logic you've built while fixing the architectural issues that cause recurring bugs.

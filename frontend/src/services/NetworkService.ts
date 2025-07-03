@@ -1,3 +1,5 @@
+// frontend/src/services/NetworkService.ts
+
 /**
  * 🌐 **NetworkService** - Robust WebSocket Connection Manager (TypeScript)
  * 
@@ -20,6 +22,7 @@ import type {
   ConnectionData,
   ReconnectState,
   NetworkMessage,
+  MessagePriority,
   ConnectionStatus,
   NetworkStatus,
   ConnectionEventDetail,
@@ -56,14 +59,14 @@ export class NetworkService extends EventTarget {
       throw new Error('NetworkService is a singleton. Use NetworkService.getInstance()');
     }
 
-    // Default configuration
+    // Default configuration - Phase 5.2 optimized for <50ms state sync
     this.config = {
       baseUrl: 'ws://localhost:5050/ws',
-      heartbeatInterval: 30000, // 30 seconds
+      heartbeatInterval: 5000, // 5 seconds (reduced from 30s)
       maxReconnectAttempts: 10,
-      reconnectBackoff: [1000, 2000, 4000, 8000, 16000], // exponential backoff
+      reconnectBackoff: [500, 1000, 2000, 4000, 8000], // faster initial retry (500ms vs 1s)
       messageQueueLimit: 1000,
-      connectionTimeout: 10000
+      connectionTimeout: 3000 // 3 seconds (reduced from 10s)
     };
   }
 
@@ -186,7 +189,8 @@ export class NetworkService extends EventTarget {
       data,
       sequence: sequenceNumber,
       timestamp: Date.now(),
-      id: crypto.randomUUID()
+      id: crypto.randomUUID(),
+      priority: this.getMessagePriority(event) // Phase 5.2: Add message priority
     };
 
     const connectionData = this.connections.get(roomId);
@@ -226,27 +230,20 @@ export class NetworkService extends EventTarget {
 
     if (!connectionData) {
       return {
-        roomId,
-        status: 'disconnected',
-        connected: false,
-        queueSize,
-        reconnecting: reconnectState?.isReconnecting || false
+        isConnected: false,
+        isConnecting: false,
+        isReconnecting: reconnectState?.isReconnecting || false,
+        error: null,
+        roomId
       };
     }
 
     return {
-      roomId,
-      status: connectionData.status,
-      connected: connectionData.websocket?.readyState === WebSocket.OPEN,
-      connectedAt: connectionData.connectedAt,
-      uptime: Date.now() - connectionData.connectedAt,
-      messagesSent: connectionData.messagesSent,
-      messagesReceived: connectionData.messagesReceived,
-      lastActivity: connectionData.lastActivity,
-      latency: connectionData.latency,
-      queueSize,
-      reconnecting: reconnectState?.isReconnecting || false,
-      reconnectAttempts: reconnectState?.attempts || 0
+      isConnected: connectionData.websocket?.readyState === WebSocket.OPEN,
+      isConnecting: connectionData.status === 'connecting',
+      isReconnecting: reconnectState?.isReconnecting || false,
+      error: null,
+      roomId
     };
   }
 
@@ -335,6 +332,16 @@ export class NetworkService extends EventTarget {
    */
   private handleConnectionOpen(roomId: string): void {
     console.log(`🔗 Connection opened to room ${roomId}`);
+    
+    // Request current game state after connection/reconnection
+    const reconnectState = this.reconnectStates.get(roomId);
+    if (reconnectState && reconnectState.attempts > 0) {
+      console.log(`🔄 Requesting state sync after reconnection for room ${roomId}`);
+      this.send(roomId, 'sync_request', { 
+        reason: 'reconnection',
+        room_id: roomId 
+      });
+    }
   }
 
   /**
@@ -348,6 +355,14 @@ export class NetworkService extends EventTarget {
       const message = JSON.parse(event.data) as NetworkMessage;
       connectionData.messagesReceived++;
       connectionData.lastActivity = Date.now();
+      
+      // During reconnection, queue non-sync messages until state is restored
+      const reconnectState = this.reconnectStates.get(roomId);
+      if (reconnectState?.isReconnecting && message.event !== 'phase_change') {
+        console.log(`🔄 Queuing message during reconnection: ${message.event}`);
+        this.queueMessage(roomId, message);
+        return;
+      }
 
       // Handle heartbeat response
       if (message.event === 'pong' && message.data?.timestamp) {
@@ -364,6 +379,15 @@ export class NetworkService extends EventTarget {
       this.dispatchEvent(new CustomEvent<NetworkEventDetail>('message', {
         detail: { roomId, message, timestamp: Date.now() }
       }));
+      
+      // If this is a sync response, mark reconnection as complete and process queued messages
+      if (message.event === 'phase_change' && message.data?.sync_response) {
+        console.log(`🔄 Received sync response, processing queued messages for room ${roomId}`);
+        if (reconnectState) {
+          reconnectState.isReconnecting = false;
+        }
+        this.processQueuedMessages(roomId);
+      }
 
     } catch (error) {
       console.error(`Failed to parse message from ${roomId}:`, error);
@@ -460,9 +484,9 @@ export class NetworkService extends EventTarget {
       reconnectState.attempts++;
       await this.connectToRoom(roomId);
 
-      // Success - reset attempts
+      // Success - reset attempts but keep isReconnecting true until sync completes
       reconnectState.attempts = 0;
-      reconnectState.isReconnecting = false;
+      // Note: isReconnecting will be set to false when sync response is received
 
       this.dispatchEvent(new CustomEvent<ReconnectionEventDetail>('reconnected', {
         detail: { roomId, timestamp: Date.now() }
@@ -474,7 +498,7 @@ export class NetworkService extends EventTarget {
         
         // Try again if under limit
         if (reconnectState.attempts < this.config.maxReconnectAttempts) {
-          setTimeout(() => this.attemptReconnection(roomId), 1000);
+          setTimeout(() => this.attemptReconnection(roomId), 500); // Phase 5.2: Reduced from 1s to 500ms
         } else {
           reconnectState.isReconnecting = false;
           this.dispatchEvent(new CustomEvent<ReconnectionEventDetail>('reconnectionFailed', {
@@ -579,7 +603,13 @@ export class NetworkService extends EventTarget {
 
     console.log(`📤 Processing ${queue.length} queued messages for ${roomId}`);
     
-    const messages = [...queue];
+    // Phase 5.2: Sort messages by priority before processing
+    const messages = [...queue].sort((a, b) => {
+      const priorityOrder = { 'CRITICAL': 0, 'HIGH': 1, 'MEDIUM': 2, 'LOW': 3 };
+      const aPriority = priorityOrder[a.priority || 'MEDIUM'];
+      const bPriority = priorityOrder[b.priority || 'MEDIUM'];
+      return aPriority - bPriority;
+    });
     queue.length = 0; // Clear queue
 
     for (const message of messages) {
@@ -608,6 +638,29 @@ export class NetworkService extends EventTarget {
    */
   private getQueueSize(roomId: string): number {
     return this.messageQueues.get(roomId)?.length || 0;
+  }
+
+  /**
+   * Phase 5.2: Get message priority based on event type for state sync optimization
+   */
+  private getMessagePriority(event: string): MessagePriority {
+    // Critical state synchronization messages
+    if (['phase_change', 'sync_request', 'sync_response'].includes(event)) {
+      return 'CRITICAL';
+    }
+    
+    // High priority game actions
+    if (['play', 'declare', 'accept_redeal', 'decline_redeal', 'turn_complete'].includes(event)) {
+      return 'HIGH';
+    }
+    
+    // Medium priority connection/status messages
+    if (['client_ready', 'pong', 'get_rooms', 'create_room', 'join_room'].includes(event)) {
+      return 'MEDIUM';
+    }
+    
+    // Low priority heartbeat and diagnostics
+    return 'LOW'; // ping, status updates, etc.
   }
 }
 

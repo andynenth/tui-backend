@@ -6,6 +6,7 @@ from engine.state_machine.game_state_machine import GameStateMachine
 from engine.state_machine.core import GamePhase
 from typing import Optional # Import Optional for type hinting variables that can be None.
 import asyncio
+from backend.migration.phase1.state_manager_hook import setup_state_manager_integration
 
 class Room:
     """
@@ -26,6 +27,7 @@ class Room:
         self.started = False # Boolean flag indicating if the game in this room has started.
         self.game: Optional[Game] = None # The Game instance associated with this room, initially None.
         self.game_state_machine: Optional[GameStateMachine] = None # State machine for game logic
+        self.state_manager = None  # State manager for versioned state tracking
 
         self._assign_lock = asyncio.Lock()  # Prevent concurrent slot assignments
         self._join_lock = asyncio.Lock()    # Prevent concurrent room joins
@@ -188,6 +190,18 @@ class Room:
                 
                 # Start state machine after bot manager is registered
                 await self.game_state_machine.start(GamePhase.PREPARATION)
+                
+                # Add StateManager integration for versioned state tracking
+                self.state_manager = setup_state_manager_integration(
+                    self.game_state_machine,
+                    self.room_id
+                )
+                
+                # Register with socket manager for version/checksum injection
+                from backend.socket_manager import room_state_managers
+                room_state_managers[self.room_id] = self.state_manager
+                
+                print(f"✅ [Room {self.room_id}] StateManager integrated with version tracking")
                 
                 self.started = True
                 

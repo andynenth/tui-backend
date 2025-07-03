@@ -5,6 +5,11 @@
  * Provides type safety for complex game state management
  */
 
+// ===== COMMON TYPES =====
+
+export type GamePhase = 'waiting' | 'preparation' | 'declaration' | 'turn' | 'turn_results' | 'scoring';
+// PhaseData type defined below
+
 // ===== NETWORK SERVICE TYPES =====
 
 export interface NetworkConfig {
@@ -34,27 +39,23 @@ export interface ReconnectState {
   abortController: AbortController | null;
 }
 
+export type MessagePriority = 'CRITICAL' | 'HIGH' | 'MEDIUM' | 'LOW';
+
 export interface NetworkMessage {
   event: string;
   data: Record<string, any>;
   sequence: number;
   timestamp: number;
   id: string;
+  priority?: MessagePriority; // Phase 5.2: Add priority for state sync optimization
 }
 
 export interface ConnectionStatus {
-  roomId: string;
-  status: string;
-  connected: boolean;
-  connectedAt?: number;
-  uptime?: number;
-  messagesSent?: number;
-  messagesReceived?: number;
-  lastActivity?: number;
-  latency?: number | null;
-  queueSize: number;
-  reconnecting: boolean;
-  reconnectAttempts?: number;
+  isConnected: boolean;
+  isConnecting: boolean;
+  isReconnecting: boolean;
+  error: string | null;
+  roomId?: string | null;
 }
 
 export interface NetworkStatus {

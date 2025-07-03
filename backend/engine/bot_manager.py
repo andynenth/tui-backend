@@ -315,6 +315,12 @@ class GameBotHandler:
                                 else:
                                     last_player = ""
                                     
+                                # 🚀 SAFETY CHECK: Only trigger if current player is actually a bot and hasn't played
+                                turn_plays = phase_data.get('turn_plays', {})
+                                if current_player in turn_plays:
+                                    print(f"🎯 ENTERPRISE_BOT_DEBUG: Current player {current_player} has already played - skipping")
+                                    return
+                                
                                 print(f"🔧 DEADLOCK_FIX: About to create fire-and-forget task for _handle_play_phase with last_player='{last_player}' for current_player='{current_player}'")
                                 # 🔧 DEADLOCK_FIX: Use fire-and-forget to prevent deadlock with EventProcessor
                                 asyncio.create_task(self._handle_play_phase(last_player))
@@ -682,25 +688,62 @@ class GameBotHandler:
             print(f"🎯 PLAY_PHASE_DEBUG: No turn order available, skipping bot plays")
             return
             
-        # Find next players to play
-        last_index = self._get_player_index(last_player, turn_order)
-        
-        print(f"🎯 PLAY_PHASE_DEBUG: Last player: {last_player}, last_index: {last_index}")
-        
-        # FIX: Only process the NEXT player, not all remaining players
-        # This prevents duplicate bot actions when multiple player_played events cascade
-        next_player_index = last_index + 1
-        if next_player_index >= len(turn_order):
-            print(f"🎯 PLAY_PHASE_DEBUG: No more players after {last_player}, turn should be complete")
-            return
-            
-        next_player_name = turn_order[next_player_index]
-        print(f"🎯 PLAY_PHASE_DEBUG: Checking next player {next_player_index}: {next_player_name}")
-        
-        # Check if next player already played this turn using state machine data
+        # 🚀 FIX: Use current state machine data instead of stale last_player context
         if self.state_machine:
             phase_data = self.state_machine.get_phase_data()
+            current_state_player = phase_data.get('current_player')
             turn_plays = phase_data.get('turn_plays', {})
+            
+            print(f"🎯 PLAY_PHASE_DEBUG: State machine current player: {current_state_player}")
+            print(f"🎯 PLAY_PHASE_DEBUG: Players who have played: {list(turn_plays.keys())}")
+            
+            # Use state machine's current player as the authoritative source
+            if current_state_player:
+                current_index = self._get_player_index(current_state_player, turn_order)
+                print(f"🎯 PLAY_PHASE_DEBUG: Current player {current_state_player} at index: {current_index}")
+                
+                # If current player hasn't played yet, they should play
+                if current_state_player not in turn_plays:
+                    next_player_name = current_state_player
+                    next_player_index = current_index
+                    print(f"🎯 PLAY_PHASE_DEBUG: Current player {current_state_player} hasn't played yet - triggering them")
+                else:
+                    # Current player has played, move to next player
+                    next_player_index = current_index + 1
+                    if next_player_index >= len(turn_order):
+                        print(f"🎯 PLAY_PHASE_DEBUG: No more players after {current_state_player}, turn should be complete")
+                        return
+                    next_player_name = turn_order[next_player_index]
+                    print(f"🎯 PLAY_PHASE_DEBUG: Current player {current_state_player} has played, checking next player {next_player_index}: {next_player_name}")
+            else:
+                print(f"🎯 PLAY_PHASE_DEBUG: No current player in state machine data")
+                return
+        else:
+            # Fallback to old logic if no state machine (should not happen)
+            print(f"⚠️ PLAY_PHASE_DEBUG: No state machine available, using fallback logic")
+            last_index = self._get_player_index(last_player, turn_order)
+            print(f"🎯 PLAY_PHASE_DEBUG: Last player: {last_player}, last_index: {last_index}")
+            
+            next_player_index = last_index + 1
+            if next_player_index >= len(turn_order):
+                print(f"🎯 PLAY_PHASE_DEBUG: No more players after {last_player}, turn should be complete")
+                return
+                
+            next_player_name = turn_order[next_player_index]
+            print(f"🎯 PLAY_PHASE_DEBUG: Checking next player {next_player_index}: {next_player_name}")
+        
+        # 🚀 SAFETY VALIDATION: Ensure we're triggering the correct bot
+        if self.state_machine:
+            phase_data = self.state_machine.get_phase_data()
+            state_current_player = phase_data.get('current_player')
+            turn_plays = phase_data.get('turn_plays', {})
+            
+            # Critical safety check: next player should match state machine's current player
+            if next_player_name != state_current_player:
+                print(f"⚠️ BOT_MANAGER_WARNING: Calculated next player {next_player_name} doesn't match state machine current player {state_current_player}")
+                print(f"⚠️ BOT_MANAGER_WARNING: This indicates stale context - aborting to prevent wrong bot trigger")
+                return
+            
             if next_player_name in turn_plays:
                 print(f"🎯 PLAY_PHASE_DEBUG: Player {next_player_name} already played this turn")
                 return
@@ -769,6 +812,22 @@ class GameBotHandler:
         """Make a bot play"""
         print(f"🔧 BOT_SUBMIT_DEBUG: _bot_play() method called for {bot.name}")
         print(f"🔧 BOT_SUBMIT_DEBUG: Bot hand: {[str(p) for p in bot.hand] if hasattr(bot, 'hand') else 'no hand'}")
+        
+        # 🚀 SAFETY CHECK: Verify this bot should actually be playing right now
+        if self.state_machine:
+            phase_data = self.state_machine.get_phase_data()
+            current_player = phase_data.get('current_player')
+            turn_plays = phase_data.get('turn_plays', {})
+            
+            # Check if it's actually this bot's turn
+            if current_player != bot.name:
+                print(f"⚠️ BOT_PLAY_SAFETY: Bot {bot.name} called to play but current player is {current_player} - aborting")
+                return
+                
+            # Check if this bot has already played this turn
+            if bot.name in turn_plays:
+                print(f"⚠️ BOT_PLAY_SAFETY: Bot {bot.name} has already played this turn - aborting")
+                return
         
         try:
             from socket_manager import broadcast
@@ -974,6 +1033,27 @@ class GameBotHandler:
     async def _bot_play_first(self, bot: Player):
         """Bot plays as first player"""
         from socket_manager import broadcast
+        
+        # 🚀 SAFETY CHECK: Verify this bot should be the first player
+        if self.state_machine:
+            phase_data = self.state_machine.get_phase_data()
+            current_player = phase_data.get('current_player')
+            current_turn_starter = phase_data.get('current_turn_starter')
+            turn_plays = phase_data.get('turn_plays', {})
+            
+            # Check if it's actually this bot's turn and they're the starter
+            if current_player != bot.name:
+                print(f"⚠️ BOT_PLAY_FIRST_SAFETY: Bot {bot.name} called to play first but current player is {current_player} - aborting")
+                return
+                
+            if current_turn_starter != bot.name:
+                print(f"⚠️ BOT_PLAY_FIRST_SAFETY: Bot {bot.name} called to play first but turn starter is {current_turn_starter} - aborting")
+                return
+                
+            # Check if this bot has already played this turn
+            if bot.name in turn_plays:
+                print(f"⚠️ BOT_PLAY_FIRST_SAFETY: Bot {bot.name} has already played this turn - aborting")
+                return
         
         try:
             print(f"🤖 Bot {bot.name} choosing first play...")

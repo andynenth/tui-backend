@@ -1,0 +1,33 @@
+{
+  "timestamp": "20250702_211037",
+  "checks": {
+    "Frontend UnifiedGameStore": false,
+    "Frontend NetworkIntegration": false,
+    "Frontend useGameStore hook": false,
+    "Backend StateManager": true,
+    "Backend StateSnapshot": true,
+    "Migration hook": true,
+    "fastapi": true,
+    "npm": true,
+    "git_branch": "event-driven"
+  },
+  "backups": [
+    {
+      "original": "../../socket_manager.py",
+      "backup": "migration_backups/phase1_20250702_211037/socket_manager.py"
+    },
+    {
+      "original": "../../api/routes/ws.py",
+      "backup": "migration_backups/phase1_20250702_211037/ws.py"
+    }
+  ],
+  "warnings": [
+    "Could not verify active games status",
+    "Uncommitted git changes"
+  ],
+  "errors": [
+    "Missing component: Frontend UnifiedGameStore",
+    "Missing component: Frontend NetworkIntegration",
+    "Missing component: Frontend useGameStore hook"
+  ]
+}
