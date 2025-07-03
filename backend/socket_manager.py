@@ -79,8 +79,6 @@ class SocketManager:
             "start_time": time.time()
         }
         
-        print(f"DEBUG_WS: Starting enhanced broadcast queue processor for room {room_id}.")
-        print(f"DEBUG_WS_QUEUE_START: Room {room_id} processor task starting, queue exists: {room_id in self.broadcast_queues}")
         
         while True:
             try:
@@ -88,7 +86,6 @@ class SocketManager:
                 # ✅ FIXED: Reduce timeout for lobby to make it more responsive
                 timeout = 0.5 if room_id == "lobby" else 1.0
                 message = await asyncio.wait_for(queue.get(), timeout=timeout)
-                print(f"DEBUG_WS_QUEUE: Room {room_id} got message: {message['event']}")
                 
                 event = message["event"]
                 data = message["data"]
@@ -99,7 +96,6 @@ class SocketManager:
                     active_websockets = list(self.room_connections.get(room_id, set()))
 
                 if not active_websockets:
-                    print(f"DEBUG_WS: No active connections found for room {room_id} during queue processing. Waiting for reconnection...")
                     # Wait for connections to return instead of re-queueing
                     await asyncio.sleep(0.5)  # Wait for potential reconnection
                     
@@ -108,13 +104,10 @@ class SocketManager:
                         active_websockets = list(self.room_connections.get(room_id, set()))
                     
                     if not active_websockets:
-                        print(f"DEBUG_WS: Still no connections for room {room_id}. Re-queueing message and continuing to wait.")
                         await self.broadcast_queues[room_id].put(message)
                         continue
                     else:
-                        print(f"DEBUG_WS: Connection restored for room {room_id}! Processing queued message.")
 
-                print(f"DEBUG_WS: Broadcasting event '{event}' (op_id: {operation_id}) to {len(active_websockets)} clients in room {room_id}.")
 
                 # Send to all active websockets with error tracking
                 failed_websockets = []
@@ -130,7 +123,6 @@ class SocketManager:
                             
                         await ws.send_json({"event": event, "data": data})
                         success_count += 1
-                        print(f"DEBUG_WS: Successfully sent '{event}' to a client in room {room_id}.")
                     except Exception as e:
                         print(f"DEBUG_WS: Error sending to client in room {room_id}: {e}")
                         if "not JSON serializable" in str(e):

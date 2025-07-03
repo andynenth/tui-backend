@@ -46,7 +46,6 @@ class PreparationState(GameState):
     async def _setup_phase(self) -> None:
         """Initialize preparation phase by dealing cards"""
         self.logger.info("🎴 Preparation phase starting - dealing cards")
-        print(f"🎴 PREP_STATE_DEBUG: Setup phase starting for room {getattr(self.state_machine, 'room_id', 'unknown')}")
         await self._deal_cards()
     
     async def _cleanup_phase(self) -> None:
@@ -65,8 +64,6 @@ class PreparationState(GameState):
         if game.current_player and (not hasattr(game, 'round_starter') or not game.round_starter):
             game.round_starter = game.current_player
         
-        print(f"🎯 PREP_STATE_DEBUG: Cleanup phase - current_player: {getattr(game, 'current_player', 'None')}")
-        print(f"🎯 PREP_STATE_DEBUG: Cleanup phase - round_starter: {getattr(game, 'round_starter', 'None')}")
         
         # Log final state
         multiplier = getattr(game, 'redeal_multiplier', 1)
@@ -81,16 +78,13 @@ class PreparationState(GameState):
         for player in game.players:
             player.declared = 0
             player.captured_piles = 0
-            print(f"🔄 PREP_RESET_DEBUG: Reset {player.name} - declared: 0, captured_piles: 0")
         
         # Use guaranteed no redeal for testing (no weak hands)
         if hasattr(game, '_deal_guaranteed_no_redeal'):
-            print(f"🎴 PREP_STATE_DEBUG: Using guaranteed no redeal dealing")
             # For testing: uncomment the line below to force player 1 (Bot 2) to get RED_GENERAL
             game._deal_guaranteed_no_redeal(red_general_player_index=1)
             # game._deal_guaranteed_no_redeal()
         elif hasattr(game, 'deal_pieces'):
-            print(f"🎴 PREP_STATE_DEBUG: Using normal dealing")
             game.deal_pieces()
         else:
             # Fallback for testing
@@ -110,7 +104,6 @@ class PreparationState(GameState):
                    f"weak players: {self.weak_players}")
         
         if self.weak_players:
-            print(f"🃏 PREP_STATE_DEBUG: Found weak players: {self.weak_players}")
             # Get current play order (might have changed due to redeal)
             if hasattr(game, 'get_player_order_from'):
                 # Determine current starter

@@ -94,13 +94,9 @@ class GameStateMachine:
     
     async def _process_loop(self):
         """Main processing loop for queued actions"""
-        print(f"🔍 STATE_MACHINE_DEBUG: Process loop started, is_running: {self.is_running}")
-        loop_count = 0
+        logger.info("State machine process loop started")
         while self.is_running:
             try:
-                loop_count += 1
-                if loop_count % 50 == 0:  # Log every 5 seconds
-                    print(f"🔍 STATE_MACHINE_DEBUG: Process loop iteration {loop_count}")
                 
                 # Process any pending actions
                 await self.process_pending_actions()
@@ -118,38 +114,32 @@ class GameStateMachine:
                 print(f"❌ STATE_MACHINE_DEBUG: Error in process loop: {e}")
                 logger.error(f"Error in process loop: {e}", exc_info=True)
         
-        print(f"🔍 STATE_MACHINE_DEBUG: Process loop ended")
+        logger.info("State machine process loop ended")
     
     async def process_pending_actions(self):
         """Process all actions in queue"""
         if not self.current_state:
-            print(f"🔍 STATE_MACHINE_DEBUG: No current state, skipping action processing")
             return
         
         actions = await self.action_queue.process_actions()
-        if actions:
-            print(f"🔍 STATE_MACHINE_DEBUG: Processing {len(actions)} actions")
         for action in actions:
             try:
-                print(f"🔍 STATE_MACHINE_DEBUG: Processing action: {action.action_type.value} from {action.player_name}")
                 result = await self.current_state.handle_action(action)
                 
                 # 🔧 FIX: Validate action result and notify bot manager of failures
                 if result is None:
-                    print(f"❌ STATE_MACHINE_DEBUG: Action rejected: {action.action_type.value} from {action.player_name}")
+                    logger.info(f"Action rejected: {action.action_type.value} from {action.player_name}")
                     await self._notify_bot_manager_action_rejected(action)
                 else:
-                    print(f"✅ STATE_MACHINE_DEBUG: Action processed successfully")
                     await self._notify_bot_manager_action_accepted(action, result)
                     
             except Exception as e:
-                print(f"❌ STATE_MACHINE_DEBUG: Error processing action: {e}")
                 logger.error(f"Error processing action: {e}", exc_info=True)
                 await self._notify_bot_manager_action_failed(action, str(e))
     
     async def _transition_to(self, new_phase: GamePhase):
         """Transition to a new phase"""
-        print(f"🔄 STATE_MACHINE_DEBUG: Attempting transition from {self.current_phase} to {new_phase}")
+        logger.info(f"Transitioning from {self.current_phase} to {new_phase}")
         
         # Validate transition (skip validation for initial transition)
         if self.current_phase and new_phase not in self._valid_transitions.get(self.current_phase, set()):
@@ -164,20 +154,14 @@ class GameStateMachine:
             return
         
         logger.info(f"🔄 Transitioning: {self.current_phase} -> {new_phase}")
-        print(f"✅ STATE_MACHINE_DEBUG: Transition validated, proceeding...")
-        
         # Exit current state
         if self.current_state:
-            print(f"🚪 STATE_MACHINE_DEBUG: Exiting current state: {self.current_state}")
             await self.current_state.on_exit()
         
         # Update phase and state
         old_phase = self.current_phase
         self.current_phase = new_phase
         self.current_state = new_state
-        
-        print(f"🎯 STATE_MACHINE_DEBUG: Phase updated: {old_phase} -> {self.current_phase}")
-        print(f"🎯 STATE_MACHINE_DEBUG: Entering new state: {self.current_state}")
         
         # Enter new state
         await self.current_state.on_enter()
@@ -271,7 +255,7 @@ class GameStateMachine:
                 logger.warning("⚠️ Room ID not set on state machine - skipping bot manager notification")
                 return
             
-            print(f"🤖 STATE_MACHINE_DEBUG: Notifying bot manager about phase {new_phase.value} for room {room_id}")
+            logger.info(f"Notifying bot manager about phase {new_phase.value}")
             
             if new_phase == GamePhase.DECLARATION:
                 # Trigger bot declarations
@@ -304,13 +288,10 @@ class GameStateMachine:
                 logger.warning("⚠️ Room ID not set on state machine - skipping bot manager notification")
                 return
             
-            print(f"🤖 ENTERPRISE_DATA_DEBUG: Notifying bot manager about data change - reason: {reason}")
-            
             # Check if it's declaration phase and if there's a current declarer
             if self.current_phase == GamePhase.DECLARATION:
                 current_declarer = phase_data.get('current_declarer')
                 if current_declarer:
-                    print(f"🤖 ENTERPRISE_DATA_DEBUG: Declaration phase - current declarer: {current_declarer}")
                     
                     # Send phase_change event with full data for bot to decide action
                     await bot_manager.handle_game_event(room_id, "phase_change", {
@@ -323,7 +304,6 @@ class GameStateMachine:
             elif self.current_phase == GamePhase.TURN:
                 current_player = phase_data.get('current_player')
                 if current_player:
-                    print(f"🤖 ENTERPRISE_DATA_DEBUG: Turn phase - current player: {current_player}")
                     
                     # Send phase_change event with full data for bot to decide action
                     await bot_manager.handle_game_event(room_id, "phase_change", {
@@ -398,7 +378,6 @@ class GameStateMachine:
                 logger.warning("⚠️ Room ID not set on state machine - skipping bot manager notification")
                 return
             
-            print(f"🚫 BOT_VALIDATION_DEBUG: Notifying bot manager of rejected action from {action.player_name}")
             
             await bot_manager.handle_game_event(room_id, "action_rejected", {
                 "player_name": action.player_name,
@@ -421,7 +400,6 @@ class GameStateMachine:
                 logger.warning("⚠️ Room ID not set on state machine - skipping bot manager notification")
                 return
             
-            print(f"✅ BOT_VALIDATION_DEBUG: Notifying bot manager of accepted action from {action.player_name}")
             
             await bot_manager.handle_game_event(room_id, "action_accepted", {
                 "player_name": action.player_name,
@@ -444,7 +422,6 @@ class GameStateMachine:
                 logger.warning("⚠️ Room ID not set on state machine - skipping bot manager notification")
                 return
             
-            print(f"💥 BOT_VALIDATION_DEBUG: Notifying bot manager of failed action from {action.player_name}")
             
             await bot_manager.handle_game_event(room_id, "action_failed", {
                 "player_name": action.player_name,
