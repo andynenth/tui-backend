@@ -106,8 +106,6 @@ class SocketManager:
                     if not active_websockets:
                         await self.broadcast_queues[room_id].put(message)
                         continue
-                    else:
-
 
                 # Send to all active websockets with error tracking
                 failed_websockets = []
