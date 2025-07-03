@@ -22,6 +22,8 @@ class GameStateMachine:
     
     def __init__(self, game, broadcast_callback=None):
         self.game = game
+        # Initialize room_id as None - will be set by Room class before starting
+        self.room_id = None
         # Pass room_id to ActionQueue for event storage
         room_id = getattr(game, 'room_id', None) if game else None
         self.action_queue = ActionQueue(room_id=room_id)
@@ -264,7 +266,10 @@ class GameStateMachine:
         try:
             from ..bot_manager import BotManager
             bot_manager = BotManager()
-            room_id = getattr(self, 'room_id', 'unknown')
+            room_id = getattr(self, 'room_id', None)
+            if not room_id:
+                logger.warning("⚠️ Room ID not set on state machine - skipping bot manager notification")
+                return
             
             print(f"🤖 STATE_MACHINE_DEBUG: Notifying bot manager about phase {new_phase.value} for room {room_id}")
             
@@ -294,7 +299,10 @@ class GameStateMachine:
         try:
             from ..bot_manager import BotManager
             bot_manager = BotManager()
-            room_id = getattr(self, 'room_id', 'unknown')
+            room_id = getattr(self, 'room_id', None)
+            if not room_id:
+                logger.warning("⚠️ Room ID not set on state machine - skipping bot manager notification")
+                return
             
             print(f"🤖 ENTERPRISE_DATA_DEBUG: Notifying bot manager about data change - reason: {reason}")
             
@@ -383,9 +391,12 @@ class GameStateMachine:
     async def _notify_bot_manager_action_rejected(self, action: GameAction):
         """Notify bot manager that an action was rejected by state machine"""
         try:
-            from backend.engine.bot_manager import BotManager
+            from ..bot_manager import BotManager
             bot_manager = BotManager()
-            room_id = getattr(self.game, 'room_id', 'unknown') if self.game else 'unknown'
+            room_id = getattr(self, 'room_id', None)
+            if not room_id:
+                logger.warning("⚠️ Room ID not set on state machine - skipping bot manager notification")
+                return
             
             print(f"🚫 BOT_VALIDATION_DEBUG: Notifying bot manager of rejected action from {action.player_name}")
             
@@ -403,9 +414,12 @@ class GameStateMachine:
     async def _notify_bot_manager_action_accepted(self, action: GameAction, result: dict):
         """Notify bot manager that an action was accepted and processed"""
         try:
-            from backend.engine.bot_manager import BotManager
+            from ..bot_manager import BotManager
             bot_manager = BotManager()
-            room_id = getattr(self.game, 'room_id', 'unknown') if self.game else 'unknown'
+            room_id = getattr(self, 'room_id', None)
+            if not room_id:
+                logger.warning("⚠️ Room ID not set on state machine - skipping bot manager notification")
+                return
             
             print(f"✅ BOT_VALIDATION_DEBUG: Notifying bot manager of accepted action from {action.player_name}")
             
@@ -423,9 +437,12 @@ class GameStateMachine:
     async def _notify_bot_manager_action_failed(self, action: GameAction, error_message: str):
         """Notify bot manager that an action failed during processing"""
         try:
-            from backend.engine.bot_manager import BotManager
+            from ..bot_manager import BotManager
             bot_manager = BotManager()
-            room_id = getattr(self.game, 'room_id', 'unknown') if self.game else 'unknown'
+            room_id = getattr(self, 'room_id', None)
+            if not room_id:
+                logger.warning("⚠️ Room ID not set on state machine - skipping bot manager notification")
+                return
             
             print(f"💥 BOT_VALIDATION_DEBUG: Notifying bot manager of failed action from {action.player_name}")
             

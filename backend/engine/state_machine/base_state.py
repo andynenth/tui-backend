@@ -136,7 +136,10 @@ class GameState(ABC):
                 sys.path.append(os.path.dirname(os.path.dirname(os.path.dirname(__file__))))
                 from socket_manager import broadcast
             
-            room_id = getattr(self.state_machine, 'room_id', 'unknown')
+            room_id = getattr(self.state_machine, 'room_id', None)
+            if not room_id:
+                self.logger.warning("⚠️ Room ID not set on state machine - skipping auto-broadcast")
+                return
             
             # Get player data if available (JSON-safe)
             players_data = {}
