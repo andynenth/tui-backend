@@ -1,0 +1,53 @@
+{
+  "timestamp": "20250702_211133",
+  "checks": {
+    "Frontend UnifiedGameStore": true,
+    "Frontend NetworkIntegration": true,
+    "Frontend useGameStore hook": true,
+    "Backend StateManager": true,
+    "Backend StateSnapshot": true,
+    "Migration hook": true,
+    "fastapi": true,
+    "npm": true,
+    "git_branch": "event-driven"
+  },
+  "backups": [
+    {
+      "original": "../../../frontend/src/App.jsx",
+      "backup": "migration_backups/phase1_20250702_211133/App.jsx"
+    },
+    {
+      "original": "../../../frontend/src/pages/GamePage.jsx",
+      "backup": "migration_backups/phase1_20250702_211133/GamePage.jsx"
+    },
+    {
+      "original": "../../socket_manager.py",
+      "backup": "migration_backups/phase1_20250702_211133/socket_manager.py"
+    },
+    {
+      "original": "../../api/routes/ws.py",
+      "backup": "migration_backups/phase1_20250702_211133/ws.py"
+    },
+    {
+      "original": "../../../frontend/src/services/GameService.ts",
+      "backup": "migration_backups/phase1_20250702_211133/GameService.ts"
+    },
+    {
+      "original": "../../../frontend/src/services/ServiceIntegration.ts",
+      "backup": "migration_backups/phase1_20250702_211133/ServiceIntegration.ts"
+    },
+    {
+      "original": "../../../frontend/src/hooks/useGameState.ts",
+      "backup": "migration_backups/phase1_20250702_211133/useGameState.ts"
+    },
+    {
+      "original": "../../../frontend/src/hooks/useGameActions.ts",
+      "backup": "migration_backups/phase1_20250702_211133/useGameActions.ts"
+    }
+  ],
+  "warnings": [
+    "Could not verify active games status",
+    "Uncommitted git changes"
+  ],
+  "errors": []
+}

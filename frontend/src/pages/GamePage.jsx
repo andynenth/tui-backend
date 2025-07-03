@@ -13,10 +13,15 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useApp } from '../contexts/AppContext';
-import { useGameState } from '../hooks/useGameState';
-import { useGameActions } from '../hooks/useGameActions';
+import { useGameStore } from '../stores/useGameStore';
 import { useConnectionStatus } from '../hooks/useConnectionStatus';
-import { serviceIntegration } from '../services/ServiceIntegration';
+import { networkService } from '../services/NetworkService';
+// Phase 6.1: Game Replay Tool integration
+import GameReplayUI from '../components/debug/GameReplayUI';
+// Phase 6.2: State Debug Tool integration
+import StateDebuggerUI from '../components/debug/StateDebuggerUI';
+// Phase 6.3: Sync Checker Tool integration
+import SyncCheckerUI from '../components/debug/SyncCheckerUI';
 
 // Import components
 import { GameContainer } from '../components/game/GameContainer';
@@ -28,13 +33,18 @@ const GamePage = () => {
   const { roomId } = useParams();
   const app = useApp();
   
-  // New service-based state management
-  const gameState = useGameState();
-  const gameActions = useGameActions();
+  // New store-based state management
+  const { gameState } = useGameStore();
   const connectionStatus = useConnectionStatus(roomId);
   
   const [showLeaveModal, setShowLeaveModal] = useState(false);
   const [isInitialized, setIsInitialized] = useState(false);
+  // Phase 6.1: Game Replay Tool state
+  const [showReplayTool, setShowReplayTool] = useState(false);
+  // Phase 6.2: State Debug Tool state
+  const [showStateDebugger, setShowStateDebugger] = useState(false);
+  // Phase 6.3: Sync Checker Tool state
+  const [showSyncChecker, setShowSyncChecker] = useState(false);
 
   // Initialize services and connect to room
   useEffect(() => {
@@ -50,7 +60,7 @@ const GamePage = () => {
         }
         
         if (roomId) {
-          await serviceIntegration.connectToRoom(roomId, playerName);
+          await networkService.connectToRoom(roomId);
           setIsInitialized(true);
         }
       } catch (error) {
@@ -76,10 +86,10 @@ const GamePage = () => {
       // Could show a modal instead of alert
       alert(`Game ended! ${winnerText}`);
       
-      // Navigate back to lobby after a delay
+      // Phase 5.2: Reduce navigation delay for <50ms state sync optimization
       setTimeout(() => {
         navigate('/lobby');
-      }, 3000);
+      }, 1000); // Reduced from 3s to 1s
     }
   }, [gameState.gameOver, gameState.winners, navigate]);
 
@@ -93,7 +103,7 @@ const GamePage = () => {
 
   const leaveGame = async () => {
     try {
-      await gameActions.disconnectFromRoom();
+      await networkService.disconnectFromRoom(roomId);
       navigate('/lobby');
     } catch (error) {
       console.error('Error leaving game:', error);
@@ -158,6 +168,34 @@ const GamePage = () => {
               </div>
             )}
 
+            {/* Debug Tools - Phase 6.1, 6.2 & 6.3 */}
+            <div className="flex items-center space-x-2">
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => setShowReplayTool(!showReplayTool)}
+                title="Game Replay Tool"
+              >
+                🎮 Replay
+              </Button>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => setShowStateDebugger(!showStateDebugger)}
+                title="State Debug Tool"
+              >
+                🔍 Debug
+              </Button>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => setShowSyncChecker(!showSyncChecker)}
+                title="Sync Checker Tool"
+              >
+                🔄 Sync
+              </Button>
+            </div>
+
             {/* Leave game button */}
             <Button
               variant="ghost"
@@ -210,7 +248,7 @@ const GamePage = () => {
                 <span className="text-sm">{gameState.error}</span>
               </div>
               <button
-                onClick={() => gameActions.triggerRecovery()}
+                onClick={() => networkService.reconnect()}
                 className="ml-2 text-xs underline hover:no-underline"
               >
                 Retry
@@ -218,6 +256,30 @@ const GamePage = () => {
             </div>
           </div>
         )}
+
+        {/* Phase 6.1: Game Replay Tool */}
+        <GameReplayUI
+          roomId={roomId}
+          playerName={gameState.playerName}
+          isVisible={showReplayTool}
+          onClose={() => setShowReplayTool(false)}
+        />
+
+        {/* Phase 6.2: State Debug Tool */}
+        <StateDebuggerUI
+          roomId={roomId}
+          playerName={gameState.playerName}
+          isVisible={showStateDebugger}
+          onClose={() => setShowStateDebugger(false)}
+        />
+
+        {/* Phase 6.3: Sync Checker Tool */}
+        <SyncCheckerUI
+          roomId={roomId}
+          playerName={gameState.playerName}
+          isVisible={showSyncChecker}
+          onClose={() => setShowSyncChecker(false)}
+        />
       </Layout>
 
       {/* Leave game confirmation */}

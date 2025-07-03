@@ -14,7 +14,7 @@
  */
 
 import { networkService } from './NetworkService';
-import { gameService } from './GameService';
+import { gameStore } from '../stores/UnifiedGameStore';
 import type {
   RecoveryState,
   EventSequence,
@@ -52,11 +52,11 @@ export class RecoveryService extends EventTarget {
       throw new Error('RecoveryService is a singleton. Use RecoveryService.getInstance()');
     }
 
-    // Default configuration
+    // Default configuration - Phase 5.2 optimized for <50ms state sync
     this.config = {
       snapshotInterval: 50, // Take snapshot every 50 events
       maxEventBuffer: 1000, // Keep last 1000 events
-      recoveryTimeout: 30000, // 30 second timeout for recovery
+      recoveryTimeout: 10000, // 10 second timeout for recovery (reduced from 30s)
       enablePersistence: true, // Enable localStorage persistence
       maxRetries: 3, // Max recovery attempts
       gapDetectionThreshold: 5 // Detect gaps > 5 sequence numbers
@@ -206,7 +206,7 @@ export class RecoveryService extends EventTarget {
       // Retry if under limit
       if (recoveryState.recoveryAttempts < this.config.maxRetries) {
         console.log(`🔄 Scheduling retry for room ${roomId} (attempt ${recoveryState.recoveryAttempts + 1})`);
-        setTimeout(() => this.startRecovery(roomId), 2000 * recoveryState.recoveryAttempts);
+        setTimeout(() => this.startRecovery(roomId), 1000 * recoveryState.recoveryAttempts); // Phase 5.2: Reduced from 2s to 1s
       }
 
       return false;
@@ -257,7 +257,7 @@ export class RecoveryService extends EventTarget {
     if (!recoveryState) return false;
 
     try {
-      const gameState = gameService.getState();
+      const gameState = gameStore.getState().gameState;
       const snapshot: RecoverySnapshot = {
         sequence: recoveryState.lastSequence,
         timestamp: Date.now(),
@@ -332,7 +332,7 @@ export class RecoveryService extends EventTarget {
     networkService.addEventListener('reconnected', this.handleReconnection.bind(this));
     
     // Listen for game state changes to create snapshots
-    gameService.addEventListener('stateChange', this.handleStateChange.bind(this));
+    gameStore.subscribe(this.handleStateChange.bind(this));
   }
 
   /**

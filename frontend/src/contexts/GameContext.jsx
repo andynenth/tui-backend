@@ -3,8 +3,9 @@
 
 import React, { createContext, useContext, useState, useEffect } from 'react';
 
-// Phase 1-4 service integration
-import { gameService, getServicesHealth } from '../services';
+// Phase 5 unified state management
+import { gameStore } from '../stores/UnifiedGameStore';
+import { networkService } from '../services/NetworkService';
 
 const GameContext = createContext(null);
 
@@ -26,27 +27,28 @@ export const GameProvider = ({
   const [error, setError] = useState(null);
   const [gameState, setGameState] = useState(null);
 
-  // Initialize Phase 1-4 Enterprise Services
+  // Initialize Phase 5 Unified State Management
   useEffect(() => {
-    const initializeGame = async () => {
+    const initializeGame = () => {
       try {
-        const health = getServicesHealth();
-        
-        if (health.overall.healthy && roomId && playerName) {
-          console.log('🚀 GAME_CONTEXT: Phase 1-4 Enterprise Architecture initializing');
+        if (roomId && playerName) {
+          console.log('🚀 GAME_CONTEXT: Phase 5 Unified State Management initializing');
           
-          // Subscribe to game service state changes
-          const unsubscribe = gameService.addListener((state) => {
-            setGameState(state);
+          // Set player info in unified store
+          gameStore.setState({ roomId, playerName });
+          
+          // Subscribe to unified game store changes
+          const unsubscribe = gameStore.subscribe((state) => {
+            setGameState(state.gameState);
           });
           
           // Get initial state
-          setGameState(gameService.getState());
+          setGameState(gameStore.getState().gameState);
           setIsInitialized(true);
           
           return unsubscribe;
         } else {
-          throw new Error('Phase 1-4 services not healthy or missing room/player data');
+          throw new Error('Missing room/player data');
         }
       } catch (err) {
         console.error('Failed to initialize GameContext:', err);
@@ -55,11 +57,12 @@ export const GameProvider = ({
     };
 
     if (roomId && playerName) {
-      initializeGame();
+      const cleanup = initializeGame();
+      return cleanup;
     }
   }, [roomId, playerName]);
 
-  // Provide simple context value focused on Phase 1-4 architecture
+  // Provide simple context value focused on Phase 5 unified state
   const contextValue = {
     // Basic state
     isInitialized,
@@ -67,25 +70,24 @@ export const GameProvider = ({
     playerName,
     roomId,
     
-    // Game state from Phase 1-4 services
+    // Game state from unified store
     gameState,
     
     // Current phase from game state
     currentPhase: gameState?.phase || 'waiting',
     
-    // Connection status (from services)
-    isConnected: getServicesHealth().network.healthy,
+    // Connection status from unified store
+    isConnected: gameStore.getState().connectionStatus.isConnected,
     
-    // Simple action methods that delegate to services
+    // Simple action methods that delegate to network service
     actions: {
-      // Services handle the actual implementation
-      leaveGame: () => gameService.disconnect(),
+      leaveGame: () => networkService.disconnectFromRoom(roomId),
     },
     
     // Legacy compatibility properties (simplified)
-    myHand: gameState?.hand || [],
-    scores: gameState?.scores || {},
-    isMyTurn: gameState?.currentPlayer === playerName,
+    myHand: gameState?.myHand || [],
+    scores: gameState?.totalScores || {},
+    isMyTurn: gameState?.isMyTurn || false,
   };
 
   return (

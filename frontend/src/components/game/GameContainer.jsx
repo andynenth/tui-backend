@@ -12,9 +12,12 @@
 
 import React, { useMemo } from 'react';
 import PropTypes from 'prop-types';
-import useGameState from "../../hooks/useGameState";
-import useGameActions from "../../hooks/useGameActions";
-import useConnectionStatus from "../../hooks/useConnectionStatus";
+import { useGameStore } from '../../stores/useGameStore';
+import { useConnectionStatus } from '../../hooks/useConnectionStatus';
+import { networkService } from '../../services/NetworkService';
+// Phase 5.3: Enhanced action management with clean state flow
+import { useGameActions } from '../../hooks/useActionManager';
+import ActionFeedback from '../ui/ActionFeedback';
 
 // Import Pure UI Components
 import WaitingUI from './WaitingUI';
@@ -29,9 +32,29 @@ import ErrorBoundary from "../ErrorBoundary";
  * Smart container that connects pure UI components to game state
  */
 export function GameContainer({ roomId }) {
-  const gameState = useGameState();
-  const gameActions = useGameActions();
+  const { gameState } = useGameStore();
   const connectionStatus = useConnectionStatus(roomId);
+  
+  // Phase 5.3: Enhanced action management with clean state flow
+  const {
+    playPieces,
+    makeDeclaration,
+    submitRedealDecision,
+    requestRedeal,
+    isPlayingPieces,
+    isDeclaring,
+    isSubmittingRedeal,
+    isRequestingRedeal,
+    lastActionResult
+  } = useGameActions();
+
+  // Legacy network service actions for compatibility
+  const gameActions = useMemo(() => ({
+    requestRedeal: () => requestRedeal(),
+    submitRedealDecision: (accept) => submitRedealDecision(accept),
+    submitDeclaration: (value) => makeDeclaration(value),
+    playCards: (indices) => playPieces(indices)
+  }), [requestRedeal, submitRedealDecision, makeDeclaration, playPieces]);
 
   // Data transformation: Pass backend state to UI components (no business logic)
   const preparationProps = useMemo(() => {
@@ -52,8 +75,8 @@ export function GameContainer({ roomId }) {
       highestCardValue: gameState.highestCardValue || 0,
       
       // Actions
-      onAcceptRedeal: gameActions.acceptRedeal,
-      onDeclineRedeal: gameActions.declineRedeal
+      onAcceptRedeal: () => gameActions.submitRedealDecision(true),
+      onDeclineRedeal: () => gameActions.submitRedealDecision(false)
     };
   }, [gameState, gameActions]);
 
@@ -76,7 +99,7 @@ export function GameContainer({ roomId }) {
       handStrength: gameState.handStrength || 0,
       
       // Actions
-      onDeclare: gameActions.makeDeclaration
+      onDeclare: gameActions.submitDeclaration
     };
   }, [gameState, gameActions]);
 
@@ -98,7 +121,7 @@ export function GameContainer({ roomId }) {
       selectedPlayValue: gameState.selectedPlayValue || 0,
       
       // Actions
-      onPlayPieces: gameActions.playPieces
+      onPlayCards: gameActions.playCards
     };
   }, [gameState, gameActions]);
 
@@ -155,7 +178,10 @@ export function GameContainer({ roomId }) {
       winners: gameState.winners || [],
       
       // Actions
-      onStartNextRound: gameState.gameOver ? null : gameActions.startNextRound,
+      onStartNextRound: gameState.gameOver ? null : () => networkService.send(roomId, 'action', {
+        action_type: 'start_next_round',
+        player_name: gameState.playerName
+      }),
       onEndGame: gameState.gameOver ? () => window.location.href = '/lobby' : null,
       
       // 🚀 EVENT-DRIVEN: Display timing props
@@ -193,7 +219,7 @@ export function GameContainer({ roomId }) {
     connectionError: connectionStatus.error,
     message: getWaitingMessage(gameState, connectionStatus),
     phase: gameState.phase || 'waiting',
-    onRetry: gameActions.triggerRecovery,
+    onRetry: () => networkService.reconnect(),
     onCancel: () => window.location.href = '/lobby'
   }), [gameState, connectionStatus, gameActions]);
 
@@ -260,6 +286,8 @@ export function GameContainer({ roomId }) {
             return <WaitingUI {...waitingProps} />;
         }
       })()}
+      {/* Phase 5.3: Action feedback overlay for clean state flow */}
+      <ActionFeedback />
     </ErrorBoundary>
   );
 }

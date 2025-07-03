@@ -1,0 +1,46 @@
+{
+  "passed": 0,
+  "failed": 8,
+  "tests": [
+    {
+      "name": "StateManager Creation",
+      "passed": false,
+      "error": "No module named 'backend'"
+    },
+    {
+      "name": "State Snapshot Creation",
+      "passed": false,
+      "error": "No module named 'backend'"
+    },
+    {
+      "name": "Checksum Calculation",
+      "passed": false,
+      "error": "No module named 'backend'"
+    },
+    {
+      "name": "State History Tracking",
+      "passed": false,
+      "error": "No module named 'backend'"
+    },
+    {
+      "name": "WebSocket Integration",
+      "passed": false,
+      "error": "No module named 'backend'"
+    },
+    {
+      "name": "Version Mismatch Detection",
+      "passed": false,
+      "error": "No module named 'backend'"
+    },
+    {
+      "name": "State Diff Retrieval",
+      "passed": false,
+      "error": "No module named 'backend'"
+    },
+    {
+      "name": "Enterprise Architecture Integration",
+      "passed": false,
+      "error": "No module named 'backend'"
+    }
+  ]
+}

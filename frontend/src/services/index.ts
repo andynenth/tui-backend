@@ -1,3 +1,5 @@
+// frontend/src/services/index.ts
+
 /**
  * 🔧 **Services Module** - Foundation Services (TypeScript)
  * 
@@ -7,65 +9,48 @@
 
 // Core Services
 export { NetworkService, networkService } from './NetworkService';
-export { GameService, gameService } from './GameService';
 export { RecoveryService, recoveryService } from './RecoveryService';
-export { ServiceIntegration, serviceIntegration } from './ServiceIntegration';
 
 // Types
 export type * from './types';
 
-// Service initialization and health monitoring (Task 1.4)
-// ✅ RecoveryService (Task 1.3) - Complete
-// ✅ ServiceIntegration (Task 1.4) - Complete
-
-import { serviceIntegration } from './ServiceIntegration';
-import type { ServiceHealthStatus } from './types';
+// New simplified initialization using NetworkIntegration
+import { networkIntegration } from '../stores/NetworkIntegration';
+import { networkService } from './NetworkService';
+import { gameStore } from '../stores/UnifiedGameStore';
 
 /**
- * Service Health Status (via Integration Layer)
- */
-export function getServicesHealth(): ServiceHealthStatus {
-  return serviceIntegration.getHealthStatus();
-}
-
-/**
- * Initialize all services via Integration Layer
+ * Initialize all services
  */
 export async function initializeServices(): Promise<void> {
-  await serviceIntegration.initialize();
+  // Initialize network integration to bridge store and network
+  networkIntegration.initialize();
 }
 
 /**
- * Cleanup all services via Integration Layer
+ * Cleanup all services
  */
 export function cleanupServices(): void {
-  serviceIntegration.destroy();
+  networkIntegration.cleanup();
 }
 
 /**
- * Connect to a game room with full integration
+ * Connect to a game room
  */
 export async function connectToRoom(roomId: string, playerName: string): Promise<void> {
-  await serviceIntegration.connectToRoom(roomId, playerName);
+  // Set player name in store
+  gameStore.setState({ playerName });
+  
+  // Connect via network service
+  await networkService.connectToRoom(roomId);
 }
 
 /**
- * Disconnect from current room with cleanup
+ * Disconnect from current room
  */
 export async function disconnectFromRoom(): Promise<void> {
-  await serviceIntegration.disconnectFromRoom();
-}
-
-/**
- * Trigger manual error recovery
- */
-export async function triggerRecovery(errorType?: string) {
-  return await serviceIntegration.triggerRecovery(errorType);
-}
-
-/**
- * Emergency reset all services
- */
-export async function emergencyReset(): Promise<void> {
-  await serviceIntegration.emergencyReset();
+  const { roomId } = gameStore.getState();
+  if (roomId) {
+    await networkService.disconnectFromRoom(roomId);
+  }
 }

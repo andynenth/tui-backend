@@ -28,6 +28,16 @@ class ActionQueue:
         await self.queue.put(action)
         print(f"🔍 ACTION_QUEUE_DEBUG: Queued action: {action.action_type.value} from {action.player_name} (queue size: {self.queue.qsize()})")
         self.logger.debug(f"Queued action: {action.action_type.value} from {action.player_name}")
+    
+    async def store_event(self, event_data: dict) -> None:
+        """Store game event for debugging and analytics."""
+        try:
+            if EVENT_STORE_AVAILABLE and event_store and self.room_id:
+                await event_store.store_event(self.room_id, event_data)
+            else:
+                self.logger.debug(f"Event stored locally: {event_data.get('event_type', 'unknown')}")
+        except Exception as e:
+            self.logger.error(f"Failed to store event: {str(e)}")
         
     async def process_actions(self) -> List[GameAction]:
         """

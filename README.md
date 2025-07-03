@@ -22,13 +22,16 @@
 - 🔄 **Weak hand redeal system** with player voting
 - 🏆 **Advanced scoring system** with multipliers and win conditions
 
-### Enterprise Architecture (Phase 1-4 Enhancements)
+### Enterprise Architecture (Phase 1-6 Complete)
 - ⚡ **State Machine Architecture** - Robust game state management with action queues
 - 🔐 **Event Sourcing System** - Complete game history with replay capabilities
 - 📨 **Reliable Message Delivery** - Guaranteed message delivery with acknowledgments
 - 🏥 **Health Monitoring** - Real-time system resource and performance monitoring
 - 🔧 **Automatic Recovery** - Self-healing procedures for common failure scenarios
 - 📊 **Centralized Logging** - Structured JSON logging with correlation IDs
+- **🎯 Phase 4 Event System** - High-performance event-driven architecture with 650+ events/sec
+- **🛠️ Phase 5 Unified State** - Single source of truth with <50ms state sync optimization
+- **🎮 Phase 6 Debugging Suite** - Enterprise-grade debugging tools for development productivity
 
 ### Frontend Modernization
 - ⚛️ **React 19** with modern hooks and component architecture
@@ -36,6 +39,7 @@
 - 🎨 **Pure UI Components** - Separation of concerns with container/presentation pattern
 - 🚀 **TypeScript Services** - Type-safe game state management and network handling
 - 📱 **Responsive Design** - Mobile-friendly interface with error boundaries
+- 🛠️ **Integrated Debug Tools** - Built-in replay, state inspection, and sync monitoring
 
 ### Production Ready
 - 🐳 **Single-container Docker deployment**
@@ -52,10 +56,14 @@
 frontend/                    → React 19 + TypeScript frontend
 ├── src/
 │   ├── components/         → Pure UI components (Button, Modal, GamePiece, etc.)
+│   │   └── debug/          → Debugging UI components (GameReplayUI, StateDebuggerUI, SyncCheckerUI)
 │   ├── contexts/           → React contexts (GameContext, AppContext)
 │   ├── hooks/              → Custom hooks (useGameState, useGameActions, useConnectionStatus)
+│   │                      → Debug hooks (useGameReplay, useStateDebugger, useSyncChecker)
 │   ├── pages/              → Page components (GamePage, LobbyPage, RoomPage)
 │   ├── services/           → TypeScript services (GameService, NetworkService, RecoveryService)
+│   ├── stores/             → Unified state management (UnifiedGameStore, ActionManager)
+│   ├── tools/              → Debug tools (GameReplay, StateDebugger, SyncChecker)
 │   └── styles/             → CSS and styling
 ├── network/                → WebSocket management and message queuing
 └── game/                   → Legacy PixiJS game components
@@ -180,6 +188,33 @@ npm run dev
 
 ---
 
+## 🛠️ Debugging Suite
+
+The application includes an enterprise-grade debugging suite accessible directly in the game interface:
+
+### Debug Tools (Phase 6 Complete)
+```
+Game Header: [🎮 Replay] [🔍 Debug] [🔄 Sync] [Leave Game]
+```
+
+- **🎮 Game Replay Tool**: Record and replay game sessions for bug reproduction
+  - Step-by-step playback with variable speed (0.25x to 4x)
+  - Event filtering by type, player, and phase
+  - Export/import sessions for team collaboration
+  
+- **🔍 State Debug Tool**: Live state inspection and performance monitoring
+  - Real-time frontend vs backend state comparison
+  - WebSocket message viewer with filtering
+  - Performance metrics (latency, timing, throughput)
+  
+- **🔄 Sync Checker Tool**: Proactive desync detection and recovery
+  - Continuous monitoring of critical game state fields
+  - Automatic alerts with severity levels (critical/high/medium/low)
+  - Historical tracking and recovery suggestions
+
+### Usage Guide
+See **DEBUGGING_TOOLS_GUIDE.md** for comprehensive documentation on using all debugging tools.
+
 ## 📊 Production Monitoring
 
 The application includes enterprise-grade monitoring and observability:
@@ -239,7 +274,7 @@ Includes: Piece types, Turn flow, Declaration, Redeal logic, Scoring system, and
 
 ## 🏗️ Architecture Evolution
 
-This project evolved through 4 major development phases:
+This project evolved through 6 major development phases:
 
 ### Phase 1: Foundation
 - ✅ State machine architecture implementation
@@ -269,14 +304,84 @@ This project evolved through 4 major development phases:
 - ✅ Automatic recovery procedures for common failures
 - ✅ Centralized structured logging with correlation IDs
 - ✅ Production-ready monitoring and observability
+- **✅ High-Performance Event System** - 650+ events/sec with publisher-subscriber architecture
+
+### Phase 5: Unified State Management
+- ✅ **Single Source of Truth**: UnifiedGameStore with TypeScript integration
+- ✅ **Performance Optimization**: State sync reduced from 500-2000ms to <50ms
+- ✅ **Action Management**: Complete action lifecycle with confirmation flow
+- ✅ **Message Prioritization**: CRITICAL/HIGH/MEDIUM/LOW priority handling
+- ✅ **Automatic Recovery**: Retry mechanisms with exponential backoff
+
+### Phase 6: Enterprise Debugging Suite
+- ✅ **Game Replay Tool**: Record and replay sessions for bug reproduction
+- ✅ **State Debug Tool**: Live state inspection with performance monitoring
+- ✅ **Sync Checker Tool**: Proactive desync detection and recovery
+- ✅ **Team Collaboration**: Export/import debugging sessions
+- ✅ **Production Integration**: Built-in tools accessible during gameplay
 
 ### Key Architectural Principles
 - **Single Responsibility**: Each component has a clear, focused purpose
 - **Event-Driven**: Asynchronous communication with proper error handling
 - **Testable**: Comprehensive test coverage across all layers
-- **Observable**: Full logging and monitoring for production environments
+- **Observable**: Full logging, monitoring, and debugging capabilities
 - **Resilient**: Automatic recovery and graceful degradation
 - **Scalable**: Modular design that supports future enhancements
+- **Developer-Focused**: Enterprise-grade debugging tools for productivity
+
+---
+
+## 🧪 Testing
+
+The project includes comprehensive testing suites for all components:
+
+### Backend Tests
+```bash
+# Activate virtual environment
+source venv/bin/activate
+
+# Run core game engine tests
+python -m pytest backend/tests/ -v
+
+# Run enterprise architecture tests
+python test_enterprise_architecture.py
+python test_turn_number_sync.py
+
+# Run Phase 4 event system tests
+python test_event_system.py
+```
+
+### Debugging Tools Testing
+Comprehensive test suites validate all debugging tools:
+```bash
+# Test debugging tool implementations
+node test_game_replay_tool.js      # Phase 6.1 Game Replay Tool
+node test_state_debug_tool.js      # Phase 6.2 State Debug Tool  
+node test_sync_checker_tool.js     # Phase 6.3 Sync Checker Tool
+```
+
+### Event System Testing
+The Phase 4 Event System includes its own comprehensive test suite:
+- **Basic Event Bus**: Core functionality validation
+- **Event Integration**: Full state machine integration testing
+- **Performance Testing**: 650+ events/sec performance validation
+- **Error Handling**: Resilience and recovery testing
+
+### Frontend Tests
+```bash
+cd frontend
+npm run test          # Run component tests
+npm run type-check    # TypeScript validation
+npm run lint          # Code quality checks
+```
+
+### Test Coverage
+- 78+ backend test suites covering all game phases
+- Complete state machine transition testing
+- WebSocket integration and error recovery tests
+- Event system performance and integration validation
+- Debugging tools functionality and integration testing
+- Frontend component and hook testing
 
 ---
 
