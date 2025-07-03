@@ -121,6 +121,10 @@ class DeclarationState(GameState):
         
         self.logger.info(f"Player {player_name} declared {declared_value}")
         
+        # Check if all players have declared - transition will be handled by polling
+        order = self.phase_data['declaration_order']
+        declarations = self.phase_data['declarations']
+        
         return {
             'status': 'declaration_recorded',
             'player': player_name,
