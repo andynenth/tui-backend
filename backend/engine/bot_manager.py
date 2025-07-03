@@ -189,6 +189,13 @@ class GameBotHandler:
                 await self._handle_turn_start(data["starter"])
             elif event == "round_started":
                 print(f"🎪 BOT_HANDLER_DEBUG: Handling round start")
+                
+                # 🔧 PHASE_TRACKING_FIX: Check if we already triggered actions for this phase
+                current_phase = data.get("phase", "unknown")
+                if current_phase in self._phase_action_triggered and self._phase_action_triggered[current_phase]:
+                    print(f"🚫 PHASE_TRACKING_FIX: Already triggered actions for {current_phase} phase via round_started - skipping")
+                    return
+                
                 await self._handle_round_start()
             elif event == "weak_hands_found":
                 print(f"🃏 BOT_HANDLER_DEBUG: Handling weak hands found")
