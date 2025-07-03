@@ -1,82 +1,9 @@
-INFO:     127.0.0.1:61520 - "GET / HTTP/1.1" 200 OK
-INFO:     127.0.0.1:61520 - "GET /bundle.css HTTP/1.1" 200 OK
-INFO:     127.0.0.1:61522 - "GET /bundle.js HTTP/1.1" 200 OK
-INFO:     127.0.0.1:61524 - "GET /.well-known/appspecific/com.chrome.devtools.json HTTP/1.1" 404 Not Found
-INFO:     127.0.0.1:61524 - "GET /bundle.css.map HTTP/1.1" 200 OK
-INFO:     127.0.0.1:61524 - "GET /bundle.js.map HTTP/1.1" 200 OK
-INFO:     ('127.0.0.1', 61530) - "WebSocket /ws/lobby" [accepted]
-DEBUG_WS: Created new enhanced broadcast queue and task for room lobby.
-DEBUG_WS: Registered new connection for room lobby. Total connections: 1
-INFO:     connection open
-DEBUG_WS: Starting enhanced broadcast queue processor for room lobby.
-DEBUG_WS_QUEUE_START: Room lobby processor task starting, queue exists: True
-DEBUG_WS_RECEIVE: Received event 'client_ready' from client in room lobby with data: {'room_id': 'lobby'}
-INFO:     ('127.0.0.1', 61532) - "WebSocket /ws/lobby" [accepted]
-DEBUG_WS: Registered new connection for room lobby. Total connections: 2
-INFO:     connection open
-DEBUG_LOBBY_WS: Client disconnected from lobby
-INFO:     connection closed
-DEBUG_WS: Unregistered connection for room lobby. Remaining connections: 1
-DEBUG_WS_RECEIVE: Received event 'client_ready' from client in room lobby with data: {'room_id': 'lobby'}
-DEBUG_LOBBY_WS: Sent initial room list to new lobby client
-DEBUG_LOBBY_WS: Client disconnected from lobby
-INFO:     connection closed
-DEBUG_WS: Unregistered connection for room lobby. Remaining connections: 0
-DEBUG_WS: Cleaned up empty room lobby
-INFO:     ('127.0.0.1', 61542) - "WebSocket /ws/lobby" [accepted]
-DEBUG_WS: Registered new connection for room lobby. Total connections: 1
-INFO:     connection open
-DEBUG_WS_RECEIVE: Received event 'client_ready' from client in room lobby with data: {'room_id': 'lobby'}
-DEBUG_LOBBY_WS: Sent initial room list to new lobby client
-DEBUG_WS_RECEIVE: Received event 'create_room' from client in room lobby with data: {'player_name': 'Andy'}
-DEBUG_LOBBY_WS: Created room D5791B for player Andy
-🔔 LOBBY_BROADCAST: Created/restarted lobby broadcast task
-🔔 LOBBY_BROADCAST: Attempting to broadcast 'room_created' to lobby
-🔔 LOBBY_BROADCAST: Data keys: ['room_id', 'host_name', 'timestamp']
-🔔 LOBBY_BROADCAST: Found 1 lobby connections
-🔔 LOBBY_BROADCAST: Queue size: 0
-DEBUG_WS: Message for event 'room_created' added to queue for room lobby.
-🔔 LOBBY_BROADCAST: Message added to lobby queue. New queue size: 1
-DEBUG_WS: Starting enhanced broadcast queue processor for room lobby.
-DEBUG_WS_QUEUE_START: Room lobby processor task starting, queue exists: True
-🔔 LOBBY_BROADCAST: Attempting to broadcast 'room_list_update' to lobby
-🔔 LOBBY_BROADCAST: Data keys: ['rooms', 'timestamp', 'reason']
-🔔 LOBBY_BROADCAST: Found 1 lobby connections
-🔔 LOBBY_BROADCAST: Queue size: 1
-DEBUG_WS: Message for event 'room_list_update' added to queue for room lobby.
-🔔 LOBBY_BROADCAST: Message added to lobby queue. New queue size: 2
-✅ Notified lobby about new room: D5791B
-DEBUG_WS_QUEUE: Room lobby got message: room_created
-DEBUG_WS: Broadcasting event 'room_created' (op_id: unknown) to 1 clients in room lobby.
-INFO:     ('127.0.0.1', 61544) - "WebSocket /ws/lobby" [accepted]
-DEBUG_WS: Registered new connection for room lobby. Total connections: 2
-INFO:     connection open
-DEBUG_WS: Error sending to client in room lobby: 
-DEBUG_WS_DISCONNECT: WebSocket client disconnected from room D5791B.
-INFO:     connection closed
-DEBUG_WS: Attempted to unregister from non-existent room D5791B
-DEBUG_WS_QUEUE: Room lobby got message: room_list_update
-DEBUG_WS: Broadcasting event 'room_list_update' (op_id: unknown) to 1 clients in room lobby.
-DEBUG_WS: Successfully sent 'room_list_update' to a client in room lobby.
-DEBUG_WS_RECEIVE: Received event 'client_ready' from client in room lobby with data: {'room_id': 'lobby'}
-DEBUG_LOBBY_WS: Sent initial room list to new lobby client
-INFO:     ('127.0.0.1', 61546) - "WebSocket /ws/D5791B" [accepted]
-DEBUG_WS: Created new enhanced broadcast queue and task for room D5791B.
-DEBUG_WS: Registered new connection for room D5791B. Total connections: 1
-INFO:     connection open
-DEBUG_WS: Starting enhanced broadcast queue processor for room D5791B.
-DEBUG_WS_QUEUE_START: Room D5791B processor task starting, queue exists: True
-DEBUG_WS_RECEIVE: Received event 'client_ready' from client in room D5791B with data: {'room_id': 'D5791B'}
-DEBUG_WS_RECEIVE: Sent initial room state to client in room D5791B after client_ready.
-DEBUG_WS_RECEIVE: Received event 'get_room_state' from client in room D5791B with data: {}
-DEBUG_WS_RECEIVE: Sent room state to client in room D5791B
-DEBUG_WS_RECEIVE: Received event 'start_game' from client in room D5791B with data: {}
-🔒 [Room D5791B] Starting game: op_id=D5791B_1
+🔒 [Room 44A1A0] Starting game: op_id=44A1A0_1
 🔄 STATE_MACHINE_DEBUG: Attempting transition from None to GamePhase.PREPARATION
 ✅ STATE_MACHINE_DEBUG: Transition validated, proceeding...
 🎯 STATE_MACHINE_DEBUG: Phase updated: None -> GamePhase.PREPARATION
-🎯 STATE_MACHINE_DEBUG: Entering new state: <engine.state_machine.states.preparation_state.PreparationState object at 0x107cdd9d0>
-🎴 PREP_STATE_DEBUG: Setup phase starting for room D5791B
+🎯 STATE_MACHINE_DEBUG: Entering new state: <engine.state_machine.states.preparation_state.PreparationState object at 0x10fdec150>
+🎴 PREP_STATE_DEBUG: Setup phase starting for room 44A1A0
 🔄 PREP_RESET_DEBUG: Reset Andy - declared: 0, captured_piles: 0
 🔄 PREP_RESET_DEBUG: Reset Bot 2 - declared: 0, captured_piles: 0
 🔄 PREP_RESET_DEBUG: Reset Bot 3 - declared: 0, captured_piles: 0
@@ -85,43 +12,42 @@ DEBUG_WS_RECEIVE: Received event 'start_game' from client in room D5791B with da
 🛡️ DEBUG: Dealing guaranteed no-redeal hands with RED_GENERAL assigned to player 1
 🛡️ DEBUG: Available pieces - Strong: 7, Weak: 24
   → Bot 2 gets RED_GENERAL: GENERAL_RED(14)
-  → Andy gets strong piece: ADVISOR_BLACK(11)
+  → Andy gets strong piece: GENERAL_BLACK(13)
   → Bot 3 gets strong piece: ADVISOR_RED(12)
-  → Bot 4 gets strong piece: ELEPHANT_RED(10)
+  → Bot 4 gets strong piece: ADVISOR_RED(12)
 🛡️ DEBUG: Guaranteed no-redeal hands dealt:
 🔧 DEBUG: Final hands verification:
-  Andy: ['CHARIOT_RED(8)', 'HORSE_BLACK(5)', 'HORSE_RED(6)', 'HORSE_BLACK(5)', 'SOLDIER_BLACK(1)', 'SOLDIER_BLACK(1)', 'CANNON_BLACK(3)', 'ADVISOR_BLACK(11)']
-    → Strong pieces (>9): 1
+  Andy: ['ADVISOR_BLACK(11)', 'CHARIOT_RED(8)', 'ELEPHANT_BLACK(9)', 'SOLDIER_BLACK(1)', 'GENERAL_BLACK(13)', 'CANNON_RED(4)', 'HORSE_RED(6)', 'SOLDIER_RED(2)']
+    → Strong pieces (>9): 2
     → Has RED_GENERAL: False
-  Bot 2: ['HORSE_RED(6)', 'ELEPHANT_RED(10)', 'GENERAL_RED(14)', 'SOLDIER_BLACK(1)', 'ELEPHANT_BLACK(9)', 'ADVISOR_BLACK(11)', 'SOLDIER_BLACK(1)', 'CHARIOT_RED(8)']
-    → Strong pieces (>9): 3
+  Bot 2: ['HORSE_BLACK(5)', 'GENERAL_RED(14)', 'CANNON_RED(4)', 'HORSE_RED(6)', 'SOLDIER_BLACK(1)', 'CHARIOT_RED(8)', 'CANNON_BLACK(3)', 'SOLDIER_RED(2)']
+    → Strong pieces (>9): 1
     → Has RED_GENERAL: True
-  Bot 3: ['CHARIOT_BLACK(7)', 'SOLDIER_BLACK(1)', 'CHARIOT_BLACK(7)', 'CANNON_RED(4)', 'CANNON_BLACK(3)', 'SOLDIER_RED(2)', 'ADVISOR_RED(12)', 'SOLDIER_RED(2)']
-    → Strong pieces (>9): 1
-    → Has RED_GENERAL: False
-  Bot 4: ['SOLDIER_RED(2)', 'SOLDIER_RED(2)', 'ELEPHANT_BLACK(9)', 'ELEPHANT_RED(10)', 'SOLDIER_RED(2)', 'ADVISOR_RED(12)', 'GENERAL_BLACK(13)', 'CANNON_RED(4)']
+  Bot 3: ['ELEPHANT_RED(10)', 'SOLDIER_RED(2)', 'SOLDIER_BLACK(1)', 'SOLDIER_RED(2)', 'ADVISOR_BLACK(11)', 'CANNON_BLACK(3)', 'CHARIOT_BLACK(7)', 'ADVISOR_RED(12)']
     → Strong pieces (>9): 3
+    → Has RED_GENERAL: False
+  Bot 4: ['CHARIOT_BLACK(7)', 'SOLDIER_BLACK(1)', 'SOLDIER_BLACK(1)', 'SOLDIER_RED(2)', 'HORSE_BLACK(5)', 'ADVISOR_RED(12)', 'ELEPHANT_RED(10)', 'ELEPHANT_BLACK(9)']
+    → Strong pieces (>9): 2
     → Has RED_GENERAL: False
 ✅ SUCCESS: No weak hands - redeal prevented!
 🔍 STARTER_DEBUG: Looking for GENERAL_RED holder in round 1
 🔍 STARTER_DEBUG: Checking player Andy
-🔍 STARTER_DEBUG: Player Andy hand: ['CHARIOT_RED(8)', 'HORSE_BLACK(5)', 'HORSE_RED(6)', 'HORSE_BLACK(5)', 'SOLDIER_BLACK(1)', 'SOLDIER_BLACK(1)', 'CANNON_BLACK(3)', 'ADVISOR_BLACK(11)']
-🔍 STARTER_DEBUG: Checking piece 'CHARIOT_RED(8)' for GENERAL_RED
-🔍 STARTER_DEBUG: Checking piece 'HORSE_BLACK(5)' for GENERAL_RED
-🔍 STARTER_DEBUG: Checking piece 'HORSE_RED(6)' for GENERAL_RED
-🔍 STARTER_DEBUG: Checking piece 'HORSE_BLACK(5)' for GENERAL_RED
-🔍 STARTER_DEBUG: Checking piece 'SOLDIER_BLACK(1)' for GENERAL_RED
-🔍 STARTER_DEBUG: Checking piece 'SOLDIER_BLACK(1)' for GENERAL_RED
-🔍 STARTER_DEBUG: Checking piece 'CANNON_BLACK(3)' for GENERAL_RED
+🔍 STARTER_DEBUG: Player Andy hand: ['ADVISOR_BLACK(11)', 'CHARIOT_RED(8)', 'ELEPHANT_BLACK(9)', 'SOLDIER_BLACK(1)', 'GENERAL_BLACK(13)', 'CANNON_RED(4)', 'HORSE_RED(6)', 'SOLDIER_RED(2)']
 🔍 STARTER_DEBUG: Checking piece 'ADVISOR_BLACK(11)' for GENERAL_RED
-🔍 STARTER_DEBUG: Checking player Bot 2
-🔍 STARTER_DEBUG: Player Bot 2 hand: ['HORSE_RED(6)', 'ELEPHANT_RED(10)', 'GENERAL_RED(14)', 'SOLDIER_BLACK(1)', 'ELEPHANT_BLACK(9)', 'ADVISOR_BLACK(11)', 'SOLDIER_BLACK(1)', 'CHARIOT_RED(8)']
+🔍 STARTER_DEBUG: Checking piece 'CHARIOT_RED(8)' for GENERAL_RED
+🔍 STARTER_DEBUG: Checking piece 'ELEPHANT_BLACK(9)' for GENERAL_RED
+🔍 STARTER_DEBUG: Checking piece 'SOLDIER_BLACK(1)' for GENERAL_RED
+🔍 STARTER_DEBUG: Checking piece 'GENERAL_BLACK(13)' for GENERAL_RED
+🔍 STARTER_DEBUG: Checking piece 'CANNON_RED(4)' for GENERAL_RED
 🔍 STARTER_DEBUG: Checking piece 'HORSE_RED(6)' for GENERAL_RED
-🔍 STARTER_DEBUG: Checking piece 'ELEPHANT_RED(10)' for GENERAL_RED
+🔍 STARTER_DEBUG: Checking piece 'SOLDIER_RED(2)' for GENERAL_RED
+🔍 STARTER_DEBUG: Checking player Bot 2
+🔍 STARTER_DEBUG: Player Bot 2 hand: ['HORSE_BLACK(5)', 'GENERAL_RED(14)', 'CANNON_RED(4)', 'HORSE_RED(6)', 'SOLDIER_BLACK(1)', 'CHARIOT_RED(8)', 'CANNON_BLACK(3)', 'SOLDIER_RED(2)']
+🔍 STARTER_DEBUG: Checking piece 'HORSE_BLACK(5)' for GENERAL_RED
 🔍 STARTER_DEBUG: Checking piece 'GENERAL_RED(14)' for GENERAL_RED
 ✅ STARTER_DEBUG: Found GENERAL_RED in Bot 2's hand!
 ✅ PREP_STATE_DEBUG: No weak hands - determined new starter: Bot 2
-DEBUG_WS: Message for event 'phase_change' added to queue for room D5791B.
+DEBUG_WS: Message for event 'phase_change' added to queue for room 44A1A0.
 🔍 STATE_MACHINE_DEBUG: Process loop started, is_running: True
 🔍 PREP_STATE_DEBUG: Checking transition conditions...
    - Initial deal complete: True
@@ -131,24 +57,24 @@ DEBUG_WS: Message for event 'phase_change' added to queue for room D5791B.
 ✅ PREP_STATE_DEBUG: No weak players, transitioning to DECLARATION
 🔄 STATE_MACHINE_DEBUG: Attempting transition from GamePhase.PREPARATION to GamePhase.DECLARATION
 ✅ STATE_MACHINE_DEBUG: Transition validated, proceeding...
-🚪 STATE_MACHINE_DEBUG: Exiting current state: <engine.state_machine.states.preparation_state.PreparationState object at 0x107cdd9d0>
+🚪 STATE_MACHINE_DEBUG: Exiting current state: <engine.state_machine.states.preparation_state.PreparationState object at 0x10fdec150>
 🎯 PREP_STATE_DEBUG: Cleanup phase - current_player: Bot 2
 🎯 PREP_STATE_DEBUG: Cleanup phase - round_starter: Bot 2
 🎯 STATE_MACHINE_DEBUG: Phase updated: GamePhase.PREPARATION -> GamePhase.DECLARATION
-🎯 STATE_MACHINE_DEBUG: Entering new state: <engine.state_machine.states.declaration_state.DeclarationState object at 0x107cddb50>
+🎯 STATE_MACHINE_DEBUG: Entering new state: <engine.state_machine.states.declaration_state.DeclarationState object at 0x10ff3d110>
 📢 DECL_STATE_DEBUG: Using round_starter: Bot 2
-DEBUG_WS: Message for event 'phase_change' added to queue for room D5791B.
-🤖 STATE_MACHINE_DEBUG: Notifying bot manager about phase preparation for room D5791B
-✅ [Room D5791B] Game and StateMachine started successfully: op_id=D5791B_1
-✅ [Room D5791B] Bot manager registered for 3 bots
-✅ Game started in room D5791B
+DEBUG_WS: Message for event 'phase_change' added to queue for room 44A1A0.
+🤖 STATE_MACHINE_DEBUG: Notifying bot manager about phase preparation for room 44A1A0
+✅ [Room 44A1A0] Game and StateMachine started successfully: op_id=44A1A0_1
+✅ [Room 44A1A0] Bot manager registered for 3 bots
+✅ Game started in room 44A1A0
 🤖 ENTERPRISE_DATA_DEBUG: Notifying bot manager about data change - reason: Declaration phase setup - basic data
-DEBUG_WS: Message for event 'phase_change' added to queue for room D5791B.
+DEBUG_WS: Message for event 'phase_change' added to queue for room 44A1A0.
 🤖 ENTERPRISE_DATA_DEBUG: Notifying bot manager about data change - reason: Declaration phase setup complete - current declarer: Bot 2
 🤖 ENTERPRISE_DATA_DEBUG: Declaration phase - current declarer: Bot 2
-🔔 BOT_MANAGER_DEBUG: Received event 'phase_change' for room D5791B with data: {'phase': 'declaration', 'phase_data': {'declaration_order': ['Bot 2 - 0 pts', 'Bot 3 - 0 pts', 'Bot 4 - 0 pts', 'Andy - 0 pts'], 'current_declarer_index': 0, 'declarations': {}, 'declaration_total': 0, 'current_declarer': 'Bot 2'}, 'current_declarer': 'Bot 2', 'reason': 'Declaration phase setup complete - current declarer: Bot 2'}
-✅ BOT_MANAGER_DEBUG: Found handler for room D5791B, delegating to handler...
-🎮 BOT_HANDLER_DEBUG: Room D5791B handling event 'phase_change' with data: {'phase': 'declaration', 'phase_data': {'declaration_order': ['Bot 2 - 0 pts', 'Bot 3 - 0 pts', 'Bot 4 - 0 pts', 'Andy - 0 pts'], 'current_declarer_index': 0, 'declarations': {}, 'declaration_total': 0, 'current_declarer': 'Bot 2'}, 'current_declarer': 'Bot 2', 'reason': 'Declaration phase setup complete - current declarer: Bot 2'}
+🔔 BOT_MANAGER_DEBUG: Received event 'phase_change' for room 44A1A0 with data: {'phase': 'declaration', 'phase_data': {'declaration_order': ['Bot 2 - 0 pts', 'Bot 3 - 0 pts', 'Bot 4 - 0 pts', 'Andy - 0 pts'], 'current_declarer_index': 0, 'declarations': {}, 'declaration_total': 0, 'current_declarer': 'Bot 2'}, 'current_declarer': 'Bot 2', 'reason': 'Declaration phase setup complete - current declarer: Bot 2'}
+✅ BOT_MANAGER_DEBUG: Found handler for room 44A1A0, delegating to handler...
+🎮 BOT_HANDLER_DEBUG: Room 44A1A0 handling event 'phase_change' with data: {'phase': 'declaration', 'phase_data': {'declaration_order': ['Bot 2 - 0 pts', 'Bot 3 - 0 pts', 'Bot 4 - 0 pts', 'Andy - 0 pts'], 'current_declarer_index': 0, 'declarations': {}, 'declaration_total': 0, 'current_declarer': 'Bot 2'}, 'current_declarer': 'Bot 2', 'reason': 'Declaration phase setup complete - current declarer: Bot 2'}
 🔄 PHASE_TRACKING_FIX: New phase detected None -> declaration
 🚀 BOT_HANDLER_DEBUG: Handling enterprise phase change
 🚀 ENTERPRISE_BOT_DEBUG: Processing phase change - phase: declaration, reason: Declaration phase setup complete - current declarer: Bot 2
@@ -163,33 +89,34 @@ DEBUG_WS: Message for event 'phase_change' added to queue for room D5791B.
 🔍 DECL_PHASE_DEBUG: Checking player 0 (Bot 2), is_bot: True
 🔍 DECL_PHASE_DEBUG: Player Bot 2 declared value: 0 (from phase data)
 🔍 DECL_PHASE_DEBUG: All phase declarations: {}
-🤖 DECL_PHASE_DEBUG: Bot Bot 2 will declare in 1.2s...
-DEBUG_WS_QUEUE: Room D5791B got message: phase_change
-DEBUG_WS: Broadcasting event 'phase_change' (op_id: unknown) to 1 clients in room D5791B.
-DEBUG_WS: Successfully sent 'phase_change' to a client in room D5791B.
-DEBUG_WS_QUEUE: Room D5791B got message: phase_change
-DEBUG_WS: Broadcasting event 'phase_change' (op_id: unknown) to 1 clients in room D5791B.
-INFO:     ('127.0.0.1', 61552) - "WebSocket /ws/D5791B" [accepted]
-DEBUG_WS: Registered new connection for room D5791B. Total connections: 2
-INFO:     connection open
-DEBUG_WS_RECEIVE: Received event 'client_ready' from client in room D5791B with data: {'room_id': 'D5791B'}
-DEBUG_WS_RECEIVE: Sent current game phase declaration to client in room D5791B
-DEBUG_WS_RECEIVE: Sent initial room state to client in room D5791B after client_ready.
-DEBUG_WS: Error sending to client in room D5791B: 
-DEBUG_WS_DISCONNECT: WebSocket client disconnected from room D5791B.
+🤖 DECL_PHASE_DEBUG: Bot Bot 2 will declare in 0.6s...
+DEBUG_WS_QUEUE: Room 44A1A0 got message: phase_change
+DEBUG_WS: Broadcasting event 'phase_change' (op_id: unknown) to 1 clients in room 44A1A0.
+DEBUG_WS: Successfully sent 'phase_change' to a client in room 44A1A0.
+DEBUG_WS_QUEUE: Room 44A1A0 got message: phase_change
+DEBUG_WS: Broadcasting event 'phase_change' (op_id: unknown) to 1 clients in room 44A1A0.
+DEBUG_WS: Successfully sent 'phase_change' to a client in room 44A1A0.
+DEBUG_WS_QUEUE: Room 44A1A0 got message: phase_change
+DEBUG_WS: Broadcasting event 'phase_change' (op_id: unknown) to 1 clients in room 44A1A0.
+DEBUG_WS: Successfully sent 'phase_change' to a client in room 44A1A0.
+DEBUG_WS_DISCONNECT: WebSocket client disconnected from room 44A1A0.
 INFO:     connection closed
-DEBUG_WS: Unregistered connection for room D5791B. Remaining connections: 1
-DEBUG_WS_QUEUE: Room D5791B got message: phase_change
-DEBUG_WS: Broadcasting event 'phase_change' (op_id: unknown) to 1 clients in room D5791B.
-DEBUG_WS: Successfully sent 'phase_change' to a client in room D5791B.
+DEBUG_WS: Unregistered connection for room 44A1A0. Remaining connections: 0
+DEBUG_WS: Room 44A1A0 has active game - keeping broadcast queue alive
+INFO:     ('127.0.0.1', 63426) - "WebSocket /ws/44A1A0" [accepted]
+DEBUG_WS: Registered new connection for room 44A1A0. Total connections: 1
+INFO:     connection open
+DEBUG_WS_RECEIVE: Received event 'client_ready' from client in room 44A1A0 with data: {'room_id': '44A1A0'}
+DEBUG_WS_RECEIVE: Sent current game phase declaration to client in room 44A1A0
+DEBUG_WS_RECEIVE: Sent initial room state to client in room 44A1A0 after client_ready.
 🤖 DECL_PHASE_DEBUG: Bot Bot 2 will now declare!
 🔍 ACTION_QUEUE_DEBUG: Queued action: declare from Bot 2 (queue size: 1)
 🔧 BOT_DECLARE_DEBUG: State machine result: {'success': True, 'queued': True}
-✅ Bot Bot 2 declared 2
+✅ Bot Bot 2 declared 3
 🔍 DECL_PHASE_DEBUG: Checking player 1 (Bot 3), is_bot: True
 🔍 DECL_PHASE_DEBUG: Player Bot 3 declared value: 0 (from phase data)
 🔍 DECL_PHASE_DEBUG: All phase declarations: {}
-🤖 DECL_PHASE_DEBUG: Bot Bot 3 will declare in 1.1s...
+🤖 DECL_PHASE_DEBUG: Bot Bot 3 will declare in 0.8s...
 🤖 DECL_PHASE_DEBUG: Bot Bot 3 will now declare!
 🔍 ACTION_QUEUE_DEBUG: Queued action: declare from Bot 3 (queue size: 2)
 🔧 BOT_DECLARE_DEBUG: State machine result: {'success': True, 'queued': True}
@@ -197,161 +124,92 @@ DEBUG_WS: Successfully sent 'phase_change' to a client in room D5791B.
 🔍 DECL_PHASE_DEBUG: Checking player 2 (Bot 4), is_bot: True
 🔍 DECL_PHASE_DEBUG: Player Bot 4 declared value: 0 (from phase data)
 🔍 DECL_PHASE_DEBUG: All phase declarations: {}
-🤖 DECL_PHASE_DEBUG: Bot Bot 4 will declare in 0.8s...
+🤖 DECL_PHASE_DEBUG: Bot Bot 4 will declare in 1.4s...
 🤖 DECL_PHASE_DEBUG: Bot Bot 4 will now declare!
 🔍 ACTION_QUEUE_DEBUG: Queued action: declare from Bot 4 (queue size: 3)
 🔧 BOT_DECLARE_DEBUG: State machine result: {'success': True, 'queued': True}
-✅ Bot Bot 4 declared 2
+✅ Bot Bot 4 declared 1
+INFO:     127.0.0.1:63430 - "GET /bundle.css HTTP/1.1" 304 Not Modified
+INFO:     127.0.0.1:63432 - "GET /.well-known/appspecific/com.chrome.devtools.json HTTP/1.1" 404 Not Found
 🔍 DECL_PHASE_DEBUG: Checking player 3 (Andy), is_bot: False
 🔍 DECL_PHASE_DEBUG: Player Andy is human, stopping bot declarations
-DEBUG_WS: Message for event 'phase_change' added to queue for room D5791B.
-🤖 STATE_MACHINE_DEBUG: Notifying bot manager about phase declaration for room D5791B
-🔔 BOT_MANAGER_DEBUG: Received event 'round_started' for room D5791B with data: {'phase': 'declaration', 'starter': 'Bot 2'}
-✅ BOT_MANAGER_DEBUG: Found handler for room D5791B, delegating to handler...
-🎮 BOT_HANDLER_DEBUG: Room D5791B handling event 'round_started' with data: {'phase': 'declaration', 'starter': 'Bot 2'}
+DEBUG_WS: Message for event 'phase_change' added to queue for room 44A1A0.
+🤖 STATE_MACHINE_DEBUG: Notifying bot manager about phase declaration for room 44A1A0
+🔔 BOT_MANAGER_DEBUG: Received event 'round_started' for room 44A1A0 with data: {'phase': 'declaration', 'starter': 'Bot 2'}
+✅ BOT_MANAGER_DEBUG: Found handler for room 44A1A0, delegating to handler...
+🎮 BOT_HANDLER_DEBUG: Room 44A1A0 handling event 'round_started' with data: {'phase': 'declaration', 'starter': 'Bot 2'}
 🎪 BOT_HANDLER_DEBUG: Handling round start
-🔍 BOT_ROUND_DEBUG: Game state current_order: None
-🔍 BOT_ROUND_DEBUG: Game round_starter: Bot 2
-🔍 BOT_ROUND_DEBUG: Game current_player: Bot 2
-👤 Round starter is human or None: None
-DEBUG_WS_QUEUE: Room D5791B got message: phase_change
-DEBUG_WS: Broadcasting event 'phase_change' (op_id: unknown) to 1 clients in room D5791B.
-DEBUG_WS: Successfully sent 'phase_change' to a client in room D5791B.
-🔍 DECL_PHASE_DEBUG: _handle_declaration_phase called with last_declarer: ''
-🔍 BOT_DEBUG: Got declaration order from state machine: ['Bot 2', 'Bot 3', 'Bot 4', 'Andy']
-🔍 DECL_PHASE_DEBUG: Declaration order: ['Bot 2', 'Bot 3', 'Bot 4', 'Andy']
-🔍 DECL_PHASE_DEBUG: Last declarer '' index: -1
-🔍 DECL_PHASE_DEBUG: Starting loop from index 0 to 4
-🔍 DECL_PHASE_DEBUG: Checking player 0 (Bot 2), is_bot: True
-🔍 DECL_PHASE_DEBUG: Player Bot 2 declared value: 0 (from phase data)
-🔍 DECL_PHASE_DEBUG: All phase declarations: {}
-🤖 DECL_PHASE_DEBUG: Bot Bot 2 will declare in 1.4s...
-🤖 DECL_PHASE_DEBUG: Bot Bot 2 will now declare!
-🔍 ACTION_QUEUE_DEBUG: Queued action: declare from Bot 2 (queue size: 4)
-🔧 BOT_DECLARE_DEBUG: State machine result: {'success': True, 'queued': True}
-✅ Bot Bot 2 declared 2
-🔍 DECL_PHASE_DEBUG: Checking player 1 (Bot 3), is_bot: True
-🔍 DECL_PHASE_DEBUG: Player Bot 3 declared value: 0 (from phase data)
-🔍 DECL_PHASE_DEBUG: All phase declarations: {}
-🤖 DECL_PHASE_DEBUG: Bot Bot 3 will declare in 0.9s...
-🤖 DECL_PHASE_DEBUG: Bot Bot 3 will now declare!
-🔍 ACTION_QUEUE_DEBUG: Queued action: declare from Bot 3 (queue size: 5)
-🔧 BOT_DECLARE_DEBUG: State machine result: {'success': True, 'queued': True}
-✅ Bot Bot 3 declared 1
-🔍 DECL_PHASE_DEBUG: Checking player 2 (Bot 4), is_bot: True
-🔍 DECL_PHASE_DEBUG: Player Bot 4 declared value: 0 (from phase data)
-🔍 DECL_PHASE_DEBUG: All phase declarations: {}
-🤖 DECL_PHASE_DEBUG: Bot Bot 4 will declare in 1.2s...
-🤖 DECL_PHASE_DEBUG: Bot Bot 4 will now declare!
-🔍 ACTION_QUEUE_DEBUG: Queued action: declare from Bot 4 (queue size: 6)
-🔧 BOT_DECLARE_DEBUG: State machine result: {'success': True, 'queued': True}
-✅ Bot Bot 4 declared 2
-🔍 DECL_PHASE_DEBUG: Checking player 3 (Andy), is_bot: False
-🔍 DECL_PHASE_DEBUG: Player Andy is human, stopping bot declarations
+🚫 PHASE_TRACKING_FIX: Already triggered actions for declaration phase via round_started - skipping
+DEBUG_WS_QUEUE: Room 44A1A0 got message: phase_change
+DEBUG_WS: Broadcasting event 'phase_change' (op_id: unknown) to 1 clients in room 44A1A0.
+DEBUG_WS: Successfully sent 'phase_change' to a client in room 44A1A0.
 🔍 ACTION_QUEUE_DEBUG: Dequeued action: declare from Bot 2
 🔍 ACTION_QUEUE_DEBUG: Dequeued action: declare from Bot 3
 🔍 ACTION_QUEUE_DEBUG: Dequeued action: declare from Bot 4
-🔍 ACTION_QUEUE_DEBUG: Dequeued action: declare from Bot 2
-🔍 ACTION_QUEUE_DEBUG: Dequeued action: declare from Bot 3
-🔍 ACTION_QUEUE_DEBUG: Dequeued action: declare from Bot 4
-🔍 STATE_MACHINE_DEBUG: Processing 6 actions
+🔍 STATE_MACHINE_DEBUG: Processing 3 actions
 🔍 STATE_MACHINE_DEBUG: Processing action: declare from Bot 2
-DEBUG_WS: Message for event 'phase_change' added to queue for room D5791B.
-🤖 ENTERPRISE_DATA_DEBUG: Notifying bot manager about data change - reason: Player Bot 2 declared 2
+DEBUG_WS: Message for event 'phase_change' added to queue for room 44A1A0.
+🤖 ENTERPRISE_DATA_DEBUG: Notifying bot manager about data change - reason: Player Bot 2 declared 3
 🤖 ENTERPRISE_DATA_DEBUG: Declaration phase - current declarer: Bot 3
-🔔 BOT_MANAGER_DEBUG: Received event 'phase_change' for room D5791B with data: {'phase': 'declaration', 'phase_data': {'declaration_order': ['Bot 2 - 0 pts', 'Bot 3 - 0 pts', 'Bot 4 - 0 pts', 'Andy - 0 pts'], 'current_declarer_index': 1, 'declarations': {'Bot 2': 2}, 'declaration_total': 2, 'current_declarer': 'Bot 3'}, 'current_declarer': 'Bot 3', 'reason': 'Player Bot 2 declared 2'}
-✅ BOT_MANAGER_DEBUG: Found handler for room D5791B, delegating to handler...
-🎮 BOT_HANDLER_DEBUG: Room D5791B handling event 'phase_change' with data: {'phase': 'declaration', 'phase_data': {'declaration_order': ['Bot 2 - 0 pts', 'Bot 3 - 0 pts', 'Bot 4 - 0 pts', 'Andy - 0 pts'], 'current_declarer_index': 1, 'declarations': {'Bot 2': 2}, 'declaration_total': 2, 'current_declarer': 'Bot 3'}, 'current_declarer': 'Bot 3', 'reason': 'Player Bot 2 declared 2'}
+🔔 BOT_MANAGER_DEBUG: Received event 'phase_change' for room 44A1A0 with data: {'phase': 'declaration', 'phase_data': {'declaration_order': ['Bot 2 - 0 pts', 'Bot 3 - 0 pts', 'Bot 4 - 0 pts', 'Andy - 0 pts'], 'current_declarer_index': 1, 'declarations': {'Bot 2': 3}, 'declaration_total': 3, 'current_declarer': 'Bot 3'}, 'current_declarer': 'Bot 3', 'reason': 'Player Bot 2 declared 3'}
+✅ BOT_MANAGER_DEBUG: Found handler for room 44A1A0, delegating to handler...
+🎮 BOT_HANDLER_DEBUG: Room 44A1A0 handling event 'phase_change' with data: {'phase': 'declaration', 'phase_data': {'declaration_order': ['Bot 2 - 0 pts', 'Bot 3 - 0 pts', 'Bot 4 - 0 pts', 'Andy - 0 pts'], 'current_declarer_index': 1, 'declarations': {'Bot 2': 3}, 'declaration_total': 3, 'current_declarer': 'Bot 3'}, 'current_declarer': 'Bot 3', 'reason': 'Player Bot 2 declared 3'}
 🔍 PHASE_TRACKING_FIX: Same phase update: declaration
 🚀 BOT_HANDLER_DEBUG: Handling enterprise phase change
-🚀 ENTERPRISE_BOT_DEBUG: Processing phase change - phase: declaration, reason: Player Bot 2 declared 2
+🚀 ENTERPRISE_BOT_DEBUG: Processing phase change - phase: declaration, reason: Player Bot 2 declared 3
 🚫 PHASE_TRACKING_FIX: Already triggered actions for declaration phase - skipping
 ✅ STATE_MACHINE_DEBUG: Action processed successfully
 ✅ BOT_VALIDATION_DEBUG: Notifying bot manager of accepted action from Bot 2
-🔔 BOT_MANAGER_DEBUG: Received event 'action_accepted' for room D5791B with data: {'player_name': 'Bot 2', 'action_type': 'declare', 'result': {'status': 'declaration_recorded', 'player': 'Bot 2', 'value': 2, 'total': 2}, 'payload': {'value': 2}, 'is_bot': True}
-✅ BOT_MANAGER_DEBUG: Found handler for room D5791B, delegating to handler...
-🎮 BOT_HANDLER_DEBUG: Room D5791B handling event 'action_accepted' with data: {'player_name': 'Bot 2', 'action_type': 'declare', 'result': {'status': 'declaration_recorded', 'player': 'Bot 2', 'value': 2, 'total': 2}, 'payload': {'value': 2}, 'is_bot': True}
+🔔 BOT_MANAGER_DEBUG: Received event 'action_accepted' for room 44A1A0 with data: {'player_name': 'Bot 2', 'action_type': 'declare', 'result': {'status': 'declaration_recorded', 'player': 'Bot 2', 'value': 3, 'total': 3}, 'payload': {'value': 3}, 'is_bot': True}
+✅ BOT_MANAGER_DEBUG: Found handler for room 44A1A0, delegating to handler...
+🎮 BOT_HANDLER_DEBUG: Room 44A1A0 handling event 'action_accepted' with data: {'player_name': 'Bot 2', 'action_type': 'declare', 'result': {'status': 'declaration_recorded', 'player': 'Bot 2', 'value': 3, 'total': 3}, 'payload': {'value': 3}, 'is_bot': True}
 ✅ BOT_HANDLER_DEBUG: Handling action acceptance
 ✅ BOT_VALIDATION_FIX: Action declare from Bot 2 was ACCEPTED
 🔍 STATE_MACHINE_DEBUG: Processing action: declare from Bot 3
-DEBUG_WS: Message for event 'phase_change' added to queue for room D5791B.
+DEBUG_WS: Message for event 'phase_change' added to queue for room 44A1A0.
 🤖 ENTERPRISE_DATA_DEBUG: Notifying bot manager about data change - reason: Player Bot 3 declared 1
 🤖 ENTERPRISE_DATA_DEBUG: Declaration phase - current declarer: Bot 4
-🔔 BOT_MANAGER_DEBUG: Received event 'phase_change' for room D5791B with data: {'phase': 'declaration', 'phase_data': {'declaration_order': ['Bot 2 - 0 pts', 'Bot 3 - 0 pts', 'Bot 4 - 0 pts', 'Andy - 0 pts'], 'current_declarer_index': 2, 'declarations': {'Bot 2': 2, 'Bot 3': 1}, 'declaration_total': 3, 'current_declarer': 'Bot 4'}, 'current_declarer': 'Bot 4', 'reason': 'Player Bot 3 declared 1'}
-✅ BOT_MANAGER_DEBUG: Found handler for room D5791B, delegating to handler...
-🎮 BOT_HANDLER_DEBUG: Room D5791B handling event 'phase_change' with data: {'phase': 'declaration', 'phase_data': {'declaration_order': ['Bot 2 - 0 pts', 'Bot 3 - 0 pts', 'Bot 4 - 0 pts', 'Andy - 0 pts'], 'current_declarer_index': 2, 'declarations': {'Bot 2': 2, 'Bot 3': 1}, 'declaration_total': 3, 'current_declarer': 'Bot 4'}, 'current_declarer': 'Bot 4', 'reason': 'Player Bot 3 declared 1'}
+🔔 BOT_MANAGER_DEBUG: Received event 'phase_change' for room 44A1A0 with data: {'phase': 'declaration', 'phase_data': {'declaration_order': ['Bot 2 - 0 pts', 'Bot 3 - 0 pts', 'Bot 4 - 0 pts', 'Andy - 0 pts'], 'current_declarer_index': 2, 'declarations': {'Bot 2': 3, 'Bot 3': 1}, 'declaration_total': 4, 'current_declarer': 'Bot 4'}, 'current_declarer': 'Bot 4', 'reason': 'Player Bot 3 declared 1'}
+✅ BOT_MANAGER_DEBUG: Found handler for room 44A1A0, delegating to handler...
+🎮 BOT_HANDLER_DEBUG: Room 44A1A0 handling event 'phase_change' with data: {'phase': 'declaration', 'phase_data': {'declaration_order': ['Bot 2 - 0 pts', 'Bot 3 - 0 pts', 'Bot 4 - 0 pts', 'Andy - 0 pts'], 'current_declarer_index': 2, 'declarations': {'Bot 2': 3, 'Bot 3': 1}, 'declaration_total': 4, 'current_declarer': 'Bot 4'}, 'current_declarer': 'Bot 4', 'reason': 'Player Bot 3 declared 1'}
 🔍 PHASE_TRACKING_FIX: Same phase update: declaration
 🚀 BOT_HANDLER_DEBUG: Handling enterprise phase change
 🚀 ENTERPRISE_BOT_DEBUG: Processing phase change - phase: declaration, reason: Player Bot 3 declared 1
 🚫 PHASE_TRACKING_FIX: Already triggered actions for declaration phase - skipping
 ✅ STATE_MACHINE_DEBUG: Action processed successfully
 ✅ BOT_VALIDATION_DEBUG: Notifying bot manager of accepted action from Bot 3
-🔔 BOT_MANAGER_DEBUG: Received event 'action_accepted' for room D5791B with data: {'player_name': 'Bot 3', 'action_type': 'declare', 'result': {'status': 'declaration_recorded', 'player': 'Bot 3', 'value': 1, 'total': 3}, 'payload': {'value': 1}, 'is_bot': True}
-✅ BOT_MANAGER_DEBUG: Found handler for room D5791B, delegating to handler...
-🎮 BOT_HANDLER_DEBUG: Room D5791B handling event 'action_accepted' with data: {'player_name': 'Bot 3', 'action_type': 'declare', 'result': {'status': 'declaration_recorded', 'player': 'Bot 3', 'value': 1, 'total': 3}, 'payload': {'value': 1}, 'is_bot': True}
+🔔 BOT_MANAGER_DEBUG: Received event 'action_accepted' for room 44A1A0 with data: {'player_name': 'Bot 3', 'action_type': 'declare', 'result': {'status': 'declaration_recorded', 'player': 'Bot 3', 'value': 1, 'total': 4}, 'payload': {'value': 1}, 'is_bot': True}
+✅ BOT_MANAGER_DEBUG: Found handler for room 44A1A0, delegating to handler...
+🎮 BOT_HANDLER_DEBUG: Room 44A1A0 handling event 'action_accepted' with data: {'player_name': 'Bot 3', 'action_type': 'declare', 'result': {'status': 'declaration_recorded', 'player': 'Bot 3', 'value': 1, 'total': 4}, 'payload': {'value': 1}, 'is_bot': True}
 ✅ BOT_HANDLER_DEBUG: Handling action acceptance
 ✅ BOT_VALIDATION_FIX: Action declare from Bot 3 was ACCEPTED
 🔍 STATE_MACHINE_DEBUG: Processing action: declare from Bot 4
-DEBUG_WS: Message for event 'phase_change' added to queue for room D5791B.
-DEBUG_WS_QUEUE: Room D5791B got message: phase_change
-DEBUG_WS: Broadcasting event 'phase_change' (op_id: unknown) to 1 clients in room D5791B.
-DEBUG_WS: Successfully sent 'phase_change' to a client in room D5791B.
-🤖 ENTERPRISE_DATA_DEBUG: Notifying bot manager about data change - reason: Player Bot 4 declared 2
+DEBUG_WS: Message for event 'phase_change' added to queue for room 44A1A0.
+DEBUG_WS_QUEUE: Room 44A1A0 got message: phase_change
+DEBUG_WS: Broadcasting event 'phase_change' (op_id: unknown) to 1 clients in room 44A1A0.
+DEBUG_WS: Successfully sent 'phase_change' to a client in room 44A1A0.
+🤖 ENTERPRISE_DATA_DEBUG: Notifying bot manager about data change - reason: Player Bot 4 declared 1
 🤖 ENTERPRISE_DATA_DEBUG: Declaration phase - current declarer: Andy
-🔔 BOT_MANAGER_DEBUG: Received event 'phase_change' for room D5791B with data: {'phase': 'declaration', 'phase_data': {'declaration_order': ['Bot 2 - 0 pts', 'Bot 3 - 0 pts', 'Bot 4 - 0 pts', 'Andy - 0 pts'], 'current_declarer_index': 3, 'declarations': {'Bot 2': 2, 'Bot 3': 1, 'Bot 4': 2}, 'declaration_total': 5, 'current_declarer': 'Andy'}, 'current_declarer': 'Andy', 'reason': 'Player Bot 4 declared 2'}
-✅ BOT_MANAGER_DEBUG: Found handler for room D5791B, delegating to handler...
-🎮 BOT_HANDLER_DEBUG: Room D5791B handling event 'phase_change' with data: {'phase': 'declaration', 'phase_data': {'declaration_order': ['Bot 2 - 0 pts', 'Bot 3 - 0 pts', 'Bot 4 - 0 pts', 'Andy - 0 pts'], 'current_declarer_index': 3, 'declarations': {'Bot 2': 2, 'Bot 3': 1, 'Bot 4': 2}, 'declaration_total': 5, 'current_declarer': 'Andy'}, 'current_declarer': 'Andy', 'reason': 'Player Bot 4 declared 2'}
+🔔 BOT_MANAGER_DEBUG: Received event 'phase_change' for room 44A1A0 with data: {'phase': 'declaration', 'phase_data': {'declaration_order': ['Bot 2 - 0 pts', 'Bot 3 - 0 pts', 'Bot 4 - 0 pts', 'Andy - 0 pts'], 'current_declarer_index': 3, 'declarations': {'Bot 2': 3, 'Bot 3': 1, 'Bot 4': 1}, 'declaration_total': 5, 'current_declarer': 'Andy'}, 'current_declarer': 'Andy', 'reason': 'Player Bot 4 declared 1'}
+✅ BOT_MANAGER_DEBUG: Found handler for room 44A1A0, delegating to handler...
+🎮 BOT_HANDLER_DEBUG: Room 44A1A0 handling event 'phase_change' with data: {'phase': 'declaration', 'phase_data': {'declaration_order': ['Bot 2 - 0 pts', 'Bot 3 - 0 pts', 'Bot 4 - 0 pts', 'Andy - 0 pts'], 'current_declarer_index': 3, 'declarations': {'Bot 2': 3, 'Bot 3': 1, 'Bot 4': 1}, 'declaration_total': 5, 'current_declarer': 'Andy'}, 'current_declarer': 'Andy', 'reason': 'Player Bot 4 declared 1'}
 🔍 PHASE_TRACKING_FIX: Same phase update: declaration
 🚀 BOT_HANDLER_DEBUG: Handling enterprise phase change
-🚀 ENTERPRISE_BOT_DEBUG: Processing phase change - phase: declaration, reason: Player Bot 4 declared 2
+🚀 ENTERPRISE_BOT_DEBUG: Processing phase change - phase: declaration, reason: Player Bot 4 declared 1
 🚫 PHASE_TRACKING_FIX: Already triggered actions for declaration phase - skipping
 ✅ STATE_MACHINE_DEBUG: Action processed successfully
 ✅ BOT_VALIDATION_DEBUG: Notifying bot manager of accepted action from Bot 4
-🔔 BOT_MANAGER_DEBUG: Received event 'action_accepted' for room D5791B with data: {'player_name': 'Bot 4', 'action_type': 'declare', 'result': {'status': 'declaration_recorded', 'player': 'Bot 4', 'value': 2, 'total': 5}, 'payload': {'value': 2}, 'is_bot': True}
-✅ BOT_MANAGER_DEBUG: Found handler for room D5791B, delegating to handler...
-🎮 BOT_HANDLER_DEBUG: Room D5791B handling event 'action_accepted' with data: {'player_name': 'Bot 4', 'action_type': 'declare', 'result': {'status': 'declaration_recorded', 'player': 'Bot 4', 'value': 2, 'total': 5}, 'payload': {'value': 2}, 'is_bot': True}
+🔔 BOT_MANAGER_DEBUG: Received event 'action_accepted' for room 44A1A0 with data: {'player_name': 'Bot 4', 'action_type': 'declare', 'result': {'status': 'declaration_recorded', 'player': 'Bot 4', 'value': 1, 'total': 5}, 'payload': {'value': 1}, 'is_bot': True}
+✅ BOT_MANAGER_DEBUG: Found handler for room 44A1A0, delegating to handler...
+🎮 BOT_HANDLER_DEBUG: Room 44A1A0 handling event 'action_accepted' with data: {'player_name': 'Bot 4', 'action_type': 'declare', 'result': {'status': 'declaration_recorded', 'player': 'Bot 4', 'value': 1, 'total': 5}, 'payload': {'value': 1}, 'is_bot': True}
 ✅ BOT_HANDLER_DEBUG: Handling action acceptance
 ✅ BOT_VALIDATION_FIX: Action declare from Bot 4 was ACCEPTED
-🔍 STATE_MACHINE_DEBUG: Processing action: declare from Bot 2
-Wrong player turn: Bot 2, expected: Andy
-Invalid action: GameAction(player_name='Bot 2', action_type=<ActionType.DECLARE: 'declare'>, payload={'value': 2}, timestamp=datetime.datetime(2025, 7, 3, 12, 13, 36, 73594), sequence_id=3, is_bot=True)
-❌ STATE_MACHINE_DEBUG: Action rejected: declare from Bot 2
-🚫 BOT_VALIDATION_DEBUG: Notifying bot manager of rejected action from Bot 2
-🔔 BOT_MANAGER_DEBUG: Received event 'action_rejected' for room D5791B with data: {'player_name': 'Bot 2', 'action_type': 'declare', 'reason': 'Invalid action for current game state', 'payload': {'value': 2}, 'is_bot': True}
-✅ BOT_MANAGER_DEBUG: Found handler for room D5791B, delegating to handler...
-🎮 BOT_HANDLER_DEBUG: Room D5791B handling event 'action_rejected' with data: {'player_name': 'Bot 2', 'action_type': 'declare', 'reason': 'Invalid action for current game state', 'payload': {'value': 2}, 'is_bot': True}
-🚫 BOT_HANDLER_DEBUG: Handling action rejection
-🚫 BOT_VALIDATION_FIX: Action declare from Bot 2 was REJECTED: Invalid action for current game state
-🚫 BOT_VALIDATION_FIX: Bot Bot 2 action rejected - preventing downstream processing
-🚫 BOT_VALIDATION_FIX: Bot Bot 2 hand size after rejection: 8
-🔍 STATE_MACHINE_DEBUG: Processing action: declare from Bot 3
-Wrong player turn: Bot 3, expected: Andy
-Invalid action: GameAction(player_name='Bot 3', action_type=<ActionType.DECLARE: 'declare'>, payload={'value': 1}, timestamp=datetime.datetime(2025, 7, 3, 12, 13, 37, 263861), sequence_id=4, is_bot=True)
-❌ STATE_MACHINE_DEBUG: Action rejected: declare from Bot 3
-🚫 BOT_VALIDATION_DEBUG: Notifying bot manager of rejected action from Bot 3
-🔔 BOT_MANAGER_DEBUG: Received event 'action_rejected' for room D5791B with data: {'player_name': 'Bot 3', 'action_type': 'declare', 'reason': 'Invalid action for current game state', 'payload': {'value': 1}, 'is_bot': True}
-✅ BOT_MANAGER_DEBUG: Found handler for room D5791B, delegating to handler...
-🎮 BOT_HANDLER_DEBUG: Room D5791B handling event 'action_rejected' with data: {'player_name': 'Bot 3', 'action_type': 'declare', 'reason': 'Invalid action for current game state', 'payload': {'value': 1}, 'is_bot': True}
-🚫 BOT_HANDLER_DEBUG: Handling action rejection
-🚫 BOT_VALIDATION_FIX: Action declare from Bot 3 was REJECTED: Invalid action for current game state
-🚫 BOT_VALIDATION_FIX: Bot Bot 3 action rejected - preventing downstream processing
-🚫 BOT_VALIDATION_FIX: Bot Bot 3 hand size after rejection: 8
-🔍 STATE_MACHINE_DEBUG: Processing action: declare from Bot 4
-Wrong player turn: Bot 4, expected: Andy
-Invalid action: GameAction(player_name='Bot 4', action_type=<ActionType.DECLARE: 'declare'>, payload={'value': 2}, timestamp=datetime.datetime(2025, 7, 3, 12, 13, 38, 706842), sequence_id=5, is_bot=True)
-❌ STATE_MACHINE_DEBUG: Action rejected: declare from Bot 4
-🚫 BOT_VALIDATION_DEBUG: Notifying bot manager of rejected action from Bot 4
-🔔 BOT_MANAGER_DEBUG: Received event 'action_rejected' for room D5791B with data: {'player_name': 'Bot 4', 'action_type': 'declare', 'reason': 'Invalid action for current game state', 'payload': {'value': 2}, 'is_bot': True}
-✅ BOT_MANAGER_DEBUG: Found handler for room D5791B, delegating to handler...
-🎮 BOT_HANDLER_DEBUG: Room D5791B handling event 'action_rejected' with data: {'player_name': 'Bot 4', 'action_type': 'declare', 'reason': 'Invalid action for current game state', 'payload': {'value': 2}, 'is_bot': True}
-🚫 BOT_HANDLER_DEBUG: Handling action rejection
-🚫 BOT_VALIDATION_FIX: Action declare from Bot 4 was REJECTED: Invalid action for current game state
-🚫 BOT_VALIDATION_FIX: Bot Bot 4 action rejected - preventing downstream processing
-🚫 BOT_VALIDATION_FIX: Bot Bot 4 hand size after rejection: 8
-DEBUG_WS_QUEUE: Room D5791B got message: phase_change
-DEBUG_WS: Broadcasting event 'phase_change' (op_id: unknown) to 1 clients in room D5791B.
-DEBUG_WS: Successfully sent 'phase_change' to a client in room D5791B.
-DEBUG_WS_QUEUE: Room D5791B got message: phase_change
-DEBUG_WS: Broadcasting event 'phase_change' (op_id: unknown) to 1 clients in room D5791B.
-DEBUG_WS: Successfully sent 'phase_change' to a client in room D5791B.
+DEBUG_WS_QUEUE: Room 44A1A0 got message: phase_change
+DEBUG_WS: Broadcasting event 'phase_change' (op_id: unknown) to 1 clients in room 44A1A0.
+DEBUG_WS: Successfully sent 'phase_change' to a client in room 44A1A0.
+DEBUG_WS_QUEUE: Room 44A1A0 got message: phase_change
+DEBUG_WS: Broadcasting event 'phase_change' (op_id: unknown) to 1 clients in room 44A1A0.
+DEBUG_WS: Successfully sent 'phase_change' to a client in room 44A1A0.
+INFO:     127.0.0.1:63432 - "GET /bundle.js.map HTTP/1.1" 200 OK
+INFO:     127.0.0.1:63430 - "GET /bundle.css.map HTTP/1.1" 200 OK
 🔍 STATE_MACHINE_DEBUG: Process loop iteration 50
