@@ -176,3 +176,7 @@ Key classes **ALL ENTERPRISE**:
 - API routes: `backend/api/routes/`
 - Frontend entry: `frontend/main.js`
 - Game rules documentation: `RULES.md`
+
+## Claude Memories
+
+- When I tell you to read log, read it from `/log.txt`

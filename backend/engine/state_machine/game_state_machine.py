@@ -281,6 +281,7 @@ class GameStateMachine:
         This implements the enterprise principle of automatic bot triggering on data updates,
         not just phase transitions. Called from base_state enterprise broadcasting.
         """
+        print(f"🔍 ENTERPRISE_DEBUG: _notify_bot_manager_data_change called - reason: {reason}")
         try:
             from ..bot_manager import BotManager
             bot_manager = BotManager()
@@ -295,12 +296,18 @@ class GameStateMachine:
                 if current_declarer:
                     
                     # Send phase_change event with full data for bot to decide action
-                    await bot_manager.handle_game_event(room_id, "phase_change", {
-                        "phase": "declaration",
-                        "phase_data": phase_data,
-                        "current_declarer": current_declarer,
-                        "reason": reason
-                    })
+                    print(f"🔍 ENTERPRISE_DEBUG: About to call bot_manager.handle_game_event for declaration phase")
+                    try:
+                        await bot_manager.handle_game_event(room_id, "phase_change", {
+                            "phase": "declaration",
+                            "phase_data": phase_data,
+                            "current_declarer": current_declarer,
+                            "reason": reason
+                        })
+                        print(f"✅ ENTERPRISE_DEBUG: bot_manager.handle_game_event completed for declaration")
+                    except Exception as e:
+                        print(f"❌ ENTERPRISE_DEBUG: bot_manager.handle_game_event failed: {e}")
+                        raise
                     
             elif self.current_phase == GamePhase.TURN:
                 current_player = phase_data.get('current_player')
