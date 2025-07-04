@@ -1,1643 +1,188 @@
- 🔢 FRONTEND_ROUND_TURN_DEBUG: Round 10, Turn 5
- 🎯 FRONTEND_TURN_STATE: Starter: Andy, Current: Andy, Required: null, Plays: 0
- 🎲 TURN_PLAYS_DEBUG: Converted 0 plays to currentTurnPlays: []
- 🔢 FRONTEND_TURN_DEBUG: phaseData.current_turn_number = 5
- 🌐 PROCESS_EVENT_DEBUG: Event phase_change processed, updating derived state
- 🎯 TURN_DEBUG: currentPlayer: Andy, playerName: Andy, isMyTurn: true
- 🎯 TURN_DEBUG: turnOrder: (4) ['Andy', 'Bot 2', 'Bot 3', 'Bot 4']
- 🎯 TURN_DEBUG: currentTurnPlays: []
- 🎯 TURN_DEBUG: currentPlayer: Andy, playerName: Andy, isMyTurn: true
- 🎯 TURN_DEBUG: turnOrder: (4) ['Andy', 'Bot 2', 'Bot 3', 'Bot 4']
- 🎯 TURN_DEBUG: currentTurnPlays: []
- 🎯 TURN_DEBUG: currentPlayer: Andy, playerName: Andy, isMyTurn: true
- 🎯 TURN_DEBUG: turnOrder: (4) ['Andy', 'Bot 2', 'Bot 3', 'Bot 4']
- 🎯 TURN_DEBUG: currentTurnPlays: []
- 🌐 PROCESS_EVENT_DEBUG: Finished processing phase_change event
- 🎮 State Change: NETWORK_EVENT:PHASE_CHANGE
- Previous: {isConnected: true, roomId: '892141', playerName: 'Andy', phase: 'turn_results', currentRound: 10, …}
- New: {isConnected: true, roomId: '892141', playerName: 'Andy', phase: 'turn', currentRound: 10, …}
- Diff: {phase: {…}, myHand: {…}, currentTurnStarter: {…}, turnOrder: {…}, currentPlayer: {…}, …}
- 🎮 GAME_STATE_DEBUG: Phase changed from 'turn_results' to 'turn'
- 🎮 GAME_STATE_DEBUG: Phase changed from 'turn_results' to 'turn'
- 🎮 GAME_STATE_DEBUG: Phase changed from 'turn_results' to 'turn'
- 🎮 GAME_STATE_DEBUG: Phase changed from 'turn_results' to 'turn'
- 🔢 GAMECONTAINER_DEBUG: gameState.currentTurnNumber = 5
- 🌐 FRONTEND_EVENT_DEBUG: Received phase_change event for room 892141 {phase: 'turn', allowed_actions: Array(4), phase_data: {…}, players: {…}, round: 10, …}
- 🔄 PHASE_CHANGE_DEBUG: Phase: turn
- 🔄 PHASE_CHANGE_DEBUG: Data players: {Andy: {…}, Bot 2: {…}, Bot 3: {…}, Bot 4: {…}}
- 🔄 PHASE_CHANGE_DEBUG: Data phase_data: {current_turn_starter: 'Andy', current_player: 'Andy', turn_order: Array(4), required_piece_count: null, turn_plays: {…}, …}
- 🔄 PHASE_CHANGE_DEBUG: First player raw: Andy {hand: Array(3), hand_size: 3}
- 🔄 PHASE_CHANGE_DEBUG: Converted players array: (4) [{…}, {…}, {…}, {…}]
- 🔄 PHASE_CHANGE_DEBUG: Sample player object: {name: 'Andy', is_bot: false, is_host: false, zero_declares_in_a_row: 0}
- 🎯 REQUIRED_COUNT_FIX: Set requiredPieceCount to null from backend phase_data
- 🔢 FRONTEND_ROUND_TURN_DEBUG: Round 10, Turn 5
- 🎯 FRONTEND_TURN_STATE: Starter: Andy, Current: Andy, Required: null, Plays: 0
- 🎲 TURN_PLAYS_DEBUG: Converted 0 plays to currentTurnPlays: []
- 🔢 FRONTEND_TURN_DEBUG: phaseData.current_turn_number = 5
- 🌐 PROCESS_EVENT_DEBUG: Event phase_change processed, updating derived state
- 🎯 TURN_DEBUG: currentPlayer: Andy, playerName: Andy, isMyTurn: true
- 🎯 TURN_DEBUG: turnOrder: (4) ['Andy', 'Bot 2', 'Bot 3', 'Bot 4']
- 🎯 TURN_DEBUG: currentTurnPlays: []
- 🎯 TURN_DEBUG: currentPlayer: Andy, playerName: Andy, isMyTurn: true
- 🎯 TURN_DEBUG: turnOrder: (4) ['Andy', 'Bot 2', 'Bot 3', 'Bot 4']
- 🎯 TURN_DEBUG: currentTurnPlays: []
- 🎯 TURN_DEBUG: currentPlayer: Andy, playerName: Andy, isMyTurn: true
- 🎯 TURN_DEBUG: turnOrder: (4) ['Andy', 'Bot 2', 'Bot 3', 'Bot 4']
- 🎯 TURN_DEBUG: currentTurnPlays: []
- 🌐 PROCESS_EVENT_DEBUG: Finished processing phase_change event
- 🎮 State Change: NETWORK_EVENT:PHASE_CHANGE
- Previous: {isConnected: true, roomId: '892141', playerName: 'Andy', phase: 'turn', currentRound: 10, …}
- New: {isConnected: true, roomId: '892141', playerName: 'Andy', phase: 'turn', currentRound: 10, …}
- Diff: {lastEventSequence: {…}, canPlayAnyCount: {…}}
- 🔢 GAMECONTAINER_DEBUG: gameState.currentTurnNumber = 5
- 🎯 TURN_UI: Card clicked at index 0, isMyTurn: true
- 🎯 TURN_UI: Selecting card 0, new selection: [0]
- 🎮 Action sent: play {piece_indices: Array(1), player_name: 'Andy', play_value: 12}
- 🌐 FRONTEND_EVENT_DEBUG: Received phase_change event for room 892141 {phase: 'turn', allowed_actions: Array(4), phase_data: {…}, players: {…}, round: 10, …}
- 🔄 PHASE_CHANGE_DEBUG: Phase: turn
- 🔄 PHASE_CHANGE_DEBUG: Data players: {Andy: {…}, Bot 2: {…}, Bot 3: {…}, Bot 4: {…}}
- 🔄 PHASE_CHANGE_DEBUG: Data phase_data: {current_turn_starter: 'Andy', current_player: 'Bot 2', turn_order: Array(4), required_piece_count: 1, turn_plays: {…}, …}
- 🔄 PHASE_CHANGE_DEBUG: First player raw: Andy {hand: Array(3), hand_size: 3}
- 🔄 PHASE_CHANGE_DEBUG: Converted players array: (4) [{…}, {…}, {…}, {…}]
- 🔄 PHASE_CHANGE_DEBUG: Sample player object: {name: 'Andy', is_bot: false, is_host: false, zero_declares_in_a_row: 0}
- 🎯 REQUIRED_COUNT_FIX: Set requiredPieceCount to 1 from backend phase_data
- 🔢 FRONTEND_ROUND_TURN_DEBUG: Round 10, Turn 5
- 🎯 FRONTEND_TURN_STATE: Starter: Andy, Current: Bot 2, Required: 1, Plays: 1
- 🎲 TURN_PLAYS_DEBUG: Converted 1 plays to currentTurnPlays: [{…}]
- 🔢 FRONTEND_TURN_DEBUG: phaseData.current_turn_number = 5
- 🌐 PROCESS_EVENT_DEBUG: Event phase_change processed, updating derived state
- 🎯 TURN_DEBUG: currentPlayer: Bot 2, playerName: Andy, isMyTurn: false
- 🎯 TURN_DEBUG: turnOrder: (4) ['Andy', 'Bot 2', 'Bot 3', 'Bot 4']
- 🎯 TURN_DEBUG: currentTurnPlays: [{…}]
- 🎯 TURN_DEBUG: currentPlayer: Bot 2, playerName: Andy, isMyTurn: false
- 🎯 TURN_DEBUG: turnOrder: (4) ['Andy', 'Bot 2', 'Bot 3', 'Bot 4']
- 🎯 TURN_DEBUG: currentTurnPlays: [{…}]
- 🎯 TURN_DEBUG: currentPlayer: Bot 2, playerName: Andy, isMyTurn: false
- 🎯 TURN_DEBUG: turnOrder: (4) ['Andy', 'Bot 2', 'Bot 3', 'Bot 4']
- 🎯 TURN_DEBUG: currentTurnPlays: [{…}]
- 🌐 PROCESS_EVENT_DEBUG: Finished processing phase_change event
- 🎮 State Change: NETWORK_EVENT:PHASE_CHANGE
- Previous: {isConnected: true, roomId: '892141', playerName: 'Andy', phase: 'turn', currentRound: 10, …}
- New: {isConnected: true, roomId: '892141', playerName: 'Andy', phase: 'turn', currentRound: 10, …}
- Diff: {currentPlayer: {…}, currentTurnPlays: {…}, requiredPieceCount: {…}, isMyTurn: {…}, allowedActions: {…}, …}
- 🔢 GAMECONTAINER_DEBUG: gameState.currentTurnNumber = 5
- 🌐 FRONTEND_EVENT_DEBUG: Received phase_change event for room 892141 {phase: 'turn', allowed_actions: Array(4), phase_data: {…}, players: {…}, round: 10, …}
- 🔄 PHASE_CHANGE_DEBUG: Phase: turn
- 🔄 PHASE_CHANGE_DEBUG: Data players: {Andy: {…}, Bot 2: {…}, Bot 3: {…}, Bot 4: {…}}
- 🔄 PHASE_CHANGE_DEBUG: Data phase_data: {current_turn_starter: 'Andy', current_player: 'Bot 3', turn_order: Array(4), required_piece_count: 1, turn_plays: {…}, …}
- 🔄 PHASE_CHANGE_DEBUG: First player raw: Andy {hand: Array(3), hand_size: 3}
- 🔄 PHASE_CHANGE_DEBUG: Converted players array: (4) [{…}, {…}, {…}, {…}]
- 🔄 PHASE_CHANGE_DEBUG: Sample player object: {name: 'Andy', is_bot: false, is_host: false, zero_declares_in_a_row: 0}
- 🎯 REQUIRED_COUNT_FIX: Set requiredPieceCount to 1 from backend phase_data
- 🔢 FRONTEND_ROUND_TURN_DEBUG: Round 10, Turn 5
- 🎯 FRONTEND_TURN_STATE: Starter: Andy, Current: Bot 3, Required: 1, Plays: 2
- 🎲 TURN_PLAYS_DEBUG: Converted 2 plays to currentTurnPlays: (2) [{…}, {…}]
- 🔢 FRONTEND_TURN_DEBUG: phaseData.current_turn_number = 5
- 🌐 PROCESS_EVENT_DEBUG: Event phase_change processed, updating derived state
- 🎯 TURN_DEBUG: currentPlayer: Bot 3, playerName: Andy, isMyTurn: false
- 🎯 TURN_DEBUG: turnOrder: (4) ['Andy', 'Bot 2', 'Bot 3', 'Bot 4']
- 🎯 TURN_DEBUG: currentTurnPlays: (2) [{…}, {…}]
- 🎯 TURN_DEBUG: currentPlayer: Bot 3, playerName: Andy, isMyTurn: false
- 🎯 TURN_DEBUG: turnOrder: (4) ['Andy', 'Bot 2', 'Bot 3', 'Bot 4']
- 🎯 TURN_DEBUG: currentTurnPlays: (2) [{…}, {…}]
- 🎯 TURN_DEBUG: currentPlayer: Bot 3, playerName: Andy, isMyTurn: false
- 🎯 TURN_DEBUG: turnOrder: (4) ['Andy', 'Bot 2', 'Bot 3', 'Bot 4']
- 🎯 TURN_DEBUG: currentTurnPlays: (2) [{…}, {…}]
- 🌐 PROCESS_EVENT_DEBUG: Finished processing phase_change event
- 🎮 State Change: NETWORK_EVENT:PHASE_CHANGE
- Previous: {isConnected: true, roomId: '892141', playerName: 'Andy', phase: 'turn', currentRound: 10, …}
- New: {isConnected: true, roomId: '892141', playerName: 'Andy', phase: 'turn', currentRound: 10, …}
- Diff: {currentPlayer: {…}, currentTurnPlays: {…}, lastEventSequence: {…}}
- 🔢 GAMECONTAINER_DEBUG: gameState.currentTurnNumber = 5
- 🌐 FRONTEND_EVENT_DEBUG: Received phase_change event for room 892141 {phase: 'turn', allowed_actions: Array(4), phase_data: {…}, players: {…}, round: 10, …}
- 🔄 PHASE_CHANGE_DEBUG: Phase: turn
- 🔄 PHASE_CHANGE_DEBUG: Data players: {Andy: {…}, Bot 2: {…}, Bot 3: {…}, Bot 4: {…}}
- 🔄 PHASE_CHANGE_DEBUG: Data phase_data: {current_turn_starter: 'Andy', current_player: 'Bot 4', turn_order: Array(4), required_piece_count: 1, turn_plays: {…}, …}
- 🔄 PHASE_CHANGE_DEBUG: First player raw: Andy {hand: Array(3), hand_size: 3}
- 🔄 PHASE_CHANGE_DEBUG: Converted players array: (4) [{…}, {…}, {…}, {…}]
- 🔄 PHASE_CHANGE_DEBUG: Sample player object: {name: 'Andy', is_bot: false, is_host: false, zero_declares_in_a_row: 0}
- 🎯 REQUIRED_COUNT_FIX: Set requiredPieceCount to 1 from backend phase_data
- 🔢 FRONTEND_ROUND_TURN_DEBUG: Round 10, Turn 5
- 🎯 FRONTEND_TURN_STATE: Starter: Andy, Current: Bot 4, Required: 1, Plays: 3
- 🎲 TURN_PLAYS_DEBUG: Converted 3 plays to currentTurnPlays: (3) [{…}, {…}, {…}]
- 🔢 FRONTEND_TURN_DEBUG: phaseData.current_turn_number = 5
- 🌐 PROCESS_EVENT_DEBUG: Event phase_change processed, updating derived state
- 🎯 TURN_DEBUG: currentPlayer: Bot 4, playerName: Andy, isMyTurn: false
- 🎯 TURN_DEBUG: turnOrder: (4) ['Andy', 'Bot 2', 'Bot 3', 'Bot 4']
- 🎯 TURN_DEBUG: currentTurnPlays: (3) [{…}, {…}, {…}]
- 🎯 TURN_DEBUG: currentPlayer: Bot 4, playerName: Andy, isMyTurn: false
- 🎯 TURN_DEBUG: turnOrder: (4) ['Andy', 'Bot 2', 'Bot 3', 'Bot 4']
- 🎯 TURN_DEBUG: currentTurnPlays: (3) [{…}, {…}, {…}]
- 🎯 TURN_DEBUG: currentPlayer: Bot 4, playerName: Andy, isMyTurn: false
- 🎯 TURN_DEBUG: turnOrder: (4) ['Andy', 'Bot 2', 'Bot 3', 'Bot 4']
- 🎯 TURN_DEBUG: currentTurnPlays: (3) [{…}, {…}, {…}]
- 🌐 PROCESS_EVENT_DEBUG: Finished processing phase_change event
- 🎮 State Change: NETWORK_EVENT:PHASE_CHANGE
- Previous: {isConnected: true, roomId: '892141', playerName: 'Andy', phase: 'turn', currentRound: 10, …}
- New: {isConnected: true, roomId: '892141', playerName: 'Andy', phase: 'turn', currentRound: 10, …}
- Diff: {currentPlayer: {…}, currentTurnPlays: {…}, lastEventSequence: {…}}
- 🔢 GAMECONTAINER_DEBUG: gameState.currentTurnNumber = 5
- 🌐 FRONTEND_EVENT_DEBUG: Received phase_change event for room 892141 {phase: 'turn', allowed_actions: Array(4), phase_data: {…}, players: {…}, round: 10, …}
- 🔄 PHASE_CHANGE_DEBUG: Phase: turn
- 🔄 PHASE_CHANGE_DEBUG: Data players: {Andy: {…}, Bot 2: {…}, Bot 3: {…}, Bot 4: {…}}
- 🔄 PHASE_CHANGE_DEBUG: Data phase_data: {current_turn_starter: 'Andy', current_player: 'Bot 4', turn_order: Array(4), required_piece_count: 1, turn_plays: {…}, …}
- 🔄 PHASE_CHANGE_DEBUG: First player raw: Andy {hand: Array(3), hand_size: 3}
- 🔄 PHASE_CHANGE_DEBUG: Converted players array: (4) [{…}, {…}, {…}, {…}]
- 🔄 PHASE_CHANGE_DEBUG: Sample player object: {name: 'Andy', is_bot: false, is_host: false, zero_declares_in_a_row: 0}
- 🎯 REQUIRED_COUNT_FIX: Set requiredPieceCount to 1 from backend phase_data
- 🔢 FRONTEND_ROUND_TURN_DEBUG: Round 10, Turn 5
- 🎯 FRONTEND_TURN_STATE: Starter: Andy, Current: Bot 4, Required: 1, Plays: 4
- 🎲 TURN_PLAYS_DEBUG: Converted 4 plays to currentTurnPlays: (4) [{…}, {…}, {…}, {…}]
- 🔢 FRONTEND_TURN_DEBUG: phaseData.current_turn_number = 5
- 🌐 PROCESS_EVENT_DEBUG: Event phase_change processed, updating derived state
- 🎯 TURN_DEBUG: currentPlayer: Bot 4, playerName: Andy, isMyTurn: false
- 🎯 TURN_DEBUG: turnOrder: (4) ['Andy', 'Bot 2', 'Bot 3', 'Bot 4']
- 🎯 TURN_DEBUG: currentTurnPlays: (4) [{…}, {…}, {…}, {…}]
- 🎯 TURN_DEBUG: currentPlayer: Bot 4, playerName: Andy, isMyTurn: false
- 🎯 TURN_DEBUG: turnOrder: (4) ['Andy', 'Bot 2', 'Bot 3', 'Bot 4']
- 🎯 TURN_DEBUG: currentTurnPlays: (4) [{…}, {…}, {…}, {…}]
- 🎯 TURN_DEBUG: currentPlayer: Bot 4, playerName: Andy, isMyTurn: false
- 🎯 TURN_DEBUG: turnOrder: (4) ['Andy', 'Bot 2', 'Bot 3', 'Bot 4']
- 🎯 TURN_DEBUG: currentTurnPlays: (4) [{…}, {…}, {…}, {…}]
- 🌐 PROCESS_EVENT_DEBUG: Finished processing phase_change event
- 🎮 State Change: NETWORK_EVENT:PHASE_CHANGE
- Previous: {isConnected: true, roomId: '892141', playerName: 'Andy', phase: 'turn', currentRound: 10, …}
- New: {isConnected: true, roomId: '892141', playerName: 'Andy', phase: 'turn', currentRound: 10, …}
- Diff: {currentTurnPlays: {…}, lastEventSequence: {…}}
- 🔢 GAMECONTAINER_DEBUG: gameState.currentTurnNumber = 5
- 🌐 FRONTEND_EVENT_DEBUG: Received turn_complete event for room 892141 {winner: 'Andy', winning_play: {…}, turn_resolution: {…}, player_piles: {…}, players: Array(4), …}
- 🌐 PROCESS_EVENT_DEBUG: Handling turn_complete event with data: {winner: 'Andy', winning_play: {…}, turn_resolution: {…}, player_piles: {…}, players: Array(4), …}
- 🏆 TURN_COMPLETE_RAW_DEBUG: Event data received: {
-  "winner": "Andy",
-  "winning_play": {
-    "pieces": [
-      "ADVISOR_RED(12)"
-    ],
-    "value": 0,
-    "type": "unknown",
-    "pilesWon": 1
-  },
-  "turn_resolution": {
-    "all_plays": [
-      {
-        "player": "Andy",
-        "pieces": [
-          "ADVISOR_RED(12)"
-        ],
-        "is_valid": true,
-        "play_type": "unknown",
-        "play_value": 0
-      },
-      {
-        "player": "Bot 2",
-        "pieces": [
-          "HORSE_BLACK(5)"
-        ],
-        "is_valid": true,
-        "play_type": "unknown",
-        "play_value": 0
-      },
-      {
-        "player": "Bot 3",
-        "pieces": [
-          "CANNON_RED(4)"
-        ],
-        "is_valid": true,
-        "play_type": "unknown",
-        "play_value": 0
-      },
-      {
-        "player": "Bot 4",
-        "pieces": [
-          "HORSE_RED(6)"
-        ],
-        "is_valid": true,
-        "play_type": "unknown",
-        "play_value": 0
-      }
-    ],
-    "winner": "Andy",
-    "winner_play": {
-      "pieces": [
-        "ADVISOR_RED(12)"
-      ],
-      "value": 0,
-      "type": "unknown",
-      "pilesWon": 1
-    }
-  },
-  "player_piles": {
-    "Andy": 1,
-    "Bot 2": 0,
-    "Bot 3": 0,
-    "Bot 4": 0
-  },
-  "players": [
-    {
-      "name": "Andy"
-    },
-    {
-      "name": "Bot 2"
-    },
-    {
-      "name": "Bot 3"
-    },
-    {
-      "name": "Bot 4"
-    }
-  ],
-  "turn_number": 5,
-  "next_starter": "Andy",
-  "all_hands_empty": false,
-  "will_continue": true,
-  "phase": "turn",
-  "sequence": 391,
-  "timestamp": 1751602100.228436,
-  "reason": "Turn 5 completed - winner: Andy",
-  "room_id": "892141"
-}
- 🏆 TURN_COMPLETE_DEBUG: Round 10, Turn 5 completed!
- 🏆 TURN_WINNER_DEBUG: Winner: Andy, Next starter: Andy
- 🏆 TURN_COMPLETE_DATA: {winner: 'Andy', winning_play: {…}, turn_resolution: {…}, player_piles: {…}, players: Array(4), …}
- 🏆 TURN_COMPLETE_DEBUG: Transitioning to turn_results phase with state: {phase: 'turn_results', turnWinner: 'Andy', winningPlay: {…}, playerPiles: {…}, turnNumber: 5, …}
- 🌐 PROCESS_EVENT_DEBUG: Event turn_complete processed, updating derived state
- 🌐 PROCESS_EVENT_DEBUG: Finished processing turn_complete event
- 🎮 State Change: NETWORK_EVENT:TURN_COMPLETE
- Previous: {isConnected: true, roomId: '892141', playerName: 'Andy', phase: 'turn', currentRound: 10, …}
- New: {isConnected: true, roomId: '892141', playerName: 'Andy', phase: 'turn_results', currentRound: 10, …}
- Diff: {phase: {…}, winningPlay: {…}, turnNumber: {…}, lastEventSequence: {…}}
- 🎮 GAME_STATE_DEBUG: Phase changed from 'turn' to 'turn_results'
- 🏆 GAME_STATE_DEBUG: Entering turn_results phase with data:
-   🏅 turnWinner: Andy
-   🎯 winningPlay: {pieces: Array(1), value: 0, type: 'unknown', pilesWon: 1}
-   📊 playerPiles: {Andy: 1, Bot 2: 0, Bot 3: 0, Bot 4: 0}
-   🔢 turnNumber: 5
-   🎪 nextStarter: Andy
- 🎮 GAME_STATE_DEBUG: Phase changed from 'turn' to 'turn_results'
- 🏆 GAME_STATE_DEBUG: Entering turn_results phase with data:
-   🏅 turnWinner: Andy
-   🎯 winningPlay: {pieces: Array(1), value: 0, type: 'unknown', pilesWon: 1}
-   📊 playerPiles: {Andy: 1, Bot 2: 0, Bot 3: 0, Bot 4: 0}
-   🔢 turnNumber: 5
-   🎪 nextStarter: Andy
- 🎮 GAME_STATE_DEBUG: Phase changed from 'turn' to 'turn_results'
- 🏆 GAME_STATE_DEBUG: Entering turn_results phase with data:
-   🏅 turnWinner: Andy
-   🎯 winningPlay: {pieces: Array(1), value: 0, type: 'unknown', pilesWon: 1}
-   📊 playerPiles: {Andy: 1, Bot 2: 0, Bot 3: 0, Bot 4: 0}
-   🔢 turnNumber: 5
-   🎪 nextStarter: Andy
- 🎮 GAME_STATE_DEBUG: Phase changed from 'turn' to 'turn_results'
- 🏆 GAME_STATE_DEBUG: Entering turn_results phase with data:
-   🏅 turnWinner: Andy
-   🎯 winningPlay: {pieces: Array(1), value: 0, type: 'unknown', pilesWon: 1}
-   📊 playerPiles: {Andy: 1, Bot 2: 0, Bot 3: 0, Bot 4: 0}
-   🔢 turnNumber: 5
-   🎪 nextStarter: Andy
- 🏆 GAMECONTAINER_DEBUG: Building turnResultsProps with gameState:
-   🎮 gameState.phase: turn_results
-   🏅 gameState.turnWinner: Andy
-   🎯 gameState.winningPlay: {pieces: Array(1), value: 0, type: 'unknown', pilesWon: 1}
-   📊 gameState.playerPiles: {Andy: 1, Bot 2: 0, Bot 3: 0, Bot 4: 0}
-   👥 gameState.players: (4) [{…}, {…}, {…}, {…}]
-   🔢 gameState.turnNumber: 5
-   🎪 gameState.nextStarter: Andy
- 🏆 GAMECONTAINER_DEBUG: Final turnResultsProps: {winner: 'Andy', winningPlay: {…}, playerPiles: {…}, players: Array(4), turnNumber: 5, …}
- 🏆 GAMECONTAINER_DEBUG: Rendering TurnResultsUI with props: {winner: 'Andy', winningPlay: {…}, playerPiles: {…}, players: Array(4), turnNumber: 5, …}
- 🏆 TURN_RESULTS_UI_DEBUG: TurnResultsUI component rendered with props:
-   🏅 winner: Andy
-   🎯 winningPlay: {pieces: Array(1), value: 0, type: 'unknown', pilesWon: 1}
-   📊 playerPiles: {Andy: 1, Bot 2: 0, Bot 3: 0, Bot 4: 0}
-   👥 players: (4) [{…}, {…}, {…}, {…}]
-   🔢 turnNumber: 5
-   🎪 nextStarter: Andy
- 🏆 TURN_RESULTS_UI_DEBUG: Computed values:
-   ✅ hasWinner: true
-   🃏 winningPieces: ['ADVISOR_RED(12)']
-   💎 winningValue: 0
-   🎲 winningType: unknown
-   🏆 pilesWon: 1
- 🌐 FRONTEND_EVENT_DEBUG: Received phase_change event for room 892141 {phase: 'turn', allowed_actions: Array(4), phase_data: {…}, players: {…}, round: 10, …}
- 🔄 PHASE_CHANGE_DEBUG: Phase: turn
- 🔄 PHASE_CHANGE_DEBUG: Data players: {Andy: {…}, Bot 2: {…}, Bot 3: {…}, Bot 4: {…}}
- 🔄 PHASE_CHANGE_DEBUG: Data phase_data: {current_turn_starter: 'Andy', current_player: 'Andy', turn_order: Array(4), required_piece_count: null, turn_plays: {…}, …}
- 🔄 PHASE_CHANGE_DEBUG: First player raw: Andy {hand: Array(2), hand_size: 2}
- 🔄 PHASE_CHANGE_DEBUG: Converted players array: (4) [{…}, {…}, {…}, {…}]
- 🔄 PHASE_CHANGE_DEBUG: Sample player object: {name: 'Andy', is_bot: false, is_host: false, zero_declares_in_a_row: 0}
- 🎯 REQUIRED_COUNT_FIX: Set requiredPieceCount to null from backend phase_data
- 🔢 FRONTEND_ROUND_TURN_DEBUG: Round 10, Turn 6
- 🎯 FRONTEND_TURN_STATE: Starter: Andy, Current: Andy, Required: null, Plays: 0
- 🎲 TURN_PLAYS_DEBUG: Converted 0 plays to currentTurnPlays: []
- 🔢 FRONTEND_TURN_DEBUG: phaseData.current_turn_number = 6
- 🌐 PROCESS_EVENT_DEBUG: Event phase_change processed, updating derived state
- 🎯 TURN_DEBUG: currentPlayer: Andy, playerName: Andy, isMyTurn: true
- 🎯 TURN_DEBUG: turnOrder: (4) ['Andy', 'Bot 2', 'Bot 3', 'Bot 4']
- 🎯 TURN_DEBUG: currentTurnPlays: []
- 🎯 TURN_DEBUG: currentPlayer: Andy, playerName: Andy, isMyTurn: true
- 🎯 TURN_DEBUG: turnOrder: (4) ['Andy', 'Bot 2', 'Bot 3', 'Bot 4']
- 🎯 TURN_DEBUG: currentTurnPlays: []
- 🎯 TURN_DEBUG: currentPlayer: Andy, playerName: Andy, isMyTurn: true
- 🎯 TURN_DEBUG: turnOrder: (4) ['Andy', 'Bot 2', 'Bot 3', 'Bot 4']
- 🎯 TURN_DEBUG: currentTurnPlays: []
- 🌐 PROCESS_EVENT_DEBUG: Finished processing phase_change event
- 🎮 State Change: NETWORK_EVENT:PHASE_CHANGE
- Previous: {isConnected: true, roomId: '892141', playerName: 'Andy', phase: 'turn_results', currentRound: 10, …}
- New: {isConnected: true, roomId: '892141', playerName: 'Andy', phase: 'turn', currentRound: 10, …}
- Diff: {phase: {…}, myHand: {…}, currentPlayer: {…}, currentTurnPlays: {…}, requiredPieceCount: {…}, …}
- 🎮 GAME_STATE_DEBUG: Phase changed from 'turn_results' to 'turn'
- 🎮 GAME_STATE_DEBUG: Phase changed from 'turn_results' to 'turn'
- 🎮 GAME_STATE_DEBUG: Phase changed from 'turn_results' to 'turn'
- 🎮 GAME_STATE_DEBUG: Phase changed from 'turn_results' to 'turn'
- 🔢 GAMECONTAINER_DEBUG: gameState.currentTurnNumber = 6
- 🌐 FRONTEND_EVENT_DEBUG: Received phase_change event for room 892141 {phase: 'turn', allowed_actions: Array(4), phase_data: {…}, players: {…}, round: 10, …}
- 🔄 PHASE_CHANGE_DEBUG: Phase: turn
- 🔄 PHASE_CHANGE_DEBUG: Data players: {Andy: {…}, Bot 2: {…}, Bot 3: {…}, Bot 4: {…}}
- 🔄 PHASE_CHANGE_DEBUG: Data phase_data: {current_turn_starter: 'Andy', current_player: 'Andy', turn_order: Array(4), required_piece_count: null, turn_plays: {…}, …}
- 🔄 PHASE_CHANGE_DEBUG: First player raw: Andy {hand: Array(2), hand_size: 2}
- 🔄 PHASE_CHANGE_DEBUG: Converted players array: (4) [{…}, {…}, {…}, {…}]
- 🔄 PHASE_CHANGE_DEBUG: Sample player object: {name: 'Andy', is_bot: false, is_host: false, zero_declares_in_a_row: 0}
- 🎯 REQUIRED_COUNT_FIX: Set requiredPieceCount to null from backend phase_data
- 🔢 FRONTEND_ROUND_TURN_DEBUG: Round 10, Turn 6
- 🎯 FRONTEND_TURN_STATE: Starter: Andy, Current: Andy, Required: null, Plays: 0
- 🎲 TURN_PLAYS_DEBUG: Converted 0 plays to currentTurnPlays: []
- 🔢 FRONTEND_TURN_DEBUG: phaseData.current_turn_number = 6
- 🌐 PROCESS_EVENT_DEBUG: Event phase_change processed, updating derived state
- 🎯 TURN_DEBUG: currentPlayer: Andy, playerName: Andy, isMyTurn: true
- 🎯 TURN_DEBUG: turnOrder: (4) ['Andy', 'Bot 2', 'Bot 3', 'Bot 4']
- 🎯 TURN_DEBUG: currentTurnPlays: []
- 🎯 TURN_DEBUG: currentPlayer: Andy, playerName: Andy, isMyTurn: true
- 🎯 TURN_DEBUG: turnOrder: (4) ['Andy', 'Bot 2', 'Bot 3', 'Bot 4']
- 🎯 TURN_DEBUG: currentTurnPlays: []
- 🎯 TURN_DEBUG: currentPlayer: Andy, playerName: Andy, isMyTurn: true
- 🎯 TURN_DEBUG: turnOrder: (4) ['Andy', 'Bot 2', 'Bot 3', 'Bot 4']
- 🎯 TURN_DEBUG: currentTurnPlays: []
- 🌐 PROCESS_EVENT_DEBUG: Finished processing phase_change event
- 🎮 State Change: NETWORK_EVENT:PHASE_CHANGE
- Previous: {isConnected: true, roomId: '892141', playerName: 'Andy', phase: 'turn', currentRound: 10, …}
- New: {isConnected: true, roomId: '892141', playerName: 'Andy', phase: 'turn', currentRound: 10, …}
- Diff: {lastEventSequence: {…}, canPlayAnyCount: {…}}
- 🔢 GAMECONTAINER_DEBUG: gameState.currentTurnNumber = 6
- 🎯 TURN_UI: Card clicked at index 1, isMyTurn: true
- 🎯 TURN_UI: Selecting card 1, new selection: [1]
- 🎮 Action sent: play {piece_indices: Array(1), player_name: 'Andy', play_value: 1}
- 🌐 FRONTEND_EVENT_DEBUG: Received phase_change event for room 892141 {phase: 'turn', allowed_actions: Array(4), phase_data: {…}, players: {…}, round: 10, …}
- 🔄 PHASE_CHANGE_DEBUG: Phase: turn
- 🔄 PHASE_CHANGE_DEBUG: Data players: {Andy: {…}, Bot 2: {…}, Bot 3: {…}, Bot 4: {…}}
- 🔄 PHASE_CHANGE_DEBUG: Data phase_data: {current_turn_starter: 'Andy', current_player: 'Bot 2', turn_order: Array(4), required_piece_count: 1, turn_plays: {…}, …}
- 🔄 PHASE_CHANGE_DEBUG: First player raw: Andy {hand: Array(2), hand_size: 2}
- 🔄 PHASE_CHANGE_DEBUG: Converted players array: (4) [{…}, {…}, {…}, {…}]
- 🔄 PHASE_CHANGE_DEBUG: Sample player object: {name: 'Andy', is_bot: false, is_host: false, zero_declares_in_a_row: 0}
- 🎯 REQUIRED_COUNT_FIX: Set requiredPieceCount to 1 from backend phase_data
- 🔢 FRONTEND_ROUND_TURN_DEBUG: Round 10, Turn 6
- 🎯 FRONTEND_TURN_STATE: Starter: Andy, Current: Bot 2, Required: 1, Plays: 1
- 🎲 TURN_PLAYS_DEBUG: Converted 1 plays to currentTurnPlays: [{…}]
- 🔢 FRONTEND_TURN_DEBUG: phaseData.current_turn_number = 6
- 🌐 PROCESS_EVENT_DEBUG: Event phase_change processed, updating derived state
- 🎯 TURN_DEBUG: currentPlayer: Bot 2, playerName: Andy, isMyTurn: false
- 🎯 TURN_DEBUG: turnOrder: (4) ['Andy', 'Bot 2', 'Bot 3', 'Bot 4']
- 🎯 TURN_DEBUG: currentTurnPlays: [{…}]
- 🎯 TURN_DEBUG: currentPlayer: Bot 2, playerName: Andy, isMyTurn: false
- 🎯 TURN_DEBUG: turnOrder: (4) ['Andy', 'Bot 2', 'Bot 3', 'Bot 4']
- 🎯 TURN_DEBUG: currentTurnPlays: [{…}]
- 🎯 TURN_DEBUG: currentPlayer: Bot 2, playerName: Andy, isMyTurn: false
- 🎯 TURN_DEBUG: turnOrder: (4) ['Andy', 'Bot 2', 'Bot 3', 'Bot 4']
- 🎯 TURN_DEBUG: currentTurnPlays: [{…}]
- 🌐 PROCESS_EVENT_DEBUG: Finished processing phase_change event
- 🎮 State Change: NETWORK_EVENT:PHASE_CHANGE
- Previous: {isConnected: true, roomId: '892141', playerName: 'Andy', phase: 'turn', currentRound: 10, …}
- New: {isConnected: true, roomId: '892141', playerName: 'Andy', phase: 'turn', currentRound: 10, …}
- Diff: {currentPlayer: {…}, currentTurnPlays: {…}, requiredPieceCount: {…}, isMyTurn: {…}, allowedActions: {…}, …}
- 🔢 GAMECONTAINER_DEBUG: gameState.currentTurnNumber = 6
- 🌐 FRONTEND_EVENT_DEBUG: Received phase_change event for room 892141 {phase: 'turn', allowed_actions: Array(4), phase_data: {…}, players: {…}, round: 10, …}
- 🔄 PHASE_CHANGE_DEBUG: Phase: turn
- 🔄 PHASE_CHANGE_DEBUG: Data players: {Andy: {…}, Bot 2: {…}, Bot 3: {…}, Bot 4: {…}}
- 🔄 PHASE_CHANGE_DEBUG: Data phase_data: {current_turn_starter: 'Andy', current_player: 'Bot 3', turn_order: Array(4), required_piece_count: 1, turn_plays: {…}, …}
- 🔄 PHASE_CHANGE_DEBUG: First player raw: Andy {hand: Array(2), hand_size: 2}
- 🔄 PHASE_CHANGE_DEBUG: Converted players array: (4) [{…}, {…}, {…}, {…}]
- 🔄 PHASE_CHANGE_DEBUG: Sample player object: {name: 'Andy', is_bot: false, is_host: false, zero_declares_in_a_row: 0}
- 🎯 REQUIRED_COUNT_FIX: Set requiredPieceCount to 1 from backend phase_data
- 🔢 FRONTEND_ROUND_TURN_DEBUG: Round 10, Turn 6
- 🎯 FRONTEND_TURN_STATE: Starter: Andy, Current: Bot 3, Required: 1, Plays: 2
- 🎲 TURN_PLAYS_DEBUG: Converted 2 plays to currentTurnPlays: (2) [{…}, {…}]
- 🔢 FRONTEND_TURN_DEBUG: phaseData.current_turn_number = 6
- 🌐 PROCESS_EVENT_DEBUG: Event phase_change processed, updating derived state
- 🎯 TURN_DEBUG: currentPlayer: Bot 3, playerName: Andy, isMyTurn: false
- 🎯 TURN_DEBUG: turnOrder: (4) ['Andy', 'Bot 2', 'Bot 3', 'Bot 4']
- 🎯 TURN_DEBUG: currentTurnPlays: (2) [{…}, {…}]
- 🎯 TURN_DEBUG: currentPlayer: Bot 3, playerName: Andy, isMyTurn: false
- 🎯 TURN_DEBUG: turnOrder: (4) ['Andy', 'Bot 2', 'Bot 3', 'Bot 4']
- 🎯 TURN_DEBUG: currentTurnPlays: (2) [{…}, {…}]
- 🎯 TURN_DEBUG: currentPlayer: Bot 3, playerName: Andy, isMyTurn: false
- 🎯 TURN_DEBUG: turnOrder: (4) ['Andy', 'Bot 2', 'Bot 3', 'Bot 4']
- 🎯 TURN_DEBUG: currentTurnPlays: (2) [{…}, {…}]
- 🌐 PROCESS_EVENT_DEBUG: Finished processing phase_change event
- 🎮 State Change: NETWORK_EVENT:PHASE_CHANGE
- Previous: {isConnected: true, roomId: '892141', playerName: 'Andy', phase: 'turn', currentRound: 10, …}
- New: {isConnected: true, roomId: '892141', playerName: 'Andy', phase: 'turn', currentRound: 10, …}
- Diff: {currentPlayer: {…}, currentTurnPlays: {…}, lastEventSequence: {…}}
- 🔢 GAMECONTAINER_DEBUG: gameState.currentTurnNumber = 6
- 🌐 FRONTEND_EVENT_DEBUG: Received phase_change event for room 892141 {phase: 'turn', allowed_actions: Array(4), phase_data: {…}, players: {…}, round: 10, …}
- 🔄 PHASE_CHANGE_DEBUG: Phase: turn
- 🔄 PHASE_CHANGE_DEBUG: Data players: {Andy: {…}, Bot 2: {…}, Bot 3: {…}, Bot 4: {…}}
- 🔄 PHASE_CHANGE_DEBUG: Data phase_data: {current_turn_starter: 'Andy', current_player: 'Bot 4', turn_order: Array(4), required_piece_count: 1, turn_plays: {…}, …}
- 🔄 PHASE_CHANGE_DEBUG: First player raw: Andy {hand: Array(2), hand_size: 2}
- 🔄 PHASE_CHANGE_DEBUG: Converted players array: (4) [{…}, {…}, {…}, {…}]
- 🔄 PHASE_CHANGE_DEBUG: Sample player object: {name: 'Andy', is_bot: false, is_host: false, zero_declares_in_a_row: 0}
- 🎯 REQUIRED_COUNT_FIX: Set requiredPieceCount to 1 from backend phase_data
- 🔢 FRONTEND_ROUND_TURN_DEBUG: Round 10, Turn 6
- 🎯 FRONTEND_TURN_STATE: Starter: Andy, Current: Bot 4, Required: 1, Plays: 3
- 🎲 TURN_PLAYS_DEBUG: Converted 3 plays to currentTurnPlays: (3) [{…}, {…}, {…}]
- 🔢 FRONTEND_TURN_DEBUG: phaseData.current_turn_number = 6
- 🌐 PROCESS_EVENT_DEBUG: Event phase_change processed, updating derived state
- 🎯 TURN_DEBUG: currentPlayer: Bot 4, playerName: Andy, isMyTurn: false
- 🎯 TURN_DEBUG: turnOrder: (4) ['Andy', 'Bot 2', 'Bot 3', 'Bot 4']
- 🎯 TURN_DEBUG: currentTurnPlays: (3) [{…}, {…}, {…}]
- 🎯 TURN_DEBUG: currentPlayer: Bot 4, playerName: Andy, isMyTurn: false
- 🎯 TURN_DEBUG: turnOrder: (4) ['Andy', 'Bot 2', 'Bot 3', 'Bot 4']
- 🎯 TURN_DEBUG: currentTurnPlays: (3) [{…}, {…}, {…}]
- 🎯 TURN_DEBUG: currentPlayer: Bot 4, playerName: Andy, isMyTurn: false
- 🎯 TURN_DEBUG: turnOrder: (4) ['Andy', 'Bot 2', 'Bot 3', 'Bot 4']
- 🎯 TURN_DEBUG: currentTurnPlays: (3) [{…}, {…}, {…}]
- 🌐 PROCESS_EVENT_DEBUG: Finished processing phase_change event
- 🎮 State Change: NETWORK_EVENT:PHASE_CHANGE
- Previous: {isConnected: true, roomId: '892141', playerName: 'Andy', phase: 'turn', currentRound: 10, …}
- New: {isConnected: true, roomId: '892141', playerName: 'Andy', phase: 'turn', currentRound: 10, …}
- Diff: {currentPlayer: {…}, currentTurnPlays: {…}, lastEventSequence: {…}}
- 🔢 GAMECONTAINER_DEBUG: gameState.currentTurnNumber = 6
- 🌐 FRONTEND_EVENT_DEBUG: Received phase_change event for room 892141 {phase: 'turn', allowed_actions: Array(4), phase_data: {…}, players: {…}, round: 10, …}
- 🔄 PHASE_CHANGE_DEBUG: Phase: turn
- 🔄 PHASE_CHANGE_DEBUG: Data players: {Andy: {…}, Bot 2: {…}, Bot 3: {…}, Bot 4: {…}}
- 🔄 PHASE_CHANGE_DEBUG: Data phase_data: {current_turn_starter: 'Andy', current_player: 'Bot 4', turn_order: Array(4), required_piece_count: 1, turn_plays: {…}, …}
- 🔄 PHASE_CHANGE_DEBUG: First player raw: Andy {hand: Array(2), hand_size: 2}
- 🔄 PHASE_CHANGE_DEBUG: Converted players array: (4) [{…}, {…}, {…}, {…}]
- 🔄 PHASE_CHANGE_DEBUG: Sample player object: {name: 'Andy', is_bot: false, is_host: false, zero_declares_in_a_row: 0}
- 🎯 REQUIRED_COUNT_FIX: Set requiredPieceCount to 1 from backend phase_data
- 🔢 FRONTEND_ROUND_TURN_DEBUG: Round 10, Turn 6
- 🎯 FRONTEND_TURN_STATE: Starter: Andy, Current: Bot 4, Required: 1, Plays: 4
- 🎲 TURN_PLAYS_DEBUG: Converted 4 plays to currentTurnPlays: (4) [{…}, {…}, {…}, {…}]
- 🔢 FRONTEND_TURN_DEBUG: phaseData.current_turn_number = 6
- 🌐 PROCESS_EVENT_DEBUG: Event phase_change processed, updating derived state
- 🎯 TURN_DEBUG: currentPlayer: Bot 4, playerName: Andy, isMyTurn: false
- 🎯 TURN_DEBUG: turnOrder: (4) ['Andy', 'Bot 2', 'Bot 3', 'Bot 4']
- 🎯 TURN_DEBUG: currentTurnPlays: (4) [{…}, {…}, {…}, {…}]
- 🎯 TURN_DEBUG: currentPlayer: Bot 4, playerName: Andy, isMyTurn: false
- 🎯 TURN_DEBUG: turnOrder: (4) ['Andy', 'Bot 2', 'Bot 3', 'Bot 4']
- 🎯 TURN_DEBUG: currentTurnPlays: (4) [{…}, {…}, {…}, {…}]
- 🎯 TURN_DEBUG: currentPlayer: Bot 4, playerName: Andy, isMyTurn: false
- 🎯 TURN_DEBUG: turnOrder: (4) ['Andy', 'Bot 2', 'Bot 3', 'Bot 4']
- 🎯 TURN_DEBUG: currentTurnPlays: (4) [{…}, {…}, {…}, {…}]
- 🌐 PROCESS_EVENT_DEBUG: Finished processing phase_change event
- 🎮 State Change: NETWORK_EVENT:PHASE_CHANGE
- Previous: {isConnected: true, roomId: '892141', playerName: 'Andy', phase: 'turn', currentRound: 10, …}
- New: {isConnected: true, roomId: '892141', playerName: 'Andy', phase: 'turn', currentRound: 10, …}
- Diff: {currentTurnPlays: {…}, lastEventSequence: {…}}
- 🌐 FRONTEND_EVENT_DEBUG: Received turn_complete event for room 892141 {winner: 'Bot 4', winning_play: {…}, turn_resolution: {…}, player_piles: {…}, players: Array(4), …}
- 🌐 PROCESS_EVENT_DEBUG: Handling turn_complete event with data: {winner: 'Bot 4', winning_play: {…}, turn_resolution: {…}, player_piles: {…}, players: Array(4), …}
- 🏆 TURN_COMPLETE_RAW_DEBUG: Event data received: {
-  "winner": "Bot 4",
-  "winning_play": {
-    "pieces": [
-      "CANNON_RED(4)"
-    ],
-    "value": 0,
-    "type": "unknown",
-    "pilesWon": 1
-  },
-  "turn_resolution": {
-    "all_plays": [
-      {
-        "player": "Andy",
-        "pieces": [
-          "SOLDIER_BLACK(1)"
-        ],
-        "is_valid": true,
-        "play_type": "unknown",
-        "play_value": 0
-      },
-      {
-        "player": "Bot 2",
-        "pieces": [
-          "SOLDIER_BLACK(1)"
-        ],
-        "is_valid": true,
-        "play_type": "unknown",
-        "play_value": 0
-      },
-      {
-        "player": "Bot 3",
-        "pieces": [
-          "CANNON_BLACK(3)"
-        ],
-        "is_valid": true,
-        "play_type": "unknown",
-        "play_value": 0
-      },
-      {
-        "player": "Bot 4",
-        "pieces": [
-          "CANNON_RED(4)"
-        ],
-        "is_valid": true,
-        "play_type": "unknown",
-        "play_value": 0
-      }
-    ],
-    "winner": "Bot 4",
-    "winner_play": {
-      "pieces": [
-        "CANNON_RED(4)"
-      ],
-      "value": 0,
-      "type": "unknown",
-      "pilesWon": 1
-    }
-  },
-  "player_piles": {
-    "Bot 4": 1,
-    "Andy": 0,
-    "Bot 2": 0,
-    "Bot 3": 0
-  },
-  "players": [
-    {
-      "name": "Andy"
-    },
-    {
-      "name": "Bot 2"
-    },
-    {
-      "name": "Bot 3"
-    },
-    {
-      "name": "Bot 4"
-    }
-  ],
-  "turn_number": 6,
-  "next_starter": "Bot 4",
-  "all_hands_empty": false,
-  "will_continue": true,
-  "phase": "turn",
-  "sequence": 398,
-  "timestamp": 1751602113.246399,
-  "reason": "Turn 6 completed - winner: Bot 4",
-  "room_id": "892141"
-}
- 🏆 TURN_COMPLETE_DEBUG: Round 10, Turn 6 completed!
- 🏆 TURN_WINNER_DEBUG: Winner: Bot 4, Next starter: Bot 4
- 🏆 TURN_COMPLETE_DATA: {winner: 'Bot 4', winning_play: {…}, turn_resolution: {…}, player_piles: {…}, players: Array(4), …}
- 🏆 TURN_COMPLETE_DEBUG: Transitioning to turn_results phase with state: {phase: 'turn_results', turnWinner: 'Bot 4', winningPlay: {…}, playerPiles: {…}, turnNumber: 6, …}
- 🌐 PROCESS_EVENT_DEBUG: Event turn_complete processed, updating derived state
- 🌐 PROCESS_EVENT_DEBUG: Finished processing turn_complete event
- 🎮 State Change: NETWORK_EVENT:TURN_COMPLETE
- Previous: {isConnected: true, roomId: '892141', playerName: 'Andy', phase: 'turn', currentRound: 10, …}
- New: {isConnected: true, roomId: '892141', playerName: 'Andy', phase: 'turn_results', currentRound: 10, …}
- Diff: {phase: {…}, turnWinner: {…}, winningPlay: {…}, playerPiles: {…}, turnNumber: {…}, …}
- 🎮 GAME_STATE_DEBUG: Phase changed from 'turn' to 'turn_results'
- 🏆 GAME_STATE_DEBUG: Entering turn_results phase with data:
-   🏅 turnWinner: Bot 4
-   🎯 winningPlay: {pieces: Array(1), value: 0, type: 'unknown', pilesWon: 1}
-   📊 playerPiles: {Bot 4: 1, Andy: 0, Bot 2: 0, Bot 3: 0}
-   🔢 turnNumber: 6
-   🎪 nextStarter: Bot 4
- 🎮 GAME_STATE_DEBUG: Phase changed from 'turn' to 'turn_results'
- 🏆 GAME_STATE_DEBUG: Entering turn_results phase with data:
-   🏅 turnWinner: Bot 4
-   🎯 winningPlay: {pieces: Array(1), value: 0, type: 'unknown', pilesWon: 1}
-   📊 playerPiles: {Bot 4: 1, Andy: 0, Bot 2: 0, Bot 3: 0}
-   🔢 turnNumber: 6
-   🎪 nextStarter: Bot 4
- 🎮 GAME_STATE_DEBUG: Phase changed from 'turn' to 'turn_results'
- 🏆 GAME_STATE_DEBUG: Entering turn_results phase with data:
-   🏅 turnWinner: Bot 4
-   🎯 winningPlay: {pieces: Array(1), value: 0, type: 'unknown', pilesWon: 1}
-   📊 playerPiles: {Bot 4: 1, Andy: 0, Bot 2: 0, Bot 3: 0}
-   🔢 turnNumber: 6
-   🎪 nextStarter: Bot 4
- 🎮 GAME_STATE_DEBUG: Phase changed from 'turn' to 'turn_results'
- 🏆 GAME_STATE_DEBUG: Entering turn_results phase with data:
-   🏅 turnWinner: Bot 4
-   🎯 winningPlay: {pieces: Array(1), value: 0, type: 'unknown', pilesWon: 1}
-   📊 playerPiles: {Bot 4: 1, Andy: 0, Bot 2: 0, Bot 3: 0}
-   🔢 turnNumber: 6
-   🎪 nextStarter: Bot 4
- 🏆 GAMECONTAINER_DEBUG: Building turnResultsProps with gameState:
-   🎮 gameState.phase: turn_results
-   🏅 gameState.turnWinner: Bot 4
-   🎯 gameState.winningPlay: {pieces: Array(1), value: 0, type: 'unknown', pilesWon: 1}
-   📊 gameState.playerPiles: {Bot 4: 1, Andy: 0, Bot 2: 0, Bot 3: 0}
-   👥 gameState.players: (4) [{…}, {…}, {…}, {…}]
-   🔢 gameState.turnNumber: 6
-   🎪 gameState.nextStarter: Bot 4
- 🏆 GAMECONTAINER_DEBUG: Final turnResultsProps: {winner: 'Bot 4', winningPlay: {…}, playerPiles: {…}, players: Array(4), turnNumber: 6, …}
- 🏆 GAMECONTAINER_DEBUG: Rendering TurnResultsUI with props: {winner: 'Bot 4', winningPlay: {…}, playerPiles: {…}, players: Array(4), turnNumber: 6, …}
- 🏆 TURN_RESULTS_UI_DEBUG: TurnResultsUI component rendered with props:
-   🏅 winner: Bot 4
-   🎯 winningPlay: {pieces: Array(1), value: 0, type: 'unknown', pilesWon: 1}
-   📊 playerPiles: {Bot 4: 1, Andy: 0, Bot 2: 0, Bot 3: 0}
-   👥 players: (4) [{…}, {…}, {…}, {…}]
-   🔢 turnNumber: 6
-   🎪 nextStarter: Bot 4
- 🏆 TURN_RESULTS_UI_DEBUG: Computed values:
-   ✅ hasWinner: true
-   🃏 winningPieces: ['CANNON_RED(4)']
-   💎 winningValue: 0
-   🎲 winningType: unknown
-   🏆 pilesWon: 1
- 🏆 GAMECONTAINER_DEBUG: Rendering TurnResultsUI with props: {winner: 'Bot 4', winningPlay: {…}, playerPiles: {…}, players: Array(4), turnNumber: 6, …}
- 🏆 TURN_RESULTS_UI_DEBUG: TurnResultsUI component rendered with props:
-   🏅 winner: Bot 4
-   🎯 winningPlay: {pieces: Array(1), value: 0, type: 'unknown', pilesWon: 1}
-   📊 playerPiles: {Bot 4: 1, Andy: 0, Bot 2: 0, Bot 3: 0}
-   👥 players: (4) [{…}, {…}, {…}, {…}]
-   🔢 turnNumber: 6
-   🎪 nextStarter: Bot 4
- 🏆 TURN_RESULTS_UI_DEBUG: Computed values:
-   ✅ hasWinner: true
-   🃏 winningPieces: ['CANNON_RED(4)']
-   💎 winningValue: 0
-   🎲 winningType: unknown
-   🏆 pilesWon: 1
- 🌐 FRONTEND_EVENT_DEBUG: Received phase_change event for room 892141 {phase: 'turn', allowed_actions: Array(4), phase_data: {…}, players: {…}, round: 10, …}
- 🔄 PHASE_CHANGE_DEBUG: Phase: turn
- 🔄 PHASE_CHANGE_DEBUG: Data players: {Andy: {…}, Bot 2: {…}, Bot 3: {…}, Bot 4: {…}}
- 🔄 PHASE_CHANGE_DEBUG: Data phase_data: {current_turn_starter: 'Bot 4', current_player: 'Bot 4', turn_order: Array(4), required_piece_count: null, turn_plays: {…}, …}
- 🔄 PHASE_CHANGE_DEBUG: First player raw: Andy {hand: Array(1), hand_size: 1}
- 🔄 PHASE_CHANGE_DEBUG: Converted players array: (4) [{…}, {…}, {…}, {…}]
- 🔄 PHASE_CHANGE_DEBUG: Sample player object: {name: 'Andy', is_bot: false, is_host: false, zero_declares_in_a_row: 0}
- 🎯 REQUIRED_COUNT_FIX: Set requiredPieceCount to null from backend phase_data
- 🔢 FRONTEND_ROUND_TURN_DEBUG: Round 10, Turn 7
- 🎯 FRONTEND_TURN_STATE: Starter: Bot 4, Current: Bot 4, Required: null, Plays: 0
- 🎲 TURN_PLAYS_DEBUG: Converted 0 plays to currentTurnPlays: []
- 🔢 FRONTEND_TURN_DEBUG: phaseData.current_turn_number = 7
- 🌐 PROCESS_EVENT_DEBUG: Event phase_change processed, updating derived state
- 🎯 TURN_DEBUG: currentPlayer: Bot 4, playerName: Andy, isMyTurn: false
- 🎯 TURN_DEBUG: turnOrder: (4) ['Bot 4', 'Andy', 'Bot 2', 'Bot 3']
- 🎯 TURN_DEBUG: currentTurnPlays: []
- 🎯 TURN_DEBUG: currentPlayer: Bot 4, playerName: Andy, isMyTurn: false
- 🎯 TURN_DEBUG: turnOrder: (4) ['Bot 4', 'Andy', 'Bot 2', 'Bot 3']
- 🎯 TURN_DEBUG: currentTurnPlays: []
- 🎯 TURN_DEBUG: currentPlayer: Bot 4, playerName: Andy, isMyTurn: false
- 🎯 TURN_DEBUG: turnOrder: (4) ['Bot 4', 'Andy', 'Bot 2', 'Bot 3']
- 🎯 TURN_DEBUG: currentTurnPlays: []
- 🌐 PROCESS_EVENT_DEBUG: Finished processing phase_change event
- 🎮 State Change: NETWORK_EVENT:PHASE_CHANGE
- Previous: {isConnected: true, roomId: '892141', playerName: 'Andy', phase: 'turn_results', currentRound: 10, …}
- New: {isConnected: true, roomId: '892141', playerName: 'Andy', phase: 'turn', currentRound: 10, …}
- Diff: {phase: {…}, myHand: {…}, currentTurnStarter: {…}, turnOrder: {…}, currentTurnPlays: {…}, …}
- 🎮 GAME_STATE_DEBUG: Phase changed from 'turn_results' to 'turn'
- 🎮 GAME_STATE_DEBUG: Phase changed from 'turn_results' to 'turn'
- 🎮 GAME_STATE_DEBUG: Phase changed from 'turn_results' to 'turn'
- 🎮 GAME_STATE_DEBUG: Phase changed from 'turn_results' to 'turn'
- 🔢 GAMECONTAINER_DEBUG: gameState.currentTurnNumber = 7
- 🌐 FRONTEND_EVENT_DEBUG: Received phase_change event for room 892141 {phase: 'turn', allowed_actions: Array(4), phase_data: {…}, players: {…}, round: 10, …}
- 🔄 PHASE_CHANGE_DEBUG: Phase: turn
- 🔄 PHASE_CHANGE_DEBUG: Data players: {Andy: {…}, Bot 2: {…}, Bot 3: {…}, Bot 4: {…}}
- 🔄 PHASE_CHANGE_DEBUG: Data phase_data: {current_turn_starter: 'Bot 4', current_player: 'Bot 4', turn_order: Array(4), required_piece_count: null, turn_plays: {…}, …}
- 🔄 PHASE_CHANGE_DEBUG: First player raw: Andy {hand: Array(1), hand_size: 1}
- 🔄 PHASE_CHANGE_DEBUG: Converted players array: (4) [{…}, {…}, {…}, {…}]
- 🔄 PHASE_CHANGE_DEBUG: Sample player object: {name: 'Andy', is_bot: false, is_host: false, zero_declares_in_a_row: 0}
- 🎯 REQUIRED_COUNT_FIX: Set requiredPieceCount to null from backend phase_data
- 🔢 FRONTEND_ROUND_TURN_DEBUG: Round 10, Turn 7
- 🎯 FRONTEND_TURN_STATE: Starter: Bot 4, Current: Bot 4, Required: null, Plays: 0
- 🎲 TURN_PLAYS_DEBUG: Converted 0 plays to currentTurnPlays: []
- 🔢 FRONTEND_TURN_DEBUG: phaseData.current_turn_number = 7
- 🌐 PROCESS_EVENT_DEBUG: Event phase_change processed, updating derived state
- 🎯 TURN_DEBUG: currentPlayer: Bot 4, playerName: Andy, isMyTurn: false
- 🎯 TURN_DEBUG: turnOrder: (4) ['Bot 4', 'Andy', 'Bot 2', 'Bot 3']
- 🎯 TURN_DEBUG: currentTurnPlays: []
- 🎯 TURN_DEBUG: currentPlayer: Bot 4, playerName: Andy, isMyTurn: false
- 🎯 TURN_DEBUG: turnOrder: (4) ['Bot 4', 'Andy', 'Bot 2', 'Bot 3']
- 🎯 TURN_DEBUG: currentTurnPlays: []
- 🎯 TURN_DEBUG: currentPlayer: Bot 4, playerName: Andy, isMyTurn: false
- 🎯 TURN_DEBUG: turnOrder: (4) ['Bot 4', 'Andy', 'Bot 2', 'Bot 3']
- 🎯 TURN_DEBUG: currentTurnPlays: []
- 🌐 PROCESS_EVENT_DEBUG: Finished processing phase_change event
- 🎮 State Change: NETWORK_EVENT:PHASE_CHANGE
- Previous: {isConnected: true, roomId: '892141', playerName: 'Andy', phase: 'turn', currentRound: 10, …}
- New: {isConnected: true, roomId: '892141', playerName: 'Andy', phase: 'turn', currentRound: 10, …}
- Diff: {lastEventSequence: {…}}
- 🔢 GAMECONTAINER_DEBUG: gameState.currentTurnNumber = 7
- 🌐 FRONTEND_EVENT_DEBUG: Received phase_change event for room 892141 {phase: 'turn', allowed_actions: Array(4), phase_data: {…}, players: {…}, round: 10, …}
- 🔄 PHASE_CHANGE_DEBUG: Phase: turn
- 🔄 PHASE_CHANGE_DEBUG: Data players: {Andy: {…}, Bot 2: {…}, Bot 3: {…}, Bot 4: {…}}
- 🔄 PHASE_CHANGE_DEBUG: Data phase_data: {current_turn_starter: 'Bot 4', current_player: 'Andy', turn_order: Array(4), required_piece_count: 1, turn_plays: {…}, …}
- 🔄 PHASE_CHANGE_DEBUG: First player raw: Andy {hand: Array(1), hand_size: 1}
- 🔄 PHASE_CHANGE_DEBUG: Converted players array: (4) [{…}, {…}, {…}, {…}]
- 🔄 PHASE_CHANGE_DEBUG: Sample player object: {name: 'Andy', is_bot: false, is_host: false, zero_declares_in_a_row: 0}
- 🎯 REQUIRED_COUNT_FIX: Set requiredPieceCount to 1 from backend phase_data
- 🔢 FRONTEND_ROUND_TURN_DEBUG: Round 10, Turn 7
- 🎯 FRONTEND_TURN_STATE: Starter: Bot 4, Current: Andy, Required: 1, Plays: 1
- 🎲 TURN_PLAYS_DEBUG: Converted 1 plays to currentTurnPlays: [{…}]
- 🔢 FRONTEND_TURN_DEBUG: phaseData.current_turn_number = 7
- 🌐 PROCESS_EVENT_DEBUG: Event phase_change processed, updating derived state
- 🎯 TURN_DEBUG: currentPlayer: Andy, playerName: Andy, isMyTurn: true
- 🎯 TURN_DEBUG: turnOrder: (4) ['Bot 4', 'Andy', 'Bot 2', 'Bot 3']
- 🎯 TURN_DEBUG: currentTurnPlays: [{…}]
- 🎯 TURN_DEBUG: currentPlayer: Andy, playerName: Andy, isMyTurn: true
- 🎯 TURN_DEBUG: turnOrder: (4) ['Bot 4', 'Andy', 'Bot 2', 'Bot 3']
- 🎯 TURN_DEBUG: currentTurnPlays: [{…}]
- 🎯 TURN_DEBUG: currentPlayer: Andy, playerName: Andy, isMyTurn: true
- 🎯 TURN_DEBUG: turnOrder: (4) ['Bot 4', 'Andy', 'Bot 2', 'Bot 3']
- 🎯 TURN_DEBUG: currentTurnPlays: [{…}]
- 🌐 PROCESS_EVENT_DEBUG: Finished processing phase_change event
- 🎮 State Change: NETWORK_EVENT:PHASE_CHANGE
- Previous: {isConnected: true, roomId: '892141', playerName: 'Andy', phase: 'turn', currentRound: 10, …}
- New: {isConnected: true, roomId: '892141', playerName: 'Andy', phase: 'turn', currentRound: 10, …}
- Diff: {currentPlayer: {…}, currentTurnPlays: {…}, requiredPieceCount: {…}, isMyTurn: {…}, allowedActions: {…}, …}
- 🔢 GAMECONTAINER_DEBUG: gameState.currentTurnNumber = 7
- 🎯 TURN_UI: Card clicked at index 0, isMyTurn: true
- 🎯 TURN_UI: Selecting card 0, new selection: [0]
- 🎮 Action sent: play {piece_indices: Array(1), player_name: 'Andy', play_value: 10}
- 🌐 FRONTEND_EVENT_DEBUG: Received phase_change event for room 892141 {phase: 'turn', allowed_actions: Array(4), phase_data: {…}, players: {…}, round: 10, …}
- 🔄 PHASE_CHANGE_DEBUG: Phase: turn
- 🔄 PHASE_CHANGE_DEBUG: Data players: {Andy: {…}, Bot 2: {…}, Bot 3: {…}, Bot 4: {…}}
- 🔄 PHASE_CHANGE_DEBUG: Data phase_data: {current_turn_starter: 'Bot 4', current_player: 'Bot 2', turn_order: Array(4), required_piece_count: 1, turn_plays: {…}, …}
- 🔄 PHASE_CHANGE_DEBUG: First player raw: Andy {hand: Array(1), hand_size: 1}
- 🔄 PHASE_CHANGE_DEBUG: Converted players array: (4) [{…}, {…}, {…}, {…}]
- 🔄 PHASE_CHANGE_DEBUG: Sample player object: {name: 'Andy', is_bot: false, is_host: false, zero_declares_in_a_row: 0}
- 🎯 REQUIRED_COUNT_FIX: Set requiredPieceCount to 1 from backend phase_data
- 🔢 FRONTEND_ROUND_TURN_DEBUG: Round 10, Turn 7
- 🎯 FRONTEND_TURN_STATE: Starter: Bot 4, Current: Bot 2, Required: 1, Plays: 2
- 🎲 TURN_PLAYS_DEBUG: Converted 2 plays to currentTurnPlays: (2) [{…}, {…}]
- 🔢 FRONTEND_TURN_DEBUG: phaseData.current_turn_number = 7
- 🌐 PROCESS_EVENT_DEBUG: Event phase_change processed, updating derived state
- 🎯 TURN_DEBUG: currentPlayer: Bot 2, playerName: Andy, isMyTurn: false
- 🎯 TURN_DEBUG: turnOrder: (4) ['Bot 4', 'Andy', 'Bot 2', 'Bot 3']
- 🎯 TURN_DEBUG: currentTurnPlays: (2) [{…}, {…}]
- 🎯 TURN_DEBUG: currentPlayer: Bot 2, playerName: Andy, isMyTurn: false
- 🎯 TURN_DEBUG: turnOrder: (4) ['Bot 4', 'Andy', 'Bot 2', 'Bot 3']
- 🎯 TURN_DEBUG: currentTurnPlays: (2) [{…}, {…}]
- 🎯 TURN_DEBUG: currentPlayer: Bot 2, playerName: Andy, isMyTurn: false
- 🎯 TURN_DEBUG: turnOrder: (4) ['Bot 4', 'Andy', 'Bot 2', 'Bot 3']
- 🎯 TURN_DEBUG: currentTurnPlays: (2) [{…}, {…}]
- 🌐 PROCESS_EVENT_DEBUG: Finished processing phase_change event
- 🎮 State Change: NETWORK_EVENT:PHASE_CHANGE
- Previous: {isConnected: true, roomId: '892141', playerName: 'Andy', phase: 'turn', currentRound: 10, …}
- New: {isConnected: true, roomId: '892141', playerName: 'Andy', phase: 'turn', currentRound: 10, …}
- Diff: {currentPlayer: {…}, currentTurnPlays: {…}, isMyTurn: {…}, allowedActions: {…}, validOptions: {…}, …}
- 🔢 GAMECONTAINER_DEBUG: gameState.currentTurnNumber = 7
- 🌐 FRONTEND_EVENT_DEBUG: Received phase_change event for room 892141 {phase: 'turn', allowed_actions: Array(4), phase_data: {…}, players: {…}, round: 10, …}
- 🔄 PHASE_CHANGE_DEBUG: Phase: turn
- 🔄 PHASE_CHANGE_DEBUG: Data players: {Andy: {…}, Bot 2: {…}, Bot 3: {…}, Bot 4: {…}}
- 🔄 PHASE_CHANGE_DEBUG: Data phase_data: {current_turn_starter: 'Bot 4', current_player: 'Bot 3', turn_order: Array(4), required_piece_count: 1, turn_plays: {…}, …}
- 🔄 PHASE_CHANGE_DEBUG: First player raw: Andy {hand: Array(1), hand_size: 1}
- 🔄 PHASE_CHANGE_DEBUG: Converted players array: (4) [{…}, {…}, {…}, {…}]
- 🔄 PHASE_CHANGE_DEBUG: Sample player object: {name: 'Andy', is_bot: false, is_host: false, zero_declares_in_a_row: 0}
- 🎯 REQUIRED_COUNT_FIX: Set requiredPieceCount to 1 from backend phase_data
- 🔢 FRONTEND_ROUND_TURN_DEBUG: Round 10, Turn 7
- 🎯 FRONTEND_TURN_STATE: Starter: Bot 4, Current: Bot 3, Required: 1, Plays: 3
- 🎲 TURN_PLAYS_DEBUG: Converted 3 plays to currentTurnPlays: (3) [{…}, {…}, {…}]
- 🔢 FRONTEND_TURN_DEBUG: phaseData.current_turn_number = 7
- 🌐 PROCESS_EVENT_DEBUG: Event phase_change processed, updating derived state
- 🎯 TURN_DEBUG: currentPlayer: Bot 3, playerName: Andy, isMyTurn: false
- 🎯 TURN_DEBUG: turnOrder: (4) ['Bot 4', 'Andy', 'Bot 2', 'Bot 3']
- 🎯 TURN_DEBUG: currentTurnPlays: (3) [{…}, {…}, {…}]
- 🎯 TURN_DEBUG: currentPlayer: Bot 3, playerName: Andy, isMyTurn: false
- 🎯 TURN_DEBUG: turnOrder: (4) ['Bot 4', 'Andy', 'Bot 2', 'Bot 3']
- 🎯 TURN_DEBUG: currentTurnPlays: (3) [{…}, {…}, {…}]
- 🎯 TURN_DEBUG: currentPlayer: Bot 3, playerName: Andy, isMyTurn: false
- 🎯 TURN_DEBUG: turnOrder: (4) ['Bot 4', 'Andy', 'Bot 2', 'Bot 3']
- 🎯 TURN_DEBUG: currentTurnPlays: (3) [{…}, {…}, {…}]
- 🌐 PROCESS_EVENT_DEBUG: Finished processing phase_change event
- 🎮 State Change: NETWORK_EVENT:PHASE_CHANGE
- Previous: {isConnected: true, roomId: '892141', playerName: 'Andy', phase: 'turn', currentRound: 10, …}
- New: {isConnected: true, roomId: '892141', playerName: 'Andy', phase: 'turn', currentRound: 10, …}
- Diff: {currentPlayer: {…}, currentTurnPlays: {…}, lastEventSequence: {…}}
- 🔢 GAMECONTAINER_DEBUG: gameState.currentTurnNumber = 7
- 🌐 FRONTEND_EVENT_DEBUG: Received phase_change event for room 892141 {phase: 'turn', allowed_actions: Array(4), phase_data: {…}, players: {…}, round: 10, …}
- 🔄 PHASE_CHANGE_DEBUG: Phase: turn
- 🔄 PHASE_CHANGE_DEBUG: Data players: {Andy: {…}, Bot 2: {…}, Bot 3: {…}, Bot 4: {…}}
- 🔄 PHASE_CHANGE_DEBUG: Data phase_data: {current_turn_starter: 'Bot 4', current_player: 'Bot 3', turn_order: Array(4), required_piece_count: 1, turn_plays: {…}, …}
- 🔄 PHASE_CHANGE_DEBUG: First player raw: Andy {hand: Array(1), hand_size: 1}
- 🔄 PHASE_CHANGE_DEBUG: Converted players array: (4) [{…}, {…}, {…}, {…}]
- 🔄 PHASE_CHANGE_DEBUG: Sample player object: {name: 'Andy', is_bot: false, is_host: false, zero_declares_in_a_row: 0}
- 🎯 REQUIRED_COUNT_FIX: Set requiredPieceCount to 1 from backend phase_data
- 🔢 FRONTEND_ROUND_TURN_DEBUG: Round 10, Turn 7
- 🎯 FRONTEND_TURN_STATE: Starter: Bot 4, Current: Bot 3, Required: 1, Plays: 4
- 🎲 TURN_PLAYS_DEBUG: Converted 4 plays to currentTurnPlays: (4) [{…}, {…}, {…}, {…}]
- 🔢 FRONTEND_TURN_DEBUG: phaseData.current_turn_number = 7
- 🌐 PROCESS_EVENT_DEBUG: Event phase_change processed, updating derived state
- 🎯 TURN_DEBUG: currentPlayer: Bot 3, playerName: Andy, isMyTurn: false
- 🎯 TURN_DEBUG: turnOrder: (4) ['Bot 4', 'Andy', 'Bot 2', 'Bot 3']
- 🎯 TURN_DEBUG: currentTurnPlays: (4) [{…}, {…}, {…}, {…}]
- 🎯 TURN_DEBUG: currentPlayer: Bot 3, playerName: Andy, isMyTurn: false
- 🎯 TURN_DEBUG: turnOrder: (4) ['Bot 4', 'Andy', 'Bot 2', 'Bot 3']
- 🎯 TURN_DEBUG: currentTurnPlays: (4) [{…}, {…}, {…}, {…}]
- 🎯 TURN_DEBUG: currentPlayer: Bot 3, playerName: Andy, isMyTurn: false
- 🎯 TURN_DEBUG: turnOrder: (4) ['Bot 4', 'Andy', 'Bot 2', 'Bot 3']
- 🎯 TURN_DEBUG: currentTurnPlays: (4) [{…}, {…}, {…}, {…}]
- 🌐 PROCESS_EVENT_DEBUG: Finished processing phase_change event
- 🎮 State Change: NETWORK_EVENT:PHASE_CHANGE
- Previous: {isConnected: true, roomId: '892141', playerName: 'Andy', phase: 'turn', currentRound: 10, …}
- New: {isConnected: true, roomId: '892141', playerName: 'Andy', phase: 'turn', currentRound: 10, …}
- Diff: {currentTurnPlays: {…}, lastEventSequence: {…}}
- 🔢 GAMECONTAINER_DEBUG: gameState.currentTurnNumber = 7
- 🌐 FRONTEND_EVENT_DEBUG: Received turn_complete event for room 892141 {winner: 'Andy', winning_play: {…}, turn_resolution: {…}, player_piles: {…}, players: Array(4), …}
- 🌐 PROCESS_EVENT_DEBUG: Handling turn_complete event with data: {winner: 'Andy', winning_play: {…}, turn_resolution: {…}, player_piles: {…}, players: Array(4), …}
- 🏆 TURN_COMPLETE_RAW_DEBUG: Event data received: {
-  "winner": "Andy",
-  "winning_play": {
-    "pieces": [
-      "ELEPHANT_RED(10)"
-    ],
-    "value": 0,
-    "type": "unknown",
-    "pilesWon": 1
-  },
-  "turn_resolution": {
-    "all_plays": [
-      {
-        "player": "Bot 4",
-        "pieces": [
-          "CANNON_BLACK(3)"
-        ],
-        "is_valid": true,
-        "play_type": "unknown",
-        "play_value": 0
-      },
-      {
-        "player": "Andy",
-        "pieces": [
-          "ELEPHANT_RED(10)"
-        ],
-        "is_valid": true,
-        "play_type": "unknown",
-        "play_value": 0
-      },
-      {
-        "player": "Bot 2",
-        "pieces": [
-          "SOLDIER_BLACK(1)"
-        ],
-        "is_valid": true,
-        "play_type": "unknown",
-        "play_value": 0
-      },
-      {
-        "player": "Bot 3",
-        "pieces": [
-          "SOLDIER_RED(2)"
-        ],
-        "is_valid": true,
-        "play_type": "unknown",
-        "play_value": 0
-      }
-    ],
-    "winner": "Andy",
-    "winner_play": {
-      "pieces": [
-        "ELEPHANT_RED(10)"
-      ],
-      "value": 0,
-      "type": "unknown",
-      "pilesWon": 1
-    }
-  },
-  "player_piles": {
-    "Andy": 1,
-    "Bot 2": 0,
-    "Bot 3": 0,
-    "Bot 4": 0
-  },
-  "players": [
-    {
-      "name": "Andy"
-    },
-    {
-      "name": "Bot 2"
-    },
-    {
-      "name": "Bot 3"
-    },
-    {
-      "name": "Bot 4"
-    }
-  ],
-  "turn_number": 7,
-  "next_starter": "Andy",
-  "all_hands_empty": true,
-  "will_continue": false,
-  "phase": "turn",
-  "sequence": 405,
-  "timestamp": 1751602127.5347662,
-  "reason": "Turn 7 completed - winner: Andy",
-  "room_id": "892141"
-}
- 🏆 TURN_COMPLETE_DEBUG: Round 10, Turn 7 completed!
- 🏆 TURN_WINNER_DEBUG: Winner: Andy, Next starter: Andy
- 🏆 TURN_COMPLETE_DATA: {winner: 'Andy', winning_play: {…}, turn_resolution: {…}, player_piles: {…}, players: Array(4), …}
- 🏆 TURN_COMPLETE_DEBUG: Transitioning to turn_results phase with state: {phase: 'turn_results', turnWinner: 'Andy', winningPlay: {…}, playerPiles: {…}, turnNumber: 7, …}
- 🌐 PROCESS_EVENT_DEBUG: Event turn_complete processed, updating derived state
- 🌐 PROCESS_EVENT_DEBUG: Finished processing turn_complete event
- 🎮 State Change: NETWORK_EVENT:TURN_COMPLETE
- Previous: {isConnected: true, roomId: '892141', playerName: 'Andy', phase: 'turn', currentRound: 10, …}
- New: {isConnected: true, roomId: '892141', playerName: 'Andy', phase: 'turn_results', currentRound: 10, …}
- Diff: {phase: {…}, turnWinner: {…}, winningPlay: {…}, playerPiles: {…}, turnNumber: {…}, …}
- 🎮 GAME_STATE_DEBUG: Phase changed from 'turn' to 'turn_results'
- 🏆 GAME_STATE_DEBUG: Entering turn_results phase with data:
-   🏅 turnWinner: Andy
-   🎯 winningPlay: {pieces: Array(1), value: 0, type: 'unknown', pilesWon: 1}
-   📊 playerPiles: {Andy: 1, Bot 2: 0, Bot 3: 0, Bot 4: 0}
-   🔢 turnNumber: 7
-   🎪 nextStarter: Andy
- 🎮 GAME_STATE_DEBUG: Phase changed from 'turn' to 'turn_results'
- 🏆 GAME_STATE_DEBUG: Entering turn_results phase with data:
-   🏅 turnWinner: Andy
-   🎯 winningPlay: {pieces: Array(1), value: 0, type: 'unknown', pilesWon: 1}
-   📊 playerPiles: {Andy: 1, Bot 2: 0, Bot 3: 0, Bot 4: 0}
-   🔢 turnNumber: 7
-   🎪 nextStarter: Andy
- 🎮 GAME_STATE_DEBUG: Phase changed from 'turn' to 'turn_results'
- 🏆 GAME_STATE_DEBUG: Entering turn_results phase with data:
-   🏅 turnWinner: Andy
-   🎯 winningPlay: {pieces: Array(1), value: 0, type: 'unknown', pilesWon: 1}
-   📊 playerPiles: {Andy: 1, Bot 2: 0, Bot 3: 0, Bot 4: 0}
-   🔢 turnNumber: 7
-   🎪 nextStarter: Andy
- 🎮 GAME_STATE_DEBUG: Phase changed from 'turn' to 'turn_results'
- 🏆 GAME_STATE_DEBUG: Entering turn_results phase with data:
-   🏅 turnWinner: Andy
-   🎯 winningPlay: {pieces: Array(1), value: 0, type: 'unknown', pilesWon: 1}
-   📊 playerPiles: {Andy: 1, Bot 2: 0, Bot 3: 0, Bot 4: 0}
-   🔢 turnNumber: 7
-   🎪 nextStarter: Andy
- 🏆 GAMECONTAINER_DEBUG: Building turnResultsProps with gameState:
-   🎮 gameState.phase: turn_results
-   🏅 gameState.turnWinner: Andy
-   🎯 gameState.winningPlay: {pieces: Array(1), value: 0, type: 'unknown', pilesWon: 1}
-   📊 gameState.playerPiles: {Andy: 1, Bot 2: 0, Bot 3: 0, Bot 4: 0}
-   👥 gameState.players: (4) [{…}, {…}, {…}, {…}]
-   🔢 gameState.turnNumber: 7
-   🎪 gameState.nextStarter: Andy
- 🏆 GAMECONTAINER_DEBUG: Final turnResultsProps: {winner: 'Andy', winningPlay: {…}, playerPiles: {…}, players: Array(4), turnNumber: 7, …}
- 🏆 GAMECONTAINER_DEBUG: Rendering TurnResultsUI with props: {winner: 'Andy', winningPlay: {…}, playerPiles: {…}, players: Array(4), turnNumber: 7, …}
- 🏆 TURN_RESULTS_UI_DEBUG: TurnResultsUI component rendered with props:
-   🏅 winner: Andy
-   🎯 winningPlay: {pieces: Array(1), value: 0, type: 'unknown', pilesWon: 1}
-   📊 playerPiles: {Andy: 1, Bot 2: 0, Bot 3: 0, Bot 4: 0}
-   👥 players: (4) [{…}, {…}, {…}, {…}]
-   🔢 turnNumber: 7
-   🎪 nextStarter: Andy
- 🏆 TURN_RESULTS_UI_DEBUG: Computed values:
-   ✅ hasWinner: true
-   🃏 winningPieces: ['ELEPHANT_RED(10)']
-   💎 winningValue: 0
-   🎲 winningType: unknown
-   🏆 pilesWon: 1
- 🌐 FRONTEND_EVENT_DEBUG: Received phase_change event for room 892141 {phase: 'turn', allowed_actions: Array(4), phase_data: {…}, players: {…}, round: 10, …}
- 🔄 PHASE_CHANGE_DEBUG: Phase: turn
- 🔄 PHASE_CHANGE_DEBUG: Data players: {Andy: {…}, Bot 2: {…}, Bot 3: {…}, Bot 4: {…}}
- 🔄 PHASE_CHANGE_DEBUG: Data phase_data: {current_turn_starter: 'Bot 4', current_player: null, turn_order: Array(4), required_piece_count: 1, turn_plays: {…}, …}
-GameService.ts:509 🔄 PHASE_CHANGE_DEBUG: First player raw: Andy {hand: Array(0), hand_size: 0}
-GameService.ts:543 🔄 PHASE_CHANGE_DEBUG: Converted players array: (4) [{…}, {…}, {…}, {…}]
-GameService.ts:544 🔄 PHASE_CHANGE_DEBUG: Sample player object: {name: 'Andy', is_bot: false, is_host: false, zero_declares_in_a_row: 0}
-GameService.ts:620 🎯 REQUIRED_COUNT_FIX: Set requiredPieceCount to 1 from backend phase_data
-GameService.ts:631 🔢 FRONTEND_ROUND_TURN_DEBUG: Round 10, Turn 7
-GameService.ts:632 🎯 FRONTEND_TURN_STATE: Starter: Bot 4, Current: unknown, Required: 1, Plays: 4
-GameService.ts:649 🎲 TURN_PLAYS_DEBUG: Converted 4 plays to currentTurnPlays: (4) [{…}, {…}, {…}, {…}]
-GameService.ts:654 🔢 FRONTEND_TURN_DEBUG: phaseData.current_turn_number = 7
-GameService.ts:489 🌐 PROCESS_EVENT_DEBUG: Event phase_change processed, updating derived state
-GameService.ts:1048 🎯 TURN_DEBUG: currentPlayer: Bot 3, playerName: Andy, isMyTurn: false
-GameService.ts:1049 🎯 TURN_DEBUG: turnOrder: (4) ['Bot 4', 'Andy', 'Bot 2', 'Bot 3']
-GameService.ts:1050 🎯 TURN_DEBUG: currentTurnPlays: (4) [{…}, {…}, {…}, {…}]
-GameService.ts:1048 🎯 TURN_DEBUG: currentPlayer: Bot 3, playerName: Andy, isMyTurn: false
-GameService.ts:1049 🎯 TURN_DEBUG: turnOrder: (4) ['Bot 4', 'Andy', 'Bot 2', 'Bot 3']
-GameService.ts:1050 🎯 TURN_DEBUG: currentTurnPlays: (4) [{…}, {…}, {…}, {…}]
-GameService.ts:1048 🎯 TURN_DEBUG: currentPlayer: Bot 3, playerName: Andy, isMyTurn: false
-GameService.ts:1049 🎯 TURN_DEBUG: turnOrder: (4) ['Bot 4', 'Andy', 'Bot 2', 'Bot 3']
-GameService.ts:1050 🎯 TURN_DEBUG: currentTurnPlays: (4) [{…}, {…}, {…}, {…}]
-GameService.ts:493 🌐 PROCESS_EVENT_DEBUG: Finished processing phase_change event
-GameService.ts:1258 🎮 State Change: NETWORK_EVENT:PHASE_CHANGE
-GameService.ts:1259 Previous: {isConnected: true, roomId: '892141', playerName: 'Andy', phase: 'turn_results', currentRound: 10, …}
-GameService.ts:1260 New: {isConnected: true, roomId: '892141', playerName: 'Andy', phase: 'turn', currentRound: 10, …}
-GameService.ts:1261 Diff: {phase: {…}, myHand: {…}, lastEventSequence: {…}}
-useGameState.ts:32 🎮 GAME_STATE_DEBUG: Phase changed from 'turn_results' to 'turn'
-useGameState.ts:32 🎮 GAME_STATE_DEBUG: Phase changed from 'turn_results' to 'turn'
-useGameState.ts:32 🎮 GAME_STATE_DEBUG: Phase changed from 'turn_results' to 'turn'
-useGameState.ts:32 🎮 GAME_STATE_DEBUG: Phase changed from 'turn_results' to 'turn'
-GameContainer.jsx:86 🔢 GAMECONTAINER_DEBUG: gameState.currentTurnNumber = 7
-GameService.ts:407 🌐 FRONTEND_EVENT_DEBUG: Received phase_change event for room 892141 {phase: 'scoring', allowed_actions: Array(4), phase_data: {…}, players: {…}, round: 10, …}
-GameService.ts:506 🔄 PHASE_CHANGE_DEBUG: Phase: scoring
-GameService.ts:507 🔄 PHASE_CHANGE_DEBUG: Data players: {Andy: {…}, Bot 2: {…}, Bot 3: {…}, Bot 4: {…}}
-GameService.ts:508 🔄 PHASE_CHANGE_DEBUG: Data phase_data: {round_scores: {…}, total_scores: {…}, players: Array(4), game_complete: true, winners: Array(1), …}
-GameService.ts:509 🔄 PHASE_CHANGE_DEBUG: First player raw: Andy {hand: Array(0), hand_size: 0}
-GameService.ts:543 🔄 PHASE_CHANGE_DEBUG: Converted players array: (4) [{…}, {…}, {…}, {…}]
-GameService.ts:544 🔄 PHASE_CHANGE_DEBUG: Sample player object: {name: 'Andy', is_bot: false, is_host: false, zero_declares_in_a_row: 0}
-GameService.ts:663 🏆 SCORING_FRONTEND_DEBUG: Processing scoring phase data
-GameService.ts:664 📊 Raw phase data: {round_scores: {…}, total_scores: {…}, players: Array(4), game_complete: true, winners: Array(1), …}
-GameService.ts:665 👥 Available players in newState: (4) [{…}, {…}, {…}, {…}]
-GameService.ts:671 📊 SCORING_DEBUG: Raw round scores: {Andy: {…}, Bot 2: {…}, Bot 3: {…}, Bot 4: {…}}
-GameService.ts:716 ✅ SCORING_DEBUG: Processed round scores: {Andy: 8, Bot 2: -2, Bot 3: 6, Bot 4: 6}
-GameService.ts:717 ✅ SCORING_DEBUG: Processed total scores: {Andy: 55, Bot 2: -5, Bot 3: -6, Bot 4: 14}
-GameService.ts:718 ✅ SCORING_DEBUG: Game over: true
-GameService.ts:719 ✅ SCORING_DEBUG: Winners: ['Andy']
-GameService.ts:720 ✅ SCORING_DEBUG: Redeal multiplier: 1
- 🧮 SCORING_DEBUG: Calculating playersWithScores...
- 🧮 SCORING_DEBUG: Generated playersWithScores: (4) [{…}, {…}, {…}, {…}]
- 🌐 PROCESS_EVENT_DEBUG: Event phase_change processed, updating derived state
- 🌐 PROCESS_EVENT_DEBUG: Finished processing phase_change event
- 🎮 State Change: NETWORK_EVENT:PHASE_CHANGE
- Previous: {isConnected: true, roomId: '892141', playerName: 'Andy', phase: 'turn', currentRound: 10, …}
- New: {isConnected: true, roomId: '892141', playerName: 'Andy', phase: 'scoring', currentRound: 10, …}
- Diff: {phase: {…}, players: {…}, roundScores: {…}, totalScores: {…}, winners: {…}, …}
- 🎮 GAME_STATE_DEBUG: Phase changed from 'turn' to 'scoring'
- 🎮 GAME_STATE_DEBUG: Phase changed from 'turn' to 'scoring'
- 🎮 GAME_STATE_DEBUG: Phase changed from 'turn' to 'scoring'
- 🎮 GAME_STATE_DEBUG: Phase changed from 'turn' to 'scoring'
- 🌐 FRONTEND_EVENT_DEBUG: Received phase_change event for room 892141 {phase: 'scoring', allowed_actions: Array(4), phase_data: {…}, players: {…}, timestamp: 1751602127.537357, …}
- 🔄 PHASE_CHANGE_DEBUG: Phase: scoring
- 🔄 PHASE_CHANGE_DEBUG: Data players: {Andy: {…}, Bot 2: {…}, Bot 3: {…}, Bot 4: {…}}
- 🔄 PHASE_CHANGE_DEBUG: Data phase_data: {round_scores: {…}, total_scores: {…}, players: Array(4), game_complete: true, winners: Array(1), …}
- 🔄 PHASE_CHANGE_DEBUG: First player raw: Andy {hand: Array(0), hand_size: 0}
- 🔄 PHASE_CHANGE_DEBUG: Converted players array: (4) [{…}, {…}, {…}, {…}]
- 🔄 PHASE_CHANGE_DEBUG: Sample player object: {name: 'Andy', is_bot: false, is_host: false, zero_declares_in_a_row: 0}
- 🏆 SCORING_FRONTEND_DEBUG: Processing scoring phase data
- 📊 Raw phase data: {round_scores: {…}, total_scores: {…}, players: Array(4), game_complete: true, winners: Array(1), …}
- 👥 Available players in newState: (4) [{…}, {…}, {…}, {…}]
- 📊 SCORING_DEBUG: Raw round scores: {Andy: {…}, Bot 2: {…}, Bot 3: {…}, Bot 4: {…}}
- ✅ SCORING_DEBUG: Processed round scores: {Andy: 8, Bot 2: -2, Bot 3: 6, Bot 4: 6}
- ✅ SCORING_DEBUG: Processed total scores: {Andy: 55, Bot 2: -5, Bot 3: -6, Bot 4: 14}
- ✅ SCORING_DEBUG: Game over: true
- ✅ SCORING_DEBUG: Winners: ['Andy']
- ✅ SCORING_DEBUG: Redeal multiplier: 1
- 🧮 SCORING_DEBUG: Calculating playersWithScores...
- 🧮 SCORING_DEBUG: Generated playersWithScores: (4) [{…}, {…}, {…}, {…}]
- 🌐 PROCESS_EVENT_DEBUG: Event phase_change processed, updating derived state
- 🌐 PROCESS_EVENT_DEBUG: Finished processing phase_change event
- 🎮 State Change: NETWORK_EVENT:PHASE_CHANGE
- Previous: {isConnected: true, roomId: '892141', playerName: 'Andy', phase: 'scoring', currentRound: 10, …}
- New: {isConnected: true, roomId: '892141', playerName: 'Andy', phase: 'scoring', currentRound: 10, …}
- Diff: {lastEventSequence: {…}}
- 🎮 GAME_CONTAINER_DEBUG: Passing props to ScoringUI:
-   👥 players: (4) [{…}, {…}, {…}, {…}]
-   📊 roundScores: {Andy: 8, Bot 2: -2, Bot 3: 6, Bot 4: 6}
-   💯 totalScores: {Andy: 55, Bot 2: -5, Bot 3: -6, Bot 4: 14}
-   🧮 playersWithScores: (4) [{…}, {…}, {…}, {…}]
-   ⚗️ redealMultiplier: 1
-   🏁 gameOver: true
-   🏆 winners: ['Andy']
- 🏆 SCORING_UI_DEBUG: ScoringUI props received:
-   👥 players: (4) [{…}, {…}, {…}, {…}]
-   📊 roundScores: {Andy: 8, Bot 2: -2, Bot 3: 6, Bot 4: 6}
-   💯 totalScores: {Andy: 55, Bot 2: -5, Bot 3: -6, Bot 4: 14}
-   ⚗️ redealMultiplier: 1
-   🧮 playersWithScores: (4) [{…}, {…}, {…}, {…}]
-   🏁 gameOver: true
-   🏆 winners: ['Andy']
- 🎯 SCORING_UI_DEBUG: Final sortedPlayers: (4) [{…}, {…}, {…}, {…}]
-bundle.js:1 [Violation] 'message' handler took 5061ms
- 🎮 State Change: NETWORK_DISCONNECTED
- Previous: {isConnected: true, roomId: '892141', playerName: 'Andy', phase: 'scoring', currentRound: 10, …}
- New: {isConnected: false, roomId: '892141', playerName: 'Andy', phase: 'scoring', currentRound: 10, …}
- Diff: {isConnected: {…}, lastEventSequence: {…}}
- 🌐 NetworkService: Disconnected from room lobby
- 🔗 Connection opened to room lobby
- 🎮 State Change: NETWORK_CONNECTED
- Previous: {isConnected: false, roomId: '892141', playerName: 'Andy', phase: 'scoring', currentRound: 10, …}
- New: {isConnected: true, roomId: '892141', playerName: 'Andy', phase: 'scoring', currentRound: 10, …}
- Diff: {isConnected: {…}, lastEventSequence: {…}}
- 🌐 NetworkService: Connected to room lobby
- 🎮 State Change: NETWORK_DISCONNECTED
- Previous: {isConnected: true, roomId: '892141', playerName: 'Andy', phase: 'scoring', currentRound: 10, …}
- New: {isConnected: false, roomId: '892141', playerName: 'Andy', phase: 'scoring', currentRound: 10, …}
- Diff: {isConnected: {…}, lastEventSequence: {…}}
- 🌐 NetworkService: Disconnected from room lobby
- 📤 Queued message for lobby: get_rooms (1 queued)
- 🔗 Connection opened to room lobby
- 🎮 State Change: NETWORK_CONNECTED
- Previous: {isConnected: false, roomId: '892141', playerName: 'Andy', phase: 'scoring', currentRound: 10, …}
- New: {isConnected: true, roomId: '892141', playerName: 'Andy', phase: 'scoring', currentRound: 10, …}
- Diff: {isConnected: {…}, lastEventSequence: {…}}
- 🌐 NetworkService: Connected to room lobby
- Received room_list_update: {roomId: 'lobby', data: {…}, message: {…}, timestamp: 1751602135769}
-
----
-
-🎯 NEW_TURN_DEBUG: Round 10, Turn 5 starting with starter Andy
-🤖 NEW_TURN_DEBUG: Notifying bot manager about new turn starter Andy for room 892141
-🔍 DUPLICATE_DEBUG: Received turn_started event for Andy from unknown
-👤 Human player Andy starts, waiting for their play
-🔢 TURN_NUMBER_DEBUG: Backend game.turn_number = 5
-DEBUG_WS: Message for event 'phase_change' added to queue for room 892141.
-🔍 ENTERPRISE_DEBUG: _notify_bot_manager_data_change called - reason: New turn 5 started with starter Andy
-🔍 PHASE_TRACKING_FIX: Same phase update: turn
-🔍 BOT_MANAGER_DEBUG: _handle_enterprise_phase_change called - phase: turn, reason: New turn 5 started with starter Andy
-🚀 ENTERPRISE_BOT_DEBUG: Turn phase - checking if Andy is a bot
-👤 ENTERPRISE_BOT_DEBUG: Current player Andy is human - waiting
-🎯 START_NEXT_DEBUG: _start_new_turn() completed
-🎯 TURN_COMPLETE_DEBUG: _process_turn_completion() finished
-🎯 UPDATE_DEBUG: About to update phase data with current_player: Andy, required_piece_count: None
-DEBUG_WS: Message for event 'phase_change' added to queue for room 892141.
-🔍 ENTERPRISE_DEBUG: _notify_bot_manager_data_change called - reason: Player Bot 2 played 1 pieces
-🔍 PHASE_TRACKING_FIX: Same phase update: turn
-🔍 BOT_MANAGER_DEBUG: _handle_enterprise_phase_change called - phase: turn, reason: Player Bot 2 played 1 pieces
-🚀 ENTERPRISE_BOT_DEBUG: Turn phase - checking if Andy is a bot
-👤 ENTERPRISE_BOT_DEBUG: Current player Andy is human - waiting
-🎯 UPDATE_DEBUG: Phase data updated - next_player should be: Andy
-🎯 TURN_STATE_DEBUG: Play pieces result: {'status': 'play_accepted', 'player': 'Bot 2', 'pieces': [CHARIOT_BLACK(7)], 'piece_count': 1, 'required_count': None, 'next_player': 'Andy', 'turn_complete': False}
-✅ BOT_VALIDATION_FIX: Bot Bot 2 play accepted - state machine handling all updates
-DEBUG_WS_RECEIVE: Received event 'play' from client in room 892141 with data: {'piece_indices': [0], 'player_name': 'Andy', 'play_value': 12}
-🎯 WS_PLAY_DEBUG: Received play event - player: Andy, indices: [0]
-🎯 WS_PLAY_DEBUG: Found player Andy with hand size 3
-🎯 WS_PLAY_DEBUG: Added piece at index 0: ADVISOR_RED(12)
-🎯 WS_PLAY_DEBUG: Final pieces to play: ['ADVISOR_RED(12)']
-🎯 WS_PLAY_DEBUG: Queuing action for state machine...
-🎯 WS_PLAY_DEBUG: State machine result: {'success': True, 'queued': True}
-✅ Play queued: Andy -> [0]
-🎯 TURN_STATE_DEBUG: Processing action play_pieces from Andy
-🎯 TURN_STATE_DEBUG: _handle_play_pieces called for Andy
-🎯 TURN_STATE_DEBUG: Current state - player_index: 0, turn_order: ['Andy', 'Bot 2', 'Bot 3', 'Bot 4']
-🎯 TURN_STATE_DEBUG: Player Andy playing 1 pieces: ['ADVISOR_RED(12)']
-🎯 TURN_STATE_DEBUG: Setting required piece count to 1
-🎯 TURN_STATE_DEBUG: Before setting - required_piece_count was: None
-🎯 TURN_STATE_DEBUG: After setting - required_piece_count is: 1
-🎯 TURN_STATE_DEBUG: Before advancing - current_player_index: 0
-🎯 TURN_STATE_DEBUG: After advancing - current_player_index: 1
-🎯 TURN_STATE_DEBUG: Next player: Bot 2
-🎯 TURN_STATE_DEBUG: Round 10, Turn 5 - Andy played, next: Bot 2
-🎯 UPDATE_DEBUG: About to update phase data with current_player: Bot 2, required_piece_count: 1
-DEBUG_WS: Message for event 'phase_change' added to queue for room 892141.
-🔍 ENTERPRISE_DEBUG: _notify_bot_manager_data_change called - reason: Player Andy played 1 pieces
-🔍 PHASE_TRACKING_FIX: Same phase update: turn
-🔍 BOT_MANAGER_DEBUG: _handle_enterprise_phase_change called - phase: turn, reason: Player Andy played 1 pieces
-🚀 ENTERPRISE_BOT_DEBUG: Turn phase - checking if Bot 2 is a bot
-🤖 ENTERPRISE_BOT_DEBUG: Current player Bot 2 is a bot - checking for duplicates
-✅ REFINED_FIX: Allowing new trigger for current player Bot 2 from phase_change
-✅ RACE_CONDITION_FIX: New action recorded for Bot 2 - play_pieces from phase_change (hash: 24adaf6dde78)
-✅ RACE_CONDITION_FIX: Triggering bot play for Bot 2 - no duplicates detected
-🎯 BOT_PLAY_DEBUG: Got required_piece_count from state machine: 1
-🤖 BOT chooses to play SINGLE (5 pts): HORSE
-🎯 BOT_PLAY_DEBUG: Final selection - 1 pieces: ['HORSE_BLACK(5)']
-🎯 BOT_PLAY_DEBUG: Action queued successfully, state machine will handle updates and broadcasting
-✅ Bot Bot 2 action queued - state machine will broadcast with correct next_player
-🎯 UPDATE_DEBUG: Phase data updated - next_player should be: Bot 2
-🎯 TURN_STATE_DEBUG: Play pieces result: {'status': 'play_accepted', 'player': 'Andy', 'pieces': [ADVISOR_RED(12)], 'piece_count': 1, 'required_count': 1, 'next_player': 'Bot 2', 'turn_complete': False}
-🎯 TURN_STATE_DEBUG: Processing action play_pieces from Bot 2
-🎯 TURN_STATE_DEBUG: _handle_play_pieces called for Bot 2
-🎯 TURN_STATE_DEBUG: Current state - player_index: 1, turn_order: ['Andy', 'Bot 2', 'Bot 3', 'Bot 4']
-🎯 TURN_STATE_DEBUG: Player Bot 2 playing 1 pieces: ['HORSE_BLACK(5)']
-🎯 TURN_STATE_DEBUG: Before advancing - current_player_index: 1
-🎯 TURN_STATE_DEBUG: After advancing - current_player_index: 2
-🎯 TURN_STATE_DEBUG: Next player: Bot 3
-🎯 TURN_STATE_DEBUG: Round 10, Turn 5 - Bot 2 played, next: Bot 3
-🎯 UPDATE_DEBUG: About to update phase data with current_player: Bot 3, required_piece_count: 1
-DEBUG_WS: Message for event 'phase_change' added to queue for room 892141.
-🔍 ENTERPRISE_DEBUG: _notify_bot_manager_data_change called - reason: Player Bot 2 played 1 pieces
-🔍 PHASE_TRACKING_FIX: Same phase update: turn
-🔍 BOT_MANAGER_DEBUG: _handle_enterprise_phase_change called - phase: turn, reason: Player Bot 2 played 1 pieces
-🚀 ENTERPRISE_BOT_DEBUG: Turn phase - checking if Bot 3 is a bot
-🤖 ENTERPRISE_BOT_DEBUG: Current player Bot 3 is a bot - checking for duplicates
-✅ REFINED_FIX: Allowing new trigger for current player Bot 3 from phase_change
-✅ RACE_CONDITION_FIX: New action recorded for Bot 3 - play_pieces from phase_change (hash: b84586616fc6)
-✅ RACE_CONDITION_FIX: Triggering bot play for Bot 3 - no duplicates detected
-🎯 BOT_PLAY_DEBUG: Got required_piece_count from state machine: 1
-🤖 BOT chooses to play SINGLE (4 pts): CANNON
-🎯 BOT_PLAY_DEBUG: Final selection - 1 pieces: ['CANNON_RED(4)']
-🎯 BOT_PLAY_DEBUG: Action queued successfully, state machine will handle updates and broadcasting
-✅ Bot Bot 3 action queued - state machine will broadcast with correct next_player
-🎯 UPDATE_DEBUG: Phase data updated - next_player should be: Bot 3
-🎯 TURN_STATE_DEBUG: Play pieces result: {'status': 'play_accepted', 'player': 'Bot 2', 'pieces': [HORSE_BLACK(5)], 'piece_count': 1, 'required_count': 1, 'next_player': 'Bot 3', 'turn_complete': False}
-✅ BOT_VALIDATION_FIX: Bot Bot 2 play accepted - state machine handling all updates
-🎯 TURN_STATE_DEBUG: Processing action play_pieces from Bot 3
-🎯 TURN_STATE_DEBUG: _handle_play_pieces called for Bot 3
-🎯 TURN_STATE_DEBUG: Current state - player_index: 2, turn_order: ['Andy', 'Bot 2', 'Bot 3', 'Bot 4']
-🎯 TURN_STATE_DEBUG: Player Bot 3 playing 1 pieces: ['CANNON_RED(4)']
-🎯 TURN_STATE_DEBUG: Before advancing - current_player_index: 2
-🎯 TURN_STATE_DEBUG: After advancing - current_player_index: 3
-🎯 TURN_STATE_DEBUG: Next player: Bot 4
-🎯 TURN_STATE_DEBUG: Round 10, Turn 5 - Bot 3 played, next: Bot 4
-🎯 UPDATE_DEBUG: About to update phase data with current_player: Bot 4, required_piece_count: 1
-DEBUG_WS: Message for event 'phase_change' added to queue for room 892141.
-🔍 ENTERPRISE_DEBUG: _notify_bot_manager_data_change called - reason: Player Bot 3 played 1 pieces
-🔍 PHASE_TRACKING_FIX: Same phase update: turn
-🔍 BOT_MANAGER_DEBUG: _handle_enterprise_phase_change called - phase: turn, reason: Player Bot 3 played 1 pieces
-🚀 ENTERPRISE_BOT_DEBUG: Turn phase - checking if Bot 4 is a bot
-🤖 ENTERPRISE_BOT_DEBUG: Current player Bot 4 is a bot - checking for duplicates
-✅ REFINED_FIX: Allowing new trigger for current player Bot 4 from phase_change
-✅ RACE_CONDITION_FIX: New action recorded for Bot 4 - play_pieces from phase_change (hash: 749788fbee0b)
-✅ RACE_CONDITION_FIX: Triggering bot play for Bot 4 - no duplicates detected
-🎯 BOT_PLAY_DEBUG: Got required_piece_count from state machine: 1
-🤖 BOT chooses to play SINGLE (6 pts): HORSE
-🎯 BOT_PLAY_DEBUG: Final selection - 1 pieces: ['HORSE_RED(6)']
-🎯 BOT_PLAY_DEBUG: Action queued successfully, state machine will handle updates and broadcasting
-✅ Bot Bot 4 action queued - state machine will broadcast with correct next_player
-🎯 UPDATE_DEBUG: Phase data updated - next_player should be: Bot 4
-🎯 TURN_STATE_DEBUG: Play pieces result: {'status': 'play_accepted', 'player': 'Bot 3', 'pieces': [CANNON_RED(4)], 'piece_count': 1, 'required_count': 1, 'next_player': 'Bot 4', 'turn_complete': False}
-✅ BOT_VALIDATION_FIX: Bot Bot 3 play accepted - state machine handling all updates
-🎯 TURN_STATE_DEBUG: Processing action play_pieces from Bot 4
-🎯 TURN_STATE_DEBUG: _handle_play_pieces called for Bot 4
-🎯 TURN_STATE_DEBUG: Current state - player_index: 3, turn_order: ['Andy', 'Bot 2', 'Bot 3', 'Bot 4']
-🎯 TURN_STATE_DEBUG: Player Bot 4 playing 1 pieces: ['HORSE_RED(6)']
-🎯 TURN_STATE_DEBUG: Before advancing - current_player_index: 3
-🎯 TURN_STATE_DEBUG: After advancing - current_player_index: 4
-🎯 TURN_STATE_DEBUG: Next player: None
-🎯 TURN_STATE_DEBUG: Round 10, Turn 5 - Bot 4 played, next: None
-🎯 TURN_STATE_DEBUG: Turn complete! Calling _complete_turn()
-🎯 TURN_COMPLETE_DEBUG: Round 10, Turn 5 _complete_turn() called
-🎯 TURN_COMPLETE_DEBUG: Round 10, Turn 5 Winner determined: Andy
-🎯 CAPTURED_PILES_DEBUG: Andy captured_piles += 1 = 2
-🎯 TURN_COMPLETE_DEBUG: Awarded 1 piles to Andy
-🎯 TURN_COMPLETE_DEBUG: Next turn starter set to: Andy
-DEBUG_WS: Message for event 'phase_change' added to queue for room 892141.
-🔍 ENTERPRISE_DEBUG: _notify_bot_manager_data_change called - reason: Turn completed - winner: Andy
-🔍 PHASE_TRACKING_FIX: Same phase update: turn
-🔍 BOT_MANAGER_DEBUG: _handle_enterprise_phase_change called - phase: turn, reason: Turn completed - winner: Andy
-🚀 ENTERPRISE_BOT_DEBUG: Turn phase - checking if Bot 4 is a bot
-🤖 ENTERPRISE_BOT_DEBUG: Current player Bot 4 is a bot - checking for duplicates
-✅ REFINED_FIX: Allowing delayed same-source trigger for current player Bot 4 from phase_change (age: 0.5s)
-✅ RACE_CONDITION_FIX: New action recorded for Bot 4 - play_pieces from phase_change (hash: 749788fbee0b)
-🚫 SEQUENCE_FIX: Bot 4 already acted in turn 5 - skipping
-🚫 RACE_CONDITION_FIX: Skipping bot trigger due to sequence tracking for Bot 4
-🎯 TURN_COMPLETE_DEBUG: Phase data updated with turn completion
-🏁 TURN_COMPLETION_DEBUG: Starting turn completion processing
-🏁 TURN_COMPLETION_DEBUG: Removing 1 pieces from Andy
-🏁 TURN_COMPLETION_DEBUG: Removing 1 pieces from Bot 2
-🏁 TURN_COMPLETION_DEBUG: Removing 1 pieces from Bot 3
-🏁 TURN_COMPLETION_DEBUG: Removing 1 pieces from Bot 4
-🏁 TURN_COMPLETION_DEBUG: After removing pieces, checking if all hands are empty
-🏁 TURN_COMPLETION_DEBUG: all_hands_empty = False
-🔧 CONSISTENCY_CHECK: Hand sizes: {'Andy': 2, 'Bot 2': 2, 'Bot 3': 2, 'Bot 4': 2}
-🔧 CONSISTENCY_CHECK: Min: 2, Max: 2
-✅ CONSISTENCY_CHECK: Hand size distribution is acceptable
-🏁 TURN_COMPLETION_DEBUG: Andy hand size: 2
-🏁 TURN_COMPLETION_DEBUG: Bot 2 hand size: 2
-🏁 TURN_COMPLETION_DEBUG: Bot 3 hand size: 2
-🏁 TURN_COMPLETION_DEBUG: Bot 4 hand size: 2
-DEBUG_WS: Message for event 'turn_complete' added to queue for room 892141.
-🏁 TURN_COMPLETION_DEBUG: Hands not empty - will start next turn after delay
-🎯 START_NEXT_DEBUG: start_next_turn_if_needed() called
-🎯 START_NEXT_DEBUG: turn_complete: True
-🎯 START_NEXT_DEBUG: all_hands_empty: False
-🎯 START_NEXT_DEBUG: Starting new turn with starter: Andy
-🎯 NEW_TURN_DEBUG: Round 10, Turn 6 starting with starter Andy
-🤖 NEW_TURN_DEBUG: Notifying bot manager about new turn starter Andy for room 892141
-🔍 DUPLICATE_DEBUG: Received turn_started event for Andy from unknown
-👤 Human player Andy starts, waiting for their play
-🔢 TURN_NUMBER_DEBUG: Backend game.turn_number = 6
-DEBUG_WS: Message for event 'phase_change' added to queue for room 892141.
-🔍 ENTERPRISE_DEBUG: _notify_bot_manager_data_change called - reason: New turn 6 started with starter Andy
-🔍 PHASE_TRACKING_FIX: Same phase update: turn
-🔍 BOT_MANAGER_DEBUG: _handle_enterprise_phase_change called - phase: turn, reason: New turn 6 started with starter Andy
-🚀 ENTERPRISE_BOT_DEBUG: Turn phase - checking if Andy is a bot
-👤 ENTERPRISE_BOT_DEBUG: Current player Andy is human - waiting
-🎯 START_NEXT_DEBUG: _start_new_turn() completed
-🎯 TURN_COMPLETE_DEBUG: _process_turn_completion() finished
-🎯 UPDATE_DEBUG: About to update phase data with current_player: Andy, required_piece_count: None
-DEBUG_WS: Message for event 'phase_change' added to queue for room 892141.
-🔍 ENTERPRISE_DEBUG: _notify_bot_manager_data_change called - reason: Player Bot 4 played 1 pieces
-🔍 PHASE_TRACKING_FIX: Same phase update: turn
-🔍 BOT_MANAGER_DEBUG: _handle_enterprise_phase_change called - phase: turn, reason: Player Bot 4 played 1 pieces
-🚀 ENTERPRISE_BOT_DEBUG: Turn phase - checking if Andy is a bot
-👤 ENTERPRISE_BOT_DEBUG: Current player Andy is human - waiting
-🎯 UPDATE_DEBUG: Phase data updated - next_player should be: Andy
-🎯 TURN_STATE_DEBUG: Play pieces result: {'status': 'play_accepted', 'player': 'Bot 4', 'pieces': [HORSE_RED(6)], 'piece_count': 1, 'required_count': None, 'next_player': 'Andy', 'turn_complete': False}
-✅ BOT_VALIDATION_FIX: Bot Bot 4 play accepted - state machine handling all updates
-DEBUG_WS_RECEIVE: Received event 'play' from client in room 892141 with data: {'piece_indices': [1], 'player_name': 'Andy', 'play_value': 1}
-🎯 WS_PLAY_DEBUG: Received play event - player: Andy, indices: [1]
-🎯 WS_PLAY_DEBUG: Found player Andy with hand size 2
-🎯 WS_PLAY_DEBUG: Added piece at index 1: SOLDIER_BLACK(1)
-🎯 WS_PLAY_DEBUG: Final pieces to play: ['SOLDIER_BLACK(1)']
-🎯 WS_PLAY_DEBUG: Queuing action for state machine...
-🎯 WS_PLAY_DEBUG: State machine result: {'success': True, 'queued': True}
-✅ Play queued: Andy -> [1]
-🎯 TURN_STATE_DEBUG: Processing action play_pieces from Andy
-🎯 TURN_STATE_DEBUG: _handle_play_pieces called for Andy
-🎯 TURN_STATE_DEBUG: Current state - player_index: 0, turn_order: ['Andy', 'Bot 2', 'Bot 3', 'Bot 4']
-🎯 TURN_STATE_DEBUG: Player Andy playing 1 pieces: ['SOLDIER_BLACK(1)']
-🎯 TURN_STATE_DEBUG: Setting required piece count to 1
-🎯 TURN_STATE_DEBUG: Before setting - required_piece_count was: None
-🎯 TURN_STATE_DEBUG: After setting - required_piece_count is: 1
-🎯 TURN_STATE_DEBUG: Before advancing - current_player_index: 0
-🎯 TURN_STATE_DEBUG: After advancing - current_player_index: 1
-🎯 TURN_STATE_DEBUG: Next player: Bot 2
-🎯 TURN_STATE_DEBUG: Round 10, Turn 6 - Andy played, next: Bot 2
-🎯 UPDATE_DEBUG: About to update phase data with current_player: Bot 2, required_piece_count: 1
-DEBUG_WS: Message for event 'phase_change' added to queue for room 892141.
-🔍 ENTERPRISE_DEBUG: _notify_bot_manager_data_change called - reason: Player Andy played 1 pieces
-🔍 PHASE_TRACKING_FIX: Same phase update: turn
-🔍 BOT_MANAGER_DEBUG: _handle_enterprise_phase_change called - phase: turn, reason: Player Andy played 1 pieces
-🚀 ENTERPRISE_BOT_DEBUG: Turn phase - checking if Bot 2 is a bot
-🤖 ENTERPRISE_BOT_DEBUG: Current player Bot 2 is a bot - checking for duplicates
-✅ REFINED_FIX: Allowing new trigger for current player Bot 2 from phase_change
-✅ RACE_CONDITION_FIX: New action recorded for Bot 2 - play_pieces from phase_change (hash: cd126bb9120d)
-✅ RACE_CONDITION_FIX: Triggering bot play for Bot 2 - no duplicates detected
-🎯 BOT_PLAY_DEBUG: Got required_piece_count from state machine: 1
-🤖 BOT chooses to play SINGLE (1 pts): SOLDIER
-🎯 BOT_PLAY_DEBUG: Final selection - 1 pieces: ['SOLDIER_BLACK(1)']
-🎯 BOT_PLAY_DEBUG: Action queued successfully, state machine will handle updates and broadcasting
-✅ Bot Bot 2 action queued - state machine will broadcast with correct next_player
-🎯 UPDATE_DEBUG: Phase data updated - next_player should be: Bot 2
-🎯 TURN_STATE_DEBUG: Play pieces result: {'status': 'play_accepted', 'player': 'Andy', 'pieces': [SOLDIER_BLACK(1)], 'piece_count': 1, 'required_count': 1, 'next_player': 'Bot 2', 'turn_complete': False}
-🎯 TURN_STATE_DEBUG: Processing action play_pieces from Bot 2
-🎯 TURN_STATE_DEBUG: _handle_play_pieces called for Bot 2
-🎯 TURN_STATE_DEBUG: Current state - player_index: 1, turn_order: ['Andy', 'Bot 2', 'Bot 3', 'Bot 4']
-🎯 TURN_STATE_DEBUG: Player Bot 2 playing 1 pieces: ['SOLDIER_BLACK(1)']
-🎯 TURN_STATE_DEBUG: Before advancing - current_player_index: 1
-🎯 TURN_STATE_DEBUG: After advancing - current_player_index: 2
-🎯 TURN_STATE_DEBUG: Next player: Bot 3
-🎯 TURN_STATE_DEBUG: Round 10, Turn 6 - Bot 2 played, next: Bot 3
-🎯 UPDATE_DEBUG: About to update phase data with current_player: Bot 3, required_piece_count: 1
-DEBUG_WS: Message for event 'phase_change' added to queue for room 892141.
-🔍 ENTERPRISE_DEBUG: _notify_bot_manager_data_change called - reason: Player Bot 2 played 1 pieces
-🔍 PHASE_TRACKING_FIX: Same phase update: turn
-🔍 BOT_MANAGER_DEBUG: _handle_enterprise_phase_change called - phase: turn, reason: Player Bot 2 played 1 pieces
-🚀 ENTERPRISE_BOT_DEBUG: Turn phase - checking if Bot 3 is a bot
-🤖 ENTERPRISE_BOT_DEBUG: Current player Bot 3 is a bot - checking for duplicates
-✅ REFINED_FIX: Allowing new trigger for current player Bot 3 from phase_change
-✅ RACE_CONDITION_FIX: New action recorded for Bot 3 - play_pieces from phase_change (hash: 92ec7dc2dfc2)
-✅ RACE_CONDITION_FIX: Triggering bot play for Bot 3 - no duplicates detected
-🎯 BOT_PLAY_DEBUG: Got required_piece_count from state machine: 1
-🤖 BOT chooses to play SINGLE (3 pts): CANNON
-🎯 BOT_PLAY_DEBUG: Final selection - 1 pieces: ['CANNON_BLACK(3)']
-🎯 BOT_PLAY_DEBUG: Action queued successfully, state machine will handle updates and broadcasting
-✅ Bot Bot 3 action queued - state machine will broadcast with correct next_player
-🎯 UPDATE_DEBUG: Phase data updated - next_player should be: Bot 3
-🎯 TURN_STATE_DEBUG: Play pieces result: {'status': 'play_accepted', 'player': 'Bot 2', 'pieces': [SOLDIER_BLACK(1)], 'piece_count': 1, 'required_count': 1, 'next_player': 'Bot 3', 'turn_complete': False}
-✅ BOT_VALIDATION_FIX: Bot Bot 2 play accepted - state machine handling all updates
-DEBUG_WS_RECEIVE: Received event 'ping' from client in room lobby with data: {'timestamp': 1751602112617}
-🎯 TURN_STATE_DEBUG: Processing action play_pieces from Bot 3
-🎯 TURN_STATE_DEBUG: _handle_play_pieces called for Bot 3
-🎯 TURN_STATE_DEBUG: Current state - player_index: 2, turn_order: ['Andy', 'Bot 2', 'Bot 3', 'Bot 4']
-🎯 TURN_STATE_DEBUG: Player Bot 3 playing 1 pieces: ['CANNON_BLACK(3)']
-🎯 TURN_STATE_DEBUG: Before advancing - current_player_index: 2
-🎯 TURN_STATE_DEBUG: After advancing - current_player_index: 3
-🎯 TURN_STATE_DEBUG: Next player: Bot 4
-🎯 TURN_STATE_DEBUG: Round 10, Turn 6 - Bot 3 played, next: Bot 4
-🎯 UPDATE_DEBUG: About to update phase data with current_player: Bot 4, required_piece_count: 1
-DEBUG_WS: Message for event 'phase_change' added to queue for room 892141.
-🔍 ENTERPRISE_DEBUG: _notify_bot_manager_data_change called - reason: Player Bot 3 played 1 pieces
-🔍 PHASE_TRACKING_FIX: Same phase update: turn
-🔍 BOT_MANAGER_DEBUG: _handle_enterprise_phase_change called - phase: turn, reason: Player Bot 3 played 1 pieces
-🚀 ENTERPRISE_BOT_DEBUG: Turn phase - checking if Bot 4 is a bot
-🤖 ENTERPRISE_BOT_DEBUG: Current player Bot 4 is a bot - checking for duplicates
-✅ REFINED_FIX: Allowing new trigger for current player Bot 4 from phase_change
-✅ RACE_CONDITION_FIX: New action recorded for Bot 4 - play_pieces from phase_change (hash: 6531d38fb003)
-✅ RACE_CONDITION_FIX: Triggering bot play for Bot 4 - no duplicates detected
-🎯 BOT_PLAY_DEBUG: Got required_piece_count from state machine: 1
-🤖 BOT chooses to play SINGLE (4 pts): CANNON
-🎯 BOT_PLAY_DEBUG: Final selection - 1 pieces: ['CANNON_RED(4)']
-🎯 BOT_PLAY_DEBUG: Action queued successfully, state machine will handle updates and broadcasting
-✅ Bot Bot 4 action queued - state machine will broadcast with correct next_player
-🎯 UPDATE_DEBUG: Phase data updated - next_player should be: Bot 4
-🎯 TURN_STATE_DEBUG: Play pieces result: {'status': 'play_accepted', 'player': 'Bot 3', 'pieces': [CANNON_BLACK(3)], 'piece_count': 1, 'required_count': 1, 'next_player': 'Bot 4', 'turn_complete': False}
-✅ BOT_VALIDATION_FIX: Bot Bot 3 play accepted - state machine handling all updates
-🎯 TURN_STATE_DEBUG: Processing action play_pieces from Bot 4
-🎯 TURN_STATE_DEBUG: _handle_play_pieces called for Bot 4
-🎯 TURN_STATE_DEBUG: Current state - player_index: 3, turn_order: ['Andy', 'Bot 2', 'Bot 3', 'Bot 4']
-🎯 TURN_STATE_DEBUG: Player Bot 4 playing 1 pieces: ['CANNON_RED(4)']
-🎯 TURN_STATE_DEBUG: Before advancing - current_player_index: 3
-🎯 TURN_STATE_DEBUG: After advancing - current_player_index: 4
-🎯 TURN_STATE_DEBUG: Next player: None
-🎯 TURN_STATE_DEBUG: Round 10, Turn 6 - Bot 4 played, next: None
-🎯 TURN_STATE_DEBUG: Turn complete! Calling _complete_turn()
-🎯 TURN_COMPLETE_DEBUG: Round 10, Turn 6 _complete_turn() called
-🎯 TURN_COMPLETE_DEBUG: Round 10, Turn 6 Winner determined: Bot 4
-🎯 CAPTURED_PILES_DEBUG: Bot 4 captured_piles += 1 = 1
-🎯 TURN_COMPLETE_DEBUG: Awarded 1 piles to Bot 4
-🎯 TURN_COMPLETE_DEBUG: Next turn starter set to: Bot 4
-DEBUG_WS: Message for event 'phase_change' added to queue for room 892141.
-🔍 ENTERPRISE_DEBUG: _notify_bot_manager_data_change called - reason: Turn completed - winner: Bot 4
-🔍 PHASE_TRACKING_FIX: Same phase update: turn
-🔍 BOT_MANAGER_DEBUG: _handle_enterprise_phase_change called - phase: turn, reason: Turn completed - winner: Bot 4
-🚀 ENTERPRISE_BOT_DEBUG: Turn phase - checking if Bot 4 is a bot
-🤖 ENTERPRISE_BOT_DEBUG: Current player Bot 4 is a bot - checking for duplicates
-✅ REFINED_FIX: Allowing delayed same-source trigger for current player Bot 4 from phase_change (age: 0.5s)
-✅ RACE_CONDITION_FIX: New action recorded for Bot 4 - play_pieces from phase_change (hash: 6531d38fb003)
-🚫 SEQUENCE_FIX: Bot 4 already acted in turn 6 - skipping
-🚫 RACE_CONDITION_FIX: Skipping bot trigger due to sequence tracking for Bot 4
-🎯 TURN_COMPLETE_DEBUG: Phase data updated with turn completion
-🏁 TURN_COMPLETION_DEBUG: Starting turn completion processing
-🏁 TURN_COMPLETION_DEBUG: Removing 1 pieces from Andy
-🏁 TURN_COMPLETION_DEBUG: Removing 1 pieces from Bot 2
-🏁 TURN_COMPLETION_DEBUG: Removing 1 pieces from Bot 3
-🏁 TURN_COMPLETION_DEBUG: Removing 1 pieces from Bot 4
-🏁 TURN_COMPLETION_DEBUG: After removing pieces, checking if all hands are empty
-🏁 TURN_COMPLETION_DEBUG: all_hands_empty = False
-🔧 CONSISTENCY_CHECK: Hand sizes: {'Andy': 1, 'Bot 2': 1, 'Bot 3': 1, 'Bot 4': 1}
-🔧 CONSISTENCY_CHECK: Min: 1, Max: 1
-✅ CONSISTENCY_CHECK: Hand size distribution is acceptable
-🏁 TURN_COMPLETION_DEBUG: Andy hand size: 1
-🏁 TURN_COMPLETION_DEBUG: Bot 2 hand size: 1
-🏁 TURN_COMPLETION_DEBUG: Bot 3 hand size: 1
-🏁 TURN_COMPLETION_DEBUG: Bot 4 hand size: 1
-DEBUG_WS: Message for event 'turn_complete' added to queue for room 892141.
-🏁 TURN_COMPLETION_DEBUG: Hands not empty - will start next turn after delay
-DEBUG_WS_RECEIVE: Received event 'ping' from client in room 892141 with data: {'timestamp': 1751602115295}
-🎯 START_NEXT_DEBUG: start_next_turn_if_needed() called
-🎯 START_NEXT_DEBUG: turn_complete: True
-🎯 START_NEXT_DEBUG: all_hands_empty: False
-🎯 START_NEXT_DEBUG: Starting new turn with starter: Bot 4
-🎯 NEW_TURN_DEBUG: Round 10, Turn 7 starting with starter Bot 4
-🤖 NEW_TURN_DEBUG: Notifying bot manager about new turn starter Bot 4 for room 892141
-🔍 DUPLICATE_DEBUG: Received turn_started event for Bot 4 from unknown
-🤖 Bot Bot 4 will play first
-🤖 Bot Bot 4 thinking for 1.8s...
-🤖 Bot Bot 4 choosing first play...
-🤖 BOT chooses to play SINGLE (3 pts): CANNON
-🤖 Bot Bot 4 will play 1 pieces: ['CANNON_BLACK(3)']
-🎯 BOT_MANAGER_DEBUG: state_machine exists: True
-🎯 BOT_PLAY_DEBUG: State machine result: {'success': True, 'queued': True}
-🎯 BOT_PLAY_DEBUG: Action queued successfully, state machine will handle updates and broadcasting
-✅ Bot Bot 4 first play action queued - state machine will broadcast with correct next_player
-🔢 TURN_NUMBER_DEBUG: Backend game.turn_number = 7
-DEBUG_WS: Message for event 'phase_change' added to queue for room 892141.
-🔍 ENTERPRISE_DEBUG: _notify_bot_manager_data_change called - reason: New turn 7 started with starter Bot 4
-🔍 PHASE_TRACKING_FIX: Same phase update: turn
-🔍 BOT_MANAGER_DEBUG: _handle_enterprise_phase_change called - phase: turn, reason: New turn 7 started with starter Bot 4
-🚀 ENTERPRISE_BOT_DEBUG: Turn phase - checking if Bot 4 is a bot
-🤖 ENTERPRISE_BOT_DEBUG: Current player Bot 4 is a bot - checking for duplicates
-✅ REFINED_FIX: Allowing new trigger for current player Bot 4 from phase_change
-✅ RACE_CONDITION_FIX: New action recorded for Bot 4 - play_pieces from phase_change (hash: c5da32a9dea9)
-🚫 RACE_CONDITION_FIX: Skipping enterprise trigger for Bot 4 - turn starter already triggered by turn_started event
-🎯 START_NEXT_DEBUG: _start_new_turn() completed
-🎯 TURN_COMPLETE_DEBUG: _process_turn_completion() finished
-🎯 UPDATE_DEBUG: About to update phase data with current_player: Bot 4, required_piece_count: None
-DEBUG_WS: Message for event 'phase_change' added to queue for room 892141.
-🔍 ENTERPRISE_DEBUG: _notify_bot_manager_data_change called - reason: Player Bot 4 played 1 pieces
-🔍 PHASE_TRACKING_FIX: Same phase update: turn
-🔍 BOT_MANAGER_DEBUG: _handle_enterprise_phase_change called - phase: turn, reason: Player Bot 4 played 1 pieces
-🚀 ENTERPRISE_BOT_DEBUG: Turn phase - checking if Bot 4 is a bot
-🤖 ENTERPRISE_BOT_DEBUG: Current player Bot 4 is a bot - checking for duplicates
-🚫 REFINED_FIX: Blocking rapid same-source trigger for current player Bot 4 from phase_change (age: 0.0s)
-🚫 RACE_CONDITION_FIX: Skipping duplicate play action for Bot 4
-🎯 UPDATE_DEBUG: Phase data updated - next_player should be: Bot 4
-🎯 TURN_STATE_DEBUG: Play pieces result: {'status': 'play_accepted', 'player': 'Bot 4', 'pieces': [CANNON_RED(4)], 'piece_count': 1, 'required_count': None, 'next_player': 'Bot 4', 'turn_complete': False}
-✅ BOT_VALIDATION_FIX: Bot Bot 4 play accepted - state machine handling all updates
-🎯 TURN_STATE_DEBUG: Processing action play_pieces from Bot 4
-🎯 TURN_STATE_DEBUG: _handle_play_pieces called for Bot 4
-🎯 TURN_STATE_DEBUG: Current state - player_index: 0, turn_order: ['Bot 4', 'Andy', 'Bot 2', 'Bot 3']
-🎯 TURN_STATE_DEBUG: Player Bot 4 playing 1 pieces: ['CANNON_BLACK(3)']
-🎯 TURN_STATE_DEBUG: Setting required piece count to 1
-🎯 TURN_STATE_DEBUG: Before setting - required_piece_count was: None
-🎯 TURN_STATE_DEBUG: After setting - required_piece_count is: 1
-🎯 TURN_STATE_DEBUG: Before advancing - current_player_index: 0
-🎯 TURN_STATE_DEBUG: After advancing - current_player_index: 1
-🎯 TURN_STATE_DEBUG: Next player: Andy
-🎯 TURN_STATE_DEBUG: Round 10, Turn 7 - Bot 4 played, next: Andy
-🎯 UPDATE_DEBUG: About to update phase data with current_player: Andy, required_piece_count: 1
-DEBUG_WS: Message for event 'phase_change' added to queue for room 892141.
-🔍 ENTERPRISE_DEBUG: _notify_bot_manager_data_change called - reason: Player Bot 4 played 1 pieces
-🔍 PHASE_TRACKING_FIX: Same phase update: turn
-🔍 BOT_MANAGER_DEBUG: _handle_enterprise_phase_change called - phase: turn, reason: Player Bot 4 played 1 pieces
-🚀 ENTERPRISE_BOT_DEBUG: Turn phase - checking if Andy is a bot
-👤 ENTERPRISE_BOT_DEBUG: Current player Andy is human - waiting
-🎯 UPDATE_DEBUG: Phase data updated - next_player should be: Andy
-🎯 TURN_STATE_DEBUG: Play pieces result: {'status': 'play_accepted', 'player': 'Bot 4', 'pieces': [CANNON_BLACK(3)], 'piece_count': 1, 'required_count': 1, 'next_player': 'Andy', 'turn_complete': False}
-✅ BOT_VALIDATION_FIX: Bot Bot 4 play accepted - state machine handling all updates
-DEBUG_WS_RECEIVE: Received event 'play' from client in room 892141 with data: {'piece_indices': [0], 'player_name': 'Andy', 'play_value': 10}
-🎯 WS_PLAY_DEBUG: Received play event - player: Andy, indices: [0]
-🎯 WS_PLAY_DEBUG: Found player Andy with hand size 1
-🎯 WS_PLAY_DEBUG: Added piece at index 0: ELEPHANT_RED(10)
-🎯 WS_PLAY_DEBUG: Final pieces to play: ['ELEPHANT_RED(10)']
-🎯 WS_PLAY_DEBUG: Queuing action for state machine...
-🎯 WS_PLAY_DEBUG: State machine result: {'success': True, 'queued': True}
-✅ Play queued: Andy -> [0]
-🎯 TURN_STATE_DEBUG: Processing action play_pieces from Andy
-🎯 TURN_STATE_DEBUG: _handle_play_pieces called for Andy
-🎯 TURN_STATE_DEBUG: Current state - player_index: 1, turn_order: ['Bot 4', 'Andy', 'Bot 2', 'Bot 3']
-🎯 TURN_STATE_DEBUG: Player Andy playing 1 pieces: ['ELEPHANT_RED(10)']
-🎯 TURN_STATE_DEBUG: Before advancing - current_player_index: 1
-🎯 TURN_STATE_DEBUG: After advancing - current_player_index: 2
-🎯 TURN_STATE_DEBUG: Next player: Bot 2
-🎯 TURN_STATE_DEBUG: Round 10, Turn 7 - Andy played, next: Bot 2
-🎯 UPDATE_DEBUG: About to update phase data with current_player: Bot 2, required_piece_count: 1
-DEBUG_WS: Message for event 'phase_change' added to queue for room 892141.
-🔍 ENTERPRISE_DEBUG: _notify_bot_manager_data_change called - reason: Player Andy played 1 pieces
-🔍 PHASE_TRACKING_FIX: Same phase update: turn
-🔍 BOT_MANAGER_DEBUG: _handle_enterprise_phase_change called - phase: turn, reason: Player Andy played 1 pieces
-🚀 ENTERPRISE_BOT_DEBUG: Turn phase - checking if Bot 2 is a bot
-🤖 ENTERPRISE_BOT_DEBUG: Current player Bot 2 is a bot - checking for duplicates
-✅ REFINED_FIX: Allowing new trigger for current player Bot 2 from phase_change
-✅ RACE_CONDITION_FIX: New action recorded for Bot 2 - play_pieces from phase_change (hash: 55e3e4241260)
-✅ RACE_CONDITION_FIX: Triggering bot play for Bot 2 - no duplicates detected
-🎯 BOT_PLAY_DEBUG: Got required_piece_count from state machine: 1
-🤖 BOT chooses to play SINGLE (1 pts): SOLDIER
-🎯 BOT_PLAY_DEBUG: Final selection - 1 pieces: ['SOLDIER_BLACK(1)']
-🎯 BOT_PLAY_DEBUG: Action queued successfully, state machine will handle updates and broadcasting
-✅ Bot Bot 2 action queued - state machine will broadcast with correct next_player
-🎯 UPDATE_DEBUG: Phase data updated - next_player should be: Bot 2
-🎯 TURN_STATE_DEBUG: Play pieces result: {'status': 'play_accepted', 'player': 'Andy', 'pieces': [ELEPHANT_RED(10)], 'piece_count': 1, 'required_count': 1, 'next_player': 'Bot 2', 'turn_complete': False}
-🎯 TURN_STATE_DEBUG: Processing action play_pieces from Bot 2
-🎯 TURN_STATE_DEBUG: _handle_play_pieces called for Bot 2
-🎯 TURN_STATE_DEBUG: Current state - player_index: 2, turn_order: ['Bot 4', 'Andy', 'Bot 2', 'Bot 3']
-🎯 TURN_STATE_DEBUG: Player Bot 2 playing 1 pieces: ['SOLDIER_BLACK(1)']
-🎯 TURN_STATE_DEBUG: Before advancing - current_player_index: 2
-🎯 TURN_STATE_DEBUG: After advancing - current_player_index: 3
-🎯 TURN_STATE_DEBUG: Next player: Bot 3
-🎯 TURN_STATE_DEBUG: Round 10, Turn 7 - Bot 2 played, next: Bot 3
-🎯 UPDATE_DEBUG: About to update phase data with current_player: Bot 3, required_piece_count: 1
-DEBUG_WS: Message for event 'phase_change' added to queue for room 892141.
-🔍 ENTERPRISE_DEBUG: _notify_bot_manager_data_change called - reason: Player Bot 2 played 1 pieces
-🔍 PHASE_TRACKING_FIX: Same phase update: turn
-🔍 BOT_MANAGER_DEBUG: _handle_enterprise_phase_change called - phase: turn, reason: Player Bot 2 played 1 pieces
-🚀 ENTERPRISE_BOT_DEBUG: Turn phase - checking if Bot 3 is a bot
-🤖 ENTERPRISE_BOT_DEBUG: Current player Bot 3 is a bot - checking for duplicates
-✅ REFINED_FIX: Allowing new trigger for current player Bot 3 from phase_change
-✅ RACE_CONDITION_FIX: New action recorded for Bot 3 - play_pieces from phase_change (hash: 26b6d1a978bc)
-✅ RACE_CONDITION_FIX: Triggering bot play for Bot 3 - no duplicates detected
-🎯 BOT_PLAY_DEBUG: Got required_piece_count from state machine: 1
-🤖 BOT chooses to play SINGLE (2 pts): SOLDIER
-🎯 BOT_PLAY_DEBUG: Final selection - 1 pieces: ['SOLDIER_RED(2)']
-🎯 BOT_PLAY_DEBUG: Action queued successfully, state machine will handle updates and broadcasting
-✅ Bot Bot 3 action queued - state machine will broadcast with correct next_player
-🎯 UPDATE_DEBUG: Phase data updated - next_player should be: Bot 3
-🎯 TURN_STATE_DEBUG: Play pieces result: {'status': 'play_accepted', 'player': 'Bot 2', 'pieces': [SOLDIER_BLACK(1)], 'piece_count': 1, 'required_count': 1, 'next_player': 'Bot 3', 'turn_complete': False}
-✅ BOT_VALIDATION_FIX: Bot Bot 2 play accepted - state machine handling all updates
-🎯 TURN_STATE_DEBUG: Processing action play_pieces from Bot 3
-🎯 TURN_STATE_DEBUG: _handle_play_pieces called for Bot 3
-🎯 TURN_STATE_DEBUG: Current state - player_index: 3, turn_order: ['Bot 4', 'Andy', 'Bot 2', 'Bot 3']
-🎯 TURN_STATE_DEBUG: Player Bot 3 playing 1 pieces: ['SOLDIER_RED(2)']
-🎯 TURN_STATE_DEBUG: Before advancing - current_player_index: 3
-🎯 TURN_STATE_DEBUG: After advancing - current_player_index: 4
-🎯 TURN_STATE_DEBUG: Next player: None
-🎯 TURN_STATE_DEBUG: Round 10, Turn 7 - Bot 3 played, next: None
-🎯 TURN_STATE_DEBUG: Turn complete! Calling _complete_turn()
-🎯 TURN_COMPLETE_DEBUG: Round 10, Turn 7 _complete_turn() called
-🎯 TURN_COMPLETE_DEBUG: Round 10, Turn 7 Winner determined: Andy
-🎯 CAPTURED_PILES_DEBUG: Andy captured_piles += 1 = 3
-🎯 TURN_COMPLETE_DEBUG: Awarded 1 piles to Andy
-🎯 TURN_COMPLETE_DEBUG: Next turn starter set to: Andy
-DEBUG_WS: Message for event 'phase_change' added to queue for room 892141.
-🔍 ENTERPRISE_DEBUG: _notify_bot_manager_data_change called - reason: Turn completed - winner: Andy
-🔍 PHASE_TRACKING_FIX: Same phase update: turn
-🔍 BOT_MANAGER_DEBUG: _handle_enterprise_phase_change called - phase: turn, reason: Turn completed - winner: Andy
-🚀 ENTERPRISE_BOT_DEBUG: Turn phase - checking if Bot 3 is a bot
-🤖 ENTERPRISE_BOT_DEBUG: Current player Bot 3 is a bot - checking for duplicates
-✅ REFINED_FIX: Allowing delayed same-source trigger for current player Bot 3 from phase_change (age: 0.5s)
-✅ RACE_CONDITION_FIX: New action recorded for Bot 3 - play_pieces from phase_change (hash: 26b6d1a978bc)
-🚫 SEQUENCE_FIX: Bot 3 already acted in turn 7 - skipping
-🚫 RACE_CONDITION_FIX: Skipping bot trigger due to sequence tracking for Bot 3
-🎯 TURN_COMPLETE_DEBUG: Phase data updated with turn completion
-🏁 TURN_COMPLETION_DEBUG: Starting turn completion processing
-🏁 TURN_COMPLETION_DEBUG: Removing 1 pieces from Andy
-🏁 TURN_COMPLETION_DEBUG: Removing 1 pieces from Bot 2
-🏁 TURN_COMPLETION_DEBUG: Removing 1 pieces from Bot 3
-🏁 TURN_COMPLETION_DEBUG: Removing 1 pieces from Bot 4
-🏁 TURN_COMPLETION_DEBUG: After removing pieces, checking if all hands are empty
-🏁 TURN_COMPLETION_DEBUG: all_hands_empty = True
-🔧 CONSISTENCY_CHECK: Hand sizes: {'Andy': 0, 'Bot 2': 0, 'Bot 3': 0, 'Bot 4': 0}
-🔧 CONSISTENCY_CHECK: Min: 0, Max: 0
-✅ CONSISTENCY_CHECK: Hand size distribution is acceptable
-🏁 TURN_COMPLETION_DEBUG: Andy hand size: 0
-🏁 TURN_COMPLETION_DEBUG: Bot 2 hand size: 0
-🏁 TURN_COMPLETION_DEBUG: Bot 3 hand size: 0
-🏁 TURN_COMPLETION_DEBUG: Bot 4 hand size: 0
-DEBUG_WS: Message for event 'turn_complete' added to queue for room 892141.
-🏁 TURN_COMPLETION_DEBUG: Round complete - will transition to scoring
-🎯 TURN_COMPLETE_DEBUG: _process_turn_completion() finished
-🎯 UPDATE_DEBUG: About to update phase data with current_player: None, required_piece_count: 1
-DEBUG_WS: Message for event 'phase_change' added to queue for room 892141.
-🔍 ENTERPRISE_DEBUG: _notify_bot_manager_data_change called - reason: Player Bot 3 played 1 pieces
-🎯 UPDATE_DEBUG: Phase data updated - next_player should be: None
-🎯 TURN_STATE_DEBUG: Play pieces result: {'status': 'play_accepted', 'player': 'Bot 3', 'pieces': [SOLDIER_RED(2)], 'piece_count': 1, 'required_count': 1, 'next_player': None, 'turn_complete': True}
-✅ BOT_VALIDATION_FIX: Bot Bot 3 play accepted - state machine handling all updates
-🔄 SCORING_SETUP_DEBUG: Reset display_delay_complete = False
-🗳️ DECLARATION_DEBUG: game.player_declarations = {'Andy': 3, 'Bot 2': 1, 'Bot 3': 1, 'Bot 4': 1}
-📋 SCORING_FIX_DEBUG: Andy - declared: 3, actual: 3
-🏆 SCORING_DEBUG: Andy scoring data:
-   📋 Declared: 3, Actual: 3
-   📊 Base Score: 8, Multiplier: 1x, Final: 8
-   💯 Total Score: 55
-📋 SCORING_FIX_DEBUG: Bot 2 - declared: 1, actual: 3
-🏆 SCORING_DEBUG: Bot 2 scoring data:
-   📋 Declared: 1, Actual: 3
-   📊 Base Score: -2, Multiplier: 1x, Final: -2
-   💯 Total Score: -5
-📋 SCORING_FIX_DEBUG: Bot 3 - declared: 1, actual: 1
-🏆 SCORING_DEBUG: Bot 3 scoring data:
-   📋 Declared: 1, Actual: 1
-   📊 Base Score: 6, Multiplier: 1x, Final: 6
-   💯 Total Score: -6
-📋 SCORING_FIX_DEBUG: Bot 4 - declared: 1, actual: 1
-🏆 SCORING_DEBUG: Bot 4 scoring data:
-   📋 Declared: 1, Actual: 1
-   📊 Base Score: 6, Multiplier: 1x, Final: 6
-   💯 Total Score: 14
-🚀 SCORING_BROADCAST_DEBUG: Broadcasting scoring data:
-   📊 Round scores: {'Andy': {'declared': 3, 'actual': 3, 'base_score': 8, 'multiplier': 1, 'final_score': 8, 'total_score': 55}, 'Bot 2': {'declared': 1, 'actual': 3, 'base_score': -2, 'multiplier': 1, 'final_score': -2, 'total_score': -5}, 'Bot 3': {'declared': 1, 'actual': 1, 'base_score': 6, 'multiplier': 1, 'final_score': 6, 'total_score': -6}, 'Bot 4': {'declared': 1, 'actual': 1, 'base_score': 6, 'multiplier': 1, 'final_score': 6, 'total_score': 14}}
-   🏁 Game complete: True
-   🏆 Winners: ['Andy']
-🚀 SCORING_BROADCAST_DEBUG: Also sending:
-   💯 Total scores: {'Andy': 55, 'Bot 2': -5, 'Bot 3': -6, 'Bot 4': 14}
-   👥 Players data: [{'name': 'Andy', 'is_bot': False, 'pile_count': 3, 'captured_piles': 3}, {'name': 'Bot 2', 'is_bot': True, 'pile_count': 1, 'captured_piles': 3}, {'name': 'Bot 3', 'is_bot': True, 'pile_count': 1, 'captured_piles': 1}, {'name': 'Bot 4', 'is_bot': True, 'pile_count': 1, 'captured_piles': 1}]
-DEBUG_WS: Message for event 'phase_change' added to queue for room 892141.
-🔍 ENTERPRISE_DEBUG: _notify_bot_manager_data_change called - reason: Scoring calculated for round 10
-DEBUG_WS: Message for event 'phase_change' added to queue for room 892141.
-⏰ SCORING_DELAY_DEBUG: Starting 7-second display delay...
-⏰ SCORING_DELAY_DEBUG: 7-second delay complete - setting display_delay_complete = True
-INFO:     ('127.0.0.1', 56609) - "WebSocket /ws/lobby" [accepted]
-DEBUG_WS: Registered new connection for room lobby. Total connections: 3
-INFO:     connection open
-DEBUG_LOBBY_WS: Client disconnected from lobby
+🔒 [Room E146C2] Starting game: op_id=E146C2_1
+🔍 DEBUG: Redeal limit check - multiplier: 1, limit: 2
+🔧 DEBUG: Dealing weak hands to players at indices [0] (max 9 points)
+📊 DEBUG: Redeals so far: 0, Max allowed: 2
+🔧 DEBUG: Found 24 weak pieces (≤9), 8 strong pieces (>9)
+🔧 DEBUG: Andy (index 0) assigned weak hand
+🔧 DEBUG: Final hands verification:
+  Andy: ['SOLDIER_BLACK(1)', 'SOLDIER_RED(2)', 'SOLDIER_RED(2)', 'SOLDIER_BLACK(1)', 'SOLDIER_BLACK(1)', 'CHARIOT_BLACK(7)', 'SOLDIER_RED(2)', 'HORSE_RED(6)']
+    → Strong pieces (>9): 0
+    → Has RED_GENERAL: False
+    ⚠️ WARNING: Andy has NO strong pieces!
+  Bot 2: ['ADVISOR_BLACK(11)', 'GENERAL_RED(14)', 'CHARIOT_RED(8)', 'ADVISOR_RED(12)', 'ADVISOR_BLACK(11)', 'SOLDIER_BLACK(1)', 'SOLDIER_RED(2)', 'ELEPHANT_RED(10)']
+    → Strong pieces (>9): 5
+    → Has RED_GENERAL: True
+  Bot 3: ['ELEPHANT_RED(10)', 'CANNON_RED(4)', 'CHARIOT_BLACK(7)', 'CANNON_RED(4)', 'ELEPHANT_BLACK(9)', 'SOLDIER_RED(2)', 'GENERAL_BLACK(13)', 'CHARIOT_RED(8)']
+    → Strong pieces (>9): 2
+    → Has RED_GENERAL: False
+  Bot 4: ['ELEPHANT_BLACK(9)', 'CANNON_BLACK(3)', 'HORSE_RED(6)', 'HORSE_BLACK(5)', 'CANNON_BLACK(3)', 'SOLDIER_BLACK(1)', 'HORSE_BLACK(5)', 'ADVISOR_RED(12)']
+    → Strong pieces (>9): 1
+    → Has RED_GENERAL: False
+🔍 PREP_STATE_DEBUG: Play order: [Andy - 0 pts, Bot 2 - 0 pts, Bot 3 - 0 pts, Bot 4 - 0 pts]
+🔍 PREP_STATE_DEBUG: Play order types: [<class 'engine.player.Player'>, <class 'engine.player.Player'>, <class 'engine.player.Player'>, <class 'engine.player.Player'>]
+🔍 PREP_STATE_DEBUG: Checking player Andy against weak players {'Andy'}
+✅ PREP_STATE_DEBUG: Added Andy to pending weak players
+🔍 PREP_STATE_DEBUG: Checking player Bot 2 against weak players {'Andy'}
+❌ PREP_STATE_DEBUG: Bot 2 not in weak players
+🔍 PREP_STATE_DEBUG: Checking player Bot 3 against weak players {'Andy'}
+❌ PREP_STATE_DEBUG: Bot 3 not in weak players
+🔍 PREP_STATE_DEBUG: Checking player Bot 4 against weak players {'Andy'}
+❌ PREP_STATE_DEBUG: Bot 4 not in weak players
+🎯 PREP_STATE_DEBUG: Current weak player to ask: Andy
+📋 PREP_STATE_DEBUG: Pending weak players queue: ['Andy']
+🤖 PREP_STATE_DEBUG: Triggering bot manager for redeal decisions...
+🔧 PREP_STATE_DEBUG: Triggering bot manager for player: Andy
+🔧 PREP_STATE_DEBUG: Using room_id: E146C2
+🔧 PREP_STATE_DEBUG: Bot manager active games: ['E146C2']
+🔄 BOT_HANDLER_DEBUG: Handling redeal decision needed
+DEBUG_WS: Message for event 'phase_change' added to queue for room E146C2.
+🔍 PREP_STATE_DEBUG: Checking transition conditions...
+   - Initial deal complete: True
+   - Weak players: {'Andy'}
+   - Redeal decisions: {}
+   - Current weak player: Andy
+⏳ PREP_STATE_DEBUG: Waiting for more redeal decisions (0/1)
+✅ [Room E146C2] Game and StateMachine started successfully: op_id=E146C2_1
+✅ [Room E146C2] Bot manager registered for 3 bots
+✅ Game started in room E146C2
+DEBUG_WS_DISCONNECT: WebSocket client disconnected from room E146C2.
 INFO:     connection closed
-DEBUG_WS: Unregistered connection for room lobby. Remaining connections: 2
-DEBUG_WS_RECEIVE: Received event 'client_ready' from client in room lobby with data: {'room_id': 'lobby'}
-INFO:     ('127.0.0.1', 56611) - "WebSocket /ws/lobby" [accepted]
-DEBUG_WS: Registered new connection for room lobby. Total connections: 3
+DEBUG_WS: Unregistered connection for room E146C2. Remaining connections: 0
+DEBUG_WS: Room E146C2 has active game - keeping broadcast queue alive
+INFO:     ('127.0.0.1', 56878) - "WebSocket /ws/E146C2" [accepted]
+DEBUG_WS: Registered new connection for room E146C2. Total connections: 1
 INFO:     connection open
-DEBUG_LOBBY_WS: Client disconnected from lobby
-INFO:     connection closed
-DEBUG_WS: Unregistered connection for room lobby. Remaining connections: 2
-DEBUG_WS_RECEIVE: Received event 'client_ready' from client in room lobby with data: {'room_id': 'lobby'}
-DEBUG_LOBBY_WS: Sent initial room list to new lobby client
-DEBUG_WS_RECEIVE: Received event 'ping' from client in room 892141 with data: {'timestamp': 1751602145294}
+DEBUG_WS_RECEIVE: Received event 'client_ready' from client in room E146C2 with data: {'room_id': 'E146C2'}
+DEBUG_WS_RECEIVE: Sent current game phase preparation to client in room E146C2
+DEBUG_WS_RECEIVE: Sent initial room state to client in room E146C2 after client_ready.
+🔍 PREP_STATE_DEBUG: Checking transition conditions...
+   - Initial deal complete: True
+   - Weak players: {'Andy'}
+   - Redeal decisions: {}
+   - Current weak player: Andy
+⏳ PREP_STATE_DEBUG: Waiting for more redeal decisions (0/1)
+🔍 PREP_STATE_DEBUG: Checking transition conditions...
+   - Initial deal complete: True
+   - Weak players: {'Andy'}
+   - Redeal decisions: {}
+   - Current weak player: Andy
+⏳ PREP_STATE_DEBUG: Waiting for more redeal decisions (0/1)
+🔍 PREP_STATE_DEBUG: Checking transition conditions...
+   - Initial deal complete: True
+   - Weak players: {'Andy'}
+   - Redeal decisions: {}
+   - Current weak player: Andy
+⏳ PREP_STATE_DEBUG: Waiting for more redeal decisions (0/1)
+🔍 PREP_STATE_DEBUG: Checking transition conditions...
+   - Initial deal complete: True
+   - Weak players: {'Andy'}
+   - Redeal decisions: {}
+   - Current weak player: Andy
+⏳ PREP_STATE_DEBUG: Waiting for more redeal decisions (0/1)
+🔍 PREP_STATE_DEBUG: Checking transition conditions...
+   - Initial deal complete: True
+   - Weak players: {'Andy'}
+   - Redeal decisions: {}
+   - Current weak player: Andy
+⏳ PREP_STATE_DEBUG: Waiting for more redeal decisions (0/1)
+🔍 PREP_STATE_DEBUG: Checking transition conditions...
+   - Initial deal complete: True
+   - Weak players: {'Andy'}
+   - Redeal decisions: {}
+   - Current weak player: Andy
+⏳ PREP_STATE_DEBUG: Waiting for more redeal decisions (0/1)
+🔍 PREP_STATE_DEBUG: Checking transition conditions...
+   - Initial deal complete: True
+   - Weak players: {'Andy'}
+   - Redeal decisions: {}
+   - Current weak player: Andy
+⏳ PREP_STATE_DEBUG: Waiting for more redeal decisions (0/1)
+🔍 PREP_STATE_DEBUG: Checking transition conditions...
+   - Initial deal complete: True
+   - Weak players: {'Andy'}
+   - Redeal decisions: {}
+   - Current weak player: Andy
+⏳ PREP_STATE_DEBUG: Waiting for more redeal decisions (0/1)
+🔍 PREP_STATE_DEBUG: Checking transition conditions...
+   - Initial deal complete: True
+   - Weak players: {'Andy'}
+   - Redeal decisions: {}
+   - Current weak player: Andy
+⏳ PREP_STATE_DEBUG: Waiting for more redeal decisions (0/1)
+🔍 PREP_STATE_DEBUG: Checking transition conditions...
+   - Initial deal complete: True
+   - Weak players: {'Andy'}
+   - Redeal decisions: {}
+   - Current weak player: Andy
+⏳ PREP_STATE_DEBUG: Waiting for more redeal decisions (0/1)
+🔍 PREP_STATE_DEBUG: Checking transition conditions...
+   - Initial deal complete: True
+   - Weak players: {'Andy'}
+   - Redeal decisions: {}
+   - Current weak player: Andy
+⏳ PREP_STATE_DEBUG: Waiting for more redeal decisions (0/1)
+🔍 PREP_STATE_DEBUG: Checking transition conditions...
+   - Initial deal complete: True
+   - Weak players: {'Andy'}
+   - Redeal decisions: {}
+   - Current weak player: Andy
+⏳ PREP_STATE_DEBUG: Waiting for more redeal decisions (0/1)
+🔍 PREP_STATE_DEBUG: Checking transition conditions...
+   - Initial deal complete: True
+   - Weak players: {'Andy'}
+   - Redeal decisions: {}
+   - Current weak player: Andy
+⏳ PREP_STATE_DEBUG: Waiting for more redeal decisions (0/1)
+🔍 PREP_STATE_DEBUG: Checking transition conditions...
+   - Initial deal complete: True
+   - Weak players: {'Andy'}
+   - Redeal decisions: {}
+   - Current weak player: Andy
+⏳ PREP_STATE_DEBUG: Waiting for more redeal decisions (0/1)
+🔍 PREP_STATE_DEBUG: Checking transition conditions...
+   - Initial deal complete: True
+   - Weak players: {'Andy'}
+   - Redeal decisions: {}
+   - Current weak player: Andy
+⏳ PREP_STATE_DEBUG: Waiting for more redeal decisions (0/1)
+🔍 PREP_STATE_DEBUG: Checking transition conditions...
+   - Initial deal complete: True
+   - Weak players: {'Andy'}
+   - Redeal decisions: {}
+   - Current weak player: Andy
+⏳ PREP_STATE_DEBUG: Waiting for more redeal decisions (0/1)
+🔍 PREP_STATE_DEBUG: Checking transition conditions...
+   - Initial deal complete: True
+   - Weak players: {'Andy'}
+   - Redeal decisions: {}
+   - Current weak player: Andy
+⏳ PREP_STATE_DEBUG: Waiting for more redeal decisions (0/1)
+🔍 PREP_STATE_DEBUG: Checking transition conditions...
+   - Initial deal complete: True
+   - Weak players: {'Andy'}
+   - Redeal decisions: {}
+   - Current weak player: Andy
+⏳ PREP_STATE_DEBUG: Waiting for more redeal decisions (0/1)
+🔍 PREP_STATE_DEBUG: Checking transition conditions...
+   - Initial deal complete: True
+   - Weak players: {'Andy'}
+   - Redeal decisions: {}
+   - Current weak player: Andy
+⏳ PREP_STATE_DEBUG: Waiting for more redeal decisions (0/1)
+🔍 PREP_STATE_DEBUG: Checking transition conditions...
+   - Initial deal complete: True
+   - Weak players: {'Andy'}
+   - Redeal decisions: {}
+   - Current weak player: Andy
+⏳ PREP_STATE_DEBUG: Waiting for more redeal decisions (0/1)
+🔍 PREP_STATE_DEBUG: Checking transition conditions...
+   - Initial deal complete: True
+   - Weak players: {'Andy'}
+   - Redeal decisions: {}
+   - Current weak player: Andy
+⏳ PREP_STATE_DEBUG: Waiting for more redeal decisions (0/1)
+🔍 PREP_STATE_DEBUG: Checking transition conditions...
+   - Initial deal complete: True
+   - Weak players: {'Andy'}
+   - Redeal decisions: {}
+   - Current weak player: Andy
