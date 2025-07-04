@@ -512,6 +512,7 @@ class Game:
     def deal_pieces(self):
         """Public method for dealing pieces - used by state machine"""
         self._deal_pieces()
+
             
     # ===== SHARED HELPER METHODS =====
 

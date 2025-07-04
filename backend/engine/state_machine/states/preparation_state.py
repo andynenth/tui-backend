@@ -79,16 +79,22 @@ class PreparationState(GameState):
             player.declared = 0
             player.captured_piles = 0
         
-        # Use guaranteed no redeal for testing (no weak hands)
-        if hasattr(game, '_deal_guaranteed_no_redeal'):
-            # For testing: uncomment the line below to force player 1 (Bot 2) to get RED_GENERAL
-            game._deal_guaranteed_no_redeal(red_general_player_index=1)
-            # game._deal_guaranteed_no_redeal()
-        elif hasattr(game, 'deal_pieces'):
-            game.deal_pieces()
-        else:
-            # Fallback for testing
-            self.logger.info("Using fallback dealing method")
+        # Choose dealing mode - uncomment ONE of the following:
+        
+        # 1. Normal random dealing (production)
+        # game.deal_pieces()
+        
+        # 2. Guaranteed no weak hands (testing)
+        # game._deal_guaranteed_no_redeal(red_general_player_index=1)
+        
+        # 3. Force weak hands (testing redeal logic)
+        game._deal_weak_hand(weak_player_indices=[0], max_weak_points=9, limit=2)
+        
+        # Examples:
+        # game._deal_guaranteed_no_redeal()                              # Random RED_GENERAL assignment
+        # game._deal_guaranteed_no_redeal(red_general_player_index=0)    # Player 1 gets RED_GENERAL
+        # game._deal_weak_hand([0, 1])                                   # Players 1 & 2 get weak hands
+        # game._deal_weak_hand([0], max_weak_points=7, limit=1)          # Player 1 weak, max 1 redeal
         
         self.initial_deal_complete = True
         
