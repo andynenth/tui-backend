@@ -95,7 +95,7 @@ export interface GameState {
   playerName: string | null;
   
   // Game state
-  phase: 'waiting' | 'preparation' | 'declaration' | 'turn' | 'turn_results' | 'scoring';
+  phase: 'waiting' | 'preparation' | 'declaration' | 'turn' | 'turn_results' | 'scoring' | 'game_over';
   currentRound: number;
   players: Player[];
   roundStarter: string | null;
@@ -125,6 +125,19 @@ export interface GameState {
   roundScores: Record<string, number>;
   totalScores: Record<string, number>;
   winners: string[];
+  
+  // Game over phase state
+  final_rankings?: Array<{
+    name: string;
+    score: number;
+    rank: number;
+  }>;
+  game_stats?: {
+    total_rounds: number;
+    game_duration: string;
+    start_time?: number;
+    end_time?: number;
+  };
   
   // UI state
   isMyTurn: boolean;

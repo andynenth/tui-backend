@@ -12,6 +12,7 @@ class GamePhase(str, Enum):
     DECLARATION = "declaration"  # Players declare target piles
     TURN = "turn"               # Players play pieces in turns
     SCORING = "scoring"         # Calculate scores, check for winner
+    GAME_OVER = "game_over"     # Game complete, show final results
 
 
 class ActionType(str, Enum):

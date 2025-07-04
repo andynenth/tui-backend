@@ -23,6 +23,7 @@ import DeclarationUI from './DeclarationUI';
 import TurnUI from './TurnUI';
 import TurnResultsUI from './TurnResultsUI';
 import ScoringUI from './ScoringUI';
+import GameOverUI from './GameOverUI';
 import ErrorBoundary from "../ErrorBoundary";
 
 /**
@@ -144,8 +145,7 @@ export function GameContainer({ roomId }) {
       winners: gameState.winners || [],
       
       // Actions
-      onStartNextRound: gameState.gameOver ? null : gameActions.startNextRound,
-      onEndGame: gameState.gameOver ? () => window.location.href = '/lobby' : null
+      onStartNextRound: gameState.gameOver ? null : gameActions.startNextRound
     };
     
     console.log('🎮 GAME_CONTAINER_DEBUG: Passing props to ScoringUI:');
@@ -170,6 +170,23 @@ export function GameContainer({ roomId }) {
     onRetry: gameActions.triggerRecovery,
     onCancel: () => window.location.href = '/lobby'
   }), [gameState, connectionStatus, gameActions]);
+
+  const gameOverProps = useMemo(() => {
+    if (gameState.phase !== 'game_over') return null;
+    
+    return {
+      finalRankings: gameState.final_rankings || [],
+      gameStats: gameState.game_stats || { total_rounds: 0, game_duration: 'Unknown' },
+      winners: gameState.winners || [],
+      onBackToLobby: () => {
+        // Clean up game state and navigate to lobby
+        if (gameActions.cleanup) {
+          gameActions.cleanup();
+        }
+        window.location.href = '/lobby';
+      }
+    };
+  }, [gameState, gameActions]);
 
   // Error handling
   if (gameState.error) {
@@ -228,6 +245,9 @@ export function GameContainer({ roomId }) {
             
           case 'scoring':
             return <ScoringUI {...scoringProps} />;
+            
+          case 'game_over':
+            return <GameOverUI {...gameOverProps} />;
             
           case 'waiting':
           default:

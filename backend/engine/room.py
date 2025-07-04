@@ -6,6 +6,7 @@ from engine.state_machine.game_state_machine import GameStateMachine
 from engine.state_machine.core import GamePhase
 from typing import Optional # Import Optional for type hinting variables that can be None.
 import asyncio
+import time
 
 class Room:
     """
@@ -176,6 +177,7 @@ class Room:
                 
                 # สร้าง Game instance
                 self.game = Game(self.players)
+                self.game.start_time = time.time()
                 
                 # Initialize GameStateMachine with WebSocket broadcasting
                 self.game_state_machine = GameStateMachine(self.game, broadcast_callback)

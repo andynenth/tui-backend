@@ -38,6 +38,10 @@ class Game:
         
         # Event-driven support
         self.current_phase = None          # Track current phase for controllers
+        
+        # Timing tracking
+        self.start_time = None             # Game start timestamp
+        self.end_time = None               # Game end timestamp
 
 
 

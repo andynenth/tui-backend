@@ -48,7 +48,8 @@ module.exports = {
         'phase-transition': 'fadeInUp 0.3s ease-out',
         'pulse-glow': 'pulseGlow 2s infinite',
         'slide-in': 'slideIn 0.3s ease-out',
-        'bounce-subtle': 'bounceSubtle 0.4s ease-out'
+        'bounce-subtle': 'bounceSubtle 0.4s ease-out',
+        slideIn: 'slideInDown 0.8s ease-out'
       },
       keyframes: {
         deal: {
@@ -76,6 +77,10 @@ module.exports = {
         bounceSubtle: {
           '0%, 100%': { transform: 'translateY(0)' },
           '50%': { transform: 'translateY(-4px)' }
+        },
+        slideInDown: {
+          'from': { opacity: '0', transform: 'translateY(-50px)' },
+          'to': { opacity: '1', transform: 'translateY(0)' }
         }
       },
       boxShadow: {

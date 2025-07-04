@@ -752,6 +752,23 @@ export class GameService extends EventTarget {
             }
           }
           break;
+          
+        case 'game_over':
+          // Handle game over phase
+          newState.gameOver = true;
+          if (phaseData.winners) {
+            newState.winners = phaseData.winners;
+          }
+          if (phaseData.final_rankings) {
+            newState.final_rankings = phaseData.final_rankings;
+          }
+          if (phaseData.game_stats) {
+            newState.game_stats = phaseData.game_stats;
+          }
+          console.log('🎮 GAME_OVER_DEBUG: Game ended with winners:', newState.winners);
+          console.log('🎮 GAME_OVER_DEBUG: Final rankings:', newState.final_rankings);
+          console.log('🎮 GAME_OVER_DEBUG: Game stats:', newState.game_stats);
+          break;
       }
     }
     
