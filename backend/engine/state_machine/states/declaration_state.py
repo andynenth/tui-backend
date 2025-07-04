@@ -121,15 +121,9 @@ class DeclarationState(GameState):
         
         self.logger.info(f"Player {player_name} declared {declared_value}")
         
-        # Get next declarer for debugging
-        next_declarer = self._get_current_declarer()
-        print(f"🔍 DECLARATION_DEBUG: {player_name} declaration processed, next_declarer: {next_declarer}")
-        
         # Check if all players have declared - transition will be handled by polling
         order = self.phase_data['declaration_order']
         declarations = self.phase_data['declarations']
-        
-        print(f"🔍 DECLARATION_DEBUG: Returning from _handle_declaration, enterprise will trigger bot manager")
         return {
             'status': 'declaration_recorded',
             'player': player_name,

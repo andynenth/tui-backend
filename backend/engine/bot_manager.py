@@ -219,7 +219,6 @@ class GameBotHandler:
         phase_data = data.get("phase_data", {})
         reason = data.get("reason", "")
         
-        print(f"🔍 BOT_MANAGER_DEBUG: _handle_enterprise_phase_change called - phase: {phase}, reason: {reason}")
         
         
         # 🔧 PHASE_TRACKING_FIX: Check if we already triggered actions for this phase
@@ -230,7 +229,6 @@ class GameBotHandler:
         
         if phase == "declaration":
             current_declarer = data.get("current_declarer") or phase_data.get("current_declarer")
-            print(f"🔍 BOT_MANAGER_DEBUG: Declaration phase detected - current_declarer: {current_declarer}")
             if current_declarer:
                 
                 # Check if current declarer is a bot
@@ -246,12 +244,10 @@ class GameBotHandler:
                                 declarations = phase_data.get('declarations', {})
                                 declared_players = list(declarations.keys())
                                 last_declarer = declared_players[-1] if declared_players else ""
-                                print(f"🔍 BOT_MANAGER_DEBUG: About to call _handle_declaration_phase for {current_declarer}")
                                 try:
                                     await self._handle_declaration_phase(last_declarer)
-                                    print(f"✅ BOT_MANAGER_DEBUG: _handle_declaration_phase completed for {current_declarer}")
                                 except Exception as e:
-                                    print(f"❌ BOT_MANAGER_DEBUG: _handle_declaration_phase failed: {e}")
+                                    print(f"❌ BOT_MANAGER_ERROR: _handle_declaration_phase failed: {e}")
                                     raise
                             else:
                                 print(f"👤 ENTERPRISE_BOT_DEBUG: Current declarer {current_declarer} is human - waiting")
@@ -306,7 +302,6 @@ class GameBotHandler:
         """Handle bot declarations in order"""
         from backend.socket_manager import broadcast
         
-        print(f"🔍 BOT_AI_DEBUG: _handle_declaration_phase called for {last_declarer}")
         print(f"🔍 DECL_PHASE_DEBUG: _handle_declaration_phase called with last_declarer: '{last_declarer}'")
         
         # Get declaration order
@@ -360,12 +355,10 @@ class GameBotHandler:
             # await asyncio.sleep(delay)
             
             print(f"🤖 DECL_PHASE_DEBUG: Bot {player_name} will now declare!")
-            print(f"🔍 BOT_AI_DEBUG: About to call bot AI for declaration for {player_name}")
             try:
                 await self._bot_declare(player_obj, i)
-                print(f"✅ BOT_AI_DEBUG: Bot AI declaration completed for {player_name}")
             except Exception as e:
-                print(f"❌ BOT_AI_DEBUG: Bot AI declaration failed for {player_name}: {e}")
+                print(f"❌ BOT_AI_ERROR: Bot AI declaration failed for {player_name}: {e}")
                 raise
             
             # Small delay for UI processing
@@ -386,7 +379,6 @@ class GameBotHandler:
             is_last = position == len(game_state.players) - 1
             
             # Calculate declaration
-            print(f"🔍 BOT_AI_DEBUG: About to call ai.choose_declare for {bot.name}")
             try:
                 value = ai.choose_declare(
                     hand=bot.hand,
@@ -396,9 +388,8 @@ class GameBotHandler:
                     must_declare_nonzero=(bot.zero_declares_in_a_row >= 2),
                     verbose=False
                 )
-                print(f"✅ BOT_AI_DEBUG: ai.choose_declare completed for {bot.name}, value: {value}")
             except Exception as e:
-                print(f"❌ BOT_AI_DEBUG: ai.choose_declare failed for {bot.name}: {e}")
+                print(f"❌ BOT_AI_ERROR: ai.choose_declare failed for {bot.name}: {e}")
                 raise
             
             # Apply last player rule
