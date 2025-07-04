@@ -32,8 +32,7 @@ export function ScoringUI({
   winners = [],
   
   // Action props
-  onStartNextRound,
-  onEndGame
+  onStartNextRound
 }) {
   // Debug logging
   console.log('🏆 SCORING_UI_DEBUG: ScoringUI props received:');
@@ -206,54 +205,26 @@ export function ScoringUI({
 
             {/* Game Status and Actions */}
             <div className="bg-blue-500/10 border border-blue-500/20 rounded-xl p-4 text-center">
-              {gameOver ? (
-                <div>
-                  <h3 className="text-xl font-bold text-white mb-3">🎉 Game Complete!</h3>
-                  
-                  {hasWinners && (
-                    <div className="mb-4">
-                      <div className="text-yellow-300 mb-1">Champion{winners.length > 1 ? 's' : ''}:</div>
-                      <div className="text-white text-lg font-bold">{winners.join(' & ')}</div>
-                      <div className="text-gray-300 text-sm">
-                        Final Score: {Math.max(...sortedPlayers.map(p => p.totalScore))} points
-                      </div>
-                    </div>
-                  )}
-                  
-                  {onEndGame && (
-                    <Button
-                      onClick={onEndGame}
-                      variant="primary"
-                      size="large"
-                      className="px-6"
-                      aria-label="End game and return to lobby"
-                    >
-                      🏠 Return to Lobby
-                    </Button>
-                  )}
+              <div>
+                <h3 className="text-lg font-semibold text-blue-200 mb-3">Round Complete</h3>
+                
+                <div className="mb-4 text-blue-100">
+                  <div className="mb-1">Highest Score: {Math.max(...sortedPlayers.map(p => p.totalScore))} points</div>
+                  <div className="text-sm text-gray-300">Game ends at 50 points or after 20 rounds</div>
                 </div>
-              ) : (
-                <div>
-                  <h3 className="text-lg font-semibold text-blue-200 mb-3">Round Complete</h3>
-                  
-                  <div className="mb-4 text-blue-100">
-                    <div className="mb-1">Highest Score: {Math.max(...sortedPlayers.map(p => p.totalScore))} points</div>
-                    <div className="text-sm text-gray-300">Game ends at 50 points or after 20 rounds</div>
-                  </div>
-                  
-                  {onStartNextRound && (
-                    <Button
-                      onClick={onStartNextRound}
-                      variant="success"
-                      size="large"
-                      className="px-6"
+                
+                {!gameOver && onStartNextRound && (
+                  <Button
+                    onClick={onStartNextRound}
+                    variant="success"
+                    size="large"
+                    className="px-6"
                       aria-label="Start next round"
                     >
                       🎮 Start Next Round
                     </Button>
                   )}
-                </div>
-              )}
+              </div>
             </div>
 
           </div>
@@ -261,11 +232,7 @@ export function ScoringUI({
 
         {/* Compact Status Footer */}
         <div className="text-center text-sm text-yellow-300">
-          {gameOver ? (
-            <div>🏁 Game completed with {sortedPlayers.length} players</div>
-          ) : (
-            <div>✅ Round scoring complete - Ready for next round</div>
-          )}
+          <div>✅ Round scoring complete{gameOver ? ' - Final round' : ' - Ready for next round'}</div>
         </div>
       </div>
     </div>
@@ -301,8 +268,7 @@ ScoringUI.propTypes = {
   winners: PropTypes.arrayOf(PropTypes.string),
   
   // Action props
-  onStartNextRound: PropTypes.func,
-  onEndGame: PropTypes.func
+  onStartNextRound: PropTypes.func
 };
 
 ScoringUI.defaultProps = {
@@ -313,8 +279,7 @@ ScoringUI.defaultProps = {
   playersWithScores: [],
   gameOver: false,
   winners: [],
-  onStartNextRound: null,
-  onEndGame: null
+  onStartNextRound: null
 };
 
 export default ScoringUI;

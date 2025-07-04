@@ -168,11 +168,11 @@ class ScoringState(GameState):
             return None
         
         if self.game_complete:
-            # Game is over, no transition (only log once)
+            # Game is over, transition to GAME_OVER phase (only log once)
             if not hasattr(self, '_game_complete_logged'):
-                self.logger.info("🔍 SCORING_TRANSITION_DEBUG: Game complete - no transition")
+                self.logger.info("🔍 SCORING_TRANSITION_DEBUG: Game complete - transitioning to GAME_OVER")
                 self._game_complete_logged = True
-            return None
+            return GamePhase.GAME_OVER
         
         # Can transition to next round (only log once)
         if not hasattr(self, '_ready_to_transition_logged'):

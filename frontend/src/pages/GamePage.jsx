@@ -65,23 +65,8 @@ const GamePage = () => {
     initializeGame();
   }, [roomId, navigate, app.playerName]);
 
-  // Handle game completion
-  useEffect(() => {
-    if (gameState.gameOver && gameState.winners.length > 0) {
-      // Show game results
-      const winnerText = gameState.winners.length === 1 
-        ? `Winner: ${gameState.winners[0]}` 
-        : `Winners: ${gameState.winners.join(', ')}`;
-        
-      // Could show a modal instead of alert
-      alert(`Game ended! ${winnerText}`);
-      
-      // Navigate back to lobby after a delay
-      setTimeout(() => {
-        navigate('/lobby');
-      }, 3000);
-    }
-  }, [gameState.gameOver, gameState.winners, navigate]);
+  // Game completion is now handled by the GameOverUI component
+  // which displays a proper game over screen with the GAME_OVER phase
 
   // Handle critical connection errors
   useEffect(() => {

@@ -9,6 +9,7 @@ from .core import GamePhase, ActionType, GameAction
 from .action_queue import ActionQueue
 from .base_state import GameState
 from .states import PreparationState, DeclarationState, TurnState, ScoringState
+from .states.game_over_state import GameOverState
 
 
 logger = logging.getLogger(__name__)
@@ -38,7 +39,8 @@ class GameStateMachine:
             GamePhase.PREPARATION: PreparationState(self),
             GamePhase.DECLARATION: DeclarationState(self),
             GamePhase.TURN: TurnState(self), 
-            GamePhase.SCORING: ScoringState(self), 
+            GamePhase.SCORING: ScoringState(self),
+            GamePhase.GAME_OVER: GameOverState(self),
         }
         
         # Transition validation map
@@ -46,7 +48,8 @@ class GameStateMachine:
             GamePhase.PREPARATION: {GamePhase.DECLARATION},
             GamePhase.DECLARATION: {GamePhase.TURN},
             GamePhase.TURN: {GamePhase.SCORING},
-            GamePhase.SCORING: {GamePhase.PREPARATION}  # Next round
+            GamePhase.SCORING: {GamePhase.PREPARATION, GamePhase.GAME_OVER},  # Next round or game over
+            GamePhase.GAME_OVER: set()  # Terminal state - no transitions
         }
     
     async def start(self, initial_phase: GamePhase = GamePhase.PREPARATION):
@@ -270,6 +273,28 @@ class GameStateMachine:
                 await bot_manager.handle_game_event(room_id, "turn_started", {
                     "starter": starter
                 })
+            elif new_phase == GamePhase.GAME_OVER:
+                # Notify bot manager that the game has ended
+                game_over_data = {
+                    "phase": new_phase.value,
+                    "final_scores": {},
+                    "winner": None,
+                    "round_number": getattr(self.game, 'round_number', 0)
+                }
+                
+                # Get final scores and winner if available
+                if hasattr(self.game, 'players') and self.game.players:
+                    for player in self.game.players:
+                        player_name = getattr(player, 'name', str(player))
+                        player_score = getattr(player, 'score', 0)
+                        game_over_data["final_scores"][player_name] = player_score
+                    
+                    # Find winner (highest score)
+                    if game_over_data["final_scores"]:
+                        winner = max(game_over_data["final_scores"].items(), key=lambda x: x[1])
+                        game_over_data["winner"] = winner[0]
+                
+                await bot_manager.handle_game_event(room_id, "game_over", game_over_data)
                 
         except Exception as e:
             logger.error(f"Failed to notify bot manager: {e}", exc_info=True)
