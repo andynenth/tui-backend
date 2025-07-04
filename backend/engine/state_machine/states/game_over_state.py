@@ -5,6 +5,7 @@ import time
 from typing import Optional, List
 from ..core import GamePhase, ActionType, GameAction
 from ..base_state import GameState
+from engine.win_conditions import get_winners
 
 
 class GameOverState(GameState):
@@ -48,7 +49,7 @@ class GameOverState(GameState):
         await self.update_phase_data({
             "final_rankings": self._calculate_final_rankings(),
             "game_stats": self._calculate_game_statistics(), 
-            "winners": game.get_winners()
+            "winners": [player.name for player in get_winners(game)]
         }, "Game over phase initialized")
     
     async def _cleanup_phase(self) -> None:

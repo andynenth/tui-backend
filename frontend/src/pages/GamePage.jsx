@@ -173,7 +173,7 @@ const GamePage = () => {
 
         {/* Full-screen game container */}
         <div className="h-full">
-          <GameContainer roomId={roomId} />
+          <GameContainer roomId={roomId} onNavigateToLobby={() => navigate('/lobby')} />
         </div>
 
         {/* Connection status overlay */}

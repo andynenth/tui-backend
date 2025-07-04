@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
-import Button from '../common/Button';
+import Button from '../Button';
 
 function GameOverUI({ finalRankings, gameStats, onBackToLobby }) {
   const [countdown, setCountdown] = useState(15); // 15-second countdown
