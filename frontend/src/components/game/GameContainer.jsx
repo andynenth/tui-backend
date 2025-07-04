@@ -29,7 +29,7 @@ import ErrorBoundary from "../ErrorBoundary";
 /**
  * Smart container that connects pure UI components to game state
  */
-export function GameContainer({ roomId }) {
+export function GameContainer({ roomId, onNavigateToLobby }) {
   const gameState = useGameState();
   const gameActions = useGameActions();
   const connectionStatus = useConnectionStatus(roomId);
@@ -183,10 +183,12 @@ export function GameContainer({ roomId }) {
         if (gameActions.cleanup) {
           gameActions.cleanup();
         }
-        window.location.href = '/lobby';
+        if (onNavigateToLobby) {
+          onNavigateToLobby();
+        }
       }
     };
-  }, [gameState, gameActions]);
+  }, [gameState, gameActions, onNavigateToLobby]);
 
   // Error handling
   if (gameState.error) {
@@ -290,11 +292,13 @@ function getWaitingMessage(gameState, connectionStatus) {
 
 // PropTypes definition
 GameContainer.propTypes = {
-  roomId: PropTypes.string
+  roomId: PropTypes.string,
+  onNavigateToLobby: PropTypes.func
 };
 
 GameContainer.defaultProps = {
-  roomId: null
+  roomId: null,
+  onNavigateToLobby: null
 };
 
 export default GameContainer;
