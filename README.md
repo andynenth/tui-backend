@@ -19,7 +19,7 @@
 - 📡 **Real-time updates** via WebSocket with automatic reconnection
 - 🧠 **Intelligent AI bots** with strategic decision-making
 - 🎯 **Complete game flow** with all 4 phases: Preparation, Declaration, Turn, Scoring
-- 🔄 **Weak hand redeal system** with player voting
+- 🔄 **Simultaneous weak hand redeal system** with dynamic starter determination
 - 🏆 **Advanced scoring system** with multipliers and win conditions
 
 ### Enterprise Architecture (Phase 1-4 Enhancements)
@@ -230,10 +230,67 @@ All system events are logged in structured JSON format with correlation IDs:
 
 ---
 
-## 🧠 Liap Tui – Game Rules
+## 🎯 Game Mechanics
 
-> [See `/docs`]  
-Includes: Piece types, Turn flow, Declaration, Redeal logic, Scoring system, and more.
+### 📋 Core Game Flow
+- **4 phases per round**: Preparation → Declaration → Turn → Scoring
+- **4 players**, 8 pieces each per round
+- **Turn-based piece playing** with strategic pile declarations
+- **First to 50 points** or highest score after 20 rounds wins
+
+### 🔄 Redeal System
+
+The redeal system handles rare cases where players receive weak hands (no pieces > 9 points):
+
+**🎯 Trigger Conditions:**
+- Player has no pieces worth more than 9 points
+- Occurs naturally during piece distribution (low probability)
+
+**⚡ Decision Process:**
+- All weak players vote simultaneously (Accept/Decline)
+- Real-time decision collection with UI prompts
+- Bot players use strategic decision algorithms
+
+**🏁 Starter Determination Logic:**
+- **Single accepter**: That player becomes round starter
+- **Multiple accepters**: First accepter in current play order becomes starter  
+- **No accepters**: Normal starter determination (RED_GENERAL holder for round 1)
+
+**📈 Score Multiplier:**
+- Each redeal increases the round score multiplier
+- Affects final scoring calculations for strategic depth
+
+**💡 Real-World Examples:**
+
+*Scenario 1 - Single Accept:*
+```
+Initial: Andy (weak), Bot 2 (weak) 
+Decisions: Andy=Decline, Bot 2=Accept
+Result: Bot 2 becomes starter, multiplier +1
+```
+
+*Scenario 2 - Multiple Accept:*
+```
+Play order: [Andy, Bot 2, Bot 3, Bot 4]
+Weak players: Andy, Bot 3
+Decisions: Andy=Accept, Bot 3=Accept  
+Result: Andy becomes starter (first in original order)
+```
+
+*Scenario 3 - Redeal Chain:*
+```
+Round 1: Bot 2 accepts → Bot 2 starter
+Round 2: Andy + Bot 2 accept → Bot 2 remains starter 
+(Bot 2 first in current play order starting from Bot 2)
+```
+
+### 🎮 Strategic Elements
+- **Weak hand acceptance** can secure starting position
+- **Score multipliers** create risk/reward decisions  
+- **Simultaneous voting** prevents information leakage
+- **Dynamic play order** maintains fairness across redeals
+
+> **Complete Rules**: See `/docs` for piece types, scoring details, and advanced strategies.
 
 ---
 
