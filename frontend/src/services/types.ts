@@ -150,6 +150,11 @@ export interface GameState {
   isMyHandWeak?: boolean;
   handValue?: number;
   highestCardValue?: number;
+  // Simultaneous mode fields
+  simultaneousMode?: boolean;
+  weakPlayersAwaiting?: string[];
+  decisionsReceived?: number;
+  decisionsNeeded?: number;
   
   // Declaration phase
   currentTotal?: number;
@@ -196,6 +201,11 @@ export interface PhaseData {
   // Preparation phase
   weak_hands?: string[];
   current_weak_player?: string;
+  // Simultaneous mode fields
+  simultaneous_mode?: boolean;
+  weak_players_awaiting?: string[];
+  decisions_received?: number;
+  decisions_needed?: number;
   
   // Declaration phase
   declaration_order?: string[];

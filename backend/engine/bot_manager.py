@@ -3,6 +3,7 @@
 import asyncio
 import time
 import hashlib
+import random
 from typing import Dict, List, Optional, Set
 from engine.player import Player
 import engine.ai as ai
@@ -199,6 +200,9 @@ class GameBotHandler:
             elif event == "redeal_decision_needed":
                 print(f"🔄 BOT_HANDLER_DEBUG: Handling redeal decision needed")
                 await self._handle_redeal_decision(data)
+            elif event == "simultaneous_redeal_decisions":
+                print(f"🔄 BOT_HANDLER_DEBUG: Handling simultaneous redeal decisions")
+                await self._handle_simultaneous_redeal_decisions(data)
             # 🔧 FIX: Add validation feedback events
             elif event == "action_rejected":
                 print(f"🚫 BOT_HANDLER_DEBUG: Handling action rejection")
@@ -915,6 +919,78 @@ class GameBotHandler:
                     print(f"🔧 Bot {bot.name} auto-declined as fallback")
                 except:
                     pass
+
+    async def _handle_simultaneous_redeal_decisions(self, data: dict):
+        """Handle multiple bot redeal decisions with realistic timing"""
+        bot_weak_players = data.get("bot_weak_players", [])
+        
+        if not bot_weak_players:
+            print(f"👤 No bot weak players to handle")
+            return
+        
+        print(f"🤖 SIMULTANEOUS_REDEAL: Handling {len(bot_weak_players)} bot decisions: {bot_weak_players}")
+        
+        # Create staggered delays for natural feel
+        bot_tasks = []
+        for i, bot_name in enumerate(bot_weak_players):
+            # Vary delay: 1-3 seconds base + 0.5s per position
+            delay = random.uniform(1.0, 3.0) + (i * 0.5)
+            
+            task = asyncio.create_task(
+                self._delayed_bot_redeal_decision(bot_name, delay)
+            )
+            bot_tasks.append(task)
+        
+        # Don't wait - let them decide asynchronously
+        asyncio.gather(*bot_tasks, return_exceptions=True)
+
+    async def _delayed_bot_redeal_decision(self, bot_name: str, delay: float):
+        """Make bot redeal decision after realistic delay"""
+        await asyncio.sleep(delay)
+        
+        # Smart decision logic
+        decline_probability = self._calculate_redeal_decline_probability(bot_name)
+        should_decline = random.random() < decline_probability
+        
+        print(f"🤖 Bot {bot_name} deciding after {delay:.1f}s delay: {'DECLINE' if should_decline else 'ACCEPT'}")
+        
+        # Send decision
+        action = GameAction(
+            player_name=bot_name,
+            action_type=ActionType.REDEAL_RESPONSE if should_decline else ActionType.REDEAL_REQUEST,
+            payload={"accept": not should_decline},
+            is_bot=True
+        )
+        
+        try:
+            await self.state_machine.handle_action(action)
+            print(f"✅ Bot {bot_name} {'DECLINED' if should_decline else 'ACCEPTED'} redeal")
+        except Exception as e:
+            print(f"❌ Bot {bot_name} redeal decision error: {e}")
+
+    def _calculate_redeal_decline_probability(self, bot_name: str) -> float:
+        """Smart bot decision making"""
+        game = self._get_game_state()
+        base_probability = 0.7  # 70% decline by default
+        
+        # Adjust based on game state
+        redeal_multiplier = getattr(game, 'redeal_multiplier', 1)
+        round_number = getattr(game, 'round_number', 1)
+        
+        if redeal_multiplier >= 3:
+            base_probability = 0.9  # Very likely to decline at high multipliers
+        elif round_number == 1:
+            base_probability = 0.5  # More aggressive in first round
+        elif redeal_multiplier == 1:
+            base_probability = 0.6  # Slightly more likely to accept first redeal
+        
+        # Add personality variation
+        if "Bot 1" in bot_name:
+            base_probability += 0.1  # Bot 1 is more conservative
+        elif "Bot 4" in bot_name:
+            base_probability -= 0.1  # Bot 4 is more aggressive
+        
+        return max(0.1, min(0.9, base_probability))  # Clamp between 0.1 and 0.9
     
     # 🔧 FIX: Validation Feedback Event Handlers
     

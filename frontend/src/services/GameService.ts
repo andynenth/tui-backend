@@ -79,17 +79,22 @@ export class GameService extends EventTarget {
     }
 
     try {
-      // Connect to room via NetworkService
-      await networkService.connectToRoom(roomId);
-      
-      // Update local state
+      // Set room ID and player name immediately so events can be processed
       this.setState({
         ...this.state,
         roomId,
-        playerName,
+        playerName
+      }, 'JOIN_ROOM_INIT');
+      
+      // Connect to room via NetworkService
+      await networkService.connectToRoom(roomId);
+      
+      // Update connection state
+      this.setState({
+        ...this.state,
         isConnected: true,
         error: null
-      }, 'JOIN_ROOM');
+      }, 'JOIN_ROOM_CONNECTED');
 
       console.log(`🎮 GameService: Joined room ${roomId} as ${playerName}`);
       
@@ -128,7 +133,7 @@ export class GameService extends EventTarget {
    */
   acceptRedeal(): void {
     this.validateAction('ACCEPT_REDEAL', 'preparation');
-    this.sendAction('accept_redeal', {});
+    this.sendAction('accept_redeal', { player_name: this.state.playerName });
   }
 
   /**
@@ -136,7 +141,7 @@ export class GameService extends EventTarget {
    */
   declineRedeal(): void {
     this.validateAction('DECLINE_REDEAL', 'preparation');
-    this.sendAction('decline_redeal', {});
+    this.sendAction('decline_redeal', { player_name: this.state.playerName });
   }
 
   /**
@@ -565,13 +570,25 @@ export class GameService extends EventTarget {
           if (phaseData.weak_hands) newState.weakHands = phaseData.weak_hands;
           if (phaseData.current_weak_player) newState.currentWeakPlayer = phaseData.current_weak_player;
           
+          // Extract simultaneous mode fields
+          newState.simultaneousMode = phaseData.simultaneous_mode || false;
+          newState.weakPlayersAwaiting = phaseData.weak_players_awaiting || [];
+          newState.decisionsReceived = phaseData.decisions_received || 0;
+          newState.decisionsNeeded = phaseData.decisions_needed || 0;
+          
           // Calculate preparation-specific UI state
           if (newState.myHand.length > 0) {
             newState.isMyHandWeak = this.calculateWeakHand(newState.myHand);
             newState.handValue = this.calculateHandValue(newState.myHand);
             newState.highestCardValue = this.calculateHighestCardValue(newState.myHand);
           }
-          if (phaseData.current_weak_player && newState.playerName) {
+          
+          // Determine if it's my decision (works for both sequential and simultaneous modes)
+          if (newState.simultaneousMode && newState.playerName) {
+            // In simultaneous mode, check if I'm in weak_players_awaiting
+            newState.isMyDecision = newState.weakPlayersAwaiting.includes(newState.playerName);
+          } else if (phaseData.current_weak_player && newState.playerName) {
+            // In sequential mode, check if I'm the current weak player
             newState.isMyDecision = phaseData.current_weak_player === newState.playerName;
           }
           break;

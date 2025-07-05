@@ -147,7 +147,7 @@ export function useGameActions(config: GameActionsConfig = {}): GameActions {
         return;
       }
 
-      if (gameState.currentWeakPlayer !== gameState.playerName) {
+      if (!gameState.isMyDecision) {
         throw new Error('Not your turn to make redeal decision');
       }
 
@@ -156,7 +156,7 @@ export function useGameActions(config: GameActionsConfig = {}): GameActions {
       handleActionError('acceptRedeal', error);
       if (throwOnError) throw error;
     }
-  }, [logAction, validateActionState, gameState.currentWeakPlayer, gameState.playerName, handleActionError, throwOnError]);
+  }, [logAction, validateActionState, gameState.isMyDecision, handleActionError, throwOnError]);
 
   const declineRedeal = useCallback(async () => {
     try {
@@ -166,7 +166,7 @@ export function useGameActions(config: GameActionsConfig = {}): GameActions {
         return;
       }
 
-      if (gameState.currentWeakPlayer !== gameState.playerName) {
+      if (!gameState.isMyDecision) {
         throw new Error('Not your turn to make redeal decision');
       }
 
@@ -175,7 +175,7 @@ export function useGameActions(config: GameActionsConfig = {}): GameActions {
       handleActionError('declineRedeal', error);
       if (throwOnError) throw error;
     }
-  }, [logAction, validateActionState, gameState.currentWeakPlayer, gameState.playerName, handleActionError, throwOnError]);
+  }, [logAction, validateActionState, gameState.isMyDecision, handleActionError, throwOnError]);
 
   // Declaration Phase Actions
   const makeDeclaration = useCallback(async (value: number) => {
@@ -402,11 +402,11 @@ export function useActionAvailability() {
 
   return useMemo(() => ({
     canAcceptRedeal: gameState.phase === 'preparation' && 
-                     gameState.currentWeakPlayer === gameState.playerName &&
+                     gameState.isMyDecision &&
                      gameState.isConnected && !gameState.error,
     
     canDeclineRedeal: gameState.phase === 'preparation' && 
-                      gameState.currentWeakPlayer === gameState.playerName &&
+                      gameState.isMyDecision &&
                       gameState.isConnected && !gameState.error,
     
     canMakeDeclaration: gameState.phase === 'declaration' && 
