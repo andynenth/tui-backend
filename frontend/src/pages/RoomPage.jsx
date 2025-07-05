@@ -22,13 +22,16 @@ const RoomPage = () => {
 
   // Connect to room and get room state
   useEffect(() => {
+    let mounted = true;
+    
     const initializeRoom = async () => {
       try {
         await networkService.connectToRoom(roomId);
-        setIsConnected(true);
-        
-        // Request room state
-        networkService.send(roomId, 'get_room_state', {});
+        if (mounted) {
+          setIsConnected(true);
+          // Request room state
+          networkService.send(roomId, 'get_room_state', {});
+        }
       } catch (error) {
         console.error('Failed to connect to room:', error);
       }
@@ -37,6 +40,14 @@ const RoomPage = () => {
     if (roomId && app.playerName) {
       initializeRoom();
     }
+
+    // Cleanup on unmount
+    return () => {
+      mounted = false;
+      if (roomId) {
+        networkService.disconnectFromRoom(roomId);
+      }
+    };
   }, [roomId, app.playerName]);
 
   // Event handlers for room updates and game start

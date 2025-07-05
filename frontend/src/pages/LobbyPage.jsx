@@ -113,6 +113,8 @@ const LobbyPage = () => {
     // Cleanup
     return () => {
       unsubscribers.forEach(unsub => unsub());
+      // Disconnect from lobby when component unmounts
+      networkService.disconnectFromRoom('lobby');
     };
   }, [isConnected, isCreatingRoom, app, navigate]);
 

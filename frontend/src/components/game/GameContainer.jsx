@@ -52,6 +52,12 @@ export function GameContainer({ roomId, onNavigateToLobby }) {
       handValue: gameState.handValue || 0,
       highestCardValue: gameState.highestCardValue || 0,
       
+      // Simultaneous mode props
+      simultaneousMode: gameState.simultaneousMode || false,
+      weakPlayersAwaiting: gameState.weakPlayersAwaiting || [],
+      decisionsReceived: gameState.decisionsReceived || 0,
+      decisionsNeeded: gameState.decisionsNeeded || 0,
+      
       // Actions
       onAcceptRedeal: gameActions.acceptRedeal,
       onDeclineRedeal: gameActions.declineRedeal

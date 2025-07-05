@@ -34,6 +34,12 @@ export function PreparationUI({
   handValue = 0,
   highestCardValue = 0,
   
+  // Simultaneous mode props
+  simultaneousMode = false,
+  weakPlayersAwaiting = [],
+  decisionsReceived = 0,
+  decisionsNeeded = 0,
+  
   // Action props
   onAcceptRedeal,
   onDeclineRedeal
@@ -155,8 +161,35 @@ export function PreparationUI({
           </div>
         )}
 
+        {/* Decision Progress Indicator */}
+        {simultaneousMode && weakHands.length > 0 && (
+          <div className="mb-6 bg-blue-900/20 rounded-lg p-4">
+            <div className="text-center mb-3">
+              <div className="text-sm text-blue-200">
+                Redeal Decisions: {decisionsReceived}/{decisionsNeeded}
+              </div>
+            </div>
+            
+            <div className="flex justify-center gap-2">
+              {weakHands.map(player => {
+                const hasDecided = !weakPlayersAwaiting.includes(player);
+                return (
+                  <div key={player} className={`
+                    px-4 py-2 rounded-lg text-sm font-medium
+                    ${hasDecided 
+                      ? 'bg-green-600 text-white' 
+                      : 'bg-yellow-600 text-yellow-100'}
+                  `}>
+                    {player} {hasDecided ? '✓' : '⏳'}
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        )}
+
         {/* Redeal Decision Interface */}
-        {isWaitingForDecision && (
+        {((simultaneousMode && isMyDecision) || (!simultaneousMode && isWaitingForDecision)) && (
           <div className="mb-8">
             <div className="bg-blue-500/10 border border-blue-500/20 rounded-xl p-6">
               <h3 className="text-lg font-semibold text-blue-200 mb-4 text-center">
@@ -168,6 +201,11 @@ export function PreparationUI({
                   <p className="text-blue-100 mb-6">
                     You have a weak hand. Do you want to request a redeal?
                   </p>
+                  {simultaneousMode && (
+                    <p className="text-sm text-blue-200 mb-4">
+                      {decisionsReceived} of {decisionsNeeded} players have decided
+                    </p>
+                  )}
                   
                   <div className="flex justify-center gap-4">
                     <Button
@@ -197,9 +235,15 @@ export function PreparationUI({
                 </div>
               ) : (
                 <div className="text-center">
-                  <p className="text-blue-100 mb-4">
-                    Waiting for <span className="font-semibold text-blue-200">{currentWeakPlayer}</span> to decide on redeal...
-                  </p>
+                  {simultaneousMode ? (
+                    <p className="text-blue-100 mb-4">
+                      Waiting for weak players to make their decisions...
+                    </p>
+                  ) : (
+                    <p className="text-blue-100 mb-4">
+                      Waiting for <span className="font-semibold text-blue-200">{currentWeakPlayer}</span> to decide on redeal...
+                    </p>
+                  )}
                   
                   <div className="flex justify-center">
                     <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-400"></div>
@@ -250,6 +294,12 @@ PreparationUI.propTypes = {
   handValue: PropTypes.number,
   highestCardValue: PropTypes.number,
   
+  // Simultaneous mode props
+  simultaneousMode: PropTypes.bool,
+  weakPlayersAwaiting: PropTypes.arrayOf(PropTypes.string),
+  decisionsReceived: PropTypes.number,
+  decisionsNeeded: PropTypes.number,
+  
   // Action props
   onAcceptRedeal: PropTypes.func,
   onDeclineRedeal: PropTypes.func
@@ -263,6 +313,10 @@ PreparationUI.defaultProps = {
   isMyHandWeak: false,
   handValue: 0,
   highestCardValue: 0,
+  simultaneousMode: false,
+  weakPlayersAwaiting: [],
+  decisionsReceived: 0,
+  decisionsNeeded: 0,
   onAcceptRedeal: () => {},
   onDeclineRedeal: () => {}
 };

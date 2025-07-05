@@ -63,6 +63,15 @@ const GamePage = () => {
     };
 
     initializeGame();
+
+    // Cleanup on unmount
+    return () => {
+      if (roomId) {
+        serviceIntegration.disconnectFromRoom().catch(err => {
+          console.error('Error disconnecting on unmount:', err);
+        });
+      }
+    };
   }, [roomId, navigate, app.playerName]);
 
   // Game completion is now handled by the GameOverUI component
