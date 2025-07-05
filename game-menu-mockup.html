@@ -1,0 +1,559 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Game Menu - Settings & Options</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&family=Crimson+Pro:wght@400;600;700&display=swap');
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Plus Jakarta Sans', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+            background: 
+                linear-gradient(135deg, #F8F9FA 0%, #E9ECEF 25%, #DEE2E6 50%, #CED4DA 75%, #ADB5BD 100%),
+                radial-gradient(circle at 30% 20%, rgba(255, 193, 7, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 70% 80%, rgba(13, 110, 253, 0.05) 0%, transparent 50%);
+            color: #212529;
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            position: relative;
+        }
+
+        /* Subtle paper texture */
+        body::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                radial-gradient(circle at 25% 25%, rgba(255, 255, 255, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 75% 75%, rgba(0, 0, 0, 0.02) 0%, transparent 50%);
+            pointer-events: none;
+        }
+
+        /* Fixed 9:16 Container */
+        .game-container {
+            width: min(100vw, 56.25vh);
+            height: min(100vh, 177.78vw);
+            max-width: 400px;
+            max-height: 711px;
+            background: 
+                linear-gradient(145deg, #FFFFFF 0%, #F8F9FA 100%),
+                radial-gradient(circle at 20% 30%, rgba(255, 193, 7, 0.03) 0%, transparent 70%),
+                radial-gradient(circle at 80% 70%, rgba(13, 110, 253, 0.02) 0%, transparent 70%);
+            border-radius: 20px;
+            border: 1px solid rgba(173, 181, 189, 0.3);
+            box-shadow: 
+                0 20px 40px rgba(0, 0, 0, 0.08),
+                0 0 0 1px rgba(255, 255, 255, 0.9),
+                inset 0 1px 0 rgba(255, 255, 255, 1);
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* Close Button */
+        .close-button {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            width: 36px;
+            height: 36px;
+            background: 
+                linear-gradient(145deg, #FFFFFF 0%, #F8F9FA 100%),
+                radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.8) 0%, transparent 60%);
+            border: 1px solid rgba(173, 181, 189, 0.3);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            z-index: 1000;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.06);
+        }
+
+        .close-button:hover {
+            transform: scale(1.1);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            border-color: rgba(173, 181, 189, 0.4);
+        }
+
+        .close-button::before,
+        .close-button::after {
+            content: '';
+            position: absolute;
+            width: 16px;
+            height: 2px;
+            background: #6C757D;
+            border-radius: 1px;
+        }
+
+        .close-button::before {
+            transform: rotate(45deg);
+        }
+
+        .close-button::after {
+            transform: rotate(-45deg);
+        }
+
+        /* Menu Header */
+        .menu-header {
+            text-align: center;
+            padding: 60px 24px 30px;
+            background: 
+                linear-gradient(180deg, rgba(248, 249, 250, 0.8) 0%, transparent 100%),
+                linear-gradient(90deg, transparent 0%, rgba(173, 181, 189, 0.1) 50%, transparent 100%);
+            border-bottom: 1px solid rgba(173, 181, 189, 0.2);
+            position: relative;
+        }
+
+        .menu-header::after {
+            content: '';
+            position: absolute;
+            bottom: -1px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 40px;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, #6C757D, transparent);
+        }
+
+        .menu-title {
+            font-family: 'Crimson Pro', serif;
+            font-size: 32px;
+            font-weight: 700;
+            margin-bottom: 8px;
+            color: #343A40;
+            letter-spacing: -0.5px;
+        }
+
+        .menu-subtitle {
+            font-size: 14px;
+            color: #6C757D;
+            font-weight: 500;
+        }
+
+        /* Menu Content */
+        .menu-content {
+            flex: 1;
+            padding: 24px 20px;
+            overflow-y: auto;
+        }
+
+        /* Menu Sections */
+        .menu-section {
+            margin-bottom: 32px;
+        }
+
+        .section-title {
+            font-size: 12px;
+            font-weight: 600;
+            color: #6C757D;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 16px;
+            padding-left: 4px;
+        }
+
+        /* Settings Items */
+        .setting-item {
+            background: 
+                linear-gradient(145deg, #FFFFFF 0%, #F8F9FA 100%),
+                radial-gradient(circle at 15% 50%, rgba(255, 255, 255, 0.8) 0%, transparent 50%);
+            border: 1px solid rgba(173, 181, 189, 0.15);
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 12px;
+            box-shadow: 
+                0 2px 8px rgba(0, 0, 0, 0.06),
+                inset 0 1px 0 rgba(255, 255, 255, 1);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .setting-item:hover {
+            transform: translateY(-1px);
+            box-shadow: 
+                0 4px 12px rgba(0, 0, 0, 0.08),
+                inset 0 1px 0 rgba(255, 255, 255, 1);
+        }
+
+        .setting-info {
+            flex: 1;
+        }
+
+        .setting-label {
+            font-size: 14px;
+            font-weight: 600;
+            color: #212529;
+            margin-bottom: 2px;
+        }
+
+        .setting-description {
+            font-size: 12px;
+            color: #6C757D;
+        }
+
+        /* Toggle Switch */
+        .toggle-switch {
+            position: relative;
+            width: 48px;
+            height: 24px;
+            background: rgba(173, 181, 189, 0.3);
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .toggle-switch.active {
+            background: linear-gradient(135deg, #28A745, #20C997);
+        }
+
+        .toggle-switch::after {
+            content: '';
+            position: absolute;
+            top: 2px;
+            left: 2px;
+            width: 20px;
+            height: 20px;
+            background: white;
+            border-radius: 50%;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+            transition: all 0.3s ease;
+        }
+
+        .toggle-switch.active::after {
+            transform: translateX(24px);
+        }
+
+        /* Volume Slider */
+        .volume-control {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .volume-icon {
+            font-size: 16px;
+            color: #6C757D;
+        }
+
+        .volume-slider {
+            flex: 1;
+            height: 4px;
+            background: rgba(173, 181, 189, 0.2);
+            border-radius: 2px;
+            position: relative;
+            cursor: pointer;
+        }
+
+        .volume-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #0D6EFD, #0A58CA);
+            border-radius: 2px;
+            width: 70%;
+            position: relative;
+        }
+
+        .volume-handle {
+            position: absolute;
+            top: 50%;
+            right: 0;
+            transform: translate(50%, -50%);
+            width: 16px;
+            height: 16px;
+            background: white;
+            border: 2px solid #0D6EFD;
+            border-radius: 50%;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        /* Action Buttons */
+        .menu-actions {
+            padding: 20px;
+            background: 
+                linear-gradient(180deg, rgba(248, 249, 250, 0.8) 0%, rgba(255, 255, 255, 0.9) 100%);
+            border-top: 1px solid rgba(173, 181, 189, 0.2);
+        }
+
+        .action-button {
+            width: 100%;
+            padding: 16px 32px;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            border: none;
+            margin-bottom: 12px;
+        }
+
+        .action-button:last-child {
+            margin-bottom: 0;
+        }
+
+        .resume-button {
+            background: 
+                linear-gradient(135deg, #28A745 0%, #20C997 100%),
+                radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.2) 0%, transparent 60%);
+            color: white;
+            border: 1px solid rgba(40, 167, 69, 0.4);
+            box-shadow: 0 4px 8px rgba(40, 167, 69, 0.2);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .resume-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 16px rgba(40, 167, 69, 0.3);
+        }
+
+        .secondary-button {
+            background: 
+                linear-gradient(145deg, #FFFFFF 0%, #F8F9FA 100%),
+                radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.8) 0%, transparent 60%);
+            color: #495057;
+            border: 1px solid rgba(173, 181, 189, 0.3);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.06);
+        }
+
+        .secondary-button:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            border-color: rgba(173, 181, 189, 0.4);
+        }
+
+        .danger-button {
+            background: 
+                linear-gradient(145deg, #FFF5F5 0%, #FFF8F8 100%),
+                radial-gradient(circle at 30% 30%, rgba(220, 53, 69, 0.1) 0%, transparent 60%);
+            color: #DC3545;
+            border: 1px solid rgba(220, 53, 69, 0.3);
+            box-shadow: 0 2px 4px rgba(220, 53, 69, 0.1);
+        }
+
+        .danger-button:hover {
+            background: 
+                linear-gradient(135deg, #DC3545 0%, #C82333 100%),
+                radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.2) 0%, transparent 60%);
+            color: white;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 8px rgba(220, 53, 69, 0.2);
+        }
+
+        /* Stats Display */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+        }
+
+        .stat-card {
+            background: rgba(248, 249, 250, 0.5);
+            border-radius: 8px;
+            padding: 12px;
+            text-align: center;
+            border: 1px solid rgba(173, 181, 189, 0.1);
+        }
+
+        .stat-value {
+            font-size: 20px;
+            font-weight: 700;
+            color: #343A40;
+            margin-bottom: 2px;
+        }
+
+        .stat-label {
+            font-size: 11px;
+            color: #6C757D;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+        }
+    </style>
+</head>
+<body>
+    <div class="game-container">
+        <!-- Close Button -->
+        <div class="close-button" onclick="closeMenu()"></div>
+
+        <!-- Menu Header -->
+        <div class="menu-header">
+            <div class="menu-title">Game Menu</div>
+            <div class="menu-subtitle">Settings & Options</div>
+        </div>
+
+        <!-- Menu Content -->
+        <div class="menu-content">
+            <!-- Audio Settings -->
+            <div class="menu-section">
+                <div class="section-title">Audio Settings</div>
+                
+                <div class="setting-item">
+                    <div class="setting-info">
+                        <div class="setting-label">Sound Effects</div>
+                        <div class="setting-description">Play sounds for game actions</div>
+                    </div>
+                    <div class="toggle-switch active" onclick="toggleSwitch(this)"></div>
+                </div>
+
+                <div class="setting-item">
+                    <div class="setting-info">
+                        <div class="setting-label">Background Music</div>
+                        <div class="setting-description">Ambient music during gameplay</div>
+                    </div>
+                    <div class="toggle-switch" onclick="toggleSwitch(this)"></div>
+                </div>
+
+                <div class="setting-item">
+                    <div class="volume-control">
+                        <span class="volume-icon">🔊</span>
+                        <div class="volume-slider">
+                            <div class="volume-fill">
+                                <div class="volume-handle"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Game Settings -->
+            <div class="menu-section">
+                <div class="section-title">Game Settings</div>
+                
+                <div class="setting-item">
+                    <div class="setting-info">
+                        <div class="setting-label">Auto-Continue</div>
+                        <div class="setting-description">Automatically proceed between turns</div>
+                    </div>
+                    <div class="toggle-switch active" onclick="toggleSwitch(this)"></div>
+                </div>
+
+                <div class="setting-item">
+                    <div class="setting-info">
+                        <div class="setting-label">Show Turn Timer</div>
+                        <div class="setting-description">Display countdown for each turn</div>
+                    </div>
+                    <div class="toggle-switch active" onclick="toggleSwitch(this)"></div>
+                </div>
+
+                <div class="setting-item">
+                    <div class="setting-info">
+                        <div class="setting-label">Vibration</div>
+                        <div class="setting-description">Haptic feedback for actions</div>
+                    </div>
+                    <div class="toggle-switch" onclick="toggleSwitch(this)"></div>
+                </div>
+            </div>
+
+            <!-- Game Stats -->
+            <div class="menu-section">
+                <div class="section-title">Current Game Stats</div>
+                
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-value">3</div>
+                        <div class="stat-label">Round</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value">15</div>
+                        <div class="stat-label">Turn</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value">12m</div>
+                        <div class="stat-label">Duration</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value">2nd</div>
+                        <div class="stat-label">Position</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Menu Actions -->
+        <div class="menu-actions">
+            <button class="action-button resume-button" onclick="resumeGame()">
+                Resume Game
+            </button>
+            <button class="action-button secondary-button" onclick="showHelp()">
+                How to Play
+            </button>
+            <button class="action-button danger-button" onclick="leaveGame()">
+                Leave Game
+            </button>
+        </div>
+    </div>
+
+    <script>
+        function toggleSwitch(element) {
+            element.classList.toggle('active');
+        }
+
+        function closeMenu() {
+            console.log('Closing menu...');
+            // In real game, this would return to game
+        }
+
+        function resumeGame() {
+            console.log('Resuming game...');
+            // In real game, this would close menu and return to game
+        }
+
+        function showHelp() {
+            console.log('Showing help...');
+            // In real game, this would open help/tutorial
+        }
+
+        function leaveGame() {
+            if (confirm('Are you sure you want to leave the game?')) {
+                console.log('Leaving game...');
+                // In real game, this would exit to lobby
+            }
+        }
+
+        // Volume slider interaction
+        const volumeSlider = document.querySelector('.volume-slider');
+        const volumeFill = document.querySelector('.volume-fill');
+        const volumeHandle = document.querySelector('.volume-handle');
+        let isDragging = false;
+
+        volumeSlider.addEventListener('click', (e) => {
+            const rect = volumeSlider.getBoundingClientRect();
+            const percent = ((e.clientX - rect.left) / rect.width) * 100;
+            volumeFill.style.width = Math.min(100, Math.max(0, percent)) + '%';
+        });
+
+        volumeHandle.addEventListener('mousedown', () => {
+            isDragging = true;
+        });
+
+        document.addEventListener('mousemove', (e) => {
+            if (isDragging) {
+                const rect = volumeSlider.getBoundingClientRect();
+                const percent = ((e.clientX - rect.left) / rect.width) * 100;
+                volumeFill.style.width = Math.min(100, Math.max(0, percent)) + '%';
+            }
+        });
+
+        document.addEventListener('mouseup', () => {
+            isDragging = false;
+        });
+    </script>
+</body>
+</html>

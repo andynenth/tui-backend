@@ -1,0 +1,598 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Preparation Phase - Dealing Cards</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&family=Crimson+Pro:wght@400;600;700&display=swap');
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Plus Jakarta Sans', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+            background: 
+                linear-gradient(135deg, #F8F9FA 0%, #E9ECEF 25%, #DEE2E6 50%, #CED4DA 75%, #ADB5BD 100%),
+                radial-gradient(circle at 30% 20%, rgba(255, 193, 7, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 70% 80%, rgba(13, 110, 253, 0.05) 0%, transparent 50%);
+            color: #212529;
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            position: relative;
+        }
+
+        /* Subtle paper texture */
+        body::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                radial-gradient(circle at 25% 25%, rgba(255, 255, 255, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 75% 75%, rgba(0, 0, 0, 0.02) 0%, transparent 50%);
+            pointer-events: none;
+        }
+
+        /* Fixed 9:16 Container */
+        .game-container {
+            width: min(100vw, 56.25vh);
+            height: min(100vh, 177.78vw);
+            max-width: 400px;
+            max-height: 711px;
+            background: 
+                linear-gradient(145deg, #FFFFFF 0%, #F8F9FA 100%),
+                radial-gradient(circle at 20% 30%, rgba(255, 193, 7, 0.03) 0%, transparent 70%),
+                radial-gradient(circle at 80% 70%, rgba(13, 110, 253, 0.02) 0%, transparent 70%);
+            border-radius: 20px;
+            border: 1px solid rgba(173, 181, 189, 0.3);
+            box-shadow: 
+                0 20px 40px rgba(0, 0, 0, 0.08),
+                0 0 0 1px rgba(255, 255, 255, 0.9),
+                inset 0 1px 0 rgba(255, 255, 255, 1);
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* Round Indicator */
+        .round-indicator {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: 
+                linear-gradient(145deg, #FFFFFF 0%, #F8F9FA 100%),
+                radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.8) 0%, transparent 60%);
+            padding: 8px 16px;
+            border-radius: 16px;
+            border: 1px solid rgba(173, 181, 189, 0.3);
+            box-shadow: 
+                0 4px 12px rgba(0, 0, 0, 0.08),
+                inset 0 1px 0 rgba(255, 255, 255, 1);
+            font-weight: 700;
+            font-size: 14px;
+            z-index: 1000;
+            color: #343A40;
+            letter-spacing: 0.5px;
+        }
+
+        /* Phase Header */
+        .phase-header {
+            text-align: center;
+            padding: 50px 24px 20px;
+            background: 
+                linear-gradient(180deg, rgba(248, 249, 250, 0.8) 0%, transparent 100%),
+                linear-gradient(90deg, transparent 0%, rgba(173, 181, 189, 0.1) 50%, transparent 100%);
+            border-bottom: 1px solid rgba(173, 181, 189, 0.2);
+            position: relative;
+        }
+
+        .phase-header::after {
+            content: '';
+            position: absolute;
+            bottom: -1px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 40px;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, #6C757D, transparent);
+        }
+
+        .phase-title {
+            font-family: 'Crimson Pro', serif;
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 4px;
+            color: #343A40;
+            letter-spacing: -0.5px;
+        }
+
+        .phase-subtitle {
+            font-size: 14px;
+            color: #6C757D;
+            font-weight: 500;
+        }
+
+        /* Main Content */
+        .content-section {
+            flex: 1;
+            padding: 24px 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Dealing Animation Container */
+        .dealing-container {
+            text-align: center;
+            padding: 40px 20px;
+        }
+
+        .dealing-icon {
+            width: 120px;
+            height: 120px;
+            margin: 0 auto 24px;
+            position: relative;
+        }
+
+        .card-stack {
+            position: absolute;
+            width: 90px;
+            height: 90px;
+            background: 
+                linear-gradient(145deg, #FFFFFF 0%, #F8F9FA 100%),
+                radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.8) 0%, transparent 60%);
+            border-radius: 50%;
+            border: 4px solid rgba(173, 181, 189, 0.8);
+            box-shadow: 
+                0 6px 16px rgba(0, 0, 0, 0.12),
+                inset 0 1px 0 rgba(255, 255, 255, 1);
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 32px;
+            font-weight: bold;
+            color: #6C757D;
+            font-family: 'SimSun', '宋体', serif;
+        }
+
+        .card-stack::before {
+            content: '?';
+        }
+
+        .card-stack:nth-child(1) {
+            animation: dealing 2s ease-in-out infinite;
+        }
+
+        .card-stack:nth-child(2) {
+            animation: dealing 2s ease-in-out infinite 0.5s;
+            opacity: 0.8;
+        }
+
+        .card-stack:nth-child(3) {
+            animation: dealing 2s ease-in-out infinite 1s;
+            opacity: 0.6;
+        }
+
+        @keyframes dealing {
+            0% {
+                transform: translate(-50%, -50%) rotate(0deg) scale(1);
+            }
+            25% {
+                transform: translate(-80%, -80%) rotate(-15deg) scale(0.9);
+            }
+            50% {
+                transform: translate(-20%, -80%) rotate(15deg) scale(0.9);
+            }
+            75% {
+                transform: translate(-20%, -20%) rotate(-10deg) scale(0.9);
+            }
+            100% {
+                transform: translate(-50%, -50%) rotate(0deg) scale(1);
+            }
+        }
+
+        .dealing-message {
+            font-size: 20px;
+            font-weight: 600;
+            color: #343A40;
+            margin-bottom: 8px;
+        }
+
+        .dealing-status {
+            font-size: 14px;
+            color: #6C757D;
+        }
+
+        /* Progress Bar */
+        .progress-container {
+            width: 100%;
+            max-width: 280px;
+            margin-top: 32px;
+        }
+
+        .progress-bar {
+            height: 8px;
+            background: rgba(173, 181, 189, 0.2);
+            border-radius: 4px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: 
+                linear-gradient(90deg, #28A745 0%, #20C997 100%);
+            border-radius: 4px;
+            width: 0;
+            animation: progress 3s ease-out forwards;
+            box-shadow: 0 0 8px rgba(40, 167, 69, 0.3);
+        }
+
+        @keyframes progress {
+            0% { width: 0; }
+            100% { width: 100%; }
+        }
+
+        /* Weak Hand Alert */
+        .weak-hand-alert {
+            background: 
+                linear-gradient(145deg, #FFF8E1 0%, #FFFBF0 100%),
+                radial-gradient(circle at 30% 30%, rgba(255, 193, 7, 0.1) 0%, transparent 60%);
+            border: 1px solid rgba(255, 193, 7, 0.3);
+            border-radius: 12px;
+            padding: 16px;
+            margin-top: 24px;
+            max-width: 320px;
+            box-shadow: 0 4px 12px rgba(255, 193, 7, 0.15);
+            display: none;
+        }
+
+        .weak-hand-alert.show {
+            display: block;
+            animation: slideIn 0.4s ease-out;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .alert-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #F57F17;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .alert-message {
+            font-size: 14px;
+            color: #6C757D;
+            margin-bottom: 16px;
+        }
+
+        .alert-buttons {
+            display: flex;
+            gap: 8px;
+        }
+
+        .alert-button {
+            flex: 1;
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: none;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+        }
+
+        .alert-button.primary {
+            background: 
+                linear-gradient(135deg, #FFC107 0%, #FF9800 100%);
+            color: #212529;
+            border: 1px solid rgba(255, 193, 7, 0.4);
+            box-shadow: 0 2px 4px rgba(255, 193, 7, 0.2);
+        }
+
+        .alert-button.primary:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 8px rgba(255, 193, 7, 0.3);
+        }
+
+        .alert-button.secondary {
+            background: 
+                linear-gradient(145deg, #FFFFFF 0%, #F8F9FA 100%);
+            color: #495057;
+            border: 1px solid rgba(173, 181, 189, 0.3);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.06);
+        }
+
+        .alert-button.secondary:hover {
+            background: 
+                linear-gradient(145deg, #F8F9FA 0%, #E9ECEF 100%);
+        }
+
+        /* Player Hand Section */
+        .hand-section {
+            background: 
+                linear-gradient(180deg, #F8F9FA 0%, #E9ECEF 100%),
+                radial-gradient(ellipse 100% 60% at 50% 0%, rgba(173, 181, 189, 0.2) 0%, transparent 100%);
+            padding: 20px;
+            border-top: 1px solid rgba(173, 181, 189, 0.2);
+            position: relative;
+            z-index: 20;
+        }
+
+        .hand-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 40px;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, #6C757D, transparent);
+        }
+
+
+        .pieces-tray {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 12px;
+            max-width: 350px;
+            margin: 0 auto;
+        }
+
+        .piece {
+            aspect-ratio: 1;
+            border-radius: 50%;
+            background: 
+                linear-gradient(145deg, #FFFFFF 0%, #F8F9FA 100%),
+                radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.8) 0%, transparent 60%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            font-weight: bold;
+            text-align: center;
+            box-shadow: 
+                0 4px 12px rgba(0, 0, 0, 0.08),
+                inset 0 1px 0 rgba(255, 255, 255, 1);
+            position: relative;
+            font-family: 'SimSun', '宋体', serif;
+            border: 3px solid rgba(173, 181, 189, 0.6);
+            opacity: 0;
+            transform: scale(0.8) translateY(20px);
+            animation: pieceAppear 0.5s ease-out forwards;
+        }
+
+        .piece:nth-child(1) { animation-delay: 0.1s; }
+        .piece:nth-child(2) { animation-delay: 0.2s; }
+        .piece:nth-child(3) { animation-delay: 0.3s; }
+        .piece:nth-child(4) { animation-delay: 0.4s; }
+        .piece:nth-child(5) { animation-delay: 0.5s; }
+        .piece:nth-child(6) { animation-delay: 0.6s; }
+        .piece:nth-child(7) { animation-delay: 0.7s; }
+        .piece:nth-child(8) { animation-delay: 0.8s; }
+
+        @keyframes pieceAppear {
+            to {
+                opacity: 1;
+                transform: scale(1) translateY(0);
+            }
+        }
+
+        .piece.red {
+            color: #DC3545;
+            border-color: rgba(220, 53, 69, 0.6);
+        }
+
+        .piece.black {
+            color: #495057;
+            border-color: rgba(73, 80, 87, 0.6);
+        }
+
+        .piece-character {
+            font-size: 18px;
+            margin-bottom: 2px;
+            font-weight: 700;
+        }
+
+        .piece-points {
+            font-size: 9px;
+            font-weight: 600;
+            background: rgba(108, 117, 125, 0.1);
+            padding: 2px 6px;
+            border-radius: 6px;
+            border: 1px solid rgba(108, 117, 125, 0.2);
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            color: #495057;
+        }
+
+        /* Redeal Multiplier */
+        .multiplier-badge {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            background: 
+                linear-gradient(135deg, #DC3545 0%, #C82333 100%),
+                radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.3) 0%, transparent 60%);
+            padding: 8px 16px;
+            border-radius: 16px;
+            border: 1px solid rgba(220, 53, 69, 0.4);
+            box-shadow: 
+                0 4px 12px rgba(220, 53, 69, 0.2),
+                inset 0 1px 0 rgba(255, 255, 255, 0.6);
+            font-weight: 700;
+            font-size: 14px;
+            z-index: 1000;
+            color: white;
+            letter-spacing: 0.5px;
+            display: none;
+        }
+
+        .multiplier-badge.show {
+            display: block;
+            animation: bounceIn 0.6s ease-out;
+        }
+
+        @keyframes bounceIn {
+            0% {
+                opacity: 0;
+                transform: scale(0.3);
+            }
+            50% {
+                transform: scale(1.1);
+            }
+            100% {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="game-container">
+        <!-- Round Indicator -->
+        <div class="round-indicator">
+            Round 1
+        </div>
+
+        <!-- Redeal Multiplier (hidden by default) -->
+        <div class="multiplier-badge" id="multiplier">
+            2×
+        </div>
+
+        <!-- Phase Header -->
+        <div class="phase-header">
+            <div class="phase-title">Preparation Phase</div>
+            <div class="phase-subtitle">Dealing cards to all players</div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="content-section">
+            <!-- Dealing Animation -->
+            <div class="dealing-container" id="dealingContainer">
+                <div class="dealing-icon">
+                    <div class="card-stack"></div>
+                    <div class="card-stack"></div>
+                    <div class="card-stack"></div>
+                </div>
+                <div class="dealing-message">Dealing Cards</div>
+                <div class="dealing-status">Please wait while cards are being dealt...</div>
+                
+                <div class="progress-container">
+                    <div class="progress-bar">
+                        <div class="progress-fill"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Weak Hand Alert (hidden by default) -->
+            <div class="weak-hand-alert" id="weakHandAlert">
+                <div class="alert-title">
+                    ⚠️ Weak Hand Detected
+                </div>
+                <div class="alert-message">
+                    No piece greater than 9 points. Would you like to request a redeal?
+                </div>
+                <div class="alert-buttons">
+                    <button class="alert-button primary" onclick="requestRedeal()">
+                        Request Redeal
+                    </button>
+                    <button class="alert-button secondary" onclick="keepHand()">
+                        Keep Hand
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Player Hand Section -->
+        <div class="hand-section">
+            <div class="pieces-tray">
+                <!-- Row 1 -->
+                <div class="piece red">
+                    <div class="piece-character">车</div>
+                    <div class="piece-points">7</div>
+                </div>
+                <div class="piece black">
+                    <div class="piece-character">马</div>
+                    <div class="piece-points">6</div>
+                </div>
+                <div class="piece red">
+                    <div class="piece-character">马</div>
+                    <div class="piece-points">6</div>
+                </div>
+                <div class="piece black">
+                    <div class="piece-character">炮</div>
+                    <div class="piece-points">3</div>
+                </div>
+                
+                <!-- Row 2 -->
+                <div class="piece red">
+                    <div class="piece-character">炮</div>
+                    <div class="piece-points">3</div>
+                </div>
+                <div class="piece black">
+                    <div class="piece-character">兵</div>
+                    <div class="piece-points">2</div>
+                </div>
+                <div class="piece red">
+                    <div class="piece-character">卒</div>
+                    <div class="piece-points">1</div>
+                </div>
+                <div class="piece black">
+                    <div class="piece-character">卒</div>
+                    <div class="piece-points">1</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Simulate dealing completion and weak hand detection
+        setTimeout(() => {
+            document.getElementById('dealingContainer').style.display = 'none';
+            document.getElementById('weakHandAlert').classList.add('show');
+        }, 3500);
+
+        function requestRedeal() {
+            console.log('Requesting redeal...');
+            document.getElementById('multiplier').classList.add('show');
+            document.getElementById('weakHandAlert').classList.remove('show');
+            // In real game, this would trigger redeal
+        }
+
+        function keepHand() {
+            console.log('Keeping current hand');
+            document.getElementById('weakHandAlert').classList.remove('show');
+            // In real game, this would proceed to declaration phase
+        }
+    </script>
+</body>
+</html>

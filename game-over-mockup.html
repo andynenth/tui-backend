@@ -1,0 +1,542 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Game Over - Final Results</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&family=Crimson+Pro:wght@400;600;700&display=swap');
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Plus Jakarta Sans', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+            background: 
+                linear-gradient(135deg, #F8F9FA 0%, #E9ECEF 25%, #DEE2E6 50%, #CED4DA 75%, #ADB5BD 100%),
+                radial-gradient(circle at 30% 20%, rgba(255, 193, 7, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 70% 80%, rgba(13, 110, 253, 0.05) 0%, transparent 50%);
+            color: #212529;
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            position: relative;
+        }
+
+        /* Subtle paper texture */
+        body::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                radial-gradient(circle at 25% 25%, rgba(255, 255, 255, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 75% 75%, rgba(0, 0, 0, 0.02) 0%, transparent 50%);
+            pointer-events: none;
+        }
+
+        /* Fixed 9:16 Container */
+        .game-container {
+            width: min(100vw, 56.25vh);
+            height: min(100vh, 177.78vw);
+            max-width: 400px;
+            max-height: 711px;
+            background: 
+                linear-gradient(145deg, #FFFFFF 0%, #F8F9FA 100%),
+                radial-gradient(circle at 20% 30%, rgba(255, 193, 7, 0.03) 0%, transparent 70%),
+                radial-gradient(circle at 80% 70%, rgba(13, 110, 253, 0.02) 0%, transparent 70%);
+            border-radius: 20px;
+            border: 1px solid rgba(173, 181, 189, 0.3);
+            box-shadow: 
+                0 20px 40px rgba(0, 0, 0, 0.08),
+                0 0 0 1px rgba(255, 255, 255, 0.9),
+                inset 0 1px 0 rgba(255, 255, 255, 1);
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* Confetti Animation */
+        .confetti {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            background: #FFC107;
+            top: -10px;
+            animation: confetti-fall 3s linear infinite;
+        }
+
+        .confetti:nth-child(1) { left: 10%; animation-delay: 0s; background: #DC3545; }
+        .confetti:nth-child(2) { left: 30%; animation-delay: 0.5s; background: #28A745; }
+        .confetti:nth-child(3) { left: 50%; animation-delay: 1s; background: #0D6EFD; }
+        .confetti:nth-child(4) { left: 70%; animation-delay: 1.5s; background: #FFC107; }
+        .confetti:nth-child(5) { left: 90%; animation-delay: 2s; background: #6F42C1; }
+
+        @keyframes confetti-fall {
+            0% {
+                transform: translateY(0) rotate(0deg);
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(750px) rotate(720deg);
+                opacity: 0;
+            }
+        }
+
+        /* Phase Header */
+        .phase-header {
+            text-align: center;
+            padding: 40px 24px 20px;
+            background: 
+                linear-gradient(180deg, rgba(248, 249, 250, 0.8) 0%, transparent 100%),
+                linear-gradient(90deg, transparent 0%, rgba(173, 181, 189, 0.1) 50%, transparent 100%);
+            border-bottom: 1px solid rgba(173, 181, 189, 0.2);
+            position: relative;
+        }
+
+        .phase-header::after {
+            content: '';
+            position: absolute;
+            bottom: -1px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 40px;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, #6C757D, transparent);
+        }
+
+        .phase-title {
+            font-family: 'Crimson Pro', serif;
+            font-size: 32px;
+            font-weight: 700;
+            margin-bottom: 4px;
+            color: #343A40;
+            letter-spacing: -0.5px;
+        }
+
+        .phase-subtitle {
+            font-size: 14px;
+            color: #6C757D;
+            font-weight: 500;
+        }
+
+        /* Winner Section */
+        .winner-section {
+            padding: 24px 20px;
+            text-align: center;
+        }
+
+        .winner-trophy {
+            font-size: 64px;
+            margin-bottom: 16px;
+            animation: trophy-bounce 2s ease-in-out infinite;
+        }
+
+        @keyframes trophy-bounce {
+            0%, 100% { transform: scale(1) rotate(0deg); }
+            25% { transform: scale(1.1) rotate(-5deg); }
+            75% { transform: scale(1.1) rotate(5deg); }
+        }
+
+        .winner-announcement {
+            background: 
+                linear-gradient(145deg, #FFF8E1 0%, #FFFBF0 100%),
+                radial-gradient(circle at 30% 30%, rgba(255, 193, 7, 0.1) 0%, transparent 60%);
+            border: 1px solid rgba(255, 193, 7, 0.3);
+            border-radius: 16px;
+            padding: 24px;
+            box-shadow: 
+                0 8px 24px rgba(255, 193, 7, 0.15),
+                inset 0 1px 0 rgba(255, 255, 255, 1);
+            margin-bottom: 24px;
+        }
+
+        .winner-name {
+            font-family: 'Crimson Pro', serif;
+            font-size: 32px;
+            font-weight: 700;
+            color: #F57F17;
+            margin-bottom: 8px;
+        }
+
+        .winner-score {
+            font-size: 20px;
+            font-weight: 600;
+            color: #6C757D;
+        }
+
+        /* Final Rankings */
+        .rankings-section {
+            flex: 1;
+            padding: 0 20px 20px;
+            overflow-y: auto;
+        }
+
+        .rankings-header {
+            font-size: 12px;
+            font-weight: 600;
+            color: #6C757D;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 16px;
+            text-align: center;
+        }
+
+        .rankings-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .rank-card {
+            display: flex;
+            align-items: center;
+            background: 
+                linear-gradient(145deg, #FFFFFF 0%, #F8F9FA 100%),
+                radial-gradient(circle at 15% 50%, rgba(255, 255, 255, 0.8) 0%, transparent 50%);
+            border: 1px solid rgba(173, 181, 189, 0.15);
+            border-radius: 12px;
+            padding: 16px;
+            box-shadow: 
+                0 2px 8px rgba(0, 0, 0, 0.06),
+                inset 0 1px 0 rgba(255, 255, 255, 1);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+        }
+
+        .rank-card.gold {
+            border-color: rgba(255, 193, 7, 0.3);
+            background: 
+                linear-gradient(145deg, #FFF8E1 0%, #FFFBF0 100%),
+                radial-gradient(circle at 15% 50%, rgba(255, 193, 7, 0.1) 0%, transparent 50%);
+        }
+
+        .rank-card.silver {
+            border-color: rgba(173, 181, 189, 0.3);
+            background: 
+                linear-gradient(145deg, #F8F9FA 0%, #FFFFFF 100%),
+                radial-gradient(circle at 15% 50%, rgba(173, 181, 189, 0.1) 0%, transparent 50%);
+        }
+
+        .rank-card.bronze {
+            border-color: rgba(205, 127, 50, 0.3);
+            background: 
+                linear-gradient(145deg, #FFF5ED 0%, #FFFAF5 100%),
+                radial-gradient(circle at 15% 50%, rgba(205, 127, 50, 0.08) 0%, transparent 50%);
+        }
+
+        .rank-position {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: 
+                linear-gradient(145deg, #FFFFFF 0%, #F8F9FA 100%),
+                radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.8) 0%, transparent 60%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 18px;
+            margin-right: 16px;
+            border: 2px solid rgba(173, 181, 189, 0.3);
+            box-shadow: 
+                0 2px 4px rgba(0, 0, 0, 0.06),
+                inset 0 1px 0 rgba(255, 255, 255, 1);
+            color: #495057;
+        }
+
+        .rank-card.gold .rank-position {
+            background: linear-gradient(135deg, #FFC107, #FF9800);
+            color: white;
+            border-color: rgba(255, 193, 7, 0.4);
+        }
+
+        .rank-card.silver .rank-position {
+            background: linear-gradient(135deg, #B0BEC5, #90A4AE);
+            color: white;
+            border-color: rgba(176, 190, 197, 0.4);
+        }
+
+        .rank-card.bronze .rank-position {
+            background: linear-gradient(135deg, #CD7F32, #B8651B);
+            color: white;
+            border-color: rgba(205, 127, 50, 0.4);
+        }
+
+        .player-info {
+            flex: 1;
+        }
+
+        .player-name {
+            font-size: 16px;
+            font-weight: 600;
+            color: #212529;
+            margin-bottom: 2px;
+        }
+
+        .player-stats {
+            font-size: 12px;
+            color: #6C757D;
+        }
+
+        .final-score {
+            text-align: right;
+        }
+
+        .score-value {
+            font-size: 24px;
+            font-weight: 700;
+            color: #343A40;
+        }
+
+        .score-label {
+            font-size: 10px;
+            color: #6C757D;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+        }
+
+        /* Game Summary */
+        .game-summary {
+            background: 
+                linear-gradient(180deg, rgba(248, 249, 250, 0.6) 0%, rgba(233, 236, 239, 0.8) 100%),
+                radial-gradient(ellipse 100% 60% at 50% 0%, rgba(173, 181, 189, 0.1) 0%, transparent 100%);
+            padding: 16px 20px;
+            border-top: 1px solid rgba(173, 181, 189, 0.2);
+            position: relative;
+        }
+
+        .game-summary::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 40px;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, #6C757D, transparent);
+        }
+
+        .summary-stats {
+            display: flex;
+            justify-content: space-around;
+            margin-bottom: 16px;
+        }
+
+        .stat-item {
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 18px;
+            font-weight: 700;
+            color: #343A40;
+            margin-bottom: 2px;
+        }
+
+        .stat-label {
+            font-size: 11px;
+            color: #6C757D;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+        }
+
+        /* Action Buttons */
+        .action-buttons {
+            display: flex;
+            gap: 12px;
+        }
+
+        .action-button {
+            flex: 1;
+            padding: 12px 20px;
+            border-radius: 12px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            border: none;
+        }
+
+        .play-again-button {
+            background: 
+                linear-gradient(135deg, #28A745 0%, #20C997 100%),
+                radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.2) 0%, transparent 60%);
+            color: white;
+            border: 1px solid rgba(40, 167, 69, 0.4);
+            box-shadow: 0 4px 8px rgba(40, 167, 69, 0.2);
+        }
+
+        .play-again-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 16px rgba(40, 167, 69, 0.3);
+        }
+
+        .exit-button {
+            background: 
+                linear-gradient(145deg, #FFFFFF 0%, #F8F9FA 100%),
+                radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.8) 0%, transparent 60%);
+            color: #495057;
+            border: 1px solid rgba(173, 181, 189, 0.3);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.06);
+        }
+
+        .exit-button:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            border-color: rgba(173, 181, 189, 0.4);
+        }
+
+        /* Animations */
+        .rank-card {
+            opacity: 0;
+            transform: translateX(-20px);
+            animation: slideIn 0.5s ease-out forwards;
+        }
+
+        .rank-card:nth-child(1) { animation-delay: 0.1s; }
+        .rank-card:nth-child(2) { animation-delay: 0.2s; }
+        .rank-card:nth-child(3) { animation-delay: 0.3s; }
+        .rank-card:nth-child(4) { animation-delay: 0.4s; }
+
+        @keyframes slideIn {
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="game-container">
+        <!-- Confetti -->
+        <div class="confetti"></div>
+        <div class="confetti"></div>
+        <div class="confetti"></div>
+        <div class="confetti"></div>
+        <div class="confetti"></div>
+
+        <!-- Phase Header -->
+        <div class="phase-header">
+            <div class="phase-title">Game Complete!</div>
+            <div class="phase-subtitle">After 20 rounds of intense competition</div>
+        </div>
+
+        <!-- Winner Section -->
+        <div class="winner-section">
+            <div class="winner-trophy">🏆</div>
+            <div class="winner-announcement">
+                <div class="winner-name">Lucas Wins!</div>
+                <div class="winner-score">Final Score: 58 points</div>
+            </div>
+        </div>
+
+        <!-- Final Rankings -->
+        <div class="rankings-section">
+            <div class="rankings-header">Final Rankings</div>
+            
+            <div class="rankings-list">
+                <!-- 1st Place -->
+                <div class="rank-card gold">
+                    <div class="rank-position">1</div>
+                    <div class="player-info">
+                        <div class="player-name">Lucas</div>
+                        <div class="player-stats">Won 12 turns • 5 perfect rounds</div>
+                    </div>
+                    <div class="final-score">
+                        <div class="score-value">58</div>
+                        <div class="score-label">Points</div>
+                    </div>
+                </div>
+
+                <!-- 2nd Place -->
+                <div class="rank-card silver">
+                    <div class="rank-position">2</div>
+                    <div class="player-info">
+                        <div class="player-name">Bob</div>
+                        <div class="player-stats">Won 10 turns • 4 perfect rounds</div>
+                    </div>
+                    <div class="final-score">
+                        <div class="score-value">52</div>
+                        <div class="score-label">Points</div>
+                    </div>
+                </div>
+
+                <!-- 3rd Place -->
+                <div class="rank-card bronze">
+                    <div class="rank-position">3</div>
+                    <div class="player-info">
+                        <div class="player-name">Daniel</div>
+                        <div class="player-stats">Won 8 turns • 3 perfect rounds</div>
+                    </div>
+                    <div class="final-score">
+                        <div class="score-value">41</div>
+                        <div class="score-label">Points</div>
+                    </div>
+                </div>
+
+                <!-- 4th Place -->
+                <div class="rank-card">
+                    <div class="rank-position">4</div>
+                    <div class="player-info">
+                        <div class="player-name">Andy (You)</div>
+                        <div class="player-stats">Won 6 turns • 2 perfect rounds</div>
+                    </div>
+                    <div class="final-score">
+                        <div class="score-value">35</div>
+                        <div class="score-label">Points</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Game Summary -->
+        <div class="game-summary">
+            <div class="summary-stats">
+                <div class="stat-item">
+                    <div class="stat-value">20</div>
+                    <div class="stat-label">Rounds</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value">152</div>
+                    <div class="stat-label">Total Turns</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value">45m</div>
+                    <div class="stat-label">Duration</div>
+                </div>
+            </div>
+
+            <div class="action-buttons">
+                <button class="action-button play-again-button" onclick="playAgain()">
+                    Play Again
+                </button>
+                <button class="action-button exit-button" onclick="exitGame()">
+                    Exit to Lobby
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function playAgain() {
+            console.log('Starting new game...');
+            // In real game, this would restart with same players
+        }
+
+        function exitGame() {
+            console.log('Returning to lobby...');
+            // In real game, this would return to main menu/lobby
+        }
+    </script>
+</body>
+</html>
