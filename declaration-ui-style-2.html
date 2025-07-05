@@ -1,0 +1,638 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Declaration Phase - Style 2 (Minimalist Zen)</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&family=Crimson+Pro:wght@400;600;700&display=swap');
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Plus Jakarta Sans', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+            background: 
+                linear-gradient(135deg, #F8F9FA 0%, #E9ECEF 25%, #DEE2E6 50%, #CED4DA 75%, #ADB5BD 100%),
+                radial-gradient(circle at 30% 20%, rgba(255, 193, 7, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 70% 80%, rgba(13, 110, 253, 0.05) 0%, transparent 50%);
+            color: #212529;
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            position: relative;
+        }
+
+        /* Subtle paper texture */
+        body::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                radial-gradient(circle at 25% 25%, rgba(255, 255, 255, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 75% 75%, rgba(0, 0, 0, 0.02) 0%, transparent 50%);
+            pointer-events: none;
+        }
+
+        /* Fixed 9:16 Container */
+        .game-container {
+            width: min(100vw, 56.25vh);
+            height: min(100vh, 177.78vw);
+            max-width: 400px;
+            max-height: 711px;
+            background: 
+                linear-gradient(145deg, #FFFFFF 0%, #F8F9FA 100%),
+                radial-gradient(circle at 20% 30%, rgba(255, 193, 7, 0.03) 0%, transparent 70%),
+                radial-gradient(circle at 80% 70%, rgba(13, 110, 253, 0.02) 0%, transparent 70%);
+            border-radius: 20px;
+            border: 1px solid rgba(173, 181, 189, 0.3);
+            box-shadow: 
+                0 20px 40px rgba(0, 0, 0, 0.08),
+                0 0 0 1px rgba(255, 255, 255, 0.9),
+                inset 0 1px 0 rgba(255, 255, 255, 1);
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* Redeal Multiplier Indicator */
+        .multiplier-indicator {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: 
+                linear-gradient(135deg, #FFC107 0%, #FF9800 100%),
+                radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.3) 0%, transparent 60%);
+            padding: 8px 16px;
+            border-radius: 16px;
+            border: 1px solid rgba(255, 193, 7, 0.4);
+            box-shadow: 
+                0 4px 12px rgba(255, 193, 7, 0.2),
+                inset 0 1px 0 rgba(255, 255, 255, 0.6);
+            font-weight: 700;
+            font-size: 16px;
+            z-index: 1000;
+            color: #212529;
+            letter-spacing: 0.5px;
+        }
+
+        /* Phase Header */
+        .phase-header {
+            text-align: center;
+            padding: 50px 24px 30px;
+            background: 
+                linear-gradient(180deg, rgba(248, 249, 250, 0.8) 0%, transparent 100%),
+                linear-gradient(90deg, transparent 0%, rgba(173, 181, 189, 0.1) 50%, transparent 100%);
+            border-bottom: 1px solid rgba(173, 181, 189, 0.2);
+            position: relative;
+        }
+
+        .phase-header::after {
+            content: '';
+            position: absolute;
+            bottom: -1px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 40px;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, #6C757D, transparent);
+        }
+
+        .phase-title {
+            font-family: 'Crimson Pro', serif;
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 8px;
+            color: #343A40;
+            letter-spacing: -0.5px;
+        }
+
+        .phase-subtitle {
+            font-size: 14px;
+            color: #6C757D;
+            font-weight: 500;
+        }
+
+        /* Players Info Section */
+        .players-section {
+            flex: 1;
+            padding: 0 20px;
+            overflow: visible;
+        }
+
+        .player-row {
+            display: flex;
+            align-items: center;
+            background: 
+                linear-gradient(145deg, #FFFFFF 0%, #F8F9FA 100%),
+                radial-gradient(circle at 15% 50%, rgba(255, 255, 255, 0.8) 0%, transparent 50%);
+            margin-bottom: 12px;
+            padding: 10px 20px;
+            border-radius: 12px;
+            border: 1px solid rgba(173, 181, 189, 0.15);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 
+                0 2px 8px rgba(0, 0, 0, 0.06),
+                inset 0 1px 0 rgba(255, 255, 255, 1);
+            position: relative;
+        }
+
+        .player-row::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 3px;
+            height: 40%;
+            border-radius: 0 2px 2px 0;
+            background: transparent;
+            transition: all 0.3s ease;
+        }
+
+        .player-row.current-turn {
+            border-color: rgba(255, 193, 7, 0.4);
+            background: 
+                linear-gradient(145deg, #FFF8E1 0%, #FFFBF0 100%),
+                radial-gradient(circle at 15% 50%, rgba(255, 193, 7, 0.1) 0%, transparent 50%);
+            box-shadow: 
+                0 4px 16px rgba(255, 193, 7, 0.15),
+                0 0 0 1px rgba(255, 193, 7, 0.1),
+                inset 0 1px 0 rgba(255, 255, 255, 1);
+        }
+
+        .player-row.current-turn::before {
+            background: linear-gradient(180deg, #FFC107, #FF9800);
+        }
+
+        .player-row.declared {
+            border-color: rgba(40, 167, 69, 0.3);
+            background: 
+                linear-gradient(145deg, #F0FFF4 0%, #F8FFF8 100%),
+                radial-gradient(circle at 15% 50%, rgba(40, 167, 69, 0.08) 0%, transparent 50%);
+        }
+
+        .player-row.declared::before {
+            background: linear-gradient(180deg, #28A745, #20C997);
+        }
+
+        .player-row.waiting {
+            border-color: rgba(108, 117, 125, 0.15);
+            background: 
+                linear-gradient(145deg, #F8F9FA 0%, #FFFFFF 100%),
+                radial-gradient(circle at 15% 50%, rgba(108, 117, 125, 0.05) 0%, transparent 50%);
+        }
+
+        .player-avatar {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            background: 
+                linear-gradient(145deg, #FFFFFF 0%, #F8F9FA 100%),
+                radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.8) 0%, transparent 60%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 16px;
+            margin-right: 16px;
+            border: 2px solid rgba(173, 181, 189, 0.3);
+            box-shadow: 
+                0 4px 8px rgba(0, 0, 0, 0.08),
+                inset 0 1px 0 rgba(255, 255, 255, 1);
+            color: #495057;
+        }
+
+        .player-info {
+            flex: 1;
+        }
+
+        .player-name {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 2px;
+            color: #212529;
+            letter-spacing: -0.2px;
+        }
+
+        .declaration-status {
+            text-align: right;
+            min-width: 80px;
+        }
+
+        .declared-value {
+            font-size: 18px;
+            font-weight: 700;
+            color: #28A745;
+            background: rgba(40, 167, 69, 0.1);
+            padding: 6px 12px;
+            border-radius: 8px;
+            border: 1px solid rgba(40, 167, 69, 0.3);
+            font-family: 'Crimson Pro', serif;
+        }
+
+        .waiting-indicator {
+            font-size: 12px;
+            color: #6C757D;
+            font-weight: 500;
+        }
+
+        .turn-indicator {
+            background: 
+                linear-gradient(135deg, #FFC107 0%, #FF9800 100%),
+                radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.3) 0%, transparent 60%);
+            color: #212529;
+            padding: 6px 12px;
+            border-radius: 8px;
+            font-size: 12px;
+            font-weight: 700;
+            border: 1px solid rgba(255, 193, 7, 0.4);
+            box-shadow: 0 2px 4px rgba(255, 193, 7, 0.2);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        /* Player Hand Section */
+        .hand-section {
+            background: 
+                linear-gradient(180deg, rgba(248, 249, 250, 0.6) 0%, rgba(233, 236, 239, 0.8) 100%),
+                radial-gradient(ellipse 100% 60% at 50% 0%, rgba(173, 181, 189, 0.1) 0%, transparent 100%);
+            padding: 24px;
+            border-top: 1px solid rgba(173, 181, 189, 0.2);
+            border-radius: 20px 20px 0 0;
+            position: relative;
+        }
+
+        .hand-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 40px;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, #6C757D, transparent);
+        }
+
+        .pieces-tray {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 12px;
+            max-width: 350px;
+            margin: 0 auto;
+        }
+
+        .piece {
+            aspect-ratio: 1;
+            border-radius: 50%;
+            background: 
+                linear-gradient(145deg, #FFFFFF 0%, #F8F9FA 100%),
+                radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.8) 0%, transparent 60%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            font-weight: bold;
+            text-align: center;
+            box-shadow: 
+                0 4px 12px rgba(0, 0, 0, 0.08),
+                inset 0 1px 0 rgba(255, 255, 255, 1);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            cursor: pointer;
+            position: relative;
+            background-size: 70%;
+            background-position: center;
+            background-repeat: no-repeat;
+            font-family: 'SimSun', '宋体', serif;
+            border: 2px solid rgba(173, 181, 189, 0.2);
+        }
+
+        .piece:hover {
+            transform: translateY(-3px) scale(1.05);
+            box-shadow: 
+                0 8px 20px rgba(0, 0, 0, 0.12),
+                inset 0 1px 0 rgba(255, 255, 255, 1);
+        }
+
+        .piece.yellow {
+            border-color: rgba(255, 193, 7, 0.6);
+            background: 
+                linear-gradient(145deg, #FFF8E1 0%, #FFFBF0 100%),
+                radial-gradient(circle at 30% 30%, rgba(255, 193, 7, 0.1) 0%, transparent 60%);
+            color: #F57F17;
+        }
+
+        .piece.blue {
+            border-color: rgba(13, 110, 253, 0.6);
+            background: 
+                linear-gradient(145deg, #F0F8FF 0%, #F8FBFF 100%),
+                radial-gradient(circle at 30% 30%, rgba(13, 110, 253, 0.08) 0%, transparent 60%);
+            color: #0A58CA;
+        }
+
+        .piece-character {
+            font-size: 18px;
+            margin-bottom: 2px;
+            font-weight: 700;
+        }
+
+        .piece-points {
+            font-size: 10px;
+            font-weight: 600;
+            background: rgba(108, 117, 125, 0.1);
+            padding: 2px 6px;
+            border-radius: 6px;
+            border: 1px solid rgba(108, 117, 125, 0.2);
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            color: #495057;
+        }
+
+        /* Declaration Popup */
+        .declaration-popup {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(33, 37, 41, 0.6);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 2000;
+            padding: 20px;
+            backdrop-filter: blur(8px);
+        }
+
+        .popup-content {
+            background: 
+                linear-gradient(145deg, #FFFFFF 0%, #F8F9FA 100%),
+                radial-gradient(circle at 30% 20%, rgba(255, 255, 255, 0.8) 0%, transparent 60%);
+            border-radius: 20px;
+            padding: 36px 32px;
+            max-width: 360px;
+            width: 100%;
+            text-align: center;
+            border: 1px solid rgba(173, 181, 189, 0.2);
+            box-shadow: 
+                0 32px 64px rgba(0, 0, 0, 0.15),
+                0 0 0 1px rgba(255, 255, 255, 0.9),
+                inset 0 1px 0 rgba(255, 255, 255, 1);
+        }
+
+        .popup-title {
+            font-family: 'Crimson Pro', serif;
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 12px;
+            color: #212529;
+            letter-spacing: -0.5px;
+        }
+
+        .popup-subtitle {
+            font-size: 14px;
+            color: #6C757D;
+            margin-bottom: 28px;
+            font-weight: 500;
+        }
+
+        .declaration-options {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+            margin-bottom: 28px;
+        }
+
+        .declaration-option {
+            padding: 16px 8px;
+            background: 
+                linear-gradient(145deg, #FFFFFF 0%, #F8F9FA 100%),
+                radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.8) 0%, transparent 60%);
+            border: 1px solid rgba(173, 181, 189, 0.3);
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            font-size: 18px;
+            font-weight: 700;
+            color: #495057;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.06);
+            font-family: 'Crimson Pro', serif;
+        }
+
+        .declaration-option:hover {
+            background: 
+                linear-gradient(145deg, #FFF8E1 0%, #FFFBF0 100%),
+                radial-gradient(circle at 30% 30%, rgba(255, 193, 7, 0.1) 0%, transparent 60%);
+            border-color: rgba(255, 193, 7, 0.4);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(255, 193, 7, 0.15);
+        }
+
+        .declaration-option.selected {
+            background: 
+                linear-gradient(135deg, #FFC107 0%, #FF9800 100%),
+                radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.3) 0%, transparent 60%);
+            border-color: rgba(255, 193, 7, 0.6);
+            color: #212529;
+            box-shadow: 0 6px 16px rgba(255, 193, 7, 0.25);
+        }
+
+        .confirm-button {
+            background: 
+                linear-gradient(135deg, #28A745 0%, #20C997 100%),
+                radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.2) 0%, transparent 60%);
+            color: white;
+            border: 1px solid rgba(40, 167, 69, 0.4);
+            padding: 16px 32px;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            width: 100%;
+            box-shadow: 0 4px 8px rgba(40, 167, 69, 0.2);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .confirm-button:hover {
+            background: 
+                linear-gradient(135deg, #20C997 0%, #28A745 100%),
+                radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.2) 0%, transparent 60%);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 16px rgba(40, 167, 69, 0.3);
+        }
+
+        .confirm-button:disabled {
+            background: 
+                linear-gradient(135deg, #ADB5BD 0%, #6C757D 100%),
+                radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.1) 0%, transparent 60%);
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: 0 2px 4px rgba(108, 117, 125, 0.2);
+            opacity: 0.6;
+        }
+    </style>
+</head>
+<body>
+    <div class="game-container">
+        <!-- Redeal Multiplier Indicator -->
+        <div class="multiplier-indicator">
+            3×
+        </div>
+
+        <!-- Phase Header -->
+        <div class="phase-header">
+            <div class="phase-title">Declaration Phase</div>
+            <div class="phase-subtitle">Round 1 • Declare your target pile count</div>
+        </div>
+
+        <!-- Players Section -->
+        <div class="players-section">
+            <!-- Bob (Already Declared) -->
+            <div class="player-row declared">
+                <div class="player-avatar">B</div>
+                <div class="player-info">
+                    <div class="player-name">Bob</div>
+                </div>
+                <div class="declaration-status">
+                    <div class="declared-value">3</div>
+                </div>
+            </div>
+
+            <!-- Andy (Human, Current Turn) -->
+            <div class="player-row current-turn">
+                <div class="player-avatar">A</div>
+                <div class="player-info">
+                    <div class="player-name">Andy (You)</div>
+                </div>
+                <div class="declaration-status">
+                    <div class="turn-indicator">Current Turn</div>
+                </div>
+            </div>
+
+            <!-- Lucas (Waiting) -->
+            <div class="player-row waiting">
+                <div class="player-avatar">L</div>
+                <div class="player-info">
+                    <div class="player-name">Lucas</div>
+                </div>
+                <div class="declaration-status">
+                    <div class="waiting-indicator">Waiting</div>
+                </div>
+            </div>
+
+            <!-- Daniel (Waiting) -->
+            <div class="player-row waiting">
+                <div class="player-avatar">D</div>
+                <div class="player-info">
+                    <div class="player-name">Daniel</div>
+                </div>
+                <div class="declaration-status">
+                    <div class="waiting-indicator">Waiting</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Player Hand Section -->
+        <div class="hand-section">
+            <div class="pieces-tray">
+                <!-- Row 1 -->
+                <div class="piece yellow">
+                    <div class="piece-character">将</div>
+                    <div class="piece-points">14</div>
+                </div>
+                <div class="piece blue">
+                    <div class="piece-character">士</div>
+                    <div class="piece-points">11</div>
+                </div>
+                <div class="piece yellow">
+                    <div class="piece-character">象</div>
+                    <div class="piece-points">10</div>
+                </div>
+                <div class="piece blue">
+                    <div class="piece-character">车</div>
+                    <div class="piece-points">7</div>
+                </div>
+                
+                <!-- Row 2 -->
+                <div class="piece yellow">
+                    <div class="piece-character">马</div>
+                    <div class="piece-points">6</div>
+                </div>
+                <div class="piece blue">
+                    <div class="piece-character">炮</div>
+                    <div class="piece-points">3</div>
+                </div>
+                <div class="piece yellow">
+                    <div class="piece-character">兵</div>
+                    <div class="piece-points">2</div>
+                </div>
+                <div class="piece blue">
+                    <div class="piece-character">卒</div>
+                    <div class="piece-points">1</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Declaration Popup -->
+    <div class="declaration-popup">
+        <div class="popup-content">
+            <div class="popup-title">Make Your Declaration</div>
+            <div class="popup-subtitle">How many piles do you plan to win this round?</div>
+            
+            <div class="declaration-options">
+                <div class="declaration-option" onclick="selectDeclaration(0)">0</div>
+                <div class="declaration-option" onclick="selectDeclaration(1)">1</div>
+                <div class="declaration-option" onclick="selectDeclaration(2)">2</div>
+                <div class="declaration-option" onclick="selectDeclaration(3)">3</div>
+                <div class="declaration-option" onclick="selectDeclaration(4)">4</div>
+                <div class="declaration-option" onclick="selectDeclaration(5)">5</div>
+                <div class="declaration-option" onclick="selectDeclaration(6)">6</div>
+                <div class="declaration-option" onclick="selectDeclaration(7)">7</div>
+                <div class="declaration-option" onclick="selectDeclaration(8)">8</div>
+            </div>
+            
+            <button class="confirm-button" onclick="confirmDeclaration()" disabled>
+                Confirm Declaration
+            </button>
+        </div>
+    </div>
+
+    <script>
+        let selectedDeclaration = null;
+
+        function selectDeclaration(value) {
+            selectedDeclaration = value;
+            
+            // Remove previous selection
+            document.querySelectorAll('.declaration-option').forEach(option => {
+                option.classList.remove('selected');
+            });
+            
+            // Add selection to clicked option
+            event.target.classList.add('selected');
+            
+            // Enable confirm button
+            document.querySelector('.confirm-button').disabled = false;
+        }
+
+        function confirmDeclaration() {
+            if (selectedDeclaration !== null) {
+                console.log(`You declared ${selectedDeclaration} piles! Good luck!`);
+                document.querySelector('.declaration-popup').style.display = 'none';
+            }
+        }
+    </script>
+</body>
+</html>
