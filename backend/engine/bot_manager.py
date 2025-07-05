@@ -866,59 +866,9 @@ class GameBotHandler:
             
             if player and player.is_bot:
                 print(f"🤖 Bot {current_weak_player} needs to make redeal decision")
-                await asyncio.sleep(0.5)  # Small delay for realism
-                await self._bot_redeal_decision(player)
+                # Use consolidated method with small delay for sequential decisions
+                await self._delayed_bot_redeal_decision(current_weak_player, 0.5)
 
-    async def _bot_redeal_decision(self, bot: Player):
-        """Make redeal decision for bot"""
-        try:
-            # Simple strategy: decline redeal 70% of the time to avoid infinite loops
-            import random
-            decline_probability = 0.7
-            should_decline = random.random() < decline_probability
-            
-            if should_decline:
-                # Decline redeal
-                if self.state_machine:
-                    action = GameAction(
-                        player_name=bot.name,
-                        action_type=ActionType.REDEAL_RESPONSE,
-                        payload={"accept": False},
-                        is_bot=True
-                    )
-                    result = await self.state_machine.handle_action(action)
-                    print(f"✅ Bot {bot.name} DECLINED redeal")
-                else:
-                    print(f"❌ No state machine available for bot {bot.name} redeal decision")
-            else:
-                # Accept redeal
-                if self.state_machine:
-                    action = GameAction(
-                        player_name=bot.name,
-                        action_type=ActionType.REDEAL_REQUEST,
-                        payload={"accept": True},
-                        is_bot=True
-                    )
-                    result = await self.state_machine.handle_action(action)
-                    print(f"✅ Bot {bot.name} ACCEPTED redeal")
-                else:
-                    print(f"❌ No state machine available for bot {bot.name} redeal decision")
-                    
-        except Exception as e:
-            print(f"❌ Bot {bot.name} redeal decision error: {e}")
-            # Fallback: auto-decline to avoid hanging
-            if self.state_machine:
-                try:
-                    action = GameAction(
-                        player_name=bot.name,
-                        action_type=ActionType.REDEAL_RESPONSE,
-                        payload={"accept": False},
-                        is_bot=True
-                    )
-                    await self.state_machine.handle_action(action)
-                    print(f"🔧 Bot {bot.name} auto-declined as fallback")
-                except:
-                    pass
 
     async def _handle_simultaneous_redeal_decisions(self, data: dict):
         """Handle multiple bot redeal decisions with realistic timing"""
@@ -948,9 +898,8 @@ class GameBotHandler:
         """Make bot redeal decision after realistic delay"""
         await asyncio.sleep(delay)
         
-        # Smart decision logic
-        decline_probability = self._calculate_redeal_decline_probability(bot_name)
-        should_decline = random.random() < decline_probability
+        # Bots always accept redeals for testing purposes
+        should_decline = False
         
         print(f"🤖 Bot {bot_name} deciding after {delay:.1f}s delay: {'DECLINE' if should_decline else 'ACCEPT'}")
         
@@ -968,29 +917,6 @@ class GameBotHandler:
         except Exception as e:
             print(f"❌ Bot {bot_name} redeal decision error: {e}")
 
-    def _calculate_redeal_decline_probability(self, bot_name: str) -> float:
-        """Smart bot decision making"""
-        game = self._get_game_state()
-        base_probability = 0.7  # 70% decline by default
-        
-        # Adjust based on game state
-        redeal_multiplier = getattr(game, 'redeal_multiplier', 1)
-        round_number = getattr(game, 'round_number', 1)
-        
-        if redeal_multiplier >= 3:
-            base_probability = 0.9  # Very likely to decline at high multipliers
-        elif round_number == 1:
-            base_probability = 0.5  # More aggressive in first round
-        elif redeal_multiplier == 1:
-            base_probability = 0.6  # Slightly more likely to accept first redeal
-        
-        # Add personality variation
-        if "Bot 1" in bot_name:
-            base_probability += 0.1  # Bot 1 is more conservative
-        elif "Bot 4" in bot_name:
-            base_probability -= 0.1  # Bot 4 is more aggressive
-        
-        return max(0.1, min(0.9, base_probability))  # Clamp between 0.1 and 0.9
     
     # 🔧 FIX: Validation Feedback Event Handlers
     

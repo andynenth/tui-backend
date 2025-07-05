@@ -101,7 +101,7 @@ class PreparationState(GameState):
         # game._deal_guaranteed_no_redeal(red_general_player_index=1)
         
         # 3. Force weak hands (testing redeal logic)
-        game._deal_weak_hand(weak_player_indices=[0], max_weak_points=9, limit=2)
+        game._deal_weak_hand(weak_player_indices=[0,1], max_weak_points=9, limit=2)
         
         # Examples:
         # game._deal_guaranteed_no_redeal()                              # Random RED_GENERAL assignment
