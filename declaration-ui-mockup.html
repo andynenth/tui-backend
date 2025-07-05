@@ -13,7 +13,7 @@
 
         body {
             font-family: 'Georgia', 'Times New Roman', serif;
-            background: linear-gradient(135deg, #8B4513 0%, #D2691E 50%, #CD853F 100%);
+            background: linear-gradient(135deg, #E6F3FF 0%, #F0F8FF 50%, #F5FFFA 100%);
             color: #2F1B14;
             height: 100vh;
             display: flex;
@@ -29,13 +29,13 @@
             height: min(100vh, 177.78vw); /* 16:9 aspect ratio */
             max-width: 400px;
             max-height: 711px;
-            background: linear-gradient(145deg, #F4A460, #DEB887);
+            background: linear-gradient(145deg, #F8F8FF, #F0F8FF);
             border-radius: 20px;
-            border: 8px solid #8B4513;
+            border: 6px solid #4169E1;
             box-shadow: 
-                0 0 0 4px #D2691E,
-                0 20px 40px rgba(0,0,0,0.3),
-                inset 0 0 20px rgba(255,255,255,0.1);
+                0 0 0 3px #FFD700,
+                0 20px 40px rgba(0,0,0,0.2),
+                inset 0 0 20px rgba(255,255,255,0.3);
             display: flex;
             flex-direction: column;
             position: relative;
@@ -46,57 +46,42 @@
         .multiplier-indicator {
             position: absolute;
             top: 15px;
-            left: 50%;
-            transform: translateX(-50%);
-            background: linear-gradient(45deg, #FF6B35, #F7931E);
-            padding: 10px 20px;
-            border-radius: 25px;
-            border: 3px solid #8B4513;
+            right: 15px;
+            background: linear-gradient(45deg, #FFD700, #FFA500);
+            padding: 8px 16px;
+            border-radius: 20px;
+            border: 2px solid #4169E1;
             box-shadow: 
-                0 4px 12px rgba(0,0,0,0.2),
-                inset 0 2px 0 rgba(255,255,255,0.3);
+                0 3px 8px rgba(0,0,0,0.2),
+                inset 0 1px 0 rgba(255,255,255,0.4);
             font-weight: bold;
-            font-size: 14px;
+            font-size: 16px;
             z-index: 1000;
-            color: white;
-            text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
-            animation: shimmer 3s ease-in-out infinite;
+            color: #2F1B14;
+            text-shadow: 1px 1px 2px rgba(255,255,255,0.5);
         }
 
-        @keyframes shimmer {
-            0%, 100% { 
-                box-shadow: 
-                    0 4px 12px rgba(0,0,0,0.2),
-                    inset 0 2px 0 rgba(255,255,255,0.3);
-            }
-            50% { 
-                box-shadow: 
-                    0 6px 20px rgba(255,107,53,0.4),
-                    inset 0 2px 0 rgba(255,255,255,0.5),
-                    0 0 15px rgba(255,107,53,0.3);
-            }
-        }
 
         /* Phase Header */
         .phase-header {
             text-align: center;
             padding: 60px 20px 20px;
-            background: linear-gradient(180deg, rgba(139,69,19,0.3) 0%, transparent 100%);
-            border-bottom: 2px solid rgba(139,69,19,0.3);
+            background: linear-gradient(180deg, rgba(65,105,225,0.1) 0%, transparent 100%);
+            border-bottom: 2px solid rgba(65,105,225,0.2);
         }
 
         .phase-title {
             font-size: 22px;
             font-weight: bold;
             margin-bottom: 8px;
-            color: #8B4513;
+            color: #4169E1;
             text-shadow: 1px 1px 2px rgba(255,255,255,0.5);
             font-family: 'Georgia', serif;
         }
 
         .phase-subtitle {
             font-size: 13px;
-            color: #A0522D;
+            color: #6495ED;
             font-style: italic;
         }
 
@@ -104,56 +89,56 @@
         .players-section {
             flex: 1;
             padding: 0 15px;
-            overflow-y: auto;
+            overflow: visible;
         }
 
         .player-row {
             display: flex;
             align-items: center;
-            background: linear-gradient(145deg, rgba(255,248,220,0.8), rgba(245,222,179,0.9));
+            background: linear-gradient(145deg, rgba(255,255,255,0.9), rgba(248,248,255,0.95));
             margin-bottom: 10px;
             padding: 12px 16px;
             border-radius: 15px;
             border: 2px solid transparent;
             transition: all 0.3s ease;
             box-shadow: 
-                0 4px 8px rgba(139,69,19,0.1),
-                inset 0 1px 0 rgba(255,255,255,0.5);
+                0 4px 8px rgba(65,105,225,0.1),
+                inset 0 1px 0 rgba(255,255,255,0.8);
         }
 
         .player-row.current-turn {
-            border-color: #FF6B35;
-            background: linear-gradient(145deg, rgba(255,107,53,0.2), rgba(247,147,30,0.3));
+            border-color: #FFD700;
+            background: linear-gradient(145deg, rgba(255,215,0,0.2), rgba(255,165,0,0.3));
             box-shadow: 
-                0 0 20px rgba(255,107,53,0.4),
-                0 4px 12px rgba(139,69,19,0.2),
-                inset 0 1px 0 rgba(255,255,255,0.6);
+                0 0 20px rgba(255,215,0,0.4),
+                0 4px 12px rgba(65,105,225,0.2),
+                inset 0 1px 0 rgba(255,255,255,0.9);
             animation: glow-pulse 2s ease-in-out infinite alternate;
         }
 
         @keyframes glow-pulse {
             from { 
                 box-shadow: 
-                    0 0 15px rgba(255,107,53,0.3),
-                    0 4px 12px rgba(139,69,19,0.2),
-                    inset 0 1px 0 rgba(255,255,255,0.6);
+                    0 0 15px rgba(255,215,0,0.3),
+                    0 4px 12px rgba(65,105,225,0.2),
+                    inset 0 1px 0 rgba(255,255,255,0.9);
             }
             to { 
                 box-shadow: 
-                    0 0 25px rgba(255,107,53,0.5),
-                    0 6px 16px rgba(139,69,19,0.3),
-                    inset 0 1px 0 rgba(255,255,255,0.8);
+                    0 0 25px rgba(255,215,0,0.5),
+                    0 6px 16px rgba(65,105,225,0.3),
+                    inset 0 1px 0 rgba(255,255,255,1);
             }
         }
 
         .player-row.declared {
-            border-color: #228B22;
-            background: linear-gradient(145deg, rgba(34,139,34,0.15), rgba(50,205,50,0.2));
+            border-color: #32CD32;
+            background: linear-gradient(145deg, rgba(50,205,50,0.15), rgba(144,238,144,0.2));
         }
 
         .player-row.waiting {
-            border-color: #DAA520;
-            background: linear-gradient(145deg, rgba(218,165,32,0.15), rgba(255,215,0,0.2));
+            border-color: #87CEEB;
+            background: linear-gradient(145deg, rgba(135,206,235,0.15), rgba(173,216,230,0.2));
             animation: waiting-pulse 3s ease-in-out infinite;
         }
 
@@ -166,28 +151,28 @@
             width: 45px;
             height: 45px;
             border-radius: 50%;
-            background: linear-gradient(145deg, #DEB887, #D2B48C);
+            background: linear-gradient(145deg, #F0F8FF, #E6F3FF);
             display: flex;
             align-items: center;
             justify-content: center;
             font-weight: bold;
             font-size: 16px;
             margin-right: 12px;
-            border: 3px solid #8B4513;
+            border: 3px solid #4169E1;
             box-shadow: 
-                0 3px 6px rgba(139,69,19,0.3),
-                inset 0 1px 0 rgba(255,255,255,0.4);
-            color: #8B4513;
+                0 3px 6px rgba(65,105,225,0.3),
+                inset 0 1px 0 rgba(255,255,255,0.6);
+            color: #4169E1;
         }
 
         .player-avatar.bot {
-            background: linear-gradient(145deg, #CD853F, #D2691E);
-            border-color: #A0522D;
+            background: linear-gradient(145deg, #E0E6FF, #D0D6FF);
+            border-color: #4169E1;
         }
 
         .player-avatar.human {
-            background: linear-gradient(145deg, #F4A460, #DEB887);
-            border-color: #8B4513;
+            background: linear-gradient(145deg, #FFF8DC, #FFFACD);
+            border-color: #FFD700;
         }
 
         .player-info {
@@ -198,12 +183,12 @@
             font-size: 15px;
             font-weight: bold;
             margin-bottom: 3px;
-            color: #8B4513;
+            color: #4169E1;
         }
 
         .player-score {
             font-size: 12px;
-            color: #A0522D;
+            color: #6495ED;
             font-style: italic;
         }
 
@@ -215,43 +200,35 @@
         .declared-value {
             font-size: 18px;
             font-weight: bold;
-            color: #228B22;
-            background: rgba(34,139,34,0.1);
+            color: #32CD32;
+            background: rgba(50,205,50,0.1);
             padding: 4px 8px;
             border-radius: 10px;
-            border: 2px solid #228B22;
+            border: 2px solid #32CD32;
         }
 
         .waiting-indicator {
             font-size: 12px;
-            color: #DAA520;
+            color: #87CEEB;
             font-style: italic;
-            animation: dots 2s infinite;
-        }
-
-        @keyframes dots {
-            0%, 20% { content: ''; }
-            40% { content: '.'; }
-            60% { content: '..'; }
-            80%, 100% { content: '...'; }
         }
 
         .turn-indicator {
-            background: linear-gradient(45deg, #FF6B35, #F7931E);
-            color: white;
+            background: linear-gradient(45deg, #FFD700, #FFA500);
+            color: #2F1B14;
             padding: 6px 10px;
             border-radius: 12px;
             font-size: 11px;
             font-weight: bold;
-            border: 2px solid #8B4513;
-            box-shadow: 0 2px 4px rgba(139,69,19,0.3);
+            border: 2px solid #4169E1;
+            box-shadow: 0 2px 4px rgba(65,105,225,0.3);
         }
 
         /* Player Hand Section */
         .hand-section {
-            background: linear-gradient(180deg, rgba(139,69,19,0.2) 0%, rgba(160,82,45,0.3) 100%);
+            background: linear-gradient(180deg, rgba(65,105,225,0.1) 0%, rgba(135,206,235,0.2) 100%);
             padding: 15px;
-            border-top: 3px solid #8B4513;
+            border-top: 3px solid #4169E1;
             border-radius: 20px 20px 0 0;
         }
 
@@ -266,17 +243,17 @@
         .piece {
             aspect-ratio: 1;
             border-radius: 50%;
-            border: 3px solid #8B4513;
+            background-color: #FFFEF7; /* Ivory background */
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            font-size: 9px;
+            font-size: 20px;
             font-weight: bold;
             text-align: center;
             box-shadow: 
-                0 4px 8px rgba(139,69,19,0.3),
-                inset 0 2px 0 rgba(255,255,255,0.3);
+                0 4px 8px rgba(65,105,225,0.3),
+                inset 0 2px 0 rgba(255,255,255,0.5);
             transition: all 0.3s ease;
             cursor: pointer;
             position: relative;
@@ -284,45 +261,41 @@
             background-size: 70%;
             background-position: center;
             background-repeat: no-repeat;
+            font-family: 'SimSun', '宋体', serif;
         }
 
         .piece:hover {
             transform: translateY(-3px) scale(1.05);
             box-shadow: 
-                0 6px 12px rgba(139,69,19,0.4),
-                inset 0 2px 0 rgba(255,255,255,0.4);
+                0 6px 12px rgba(65,105,225,0.4),
+                inset 0 2px 0 rgba(255,255,255,0.6);
         }
 
-        .piece.red {
-            background-color: #DC143C;
-            background-image: linear-gradient(145deg, #DC143C, #B22222);
-            color: white;
-            border-color: #8B0000;
-            text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
+        .piece.yellow {
+            border: 3px solid #FFD700;
+            color: #B8860B;
+            text-shadow: 1px 1px 2px rgba(255,255,255,0.5);
         }
 
-        .piece.black {
-            background-color: #2F4F4F;
-            background-image: linear-gradient(145deg, #2F4F4F, #1C1C1C);
-            color: white;
-            border-color: #000000;
-            text-shadow: 1px 1px 2px rgba(0,0,0,0.7);
+        .piece.blue {
+            border: 3px solid #4169E1;
+            color: #191970;
+            text-shadow: 1px 1px 2px rgba(255,255,255,0.5);
         }
 
-        .piece-type {
-            font-size: 7px;
-            margin-bottom: 1px;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
+        .piece-character {
+            font-size: 16px;
+            margin-bottom: 2px;
         }
 
         .piece-points {
-            font-size: 11px;
+            font-size: 10px;
             font-weight: bold;
-            background: rgba(0,0,0,0.2);
+            background: rgba(0,0,0,0.1);
             padding: 1px 4px;
-            border-radius: 8px;
-            border: 1px solid rgba(255,255,255,0.3);
+            border-radius: 6px;
+            border: 1px solid rgba(0,0,0,0.2);
+            font-family: Arial, sans-serif;
         }
 
         /* Declaration Popup */
@@ -332,7 +305,7 @@
             left: 0;
             right: 0;
             bottom: 0;
-            background: rgba(139,69,19,0.85);
+            background: rgba(65,105,225,0.85);
             display: flex;
             align-items: center;
             justify-content: center;
@@ -341,30 +314,30 @@
         }
 
         .popup-content {
-            background: linear-gradient(145deg, #F4A460, #DEB887);
+            background: linear-gradient(145deg, #F8F8FF, #F0F8FF);
             border-radius: 20px;
             padding: 25px;
             max-width: 320px;
             width: 100%;
             text-align: center;
-            border: 4px solid #8B4513;
+            border: 4px solid #4169E1;
             box-shadow: 
                 0 20px 40px rgba(0,0,0,0.5),
-                inset 0 2px 0 rgba(255,255,255,0.3);
+                inset 0 2px 0 rgba(255,255,255,0.6);
         }
 
         .popup-title {
             font-size: 18px;
             font-weight: bold;
             margin-bottom: 12px;
-            color: #8B4513;
+            color: #4169E1;
             text-shadow: 1px 1px 2px rgba(255,255,255,0.5);
             font-family: 'Georgia', serif;
         }
 
         .popup-subtitle {
             font-size: 13px;
-            color: #A0522D;
+            color: #6495ED;
             margin-bottom: 20px;
             font-style: italic;
         }
@@ -378,36 +351,36 @@
 
         .declaration-option {
             padding: 12px 6px;
-            background: linear-gradient(145deg, rgba(255,255,255,0.5), rgba(245,222,179,0.7));
-            border: 2px solid #8B4513;
+            background: linear-gradient(145deg, rgba(255,255,255,0.8), rgba(248,248,255,0.9));
+            border: 2px solid #4169E1;
             border-radius: 12px;
             cursor: pointer;
             transition: all 0.3s ease;
             font-size: 16px;
             font-weight: bold;
-            color: #8B4513;
-            box-shadow: 0 2px 4px rgba(139,69,19,0.3);
+            color: #4169E1;
+            box-shadow: 0 2px 4px rgba(65,105,225,0.3);
         }
 
         .declaration-option:hover {
-            background: linear-gradient(145deg, rgba(255,107,53,0.3), rgba(247,147,30,0.4));
-            border-color: #FF6B35;
+            background: linear-gradient(145deg, rgba(255,215,0,0.3), rgba(255,165,0,0.4));
+            border-color: #FFD700;
             transform: scale(1.05);
-            box-shadow: 0 4px 8px rgba(255,107,53,0.4);
+            box-shadow: 0 4px 8px rgba(255,215,0,0.4);
         }
 
         .declaration-option.selected {
-            background: linear-gradient(145deg, #FF6B35, #F7931E);
-            border-color: #8B4513;
-            color: white;
-            text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
-            box-shadow: 0 4px 12px rgba(255,107,53,0.5);
+            background: linear-gradient(145deg, #FFD700, #FFA500);
+            border-color: #4169E1;
+            color: #2F1B14;
+            text-shadow: 1px 1px 2px rgba(255,255,255,0.5);
+            box-shadow: 0 4px 12px rgba(255,215,0,0.5);
         }
 
         .confirm-button {
-            background: linear-gradient(145deg, #228B22, #32CD32);
+            background: linear-gradient(145deg, #32CD32, #228B22);
             color: white;
-            border: 3px solid #8B4513;
+            border: 3px solid #4169E1;
             padding: 14px 28px;
             border-radius: 15px;
             font-size: 15px;
@@ -416,20 +389,20 @@
             transition: all 0.3s ease;
             width: 100%;
             text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
-            box-shadow: 0 4px 8px rgba(139,69,19,0.3);
+            box-shadow: 0 4px 8px rgba(65,105,225,0.3);
         }
 
         .confirm-button:hover {
-            background: linear-gradient(145deg, #32CD32, #228B22);
+            background: linear-gradient(145deg, #228B22, #32CD32);
             transform: translateY(-2px);
-            box-shadow: 0 6px 12px rgba(34,139,34,0.4);
+            box-shadow: 0 6px 12px rgba(50,205,50,0.4);
         }
 
         .confirm-button:disabled {
-            background: linear-gradient(145deg, #A0522D, #8B4513);
+            background: linear-gradient(145deg, #87CEEB, #6495ED);
             cursor: not-allowed;
             transform: none;
-            box-shadow: 0 2px 4px rgba(139,69,19,0.2);
+            box-shadow: 0 2px 4px rgba(65,105,225,0.2);
             opacity: 0.6;
         }
 
@@ -444,17 +417,17 @@
         }
 
         .status-waiting {
-            background: linear-gradient(145deg, rgba(218,165,32,0.2), rgba(255,215,0,0.3));
-            border: 2px solid #DAA520;
-            color: #8B4513;
-            box-shadow: 0 2px 4px rgba(218,165,32,0.2);
+            background: linear-gradient(145deg, rgba(135,206,235,0.2), rgba(173,216,230,0.3));
+            border: 2px solid #87CEEB;
+            color: #4169E1;
+            box-shadow: 0 2px 4px rgba(135,206,235,0.2);
         }
 
         .status-your-turn {
-            background: linear-gradient(145deg, rgba(255,107,53,0.2), rgba(247,147,30,0.3));
-            border: 2px solid #FF6B35;
-            color: #8B4513;
-            box-shadow: 0 2px 4px rgba(255,107,53,0.2);
+            background: linear-gradient(145deg, rgba(255,215,0,0.2), rgba(255,165,0,0.3));
+            border: 2px solid #FFD700;
+            color: #4169E1;
+            box-shadow: 0 2px 4px rgba(255,215,0,0.2);
         }
     </style>
 </head>
@@ -462,7 +435,7 @@
     <div class="game-container">
         <!-- Redeal Multiplier Indicator (shown when > 1) -->
         <div class="multiplier-indicator">
-            🔄 Redeal Multiplier: 3x
+            3x
         </div>
 
         <!-- Phase Header -->
@@ -473,27 +446,14 @@
 
         <!-- Players Section -->
         <div class="players-section">
-            <!-- Bot 2 (Already Declared) -->
+            <!-- Bob (Already Declared) -->
             <div class="player-row declared">
-                <div class="player-avatar bot">B2</div>
+                <div class="player-avatar bot">B</div>
                 <div class="player-info">
-                    <div class="player-name">Bot 2</div>
-                    <div class="player-score">Score: 38 pts</div>
+                    <div class="player-name">Bob</div>
                 </div>
                 <div class="declaration-status">
                     <div class="declared-value">3</div>
-                </div>
-            </div>
-
-            <!-- Bot 3 (Already Declared) -->
-            <div class="player-row declared">
-                <div class="player-avatar bot">B3</div>
-                <div class="player-info">
-                    <div class="player-name">Bot 3</div>
-                    <div class="player-score">Score: 31 pts</div>
-                </div>
-                <div class="declaration-status">
-                    <div class="declared-value">2</div>
                 </div>
             </div>
 
@@ -502,67 +462,71 @@
                 <div class="player-avatar human">A</div>
                 <div class="player-info">
                     <div class="player-name">Andy (You)</div>
-                    <div class="player-score">Score: 42 pts</div>
                 </div>
                 <div class="declaration-status">
-                    <div class="turn-indicator">Your Turn</div>
+                    <div class="turn-indicator">Current turn</div>
                 </div>
             </div>
 
-            <!-- Bot 4 (Waiting for their turn) -->
+            <!-- Lucas (Waiting) -->
             <div class="player-row waiting">
-                <div class="player-avatar bot">B4</div>
+                <div class="player-avatar bot">L</div>
                 <div class="player-info">
-                    <div class="player-name">Bot 4</div>
-                    <div class="player-score">Score: 26 pts</div>
+                    <div class="player-name">Lucas</div>
                 </div>
                 <div class="declaration-status">
-                    <div class="waiting-indicator">Waiting...</div>
+                    <div class="waiting-indicator">Waiting</div>
                 </div>
             </div>
-        </div>
 
-        <!-- Status Message -->
-        <div class="status-message status-your-turn">
-            Your turn to declare! Choose how many piles you plan to win this round.
+            <!-- Daniel (Waiting) -->
+            <div class="player-row waiting">
+                <div class="player-avatar bot">D</div>
+                <div class="player-info">
+                    <div class="player-name">Daniel</div>
+                </div>
+                <div class="declaration-status">
+                    <div class="waiting-indicator">Waiting</div>
+                </div>
+            </div>
         </div>
 
         <!-- Player Hand Section -->
         <div class="hand-section">
             <div class="pieces-tray">
                 <!-- Row 1 -->
-                <div class="piece red">
-                    <div class="piece-type">GENERAL</div>
+                <div class="piece yellow">
+                    <div class="piece-character">将</div>
                     <div class="piece-points">14</div>
                 </div>
-                <div class="piece black">
-                    <div class="piece-type">ADVISOR</div>
+                <div class="piece blue">
+                    <div class="piece-character">士</div>
                     <div class="piece-points">11</div>
                 </div>
-                <div class="piece red">
-                    <div class="piece-type">ELEPHANT</div>
+                <div class="piece yellow">
+                    <div class="piece-character">象</div>
                     <div class="piece-points">10</div>
                 </div>
-                <div class="piece black">
-                    <div class="piece-type">CHARIOT</div>
+                <div class="piece blue">
+                    <div class="piece-character">车</div>
                     <div class="piece-points">7</div>
                 </div>
                 
                 <!-- Row 2 -->
-                <div class="piece red">
-                    <div class="piece-type">HORSE</div>
+                <div class="piece yellow">
+                    <div class="piece-character">马</div>
                     <div class="piece-points">6</div>
                 </div>
-                <div class="piece black">
-                    <div class="piece-type">CANNON</div>
+                <div class="piece blue">
+                    <div class="piece-character">炮</div>
                     <div class="piece-points">3</div>
                 </div>
-                <div class="piece red">
-                    <div class="piece-type">SOLDIER</div>
+                <div class="piece yellow">
+                    <div class="piece-character">兵</div>
                     <div class="piece-points">2</div>
                 </div>
-                <div class="piece black">
-                    <div class="piece-type">SOLDIER</div>
+                <div class="piece blue">
+                    <div class="piece-character">卒</div>
                     <div class="piece-points">1</div>
                 </div>
             </div>
@@ -613,7 +577,7 @@
 
         function confirmDeclaration() {
             if (selectedDeclaration !== null) {
-                alert(`You declared ${selectedDeclaration} piles! Good luck!`);
+                console.log(`You declared ${selectedDeclaration} piles! Good luck!`);
                 // Here you would send the declaration to the backend
                 // For demo, we'll just hide the popup
                 document.querySelector('.declaration-popup').style.display = 'none';
