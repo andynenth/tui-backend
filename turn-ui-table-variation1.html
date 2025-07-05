@@ -1,0 +1,681 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Turn Phase - Table Layout Variation 1</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&family=Crimson+Pro:wght@400;600;700&display=swap');
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Plus Jakarta Sans', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+            background: 
+                linear-gradient(135deg, #F8F9FA 0%, #E9ECEF 25%, #DEE2E6 50%, #CED4DA 75%, #ADB5BD 100%),
+                radial-gradient(circle at 30% 20%, rgba(255, 193, 7, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 70% 80%, rgba(13, 110, 253, 0.05) 0%, transparent 50%);
+            color: #212529;
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            position: relative;
+        }
+
+        /* Subtle paper texture */
+        body::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                radial-gradient(circle at 25% 25%, rgba(255, 255, 255, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 75% 75%, rgba(0, 0, 0, 0.02) 0%, transparent 50%);
+            pointer-events: none;
+        }
+
+        /* Fixed 9:16 Container */
+        .game-container {
+            width: min(100vw, 56.25vh);
+            height: min(100vh, 177.78vw);
+            max-width: 400px;
+            max-height: 711px;
+            background: 
+                linear-gradient(145deg, #FFFFFF 0%, #F8F9FA 100%),
+                radial-gradient(circle at 20% 30%, rgba(255, 193, 7, 0.03) 0%, transparent 70%),
+                radial-gradient(circle at 80% 70%, rgba(13, 110, 253, 0.02) 0%, transparent 70%);
+            border-radius: 20px;
+            border: 1px solid rgba(173, 181, 189, 0.3);
+            box-shadow: 
+                0 20px 40px rgba(0, 0, 0, 0.08),
+                0 0 0 1px rgba(255, 255, 255, 0.9),
+                inset 0 1px 0 rgba(255, 255, 255, 1);
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* Turn Number Indicator */
+        .turn-indicator {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: 
+                linear-gradient(135deg, #28A745 0%, #20C997 100%),
+                radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.3) 0%, transparent 60%);
+            padding: 8px 16px;
+            border-radius: 16px;
+            border: 1px solid rgba(40, 167, 69, 0.4);
+            box-shadow: 
+                0 4px 12px rgba(40, 167, 69, 0.2),
+                inset 0 1px 0 rgba(255, 255, 255, 0.6);
+            font-weight: 700;
+            font-size: 14px;
+            z-index: 1000;
+            color: white;
+            letter-spacing: 0.5px;
+        }
+
+        /* Phase Header */
+        .phase-header {
+            text-align: center;
+            padding: 50px 24px 20px;
+            background: 
+                linear-gradient(180deg, rgba(248, 249, 250, 0.8) 0%, transparent 100%),
+                linear-gradient(90deg, transparent 0%, rgba(173, 181, 189, 0.1) 50%, transparent 100%);
+            border-bottom: 1px solid rgba(173, 181, 189, 0.2);
+            position: relative;
+        }
+
+        .phase-header::after {
+            content: '';
+            position: absolute;
+            bottom: -1px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 40px;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, #6C757D, transparent);
+        }
+
+        .phase-title {
+            font-family: 'Crimson Pro', serif;
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 4px;
+            color: #343A40;
+            letter-spacing: -0.5px;
+        }
+
+        .phase-subtitle {
+            font-size: 14px;
+            color: #6C757D;
+            font-weight: 500;
+            margin-bottom: 8px;
+        }
+
+        .turn-status {
+            font-size: 12px;
+            color: #28A745;
+            font-weight: 600;
+            background: rgba(40, 167, 69, 0.1);
+            padding: 4px 12px;
+            border-radius: 8px;
+            border: 1px solid rgba(40, 167, 69, 0.3);
+            display: inline-block;
+        }
+
+        /* Table Section */
+        .table-section {
+            flex: 1;
+            padding: 16px;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .turn-requirement {
+            font-size: 12px;
+            color: #FFC107;
+            background: rgba(255, 193, 7, 0.1);
+            padding: 6px 12px;
+            border-radius: 8px;
+            border: 1px solid rgba(255, 193, 7, 0.3);
+            text-align: center;
+            margin-bottom: 12px;
+            align-self: center;
+        }
+
+        /* Table Layout */
+        .table-layout {
+            position: relative;
+            flex: 1;
+            min-height: 220px;
+        }
+
+        /* Central Table */
+        .central-table {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 120px;
+            height: 120px;
+            background: 
+                linear-gradient(145deg, #F8F9FA 0%, #E9ECEF 100%),
+                radial-gradient(circle at 30% 30%, rgba(173, 181, 189, 0.1) 0%, transparent 60%);
+            border: 1px solid rgba(173, 181, 189, 0.3);
+            border-radius: 12px;
+            box-shadow: 
+                0 4px 12px rgba(0, 0, 0, 0.06),
+                inset 0 1px 0 rgba(255, 255, 255, 1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 11px;
+            color: #6C757D;
+            text-align: center;
+            font-weight: 500;
+        }
+
+        /* Player Positions */
+        .player-position {
+            position: absolute;
+            display: flex;
+            align-items: center;
+        }
+
+        .player-position.top {
+            top: 8px;
+            left: 50%;
+            transform: translateX(-50%);
+            flex-direction: column;
+        }
+
+        .player-position.left {
+            left: 8px;
+            top: 50%;
+            transform: translateY(-50%);
+            flex-direction: row;
+        }
+
+        .player-position.right {
+            right: 8px;
+            top: 50%;
+            transform: translateY(-50%);
+            flex-direction: row-reverse;
+        }
+
+        .player-info-compact {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            background: 
+                linear-gradient(145deg, #FFFFFF 0%, #F8F9FA 100%),
+                radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.8) 0%, transparent 60%);
+            border: 1px solid rgba(173, 181, 189, 0.2);
+            border-radius: 8px;
+            padding: 8px 6px;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);
+            min-width: 50px;
+        }
+
+        .player-info-compact.active {
+            border-color: rgba(255, 193, 7, 0.4);
+            background: 
+                linear-gradient(145deg, #FFF8E1 0%, #FFFBF0 100%),
+                radial-gradient(circle at 30% 30%, rgba(255, 193, 7, 0.1) 0%, transparent 60%);
+        }
+
+        .player-avatar-small {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background: 
+                linear-gradient(145deg, #FFFFFF 0%, #F8F9FA 100%),
+                radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.8) 0%, transparent 60%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 10px;
+            border: 1px solid rgba(173, 181, 189, 0.3);
+            color: #495057;
+            margin-bottom: 4px;
+        }
+
+        .player-stats {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 2px;
+        }
+
+        .pile-count {
+            font-size: 12px;
+            font-weight: 700;
+            color: #343A40;
+        }
+
+        .declared-count {
+            font-size: 10px;
+            color: #6C757D;
+            background: rgba(108, 117, 125, 0.1);
+            padding: 1px 4px;
+            border-radius: 4px;
+        }
+
+        /* Played Pieces Areas */
+        .played-pieces {
+            position: absolute;
+            display: flex;
+            gap: 4px;
+        }
+
+        .played-pieces.top {
+            top: 60px;
+            left: 50%;
+            transform: translateX(-50%);
+            flex-direction: row;
+        }
+
+        .played-pieces.left {
+            left: 80px;
+            top: 50%;
+            transform: translateY(-50%);
+            flex-direction: column;
+        }
+
+        .played-pieces.right {
+            right: 80px;
+            top: 50%;
+            transform: translateY(-50%);
+            flex-direction: column;
+        }
+
+        .mini-piece {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: 
+                linear-gradient(145deg, #FFFFFF 0%, #F8F9FA 100%),
+                radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.8) 0%, transparent 60%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 8px;
+            font-weight: bold;
+            border: 1px solid rgba(173, 181, 189, 0.3);
+            font-family: 'SimSun', '宋体', serif;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.06);
+        }
+
+        .mini-piece.red {
+            color: #DC3545;
+            border-color: rgba(220, 53, 69, 0.4);
+        }
+
+        .mini-piece.black {
+            color: #495057;
+            border-color: rgba(73, 80, 87, 0.4);
+        }
+
+        /* Confirm Selection Panel - Sliding Tray */
+        .confirm-panel {
+            position: absolute;
+            bottom: 220px;
+            left: 0;
+            right: 0;
+            background: 
+                linear-gradient(145deg, #F0FFF4 0%, #F8FFF8 100%),
+                radial-gradient(circle at 30% 30%, rgba(40, 167, 69, 0.1) 0%, transparent 60%);
+            border: 1px solid rgba(40, 167, 69, 0.3);
+            border-radius: 16px;
+            margin: 0 16px;
+            padding: 16px 20px;
+            box-shadow: 
+                0 4px 20px rgba(40, 167, 69, 0.15),
+                0 0 0 1px rgba(255, 255, 255, 0.9),
+                inset 0 1px 0 rgba(255, 255, 255, 1);
+            z-index: 25;
+            transform: translateY(calc(100% + 20px));
+            transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .confirm-panel.show {
+            transform: translateY(0);
+        }
+
+        .confirm-panel::before {
+            content: '';
+            position: absolute;
+            top: 8px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 40px;
+            height: 3px;
+            background: rgba(40, 167, 69, 0.3);
+            border-radius: 2px;
+        }
+
+        .selection-info {
+            text-align: center;
+            margin-bottom: 12px;
+        }
+
+        .selection-count {
+            font-size: 14px;
+            color: #28A745;
+            font-weight: 600;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 8px;
+            justify-content: center;
+        }
+
+        .action-button {
+            background: 
+                linear-gradient(135deg, #28A745 0%, #20C997 100%),
+                radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.2) 0%, transparent 60%);
+            color: white;
+            border: 1px solid rgba(40, 167, 69, 0.4);
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 2px 4px rgba(40, 167, 69, 0.2);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+        }
+
+        .action-button:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 8px rgba(40, 167, 69, 0.3);
+        }
+
+        .action-button.secondary {
+            background: 
+                linear-gradient(135deg, #6C757D 0%, #495057 100%),
+                radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.1) 0%, transparent 60%);
+            border-color: rgba(108, 117, 125, 0.4);
+            box-shadow: 0 2px 4px rgba(108, 117, 125, 0.2);
+        }
+
+        .action-button.secondary:hover {
+            box-shadow: 0 4px 8px rgba(108, 117, 125, 0.3);
+        }
+
+        /* Player Hand Section (Piece Tray) */
+        .hand-section {
+            background: #F8F9FA;
+            padding: 20px;
+            border-top: 1px solid rgba(173, 181, 189, 0.2);
+            position: relative;
+            z-index: 20;
+        }
+
+        .hand-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 40px;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, #6C757D, transparent);
+        }
+
+        .pieces-tray {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 12px;
+            max-width: 350px;
+            margin: 0 auto;
+        }
+
+        .piece {
+            aspect-ratio: 1;
+            border-radius: 50%;
+            background: 
+                linear-gradient(145deg, #FFFFFF 0%, #F8F9FA 100%),
+                radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.8) 0%, transparent 60%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            font-weight: bold;
+            text-align: center;
+            box-shadow: 
+                0 4px 12px rgba(0, 0, 0, 0.08),
+                inset 0 1px 0 rgba(255, 255, 255, 1);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            cursor: pointer;
+            position: relative;
+            font-family: 'SimSun', '宋体', serif;
+            border: 2px solid rgba(173, 181, 189, 0.2);
+        }
+
+        .piece:hover {
+            transform: translateY(-3px) scale(1.05);
+            box-shadow: 
+                0 8px 20px rgba(0, 0, 0, 0.12),
+                inset 0 1px 0 rgba(255, 255, 255, 1);
+        }
+
+        .piece.selected {
+            border-color: rgba(40, 167, 69, 0.6);
+            background: 
+                linear-gradient(145deg, #F0FFF4 0%, #F8FFF8 100%),
+                radial-gradient(circle at 30% 30%, rgba(40, 167, 69, 0.1) 0%, transparent 60%);
+            transform: translateY(-3px) scale(1.1);
+            box-shadow: 
+                0 8px 20px rgba(40, 167, 69, 0.2),
+                inset 0 1px 0 rgba(255, 255, 255, 1);
+        }
+
+        .piece.red {
+            color: #DC3545;
+        }
+
+        .piece.black {
+            color: #495057;
+        }
+
+        .piece-character {
+            font-size: 16px;
+            margin-bottom: 2px;
+            font-weight: 700;
+        }
+
+        .piece-points {
+            font-size: 9px;
+            font-weight: 600;
+            background: rgba(108, 117, 125, 0.1);
+            padding: 2px 6px;
+            border-radius: 6px;
+            border: 1px solid rgba(108, 117, 125, 0.2);
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            color: #495057;
+        }
+    </style>
+</head>
+<body>
+    <div class="game-container">
+        <!-- Turn Number Indicator -->
+        <div class="turn-indicator">
+            Turn 3
+        </div>
+
+        <!-- Phase Header -->
+        <div class="phase-header">
+            <div class="phase-title">Turn Phase</div>
+            <div class="phase-subtitle">Round 1 • Andy's Turn</div>
+            <div class="turn-status">✨ Your Turn</div>
+        </div>
+
+        <!-- Table Section -->
+        <div class="table-section">
+            <div class="turn-requirement">Must play exactly 2 pieces</div>
+            
+            <div class="table-layout">
+                <!-- Central Table -->
+                <div class="central-table">
+                    Table Center<br>
+                    <small>Played pieces appear around edges</small>
+                </div>
+
+                <!-- Top Player (Bob) -->
+                <div class="player-position top">
+                    <div class="player-info-compact">
+                        <div class="player-avatar-small">B</div>
+                        <div class="player-stats">
+                            <div class="pile-count">3</div>
+                            <div class="declared-count">→2</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Left Player (Lucas) -->
+                <div class="player-position left">
+                    <div class="player-info-compact">
+                        <div class="player-avatar-small">L</div>
+                        <div class="player-stats">
+                            <div class="pile-count">1</div>
+                            <div class="declared-count">→4</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right Player (Daniel) -->
+                <div class="player-position right">
+                    <div class="player-info-compact">
+                        <div class="player-avatar-small">D</div>
+                        <div class="player-stats">
+                            <div class="pile-count">2</div>
+                            <div class="declared-count">→1</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Played Pieces - Top (Bob's play) -->
+                <div class="played-pieces top">
+                    <div class="mini-piece red">将</div>
+                    <div class="mini-piece black">車</div>
+                </div>
+
+                <!-- Turn Indicator for Current Player -->
+                <div style="position: absolute; bottom: 8px; left: 50%; transform: translateX(-50%); 
+                           background: rgba(255, 193, 7, 0.1); border: 1px solid rgba(255, 193, 7, 0.3); 
+                           border-radius: 8px; padding: 4px 8px; font-size: 10px; font-weight: 600; color: #F57F17;">
+                    👤 Your Turn (Andy)
+                </div>
+            </div>
+        </div>
+
+        <!-- Player Hand Section (Piece Tray) -->
+        <div class="hand-section">
+            <div class="pieces-tray">
+                <!-- Row 1 -->
+                <div class="piece red">
+                    <div class="piece-character">士</div>
+                    <div class="piece-points">11</div>
+                </div>
+                <div class="piece black">
+                    <div class="piece-character">象</div>
+                    <div class="piece-points">10</div>
+                </div>
+                <div class="piece red">
+                    <div class="piece-character">车</div>
+                    <div class="piece-points">7</div>
+                </div>
+                <div class="piece black">
+                    <div class="piece-character">马</div>
+                    <div class="piece-points">6</div>
+                </div>
+                
+                <!-- Row 2 -->
+                <div class="piece red">
+                    <div class="piece-character">炮</div>
+                    <div class="piece-points">3</div>
+                </div>
+                <div class="piece black">
+                    <div class="piece-character">兵</div>
+                    <div class="piece-points">2</div>
+                </div>
+                <div class="piece red">
+                    <div class="piece-character">卒</div>
+                    <div class="piece-points">1</div>
+                </div>
+                <div class="piece black" style="opacity: 0.3;">
+                    <div class="piece-character">?</div>
+                    <div class="piece-points">0</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Confirm Selection Panel -->
+        <div class="confirm-panel" id="confirmPanel">
+            <div class="selection-info">
+                <div class="selection-count" id="selectionCount">2 pieces selected</div>
+            </div>
+            
+            <div class="action-buttons">
+                <button class="action-button" onclick="playCards()">Play Cards</button>
+                <button class="action-button secondary" onclick="clearSelection()">Clear</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Simple interaction for demonstration
+        document.querySelectorAll('.piece').forEach(piece => {
+            piece.addEventListener('click', function() {
+                if (this.style.opacity === '0.3') return; // Skip empty slots
+                
+                this.classList.toggle('selected');
+                
+                // Update selection info and show/hide confirm panel
+                const selectedPieces = document.querySelectorAll('.piece.selected');
+                const count = selectedPieces.length;
+                const confirmPanel = document.getElementById('confirmPanel');
+                const selectionCount = document.getElementById('selectionCount');
+                
+                if (count > 0) {
+                    selectionCount.textContent = `${count} piece${count !== 1 ? 's' : ''} selected`;
+                    confirmPanel.classList.add('show');
+                } else {
+                    confirmPanel.classList.remove('show');
+                }
+            });
+        });
+
+        function playCards() {
+            const selectedPieces = document.querySelectorAll('.piece.selected');
+            console.log(`Playing ${selectedPieces.length} pieces!`);
+            clearSelection();
+        }
+
+        function clearSelection() {
+            document.querySelectorAll('.piece.selected').forEach(piece => {
+                piece.classList.remove('selected');
+            });
+            document.getElementById('confirmPanel').classList.remove('show');
+        }
+    </script>
+</body>
+</html>

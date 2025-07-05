@@ -1,0 +1,613 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Scoring Phase - Round Results</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&family=Crimson+Pro:wght@400;600;700&display=swap');
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Plus Jakarta Sans', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+            background: 
+                linear-gradient(135deg, #F8F9FA 0%, #E9ECEF 25%, #DEE2E6 50%, #CED4DA 75%, #ADB5BD 100%),
+                radial-gradient(circle at 30% 20%, rgba(255, 193, 7, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 70% 80%, rgba(13, 110, 253, 0.05) 0%, transparent 50%);
+            color: #212529;
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            position: relative;
+        }
+
+        /* Subtle paper texture */
+        body::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                radial-gradient(circle at 25% 25%, rgba(255, 255, 255, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 75% 75%, rgba(0, 0, 0, 0.02) 0%, transparent 50%);
+            pointer-events: none;
+        }
+
+        /* Fixed 9:16 Container */
+        .game-container {
+            width: min(100vw, 56.25vh);
+            height: min(100vh, 177.78vw);
+            max-width: 400px;
+            max-height: 711px;
+            background: 
+                linear-gradient(145deg, #FFFFFF 0%, #F8F9FA 100%),
+                radial-gradient(circle at 20% 30%, rgba(255, 193, 7, 0.03) 0%, transparent 70%),
+                radial-gradient(circle at 80% 70%, rgba(13, 110, 253, 0.02) 0%, transparent 70%);
+            border-radius: 20px;
+            border: 1px solid rgba(173, 181, 189, 0.3);
+            box-shadow: 
+                0 20px 40px rgba(0, 0, 0, 0.08),
+                0 0 0 1px rgba(255, 255, 255, 0.9),
+                inset 0 1px 0 rgba(255, 255, 255, 1);
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* Round Indicator */
+        .round-indicator {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: 
+                linear-gradient(135deg, #6C757D 0%, #495057 100%),
+                radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.2) 0%, transparent 60%);
+            padding: 8px 16px;
+            border-radius: 16px;
+            border: 1px solid rgba(108, 117, 125, 0.4);
+            box-shadow: 
+                0 4px 12px rgba(108, 117, 125, 0.2),
+                inset 0 1px 0 rgba(255, 255, 255, 0.6);
+            font-weight: 700;
+            font-size: 14px;
+            z-index: 1000;
+            color: white;
+            letter-spacing: 0.5px;
+        }
+
+        /* Multiplier Badge */
+        .multiplier-badge {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            background: 
+                linear-gradient(135deg, #DC3545 0%, #C82333 100%),
+                radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.3) 0%, transparent 60%);
+            padding: 8px 16px;
+            border-radius: 16px;
+            border: 1px solid rgba(220, 53, 69, 0.4);
+            box-shadow: 
+                0 4px 12px rgba(220, 53, 69, 0.2),
+                inset 0 1px 0 rgba(255, 255, 255, 0.6);
+            font-weight: 700;
+            font-size: 16px;
+            z-index: 1000;
+            color: white;
+            letter-spacing: 0.5px;
+        }
+
+        /* Phase Header */
+        .phase-header {
+            text-align: center;
+            padding: 60px 24px 20px;
+            background: 
+                linear-gradient(180deg, rgba(248, 249, 250, 0.8) 0%, transparent 100%),
+                linear-gradient(90deg, transparent 0%, rgba(173, 181, 189, 0.1) 50%, transparent 100%);
+            border-bottom: 1px solid rgba(173, 181, 189, 0.2);
+            position: relative;
+        }
+
+        .phase-header::after {
+            content: '';
+            position: absolute;
+            bottom: -1px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 40px;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, #6C757D, transparent);
+        }
+
+        .phase-title {
+            font-family: 'Crimson Pro', serif;
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 4px;
+            color: #343A40;
+            letter-spacing: -0.5px;
+        }
+
+        .phase-subtitle {
+            font-size: 14px;
+            color: #6C757D;
+            font-weight: 500;
+        }
+
+        /* Scoring Content */
+        .scoring-content {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+        }
+
+        /* Score Cards */
+        .score-cards {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .score-card {
+            background: 
+                linear-gradient(145deg, #FFFFFF 0%, #F8F9FA 100%),
+                radial-gradient(circle at 15% 50%, rgba(255, 255, 255, 0.8) 0%, transparent 50%);
+            border: 1px solid rgba(173, 181, 189, 0.15);
+            border-radius: 12px;
+            padding: 16px;
+            box-shadow: 
+                0 2px 8px rgba(0, 0, 0, 0.06),
+                inset 0 1px 0 rgba(255, 255, 255, 1);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .score-card.positive {
+            border-color: rgba(40, 167, 69, 0.3);
+            background: 
+                linear-gradient(145deg, #F0FFF4 0%, #F8FFF8 100%),
+                radial-gradient(circle at 15% 50%, rgba(40, 167, 69, 0.08) 0%, transparent 50%);
+        }
+
+        .score-card.positive::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 4px;
+            background: linear-gradient(180deg, #28A745, #20C997);
+        }
+
+        .score-card.negative {
+            border-color: rgba(220, 53, 69, 0.3);
+            background: 
+                linear-gradient(145deg, #FFF5F5 0%, #FFF8F8 100%),
+                radial-gradient(circle at 15% 50%, rgba(220, 53, 69, 0.08) 0%, transparent 50%);
+        }
+
+        .score-card.negative::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 4px;
+            background: linear-gradient(180deg, #DC3545, #C82333);
+        }
+
+        .score-card-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 12px;
+        }
+
+        .player-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .player-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: 
+                linear-gradient(145deg, #FFFFFF 0%, #F8F9FA 100%),
+                radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.8) 0%, transparent 60%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 16px;
+            border: 2px solid rgba(173, 181, 189, 0.3);
+            box-shadow: 
+                0 2px 4px rgba(0, 0, 0, 0.06),
+                inset 0 1px 0 rgba(255, 255, 255, 1);
+            color: #495057;
+        }
+
+        .player-name {
+            font-size: 16px;
+            font-weight: 600;
+            color: #212529;
+        }
+
+        .round-score {
+            font-size: 20px;
+            font-weight: 700;
+            color: #343A40;
+        }
+
+        .score-breakdown {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 8px;
+            margin-bottom: 12px;
+            padding: 12px;
+            background: rgba(248, 249, 250, 0.5);
+            border-radius: 8px;
+        }
+
+        .score-item {
+            text-align: center;
+        }
+
+        .score-label {
+            font-size: 10px;
+            font-weight: 600;
+            color: #6C757D;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+            margin-bottom: 4px;
+        }
+
+        .score-value {
+            font-size: 16px;
+            font-weight: 700;
+            color: #343A40;
+        }
+
+        .score-calculation {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            font-size: 14px;
+            color: #6C757D;
+            margin-top: 8px;
+        }
+
+        .multiplier-highlight {
+            background: rgba(220, 53, 69, 0.1);
+            color: #DC3545;
+            padding: 2px 8px;
+            border-radius: 6px;
+            font-weight: 600;
+        }
+
+        /* Total Scores Summary */
+        .total-scores {
+            background: 
+                linear-gradient(180deg, rgba(248, 249, 250, 0.6) 0%, rgba(233, 236, 239, 0.8) 100%),
+                radial-gradient(ellipse 100% 60% at 50% 0%, rgba(173, 181, 189, 0.1) 0%, transparent 100%);
+            padding: 20px;
+            border-top: 1px solid rgba(173, 181, 189, 0.2);
+            position: relative;
+        }
+
+        .total-scores::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 40px;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, #6C757D, transparent);
+        }
+
+        .total-scores-title {
+            font-size: 12px;
+            font-weight: 600;
+            color: #6C757D;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 16px;
+            text-align: center;
+        }
+
+        .total-scores-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+        }
+
+        .total-score-item {
+            background: 
+                linear-gradient(145deg, #FFFFFF 0%, #F8F9FA 100%),
+                radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.8) 0%, transparent 60%);
+            border: 1px solid rgba(173, 181, 189, 0.2);
+            border-radius: 8px;
+            padding: 12px;
+            text-align: center;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.04);
+        }
+
+        .total-score-name {
+            font-size: 12px;
+            font-weight: 600;
+            color: #495057;
+            margin-bottom: 4px;
+        }
+
+        .total-score-value {
+            font-size: 24px;
+            font-weight: 700;
+            color: #343A40;
+        }
+
+        .total-score-item.leader {
+            border-color: rgba(255, 193, 7, 0.3);
+            background: 
+                linear-gradient(145deg, #FFF8E1 0%, #FFFBF0 100%),
+                radial-gradient(circle at 30% 30%, rgba(255, 193, 7, 0.1) 0%, transparent 60%);
+        }
+
+        /* Continue Button */
+        .continue-section {
+            padding: 20px;
+            background: 
+                linear-gradient(180deg, rgba(248, 249, 250, 0.8) 0%, rgba(255, 255, 255, 0.9) 100%);
+        }
+
+        .continue-button {
+            background: 
+                linear-gradient(135deg, #28A745 0%, #20C997 100%),
+                radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.2) 0%, transparent 60%);
+            color: white;
+            border: 1px solid rgba(40, 167, 69, 0.4);
+            padding: 16px 32px;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 4px 8px rgba(40, 167, 69, 0.2);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            width: 100%;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+        }
+
+        .continue-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 16px rgba(40, 167, 69, 0.3);
+        }
+
+        /* Animations */
+        .score-card {
+            opacity: 0;
+            transform: translateY(20px);
+            animation: slideUp 0.5s ease-out forwards;
+        }
+
+        .score-card:nth-child(1) { animation-delay: 0.1s; }
+        .score-card:nth-child(2) { animation-delay: 0.2s; }
+        .score-card:nth-child(3) { animation-delay: 0.3s; }
+        .score-card:nth-child(4) { animation-delay: 0.4s; }
+
+        @keyframes slideUp {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .round-score {
+            animation: scaleIn 0.6s ease-out;
+        }
+
+        @keyframes scaleIn {
+            from {
+                transform: scale(0);
+            }
+            to {
+                transform: scale(1);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="game-container">
+        <!-- Round Indicator -->
+        <div class="round-indicator">
+            Round 1
+        </div>
+
+        <!-- Multiplier Badge -->
+        <div class="multiplier-badge">
+            3×
+        </div>
+
+        <!-- Phase Header -->
+        <div class="phase-header">
+            <div class="phase-title">Scoring Phase</div>
+            <div class="phase-subtitle">Round 1 Complete - Calculating Scores</div>
+        </div>
+
+        <!-- Scoring Content -->
+        <div class="scoring-content">
+            <div class="score-cards">
+                <!-- Bob's Score (Positive) -->
+                <div class="score-card positive">
+                    <div class="score-card-header">
+                        <div class="player-info">
+                            <div class="player-avatar">B</div>
+                            <div class="player-name">Bob</div>
+                        </div>
+                        <div class="round-score">+9</div>
+                    </div>
+                    <div class="score-breakdown">
+                        <div class="score-item">
+                            <div class="score-label">Declared</div>
+                            <div class="score-value">3</div>
+                        </div>
+                        <div class="score-item">
+                            <div class="score-label">Actual</div>
+                            <div class="score-value">3</div>
+                        </div>
+                        <div class="score-item">
+                            <div class="score-label">Bonus</div>
+                            <div class="score-value">+3</div>
+                        </div>
+                    </div>
+                    <div class="score-calculation">
+                        <span>3 × 3</span>
+                        <span class="multiplier-highlight">×3</span>
+                        <span>= 9 points</span>
+                    </div>
+                </div>
+
+                <!-- Andy's Score (Current Player, Negative) -->
+                <div class="score-card negative">
+                    <div class="score-card-header">
+                        <div class="player-info">
+                            <div class="player-avatar">A</div>
+                            <div class="player-name">Andy (You)</div>
+                        </div>
+                        <div class="round-score">-12</div>
+                    </div>
+                    <div class="score-breakdown">
+                        <div class="score-item">
+                            <div class="score-label">Declared</div>
+                            <div class="score-value">2</div>
+                        </div>
+                        <div class="score-item">
+                            <div class="score-label">Actual</div>
+                            <div class="score-value">0</div>
+                        </div>
+                        <div class="score-item">
+                            <div class="score-label">Penalty</div>
+                            <div class="score-value">-4</div>
+                        </div>
+                    </div>
+                    <div class="score-calculation">
+                        <span>|0 - 2| × 2</span>
+                        <span class="multiplier-highlight">×3</span>
+                        <span>= -12 points</span>
+                    </div>
+                </div>
+
+                <!-- Lucas's Score (Positive) -->
+                <div class="score-card positive">
+                    <div class="score-card-header">
+                        <div class="player-info">
+                            <div class="player-avatar">L</div>
+                            <div class="player-name">Lucas</div>
+                        </div>
+                        <div class="round-score">+12</div>
+                    </div>
+                    <div class="score-breakdown">
+                        <div class="score-item">
+                            <div class="score-label">Declared</div>
+                            <div class="score-value">4</div>
+                        </div>
+                        <div class="score-item">
+                            <div class="score-label">Actual</div>
+                            <div class="score-value">4</div>
+                        </div>
+                        <div class="score-item">
+                            <div class="score-label">Bonus</div>
+                            <div class="score-value">+4</div>
+                        </div>
+                    </div>
+                    <div class="score-calculation">
+                        <span>4 × 3</span>
+                        <span class="multiplier-highlight">×3</span>
+                        <span>= 12 points</span>
+                    </div>
+                </div>
+
+                <!-- Daniel's Score (Negative) -->
+                <div class="score-card negative">
+                    <div class="score-card-header">
+                        <div class="player-info">
+                            <div class="player-avatar">D</div>
+                            <div class="player-name">Daniel</div>
+                        </div>
+                        <div class="round-score">-6</div>
+                    </div>
+                    <div class="score-breakdown">
+                        <div class="score-item">
+                            <div class="score-label">Declared</div>
+                            <div class="score-value">1</div>
+                        </div>
+                        <div class="score-item">
+                            <div class="score-label">Actual</div>
+                            <div class="score-value">2</div>
+                        </div>
+                        <div class="score-item">
+                            <div class="score-label">Penalty</div>
+                            <div class="score-value">-2</div>
+                        </div>
+                    </div>
+                    <div class="score-calculation">
+                        <span>|2 - 1| × 2</span>
+                        <span class="multiplier-highlight">×3</span>
+                        <span>= -6 points</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Total Scores Summary -->
+        <div class="total-scores">
+            <div class="total-scores-title">Total Scores</div>
+            <div class="total-scores-grid">
+                <div class="total-score-item leader">
+                    <div class="total-score-name">Lucas</div>
+                    <div class="total-score-value">12</div>
+                </div>
+                <div class="total-score-item">
+                    <div class="total-score-name">Bob</div>
+                    <div class="total-score-value">9</div>
+                </div>
+                <div class="total-score-item">
+                    <div class="total-score-name">Andy</div>
+                    <div class="total-score-value">-12</div>
+                </div>
+                <div class="total-score-item">
+                    <div class="total-score-name">Daniel</div>
+                    <div class="total-score-value">-6</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Continue Button -->
+        <div class="continue-section">
+            <button class="continue-button" onclick="continueGame()">
+                Continue to Round 2
+            </button>
+        </div>
+    </div>
+
+    <script>
+        function continueGame() {
+            console.log('Continuing to next round...');
+            // In real game, this would transition to preparation phase for round 2
+        }
+    </script>
+</body>
+</html>

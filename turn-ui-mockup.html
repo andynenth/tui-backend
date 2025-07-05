@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Declaration Phase - Liap Tui</title>
+    <title>Turn Phase - Zen Style Mockup</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&family=Crimson+Pro:wght@400;600;700&display=swap');
         
@@ -64,19 +64,19 @@
             overflow: hidden;
         }
 
-        /* Redeal Multiplier Indicator */
-        .multiplier-indicator {
+        /* Turn Number Indicator */
+        .turn-indicator {
             position: absolute;
             top: 20px;
-            left: 20px;
+            right: 50px;
             background: 
-                linear-gradient(135deg, #DC3545 0%, #C82333 100%),
+                linear-gradient(135deg, #28A745 0%, #20C997 100%),
                 radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.3) 0%, transparent 60%);
             padding: 8px 16px;
             border-radius: 16px;
-            border: 1px solid rgba(220, 53, 69, 0.4);
+            border: 1px solid rgba(40, 167, 69, 0.4);
             box-shadow: 
-                0 4px 12px rgba(220, 53, 69, 0.2),
+                0 4px 12px rgba(40, 167, 69, 0.2),
                 inset 0 1px 0 rgba(255, 255, 255, 0.6);
             font-weight: 700;
             font-size: 14px;
@@ -85,11 +85,10 @@
             letter-spacing: 0.5px;
         }
 
-
         /* Phase Header */
         .phase-header {
             text-align: center;
-            padding: 50px 24px 16px;
+            padding: 50px 24px 20px;
             background: 
                 linear-gradient(180deg, rgba(248, 249, 250, 0.8) 0%, transparent 100%),
                 linear-gradient(90deg, transparent 0%, rgba(173, 181, 189, 0.1) 50%, transparent 100%);
@@ -121,6 +120,18 @@
             font-size: 14px;
             color: #6C757D;
             font-weight: 500;
+            margin-bottom: 8px;
+        }
+
+        .turn-status {
+            font-size: 12px;
+            color: #28A745;
+            font-weight: 600;
+            background: rgba(40, 167, 69, 0.1);
+            padding: 4px 12px;
+            border-radius: 8px;
+            border: 1px solid rgba(40, 167, 69, 0.3);
+            display: inline-block;
         }
 
         /* Game Status Section */
@@ -131,7 +142,7 @@
             flex-direction: column;
         }
 
-        .declaration-requirement {
+        .turn-requirement {
             font-size: 14px;
             color: #FFC107;
             background: rgba(255, 193, 7, 0.1);
@@ -194,22 +205,16 @@
             background: linear-gradient(180deg, #FFC107, #FF9800);
         }
 
-
-        .player-row.declared {
+        .player-row.played {
             border-color: rgba(40, 167, 69, 0.3);
             background: 
                 linear-gradient(145deg, #F0FFF4 0%, #F8FFF8 100%),
                 radial-gradient(circle at 15% 50%, rgba(40, 167, 69, 0.08) 0%, transparent 50%);
         }
 
-        .player-row.declared::before {
+        .player-row.played::before {
             background: linear-gradient(180deg, #28A745, #20C997);
         }
-
-        .player-row.waiting {
-            /* Default styling - no special classes needed */
-        }
-
 
         .player-avatar {
             width: 36px;
@@ -231,7 +236,6 @@
             color: #495057;
         }
 
-
         .player-info {
             flex: 1;
         }
@@ -242,7 +246,6 @@
             color: #212529;
             letter-spacing: -0.2px;
         }
-
 
         .player-status {
             text-align: right;
@@ -265,7 +268,7 @@
             border: 1px solid rgba(255, 193, 7, 0.4);
         }
 
-        .status-badge.declared {
+        .status-badge.played {
             background: rgba(40, 167, 69, 0.1);
             color: #28A745;
             border: 1px solid rgba(40, 167, 69, 0.3);
@@ -277,17 +280,98 @@
             border: 1px solid rgba(108, 117, 125, 0.2);
         }
 
-        .declared-value {
-            font-size: 16px;
-            font-weight: 700;
-            color: #28A745;
-            background: rgba(40, 167, 69, 0.1);
-            padding: 3px 8px;
-            border-radius: 6px;
+        /* Confirm Selection Panel - Sliding Tray */
+        .confirm-panel {
+            position: absolute;
+            bottom: 220px; /* Higher position to clear the piece tray completely */
+            left: 0;
+            right: 0;
+            background: 
+                linear-gradient(145deg, #F0FFF4 0%, #F8FFF8 100%),
+                radial-gradient(circle at 30% 30%, rgba(40, 167, 69, 0.1) 0%, transparent 60%);
             border: 1px solid rgba(40, 167, 69, 0.3);
+            border-radius: 16px;
+            margin: 0 16px;
+            padding: 16px 20px;
+            box-shadow: 
+                0 4px 20px rgba(40, 167, 69, 0.15),
+                0 0 0 1px rgba(255, 255, 255, 0.9),
+                inset 0 1px 0 rgba(255, 255, 255, 1);
+            z-index: 15; /* Higher than piece tray to ensure visibility */
+            transform: translateY(calc(100% + 20px));
+            transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
-        /* Player Hand Section */
+        .confirm-panel.show {
+            transform: translateY(0);
+        }
+
+        /* Handle indicator */
+        .confirm-panel::before {
+            content: '';
+            position: absolute;
+            top: 8px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 40px;
+            height: 3px;
+            background: rgba(40, 167, 69, 0.3);
+            border-radius: 2px;
+        }
+
+        .selection-info {
+            text-align: center;
+            margin-bottom: 12px;
+        }
+
+        .selection-count {
+            font-size: 14px;
+            color: #28A745;
+            font-weight: 600;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 8px;
+            justify-content: center;
+        }
+
+        .action-button {
+            background: 
+                linear-gradient(135deg, #28A745 0%, #20C997 100%),
+                radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.2) 0%, transparent 60%);
+            color: white;
+            border: 1px solid rgba(40, 167, 69, 0.4);
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 2px 4px rgba(40, 167, 69, 0.2);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+        }
+
+        .action-button:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 8px rgba(40, 167, 69, 0.3);
+        }
+
+        .action-button.secondary {
+            background: 
+                linear-gradient(135deg, #6C757D 0%, #495057 100%),
+                radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.1) 0%, transparent 60%);
+            border-color: rgba(108, 117, 125, 0.4);
+            box-shadow: 0 2px 4px rgba(108, 117, 125, 0.2);
+        }
+
+        .action-button.secondary:hover {
+            box-shadow: 0 4px 8px rgba(108, 117, 125, 0.3);
+        }
+
+        /* Player Hand Section (Piece Tray) */
         .hand-section {
             background: 
                 linear-gradient(180deg, #F8F9FA 0%, #E9ECEF 100%),
@@ -312,7 +396,7 @@
         .pieces-tray {
             display: grid;
             grid-template-columns: repeat(4, 1fr);
-            gap: 8px;
+            gap: 12px;
             max-width: 350px;
             margin: 0 auto;
         }
@@ -327,38 +411,47 @@
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            font-size: 20px;
+            font-size: 18px;
             font-weight: bold;
             text-align: center;
             box-shadow: 
                 0 4px 12px rgba(0, 0, 0, 0.08),
                 inset 0 1px 0 rgba(255, 255, 255, 1);
-            transition: all 0.3s ease;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             cursor: pointer;
             position: relative;
             font-family: 'SimSun', '宋体', serif;
-            border: 3px solid rgba(173, 181, 189, 0.6);
+            border: 2px solid rgba(173, 181, 189, 0.2);
         }
 
         .piece:hover {
             transform: translateY(-3px) scale(1.05);
             box-shadow: 
-                0 6px 12px rgba(65,105,225,0.4),
-                inset 0 2px 0 rgba(255,255,255,0.6);
+                0 8px 20px rgba(0, 0, 0, 0.12),
+                inset 0 1px 0 rgba(255, 255, 255, 1);
+        }
+
+        .piece.selected {
+            border-color: rgba(40, 167, 69, 0.6);
+            background: 
+                linear-gradient(145deg, #F0FFF4 0%, #F8FFF8 100%),
+                radial-gradient(circle at 30% 30%, rgba(40, 167, 69, 0.1) 0%, transparent 60%);
+            transform: translateY(-3px) scale(1.1);
+            box-shadow: 
+                0 8px 20px rgba(40, 167, 69, 0.2),
+                inset 0 1px 0 rgba(255, 255, 255, 1);
         }
 
         .piece.red {
             color: #DC3545;
-            border-color: rgba(220, 53, 69, 0.6);
         }
 
         .piece.black {
             color: #495057;
-            border-color: rgba(73, 80, 87, 0.6);
         }
 
         .piece-character {
-            font-size: 18px;
+            font-size: 16px;
             margin-bottom: 2px;
             font-weight: 700;
         }
@@ -374,223 +467,60 @@
             color: #495057;
         }
 
-        /* Declaration Popup */
-        .declaration-popup {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(0, 0, 0, 0.4);
-            backdrop-filter: blur(4px);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            z-index: 2000;
-            padding: 20px;
-        }
-
-        .popup-content {
-            background: 
-                linear-gradient(145deg, #FFFFFF 0%, #F8F9FA 100%),
-                radial-gradient(circle at 20% 30%, rgba(255, 193, 7, 0.03) 0%, transparent 70%);
-            border-radius: 20px;
-            padding: 24px;
-            max-width: 320px;
-            width: 100%;
+        /* Waiting State */
+        .waiting-state {
             text-align: center;
-            border: 1px solid rgba(173, 181, 189, 0.3);
-            box-shadow: 
-                0 20px 40px rgba(0, 0, 0, 0.08),
-                0 0 0 1px rgba(255, 255, 255, 0.9),
-                inset 0 1px 0 rgba(255, 255, 255, 1);
-        }
-
-        .popup-title {
-            font-family: 'Crimson Pro', serif;
-            font-size: 24px;
-            font-weight: 700;
-            margin-bottom: 8px;
-            color: #343A40;
-            letter-spacing: -0.5px;
-        }
-
-        .popup-subtitle {
-            font-size: 14px;
+            padding: 40px 20px;
             color: #6C757D;
-            font-weight: 500;
-            margin-bottom: 20px;
         }
 
-        .declaration-options {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 8px;
-            margin-bottom: 20px;
+        .waiting-spinner {
+            width: 24px;
+            height: 24px;
+            border: 2px solid rgba(108, 117, 125, 0.2);
+            border-top: 2px solid #6C757D;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 12px;
         }
 
-        .declaration-option {
-            padding: 12px 6px;
-            background: 
-                linear-gradient(145deg, #FFFFFF 0%, #F8F9FA 100%),
-                radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.8) 0%, transparent 60%);
-            border: 1px solid rgba(173, 181, 189, 0.3);
-            border-radius: 10px;
-            cursor: pointer;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            font-size: 16px;
-            font-weight: 600;
-            color: #343A40;
-            box-shadow: 
-                0 2px 6px rgba(0, 0, 0, 0.04),
-                inset 0 1px 0 rgba(255, 255, 255, 1);
-        }
-
-        .declaration-option:hover {
-            background: 
-                linear-gradient(145deg, #FFF8E1 0%, #FFFBF0 100%),
-                radial-gradient(circle at 30% 30%, rgba(255, 193, 7, 0.1) 0%, transparent 60%);
-            border-color: rgba(255, 193, 7, 0.4);
-            transform: translateY(-1px) scale(1.02);
-            box-shadow: 
-                0 4px 12px rgba(255, 193, 7, 0.15),
-                inset 0 1px 0 rgba(255, 255, 255, 1);
-        }
-
-        .declaration-option.selected {
-            background: 
-                linear-gradient(135deg, #FFC107 0%, #FF9800 100%);
-            border-color: rgba(255, 193, 7, 0.6);
-            color: #212529;
-            transform: translateY(-1px) scale(1.02);
-            box-shadow: 
-                0 4px 12px rgba(255, 193, 7, 0.3),
-                inset 0 1px 0 rgba(255, 255, 255, 0.8);
-        }
-
-        .confirm-button {
-            background: 
-                linear-gradient(135deg, #28A745 0%, #20C997 100%),
-                radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.2) 0%, transparent 60%);
-            color: white;
-            border: 1px solid rgba(40, 167, 69, 0.4);
-            padding: 12px 24px;
-            border-radius: 10px;
-            font-size: 14px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            width: 100%;
-            font-family: 'Plus Jakarta Sans', sans-serif;
-            box-shadow: 
-                0 4px 12px rgba(40, 167, 69, 0.2),
-                inset 0 1px 0 rgba(255, 255, 255, 0.2);
-        }
-
-        .confirm-button:hover {
-            background: 
-                linear-gradient(135deg, #20C997 0%, #28A745 100%),
-                radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.3) 0%, transparent 60%);
-            transform: translateY(-1px);
-            box-shadow: 
-                0 6px 16px rgba(40, 167, 69, 0.25),
-                inset 0 1px 0 rgba(255, 255, 255, 0.3);
-        }
-
-        .confirm-button:disabled {
-            background: 
-                linear-gradient(145deg, #E9ECEF 0%, #DEE2E6 100%);
-            color: #6C757D;
-            border-color: rgba(173, 181, 189, 0.3);
-            cursor: not-allowed;
-            transform: none;
-            box-shadow: 
-                0 2px 4px rgba(0, 0, 0, 0.04),
-                inset 0 1px 0 rgba(255, 255, 255, 1);
-            opacity: 0.7;
-        }
-
-        /* Status Messages */
-        .status-message {
-            text-align: center;
-            padding: 10px 15px;
-            margin: 10px 15px;
-            border-radius: 15px;
-            font-weight: bold;
-            font-size: 13px;
-        }
-
-        .status-waiting {
-            background: linear-gradient(145deg, rgba(135,206,235,0.2), rgba(173,216,230,0.3));
-            border: 2px solid #87CEEB;
-            color: #4169E1;
-            box-shadow: 0 2px 4px rgba(135,206,235,0.2);
-        }
-
-        .status-your-turn {
-            background: linear-gradient(145deg, rgba(255,215,0,0.2), rgba(255,165,0,0.3));
-            border: 2px solid #FFD700;
-            color: #4169E1;
-            box-shadow: 0 2px 4px rgba(255,215,0,0.2);
-        }
-
-        /* Round Indicator */
-        .round-indicator {
-            position: absolute;
-            top: 20px;
-            right: 20px;
-            background: 
-                linear-gradient(145deg, #FFFFFF 0%, #F8F9FA 100%),
-                radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.8) 0%, transparent 60%);
-            padding: 8px 16px;
-            border-radius: 16px;
-            border: 1px solid rgba(173, 181, 189, 0.3);
-            box-shadow: 
-                0 4px 12px rgba(0, 0, 0, 0.08),
-                inset 0 1px 0 rgba(255, 255, 255, 1);
-            font-weight: 700;
-            font-size: 14px;
-            z-index: 1000;
-            color: #343A40;
-            letter-spacing: 0.5px;
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
         }
     </style>
 </head>
 <body>
     <div class="game-container">
-        <!-- Round Indicator -->
-        <div class="round-indicator">
-            Round 1
-        </div>
-
-        <!-- Redeal Multiplier Indicator (shown when > 1) -->
-        <div class="multiplier-indicator">
-            3x
+        <!-- Turn Number Indicator -->
+        <div class="turn-indicator">
+            Turn 3
         </div>
 
         <!-- Phase Header -->
         <div class="phase-header">
-            <div class="phase-title">Declaration Phase</div>
-            <div class="phase-subtitle">Round 1 • Declare your target pile count</div>
+            <div class="phase-title">Turn Phase</div>
+            <div class="phase-subtitle">Round 1 • Andy's Turn</div>
+            <div class="turn-status">✨ Your Turn</div>
         </div>
 
         <!-- Game Status Section -->
         <div class="game-status-section">
-            <div class="declaration-requirement">Declare your target pile count</div>
+            <div class="turn-requirement">Must play exactly 2 pieces</div>
             
             <div class="players-list">
-                <!-- Bob (Already Declared) -->
-                <div class="player-row declared">
+                <!-- Bob (Already Played) -->
+                <div class="player-row played">
                     <div class="player-avatar">B</div>
                     <div class="player-info">
                         <div class="player-name">Bob</div>
                     </div>
                     <div class="player-status">
-                        <div class="declared-value">3</div>
+                        <div class="status-badge played">Played</div>
                     </div>
                 </div>
 
-                <!-- Andy (Human, Current Turn) -->
+                <!-- Andy (Current Turn) -->
                 <div class="player-row current-turn">
                     <div class="player-avatar">A</div>
                     <div class="player-info">
@@ -625,127 +555,96 @@
             </div>
         </div>
 
-        <!-- Player Hand Section -->
+        <!-- Player Hand Section (Piece Tray) -->
         <div class="hand-section">
             <div class="pieces-tray">
                 <!-- Row 1 -->
                 <div class="piece red">
-                    <div class="piece-character">将</div>
-                    <div class="piece-points">14</div>
-                </div>
-                <div class="piece black">
                     <div class="piece-character">士</div>
                     <div class="piece-points">11</div>
                 </div>
-                <div class="piece red">
+                <div class="piece black">
                     <div class="piece-character">象</div>
                     <div class="piece-points">10</div>
                 </div>
-                <div class="piece black">
+                <div class="piece red">
                     <div class="piece-character">车</div>
                     <div class="piece-points">7</div>
+                </div>
+                <div class="piece black">
+                    <div class="piece-character">马</div>
+                    <div class="piece-points">6</div>
                 </div>
                 
                 <!-- Row 2 -->
                 <div class="piece red">
-                    <div class="piece-character">马</div>
-                    <div class="piece-points">6</div>
-                </div>
-                <div class="piece black">
                     <div class="piece-character">炮</div>
                     <div class="piece-points">3</div>
                 </div>
-                <div class="piece red">
+                <div class="piece black">
                     <div class="piece-character">兵</div>
                     <div class="piece-points">2</div>
                 </div>
-                <div class="piece black">
+                <div class="piece red">
                     <div class="piece-character">卒</div>
                     <div class="piece-points">1</div>
                 </div>
+                <div class="piece black" style="opacity: 0.3;">
+                    <div class="piece-character">?</div>
+                    <div class="piece-points">0</div>
+                </div>
             </div>
         </div>
-    </div>
 
-    <!-- Declaration Popup (shown when it's player's turn) -->
-    <div class="declaration-popup">
-        <div class="popup-content">
-            <div class="popup-title">Make Your Declaration</div>
-            <div class="popup-subtitle">How many piles do you plan to win this round?</div>
-            
-            <div class="declaration-options">
-                <div class="declaration-option" onclick="selectDeclaration(0)">0</div>
-                <div class="declaration-option" onclick="selectDeclaration(1)">1</div>
-                <div class="declaration-option" onclick="selectDeclaration(2)">2</div>
-                <div class="declaration-option" onclick="selectDeclaration(3)">3</div>
-                <div class="declaration-option" onclick="selectDeclaration(4)">4</div>
-                <div class="declaration-option" onclick="selectDeclaration(5)">5</div>
-                <div class="declaration-option" onclick="selectDeclaration(6)">6</div>
-                <div class="declaration-option" onclick="selectDeclaration(7)">7</div>
-                <div class="declaration-option" onclick="selectDeclaration(8)">8</div>
+        <!-- Confirm Selection Panel (Popup Overlay) -->
+        <div class="confirm-panel" id="confirmPanel">
+            <div class="selection-info">
+                <div class="selection-count" id="selectionCount">2 pieces selected</div>
             </div>
             
-            <button class="confirm-button" onclick="confirmDeclaration()" disabled>
-                Confirm Declaration
-            </button>
+            <div class="action-buttons">
+                <button class="action-button" onclick="playCards()">Play Cards</button>
+                <button class="action-button secondary" onclick="clearSelection()">Clear</button>
+            </div>
         </div>
     </div>
 
     <script>
-        let selectedDeclaration = null;
-
-        function selectDeclaration(value) {
-            selectedDeclaration = value;
-            
-            // Remove previous selection
-            document.querySelectorAll('.declaration-option').forEach(option => {
-                option.classList.remove('selected');
+        // Simple interaction for demonstration
+        document.querySelectorAll('.piece').forEach(piece => {
+            piece.addEventListener('click', function() {
+                if (this.style.opacity === '0.3') return; // Skip empty slots
+                
+                this.classList.toggle('selected');
+                
+                // Update selection info and show/hide confirm panel
+                const selectedPieces = document.querySelectorAll('.piece.selected');
+                const count = selectedPieces.length;
+                const confirmPanel = document.getElementById('confirmPanel');
+                const selectionCount = document.getElementById('selectionCount');
+                
+                if (count > 0) {
+                    selectionCount.textContent = `${count} piece${count !== 1 ? 's' : ''} selected`;
+                    confirmPanel.classList.add('show');
+                } else {
+                    confirmPanel.classList.remove('show');
+                }
             });
-            
-            // Add selection to clicked option
-            event.target.classList.add('selected');
-            
-            // Enable confirm button
-            document.querySelector('.confirm-button').disabled = false;
+        });
+
+        function playCards() {
+            const selectedPieces = document.querySelectorAll('.piece.selected');
+            console.log(`Playing ${selectedPieces.length} pieces!`);
+            // Here you would send the play to the server
+            clearSelection();
         }
 
-        function confirmDeclaration() {
-            if (selectedDeclaration !== null) {
-                console.log(`You declared ${selectedDeclaration} piles! Good luck!`);
-                // Here you would send the declaration to the backend
-                // For demo, we'll just hide the popup
-                document.querySelector('.declaration-popup').style.display = 'none';
-                
-                // Update the player row to show declared state
-                const playerRow = document.querySelector('.player-row.current-turn');
-                playerRow.classList.remove('current-turn');
-                playerRow.classList.add('declared');
-                
-                const declarationStatus = playerRow.querySelector('.declaration-status');
-                declarationStatus.innerHTML = `<div class="declared-value">${selectedDeclaration}</div>`;
-                
-                // Update status message
-                const statusMessage = document.querySelector('.status-message');
-                statusMessage.className = 'status-message status-waiting';
-                statusMessage.textContent = 'Waiting for Bot 4 to declare...';
-                
-                // Move turn to Bot 4
-                const bot4Row = document.querySelectorAll('.player-row')[3];
-                bot4Row.classList.add('current-turn');
-                const bot4Status = bot4Row.querySelector('.declaration-status');
-                bot4Status.innerHTML = '<div class="turn-indicator">Current Turn</div>';
-            }
+        function clearSelection() {
+            document.querySelectorAll('.piece.selected').forEach(piece => {
+                piece.classList.remove('selected');
+            });
+            document.getElementById('confirmPanel').classList.remove('show');
         }
-
-        // Multiplier stays visible to demonstrate the feature
-
-        // Demo: Auto-close popup after 15 seconds
-        setTimeout(() => {
-            if (selectedDeclaration === null) {
-                selectDeclaration(3); // Auto-select 3
-                setTimeout(() => confirmDeclaration(), 1000);
-            }
-        }, 15000);
     </script>
 </body>
 </html>
