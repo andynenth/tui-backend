@@ -110,6 +110,14 @@ class DeclarationState(GameState):
             'current_declarer': next_declarer
         }, f"Player {player_name} declared {declared_value}")
         
+        # 🚀 ENTERPRISE: Broadcast custom declare event for immediate UI update
+        await self.broadcast_custom_event("declare", {
+            "player": player_name,
+            "value": declared_value,
+            "total": current_total + declared_value,
+            "declarations": updated_declarations
+        }, f"Declaration by {player_name}: {declared_value}")
+        
         # FIX: Also immediately update game object for real-time access
         self.state_machine.game.player_declarations[player_name] = declared_value
         

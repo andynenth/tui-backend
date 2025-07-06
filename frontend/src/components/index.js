@@ -7,7 +7,7 @@ export { default as Layout } from './Layout';
 export { default as LoadingOverlay } from './LoadingOverlay';
 export { default as ConnectionIndicator } from './ConnectionIndicator';
 export { default as PlayerSlot } from './PlayerSlot';
-export { default as GamePiece } from './GamePiece';
+export { default as GamePiece } from './shared/EnhancedGamePiece';
 export { default as ErrorBoundary } from './ErrorBoundary';
 export { default as LazyRoute } from './LazyRoute';
 

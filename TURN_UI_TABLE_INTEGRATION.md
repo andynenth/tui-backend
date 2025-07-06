@@ -2208,3 +2208,301 @@ const useGamePhaseTransition = () => {
    - Error boundary implementation
 
 This unified architecture ensures consistency across all game phases while maintaining the flexibility to add phase-specific features and maintaining compatibility with the existing enterprise backend architecture.
+
+## Detailed Mockup Implementation Plan
+
+### **Phase 2A: PreparationUI Mockup Implementation**
+**Extends the existing Phase 2 plan with detailed mockup features from preparation-phase-mockup.html:**
+
+#### **Dealing Animation System**
+Implement 3 rotating card stacks with CSS keyframes matching the mockup design:
+```jsx
+const DealingAnimation = () => (
+  <div className="relative w-30 h-30 mx-auto mb-6">
+    {/* Card Stack 1 - Primary animation */}
+    <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-24 h-24 bg-gradient-to-br from-white to-gray-50 rounded-full border-4 border-gray-400 shadow-lg flex items-center justify-center font-bold text-gray-600 text-2xl animate-spin" 
+         style={{ fontFamily: 'SimSun, serif', animationDuration: '2s' }}>
+      ?
+    </div>
+    {/* Card Stack 2 - Delayed animation */}
+    <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-24 h-24 bg-gradient-to-br from-white to-gray-50 rounded-full border-4 border-gray-400 shadow-lg flex items-center justify-center font-bold text-gray-600 text-2xl animate-spin opacity-80" 
+         style={{ fontFamily: 'SimSun, serif', animationDuration: '2s', animationDelay: '0.5s' }}>
+      ?
+    </div>
+    {/* Card Stack 3 - Most delayed */}
+    <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-24 h-24 bg-gradient-to-br from-white to-gray-50 rounded-full border-4 border-gray-400 shadow-lg flex items-center justify-center font-bold text-gray-600 text-2xl animate-spin opacity-60" 
+         style={{ fontFamily: 'SimSun, serif', animationDuration: '2s', animationDelay: '1s' }}>
+      ?
+    </div>
+  </div>
+);
+```
+
+#### **Progress Bar Component**
+Animated green fill matching mockup timing:
+```jsx
+const ProgressBar = () => (
+  <div className="w-full max-w-sm mx-auto">
+    <div className="h-2 bg-gray-200 rounded-full overflow-hidden">
+      <div className="h-full bg-gradient-to-r from-green-500 to-teal-500 rounded-full shadow-lg animate-pulse" 
+           style={{ width: '100%', animation: 'progress 3s ease-out forwards' }}>
+      </div>
+    </div>
+  </div>
+);
+```
+
+#### **Weak Hand Alert Modal**
+Slide-in popup with yellow gradient and action buttons:
+```jsx
+const WeakHandAlert = ({ onRequestRedeal, onKeepHand }) => (
+  <div className="bg-gradient-to-br from-yellow-50 to-orange-50 border border-yellow-300 rounded-xl p-6 max-w-sm mx-auto shadow-lg animate-slide-in">
+    <div className="text-center">
+      <div className="text-2xl mb-4">⚠️</div>
+      <h3 className="text-lg font-semibold text-yellow-700 mb-2">
+        Weak Hand Detected
+      </h3>
+      <p className="text-sm text-gray-600 mb-4">
+        No piece greater than 9 points. Would you like to request a redeal?
+      </p>
+      <div className="flex gap-2">
+        <button onClick={onRequestRedeal} className="flex-1 bg-gradient-to-br from-yellow-400 to-orange-400 text-gray-800 font-semibold py-2 px-4 rounded-lg border border-yellow-300 shadow-md hover:shadow-lg hover:-translate-y-0.5 transition-all duration-200">
+          Request Redeal
+        </button>
+        <button onClick={onKeepHand} className="flex-1 bg-gradient-to-br from-white to-gray-50 text-gray-700 font-semibold py-2 px-4 rounded-lg border border-gray-300 shadow-md hover:shadow-lg hover:bg-gray-50 transition-all duration-200">
+          Keep Hand
+        </button>
+      </div>
+    </div>
+  </div>
+);
+```
+
+#### **Piece Appearance Animation**
+Staggered piece reveals with 0.1s delays per piece:
+```css
+.animate-pieces :nth-child(1) { animation: piece-appear 0.5s ease-out 0.1s both; }
+.animate-pieces :nth-child(2) { animation: piece-appear 0.5s ease-out 0.2s both; }
+.animate-pieces :nth-child(3) { animation: piece-appear 0.5s ease-out 0.3s both; }
+.animate-pieces :nth-child(4) { animation: piece-appear 0.5s ease-out 0.4s both; }
+.animate-pieces :nth-child(5) { animation: piece-appear 0.5s ease-out 0.5s both; }
+.animate-pieces :nth-child(6) { animation: piece-appear 0.5s ease-out 0.6s both; }
+.animate-pieces :nth-child(7) { animation: piece-appear 0.5s ease-out 0.7s both; }
+.animate-pieces :nth-child(8) { animation: piece-appear 0.5s ease-out 0.8s both; }
+
+@keyframes piece-appear {
+  from {
+    opacity: 0;
+    transform: scale(0.8) translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+```
+
+#### **Badge System**
+Round indicator (top-right) and redeal multiplier (top-left):
+```jsx
+const RoundIndicator = ({ roundNumber }) => (
+  <div className="absolute top-5 right-5 z-50">
+    <div className="bg-gradient-to-br from-white to-gray-50 border border-gray-300 rounded-2xl px-4 py-2 shadow-lg">
+      <span className="text-sm font-bold text-gray-700 tracking-wide">Round {roundNumber}</span>
+    </div>
+  </div>
+);
+
+const RedealMultiplierBadge = ({ multiplier, show }) => (
+  show && multiplier > 1 && (
+    <div className="absolute top-5 left-5 z-50">
+      <div className="bg-gradient-to-br from-red-500 to-red-600 border border-red-400 rounded-2xl px-4 py-2 shadow-lg animate-bounce">
+        <span className="text-sm font-bold text-white tracking-wide">{multiplier}×</span>
+      </div>
+    </div>
+  )
+);
+```
+
+### **Phase 2B: DeclarationUI Mockup Implementation**
+**Extends the existing Phase 2 plan with detailed mockup features from declaration-ui-mockup.html:**
+
+#### **Player Status Grid**
+Replace basic grid with vertical list from mockup:
+```jsx
+const PlayerStatusRow = ({ player, status, declaration }) => {
+  const getStatusStyling = (status) => {
+    switch (status) {
+      case 'current':
+        return 'border-yellow-400 bg-gradient-to-br from-yellow-50 to-yellow-100';
+      case 'declared':
+        return 'border-green-300 bg-gradient-to-br from-green-50 to-green-100';
+      default:
+        return 'border-gray-200';
+    }
+  };
+
+  const getStatusBadge = (status, declaration) => {
+    if (status === 'declared') {
+      return (
+        <div className="text-base font-bold text-green-600 bg-green-100 border border-green-300 px-2 py-1 rounded">
+          {declaration}
+        </div>
+      );
+    }
+    if (status === 'current') {
+      return (
+        <div className="text-xs font-semibold bg-gradient-to-br from-yellow-400 to-orange-400 text-gray-800 border border-yellow-400 px-2 py-1 rounded uppercase tracking-wide">
+          Your Turn
+        </div>
+      );
+    }
+    return (
+      <div className="text-xs font-semibold bg-gray-100 text-gray-600 border border-gray-200 px-2 py-1 rounded uppercase tracking-wide">
+        Waiting
+      </div>
+    );
+  };
+
+  return (
+    <div className={`relative flex items-center bg-gradient-to-br from-white to-gray-50 p-2 px-4 rounded-lg border shadow-sm transition-all ${getStatusStyling(status)}`}>
+      {/* Left accent bar */}
+      <div className={`absolute left-0 top-1/2 transform -translate-y-1/2 w-1 h-3/5 rounded-r ${
+        status === 'current' ? 'bg-gradient-to-b from-yellow-400 to-orange-400' :
+        status === 'declared' ? 'bg-gradient-to-b from-green-500 to-teal-500' : ''
+      }`}></div>
+      
+      {/* Player Avatar */}
+      <div className="w-9 h-9 rounded-full bg-gradient-to-br from-white to-gray-50 border-2 border-gray-300 flex items-center justify-center text-sm font-bold text-gray-700 mr-3 shadow-sm">
+        {player.name[0].toUpperCase()}
+      </div>
+      
+      {/* Player Info */}
+      <div className="flex-1">
+        <div className="text-sm font-semibold text-gray-800 tracking-tight">
+          {player.name}{player.name === 'Andy' ? ' (You)' : ''}
+        </div>
+      </div>
+      
+      {/* Status Display */}
+      <div className="text-right min-w-15">
+        {getStatusBadge(status, declaration)}
+      </div>
+    </div>
+  );
+};
+```
+
+#### **Declaration Popup Modal**
+Full-screen overlay with backdrop blur and 3x3 grid:
+```jsx
+const DeclarationModal = ({ onDeclare, validOptions, selectedDeclaration, onSelectDeclaration }) => (
+  <div className="fixed inset-0 bg-black bg-opacity-40 backdrop-blur-sm flex items-center justify-center z-50 p-5">
+    <div className="bg-gradient-to-br from-white to-gray-50 border border-gray-300 rounded-xl p-6 max-w-sm w-full shadow-2xl">
+      <div className="text-center">
+        <h2 className="text-2xl font-bold text-gray-800 mb-2" style={{ fontFamily: 'Crimson Pro, serif', letterSpacing: '-0.5px' }}>
+          Make Your Declaration
+        </h2>
+        <p className="text-sm text-gray-600 font-medium mb-5">
+          How many piles do you plan to win this round?
+        </p>
+        
+        {/* Declaration Options Grid */}
+        <div className="grid grid-cols-3 gap-2 mb-5">
+          {[0, 1, 2, 3, 4, 5, 6, 7, 8].map((value) => {
+            const isValid = validOptions.includes(value);
+            const isSelected = selectedDeclaration === value;
+            
+            return (
+              <button
+                key={value}
+                onClick={() => isValid && onSelectDeclaration(value)}
+                disabled={!isValid}
+                className={`py-3 px-2 rounded-lg text-base font-semibold border transition-all duration-200 ${
+                  isSelected 
+                    ? 'bg-gradient-to-br from-yellow-400 to-orange-400 border-yellow-500 text-gray-800 shadow-md scale-105' 
+                    : isValid
+                      ? 'bg-gradient-to-br from-white to-gray-50 border-gray-300 text-gray-700 hover:bg-gradient-to-br hover:from-yellow-50 hover:to-orange-50 hover:border-yellow-400 hover:-translate-y-0.5 hover:scale-105 shadow-sm'
+                      : 'bg-gray-200 border-gray-300 text-gray-400 cursor-not-allowed'
+                }`}
+              >
+                {value}
+              </button>
+            );
+          })}
+        </div>
+        
+        {/* Confirm Button */}
+        <button
+          onClick={() => selectedDeclaration !== null && onDeclare(selectedDeclaration)}
+          disabled={selectedDeclaration === null}
+          className={`w-full py-3 px-6 rounded-lg text-sm font-semibold transition-all duration-200 ${
+            selectedDeclaration !== null
+              ? 'bg-gradient-to-br from-green-500 to-teal-500 border border-green-400 text-white shadow-md hover:-translate-y-0.5 hover:shadow-lg'
+              : 'bg-gray-200 border border-gray-300 text-gray-400 cursor-not-allowed opacity-70'
+          }`}
+        >
+          Confirm Declaration
+        </button>
+      </div>
+    </div>
+  </div>
+);
+```
+
+#### **Declaration Banner**
+Yellow center badge with requirement message:
+```jsx
+const DeclarationBanner = () => (
+  <div className="text-center mb-4">
+    <div className="bg-yellow-100 border border-yellow-300 rounded-xl px-4 py-2 inline-block">
+      <span className="text-sm text-yellow-700 font-medium">Declare your target pile count</span>
+    </div>
+  </div>
+);
+```
+
+## Implementation Task List
+
+### **Phase 2A Tasks - PreparationUI:**
+- [ ] Implement 3-card dealing animation with CSS keyframes and staggered timing
+- [ ] Create progress bar with 0-100% animation over 3 seconds using CSS animation
+- [ ] Build weak hand alert modal with slide-in animation and proper button styling
+- [ ] Add redeal multiplier badge with bounce animation (conditional display)
+- [ ] Implement piece appearance sequence with staggered delays (0.1s increments)
+- [ ] Add round indicator badge to top-right corner with proper styling
+- [ ] Test all animations for smooth 60fps performance on mobile devices
+- [ ] Integrate with existing GameService props and WebSocket events
+
+### **Phase 2B Tasks - DeclarationUI:**
+- [ ] Replace current grid layout with vertical player status list
+- [ ] Implement player status determination logic (current/declared/waiting states)
+- [ ] Create declaration popup with backdrop blur and 3x3 grid selection
+- [ ] Add state-specific styling (golden current, green declared, neutral waiting)
+- [ ] Implement declaration requirement banner with yellow styling
+- [ ] Add player avatar system with circular badges and initials
+- [ ] Create left accent bars for current and declared player states
+- [ ] Test modal accessibility and keyboard navigation
+- [ ] Integrate with existing declaration logic and WebSocket events
+
+### **Phase 2C Tasks - Integration:**
+- [ ] Update shared components (GamePhaseContainer, PhaseHeader, HandSection) with mockup enhancements
+- [ ] Ensure both UIs maintain existing prop interfaces for compatibility
+- [ ] Test both components in GameFlowDemo at localhost:5050
+- [ ] Fix any ESLint errors from new implementations
+- [ ] Verify responsive design on mobile viewports (400px container)
+- [ ] Test animation performance on various devices and browsers
+- [ ] Validate Chinese character support with SimSun font family
+- [ ] Ensure proper timer cleanup to prevent memory leaks
+
+### **Phase 2D Tasks - Quality Assurance:**
+- [ ] Cross-browser testing (Chrome, Firefox, Safari, Edge)
+- [ ] Mobile device testing (iOS Safari, Chrome Mobile)
+- [ ] Animation performance profiling (60fps target)
+- [ ] Accessibility audit (screen readers, keyboard navigation)
+- [ ] PropTypes validation and TypeScript compatibility
+- [ ] Component documentation and usage examples
+- [ ] Integration testing with existing game state management
+- [ ] User acceptance testing for visual fidelity to mockups
+
+This detailed implementation plan builds directly on the existing foundation in the document while adding the specific mockup implementations that transform the basic components into the stunning visual designs from the HTML mockups.

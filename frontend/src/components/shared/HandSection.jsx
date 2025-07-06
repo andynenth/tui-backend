@@ -60,11 +60,26 @@ export function HandSection({
   };
   
   return (
-    <div className={`
-      px-5 py-4 
-      ${isActivePlayer ? 'bg-gradient-to-r from-yellow-50 to-yellow-100 border-t border-yellow-200' : ''}
-      ${className}
-    `}>
+    <div 
+      className={`
+        px-5 py-5 border-t relative z-20
+        ${className}
+      `}
+      style={{
+        background: `
+          linear-gradient(180deg, #F8F9FA 0%, #E9ECEF 100%),
+          radial-gradient(ellipse 100% 60% at 50% 0%, rgba(173, 181, 189, 0.2) 0%, transparent 100%)
+        `,
+        borderTopColor: 'rgba(173, 181, 189, 0.2)'
+      }}
+    >
+      {/* Decorative top line - exact mockup match */}
+      <div 
+        className="absolute top-0 left-1/2 transform -translate-x-1/2 w-10 h-0.5"
+        style={{
+          background: 'linear-gradient(90deg, transparent, #6C757D, transparent)'
+        }}
+      />
       {/* Optional title */}
       {title && (
         <h3 className="text-sm font-semibold text-gray-700 mb-3 text-center">
@@ -72,8 +87,8 @@ export function HandSection({
         </h3>
       )}
       
-      {/* Hand pieces grid */}
-      <div className="grid grid-cols-4 gap-2 max-w-xs mx-auto">
+      {/* Hand pieces grid - matching mockup layout */}
+      <div className="grid grid-cols-4 gap-3 max-w-sm mx-auto">
         {sortedPieces.map((piece, displayIndex) => (
           <EnhancedGamePiece
             key={piece.displayId}

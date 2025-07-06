@@ -24,29 +24,72 @@ export function EnhancedGamePiece({
   onClick, 
   size = 'medium', 
   disabled = false,
-  className = '' 
+  className = '',
+  animationDelay = '0s'
 }) {
-  // Size configuration
-  const sizeClasses = {
-    small: 'w-4 h-4 text-xs',
-    medium: 'w-6 h-6 text-sm', 
-    large: 'w-8 h-8 text-base'
+  
+  // Parse piece information like GamePiece.jsx
+  const parsePieceInfo = () => {
+    if (!piece) {
+      return { color: 'red', point: 0, kind: 'UNKNOWN' };
+    }
+    
+    if (typeof piece === 'string') {
+      const color = piece.includes('RED') ? 'red' : 'black';
+      const match = piece.match(/\((\d+)\)/);
+      const point = match ? parseInt(match[1]) : 0;
+      const kind = piece.split('(')[0].trim();
+      return { color, point, kind };
+    }
+    
+    // Handle object pieces - fix color mapping
+    return {
+      color: (piece.color && piece.color.toLowerCase()) || 'black',
+      point: piece.points || piece.point || piece.value || 0,
+      kind: piece.kind || piece.type || 'UNKNOWN'
+    };
   };
+
+  const pieceInfo = parsePieceInfo();
+  const isRed = pieceInfo.color === 'red';
   
-  // Determine piece color and styling
-  const isRed = piece.color === 'red';
-  const pieceContent = piece.display || piece.character || piece.value || '?';
+  // Chinese character symbols - exact mapping from GamePiece.jsx
+  const getPieceSymbol = (kind, color) => {
+    let symbolKey = kind;
+    if (color && !kind.includes('_')) {
+      symbolKey = `${kind}_${color.toUpperCase()}`;
+    }
+    
+    const symbols = {
+      GENERAL_RED: '将',
+      GENERAL_BLACK: '將', 
+      ADVISOR_RED: '士',
+      ADVISOR_BLACK: '仕',
+      ELEPHANT_RED: '相',
+      ELEPHANT_BLACK: '象',
+      CHARIOT_RED: '車',
+      CHARIOT_BLACK: '車',
+      HORSE_RED: '馬',
+      HORSE_BLACK: '馬',
+      CANNON_RED: '炮',
+      CANNON_BLACK: '砲',
+      SOLDIER_RED: '兵',
+      SOLDIER_BLACK: '卒'
+    };
+    
+    return symbols[symbolKey] || '?';
+  };
+
+  const chineseChar = getPieceSymbol(pieceInfo.kind, pieceInfo.color);
+  const piecePoints = pieceInfo.point;
   
-  // Build className string
-  const combinedClassName = `
-    ${sizeClasses[size]} rounded-full bg-gradient-to-br from-white to-gray-50 
-    flex items-center justify-center font-bold border-2 shadow-sm
-    transition-all duration-200 ease-in-out
-    ${!disabled ? 'cursor-pointer hover:shadow-md hover:scale-105' : 'cursor-not-allowed opacity-60'}
-    ${isSelected ? 'ring-2 ring-blue-400 ring-offset-1 scale-110' : ''}
-    ${isRed ? 'text-red-600 border-red-300' : 'text-gray-600 border-gray-400'}
-    ${className}
-  `;
+  // Build className string - exact mockup match (no Tailwind classes)
+  const combinedClassName = `piece ${pieceInfo.color} ${isSelected ? 'selected' : ''} ${disabled ? 'disabled' : ''} ${className}`.trim();
+  
+  // Only animation delay as inline style, let CSS handle the rest
+  const inlineStyles = {
+    animationDelay: animationDelay
+  };
   
   const handleClick = () => {
     if (!disabled && onClick) {
@@ -58,13 +101,10 @@ export function EnhancedGamePiece({
     <div
       onClick={handleClick}
       className={combinedClassName}
-      style={{ 
-        fontFamily: 'SimSun, serif',
-        borderColor: isRed ? 'rgba(220, 38, 38, 0.4)' : 'rgba(73, 80, 87, 0.4)'
-      }}
+      style={inlineStyles}
       role={onClick ? 'button' : 'presentation'}
       tabIndex={onClick && !disabled ? 0 : -1}
-      aria-label={`${piece.color} piece: ${pieceContent}${piece.points ? ` (${piece.points} points)` : ''}`}
+      aria-label={`${pieceInfo.color} piece: ${chineseChar}${piecePoints ? ` (${piecePoints} points)` : ''}`}
       onKeyDown={(e) => {
         if ((e.key === 'Enter' || e.key === ' ') && !disabled && onClick) {
           e.preventDefault();
@@ -72,7 +112,15 @@ export function EnhancedGamePiece({
         }
       }}
     >
-      {pieceContent}
+      {/* Chinese Character */}
+      <div className="piece-character">
+        {chineseChar}
+      </div>
+      
+      {/* Point Value - exact mockup styling */}
+      <div className="piece-points">
+        {piecePoints}
+      </div>
     </div>
   );
 }
@@ -90,7 +138,8 @@ EnhancedGamePiece.propTypes = {
   onClick: PropTypes.func,
   size: PropTypes.oneOf(['small', 'medium', 'large']),
   disabled: PropTypes.bool,
-  className: PropTypes.string
+  className: PropTypes.string,
+  animationDelay: PropTypes.string
 };
 
 EnhancedGamePiece.defaultProps = {
