@@ -5,16 +5,16 @@ const tailwindcss = require('@tailwindcss/postcss'); // This is correct for Tail
 const autoprefixer = require('autoprefixer');
 const fs = require('fs');
 const path = require('path');
-
 require('dotenv').config({ path: '../.env' });
 
 const entry = process.env.ESBUILD_ENTRY || './main.js';
 const outfile = process.env.ESBUILD_OUT || '../backend/static/bundle.js';
 
-// CSS processing plugin
+// CSS processing plugin for all CSS files
 const cssPlugin = {
   name: 'css',
   setup(build) {
+    // Handle all CSS files
     build.onLoad({ filter: /\.css$/ }, async (args) => {
       const css = await fs.promises.readFile(args.path, 'utf8');
       
@@ -47,7 +47,9 @@ esbuild.context({
   jsx: 'automatic',
   minify: true,
   sourcemap: true,
-  plugins: [cssPlugin],
+  plugins: [
+    cssPlugin
+  ],
 }).then(ctx => {
   return ctx.watch();
 }).then(() => {

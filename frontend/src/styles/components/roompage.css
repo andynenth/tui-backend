@@ -1,0 +1,392 @@
+/* RoomPage Component Styles */
+
+.rp-gameContainer {
+  width: var(--container-width);
+  height: var(--container-height);
+  max-width: var(--container-max-width);
+  max-height: var(--container-max-height);
+  background: var(--gradient-container);
+  border-radius: var(--radius-xl);
+  border: 1px solid rgba(173, 181, 189, 0.3);
+  box-shadow: var(--shadow-xl), var(--shadow-border), var(--shadow-inset-white);
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Room Header */
+.rp-roomHeader {
+  text-align: center;
+  padding: 50px 24px 20px;
+  background: linear-gradient(180deg, rgba(248, 249, 250, 0.8) 0%, transparent 100%),
+              linear-gradient(90deg, transparent 0%, rgba(173, 181, 189, 0.1) 50%, transparent 100%);
+  border-bottom: 1px solid rgba(173, 181, 189, 0.2);
+  position: relative;
+}
+
+.rp-roomHeader::after {
+  content: '';
+  position: absolute;
+  bottom: -1px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 40px;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, var(--color-gray-500), transparent);
+}
+
+.rp-roomTitle {
+  font-family: var(--font-serif);
+  font-size: 28px;
+  font-weight: 700;
+  margin-bottom: 4px;
+  color: var(--color-gray-700);
+  letter-spacing: -0.5px;
+}
+
+.rp-roomSubtitle {
+  font-size: 14px;
+  color: var(--color-gray-500);
+  font-weight: 500;
+  transition: var(--transition-base);
+}
+
+.rp-roomSubtitle.rp-ready {
+  color: var(--color-success);
+  font-weight: 600;
+}
+
+/* Room ID Badge */
+.rp-roomIdBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(255, 193, 7, 0.1);
+  padding: 8px 16px;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 193, 7, 0.3);
+  margin-top: 12px;
+}
+
+.rp-roomIdLabel {
+  font-size: 12px;
+  color: var(--color-gray-500);
+  font-weight: 600;
+}
+
+.rp-roomIdValue {
+  font-size: 14px;
+  color: #F57F17;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  font-family: 'Courier New', monospace;
+}
+
+/* Players Section */
+.rp-playersSection {
+  flex: 1;
+  padding: 24px 20px;
+  display: flex;
+  flex-direction: column;
+}
+
+.rp-sectionHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.rp-sectionTitle {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--color-gray-600);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.rp-playerCount {
+  font-size: 13px;
+  color: var(--color-gray-500);
+  font-weight: 600;
+  background: rgba(108, 117, 125, 0.1);
+  padding: 4px 12px;
+  border-radius: 12px;
+  border: 1px solid rgba(108, 117, 125, 0.2);
+}
+
+.rp-playerCount.full {
+  background: rgba(40, 167, 69, 0.1);
+  border-color: rgba(40, 167, 69, 0.3);
+  color: var(--color-success);
+}
+
+/* Game Table Visualization */
+.rp-gameTable {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  position: relative;
+}
+
+.rp-tableSurface {
+  width: 240px;
+  height: 240px;
+  background: var(--gradient-wood), var(--gradient-wood-texture);
+  background-size: 100% 100%, 4px 100%;
+  border-radius: 24px;
+  border: 3px solid rgba(139, 90, 43, 0.3);
+  box-shadow: inset 0 2px 12px rgba(0, 0, 0, 0.15),
+              inset 0 -2px 8px rgba(255, 255, 255, 0.2),
+              0 8px 24px rgba(0, 0, 0, 0.15),
+              0 2px 8px rgba(0, 0, 0, 0.1);
+  position: relative;
+}
+
+/* Table felt pattern */
+.rp-tableSurface::before {
+  content: '';
+  position: absolute;
+  inset: 20px;
+  background: radial-gradient(ellipse at center, var(--color-felt) 0%, rgba(34, 139, 34, 0.05) 70%);
+  border: 1px solid var(--color-felt-border);
+  border-radius: 16px;
+  pointer-events: none;
+}
+
+/* Player Seats */
+.rp-playerSeat {
+  position: absolute;
+  width: 100px;
+  text-align: center;
+}
+
+.rp-playerSeat.rp-position-1 {
+  top: -65px;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.rp-playerSeat.rp-position-2 {
+  right: -45px;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+.rp-playerSeat.rp-position-3 {
+  bottom: -45px;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.rp-playerSeat.rp-position-4 {
+  left: -45px;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+.rp-seatNumber {
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--color-gray-500);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 8px;
+}
+
+/* Player Cards */
+.rp-playerCard {
+  background: #FFFFFF;
+  border: 2px solid rgba(173, 181, 189, 0.3);
+  border-radius: 12px;
+  padding: 12px;
+  box-shadow: var(--shadow-md), var(--shadow-inset-white);
+  transition: var(--transition-base);
+  animation: slideInFromBottom 0.5s ease-out;
+}
+
+.rp-playerCard.rp-filled {
+  border-color: rgba(40, 167, 69, 0.3);
+  background: #FFFFFF;
+}
+
+.rp-playerCard.rp-host {
+  border-color: rgba(255, 193, 7, 0.3);
+  background: #FFFFFF;
+}
+
+.rp-playerCard.rp-empty {
+  border-style: dashed;
+  background: #FFFFFF;
+  opacity: 0.6;
+}
+
+.rp-playerName {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--color-gray-800);
+  margin-bottom: 8px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.rp-playerBadges {
+  display: flex;
+  gap: 4px;
+  justify-content: center;
+  flex-wrap: wrap;
+  margin-bottom: 6px;
+  min-height: 20px;
+}
+
+.rp-badge {
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-size: 9px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+
+.rp-hostBadge {
+  background: linear-gradient(135deg, #FFC107 0%, #FF9800 100%);
+  color: #212529;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-size: 9px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+  border: 1px solid rgba(255, 193, 7, 0.4);
+}
+
+/* Player Actions */
+.rp-playerAction {
+  margin-top: 8px;
+}
+
+.rp-actionBtn {
+  padding: 4px 8px;
+  border-radius: 6px;
+  font-size: 10px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  border: none;
+  width: 100%;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+}
+
+.rp-addBotBtn {
+  background: linear-gradient(135deg, #6C757D 0%, #495057 100%);
+  color: white;
+  border: 1px solid rgba(108, 117, 125, 0.4);
+}
+
+.rp-addBotBtn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 2px 4px rgba(108, 117, 125, 0.3);
+}
+
+.rp-removeBtn {
+  background: linear-gradient(135deg, #DC3545 0%, #C82333 100%);
+  color: white;
+  border: 1px solid rgba(220, 53, 69, 0.4);
+}
+
+.rp-removeBtn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 2px 4px rgba(220, 53, 69, 0.3);
+}
+
+/* Game Controls */
+.rp-gameControls {
+  padding: 20px;
+  background: linear-gradient(180deg, rgba(248, 249, 250, 0.6) 0%, rgba(233, 236, 239, 0.8) 100%),
+              radial-gradient(ellipse 100% 60% at 50% 0%, rgba(173, 181, 189, 0.1) 0%, transparent 100%);
+  border-top: 1px solid rgba(173, 181, 189, 0.2);
+  position: relative;
+}
+
+.rp-gameControls::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 40px;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, var(--color-gray-500), transparent);
+}
+
+.rp-controlButtons {
+  display: flex;
+  gap: 12px;
+}
+
+.rp-controlButton {
+  flex: 1;
+  padding: 12px 20px;
+  border-radius: 10px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  border: none;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.rp-startButton {
+  background: 
+    linear-gradient(135deg, #28A745 0%, #20C997 100%),
+    radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.2) 0%, transparent 60%);
+  color: white;
+  border: 1px solid rgba(40, 167, 69, 0.4);
+  box-shadow: 0 4px 8px rgba(40, 167, 69, 0.2);
+}
+
+.rp-startButton:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 16px rgba(40, 167, 69, 0.3);
+}
+
+.rp-startButton:disabled {
+  background: linear-gradient(145deg, var(--color-gray-100) 0%, var(--color-gray-200) 100%);
+  color: var(--color-gray-500);
+  border-color: rgba(173, 181, 189, 0.3);
+  cursor: not-allowed;
+  opacity: 0.7;
+}
+
+.rp-leaveButton {
+  background: var(--gradient-white),
+              radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.8) 0%, transparent 60%);
+  color: var(--color-gray-600);
+  border: 1px solid rgba(173, 181, 189, 0.3);
+  box-shadow: var(--shadow-sm);
+}
+
+.rp-leaveButton:hover {
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-md);
+  border-color: rgba(173, 181, 189, 0.4);
+}
+
+.rp-roomStatus {
+  text-align: center;
+  margin-bottom: 16px;
+  font-size: 13px;
+  color: var(--color-gray-500);
+  transition: var(--transition-base);
+}
+
+.rp-roomStatus.rp-ready {
+  color: var(--color-success);
+  font-weight: 600;
+}

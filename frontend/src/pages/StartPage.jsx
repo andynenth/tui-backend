@@ -4,7 +4,8 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { useApp } from '../contexts/AppContext';
-import { Layout, Button, Input, LoadingOverlay } from '../components';
+import { Layout, LoadingOverlay } from '../components';
+// CSS classes are imported globally
 
 const StartPage = () => {
   const navigate = useNavigate();
@@ -62,79 +63,84 @@ const StartPage = () => {
         showConnection={false}
         showHeader={false}
       >
-        <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100">
-          <div className="max-w-md w-full mx-4">
-            <div className="bg-white rounded-lg shadow-xl p-8">
-              {/* Header */}
-              <div className="text-center mb-8">
-                <h1 className="text-3xl font-bold text-gray-900 mb-2">
-                  Welcome to Liap TUI
-                </h1>
-                <p className="text-gray-600">
-                  Enter your player name to start playing
-                </p>
+        <div className="min-h-screen flex items-center justify-center" style={{ background: 'var(--gradient-gray)' }}>
+          <div className="sp-game-container">
+            <div className="sp-content-wrapper">
+              {/* Game Icon with rotating pieces */}
+              <div className="sp-game-icon">
+                <div className="sp-icon-circle">將</div>
+                <div className="sp-icon-pieces sp-icon-piece-1">帥</div>
+                <div className="sp-icon-pieces sp-icon-piece-2">卒</div>
               </div>
-
+              
+              {/* Header */}
+              <h1 className="sp-game-title">Welcome to Liap TUI</h1>
+              <p className="sp-game-subtitle">Enter your player name to start playing</p>
+              
               {/* Player name form */}
-              <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-                <Input
-                  label="Player Name"
-                  placeholder="Enter your name..."
-                  fullWidth
-                  {...register('playerName', {
-                    required: 'Player name is required',
-                    minLength: {
-                      value: 2,
-                      message: 'Name must be at least 2 characters'
-                    },
-                    maxLength: {
-                      value: 20,
-                      message: 'Name must be less than 20 characters'
-                    },
-                    pattern: {
-                      value: /^[a-zA-Z0-9_-]+$/,
-                      message: 'Only letters, numbers, underscore and dash allowed'
-                    }
-                  })}
-                  error={errors.playerName?.message}
-                  helperText="2-20 characters, letters and numbers only"
-                />
+              <form onSubmit={handleSubmit(onSubmit)} className="sp-form-container">
+                <div className="sp-input-wrapper">
+                  <label className="sp-input-label">Player Name</label>
+                  <input
+                    type="text"
+                    className="sp-glowing-input"
+                    placeholder="Enter your name..."
+                    {...register('playerName', {
+                      required: 'Player name is required',
+                      minLength: {
+                        value: 2,
+                        message: 'Name must be at least 2 characters'
+                      },
+                      maxLength: {
+                        value: 20,
+                        message: 'Name must be less than 20 characters'
+                      },
+                      pattern: {
+                        value: /^[a-zA-Z0-9_-]+$/,
+                        message: 'Only letters, numbers, underscore and dash allowed'
+                      }
+                    })}
+                  />
+                  {errors.playerName ? (
+                    <p className="sp-input-error">
+                      ⚠️ {errors.playerName.message}
+                    </p>
+                  ) : (
+                    <p className="sp-input-helper-text">
+                      2-20 characters, letters and numbers only
+                    </p>
+                  )}
+                </div>
 
-                <div className="space-y-3">
-                  <Button
+                <div className="sp-button-group">
+                  <button
                     type="submit"
-                    fullWidth
-                    loading={isSubmitting}
+                    className="btn btn-primary btn-full"
                     disabled={!playerNameValue || isSubmitting}
-                    loadingText="Setting up..."
                   >
-                    Enter Lobby
-                  </Button>
+                    {isSubmitting && <span className="sp-loading-spinner" />}
+                    {isSubmitting ? 'Setting up...' : 'Enter Lobby'}
+                  </button>
 
-                  {/* Quick access if player name already exists */}
-                  {app.playerName && app.playerName !== playerNameValue && (
-                    <Button
+                  {/* Continue as previous player */}
+                  {app.playerName && (
+                    <button
                       type="button"
-                      variant="outline"
-                      fullWidth
+                      className="btn btn-secondary btn-full"
                       onClick={goToLobby}
                     >
                       Continue as {app.playerName}
-                    </Button>
+                    </button>
                   )}
                 </div>
               </form>
 
               {/* Game info */}
-              <div className="mt-8 pt-6 border-t border-gray-200">
-                <div className="text-center text-sm text-gray-500">
-                  <p className="mb-2">
-                    🎮 A real-time multiplayer strategy game
-                  </p>
-                  <p>
-                    4 players • Card-based gameplay • Strategic planning
-                  </p>
-                </div>
+              <div className="sp-game-info">
+                <p className="sp-game-info-text">
+                  A strategic board game for 4 players.<br/>
+                  Create or join a room to start playing!
+                </p>
               </div>
             </div>
           </div>
