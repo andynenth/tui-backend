@@ -1,0 +1,1074 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Turn Phase - Table Layout Variation 2</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&family=Crimson+Pro:wght@400;600;700&display=swap');
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Plus Jakarta Sans', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+            background: 
+                linear-gradient(135deg, #F8F9FA 0%, #E9ECEF 25%, #DEE2E6 50%, #CED4DA 75%, #ADB5BD 100%),
+                radial-gradient(circle at 30% 20%, rgba(255, 193, 7, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 70% 80%, rgba(13, 110, 253, 0.05) 0%, transparent 50%);
+            color: #212529;
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            position: relative;
+        }
+
+        /* Subtle paper texture */
+        body::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                radial-gradient(circle at 25% 25%, rgba(255, 255, 255, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 75% 75%, rgba(0, 0, 0, 0.02) 0%, transparent 50%);
+            pointer-events: none;
+        }
+
+        /* Fixed 9:16 Container */
+        .game-container {
+            width: min(100vw, 56.25vh);
+            height: min(100vh, 177.78vw);
+            max-width: 400px;
+            max-height: 711px;
+            background: 
+                linear-gradient(145deg, #FFFFFF 0%, #F8F9FA 100%),
+                radial-gradient(circle at 20% 30%, rgba(255, 193, 7, 0.03) 0%, transparent 70%),
+                radial-gradient(circle at 80% 70%, rgba(13, 110, 253, 0.02) 0%, transparent 70%);
+            border-radius: 20px;
+            border: 1px solid rgba(173, 181, 189, 0.3);
+            box-shadow: 
+                0 20px 40px rgba(0, 0, 0, 0.08),
+                0 0 0 1px rgba(255, 255, 255, 0.9),
+                inset 0 1px 0 rgba(255, 255, 255, 1);
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* Turn Number Indicator */
+        .turn-indicator {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: 
+                linear-gradient(135deg, #28A745 0%, #20C997 100%),
+                radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.3) 0%, transparent 60%);
+            padding: 8px 16px;
+            border-radius: 16px;
+            border: 1px solid rgba(40, 167, 69, 0.4);
+            box-shadow: 
+                0 4px 12px rgba(40, 167, 69, 0.2),
+                inset 0 1px 0 rgba(255, 255, 255, 0.6);
+            font-weight: 700;
+            font-size: 14px;
+            z-index: 1000;
+            color: white;
+            letter-spacing: 0.5px;
+        }
+
+        /* Phase Header */
+        .phase-header {
+            text-align: center;
+            padding: 50px 24px 16px;
+            background: 
+                linear-gradient(180deg, rgba(248, 249, 250, 0.8) 0%, transparent 100%),
+                linear-gradient(90deg, transparent 0%, rgba(173, 181, 189, 0.1) 50%, transparent 100%);
+            border-bottom: 1px solid rgba(173, 181, 189, 0.2);
+            position: relative;
+        }
+
+        .phase-header::after {
+            content: '';
+            position: absolute;
+            bottom: -1px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 40px;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, #6C757D, transparent);
+        }
+
+        .phase-title {
+            font-family: 'Crimson Pro', serif;
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 4px;
+            color: #343A40;
+            letter-spacing: -0.5px;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .phase-title.play-type {
+            color: #FF6B35;
+            text-shadow: 0 2px 4px rgba(255, 107, 53, 0.2);
+        }
+
+        .phase-title.updating {
+            animation: flipIn 0.6s ease-out;
+        }
+
+        /* Flip In Animation */
+        @keyframes flipIn {
+            0% { 
+                opacity: 0; 
+                transform: rotateX(-90deg); 
+                color: #343A40;
+            }
+            50% { 
+                opacity: 0.8;
+                transform: rotateX(-30deg); 
+                text-shadow: 0 4px 12px rgba(255, 107, 53, 0.3);
+            }
+            100% { 
+                opacity: 1; 
+                transform: rotateX(0); 
+                color: #FF6B35;
+                text-shadow: 0 2px 4px rgba(255, 107, 53, 0.2);
+            }
+        }
+
+        .phase-subtitle {
+            font-size: 14px;
+            color: #6C757D;
+            font-weight: 500;
+            margin-bottom: 8px;
+        }
+
+        .turn-requirement-header {
+            font-size: 11px;
+            color: #FFC107;
+            background: rgba(255, 193, 7, 0.1);
+            padding: 4px 12px;
+            border-radius: 8px;
+            border: 1px solid rgba(255, 193, 7, 0.3);
+            display: inline-block;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            max-width: 300px;
+            font-weight: 500;
+        }
+
+        .turn-requirement-header.waiting {
+            color: #6C757D;
+            background: rgba(108, 117, 125, 0.1);
+            border: 1px solid rgba(108, 117, 125, 0.3);
+        }
+
+        .turn-requirement-header.error {
+            color: #DC3545;
+            background: rgba(220, 53, 69, 0.1);
+            border: 1px solid rgba(220, 53, 69, 0.3);
+        }
+
+        /* Table Section */
+        .table-section {
+            flex: 1;
+            padding: 8px;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Table Layout - Optimized */
+        .table-layout {
+            position: relative;
+            flex: 1;
+            min-height: 260px;
+            padding: 8px;
+        }
+
+        /* Central Table - Larger and shifted down */
+        .central-table {
+            position: absolute;
+            top: 58%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 220px;
+            height: 220px;
+            background: 
+                linear-gradient(145deg, #FFFFFF 0%, #F8F9FA 100%),
+                /* Grid pattern - more visible */
+                linear-gradient(rgba(173, 181, 189, 0.2) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(173, 181, 189, 0.2) 1px, transparent 1px);
+            background-size: 100% 100%, 15px 15px, 15px 15px;
+            border: 1px solid rgba(173, 181, 189, 0.4);
+            border-radius: 8px;
+            box-shadow: 
+                0 4px 12px rgba(0, 0, 0, 0.08),
+                inset 0 1px 0 rgba(255, 255, 255, 1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+
+        /* Grid enhancement for game table feel */
+        .central-table::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: 
+                /* Center cross lines */
+                linear-gradient(rgba(173, 181, 189, 0.15) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(173, 181, 189, 0.15) 1px, transparent 1px);
+            background-size: 15px 15px, 15px 15px;
+            background-position: 0 0, 0 0;
+            border-radius: 7px;
+            pointer-events: none;
+        }
+
+        /* Player piece areas positioned around table */
+        .player-pieces-area {
+            position: absolute;
+            display: grid;
+            gap: 3px;
+        }
+
+        .player-pieces-area.top {
+            top: 15px;
+            left: 50%;
+            transform: translateX(-50%);
+            grid-template-columns: repeat(3, 1fr);
+            grid-template-rows: repeat(2, 1fr);
+            max-width: 170px;
+            justify-items: center;
+        }
+
+        .player-pieces-area.bottom {
+            bottom: 15px;
+            left: 50%;
+            transform: translateX(-50%);
+            grid-template-columns: repeat(3, 1fr);
+            grid-template-rows: repeat(2, 1fr);
+            max-width: 170px;
+            justify-items: center;
+        }
+
+        .player-pieces-area.left {
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            grid-template-columns: repeat(2, 1fr);
+            grid-template-rows: repeat(3, 1fr);
+            max-height: 170px;
+            justify-items: center;
+        }
+
+        .player-pieces-area.right {
+            right: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            grid-template-columns: repeat(2, 1fr);
+            grid-template-rows: repeat(3, 1fr);
+            max-height: 170px;
+            justify-items: center;
+        }
+
+        /* Special handling for 3 or fewer pieces - single row/column */
+        .player-pieces-area.single-line.top,
+        .player-pieces-area.single-line.bottom {
+            grid-template-columns: repeat(3, 1fr);
+            grid-template-rows: 1fr;
+        }
+
+        .player-pieces-area.single-line.left,
+        .player-pieces-area.single-line.right {
+            grid-template-columns: 1fr;
+            grid-template-rows: repeat(3, 1fr);
+        }
+
+        /* Player Summary Bars - Edge positioned, table-center aligned */
+        .player-summary-bar {
+            position: absolute;
+            background: 
+                linear-gradient(145deg, #F8F9FA 0%, #FFFFFF 100%),
+                radial-gradient(circle at 20% 50%, rgba(173, 181, 189, 0.1) 0%, transparent 50%);
+            border: 1px solid rgba(173, 181, 189, 0.15);
+            border-radius: 8px;
+            padding: 6px 10px;
+            box-shadow: 
+                0 2px 8px rgba(0, 0, 0, 0.04),
+                inset 0 1px 0 rgba(255, 255, 255, 1);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 6px;
+            transition: all 0.3s ease;
+        }
+
+        .player-summary-bar.top {
+            top: 4px;
+            left: 50%;
+            transform: translateX(-50%);
+            min-width: 140px;
+        }
+
+        .player-summary-bar.left {
+            left: -45px;
+            top: 58%;
+            transform: translateY(-50%) rotate(-90deg);
+            transform-origin: center;
+            min-width: 140px;
+        }
+
+        .player-summary-bar.right {
+            right: -45px;
+            top: 58%;
+            transform: translateY(-50%) rotate(90deg);
+            transform-origin: center;
+            min-width: 140px;
+        }
+
+        .player-summary-bar.active {
+            border-color: rgba(255, 193, 7, 0.4);
+            background: 
+                linear-gradient(145deg, #FFF8E1 0%, #FFFBF0 100%),
+                radial-gradient(circle at 20% 50%, rgba(255, 193, 7, 0.1) 0%, transparent 50%);
+            box-shadow: 
+                0 4px 12px rgba(255, 193, 7, 0.15),
+                inset 0 1px 0 rgba(255, 255, 255, 1);
+        }
+
+        .player-summary-bar.played {
+            border-color: rgba(40, 167, 69, 0.4);
+            background: 
+                linear-gradient(145deg, #F0FFF4 0%, #F8FFF8 100%),
+                radial-gradient(circle at 20% 50%, rgba(40, 167, 69, 0.1) 0%, transparent 50%);
+            box-shadow: 
+                0 4px 12px rgba(40, 167, 69, 0.15),
+                inset 0 1px 0 rgba(255, 255, 255, 1);
+        }
+
+        .player-summary-bar.current-user {
+            border: 2px solid rgba(13, 110, 253, 0.3);
+            box-shadow: 
+                0 2px 8px rgba(0, 0, 0, 0.04),
+                0 0 0 1px rgba(13, 110, 253, 0.1),
+                inset 0 1px 0 rgba(255, 255, 255, 1);
+        }
+
+        .player-summary-content {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            flex: 1;
+        }
+
+        .player-avatar-small {
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background: 
+                linear-gradient(145deg, #FFFFFF 0%, #F8F9FA 100%),
+                radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.8) 0%, transparent 60%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 8px;
+            border: 1px solid rgba(173, 181, 189, 0.3);
+            color: #495057;
+        }
+
+        .player-name-short {
+            font-size: 10px;
+            font-weight: 600;
+            color: #343A40;
+            white-space: nowrap;
+        }
+
+        .player-stats-compact {
+            display: flex;
+            align-items: center;
+            gap: 3px;
+            white-space: nowrap;
+        }
+
+        .stat-number {
+            font-size: 11px;
+            font-weight: 700;
+            color: #343A40;
+        }
+
+        .stat-separator {
+            font-size: 9px;
+            color: #6C757D;
+        }
+
+        .status-icons {
+            display: flex;
+            gap: 2px;
+            justify-content: center;
+        }
+
+        .status-icon {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            display: inline-block;
+            background: 
+                linear-gradient(145deg, #FFFFFF 0%, #F8F9FA 100%),
+                radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.8) 0%, transparent 60%);
+            border: 1px solid rgba(173, 181, 189, 0.7);
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.06);
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.6; }
+        }
+
+        .table-piece {
+            width: 22px;
+            height: 22px;
+            border-radius: 50%;
+            position: relative;
+            transform-style: preserve-3d;
+            transition: transform 0.6s ease;
+            cursor: pointer;
+        }
+
+        .table-piece.flipped {
+            transform: rotateY(180deg);
+        }
+
+        .table-piece-face {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            background: 
+                linear-gradient(145deg, #FFFFFF 0%, #F8F9FA 100%),
+                radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.8) 0%, transparent 60%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 10px;
+            font-weight: bold;
+            border: 1px solid rgba(173, 181, 189, 0.3);
+            font-family: 'SimSun', '宋体', serif;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
+            backface-visibility: hidden;
+        }
+
+        .table-piece-back {
+            background: 
+                linear-gradient(145deg, #FFFFFF 0%, #F8F9FA 100%),
+                radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.8) 0%, transparent 60%);
+            border: 1px solid rgba(173, 181, 189, 0.7);
+        }
+
+        .table-piece-back::after {
+            content: '?';
+            color: #6C757D;
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        .table-piece-front {
+            transform: rotateY(180deg);
+        }
+
+        .table-piece-front.red {
+            color: #DC3545;
+            border-color: rgba(220, 53, 69, 0.4);
+        }
+
+        .table-piece-front.black {
+            color: #495057;
+            border-color: rgba(73, 80, 87, 0.4);
+        }
+
+        .table-piece:hover {
+            transform: scale(1.1);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.12);
+        }
+
+        /* Confirm Selection Panel - Sliding Tray */
+        .confirm-panel {
+            position: absolute;
+            bottom: 220px;
+            left: 0;
+            right: 0;
+            background: 
+                linear-gradient(145deg, #F0FFF4 0%, #F8FFF8 100%),
+                radial-gradient(circle at 30% 30%, rgba(40, 167, 69, 0.1) 0%, transparent 60%);
+            border: 1px solid rgba(40, 167, 69, 0.3);
+            border-radius: 16px;
+            margin: 0 16px;
+            padding: 16px 20px;
+            box-shadow: 
+                0 4px 20px rgba(40, 167, 69, 0.15),
+                0 0 0 1px rgba(255, 255, 255, 0.9),
+                inset 0 1px 0 rgba(255, 255, 255, 1);
+            z-index: 10;
+            transform: translateY(calc(100% + 20px));
+            transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .confirm-panel.show {
+            transform: translateY(0);
+        }
+
+        .confirm-panel::before {
+            content: '';
+            position: absolute;
+            top: 8px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 40px;
+            height: 3px;
+            background: rgba(40, 167, 69, 0.3);
+            border-radius: 2px;
+        }
+
+        .selection-info {
+            text-align: center;
+            margin-bottom: 12px;
+        }
+
+        .selection-count {
+            font-size: 14px;
+            color: #28A745;
+            font-weight: 600;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 8px;
+            justify-content: center;
+        }
+
+        .action-button {
+            background: 
+                linear-gradient(135deg, #28A745 0%, #20C997 100%),
+                radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.2) 0%, transparent 60%);
+            color: white;
+            border: 1px solid rgba(40, 167, 69, 0.4);
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 2px 4px rgba(40, 167, 69, 0.2);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+        }
+
+        .action-button:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 8px rgba(40, 167, 69, 0.3);
+        }
+
+        .action-button.secondary {
+            background: 
+                linear-gradient(135deg, #6C757D 0%, #495057 100%),
+                radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.1) 0%, transparent 60%);
+            border-color: rgba(108, 117, 125, 0.4);
+            box-shadow: 0 2px 4px rgba(108, 117, 125, 0.2);
+        }
+
+        .action-button.secondary:hover {
+            box-shadow: 0 4px 8px rgba(108, 117, 125, 0.3);
+        }
+
+
+        /* Player Hand Section (Piece Tray) */
+        .hand-section {
+            background: #F8F9FA;
+            padding: 16px;
+            border-top: 1px solid rgba(173, 181, 189, 0.2);
+            position: relative;
+            z-index: 20;
+        }
+
+        .hand-section.active-turn {
+            border-top: 2px solid rgba(255, 193, 7, 0.4);
+            background: linear-gradient(180deg, rgba(255, 248, 225, 0.3) 0%, #F8F9FA 100%);
+            box-shadow: 
+                inset 0 2px 0 rgba(255, 193, 7, 0.2),
+                0 -2px 12px rgba(255, 193, 7, 0.1);
+        }
+
+        .hand-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 40px;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, #6C757D, transparent);
+        }
+
+        .pieces-tray {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 12px;
+            max-width: 350px;
+            margin: 0 auto;
+        }
+
+        .piece {
+            aspect-ratio: 1;
+            border-radius: 50%;
+            background: 
+                linear-gradient(145deg, #FFFFFF 0%, #F8F9FA 100%),
+                radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.8) 0%, transparent 60%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            font-weight: bold;
+            text-align: center;
+            box-shadow: 
+                0 4px 12px rgba(0, 0, 0, 0.08),
+                inset 0 1px 0 rgba(255, 255, 255, 1);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            cursor: pointer;
+            position: relative;
+            font-family: 'SimSun', '宋体', serif;
+            border: 3px solid rgba(173, 181, 189, 0.6);
+        }
+
+        .piece:hover {
+            transform: translateY(-3px) scale(1.05);
+            box-shadow: 
+                0 8px 20px rgba(0, 0, 0, 0.12),
+                inset 0 1px 0 rgba(255, 255, 255, 1);
+        }
+
+        .piece.selected {
+            border-color: rgba(40, 167, 69, 0.6);
+            background: 
+                linear-gradient(145deg, #F0FFF4 0%, #F8FFF8 100%),
+                radial-gradient(circle at 30% 30%, rgba(40, 167, 69, 0.1) 0%, transparent 60%);
+            transform: translateY(-3px) scale(1.1);
+            box-shadow: 
+                0 8px 20px rgba(40, 167, 69, 0.2),
+                inset 0 1px 0 rgba(255, 255, 255, 1);
+        }
+
+        .piece.red {
+            color: #DC3545;
+            border-color: rgba(220, 53, 69, 0.6);
+        }
+
+        .piece.black {
+            color: #495057;
+            border-color: rgba(73, 80, 87, 0.6);
+        }
+
+        .piece-character {
+            font-size: 18px;
+            margin-bottom: 2px;
+            font-weight: 700;
+        }
+
+        .piece-points {
+            font-size: 9px;
+            font-weight: 600;
+            background: rgba(108, 117, 125, 0.1);
+            padding: 2px 6px;
+            border-radius: 6px;
+            border: 1px solid rgba(108, 117, 125, 0.2);
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            color: #495057;
+        }
+    </style>
+</head>
+<body>
+    <div class="game-container">
+        <!-- Turn Number Indicator -->
+        <div class="turn-indicator">
+            Turn 3
+        </div>
+
+        <!-- Phase Header -->
+        <div class="phase-header">
+            <!-- Phase title can display play type after starter plays (e.g. "Single", "Pair", "Straight", etc.) -->
+            <div class="phase-title">Turn Phase</div>
+            <div class="phase-subtitle">Round 1 • Bob's Turn</div>
+            <!-- Turn requirement can display:
+                 "Waiting for {player} to play" - when it's not player's turn
+                 "As starter, your play must be valid" - when it's player's turn and player is starter
+                 "Must play exactly {number} pieces" - when it's player's turn and not starter
+            -->
+            <div class="turn-requirement-header waiting">Waiting for Bob to play</div>
+        </div>
+
+        <!-- Table Section -->
+        <div class="table-section">
+            <div class="table-layout">
+                <!-- Central Table -->
+                <div class="central-table">
+                    <!-- Top Player Pieces (Bob) -->
+                    <div class="player-pieces-area top">
+                        <div class="table-piece">
+                            <div class="table-piece-face table-piece-back"></div>
+                            <div class="table-piece-face table-piece-front red">将</div>
+                        </div>
+                        <div class="table-piece">
+                            <div class="table-piece-face table-piece-back"></div>
+                            <div class="table-piece-face table-piece-front black">車</div>
+                        </div>
+                        <div class="table-piece">
+                            <div class="table-piece-face table-piece-back"></div>
+                            <div class="table-piece-face table-piece-front red">马</div>
+                        </div>
+                        <div class="table-piece">
+                            <div class="table-piece-face table-piece-back"></div>
+                            <div class="table-piece-face table-piece-front black">炮</div>
+                        </div>
+                        <div class="table-piece">
+                            <div class="table-piece-face table-piece-back"></div>
+                            <div class="table-piece-face table-piece-front red">士</div>
+                        </div>
+                        <div class="table-piece">
+                            <div class="table-piece-face table-piece-back"></div>
+                            <div class="table-piece-face table-piece-front black">象</div>
+                        </div>
+                    </div>
+
+                    <!-- Left Player Pieces (Lucas) -->
+                    <div class="player-pieces-area left">
+                        <div class="table-piece">
+                            <div class="table-piece-face table-piece-back"></div>
+                            <div class="table-piece-face table-piece-front red">馬</div>
+                        </div>
+                        <div class="table-piece">
+                            <div class="table-piece-face table-piece-back"></div>
+                            <div class="table-piece-face table-piece-front black">炮</div>
+                        </div>
+                        <div class="table-piece">
+                            <div class="table-piece-face table-piece-back"></div>
+                            <div class="table-piece-face table-piece-front red">卒</div>
+                        </div>
+                        <div class="table-piece">
+                            <div class="table-piece-face table-piece-back"></div>
+                            <div class="table-piece-face table-piece-front black">兵</div>
+                        </div>
+                        <div class="table-piece">
+                            <div class="table-piece-face table-piece-back"></div>
+                            <div class="table-piece-face table-piece-front red">车</div>
+                        </div>
+                        <div class="table-piece">
+                            <div class="table-piece-face table-piece-back"></div>
+                            <div class="table-piece-face table-piece-front black">相</div>
+                        </div>
+                    </div>
+
+                    <!-- Right Player Pieces (Daniel) -->
+                    <div class="player-pieces-area right">
+                        <div class="table-piece">
+                            <div class="table-piece-face table-piece-back"></div>
+                            <div class="table-piece-face table-piece-front black">兵</div>
+                        </div>
+                        <div class="table-piece">
+                            <div class="table-piece-face table-piece-back"></div>
+                            <div class="table-piece-face table-piece-front red">帅</div>
+                        </div>
+                        <div class="table-piece">
+                            <div class="table-piece-face table-piece-back"></div>
+                            <div class="table-piece-face table-piece-front black">士</div>
+                        </div>
+                        <div class="table-piece">
+                            <div class="table-piece-face table-piece-back"></div>
+                            <div class="table-piece-face table-piece-front red">象</div>
+                        </div>
+                        <div class="table-piece">
+                            <div class="table-piece-face table-piece-back"></div>
+                            <div class="table-piece-face table-piece-front black">马</div>
+                        </div>
+                        <div class="table-piece">
+                            <div class="table-piece-face table-piece-back"></div>
+                            <div class="table-piece-face table-piece-front red">车</div>
+                        </div>
+                    </div>
+
+                    <!-- Bottom Player Pieces (Andy - Current Player) -->
+                    <div class="player-pieces-area bottom">
+                        <!-- Initially empty - pieces will be added when player plays -->
+                    </div>
+                </div>
+
+                <!-- Top Player (Bob) - Current Turn -->
+                <div class="player-summary-bar top active">
+                    <div class="player-summary-content">
+                        <div class="player-avatar-small">B</div>
+                        <span class="player-name-short">Bob</span>
+                        <!-- Stats show captured piles / declared this round -->
+                        <!-- Stats show captured piles / declared this round -->
+                        <div class="player-stats-compact">
+                            <span class="stat-number">3</span>
+                            <span class="stat-separator">/</span>
+                            <span class="stat-number">2</span>
+                        </div>
+                    </div>
+                    <!-- Status icons indicate how many pieces player has in hand -->
+                    <div class="status-icons">
+                        <span class="status-icon"></span>
+                        <span class="status-icon"></span>
+                        <span class="status-icon"></span>
+                        <span class="status-icon"></span>
+                        <span class="status-icon"></span>
+                        <span class="status-icon"></span>
+                    </div>
+                </div>
+
+                <!-- Left Player (Lucas) - Played -->
+                <div class="player-summary-bar left played">
+                    <div class="player-summary-content">
+                        <div class="player-avatar-small">L</div>
+                        <span class="player-name-short">Lucas</span>
+                        <!-- Stats show captured piles / declared this round -->
+                        <div class="player-stats-compact">
+                            <span class="stat-number">1</span>
+                            <span class="stat-separator">/</span>
+                            <span class="stat-number">4</span>
+                        </div>
+                    </div>
+                    <!-- Status icons indicate how many pieces player has in hand -->
+                    <div class="status-icons">
+                        <span class="status-icon"></span>
+                        <span class="status-icon"></span>
+                        <span class="status-icon"></span>
+                        <span class="status-icon"></span>
+                        <span class="status-icon"></span>
+                        <span class="status-icon"></span>
+                    </div>
+                </div>
+
+                <!-- Right Player (Daniel) - Waiting -->
+                <div class="player-summary-bar right">
+                    <div class="player-summary-content">
+                        <div class="player-avatar-small">D</div>
+                        <span class="player-name-short">Daniel</span>
+                        <!-- Stats show captured piles / declared this round -->
+                        <div class="player-stats-compact">
+                            <span class="stat-number">2</span>
+                            <span class="stat-separator">/</span>
+                            <span class="stat-number">1</span>
+                        </div>
+                    </div>
+                    <div class="status-icons">
+                        <span class="status-icon"></span>
+                        <span class="status-icon"></span>
+                        <span class="status-icon"></span>
+                        <span class="status-icon"></span>
+                        <span class="status-icon"></span>
+                        <span class="status-icon"></span>
+                        <span class="status-icon"></span>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- Player Hand Section (Piece Tray) -->
+        <!-- NOTE: Pieces are only interactive during turn phase - other phases clicking does nothing -->
+        <!-- NOTE: Played pieces will be disabled after being played -->
+        <div class="hand-section">
+            <div class="pieces-tray">
+                <!-- Row 1 -->
+                <div class="piece red">
+                    <div class="piece-character">士</div>
+                    <div class="piece-points">11</div>
+                </div>
+                <div class="piece black">
+                    <div class="piece-character">象</div>
+                    <div class="piece-points">10</div>
+                </div>
+                <div class="piece red">
+                    <div class="piece-character">车</div>
+                    <div class="piece-points">7</div>
+                </div>
+                <div class="piece black">
+                    <div class="piece-character">马</div>
+                    <div class="piece-points">6</div>
+                </div>
+                
+                <!-- Row 2 -->
+                <div class="piece red">
+                    <div class="piece-character">炮</div>
+                    <div class="piece-points">3</div>
+                </div>
+                <div class="piece black">
+                    <div class="piece-character">兵</div>
+                    <div class="piece-points">2</div>
+                </div>
+                <div class="piece red">
+                    <div class="piece-character">卒</div>
+                    <div class="piece-points">1</div>
+                </div>
+                <div class="piece black" style="opacity: 0.3;">
+                    <div class="piece-character">?</div>
+                    <div class="piece-points">0</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Confirm Selection Panel -->
+        <!-- NOTE: Clicking on a piece will not toggle confirm-panel if it's not player's turn -->
+        <div class="confirm-panel" id="confirmPanel">
+            <div class="selection-info">
+                <div class="selection-count" id="selectionCount">2 pieces selected</div>
+            </div>
+            
+            <div class="action-buttons">
+                <button class="action-button" onclick="playCards()">Play Cards</button>
+                <button class="action-button secondary" onclick="clearSelection()">Clear</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Simple interaction for demonstration
+        document.querySelectorAll('.piece').forEach(piece => {
+            piece.addEventListener('click', function() {
+                if (this.style.opacity === '0.3') return; // Skip empty slots
+                
+                this.classList.toggle('selected');
+                
+                // Update selection info and show/hide confirm panel
+                const selectedPieces = document.querySelectorAll('.piece.selected');
+                const count = selectedPieces.length;
+                const confirmPanel = document.getElementById('confirmPanel');
+                const selectionCount = document.getElementById('selectionCount');
+                
+                if (count > 0) {
+                    selectionCount.textContent = `${count} piece${count !== 1 ? 's' : ''} selected`;
+                    confirmPanel.classList.add('show');
+                } else {
+                    confirmPanel.classList.remove('show');
+                }
+            });
+        });
+
+        function playCards() {
+            const selectedPieces = document.querySelectorAll('.piece.selected');
+            console.log(`Playing ${selectedPieces.length} pieces!`);
+            
+            // Add player's pieces to the table (face-down initially)
+            addPlayerPiecesToTable(selectedPieces);
+            
+            // Flip all pieces on the table after a short delay
+            setTimeout(() => {
+                flipAllPieces();
+            }, 800);
+            
+            clearSelection();
+        }
+
+        function addPlayerPiecesToTable(selectedPieces) {
+            const bottomArea = document.querySelector('.player-pieces-area.bottom');
+            
+            selectedPieces.forEach(piece => {
+                const character = piece.querySelector('.piece-character').textContent;
+                const isRed = piece.classList.contains('red');
+                
+                const tablePiece = document.createElement('div');
+                tablePiece.className = 'table-piece';
+                tablePiece.innerHTML = `
+                    <div class="table-piece-face table-piece-back"></div>
+                    <div class="table-piece-face table-piece-front ${isRed ? 'red' : 'black'}">${character}</div>
+                `;
+                
+                bottomArea.appendChild(tablePiece);
+            });
+        }
+
+        function flipAllPieces() {
+            // Define flip order: Lucas > Bob > Daniel > Andy
+            const playOrder = [
+                '.player-pieces-area.left .table-piece',    // Lucas (left)
+                '.player-pieces-area.top .table-piece',     // Bob (top)
+                '.player-pieces-area.right .table-piece',   // Daniel (right)
+                '.player-pieces-area.bottom .table-piece'   // Andy (bottom)
+            ];
+            
+            let delayCounter = 0;
+            
+            playOrder.forEach(selector => {
+                const playerPieces = document.querySelectorAll(selector);
+                playerPieces.forEach(piece => {
+                    setTimeout(() => {
+                        piece.classList.add('flipped');
+                    }, delayCounter * 50); // 80ms delay between each piece
+                    delayCounter++;
+                });
+            });
+        }
+
+        function clearSelection() {
+            document.querySelectorAll('.piece.selected').forEach(piece => {
+                piece.classList.remove('selected');
+            });
+            document.getElementById('confirmPanel').classList.remove('show');
+        }
+
+        // Function to update phase title with flip in animation
+        function updatePhaseTitle(playType) {
+            const phaseTitle = document.querySelector('.phase-title');
+            
+            // First fade out the current text
+            phaseTitle.style.opacity = '0';
+            phaseTitle.style.transform = 'translateY(10px)';
+            
+            setTimeout(() => {
+                // Change text while invisible
+                phaseTitle.textContent = playType;
+                phaseTitle.classList.add('play-type');
+                
+                // Then trigger the flip in animation
+                phaseTitle.classList.add('updating');
+                phaseTitle.style.opacity = '';
+                phaseTitle.style.transform = '';
+            }, 150);
+            
+            setTimeout(() => {
+                phaseTitle.classList.remove('updating');
+            }, 750);
+        }
+
+        // Demo: Show play type animation with flip in effect
+        setTimeout(() => {
+            updatePhaseTitle('Extended Straight 5');
+        }, 3000);
+
+        setTimeout(() => {
+            updatePhaseTitle('Pair');
+        }, 6000);
+
+        setTimeout(() => {
+            updatePhaseTitle('Five of a Kind');
+        }, 9000);
+    </script>
+</body>
+</html>

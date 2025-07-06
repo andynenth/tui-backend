@@ -1,0 +1,486 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Turn Results - Winner Announcement</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&family=Crimson+Pro:wght@400;600;700&display=swap');
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Plus Jakarta Sans', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+            background: 
+                linear-gradient(135deg, #F8F9FA 0%, #E9ECEF 25%, #DEE2E6 50%, #CED4DA 75%, #ADB5BD 100%),
+                radial-gradient(circle at 30% 20%, rgba(255, 193, 7, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 70% 80%, rgba(13, 110, 253, 0.05) 0%, transparent 50%);
+            color: #212529;
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            position: relative;
+        }
+
+        /* Subtle paper texture */
+        body::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                radial-gradient(circle at 25% 25%, rgba(255, 255, 255, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 75% 75%, rgba(0, 0, 0, 0.02) 0%, transparent 50%);
+            pointer-events: none;
+        }
+
+        /* Fixed 9:16 Container */
+        .game-container {
+            width: min(100vw, 56.25vh);
+            height: min(100vh, 177.78vw);
+            max-width: 400px;
+            max-height: 711px;
+            background: 
+                linear-gradient(145deg, #FFFFFF 0%, #F8F9FA 100%),
+                radial-gradient(circle at 20% 30%, rgba(255, 193, 7, 0.03) 0%, transparent 70%),
+                radial-gradient(circle at 80% 70%, rgba(13, 110, 253, 0.02) 0%, transparent 70%);
+            border-radius: 20px;
+            border: 1px solid rgba(173, 181, 189, 0.3);
+            box-shadow: 
+                0 20px 40px rgba(0, 0, 0, 0.08),
+                0 0 0 1px rgba(255, 255, 255, 0.9),
+                inset 0 1px 0 rgba(255, 255, 255, 1);
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            overflow: hidden;
+        }
+
+
+        /* Phase Header */
+        .phase-header {
+            text-align: center;
+            padding: 50px 24px 20px;
+            background: 
+                linear-gradient(180deg, rgba(248, 249, 250, 0.8) 0%, transparent 100%),
+                linear-gradient(90deg, transparent 0%, rgba(173, 181, 189, 0.1) 50%, transparent 100%);
+            border-bottom: 1px solid rgba(173, 181, 189, 0.2);
+            position: relative;
+        }
+
+        .phase-header::after {
+            content: '';
+            position: absolute;
+            bottom: -1px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 40px;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, #6C757D, transparent);
+        }
+
+        .phase-title {
+            font-family: 'Crimson Pro', serif;
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 4px;
+            color: #343A40;
+            letter-spacing: -0.5px;
+        }
+
+        .phase-subtitle {
+            font-size: 14px;
+            color: #6C757D;
+            font-weight: 500;
+        }
+
+        /* Winner Announcement */
+        .winner-section {
+            padding: 20px 20px;
+            text-align: center;
+        }
+
+        .winner-announcement {
+            background: 
+                linear-gradient(145deg, #FFF8E1 0%, #FFFBF0 100%),
+                radial-gradient(circle at 30% 30%, rgba(255, 193, 7, 0.1) 0%, transparent 60%);
+            border: 1px solid rgba(255, 193, 7, 0.3);
+            border-radius: 16px;
+            padding: 16px;
+            box-shadow: 
+                0 8px 24px rgba(255, 193, 7, 0.15),
+                inset 0 1px 0 rgba(255, 255, 255, 1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .winner-announcement::before {
+            content: '✨';
+            position: absolute;
+            top: -20px;
+            left: -20px;
+            font-size: 60px;
+            opacity: 0.1;
+            transform: rotate(-15deg);
+        }
+
+        .winner-announcement::after {
+            content: '🎉';
+            position: absolute;
+            bottom: -20px;
+            right: -20px;
+            font-size: 60px;
+            opacity: 0.1;
+            transform: rotate(15deg);
+        }
+
+        .crown-icon {
+            font-size: 36px;
+            margin-bottom: 12px;
+            animation: bounce 1s ease-in-out infinite;
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        .winner-name {
+            font-family: 'Crimson Pro', serif;
+            font-size: 24px;
+            font-weight: 700;
+            color: #F57F17;
+            margin-bottom: 6px;
+        }
+
+
+        /* Winning Play Display */
+        .winning-play {
+            margin-top: 16px;
+            background: rgba(255, 255, 255, 0.8);
+            border-radius: 12px;
+            padding: 12px;
+            border: 1px solid rgba(255, 193, 7, 0.2);
+        }
+
+        .play-label {
+            font-size: 12px;
+            font-weight: 600;
+            color: #6C757D;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 12px;
+        }
+
+        .winning-pieces {
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+            margin-bottom: 8px;
+        }
+
+        .mini-piece {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: 
+                linear-gradient(145deg, #FFFFFF 0%, #F8F9FA 100%),
+                radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.8) 0%, transparent 60%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            font-weight: bold;
+            border: 1px solid rgba(173, 181, 189, 0.3);
+            font-family: 'SimSun', '宋体', serif;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.06);
+        }
+
+        .mini-piece.red {
+            color: #DC3545;
+            border-color: rgba(220, 53, 69, 0.4);
+        }
+
+        .mini-piece.black {
+            color: #495057;
+            border-color: rgba(73, 80, 87, 0.4);
+        }
+
+
+        /* Players Summary */
+        .players-summary {
+            padding: 0 20px 20px;
+        }
+
+
+        .player-summary-list {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .player-summary-row {
+            display: flex;
+            align-items: center;
+            background: 
+                linear-gradient(145deg, #FFFFFF 0%, #F8F9FA 100%),
+                radial-gradient(circle at 15% 50%, rgba(255, 255, 255, 0.8) 0%, transparent 50%);
+            padding: 12px 16px;
+            border-radius: 10px;
+            border: 1px solid rgba(173, 181, 189, 0.15);
+            box-shadow: 
+                0 2px 6px rgba(0, 0, 0, 0.04),
+                inset 0 1px 0 rgba(255, 255, 255, 1);
+        }
+
+
+        .player-avatar-small {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: 
+                linear-gradient(145deg, #FFFFFF 0%, #F8F9FA 100%),
+                radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.8) 0%, transparent 60%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 12px;
+            margin-right: 12px;
+            border: 2px solid rgba(173, 181, 189, 0.3);
+            box-shadow: 
+                0 2px 4px rgba(0, 0, 0, 0.06),
+                inset 0 1px 0 rgba(255, 255, 255, 1);
+            color: #495057;
+        }
+
+        .player-summary-info {
+            flex: 1;
+        }
+
+        .player-summary-name {
+            font-size: 14px;
+            font-weight: 600;
+            color: #212529;
+        }
+
+        .played-pieces {
+            display: flex;
+            gap: 4px;
+            flex-wrap: wrap;
+            justify-content: flex-end;
+            align-items: center;
+        }
+
+        .played-pieces .piece {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background: 
+                linear-gradient(145deg, #FFFFFF 0%, #F8F9FA 100%),
+                radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.8) 0%, transparent 60%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            font-weight: bold;
+            font-family: 'SimSun', '宋体', serif;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
+        }
+
+        .played-pieces .piece.red {
+            color: #DC3545;
+            border: 1px solid rgba(220, 53, 69, 0.4);
+        }
+
+        .played-pieces .piece.black {
+            color: #495057;
+            border: 1px solid rgba(73, 80, 87, 0.4);
+        }
+
+        /* Next Turn Info */
+        .next-turn-info {
+            background: 
+                linear-gradient(180deg, rgba(248, 249, 250, 0.6) 0%, rgba(233, 236, 239, 0.8) 100%),
+                radial-gradient(ellipse 100% 60% at 50% 0%, rgba(173, 181, 189, 0.1) 0%, transparent 100%);
+            padding: 20px;
+            border-top: 1px solid rgba(173, 181, 189, 0.2);
+            text-align: center;
+            position: relative;
+            margin-top: auto;
+        }
+
+        .next-turn-info::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 40px;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, #6C757D, transparent);
+        }
+
+        .next-starter {
+            font-size: 16px;
+            font-weight: 600;
+            color: #343A40;
+            margin-bottom: 8px;
+        }
+
+        .auto-continue {
+            font-size: 12px;
+            color: #6C757D;
+        }
+
+        .countdown {
+            display: inline-block;
+            background: rgba(108, 117, 125, 0.1);
+            padding: 2px 8px;
+            border-radius: 6px;
+            font-weight: 600;
+            margin-left: 4px;
+        }
+
+        /* Animations */
+        .fade-in {
+            animation: fadeIn 0.6s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .winner-announcement {
+            animation: slideAndScale 0.8s ease-out;
+        }
+
+        @keyframes slideAndScale {
+            from {
+                opacity: 0;
+                transform: scale(0.9) translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1) translateY(0);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="game-container">
+
+        <!-- Phase Header -->
+        <div class="phase-header">
+            <div class="phase-title">Turn Results</div>
+            <div class="phase-subtitle">Round 1 • Turn 3 Winner</div>
+        </div>
+
+        <!-- Winner Announcement -->
+        <div class="winner-section">
+            <div class="winner-announcement">
+                <div class="crown-icon">👑</div>
+                <div class="winner-name">Bob Wins!</div>
+                
+                <div class="winning-play">
+                    <div class="play-label">Winning Play</div>
+                    <div class="winning-pieces">
+                        <div class="mini-piece red">将</div>
+                        <div class="mini-piece black">車</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Players Summary -->
+        <div class="players-summary">
+            
+            <div class="player-summary-list">
+
+                <!-- Andy -->
+                <div class="player-summary-row">
+                    <div class="player-avatar-small">A</div>
+                    <div class="player-summary-info">
+                        <div class="player-summary-name">Andy (You)</div>
+                    </div>
+                    <div class="played-pieces">
+                        <div class="piece red">兵</div>
+                        <div class="piece red">炮</div>
+                        <div class="piece black">马</div>
+                    </div>
+                </div>
+
+                <!-- Lucas -->
+                <div class="player-summary-row">
+                    <div class="player-avatar-small">L</div>
+                    <div class="player-summary-info">
+                        <div class="player-summary-name">Lucas</div>
+                    </div>
+                    <div class="played-pieces">
+                        <div class="piece red">帅</div>
+                    </div>
+                </div>
+
+                <!-- Daniel -->
+                <div class="player-summary-row">
+                    <div class="player-avatar-small">D</div>
+                    <div class="player-summary-info">
+                        <div class="player-summary-name">Daniel</div>
+                    </div>
+                    <div class="played-pieces">
+                        <div class="piece black">象</div>
+                        <div class="piece black">士</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Next Turn Info -->
+        <!-- NOTE: next-starter text changes based on game state:
+             Mid-round: "Bob will start Turn 4" 
+             Last turn of round: "Bob will start Round 2"
+             auto-continue text also changes:
+             Mid-round: "Continuing in X seconds"
+             Last turn: "Starting Round 2 in X seconds"
+        -->
+        <div class="next-turn-info">
+            <div class="next-starter">Bob will start Round 2</div>
+            <div class="auto-continue">
+                Starting Round 2 in<span class="countdown" id="countdown">5</span>seconds
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Countdown timer
+        let count = 5;
+        const countdownEl = document.getElementById('countdown');
+        
+        const timer = setInterval(() => {
+            count--;
+            countdownEl.textContent = count;
+            
+            if (count <= 0) {
+                clearInterval(timer);
+                console.log('Proceeding to next turn...');
+                // In real game, this would transition to turn phase
+            }
+        }, 1000);
+    </script>
+</body>
+</html>
