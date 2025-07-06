@@ -1,0 +1,631 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Room #R1234 - Cards Display</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&family=Crimson+Pro:wght@400;600;700&display=swap');
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Plus Jakarta Sans', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+            background: 
+                linear-gradient(135deg, #F8F9FA 0%, #E9ECEF 25%, #DEE2E6 50%, #CED4DA 75%, #ADB5BD 100%),
+                radial-gradient(circle at 30% 20%, rgba(255, 193, 7, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 70% 80%, rgba(13, 110, 253, 0.05) 0%, transparent 50%);
+            color: #212529;
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            position: relative;
+        }
+
+        /* Subtle paper texture */
+        body::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                radial-gradient(circle at 25% 25%, rgba(255, 255, 255, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 75% 75%, rgba(0, 0, 0, 0.02) 0%, transparent 50%);
+            pointer-events: none;
+        }
+
+        /* Fixed 9:16 Container */
+        .game-container {
+            width: min(100vw, 56.25vh);
+            height: min(100vh, 177.78vw);
+            max-width: 400px;
+            max-height: 711px;
+            background: 
+                linear-gradient(145deg, #FFFFFF 0%, #F8F9FA 100%),
+                radial-gradient(circle at 20% 30%, rgba(255, 193, 7, 0.03) 0%, transparent 70%),
+                radial-gradient(circle at 80% 70%, rgba(13, 110, 253, 0.02) 0%, transparent 70%);
+            border-radius: 20px;
+            border: 1px solid rgba(173, 181, 189, 0.3);
+            box-shadow: 
+                0 20px 40px rgba(0, 0, 0, 0.08),
+                0 0 0 1px rgba(255, 255, 255, 0.9),
+                inset 0 1px 0 rgba(255, 255, 255, 1);
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* Connection Status Badge */
+        .connection-status {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: 
+                linear-gradient(135deg, #28A745 0%, #20C997 100%),
+                radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.3) 0%, transparent 60%);
+            padding: 6px 12px;
+            border-radius: 16px;
+            border: 1px solid rgba(40, 167, 69, 0.4);
+            box-shadow: 
+                0 4px 12px rgba(40, 167, 69, 0.2),
+                inset 0 1px 0 rgba(255, 255, 255, 0.6);
+            font-weight: 600;
+            font-size: 11px;
+            z-index: 1000;
+            color: white;
+            letter-spacing: 0.3px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .status-dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: white;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        /* Room Header */
+        .room-header {
+            text-align: center;
+            padding: 50px 24px 20px;
+            background: 
+                linear-gradient(180deg, rgba(248, 249, 250, 0.8) 0%, transparent 100%),
+                linear-gradient(90deg, transparent 0%, rgba(173, 181, 189, 0.1) 50%, transparent 100%);
+            border-bottom: 1px solid rgba(173, 181, 189, 0.2);
+            position: relative;
+        }
+
+        .room-header::after {
+            content: '';
+            position: absolute;
+            bottom: -1px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 40px;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, #6C757D, transparent);
+        }
+
+        .room-title {
+            font-family: 'Crimson Pro', serif;
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 4px;
+            color: #343A40;
+            letter-spacing: -0.5px;
+        }
+
+        .room-subtitle {
+            font-size: 14px;
+            color: #6C757D;
+            font-weight: 500;
+        }
+
+        .room-id-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(255, 193, 7, 0.1);
+            padding: 8px 16px;
+            border-radius: 12px;
+            border: 1px solid rgba(255, 193, 7, 0.3);
+            margin-top: 12px;
+        }
+
+        .room-id-label {
+            font-size: 12px;
+            color: #6C757D;
+            font-weight: 600;
+        }
+
+        .room-id-value {
+            font-size: 14px;
+            color: #F57F17;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+        }
+
+        /* Card-based Player Display */
+        .players-section {
+            flex: 1;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .section-header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .section-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: #495057;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 8px;
+        }
+
+        .player-progress {
+            width: 200px;
+            height: 8px;
+            background: rgba(173, 181, 189, 0.2);
+            border-radius: 4px;
+            margin: 0 auto;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #28A745 0%, #20C997 100%);
+            border-radius: 4px;
+            transition: width 0.5s ease;
+            box-shadow: 0 0 8px rgba(40, 167, 69, 0.3);
+        }
+
+        .progress-fill.partial {
+            width: 75%;
+        }
+
+        .progress-fill.full {
+            width: 100%;
+        }
+
+        /* Player Cards Container */
+        .player-cards {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            justify-content: center;
+            margin-top: 20px;
+        }
+
+        .player-card {
+            width: calc(50% - 6px);
+            max-width: 170px;
+            background: 
+                linear-gradient(145deg, #FFFFFF 0%, #F8F9FA 100%),
+                radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.8) 0%, transparent 60%);
+            border: 2px solid rgba(173, 181, 189, 0.3);
+            border-radius: 16px;
+            padding: 20px 16px;
+            text-align: center;
+            box-shadow: 
+                0 4px 12px rgba(0, 0, 0, 0.08),
+                inset 0 1px 0 rgba(255, 255, 255, 1);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .player-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: transparent;
+            transition: all 0.3s ease;
+        }
+
+        .player-card.filled::before {
+            background: linear-gradient(90deg, #28A745, #20C997);
+        }
+
+        .player-card.host::before {
+            background: linear-gradient(90deg, #FFC107, #FF9800);
+        }
+
+        .player-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 
+                0 8px 20px rgba(0, 0, 0, 0.12),
+                inset 0 1px 0 rgba(255, 255, 255, 1);
+        }
+
+        .player-card.filled {
+            border-color: rgba(40, 167, 69, 0.3);
+            background: 
+                linear-gradient(145deg, #F0FFF4 0%, #F8FFF8 100%),
+                radial-gradient(circle at 30% 30%, rgba(40, 167, 69, 0.08) 0%, transparent 60%);
+        }
+
+        .player-card.host {
+            border-color: rgba(255, 193, 7, 0.3);
+            background: 
+                linear-gradient(145deg, #FFF8E1 0%, #FFFBF0 100%),
+                radial-gradient(circle at 30% 30%, rgba(255, 193, 7, 0.08) 0%, transparent 60%);
+        }
+
+        .player-card.empty {
+            border-style: dashed;
+            background: 
+                linear-gradient(145deg, #F8F9FA 0%, #E9ECEF 100%);
+            opacity: 0.7;
+        }
+
+        .seat-indicator {
+            position: absolute;
+            top: 12px;
+            left: 12px;
+            width: 24px;
+            height: 24px;
+            background: rgba(108, 117, 125, 0.1);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 11px;
+            font-weight: 700;
+            color: #6C757D;
+            border: 1px solid rgba(108, 117, 125, 0.2);
+        }
+
+        .player-avatar {
+            width: 64px;
+            height: 64px;
+            border-radius: 50%;
+            background: 
+                linear-gradient(145deg, #FFFFFF 0%, #F8F9FA 100%),
+                radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.8) 0%, transparent 60%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 28px;
+            margin: 0 auto 12px;
+            border: 3px solid rgba(173, 181, 189, 0.3);
+            box-shadow: 
+                0 4px 8px rgba(0, 0, 0, 0.08),
+                inset 0 1px 0 rgba(255, 255, 255, 1);
+            color: #495057;
+        }
+
+        .empty-avatar {
+            border-style: dashed;
+            background: rgba(173, 181, 189, 0.1);
+            color: #ADB5BD;
+        }
+
+        .player-name {
+            font-size: 14px;
+            font-weight: 600;
+            color: #212529;
+            margin-bottom: 8px;
+        }
+
+        .player-badges {
+            display: flex;
+            gap: 4px;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-bottom: 12px;
+            min-height: 20px;
+        }
+
+        .badge {
+            padding: 3px 8px;
+            border-radius: 6px;
+            font-size: 9px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+        }
+
+        .host-badge {
+            background: 
+                linear-gradient(135deg, #FFC107 0%, #FF9800 100%);
+            color: #212529;
+            border: 1px solid rgba(255, 193, 7, 0.4);
+        }
+
+
+
+        .player-action {
+            margin-top: auto;
+        }
+
+        .action-btn {
+            padding: 6px 12px;
+            border-radius: 8px;
+            font-size: 11px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: none;
+            width: 100%;
+        }
+
+        .add-bot-btn {
+            background: 
+                linear-gradient(135deg, #6C757D 0%, #495057 100%);
+            color: white;
+            border: 1px solid rgba(108, 117, 125, 0.4);
+        }
+
+        .add-bot-btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 2px 4px rgba(108, 117, 125, 0.3);
+        }
+
+        .remove-btn {
+            background: 
+                linear-gradient(135deg, #DC3545 0%, #C82333 100%);
+            color: white;
+            border: 1px solid rgba(220, 53, 69, 0.4);
+        }
+
+        .remove-btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 2px 4px rgba(220, 53, 69, 0.3);
+        }
+
+        /* Game Controls */
+        .game-controls {
+            padding: 20px;
+            background: 
+                linear-gradient(180deg, rgba(248, 249, 250, 0.6) 0%, rgba(233, 236, 239, 0.8) 100%),
+                radial-gradient(ellipse 100% 60% at 50% 0%, rgba(173, 181, 189, 0.1) 0%, transparent 100%);
+            border-top: 1px solid rgba(173, 181, 189, 0.2);
+            position: relative;
+        }
+
+        .game-controls::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 40px;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, #6C757D, transparent);
+        }
+
+        .control-buttons {
+            display: flex;
+            gap: 12px;
+        }
+
+        .control-button {
+            flex: 1;
+            padding: 12px 20px;
+            border-radius: 10px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            border: none;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .start-button {
+            background: 
+                linear-gradient(135deg, #28A745 0%, #20C997 100%),
+                radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.2) 0%, transparent 60%);
+            color: white;
+            border: 1px solid rgba(40, 167, 69, 0.4);
+            box-shadow: 0 4px 8px rgba(40, 167, 69, 0.2);
+        }
+
+        .start-button:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 16px rgba(40, 167, 69, 0.3);
+        }
+
+        .start-button:disabled {
+            background: 
+                linear-gradient(145deg, #E9ECEF 0%, #DEE2E6 100%);
+            color: #6C757D;
+            border-color: rgba(173, 181, 189, 0.3);
+            cursor: not-allowed;
+            opacity: 0.7;
+        }
+
+        .leave-button {
+            background: 
+                linear-gradient(145deg, #FFFFFF 0%, #F8F9FA 100%),
+                radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.8) 0%, transparent 60%);
+            color: #495057;
+            border: 1px solid rgba(173, 181, 189, 0.3);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.06);
+        }
+
+        .leave-button:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            border-color: rgba(173, 181, 189, 0.4);
+        }
+
+        .room-status {
+            text-align: center;
+            margin-bottom: 16px;
+            font-size: 13px;
+            color: #6C757D;
+        }
+
+        .room-status.ready {
+            color: #28A745;
+            font-weight: 600;
+        }
+    </style>
+</head>
+<body>
+    <div class="game-container">
+        <!-- Connection Status -->
+        <div class="connection-status">
+            <span class="status-dot"></span>
+            Connected
+        </div>
+
+        <!-- Room Header -->
+        <div class="room-header">
+            <h1 class="room-title">Game Room</h1>
+            <p class="room-subtitle">Waiting for players to join</p>
+            <div class="room-id-badge">
+                <span class="room-id-label">Room ID:</span>
+                <span class="room-id-value">R1234</span>
+            </div>
+        </div>
+
+        <!-- Player Cards Section -->
+        <div class="players-section">
+            <div class="section-header">
+                <h2 class="section-title">Players</h2>
+                <div class="player-progress">
+                    <div class="progress-fill partial"></div>
+                </div>
+            </div>
+            
+            <div class="player-cards">
+                <!-- Player 1 - Host -->
+                <div class="player-card filled host">
+                    <div class="seat-indicator">1</div>
+                    <div class="player-avatar">A</div>
+                    <div class="player-name">Andy</div>
+                    <div class="player-badges">
+                        <span class="badge host-badge">Host</span>
+                    </div>
+                </div>
+
+                <!-- Player 2 - Bot -->
+                <div class="player-card filled">
+                    <div class="seat-indicator">2</div>
+                    <div class="player-avatar">B</div>
+                    <div class="player-name">Bot 2</div>
+                    <div class="player-badges"></div>
+                    <div class="player-action">
+                        <button class="action-btn remove-btn" onclick="removePlayer(2)">Remove</button>
+                    </div>
+                </div>
+
+                <!-- Player 3 - Human -->
+                <div class="player-card filled">
+                    <div class="seat-indicator">3</div>
+                    <div class="player-avatar">L</div>
+                    <div class="player-name">Lucas</div>
+                    <div class="player-badges"></div>
+                    <div class="player-action">
+                        <button class="action-btn remove-btn" onclick="removePlayer(3)">Remove</button>
+                    </div>
+                </div>
+
+                <!-- Player 4 - Empty -->
+                <div class="player-card empty">
+                    <div class="seat-indicator">4</div>
+                    <div class="player-avatar empty-avatar">?</div>
+                    <div class="player-name">Waiting...</div>
+                    <div class="player-badges"></div>
+                    <div class="player-action">
+                        <button class="action-btn add-bot-btn" onclick="addBot(4)">Add Bot</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Game Controls -->
+        <div class="game-controls">
+            <div class="room-status">Need 1 more player to start</div>
+            <div class="control-buttons">
+                <button class="control-button start-button" disabled onclick="startGame()">
+                    Start Game
+                </button>
+                <button class="control-button leave-button" onclick="leaveRoom()">
+                    Leave Room
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function addBot(seat) {
+            console.log('Adding bot to seat', seat);
+            // In real app, this would send websocket message
+        }
+
+        function removePlayer(seat) {
+            console.log('Removing player from seat', seat);
+            // In real app, this would send websocket message
+        }
+
+        function startGame() {
+            console.log('Starting game...');
+            // In real app, this would send websocket message
+        }
+
+        function leaveRoom() {
+            console.log('Leaving room...');
+            // In real app, this would navigate back to lobby
+        }
+
+        // Simulate player joining
+        setTimeout(() => {
+            const emptyCard = document.querySelector('.player-card.empty');
+            if (emptyCard) {
+                emptyCard.classList.remove('empty');
+                emptyCard.classList.add('filled');
+                emptyCard.innerHTML = `
+                    <div class="seat-indicator">4</div>
+                    <div class="player-avatar">B</div>
+                    <div class="player-name">Bot 4</div>
+                    <div class="player-badges"></div>
+                    <div class="player-action">
+                        <button class="action-btn remove-btn" onclick="removePlayer(4)">Remove</button>
+                    </div>
+                `;
+                
+                // Update progress bar
+                document.querySelector('.progress-fill').classList.remove('partial');
+                document.querySelector('.progress-fill').classList.add('full');
+                
+                // Update room status
+                document.querySelector('.room-subtitle').textContent = 'All players ready - Start the game!';
+                document.querySelector('.room-status').textContent = 'All players ready!';
+                document.querySelector('.room-status').classList.add('ready');
+                document.querySelector('.start-button').disabled = false;
+            }
+        }, 5000);
+    </script>
+</body>
+</html>
