@@ -16,11 +16,9 @@ import useGameState from "../../hooks/useGameState";
 import useGameActions from "../../hooks/useGameActions";
 import useConnectionStatus from "../../hooks/useConnectionStatus";
 
-// Import Pure UI Components
+// Import Unified Game UI Component
+import UnifiedGameUI from './UnifiedGameUI';
 import WaitingUI from './WaitingUI';
-import PreparationUI from './PreparationUI';
-import DeclarationUI from './DeclarationUI';
-import TurnUI from './TurnUI';
 import TurnResultsUI from './TurnResultsUI';
 import ScoringUI from './ScoringUI';
 import GameOverUI from './GameOverUI';
@@ -34,79 +32,60 @@ export function GameContainer({ roomId, onNavigateToLobby }) {
   const gameActions = useGameActions();
   const connectionStatus = useConnectionStatus(roomId);
 
-  // Data transformation: Pass backend state to UI components (no business logic)
-  const preparationProps = useMemo(() => {
-    if (gameState.phase !== 'preparation') return null;
+  // Unified Game UI Props - handles all game phases
+  const unifiedGameProps = useMemo(() => {
+    // Map phase names
+    const phaseMap = {
+      'preparation': 'PREPARATION',
+      'declaration': 'DECLARATION', 
+      'turn': 'TURN',
+      'scoring': 'SCORING'
+    };
     
-    return {
-      // Data from backend
+    const currentPhase = phaseMap[gameState.phase] || gameState.phase;
+    
+    // Common props for all phases
+    const commonProps = {
+      phase: currentPhase,
       myHand: gameState.myHand || [],
-      players: gameState.players || [],
+      players: (gameState.players || []).map(player => ({
+        ...player,
+        isMe: player.name === gameState.playerName
+      })),
+      roundNumber: gameState.currentRound || 1,
+    };
+    
+    // Phase-specific props
+    const phaseProps = {
+      // Preparation phase
       weakHands: gameState.weakHands || [],
       redealMultiplier: gameState.redealMultiplier || 1,
-      currentWeakPlayer: gameState.currentWeakPlayer,
-      
-      // State calculated by backend
-      isMyDecision: gameState.isMyDecision || false,
       isMyHandWeak: gameState.isMyHandWeak || false,
-      handValue: gameState.handValue || 0,
-      highestCardValue: gameState.highestCardValue || 0,
+      isMyDecision: gameState.isMyDecision || false,
       
-      // Simultaneous mode props
-      simultaneousMode: gameState.simultaneousMode || false,
-      weakPlayersAwaiting: gameState.weakPlayersAwaiting || [],
-      decisionsReceived: gameState.decisionsReceived || 0,
-      decisionsNeeded: gameState.decisionsNeeded || 0,
-      
-      // Actions
-      onAcceptRedeal: gameActions.acceptRedeal,
-      onDeclineRedeal: gameActions.declineRedeal
-    };
-  }, [gameState, gameActions]);
-
-  const declarationProps = useMemo(() => {
-    if (gameState.phase !== 'declaration') return null;
-    
-    return {
-      // Data from backend
-      myHand: gameState.myHand || [],
+      // Declaration phase
       declarations: gameState.declarations || {},
-      players: gameState.players || [],
       currentTotal: gameState.currentTotal || 0,
-      
-      // State calculated by backend
-      isMyTurn: gameState.isMyTurn || false,
+      isMyTurnToDeclare: gameState.phase === 'declaration' && (gameState.isMyTurn || false),
       validOptions: gameState.validOptions || [],
-      declarationProgress: gameState.declarationProgress || { declared: 0, total: 4 },
       isLastPlayer: gameState.isLastPlayer || false,
-      estimatedPiles: gameState.estimatedPiles || 0,
-      handStrength: gameState.handStrength || 0,
       
-      // Actions
-      onDeclare: gameActions.makeDeclaration
-    };
-  }, [gameState, gameActions]);
-
-  const turnProps = useMemo(() => {
-    if (gameState.phase !== 'turn') return null;
-    
-    console.log(`🔢 GAMECONTAINER_DEBUG: gameState.currentTurnNumber = ${gameState.currentTurnNumber}`);
-    
-    return {
-      // Data from backend
-      myHand: gameState.myHand || [],
+      // Turn phase
       currentTurnPlays: gameState.currentTurnPlays || [],
       requiredPieceCount: gameState.requiredPieceCount,
       turnNumber: gameState.currentTurnNumber || 1,
-      
-      // State calculated by backend
-      isMyTurn: gameState.isMyTurn || false,
+      isMyTurn: gameState.phase === 'turn' && (gameState.isMyTurn || false),
       canPlayAnyCount: gameState.canPlayAnyCount || false,
-      selectedPlayValue: gameState.selectedPlayValue || 0,
+      currentPlayer: gameState.currentPlayer || '',
       
       // Actions
+      onAcceptRedeal: gameActions.acceptRedeal,
+      onDeclineRedeal: gameActions.declineRedeal,
+      onDeclare: gameActions.makeDeclaration,
       onPlayPieces: gameActions.playPieces
     };
+    
+    return { ...commonProps, ...phaseProps };
   }, [gameState, gameActions]);
 
   const turnResultsProps = useMemo(() => {
@@ -239,13 +218,10 @@ export function GameContainer({ roomId, onNavigateToLobby }) {
       {(() => {
         switch (gameState.phase) {
           case 'preparation':
-            return <PreparationUI {...preparationProps} />;
-            
           case 'declaration':
-            return <DeclarationUI {...declarationProps} />;
-            
           case 'turn':
-            return <TurnUI {...turnProps} />;
+            // Use UnifiedGameUI for main game phases
+            return <UnifiedGameUI {...unifiedGameProps} />;
             
           case 'turn_results':
             console.log('🏆 GAMECONTAINER_DEBUG: Rendering TurnResultsUI with props:', turnResultsProps);

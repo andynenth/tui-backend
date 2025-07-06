@@ -34,13 +34,30 @@ export function PhaseHeader({
       {/* Decorative line separator */}
       <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 w-10 h-0.5 bg-gradient-to-r from-transparent via-gray-400 to-transparent"></div>
       
-      {/* Phase title with serif font */}
-      <h1 className="text-2xl font-bold text-gray-800 mb-1 font-serif tracking-tight">
+      {/* Phase title with exact mockup styling */}
+      <h1 
+        className="font-bold text-gray-800 mb-1"
+        style={{
+          fontFamily: 'Crimson Pro, serif',
+          fontSize: '28px',
+          fontWeight: '700',
+          color: '#343A40',
+          letterSpacing: '-0.5px',
+          marginBottom: '4px'
+        }}
+      >
         {title}
       </h1>
       
-      {/* Subtitle with round indicator */}
-      <p className="text-sm text-gray-600 font-medium flex items-center justify-center">
+      {/* Subtitle with exact mockup styling */}
+      <p 
+        className="flex items-center justify-center"
+        style={{
+          fontSize: '14px',
+          color: '#6C757D',
+          fontWeight: '500'
+        }}
+      >
         {showRoundIndicator && (
           <span className="inline-block w-4 h-4 bg-white border-2 border-gray-300 rounded-full mr-2"></span>
         )}
