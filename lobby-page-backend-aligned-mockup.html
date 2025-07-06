@@ -1,0 +1,902 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lobby - Liap Tui</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&family=Crimson+Pro:wght@400;600;700&display=swap');
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Plus Jakarta Sans', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+            background: 
+                linear-gradient(135deg, #F8F9FA 0%, #E9ECEF 25%, #DEE2E6 50%, #CED4DA 75%, #ADB5BD 100%),
+                radial-gradient(circle at 30% 20%, rgba(255, 193, 7, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 70% 80%, rgba(13, 110, 253, 0.05) 0%, transparent 50%);
+            color: #212529;
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            position: relative;
+        }
+
+        /* Subtle paper texture */
+        body::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                radial-gradient(circle at 25% 25%, rgba(255, 255, 255, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 75% 75%, rgba(0, 0, 0, 0.02) 0%, transparent 50%);
+            pointer-events: none;
+        }
+
+        /* Fixed 9:16 Container */
+        .game-container {
+            width: min(100vw, 56.25vh);
+            height: min(100vh, 177.78vw);
+            max-width: 400px;
+            max-height: 711px;
+            background: 
+                linear-gradient(145deg, #FFFFFF 0%, #F8F9FA 100%),
+                radial-gradient(circle at 20% 30%, rgba(255, 193, 7, 0.03) 0%, transparent 70%),
+                radial-gradient(circle at 80% 70%, rgba(13, 110, 253, 0.02) 0%, transparent 70%);
+            border-radius: 20px;
+            border: 1px solid rgba(173, 181, 189, 0.3);
+            box-shadow: 
+                0 20px 40px rgba(0, 0, 0, 0.08),
+                0 0 0 1px rgba(255, 255, 255, 0.9),
+                inset 0 1px 0 rgba(255, 255, 255, 1);
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* Player Info Badge */
+        .player-info-badge {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            background: 
+                linear-gradient(145deg, #FFFFFF 0%, #F8F9FA 100%),
+                radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.8) 0%, transparent 60%);
+            padding: 8px 16px;
+            border-radius: 16px;
+            border: 1px solid rgba(173, 181, 189, 0.3);
+            box-shadow: 
+                0 4px 12px rgba(0, 0, 0, 0.08),
+                inset 0 1px 0 rgba(255, 255, 255, 1);
+            font-weight: 600;
+            font-size: 12px;
+            z-index: 1000;
+            color: #343A40;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .player-avatar-mini {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: rgba(255, 193, 7, 0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 10px;
+            font-weight: 700;
+            color: #F57F17;
+        }
+
+        /* WebSocket Connection Status */
+        .connection-status {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: 
+                linear-gradient(135deg, #28A745 0%, #20C997 100%),
+                radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.3) 0%, transparent 60%);
+            padding: 6px 12px;
+            border-radius: 16px;
+            border: 1px solid rgba(40, 167, 69, 0.4);
+            box-shadow: 
+                0 4px 12px rgba(40, 167, 69, 0.2),
+                inset 0 1px 0 rgba(255, 255, 255, 0.6);
+            font-weight: 600;
+            font-size: 11px;
+            z-index: 1000;
+            color: white;
+            letter-spacing: 0.3px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .connection-status.disconnected {
+            background: 
+                linear-gradient(135deg, #DC3545 0%, #C82333 100%),
+                radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.3) 0%, transparent 60%);
+            border-color: rgba(220, 53, 69, 0.4);
+            box-shadow: 0 4px 12px rgba(220, 53, 69, 0.2);
+        }
+
+        .status-dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: white;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        /* Lobby Header */
+        .lobby-header {
+            text-align: center;
+            padding: 60px 24px 20px;
+            background: 
+                linear-gradient(180deg, rgba(248, 249, 250, 0.8) 0%, transparent 100%),
+                linear-gradient(90deg, transparent 0%, rgba(173, 181, 189, 0.1) 50%, transparent 100%);
+            border-bottom: 1px solid rgba(173, 181, 189, 0.2);
+            position: relative;
+        }
+
+        .lobby-header::after {
+            content: '';
+            position: absolute;
+            bottom: -1px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 40px;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, #6C757D, transparent);
+        }
+
+        .lobby-title {
+            font-family: 'Crimson Pro', serif;
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 4px;
+            color: #343A40;
+            letter-spacing: -0.5px;
+        }
+
+        .lobby-subtitle {
+            font-size: 14px;
+            color: #6C757D;
+            font-weight: 500;
+        }
+
+        /* Action Bar */
+        .action-bar {
+            padding: 16px 20px;
+            background: rgba(248, 249, 250, 0.6);
+            border-bottom: 1px solid rgba(173, 181, 189, 0.2);
+            display: flex;
+            gap: 8px;
+        }
+
+        .action-button {
+            padding: 10px 16px;
+            border-radius: 10px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            border: none;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .action-button.primary {
+            background: 
+                linear-gradient(135deg, #28A745 0%, #20C997 100%),
+                radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.2) 0%, transparent 60%);
+            color: white;
+            border: 1px solid rgba(40, 167, 69, 0.4);
+            box-shadow: 0 2px 4px rgba(40, 167, 69, 0.2);
+        }
+
+        .action-button.primary:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 8px rgba(40, 167, 69, 0.3);
+        }
+
+        .action-button.secondary {
+            background: 
+                linear-gradient(145deg, #FFFFFF 0%, #F8F9FA 100%),
+                radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.8) 0%, transparent 60%);
+            color: #495057;
+            border: 1px solid rgba(173, 181, 189, 0.3);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.06);
+        }
+
+        .action-button.secondary:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            border-color: rgba(173, 181, 189, 0.4);
+        }
+
+        .action-button.icon-only {
+            padding: 10px;
+            min-width: 36px;
+        }
+
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        .action-button.refreshing #refreshIcon {
+            animation: spin 1s linear infinite;
+            display: inline-block;
+        }
+
+        /* Auto-refresh indicator */
+        .auto-refresh-badge {
+            margin-left: auto;
+            font-size: 11px;
+            color: #6C757D;
+            background: rgba(108, 117, 125, 0.1);
+            padding: 6px 12px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            border: 1px solid rgba(108, 117, 125, 0.2);
+        }
+
+        .refresh-dot {
+            width: 6px;
+            height: 6px;
+            background: #28A745;
+            border-radius: 50%;
+            animation: blink 2s infinite;
+        }
+
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.3; }
+        }
+
+        /* Room List Section */
+        .room-list-section {
+            flex: 1;
+            padding: 16px 20px;
+            overflow-y: auto;
+            overflow-x: hidden;
+        }
+
+        .room-list-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+
+        .room-count {
+            font-size: 13px;
+            color: #6C757D;
+            font-weight: 600;
+        }
+
+        .last-updated {
+            font-size: 11px;
+            color: #6C757D;
+        }
+
+        /* Room Cards */
+        .room-list {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .room-card {
+            background: 
+                linear-gradient(145deg, #FFFFFF 0%, #F8F9FA 100%),
+                radial-gradient(circle at 15% 50%, rgba(255, 255, 255, 0.8) 0%, transparent 50%);
+            border: 1px solid rgba(173, 181, 189, 0.15);
+            border-radius: 10px;
+            padding: 12px;
+            transition: all 0.3s ease;
+            box-shadow: 
+                0 2px 6px rgba(0, 0, 0, 0.04),
+                inset 0 1px 0 rgba(255, 255, 255, 1);
+            position: relative;
+            cursor: pointer;
+        }
+
+        .room-card:hover {
+            transform: translateY(-1px);
+            box-shadow: 
+                0 4px 12px rgba(0, 0, 0, 0.08),
+                inset 0 1px 0 rgba(255, 255, 255, 1);
+            border-color: rgba(13, 110, 253, 0.3);
+        }
+
+        .room-card.full {
+            opacity: 0.7;
+            cursor: not-allowed;
+        }
+
+        .room-card.full:hover {
+            transform: none;
+            border-color: rgba(173, 181, 189, 0.15);
+        }
+
+        .room-card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+
+        .room-info {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .room-id {
+            font-size: 14px;
+            font-weight: 700;
+            color: #343A40;
+            background: rgba(255, 193, 7, 0.1);
+            padding: 4px 8px;
+            border-radius: 6px;
+            border: 1px solid rgba(255, 193, 7, 0.3);
+            font-family: 'Courier New', monospace;
+            letter-spacing: 0.5px;
+        }
+
+        .host-name {
+            font-size: 12px;
+            color: #6C757D;
+        }
+
+        .room-occupancy {
+            font-size: 12px;
+            font-weight: 600;
+            padding: 4px 8px;
+            border-radius: 6px;
+            background: rgba(40, 167, 69, 0.1);
+            color: #28A745;
+            border: 1px solid rgba(40, 167, 69, 0.3);
+        }
+
+        .room-occupancy.full {
+            background: rgba(220, 53, 69, 0.1);
+            color: #DC3545;
+            border-color: rgba(220, 53, 69, 0.3);
+        }
+
+        .room-players {
+            display: flex;
+            gap: 4px;
+            margin-bottom: 8px;
+            flex-wrap: wrap;
+        }
+
+        .player-slot {
+            width: 22%;
+            padding: 6px;
+            border-radius: 6px;
+            font-size: 11px;
+            text-align: center;
+            background: rgba(108, 117, 125, 0.1);
+            border: 1px solid rgba(108, 117, 125, 0.2);
+            color: #495057;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .player-slot.filled {
+            background: rgba(40, 167, 69, 0.1);
+            border-color: rgba(40, 167, 69, 0.3);
+            color: #28A745;
+            font-weight: 600;
+        }
+
+        .player-slot.bot {
+            background: rgba(173, 181, 189, 0.1);
+            border-color: rgba(173, 181, 189, 0.3);
+            color: #6C757D;
+        }
+
+        .player-slot.empty {
+            border-style: dashed;
+            color: #ADB5BD;
+        }
+
+        .room-click-hint {
+            position: absolute;
+            right: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 18px;
+            color: #0D6EFD;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .room-card:hover .room-click-hint {
+            opacity: 0.5;
+        }
+
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+        }
+
+        .empty-icon {
+            font-size: 48px;
+            margin-bottom: 16px;
+            opacity: 0.3;
+        }
+
+        .empty-text {
+            font-size: 14px;
+            color: #6C757D;
+            margin-bottom: 20px;
+        }
+
+        /* Footer Actions */
+        .footer-actions {
+            padding: 16px 20px;
+            background: 
+                linear-gradient(180deg, rgba(248, 249, 250, 0.6) 0%, rgba(233, 236, 239, 0.8) 100%),
+                radial-gradient(ellipse 100% 60% at 50% 0%, rgba(173, 181, 189, 0.1) 0%, transparent 100%);
+            border-top: 1px solid rgba(173, 181, 189, 0.2);
+            text-align: center;
+        }
+
+        .footer-button {
+            font-size: 12px;
+            color: #6C757D;
+            background: none;
+            border: none;
+            cursor: pointer;
+            text-decoration: underline;
+            transition: color 0.3s ease;
+        }
+
+        .footer-button:hover {
+            color: #495057;
+        }
+
+        /* Join Modal */
+        .modal-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 2000;
+            border-radius: 20px;
+        }
+
+        .modal-overlay.show {
+            display: flex;
+        }
+
+        .modal-content {
+            background: white;
+            padding: 24px;
+            border-radius: 16px;
+            width: 90%;
+            max-width: 320px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+        }
+
+        .modal-title {
+            font-size: 18px;
+            font-weight: 700;
+            margin-bottom: 16px;
+            color: #343A40;
+        }
+
+        .modal-input {
+            width: 100%;
+            padding: 10px 14px;
+            font-size: 14px;
+            background: rgba(248, 249, 250, 0.8);
+            border: 2px solid rgba(173, 181, 189, 0.3);
+            border-radius: 8px;
+            outline: none;
+            margin-bottom: 16px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            font-weight: 600;
+            font-family: 'Courier New', monospace;
+        }
+
+        .modal-input:focus {
+            border-color: rgba(255, 193, 7, 0.5);
+            background: rgba(255, 251, 240, 0.5);
+        }
+
+        .modal-buttons {
+            display: flex;
+            gap: 8px;
+        }
+
+        .modal-button {
+            flex: 1;
+            padding: 10px 16px;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: none;
+        }
+
+        .modal-button.confirm {
+            background: 
+                linear-gradient(135deg, #0D6EFD 0%, #0056B3 100%);
+            color: white;
+            border: 1px solid rgba(13, 110, 253, 0.4);
+        }
+
+        .modal-button.confirm:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 8px rgba(13, 110, 253, 0.3);
+        }
+
+        .modal-button.cancel {
+            background: rgba(248, 249, 250, 0.8);
+            color: #495057;
+            border: 1px solid rgba(173, 181, 189, 0.3);
+        }
+
+        .modal-button.cancel:hover {
+            background: rgba(233, 236, 239, 0.8);
+        }
+
+        /* WebSocket disconnected overlay */
+        .disconnected-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            padding: 12px;
+            background: rgba(220, 53, 69, 0.95);
+            color: white;
+            text-align: center;
+            font-size: 13px;
+            font-weight: 600;
+            display: none;
+            z-index: 1500;
+        }
+
+        .disconnected-overlay.show {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <div class="game-container">
+        <!-- Player Info -->
+        <div class="player-info-badge">
+            <div class="player-avatar-mini">A</div>
+            <span>Andy</span>
+        </div>
+
+        <!-- WebSocket Connection Status -->
+        <div class="connection-status" id="connectionStatus">
+            <span class="status-dot"></span>
+            Connected
+        </div>
+
+        <!-- Disconnected Overlay -->
+        <div class="disconnected-overlay" id="disconnectedOverlay">
+            🔌 Connection lost. Reconnecting...
+        </div>
+
+        <!-- Lobby Header -->
+        <div class="lobby-header">
+            <h1 class="lobby-title">Game Lobby</h1>
+            <p class="lobby-subtitle">Find a room or create your own</p>
+        </div>
+
+        <!-- Action Bar -->
+        <div class="action-bar">
+            <button class="action-button primary" onclick="createRoom()">
+                <span>➕</span> Create Room
+            </button>
+            <button class="action-button secondary" onclick="showJoinModal()">
+                <span>🔗</span> Join by ID
+            </button>
+            <button class="action-button secondary icon-only" onclick="refreshRooms()" title="Refresh room list">
+                <span id="refreshIcon">🔄</span>
+            </button>
+            <div class="auto-refresh-badge">
+                <span class="refresh-dot"></span>
+                Live Updates
+            </div>
+        </div>
+
+        <!-- Room List Section -->
+        <div class="room-list-section">
+            <div class="room-list-header">
+                <h2 class="room-count">Available Rooms (3)</h2>
+                <span class="last-updated">Updated: <span id="lastUpdate">just now</span></span>
+            </div>
+
+            <div class="room-list">
+                <!-- Room 1 - Has space -->
+                <div class="room-card" onclick="joinRoom('ABC123')">
+                    <div class="room-card-header">
+                        <div class="room-info">
+                            <div class="room-id">ABC123</div>
+                            <div class="host-name">Host: Lucas</div>
+                        </div>
+                        <div class="room-occupancy">2/4</div>
+                    </div>
+                    <div class="room-players">
+                        <div class="player-slot filled">Lucas</div>
+                        <div class="player-slot bot">Bot</div>
+                        <div class="player-slot empty">Empty</div>
+                        <div class="player-slot empty">Empty</div>
+                    </div>
+                    <div class="room-click-hint">→</div>
+                </div>
+
+                <!-- Room 2 - Almost full -->
+                <div class="room-card" onclick="joinRoom('XYZ789')">
+                    <div class="room-card-header">
+                        <div class="room-info">
+                            <div class="room-id">XYZ789</div>
+                            <div class="host-name">Host: Emma</div>
+                        </div>
+                        <div class="room-occupancy">3/4</div>
+                    </div>
+                    <div class="room-players">
+                        <div class="player-slot filled">Emma</div>
+                        <div class="player-slot filled">Oliver</div>
+                        <div class="player-slot filled">Sophie</div>
+                        <div class="player-slot empty">Empty</div>
+                    </div>
+                    <div class="room-click-hint">→</div>
+                </div>
+
+                <!-- Room 3 - Full (not clickable) -->
+                <div class="room-card full">
+                    <div class="room-card-header">
+                        <div class="room-info">
+                            <div class="room-id">DEF456</div>
+                            <div class="host-name">Host: Mike</div>
+                        </div>
+                        <div class="room-occupancy full">4/4</div>
+                    </div>
+                    <div class="room-players">
+                        <div class="player-slot filled">Mike</div>
+                        <div class="player-slot filled">Sarah</div>
+                        <div class="player-slot bot">Bot</div>
+                        <div class="player-slot bot">Bot</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Empty State (hidden when rooms exist) -->
+            <div class="empty-state" style="display: none;">
+                <div class="empty-icon">🎲</div>
+                <div class="empty-text">No rooms available right now</div>
+                <button class="action-button primary" onclick="createRoom()">
+                    Create First Room
+                </button>
+            </div>
+        </div>
+
+        <!-- Footer Actions -->
+        <div class="footer-actions">
+            <button class="footer-button" onclick="changeName()">Change Name</button>
+        </div>
+
+        <!-- Join by ID Modal -->
+        <div class="modal-overlay" id="joinModal">
+            <div class="modal-content">
+                <h3 class="modal-title">Join Room by ID</h3>
+                <input 
+                    type="text" 
+                    class="modal-input" 
+                    id="roomIdInput" 
+                    placeholder="Enter Room ID"
+                    maxlength="6"
+                />
+                <div class="modal-buttons">
+                    <button class="modal-button confirm" onclick="joinByRoomId()">Join</button>
+                    <button class="modal-button cancel" onclick="hideJoinModal()">Cancel</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Simulate WebSocket connection
+        let wsConnected = true;
+        let lastUpdateTime = Date.now();
+
+        function createRoom() {
+            console.log('WebSocket: Sending create_room event');
+            // ws.send(JSON.stringify({
+            //     event: 'create_room',
+            //     data: { player_name: 'Andy' }
+            // }));
+        }
+
+        function joinRoom(roomId) {
+            if (!wsConnected) {
+                alert('Connection lost. Please wait...');
+                return;
+            }
+            console.log('WebSocket: Sending join_room event for', roomId);
+            // ws.send(JSON.stringify({
+            //     event: 'join_room',
+            //     data: { room_id: roomId, player_name: 'Andy' }
+            // }));
+        }
+
+        function showJoinModal() {
+            document.getElementById('joinModal').classList.add('show');
+            document.getElementById('roomIdInput').focus();
+        }
+
+        function hideJoinModal() {
+            document.getElementById('joinModal').classList.remove('show');
+            document.getElementById('roomIdInput').value = '';
+        }
+
+        function joinByRoomId() {
+            const roomId = document.getElementById('roomIdInput').value.trim().toUpperCase();
+            if (roomId && roomId.length >= 3) {
+                console.log('WebSocket: Sending join_room event for manual ID:', roomId);
+                hideJoinModal();
+                // ws.send(JSON.stringify({
+                //     event: 'join_room',
+                //     data: { room_id: roomId, player_name: 'Andy' }
+                // }));
+            }
+        }
+
+        function changeName() {
+            console.log('Navigating back to start page...');
+            // window.location.href = '/';
+        }
+
+        function refreshRooms() {
+            if (!wsConnected) {
+                alert('Connection lost. Please wait...');
+                return;
+            }
+            
+            // Add spinning animation
+            const button = event.currentTarget;
+            button.classList.add('refreshing');
+            button.disabled = true;
+            
+            console.log('WebSocket: Sending request_room_list event');
+            // ws.send(JSON.stringify({ event: 'request_room_list' }));
+            
+            // Simulate refresh completion
+            setTimeout(() => {
+                button.classList.remove('refreshing');
+                button.disabled = false;
+                simulateWebSocketUpdate();
+                
+                // Quick visual feedback
+                const icon = document.getElementById('refreshIcon');
+                icon.textContent = '✓';
+                setTimeout(() => {
+                    icon.textContent = '🔄';
+                }, 500);
+            }, 1000);
+        }
+
+        // Update last refresh time
+        function updateLastRefreshTime() {
+            const now = Date.now();
+            const diff = Math.floor((now - lastUpdateTime) / 1000);
+            
+            let text;
+            if (diff < 5) {
+                text = 'just now';
+            } else if (diff < 60) {
+                text = `${diff}s ago`;
+            } else {
+                text = `${Math.floor(diff / 60)}m ago`;
+            }
+            
+            document.getElementById('lastUpdate').textContent = text;
+        }
+
+        // Simulate WebSocket events
+        function simulateWebSocketUpdate() {
+            console.log('WebSocket: Received room_list_update event');
+            lastUpdateTime = Date.now();
+            
+            // Simulate room changes
+            const rooms = document.querySelectorAll('.room-card');
+            rooms.forEach(room => {
+                if (Math.random() > 0.8 && !room.classList.contains('full')) {
+                    // Simulate player joining
+                    const emptySlot = room.querySelector('.player-slot.empty');
+                    if (emptySlot) {
+                        emptySlot.classList.remove('empty');
+                        emptySlot.classList.add('filled');
+                        emptySlot.textContent = 'Player' + Math.floor(Math.random() * 100);
+                        
+                        // Update occupancy
+                        const occupancy = room.querySelector('.room-occupancy');
+                        const current = occupancy.textContent.split('/');
+                        const newCount = parseInt(current[0]) + 1;
+                        occupancy.textContent = `${newCount}/4`;
+                        
+                        if (newCount === 4) {
+                            room.classList.add('full');
+                            occupancy.classList.add('full');
+                            room.onclick = null;
+                        }
+                    }
+                }
+            });
+        }
+
+        // Simulate connection loss
+        function simulateDisconnect() {
+            wsConnected = false;
+            document.getElementById('connectionStatus').classList.add('disconnected');
+            document.getElementById('connectionStatus').innerHTML = '<span class="status-dot"></span> Disconnected';
+            document.getElementById('disconnectedOverlay').classList.add('show');
+            
+            setTimeout(() => {
+                wsConnected = true;
+                document.getElementById('connectionStatus').classList.remove('disconnected');
+                document.getElementById('connectionStatus').innerHTML = '<span class="status-dot"></span> Connected';
+                document.getElementById('disconnectedOverlay').classList.remove('show');
+                simulateWebSocketUpdate();
+            }, 3000);
+        }
+
+        // Update timer
+        setInterval(updateLastRefreshTime, 1000);
+
+        // Simulate WebSocket updates
+        setInterval(simulateWebSocketUpdate, 5000 + Math.random() * 5000);
+
+        // Simulate occasional disconnects
+        setTimeout(() => {
+            simulateDisconnect();
+        }, 15000);
+
+        // Initial WebSocket connection
+        console.log('WebSocket: Connected to ws://host:port/ws/lobby');
+        console.log('WebSocket: Sending client_ready event');
+        // ws.send(JSON.stringify({ event: 'client_ready' }));
+    </script>
+</body>
+</html>
