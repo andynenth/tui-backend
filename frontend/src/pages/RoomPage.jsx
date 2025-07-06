@@ -4,8 +4,9 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useApp } from '../contexts/AppContext';
-import { Layout, Button } from '../components';
+import { Layout } from '../components';
 import { networkService } from '../services';
+// CSS classes are imported globally
 
 const RoomPage = () => {
   const navigate = useNavigate();
@@ -67,7 +68,7 @@ const RoomPage = () => {
 
     const handleGameStarted = (event) => {
       const eventData = event.detail;
-      const gameData = eventData.data;
+      // const gameData = eventData.data;
       console.log('Game started, navigating to game page');
       navigate(`/game/${roomId}`);
     };
@@ -143,131 +144,109 @@ const RoomPage = () => {
 
   return (
     <Layout 
-      title={`Room ${roomId}`}
-      showConnection={true}
-      connectionProps={{
-        isConnected,
-        isConnecting: false,
-        isReconnecting: false,
-        error: null,
-        roomId
-      }}
-      headerContent={
-        <div className="flex items-center space-x-4">
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={leaveRoom}
-          >
-            Leave Room
-          </Button>
-        </div>
-      }
+      title=""
+      showConnection={false}
+      showHeader={false}
     >
-      <div className="max-w-4xl mx-auto px-4 py-8">
-        {/* Room Header */}
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-8">
-          <div className="flex items-center justify-between">
-            <div>
-              <h1 className="text-2xl font-bold text-gray-900">Room {roomId}</h1>
-              <p className="text-gray-600">Host: {app.playerName}</p>
+      <div className="min-h-screen flex items-center justify-center" style={{ background: 'var(--gradient-gray)' }}>
+        <div className="rp-gameContainer">
+          {/* Connection Status */}
+          <div className={`connection-status ${!isConnected ? 'disconnected' : ''}`}>
+            <span className="status-dot"></span>
+            {isConnected ? 'Connected' : 'Disconnected'}
+          </div>
+
+          {/* Room Header */}
+          <div className="rp-roomHeader">
+            <h1 className="rp-roomTitle">Game Room</h1>
+            <p className={`rp-roomSubtitle ${isRoomFull ? 'rp-ready' : ''}`}>
+              {isRoomFull ? 'All players ready - Start the game!' : 'Waiting for players to join'}
+            </p>
+            <div className="rp-roomIdBadge">
+              <span className="rp-roomIdLabel">Room ID:</span>
+              <span className="rp-roomIdValue">{roomId}</span>
             </div>
-            <div className="text-right">
-              <div className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium ${
-                isConnected ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
-              }`}>
-                {isConnected ? '✅ Connected' : '❌ Disconnected'}
+          </div>
+
+          {/* Players Section with Table Visualization */}
+          <div className="rp-playersSection">
+            <div className="rp-sectionHeader">
+              <h2 className="rp-sectionTitle">Players</h2>
+              <div className={`rp-playerCount ${isRoomFull ? 'full' : ''}`}>
+                {occupiedSlots} / 4
+              </div>
+            </div>
+            
+            {/* Game Table Visualization */}
+            <div className="rp-gameTable">
+              <div className="rp-tableSurface">
+                {/* Table felt is created with CSS ::before */}
+                
+                {/* Player positions around the table */}
+                {[1, 2, 3, 4].map((position) => {
+                  const player = roomData?.players?.[position - 1];
+                  const isEmpty = !player;
+                  const isHost = player?.is_host;
+                  const isBot = player?.is_bot;
+                  const playerName = player ? (isBot ? `Bot ${position}` : player.name) : 'Waiting...';
+                  
+                  return (
+                    <div key={position} className={`rp-playerSeat rp-position-${position}`}>
+                      <div className="rp-seatNumber">Seat {position}</div>
+                      <div className={`rp-playerCard ${!isEmpty ? 'rp-filled' : 'rp-empty'} ${isHost ? 'rp-host' : ''}`}>
+                        <div className="rp-playerName">{playerName}</div>
+                        {isHost && <span className="rp-hostBadge">Host</span>}
+                        {isEmpty ? (
+                          <div className="rp-playerAction">
+                            <button 
+                              className="rp-actionBtn rp-addBotBtn"
+                              onClick={() => addBot(position)}
+                              disabled={!isConnected}
+                            >
+                              Add Bot
+                            </button>
+                          </div>
+                        ) : (!isHost && (
+                          <div className="rp-playerAction">
+                            <button 
+                              className="rp-actionBtn rp-removeBtn"
+                              onClick={() => removePlayer(position)}
+                              disabled={!isConnected}
+                            >
+                              Remove
+                            </button>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  );
+                })}
               </div>
             </div>
           </div>
-        </div>
 
-        {/* Player Slots */}
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-8">
-          <h2 className="text-lg font-semibold text-gray-900 mb-4">Players</h2>
-          <div className="grid grid-cols-2 gap-4">
-            {[1, 2, 3, 4].map((slotId) => {
-              const player = roomData?.players?.[slotId - 1];
-              const isEmpty = !player;
-              console.log(`🎯 SLOT_${slotId}: player=`, player, 'isEmpty=', isEmpty);
-              
-              return (
-                <div key={slotId} className="border border-gray-200 rounded-lg p-4">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <h3 className="font-medium text-gray-900">P{slotId}</h3>
-                      {player ? (
-                        <div className="flex items-center space-x-2">
-                          <span className="text-sm text-gray-600">
-                            {player.is_bot ? '🤖' : '👤'} {player.name}
-                          </span>
-                          {player.is_host && (
-                            <span className="inline-flex items-center px-2 py-1 text-xs font-medium bg-blue-100 text-blue-800 rounded">
-                              Host
-                            </span>
-                          )}
-                        </div>
-                      ) : (
-                        <p className="text-sm text-gray-500">Empty</p>
-                      )}
-                    </div>
-                    
-                    <div className="flex space-x-2">
-                      {isEmpty ? (
-                        <Button
-                          size="sm"
-                          variant="outline"
-                          onClick={() => addBot(slotId)}
-                          disabled={!isConnected}
-                        >
-                          Add Bot
-                        </Button>
-                      ) : !player.is_host ? (
-                        <Button
-                          size="sm"
-                          variant="outline"
-                          onClick={() => removePlayer(slotId)}
-                          disabled={!isConnected}
-                        >
-                          Remove
-                        </Button>
-                      ) : null}
-                    </div>
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-        </div>
-
-        {/* Game Controls */}
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-          <div className="flex items-center justify-between">
-            <div>
-              <h2 className="text-lg font-semibold text-gray-900">Game Controls</h2>
-              <p className="text-gray-600">Ready to start the game?</p>
+          {/* Game Controls */}
+          <div className="rp-gameControls">
+            <div className={`rp-roomStatus ${isRoomFull ? 'rp-ready' : ''}`}>
+              {isRoomFull ? 'All players ready!' : `Need ${4 - occupiedSlots} more player${4 - occupiedSlots > 1 ? 's' : ''} to start`}
             </div>
-            <Button
-              onClick={startGame}
-              disabled={!isConnected || isStartingGame || !isRoomFull}
-              size="lg"
-            >
-              {isStartingGame ? 'Starting...' : isRoomFull ? 'Start Game' : `Start Game (${occupiedSlots}/4)`}
-            </Button>
-          </div>
-        </div>
-
-        {/* Connection Status */}
-        {!isConnected && (
-          <div className="mt-8 bg-yellow-50 border border-yellow-200 rounded-lg p-4">
-            <div className="flex items-center">
-              <span className="text-yellow-600 mr-2">⚠️</span>
-              <p className="text-yellow-800">
-                Not connected to room. Trying to reconnect...
-              </p>
+            <div className="rp-controlButtons">
+              <button
+                className="rp-controlButton rp-startButton"
+                onClick={startGame}
+                disabled={!isConnected || isStartingGame || !isRoomFull}
+              >
+                {isStartingGame ? 'Starting...' : 'Start Game'}
+              </button>
+              <button
+                className="rp-controlButton rp-leaveButton"
+                onClick={leaveRoom}
+              >
+                Leave Room
+              </button>
             </div>
           </div>
-        )}
+        </div>
       </div>
     </Layout>
   );
