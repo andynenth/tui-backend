@@ -151,7 +151,10 @@ class GameState(ABC):
                         player_hand = getattr(player, 'hand', [])
                         players_data[player_name] = {
                             'hand': [str(piece) for piece in player_hand],
-                            'hand_size': len(player_hand)
+                            'hand_size': len(player_hand),
+                            'zero_declares_in_a_row': getattr(player, 'zero_declares_in_a_row', 0),
+                            'declared': getattr(player, 'declared', 0),
+                            'score': getattr(player, 'score', 0)
                         }
             
             # Convert phase_data to JSON-safe format with recursive handling
