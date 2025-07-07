@@ -251,7 +251,7 @@
   gap: 12px;
   max-width: 350px;
   margin: 0 auto;
-  min-height: 148px; /* Ensures space for 2 rows: 2 * 62px (piece height) + 12px (gap) + some padding */
+  min-height: 169px; /* Ensures space for 2 rows: 2 * 62px (piece height) + 12px (gap) + some padding */
   align-content: start;
 }
 
