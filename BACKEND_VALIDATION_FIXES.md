@@ -48,6 +48,7 @@ play_data = {
 **Issue**: No check if pieces form valid combinations  
 **Impact**: Players can play invalid combinations (e.g., mismatched pairs)  
 **Solution**: Add validation in `_validate_play_pieces` method
+**Update**: Modified to only validate combinations for turn starters (non-starters can play any pieces matching the count)
 
 #### Implementation Tasks:
 
@@ -64,12 +65,15 @@ from engine.rules import get_play_type
 - [x] Store error message for feedback
 ```python
 # Replace TODO comment at lines 272-273
-# Validate pieces form a valid combination
-play_type = get_play_type(pieces)
-if play_type == "INVALID" or play_type == "UNKNOWN":
-    self.logger.warning(f"Invalid piece combination: {pieces}")
-    self._last_validation_error = "Invalid piece combination - pieces don't form a valid play type"
-    return False
+# Only validate combination if this is the starter
+if self.required_piece_count is None:
+    # This is the starter - must play valid combination
+    play_type = get_play_type(pieces)
+    if play_type == "INVALID" or play_type == "UNKNOWN":
+        self.logger.warning(f"Invalid piece combination for starter: {pieces}")
+        self._last_validation_error = "Starter must play a valid combination"
+        return False
+# Non-starters can play any pieces as long as count matches
 ```
 **Location**: `turn_state.py` lines 272-273
 
@@ -517,3 +521,13 @@ Key methods to modify:
 - **UX**: 1 issue (#4) ✅ COMPLETE
 
 Last Updated: 2025-01-07
+
+## Additional Fixes
+
+### 9. ✅ Combination Validation Rule Clarification
+**Issue**: Initial implementation validated all players' combinations
+**Fix**: Updated validation to only check combinations for turn starters
+**Rule**: 
+- Turn starters must play valid combinations (PAIR, STRAIGHT, etc.)
+- Non-starters can play any pieces as long as they match the required count
+**Status**: ✅ Implemented

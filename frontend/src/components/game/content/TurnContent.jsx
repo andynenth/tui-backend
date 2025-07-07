@@ -181,12 +181,6 @@ const TurnContent = ({
       
       {/* Table section */}
       <div className="turn-table-section">
-        {/* Play type display - shows when pieces have been played */}
-        {playType && playType !== 'UNKNOWN' && Object.keys(playerPieces).length > 0 && (
-          <div className="turn-phase-info">
-            <div className="turn-play-type">{formatPlayType(playType)}</div>
-          </div>
-        )}
         
         <div className="turn-table-layout">
           {/* Central table */}
