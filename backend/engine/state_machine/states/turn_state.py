@@ -1,10 +1,12 @@
 # backend/engine/state_machine/states/turn_state.py
 
 from typing import Dict, Any, Optional, List, Set
-from ..core import GamePhase, ActionType, GameAction
+from ..core import GamePhase, ActionType, GameAction, GameStateError
 from ..base_state import GameState
 from ...turn_resolution import resolve_turn, TurnPlay, TurnResult
 from ...player import Player
+from ...rules import get_play_type
+from ...constants import PIECE_POINTS
 import asyncio
 
 
@@ -48,6 +50,7 @@ class TurnState(GameState):
         self._turn_resolution_cache: Optional[Dict[str, Any]] = (
             None  # Cache to avoid duplicate resolve_turn calls
         )
+        self._last_validation_error: Optional[str] = None  # Store validation error messages
 
     async def _setup_phase(self) -> None:
         """Initialize turn phase"""
@@ -236,21 +239,25 @@ class TurnState(GameState):
             self.logger.warning(
                 f"Not {action.player_name}'s turn - expected {current_player}"
             )
+            self._last_validation_error = f"It's {current_player}'s turn to play"
             return False
 
         # Check if player already played this turn
         if action.player_name in self.turn_plays:
             self.logger.warning(f"{action.player_name} already played this turn")
+            self._last_validation_error = "You have already played this turn"
             return False
 
         # Validate payload structure
         if "pieces" not in payload:
             self.logger.warning(f"Play missing 'pieces': {payload}")
+            self._last_validation_error = "Invalid play - missing pieces"
             return False
 
         pieces = payload["pieces"]
         if not isinstance(pieces, list) or not pieces:
             self.logger.warning(f"Invalid pieces format: {pieces}")
+            self._last_validation_error = "Please select pieces to play"
             return False
 
         # Validate piece count
@@ -260,6 +267,7 @@ class TurnState(GameState):
             # This is the starter - they set the count (1-6 pieces)
             if not (1 <= piece_count <= 6):
                 self.logger.warning(f"Starter must play 1-6 pieces, got {piece_count}")
+                self._last_validation_error = "You must play between 1 and 6 pieces"
                 return False
         else:
             # Other players must match the required count
@@ -267,10 +275,32 @@ class TurnState(GameState):
                 self.logger.warning(
                     f"Must play {self.required_piece_count} pieces, got {piece_count}"
                 )
+                self._last_validation_error = f"Must play exactly {self.required_piece_count} pieces"
                 return False
 
-        # TODO: Add piece validity checks (valid combinations, player has pieces, etc.)
-        # For now, assume pieces are valid
+        # Only validate combination if this is the starter
+        if self.required_piece_count is None:
+            # This is the starter - must play valid combination
+            play_type = get_play_type(pieces)
+            if play_type == "INVALID" or play_type == "UNKNOWN":
+                self.logger.warning(f"Invalid piece combination for starter: {pieces}")
+                self._last_validation_error = "Starter must play a valid combination"
+                return False
+        # Non-starters can play any pieces as long as count matches
+        
+        # Validate player owns all pieces
+        game = self.state_machine.game
+        player = next((p for p in game.players if p.name == action.player_name), None)
+        if player:
+            for piece in pieces:
+                if piece not in player.hand:
+                    self.logger.warning(f"Player {action.player_name} doesn't have piece: {piece}")
+                    self._last_validation_error = f"You don't have one or more of the selected pieces"
+                    return False
+        else:
+            self.logger.error(f"Player {action.player_name} not found in game")
+            self._last_validation_error = "Player not found"
+            return False
 
         return True
 
@@ -290,6 +320,18 @@ class TurnState(GameState):
         print(
             f"🎯 TURN_STATE_DEBUG: Player {action.player_name} playing {piece_count} pieces: {[str(p) for p in pieces]}"
         )
+        
+        # Calculate play type from pieces
+        play_type = get_play_type(pieces) if pieces else "UNKNOWN"
+        print(f"🎯 TURN_STATE_DEBUG: Calculated play type: {play_type}")
+        
+        # Calculate total play value from piece points
+        play_value = 0
+        if pieces:
+            for piece in pieces:
+                piece_key = f"{piece.name}_{piece.color}"
+                play_value += PIECE_POINTS.get(piece_key, 0)
+        print(f"🎯 TURN_STATE_DEBUG: Calculated play value: {play_value}")
 
         # If this is the starter, set the required piece count
         if self.required_piece_count is None:
@@ -309,9 +351,9 @@ class TurnState(GameState):
         play_data = {
             "pieces": pieces.copy(),
             "piece_count": piece_count,
-            "play_type": payload.get("play_type", "unknown"),
-            "play_value": payload.get("play_value", 0),
-            "is_valid": payload.get("is_valid", True),
+            "play_type": play_type,  # Use calculated value instead of payload.get("play_type", "unknown")
+            "play_value": play_value,  # Use calculated value instead of payload.get("play_value", 0)
+            "is_valid": True,  # Always True - only valid plays reach this point
             "timestamp": action.timestamp,
         }
 
@@ -320,6 +362,17 @@ class TurnState(GameState):
         self.logger.info(
             f"🎲 {action.player_name} plays: {pieces} (value: {play_data['play_value']})"
         )
+        
+        # Remove pieces from player's hand immediately
+        game = self.state_machine.game
+        player = next((p for p in game.players if p.name == action.player_name), None)
+        if player:
+            for piece in pieces:
+                if piece in player.hand:
+                    player.hand.remove(piece)
+            self.logger.info(f"Removed {len(pieces)} pieces from {action.player_name}'s hand")
+        else:
+            self.logger.error(f"Could not find player {action.player_name} to remove pieces")
 
         print(
             f"🎯 TURN_STATE_DEBUG: Before advancing - current_player_index: {self.current_player_index}"
@@ -556,6 +609,9 @@ class TurnState(GameState):
         print(f"🏁 TURN_COMPLETION_DEBUG: Starting turn completion processing")
 
         # STEP 1: Remove played pieces from player hands FIRST
+        # NOTE: Pieces are now removed immediately in _handle_play_pieces
+        # This section is no longer needed
+        """
         if hasattr(game, "players") and game.players:
             for player in game.players:
                 player_name = player.name
@@ -570,6 +626,7 @@ class TurnState(GameState):
                     for piece in pieces_to_remove:
                         if piece in player.hand:
                             player.hand.remove(piece)
+        """
 
         # STEP 2: Check if any hands are empty AFTER pieces removed
         all_hands_empty = True
@@ -587,7 +644,11 @@ class TurnState(GameState):
         print(f"🏁 TURN_COMPLETION_DEBUG: all_hands_empty = {all_hands_empty}")
 
         # 🔧 FIX: Add defensive consistency check
-        self._validate_hand_size_consistency(hand_sizes)
+        try:
+            await self._validate_hand_size_consistency(hand_sizes)
+        except GameStateError as e:
+            self.logger.critical(f"Hand size validation failed: {e}")
+            return  # Exit early
 
         if hasattr(game, "players") and game.players:
             for player in game.players:
@@ -933,7 +994,7 @@ class TurnState(GameState):
     # REMOVED: _broadcast_new_turn_started() - no longer needed
     # 🚀 ENTERPRISE: New turn broadcasting is handled automatically by update_phase_data() in _start_new_turn()
 
-    def _validate_hand_size_consistency(self, hand_sizes: dict) -> None:
+    async def _validate_hand_size_consistency(self, hand_sizes: dict) -> None:
         """🔧 FIX: Defensive check for hand size consistency to prevent state desynchronization"""
         if not hand_sizes:
             return
@@ -948,27 +1009,20 @@ class TurnState(GameState):
 
         # If there's more than 1 card difference between players, something is wrong
         if max_hand_size - min_hand_size > 1:
-            self.logger.error(
-                f"❌ CONSISTENCY ERROR: Uneven hand distribution detected!"
-            )
-            self.logger.error(f"   Hand sizes: {hand_sizes}")
-            self.logger.error(
+            self.logger.critical(f"❌ CONSISTENCY ERROR: Uneven hand distribution!")
+            self.logger.critical(f"   Hand sizes: {hand_sizes}")
+            self.logger.critical(
                 f"   Max difference: {max_hand_size - min_hand_size} cards"
             )
-
-            # Log turn plays for debugging
-            self.logger.error(
-                f"   Turn plays processed: {list(self.turn_plays.keys())}"
+            
+            # Trigger critical error handling
+            await self._handle_critical_game_error(
+                "Game state corrupted: Players have different hand sizes",
+                hand_sizes
             )
-
-            # This indicates a race condition or invalid action processing
-            # The game should not continue in this state
-            print(
-                f"🚨 CRITICAL: Game state inconsistency detected - investigation needed!"
-            )
-
-            # For now, continue but log the error for debugging
-            return
+            
+            # Raise exception to stop normal flow
+            raise GameStateError("Critical game state error - uneven hands")
 
         # Check for mixed hand states (some empty, some with cards > 1)
         non_empty_hands = [size for size in hand_values if size > 0]
@@ -981,3 +1035,24 @@ class TurnState(GameState):
                 print(f"⚠️ MIXED STATE WARNING: This may indicate piece removal issues")
 
         print(f"✅ CONSISTENCY_CHECK: Hand size distribution is acceptable")
+    
+    async def _handle_critical_game_error(self, error_message: str, debug_data: dict) -> None:
+        """Handle critical game errors by notifying all players and ending game"""
+        
+        # Broadcast error to all players
+        await self.broadcast_custom_event(
+            "critical_error",
+            {
+                "message": error_message,
+                "reason": "Game state inconsistency detected",
+                "action": "returning_to_lobby"
+            },
+            f"Critical error: {error_message}"
+        )
+        
+        # Log with full context
+        self.logger.critical(f"GAME HALTED: {error_message}")
+        self.logger.critical(f"Debug data: {debug_data}")
+        
+        # Force end game
+        await self.state_machine.force_end_game("critical_error")

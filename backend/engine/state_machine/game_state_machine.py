@@ -546,3 +546,18 @@ class GameStateMachine:
             logger.error(
                 f"Failed to notify bot manager of failed action: {e}", exc_info=True
             )
+
+    async def force_end_game(self, reason: str) -> None:
+        """Force end the game due to critical error"""
+        logger.critical(f"Force ending game: {reason}")
+        self.is_running = False
+        
+        if self._process_task and not self._process_task.done():
+            self._process_task.cancel()
+        
+        # Notify room manager if available
+        if hasattr(self, 'room_id') and self.room_id:
+            from ...room_manager import room_manager
+            room = room_manager.get_room(self.room_id)
+            if room:
+                await room.handle_critical_error(reason)

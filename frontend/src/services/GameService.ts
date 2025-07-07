@@ -486,6 +486,17 @@ export class GameService extends EventTarget {
         newState = this.handleGameEnded(newState, data);
         break;
         
+      case 'play_rejected':
+        const message = data.details || data.message || 'Invalid play. Please try again.';
+        alert(message);
+        // Keep play UI active for retry
+        break;
+        
+      case 'critical_error':
+        alert(data.message || 'Game ended due to critical error. Returning to lobby...');
+        window.location.href = '/lobby';
+        break;
+        
       default:
         console.warn(`🌐 PROCESS_EVENT_DEBUG: Unknown game event: ${eventType}`, data);
         return newState;

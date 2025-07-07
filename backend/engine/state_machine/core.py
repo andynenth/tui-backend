@@ -6,6 +6,11 @@ from typing import Dict, Any, Optional
 from datetime import datetime
 
 
+class GameStateError(Exception):
+    """Raised when game state becomes corrupted or invalid"""
+    pass
+
+
 class GamePhase(str, Enum):
     """Game phases in order"""
 

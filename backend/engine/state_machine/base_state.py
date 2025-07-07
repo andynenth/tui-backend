@@ -56,7 +56,11 @@ class GameState(ABC):
             
         if not await self._validate_action(action):
             self.logger.warning(f"Invalid action: {action}")
-            return None
+            return {
+                "success": False,
+                "error": "Invalid play",
+                "details": getattr(self, '_last_validation_error', 'Please try different pieces')
+            }
             
         return await self._process_action(action)
     
