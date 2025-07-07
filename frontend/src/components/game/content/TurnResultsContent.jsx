@@ -1,0 +1,161 @@
+import React, { useState, useEffect } from 'react';
+import PropTypes from 'prop-types';
+import { getPieceDisplay, getPieceColorClass } from '../../../utils/pieceMapping';
+
+/**
+ * TurnResultsContent Component
+ * 
+ * Displays the turn results with:
+ * - Winner announcement with crown animation
+ * - Winning pieces display
+ * - All players' played pieces
+ * - Auto-advance countdown timer
+ * - Next turn/round information
+ */
+const TurnResultsContent = ({
+  winner = '',
+  winningPieces = [],
+  playerPlays = [], // [{ playerName, pieces }]
+  myName = '',
+  turnNumber = 1,
+  roundNumber = 1,
+  isLastTurn = false,
+  nextStarter = '',
+  onContinue
+}) => {
+  const [countdown, setCountdown] = useState(5);
+  
+  // Auto-advance timer
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setCountdown(prev => {
+        if (prev <= 1) {
+          clearInterval(timer);
+          if (onContinue) {
+            onContinue();
+          }
+          return 0;
+        }
+        return prev - 1;
+      });
+    }, 1000);
+    
+    return () => clearInterval(timer);
+  }, [onContinue]);
+  
+  // Get player initial
+  const getPlayerInitial = (name) => {
+    return name.charAt(0).toUpperCase();
+  };
+  
+  // Get next phase text
+  const getNextPhaseText = () => {
+    if (isLastTurn) {
+      return {
+        starter: `${nextStarter} will start Round ${roundNumber + 1}`,
+        continue: `Starting Round ${roundNumber + 1} in`
+      };
+    } else {
+      return {
+        starter: `${nextStarter} will start Turn ${turnNumber + 1}`,
+        continue: 'Continuing in'
+      };
+    }
+  };
+  
+  const nextPhase = getNextPhaseText();
+  
+  return (
+    <>
+      {/* Modified phase header for turn results */}
+      <div className="gl-phase-header">
+        <h1 className="gl-phase-title">Turn Results</h1>
+        <p className="gl-phase-subtitle">Round {roundNumber} • Turn {turnNumber} Winner</p>
+      </div>
+      
+      {/* Winner announcement */}
+      <div className="tr-winner-section">
+        <div className="tr-winner-announcement">
+          <div className="tr-crown-icon">👑</div>
+          <div className="tr-winner-name">{winner} Wins!</div>
+          
+          {/* Winning play display */}
+          {winningPieces.length > 0 && (
+            <div className="tr-winning-play">
+              <div className="tr-play-label">Winning Play</div>
+              <div className="tr-winning-pieces">
+                {winningPieces.map((piece, idx) => (
+                  <div 
+                    key={idx}
+                    className={`tr-mini-piece ${getPieceColorClass(piece)}`}
+                  >
+                    {getPieceDisplay(piece)}
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
+      
+      {/* Players summary */}
+      <div className="tr-players-summary">
+        <div className="tr-player-list">
+          {playerPlays.map((play, index) => (
+            <div key={play.playerName} className="tr-player-row">
+              <div className="tr-player-avatar">
+                {getPlayerInitial(play.playerName)}
+              </div>
+              <div className="tr-player-info">
+                <div className="tr-player-name">
+                  {play.playerName}{play.playerName === myName ? ' (You)' : ''}
+                </div>
+              </div>
+              <div className="tr-played-pieces">
+                {play.pieces.length === 0 ? (
+                  <span className="tr-pass-indicator">Passed</span>
+                ) : (
+                  play.pieces.map((piece, idx) => (
+                    <div 
+                      key={idx}
+                      className={`tr-played-piece ${getPieceColorClass(piece)}`}
+                    >
+                      {getPieceDisplay(piece)}
+                    </div>
+                  ))
+                )}
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+      
+      {/* Next turn info */}
+      <div className="tr-next-turn-info">
+        <div className="tr-next-starter">{nextPhase.starter}</div>
+        <div className="tr-auto-continue">
+          {nextPhase.continue}
+          <span className="tr-countdown">{countdown}</span>
+          seconds
+        </div>
+      </div>
+    </>
+  );
+};
+
+TurnResultsContent.propTypes = {
+  winner: PropTypes.string,
+  winningPieces: PropTypes.array,
+  playerPlays: PropTypes.arrayOf(PropTypes.shape({
+    playerName: PropTypes.string,
+    pieces: PropTypes.array
+  })),
+  myName: PropTypes.string,
+  turnNumber: PropTypes.number,
+  roundNumber: PropTypes.number,
+  isLastTurn: PropTypes.bool,
+  nextStarter: PropTypes.string,
+  onContinue: PropTypes.func
+};
+
+export default TurnResultsContent;

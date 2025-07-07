@@ -11,6 +11,9 @@
 @import './components/game/_animations.css';
 @import './components/game/gamelayout.css';
 @import './components/game/preparation.css';
+@import './components/game/declaration.css';
+@import './components/game/turn.css';
+@import './components/game/turnresults.css';
 @import 'tailwindcss/index.css';
 
 /* Your custom styles */
