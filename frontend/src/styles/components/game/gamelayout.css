@@ -1,0 +1,165 @@
+/* GameLayout Component Styles */
+/* Prefix: gl- */
+
+.gl-game-container {
+  /* Fixed aspect ratio container */
+  width: 100%;
+  max-width: var(--game-max-width);
+  aspect-ratio: 9 / 16;
+  max-height: var(--game-max-height);
+  margin: 0 auto;
+  
+  /* Visual styling - matching mockup */
+  background: 
+    linear-gradient(145deg, #FFFFFF 0%, #F8F9FA 100%),
+    radial-gradient(circle at 20% 30%, rgba(255, 193, 7, 0.03) 0%, transparent 70%),
+    radial-gradient(circle at 80% 70%, rgba(13, 110, 253, 0.02) 0%, transparent 70%);
+  border-radius: 20px;
+  border: 1px solid rgba(173, 181, 189, 0.3);
+  box-shadow: 
+    0 20px 40px rgba(0, 0, 0, 0.08),
+    0 0 0 1px rgba(255, 255, 255, 0.9),
+    inset 0 1px 0 rgba(255, 255, 255, 1);
+  
+  /* Layout */
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Round indicator in top-right */
+.gl-round-indicator {
+  position: absolute;
+  top: var(--game-spacing-md);
+  right: var(--game-spacing-md);
+  z-index: var(--z-game-overlay);
+  
+  /* Styling - matching mockup */
+  background: 
+    linear-gradient(145deg, #FFFFFF 0%, #F8F9FA 100%),
+    radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.8) 0%, transparent 60%);
+  padding: 8px 16px;
+  border-radius: 16px;
+  border: 1px solid rgba(173, 181, 189, 0.3);
+  box-shadow: 
+    0 4px 12px rgba(0, 0, 0, 0.08),
+    inset 0 1px 0 rgba(255, 255, 255, 1);
+  
+  /* Typography */
+  font-size: 14px;
+  font-weight: 700;
+  color: #343A40;
+  font-family: var(--font-primary);
+  letter-spacing: 0.5px;
+}
+
+/* Multiplier badge in top-left */
+.gl-multiplier-badge {
+  position: absolute;
+  top: var(--game-spacing-md);
+  left: var(--game-spacing-md);
+  z-index: var(--z-game-overlay);
+  
+  /* Hidden by default */
+  opacity: 0;
+  transform: scale(0.8);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  
+  /* Styling - matching mockup */
+  background: 
+    linear-gradient(135deg, #DC3545 0%, #C82333 100%),
+    radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.3) 0%, transparent 60%);
+  padding: 8px 16px;
+  border-radius: 16px;
+  border: 1px solid rgba(220, 53, 69, 0.4);
+  box-shadow: 
+    0 4px 12px rgba(220, 53, 69, 0.2),
+    inset 0 1px 0 rgba(255, 255, 255, 0.6);
+  
+  /* Typography */
+  font-size: 14px;
+  font-weight: 700;
+  color: white;
+  font-family: var(--font-primary);
+  letter-spacing: 0.5px;
+}
+
+/* Show multiplier badge */
+.gl-multiplier-badge.show {
+  opacity: 1;
+  transform: scale(1);
+  animation: bounceIn 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+
+/* Phase header section */
+.gl-phase-header {
+  position: relative;
+  padding: 50px 24px 20px;
+  background: 
+    linear-gradient(180deg, rgba(248, 249, 250, 0.8) 0%, transparent 100%),
+    linear-gradient(90deg, transparent 0%, rgba(173, 181, 189, 0.1) 50%, transparent 100%);
+  border-bottom: 1px solid rgba(173, 181, 189, 0.2);
+  text-align: center;
+}
+
+/* Decorative line under header */
+.gl-phase-header::after {
+  content: '';
+  position: absolute;
+  bottom: -1px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 40px;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, #6C757D, transparent);
+}
+
+/* Phase title */
+.gl-phase-title {
+  font-family: var(--font-serif);
+  font-size: 28px;
+  font-weight: 700;
+  color: #343A40;
+  margin: 0 0 4px 0;
+  letter-spacing: -0.5px;
+}
+
+/* Phase subtitle */
+.gl-phase-subtitle {
+  font-size: 14px;
+  font-weight: 500;
+  color: #6C757D;
+  margin: 0;
+}
+
+/* Content section */
+.gl-content-section {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Responsive adjustments */
+@media (max-height: 800px) {
+  .gl-phase-header {
+    padding: var(--game-spacing-lg) var(--game-spacing-lg) var(--game-spacing-md);
+  }
+  
+  .gl-phase-title {
+    font-size: 28px;
+  }
+  
+  .gl-phase-subtitle {
+    font-size: 13px;
+  }
+}
+
+@media (max-width: 420px) {
+  .gl-game-container {
+    max-width: calc(100vw - 20px);
+    margin: 10px auto;
+  }
+}

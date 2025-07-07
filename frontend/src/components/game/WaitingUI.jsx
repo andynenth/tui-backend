@@ -91,15 +91,11 @@ export function WaitingUI({
         {/* Waiting Animation */}
         {!connectionError && !isConnecting && !isReconnecting && (
           <div className="mb-6">
-            <div className="flex justify-center items-center space-x-1">
+            <div className="waiting-dots">
               {[0, 1, 2].map((i) => (
                 <div
                   key={i}
-                  className="w-3 h-3 bg-blue-400 rounded-full animate-pulse"
-                  style={{
-                    animationDelay: `${i * 0.3}s`,
-                    animationDuration: '1.2s'
-                  }}
+                  className="waiting-dot"
                 />
               ))}
             </div>

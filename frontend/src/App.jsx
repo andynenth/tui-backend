@@ -114,7 +114,7 @@ const AppWithServices = () => {
       try {
         await initializeServices();
         setServicesInitialized(true);
-        console.log('🎮 Phase 1-4 Enterprise Architecture - Global services initialized');
+        console.log('🎮 Global services initialized');
       } catch (error) {
         console.error('Failed to initialize global services:', error);
         setInitializationError(error.message);
@@ -132,13 +132,13 @@ const AppWithServices = () => {
 
   if (initializationError) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50">
-        <div className="text-center">
-          <h1 className="text-2xl font-bold text-red-600 mb-4">Service Initialization Failed</h1>
-          <p className="text-gray-600 mb-4">{initializationError}</p>
+      <div className="service-init-overlay">
+        <div className="service-init-container">
+          <h1 className="service-error-title">Service Initialization Failed</h1>
+          <p className="service-error-message">{initializationError}</p>
           <button 
             onClick={() => window.location.reload()} 
-            className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+            className="service-retry-button"
           >
             Retry
           </button>
@@ -149,31 +149,16 @@ const AppWithServices = () => {
 
   if (!servicesInitialized) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-purple-50">
-        <div className="text-center bg-white p-8 rounded-lg shadow-lg">
-          <div className="mb-4">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
-            <div className="bg-gradient-to-r from-blue-600 to-purple-600 text-white px-4 py-2 rounded-lg mb-2">
-              <span className="font-semibold">🚀 Phase 1-4 Enterprise Architecture</span>
-            </div>
-            <p className="text-gray-600">Initializing advanced services...</p>
-          </div>
-          <div className="text-xs text-gray-500 space-y-1">
-            <div>• State Machine Engine</div>
-            <div>• TypeScript Service Layer</div>
-            <div>• Enterprise Monitoring</div>
-            <div>• Auto-Recovery Systems</div>
-          </div>
+      <div className="service-init-overlay">
+        <div className="service-init-container">
+          <div className="service-loading-spinner"></div>
+          <p className="service-loading-text">Initializing game services...</p>
         </div>
       </div>
     );
   }
 
-  return (
-    <div className="App">
-      <AppRouter />
-    </div>
-  );
+  return <AppRouter />;
 };
 
 // Main App component
