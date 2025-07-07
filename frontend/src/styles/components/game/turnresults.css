@@ -1,0 +1,309 @@
+/* Turn Results Phase Styles */
+/* Prefix: tr- */
+
+/* Winner section */
+.tr-winner-section {
+  padding: 20px;
+  text-align: center;
+}
+
+/* Winner announcement box */
+.tr-winner-announcement {
+  background: 
+    linear-gradient(145deg, #FFF8E1 0%, #FFFBF0 100%),
+    radial-gradient(circle at 30% 30%, rgba(255, 193, 7, 0.1) 0%, transparent 60%);
+  border: 1px solid rgba(255, 193, 7, 0.3);
+  border-radius: 16px;
+  padding: 16px;
+  box-shadow: 
+    0 8px 24px rgba(255, 193, 7, 0.15),
+    inset 0 1px 0 rgba(255, 255, 255, 1);
+  position: relative;
+  overflow: hidden;
+  animation: slideAndScale 0.8s ease-out;
+}
+
+/* Decorative elements */
+.tr-winner-announcement::before {
+  content: '✨';
+  position: absolute;
+  top: -20px;
+  left: -20px;
+  font-size: 60px;
+  opacity: 0.1;
+  transform: rotate(-15deg);
+}
+
+.tr-winner-announcement::after {
+  content: '🎉';
+  position: absolute;
+  bottom: -20px;
+  right: -20px;
+  font-size: 60px;
+  opacity: 0.1;
+  transform: rotate(15deg);
+}
+
+/* Crown icon */
+.tr-crown-icon {
+  font-size: 36px;
+  margin-bottom: 12px;
+  animation: bounce 1s ease-in-out infinite;
+}
+
+/* Winner name */
+.tr-winner-name {
+  font-family: var(--font-serif);
+  font-size: 24px;
+  font-weight: 700;
+  color: #F57F17;
+  margin-bottom: 6px;
+}
+
+/* Winning play display */
+.tr-winning-play {
+  margin-top: 16px;
+  background: rgba(255, 255, 255, 0.8);
+  border-radius: 12px;
+  padding: 12px;
+  border: 1px solid rgba(255, 193, 7, 0.2);
+}
+
+.tr-play-label {
+  font-size: 12px;
+  font-weight: 600;
+  color: #6C757D;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 12px;
+}
+
+.tr-winning-pieces {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+/* Mini piece display */
+.tr-mini-piece {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: 
+    linear-gradient(145deg, #FFFFFF 0%, #F8F9FA 100%),
+    radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.8) 0%, transparent 60%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  font-weight: bold;
+  border: 1px solid rgba(173, 181, 189, 0.3);
+  font-family: 'SimSun', '宋体', serif;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.06);
+}
+
+.tr-mini-piece.red {
+  color: #DC3545;
+  border-color: rgba(220, 53, 69, 0.4);
+}
+
+.tr-mini-piece.black {
+  color: #495057;
+  border-color: rgba(73, 80, 87, 0.4);
+}
+
+/* Players summary section */
+.tr-players-summary {
+  padding: 0 20px 20px;
+}
+
+.tr-player-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+/* Player summary row */
+.tr-player-row {
+  display: flex;
+  align-items: center;
+  background: 
+    linear-gradient(145deg, #FFFFFF 0%, #F8F9FA 100%),
+    radial-gradient(circle at 15% 50%, rgba(255, 255, 255, 0.8) 0%, transparent 50%);
+  padding: 12px 16px;
+  border-radius: 10px;
+  border: 1px solid rgba(173, 181, 189, 0.15);
+  box-shadow: 
+    0 2px 6px rgba(0, 0, 0, 0.04),
+    inset 0 1px 0 rgba(255, 255, 255, 1);
+  animation: fadeIn 0.6s ease-out;
+  animation-fill-mode: both;
+}
+
+/* Stagger animations */
+.tr-player-row:nth-child(1) { animation-delay: 0.1s; }
+.tr-player-row:nth-child(2) { animation-delay: 0.2s; }
+.tr-player-row:nth-child(3) { animation-delay: 0.3s; }
+.tr-player-row:nth-child(4) { animation-delay: 0.4s; }
+
+/* Player avatar */
+.tr-player-avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: 
+    linear-gradient(145deg, #FFFFFF 0%, #F8F9FA 100%),
+    radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.8) 0%, transparent 60%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 12px;
+  margin-right: 12px;
+  border: 2px solid rgba(173, 181, 189, 0.3);
+  box-shadow: 
+    0 2px 4px rgba(0, 0, 0, 0.06),
+    inset 0 1px 0 rgba(255, 255, 255, 1);
+  color: #495057;
+}
+
+/* Player info */
+.tr-player-info {
+  flex: 1;
+}
+
+.tr-player-name {
+  font-size: 14px;
+  font-weight: 600;
+  color: #212529;
+}
+
+/* Played pieces display */
+.tr-played-pieces {
+  display: flex;
+  gap: 4px;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  align-items: center;
+}
+
+.tr-played-piece {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: 
+    linear-gradient(145deg, #FFFFFF 0%, #F8F9FA 100%),
+    radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.8) 0%, transparent 60%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 10px;
+  font-weight: bold;
+  font-family: 'SimSun', '宋体', serif;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
+}
+
+.tr-played-piece.red {
+  color: #DC3545;
+  border: 1px solid rgba(220, 53, 69, 0.4);
+}
+
+.tr-played-piece.black {
+  color: #495057;
+  border: 1px solid rgba(73, 80, 87, 0.4);
+}
+
+/* Pass indicator */
+.tr-pass-indicator {
+  font-size: 12px;
+  color: #6C757D;
+  font-style: italic;
+}
+
+/* Next turn info section */
+.tr-next-turn-info {
+  background: 
+    linear-gradient(180deg, rgba(248, 249, 250, 0.6) 0%, rgba(233, 236, 239, 0.8) 100%),
+    radial-gradient(ellipse 100% 60% at 50% 0%, rgba(173, 181, 189, 0.1) 0%, transparent 100%);
+  padding: 20px;
+  border-top: 1px solid rgba(173, 181, 189, 0.2);
+  text-align: center;
+  position: relative;
+  margin-top: auto;
+}
+
+.tr-next-turn-info::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 40px;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, #6C757D, transparent);
+}
+
+.tr-next-starter {
+  font-size: 16px;
+  font-weight: 600;
+  color: #343A40;
+  margin-bottom: 8px;
+}
+
+.tr-auto-continue {
+  font-size: 12px;
+  color: #6C757D;
+}
+
+.tr-countdown {
+  display: inline-block;
+  background: rgba(108, 117, 125, 0.1);
+  padding: 2px 8px;
+  border-radius: 6px;
+  font-weight: 600;
+  margin: 0 4px;
+}
+
+/* Animations */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideAndScale {
+  from {
+    opacity: 0;
+    transform: scale(0.9) translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+@keyframes bounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-10px); }
+}
+
+/* Responsive adjustments */
+@media (max-height: 700px) {
+  .tr-winner-announcement {
+    padding: 12px;
+  }
+  
+  .tr-crown-icon {
+    font-size: 28px;
+  }
+  
+  .tr-winner-name {
+    font-size: 20px;
+  }
+}

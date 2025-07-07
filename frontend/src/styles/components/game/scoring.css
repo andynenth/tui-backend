@@ -1,0 +1,278 @@
+/* Scoring Phase Styles */
+/* Prefix: sc- */
+
+/* Scoring section */
+.sc-scoring-section {
+  flex: 1;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  overflow: auto;
+}
+
+/* Score card */
+.sc-score-card {
+  background: 
+    linear-gradient(145deg, #FFFFFF 0%, #F8F9FA 100%),
+    radial-gradient(circle at 15% 50%, rgba(255, 255, 255, 0.8) 0%, transparent 50%);
+  border: 1px solid rgba(173, 181, 189, 0.3);
+  border-radius: 8px;
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  box-shadow: 
+    0 2px 6px rgba(0, 0, 0, 0.04),
+    inset 0 1px 0 rgba(255, 255, 255, 1);
+  position: relative;
+  transition: all 0.3s ease;
+  margin-bottom: 6px;
+  animation: fadeIn 0.6s ease-out;
+  animation-fill-mode: both;
+}
+
+/* Stagger animations */
+.sc-score-card:nth-child(1) { animation-delay: 0.1s; }
+.sc-score-card:nth-child(2) { animation-delay: 0.2s; }
+.sc-score-card:nth-child(3) { animation-delay: 0.3s; }
+.sc-score-card:nth-child(4) { animation-delay: 0.4s; }
+
+/* Top row - player and total score */
+.sc-top-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+/* Player info */
+.sc-player-info {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex: 1;
+}
+
+.sc-player-avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: 
+    linear-gradient(145deg, #FFFFFF 0%, #F8F9FA 100%),
+    radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.8) 0%, transparent 60%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 14px;
+  border: 2px solid rgba(173, 181, 189, 0.3);
+  box-shadow: 
+    0 2px 4px rgba(0, 0, 0, 0.06),
+    inset 0 1px 0 rgba(255, 255, 255, 1);
+  color: #495057;
+}
+
+.sc-player-name {
+  font-size: 14px;
+  font-weight: 600;
+  color: #212529;
+  white-space: nowrap;
+}
+
+/* Total score display */
+.sc-total-score {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.sc-total-label {
+  font-size: 12px;
+  font-weight: 600;
+  color: #6C757D;
+}
+
+.sc-total-value {
+  font-size: 20px;
+  font-weight: 900;
+  text-align: center;
+  line-height: 1;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+  padding: 3px 6px;
+  border-radius: 4px;
+}
+
+.sc-total-value.positive {
+  color: #28A745;
+  background: linear-gradient(135deg, rgba(40, 167, 69, 0.1), rgba(32, 201, 151, 0.1));
+  border: 1px solid rgba(40, 167, 69, 0.2);
+}
+
+.sc-total-value.negative {
+  color: #DC3545;
+  background: linear-gradient(135deg, rgba(220, 53, 69, 0.1), rgba(200, 35, 51, 0.1));
+  border: 1px solid rgba(220, 53, 69, 0.2);
+}
+
+.sc-total-value.neutral {
+  color: #6C757D;
+  background: linear-gradient(135deg, rgba(108, 117, 125, 0.1), rgba(173, 181, 189, 0.1));
+  border: 1px solid rgba(108, 117, 125, 0.2);
+}
+
+/* Bottom row - scoring details */
+.sc-bottom-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+/* Individual stat sections */
+.sc-stat {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1px;
+}
+
+.sc-stat-label {
+  font-size: 8px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+  color: #6C757D;
+}
+
+.sc-stat-value {
+  font-size: 11px;
+  font-weight: 700;
+  padding: 2px 4px;
+  border-radius: 4px;
+  text-align: center;
+  min-width: 30px;
+}
+
+/* Target info */
+.sc-target {
+  flex-direction: column;
+  align-items: flex-start;
+  min-width: 40px;
+}
+
+.sc-target-value {
+  font-size: 12px;
+  font-weight: 700;
+  color: #343A40;
+}
+
+/* Result value colors */
+.sc-stat-value.positive {
+  background: rgba(40, 167, 69, 0.1);
+  color: #28A745;
+  border: 1px solid rgba(40, 167, 69, 0.3);
+}
+
+.sc-stat-value.negative {
+  background: rgba(220, 53, 69, 0.1);
+  color: #DC3545;
+  border: 1px solid rgba(220, 53, 69, 0.3);
+}
+
+.sc-stat-value.neutral {
+  background: rgba(108, 117, 125, 0.1);
+  color: #6C757D;
+  border: 1px solid rgba(108, 117, 125, 0.3);
+}
+
+.sc-stat-value.special {
+  background: rgba(13, 110, 253, 0.1);
+  color: #0D6EFD;
+  border: 1px solid rgba(13, 110, 253, 0.3);
+}
+
+/* Multiplier display */
+.sc-multiplier {
+  font-size: 10px;
+  font-weight: 700;
+  color: #DC3545;
+  background: rgba(220, 53, 69, 0.1);
+  padding: 2px 6px;
+  border-radius: 4px;
+  border: 1px solid rgba(220, 53, 69, 0.3);
+}
+
+/* Continue section */
+.sc-continue-section {
+  background: 
+    linear-gradient(180deg, rgba(248, 249, 250, 0.6) 0%, rgba(233, 236, 239, 0.8) 100%),
+    radial-gradient(ellipse 100% 60% at 50% 0%, rgba(173, 181, 189, 0.1) 0%, transparent 100%);
+  padding: 20px;
+  border-top: 1px solid rgba(173, 181, 189, 0.2);
+  text-align: center;
+  position: relative;
+}
+
+.sc-continue-section::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 40px;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, #6C757D, transparent);
+}
+
+.sc-continue-text {
+  font-size: 14px;
+  color: #6C757D;
+  margin-bottom: 12px;
+}
+
+.sc-continue-btn {
+  background: 
+    linear-gradient(135deg, #28A745 0%, #20C997 100%),
+    radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.2) 0%, transparent 60%);
+  color: white;
+  border: 1px solid rgba(40, 167, 69, 0.4);
+  padding: 10px 24px;
+  border-radius: 10px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 2px 4px rgba(40, 167, 69, 0.2);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  font-family: var(--font-primary);
+}
+
+.sc-continue-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(40, 167, 69, 0.3);
+}
+
+/* Animation */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Responsive adjustments */
+@media (max-height: 700px) {
+  .sc-score-card {
+    padding: 8px;
+    margin-bottom: 4px;
+  }
+  
+  .sc-total-value {
+    font-size: 18px;
+  }
+}

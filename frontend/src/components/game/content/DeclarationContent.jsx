@@ -1,0 +1,233 @@
+import React, { useState, useEffect } from 'react';
+import PropTypes from 'prop-types';
+import { getPieceDisplay, getPieceColorClass, formatPieceValue } from '../../../utils/pieceMapping';
+
+/**
+ * DeclarationContent Component
+ * 
+ * Displays the declaration phase with:
+ * - Players list showing declaration status
+ * - Declaration panel with number selection (0-8)
+ * - Validation for total sum and consecutive zeros
+ * - Player's hand display at bottom
+ */
+const DeclarationContent = ({
+  myHand = [],
+  players = [],
+  currentPlayer = '',
+  myName = '',
+  declarations = {},
+  totalDeclared = 0,
+  consecutiveZeros = 0,
+  redealMultiplier = 1,
+  onDeclare
+}) => {
+  const [selectedValue, setSelectedValue] = useState(null);
+  const [showPanel, setShowPanel] = useState(false);
+  
+  // Check if it's my turn
+  const isMyTurn = currentPlayer === myName;
+  
+  // Show panel when it's my turn
+  useEffect(() => {
+    if (isMyTurn) {
+      setShowPanel(true);
+    } else {
+      setShowPanel(false);
+      setSelectedValue(null);
+    }
+  }, [isMyTurn]);
+  
+  // Calculate restrictions
+  const getRestrictions = () => {
+    const restrictions = {
+      message: 'Declare your target pile count',
+      disabledValues: []
+    };
+    
+    // Check if player is last to declare
+    const declaredCount = Object.keys(declarations).length;
+    const isLastPlayer = declaredCount === players.length - 1;
+    
+    if (isLastPlayer) {
+      // Total cannot equal 8
+      const remainingForEight = 8 - totalDeclared;
+      if (remainingForEight >= 0 && remainingForEight <= 8) {
+        restrictions.disabledValues.push(remainingForEight);
+        restrictions.message = 'The total number cannot be 8';
+      }
+    }
+    
+    // Check consecutive zeros (player declared 0 twice in a row)
+    if (consecutiveZeros >= 2) {
+      restrictions.disabledValues.push(0);
+      restrictions.message = 'No third consecutive 0';
+    }
+    
+    return restrictions;
+  };
+  
+  const restrictions = getRestrictions();
+  
+  // Get player status
+  const getPlayerStatus = (player) => {
+    const playerName = player.name;
+    
+    if (declarations[playerName] !== undefined) {
+      return {
+        type: 'declared',
+        value: declarations[playerName]
+      };
+    } else if (playerName === currentPlayer) {
+      return {
+        type: 'current',
+        text: playerName === myName ? 'Declaring' : 'Their Turn'
+      };
+    } else {
+      return {
+        type: 'waiting',
+        text: 'Waiting'
+      };
+    }
+  };
+  
+  // Handle declaration selection
+  const handleSelectValue = (value) => {
+    if (!restrictions.disabledValues.includes(value)) {
+      setSelectedValue(value);
+    }
+  };
+  
+  // Handle confirm
+  const handleConfirm = () => {
+    if (selectedValue !== null && onDeclare) {
+      onDeclare(selectedValue);
+    }
+  };
+  
+  // Handle clear
+  const handleClear = () => {
+    setSelectedValue(null);
+  };
+  
+  // Get player avatar initial
+  const getPlayerInitial = (name) => {
+    return name.charAt(0).toUpperCase();
+  };
+  
+  return (
+    <>
+      {/* Game status section */}
+      <div className="dec-game-status-section">
+        {/* Declaration requirement */}
+        <div className="dec-requirement-badge">
+          {restrictions.message}
+        </div>
+        
+        {/* Players list */}
+        <div className="dec-players-list">
+          {players.map((player) => {
+            const status = getPlayerStatus(player);
+            const isCurrentTurn = player.name === currentPlayer;
+            const isDeclared = status.type === 'declared';
+            
+            return (
+              <div
+                key={player.name}
+                className={`dec-player-row ${isCurrentTurn ? 'current-turn' : ''} ${isDeclared ? 'declared' : ''}`}
+              >
+                <div className="dec-player-avatar">
+                  {getPlayerInitial(player.name)}
+                </div>
+                <div className="dec-player-info">
+                  <div className="dec-player-name">
+                    {player.name}{player.name === myName ? ' (You)' : ''}
+                  </div>
+                </div>
+                <div className="dec-player-status">
+                  {status.type === 'declared' ? (
+                    <div className="dec-declared-value">{status.value}</div>
+                  ) : (
+                    <div className={`dec-status-badge ${status.type}`}>
+                      {status.text}
+                    </div>
+                  )}
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      </div>
+      
+      {/* Declaration panel - sliding tray */}
+      <div className={`dec-panel ${showPanel ? 'show' : ''}`}>
+        <div className="dec-options">
+          {[0, 1, 2, 3, 4, 5, 6, 7, 8].map((value) => {
+            const isDisabled = restrictions.disabledValues.includes(value);
+            const isSelected = selectedValue === value;
+            
+            return (
+              <button
+                key={value}
+                className={`dec-option ${isSelected ? 'selected' : ''} ${isDisabled ? 'disabled' : ''}`}
+                onClick={() => handleSelectValue(value)}
+                disabled={isDisabled}
+              >
+                {value}
+              </button>
+            );
+          })}
+        </div>
+        
+        <div className="dec-actions">
+          <button
+            className="dec-action-btn"
+            onClick={handleConfirm}
+            disabled={selectedValue === null}
+          >
+            Confirm
+          </button>
+          <button
+            className="dec-action-btn secondary"
+            onClick={handleClear}
+          >
+            Clear
+          </button>
+        </div>
+      </div>
+      
+      {/* Hand section - always visible at bottom */}
+      <div className="hand-section">
+        <div className="pieces-tray">
+          {myHand.map((piece, index) => (
+            <div 
+              key={index}
+              className={`piece ${getPieceColorClass(piece)}`}
+            >
+              <div className="piece-character">
+                {getPieceDisplay(piece)}
+              </div>
+              <div className="piece-points">
+                {formatPieceValue(piece)}
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </>
+  );
+};
+
+DeclarationContent.propTypes = {
+  myHand: PropTypes.array,
+  players: PropTypes.array,
+  currentPlayer: PropTypes.string,
+  myName: PropTypes.string,
+  declarations: PropTypes.object,
+  totalDeclared: PropTypes.number,
+  consecutiveZeros: PropTypes.number,
+  redealMultiplier: PropTypes.number,
+  onDeclare: PropTypes.func
+};
+
+export default DeclarationContent;
