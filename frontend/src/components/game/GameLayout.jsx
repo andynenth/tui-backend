@@ -16,7 +16,11 @@ const GameLayout = ({
   phase, 
   roundNumber = 1, 
   showMultiplier = false,
-  multiplierValue = 2 
+  multiplierValue = 2,
+  // Additional props for turn phase
+  playType = '',
+  currentPlayer = '',
+  turnRequirement = null
 }) => {
   // Get phase title and subtitle based on current phase
   const getPhaseInfo = () => {
@@ -33,8 +37,8 @@ const GameLayout = ({
         };
       case 'turn':
         return {
-          title: 'Game Time',
-          subtitle: 'Play your pieces strategically'
+          title: playType || 'Turn Phase',
+          subtitle: currentPlayer ? `Round ${roundNumber} • ${currentPlayer}'s Turn` : 'Play your pieces strategically'
         };
       case 'turn_results':
         return {
@@ -75,7 +79,7 @@ const GameLayout = ({
 
       {/* Phase header */}
       <div className="gl-phase-header">
-        <h1 className="gl-phase-title">{title}</h1>
+        <h1 className={`gl-phase-title ${phase === 'turn' && playType ? 'turn-play-type' : ''}`}>{title}</h1>
         <p className="gl-phase-subtitle">{subtitle}</p>
       </div>
 
@@ -99,7 +103,13 @@ GameLayout.propTypes = {
   ]).isRequired,
   roundNumber: PropTypes.number,
   showMultiplier: PropTypes.bool,
-  multiplierValue: PropTypes.number
+  multiplierValue: PropTypes.number,
+  playType: PropTypes.string,
+  currentPlayer: PropTypes.string,
+  turnRequirement: PropTypes.shape({
+    type: PropTypes.string,
+    text: PropTypes.string
+  })
 };
 
 export default GameLayout;

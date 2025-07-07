@@ -25,6 +25,7 @@ export function TurnResultsUI({
   nextStarter = '',
   playerName = '',
   isLastTurn = false,
+  currentTurnPlays = [], // Turn plays data from turn phase
   
   // Action props
   onContinue
@@ -32,11 +33,16 @@ export function TurnResultsUI({
   // Extract winning pieces from winning play
   const winningPieces = winningPlay?.pieces || [];
   
-  // Build player plays array from playerPiles
-  const playerPlays = players.map(player => ({
-    playerName: player.name,
-    pieces: playerPiles[player.name] || []
-  }));
+  // Build player plays array from turn plays data
+  // The currentTurnPlays should contain what each player played
+  const playerPlays = players.map(player => {
+    // Find what this player played in the turn
+    const turnPlay = currentTurnPlays.find(play => play.player === player.name);
+    return {
+      playerName: player.name,
+      pieces: turnPlay?.cards || []
+    };
+  });
   
   // Pass through props to TurnResultsContent
   return (
@@ -70,6 +76,7 @@ TurnResultsUI.propTypes = {
   nextStarter: PropTypes.string,
   playerName: PropTypes.string,
   isLastTurn: PropTypes.bool,
+  currentTurnPlays: PropTypes.array,
   
   // Actions
   onContinue: PropTypes.func

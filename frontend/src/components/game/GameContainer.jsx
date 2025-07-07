@@ -15,6 +15,7 @@ import PropTypes from 'prop-types';
 import useGameState from "../../hooks/useGameState";
 import useGameActions from "../../hooks/useGameActions";
 import useConnectionStatus from "../../hooks/useConnectionStatus";
+// Play type detection now handled by backend
 
 // Import Pure UI Components
 import WaitingUI from './WaitingUI';
@@ -92,21 +93,75 @@ export function GameContainer({ roomId, onNavigateToLobby }) {
     if (gameState.phase !== 'turn') return null;
     
     console.log(`🔢 GAMECONTAINER_DEBUG: gameState.currentTurnNumber = ${gameState.currentTurnNumber}`);
+    console.log(`🔢 GAMECONTAINER_DEBUG: currentTurnPlays =`, gameState.currentTurnPlays);
+    
+    // Extract play type from the starter's play
+    let playType = '';
+    if (gameState.currentTurnPlays && gameState.currentTurnPlays.length > 0 && gameState.currentTurnStarter) {
+      console.log('🎲 PLAYTYPE_DEBUG: currentTurnStarter:', gameState.currentTurnStarter);
+      console.log('🎲 PLAYTYPE_DEBUG: currentTurnPlays:', gameState.currentTurnPlays);
+      
+      // Find the starter's play
+      const starterPlay = gameState.currentTurnPlays.find(play => 
+        play.player === gameState.currentTurnStarter
+      );
+      console.log('🎲 PLAYTYPE_DEBUG: starterPlay:', starterPlay);
+      
+      if (starterPlay) {
+        // Check both camelCase and snake_case versions
+        const extractedPlayType = starterPlay.playType || starterPlay.play_type;
+        if (extractedPlayType && extractedPlayType !== 'UNKNOWN' && extractedPlayType !== 'unknown') {
+          playType = extractedPlayType;
+          console.log('🎲 PLAYTYPE_DEBUG: Found play type:', playType);
+        }
+      } else {
+        console.log('🎲 PLAYTYPE_DEBUG: No starter play found');
+      }
+    }
+    
+    // Build piles won count from previous turns (would need to be tracked)
+    const piecesWonCount = gameState.playerPiles || {};
+    
+    // Build player hand sizes - this would come from backend players data
+    const playerHandSizes = {};
+    if (gameState.players) {
+      gameState.players.forEach(player => {
+        // For current player, use actual hand length
+        if (player.name === gameState.playerName) {
+          playerHandSizes[player.name] = gameState.myHand.length;
+        } else {
+          // For others, backend should provide hand_size
+          // Fallback to 8 minus played pieces count
+          const playedCount = gameState.currentTurnPlays
+            ? gameState.currentTurnPlays.filter(p => p.player === player.name).length * (gameState.requiredPieceCount || 1)
+            : 0;
+          playerHandSizes[player.name] = Math.max(0, 8 - playedCount);
+        }
+      });
+    }
     
     return {
       // Data from backend
       myHand: gameState.myHand || [],
+      players: gameState.players || [],
+      currentPlayer: gameState.currentPlayer || '',
+      playerName: gameState.playerName || '',
       currentTurnPlays: gameState.currentTurnPlays || [],
       requiredPieceCount: gameState.requiredPieceCount,
       turnNumber: gameState.currentTurnNumber || 1,
+      piecesWonCount: piecesWonCount,
+      previousWinner: gameState.currentTurnStarter || '',
+      playType: playType,
+      declarationData: gameState.declarations || {},
+      playerHandSizes: playerHandSizes,
       
       // State calculated by backend
       isMyTurn: gameState.isMyTurn || false,
       canPlayAnyCount: gameState.canPlayAnyCount || false,
-      selectedPlayValue: gameState.selectedPlayValue || 0,
       
       // Actions
-      onPlayPieces: gameActions.playPieces
+      onPlayPieces: gameActions.playPieces,
+      onPass: gameActions.pass
     };
   }, [gameState, gameActions]);
 
@@ -122,14 +177,30 @@ export function GameContainer({ roomId, onNavigateToLobby }) {
     console.log('  🔢 gameState.turnNumber:', gameState.turnNumber);
     console.log('  🎪 gameState.nextStarter:', gameState.nextStarter);
     
+    // Determine if this is the last turn of the round
+    const isLastTurn = gameState.players.every(player => {
+      // Check if all players have empty hands (would need backend data)
+      return false; // Default to false, backend should provide this
+    });
+    
     const props = {
       // Data from backend
       winner: gameState.turnWinner || null,
       winningPlay: gameState.winningPlay || null,
       playerPiles: gameState.playerPiles || {},
       players: gameState.players || [],
-      turnNumber: gameState.turnNumber || 1,
-      nextStarter: gameState.nextStarter || null
+      turnNumber: gameState.currentTurnNumber || gameState.turnNumber || 1,
+      roundNumber: gameState.currentRound || 1,
+      nextStarter: gameState.nextStarter || null,
+      playerName: gameState.playerName || '',
+      isLastTurn: isLastTurn,
+      currentTurnPlays: gameState.currentTurnPlays || [],
+      
+      // Actions
+      onContinue: () => {
+        // Backend handles auto-transition, this is just for manual continue if needed
+        console.log('Turn results continue requested');
+      }
     };
     
     console.log('🏆 GAMECONTAINER_DEBUG: Final turnResultsProps:', props);
@@ -264,12 +335,31 @@ export function GameContainer({ roomId, onNavigateToLobby }) {
             );
             
           case 'turn':
+            const turnRequirement = (() => {
+              if (!turnProps) return null;
+              const { currentPlayer, playerName, requiredPieceCount } = turnProps;
+              const isMyTurn = currentPlayer === playerName;
+              
+              if (!isMyTurn) {
+                return { type: 'waiting', text: `Waiting for ${currentPlayer} to play` };
+              }
+              
+              if (requiredPieceCount === 0 || requiredPieceCount === null) {
+                return { type: 'active', text: 'Play any number of pieces or pass' };
+              }
+              
+              return { type: 'active', text: `Must play exactly ${requiredPieceCount} piece${requiredPieceCount > 1 ? 's' : ''}` };
+            })();
+            
             return (
               <GameLayout 
                 phase="turn" 
                 roundNumber={gameState.currentRound}
                 showMultiplier={gameState.redealMultiplier > 1}
                 multiplierValue={gameState.redealMultiplier}
+                playType={turnProps?.playType || ''}
+                currentPlayer={turnProps?.currentPlayer || ''}
+                turnRequirement={turnRequirement}
               >
                 <TurnUI {...turnProps} />
               </GameLayout>
