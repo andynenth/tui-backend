@@ -271,30 +271,35 @@ Update the frontend game UI to match the provided mockup designs exactly, using 
 ### Phase 4: Turn Phase (Days 3-4) ✅ COMPLETED
 **Goal**: Implement complex table layout with piece playing
 
-#### Tasks:
-- [x] Create TurnContent component
-- [x] Create turn.css with:
-  - Central game table
-  - Player piece areas (4 positions)
-  - Player summary bars
-  - Piece selection states
+#### Tasks Completed:
+- [x] Create TurnContent component with full turn phase UI
+- [x] Create turn.css with all required styles
+- [x] Implement circular table with grid pattern
+- [x] Create player piece areas for all 4 positions
+- [x] Add player summary bars with stats
+- [x] Implement piece selection and confirmation panel
+- [x] Add piece flip animations after all players have played
+- [x] Fix turn indicator to show player stats instead of turn number
+- [x] Remove bottom player summary bar (duplicate)
+- [x] Update confirm panel text to show requirements
+- [x] Remove play type display from turn UI
+- [x] Fix pieces tray to always show 2 rows
 
-- [x] Implement features:
-  - Table with grid pattern
-  - Piece placement areas
-  - Flip animations
-  - Selection confirmation panel
-  - Play type display animation
-
-- [x] Handle piece positions:
-  - Top (opponent across)
-  - Bottom (current player)
-  - Left/Right (side opponents)
+#### Backend Fixes Implemented:
+- [x] Added play type calculation from pieces
+- [x] Added play value calculation using PIECE_POINTS
+- [x] Added combination validation (only for starters)
+- [x] Added ownership validation
+- [x] Added immediate piece removal
+- [x] Added validation error feedback
+- [x] Added hand size consistency checks
+- [x] Fixed validation to allow non-starters to play any pieces
 
 #### Deliverables:
-- TurnContent.jsx
-- turn.css
-- Working piece selection and play animations
+- TurnContent.jsx with complete functionality
+- turn.css with all animations
+- Backend validation system (8 fixes)
+- Working piece selection, play, and flip animations
 
 ---
 
@@ -302,26 +307,104 @@ Update the frontend game UI to match the provided mockup designs exactly, using 
 **Goal**: Implement turn results and scoring displays
 
 #### Turn Results Tasks:
-- [ ] Create TurnResultsContent component
-- [ ] Create turnresults.css
-- [ ] Implement:
-  - Winner crown animation
-  - Winning play display
-  - Pile count updates
-  - 7-second auto-transition
+
+##### 5.1 Create TurnResultsContent Component
+- [ ] Create `frontend/src/components/game/content/TurnResultsContent.jsx`
+- [ ] Add component skeleton with PropTypes
+- [ ] Import from GameContainer for turn_results phase
+- [ ] Add props: turnWinner, winningPlay, playerStats, players
+
+##### 5.2 Create Turn Results CSS
+- [ ] Create `frontend/src/styles/components/game/turnresults.css`
+- [ ] Import in TurnResultsContent component
+- [ ] Import in globals.css
+- [ ] Add CSS prefix comment `/* tr- prefix */`
+
+##### 5.3 Implement Winner Display
+- [ ] Create winner section with crown icon
+- [ ] Add `.tr-winner-section` container styles
+- [ ] Add `.tr-crown-icon` with bounce animation
+- [ ] Add `.tr-winner-name` typography
+- [ ] Add `.tr-winner-subtitle` for "won this turn" text
+
+##### 5.4 Implement Winning Play Display
+- [ ] Create pieces display area
+- [ ] Add `.tr-winning-play` container
+- [ ] Map pieces using getPieceDisplay utility
+- [ ] Add `.tr-piece` styles (similar to turn phase)
+- [ ] Show play type if available
+
+##### 5.5 Implement Pile Count Display
+- [ ] Add pile count section
+- [ ] Create `.tr-pile-count` styles
+- [ ] Show number of piles won
+- [ ] Add pile icon/visual indicator
+
+##### 5.6 Implement Auto-transition Timer
+- [ ] Add countdown state (7 seconds)
+- [ ] Create useEffect for countdown
+- [ ] Add `.tr-timer` progress bar
+- [ ] Animate progress bar countdown
+- [ ] Trigger phase transition at 0
+
+##### 5.7 Add Continue Button
+- [ ] Add manual continue button
+- [ ] Style with `.tr-continue-button`
+- [ ] Connect to phase transition
+- [ ] Show remaining time on button
 
 #### Scoring Tasks:
-- [ ] Create ScoringContent component
-- [ ] Create scoring.css
-- [ ] Implement:
-  - Score cards (2-row layout)
-  - Calculation display
-  - Multiplier indicator
-  - Total scores
+
+##### 5.8 Create ScoringContent Component
+- [ ] Create `frontend/src/components/game/content/ScoringContent.jsx`
+- [ ] Add component skeleton with PropTypes
+- [ ] Import from GameContainer for scoring phase
+- [ ] Add props: playerScores, roundScores, multipliers
+
+##### 5.9 Create Scoring CSS
+- [ ] Create `frontend/src/styles/components/game/scoring.css`
+- [ ] Import in ScoringContent component
+- [ ] Import in globals.css
+- [ ] Add CSS prefix comment `/* sc- prefix */`
+
+##### 5.10 Implement Score Cards Layout
+- [ ] Create 2x2 grid for 4 players
+- [ ] Add `.sc-score-grid` container
+- [ ] Add `.sc-score-card` for each player
+- [ ] Add player avatar and name section
+- [ ] Style cards with gradients and shadows
+
+##### 5.11 Implement Score Details
+- [ ] Add declared vs actual piles display
+- [ ] Create `.sc-piles-row` with two values
+- [ ] Add `.sc-declared` and `.sc-actual` styles
+- [ ] Show difference indicator (arrow/symbol)
+
+##### 5.12 Implement Points Calculation
+- [ ] Add points section to each card
+- [ ] Show base points calculation
+- [ ] Add multiplier indicator if active
+- [ ] Animate point changes
+- [ ] Highlight positive/negative scores
+
+##### 5.13 Implement Total Scores
+- [ ] Add total score section
+- [ ] Create `.sc-total-score` prominent display
+- [ ] Add score change animation
+- [ ] Show running total
+- [ ] Highlight score leaders
+
+##### 5.14 Add Round Summary
+- [ ] Add round complete message
+- [ ] Show current standings
+- [ ] Add continue to next round button
+- [ ] Handle game over condition check
 
 #### Deliverables:
-- TurnResultsContent.jsx & turnresults.css
-- ScoringContent.jsx & scoring.css
+- TurnResultsContent.jsx with winner display and auto-transition
+- turnresults.css with all animations
+- ScoringContent.jsx with score calculations
+- scoring.css with card layout and animations
 
 ---
 
@@ -329,19 +412,85 @@ Update the frontend game UI to match the provided mockup designs exactly, using 
 **Goal**: Implement game over with celebrations
 
 #### Tasks:
-- [ ] Create GameOverContent component
-- [ ] Create gameover.css
-- [ ] Implement:
-  - Confetti animation
-  - Trophy bounce animation
-  - Final rankings
-  - Medal indicators
-  - Auto-redirect countdown
+
+##### 6.1 Create GameOverContent Component
+- [ ] Create `frontend/src/components/game/content/GameOverContent.jsx`
+- [ ] Add component skeleton with PropTypes
+- [ ] Import from GameContainer for game_over phase
+- [ ] Add props: winner, finalScores, players, gameStats
+
+##### 6.2 Create Game Over CSS
+- [ ] Create `frontend/src/styles/components/game/gameover.css`
+- [ ] Import in GameOverContent component
+- [ ] Import in globals.css
+- [ ] Add CSS prefix comment `/* go- prefix */`
+
+##### 6.3 Implement Confetti Animation
+- [ ] Create confetti particles (50+ divs)
+- [ ] Add `.go-confetti-container` for positioning
+- [ ] Add `.go-confetti` particle styles
+- [ ] Create different colors/sizes variants
+- [ ] Add falling animation with rotation
+- [ ] Randomize delays and positions
+- [ ] Use CSS transforms for performance
+
+##### 6.4 Implement Trophy Display
+- [ ] Create trophy section
+- [ ] Add `.go-trophy-container` centering
+- [ ] Add `.go-trophy` SVG or emoji (🏆)
+- [ ] Add bounce-in animation
+- [ ] Add glow/shine effect
+- [ ] Scale animation on appear
+
+##### 6.5 Implement Winner Announcement
+- [ ] Add winner name display
+- [ ] Create `.go-winner-name` large text
+- [ ] Add "Champion!" or similar subtitle
+- [ ] Add text appear animation
+- [ ] Add celebration message
+
+##### 6.6 Implement Final Rankings
+- [ ] Create rankings list
+- [ ] Add `.go-rankings` container
+- [ ] Add `.go-rank-item` for each player
+- [ ] Show position numbers (1st, 2nd, etc)
+- [ ] Add medal icons for top 3
+- [ ] Show final scores
+- [ ] Add staggered appear animation
+
+##### 6.7 Style Medal Indicators
+- [ ] Create medal icons (🥇🥈🥉)
+- [ ] Add `.go-medal` styles
+- [ ] Add shine animation
+- [ ] Different colors for each position
+- [ ] Only show for top 3 players
+
+##### 6.8 Implement Auto-redirect Timer
+- [ ] Add countdown state (10 seconds)
+- [ ] Create useEffect for countdown
+- [ ] Add `.go-countdown` display
+- [ ] Show "Returning to lobby in X..."
+- [ ] Redirect to /lobby at 0
+
+##### 6.9 Add Manual Actions
+- [ ] Add "Return to Lobby" button
+- [ ] Add "Play Again" button (if applicable)
+- [ ] Style with `.go-action-button`
+- [ ] Add hover effects
+
+##### 6.10 Add Game Statistics
+- [ ] Show game duration
+- [ ] Show total rounds played
+- [ ] Show highest single score
+- [ ] Any other interesting stats
+- [ ] Style with `.go-stats` section
 
 #### Deliverables:
-- GameOverContent.jsx
-- gameover.css
+- GameOverContent.jsx with complete celebration UI
+- gameover.css with all animations
 - Working confetti animation
+- Auto-redirect to lobby functionality
+- Responsive layout for all screen sizes
 
 ---
 
@@ -509,7 +658,28 @@ Successfully implemented preparation phase UI:
 
 ### Key Learnings & Blockers Encountered
 
-#### Blockers:
+#### Phase 4 Specific Blockers:
+1. **Backend Data Format Mismatch**
+   - **Problem**: Play data had `play.pieces` but UI expected `play.cards`
+   - **Solution**: Fixed by using correct property name from backend data
+   
+2. **Play Type Always "unknown"**
+   - **Problem**: Backend wasn't calculating play types, just passing through "unknown"
+   - **Solution**: Implemented play type calculation using existing `get_play_type()` function
+   
+3. **Piece Attribute Error**
+   - **Problem**: Code used `piece.type` but Piece object has `piece.name`
+   - **Solution**: Fixed to use correct attribute names (name, color, kind)
+   
+4. **Bot Invalid Plays Blocking UI**
+   - **Problem**: Bots playing invalid combinations caused alert popups
+   - **Solution**: Updated validation to only check combinations for turn starters
+   
+5. **Delayed Piece Removal**
+   - **Problem**: Pieces only removed after turn completion, causing incorrect hand displays
+   - **Solution**: Implemented immediate piece removal when played
+
+#### General Blockers (from earlier phases):
 1. **CSS Module Import Issues**
    - **Problem**: ESBuild doesn't support CSS modules out of the box
    - **Solution**: Used regular CSS imports with prefixed class names (gl-, gp-, etc.)
@@ -532,6 +702,10 @@ Successfully implemented preparation phase UI:
 3. **No Inline Styles**: Create CSS classes from the start
 4. **Trace Data Flow**: When debugging, follow data from source to display
 5. **Check Build Output**: Verify changes are in the built files
+6. **Understand Game Rules**: Validate implementation against actual game rules (e.g., starter vs non-starter)
+7. **Check Backend Data Structure**: Always verify actual data format before using
+8. **Test with Bots**: Ensure UI handles both human and bot actions gracefully
+9. **Document Backend Changes**: Keep BACKEND_VALIDATION_FIXES.md updated
 
 ### Technical Decisions Made:
 1. **No CSS Modules** - ESBuild limitation led to prefix-based naming (gl-, gp-, etc.)
@@ -567,3 +741,35 @@ Successfully implemented preparation phase UI:
    - Local state for UI interactions
    - Proper prop validation with PropTypes
    - Consistent naming conventions
+
+### Recommendations for Phases 5 & 6:
+
+1. **Data Validation First**:
+   - Check exact data structure from backend before coding
+   - Log phase_data to console to see actual format
+   - Don't assume property names - verify them
+
+2. **Test with Real Game Flow**:
+   - Test turn_results with actual turn completion data
+   - Ensure scoring calculations match backend logic
+   - Verify game_over receives winner data correctly
+
+3. **Animation Performance**:
+   - Use CSS transforms for confetti (not position)
+   - Limit particle count based on device performance
+   - Add prefers-reduced-motion checks
+
+4. **Error Handling**:
+   - Handle missing data gracefully (winner might be null)
+   - Add fallbacks for missing player stats
+   - Ensure timers clean up on unmount
+
+5. **Cross-Phase Testing**:
+   - Test transition from turn → turn_results → turn
+   - Test transition from scoring → preparation (new round)
+   - Test scoring → game_over transition
+
+6. **Backend Integration Points**:
+   - Turn Results: turnWinner, winningPlay, pilesWon
+   - Scoring: playerScores, roundScores, multipliers
+   - Game Over: winner, finalScores, gameStats
