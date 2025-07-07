@@ -651,7 +651,9 @@ export class GameService extends EventTarget {
           // Convert backend's turn_plays dictionary to frontend's currentTurnPlays array
           if (phaseData.turn_plays && typeof phaseData.turn_plays === 'object') {
             newState.currentTurnPlays = Object.entries(phaseData.turn_plays).map(([playerName, playData]: [string, any]) => {
-              const playType = playData.play_type || 'UNKNOWN';
+              console.log(`🎯 TURN_PLAY_DEBUG: Player ${playerName}, playData:`, playData);
+              const playType = playData.type || playData.play_type || 'UNKNOWN';
+              console.log(`🎯 TURN_PLAY_DEBUG: Extracted playType: ${playType} from type: ${playData.type}, play_type: ${playData.play_type}`);
               // A play is invalid if explicitly marked as invalid OR if play_type is 'INVALID'
               const isValid = playData.is_valid !== false && playType !== 'INVALID';
               

@@ -67,12 +67,6 @@ const TurnResultsContent = ({
   
   return (
     <>
-      {/* Modified phase header for turn results */}
-      <div className="gl-phase-header">
-        <h1 className="gl-phase-title">Turn Results</h1>
-        <p className="gl-phase-subtitle">Round {roundNumber} • Turn {turnNumber} Winner</p>
-      </div>
-      
       {/* Winner announcement */}
       <div className="tr-winner-section">
         <div className="tr-winner-announcement">

@@ -26,6 +26,9 @@ export function TurnUI({
   piecesWonCount = {},
   previousWinner = '',
   currentTurnPlays = [],
+  playType = '',
+  declarationData = {},
+  playerHandSizes = {},
   
   // State flags
   isMyTurn = false,
@@ -35,17 +38,38 @@ export function TurnUI({
   onPlayPieces,
   onPass
 }) {
-  // Calculate player pieces count for display
+  // Build player pieces from turn plays
   const playerPieces = {};
+  currentTurnPlays.forEach(play => {
+    if (play.player && play.cards) {
+      // Use cards property from the converted turn plays
+      playerPieces[play.player] = play.cards;
+    }
+  });
+  
+  // Extract play type from the current turn plays
+  const currentPlayType = playType || (() => {
+    const validPlays = currentTurnPlays.filter(play => play.isValid !== false);
+    if (validPlays.length > 0) {
+      const lastPlay = validPlays[validPlays.length - 1];
+      // Check both camelCase and snake_case
+      return lastPlay.playType || lastPlay.play_type || '';
+    }
+    return '';
+  })();
+  
+  // Build player stats from declaration and piles won
+  const playerStats = {};
   players.forEach(player => {
-    const won = piecesWonCount[player.name] || 0;
-    const handSize = player.name === playerName ? myHand.length : 8; // Assume others have pieces
-    playerPieces[player.name] = Array(handSize).fill({ type: 'UNKNOWN', color: 'black' });
+    playerStats[player.name] = {
+      pilesWon: piecesWonCount[player.name] || 0,
+      declared: declarationData[player.name] || 0
+    };
   });
   
   // Use current pile from props or derive from currentTurnPlays
   const pile = currentPile.length > 0 ? currentPile : 
-    currentTurnPlays.reduce((acc, play) => [...acc, ...play.pieces], []);
+    currentTurnPlays.reduce((acc, play) => [...acc, ...(play.cards || [])], []);
   
   // Determine required count
   const required = canPlayAnyCount ? 0 : requiredPieceCount;
@@ -62,6 +86,9 @@ export function TurnUI({
       turnNumber={turnNumber}
       playerPieces={playerPieces}
       lastWinner={previousWinner}
+      playType={currentPlayType}
+      playerStats={playerStats}
+      playerHandSizes={playerHandSizes}
       onPlayPieces={onPlayPieces}
       onPass={onPass}
     />
@@ -80,6 +107,9 @@ TurnUI.propTypes = {
   piecesWonCount: PropTypes.object,
   previousWinner: PropTypes.string,
   currentTurnPlays: PropTypes.array,
+  playType: PropTypes.string,
+  declarationData: PropTypes.object,
+  playerHandSizes: PropTypes.object,
   
   // State flags
   isMyTurn: PropTypes.bool,

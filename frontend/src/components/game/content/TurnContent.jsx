@@ -1,15 +1,17 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import PropTypes from 'prop-types';
 import { getPieceDisplay, getPieceColorClass, formatPieceValue } from '../../../utils/pieceMapping';
+import { formatPlayType } from '../../../utils/playTypeFormatter';
 
 /**
  * TurnContent Component
  * 
  * Displays the turn phase with:
  * - Circular table layout with player positions
- * - Current pile in center
+ * - Player summary bars with stats
+ * - Current pile in center with flip animations
  * - Player pieces around table
- * - Selected pieces display
+ * - Sliding confirm panel
  * - Play/Pass actions
  */
 const TurnContent = ({
@@ -22,25 +24,72 @@ const TurnContent = ({
   turnNumber = 1,
   playerPieces = {}, // { playerName: pieces[] }
   lastWinner = '',
+  playType = '', // e.g., "Pair", "Straight", "Five of a Kind"
+  playerStats = {}, // { playerName: { pilesWon: 0, declared: 0 } }
+  playerHandSizes = {}, // { playerName: handSize }
   onPlayPieces,
   onPass
 }) => {
   const [selectedPieces, setSelectedPieces] = useState([]);
+  const [showConfirmPanel, setShowConfirmPanel] = useState(false);
+  const [flippedPieces, setFlippedPieces] = useState(new Set());
+  const hasFlippedThisTurn = useRef(false);
   
   // Check if it's my turn
   const isMyTurn = currentPlayer === myName;
   
-  // Get player position (0-3)
-  const getPlayerPosition = (playerName) => {
-    const index = players.findIndex(p => p.name === playerName);
-    return index;
+  // Get my player index
+  const myIndex = players.findIndex(p => p.name === myName);
+  
+  // Get player position relative to me (always at bottom)
+  const getRelativePosition = (playerName) => {
+    const playerIndex = players.findIndex(p => p.name === playerName);
+    if (playerIndex === -1) return 'bottom';
+    
+    // Calculate relative position with me always at bottom
+    const relativeIndex = (playerIndex - myIndex + 4) % 4;
+    const positions = ['bottom', 'right', 'top', 'left'];
+    return positions[relativeIndex];
   };
   
-  // Map position index to position class
-  const getPositionClass = (index) => {
-    const positions = ['bottom', 'right', 'top', 'left'];
-    return positions[index] || 'bottom';
-  };
+  // Update confirm panel visibility when pieces are selected
+  useEffect(() => {
+    setShowConfirmPanel(selectedPieces.length > 0 && isMyTurn);
+  }, [selectedPieces, isMyTurn]);
+  
+  // Last-player detection and flip animation
+  useEffect(() => {
+    // Count how many players have played
+    const playedCount = Object.keys(playerPieces).filter(
+      player => playerPieces[player]?.length > 0
+    ).length;
+    
+    // Check if this is the final play
+    const isLastPlay = playedCount === players.length && !hasFlippedThisTurn.current;
+    
+    if (isLastPlay) {
+      hasFlippedThisTurn.current = true;
+      
+      // Start flip timer after last player plays
+      const timer = setTimeout(() => {
+        const allPieceIds = new Set();
+        Object.entries(playerPieces).forEach(([player, pieces]) => {
+          pieces.forEach((_, idx) => {
+            allPieceIds.add(`${player}-${idx}`);
+          });
+        });
+        setFlippedPieces(allPieceIds);
+      }, 800);
+      
+      return () => clearTimeout(timer);
+    }
+  }, [playerPieces, players.length]);
+  
+  // Reset flip state when turn changes
+  useEffect(() => {
+    hasFlippedThisTurn.current = false;
+    setFlippedPieces(new Set());
+  }, [turnNumber]);
   
   // Handle piece selection
   const handlePieceSelect = (piece, index) => {
@@ -48,13 +97,35 @@ const TurnContent = ({
     
     const pieceId = `${index}-${piece.type}-${piece.color}`;
     
-    if (selectedPieces.some(p => p.id === pieceId)) {
-      // Deselect
-      setSelectedPieces(selectedPieces.filter(p => p.id !== pieceId));
-    } else {
-      // Select
-      setSelectedPieces([...selectedPieces, { ...piece, id: pieceId, index }]);
-    }
+    setSelectedPieces(prev => {
+      // Check if already selected (toggle off)
+      if (prev.some(p => p.id === pieceId)) {
+        return prev.filter(p => p.id !== pieceId);
+      }
+      
+      // New selection
+      const newPiece = { ...piece, id: pieceId, index };
+      
+      // If required count is set and we're at the limit
+      if (requiredPieceCount > 0 && prev.length >= requiredPieceCount) {
+        // Replace selection with just the new piece
+        return [newPiece];
+      }
+      
+      // If first player (no required count), limit to 6 pieces
+      if (requiredPieceCount === 0 && prev.length >= 6) {
+        // Don't allow more than 6
+        return prev;
+      }
+      
+      // Add to selection
+      return [...prev, newPiece];
+    });
+  };
+  
+  // Clear selection
+  const clearSelection = () => {
+    setSelectedPieces([]);
   };
   
   // Check if can play
@@ -81,6 +152,11 @@ const TurnContent = ({
     }
   };
   
+  // Get player stats with defaults
+  const getPlayerStats = (playerName) => {
+    return playerStats[playerName] || { pilesWon: 0, declared: 0 };
+  };
+  
   // Get turn requirement message
   const getTurnRequirement = () => {
     if (!isMyTurn) {
@@ -100,130 +176,111 @@ const TurnContent = ({
     <>
       {/* Turn indicator */}
       <div className="turn-indicator">
-        Turn {turnNumber}
-      </div>
-      
-      {/* Modified phase header for turn info */}
-      <div className="gl-phase-header">
-        <h1 className="gl-phase-title">Game Time</h1>
-        <p className="gl-phase-subtitle">Play your pieces strategically</p>
-        <div className={`turn-requirement ${requirement.type}`}>
-          {requirement.text}
-        </div>
+        {getPlayerStats(myName).pilesWon}/{getPlayerStats(myName).declared}
       </div>
       
       {/* Table section */}
       <div className="turn-table-section">
+        {/* Play type display - shows when pieces have been played */}
+        {playType && playType !== 'UNKNOWN' && Object.keys(playerPieces).length > 0 && (
+          <div className="turn-phase-info">
+            <div className="turn-play-type">{formatPlayType(playType)}</div>
+          </div>
+        )}
+        
         <div className="turn-table-layout">
           {/* Central table */}
           <div className="turn-central-table">
-            <div className="turn-current-pile">
-              <div className="turn-pile-label">Current Pile</div>
-              <div className="turn-pile-display">
-                {currentPile.length === 0 ? (
-                  <div className="turn-empty-pile">Empty</div>
-                ) : (
-                  currentPile.map((piece, idx) => (
-                    <div 
-                      key={idx}
-                      className={`turn-mini-piece ${getPieceColorClass(piece)}`}
-                    >
-                      {getPieceDisplay(piece)}
-                    </div>
-                  ))
-                )}
-              </div>
-            </div>
-          </div>
-          
-          {/* Player seats and pieces */}
-          {players.map((player, index) => {
-            const position = getPositionClass(index);
-            const isActive = player.name === currentPlayer;
-            const isWinner = player.name === lastWinner;
-            const pieces = playerPieces[player.name] || [];
-            
-            return (
-              <React.Fragment key={player.name}>
-                {/* Player seat */}
-                <div className={`turn-player-seat position-${position} ${isActive ? 'active' : ''} ${isWinner ? 'winner' : ''}`}>
-                  <div className="turn-player-name">
-                    {player.name}{player.name === myName ? ' (You)' : ''}
-                  </div>
-                  <div className="turn-player-status">
-                    {pieces.length} pieces
-                  </div>
-                </div>
-                
-                {/* Player pieces (only show for current player) */}
-                {isActive && pieces.length > 0 && (
-                  <div className={`turn-player-pieces position-${position}`}>
-                    {pieces.slice(0, 6).map((piece, idx) => (
+            {/* Player pieces areas around table */}
+            {players.map((player) => {
+              const position = getRelativePosition(player.name);
+              const pieces = playerPieces[player.name] || [];
+              const hasPlayed = pieces.length > 0;
+              
+              return hasPlayed && (
+                <div 
+                  key={player.name}
+                  className={`turn-player-pieces-area ${position} ${pieces.length <= 3 ? 'single-line' : ''}`}
+                >
+                  {pieces.map((piece, idx) => {
+                    const pieceId = `${player.name}-${idx}`;
+                    const isFlipped = flippedPieces.has(pieceId);
+                    
+                    return (
                       <div 
                         key={idx}
-                        className={`turn-mini-piece ${getPieceColorClass(piece)}`}
+                        className={`turn-table-piece ${isFlipped ? 'flipped' : ''}`}
                       >
-                        {getPieceDisplay(piece)}
+                        <div className="turn-table-piece-face turn-table-piece-back"></div>
+                        <div className={`turn-table-piece-face turn-table-piece-front ${getPieceColorClass(piece)}`}>
+                          {getPieceDisplay(piece)}
+                        </div>
                       </div>
-                    ))}
+                    );
+                  })}
+                </div>
+              );
+            })}
+          </div>
+          
+          {/* Player summary bars */}
+          {players.map((player) => {
+            const position = getRelativePosition(player.name);
+            const isActive = player.name === currentPlayer;
+            const hasPlayed = (playerPieces[player.name] || []).length > 0;
+            const stats = getPlayerStats(player.name);
+            const piecesInHand = playerHandSizes[player.name] || 0;
+            const isCurrentUser = player.name === myName;
+            
+            // Skip bottom player (current user)
+            if (position === 'bottom') return null;
+            
+            return (
+              <div 
+                key={player.name}
+                className={`turn-player-summary-bar ${position} ${isActive ? 'active' : ''} ${hasPlayed ? 'played' : ''} ${isCurrentUser ? 'current-user' : ''}`}
+              >
+                <div className="turn-player-summary-content">
+                  <div className="turn-player-avatar-small">
+                    {player.name.charAt(0).toUpperCase()}
                   </div>
-                )}
-              </React.Fragment>
+                  <span className="turn-player-name-short">{player.name}</span>
+                  <div className="turn-player-stats-compact">
+                    <span className="turn-stat-number">{stats.pilesWon}</span>
+                    <span className="turn-stat-separator">/</span>
+                    <span className="turn-stat-number">{stats.declared}</span>
+                  </div>
+                </div>
+                {/* Status icons showing pieces in hand */}
+                <div className="turn-status-icons">
+                  {[...Array(Math.min(piecesInHand, 8))].map((_, i) => (
+                    <span key={i} className="turn-status-icon"></span>
+                  ))}
+                </div>
+              </div>
             );
           })}
         </div>
       </div>
       
-      {/* Action section */}
-      <div className="turn-action-section">
-        {/* Selected pieces display */}
-        <div className="turn-selected-display">
-          <div className="turn-selected-label">Selected Pieces</div>
-          {selectedPieces.length === 0 ? (
-            <div className="turn-no-selection">
-              {isMyTurn ? 'Select pieces to play' : 'Not your turn'}
-            </div>
-          ) : (
-            <div className="turn-selected-pieces">
-              {selectedPieces.map((piece) => (
-                <div 
-                  key={piece.id}
-                  className={`piece ${getPieceColorClass(piece)}`}
-                  style={{ width: '40px', height: '40px' }}
-                >
-                  <div className="piece-character" style={{ fontSize: '14px' }}>
-                    {getPieceDisplay(piece)}
-                  </div>
-                  <div className="piece-points" style={{ fontSize: '8px' }}>
-                    {formatPieceValue(piece)}
-                  </div>
-                </div>
-              ))}
-            </div>
-          )}
+      {/* Confirm Selection Panel - Sliding Tray */}
+      <div className={`turn-confirm-panel ${showConfirmPanel ? 'show' : ''}`}>
+        <div className="turn-selection-info">
+          <div className="turn-selection-count">
+            {requiredPieceCount === 0 || requiredPieceCount === null
+              ? 'As starter, your play must be valid'
+              : `Must play exactly ${requiredPieceCount} piece${requiredPieceCount > 1 ? 's' : ''}`}
+          </div>
         </div>
         
-        {/* Action buttons */}
-        <div className="turn-actions">
-          <button
-            className="turn-action-btn primary"
-            onClick={handlePlay}
-            disabled={!canPlay()}
-          >
-            Play
-          </button>
-          <button
-            className="turn-action-btn secondary"
-            onClick={handlePass}
-            disabled={!isMyTurn}
-          >
-            Pass
-          </button>
+        <div className="turn-action-buttons">
+          <button className="turn-action-button" onClick={handlePlay}>Play Pieces</button>
+          <button className="turn-action-button secondary" onClick={clearSelection}>Clear</button>
         </div>
       </div>
       
       {/* Hand section - always visible at bottom */}
-      <div className="hand-section">
+      <div className={`hand-section ${isMyTurn ? 'active-turn' : ''}`}>
         <div className="pieces-tray">
           {myHand.map((piece, index) => {
             const pieceId = `${index}-${piece.type}-${piece.color}`;
@@ -232,13 +289,10 @@ const TurnContent = ({
             return (
               <div 
                 key={index}
-                className={`piece ${getPieceColorClass(piece)} ${isSelected ? 'selected' : ''} ${isMyTurn ? 'clickable' : ''}`}
+                className={`piece ${getPieceColorClass(piece)} ${isSelected ? 'selected' : ''}`}
                 onClick={() => handlePieceSelect(piece, index)}
                 style={{
-                  cursor: isMyTurn ? 'pointer' : 'default',
-                  transform: isSelected ? 'translateY(-8px) scale(1.05)' : '',
-                  boxShadow: isSelected ? '0 8px 16px rgba(255, 193, 7, 0.3)' : '',
-                  border: isSelected ? '3px solid #FFC107' : ''
+                  cursor: isMyTurn ? 'pointer' : 'default'
                 }}
               >
                 <div className="piece-character">
@@ -266,6 +320,9 @@ TurnContent.propTypes = {
   turnNumber: PropTypes.number,
   playerPieces: PropTypes.object,
   lastWinner: PropTypes.string,
+  playType: PropTypes.string,
+  playerStats: PropTypes.object,
+  playerHandSizes: PropTypes.object,
   onPlayPieces: PropTypes.func,
   onPass: PropTypes.func
 };
