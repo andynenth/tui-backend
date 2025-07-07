@@ -1,370 +1,201 @@
-RecoveryService.ts:66 🔄 RecoveryService: Initialized
-ServiceIntegration.ts:79 🔗 ServiceIntegration: Initialized
-ServiceIntegration.ts:98 
-ServiceIntegration.ts:99 🎯 =============================================
-ServiceIntegration.ts:100 🚀 PHASE 1-4 ENTERPRISE ARCHITECTURE STARTING
-ServiceIntegration.ts:101 🎯 =============================================
-ServiceIntegration.ts:102 🔧 Initializing integrated service layer...
-ServiceIntegration.ts:567 ✅ NetworkService integrated
-ServiceIntegration.ts:575 ✅ GameService integrated
-ServiceIntegration.ts:583 ✅ RecoveryService integrated
-ServiceIntegration.ts:594 🩺 Health monitoring started (30000ms interval)
-ServiceIntegration.ts:124 
-ServiceIntegration.ts:125 ✅ =============================================
-ServiceIntegration.ts:126 🎉 PHASE 1-4 ARCHITECTURE FULLY OPERATIONAL!
-ServiceIntegration.ts:127 ✅ =============================================
-ServiceIntegration.ts:128 🔗 NetworkService: Advanced WebSocket with auto-reconnection
-ServiceIntegration.ts:129 🎮 GameService: React hooks with TypeScript state management
-ServiceIntegration.ts:130 🛠️ RecoveryService: Automatic error recovery and health monitoring
-ServiceIntegration.ts:131 🏢 Enterprise Features: Event sourcing, logging, metrics
-ServiceIntegration.ts:132 ✅ Service integration layer initialized successfully
-ServiceIntegration.ts:133 
-App.jsx:117 🎮 Global services initialized
-favicon.ico:1  GET http://localhost:5050/favicon.ico 404 (Not Found)
-NetworkService.ts:337 🔗 Connection opened to room lobby
-GameService.ts:1294 🎮 State Change: NETWORK_CONNECTED
-GameService.ts:1295 Previous: {isConnected: false, roomId: null, playerName: null, phase: 'waiting', currentRound: 0, …}
-GameService.ts:1296 New: {isConnected: true, roomId: null, playerName: null, phase: 'waiting', currentRound: 0, …}
-GameService.ts:1297 Diff: {isConnected: {…}, lastEventSequence: {…}}
-NetworkService.ts:129 🌐 NetworkService: Connected to room lobby
-GameService.ts:1294 🎮 State Change: NETWORK_DISCONNECTED
-GameService.ts:1295 Previous: {isConnected: true, roomId: null, playerName: null, phase: 'waiting', currentRound: 0, …}
-GameService.ts:1296 New: {isConnected: false, roomId: null, playerName: null, phase: 'waiting', currentRound: 0, …}
-GameService.ts:1297 Diff: {isConnected: {…}, lastEventSequence: {…}}
-NetworkService.ts:171 🌐 NetworkService: Disconnected from room lobby
-NetworkService.ts:214 📤 Queued message for lobby: get_rooms (1 queued)
-NetworkService.ts:337 🔗 Connection opened to room lobby
-GameService.ts:1294 🎮 State Change: NETWORK_CONNECTED
-GameService.ts:1295 Previous: {isConnected: false, roomId: null, playerName: null, phase: 'waiting', currentRound: 0, …}
-GameService.ts:1296 New: {isConnected: true, roomId: null, playerName: null, phase: 'waiting', currentRound: 0, …}
-GameService.ts:1297 Diff: {isConnected: {…}, lastEventSequence: {…}}
-NetworkService.ts:129 🌐 NetworkService: Connected to room lobby
-LobbyPage.jsx:45 Received room_list_update: {roomId: 'lobby', data: {…}, message: {…}, timestamp: 1751879631793}
-GameService.ts:1294 🎮 State Change: NETWORK_DISCONNECTED
-GameService.ts:1295 Previous: {isConnected: true, roomId: null, playerName: null, phase: 'waiting', currentRound: 0, …}
-GameService.ts:1296 New: {isConnected: false, roomId: null, playerName: null, phase: 'waiting', currentRound: 0, …}
-GameService.ts:1297 Diff: {isConnected: {…}, lastEventSequence: {…}}
-NetworkService.ts:171 🌐 NetworkService: Disconnected from room lobby
-NetworkService.ts:214 📤 Queued message for lobby: get_rooms (1 queued)
-NetworkService.ts:337 🔗 Connection opened to room lobby
-GameService.ts:1294 🎮 State Change: NETWORK_CONNECTED
-GameService.ts:1295 Previous: {isConnected: false, roomId: null, playerName: null, phase: 'waiting', currentRound: 0, …}
-GameService.ts:1296 New: {isConnected: true, roomId: null, playerName: null, phase: 'waiting', currentRound: 0, …}
-GameService.ts:1297 Diff: {isConnected: {…}, lastEventSequence: {…}}
-NetworkService.ts:129 🌐 NetworkService: Connected to room lobby
-LobbyPage.jsx:45 Received room_list_update: {roomId: 'lobby', data: {…}, message: {…}, timestamp: 1751879633962}
-LobbyPage.jsx:56 Received room_created: {roomId: 'lobby', data: {…}, message: {…}, timestamp: 1751879634052}
-LobbyPage.jsx:57 🟢 Navigation: room_id = C896ED navigating to: /room/C896ED
-LobbyPage.jsx:61 ✅ Navigating to new room: C896ED
-GameService.ts:1294 🎮 State Change: NETWORK_DISCONNECTED
-GameService.ts:1295 Previous: {isConnected: true, roomId: null, playerName: null, phase: 'waiting', currentRound: 0, …}
-GameService.ts:1296 New: {isConnected: false, roomId: null, playerName: null, phase: 'waiting', currentRound: 0, …}
-GameService.ts:1297 Diff: {isConnected: {…}, lastEventSequence: {…}}
-NetworkService.ts:171 🌐 NetworkService: Disconnected from room lobby
-NetworkService.ts:214 📤 Queued message for lobby: get_rooms (1 queued)
-NetworkService.ts:337 🔗 Connection opened to room lobby
-GameService.ts:1294 🎮 State Change: NETWORK_CONNECTED
-GameService.ts:1295 Previous: {isConnected: false, roomId: null, playerName: null, phase: 'waiting', currentRound: 0, …}
-GameService.ts:1296 New: {isConnected: true, roomId: null, playerName: null, phase: 'waiting', currentRound: 0, …}
-GameService.ts:1297 Diff: {isConnected: {…}, lastEventSequence: {…}}
-NetworkService.ts:129 🌐 NetworkService: Connected to room lobby
-NetworkService.ts:337 🔗 Connection opened to room C896ED
-GameService.ts:1294 🎮 State Change: NETWORK_CONNECTED
-GameService.ts:1295 Previous: {isConnected: true, roomId: null, playerName: null, phase: 'waiting', currentRound: 0, …}
-GameService.ts:1296 New: {isConnected: true, roomId: null, playerName: null, phase: 'waiting', currentRound: 0, …}
-GameService.ts:1297 Diff: {lastEventSequence: {…}}
-NetworkService.ts:129 🌐 NetworkService: Connected to room C896ED
-RoomPage.jsx:61 🏠 ROOM_UPDATE: Full data received: {players: Array(4), host_name: 'Andy', room_id: 'C896ED', started: false}
-RoomPage.jsx:62 🏠 ROOM_UPDATE: Players array: (4) [{…}, {…}, {…}, {…}]
-RoomPage.jsx:63 🏠 ROOM_UPDATE: Players array type: object
-RoomPage.jsx:64 🏠 ROOM_UPDATE: Players array length: 4
-RoomPage.jsx:65 🏠 ROOM_UPDATE: Players array entries: (4) [Array(2), Array(2), Array(2), Array(2)]
- 🎮 START_GAME: Button clicked
- 🎮 START_GAME: Room ID: C896ED
- Game started, navigating to game page
- 🌐 FRONTEND_EVENT_DEBUG: Received phase_change event for room C896ED {phase: 'preparation', allowed_actions: Array(4), phase_data: {…}, players: {…}, timestamp: 1751879635.1699321, …}
- 🌐 FRONTEND_EVENT_DEBUG: Ignoring event for different room (ours: null)
- 🌐 FRONTEND_EVENT_DEBUG: Received phase_change event for room C896ED {phase: 'declaration', allowed_actions: Array(4), phase_data: {…}, players: {…}, round: 1, …}
- 🌐 FRONTEND_EVENT_DEBUG: Ignoring event for different room (ours: null)
- 🌐 FRONTEND_EVENT_DEBUG: Received phase_change event for room C896ED {phase: 'declaration', allowed_actions: Array(4), phase_data: {…}, players: {…}, round: 1, …}
- 🌐 FRONTEND_EVENT_DEBUG: Ignoring event for different room (ours: null)
- 🎮 State Change: NETWORK_DISCONNECTED
- Previous: {isConnected: true, roomId: null, playerName: null, phase: 'waiting', currentRound: 0, …}
- New: {isConnected: false, roomId: null, playerName: null, phase: 'waiting', currentRound: 0, …}
- Diff: {isConnected: {…}, lastEventSequence: {…}}
-NetworkService.ts:171 🌐 NetworkService: Disconnected from room C896ED
-ServiceIntegration.ts:157 🔗 Connecting to room C896ED as Andy...
-RecoveryService.ts:106 🔄 RecoveryService: Initialized tracking for room C896ED
-GameService.ts:1294 🎮 State Change: JOIN_ROOM_INIT
-GameService.ts:1295 Previous: {isConnected: false, roomId: null, playerName: null, phase: 'waiting', currentRound: 0, …}
-GameService.ts:1296 New: {isConnected: false, roomId: 'C896ED', playerName: 'Andy', phase: 'waiting', currentRound: 0, …}
-GameService.ts:1297 Diff: {roomId: {…}, playerName: {…}, lastEventSequence: {…}}
-GameContext.jsx:36 🚀 GAME_CONTEXT: Phase 1-4 Enterprise Architecture initializing
-NetworkService.ts:337 🔗 Connection opened to room C896ED
-GameService.ts:1294 🎮 State Change: NETWORK_CONNECTED
-GameService.ts:1295 Previous: {isConnected: false, roomId: 'C896ED', playerName: 'Andy', phase: 'waiting', currentRound: 0, …}
-GameService.ts:1296 New: {isConnected: true, roomId: 'C896ED', playerName: 'Andy', phase: 'waiting', currentRound: 0, …}
-GameService.ts:1297 Diff: {isConnected: {…}, lastEventSequence: {…}}
-NetworkService.ts:129 🌐 NetworkService: Connected to room C896ED
-GameService.ts:1294 🎮 State Change: JOIN_ROOM_CONNECTED
-GameService.ts:1295 Previous: {isConnected: true, roomId: 'C896ED', playerName: 'Andy', phase: 'waiting', currentRound: 0, …}
-GameService.ts:1296 New: {isConnected: true, roomId: 'C896ED', playerName: 'Andy', phase: 'waiting', currentRound: 0, …}
-GameService.ts:1297 Diff: {lastEventSequence: {…}}
-GameService.ts:99 🎮 GameService: Joined room C896ED as Andy
-ServiceIntegration.ts:169 ✅ Successfully connected to room C896ED
-GameService.ts:412 🌐 FRONTEND_EVENT_DEBUG: Received phase_change event for room C896ED {phase: 'declaration', allowed_actions: Array(4), phase_data: {…}, players: {…}}
-GameService.ts:511 🔄 PHASE_CHANGE_DEBUG: Phase: declaration
-GameService.ts:512 🔄 PHASE_CHANGE_DEBUG: Data players: {Andy: {…}, Bot 2: {…}, Bot 3: {…}, Bot 4: {…}}
-GameService.ts:513 🔄 PHASE_CHANGE_DEBUG: Data phase_data: {declaration_order: Array(4), current_declarer_index: 0, declarations: {…}, declaration_total: 0, current_declarer: 'Bot 2'}
-GameService.ts:514 🔄 PHASE_CHANGE_DEBUG: First player raw: Andy {hand: Array(8), hand_size: 8, zero_declares_in_a_row: 0, declared: 0, score: 0}
-GameService.ts:548 🔄 PHASE_CHANGE_DEBUG: Converted players array: (4) [{…}, {…}, {…}, {…}]
-GameService.ts:549 🔄 PHASE_CHANGE_DEBUG: Sample player object: {name: 'Andy', is_bot: false, is_host: false, zero_declares_in_a_row: 0}
-GameService.ts:494 🌐 PROCESS_EVENT_DEBUG: Event phase_change processed, updating derived state
-GameService.ts:498 🌐 PROCESS_EVENT_DEBUG: Finished processing phase_change event
-GameService.ts:1294 🎮 State Change: NETWORK_EVENT:PHASE_CHANGE
-GameService.ts:1295 Previous: {isConnected: true, roomId: 'C896ED', playerName: 'Andy', phase: 'waiting', currentRound: 0, …}
-GameService.ts:1296 New: {isConnected: true, roomId: 'C896ED', playerName: 'Andy', phase: 'declaration', currentRound: 0, …}
-GameService.ts:1297 Diff: {phase: {…}, players: {…}, myHand: {…}, declarationOrder: {…}, currentDeclarer: {…}, …}
-useGameState.ts:32 🎮 GAME_STATE_DEBUG: Phase changed from 'waiting' to 'declaration'
-useGameState.ts:32 🎮 GAME_STATE_DEBUG: Phase changed from 'waiting' to 'declaration'
-useGameState.ts:32 🎮 GAME_STATE_DEBUG: Phase changed from 'waiting' to 'declaration'
-useGameState.ts:32 🎮 GAME_STATE_DEBUG: Phase changed from 'waiting' to 'declaration'
-GameService.ts:412 🌐 FRONTEND_EVENT_DEBUG: Received phase_change event for room C896ED {phase: 'declaration', allowed_actions: Array(4), phase_data: {…}, players: {…}, timestamp: 1751879635.929842, …}
-GameService.ts:511 🔄 PHASE_CHANGE_DEBUG: Phase: declaration
-GameService.ts:512 🔄 PHASE_CHANGE_DEBUG: Data players: {Andy: {…}, Bot 2: {…}, Bot 3: {…}, Bot 4: {…}}
-GameService.ts:513 🔄 PHASE_CHANGE_DEBUG: Data phase_data: {declaration_order: Array(4), current_declarer_index: 0, declarations: {…}, declaration_total: 0, current_declarer: 'Bot 2'}
-GameService.ts:514 🔄 PHASE_CHANGE_DEBUG: First player raw: Andy {hand: Array(8), hand_size: 8}
-GameService.ts:548 🔄 PHASE_CHANGE_DEBUG: Converted players array: (4) [{…}, {…}, {…}, {…}]
-GameService.ts:549 🔄 PHASE_CHANGE_DEBUG: Sample player object: {name: 'Andy', is_bot: false, is_host: false, zero_declares_in_a_row: 0}
-GameService.ts:494 🌐 PROCESS_EVENT_DEBUG: Event phase_change processed, updating derived state
-GameService.ts:498 🌐 PROCESS_EVENT_DEBUG: Finished processing phase_change event
-GameService.ts:1294 🎮 State Change: NETWORK_EVENT:PHASE_CHANGE
-GameService.ts:1295 Previous: {isConnected: true, roomId: 'C896ED', playerName: 'Andy', phase: 'declaration', currentRound: 0, …}
-GameService.ts:1296 New: {isConnected: true, roomId: 'C896ED', playerName: 'Andy', phase: 'declaration', currentRound: 0, …}
-GameService.ts:1297 Diff: {lastEventSequence: {…}}
-GameService.ts:412 🌐 FRONTEND_EVENT_DEBUG: Received phase_change event for room C896ED {phase: 'declaration', allowed_actions: Array(4), phase_data: {…}, players: {…}, round: 1, …}
-GameService.ts:511 🔄 PHASE_CHANGE_DEBUG: Phase: declaration
-GameService.ts:512 🔄 PHASE_CHANGE_DEBUG: Data players: {Andy: {…}, Bot 2: {…}, Bot 3: {…}, Bot 4: {…}}
-GameService.ts:513 🔄 PHASE_CHANGE_DEBUG: Data phase_data: {declaration_order: Array(4), current_declarer_index: 1, declarations: {…}, declaration_total: 3, current_declarer: 'Bot 3'}
-GameService.ts:514 🔄 PHASE_CHANGE_DEBUG: First player raw: Andy {hand: Array(8), hand_size: 8, zero_declares_in_a_row: 0, declared: 0, score: 0}
-GameService.ts:548 🔄 PHASE_CHANGE_DEBUG: Converted players array: (4) [{…}, {…}, {…}, {…}]
-GameService.ts:549 🔄 PHASE_CHANGE_DEBUG: Sample player object: {name: 'Andy', is_bot: false, is_host: false, zero_declares_in_a_row: 0}
-GameService.ts:494 🌐 PROCESS_EVENT_DEBUG: Event phase_change processed, updating derived state
-GameService.ts:498 🌐 PROCESS_EVENT_DEBUG: Finished processing phase_change event
-GameService.ts:1294 🎮 State Change: NETWORK_EVENT:PHASE_CHANGE
-GameService.ts:1295 Previous: {isConnected: true, roomId: 'C896ED', playerName: 'Andy', phase: 'declaration', currentRound: 0, …}
-GameService.ts:1296 New: {isConnected: true, roomId: 'C896ED', playerName: 'Andy', phase: 'declaration', currentRound: 1, …}
-GameService.ts:1297 Diff: {currentRound: {…}, declarations: {…}, declarationOrder: {…}, currentDeclarer: {…}, lastEventSequence: {…}, …}
-GameService.ts:412 🌐 FRONTEND_EVENT_DEBUG: Received phase_change event for room C896ED {phase: 'declaration', allowed_actions: Array(4), phase_data: {…}, players: {…}, round: 1, …}
-GameService.ts:511 🔄 PHASE_CHANGE_DEBUG: Phase: declaration
-GameService.ts:512 🔄 PHASE_CHANGE_DEBUG: Data players: {Andy: {…}, Bot 2: {…}, Bot 3: {…}, Bot 4: {…}}
-GameService.ts:513 🔄 PHASE_CHANGE_DEBUG: Data phase_data: {declaration_order: Array(4), current_declarer_index: 2, declarations: {…}, declaration_total: 4, current_declarer: 'Bot 4'}
-GameService.ts:514 🔄 PHASE_CHANGE_DEBUG: First player raw: Andy {hand: Array(8), hand_size: 8, zero_declares_in_a_row: 0, declared: 0, score: 0}
-GameService.ts:548 🔄 PHASE_CHANGE_DEBUG: Converted players array: (4) [{…}, {…}, {…}, {…}]
-GameService.ts:549 🔄 PHASE_CHANGE_DEBUG: Sample player object: {name: 'Andy', is_bot: false, is_host: false, zero_declares_in_a_row: 0}
-GameService.ts:494 🌐 PROCESS_EVENT_DEBUG: Event phase_change processed, updating derived state
-GameService.ts:498 🌐 PROCESS_EVENT_DEBUG: Finished processing phase_change event
-GameService.ts:1294 🎮 State Change: NETWORK_EVENT:PHASE_CHANGE
-GameService.ts:1295 Previous: {isConnected: true, roomId: 'C896ED', playerName: 'Andy', phase: 'declaration', currentRound: 1, …}
-GameService.ts:1296 New: {isConnected: true, roomId: 'C896ED', playerName: 'Andy', phase: 'declaration', currentRound: 1, …}
-GameService.ts:1297 Diff: {declarations: {…}, currentDeclarer: {…}, lastEventSequence: {…}, currentTotal: {…}, declarationProgress: {…}}
-GameService.ts:412 🌐 FRONTEND_EVENT_DEBUG: Received phase_change event for room C896ED {phase: 'declaration', allowed_actions: Array(4), phase_data: {…}, players: {…}, round: 1, …}
-GameService.ts:511 🔄 PHASE_CHANGE_DEBUG: Phase: declaration
-GameService.ts:512 🔄 PHASE_CHANGE_DEBUG: Data players: {Andy: {…}, Bot 2: {…}, Bot 3: {…}, Bot 4: {…}}
-GameService.ts:513 🔄 PHASE_CHANGE_DEBUG: Data phase_data: {declaration_order: Array(4), current_declarer_index: 3, declarations: {…}, declaration_total: 5, current_declarer: 'Andy'}
-GameService.ts:514 🔄 PHASE_CHANGE_DEBUG: First player raw: Andy {hand: Array(8), hand_size: 8, zero_declares_in_a_row: 0, declared: 0, score: 0}
-GameService.ts:548 🔄 PHASE_CHANGE_DEBUG: Converted players array: (4) [{…}, {…}, {…}, {…}]
-GameService.ts:549 🔄 PHASE_CHANGE_DEBUG: Sample player object: {name: 'Andy', is_bot: false, is_host: false, zero_declares_in_a_row: 0}
-GameService.ts:494 🌐 PROCESS_EVENT_DEBUG: Event phase_change processed, updating derived state
-GameService.ts:498 🌐 PROCESS_EVENT_DEBUG: Finished processing phase_change event
-GameService.ts:1294 🎮 State Change: NETWORK_EVENT:PHASE_CHANGE
-GameService.ts:1295 Previous: {isConnected: true, roomId: 'C896ED', playerName: 'Andy', phase: 'declaration', currentRound: 1, …}
-GameService.ts:1296 New: {isConnected: true, roomId: 'C896ED', playerName: 'Andy', phase: 'declaration', currentRound: 1, …}
-GameService.ts:1297 Diff: {declarations: {…}, currentDeclarer: {…}, isMyTurn: {…}, allowedActions: {…}, validOptions: {…}, …}
-GameService.ts:1264 🎮 Action sent: declare {value: 4, player_name: 'Andy'}
-GameService.ts:412 🌐 FRONTEND_EVENT_DEBUG: Received phase_change event for room C896ED {phase: 'declaration', allowed_actions: Array(4), phase_data: {…}, players: {…}, round: 1, …}
-GameService.ts:511 🔄 PHASE_CHANGE_DEBUG: Phase: declaration
-GameService.ts:512 🔄 PHASE_CHANGE_DEBUG: Data players: {Andy: {…}, Bot 2: {…}, Bot 3: {…}, Bot 4: {…}}
-GameService.ts:513 🔄 PHASE_CHANGE_DEBUG: Data phase_data: {declaration_order: Array(4), current_declarer_index: 4, declarations: {…}, declaration_total: 9, current_declarer: null}
-GameService.ts:514 🔄 PHASE_CHANGE_DEBUG: First player raw: Andy {hand: Array(8), hand_size: 8, zero_declares_in_a_row: 0, declared: 0, score: 0}
-GameService.ts:548 🔄 PHASE_CHANGE_DEBUG: Converted players array: (4) [{…}, {…}, {…}, {…}]
-GameService.ts:549 🔄 PHASE_CHANGE_DEBUG: Sample player object: {name: 'Andy', is_bot: false, is_host: false, zero_declares_in_a_row: 0}
-GameService.ts:494 🌐 PROCESS_EVENT_DEBUG: Event phase_change processed, updating derived state
-GameService.ts:498 🌐 PROCESS_EVENT_DEBUG: Finished processing phase_change event
-GameService.ts:1294 🎮 State Change: NETWORK_EVENT:PHASE_CHANGE
-GameService.ts:1295 Previous: {isConnected: true, roomId: 'C896ED', playerName: 'Andy', phase: 'declaration', currentRound: 1, …}
-GameService.ts:1296 New: {isConnected: true, roomId: 'C896ED', playerName: 'Andy', phase: 'declaration', currentRound: 1, …}
-GameService.ts:1297 Diff: {declarations: {…}, validOptions: {…}, lastEventSequence: {…}, currentTotal: {…}, declarationProgress: {…}, …}
-GameService.ts:412 🌐 FRONTEND_EVENT_DEBUG: Received phase_change event for room C896ED {phase: 'turn', allowed_actions: Array(4), phase_data: {…}, players: {…}, round: 1, …}
-GameService.ts:511 🔄 PHASE_CHANGE_DEBUG: Phase: turn
-GameService.ts:512 🔄 PHASE_CHANGE_DEBUG: Data players: {Andy: {…}, Bot 2: {…}, Bot 3: {…}, Bot 4: {…}}
-GameService.ts:513 🔄 PHASE_CHANGE_DEBUG: Data phase_data: {current_turn_starter: 'Bot 2', current_player: 'Bot 2', turn_order: Array(4), required_piece_count: null, turn_plays: {…}, …}
- 🔄 PHASE_CHANGE_DEBUG: First player raw: Andy {hand: Array(8), hand_size: 8, zero_declares_in_a_row: 0, declared: 4, score: 0}
- 🔄 PHASE_CHANGE_DEBUG: Converted players array: (4) [{…}, {…}, {…}, {…}]
- 🔄 PHASE_CHANGE_DEBUG: Sample player object: {name: 'Andy', is_bot: false, is_host: false, zero_declares_in_a_row: 0}
- 🎯 REQUIRED_COUNT_FIX: Set requiredPieceCount to null from backend phase_data
- 🔢 FRONTEND_ROUND_TURN_DEBUG: Round 1, Turn 1
- 🎯 FRONTEND_TURN_STATE: Starter: Bot 2, Current: Bot 2, Required: null, Plays: 0
- 🎲 TURN_PLAYS_DEBUG: Converted 0 plays to currentTurnPlays: []
- 🔢 FRONTEND_TURN_DEBUG: phaseData.current_turn_number = 1
- 🌐 PROCESS_EVENT_DEBUG: Event phase_change processed, updating derived state
- 🎯 TURN_DEBUG: currentPlayer: Bot 2, playerName: Andy, isMyTurn: false
- 🎯 TURN_DEBUG: turnOrder: (4) ['Bot 2', 'Bot 3', 'Bot 4', 'Andy']
- 🎯 TURN_DEBUG: currentTurnPlays: []
- 🎯 TURN_DEBUG: currentPlayer: Bot 2, playerName: Andy, isMyTurn: false
- 🎯 TURN_DEBUG: turnOrder: (4) ['Bot 2', 'Bot 3', 'Bot 4', 'Andy']
- 🎯 TURN_DEBUG: currentTurnPlays: []
- 🎯 TURN_DEBUG: currentPlayer: Bot 2, playerName: Andy, isMyTurn: false
- 🎯 TURN_DEBUG: turnOrder: (4) ['Bot 2', 'Bot 3', 'Bot 4', 'Andy']
- 🎯 TURN_DEBUG: currentTurnPlays: []
- 🌐 PROCESS_EVENT_DEBUG: Finished processing phase_change event
- 🎮 State Change: NETWORK_EVENT:PHASE_CHANGE
- Previous: {isConnected: true, roomId: 'C896ED', playerName: 'Andy', phase: 'declaration', currentRound: 1, …}
-GameService.ts:1296 New: {isConnected: true, roomId: 'C896ED', playerName: 'Andy', phase: 'turn', currentRound: 1, …}
-GameService.ts:1297 Diff: {phase: {…}, currentTurnStarter: {…}, turnOrder: {…}, currentPlayer: {…}, currentTurnNumber: {…}, …}
-useGameState.ts:32 🎮 GAME_STATE_DEBUG: Phase changed from 'declaration' to 'turn'
-useGameState.ts:32 🎮 GAME_STATE_DEBUG: Phase changed from 'declaration' to 'turn'
-useGameState.ts:32 🎮 GAME_STATE_DEBUG: Phase changed from 'declaration' to 'turn'
-useGameState.ts:32 🎮 GAME_STATE_DEBUG: Phase changed from 'declaration' to 'turn'
-GameContainer.jsx:94 🔢 GAMECONTAINER_DEBUG: gameState.currentTurnNumber = 1
-GameContainer.jsx:95 🔢 GAMECONTAINER_DEBUG: currentTurnPlays = []
-GameService.ts:412 🌐 FRONTEND_EVENT_DEBUG: Received phase_change event for room C896ED {phase: 'turn', allowed_actions: Array(4), phase_data: {…}, players: {…}, timestamp: 1751879640.7312, …}
-GameService.ts:511 🔄 PHASE_CHANGE_DEBUG: Phase: turn
-GameService.ts:512 🔄 PHASE_CHANGE_DEBUG: Data players: {Andy: {…}, Bot 2: {…}, Bot 3: {…}, Bot 4: {…}}
-GameService.ts:513 🔄 PHASE_CHANGE_DEBUG: Data phase_data: {current_turn_starter: 'Bot 2', current_player: 'Bot 2', turn_order: Array(4), required_piece_count: null, turn_plays: {…}, …}
-GameService.ts:514 🔄 PHASE_CHANGE_DEBUG: First player raw: Andy {hand: Array(8), hand_size: 8}
-GameService.ts:548 🔄 PHASE_CHANGE_DEBUG: Converted players array: (4) [{…}, {…}, {…}, {…}]
-GameService.ts:549 🔄 PHASE_CHANGE_DEBUG: Sample player object: {name: 'Andy', is_bot: false, is_host: false, zero_declares_in_a_row: 0}
-GameService.ts:637 🎯 REQUIRED_COUNT_FIX: Set requiredPieceCount to null from backend phase_data
-GameService.ts:648 🔢 FRONTEND_ROUND_TURN_DEBUG: Round 1, Turn 1
-GameService.ts:649 🎯 FRONTEND_TURN_STATE: Starter: Bot 2, Current: Bot 2, Required: null, Plays: 0
-GameService.ts:668 🎲 TURN_PLAYS_DEBUG: Converted 0 plays to currentTurnPlays: []
-GameService.ts:673 🔢 FRONTEND_TURN_DEBUG: phaseData.current_turn_number = 1
-GameService.ts:494 🌐 PROCESS_EVENT_DEBUG: Event phase_change processed, updating derived state
-GameService.ts:1084 🎯 TURN_DEBUG: currentPlayer: Bot 2, playerName: Andy, isMyTurn: false
-GameService.ts:1085 🎯 TURN_DEBUG: turnOrder: (4) ['Bot 2', 'Bot 3', 'Bot 4', 'Andy']
-GameService.ts:1086 🎯 TURN_DEBUG: currentTurnPlays: []
-GameService.ts:1084 🎯 TURN_DEBUG: currentPlayer: Bot 2, playerName: Andy, isMyTurn: false
-GameService.ts:1085 🎯 TURN_DEBUG: turnOrder: (4) ['Bot 2', 'Bot 3', 'Bot 4', 'Andy']
-GameService.ts:1086 🎯 TURN_DEBUG: currentTurnPlays: []
-GameService.ts:1084 🎯 TURN_DEBUG: currentPlayer: Bot 2, playerName: Andy, isMyTurn: false
-GameService.ts:1085 🎯 TURN_DEBUG: turnOrder: (4) ['Bot 2', 'Bot 3', 'Bot 4', 'Andy']
-GameService.ts:1086 🎯 TURN_DEBUG: currentTurnPlays: []
-GameService.ts:498 🌐 PROCESS_EVENT_DEBUG: Finished processing phase_change event
-GameService.ts:1294 🎮 State Change: NETWORK_EVENT:PHASE_CHANGE
-GameService.ts:1295 Previous: {isConnected: true, roomId: 'C896ED', playerName: 'Andy', phase: 'turn', currentRound: 1, …}
-GameService.ts:1296 New: {isConnected: true, roomId: 'C896ED', playerName: 'Andy', phase: 'turn', currentRound: 1, …}
-GameService.ts:1297 Diff: {lastEventSequence: {…}, canPlayAnyCount: {…}}
-GameContainer.jsx:94 🔢 GAMECONTAINER_DEBUG: gameState.currentTurnNumber = 1
-GameContainer.jsx:95 🔢 GAMECONTAINER_DEBUG: currentTurnPlays = []
- 🌐 FRONTEND_EVENT_DEBUG: Received phase_change event for room C896ED {phase: 'turn', allowed_actions: Array(4), phase_data: {…}, players: {…}, round: 1, …}
-GameService.ts:511 🔄 PHASE_CHANGE_DEBUG: Phase: turn
-GameService.ts:512 🔄 PHASE_CHANGE_DEBUG: Data players: {Andy: {…}, Bot 2: {…}, Bot 3: {…}, Bot 4: {…}}
-GameService.ts:513 🔄 PHASE_CHANGE_DEBUG: Data phase_data: {current_turn_starter: 'Bot 2', current_player: 'Bot 3', turn_order: Array(4), required_piece_count: 2, turn_plays: {…}, …}
-GameService.ts:514 🔄 PHASE_CHANGE_DEBUG: First player raw: Andy {hand: Array(8), hand_size: 8, zero_declares_in_a_row: 0, declared: 4, score: 0}
-GameService.ts:548 🔄 PHASE_CHANGE_DEBUG: Converted players array: (4) [{…}, {…}, {…}, {…}]
-GameService.ts:549 🔄 PHASE_CHANGE_DEBUG: Sample player object: {name: 'Andy', is_bot: false, is_host: false, zero_declares_in_a_row: 0}
-GameService.ts:637 🎯 REQUIRED_COUNT_FIX: Set requiredPieceCount to 2 from backend phase_data
-GameService.ts:648 🔢 FRONTEND_ROUND_TURN_DEBUG: Round 1, Turn 1
-GameService.ts:649 🎯 FRONTEND_TURN_STATE: Starter: Bot 2, Current: Bot 3, Required: 2, Plays: 1
-GameService.ts:654 🎯 TURN_PLAY_DEBUG: Player Bot 2, playData: {pieces: Array(2), piece_count: 2, play_type: 'unknown', play_value: 0, is_valid: true, …}
-GameService.ts:656 🎯 TURN_PLAY_DEBUG: Extracted playType: unknown from type: undefined, play_type: unknown
-GameService.ts:668 🎲 TURN_PLAYS_DEBUG: Converted 1 plays to currentTurnPlays: [{…}]
-GameService.ts:673 🔢 FRONTEND_TURN_DEBUG: phaseData.current_turn_number = 1
-GameService.ts:494 🌐 PROCESS_EVENT_DEBUG: Event phase_change processed, updating derived state
-GameService.ts:1084 🎯 TURN_DEBUG: currentPlayer: Bot 3, playerName: Andy, isMyTurn: false
-GameService.ts:1085 🎯 TURN_DEBUG: turnOrder: (4) ['Bot 2', 'Bot 3', 'Bot 4', 'Andy']
-GameService.ts:1086 🎯 TURN_DEBUG: currentTurnPlays: [{…}]
-GameService.ts:1084 🎯 TURN_DEBUG: currentPlayer: Bot 3, playerName: Andy, isMyTurn: false
-GameService.ts:1085 🎯 TURN_DEBUG: turnOrder: (4) ['Bot 2', 'Bot 3', 'Bot 4', 'Andy']
-GameService.ts:1086 🎯 TURN_DEBUG: currentTurnPlays: [{…}]
-GameService.ts:1084 🎯 TURN_DEBUG: currentPlayer: Bot 3, playerName: Andy, isMyTurn: false
-GameService.ts:1085 🎯 TURN_DEBUG: turnOrder: (4) ['Bot 2', 'Bot 3', 'Bot 4', 'Andy']
-GameService.ts:1086 🎯 TURN_DEBUG: currentTurnPlays: [{…}]
-GameService.ts:498 🌐 PROCESS_EVENT_DEBUG: Finished processing phase_change event
-GameService.ts:1294 🎮 State Change: NETWORK_EVENT:PHASE_CHANGE
-GameService.ts:1295 Previous: {isConnected: true, roomId: 'C896ED', playerName: 'Andy', phase: 'turn', currentRound: 1, …}
-GameService.ts:1296 New: {isConnected: true, roomId: 'C896ED', playerName: 'Andy', phase: 'turn', currentRound: 1, …}
-GameService.ts:1297 Diff: {currentPlayer: {…}, currentTurnPlays: {…}, requiredPieceCount: {…}, lastEventSequence: {…}}
-GameContainer.jsx:94 🔢 GAMECONTAINER_DEBUG: gameState.currentTurnNumber = 1
-GameContainer.jsx:95 🔢 GAMECONTAINER_DEBUG: currentTurnPlays = [{…}]
-GameContainer.jsx:100 🎲 PLAYTYPE_DEBUG: currentTurnStarter: Bot 2
-GameContainer.jsx:101 🎲 PLAYTYPE_DEBUG: currentTurnPlays: [{…}]
-GameContainer.jsx:107 🎲 PLAYTYPE_DEBUG: starterPlay: {player: 'Bot 2', cards: Array(2), isValid: true, playType: 'unknown', totalValue: 0}
-GameContainer.jsx:111 🎲 PLAYTYPE_DEBUG: Found play type: unknown
- 🌐 FRONTEND_EVENT_DEBUG: Received phase_change event for room C896ED {phase: 'turn', allowed_actions: Array(4), phase_data: {…}, players: {…}, round: 1, …}
- 🔄 PHASE_CHANGE_DEBUG: Phase: turn
- 🔄 PHASE_CHANGE_DEBUG: Data players: {Andy: {…}, Bot 2: {…}, Bot 3: {…}, Bot 4: {…}}
- 🔄 PHASE_CHANGE_DEBUG: Data phase_data: {current_turn_starter: 'Bot 2', current_player: 'Bot 4', turn_order: Array(4), required_piece_count: 2, turn_plays: {…}, …}
- 🔄 PHASE_CHANGE_DEBUG: First player raw: Andy {hand: Array(8), hand_size: 8, zero_declares_in_a_row: 0, declared: 4, score: 0}
- 🔄 PHASE_CHANGE_DEBUG: Converted players array: (4) [{…}, {…}, {…}, {…}]
- 🔄 PHASE_CHANGE_DEBUG: Sample player object: {name: 'Andy', is_bot: false, is_host: false, zero_declares_in_a_row: 0}
- 🎯 REQUIRED_COUNT_FIX: Set requiredPieceCount to 2 from backend phase_data
- 🔢 FRONTEND_ROUND_TURN_DEBUG: Round 1, Turn 1
- 🎯 FRONTEND_TURN_STATE: Starter: Bot 2, Current: Bot 4, Required: 2, Plays: 2
- 🎯 TURN_PLAY_DEBUG: Player Bot 2, playData: {pieces: Array(2), piece_count: 2, play_type: 'unknown', play_value: 0, is_valid: true, …}
- 🎯 TURN_PLAY_DEBUG: Extracted playType: unknown from type: undefined, play_type: unknown
- 🎯 TURN_PLAY_DEBUG: Player Bot 3, playData: {pieces: Array(2), piece_count: 2, play_type: 'unknown', play_value: 0, is_valid: true, …}
- 🎯 TURN_PLAY_DEBUG: Extracted playType: unknown from type: undefined, play_type: unknown
- 🎲 TURN_PLAYS_DEBUG: Converted 2 plays to currentTurnPlays: (2) [{…}, {…}]
- 🔢 FRONTEND_TURN_DEBUG: phaseData.current_turn_number = 1
- 🌐 PROCESS_EVENT_DEBUG: Event phase_change processed, updating derived state
- 🎯 TURN_DEBUG: currentPlayer: Bot 4, playerName: Andy, isMyTurn: false
- 🎯 TURN_DEBUG: turnOrder: (4) ['Bot 2', 'Bot 3', 'Bot 4', 'Andy']
- 🎯 TURN_DEBUG: currentTurnPlays: (2) [{…}, {…}]
- 🎯 TURN_DEBUG: currentPlayer: Bot 4, playerName: Andy, isMyTurn: false
- 🎯 TURN_DEBUG: turnOrder: (4) ['Bot 2', 'Bot 3', 'Bot 4', 'Andy']
- 🎯 TURN_DEBUG: currentTurnPlays: (2) [{…}, {…}]
- 🎯 TURN_DEBUG: currentPlayer: Bot 4, playerName: Andy, isMyTurn: false
- 🎯 TURN_DEBUG: turnOrder: (4) ['Bot 2', 'Bot 3', 'Bot 4', 'Andy']
- 🎯 TURN_DEBUG: currentTurnPlays: (2) [{…}, {…}]
- 🌐 PROCESS_EVENT_DEBUG: Finished processing phase_change event
- 🎮 State Change: NETWORK_EVENT:PHASE_CHANGE
- Previous: {isConnected: true, roomId: 'C896ED', playerName: 'Andy', phase: 'turn', currentRound: 1, …}
- New: {isConnected: true, roomId: 'C896ED', playerName: 'Andy', phase: 'turn', currentRound: 1, …}
- Diff: {currentPlayer: {…}, currentTurnPlays: {…}, lastEventSequence: {…}}
- 🔢 GAMECONTAINER_DEBUG: gameState.currentTurnNumber = 1
- 🔢 GAMECONTAINER_DEBUG: currentTurnPlays = (2) [{…}, {…}]
- 🎲 PLAYTYPE_DEBUG: currentTurnStarter: Bot 2
- 🎲 PLAYTYPE_DEBUG: currentTurnPlays: (2) [{…}, {…}]
- 🎲 PLAYTYPE_DEBUG: starterPlay: {player: 'Bot 2', cards: Array(2), isValid: true, playType: 'unknown', totalValue: 0}
- 🎲 PLAYTYPE_DEBUG: Found play type: unknown
- 🌐 FRONTEND_EVENT_DEBUG: Received phase_change event for room C896ED {phase: 'turn', allowed_actions: Array(4), phase_data: {…}, players: {…}, round: 1, …}
- 🔄 PHASE_CHANGE_DEBUG: Phase: turn
- 🔄 PHASE_CHANGE_DEBUG: Data players: {Andy: {…}, Bot 2: {…}, Bot 3: {…}, Bot 4: {…}}
- 🔄 PHASE_CHANGE_DEBUG: Data phase_data: {current_turn_starter: 'Bot 2', current_player: 'Andy', turn_order: Array(4), required_piece_count: 2, turn_plays: {…}, …}
- 🔄 PHASE_CHANGE_DEBUG: First player raw: Andy {hand: Array(8), hand_size: 8, zero_declares_in_a_row: 0, declared: 4, score: 0}
-GameService.ts:548 🔄 PHASE_CHANGE_DEBUG: Converted players array: (4) [{…}, {…}, {…}, {…}]
-GameService.ts:549 🔄 PHASE_CHANGE_DEBUG: Sample player object: {name: 'Andy', is_bot: false, is_host: false, zero_declares_in_a_row: 0}
-GameService.ts:637 🎯 REQUIRED_COUNT_FIX: Set requiredPieceCount to 2 from backend phase_data
-GameService.ts:648 🔢 FRONTEND_ROUND_TURN_DEBUG: Round 1, Turn 1
-GameService.ts:649 🎯 FRONTEND_TURN_STATE: Starter: Bot 2, Current: Andy, Required: 2, Plays: 3
-GameService.ts:654 🎯 TURN_PLAY_DEBUG: Player Bot 2, playData: {pieces: Array(2), piece_count: 2, play_type: 'unknown', play_value: 0, is_valid: true, …}
-GameService.ts:656 🎯 TURN_PLAY_DEBUG: Extracted playType: unknown from type: undefined, play_type: unknown
-GameService.ts:654 🎯 TURN_PLAY_DEBUG: Player Bot 3, playData: {pieces: Array(2), piece_count: 2, play_type: 'unknown', play_value: 0, is_valid: true, …}
-GameService.ts:656 🎯 TURN_PLAY_DEBUG: Extracted playType: unknown from type: undefined, play_type: unknown
-GameService.ts:654 🎯 TURN_PLAY_DEBUG: Player Bot 4, playData: {pieces: Array(2), piece_count: 2, play_type: 'unknown', play_value: 0, is_valid: true, …}
-GameService.ts:656 🎯 TURN_PLAY_DEBUG: Extracted playType: unknown from type: undefined, play_type: unknown
-GameService.ts:668 🎲 TURN_PLAYS_DEBUG: Converted 3 plays to currentTurnPlays: (3) [{…}, {…}, {…}]
-GameService.ts:673 🔢 FRONTEND_TURN_DEBUG: phaseData.current_turn_number = 1
-GameService.ts:494 🌐 PROCESS_EVENT_DEBUG: Event phase_change processed, updating derived state
-GameService.ts:1084 🎯 TURN_DEBUG: currentPlayer: Andy, playerName: Andy, isMyTurn: true
-GameService.ts:1085 🎯 TURN_DEBUG: turnOrder: (4) ['Bot 2', 'Bot 3', 'Bot 4', 'Andy']
-GameService.ts:1086 🎯 TURN_DEBUG: currentTurnPlays: (3) [{…}, {…}, {…}]
-GameService.ts:1084 🎯 TURN_DEBUG: currentPlayer: Andy, playerName: Andy, isMyTurn: true
-GameService.ts:1085 🎯 TURN_DEBUG: turnOrder: (4) ['Bot 2', 'Bot 3', 'Bot 4', 'Andy']
-GameService.ts:1086 🎯 TURN_DEBUG: currentTurnPlays: (3) [{…}, {…}, {…}]
-GameService.ts:1084 🎯 TURN_DEBUG: currentPlayer: Andy, playerName: Andy, isMyTurn: true
-GameService.ts:1085 🎯 TURN_DEBUG: turnOrder: (4) ['Bot 2', 'Bot 3', 'Bot 4', 'Andy']
-GameService.ts:1086 🎯 TURN_DEBUG: currentTurnPlays: (3) [{…}, {…}, {…}]
-GameService.ts:498 🌐 PROCESS_EVENT_DEBUG: Finished processing phase_change event
-GameService.ts:1294 🎮 State Change: NETWORK_EVENT:PHASE_CHANGE
-GameService.ts:1295 Previous: {isConnected: true, roomId: 'C896ED', playerName: 'Andy', phase: 'turn', currentRound: 1, …}
-GameService.ts:1296 New: {isConnected: true, roomId: 'C896ED', playerName: 'Andy', phase: 'turn', currentRound: 1, …}
-GameService.ts:1297 Diff: {currentPlayer: {…}, currentTurnPlays: {…}, isMyTurn: {…}, allowedActions: {…}, validOptions: {…}, …}
-GameContainer.jsx:94 🔢 GAMECONTAINER_DEBUG: gameState.currentTurnNumber = 1
-GameContainer.jsx:95 🔢 GAMECONTAINER_DEBUG: currentTurnPlays = (3) [{…}, {…}, {…}]
-GameContainer.jsx:100 🎲 PLAYTYPE_DEBUG: currentTurnStarter: Bot 2
-GameContainer.jsx:101 🎲 PLAYTYPE_DEBUG: currentTurnPlays: (3) [{…}, {…}, {…}]
-GameContainer.jsx:107 🎲 PLAYTYPE_DEBUG: starterPlay: {player: 'Bot 2', cards: Array(2), isValid: true, playType: 'unknown', totalValue: 0}
-GameContainer.jsx:111 🎲 PLAYTYPE_DEBUG: Found play type: unknown
+🔒 [Room 2C435C] Starting game: op_id=2C435C_1
+🛡️ DEBUG: Dealing guaranteed no-redeal hands with RED_GENERAL assigned to player 1
+🛡️ DEBUG: Available pieces - Strong: 7, Weak: 24
+  → Bot 2 gets RED_GENERAL: GENERAL_RED(14)
+  → Andy gets strong piece: GENERAL_BLACK(13)
+  → Bot 3 gets strong piece: ADVISOR_BLACK(11)
+  → Bot 4 gets strong piece: ELEPHANT_RED(10)
+🛡️ DEBUG: Guaranteed no-redeal hands dealt:
+🔧 DEBUG: Final hands verification:
+  Andy: ['HORSE_RED(6)', 'CANNON_RED(4)', 'GENERAL_BLACK(13)', 'SOLDIER_RED(2)', 'HORSE_RED(6)', 'ADVISOR_BLACK(11)', 'SOLDIER_RED(2)', 'CANNON_BLACK(3)']
+    → Strong pieces (>9): 2
+    → Has RED_GENERAL: False
+  Bot 2: ['CANNON_BLACK(3)', 'ADVISOR_RED(12)', 'SOLDIER_RED(2)', 'GENERAL_RED(14)', 'ELEPHANT_RED(10)', 'SOLDIER_BLACK(1)', 'SOLDIER_RED(2)', 'CHARIOT_RED(8)']
+    → Strong pieces (>9): 3
+    → Has RED_GENERAL: True
+  Bot 3: ['ADVISOR_BLACK(11)', 'HORSE_BLACK(5)', 'ADVISOR_RED(12)', 'ELEPHANT_BLACK(9)', 'HORSE_BLACK(5)', 'CHARIOT_BLACK(7)', 'CHARIOT_RED(8)', 'SOLDIER_BLACK(1)']
+    → Strong pieces (>9): 2
+    → Has RED_GENERAL: False
+  Bot 4: ['ELEPHANT_BLACK(9)', 'ELEPHANT_RED(10)', 'SOLDIER_BLACK(1)', 'CANNON_RED(4)', 'CHARIOT_BLACK(7)', 'SOLDIER_BLACK(1)', 'SOLDIER_RED(2)', 'SOLDIER_BLACK(1)']
+    → Strong pieces (>9): 1
+    → Has RED_GENERAL: False
+✅ SUCCESS: No weak hands - redeal prevented!
+🔍 STARTER_DEBUG: Looking for GENERAL_RED holder in round 1
+🔍 STARTER_DEBUG: Checking player Andy
+🔍 STARTER_DEBUG: Player Andy hand: ['HORSE_RED(6)', 'CANNON_RED(4)', 'GENERAL_BLACK(13)', 'SOLDIER_RED(2)', 'HORSE_RED(6)', 'ADVISOR_BLACK(11)', 'SOLDIER_RED(2)', 'CANNON_BLACK(3)']
+🔍 STARTER_DEBUG: Checking piece 'HORSE_RED(6)' for GENERAL_RED
+🔍 STARTER_DEBUG: Checking piece 'CANNON_RED(4)' for GENERAL_RED
+🔍 STARTER_DEBUG: Checking piece 'GENERAL_BLACK(13)' for GENERAL_RED
+🔍 STARTER_DEBUG: Checking piece 'SOLDIER_RED(2)' for GENERAL_RED
+🔍 STARTER_DEBUG: Checking piece 'HORSE_RED(6)' for GENERAL_RED
+🔍 STARTER_DEBUG: Checking piece 'ADVISOR_BLACK(11)' for GENERAL_RED
+🔍 STARTER_DEBUG: Checking piece 'SOLDIER_RED(2)' for GENERAL_RED
+🔍 STARTER_DEBUG: Checking piece 'CANNON_BLACK(3)' for GENERAL_RED
+🔍 STARTER_DEBUG: Checking player Bot 2
+🔍 STARTER_DEBUG: Player Bot 2 hand: ['CANNON_BLACK(3)', 'ADVISOR_RED(12)', 'SOLDIER_RED(2)', 'GENERAL_RED(14)', 'ELEPHANT_RED(10)', 'SOLDIER_BLACK(1)', 'SOLDIER_RED(2)', 'CHARIOT_RED(8)']
+🔍 STARTER_DEBUG: Checking piece 'CANNON_BLACK(3)' for GENERAL_RED
+🔍 STARTER_DEBUG: Checking piece 'ADVISOR_RED(12)' for GENERAL_RED
+🔍 STARTER_DEBUG: Checking piece 'SOLDIER_RED(2)' for GENERAL_RED
+🔍 STARTER_DEBUG: Checking piece 'GENERAL_RED(14)' for GENERAL_RED
+✅ STARTER_DEBUG: Found GENERAL_RED in Bot 2's hand!
+✅ PREP_STATE_DEBUG: No weak hands - determined new starter: Bot 2
+DEBUG_WS: Message for event 'phase_change' added to queue for room 2C435C.
+🔍 PREP_STATE_DEBUG: Checking transition conditions...
+   - Initial deal complete: True
+   - Weak players: set()
+   - Redeal decisions: {}
+   - Weak players awaiting: set()
+   - All decisions received: True
+✅ PREP_STATE_DEBUG: No weak players, transitioning to DECLARATION
+📢 DECL_STATE_DEBUG: Using round_starter: Bot 2
+DEBUG_WS: Message for event 'phase_change' added to queue for room 2C435C.
+✅ [Room 2C435C] Game and StateMachine started successfully: op_id=2C435C_1
+✅ [Room 2C435C] Bot manager registered for 3 bots
+✅ Game started in room 2C435C
+DEBUG_WS: Message for event 'phase_change' added to queue for room 2C435C.
+🔄 PHASE_TRACKING_FIX: New phase detected None -> declaration
+✅ PHASE_TRACKING_FIX: Marked declaration phase as triggered
+🔍 DECL_PHASE_DEBUG: _handle_declaration_phase called with last_declarer: ''
+🔍 BOT_DEBUG: Got declaration order from state machine: ['Bot 2', 'Bot 3', 'Bot 4', 'Andy']
+🔍 DECL_PHASE_DEBUG: Declaration order: ['Bot 2', 'Bot 3', 'Bot 4', 'Andy']
+🔍 DECL_PHASE_DEBUG: Last declarer '' index: -1
+🔍 DECL_PHASE_DEBUG: Starting loop from index 0 to 4
+🔍 DECL_PHASE_DEBUG: Checking player 0 (Bot 2), is_bot: True
+🔍 DECL_PHASE_DEBUG: Player Bot 2 declared value: 0 (from phase data)
+🔍 DECL_PHASE_DEBUG: All phase declarations: {}
+🤖 DECL_PHASE_DEBUG: Bot Bot 2 will now declare!
+🔧 BOT_DECLARE_DEBUG: State machine result: {'success': True, 'queued': True}
+INFO:     ('127.0.0.1', 63758) - "WebSocket /ws/2C435C" [accepted]
+DEBUG_WS: Registered new connection for room 2C435C. Total connections: 2
+INFO:     connection open
+DEBUG_WS_DISCONNECT: WebSocket client disconnected from room 2C435C.
+INFO:     connection closed
+DEBUG_WS: Unregistered connection for room 2C435C. Remaining connections: 1
+DEBUG_WS_RECEIVE: Received event 'client_ready' from client in room 2C435C with data: {'room_id': '2C435C'}
+DEBUG_WS_RECEIVE: Sent current game phase declaration to client in room 2C435C
+DEBUG_WS_RECEIVE: Sent initial room state to client in room 2C435C after client_ready.
+✅ Bot Bot 2 declared 3
+🔍 DECL_PHASE_DEBUG: Checking player 1 (Bot 3), is_bot: True
+🔍 DECL_PHASE_DEBUG: Player Bot 3 declared value: 0 (from phase data)
+🔍 DECL_PHASE_DEBUG: All phase declarations: {}
+🤖 DECL_PHASE_DEBUG: Bot Bot 3 will now declare!
+🔧 BOT_DECLARE_DEBUG: State machine result: {'success': True, 'queued': True}
+✅ Bot Bot 3 declared 1
+🔍 DECL_PHASE_DEBUG: Checking player 2 (Bot 4), is_bot: True
+🔍 DECL_PHASE_DEBUG: Player Bot 4 declared value: 0 (from phase data)
+🔍 DECL_PHASE_DEBUG: All phase declarations: {}
+🤖 DECL_PHASE_DEBUG: Bot Bot 4 will now declare!
+🔧 BOT_DECLARE_DEBUG: State machine result: {'success': True, 'queued': True}
+✅ Bot Bot 4 declared 1
+🔍 DECL_PHASE_DEBUG: Checking player 3 (Andy), is_bot: False
+🔍 DECL_PHASE_DEBUG: Player Andy is human, stopping bot declarations
+DEBUG_WS: Message for event 'phase_change' added to queue for room 2C435C.
+🚫 PHASE_TRACKING_FIX: Already triggered actions for declaration phase via round_started - skipping
+DEBUG_WS: Message for event 'phase_change' added to queue for room 2C435C.
+🔍 PHASE_TRACKING_FIX: Same phase update: declaration
+✅ PHASE_TRACKING_FIX: Marked declaration phase as triggered
+🔍 DECL_PHASE_DEBUG: _handle_declaration_phase called with last_declarer: 'Bot 2'
+🔍 BOT_DEBUG: Got declaration order from state machine: ['Bot 2', 'Bot 3', 'Bot 4', 'Andy']
+🔍 DECL_PHASE_DEBUG: Declaration order: ['Bot 2', 'Bot 3', 'Bot 4', 'Andy']
+🔍 DECL_PHASE_DEBUG: Last declarer 'Bot 2' index: 0
+🔍 DECL_PHASE_DEBUG: Starting loop from index 1 to 4
+🔍 DECL_PHASE_DEBUG: Checking player 1 (Bot 3), is_bot: True
+🔍 DECL_PHASE_DEBUG: Player Bot 3 declared value: 0 (from phase data)
+🔍 DECL_PHASE_DEBUG: All phase declarations: {'Bot 2': 3}
+🤖 DECL_PHASE_DEBUG: Bot Bot 3 will now declare!
+🔧 BOT_DECLARE_DEBUG: State machine result: {'success': True, 'queued': True}
+✅ Bot Bot 3 declared 1
+🔍 DECL_PHASE_DEBUG: Checking player 2 (Bot 4), is_bot: True
+🔍 DECL_PHASE_DEBUG: Player Bot 4 declared value: 0 (from phase data)
+🔍 DECL_PHASE_DEBUG: All phase declarations: {'Bot 2': 3}
+🤖 DECL_PHASE_DEBUG: Bot Bot 4 will now declare!
+🔧 BOT_DECLARE_DEBUG: State machine result: {'success': True, 'queued': True}
+✅ Bot Bot 4 declared 1
+🔍 DECL_PHASE_DEBUG: Checking player 3 (Andy), is_bot: False
+🔍 DECL_PHASE_DEBUG: Player Andy is human, stopping bot declarations
+DEBUG_WS: Message for event 'phase_change' added to queue for room 2C435C.
+🔍 PHASE_TRACKING_FIX: Same phase update: declaration
+✅ PHASE_TRACKING_FIX: Marked declaration phase as triggered
+🔍 DECL_PHASE_DEBUG: _handle_declaration_phase called with last_declarer: 'Bot 3'
+🔍 BOT_DEBUG: Got declaration order from state machine: ['Bot 2', 'Bot 3', 'Bot 4', 'Andy']
+🔍 DECL_PHASE_DEBUG: Declaration order: ['Bot 2', 'Bot 3', 'Bot 4', 'Andy']
+🔍 DECL_PHASE_DEBUG: Last declarer 'Bot 3' index: 1
+🔍 DECL_PHASE_DEBUG: Starting loop from index 2 to 4
+🔍 DECL_PHASE_DEBUG: Checking player 2 (Bot 4), is_bot: True
+🔍 DECL_PHASE_DEBUG: Player Bot 4 declared value: 0 (from phase data)
+🔍 DECL_PHASE_DEBUG: All phase declarations: {'Bot 2': 3, 'Bot 3': 1}
+🤖 DECL_PHASE_DEBUG: Bot Bot 4 will now declare!
+🔧 BOT_DECLARE_DEBUG: State machine result: {'success': True, 'queued': True}
+✅ Bot Bot 4 declared 1
+🔍 DECL_PHASE_DEBUG: Checking player 3 (Andy), is_bot: False
+🔍 DECL_PHASE_DEBUG: Player Andy is human, stopping bot declarations
+DEBUG_WS: Message for event 'phase_change' added to queue for room 2C435C.
+🔍 PHASE_TRACKING_FIX: Same phase update: declaration
+👤 ENTERPRISE_BOT_DEBUG: Current declarer Andy is human - waiting
+Wrong player turn: Bot 3, expected: Andy
+Invalid action: GameAction(player_name='Bot 3', action_type=<ActionType.DECLARE: 'declare'>, payload={'value': 1}, timestamp=datetime.datetime(2025, 7, 7, 14, 34, 57, 50638), sequence_id=3, is_bot=True)
+Wrong player turn: Bot 4, expected: Andy
+Invalid action: GameAction(player_name='Bot 4', action_type=<ActionType.DECLARE: 'declare'>, payload={'value': 1}, timestamp=datetime.datetime(2025, 7, 7, 14, 34, 57, 303647), sequence_id=4, is_bot=True)
+Wrong player turn: Bot 4, expected: Andy
+Invalid action: GameAction(player_name='Bot 4', action_type=<ActionType.DECLARE: 'declare'>, payload={'value': 1}, timestamp=datetime.datetime(2025, 7, 7, 14, 34, 57, 557735), sequence_id=5, is_bot=True)
+DEBUG_WS_RECEIVE: Received event 'declare' from client in room 2C435C with data: {'value': 2, 'player_name': 'Andy'}
+✅ Declaration queued: Andy -> 2
+DEBUG_WS: Message for event 'phase_change' added to queue for room 2C435C.
+🎯 NEW_TURN_DEBUG: Round 1, Turn 1 starting with starter Bot 2
+🤖 NEW_TURN_DEBUG: Notifying bot manager about new turn starter Bot 2 for room 2C435C
+🔍 DUPLICATE_DEBUG: Received turn_started event for Bot 2 from unknown
+🤖 Bot Bot 2 will play first
+🤖 Bot Bot 2 thinking for 1.5s...
+🤖 Bot Bot 2 choosing first play...
+🤖 BOT chooses to play STRAIGHT (36 pts): ADVISOR, GENERAL, ELEPHANT
+🤖 Bot Bot 2 will play 3 pieces: ['ADVISOR_RED(12)', 'GENERAL_RED(14)', 'ELEPHANT_RED(10)']
+🎯 BOT_MANAGER_DEBUG: state_machine exists: True
+🎯 BOT_PLAY_DEBUG: State machine result: {'success': True, 'queued': True}
+🎯 BOT_PLAY_DEBUG: Action queued successfully, state machine will handle updates and broadcasting
+✅ Bot Bot 2 first play action queued - state machine will broadcast with correct next_player
+🔢 TURN_NUMBER_DEBUG: Backend game.turn_number = 1
+DEBUG_WS: Message for event 'phase_change' added to queue for room 2C435C.
+🔄 PHASE_TRACKING_FIX: New phase detected declaration -> turn
+🚀 ENTERPRISE_BOT_DEBUG: Turn phase - checking if Bot 2 is a bot
+🤖 ENTERPRISE_BOT_DEBUG: Current player Bot 2 is a bot - checking for duplicates
+✅ REFINED_FIX: Allowing new trigger for current player Bot 2 from phase_change
+✅ RACE_CONDITION_FIX: New action recorded for Bot 2 - play_pieces from phase_change (hash: 36a22356f55e)
+🚫 RACE_CONDITION_FIX: Skipping enterprise trigger for Bot 2 - turn starter already triggered by turn_started event
+DEBUG_WS: Message for event 'phase_change' added to queue for room 2C435C.
+🔍 DUPLICATE_DEBUG: Received turn_started event for Bot 2 from unknown
+🚫 TURN_START_FIX: Skipping duplicate turn_started event for Bot 2 turn 1
+🎯 TURN_STATE_DEBUG: Processing action play_pieces from Bot 2
+🎯 TURN_STATE_DEBUG: _handle_play_pieces called for Bot 2
+🎯 TURN_STATE_DEBUG: Current state - player_index: 0, turn_order: ['Bot 2', 'Bot 3', 'Bot 4', 'Andy']
+🎯 TURN_STATE_DEBUG: Player Bot 2 playing 3 pieces: ['ADVISOR_RED(12)', 'GENERAL_RED(14)', 'ELEPHANT_RED(10)']
+🎯 TURN_STATE_DEBUG: Calculated play type: STRAIGHT
+🎯 TURN_STATE_DEBUG: Calculated play value: 36
+🎯 TURN_STATE_DEBUG: Setting required piece count to 3
+🎯 TURN_STATE_DEBUG: Before setting - required_piece_count was: None
+🎯 TURN_STATE_DEBUG: After setting - required_piece_count is: 3
+🎯 TURN_STATE_DEBUG: Before advancing - current_player_index: 0
+🎯 TURN_STATE_DEBUG: After advancing - current_player_index: 1
+🎯 TURN_STATE_DEBUG: Next player: Bot 3
+🎯 TURN_STATE_DEBUG: Round 1, Turn 1 - Bot 2 played, next: Bot 3
+🎯 UPDATE_DEBUG: About to update phase data with current_player: Bot 3, required_piece_count: 3
+DEBUG_WS: Message for event 'phase_change' added to queue for room 2C435C.
+🔍 PHASE_TRACKING_FIX: Same phase update: turn
+🚀 ENTERPRISE_BOT_DEBUG: Turn phase - checking if Bot 3 is a bot
+🤖 ENTERPRISE_BOT_DEBUG: Current player Bot 3 is a bot - checking for duplicates
+✅ REFINED_FIX: Allowing new trigger for current player Bot 3 from phase_change
+✅ RACE_CONDITION_FIX: New action recorded for Bot 3 - play_pieces from phase_change (hash: 4f2f81ba12f7)
+✅ RACE_CONDITION_FIX: Triggering bot play for Bot 3 - no duplicates detected
+🎯 BOT_PLAY_DEBUG: Got required_piece_count from state machine: 3
+🤖 BOT has no valid play. Discards lowest pieces: SOLDIER, HORSE, HORSE
+    🔍 Final play: ['SOLDIER', 'HORSE', 'HORSE']
+    🧠 Hand left: ['ADVISOR', 'HORSE', 'ADVISOR', 'ELEPHANT', 'HORSE', 'CHARIOT', 'CHARIOT', 'SOLDIER']
+🎯 BOT_PLAY_DEBUG: Final selection - 3 pieces: ['SOLDIER_BLACK(1)', 'HORSE_BLACK(5)', 'HORSE_BLACK(5)']
+🎯 BOT_PLAY_DEBUG: Action queued successfully, state machine will handle updates and broadcasting
+✅ Bot Bot 3 action queued - state machine will broadcast with correct next_player
+🎯 UPDATE_DEBUG: Phase data updated - next_player should be: Bot 3
+🎯 TURN_STATE_DEBUG: Play pieces result: {'status': 'play_accepted', 'player': 'Bot 2', 'pieces': [ADVISOR_RED(12), GENERAL_RED(14), ELEPHANT_RED(10)], 'piece_count': 3, 'required_count': 3, 'next_player': 'Bot 3', 'turn_complete': False}
+✅ BOT_VALIDATION_FIX: Bot Bot 2 play accepted - state machine handling all updates
+Invalid piece combination: [SOLDIER_BLACK(1), HORSE_BLACK(5), HORSE_BLACK(5)]
+Invalid action: GameAction(player_name='Bot 3', action_type=<ActionType.PLAY_PIECES: 'play_pieces'>, payload={'pieces': [SOLDIER_BLACK(1), HORSE_BLACK(5), HORSE_BLACK(5)]}, timestamp=datetime.datetime(2025, 7, 7, 14, 35, 3, 293275), sequence_id=8, is_bot=True)
+✅ BOT_VALIDATION_FIX: Bot Bot 3 play accepted - state machine handling all updates
+DEBUG_WS_RECEIVE: Received event 'ping' from client in room lobby with data: {'timestamp': 1751924122931}

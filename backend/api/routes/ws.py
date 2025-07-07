@@ -611,13 +611,23 @@ async def websocket_endpoint(websocket: WebSocket, room_id: str):
                         result = await room.game_state_machine.handle_action(action)
                         print(f"🎯 WS_PLAY_DEBUG: State machine result: {result}")
                         
-                        if result.get("success"):
-                            print(f"✅ Play queued: {player_name} -> {indices}")
-                        else:
+                        if not result:
+                            # Handle None result (shouldn't happen with new base_state)
                             await registered_ws.send_json({
-                                "event": "error",
-                                "data": {"message": result.get("error", "Play failed")}
+                                "event": "play_rejected",
+                                "data": {"message": "Invalid play - try again"}
                             })
+                        elif result.get("success") == False:
+                            # Handle validation failure
+                            await registered_ws.send_json({
+                                "event": "play_rejected", 
+                                "data": {
+                                    "message": result.get("error", "Invalid play"),
+                                    "details": result.get("details", "Please try different pieces")
+                                }
+                            })
+                        else:
+                            print(f"✅ Play accepted: {player_name}")
                             
                     except Exception as e:
                         print(f"❌ Play error: {e}")
