@@ -53,46 +53,112 @@ We need to implement three key UI pages based on the HTML mockups:
 - [ ] Create `/frontend/src/styles/components/lobbypage.module.css`
 - [ ] Import modules in respective components
 
-### Phase 2: StartPage Implementation
+### Phase 2: Game UI Implementation ✅ COMPLETED
 
-#### Task 2.1: Update Page Structure
-- [ ] Replace current gradient background with paper texture design
-- [ ] Implement floating game pieces animation
-- [ ] Update container to match 9:16 aspect ratio styling
+#### Task 2.1: CSS Architecture Setup
+- [x] Created `/frontend/src/styles/components/game/` directory structure
+- [x] Created base CSS files with proper variable definitions
+- [x] Set up GameLayout component with 9:16 aspect ratio container
+- [x] Implemented proper CSS organization without CSS modules
 
-#### Task 2.2: Enhance Form Design
-- [ ] Style input field with gradient borders and focus effects
-- [ ] Update button with gradient background and hover animations
-- [ ] Add helper text styling
+#### Task 2.2: Preparation Phase UI
+- [x] Created PreparationContent component with dealing animation
+- [x] Implemented weak hand alert with proper styling
+- [x] Created piece mapping utility for Chinese character display
+- [x] Fixed all styling to match mockup exactly (light gray/white theme)
 
-#### Task 2.3: Add Game Icon Animation
-- [ ] Create animated dice/pieces icon component
-- [ ] Implement rotation and floating animations
-- [ ] Position above the title
+#### Task 2.3: Infrastructure Updates
+- [x] Removed all Tailwind UI headers and enterprise banners
+- [x] Converted all inline styles to CSS classes
+- [x] Centered game container properly on screen
+- [x] Fixed round display (removed hardcoded "/20")
 
-### Phase 3: RoomPage Implementation
+### Phase 2 Lessons Learned & Blockers
 
-#### Task 3.1: Replace Grid Layout with Table Visualization
-- [ ] Create table surface component with wood texture styling
-- [ ] Position player cards around the table (4 positions)
-- [ ] Add green felt inlay effect
+#### Blockers Encountered:
+1. **CSS Module Import Issues**
+   - **Problem**: ESBuild doesn't support CSS modules out of the box
+   - **Solution**: Used regular CSS imports with prefixed class names (gl-, rp-, etc.)
+   - **Learning**: Check build tool capabilities before choosing CSS architecture
 
-#### Task 3.2: Update Player Cards
-- [ ] Remove avatars (as per mockup)
-- [ ] White background with colored borders
-- [ ] Host badge styling (gold gradient)
-- [ ] Bot naming convention (Bot 2, Bot 3, Bot 4)
+2. **Component State Mismatch**
+   - **Problem**: Pieces showing "?" - GameService creates different object format than UI expects
+   - **Solution**: Updated parsePiece() to handle multiple formats
+   - **Learning**: Always trace data flow from backend to UI when debugging
 
-#### Task 3.3: Update Room Header
-- [ ] Add room ID badge with yellow accent
-- [ ] Update subtitle based on room state:
-  - "Waiting for players to join" (not full)
-  - "All players ready - Start the game!" (full)
+3. **Old UI Persistence**
+   - **Problem**: Tailwind headers still showing after changes
+   - **Solution**: Found and removed Layout wrapper, updated App.jsx
+   - **Learning**: Check parent components and build cache when UI changes don't appear
 
-#### Task 3.4: Style Control Buttons
-- [ ] Green gradient for Start Game button
-- [ ] White/gray for Leave Room button
-- [ ] Proper disabled states
+4. **Weak Hand Alert Logic**
+   - **Problem**: Complex conditions preventing alert from showing
+   - **Solution**: Simplified logic and added debug logging
+   - **Learning**: Start with simple implementation, then add complexity
+
+#### Process Improvements for Phase 3:
+1. **Read First, Code Second**: Always read existing code and mockups before implementing
+2. **Test Incrementally**: Build and test after each component change
+3. **No Inline Styles**: Create CSS classes from the start
+4. **Trace Data Flow**: When debugging, follow data from source to display
+5. **Check Build Output**: Verify changes are in the built files
+
+### Phase 3: Complete Game UI Implementation
+
+#### Task 3.1: Declaration Phase UI
+- [ ] Create `/frontend/src/styles/components/game/declaration.css`
+- [ ] Create DeclarationContent component structure
+- [ ] Implement pile counter UI with +/- buttons
+- [ ] Add total pile count validation (must not equal 8)
+- [ ] Create animated progress indicator
+- [ ] Style submit button with gradient
+- [ ] Test with different player states
+
+#### Task 3.2: Turn Phase UI - Table Visualization
+- [ ] Create `/frontend/src/styles/components/game/turn.css`
+- [ ] Create TurnContent component
+- [ ] Implement circular table layout
+- [ ] Position player seats around table
+- [ ] Add current player indicator animation
+- [ ] Create center pile display
+- [ ] Implement piece selection from hand
+- [ ] Add "Play Pieces" button functionality
+- [ ] Create pass button styling
+
+#### Task 3.3: Turn Results UI
+- [ ] Create `/frontend/src/styles/components/game/turnresults.css`
+- [ ] Create TurnResultsContent component
+- [ ] Display all players' played pieces
+- [ ] Highlight winner with animation
+- [ ] Show pieces won counter
+- [ ] Add "Continue" button
+- [ ] Implement auto-advance timer
+
+#### Task 3.4: Scoring Phase UI
+- [ ] Create `/frontend/src/styles/components/game/scoring.css`
+- [ ] Create ScoringContent component
+- [ ] Build scoring table layout
+- [ ] Display declared vs actual piles
+- [ ] Calculate and show points with animations
+- [ ] Highlight score changes
+- [ ] Add round summary section
+
+#### Task 3.5: Game Over UI
+- [ ] Create `/frontend/src/styles/components/game/gameover.css`
+- [ ] Create GameOverContent component
+- [ ] Implement confetti animation
+- [ ] Display final rankings
+- [ ] Show winner announcement
+- [ ] Add "New Game" and "Leave" buttons
+- [ ] Create trophy/medal icons
+
+#### Task 3.6: Integration & Testing
+- [ ] Update GameContainer phase routing
+- [ ] Test all phase transitions
+- [ ] Verify data flow for each phase
+- [ ] Test responsive behavior
+- [ ] Fix any animation performance issues
+- [ ] Add loading states between phases
 
 ### Phase 4: LobbyPage Implementation
 
@@ -717,3 +783,32 @@ export const getPlayerDisplayName = (player, slotNumber) => {
 - Focus indicators visible
 - Reduced motion media query support
 - Color contrast WCAG AA compliant
+
+## Phase 2 Implementation Summary
+
+### Completed Components:
+1. **GameLayout** - Base layout wrapper with 9:16 aspect ratio container
+2. **PreparationContent** - Dealing animation and weak hand alert
+3. **Piece Mapping Utility** - Chinese character display for game pieces
+4. **CSS Architecture** - Organized structure with prefixed class names
+
+### Key Achievements:
+- Successfully matched mockup design without backend changes
+- Removed all old UI elements (Tailwind headers, enterprise banners)
+- Implemented smooth animations for dealing and alerts
+- Fixed all data parsing issues for piece display
+- Established consistent CSS naming conventions
+
+### Technical Decisions:
+1. **No CSS Modules** - ESBuild limitation led to prefix-based naming (gl-, rp-, etc.)
+2. **Component Structure** - Separate content components for each phase
+3. **Data Handling** - Flexible parsing to handle multiple backend formats
+4. **Style Organization** - All styles in CSS files, no inline styles
+
+### Phase 3 Preparation:
+Based on Phase 2 learnings, Phase 3 will focus on:
+- Creating all remaining game phase UIs
+- Maintaining consistent styling patterns
+- Testing each component incrementally
+- Documenting data flow for each phase
+- Avoiding common pitfalls identified in Phase 2

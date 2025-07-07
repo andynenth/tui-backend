@@ -8,14 +8,12 @@
  * ✅ No hooks except local UI state
  * ✅ Comprehensive prop interfaces
  * ✅ Accessible and semantic HTML
- * ✅ Tailwind CSS styling
+ * ✅ Custom CSS styling
  */
 
 import React from 'react';
 import PropTypes from 'prop-types';
-import GamePiece from "../GamePiece";
-import PlayerSlot from "../PlayerSlot";
-import Button from "../Button";
+import PreparationContent from './content/PreparationContent';
 
 /**
  * Pure UI component for preparation phase
@@ -44,10 +42,29 @@ export function PreparationUI({
   onAcceptRedeal,
   onDeclineRedeal
 }) {
-  const hasWeakHands = weakHands.length > 0;
-  const isWaitingForDecision = hasWeakHands && currentWeakPlayer !== null;
-
+  // Simply pass all props through to PreparationContent
   return (
+    <PreparationContent 
+      myHand={myHand}
+      players={players}
+      weakHands={weakHands}
+      redealMultiplier={redealMultiplier}
+      currentWeakPlayer={currentWeakPlayer}
+      isMyDecision={isMyDecision}
+      isMyHandWeak={isMyHandWeak}
+      handValue={handValue}
+      highestCardValue={highestCardValue}
+      simultaneousMode={simultaneousMode}
+      weakPlayersAwaiting={weakPlayersAwaiting}
+      decisionsReceived={decisionsReceived}
+      decisionsNeeded={decisionsNeeded}
+      onAcceptRedeal={onAcceptRedeal}
+      onDeclineRedeal={onDeclineRedeal}
+    />
+  );
+  
+  // OLD TAILWIND UI BELOW - KEPT FOR REFERENCE
+  const OLD_UI = (
     <div className="min-h-screen bg-gradient-to-br from-green-900 to-blue-900 p-4">
       <div className="max-w-6xl mx-auto">
         
@@ -277,8 +294,9 @@ export function PreparationUI({
 PreparationUI.propTypes = {
   // Data props
   myHand: PropTypes.arrayOf(PropTypes.shape({
-    suit: PropTypes.string.isRequired,
-    value: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired
+    type: PropTypes.string.isRequired,
+    color: PropTypes.oneOf(['red', 'black']).isRequired,
+    value: PropTypes.number.isRequired
   })),
   players: PropTypes.arrayOf(PropTypes.shape({
     name: PropTypes.string.isRequired,

@@ -1,0 +1,40 @@
+/* WaitingUI.jsx animation styles */
+
+/* Waiting dots animation */
+.waiting-dots {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.waiting-dot {
+  width: 12px;
+  height: 12px;
+  background-color: #60a5fa;
+  border-radius: 50%;
+  animation: pulse 1.2s infinite;
+}
+
+.waiting-dot:nth-child(1) {
+  animation-delay: 0s;
+}
+
+.waiting-dot:nth-child(2) {
+  animation-delay: 0.3s;
+}
+
+.waiting-dot:nth-child(3) {
+  animation-delay: 0.6s;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 0.4;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.2);
+  }
+}

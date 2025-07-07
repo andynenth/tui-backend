@@ -24,6 +24,7 @@ import TurnUI from './TurnUI';
 import TurnResultsUI from './TurnResultsUI';
 import ScoringUI from './ScoringUI';
 import GameOverUI from './GameOverUI';
+import GameLayout from './GameLayout';
 import ErrorBoundary from "../ErrorBoundary";
 
 /**
@@ -239,23 +240,76 @@ export function GameContainer({ roomId, onNavigateToLobby }) {
       {(() => {
         switch (gameState.phase) {
           case 'preparation':
-            return <PreparationUI {...preparationProps} />;
+            return (
+              <GameLayout 
+                phase="preparation" 
+                roundNumber={gameState.currentRound}
+                showMultiplier={gameState.redealMultiplier > 1}
+                multiplierValue={gameState.redealMultiplier}
+              >
+                <PreparationUI {...preparationProps} />
+              </GameLayout>
+            );
             
           case 'declaration':
-            return <DeclarationUI {...declarationProps} />;
+            return (
+              <GameLayout 
+                phase="declaration" 
+                roundNumber={gameState.currentRound}
+                showMultiplier={gameState.redealMultiplier > 1}
+                multiplierValue={gameState.redealMultiplier}
+              >
+                <DeclarationUI {...declarationProps} />
+              </GameLayout>
+            );
             
           case 'turn':
-            return <TurnUI {...turnProps} />;
+            return (
+              <GameLayout 
+                phase="turn" 
+                roundNumber={gameState.currentRound}
+                showMultiplier={gameState.redealMultiplier > 1}
+                multiplierValue={gameState.redealMultiplier}
+              >
+                <TurnUI {...turnProps} />
+              </GameLayout>
+            );
             
           case 'turn_results':
             console.log('🏆 GAMECONTAINER_DEBUG: Rendering TurnResultsUI with props:', turnResultsProps);
-            return <TurnResultsUI {...turnResultsProps} />;
+            return (
+              <GameLayout 
+                phase="turn_results" 
+                roundNumber={gameState.currentRound}
+                showMultiplier={gameState.redealMultiplier > 1}
+                multiplierValue={gameState.redealMultiplier}
+              >
+                <TurnResultsUI {...turnResultsProps} />
+              </GameLayout>
+            );
             
           case 'scoring':
-            return <ScoringUI {...scoringProps} />;
+            return (
+              <GameLayout 
+                phase="scoring" 
+                roundNumber={gameState.currentRound}
+                showMultiplier={gameState.redealMultiplier > 1}
+                multiplierValue={gameState.redealMultiplier}
+              >
+                <ScoringUI {...scoringProps} />
+              </GameLayout>
+            );
             
           case 'game_over':
-            return <GameOverUI {...gameOverProps} />;
+            return (
+              <GameLayout 
+                phase="game_over" 
+                roundNumber={gameState.currentRound}
+                showMultiplier={false}
+              >
+                <GameOverUI {...gameOverProps} />
+              </GameLayout>
+            );
             
           case 'waiting':
           default:

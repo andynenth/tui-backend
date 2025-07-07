@@ -1,0 +1,57 @@
+/* Game-specific CSS Variables */
+
+:root {
+  /* Game Gradients */
+  --gradient-game-primary: linear-gradient(135deg, #1E3A8A 0%, #3B82F6 50%, #60A5FA 100%);
+  --gradient-game-secondary: linear-gradient(135deg, #6366F1 0%, #8B5CF6 100%);
+  --gradient-game-wood: linear-gradient(135deg, #92400E 0%, #B45309 50%, #D97706 100%);
+  --gradient-game-felt: radial-gradient(ellipse at center, rgba(34, 139, 34, 0.15) 0%, rgba(34, 139, 34, 0.05) 70%);
+  
+  /* Phase-specific Gradients */
+  --gradient-preparation: linear-gradient(135deg, #F59E0B 0%, #FBBF24 50%, #FCD34D 100%);
+  --gradient-declaration: linear-gradient(135deg, #8B5CF6 0%, #A78BFA 50%, #C4B5FD 100%);
+  --gradient-turn: linear-gradient(135deg, #059669 0%, #10B981 50%, #34D399 100%);
+  --gradient-scoring: linear-gradient(135deg, #DC2626 0%, #EF4444 50%, #F87171 100%);
+  
+  /* Game-specific Spacing */
+  --game-spacing-xs: 4px;
+  --game-spacing-sm: 8px;
+  --game-spacing-md: 16px;
+  --game-spacing-lg: 24px;
+  --game-spacing-xl: 32px;
+  
+  /* Animation Durations */
+  --animation-dealing: 3.5s;
+  --animation-piece-appear: 0.5s;
+  --animation-slide-in: 0.3s;
+  --animation-badge-bounce: 0.4s;
+  --animation-progress: 3s;
+  --animation-confetti: 2.5s;
+  
+  /* Z-index Layers */
+  --z-game-background: 1;
+  --z-game-content: 10;
+  --z-game-overlay: 20;
+  --z-game-modal: 30;
+  --z-game-notification: 40;
+  
+  /* Game Container */
+  --game-container-ratio: 0.5625; /* 9:16 ratio */
+  --game-max-width: 400px;
+  --game-max-height: 711px;
+  
+  /* Piece Colors */
+  --color-piece-red: #DC2626;
+  --color-piece-red-light: #FEE2E2;
+  --color-piece-black: #1F2937;
+  --color-piece-black-light: #F3F4F6;
+  
+  /* Alert Colors */
+  --color-alert-yellow: #FEF3C7;
+  --color-alert-yellow-border: #F59E0B;
+  
+  /* Additional Shadows */
+  --shadow-game-card: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  --shadow-game-elevated: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  --shadow-game-piece: 0 4px 6px -1px rgba(0, 0, 0, 0.2), 0 2px 4px -1px rgba(0, 0, 0, 0.1);
+}

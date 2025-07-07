@@ -73,16 +73,7 @@ const Modal = ({
   return (
     <div
       ref={overlayRef}
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black"
-      style={{ 
-        zIndex: 9999, 
-        backgroundColor: 'rgba(0, 0, 0, 0.5)',
-        position: 'fixed',
-        top: 0,
-        left: 0,
-        right: 0,
-        bottom: 0
-      }} // Force high z-index and explicit overlay styling
+      className="modal-overlay fixed inset-0 z-50 flex items-center justify-center"
       onClick={handleOverlayClick}
     >
       <div
