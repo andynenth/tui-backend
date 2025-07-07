@@ -264,7 +264,10 @@ async def websocket_endpoint(websocket: WebSocket, room_id: str):
                                         
                                         players_data[player_name] = {
                                             'hand': player_hand,
-                                            'hand_size': len(player_hand)
+                                            'hand_size': len(player_hand),
+                                            'zero_declares_in_a_row': getattr(player, 'zero_declares_in_a_row', 0),
+                                            'declared': getattr(player, 'declared', 0),
+                                            'score': getattr(player, 'score', 0)
                                         }
                                 
                                 await registered_ws.send_json({
