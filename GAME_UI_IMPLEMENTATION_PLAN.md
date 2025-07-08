@@ -608,22 +608,52 @@ This provides meaningful game statistics that enhance the competitive aspect and
 **Goal**: Complete integration and polish animations
 
 #### Tasks:
-- [ ] Update all imports in GameContainer
-- [ ] Test all phase transitions
-- [ ] Verify WebSocket data flow
+
+##### 7.1 Remove Old UI System Remnants
+- [x] Audit all game UI components for old Tailwind code
+- [x] Remove commented-out old UI code from all files
+- [x] Remove or consolidate thin wrapper UI components
+- [x] Clean up unused CSS classes and imports
+- [ ] Remove WaitingUI if using new pattern
+
+##### 7.2 Simplify Component Structure
+- [x] Consider removing wrapper components (PreparationUI, DeclarationUI, etc.)
+- [x] Update GameContainer to import content components directly
+- [x] Update all phase rendering to use content components
+- [x] Remove redundant prop passing through wrappers
+
+##### 7.3 Update Imports and Integration
+- [x] Update all imports in GameContainer
+- [x] Ensure consistent use of GameLayout wrapper
+- [x] Remove any direct phase UI imports if using content components
+- [x] Verify all content components are properly imported
+
+##### 7.4 Test All Phase Transitions
+- [ ] Preparation → Declaration
+- [ ] Declaration → Turn
+- [ ] Turn → Turn Results → Turn (multiple turns)
+- [ ] Turn → Turn Results → Scoring
+- [ ] Scoring → Preparation (new round)
+- [ ] Scoring → Game Over
+
+##### 7.5 Polish and Optimization
+- [ ] Verify WebSocket data flow for all phases
 - [ ] Polish animations and transitions
-- [ ] Test responsive behavior
-- [ ] Add error states
-- [ ] Performance optimization
+- [ ] Test responsive behavior on different screen sizes
+- [ ] Add error states for network issues
+- [ ] Performance optimization (reduce re-renders)
+- [x] Remove console.log statements
 
 #### Testing Checklist:
 - [ ] All phases render correctly
-- [ ] Animations are smooth
+- [ ] Animations are smooth (60fps)
 - [ ] Chinese characters display properly
 - [ ] Container maintains 9:16 ratio
-- [ ] No console errors
-- [ ] WebSocket events handled
-- [ ] State updates reflect in UI
+- [ ] No console errors or warnings
+- [ ] WebSocket events handled properly
+- [ ] State updates reflect in UI immediately
+- [ ] Player statistics tracked correctly
+- [ ] Game over displays accurate data
 
 ---
 

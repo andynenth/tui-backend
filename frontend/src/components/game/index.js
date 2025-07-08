@@ -1,19 +1,20 @@
 /**
  * 🎮 **Game Components Index** - Unified exports for game-related components
  * 
- * Phase 2, Task 2.3: Smart Container Components
- * 
- * Exports:
- * ✅ Pure UI Components (Task 2.2)
- * ✅ Smart Container Components (Task 2.3)
+ * Exports game container and remaining UI components
  */
 
-// Pure UI Components (Phase 2, Task 2.2)
+// UI Components
 export { default as WaitingUI } from './WaitingUI';
-export { default as PreparationUI } from './PreparationUI';
-export { default as DeclarationUI } from './DeclarationUI';
-export { default as TurnUI } from './TurnUI';
-export { default as ScoringUI } from './ScoringUI';
+export { default as GameLayout } from './GameLayout';
 
-// Smart Container Components (Phase 2, Task 2.3)
+// Smart Container Component
 export { default as GameContainer } from './GameContainer';
+
+// Content Components (used directly by GameContainer)
+export { default as PreparationContent } from './content/PreparationContent';
+export { default as DeclarationContent } from './content/DeclarationContent';
+export { default as TurnContent } from './content/TurnContent';
+export { default as TurnResultsContent } from './content/TurnResultsContent';
+export { default as ScoringContent } from './content/ScoringContent';
+export { default as GameOverContent } from './content/GameOverContent';

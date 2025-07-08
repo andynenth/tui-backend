@@ -41,14 +41,7 @@ const PreparationContent = ({
   // Check if we should show weak hand alert
   const shouldShowWeakHandAlert = () => {
     if (!showDealing) {
-      console.log('PreparationContent weak hand check:', {
-        simultaneousMode,
-        isMyHandWeak,
-        isMyDecision,
-        currentWeakPlayer,
-        weakPlayersAwaiting,
-        highestCardValue
-      });
+      // Weak hand check logic
       
       // Show alert if:
       // 1. Player has a weak hand (no piece > 9)

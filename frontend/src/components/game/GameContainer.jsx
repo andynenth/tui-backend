@@ -17,16 +17,54 @@ import useGameActions from "../../hooks/useGameActions";
 import useConnectionStatus from "../../hooks/useConnectionStatus";
 // Play type detection now handled by backend
 
-// Import Pure UI Components
-import WaitingUI from './WaitingUI';
-import PreparationUI from './PreparationUI';
-import DeclarationUI from './DeclarationUI';
-import TurnUI from './TurnUI';
-import TurnResultsUI from './TurnResultsUI';
-import ScoringUI from './ScoringUI';
-import GameOverUI from './GameOverUI';
+// Import UI Components
+import WaitingUI from './WaitingUI'; // TODO: Convert to content component pattern
 import GameLayout from './GameLayout';
 import ErrorBoundary from "../ErrorBoundary";
+
+// Import Content Components directly
+import PreparationContent from './content/PreparationContent';
+import DeclarationContent from './content/DeclarationContent';
+import TurnContent from './content/TurnContent';
+import TurnResultsContent from './content/TurnResultsContent';
+import ScoringContent from './content/ScoringContent';
+import GameOverContent from './content/GameOverContent';
+
+// Helper functions for data transformation
+function getWinnerFromRankings(rankings) {
+  const winner = rankings?.find(r => r.rank === 1);
+  return winner ? { id: winner.name, name: winner.name } : null;
+}
+
+function getFinalScores(rankings) {
+  return rankings?.reduce((acc, ranking) => {
+    acc[ranking.name] = ranking.score;
+    return acc;
+  }, {}) || {};
+}
+
+function getPlayersWithStats(rankings) {
+  return rankings?.map(ranking => ({
+    id: ranking.name,
+    name: ranking.name,
+    turns_won: ranking.turns_won || 0,
+    perfect_rounds: ranking.perfect_rounds || 0
+  })) || [];
+}
+
+function transformGameStats(gameStats) {
+  return {
+    totalRounds: gameStats?.total_rounds || 0,
+    duration: parseGameDuration(gameStats?.game_duration),
+    highestScore: gameStats?.highest_score || 0
+  };
+}
+
+function parseGameDuration(durationStr) {
+  if (!durationStr) return 0;
+  const match = durationStr.match(/(\d+)\s*min/);
+  return match ? parseInt(match[1]) * 60 : 0;
+}
 
 /**
  * Smart container that connects pure UI components to game state
@@ -320,7 +358,23 @@ export function GameContainer({ roomId, onNavigateToLobby }) {
                 showMultiplier={gameState.redealMultiplier > 1}
                 multiplierValue={gameState.redealMultiplier}
               >
-                <PreparationUI {...preparationProps} />
+                <PreparationContent 
+                  myHand={preparationProps.myHand}
+                  players={preparationProps.players}
+                  weakHands={preparationProps.weakHands}
+                  redealMultiplier={preparationProps.redealMultiplier}
+                  currentWeakPlayer={preparationProps.currentWeakPlayer}
+                  isMyDecision={preparationProps.isMyDecision}
+                  isMyHandWeak={preparationProps.isMyHandWeak}
+                  handValue={preparationProps.handValue}
+                  highestCardValue={preparationProps.highestCardValue}
+                  simultaneousMode={preparationProps.simultaneousMode}
+                  weakPlayersAwaiting={preparationProps.weakPlayersAwaiting}
+                  decisionsReceived={preparationProps.decisionsReceived}
+                  decisionsNeeded={preparationProps.decisionsNeeded}
+                  onAcceptRedeal={preparationProps.onAcceptRedeal}
+                  onDeclineRedeal={preparationProps.onDeclineRedeal}
+                />
               </GameLayout>
             );
             
@@ -332,7 +386,17 @@ export function GameContainer({ roomId, onNavigateToLobby }) {
                 showMultiplier={gameState.redealMultiplier > 1}
                 multiplierValue={gameState.redealMultiplier}
               >
-                <DeclarationUI {...declarationProps} />
+                <DeclarationContent 
+                  myHand={declarationProps.myHand}
+                  players={declarationProps.players}
+                  currentPlayer={gameState.currentPlayer || ''}
+                  myName={gameState.playerName || ''}
+                  declarations={declarationProps.declarations}
+                  totalDeclared={declarationProps.currentTotal}
+                  consecutiveZeros={0}
+                  redealMultiplier={declarationProps.redealMultiplier}
+                  onDeclare={declarationProps.onDeclare}
+                />
               </GameLayout>
             );
             
@@ -363,12 +427,25 @@ export function GameContainer({ roomId, onNavigateToLobby }) {
                 currentPlayer={turnProps?.currentPlayer || ''}
                 turnRequirement={turnRequirement}
               >
-                <TurnUI {...turnProps} />
+                <TurnContent 
+                  players={turnProps.players}
+                  myHand={turnProps.myHand}
+                  tableCards={turnProps.tableCards}
+                  currentPlayer={turnProps.currentPlayer}
+                  playerName={turnProps.playerName}
+                  requiredPieceCount={turnProps.requiredPieceCount}
+                  turnOrder={turnProps.turnOrder}
+                  isFirstTurn={turnProps.isFirstTurn}
+                  myDeclaredPiles={turnProps.myDeclaredPiles}
+                  myCapturedPiles={turnProps.myCapturedPiles}
+                  playType={turnProps.playType}
+                  onPlayPieces={turnProps.onPlayPieces}
+                  onPass={turnProps.onPass}
+                />
               </GameLayout>
             );
             
           case 'turn_results':
-            console.log('🏆 GAMECONTAINER_DEBUG: Rendering TurnResultsUI with props:', turnResultsProps);
             return (
               <GameLayout 
                 phase="turn_results" 
@@ -376,7 +453,30 @@ export function GameContainer({ roomId, onNavigateToLobby }) {
                 showMultiplier={gameState.redealMultiplier > 1}
                 multiplierValue={gameState.redealMultiplier}
               >
-                <TurnResultsUI {...turnResultsProps} />
+                <TurnResultsContent 
+                  winner={turnResultsProps.winner || ''}
+                  winningPieces={turnResultsProps.winningPlay?.pieces || []}
+                  playerPlays={(() => {
+                    // Transform currentTurnPlays into the expected format
+                    const playsMap = {};
+                    if (turnResultsProps.currentTurnPlays) {
+                      turnResultsProps.currentTurnPlays.forEach(play => {
+                        playsMap[play.player] = play.pieces || [];
+                      });
+                    }
+                    // Create array with all players
+                    return turnResultsProps.players.map(player => ({
+                      playerName: player.name,
+                      pieces: playsMap[player.name] || []
+                    }));
+                  })()}
+                  myName={turnResultsProps.playerName || ''}
+                  turnNumber={turnResultsProps.turnNumber}
+                  roundNumber={turnResultsProps.roundNumber}
+                  isLastTurn={turnResultsProps.isLastTurn}
+                  nextStarter={turnResultsProps.nextStarter || ''}
+                  onContinue={turnResultsProps.onContinue}
+                />
               </GameLayout>
             );
             
@@ -388,7 +488,14 @@ export function GameContainer({ roomId, onNavigateToLobby }) {
                 showMultiplier={gameState.redealMultiplier > 1}
                 multiplierValue={gameState.redealMultiplier}
               >
-                <ScoringUI {...scoringProps} />
+                <ScoringContent 
+                  roundScores={scoringProps.roundScores}
+                  totalScores={scoringProps.totalScores}
+                  players={scoringProps.players}
+                  redealMultiplier={scoringProps.redealMultiplier}
+                  roundNumber={scoringProps.roundNumber}
+                  onContinue={scoringProps.onContinue}
+                />
               </GameLayout>
             );
             
@@ -399,7 +506,13 @@ export function GameContainer({ roomId, onNavigateToLobby }) {
                 roundNumber={gameState.currentRound}
                 showMultiplier={false}
               >
-                <GameOverUI {...gameOverProps} />
+                <GameOverContent 
+                  winner={getWinnerFromRankings(gameOverProps.finalRankings)}
+                  finalScores={getFinalScores(gameOverProps.finalRankings)}
+                  players={getPlayersWithStats(gameOverProps.finalRankings)}
+                  gameStats={transformGameStats(gameOverProps.gameStats)}
+                  onBackToLobby={gameOverProps.onBackToLobby}
+                />
               </GameLayout>
             );
             
