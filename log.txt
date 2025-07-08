@@ -1,4 +1,4 @@
-🔒 [Room B5A4F0] Starting game: op_id=B5A4F0_1
+🔒 [Room 070A0B] Starting game: op_id=070A0B_1
 🔍 DEBUG: Redeal limit check - multiplier: 1, limit: 2
 🔧 DEBUG: Dealing weak hands to players at indices [0, 1] (max 9 points)
 📊 DEBUG: Redeals so far: 0, Max allowed: 2
@@ -6,151 +6,123 @@
 🔧 DEBUG: Andy (index 0) assigned weak hand
 🔧 DEBUG: Bot 2 (index 1) assigned weak hand
 🔧 DEBUG: Final hands verification:
-  Andy: ['SOLDIER_RED(2)', 'CANNON_BLACK(3)', 'CANNON_RED(4)', 'SOLDIER_BLACK(1)', 'SOLDIER_BLACK(1)', 'CANNON_RED(4)', 'CHARIOT_BLACK(7)', 'CHARIOT_BLACK(7)']
+  Andy: ['SOLDIER_BLACK(1)', 'HORSE_BLACK(5)', 'SOLDIER_BLACK(1)', 'HORSE_BLACK(5)', 'SOLDIER_BLACK(1)', 'CANNON_BLACK(3)', 'SOLDIER_RED(2)', 'CHARIOT_RED(8)']
     → Strong pieces (>9): 0
     → Has RED_GENERAL: False
     ⚠️ WARNING: Andy has NO strong pieces!
-  Bot 2: ['CHARIOT_RED(8)', 'SOLDIER_RED(2)', 'HORSE_RED(6)', 'SOLDIER_RED(2)', 'ELEPHANT_BLACK(9)', 'ELEPHANT_BLACK(9)', 'SOLDIER_BLACK(1)', 'HORSE_BLACK(5)']
+  Bot 2: ['ELEPHANT_BLACK(9)', 'ELEPHANT_BLACK(9)', 'CANNON_RED(4)', 'CANNON_RED(4)', 'CANNON_BLACK(3)', 'CHARIOT_BLACK(7)', 'CHARIOT_RED(8)', 'SOLDIER_RED(2)']
     → Strong pieces (>9): 0
     → Has RED_GENERAL: False
     ⚠️ WARNING: Bot 2 has NO strong pieces!
-  Bot 3: ['GENERAL_RED(14)', 'ADVISOR_RED(12)', 'SOLDIER_BLACK(1)', 'GENERAL_BLACK(13)', 'ELEPHANT_RED(10)', 'ADVISOR_BLACK(11)', 'ADVISOR_RED(12)', 'SOLDIER_RED(2)']
-    → Strong pieces (>9): 6
-    → Has RED_GENERAL: True
-  Bot 4: ['CHARIOT_RED(8)', 'SOLDIER_BLACK(1)', 'HORSE_BLACK(5)', 'SOLDIER_RED(2)', 'HORSE_RED(6)', 'ADVISOR_BLACK(11)', 'ELEPHANT_RED(10)', 'CANNON_BLACK(3)']
+  Bot 3: ['ADVISOR_RED(12)', 'SOLDIER_RED(2)', 'CHARIOT_BLACK(7)', 'ELEPHANT_RED(10)', 'SOLDIER_BLACK(1)', 'SOLDIER_RED(2)', 'HORSE_RED(6)', 'HORSE_RED(6)']
     → Strong pieces (>9): 2
     → Has RED_GENERAL: False
+  Bot 4: ['GENERAL_RED(14)', 'ADVISOR_RED(12)', 'ELEPHANT_RED(10)', 'SOLDIER_RED(2)', 'ADVISOR_BLACK(11)', 'SOLDIER_BLACK(1)', 'ADVISOR_BLACK(11)', 'GENERAL_BLACK(13)']
+    → Strong pieces (>9): 6
+    → Has RED_GENERAL: True
 🔍 PREP_STATE_DEBUG: Play order: [Andy - 0 pts, Bot 2 - 0 pts, Bot 3 - 0 pts, Bot 4 - 0 pts]
 🔍 PREP_STATE_DEBUG: Play order types: [<class 'engine.player.Player'>, <class 'engine.player.Player'>, <class 'engine.player.Player'>, <class 'engine.player.Player'>]
-🎯 PREP_STATE_DEBUG: All weak players awaiting simultaneous decisions: {'Andy', 'Bot 2'}
-DEBUG_WS: Message for event 'phase_change' added to queue for room B5A4F0.
+🎯 PREP_STATE_DEBUG: All weak players awaiting simultaneous decisions: {'Bot 2', 'Andy'}
+DEBUG_WS: Message for event 'phase_change' added to queue for room 070A0B.
 🔍 PREP_STATE_DEBUG: Checking transition conditions...
    - Initial deal complete: True
-   - Weak players: {'Andy', 'Bot 2'}
-   - Redeal decisions: {}
-   - Weak players awaiting: {'Andy', 'Bot 2'}
-   - All decisions received: False
-⏳ PREP_STATE_DEBUG: Waiting for more redeal decisions (0/2)
-🤖 PREP_STATE_DEBUG: Triggering bot manager for simultaneous redeal decisions...
-👤 PREP_STATE_DEBUG: Human weak player: Andy - waiting for UI
-🤖 PREP_STATE_DEBUG: Bot weak player found: Bot 2
-🔄 BOT_HANDLER_DEBUG: Handling simultaneous redeal decisions
-🤖 REDEAL: Processing 1 bot decisions sequentially
-🤖 Bot Bot 2 will decide in 1.1s...
+   - Weak players: {'Bot 2', 'Andy'}
+⏳ PREP_STATE_DEBUG: Have weak players - waiting for event-based transition
+🔄 PHASE_TRACKING_FIX: New phase detected None -> preparation
+🚀 ENTERPRISE_BOT_DEBUG: _handle_enterprise_phase_change called - phase: preparation
+🎲 REDEAL_PHASE_DEBUG: Handling redeal decisions - awaiting: ['Bot 2', 'Andy']
+🤖 REDEAL_PHASE_DEBUG: Bot Bot 2 will decide in 1.3s...
 🔍 PREP_STATE_DEBUG: Checking transition conditions...
    - Initial deal complete: True
-   - Weak players: {'Andy', 'Bot 2'}
-   - Redeal decisions: {}
-   - Weak players awaiting: {'Andy', 'Bot 2'}
-   - All decisions received: False
-⏳ PREP_STATE_DEBUG: Waiting for more redeal decisions (0/2)
-INFO:     127.0.0.1:56915 - "GET /.well-known/appspecific/com.chrome.devtools.json HTTP/1.1" 404 Not Found
-INFO:     127.0.0.1:56915 - "GET /bundle.css.map HTTP/1.1" 200 OK
-INFO:     127.0.0.1:56915 - "GET /bundle.js.map HTTP/1.1" 200 OK
+   - Weak players: {'Bot 2', 'Andy'}
+⏳ PREP_STATE_DEBUG: Have weak players - waiting for event-based transition
 🔍 PREP_STATE_DEBUG: Checking transition conditions...
    - Initial deal complete: True
-   - Weak players: {'Andy', 'Bot 2'}
-   - Redeal decisions: {}
-   - Weak players awaiting: {'Andy', 'Bot 2'}
-   - All decisions received: False
-⏳ PREP_STATE_DEBUG: Waiting for more redeal decisions (0/2)
+   - Weak players: {'Bot 2', 'Andy'}
+⏳ PREP_STATE_DEBUG: Have weak players - waiting for event-based transition
+🤖 REDEAL_PHASE_DEBUG: Bot Bot 2 making redeal decision
 🤖 Bot Bot 2 deciding: ACCEPT redeal
 ✅ Bot Bot 2 ACCEPTED redeal
-DEBUG_WS: Message for event 'phase_change' added to queue for room B5A4F0.
-✅ [Room B5A4F0] Game and StateMachine started successfully: op_id=B5A4F0_1
-✅ [Room B5A4F0] Bot manager registered for 3 bots
-✅ Game started in room B5A4F0
-INFO:     ('127.0.0.1', 56921) - "WebSocket /ws/B5A4F0" [accepted]
-DEBUG_WS: Registered new connection for room B5A4F0. Total connections: 2
-INFO:     connection open
-DEBUG_WS_DISCONNECT: WebSocket client disconnected from room B5A4F0.
-INFO:     connection closed
-DEBUG_WS_RECEIVE: Received event 'client_ready' from client in room B5A4F0 with data: {'room_id': 'B5A4F0'}
-DEBUG_WS_RECEIVE: Sent current game phase preparation to client in room B5A4F0
-DEBUG_WS: Unregistered connection for room B5A4F0. Remaining connections: 1
-DEBUG_WS_RECEIVE: Sent initial room state to client in room B5A4F0 after client_ready.
+DEBUG_WS: Message for event 'phase_change' added to queue for room 070A0B.
+✅ [Room 070A0B] Game and StateMachine started successfully: op_id=070A0B_1
+✅ [Room 070A0B] Bot manager registered for 3 bots
+✅ Game started in room 070A0B
 🔍 REDEAL_DEBUG: Processing REDEAL_REQUEST as accept for Bot 2
 🔍 REDEAL_DEBUG: _handle_redeal_decision - Bot 2 decision: accept=True
 🔍 REDEAL_DEBUG: Recorded decision - redeal_decisions now: {'Bot 2': True}
-DEBUG_WS: Message for event 'phase_change' added to queue for room B5A4F0.
+DEBUG_WS: Message for event 'phase_change' added to queue for room 070A0B.
+🔍 PHASE_TRACKING_FIX: Same phase update: preparation
+🚀 ENTERPRISE_BOT_DEBUG: _handle_enterprise_phase_change called - phase: preparation
+🎲 REDEAL_PHASE_DEBUG: Handling redeal decisions - awaiting: ['Andy']
+👤 REDEAL_PHASE_DEBUG: Player Andy is human, skipping
 🔍 PREP_STATE_DEBUG: Checking transition conditions...
    - Initial deal complete: True
-   - Weak players: {'Andy', 'Bot 2'}
-   - Redeal decisions: {'Bot 2': True}
-   - Weak players awaiting: {'Andy'}
-   - All decisions received: False
-⏳ PREP_STATE_DEBUG: Waiting for more redeal decisions (1/2)
+   - Weak players: {'Bot 2', 'Andy'}
+⏳ PREP_STATE_DEBUG: Have weak players - waiting for event-based transition
+DEBUG_WS: Error sending to client in room 070A0B: 
+DEBUG_WS_DISCONNECT: WebSocket client disconnected from room 070A0B.
+INFO:     connection closed
+DEBUG_WS: Unregistered connection for room 070A0B. Remaining connections: 0
+DEBUG_WS: Room 070A0B has active game - keeping broadcast queue alive
+INFO:     ('127.0.0.1', 56860) - "WebSocket /ws/070A0B" [accepted]
+DEBUG_WS: Registered new connection for room 070A0B. Total connections: 1
+INFO:     connection open
+DEBUG_WS_RECEIVE: Received event 'client_ready' from client in room 070A0B with data: {'room_id': '070A0B'}
+DEBUG_WS_RECEIVE: Sent current game phase preparation to client in room 070A0B
+DEBUG_WS_RECEIVE: Sent initial room state to client in room 070A0B after client_ready.
 🔍 PREP_STATE_DEBUG: Checking transition conditions...
    - Initial deal complete: True
-   - Weak players: {'Andy', 'Bot 2'}
-   - Redeal decisions: {'Bot 2': True}
-   - Weak players awaiting: {'Andy'}
-   - All decisions received: False
-⏳ PREP_STATE_DEBUG: Waiting for more redeal decisions (1/2)
+   - Weak players: {'Bot 2', 'Andy'}
+⏳ PREP_STATE_DEBUG: Have weak players - waiting for event-based transition
 🔍 PREP_STATE_DEBUG: Checking transition conditions...
    - Initial deal complete: True
-   - Weak players: {'Andy', 'Bot 2'}
-   - Redeal decisions: {'Bot 2': True}
-   - Weak players awaiting: {'Andy'}
-   - All decisions received: False
-⏳ PREP_STATE_DEBUG: Waiting for more redeal decisions (1/2)
+   - Weak players: {'Bot 2', 'Andy'}
+⏳ PREP_STATE_DEBUG: Have weak players - waiting for event-based transition
 🔍 PREP_STATE_DEBUG: Checking transition conditions...
    - Initial deal complete: True
-   - Weak players: {'Andy', 'Bot 2'}
-   - Redeal decisions: {'Bot 2': True}
-   - Weak players awaiting: {'Andy'}
-   - All decisions received: False
-⏳ PREP_STATE_DEBUG: Waiting for more redeal decisions (1/2)
+   - Weak players: {'Bot 2', 'Andy'}
+⏳ PREP_STATE_DEBUG: Have weak players - waiting for event-based transition
 🔍 PREP_STATE_DEBUG: Checking transition conditions...
    - Initial deal complete: True
-   - Weak players: {'Andy', 'Bot 2'}
-   - Redeal decisions: {'Bot 2': True}
-   - Weak players awaiting: {'Andy'}
-   - All decisions received: False
-⏳ PREP_STATE_DEBUG: Waiting for more redeal decisions (1/2)
+   - Weak players: {'Bot 2', 'Andy'}
+⏳ PREP_STATE_DEBUG: Have weak players - waiting for event-based transition
 🔍 PREP_STATE_DEBUG: Checking transition conditions...
    - Initial deal complete: True
-   - Weak players: {'Andy', 'Bot 2'}
-   - Redeal decisions: {'Bot 2': True}
-   - Weak players awaiting: {'Andy'}
-   - All decisions received: False
-⏳ PREP_STATE_DEBUG: Waiting for more redeal decisions (1/2)
+   - Weak players: {'Bot 2', 'Andy'}
+⏳ PREP_STATE_DEBUG: Have weak players - waiting for event-based transition
 🔍 PREP_STATE_DEBUG: Checking transition conditions...
    - Initial deal complete: True
-   - Weak players: {'Andy', 'Bot 2'}
-   - Redeal decisions: {'Bot 2': True}
-   - Weak players awaiting: {'Andy'}
-   - All decisions received: False
-⏳ PREP_STATE_DEBUG: Waiting for more redeal decisions (1/2)
+   - Weak players: {'Bot 2', 'Andy'}
+⏳ PREP_STATE_DEBUG: Have weak players - waiting for event-based transition
 🔍 PREP_STATE_DEBUG: Checking transition conditions...
    - Initial deal complete: True
-   - Weak players: {'Andy', 'Bot 2'}
-   - Redeal decisions: {'Bot 2': True}
-   - Weak players awaiting: {'Andy'}
-   - All decisions received: False
-⏳ PREP_STATE_DEBUG: Waiting for more redeal decisions (1/2)
+   - Weak players: {'Bot 2', 'Andy'}
+⏳ PREP_STATE_DEBUG: Have weak players - waiting for event-based transition
 🔍 PREP_STATE_DEBUG: Checking transition conditions...
    - Initial deal complete: True
-   - Weak players: {'Andy', 'Bot 2'}
-   - Redeal decisions: {'Bot 2': True}
-   - Weak players awaiting: {'Andy'}
-   - All decisions received: False
-⏳ PREP_STATE_DEBUG: Waiting for more redeal decisions (1/2)
+   - Weak players: {'Bot 2', 'Andy'}
+⏳ PREP_STATE_DEBUG: Have weak players - waiting for event-based transition
 🔍 PREP_STATE_DEBUG: Checking transition conditions...
    - Initial deal complete: True
-   - Weak players: {'Andy', 'Bot 2'}
-   - Redeal decisions: {'Bot 2': True}
-   - Weak players awaiting: {'Andy'}
-   - All decisions received: False
-⏳ PREP_STATE_DEBUG: Waiting for more redeal decisions (1/2)
+   - Weak players: {'Bot 2', 'Andy'}
+⏳ PREP_STATE_DEBUG: Have weak players - waiting for event-based transition
 🔍 PREP_STATE_DEBUG: Checking transition conditions...
    - Initial deal complete: True
-   - Weak players: {'Andy', 'Bot 2'}
-   - Redeal decisions: {'Bot 2': True}
-   - Weak players awaiting: {'Andy'}
-   - All decisions received: False
-⏳ PREP_STATE_DEBUG: Waiting for more redeal decisions (1/2)
-DEBUG_WS_RECEIVE: Received event 'accept_redeal' from client in room B5A4F0 with data: {'player_name': 'Andy'}
+   - Weak players: {'Bot 2', 'Andy'}
+⏳ PREP_STATE_DEBUG: Have weak players - waiting for event-based transition
+🔍 PREP_STATE_DEBUG: Checking transition conditions...
+   - Initial deal complete: True
+   - Weak players: {'Bot 2', 'Andy'}
+⏳ PREP_STATE_DEBUG: Have weak players - waiting for event-based transition
+🔍 PREP_STATE_DEBUG: Checking transition conditions...
+   - Initial deal complete: True
+   - Weak players: {'Bot 2', 'Andy'}
+⏳ PREP_STATE_DEBUG: Have weak players - waiting for event-based transition
+🔍 PREP_STATE_DEBUG: Checking transition conditions...
+   - Initial deal complete: True
+   - Weak players: {'Bot 2', 'Andy'}
+⏳ PREP_STATE_DEBUG: Have weak players - waiting for event-based transition
+DEBUG_WS_RECEIVE: Received event 'accept_redeal' from client in room 070A0B with data: {'player_name': 'Andy'}
 ✅ Redeal accept queued: Andy
 🔍 REDEAL_DEBUG: Processing REDEAL_RESPONSE for Andy, accept=True
 🔍 REDEAL_DEBUG: _handle_redeal_decision - Andy decision: accept=True
@@ -163,339 +135,86 @@ DEBUG_WS_RECEIVE: Received event 'accept_redeal' from client in room B5A4F0 with
 🔧 DEBUG: Andy (index 0) assigned weak hand
 🔧 DEBUG: Bot 2 (index 1) assigned weak hand
 🔧 DEBUG: Final hands verification:
-  Andy: ['CHARIOT_BLACK(7)', 'SOLDIER_RED(2)', 'CANNON_BLACK(3)', 'HORSE_BLACK(5)', 'SOLDIER_BLACK(1)', 'ELEPHANT_BLACK(9)', 'HORSE_RED(6)', 'SOLDIER_RED(2)']
+  Andy: ['CANNON_BLACK(3)', 'CHARIOT_RED(8)', 'SOLDIER_RED(2)', 'CANNON_RED(4)', 'CANNON_RED(4)', 'CHARIOT_BLACK(7)', 'CHARIOT_RED(8)', 'SOLDIER_RED(2)']
     → Strong pieces (>9): 0
     → Has RED_GENERAL: False
     ⚠️ WARNING: Andy has NO strong pieces!
-  Bot 2: ['SOLDIER_BLACK(1)', 'SOLDIER_RED(2)', 'SOLDIER_BLACK(1)', 'SOLDIER_RED(2)', 'SOLDIER_RED(2)', 'HORSE_RED(6)', 'SOLDIER_BLACK(1)', 'HORSE_BLACK(5)']
+  Bot 2: ['SOLDIER_BLACK(1)', 'SOLDIER_BLACK(1)', 'ELEPHANT_BLACK(9)', 'HORSE_RED(6)', 'HORSE_RED(6)', 'SOLDIER_BLACK(1)', 'SOLDIER_BLACK(1)', 'SOLDIER_BLACK(1)']
     → Strong pieces (>9): 0
     → Has RED_GENERAL: False
     ⚠️ WARNING: Bot 2 has NO strong pieces!
-  Bot 3: ['ELEPHANT_RED(10)', 'GENERAL_BLACK(13)', 'CHARIOT_RED(8)', 'GENERAL_RED(14)', 'CANNON_BLACK(3)', 'ELEPHANT_RED(10)', 'CHARIOT_RED(8)', 'ADVISOR_BLACK(11)']
-    → Strong pieces (>9): 5
+  Bot 3: ['ELEPHANT_RED(10)', 'HORSE_BLACK(5)', 'HORSE_BLACK(5)', 'ADVISOR_BLACK(11)', 'ADVISOR_RED(12)', 'SOLDIER_RED(2)', 'GENERAL_RED(14)', 'ELEPHANT_BLACK(9)']
+    → Strong pieces (>9): 4
     → Has RED_GENERAL: True
-  Bot 4: ['CANNON_RED(4)', 'CANNON_RED(4)', 'SOLDIER_BLACK(1)', 'ADVISOR_BLACK(11)', 'ADVISOR_RED(12)', 'ELEPHANT_BLACK(9)', 'CHARIOT_BLACK(7)', 'ADVISOR_RED(12)']
-    → Strong pieces (>9): 3
+  Bot 4: ['GENERAL_BLACK(13)', 'ELEPHANT_RED(10)', 'ADVISOR_BLACK(11)', 'SOLDIER_RED(2)', 'CANNON_BLACK(3)', 'CHARIOT_BLACK(7)', 'SOLDIER_RED(2)', 'ADVISOR_RED(12)']
+    → Strong pieces (>9): 4
     → Has RED_GENERAL: False
 🔍 PREP_STATE_DEBUG: Play order: [Andy - 0 pts, Bot 2 - 0 pts, Bot 3 - 0 pts, Bot 4 - 0 pts]
 🔍 PREP_STATE_DEBUG: Play order types: [<class 'engine.player.Player'>, <class 'engine.player.Player'>, <class 'engine.player.Player'>, <class 'engine.player.Player'>]
-🎯 PREP_STATE_DEBUG: All weak players awaiting simultaneous decisions: {'Andy', 'Bot 2'}
-DEBUG_WS: Message for event 'phase_change' added to queue for room B5A4F0.
-🤖 PREP_STATE_DEBUG: Triggering bot manager for simultaneous redeal decisions...
-👤 PREP_STATE_DEBUG: Human weak player: Andy - waiting for UI
-🤖 PREP_STATE_DEBUG: Bot weak player found: Bot 2
-🔄 BOT_HANDLER_DEBUG: Handling simultaneous redeal decisions
-🤖 REDEAL: Processing 1 bot decisions sequentially
-🤖 Bot Bot 2 will decide in 1.4s...
+🎯 PREP_STATE_DEBUG: All weak players awaiting simultaneous decisions: {'Bot 2', 'Andy'}
+DEBUG_WS: Message for event 'phase_change' added to queue for room 070A0B.
+🔍 PHASE_TRACKING_FIX: Same phase update: preparation
+🚀 ENTERPRISE_BOT_DEBUG: _handle_enterprise_phase_change called - phase: preparation
+🎲 REDEAL_PHASE_DEBUG: Handling redeal decisions - awaiting: ['Bot 2', 'Andy']
+🎲 REDEAL_PHASE_DEBUG: Player Bot 2 already decided
+👤 REDEAL_PHASE_DEBUG: Player Andy is human, skipping
+🔍 PREP_STATE_DEBUG: Checking transition conditions...
+   - Initial deal complete: True
+   - Weak players: {'Bot 2', 'Andy'}
+⏳ PREP_STATE_DEBUG: Have weak players - waiting for event-based transition
+DEBUG_WS_RECEIVE: Received event 'accept_redeal' from client in room 070A0B with data: {'player_name': 'Andy'}
+✅ Redeal accept queued: Andy
+🔍 REDEAL_DEBUG: Processing REDEAL_RESPONSE for Andy, accept=True
+🔍 REDEAL_DEBUG: _handle_redeal_decision - Andy decision: accept=True
+🔍 REDEAL_DEBUG: Recorded decision - redeal_decisions now: {'Andy': True}
+DEBUG_WS: Message for event 'phase_change' added to queue for room 070A0B.
+🔍 PHASE_TRACKING_FIX: Same phase update: preparation
+🚀 ENTERPRISE_BOT_DEBUG: _handle_enterprise_phase_change called - phase: preparation
+🎲 REDEAL_PHASE_DEBUG: Handling redeal decisions - awaiting: ['Bot 2']
+🤖 REDEAL_PHASE_DEBUG: Bot Bot 2 will decide in 0.9s...
+🤖 REDEAL_PHASE_DEBUG: Bot Bot 2 making redeal decision
 🤖 Bot Bot 2 deciding: ACCEPT redeal
 ✅ Bot Bot 2 ACCEPTED redeal
 🔍 PREP_STATE_DEBUG: Checking transition conditions...
    - Initial deal complete: True
-   - Weak players: {'Andy', 'Bot 2'}
-   - Redeal decisions: {}
-   - Weak players awaiting: {'Andy', 'Bot 2'}
-   - All decisions received: False
-⏳ PREP_STATE_DEBUG: Waiting for more redeal decisions (0/2)
+   - Weak players: {'Bot 2', 'Andy'}
+⏳ PREP_STATE_DEBUG: Have weak players - waiting for event-based transition
 🔍 REDEAL_DEBUG: Processing REDEAL_REQUEST as accept for Bot 2
 🔍 REDEAL_DEBUG: _handle_redeal_decision - Bot 2 decision: accept=True
-🔍 REDEAL_DEBUG: Recorded decision - redeal_decisions now: {'Bot 2': True}
-DEBUG_WS: Message for event 'phase_change' added to queue for room B5A4F0.
-🔍 PREP_STATE_DEBUG: Checking transition conditions...
-   - Initial deal complete: True
-   - Weak players: {'Andy', 'Bot 2'}
-   - Redeal decisions: {'Bot 2': True}
-   - Weak players awaiting: {'Andy'}
-   - All decisions received: False
-⏳ PREP_STATE_DEBUG: Waiting for more redeal decisions (1/2)
-🔍 PREP_STATE_DEBUG: Checking transition conditions...
-   - Initial deal complete: True
-   - Weak players: {'Andy', 'Bot 2'}
-   - Redeal decisions: {'Bot 2': True}
-   - Weak players awaiting: {'Andy'}
-   - All decisions received: False
-⏳ PREP_STATE_DEBUG: Waiting for more redeal decisions (1/2)
-🔍 PREP_STATE_DEBUG: Checking transition conditions...
-   - Initial deal complete: True
-   - Weak players: {'Andy', 'Bot 2'}
-   - Redeal decisions: {'Bot 2': True}
-   - Weak players awaiting: {'Andy'}
-   - All decisions received: False
-⏳ PREP_STATE_DEBUG: Waiting for more redeal decisions (1/2)
-🔍 PREP_STATE_DEBUG: Checking transition conditions...
-   - Initial deal complete: True
-   - Weak players: {'Andy', 'Bot 2'}
-   - Redeal decisions: {'Bot 2': True}
-   - Weak players awaiting: {'Andy'}
-   - All decisions received: False
-⏳ PREP_STATE_DEBUG: Waiting for more redeal decisions (1/2)
-🔍 PREP_STATE_DEBUG: Checking transition conditions...
-   - Initial deal complete: True
-   - Weak players: {'Andy', 'Bot 2'}
-   - Redeal decisions: {'Bot 2': True}
-   - Weak players awaiting: {'Andy'}
-   - All decisions received: False
-⏳ PREP_STATE_DEBUG: Waiting for more redeal decisions (1/2)
-🔍 PREP_STATE_DEBUG: Checking transition conditions...
-   - Initial deal complete: True
-   - Weak players: {'Andy', 'Bot 2'}
-   - Redeal decisions: {'Bot 2': True}
-   - Weak players awaiting: {'Andy'}
-   - All decisions received: False
-⏳ PREP_STATE_DEBUG: Waiting for more redeal decisions (1/2)
-🔍 PREP_STATE_DEBUG: Checking transition conditions...
-   - Initial deal complete: True
-   - Weak players: {'Andy', 'Bot 2'}
-   - Redeal decisions: {'Bot 2': True}
-   - Weak players awaiting: {'Andy'}
-   - All decisions received: False
-⏳ PREP_STATE_DEBUG: Waiting for more redeal decisions (1/2)
-🔍 PREP_STATE_DEBUG: Checking transition conditions...
-   - Initial deal complete: True
-   - Weak players: {'Andy', 'Bot 2'}
-   - Redeal decisions: {'Bot 2': True}
-   - Weak players awaiting: {'Andy'}
-   - All decisions received: False
-⏳ PREP_STATE_DEBUG: Waiting for more redeal decisions (1/2)
-🔍 PREP_STATE_DEBUG: Checking transition conditions...
-   - Initial deal complete: True
-   - Weak players: {'Andy', 'Bot 2'}
-   - Redeal decisions: {'Bot 2': True}
-   - Weak players awaiting: {'Andy'}
-   - All decisions received: False
-⏳ PREP_STATE_DEBUG: Waiting for more redeal decisions (1/2)
-🔍 PREP_STATE_DEBUG: Checking transition conditions...
-   - Initial deal complete: True
-   - Weak players: {'Andy', 'Bot 2'}
-   - Redeal decisions: {'Bot 2': True}
-   - Weak players awaiting: {'Andy'}
-   - All decisions received: False
-⏳ PREP_STATE_DEBUG: Waiting for more redeal decisions (1/2)
-🔍 PREP_STATE_DEBUG: Checking transition conditions...
-   - Initial deal complete: True
-   - Weak players: {'Andy', 'Bot 2'}
-   - Redeal decisions: {'Bot 2': True}
-   - Weak players awaiting: {'Andy'}
-   - All decisions received: False
-⏳ PREP_STATE_DEBUG: Waiting for more redeal decisions (1/2)
-🔍 PREP_STATE_DEBUG: Checking transition conditions...
-   - Initial deal complete: True
-   - Weak players: {'Andy', 'Bot 2'}
-   - Redeal decisions: {'Bot 2': True}
-   - Weak players awaiting: {'Andy'}
-   - All decisions received: False
-⏳ PREP_STATE_DEBUG: Waiting for more redeal decisions (1/2)
-🔍 PREP_STATE_DEBUG: Checking transition conditions...
-   - Initial deal complete: True
-   - Weak players: {'Andy', 'Bot 2'}
-   - Redeal decisions: {'Bot 2': True}
-   - Weak players awaiting: {'Andy'}
-   - All decisions received: False
-⏳ PREP_STATE_DEBUG: Waiting for more redeal decisions (1/2)
-🔍 PREP_STATE_DEBUG: Checking transition conditions...
-   - Initial deal complete: True
-   - Weak players: {'Andy', 'Bot 2'}
-   - Redeal decisions: {'Bot 2': True}
-   - Weak players awaiting: {'Andy'}
-   - All decisions received: False
-⏳ PREP_STATE_DEBUG: Waiting for more redeal decisions (1/2)
-🔍 PREP_STATE_DEBUG: Checking transition conditions...
-   - Initial deal complete: True
-   - Weak players: {'Andy', 'Bot 2'}
-   - Redeal decisions: {'Bot 2': True}
-   - Weak players awaiting: {'Andy'}
-   - All decisions received: False
-⏳ PREP_STATE_DEBUG: Waiting for more redeal decisions (1/2)
-🔍 PREP_STATE_DEBUG: Checking transition conditions...
-   - Initial deal complete: True
-   - Weak players: {'Andy', 'Bot 2'}
-   - Redeal decisions: {'Bot 2': True}
-   - Weak players awaiting: {'Andy'}
-   - All decisions received: False
-⏳ PREP_STATE_DEBUG: Waiting for more redeal decisions (1/2)
-🔍 PREP_STATE_DEBUG: Checking transition conditions...
-   - Initial deal complete: True
-   - Weak players: {'Andy', 'Bot 2'}
-   - Redeal decisions: {'Bot 2': True}
-   - Weak players awaiting: {'Andy'}
-   - All decisions received: False
-⏳ PREP_STATE_DEBUG: Waiting for more redeal decisions (1/2)
-🔍 PREP_STATE_DEBUG: Checking transition conditions...
-   - Initial deal complete: True
-   - Weak players: {'Andy', 'Bot 2'}
-   - Redeal decisions: {'Bot 2': True}
-   - Weak players awaiting: {'Andy'}
-   - All decisions received: False
-⏳ PREP_STATE_DEBUG: Waiting for more redeal decisions (1/2)
-🔍 PREP_STATE_DEBUG: Checking transition conditions...
-   - Initial deal complete: True
-   - Weak players: {'Andy', 'Bot 2'}
-   - Redeal decisions: {'Bot 2': True}
-   - Weak players awaiting: {'Andy'}
-   - All decisions received: False
-⏳ PREP_STATE_DEBUG: Waiting for more redeal decisions (1/2)
-🔍 PREP_STATE_DEBUG: Checking transition conditions...
-   - Initial deal complete: True
-   - Weak players: {'Andy', 'Bot 2'}
-   - Redeal decisions: {'Bot 2': True}
-   - Weak players awaiting: {'Andy'}
-   - All decisions received: False
-⏳ PREP_STATE_DEBUG: Waiting for more redeal decisions (1/2)
-🔍 PREP_STATE_DEBUG: Checking transition conditions...
-   - Initial deal complete: True
-   - Weak players: {'Andy', 'Bot 2'}
-   - Redeal decisions: {'Bot 2': True}
-   - Weak players awaiting: {'Andy'}
-   - All decisions received: False
-⏳ PREP_STATE_DEBUG: Waiting for more redeal decisions (1/2)
-🔍 PREP_STATE_DEBUG: Checking transition conditions...
-   - Initial deal complete: True
-   - Weak players: {'Andy', 'Bot 2'}
-   - Redeal decisions: {'Bot 2': True}
-   - Weak players awaiting: {'Andy'}
-   - All decisions received: False
-⏳ PREP_STATE_DEBUG: Waiting for more redeal decisions (1/2)
-🔍 PREP_STATE_DEBUG: Checking transition conditions...
-   - Initial deal complete: True
-   - Weak players: {'Andy', 'Bot 2'}
-   - Redeal decisions: {'Bot 2': True}
-   - Weak players awaiting: {'Andy'}
-   - All decisions received: False
-⏳ PREP_STATE_DEBUG: Waiting for more redeal decisions (1/2)
-🔍 PREP_STATE_DEBUG: Checking transition conditions...
-   - Initial deal complete: True
-   - Weak players: {'Andy', 'Bot 2'}
-   - Redeal decisions: {'Bot 2': True}
-   - Weak players awaiting: {'Andy'}
-   - All decisions received: False
-⏳ PREP_STATE_DEBUG: Waiting for more redeal decisions (1/2)
-🔍 PREP_STATE_DEBUG: Checking transition conditions...
-   - Initial deal complete: True
-   - Weak players: {'Andy', 'Bot 2'}
-   - Redeal decisions: {'Bot 2': True}
-   - Weak players awaiting: {'Andy'}
-   - All decisions received: False
-⏳ PREP_STATE_DEBUG: Waiting for more redeal decisions (1/2)
-🔍 PREP_STATE_DEBUG: Checking transition conditions...
-   - Initial deal complete: True
-   - Weak players: {'Andy', 'Bot 2'}
-   - Redeal decisions: {'Bot 2': True}
-   - Weak players awaiting: {'Andy'}
-   - All decisions received: False
-⏳ PREP_STATE_DEBUG: Waiting for more redeal decisions (1/2)
-🔍 PREP_STATE_DEBUG: Checking transition conditions...
-   - Initial deal complete: True
-   - Weak players: {'Andy', 'Bot 2'}
-   - Redeal decisions: {'Bot 2': True}
-   - Weak players awaiting: {'Andy'}
-   - All decisions received: False
-⏳ PREP_STATE_DEBUG: Waiting for more redeal decisions (1/2)
-🔍 PREP_STATE_DEBUG: Checking transition conditions...
-   - Initial deal complete: True
-   - Weak players: {'Andy', 'Bot 2'}
-   - Redeal decisions: {'Bot 2': True}
-   - Weak players awaiting: {'Andy'}
-   - All decisions received: False
-⏳ PREP_STATE_DEBUG: Waiting for more redeal decisions (1/2)
-🔍 PREP_STATE_DEBUG: Checking transition conditions...
-   - Initial deal complete: True
-   - Weak players: {'Andy', 'Bot 2'}
-   - Redeal decisions: {'Bot 2': True}
-   - Weak players awaiting: {'Andy'}
-   - All decisions received: False
-⏳ PREP_STATE_DEBUG: Waiting for more redeal decisions (1/2)
-🔍 PREP_STATE_DEBUG: Checking transition conditions...
-   - Initial deal complete: True
-   - Weak players: {'Andy', 'Bot 2'}
-   - Redeal decisions: {'Bot 2': True}
-   - Weak players awaiting: {'Andy'}
-   - All decisions received: False
-⏳ PREP_STATE_DEBUG: Waiting for more redeal decisions (1/2)
-🔍 PREP_STATE_DEBUG: Checking transition conditions...
-   - Initial deal complete: True
-   - Weak players: {'Andy', 'Bot 2'}
-   - Redeal decisions: {'Bot 2': True}
-   - Weak players awaiting: {'Andy'}
-   - All decisions received: False
-⏳ PREP_STATE_DEBUG: Waiting for more redeal decisions (1/2)
-🔍 PREP_STATE_DEBUG: Checking transition conditions...
-   - Initial deal complete: True
-   - Weak players: {'Andy', 'Bot 2'}
-   - Redeal decisions: {'Bot 2': True}
-   - Weak players awaiting: {'Andy'}
-   - All decisions received: False
-⏳ PREP_STATE_DEBUG: Waiting for more redeal decisions (1/2)
-🔍 PREP_STATE_DEBUG: Checking transition conditions...
-   - Initial deal complete: True
-   - Weak players: {'Andy', 'Bot 2'}
-   - Redeal decisions: {'Bot 2': True}
-   - Weak players awaiting: {'Andy'}
-   - All decisions received: False
-⏳ PREP_STATE_DEBUG: Waiting for more redeal decisions (1/2)
-🔍 PREP_STATE_DEBUG: Checking transition conditions...
-   - Initial deal complete: True
-   - Weak players: {'Andy', 'Bot 2'}
-   - Redeal decisions: {'Bot 2': True}
-   - Weak players awaiting: {'Andy'}
-   - All decisions received: False
-⏳ PREP_STATE_DEBUG: Waiting for more redeal decisions (1/2)
-🔍 PREP_STATE_DEBUG: Checking transition conditions...
-   - Initial deal complete: True
-   - Weak players: {'Andy', 'Bot 2'}
-   - Redeal decisions: {'Bot 2': True}
-   - Weak players awaiting: {'Andy'}
-   - All decisions received: False
-⏳ PREP_STATE_DEBUG: Waiting for more redeal decisions (1/2)
-🔍 PREP_STATE_DEBUG: Checking transition conditions...
-   - Initial deal complete: True
-   - Weak players: {'Andy', 'Bot 2'}
-   - Redeal decisions: {'Bot 2': True}
-   - Weak players awaiting: {'Andy'}
-   - All decisions received: False
-⏳ PREP_STATE_DEBUG: Waiting for more redeal decisions (1/2)
-DEBUG_WS_RECEIVE: Received event 'accept_redeal' from client in room B5A4F0 with data: {'player_name': 'Andy'}
-✅ Redeal accept queued: Andy
-🔍 REDEAL_DEBUG: Processing REDEAL_RESPONSE for Andy, accept=True
-🔍 REDEAL_DEBUG: _handle_redeal_decision - Andy decision: accept=True
-🔍 REDEAL_DEBUG: Recorded decision - redeal_decisions now: {'Bot 2': True, 'Andy': True}
-🔍 REDEAL_DEBUG: _process_all_decisions - first_accepter: Andy, all decisions: {'Bot 2': True, 'Andy': True}
+🔍 REDEAL_DEBUG: Recorded decision - redeal_decisions now: {'Andy': True, 'Bot 2': True}
+🔍 REDEAL_DEBUG: _process_all_decisions - first_accepter: Andy, all decisions: {'Andy': True, 'Bot 2': True}
 🔍 DEBUG: Redeal limit check - multiplier: 3, limit: 2
 🚫 DEBUG: Redeal limit (2) exceeded. Multiplier is 3 (>3)
 🔄 DEBUG: Switching to guaranteed no redeal to prevent infinite loop.
 🛡️ DEBUG: Dealing guaranteed no-redeal hands
 🛡️ DEBUG: Available pieces - Strong: 7, Weak: 24
-  → Andy gets strong piece: GENERAL_BLACK(13)
-  → Bot 2 gets strong piece: ADVISOR_BLACK(11)
+  → Andy gets strong piece: ADVISOR_BLACK(11)
+  → Bot 2 gets strong piece: ELEPHANT_RED(10)
   → Bot 3 gets strong piece: ADVISOR_BLACK(11)
-  → Bot 4 gets strong piece: GENERAL_RED(14)
+  → Bot 4 gets strong piece: ADVISOR_RED(12)
 🛡️ DEBUG: Guaranteed no-redeal hands dealt:
 🔧 DEBUG: Final hands verification:
-  Andy: ['GENERAL_BLACK(13)', 'SOLDIER_RED(2)', 'HORSE_BLACK(5)', 'CANNON_RED(4)', 'SOLDIER_BLACK(1)', 'SOLDIER_BLACK(1)', 'SOLDIER_RED(2)', 'SOLDIER_RED(2)']
-    → Strong pieces (>9): 1
-    → Has RED_GENERAL: False
-  Bot 2: ['ELEPHANT_RED(10)', 'ELEPHANT_BLACK(9)', 'ELEPHANT_RED(10)', 'ADVISOR_BLACK(11)', 'HORSE_BLACK(5)', 'HORSE_RED(6)', 'SOLDIER_BLACK(1)', 'ADVISOR_RED(12)']
-    → Strong pieces (>9): 4
-    → Has RED_GENERAL: False
-  Bot 3: ['ELEPHANT_BLACK(9)', 'CANNON_BLACK(3)', 'CHARIOT_BLACK(7)', 'ADVISOR_RED(12)', 'ADVISOR_BLACK(11)', 'CANNON_RED(4)', 'SOLDIER_BLACK(1)', 'SOLDIER_RED(2)']
+  Andy: ['ELEPHANT_BLACK(9)', 'SOLDIER_RED(2)', 'ELEPHANT_RED(10)', 'CHARIOT_BLACK(7)', 'ADVISOR_BLACK(11)', 'CHARIOT_RED(8)', 'CHARIOT_BLACK(7)', 'HORSE_BLACK(5)']
     → Strong pieces (>9): 2
     → Has RED_GENERAL: False
-  Bot 4: ['GENERAL_RED(14)', 'CANNON_BLACK(3)', 'CHARIOT_RED(8)', 'SOLDIER_BLACK(1)', 'CHARIOT_BLACK(7)', 'HORSE_RED(6)', 'CHARIOT_RED(8)', 'SOLDIER_RED(2)']
-    → Strong pieces (>9): 1
+  Bot 2: ['SOLDIER_RED(2)', 'ELEPHANT_BLACK(9)', 'SOLDIER_RED(2)', 'SOLDIER_BLACK(1)', 'CANNON_RED(4)', 'GENERAL_RED(14)', 'HORSE_RED(6)', 'ELEPHANT_RED(10)']
+    → Strong pieces (>9): 2
     → Has RED_GENERAL: True
+  Bot 3: ['ADVISOR_BLACK(11)', 'SOLDIER_BLACK(1)', 'SOLDIER_RED(2)', 'SOLDIER_BLACK(1)', 'SOLDIER_BLACK(1)', 'CANNON_BLACK(3)', 'GENERAL_BLACK(13)', 'CHARIOT_RED(8)']
+    → Strong pieces (>9): 2
+    → Has RED_GENERAL: False
+  Bot 4: ['SOLDIER_BLACK(1)', 'HORSE_BLACK(5)', 'SOLDIER_RED(2)', 'ADVISOR_RED(12)', 'CANNON_RED(4)', 'HORSE_RED(6)', 'CANNON_BLACK(3)', 'ADVISOR_RED(12)']
+    → Strong pieces (>9): 2
+    → Has RED_GENERAL: False
 ✅ SUCCESS: No weak hands - redeal prevented!
 ✅ PREP_STATE_DEBUG: No weak hands - keeping existing starter: Andy
-🔍 PREP_STATE_DEBUG: Checking transition conditions...
-   - Initial deal complete: True
-   - Weak players: set()
-   - Redeal decisions: {}
-   - Weak players awaiting: set()
-   - All decisions received: True
-✅ PREP_STATE_DEBUG: No weak players, transitioning to DECLARATION
 📢 DECL_STATE_DEBUG: Using round_starter: Andy
-DEBUG_WS: Message for event 'phase_change' added to queue for room B5A4F0.
-DEBUG_WS: Message for event 'phase_change' added to queue for room B5A4F0.
-🔄 PHASE_TRACKING_FIX: New phase detected None -> declaration
+DEBUG_WS: Message for event 'phase_change' added to queue for room 070A0B.
+DEBUG_WS: Message for event 'phase_change' added to queue for room 070A0B.
+🔄 PHASE_TRACKING_FIX: New phase detected preparation -> declaration
+🚀 ENTERPRISE_BOT_DEBUG: _handle_enterprise_phase_change called - phase: declaration
 👤 ENTERPRISE_BOT_DEBUG: Current declarer Andy is human - waiting
-DEBUG_WS: Message for event 'phase_change' added to queue for room B5A4F0.
+DEBUG_WS: Message for event 'phase_change' added to queue for room 070A0B.
 🔍 BOT_ROUND_DEBUG: Game state current_order: None
 🔍 BOT_ROUND_DEBUG: Game round_starter: Andy
 🔍 BOT_ROUND_DEBUG: Game current_player: Andy
@@ -507,600 +226,5 @@ DEBUG_WS: Message for event 'phase_change' added to queue for room B5A4F0.
 🔍 DECL_PHASE_DEBUG: Starting loop from index 0 to 4
 🔍 DECL_PHASE_DEBUG: Checking player 0 (Andy), is_bot: False
 🔍 DECL_PHASE_DEBUG: Player Andy is human, stopping bot declarations
-DEBUG_WS_RECEIVE: Received event 'ping' from client in room lobby with data: {'timestamp': 1751956957829}
-DEBUG_WS_RECEIVE: Received event 'ping' from client in room B5A4F0 with data: {'timestamp': 1751956960727}
-DEBUG_WS_RECEIVE: Received event 'declare' from client in room B5A4F0 with data: {'value': 3, 'player_name': 'Andy'}
-✅ Declaration queued: Andy -> 3
-DEBUG_WS: Message for event 'phase_change' added to queue for room B5A4F0.
-🔍 PHASE_TRACKING_FIX: Same phase update: declaration
-✅ PHASE_TRACKING_FIX: Marked declaration phase as triggered
-🔍 DECL_PHASE_DEBUG: _handle_declaration_phase called with last_declarer: 'Andy'
-🔍 BOT_DEBUG: Got declaration order from state machine: ['Andy', 'Bot 2', 'Bot 3', 'Bot 4']
-🔍 DECL_PHASE_DEBUG: Declaration order: ['Andy', 'Bot 2', 'Bot 3', 'Bot 4']
-🔍 DECL_PHASE_DEBUG: Last declarer 'Andy' index: 0
-🔍 DECL_PHASE_DEBUG: Starting loop from index 1 to 4
-🔍 DECL_PHASE_DEBUG: Checking player 1 (Bot 2), is_bot: True
-🔍 DECL_PHASE_DEBUG: Player Bot 2 declared value: 0 (from phase data)
-🔍 DECL_PHASE_DEBUG: All phase declarations: {'Andy': 3}
-🤖 DECL_PHASE_DEBUG: Bot Bot 2 will declare in 1.2s...
-🤖 DECL_PHASE_DEBUG: Bot Bot 2 will now declare!
-🔧 BOT_DECLARE_DEBUG: State machine result: {'success': True, 'queued': True}
-✅ Bot Bot 2 declared 1
-🔍 DECL_PHASE_DEBUG: Checking player 2 (Bot 3), is_bot: True
-🔍 DECL_PHASE_DEBUG: Player Bot 3 declared value: 0 (from phase data)
-🔍 DECL_PHASE_DEBUG: All phase declarations: {'Andy': 3}
-🤖 DECL_PHASE_DEBUG: Bot Bot 3 will declare in 1.5s...
-🤖 DECL_PHASE_DEBUG: Bot Bot 3 will now declare!
-🔧 BOT_DECLARE_DEBUG: State machine result: {'success': True, 'queued': True}
-✅ Bot Bot 3 declared 1
-🔍 DECL_PHASE_DEBUG: Checking player 3 (Bot 4), is_bot: True
-🔍 DECL_PHASE_DEBUG: Player Bot 4 declared value: 0 (from phase data)
-🔍 DECL_PHASE_DEBUG: All phase declarations: {'Andy': 3}
-🤖 DECL_PHASE_DEBUG: Bot Bot 4 will declare in 0.6s...
-🤖 DECL_PHASE_DEBUG: Bot Bot 4 will now declare!
-🔧 BOT_DECLARE_DEBUG: State machine result: {'success': True, 'queued': True}
-✅ Bot Bot 4 declared 1
-DEBUG_WS: Message for event 'phase_change' added to queue for room B5A4F0.
-🔍 PHASE_TRACKING_FIX: Same phase update: declaration
-✅ PHASE_TRACKING_FIX: Marked declaration phase as triggered
-🔍 DECL_PHASE_DEBUG: _handle_declaration_phase called with last_declarer: 'Bot 2'
-🔍 BOT_DEBUG: Got declaration order from state machine: ['Andy', 'Bot 2', 'Bot 3', 'Bot 4']
-🔍 DECL_PHASE_DEBUG: Declaration order: ['Andy', 'Bot 2', 'Bot 3', 'Bot 4']
-🔍 DECL_PHASE_DEBUG: Last declarer 'Bot 2' index: 1
-🔍 DECL_PHASE_DEBUG: Starting loop from index 2 to 4
-🔍 DECL_PHASE_DEBUG: Checking player 2 (Bot 3), is_bot: True
-🔍 DECL_PHASE_DEBUG: Player Bot 3 declared value: 0 (from phase data)
-🔍 DECL_PHASE_DEBUG: All phase declarations: {'Andy': 3, 'Bot 2': 1}
-🤖 DECL_PHASE_DEBUG: Bot Bot 3 will declare in 1.3s...
-🤖 DECL_PHASE_DEBUG: Bot Bot 3 will now declare!
-🔧 BOT_DECLARE_DEBUG: State machine result: {'success': True, 'queued': True}
-✅ Bot Bot 3 declared 1
-🔍 DECL_PHASE_DEBUG: Checking player 3 (Bot 4), is_bot: True
-🔍 DECL_PHASE_DEBUG: Player Bot 4 declared value: 0 (from phase data)
-🔍 DECL_PHASE_DEBUG: All phase declarations: {'Andy': 3, 'Bot 2': 1}
-🤖 DECL_PHASE_DEBUG: Bot Bot 4 will declare in 1.3s...
-🤖 DECL_PHASE_DEBUG: Bot Bot 4 will now declare!
-🔧 BOT_DECLARE_DEBUG: State machine result: {'success': True, 'queued': True}
-✅ Bot Bot 4 declared 1
-DEBUG_WS: Message for event 'phase_change' added to queue for room B5A4F0.
-🔍 PHASE_TRACKING_FIX: Same phase update: declaration
-✅ PHASE_TRACKING_FIX: Marked declaration phase as triggered
-🔍 DECL_PHASE_DEBUG: _handle_declaration_phase called with last_declarer: 'Bot 3'
-🔍 BOT_DEBUG: Got declaration order from state machine: ['Andy', 'Bot 2', 'Bot 3', 'Bot 4']
-🔍 DECL_PHASE_DEBUG: Declaration order: ['Andy', 'Bot 2', 'Bot 3', 'Bot 4']
-🔍 DECL_PHASE_DEBUG: Last declarer 'Bot 3' index: 2
-🔍 DECL_PHASE_DEBUG: Starting loop from index 3 to 4
-🔍 DECL_PHASE_DEBUG: Checking player 3 (Bot 4), is_bot: True
-🔍 DECL_PHASE_DEBUG: Player Bot 4 declared value: 0 (from phase data)
-🔍 DECL_PHASE_DEBUG: All phase declarations: {'Andy': 3, 'Bot 2': 1, 'Bot 3': 1}
-🤖 DECL_PHASE_DEBUG: Bot Bot 4 will declare in 1.2s...
-🤖 DECL_PHASE_DEBUG: Bot Bot 4 will now declare!
-🔧 BOT_DECLARE_DEBUG: State machine result: {'success': True, 'queued': True}
-✅ Bot Bot 4 declared 1
-DEBUG_WS: Message for event 'phase_change' added to queue for room B5A4F0.
-🎯 NEW_TURN_DEBUG: Round 1, Turn 1 starting with starter Andy
-🔢 TURN_NUMBER_DEBUG: Backend game.turn_number = 1
-DEBUG_WS: Message for event 'phase_change' added to queue for room B5A4F0.
-🔄 PHASE_TRACKING_FIX: New phase detected declaration -> turn
-🚀 ENTERPRISE_BOT_DEBUG: Turn phase update - current_player: Andy, turn_plays: []
-🚀 ENTERPRISE_BOT_DEBUG: Turn starter Andy - using empty string to trigger from beginning
-🎯 TURN_PLAY_PHASE_DEBUG: _handle_turn_play_phase called with last_player: ''
-🔍 TURN_ORDER_DEBUG: Got turn order from state machine: ['Andy', 'Bot 2', 'Bot 3', 'Bot 4']
-🎯 TURN_PLAY_PHASE_DEBUG: Last player '' index: -1
-🎯 TURN_PLAY_PHASE_DEBUG: Starting loop from index 0 to 4
-🎯 TURN_PLAY_PHASE_DEBUG: Checking player 0 (Andy)
-🎯 TURN_PLAY_PHASE_DEBUG: Found player Andy, is_bot: False
-🎯 TURN_PLAY_PHASE_DEBUG: Player Andy is human, stopping bot plays
-DEBUG_WS: Message for event 'phase_change' added to queue for room B5A4F0.
-🔍 DUPLICATE_DEBUG: Received turn_started event for Andy from unknown
-🎯 TURN_START_DEBUG: Turn starter is Andy, triggering sequential handler
-🎯 TURN_PLAY_PHASE_DEBUG: _handle_turn_play_phase called with last_player: ''
-🔍 TURN_ORDER_DEBUG: Got turn order from state machine: ['Andy', 'Bot 2', 'Bot 3', 'Bot 4']
-🎯 TURN_PLAY_PHASE_DEBUG: Last player '' index: -1
-🎯 TURN_PLAY_PHASE_DEBUG: Starting loop from index 0 to 4
-🎯 TURN_PLAY_PHASE_DEBUG: Checking player 0 (Andy)
-🎯 TURN_PLAY_PHASE_DEBUG: Found player Andy, is_bot: False
-🎯 TURN_PLAY_PHASE_DEBUG: Player Andy is human, stopping bot plays
-Action declare not allowed in turn
-🚫 BOT_HANDLER_DEBUG: Handling action rejection
-🚫 BOT_VALIDATION_FIX: Action declare from Bot 3 was REJECTED: Invalid action for current game state
-🚫 BOT_VALIDATION_FIX: Bot Bot 3 action rejected - preventing downstream processing
-🚫 BOT_VALIDATION_FIX: Bot Bot 3 hand size after rejection: 8
-Action declare not allowed in turn
-🚫 BOT_HANDLER_DEBUG: Handling action rejection
-🚫 BOT_VALIDATION_FIX: Action declare from Bot 4 was REJECTED: Invalid action for current game state
-🚫 BOT_VALIDATION_FIX: Bot Bot 4 action rejected - preventing downstream processing
-🚫 BOT_VALIDATION_FIX: Bot Bot 4 hand size after rejection: 8
-Action declare not allowed in turn
-🚫 BOT_HANDLER_DEBUG: Handling action rejection
-🚫 BOT_VALIDATION_FIX: Action declare from Bot 4 was REJECTED: Invalid action for current game state
-🚫 BOT_VALIDATION_FIX: Bot Bot 4 action rejected - preventing downstream processing
-🚫 BOT_VALIDATION_FIX: Bot Bot 4 hand size after rejection: 8
-DEBUG_WS_RECEIVE: Received event 'play' from client in room B5A4F0 with data: {'piece_indices': [1, 6, 7], 'player_name': 'Andy', 'play_value': 6}
-🎯 WS_PLAY_DEBUG: Received play event - player: Andy, indices: [1, 6, 7]
-🎯 WS_PLAY_DEBUG: Found player Andy with hand size 8
-🎯 WS_PLAY_DEBUG: Added piece at index 1: SOLDIER_RED(2)
-🎯 WS_PLAY_DEBUG: Added piece at index 6: SOLDIER_RED(2)
-🎯 WS_PLAY_DEBUG: Added piece at index 7: SOLDIER_RED(2)
-🎯 WS_PLAY_DEBUG: Final pieces to play: ['SOLDIER_RED(2)', 'SOLDIER_RED(2)', 'SOLDIER_RED(2)']
-🎯 WS_PLAY_DEBUG: Queuing action for state machine...
-🎯 WS_PLAY_DEBUG: State machine result: {'success': True, 'queued': True}
-✅ Play accepted: Andy
-🎯 TURN_STATE_DEBUG: Processing action play_pieces from Andy
-🎯 TURN_STATE_DEBUG: _handle_play_pieces called for Andy
-🎯 TURN_STATE_DEBUG: Current state - player_index: 0, turn_order: ['Andy', 'Bot 2', 'Bot 3', 'Bot 4']
-🎯 TURN_STATE_DEBUG: Player Andy playing 3 pieces: ['SOLDIER_RED(2)', 'SOLDIER_RED(2)', 'SOLDIER_RED(2)']
-🎯 TURN_STATE_DEBUG: Calculated play type: THREE_OF_A_KIND
-🎯 TURN_STATE_DEBUG: Calculated play value: 6
-🎯 TURN_STATE_DEBUG: Setting required piece count to 3
-🎯 TURN_STATE_DEBUG: Before setting - required_piece_count was: None
-🎯 TURN_STATE_DEBUG: After setting - required_piece_count is: 3
-🎯 TURN_STATE_DEBUG: Before advancing - current_player_index: 0
-🎯 TURN_STATE_DEBUG: After advancing - current_player_index: 1
-🎯 TURN_STATE_DEBUG: Next player: Bot 2
-🎯 TURN_STATE_DEBUG: Round 1, Turn 1 - Andy played, next: Bot 2
-🎯 UPDATE_DEBUG: About to update phase data with current_player: Bot 2, required_piece_count: 3
-DEBUG_WS: Message for event 'phase_change' added to queue for room B5A4F0.
-🔍 PHASE_TRACKING_FIX: Same phase update: turn
-🚀 ENTERPRISE_BOT_DEBUG: Turn phase update - current_player: Bot 2, turn_plays: ['Andy']
-🚀 ENTERPRISE_BOT_DEBUG: Last player who played: Andy
-🎯 TURN_PLAY_PHASE_DEBUG: _handle_turn_play_phase called with last_player: 'Andy'
-🔍 TURN_ORDER_DEBUG: Got turn order from state machine: ['Andy', 'Bot 2', 'Bot 3', 'Bot 4']
-🎯 TURN_PLAY_PHASE_DEBUG: Last player 'Andy' index: 0
-🎯 TURN_PLAY_PHASE_DEBUG: Starting loop from index 1 to 4
-🎯 TURN_PLAY_PHASE_DEBUG: Checking player 1 (Bot 2)
-🎯 TURN_PLAY_PHASE_DEBUG: Found player Bot 2, is_bot: True
-🤖 TURN_PLAY_PHASE_DEBUG: Bot Bot 2 will play in 1.2s...
-DEBUG_WS_RECEIVE: Received event 'ping' from client in room lobby with data: {'timestamp': 1751956987830}
-🤖 TURN_PLAY_PHASE_DEBUG: Bot Bot 2 will now play!
-🎯 BOT_PLAY_DEBUG: Got required_piece_count from state machine: 3
-🤖 BOT has no valid play. Discards lowest pieces: SOLDIER, HORSE, HORSE
-    🔍 Final play: ['SOLDIER', 'HORSE', 'HORSE']
-    🧠 Hand left: ['ELEPHANT', 'ELEPHANT', 'ELEPHANT', 'ADVISOR', 'HORSE', 'HORSE', 'SOLDIER', 'ADVISOR']
-🎯 BOT_PLAY_DEBUG: Final selection - 3 pieces: ['SOLDIER_BLACK(1)', 'HORSE_BLACK(5)', 'HORSE_RED(6)']
-🎯 BOT_PLAY_DEBUG: Action queued successfully, state machine will handle updates and broadcasting
-✅ Bot Bot 2 action queued - state machine will broadcast with correct next_player
-🎯 TURN_PLAY_PHASE_DEBUG: Checking player 2 (Bot 3)
-🎯 TURN_PLAY_PHASE_DEBUG: Found player Bot 3, is_bot: True
-🤖 TURN_PLAY_PHASE_DEBUG: Bot Bot 3 will play in 0.8s...
-🤖 TURN_PLAY_PHASE_DEBUG: Bot Bot 3 will now play!
-🎯 BOT_PLAY_DEBUG: Got required_piece_count from state machine: 3
-🤖 BOT has no valid play. Discards lowest pieces: SOLDIER, SOLDIER, CANNON
-    🔍 Final play: ['SOLDIER', 'SOLDIER', 'CANNON']
-    🧠 Hand left: ['ELEPHANT', 'CANNON', 'CHARIOT', 'ADVISOR', 'ADVISOR', 'CANNON', 'SOLDIER', 'SOLDIER']
-🎯 BOT_PLAY_DEBUG: Final selection - 3 pieces: ['SOLDIER_BLACK(1)', 'SOLDIER_RED(2)', 'CANNON_BLACK(3)']
-🎯 BOT_PLAY_DEBUG: Action queued successfully, state machine will handle updates and broadcasting
-✅ Bot Bot 3 action queued - state machine will broadcast with correct next_player
-🎯 TURN_PLAY_PHASE_DEBUG: Checking player 3 (Bot 4)
-🎯 TURN_PLAY_PHASE_DEBUG: Found player Bot 4, is_bot: True
-🤖 TURN_PLAY_PHASE_DEBUG: Bot Bot 4 will play in 0.6s...
-🤖 TURN_PLAY_PHASE_DEBUG: Bot Bot 4 will now play!
-🎯 BOT_PLAY_DEBUG: Got required_piece_count from state machine: 3
-🤖 BOT has no valid play. Discards lowest pieces: SOLDIER, SOLDIER, CANNON
-    🔍 Final play: ['SOLDIER', 'SOLDIER', 'CANNON']
-    🧠 Hand left: ['GENERAL', 'CANNON', 'CHARIOT', 'SOLDIER', 'CHARIOT', 'HORSE', 'CHARIOT', 'SOLDIER']
-🎯 BOT_PLAY_DEBUG: Final selection - 3 pieces: ['SOLDIER_BLACK(1)', 'SOLDIER_RED(2)', 'CANNON_BLACK(3)']
-🎯 BOT_PLAY_DEBUG: Action queued successfully, state machine will handle updates and broadcasting
-✅ Bot Bot 4 action queued - state machine will broadcast with correct next_player
-🎯 UPDATE_DEBUG: Phase data updated - next_player should be: Bot 2
-🎯 TURN_STATE_DEBUG: Play pieces result: {'status': 'play_accepted', 'player': 'Andy', 'pieces': [SOLDIER_RED(2), SOLDIER_RED(2), SOLDIER_RED(2)], 'piece_count': 3, 'required_count': 3, 'next_player': 'Bot 2', 'turn_complete': False}
-🎯 TURN_STATE_DEBUG: Processing action play_pieces from Bot 2
-🎯 TURN_STATE_DEBUG: _handle_play_pieces called for Bot 2
-🎯 TURN_STATE_DEBUG: Current state - player_index: 1, turn_order: ['Andy', 'Bot 2', 'Bot 3', 'Bot 4']
-🎯 TURN_STATE_DEBUG: Player Bot 2 playing 3 pieces: ['SOLDIER_BLACK(1)', 'HORSE_BLACK(5)', 'HORSE_RED(6)']
-🎯 TURN_STATE_DEBUG: Calculated play type: INVALID
-🎯 TURN_STATE_DEBUG: Calculated play value: 12
-🎯 TURN_STATE_DEBUG: Before advancing - current_player_index: 1
-🎯 TURN_STATE_DEBUG: After advancing - current_player_index: 2
-🎯 TURN_STATE_DEBUG: Next player: Bot 3
-🎯 TURN_STATE_DEBUG: Round 1, Turn 1 - Bot 2 played, next: Bot 3
-🎯 UPDATE_DEBUG: About to update phase data with current_player: Bot 3, required_piece_count: 3
-DEBUG_WS: Message for event 'phase_change' added to queue for room B5A4F0.
-🔍 PHASE_TRACKING_FIX: Same phase update: turn
-🚀 ENTERPRISE_BOT_DEBUG: Turn phase update - current_player: Bot 3, turn_plays: ['Andy', 'Bot 2']
-🚀 ENTERPRISE_BOT_DEBUG: Last player who played: Bot 2
-🎯 TURN_PLAY_PHASE_DEBUG: _handle_turn_play_phase called with last_player: 'Bot 2'
-🔍 TURN_ORDER_DEBUG: Got turn order from state machine: ['Andy', 'Bot 2', 'Bot 3', 'Bot 4']
-🎯 TURN_PLAY_PHASE_DEBUG: Last player 'Bot 2' index: 1
-🎯 TURN_PLAY_PHASE_DEBUG: Starting loop from index 2 to 4
-🎯 TURN_PLAY_PHASE_DEBUG: Checking player 2 (Bot 3)
-🎯 TURN_PLAY_PHASE_DEBUG: Found player Bot 3, is_bot: True
-🤖 TURN_PLAY_PHASE_DEBUG: Bot Bot 3 will play in 1.3s...
-DEBUG_WS_RECEIVE: Received event 'ping' from client in room B5A4F0 with data: {'timestamp': 1751956990728}
-🤖 TURN_PLAY_PHASE_DEBUG: Bot Bot 3 will now play!
-🎯 BOT_PLAY_DEBUG: Got required_piece_count from state machine: 3
-🤖 BOT has no valid play. Discards lowest pieces: SOLDIER, SOLDIER, CANNON
-    🔍 Final play: ['SOLDIER', 'SOLDIER', 'CANNON']
-    🧠 Hand left: ['ELEPHANT', 'CANNON', 'CHARIOT', 'ADVISOR', 'ADVISOR', 'CANNON', 'SOLDIER', 'SOLDIER']
-🎯 BOT_PLAY_DEBUG: Final selection - 3 pieces: ['SOLDIER_BLACK(1)', 'SOLDIER_RED(2)', 'CANNON_BLACK(3)']
-🎯 BOT_PLAY_DEBUG: Action queued successfully, state machine will handle updates and broadcasting
-✅ Bot Bot 3 action queued - state machine will broadcast with correct next_player
-🎯 TURN_PLAY_PHASE_DEBUG: Checking player 3 (Bot 4)
-🎯 TURN_PLAY_PHASE_DEBUG: Found player Bot 4, is_bot: True
-🤖 TURN_PLAY_PHASE_DEBUG: Bot Bot 4 will play in 1.2s...
-🤖 TURN_PLAY_PHASE_DEBUG: Bot Bot 4 will now play!
-🎯 BOT_PLAY_DEBUG: Got required_piece_count from state machine: 3
-🤖 BOT has no valid play. Discards lowest pieces: SOLDIER, SOLDIER, CANNON
-    🔍 Final play: ['SOLDIER', 'SOLDIER', 'CANNON']
-    🧠 Hand left: ['GENERAL', 'CANNON', 'CHARIOT', 'SOLDIER', 'CHARIOT', 'HORSE', 'CHARIOT', 'SOLDIER']
-🎯 BOT_PLAY_DEBUG: Final selection - 3 pieces: ['SOLDIER_BLACK(1)', 'SOLDIER_RED(2)', 'CANNON_BLACK(3)']
-🎯 BOT_PLAY_DEBUG: Action queued successfully, state machine will handle updates and broadcasting
-✅ Bot Bot 4 action queued - state machine will broadcast with correct next_player
-🎯 UPDATE_DEBUG: Phase data updated - next_player should be: Bot 3
-🎯 TURN_STATE_DEBUG: Play pieces result: {'status': 'play_accepted', 'player': 'Bot 2', 'pieces': [SOLDIER_BLACK(1), HORSE_BLACK(5), HORSE_RED(6)], 'piece_count': 3, 'required_count': 3, 'next_player': 'Bot 3', 'turn_complete': False}
-✅ BOT_VALIDATION_FIX: Bot Bot 2 play accepted - state machine handling all updates
-🎯 TURN_STATE_DEBUG: Processing action play_pieces from Bot 3
-🎯 TURN_STATE_DEBUG: _handle_play_pieces called for Bot 3
-🎯 TURN_STATE_DEBUG: Current state - player_index: 2, turn_order: ['Andy', 'Bot 2', 'Bot 3', 'Bot 4']
-🎯 TURN_STATE_DEBUG: Player Bot 3 playing 3 pieces: ['SOLDIER_BLACK(1)', 'SOLDIER_RED(2)', 'CANNON_BLACK(3)']
-🎯 TURN_STATE_DEBUG: Calculated play type: INVALID
-🎯 TURN_STATE_DEBUG: Calculated play value: 6
-🎯 TURN_STATE_DEBUG: Before advancing - current_player_index: 2
-🎯 TURN_STATE_DEBUG: After advancing - current_player_index: 3
-🎯 TURN_STATE_DEBUG: Next player: Bot 4
-🎯 TURN_STATE_DEBUG: Round 1, Turn 1 - Bot 3 played, next: Bot 4
-🎯 UPDATE_DEBUG: About to update phase data with current_player: Bot 4, required_piece_count: 3
-DEBUG_WS: Message for event 'phase_change' added to queue for room B5A4F0.
-🔍 PHASE_TRACKING_FIX: Same phase update: turn
-🚀 ENTERPRISE_BOT_DEBUG: Turn phase update - current_player: Bot 4, turn_plays: ['Andy', 'Bot 2', 'Bot 3']
-🚀 ENTERPRISE_BOT_DEBUG: Last player who played: Bot 3
-🎯 TURN_PLAY_PHASE_DEBUG: _handle_turn_play_phase called with last_player: 'Bot 3'
-🔍 TURN_ORDER_DEBUG: Got turn order from state machine: ['Andy', 'Bot 2', 'Bot 3', 'Bot 4']
-🎯 TURN_PLAY_PHASE_DEBUG: Last player 'Bot 3' index: 2
-🎯 TURN_PLAY_PHASE_DEBUG: Starting loop from index 3 to 4
-🎯 TURN_PLAY_PHASE_DEBUG: Checking player 3 (Bot 4)
-🎯 TURN_PLAY_PHASE_DEBUG: Found player Bot 4, is_bot: True
-🤖 TURN_PLAY_PHASE_DEBUG: Bot Bot 4 will play in 0.8s...
-🤖 TURN_PLAY_PHASE_DEBUG: Bot Bot 4 will now play!
-🎯 BOT_PLAY_DEBUG: Got required_piece_count from state machine: 3
-🤖 BOT has no valid play. Discards lowest pieces: SOLDIER, SOLDIER, CANNON
-    🔍 Final play: ['SOLDIER', 'SOLDIER', 'CANNON']
-    🧠 Hand left: ['GENERAL', 'CANNON', 'CHARIOT', 'SOLDIER', 'CHARIOT', 'HORSE', 'CHARIOT', 'SOLDIER']
-🎯 BOT_PLAY_DEBUG: Final selection - 3 pieces: ['SOLDIER_BLACK(1)', 'SOLDIER_RED(2)', 'CANNON_BLACK(3)']
-🎯 BOT_PLAY_DEBUG: Action queued successfully, state machine will handle updates and broadcasting
-✅ Bot Bot 4 action queued - state machine will broadcast with correct next_player
-🎯 UPDATE_DEBUG: Phase data updated - next_player should be: Bot 4
-🎯 TURN_STATE_DEBUG: Play pieces result: {'status': 'play_accepted', 'player': 'Bot 3', 'pieces': [SOLDIER_BLACK(1), SOLDIER_RED(2), CANNON_BLACK(3)], 'piece_count': 3, 'required_count': 3, 'next_player': 'Bot 4', 'turn_complete': False}
-✅ BOT_VALIDATION_FIX: Bot Bot 3 play accepted - state machine handling all updates
-🎯 TURN_STATE_DEBUG: Processing action play_pieces from Bot 4
-🎯 TURN_STATE_DEBUG: _handle_play_pieces called for Bot 4
-🎯 TURN_STATE_DEBUG: Current state - player_index: 3, turn_order: ['Andy', 'Bot 2', 'Bot 3', 'Bot 4']
-🎯 TURN_STATE_DEBUG: Player Bot 4 playing 3 pieces: ['SOLDIER_BLACK(1)', 'SOLDIER_RED(2)', 'CANNON_BLACK(3)']
-🎯 TURN_STATE_DEBUG: Calculated play type: INVALID
-🎯 TURN_STATE_DEBUG: Calculated play value: 6
-🎯 TURN_STATE_DEBUG: Before advancing - current_player_index: 3
-🎯 TURN_STATE_DEBUG: After advancing - current_player_index: 4
-🎯 TURN_STATE_DEBUG: Next player: None
-🎯 TURN_STATE_DEBUG: Round 1, Turn 1 - Bot 4 played, next: None
-🎯 TURN_STATE_DEBUG: Turn complete! Calling _complete_turn()
-🎯 TURN_COMPLETE_DEBUG: Round 1, Turn 1 _complete_turn() called
-🎯 TURN_COMPLETE_DEBUG: Round 1, Turn 1 Winner determined: Andy
-🎯 CAPTURED_PILES_DEBUG: Andy captured_piles += 3 = 3
-🎯 TURN_COMPLETE_DEBUG: Awarded 3 piles to Andy
-🎯 TURN_COMPLETE_DEBUG: Next turn starter set to: Andy
-DEBUG_WS: Message for event 'phase_change' added to queue for room B5A4F0.
-🔍 PHASE_TRACKING_FIX: Same phase update: turn
-🚀 ENTERPRISE_BOT_DEBUG: Turn phase update - current_player: Bot 4, turn_plays: ['Andy', 'Bot 2', 'Bot 3', 'Bot 4']
-🚀 ENTERPRISE_BOT_DEBUG: Last player who played: Bot 4
-🎯 TURN_PLAY_PHASE_DEBUG: _handle_turn_play_phase called with last_player: 'Bot 4'
-🔍 TURN_ORDER_DEBUG: Got turn order from state machine: ['Andy', 'Bot 2', 'Bot 3', 'Bot 4']
-🎯 TURN_PLAY_PHASE_DEBUG: Last player 'Bot 4' index: 3
-🎯 TURN_PLAY_PHASE_DEBUG: Last player was end of turn order, no more players
-🎯 TURN_COMPLETE_DEBUG: Phase data updated with turn completion
-🏁 TURN_COMPLETION_DEBUG: Starting turn completion processing
-🏁 TURN_COMPLETION_DEBUG: After removing pieces, checking if all hands are empty
-🏁 TURN_COMPLETION_DEBUG: all_hands_empty = False
-🔧 CONSISTENCY_CHECK: Hand sizes: {'Andy': 5, 'Bot 2': 5, 'Bot 3': 5, 'Bot 4': 5}
-🔧 CONSISTENCY_CHECK: Min: 5, Max: 5
-✅ CONSISTENCY_CHECK: Hand size distribution is acceptable
-🏁 TURN_COMPLETION_DEBUG: Andy hand size: 5
-🏁 TURN_COMPLETION_DEBUG: Bot 2 hand size: 5
-🏁 TURN_COMPLETION_DEBUG: Bot 3 hand size: 5
-🏁 TURN_COMPLETION_DEBUG: Bot 4 hand size: 5
-DEBUG_WS: Message for event 'turn_complete' added to queue for room B5A4F0.
-🏁 TURN_COMPLETION_DEBUG: Hands not empty - will start next turn after delay
-🎯 START_NEXT_DEBUG: start_next_turn_if_needed() called
-🎯 START_NEXT_DEBUG: turn_complete: True
-🎯 START_NEXT_DEBUG: all_hands_empty: False
-🎯 START_NEXT_DEBUG: Starting new turn with starter: Andy
-🎯 NEW_TURN_DEBUG: Round 1, Turn 2 starting with starter Andy
-🔢 TURN_NUMBER_DEBUG: Backend game.turn_number = 2
-DEBUG_WS: Message for event 'phase_change' added to queue for room B5A4F0.
-🔍 PHASE_TRACKING_FIX: Same phase update: turn
-🚀 ENTERPRISE_BOT_DEBUG: Turn phase update - current_player: Andy, turn_plays: []
-🚀 ENTERPRISE_BOT_DEBUG: Turn starter Andy - using empty string to trigger from beginning
-🎯 TURN_PLAY_PHASE_DEBUG: _handle_turn_play_phase called with last_player: ''
-🔍 TURN_ORDER_DEBUG: Got turn order from state machine: ['Andy', 'Bot 2', 'Bot 3', 'Bot 4']
-🎯 TURN_PLAY_PHASE_DEBUG: Last player '' index: -1
-🎯 TURN_PLAY_PHASE_DEBUG: Starting loop from index 0 to 4
-🎯 TURN_PLAY_PHASE_DEBUG: Checking player 0 (Andy)
-🎯 TURN_PLAY_PHASE_DEBUG: Found player Andy, is_bot: False
-🎯 TURN_PLAY_PHASE_DEBUG: Player Andy is human, stopping bot plays
-🎯 START_NEXT_DEBUG: _start_new_turn() completed
-🎯 TURN_COMPLETE_DEBUG: _process_turn_completion() finished
-🎯 UPDATE_DEBUG: About to update phase data with current_player: Andy, required_piece_count: None
-DEBUG_WS: Message for event 'phase_change' added to queue for room B5A4F0.
-🔍 PHASE_TRACKING_FIX: Same phase update: turn
-🚀 ENTERPRISE_BOT_DEBUG: Turn phase update - current_player: Andy, turn_plays: []
-🚀 ENTERPRISE_BOT_DEBUG: Turn starter Andy - using empty string to trigger from beginning
-🎯 TURN_PLAY_PHASE_DEBUG: _handle_turn_play_phase called with last_player: ''
-🔍 TURN_ORDER_DEBUG: Got turn order from state machine: ['Andy', 'Bot 2', 'Bot 3', 'Bot 4']
-🎯 TURN_PLAY_PHASE_DEBUG: Last player '' index: -1
-🎯 TURN_PLAY_PHASE_DEBUG: Starting loop from index 0 to 4
-🎯 TURN_PLAY_PHASE_DEBUG: Checking player 0 (Andy)
-🎯 TURN_PLAY_PHASE_DEBUG: Found player Andy, is_bot: False
-🎯 TURN_PLAY_PHASE_DEBUG: Player Andy is human, stopping bot plays
-🎯 UPDATE_DEBUG: Phase data updated - next_player should be: Andy
-🎯 TURN_STATE_DEBUG: Play pieces result: {'status': 'play_accepted', 'player': 'Bot 4', 'pieces': [SOLDIER_BLACK(1), SOLDIER_RED(2), CANNON_BLACK(3)], 'piece_count': 3, 'required_count': None, 'next_player': 'Andy', 'turn_complete': False}
-✅ BOT_VALIDATION_FIX: Bot Bot 4 play accepted - state machine handling all updates
-Not Bot 3's turn - expected Andy
-Invalid action: GameAction(player_name='Bot 3', action_type=<ActionType.PLAY_PIECES: 'play_pieces'>, payload={'pieces': [SOLDIER_BLACK(1), SOLDIER_RED(2), CANNON_BLACK(3)]}, timestamp=datetime.datetime(2025, 7, 7, 23, 43, 11, 740217), sequence_id=15, is_bot=True)
-✅ BOT_VALIDATION_FIX: Bot Bot 3 play accepted - state machine handling all updates
-Not Bot 4's turn - expected Andy
-Invalid action: GameAction(player_name='Bot 4', action_type=<ActionType.PLAY_PIECES: 'play_pieces'>, payload={'pieces': [SOLDIER_BLACK(1), SOLDIER_RED(2), CANNON_BLACK(3)]}, timestamp=datetime.datetime(2025, 7, 7, 23, 43, 13, 105986), sequence_id=16, is_bot=True)
-✅ BOT_VALIDATION_FIX: Bot Bot 4 play accepted - state machine handling all updates
-Not Bot 4's turn - expected Andy
-Invalid action: GameAction(player_name='Bot 4', action_type=<ActionType.PLAY_PIECES: 'play_pieces'>, payload={'pieces': [SOLDIER_BLACK(1), SOLDIER_RED(2), CANNON_BLACK(3)]}, timestamp=datetime.datetime(2025, 7, 7, 23, 43, 14, 91516), sequence_id=17, is_bot=True)
-✅ BOT_VALIDATION_FIX: Bot Bot 4 play accepted - state machine handling all updates
-DEBUG_WS_RECEIVE: Received event 'play' from client in room B5A4F0 with data: {'piece_indices': [1], 'player_name': 'Andy', 'play_value': 5}
-🎯 WS_PLAY_DEBUG: Received play event - player: Andy, indices: [1]
-🎯 WS_PLAY_DEBUG: Found player Andy with hand size 5
-🎯 WS_PLAY_DEBUG: Added piece at index 1: HORSE_BLACK(5)
-🎯 WS_PLAY_DEBUG: Final pieces to play: ['HORSE_BLACK(5)']
-🎯 WS_PLAY_DEBUG: Queuing action for state machine...
-🎯 WS_PLAY_DEBUG: State machine result: {'success': True, 'queued': True}
-✅ Play accepted: Andy
-🎯 TURN_STATE_DEBUG: Processing action play_pieces from Andy
-🎯 TURN_STATE_DEBUG: _handle_play_pieces called for Andy
-🎯 TURN_STATE_DEBUG: Current state - player_index: 0, turn_order: ['Andy', 'Bot 2', 'Bot 3', 'Bot 4']
-🎯 TURN_STATE_DEBUG: Player Andy playing 1 pieces: ['HORSE_BLACK(5)']
-🎯 TURN_STATE_DEBUG: Calculated play type: SINGLE
-🎯 TURN_STATE_DEBUG: Calculated play value: 5
-🎯 TURN_STATE_DEBUG: Setting required piece count to 1
-🎯 TURN_STATE_DEBUG: Before setting - required_piece_count was: None
-🎯 TURN_STATE_DEBUG: After setting - required_piece_count is: 1
-🎯 TURN_STATE_DEBUG: Before advancing - current_player_index: 0
-🎯 TURN_STATE_DEBUG: After advancing - current_player_index: 1
-🎯 TURN_STATE_DEBUG: Next player: Bot 2
-🎯 TURN_STATE_DEBUG: Round 1, Turn 2 - Andy played, next: Bot 2
-🎯 UPDATE_DEBUG: About to update phase data with current_player: Bot 2, required_piece_count: 1
-DEBUG_WS: Message for event 'phase_change' added to queue for room B5A4F0.
-🔍 PHASE_TRACKING_FIX: Same phase update: turn
-🚀 ENTERPRISE_BOT_DEBUG: Turn phase update - current_player: Bot 2, turn_plays: ['Andy']
-🚀 ENTERPRISE_BOT_DEBUG: Last player who played: Andy
-🎯 TURN_PLAY_PHASE_DEBUG: _handle_turn_play_phase called with last_player: 'Andy'
-🔍 TURN_ORDER_DEBUG: Got turn order from state machine: ['Andy', 'Bot 2', 'Bot 3', 'Bot 4']
-🎯 TURN_PLAY_PHASE_DEBUG: Last player 'Andy' index: 0
-🎯 TURN_PLAY_PHASE_DEBUG: Starting loop from index 1 to 4
-🎯 TURN_PLAY_PHASE_DEBUG: Checking player 1 (Bot 2)
-🎯 TURN_PLAY_PHASE_DEBUG: Found player Bot 2, is_bot: True
-🤖 TURN_PLAY_PHASE_DEBUG: Bot Bot 2 will play in 0.7s...
-🤖 TURN_PLAY_PHASE_DEBUG: Bot Bot 2 will now play!
-🎯 BOT_PLAY_DEBUG: Got required_piece_count from state machine: 1
-🤖 BOT chooses to play SINGLE (12 pts): ADVISOR
-🎯 BOT_PLAY_DEBUG: Final selection - 1 pieces: ['ADVISOR_RED(12)']
-🎯 BOT_PLAY_DEBUG: Action queued successfully, state machine will handle updates and broadcasting
-✅ Bot Bot 2 action queued - state machine will broadcast with correct next_player
-🎯 TURN_PLAY_PHASE_DEBUG: Checking player 2 (Bot 3)
-🎯 TURN_PLAY_PHASE_DEBUG: Found player Bot 3, is_bot: True
-🤖 TURN_PLAY_PHASE_DEBUG: Bot Bot 3 will play in 1.1s...
-🤖 TURN_PLAY_PHASE_DEBUG: Bot Bot 3 will now play!
-🎯 BOT_PLAY_DEBUG: Got required_piece_count from state machine: 1
-🤖 BOT chooses to play SINGLE (12 pts): ADVISOR
-🎯 BOT_PLAY_DEBUG: Final selection - 1 pieces: ['ADVISOR_RED(12)']
-🎯 BOT_PLAY_DEBUG: Action queued successfully, state machine will handle updates and broadcasting
-✅ Bot Bot 3 action queued - state machine will broadcast with correct next_player
-🎯 TURN_PLAY_PHASE_DEBUG: Checking player 3 (Bot 4)
-🎯 TURN_PLAY_PHASE_DEBUG: Found player Bot 4, is_bot: True
-🤖 TURN_PLAY_PHASE_DEBUG: Bot Bot 4 will play in 0.6s...
-🤖 TURN_PLAY_PHASE_DEBUG: Bot Bot 4 will now play!
-🎯 BOT_PLAY_DEBUG: Got required_piece_count from state machine: 1
-🤖 BOT chooses to play SINGLE (14 pts): GENERAL
-🎯 BOT_PLAY_DEBUG: Final selection - 1 pieces: ['GENERAL_RED(14)']
-🎯 BOT_PLAY_DEBUG: Action queued successfully, state machine will handle updates and broadcasting
-✅ Bot Bot 4 action queued - state machine will broadcast with correct next_player
-🎯 UPDATE_DEBUG: Phase data updated - next_player should be: Bot 2
-🎯 TURN_STATE_DEBUG: Play pieces result: {'status': 'play_accepted', 'player': 'Andy', 'pieces': [HORSE_BLACK(5)], 'piece_count': 1, 'required_count': 1, 'next_player': 'Bot 2', 'turn_complete': False}
-🎯 TURN_STATE_DEBUG: Processing action play_pieces from Bot 2
-🎯 TURN_STATE_DEBUG: _handle_play_pieces called for Bot 2
-🎯 TURN_STATE_DEBUG: Current state - player_index: 1, turn_order: ['Andy', 'Bot 2', 'Bot 3', 'Bot 4']
-🎯 TURN_STATE_DEBUG: Player Bot 2 playing 1 pieces: ['ADVISOR_RED(12)']
-🎯 TURN_STATE_DEBUG: Calculated play type: SINGLE
-🎯 TURN_STATE_DEBUG: Calculated play value: 12
-🎯 TURN_STATE_DEBUG: Before advancing - current_player_index: 1
-🎯 TURN_STATE_DEBUG: After advancing - current_player_index: 2
-🎯 TURN_STATE_DEBUG: Next player: Bot 3
-🎯 TURN_STATE_DEBUG: Round 1, Turn 2 - Bot 2 played, next: Bot 3
-🎯 UPDATE_DEBUG: About to update phase data with current_player: Bot 3, required_piece_count: 1
-DEBUG_WS: Message for event 'phase_change' added to queue for room B5A4F0.
-🔍 PHASE_TRACKING_FIX: Same phase update: turn
-🚀 ENTERPRISE_BOT_DEBUG: Turn phase update - current_player: Bot 3, turn_plays: ['Andy', 'Bot 2']
-🚀 ENTERPRISE_BOT_DEBUG: Last player who played: Bot 2
-🎯 TURN_PLAY_PHASE_DEBUG: _handle_turn_play_phase called with last_player: 'Bot 2'
-🔍 TURN_ORDER_DEBUG: Got turn order from state machine: ['Andy', 'Bot 2', 'Bot 3', 'Bot 4']
-🎯 TURN_PLAY_PHASE_DEBUG: Last player 'Bot 2' index: 1
-🎯 TURN_PLAY_PHASE_DEBUG: Starting loop from index 2 to 4
-🎯 TURN_PLAY_PHASE_DEBUG: Checking player 2 (Bot 3)
-🎯 TURN_PLAY_PHASE_DEBUG: Found player Bot 3, is_bot: True
-🤖 TURN_PLAY_PHASE_DEBUG: Bot Bot 3 will play in 1.1s...
-🤖 TURN_PLAY_PHASE_DEBUG: Bot Bot 3 will now play!
-🎯 BOT_PLAY_DEBUG: Got required_piece_count from state machine: 1
-🤖 BOT chooses to play SINGLE (12 pts): ADVISOR
-🎯 BOT_PLAY_DEBUG: Final selection - 1 pieces: ['ADVISOR_RED(12)']
-🎯 BOT_PLAY_DEBUG: Action queued successfully, state machine will handle updates and broadcasting
-✅ Bot Bot 3 action queued - state machine will broadcast with correct next_player
-🎯 TURN_PLAY_PHASE_DEBUG: Checking player 3 (Bot 4)
-🎯 TURN_PLAY_PHASE_DEBUG: Found player Bot 4, is_bot: True
-🤖 TURN_PLAY_PHASE_DEBUG: Bot Bot 4 will play in 0.5s...
-🤖 TURN_PLAY_PHASE_DEBUG: Bot Bot 4 will now play!
-🎯 BOT_PLAY_DEBUG: Got required_piece_count from state machine: 1
-🤖 BOT chooses to play SINGLE (14 pts): GENERAL
-🎯 BOT_PLAY_DEBUG: Final selection - 1 pieces: ['GENERAL_RED(14)']
-🎯 BOT_PLAY_DEBUG: Action queued successfully, state machine will handle updates and broadcasting
-✅ Bot Bot 4 action queued - state machine will broadcast with correct next_player
-🎯 UPDATE_DEBUG: Phase data updated - next_player should be: Bot 3
-🎯 TURN_STATE_DEBUG: Play pieces result: {'status': 'play_accepted', 'player': 'Bot 2', 'pieces': [ADVISOR_RED(12)], 'piece_count': 1, 'required_count': 1, 'next_player': 'Bot 3', 'turn_complete': False}
-✅ BOT_VALIDATION_FIX: Bot Bot 2 play accepted - state machine handling all updates
-🎯 TURN_STATE_DEBUG: Processing action play_pieces from Bot 3
-🎯 TURN_STATE_DEBUG: _handle_play_pieces called for Bot 3
-🎯 TURN_STATE_DEBUG: Current state - player_index: 2, turn_order: ['Andy', 'Bot 2', 'Bot 3', 'Bot 4']
-🎯 TURN_STATE_DEBUG: Player Bot 3 playing 1 pieces: ['ADVISOR_RED(12)']
-🎯 TURN_STATE_DEBUG: Calculated play type: SINGLE
-🎯 TURN_STATE_DEBUG: Calculated play value: 12
-🎯 TURN_STATE_DEBUG: Before advancing - current_player_index: 2
-🎯 TURN_STATE_DEBUG: After advancing - current_player_index: 3
-🎯 TURN_STATE_DEBUG: Next player: Bot 4
-🎯 TURN_STATE_DEBUG: Round 1, Turn 2 - Bot 3 played, next: Bot 4
-🎯 UPDATE_DEBUG: About to update phase data with current_player: Bot 4, required_piece_count: 1
-DEBUG_WS: Message for event 'phase_change' added to queue for room B5A4F0.
-🔍 PHASE_TRACKING_FIX: Same phase update: turn
-🚀 ENTERPRISE_BOT_DEBUG: Turn phase update - current_player: Bot 4, turn_plays: ['Andy', 'Bot 2', 'Bot 3']
-🚀 ENTERPRISE_BOT_DEBUG: Last player who played: Bot 3
-🎯 TURN_PLAY_PHASE_DEBUG: _handle_turn_play_phase called with last_player: 'Bot 3'
-🔍 TURN_ORDER_DEBUG: Got turn order from state machine: ['Andy', 'Bot 2', 'Bot 3', 'Bot 4']
-🎯 TURN_PLAY_PHASE_DEBUG: Last player 'Bot 3' index: 2
-🎯 TURN_PLAY_PHASE_DEBUG: Starting loop from index 3 to 4
-🎯 TURN_PLAY_PHASE_DEBUG: Checking player 3 (Bot 4)
-🎯 TURN_PLAY_PHASE_DEBUG: Found player Bot 4, is_bot: True
-🤖 TURN_PLAY_PHASE_DEBUG: Bot Bot 4 will play in 0.6s...
-🤖 TURN_PLAY_PHASE_DEBUG: Bot Bot 4 will now play!
-🎯 BOT_PLAY_DEBUG: Got required_piece_count from state machine: 1
-🤖 BOT chooses to play SINGLE (14 pts): GENERAL
-🎯 BOT_PLAY_DEBUG: Final selection - 1 pieces: ['GENERAL_RED(14)']
-🎯 BOT_PLAY_DEBUG: Action queued successfully, state machine will handle updates and broadcasting
-✅ Bot Bot 4 action queued - state machine will broadcast with correct next_player
-🎯 UPDATE_DEBUG: Phase data updated - next_player should be: Bot 4
-🎯 TURN_STATE_DEBUG: Play pieces result: {'status': 'play_accepted', 'player': 'Bot 3', 'pieces': [ADVISOR_RED(12)], 'piece_count': 1, 'required_count': 1, 'next_player': 'Bot 4', 'turn_complete': False}
-✅ BOT_VALIDATION_FIX: Bot Bot 3 play accepted - state machine handling all updates
-🎯 TURN_STATE_DEBUG: Processing action play_pieces from Bot 4
-🎯 TURN_STATE_DEBUG: _handle_play_pieces called for Bot 4
-🎯 TURN_STATE_DEBUG: Current state - player_index: 3, turn_order: ['Andy', 'Bot 2', 'Bot 3', 'Bot 4']
-🎯 TURN_STATE_DEBUG: Player Bot 4 playing 1 pieces: ['GENERAL_RED(14)']
-🎯 TURN_STATE_DEBUG: Calculated play type: SINGLE
-🎯 TURN_STATE_DEBUG: Calculated play value: 14
-🎯 TURN_STATE_DEBUG: Before advancing - current_player_index: 3
-🎯 TURN_STATE_DEBUG: After advancing - current_player_index: 4
-🎯 TURN_STATE_DEBUG: Next player: None
-🎯 TURN_STATE_DEBUG: Round 1, Turn 2 - Bot 4 played, next: None
-🎯 TURN_STATE_DEBUG: Turn complete! Calling _complete_turn()
-🎯 TURN_COMPLETE_DEBUG: Round 1, Turn 2 _complete_turn() called
-🎯 TURN_COMPLETE_DEBUG: Round 1, Turn 2 Winner determined: Bot 4
-🎯 CAPTURED_PILES_DEBUG: Bot 4 captured_piles += 1 = 1
-🎯 TURN_COMPLETE_DEBUG: Awarded 1 piles to Bot 4
-🎯 TURN_COMPLETE_DEBUG: Next turn starter set to: Bot 4
-DEBUG_WS: Message for event 'phase_change' added to queue for room B5A4F0.
-🔍 PHASE_TRACKING_FIX: Same phase update: turn
-🚀 ENTERPRISE_BOT_DEBUG: Turn phase update - current_player: Bot 4, turn_plays: ['Andy', 'Bot 2', 'Bot 3', 'Bot 4']
-🚀 ENTERPRISE_BOT_DEBUG: Last player who played: Bot 4
-🎯 TURN_PLAY_PHASE_DEBUG: _handle_turn_play_phase called with last_player: 'Bot 4'
-🔍 TURN_ORDER_DEBUG: Got turn order from state machine: ['Andy', 'Bot 2', 'Bot 3', 'Bot 4']
-🎯 TURN_PLAY_PHASE_DEBUG: Last player 'Bot 4' index: 3
-🎯 TURN_PLAY_PHASE_DEBUG: Last player was end of turn order, no more players
-🎯 TURN_COMPLETE_DEBUG: Phase data updated with turn completion
-🏁 TURN_COMPLETION_DEBUG: Starting turn completion processing
-🏁 TURN_COMPLETION_DEBUG: After removing pieces, checking if all hands are empty
-🏁 TURN_COMPLETION_DEBUG: all_hands_empty = False
-🔧 CONSISTENCY_CHECK: Hand sizes: {'Andy': 4, 'Bot 2': 4, 'Bot 3': 4, 'Bot 4': 4}
-🔧 CONSISTENCY_CHECK: Min: 4, Max: 4
-✅ CONSISTENCY_CHECK: Hand size distribution is acceptable
-🏁 TURN_COMPLETION_DEBUG: Andy hand size: 4
-🏁 TURN_COMPLETION_DEBUG: Bot 2 hand size: 4
-🏁 TURN_COMPLETION_DEBUG: Bot 3 hand size: 4
-🏁 TURN_COMPLETION_DEBUG: Bot 4 hand size: 4
-DEBUG_WS: Message for event 'turn_complete' added to queue for room B5A4F0.
-🏁 TURN_COMPLETION_DEBUG: Hands not empty - will start next turn after delay
-DEBUG_WS_RECEIVE: Received event 'ping' from client in room lobby with data: {'timestamp': 1751957017831}
-DEBUG_WS_RECEIVE: Received event 'ping' from client in room B5A4F0 with data: {'timestamp': 1751957020729}
-🎯 START_NEXT_DEBUG: start_next_turn_if_needed() called
-🎯 START_NEXT_DEBUG: turn_complete: True
-🎯 START_NEXT_DEBUG: all_hands_empty: False
-🎯 START_NEXT_DEBUG: Starting new turn with starter: Bot 4
-🎯 NEW_TURN_DEBUG: Round 1, Turn 3 starting with starter Bot 4
-🔢 TURN_NUMBER_DEBUG: Backend game.turn_number = 3
-DEBUG_WS: Message for event 'phase_change' added to queue for room B5A4F0.
-🔍 PHASE_TRACKING_FIX: Same phase update: turn
-🚀 ENTERPRISE_BOT_DEBUG: Turn phase update - current_player: Bot 4, turn_plays: []
-🚀 ENTERPRISE_BOT_DEBUG: Turn starter Bot 4 - using empty string to trigger from beginning
-🎯 TURN_PLAY_PHASE_DEBUG: _handle_turn_play_phase called with last_player: ''
-🔍 TURN_ORDER_DEBUG: Got turn order from state machine: ['Bot 4', 'Andy', 'Bot 2', 'Bot 3']
-🎯 TURN_PLAY_PHASE_DEBUG: Last player '' index: -1
-🎯 TURN_PLAY_PHASE_DEBUG: Starting loop from index 0 to 4
-🎯 TURN_PLAY_PHASE_DEBUG: Checking player 0 (Bot 4)
-🎯 TURN_PLAY_PHASE_DEBUG: Found player Bot 4, is_bot: True
-🤖 TURN_PLAY_PHASE_DEBUG: Bot Bot 4 will play in 1.2s...
-🤖 TURN_PLAY_PHASE_DEBUG: Bot Bot 4 will now play!
-🎯 BOT_PLAY_DEBUG: Got required_piece_count from state machine: None
-🤖 BOT chooses to play PAIR (16 pts): CHARIOT, CHARIOT
-🎯 BOT_PLAY_DEBUG: Final selection - 2 pieces: ['CHARIOT_RED(8)', 'CHARIOT_RED(8)']
-🎯 BOT_PLAY_DEBUG: Action queued successfully, state machine will handle updates and broadcasting
-✅ Bot Bot 4 action queued - state machine will broadcast with correct next_player
-🎯 TURN_PLAY_PHASE_DEBUG: Checking player 1 (Andy)
-🎯 TURN_PLAY_PHASE_DEBUG: Found player Andy, is_bot: False
-🎯 TURN_PLAY_PHASE_DEBUG: Player Andy is human, stopping bot plays
-🎯 START_NEXT_DEBUG: _start_new_turn() completed
-🎯 TURN_COMPLETE_DEBUG: _process_turn_completion() finished
-🎯 UPDATE_DEBUG: About to update phase data with current_player: Bot 4, required_piece_count: None
-DEBUG_WS: Message for event 'phase_change' added to queue for room B5A4F0.
-🔍 PHASE_TRACKING_FIX: Same phase update: turn
-🚀 ENTERPRISE_BOT_DEBUG: Turn phase update - current_player: Bot 4, turn_plays: []
-🚀 ENTERPRISE_BOT_DEBUG: Turn starter Bot 4 - using empty string to trigger from beginning
-🎯 TURN_PLAY_PHASE_DEBUG: _handle_turn_play_phase called with last_player: ''
-🔍 TURN_ORDER_DEBUG: Got turn order from state machine: ['Bot 4', 'Andy', 'Bot 2', 'Bot 3']
-🎯 TURN_PLAY_PHASE_DEBUG: Last player '' index: -1
-🎯 TURN_PLAY_PHASE_DEBUG: Starting loop from index 0 to 4
-🎯 TURN_PLAY_PHASE_DEBUG: Checking player 0 (Bot 4)
-🎯 TURN_PLAY_PHASE_DEBUG: Found player Bot 4, is_bot: True
-🤖 TURN_PLAY_PHASE_DEBUG: Bot Bot 4 will play in 1.5s...
-🤖 TURN_PLAY_PHASE_DEBUG: Bot Bot 4 will now play!
-🎯 BOT_PLAY_DEBUG: Got required_piece_count from state machine: None
-🤖 BOT chooses to play PAIR (16 pts): CHARIOT, CHARIOT
-🎯 BOT_PLAY_DEBUG: Final selection - 2 pieces: ['CHARIOT_RED(8)', 'CHARIOT_RED(8)']
-🎯 BOT_PLAY_DEBUG: Action queued successfully, state machine will handle updates and broadcasting
-✅ Bot Bot 4 action queued - state machine will broadcast with correct next_player
-🎯 TURN_PLAY_PHASE_DEBUG: Checking player 1 (Andy)
-🎯 TURN_PLAY_PHASE_DEBUG: Found player Andy, is_bot: False
-🎯 TURN_PLAY_PHASE_DEBUG: Player Andy is human, stopping bot plays
-🎯 UPDATE_DEBUG: Phase data updated - next_player should be: Bot 4
-🎯 TURN_STATE_DEBUG: Play pieces result: {'status': 'play_accepted', 'player': 'Bot 4', 'pieces': [GENERAL_RED(14)], 'piece_count': 1, 'required_count': None, 'next_player': 'Bot 4', 'turn_complete': False}
-✅ BOT_VALIDATION_FIX: Bot Bot 4 play accepted - state machine handling all updates
-Not Bot 3's turn - expected Bot 4
-Invalid action: GameAction(player_name='Bot 3', action_type=<ActionType.PLAY_PIECES: 'play_pieces'>, payload={'pieces': [ADVISOR_RED(12)]}, timestamp=datetime.datetime(2025, 7, 7, 23, 43, 32, 436499), sequence_id=22, is_bot=True)
-✅ BOT_VALIDATION_FIX: Bot Bot 3 play accepted - state machine handling all updates
-Player Bot 4 doesn't have piece: GENERAL_RED(14)
-Invalid action: GameAction(player_name='Bot 4', action_type=<ActionType.PLAY_PIECES: 'play_pieces'>, payload={'pieces': [GENERAL_RED(14)]}, timestamp=datetime.datetime(2025, 7, 7, 23, 43, 33, 185180), sequence_id=23, is_bot=True)
-✅ BOT_VALIDATION_FIX: Bot Bot 4 play accepted - state machine handling all updates
-Player Bot 4 doesn't have piece: GENERAL_RED(14)
-Invalid action: GameAction(player_name='Bot 4', action_type=<ActionType.PLAY_PIECES: 'play_pieces'>, payload={'pieces': [GENERAL_RED(14)]}, timestamp=datetime.datetime(2025, 7, 7, 23, 43, 34, 2971), sequence_id=24, is_bot=True)
-✅ BOT_VALIDATION_FIX: Bot Bot 4 play accepted - state machine handling all updates
-🎯 TURN_STATE_DEBUG: Processing action play_pieces from Bot 4
-🎯 TURN_STATE_DEBUG: _handle_play_pieces called for Bot 4
-🎯 TURN_STATE_DEBUG: Current state - player_index: 0, turn_order: ['Bot 4', 'Andy', 'Bot 2', 'Bot 3']
-🎯 TURN_STATE_DEBUG: Player Bot 4 playing 2 pieces: ['CHARIOT_RED(8)', 'CHARIOT_RED(8)']
-🎯 TURN_STATE_DEBUG: Calculated play type: PAIR
-🎯 TURN_STATE_DEBUG: Calculated play value: 16
-🎯 TURN_STATE_DEBUG: Setting required piece count to 2
-🎯 TURN_STATE_DEBUG: Before setting - required_piece_count was: None
-🎯 TURN_STATE_DEBUG: After setting - required_piece_count is: 2
-🎯 TURN_STATE_DEBUG: Before advancing - current_player_index: 0
-🎯 TURN_STATE_DEBUG: After advancing - current_player_index: 1
-🎯 TURN_STATE_DEBUG: Next player: Andy
-🎯 TURN_STATE_DEBUG: Round 1, Turn 3 - Bot 4 played, next: Andy
-🎯 UPDATE_DEBUG: About to update phase data with current_player: Andy, required_piece_count: 2
-DEBUG_WS: Message for event 'phase_change' added to queue for room B5A4F0.
-🔍 PHASE_TRACKING_FIX: Same phase update: turn
-🚀 ENTERPRISE_BOT_DEBUG: Turn phase update - current_player: Andy, turn_plays: ['Bot 4']
-🚀 ENTERPRISE_BOT_DEBUG: Last player who played: Bot 4
-🎯 TURN_PLAY_PHASE_DEBUG: _handle_turn_play_phase called with last_player: 'Bot 4'
-🔍 TURN_ORDER_DEBUG: Got turn order from state machine: ['Bot 4', 'Andy', 'Bot 2', 'Bot 3']
-🎯 TURN_PLAY_PHASE_DEBUG: Last player 'Bot 4' index: 0
-🎯 TURN_PLAY_PHASE_DEBUG: Starting loop from index 1 to 4
-🎯 TURN_PLAY_PHASE_DEBUG: Checking player 1 (Andy)
-🎯 TURN_PLAY_PHASE_DEBUG: Found player Andy, is_bot: False
-🎯 TURN_PLAY_PHASE_DEBUG: Player Andy is human, stopping bot plays
-🎯 UPDATE_DEBUG: Phase data updated - next_player should be: Andy
-🎯 TURN_STATE_DEBUG: Play pieces result: {'status': 'play_accepted', 'player': 'Bot 4', 'pieces': [CHARIOT_RED(8), CHARIOT_RED(8)], 'piece_count': 2, 'required_count': 2, 'next_player': 'Andy', 'turn_complete': False}
-✅ BOT_VALIDATION_FIX: Bot Bot 4 play accepted - state machine handling all updates
-Not Bot 4's turn - expected Andy
-Invalid action: GameAction(player_name='Bot 4', action_type=<ActionType.PLAY_PIECES: 'play_pieces'>, payload={'pieces': [CHARIOT_RED(8), CHARIOT_RED(8)]}, timestamp=datetime.datetime(2025, 7, 7, 23, 43, 44, 76491), sequence_id=26, is_bot=True)
-✅ BOT_VALIDATION_FIX: Bot Bot 4 play accepted - state machine handling all updates
-DEBUG_WS_RECEIVE: Received event 'ping' from client in room lobby with data: {'timestamp': 1751957047832}
+DEBUG_WS_RECEIVE: Received event 'ping' from client in room lobby with data: {'timestamp': 1751988819316}
+DEBUG_WS_RECEIVE: Received event 'ping' from client in room 070A0B with data: {'timestamp': 1751988822271}
