@@ -294,14 +294,6 @@ class GameStateMachine:
                         ),
                     },
                 )
-            elif new_phase == GamePhase.TURN:
-                # Trigger turn start
-                starter = self.game.current_player or (
-                    self.game.players[0].name if self.game.players else "unknown"
-                )
-                await bot_manager.handle_game_event(
-                    room_id, "turn_started", {"starter": starter}
-                )
             elif new_phase == GamePhase.GAME_OVER:
                 # Notify bot manager that the game has ended
                 game_over_data = {

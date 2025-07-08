@@ -878,49 +878,6 @@ class TurnState(GameState):
         """DEPRECATED: Use _broadcast_play_event_enterprise instead"""
         await self._broadcast_play_event_enterprise(player_name, pieces, piece_count)
 
-    async def _notify_bot_manager_play(self, player_name: str):
-        """Notify bot manager about a player's play to trigger next bot actions"""
-        try:
-            from ...bot_manager import BotManager
-
-            bot_manager = BotManager()
-            room_id = getattr(self.state_machine, "room_id", "unknown")
-
-            print(
-                f"🤖 TURN_STATE_DEBUG: Notifying bot manager about {player_name}'s play for room {room_id}"
-            )
-
-            # Trigger bot manager to handle the next player's turn
-            await bot_manager.handle_game_event(
-                room_id, "player_played", {"player_name": player_name}
-            )
-
-        except Exception as e:
-            self.logger.error(
-                f"Failed to notify bot manager about play: {e}", exc_info=True
-            )
-
-    async def _notify_bot_manager_new_turn(self, starter: str):
-        """Notify bot manager about a new turn starting"""
-        try:
-            from ...bot_manager import BotManager
-
-            bot_manager = BotManager()
-            room_id = getattr(self.state_machine, "room_id", "unknown")
-
-            print(
-                f"🤖 NEW_TURN_DEBUG: Notifying bot manager about new turn starter {starter} for room {room_id}"
-            )
-
-            # Trigger bot manager to handle the new turn
-            await bot_manager.handle_game_event(
-                room_id, "turn_started", {"starter": starter}
-            )
-
-        except Exception as e:
-            self.logger.error(
-                f"Failed to notify bot manager about new turn: {e}", exc_info=True
-            )
 
     async def _broadcast_turn_completion_enterprise(self):
         """🚀 ENTERPRISE: Broadcast turn completion using centralized system"""

@@ -44,6 +44,44 @@ Player plays → update_phase_data() → automatic "phase_change" broadcast → 
 - `bot_manager.py`:
   - `_handle_play_phase()` (lines 533-633) - old implementation, replaced by `_handle_turn_play_phase()`
 
+## Implementation Status
+
+### ✅ Completed Steps
+
+1. **Step 1: Remove Dead Methods in turn_state.py** ✅
+   - Removed `_notify_bot_manager_play()` (lines 881-901)
+   - Removed `_notify_bot_manager_new_turn()` (lines 903-923)
+
+2. **Step 2: Clean Up Bot Manager Event Handlers** ✅
+   - Note: These handlers were already removed (not found in code)
+   - The `"turn_started"` and `"player_played"` handlers no longer exist
+
+3. **Step 3: Remove Legacy Turn Play Handler** ✅
+   - Deleted entire `_handle_play_phase()` method (lines 533-633)
+   - This removes 100 lines of legacy code
+
+4. **Step 4: Remove Unnecessary Event Trigger** ✅
+   - Removed the `"turn_started"` event trigger from game_state_machine.py (lines 297-304)
+
+5. **Step 5: Verify Enterprise System** ✅
+   - Basic imports and game creation verified
+   - Code structure intact
+   - Bot manager methods properly cleaned up
+
+### Summary of Changes
+
+**Code Removed:**
+- ~40 lines from `turn_state.py` (2 unused notification methods)
+- ~100 lines from `bot_manager.py` (legacy _handle_play_phase method)
+- ~8 lines from `game_state_machine.py` (turn_started event trigger)
+- **Total: ~148 lines of dead/legacy code removed**
+
+**Result:**
+- Turn play now uses ONLY enterprise `phase_change` events
+- Consistent with declaration phase implementation
+- No more dual-triggering possibility
+- Clean foundation for redeal implementation
+
 ## Implementation Plan
 
 ### Step 1: Remove Dead Methods in turn_state.py
