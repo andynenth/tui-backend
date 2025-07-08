@@ -185,10 +185,11 @@
   border: 1px solid rgba(108, 117, 125, 0.3);
 }
 
-.sc-stat-value.special {
-  background: rgba(13, 110, 253, 0.1);
-  color: #0D6EFD;
-  border: 1px solid rgba(13, 110, 253, 0.3);
+.sc-stat-value.special,
+.sc-stat-value.value-blue {
+  background: rgba(0, 123, 255, 0.1);
+  color: #007BFF;
+  border: 1px solid rgba(0, 123, 255, 0.3);
 }
 
 /* Multiplier display */
@@ -207,9 +208,8 @@
   background: 
     linear-gradient(180deg, rgba(248, 249, 250, 0.6) 0%, rgba(233, 236, 239, 0.8) 100%),
     radial-gradient(ellipse 100% 60% at 50% 0%, rgba(173, 181, 189, 0.1) 0%, transparent 100%);
-  padding: 20px;
+  padding: 16px;
   border-top: 1px solid rgba(173, 181, 189, 0.2);
-  text-align: center;
   position: relative;
 }
 
@@ -224,33 +224,31 @@
   background: linear-gradient(90deg, transparent, #6C757D, transparent);
 }
 
-.sc-continue-text {
-  font-size: 14px;
-  color: #6C757D;
-  margin-bottom: 12px;
+.sc-continue-info {
+  text-align: center;
 }
 
-.sc-continue-btn {
-  background: 
-    linear-gradient(135deg, #28A745 0%, #20C997 100%),
-    radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.2) 0%, transparent 60%);
-  color: white;
-  border: 1px solid rgba(40, 167, 69, 0.4);
-  padding: 10px 24px;
-  border-radius: 10px;
+.sc-next-round {
   font-size: 14px;
   font-weight: 600;
-  cursor: pointer;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  box-shadow: 0 2px 4px rgba(40, 167, 69, 0.2);
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-  font-family: var(--font-primary);
+  color: #343A40;
+  margin-bottom: 4px;
 }
 
-.sc-continue-btn:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 4px 8px rgba(40, 167, 69, 0.3);
+.sc-auto-continue {
+  font-size: 12px;
+  color: #6C757D;
+}
+
+.sc-countdown {
+  display: inline-block;
+  background: rgba(108, 117, 125, 0.1);
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-weight: 600;
+  margin: 0 4px;
+  min-width: 20px;
+  text-align: center;
 }
 
 /* Animation */
