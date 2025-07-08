@@ -365,6 +365,20 @@ class GameStateMachine:
                         )
                         raise
 
+            elif self.current_phase == GamePhase.PREPARATION:
+                weak_players_awaiting = phase_data.get("weak_players_awaiting", set())
+                if weak_players_awaiting:
+                    # Send phase_change event for bot redeal decisions
+                    await bot_manager.handle_game_event(
+                        room_id,
+                        "phase_change",
+                        {
+                            "phase": "preparation",
+                            "phase_data": phase_data,
+                            "reason": reason,
+                        },
+                    )
+                    
             elif self.current_phase == GamePhase.TURN:
                 current_player = phase_data.get("current_player")
                 if current_player:

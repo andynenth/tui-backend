@@ -155,9 +155,8 @@ class PreparationState(GameState):
             # Notify about weak hands (frontend will prompt players)
             await self._notify_weak_hands()
             
-            # Trigger bot manager to handle bot decisions
-            print(f"🤖 PREP_STATE_DEBUG: Triggering bot manager for simultaneous redeal decisions...")
-            await self._trigger_bot_redeal_decisions()
+            # Enterprise architecture handles bot triggering automatically via phase_change events
+            # No manual trigger needed - bot manager watches phase data updates
             
             # Start timeout monitoring
             asyncio.create_task(self._monitor_decision_timeout())
@@ -243,6 +242,10 @@ class PreparationState(GameState):
             if self._processing_decisions:
                 return {"success": False, "error": "Processing in progress"}
             
+            # NEW: Prevent late decisions after phase change
+            if self.state_machine.current_phase != GamePhase.PREPARATION:
+                return {"success": False, "error": "Phase has already changed"}
+            
             player_name = action.player_name
             accept = action.payload.get("accept", False)
             
@@ -268,6 +271,11 @@ class PreparationState(GameState):
                 self._processing_decisions = True
                 try:
                     result = await self._process_all_decisions()
+                    
+                    # NEW: Direct transition if no weak players remain
+                    if not self.weak_players:
+                        await self.state_machine._transition_to(GamePhase.DECLARATION)
+                    
                     return result
                 finally:
                     self._processing_decisions = False
@@ -333,6 +341,11 @@ class PreparationState(GameState):
         else:
             # All declined - determine starter normally
             self.logger.info("✅ All weak players declined - proceeding with current hands")
+            
+            # Clear weak player tracking since all declined
+            self.weak_players.clear()
+            self.redeal_decisions.clear()
+            self.weak_players_awaiting.clear()
             
             starter = self._determine_starter()
             game = self.state_machine.game
@@ -546,6 +559,7 @@ class PreparationState(GameState):
             'decisions_received': len(self.redeal_decisions),
             'decisions_needed': len(self.weak_players),
             'weak_players_awaiting': list(self.weak_players_awaiting),
+            'redeal_decisions': dict(self.redeal_decisions),  # Add this for bot manager
             'all_decided': self._all_weak_decisions_received()
         }
         
@@ -555,60 +569,25 @@ class PreparationState(GameState):
             f"Player {player_name} {'accepted' if accepted else 'declined'} redeal ({len(self.redeal_decisions)}/{len(self.weak_players)} decided)"
         )
     
-    async def _trigger_bot_redeal_decisions(self) -> None:
-        """Trigger bot manager only for bot weak players"""
-        from ...bot_manager import BotManager
-        bot_manager = BotManager()
-        room_id = getattr(self.state_machine, 'room_id', 'unknown')
-        
-        # Collect all bot weak players
-        game = self.state_machine.game
-        bot_weak_players = []
-        
-        for player_name in self.weak_players:
-            player = next((p for p in game.players if p.name == player_name), None)
-            if player and getattr(player, 'is_bot', False):
-                bot_weak_players.append(player_name)
-                print(f"🤖 PREP_STATE_DEBUG: Bot weak player found: {player_name}")
-            else:
-                print(f"👤 PREP_STATE_DEBUG: Human weak player: {player_name} - waiting for UI")
-        
-        # Only trigger if there are bot weak players
-        if bot_weak_players:
-            await bot_manager.handle_game_event(room_id, "simultaneous_redeal_decisions", {
-                "bot_weak_players": bot_weak_players,
-                "weak_players": list(self.weak_players)
-            })
-        else:
-            print(f"👤 PREP_STATE_DEBUG: No bot weak players found - all humans will use UI")
     
     
     async def check_transition_conditions(self) -> Optional[GamePhase]:
         """Check if ready to transition to Declaration phase"""
-        # Transition when:
-        # 1. Initial deal done AND no weak players, OR
-        # 2. All weak players have made redeal decisions
+        # Only check basic conditions - redeal decisions now trigger transitions directly
         
         print(f"🔍 PREP_STATE_DEBUG: Checking transition conditions...")
         print(f"   - Initial deal complete: {self.initial_deal_complete}")
         print(f"   - Weak players: {self.weak_players}")
-        print(f"   - Redeal decisions: {self.redeal_decisions}")
-        print(f"   - Weak players awaiting: {self.weak_players_awaiting}")
-        print(f"   - All decisions received: {self._all_weak_decisions_received()}")
         
         if not self.initial_deal_complete:
             print(f"❌ PREP_STATE_DEBUG: Initial deal not complete, staying in preparation")
             return None
         
         if not self.weak_players:
-            # No weak hands found
+            # No weak hands found - this is the only polling-based transition now
             print(f"✅ PREP_STATE_DEBUG: No weak players, transitioning to DECLARATION")
             return GamePhase.DECLARATION
         
-        if self._all_weak_decisions_received():
-            # All weak players have decided
-            print(f"✅ PREP_STATE_DEBUG: All weak players decided, transitioning to DECLARATION")
-            return GamePhase.DECLARATION
-        
-        print(f"⏳ PREP_STATE_DEBUG: Waiting for more redeal decisions ({len(self.redeal_decisions)}/{len(self.weak_players)})")
+        # If we have weak players, wait for redeal decisions to trigger transition directly
+        print(f"⏳ PREP_STATE_DEBUG: Have weak players - waiting for event-based transition")
         return None

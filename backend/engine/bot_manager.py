@@ -195,14 +195,6 @@ class GameBotHandler:
                     return
                 
                 await self._handle_round_start()
-            elif event == "weak_hands_found":
-                await self._handle_weak_hands(data)
-            elif event == "redeal_decision_needed":
-                print(f"🔄 BOT_HANDLER_DEBUG: Handling redeal decision needed")
-                await self._handle_redeal_decision(data)
-            elif event == "simultaneous_redeal_decisions":
-                print(f"🔄 BOT_HANDLER_DEBUG: Handling simultaneous redeal decisions")
-                await self._handle_simultaneous_redeal_decisions(data)
             # 🔧 FIX: Add validation feedback events
             elif event == "action_rejected":
                 print(f"🚫 BOT_HANDLER_DEBUG: Handling action rejection")
@@ -222,6 +214,8 @@ class GameBotHandler:
         phase = data.get("phase")
         phase_data = data.get("phase_data", {})
         reason = data.get("reason", "")
+        
+        print(f"🚀 ENTERPRISE_BOT_DEBUG: _handle_enterprise_phase_change called - phase: {phase}")
         
         
         
@@ -256,6 +250,12 @@ class GameBotHandler:
                             else:
                                 print(f"👤 ENTERPRISE_BOT_DEBUG: Current declarer {current_declarer} is human - waiting")
                             break
+                            
+        elif phase == "preparation":
+            # Handle redeal decisions through phase data
+            weak_players_awaiting = phase_data.get("weak_players_awaiting", set())
+            if weak_players_awaiting:
+                await self._handle_redeal_decision_phase(phase_data)
                             
         elif phase == "turn":
             # 🚀 ENTERPRISE: Use sequential turn play handler like declarations
@@ -608,6 +608,58 @@ class GameBotHandler:
             print(f"❌ Bot {bot.name} play error: {e}")
             import traceback
             traceback.print_exc()
+    
+    async def _handle_redeal_decision_phase(self, phase_data: dict):
+        """Handle bot redeal decisions one at a time - follows enterprise pattern"""
+        weak_players_awaiting = phase_data.get("weak_players_awaiting", set())
+        redeal_decisions = phase_data.get("redeal_decisions", {})
+        
+        print(f"🎲 REDEAL_PHASE_DEBUG: Handling redeal decisions - awaiting: {weak_players_awaiting}")
+        
+        game_state = self._get_game_state()
+        
+        # Process one bot at a time, just like declarations and turns
+        for player_name in weak_players_awaiting:
+            if player_name in redeal_decisions:
+                print(f"🎲 REDEAL_PHASE_DEBUG: Player {player_name} already decided")
+                continue
+                
+            # Find the actual Player object
+            player = None
+            for p in game_state.players:
+                if getattr(p, 'name', str(p)) == player_name:
+                    player = p
+                    break
+                    
+            if not player:
+                print(f"❌ REDEAL_PHASE_DEBUG: Could not find Player object for {player_name}")
+                continue
+                
+            if not getattr(player, 'is_bot', False):
+                print(f"👤 REDEAL_PHASE_DEBUG: Player {player_name} is human, skipping")
+                continue
+                
+            # Bot decides with standard delay (0.5-1.5s)
+            import random
+            delay = random.uniform(0.5, 1.5)
+            print(f"🤖 REDEAL_PHASE_DEBUG: Bot {player_name} will decide in {delay:.1f}s...")
+            await asyncio.sleep(delay)
+            
+            print(f"🤖 REDEAL_PHASE_DEBUG: Bot {player_name} making redeal decision")
+            try:
+                await self._bot_redeal_decision(player)
+            except Exception as e:
+                print(f"❌ BOT_AI_ERROR: Bot redeal decision failed for {player_name}: {e}")
+                import traceback
+                traceback.print_exc()
+                # Continue with next bot even if one fails
+                continue
+                
+            # Small delay for UI processing
+            await asyncio.sleep(0.2)
+            
+            # Process only one bot at a time - let enterprise phase change handle the rest
+            break
             
     async def _handle_turn_resolved(self, result: dict):
         """Handle end of turn"""
@@ -800,74 +852,8 @@ class GameBotHandler:
                 hand_copy[idx] = None  # Mark as used
         return indices
 
-    async def _handle_weak_hands(self, data: dict):
-        """Handle weak hands found event - auto-decide for bots"""
-        weak_players = data.get("weak_players", [])
-        current_weak_player = data.get("current_weak_player")
-        
-        # Auto-decide for current bot if it's a bot
-        if current_weak_player:
-            game_state = self._get_game_state()
-            player = None
-            for p in game_state.players:
-                if p.name == current_weak_player:
-                    player = p
-                    break
-            
-            if player and player.is_bot:
-                print(f"🤖 Auto-deciding redeal for bot {current_weak_player}")
-                await asyncio.sleep(0.5)  # Small delay for realism
-                await self._bot_redeal_decision(player)
-
-    async def _handle_redeal_decision(self, data: dict):
-        """Handle redeal decision needed event"""
-        current_weak_player = data.get("current_weak_player")
-        
-        if current_weak_player:
-            game_state = self._get_game_state()
-            player = None
-            for p in game_state.players:
-                if p.name == current_weak_player:
-                    player = p
-                    break
-            
-            if player and player.is_bot:
-                print(f"🤖 Bot {current_weak_player} needs to make redeal decision")
-                # Use consolidated method with small delay for sequential decisions
-                await self._delayed_bot_redeal_decision(current_weak_player, 0.5)
 
 
-    async def _handle_simultaneous_redeal_decisions(self, data: dict):
-        """Handle bot redeal decisions sequentially with standard timing - MATCHES declaration/turn patterns"""
-        bot_weak_players = data.get("bot_weak_players", [])
-        
-        if not bot_weak_players:
-            print(f"👤 No bot weak players to handle")
-            return
-        
-        print(f"🤖 REDEAL: Processing {len(bot_weak_players)} bot decisions sequentially")
-        
-        # Process bots sequentially with standard delays - EXACTLY like declarations/turns
-        game_state = self._get_game_state()
-        
-        for bot_name in bot_weak_players:
-            # Find the bot player object
-            bot = None
-            for p in game_state.players:
-                if p.name == bot_name:
-                    bot = p
-                    break
-            
-            if bot and bot.is_bot:
-                # Apply standard delay (0.5-1.5s) - SAME as declarations/turns
-                delay = random.uniform(0.5, 1.5)
-                print(f"🤖 Bot {bot_name} will decide in {delay:.1f}s...")
-                await asyncio.sleep(delay)
-                
-                # Make decision
-                await self._bot_redeal_decision(bot)
-            else:
-                print(f"❌ Could not find bot player {bot_name}")
 
     async def _bot_redeal_decision(self, bot: Player):
         """Make bot redeal decision - uses standard pattern like declarations/turns"""
@@ -893,24 +879,6 @@ class GameBotHandler:
             print(f"❌ Bot {bot_name} redeal decision error: {e}")
             import traceback
             traceback.print_exc()
-    
-    async def _delayed_bot_redeal_decision(self, bot_name: str, delay: float):
-        """Legacy method - kept for compatibility but should migrate to _bot_redeal_decision"""
-        await asyncio.sleep(delay)
-        
-        # Find player object and use new method
-        game_state = self._get_game_state()
-        bot = None
-        for p in game_state.players:
-            if p.name == bot_name:
-                bot = p
-                break
-        
-        if bot and bot.is_bot:
-            await self._bot_redeal_decision(bot)
-        else:
-            print(f"❌ Could not find bot player {bot_name} for delayed decision")
-
     
     # 🔧 FIX: Validation Feedback Event Handlers
     
