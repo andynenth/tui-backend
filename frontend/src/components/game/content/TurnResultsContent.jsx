@@ -65,6 +65,12 @@ const TurnResultsContent = ({
   
   const nextPhase = getNextPhaseText();
   
+  // Debug logging
+  console.log('🎯 TurnResultsContent Debug:');
+  console.log('  winner:', winner);
+  console.log('  winner type:', typeof winner);
+  console.log('  playerPlays:', playerPlays);
+  
   return (
     <>
       {/* Winner announcement */}
@@ -95,32 +101,93 @@ const TurnResultsContent = ({
       {/* Players summary */}
       <div className="tr-players-summary">
         <div className="tr-player-list">
-          {playerPlays.map((play, index) => (
-            <div key={play.playerName} className="tr-player-row">
-              <div className="tr-player-avatar">
-                {getPlayerInitial(play.playerName)}
-              </div>
-              <div className="tr-player-info">
-                <div className="tr-player-name">
-                  {play.playerName}{play.playerName === myName ? ' (You)' : ''}
+          {(() => {
+            // Filter out the winner - simple string comparison
+            if (!winner) {
+              console.log('⚠️ No winner provided, showing all players');
+              return playerPlays.map((play, index) => (
+                <div key={play.playerName} className="tr-player-row">
+                  <div className="tr-player-avatar">
+                    {getPlayerInitial(play.playerName)}
+                  </div>
+                  <div className="tr-player-info">
+                    <div className="tr-player-name">
+                      {play.playerName}{play.playerName === myName ? ' (You)' : ''}
+                    </div>
+                  </div>
+                  <div className="tr-played-pieces">
+                    {play.pieces.length === 0 ? (
+                      <span className="tr-pass-indicator">Passed</span>
+                    ) : (
+                      play.pieces.map((piece, idx) => (
+                        <div 
+                          key={idx}
+                          className={`tr-played-piece ${getPieceColorClass(piece)}`}
+                        >
+                          {getPieceDisplay(piece)}
+                        </div>
+                      ))
+                    )}
+                  </div>
+                </div>
+              ));
+            }
+            
+            // Filter out the winner
+            const nonWinnerPlays = playerPlays.filter(play => play.playerName !== winner);
+            console.log('🔍 Filtering debug:');
+            console.log('  winner:', winner);
+            console.log('  nonWinnerPlays:', nonWinnerPlays);
+            
+            // Find winner's index in original order
+            const winnerIndex = playerPlays.findIndex(play => play.playerName === winner);
+            console.log('  winnerIndex:', winnerIndex);
+            
+            // Reorder starting from player after winner
+            const reorderedPlays = [];
+            if (winnerIndex !== -1 && nonWinnerPlays.length > 0) {
+              // Start from the player after the winner
+              for (let i = 0; i < playerPlays.length - 1; i++) {
+                const index = (winnerIndex + 1 + i) % playerPlays.length;
+                const play = playerPlays[index];
+                if (play.playerName !== winner) {
+                  reorderedPlays.push(play);
+                }
+              }
+            } else {
+              // Fallback to original order without winner
+              reorderedPlays.push(...nonWinnerPlays);
+            }
+            
+            console.log('  reorderedPlays:', reorderedPlays);
+            
+            return reorderedPlays.map((play, index) => (
+              <div key={play.playerName} className="tr-player-row">
+                <div className="tr-player-avatar">
+                  {getPlayerInitial(play.playerName)}
+                </div>
+                <div className="tr-player-info">
+                  <div className="tr-player-name">
+                    {play.playerName}{play.playerName === myName ? ' (You)' : ''}
+                  </div>
+                </div>
+                <div className="tr-played-pieces">
+                  {play.pieces.length === 0 ? (
+                    <span className="tr-pass-indicator">Passed</span>
+                  ) : (
+                    play.pieces.map((piece, idx) => (
+                      <div 
+                        key={idx}
+                        className={`tr-played-piece ${getPieceColorClass(piece)}`}
+                      >
+                        {getPieceDisplay(piece)}
+                      </div>
+                    ))
+                  )}
                 </div>
               </div>
-              <div className="tr-played-pieces">
-                {play.pieces.length === 0 ? (
-                  <span className="tr-pass-indicator">Passed</span>
-                ) : (
-                  play.pieces.map((piece, idx) => (
-                    <div 
-                      key={idx}
-                      className={`tr-played-piece ${getPieceColorClass(piece)}`}
-                    >
-                      {getPieceDisplay(piece)}
-                    </div>
-                  ))
-                )}
-              </div>
-            </div>
-          ))}
+            ));
+          })()}
         </div>
       </div>
       

@@ -217,6 +217,8 @@ export function GameContainer({ roomId, onNavigateToLobby }) {
       totalScores: gameState.totalScores || {},
       redealMultiplier: gameState.redealMultiplier || 1,
       playersWithScores: gameState.playersWithScores || [], // backend provides sorted players with all score data
+      roundNumber: gameState.currentRound || 1,
+      playerName: gameState.playerName || '',
       
       // State from backend
       gameOver: gameState.gameOver || false,

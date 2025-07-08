@@ -636,27 +636,45 @@ Successfully implemented preparation phase UI:
 - Added "Play Pieces" and "Pass" button functionality
 - Added selected pieces display area
 
-### Phase 5: Results & Scoring - PARTIALLY COMPLETED
+### Phase 5: Results & Scoring ✅ COMPLETED
 
-#### Turn Results Tasks - PENDING
-- [ ] Create TurnResultsContent component
-- [ ] Create turnresults.css
-- [ ] Display all players' played pieces
-- [ ] Highlight winner with animation
-- [ ] Show pieces won counter
-- [ ] Add "Continue" button
-- [ ] Implement auto-advance timer
+#### Turn Results Tasks ✅ COMPLETED
+- [x] Create TurnResultsContent component
+- [x] Create turnresults.css
+- [x] Display all players' played pieces
+- [x] Highlight winner with crown animation
+- [x] Show winning play pieces
+- [x] Implement auto-advance timer (5 seconds)
+- [x] Show next turn/round starter info
 
-#### Scoring Tasks - PENDING
-- [ ] Create ScoringContent component
-- [ ] Create scoring.css
-- [ ] Build scoring table layout
-- [ ] Display declared vs actual piles
-- [ ] Calculate and show points with animations
-- [ ] Highlight score changes
-- [ ] Add round summary section
+#### Scoring Tasks ✅ COMPLETED  
+- [x] Update ScoringUI to use ScoringContent component
+- [x] Update scoring.css with exact mockup styles
+- [x] Build score cards layout with all details
+- [x] Display declared vs actual piles
+- [x] Show hit/penalty values with color coding
+- [x] Display bonus points (special blue for 0/0)
+- [x] Show multiplier when applicable
+- [x] Implement auto-countdown timer
 
 ### Key Learnings & Blockers Encountered
+
+#### Phase 5 Specific Blockers:
+1. **Component Structure Consistency**
+   - **Problem**: ScoringUI still used old Tailwind UI instead of new pattern
+   - **Solution**: Updated to use ScoringContent component wrapper pattern
+   
+2. **Data Mapping**
+   - **Problem**: Backend data structure different from UI expectations
+   - **Solution**: Transform data in wrapper component before passing to content
+   
+3. **CSS Import**
+   - **Problem**: scoring.css wasn't imported in globals.css
+   - **Solution**: Added import to ensure styles load
+   
+4. **Special Score Display**
+   - **Problem**: Zero/zero scores needed special blue color coding
+   - **Solution**: Added value-blue class and special case logic
 
 #### Phase 4 Specific Blockers:
 1. **Backend Data Format Mismatch**

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 
 /**
@@ -11,6 +11,7 @@ import PropTypes from 'prop-types';
  * - Bonus points
  * - Multiplier display
  * - Total scores
+ * - Auto-countdown timer
  */
 const ScoringContent = ({
   players = [],
@@ -20,6 +21,25 @@ const ScoringContent = ({
   myName = '',
   onContinue
 }) => {
+  const [countdown, setCountdown] = useState(5);
+  
+  // Auto-countdown timer
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setCountdown(prev => {
+        if (prev <= 1) {
+          clearInterval(timer);
+          if (onContinue) {
+            onContinue();
+          }
+          return 0;
+        }
+        return prev - 1;
+      });
+    }, 1000);
+    
+    return () => clearInterval(timer);
+  }, [onContinue]);
   // Get player initial
   const getPlayerInitial = (name) => {
     return name.charAt(0).toUpperCase();
@@ -38,32 +58,24 @@ const ScoringContent = ({
     return value.toString();
   };
   
-  // Get result class
-  const getResultClass = (hit) => {
-    if (hit) return 'positive';
-    return 'negative';
+  // Get result class - special handling for zero/zero
+  const getResultClass = (score) => {
+    // Special case: 0/0 shows as blue
+    if (score.declared === 0 && score.actual === 0) return 'value-blue';
+    if (score.hit) return 'value-positive';
+    return 'value-negative';
   };
   
-  // Get bonus class
-  const getBonusClass = (bonus) => {
-    if (bonus > 0) return 'positive';
-    return 'neutral';
+  // Get bonus class - special handling for zero/zero
+  const getBonusClass = (score) => {
+    // Special case: 0/0 bonus is blue
+    if (score.declared === 0 && score.actual === 0) return 'value-blue';
+    if (score.bonus > 0) return 'value-positive';
+    return 'value-neutral';
   };
   
   return (
     <>
-      {/* Modified phase header for scoring */}
-      <div className="gl-phase-header">
-        <h1 className="gl-phase-title">Scoring Phase</h1>
-        <p className="gl-phase-subtitle">Round {roundNumber} Results</p>
-      </div>
-      
-      {/* Multiplier badge if > 1 */}
-      {redealMultiplier > 1 && (
-        <div className="gl-multiplier-badge show">
-          {redealMultiplier}×
-        </div>
-      )}
       
       {/* Scoring section */}
       <div className="sc-scoring-section">
@@ -104,7 +116,7 @@ const ScoringContent = ({
                 {/* Hit/Penalty */}
                 <div className="sc-stat">
                   <span className="sc-stat-label">{score.hit ? 'Hit' : 'Penalty'}</span>
-                  <span className={`sc-stat-value ${getResultClass(score.hit)}`}>
+                  <span className={`sc-stat-value ${getResultClass(score)}`}>
                     {formatScore(score.hitValue)}
                   </span>
                 </div>
@@ -112,7 +124,7 @@ const ScoringContent = ({
                 {/* Bonus */}
                 <div className="sc-stat">
                   <span className="sc-stat-label">Bonus</span>
-                  <span className={`sc-stat-value ${getBonusClass(score.bonus)}`}>
+                  <span className={`sc-stat-value ${getBonusClass(score)}`}>
                     {formatScore(score.bonus)}
                   </span>
                 </div>
@@ -142,12 +154,12 @@ const ScoringContent = ({
       
       {/* Continue section */}
       <div className="sc-continue-section">
-        <div className="sc-continue-text">
-          Round {roundNumber} complete
+        <div className="sc-continue-info">
+          <div className="sc-next-round">Starting Round {roundNumber + 1}</div>
+          <div className="sc-auto-continue">
+            Continuing in <span className="sc-countdown">{countdown}</span> seconds
+          </div>
         </div>
-        <button className="sc-continue-btn" onClick={onContinue}>
-          Continue
-        </button>
       </div>
     </>
   );
