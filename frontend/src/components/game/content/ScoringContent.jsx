@@ -58,6 +58,13 @@ const ScoringContent = ({
     return value.toString();
   };
   
+  // Get target color class
+  const getTargetClass = (score) => {
+    if (score.declared === 0 && score.actual === 0) return 'value-blue';
+    if (score.declared === score.actual) return 'value-positive'; // Green for hits
+    return 'value-negative'; // Red for misses
+  };
+
   // Get result class - special handling for zero/zero
   const getResultClass = (score) => {
     // Special case: 0/0 shows as blue
@@ -71,6 +78,14 @@ const ScoringContent = ({
     // Special case: 0/0 bonus is blue
     if (score.declared === 0 && score.actual === 0) return 'value-blue';
     if (score.bonus > 0) return 'value-positive';
+    return 'value-neutral';
+  };
+
+  // Get round score class - special handling for zero/zero
+  const getRoundScoreClass = (score) => {
+    if (score.declared === 0 && score.actual === 0) return 'value-blue';
+    if (score.roundScore > 0) return 'value-positive';
+    if (score.roundScore < 0) return 'value-negative';
     return 'value-neutral';
   };
   
@@ -97,7 +112,7 @@ const ScoringContent = ({
                 
                 <div className="sc-total-score">
                   <span className="sc-total-label">Total:</span>
-                  <span className={`sc-total-value ${getScoreClass(score.totalScore)}`}>
+                  <span className="sc-total-value neutral">
                     {score.totalScore}
                   </span>
                 </div>
@@ -108,7 +123,7 @@ const ScoringContent = ({
                 {/* Target */}
                 <div className="sc-stat sc-target">
                   <span className="sc-stat-label">Target</span>
-                  <span className="sc-target-value">
+                  <span className={`sc-target-value ${getTargetClass(score)}`}>
                     {score.declared}/{score.actual}
                   </span>
                 </div>
@@ -142,7 +157,7 @@ const ScoringContent = ({
                 {/* Round score */}
                 <div className="sc-stat">
                   <span className="sc-stat-label">Score</span>
-                  <span className={`sc-stat-value ${getScoreClass(score.roundScore)}`}>
+                  <span className={`sc-stat-value ${getRoundScoreClass(score)}`}>
                     {formatScore(score.roundScore)}
                   </span>
                 </div>

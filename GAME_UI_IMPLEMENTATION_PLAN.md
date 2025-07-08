@@ -791,3 +791,66 @@ Successfully implemented preparation phase UI:
    - Turn Results: turnWinner, winningPlay, pilesWon
    - Scoring: playerScores, roundScores, multipliers
    - Game Over: winner, finalScores, gameStats
+
+## Recent Updates and Improvements ✅ COMPLETED
+
+### **Code Consolidation & Cleanup (Latest Session)**
+
+#### **Piece Mapping Consolidation ✅ COMPLETED**
+- **Problem**: Duplicate piece mappings in `GamePiece.jsx` and `pieceMapping.js` with character inconsistencies
+- **Solution**: Consolidated to use single source of truth in `pieceMapping.js`
+- **Changes Made**:
+  - Updated `pieceMapping.js` with traditional Chinese chess symbols:
+    - `GENERAL_RED: '帥'`, `GENERAL_BLACK: '將'`
+    - `ADVISOR_RED: '仕'`, `ADVISOR_BLACK: '士'`
+    - `ELEPHANT_RED: '相'`, `ELEPHANT_BLACK: '象'`
+    - `CHARIOT_RED: '俥'`, `CHARIOT_BLACK: '車'`
+    - `HORSE_RED: '傌'`, `HORSE_BLACK: '馬'`
+    - `CANNON_RED: '炮'`, `CANNON_BLACK: '砲'`
+    - `SOLDIER_RED: '兵'`, `SOLDIER_BLACK: '卒'`
+  - Updated `GamePiece.jsx` to use `getPieceDisplay` from `pieceMapping.js`
+  - Removed duplicate 22-line `getPieceSymbol` function from `GamePiece.jsx`
+
+#### **Component Cleanup ✅ COMPLETED**
+- **Removed unused `GamePiece.jsx`** component (168 lines)
+  - Only reference was in commented-out legacy code in `PreparationUI.jsx`
+  - All active game phases use content components with `pieceMapping.js` utility
+- **Cleaned up `PreparationUI.jsx`** by removing 224 lines of old Tailwind UI code
+- **Updated `components/index.js`** to remove GamePiece export
+
+#### **Turn Results UI Refinement ✅ COMPLETED**
+- **Reduced winner announcement size** in `turnresults.css`:
+  - Reduced padding from 16px to 12px
+  - Reduced crown icon from 36px to 28px
+  - Reduced winner name font from 24px to 20px
+  - Reduced mini piece size from 36px to 32px
+  - Reduced gaps and margins throughout
+  - Removed max-height constraint
+
+#### **Benefits Achieved**:
+- **Single source of truth** for piece mappings across all 5 game files
+- **Traditional Chinese chess symbols** that visually distinguish red and black pieces
+- **Eliminated 392+ lines** of duplicate/unused code
+- **Consistent piece display** across all game phases
+- **Cleaner, more maintainable codebase**
+
+### **Current Status Summary**
+
+**All Phases Completed:**
+- ✅ **Phase 1**: Foundation Setup
+- ✅ **Phase 2**: Preparation Phase  
+- ✅ **Phase 3**: Declaration Phase
+- ✅ **Phase 4**: Turn Phase
+- ✅ **Phase 5**: Results & Scoring Phase
+
+**Remaining Work:**
+- 🔲 **Phase 6**: Game Over UI (Winner announcement, final rankings, confetti)
+- 🔲 **Complete game flow testing**
+
+**Architecture Status:**
+- ✅ Single source of truth for piece mappings (`pieceMapping.js`)
+- ✅ Consistent traditional Chinese chess symbols
+- ✅ Clean component architecture (wrapper + content pattern)
+- ✅ Custom CSS with proper prefixes (gl-, gp-, gd-, gt-, tr-, sc-)
+- ✅ No code duplication for piece rendering
+- ✅ Responsive 9:16 aspect ratio game container
