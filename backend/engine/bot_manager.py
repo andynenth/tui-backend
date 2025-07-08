@@ -938,39 +938,47 @@ class GameBotHandler:
 
 
     async def _handle_simultaneous_redeal_decisions(self, data: dict):
-        """Handle multiple bot redeal decisions with realistic timing"""
+        """Handle bot redeal decisions sequentially with standard timing - MATCHES declaration/turn patterns"""
         bot_weak_players = data.get("bot_weak_players", [])
         
         if not bot_weak_players:
             print(f"👤 No bot weak players to handle")
             return
         
-        print(f"🤖 SIMULTANEOUS_REDEAL: Handling {len(bot_weak_players)} bot decisions: {bot_weak_players}")
+        print(f"🤖 REDEAL: Processing {len(bot_weak_players)} bot decisions sequentially")
         
-        # Create staggered delays for natural feel
-        bot_tasks = []
-        for i, bot_name in enumerate(bot_weak_players):
-            # Vary delay: 1-3 seconds base + 0.5s per position
-            delay = random.uniform(1.0, 3.0) + (i * 0.5)
+        # Process bots sequentially with standard delays - EXACTLY like declarations/turns
+        game_state = self._get_game_state()
+        
+        for bot_name in bot_weak_players:
+            # Find the bot player object
+            bot = None
+            for p in game_state.players:
+                if p.name == bot_name:
+                    bot = p
+                    break
             
-            task = asyncio.create_task(
-                self._delayed_bot_redeal_decision(bot_name, delay)
-            )
-            bot_tasks.append(task)
-        
-        # Don't wait - let them decide asynchronously
-        asyncio.gather(*bot_tasks, return_exceptions=True)
+            if bot and bot.is_bot:
+                # Apply standard delay (0.5-1.5s) - SAME as declarations/turns
+                delay = random.uniform(0.5, 1.5)
+                print(f"🤖 Bot {bot_name} will decide in {delay:.1f}s...")
+                await asyncio.sleep(delay)
+                
+                # Make decision
+                await self._bot_redeal_decision(bot)
+            else:
+                print(f"❌ Could not find bot player {bot_name}")
 
-    async def _delayed_bot_redeal_decision(self, bot_name: str, delay: float):
-        """Make bot redeal decision after realistic delay"""
-        await asyncio.sleep(delay)
-        
+    async def _bot_redeal_decision(self, bot: Player):
+        """Make bot redeal decision - uses standard pattern like declarations/turns"""
         # Bots always accept redeals for testing purposes
+        # TODO: Add AI logic to make intelligent redeal decisions based on hand strength
         should_decline = False
         
-        print(f"🤖 Bot {bot_name} deciding after {delay:.1f}s delay: {'DECLINE' if should_decline else 'ACCEPT'}")
+        bot_name = bot.name
+        print(f"🤖 Bot {bot_name} deciding: {'DECLINE' if should_decline else 'ACCEPT'} redeal")
         
-        # Send decision
+        # Send decision through state machine
         action = GameAction(
             player_name=bot_name,
             action_type=ActionType.REDEAL_RESPONSE if should_decline else ActionType.REDEAL_REQUEST,
@@ -983,6 +991,25 @@ class GameBotHandler:
             print(f"✅ Bot {bot_name} {'DECLINED' if should_decline else 'ACCEPTED'} redeal")
         except Exception as e:
             print(f"❌ Bot {bot_name} redeal decision error: {e}")
+            import traceback
+            traceback.print_exc()
+    
+    async def _delayed_bot_redeal_decision(self, bot_name: str, delay: float):
+        """Legacy method - kept for compatibility but should migrate to _bot_redeal_decision"""
+        await asyncio.sleep(delay)
+        
+        # Find player object and use new method
+        game_state = self._get_game_state()
+        bot = None
+        for p in game_state.players:
+            if p.name == bot_name:
+                bot = p
+                break
+        
+        if bot and bot.is_bot:
+            await self._bot_redeal_decision(bot)
+        else:
+            print(f"❌ Could not find bot player {bot_name} for delayed decision")
 
     
     # 🔧 FIX: Validation Feedback Event Handlers
