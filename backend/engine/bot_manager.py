@@ -258,49 +258,37 @@ class GameBotHandler:
                             break
                             
         elif phase == "turn":
+            # 🚀 ENTERPRISE: Use sequential turn play handler like declarations
+            # This ensures consistent delays for all bot plays (0.5-1.5s)
+            turn_plays = phase_data.get('turn_plays', {})
             current_player = data.get("current_player") or phase_data.get("current_player")
-            if current_player:
-                print(f"🚀 ENTERPRISE_BOT_DEBUG: Turn phase - checking if {current_player} is a bot")
-                
-                # Check if current player is a bot
-                game_state = self._get_game_state()
-                if hasattr(game_state, 'players'):
-                    for player in game_state.players:
-                        if getattr(player, 'name', str(player)) == current_player:
-                            if getattr(player, 'is_bot', False):
-                                print(f"🤖 ENTERPRISE_BOT_DEBUG: Current player {current_player} is a bot - checking for duplicates")
-                                
-                                # 🔧 RACE_CONDITION_FIX: Check for duplicate action before triggering
-                                context = {
-                                    'phase': phase,
-                                    'turn_number': phase_data.get('current_turn_number', 0),
-                                    'current_player': current_player,
-                                    'required_count': phase_data.get('required_piece_count'),
-                                    'trigger_source': 'phase_change'
-                                }
-                                
-                                # Check both deduplication mechanisms
-                                if self._is_duplicate_action(current_player, 'play_pieces', context):
-                                    print(f"🚫 RACE_CONDITION_FIX: Skipping duplicate play action for {current_player}")
-                                    return
-                                
-                                if self._should_skip_bot_trigger(current_player, context):
-                                    print(f"🚫 RACE_CONDITION_FIX: Skipping bot trigger due to sequence tracking for {current_player}")
-                                    return
-                                
-                                # 🚀 ENTERPRISE: Check if this is a new turn start (bot already triggered by turn_started event)
-                                turn_plays = phase_data.get('turn_plays', {})
-                                if not turn_plays or len(turn_plays) == 0:
-                                    print(f"🚫 RACE_CONDITION_FIX: Skipping enterprise trigger for {current_player} - turn starter already triggered by turn_started event")
-                                    return
-                                
-                                print(f"✅ RACE_CONDITION_FIX: Triggering bot play for {current_player} - no duplicates detected")
-                                
-                                # 🚀 ENTERPRISE: Direct bot triggering for current player (single-source triggering)
-                                await self._bot_play(player)
-                            else:
-                                print(f"👤 ENTERPRISE_BOT_DEBUG: Current player {current_player} is human - waiting")
-                            break
+            
+            print(f"🚀 ENTERPRISE_BOT_DEBUG: Turn phase update - current_player: {current_player}, turn_plays: {list(turn_plays.keys())}")
+            
+            # If there are turn plays, find the last player who played
+            if turn_plays:
+                # Get the last player who played from turn_plays
+                last_player = list(turn_plays.keys())[-1]
+                print(f"🚀 ENTERPRISE_BOT_DEBUG: Last player who played: {last_player}")
+                # Use sequential handler for next bot(s)
+                await self._handle_turn_play_phase(last_player)
+            elif current_player:
+                # No plays yet, but current player is set
+                # Check if it's the turn starter (first play of the turn)
+                if phase_data.get('current_turn_starter') == current_player:
+                    print(f"🚀 ENTERPRISE_BOT_DEBUG: Turn starter {current_player} - using empty string to trigger from beginning")
+                    # Start from beginning of turn order
+                    await self._handle_turn_play_phase("")
+                else:
+                    print(f"🚀 ENTERPRISE_BOT_DEBUG: Mid-turn update, current player: {current_player}")
+                    # Find who played before current player
+                    turn_order = phase_data.get('turn_order', [])
+                    if current_player in turn_order:
+                        curr_idx = turn_order.index(current_player)
+                        if curr_idx > 0:
+                            last_player = turn_order[curr_idx - 1]
+                            print(f"🚀 ENTERPRISE_BOT_DEBUG: Previous player in order: {last_player}")
+                            await self._handle_turn_play_phase(last_player)
                 
     async def _handle_declaration_phase(self, last_declarer: str):
         """Handle bot declarations in order"""
@@ -469,6 +457,78 @@ class GameBotHandler:
             # Still need to handle bot declarations even if human starts
             await asyncio.sleep(0.5)
             await self._handle_declaration_phase("")  # Check for bot declarations
+    
+    async def _handle_turn_play_phase(self, last_player: str):
+        """Handle bot plays in turn order - IDENTICAL to declaration pattern"""
+        print(f"🎯 TURN_PLAY_PHASE_DEBUG: _handle_turn_play_phase called with last_player: '{last_player}'")
+        
+        # Get turn order from phase data  
+        turn_order = self._get_turn_order()
+        if not turn_order:
+            print(f"🎯 TURN_PLAY_PHASE_DEBUG: No turn order available, skipping bot plays")
+            return
+            
+        # Find next bot to play
+        last_index = self._get_player_index(last_player, turn_order)
+        print(f"🎯 TURN_PLAY_PHASE_DEBUG: Last player '{last_player}' index: {last_index}")
+        
+        if last_index >= len(turn_order) - 1:
+            print(f"🎯 TURN_PLAY_PHASE_DEBUG: Last player was end of turn order, no more players")
+            return
+        
+        print(f"🎯 TURN_PLAY_PHASE_DEBUG: Starting loop from index {last_index + 1} to {len(turn_order)}")
+        
+        # Get actual Player objects from game state
+        game_state = self._get_game_state()
+        
+        # Loop through remaining players - EXACT SAME PATTERN as declarations
+        for i in range(last_index + 1, len(turn_order)):
+            player_name = turn_order[i]
+            print(f"🎯 TURN_PLAY_PHASE_DEBUG: Checking player {i} ({player_name})")
+            
+            # Find the actual Player object
+            player_obj = None
+            for p in game_state.players:
+                if getattr(p, 'name', str(p)) == player_name:
+                    player_obj = p
+                    break
+                    
+            if not player_obj:
+                print(f"❌ TURN_PLAY_PHASE_DEBUG: Could not find Player object for {player_name}")
+                continue
+                
+            print(f"🎯 TURN_PLAY_PHASE_DEBUG: Found player {player_name}, is_bot: {getattr(player_obj, 'is_bot', False)}")
+            
+            if not getattr(player_obj, 'is_bot', False):
+                print(f"🎯 TURN_PLAY_PHASE_DEBUG: Player {player_name} is human, stopping bot plays")
+                break  # Stop at human player
+            
+            # Check if bot already played this turn (using phase data)
+            if self.state_machine:
+                phase_data = self.state_machine.get_phase_data()
+                turn_plays = phase_data.get('turn_plays', {})
+                if player_name in turn_plays:
+                    print(f"🎯 TURN_PLAY_PHASE_DEBUG: Bot {player_name} already played this turn, skipping")
+                    continue
+            
+            # Bot plays with SAME delay as declarations (0.5-1.5s)
+            import random
+            delay = random.uniform(0.5, 1.5)
+            print(f"🤖 TURN_PLAY_PHASE_DEBUG: Bot {player_name} will play in {delay:.1f}s...")
+            await asyncio.sleep(delay)
+            
+            print(f"🤖 TURN_PLAY_PHASE_DEBUG: Bot {player_name} will now play!")
+            try:
+                await self._bot_play(player_obj)
+            except Exception as e:
+                print(f"❌ BOT_AI_ERROR: Bot AI play failed for {player_name}: {e}")
+                import traceback
+                traceback.print_exc()
+                # Continue with next bot even if one fails
+                continue
+                
+            # Small delay for UI processing  
+            await asyncio.sleep(0.2)
             
     async def _handle_play_phase(self, last_player: str):
         """Handle bot plays in turn order"""
@@ -724,19 +784,13 @@ class GameBotHandler:
             print(f"❌ Starter {starter_name} not found")
             return
             
-        if starter.is_bot and len(starter.hand) > 0:
-            print(f"🤖 Bot {starter_name} will play first")
-            
-            # Add realistic delay for bot decision if the starter is a bot
-            import random
-            delay = random.uniform(1.0, 2.0)
-            print(f"🤖 Bot {starter_name} thinking for {delay:.1f}s...")
-            await asyncio.sleep(delay)
-            
-            # Bot starts the turn
-            await self._bot_play_first(starter)
-        else:
-            print(f"👤 Human player {starter_name} starts, waiting for their play")
+        # 🚀 ENTERPRISE: Use sequential turn play handler for ALL bot plays
+        # This ensures consistent 0.5-1.5s delays for turn starters too
+        print(f"🎯 TURN_START_DEBUG: Turn starter is {starter_name}, triggering sequential handler")
+        
+        # Start sequential processing from beginning of turn order
+        # Empty string means start from index -1, so loop begins at index 0
+        await self._handle_turn_play_phase("")
             
     async def _bot_play_first(self, bot: Player):
         """Bot plays as first player"""
@@ -808,6 +862,19 @@ class GameBotHandler:
             # Fallback to game state
             game_state = self._get_game_state()
             return game_state.current_order
+    
+    def _get_turn_order(self) -> List[str]:
+        """Get players in turn order - identical pattern to declaration order"""
+        if self.state_machine:
+            # Get turn order from state machine phase data
+            phase_data = self.state_machine.get_phase_data()
+            turn_order = phase_data.get('turn_order', [])
+            print(f"🔍 TURN_ORDER_DEBUG: Got turn order from state machine: {turn_order}")
+            return turn_order
+        else:
+            # Fallback to game state
+            game_state = self._get_game_state()
+            return getattr(game_state, 'turn_order', [])
         
     def _get_player_index(self, player_name: str, order: List) -> int:
         """Find player index in order"""
