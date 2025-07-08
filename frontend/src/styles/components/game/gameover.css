@@ -1,0 +1,307 @@
+/* gameover.css - Game Over Phase Styles */
+/* go- prefix for all game over related styles */
+
+/* Main container */
+.go-content {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 20px;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Confetti container */
+.go-confetti-container {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+/* Confetti particles */
+.go-confetti {
+  position: absolute;
+  width: 10px;
+  height: 10px;
+  background: #ff6b6b;
+  animation: confetti-fall 3s ease-out infinite;
+}
+
+.go-confetti.color-1 { background: #ff6b6b; }
+.go-confetti.color-2 { background: #4ecdc4; }
+.go-confetti.color-3 { background: #45b7d1; }
+.go-confetti.color-4 { background: #f9ca24; }
+.go-confetti.color-5 { background: #6c5ce7; }
+.go-confetti.color-6 { background: #a29bfe; }
+
+.go-confetti.size-small {
+  width: 8px;
+  height: 8px;
+}
+
+.go-confetti.size-medium {
+  width: 10px;
+  height: 10px;
+}
+
+.go-confetti.size-large {
+  width: 12px;
+  height: 12px;
+}
+
+/* Trophy section */
+.go-trophy-container {
+  margin-top: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  z-index: 10;
+  animation: bounceIn 0.6s ease-out;
+}
+
+.go-trophy {
+  font-size: 56px;
+  line-height: 1;
+  animation: trophy-glow 2s ease-in-out infinite;
+  filter: drop-shadow(0 4px 8px rgba(255, 215, 0, 0.3));
+}
+
+@keyframes trophy-glow {
+  0%, 100% { transform: scale(1) rotate(0deg); }
+  50% { transform: scale(1.1) rotate(5deg); }
+}
+
+/* Winner announcement */
+.go-winner-section {
+  margin-top: 16px;
+  text-align: center;
+  animation: slideIn 0.8s ease-out 0.3s both;
+}
+
+.go-winner-name {
+  font-family: 'Crimson Pro', serif;
+  font-size: 28px;
+  font-weight: 700;
+  color: #2d3748;
+  text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+  margin-bottom: 6px;
+}
+
+.go-winner-subtitle {
+  font-size: 16px;
+  color: #718096;
+  font-weight: 500;
+}
+
+/* Final rankings */
+.go-rankings-container {
+  width: 100%;
+  max-width: 320px;
+  margin-top: 20px;
+}
+
+.go-rankings-title {
+  font-size: 18px;
+  font-weight: 600;
+  color: #2d3748;
+  text-align: center;
+  margin-bottom: 12px;
+}
+
+.go-rankings {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.go-rank-item {
+  background: white;
+  border-radius: 8px;
+  padding: 12px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+  opacity: 0;
+  animation: slideIn 0.5s ease-out forwards;
+}
+
+.go-rank-item:nth-child(1) { animation-delay: 0.6s; }
+.go-rank-item:nth-child(2) { animation-delay: 0.8s; }
+.go-rank-item:nth-child(3) { animation-delay: 1.0s; }
+.go-rank-item:nth-child(4) { animation-delay: 1.2s; }
+
+.go-rank-position {
+  font-size: 18px;
+  font-weight: 700;
+  color: #a0aec0;
+  min-width: 28px;
+}
+
+.go-medal {
+  font-size: 24px;
+  animation: medal-shine 2s ease-in-out infinite;
+}
+
+@keyframes medal-shine {
+  0%, 100% { transform: scale(1) rotate(0deg); }
+  50% { transform: scale(1.2) rotate(10deg); }
+}
+
+.go-player-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.go-player-name {
+  font-size: 14px;
+  font-weight: 600;
+  color: #2d3748;
+}
+
+.go-player-score {
+  font-size: 12px;
+  color: #718096;
+}
+
+.go-final-score {
+  font-size: 20px;
+  font-weight: 700;
+  color: #2d3748;
+  text-align: right;
+}
+
+/* Game stats */
+.go-stats {
+  margin-top: 20px;
+  background: rgba(255,255,255,0.8);
+  border-radius: 12px;
+  padding: 16px;
+  text-align: center;
+  max-width: 320px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+}
+
+.go-stats-title {
+  font-size: 16px;
+  font-weight: 600;
+  color: #2d3748;
+  margin-bottom: 12px;
+}
+
+.go-stat-item {
+  display: flex;
+  justify-content: space-between;
+  padding: 8px 0;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.go-stat-item:last-child {
+  border-bottom: none;
+}
+
+.go-stat-label {
+  font-size: 14px;
+  color: #718096;
+}
+
+.go-stat-value {
+  font-size: 14px;
+  font-weight: 600;
+  color: #2d3748;
+}
+
+/* Action buttons */
+.go-actions {
+  margin-top: 20px;
+  display: flex;
+  gap: 12px;
+  z-index: 10;
+}
+
+.go-action-button {
+  padding: 10px 20px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-decoration: none;
+  display: inline-block;
+}
+
+.go-action-button.primary {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+}
+
+.go-action-button.primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(102, 126, 234, 0.4);
+}
+
+.go-action-button.secondary {
+  background: white;
+  color: #4a5568;
+  border: 2px solid #e2e8f0;
+}
+
+.go-action-button.secondary:hover {
+  background: #f7fafc;
+  border-color: #cbd5e0;
+}
+
+/* Countdown timer */
+.go-countdown {
+  margin-top: 20px;
+  font-size: 14px;
+  color: #718096;
+  text-align: center;
+}
+
+.go-countdown-time {
+  font-weight: 600;
+  color: #4a5568;
+}
+
+/* Animations */
+@keyframes confetti-fall {
+  0% {
+    transform: translateY(-100vh) rotate(0deg);
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(100vh) rotate(720deg);
+    opacity: 0;
+  }
+}
+
+/* Responsive adjustments */
+@media (max-height: 600px) {
+  .go-trophy {
+    font-size: 48px;
+  }
+  
+  .go-winner-name {
+    font-size: 24px;
+  }
+  
+  .go-rank-item {
+    padding: 10px;
+  }
+  
+  .go-stats {
+    margin-top: 16px;
+    padding: 12px;
+  }
+}

@@ -53,6 +53,11 @@ def calculate_round_scores(players, pile_counts, redeal_multiplier):
         delta = calculate_score(declared, actual) * redeal_multiplier
 
         player.score += delta                      # Update total score
+        
+        # Check for perfect round (non-zero declaration that was met exactly)
+        perfect_round = declared > 0 and declared == actual
+        if perfect_round:
+            player.perfect_rounds += 1
 
         score_data.append({
             "player": player,                      # Reference to player object
@@ -60,7 +65,9 @@ def calculate_round_scores(players, pile_counts, redeal_multiplier):
             "actual": actual,                      # Actual piles captured
             "delta": delta,                        # Score gained/lost this round
             "multiplier": redeal_multiplier,       # Score multiplier from redeals
-            "total": player.score                  # Updated total score
+            "total": player.score,                 # Updated total score
+            "perfect_round": perfect_round,        # Whether this was a perfect round
+            "total_perfect_rounds": player.perfect_rounds  # Cumulative perfect rounds
         })
 
     return score_data

@@ -9,6 +9,10 @@ class Player:
         self.captured_piles = 0           # Number of pieces captured this round (reset each round)
         self.is_bot = is_bot              # Whether this player is AI-controlled
         self.zero_declares_in_a_row = 0   # Counter for how many rounds this player has declared 0 in a row
+        
+        # Game statistics (cumulative across all rounds)
+        self.turns_won = 0                # Total number of turns won in the game
+        self.perfect_rounds = 0           # Number of rounds where declared == actual (non-zero)
 
     def has_red_general(self):
         """

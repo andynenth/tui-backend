@@ -91,7 +91,13 @@ class GameOverState(GameState):
         )
         
         return [
-            {"name": player.name, "score": player.score, "rank": i + 1}
+            {
+                "name": player.name, 
+                "score": player.score, 
+                "rank": i + 1,
+                "turns_won": getattr(player, "turns_won", 0),
+                "perfect_rounds": getattr(player, "perfect_rounds", 0)
+            }
             for i, player in enumerate(sorted_players)
         ]
     

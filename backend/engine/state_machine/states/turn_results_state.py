@@ -68,6 +68,19 @@ class TurnResultsState(GameState):
                 GamePhase.SCORING if all_hands_empty else GamePhase.TURN
             )
 
+            # Update turn winner's statistics
+            if self.turn_winner:
+                winner_player = next((p for p in game.players if p.name == self.turn_winner), None)
+                if winner_player:
+                    winner_player.turns_won += 1
+                    self.logger.info(f"Player {self.turn_winner} now has {winner_player.turns_won} turns won")
+            
+            # Prepare player statistics for broadcast
+            player_stats = {
+                p.name: {"turns_won": p.turns_won, "perfect_rounds": p.perfect_rounds} 
+                for p in game.players
+            }
+            
             # 🚀 ENTERPRISE: Update phase data with turn results display
             await self.update_phase_data(
                 {
@@ -76,6 +89,7 @@ class TurnResultsState(GameState):
                     "display_duration": self.display_duration,
                     "next_phase": self.transition_target.value,
                     "auto_transition": True,
+                    "player_stats": player_stats,
                 },
                 f"Displaying turn results - winner: {self.turn_winner}",
             )

@@ -17,7 +17,7 @@ def is_game_over(game):
     if condition == WinConditionType.FIRST_TO_REACH_50:
         return any(p.score >= game.max_score for p in game.players)
 
-    if condition == WinConditionType.MOST_POINTS_AFTER_20_ROUNDS:
+    if condition == WinConditionType.AFTER_20_ROUNDS:
         return game.round_number >= game.max_rounds
 
     if condition == WinConditionType.EXACTLY_50_POINTS:

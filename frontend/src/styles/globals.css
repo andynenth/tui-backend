@@ -15,6 +15,7 @@
 @import './components/game/turn.css';
 @import './components/game/turnresults.css';
 @import './components/game/scoring.css';
+@import './components/game/gameover.css';
 @import 'tailwindcss/index.css';
 
 /* Your custom styles */

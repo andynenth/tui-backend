@@ -24,78 +24,78 @@ Update the frontend game UI to match the provided mockup designs exactly, using 
   - [x] `gamelayout.css`
 
 ##### 1.2 Setup CSS Variables
-- [ ] In `_variables.css`, add game-specific variables:
-  - [ ] Gradient definitions from mockups
-  - [ ] Game-specific spacing values
-  - [ ] Animation durations
-  - [ ] Z-index layers
-- [ ] Import `_variables.css` in `globals.css`
+- [x] In `_variables.css`, add game-specific variables:
+  - [x] Gradient definitions from mockups
+  - [x] Game-specific spacing values
+  - [x] Animation durations
+  - [x] Z-index layers
+- [x] Import `_variables.css` in `globals.css`
 
 ##### 1.3 Setup Animation Keyframes
-- [ ] In `_animations.css`, create keyframes:
-  - [ ] `@keyframes dealing` (card animation)
-  - [ ] `@keyframes progress` (progress bar)
-  - [ ] `@keyframes slideIn` (panel slides)
-  - [ ] `@keyframes pieceAppear` (piece fade-in)
-  - [ ] `@keyframes bounceIn` (badge appear)
-  - [ ] `@keyframes flipIn` (title change)
-  - [ ] `@keyframes confetti-fall` (for later)
-- [ ] Import `_animations.css` in `globals.css`
+- [x] In `_animations.css`, create keyframes:
+  - [x] `@keyframes dealing` (card animation)
+  - [x] `@keyframes progress` (progress bar)
+  - [x] `@keyframes slideIn` (panel slides)
+  - [x] `@keyframes pieceAppear` (piece fade-in)
+  - [x] `@keyframes bounceIn` (badge appear)
+  - [x] `@keyframes flipIn` (title change)
+  - [x] `@keyframes confetti-fall` (for later)
+- [x] Import `_animations.css` in `globals.css`
 
 ##### 1.4 Create GameLayout Component Structure
-- [ ] Create `frontend/src/components/game/GameLayout.jsx`
-- [ ] Add component skeleton with props interface
-- [ ] Add prop validation with PropTypes
+- [x] Create `frontend/src/components/game/GameLayout.jsx`
+- [x] Add component skeleton with props interface
+- [x] Add prop validation with PropTypes
 
 ##### 1.5 Implement GameLayout Container
-- [ ] Add main container div with `gl-game-container` class
-- [ ] Import and link `gamelayout.css`
-- [ ] Add container styles in CSS:
-  - [ ] Fixed dimensions (9:16 ratio)
-  - [ ] Background gradients
-  - [ ] Border and shadows
-  - [ ] Border radius
+- [x] Add main container div with `gl-game-container` class
+- [x] Import and link `gamelayout.css`
+- [x] Add container styles in CSS:
+  - [x] Fixed dimensions (9:16 ratio)
+  - [x] Background gradients
+  - [x] Border and shadows
+  - [x] Border radius
 
 ##### 1.6 Implement Round Indicator
-- [ ] Add round indicator JSX in top-right
-- [ ] Create `.gl-round-indicator` styles:
-  - [ ] Positioning (absolute)
-  - [ ] Background gradient
-  - [ ] Typography
-  - [ ] Shadow effects
-- [ ] Connect to `roundNumber` prop
+- [x] Add round indicator JSX in top-right
+- [x] Create `.gl-round-indicator` styles:
+  - [x] Positioning (absolute)
+  - [x] Background gradient
+  - [x] Typography
+  - [x] Shadow effects
+- [x] Connect to `roundNumber` prop
 
 ##### 1.7 Implement Multiplier Badge
-- [ ] Add conditional multiplier badge JSX
-- [ ] Create `.gl-multiplier-badge` styles:
-  - [ ] Red gradient background
-  - [ ] Positioning (top-left)
-  - [ ] Show/hide logic
-- [ ] Add `show` class animation
+- [x] Add conditional multiplier badge JSX
+- [x] Create `.gl-multiplier-badge` styles:
+  - [x] Red gradient background
+  - [x] Positioning (top-left)
+  - [x] Show/hide logic
+- [x] Add `show` class animation
 
 ##### 1.8 Implement Phase Header
-- [ ] Add phase header section JSX
-- [ ] Create header styles:
-  - [ ] `.gl-phase-header` container
-  - [ ] `.gl-phase-title` with Crimson Pro font
-  - [ ] `.gl-phase-subtitle` styling
-  - [ ] Header gradient background
-  - [ ] Bottom border with pseudo-element
-- [ ] Add phase title/subtitle helper functions
+- [x] Add phase header section JSX
+- [x] Create header styles:
+  - [x] `.gl-phase-header` container
+  - [x] `.gl-phase-title` with Crimson Pro font
+  - [x] `.gl-phase-subtitle` styling
+  - [x] Header gradient background
+  - [x] Bottom border with pseudo-element
+- [x] Add phase title/subtitle helper functions
 
 ##### 1.9 Add Content Area
-- [ ] Add content section container
-- [ ] Create `.gl-content-section` styles
-- [ ] Add `{children}` prop rendering
-- [ ] Set up proper flex layout
+- [x] Add content section container
+- [x] Create `.gl-content-section` styles
+- [x] Add `{children}` prop rendering
+- [x] Set up proper flex layout
 
 ##### 1.10 Update GameContainer
-- [ ] Import GameLayout component
-- [ ] Wrap preparation phase return:
-  - [ ] Keep existing PreparationUI for now
-  - [ ] Wrap in GameLayout
-  - [ ] Pass required props
-- [ ] Test that it renders without breaking
+- [x] Import GameLayout component
+- [x] Wrap preparation phase return:
+  - [x] Keep existing PreparationUI for now
+  - [x] Wrap in GameLayout
+  - [x] Pass required props
+- [x] Test that it renders without breaking
 
 #### Deliverables:
 - GameLayout.jsx component
@@ -112,17 +112,17 @@ Update the frontend game UI to match the provided mockup designs exactly, using 
 
 ##### 2.1 Create Piece Mapping Utility
 - [x] Create `frontend/src/utils/pieceMapping.js`
-- [ ] Add piece type to Chinese character mapping:
-  - [ ] Map GENERAL_RED → "将"
-  - [ ] Map GENERAL_BLACK → "帅"
-  - [ ] Map ADVISOR → "士"
-  - [ ] Map ELEPHANT → "象"
-  - [ ] Map CHARIOT → "车"
-  - [ ] Map HORSE → "马"
-  - [ ] Map CANNON → "炮"
-  - [ ] Map SOLDIER → "兵/卒"
-- [ ] Add helper function `getPieceDisplay(piece)`
-- [ ] Export mapping object and helper
+- [x] Add piece type to Chinese character mapping:
+  - [x] Map GENERAL_RED → "将"
+  - [x] Map GENERAL_BLACK → "帅"
+  - [x] Map ADVISOR → "士"
+  - [x] Map ELEPHANT → "象"
+  - [x] Map CHARIOT → "车"
+  - [x] Map HORSE → "马"
+  - [x] Map CANNON → "炮"
+  - [x] Map SOLDIER → "兵/卒"
+- [x] Add helper function `getPieceDisplay(piece)`
+- [x] Export mapping object and helper
 
 ##### 2.2 Create PreparationContent Component
 - [ ] Create `frontend/src/components/game/content/PreparationContent.jsx`
@@ -408,89 +408,199 @@ Update the frontend game UI to match the provided mockup designs exactly, using 
 
 ---
 
-### Phase 6: Game Over (Day 5)
+### Phase 6: Game Over (Day 5) ✅ COMPLETED
 **Goal**: Implement game over with celebrations
+
+#### Data Flow Documentation:
+
+##### Backend Data Provided:
+The backend `GameOverState` (backend/engine/state_machine/states/game_over_state.py) provides:
+```javascript
+{
+  phase: 'game_over',
+  phase_data: {
+    final_rankings: [
+      {name: "Player1", score: 58, rank: 1},
+      {name: "Player2", score: 52, rank: 2},
+      // ... sorted by score descending
+    ],
+    game_stats: {
+      total_rounds: 20,
+      game_duration: "45 min",  // Calculated from start_time/end_time
+      start_time: 1234567890,
+      end_time: 1234570590
+    },
+    winners: ["Player1"]  // Array of winner names (can be multiple if tied)
+  }
+}
+```
+
+##### Frontend Data Processing:
+1. **GameService** receives `phase_change` event and stores data
+2. **GameContainer** maps data to props for GameOverUI
+3. **GameOverUI** transforms data for GameOverContent:
+   - Extracts winner from rank 1 player
+   - Creates player list and score mapping
+   - Converts duration string to seconds (if needed)
+   - Calculates highest score from rankings
+
+##### Navigation Flow:
+- `onBackToLobby` callback chain: GamePage → GameContainer → GameOverUI
+- Triggers `gameActions.cleanup()` and navigates to '/lobby'
+- Auto-redirect after 10 seconds countdown
+
+##### Implementation Plan for Player Statistics:
+
+###### 1. Player Class Updates (`backend/engine/player.py`):
+```python
+class Player:
+    def __init__(self, name, is_bot=False):
+        # ... existing fields ...
+        # Game statistics (cumulative across all rounds)
+        self.turns_won = 0         # Total number of turns won in the game
+        self.perfect_rounds = 0    # Number of rounds where declared == actual (non-zero)
+```
+
+###### 2. Track Turn Winners (`backend/engine/state_machine/states/turn_results_state.py`):
+In `_setup_phase()` after determining turn winner:
+```python
+# Find and update turn winner's statistics
+winner_player = next((p for p in game.players if p.name == turn_winner), None)
+if winner_player:
+    winner_player.turns_won += 1
+    
+# Include in phase data
+phase_data["player_stats"] = {
+    p.name: {"turns_won": p.turns_won} for p in game.players
+}
+```
+
+###### 3. Track Perfect Rounds (`backend/engine/scoring.py`):
+Modify `calculate_round_scores()`:
+```python
+# Inside the loop for each player
+if declared > 0 and declared == actual:
+    player.perfect_rounds += 1
+    
+# Add to score_data
+score_data.append({
+    # ... existing fields ...
+    "perfect_round": declared > 0 and declared == actual,
+    "total_perfect_rounds": player.perfect_rounds
+})
+```
+
+###### 4. Update Game Over State (`backend/engine/state_machine/states/game_over_state.py`):
+Modify `_calculate_final_rankings()`:
+```python
+return [
+    {
+        "name": player.name, 
+        "score": player.score, 
+        "rank": i + 1,
+        "turns_won": player.turns_won,
+        "perfect_rounds": player.perfect_rounds
+    }
+    for i, player in enumerate(sorted_players)
+]
+```
+
+###### 5. Frontend Display (`frontend/src/components/game/content/GameOverContent.jsx`):
+```jsx
+<div className="go-player-score">
+  {player.turns_won ? `Won ${player.turns_won} turns` : 'No turns won'} 
+  {player.perfect_rounds ? ` • ${player.perfect_rounds} perfect rounds` : ''}
+</div>
+```
+
+###### Complete Data Flow:
+1. **Turn Phase**: When a turn ends, increment winner's `turns_won`
+2. **Scoring Phase**: When scoring, check for perfect rounds and increment counter
+3. **Game Over Phase**: Include statistics in final rankings broadcast
+4. **Frontend**: Display statistics in player cards
+
+This provides meaningful game statistics that enhance the competitive aspect and give players a sense of accomplishment beyond just the final score.
 
 #### Tasks:
 
 ##### 6.1 Create GameOverContent Component
-- [ ] Create `frontend/src/components/game/content/GameOverContent.jsx`
-- [ ] Add component skeleton with PropTypes
-- [ ] Import from GameContainer for game_over phase
-- [ ] Add props: winner, finalScores, players, gameStats
+- [x] Create `frontend/src/components/game/content/GameOverContent.jsx`
+- [x] Add component skeleton with PropTypes
+- [x] Import from GameContainer for game_over phase
+- [x] Add props: winner, finalScores, players, gameStats
 
 ##### 6.2 Create Game Over CSS
-- [ ] Create `frontend/src/styles/components/game/gameover.css`
-- [ ] Import in GameOverContent component
-- [ ] Import in globals.css
-- [ ] Add CSS prefix comment `/* go- prefix */`
+- [x] Create `frontend/src/styles/components/game/gameover.css`
+- [x] Import in GameOverContent component
+- [x] Import in globals.css
+- [x] Add CSS prefix comment `/* go- prefix */`
 
 ##### 6.3 Implement Confetti Animation
-- [ ] Create confetti particles (50+ divs)
-- [ ] Add `.go-confetti-container` for positioning
-- [ ] Add `.go-confetti` particle styles
-- [ ] Create different colors/sizes variants
-- [ ] Add falling animation with rotation
-- [ ] Randomize delays and positions
-- [ ] Use CSS transforms for performance
+- [x] Create confetti particles (50+ divs)
+- [x] Add `.go-confetti-container` for positioning
+- [x] Add `.go-confetti` particle styles
+- [x] Create different colors/sizes variants
+- [x] Add falling animation with rotation
+- [x] Randomize delays and positions
+- [x] Use CSS transforms for performance
 
 ##### 6.4 Implement Trophy Display
-- [ ] Create trophy section
-- [ ] Add `.go-trophy-container` centering
-- [ ] Add `.go-trophy` SVG or emoji (🏆)
-- [ ] Add bounce-in animation
-- [ ] Add glow/shine effect
-- [ ] Scale animation on appear
+- [x] Create trophy section
+- [x] Add `.go-trophy-container` centering
+- [x] Add `.go-trophy` SVG or emoji (🏆)
+- [x] Add bounce-in animation
+- [x] Add glow/shine effect
+- [x] Scale animation on appear
 
 ##### 6.5 Implement Winner Announcement
-- [ ] Add winner name display
-- [ ] Create `.go-winner-name` large text
-- [ ] Add "Champion!" or similar subtitle
-- [ ] Add text appear animation
-- [ ] Add celebration message
+- [x] Add winner name display
+- [x] Create `.go-winner-name` large text
+- [x] Add "Champion!" or similar subtitle
+- [x] Add text appear animation
+- [x] Add celebration message
 
 ##### 6.6 Implement Final Rankings
-- [ ] Create rankings list
-- [ ] Add `.go-rankings` container
-- [ ] Add `.go-rank-item` for each player
-- [ ] Show position numbers (1st, 2nd, etc)
-- [ ] Add medal icons for top 3
-- [ ] Show final scores
-- [ ] Add staggered appear animation
+- [x] Create rankings list
+- [x] Add `.go-rankings` container
+- [x] Add `.go-rank-item` for each player
+- [x] Show position numbers (1st, 2nd, etc)
+- [x] Add medal icons for top 3
+- [x] Show final scores
+- [x] Add staggered appear animation
 
 ##### 6.7 Style Medal Indicators
-- [ ] Create medal icons (🥇🥈🥉)
-- [ ] Add `.go-medal` styles
-- [ ] Add shine animation
-- [ ] Different colors for each position
-- [ ] Only show for top 3 players
+- [x] Create medal icons (🥇🥈🥉)
+- [x] Add `.go-medal` styles
+- [x] Add shine animation
+- [x] Different colors for each position
+- [x] Only show for top 3 players
 
 ##### 6.8 Implement Auto-redirect Timer
-- [ ] Add countdown state (10 seconds)
-- [ ] Create useEffect for countdown
-- [ ] Add `.go-countdown` display
-- [ ] Show "Returning to lobby in X..."
-- [ ] Redirect to /lobby at 0
+- [x] Add countdown state (10 seconds)
+- [x] Create useEffect for countdown
+- [x] Add `.go-countdown` display
+- [x] Show "Returning to lobby in X..."
+- [x] Redirect to /lobby at 0
 
 ##### 6.9 Add Manual Actions
-- [ ] Add "Return to Lobby" button
-- [ ] Add "Play Again" button (if applicable)
-- [ ] Style with `.go-action-button`
-- [ ] Add hover effects
+- [x] Add "Return to Lobby" button
+- [x] Add "Play Again" button (if applicable)
+- [x] Style with `.go-action-button`
+- [x] Add hover effects
 
 ##### 6.10 Add Game Statistics
-- [ ] Show game duration
-- [ ] Show total rounds played
-- [ ] Show highest single score
-- [ ] Any other interesting stats
-- [ ] Style with `.go-stats` section
+- [x] Show game duration
+- [x] Show total rounds played
+- [x] Show highest single score
+- [x] Any other interesting stats
+- [x] Style with `.go-stats` section
 
 #### Deliverables:
-- GameOverContent.jsx with complete celebration UI
-- gameover.css with all animations
-- Working confetti animation
-- Auto-redirect to lobby functionality
-- Responsive layout for all screen sizes
+- ✅ GameOverContent.jsx with complete celebration UI
+- ✅ gameover.css with all animations
+- ✅ Working confetti animation
+- ✅ Auto-redirect to lobby functionality
+- ✅ Responsive layout for all screen sizes
 
 ---
 

@@ -68,6 +68,7 @@ class ScoringState(GameState):
             game = self.state_machine.game
             total_scores = {}
             players_data = []
+            player_stats = {}
 
             if hasattr(game, "players") and game.players:
                 for player in game.players:
@@ -84,6 +85,11 @@ class ScoringState(GameState):
                             "captured_piles": getattr(player, "captured_piles", 0),
                         }
                     )
+                    # Include player statistics
+                    player_stats[player.name] = {
+                        "turns_won": getattr(player, "turns_won", 0),
+                        "perfect_rounds": getattr(player, "perfect_rounds", 0)
+                    }
 
             print(f"🚀 SCORING_BROADCAST_DEBUG: Also sending:")
             print(f"   💯 Total scores: {total_scores}")
@@ -94,6 +100,7 @@ class ScoringState(GameState):
                     "round_scores": self.round_scores,
                     "total_scores": total_scores,
                     "players": players_data,
+                    "player_stats": player_stats,
                     "game_complete": self.game_complete,
                     "winners": self.winners,
                     "scores_calculated": True,
