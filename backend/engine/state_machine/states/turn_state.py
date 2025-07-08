@@ -200,10 +200,11 @@ class TurnState(GameState):
         self.winner = None
         self._turn_resolution_cache = None  # Clear cache for new turn
 
-        # 🤖 CRITICAL: Notify bot manager FIRST before any state updates to ensure bot actions are queued immediately
-        await self._notify_bot_manager_new_turn(self.current_turn_starter)
+        # 🚀 ENTERPRISE: Bot manager notifications removed - enterprise architecture handles bot triggering automatically
+        # Manual notifications were causing dual triggering with instant bot plays
+        # Now relies on phase_change events for consistent sequential bot processing
 
-        # 🚀 ENTERPRISE: Use automatic broadcasting system after bot notification
+        # 🚀 ENTERPRISE: Use automatic broadcasting system
         current_turn_number = game.turn_number
 
         print(f"🔢 TURN_NUMBER_DEBUG: Backend game.turn_number = {current_turn_number}")
