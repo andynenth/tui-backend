@@ -66,10 +66,7 @@ const TurnResultsContent = ({
   const nextPhase = getNextPhaseText();
   
   // Debug logging
-  console.log('🎯 TurnResultsContent Debug:');
-  console.log('  winner:', winner);
-  console.log('  winner type:', typeof winner);
-  console.log('  playerPlays:', playerPlays);
+  // Debug info removed - winner display logic working correctly
   
   return (
     <>
@@ -104,7 +101,7 @@ const TurnResultsContent = ({
           {(() => {
             // Filter out the winner - simple string comparison
             if (!winner) {
-              console.log('⚠️ No winner provided, showing all players');
+              // No winner provided, showing all players
               return playerPlays.map((play, index) => (
                 <div key={play.playerName} className="tr-player-row">
                   <div className="tr-player-avatar">
@@ -135,13 +132,11 @@ const TurnResultsContent = ({
             
             // Filter out the winner
             const nonWinnerPlays = playerPlays.filter(play => play.playerName !== winner);
-            console.log('🔍 Filtering debug:');
-            console.log('  winner:', winner);
-            console.log('  nonWinnerPlays:', nonWinnerPlays);
+            // Filter out winner from plays
             
             // Find winner's index in original order
             const winnerIndex = playerPlays.findIndex(play => play.playerName === winner);
-            console.log('  winnerIndex:', winnerIndex);
+            // Insert winner at appropriate position
             
             // Reorder starting from player after winner
             const reorderedPlays = [];
@@ -159,7 +154,7 @@ const TurnResultsContent = ({
               reorderedPlays.push(...nonWinnerPlays);
             }
             
-            console.log('  reorderedPlays:', reorderedPlays);
+            // Reordered plays ready for display
             
             return reorderedPlays.map((play, index) => (
               <div key={play.playerName} className="tr-player-row">
