@@ -130,17 +130,42 @@ const TurnContent = ({
   
   // Check if can play
   const canPlay = () => {
-    if (!isMyTurn) return false;
-    if (requiredPieceCount === 0) return selectedPieces.length > 0;
-    return selectedPieces.length === requiredPieceCount;
+    console.log('🎮 CANPLAY_DEBUG:', {
+      isMyTurn,
+      requiredPieceCount,
+      selectedPiecesLength: selectedPieces.length,
+      currentPlayer,
+      myName
+    });
+    
+    if (!isMyTurn) {
+      console.log('🎮 CANPLAY_DEBUG: Not my turn');
+      return false;
+    }
+    if (requiredPieceCount === 0 || requiredPieceCount === null) {
+      const canPlayResult = selectedPieces.length > 0;
+      console.log(`🎮 CANPLAY_DEBUG: Starter mode (count: ${requiredPieceCount}) - can play: ${canPlayResult}`);
+      return canPlayResult;
+    }
+    const canPlayResult = selectedPieces.length === requiredPieceCount;
+    console.log(`🎮 CANPLAY_DEBUG: Must match count ${requiredPieceCount} - can play: ${canPlayResult}`);
+    return canPlayResult;
   };
   
   // Handle play
   const handlePlay = () => {
+    console.log('🎮 TURNCONTENT_DEBUG: handlePlay clicked');
+    console.log('🎮 TURNCONTENT_DEBUG: selectedPieces:', selectedPieces);
+    console.log('🎮 TURNCONTENT_DEBUG: canPlay():', canPlay());
+    console.log('🎮 TURNCONTENT_DEBUG: onPlayPieces:', typeof onPlayPieces);
+    
     if (canPlay() && onPlayPieces) {
       const pieceIndices = selectedPieces.map(p => p.index);
+      console.log('🎮 TURNCONTENT_DEBUG: Calling onPlayPieces with indices:', pieceIndices);
       onPlayPieces(pieceIndices);
       setSelectedPieces([]);
+    } else {
+      console.error('🎮 TURNCONTENT_DEBUG: Cannot play - canPlay:', canPlay(), 'onPlayPieces:', !!onPlayPieces);
     }
   };
   

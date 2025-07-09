@@ -233,6 +233,10 @@ class TurnState(GameState):
     async def _validate_play_pieces(self, action: GameAction) -> bool:
         """Validate a play pieces action"""
         payload = action.payload
+        
+        print(f"🎯 VALIDATE_DEBUG: Validating play from {action.player_name}")
+        print(f"🎯 VALIDATE_DEBUG: Current turn_plays: {list(self.turn_plays.keys())}")
+        print(f"🎯 VALIDATE_DEBUG: turn_complete: {self.turn_complete}")
 
         # Check if it's this player's turn
         current_player = self._get_current_player()
@@ -400,7 +404,8 @@ class TurnState(GameState):
         
         # Determine if this is the last play of the turn
         is_turn_complete = self.current_player_index >= len(self.turn_order)
-        next_player = None if is_turn_complete else self._get_current_player()
+        # Keep last player as current when turn is complete to avoid breaking frontend
+        next_player = self._get_current_player() if not is_turn_complete else action.player_name
         
         print(
             f"🎯 UPDATE_DEBUG: Broadcasting play - turn_complete: {is_turn_complete}, next_player: {next_player}"

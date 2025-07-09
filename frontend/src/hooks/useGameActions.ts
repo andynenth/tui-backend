@@ -215,42 +215,65 @@ export function useGameActions(config: GameActionsConfig = {}): GameActions {
 
   // Turn Phase Actions
   const playPieces = useCallback(async (indices: number[]) => {
+    console.log('🎯 GAMEACTIONS_DEBUG: playPieces called with indices:', indices);
+    console.log('🎯 GAMEACTIONS_DEBUG: Current gameState:', {
+      phase: gameState.phase,
+      isMyTurn: gameState.isMyTurn,
+      currentPlayer: gameState.currentPlayer,
+      playerName: gameState.playerName,
+      requiredPieceCount: gameState.requiredPieceCount,
+      myHandLength: gameState.myHand.length,
+      isConnected: gameState.isConnected,
+      error: gameState.error
+    });
+    
     try {
       logAction('playPieces', { indices });
       
-      if (!validateActionState('playPieces', 'turn')) {
+      const isValid = validateActionState('playPieces', 'turn');
+      console.log('🎯 GAMEACTIONS_DEBUG: validateActionState result:', isValid);
+      
+      if (!isValid) {
+        console.error('🎯 GAMEACTIONS_DEBUG: validateActionState failed, returning early');
         return;
       }
 
       if (!gameState.isMyTurn) {
+        console.error('🎯 GAMEACTIONS_DEBUG: Not player turn');
         throw new Error('Not your turn to play pieces');
       }
 
       if (!Array.isArray(indices) || indices.length === 0) {
+        console.error('🎯 GAMEACTIONS_DEBUG: No pieces selected');
         throw new Error('Must select at least one piece to play');
       }
 
       if (indices.some(i => i < 0 || i >= gameState.myHand.length)) {
+        console.error('🎯 GAMEACTIONS_DEBUG: Invalid piece indices');
         throw new Error('Invalid piece indices selected');
       }
 
       // Validate piece count matches required (if set)
       if (gameState.requiredPieceCount !== null && indices.length !== gameState.requiredPieceCount) {
+        console.error('🎯 GAMEACTIONS_DEBUG: Wrong piece count');
         throw new Error(`Must play exactly ${gameState.requiredPieceCount} pieces`);
       }
 
       // Remove duplicates
       const uniqueIndices = Array.from(new Set(indices));
       if (uniqueIndices.length !== indices.length) {
+        console.error('🎯 GAMEACTIONS_DEBUG: Duplicate pieces');
         throw new Error('Cannot play the same piece multiple times');
       }
 
+      console.log('🎯 GAMEACTIONS_DEBUG: Calling gameService.playPieces with indices:', uniqueIndices);
       gameService.playPieces(uniqueIndices);
     } catch (error) {
+      console.error('🎯 GAMEACTIONS_DEBUG: Error in playPieces:', error);
       handleActionError('playPieces', error);
       if (throwOnError) throw error;
     }
-  }, [logAction, validateActionState, gameState.isMyTurn, gameState.myHand.length, gameState.requiredPieceCount, handleActionError, throwOnError]);
+  }, [logAction, validateActionState, gameState.isMyTurn, gameState.myHand.length, gameState.requiredPieceCount, handleActionError, throwOnError, gameState]);
 
   // Scoring Phase Actions
   const startNextRound = useCallback(async () => {
