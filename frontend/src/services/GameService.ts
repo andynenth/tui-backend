@@ -176,42 +176,24 @@ export class GameService extends EventTarget {
    * Play pieces during turn phase
    */
   playPieces(indices: number[]): void {
-    console.log('🎮 PLAY_DEBUG: playPieces called with indices:', indices);
-    console.log('🎮 PLAY_DEBUG: Current state:', {
-      phase: this.state.phase,
-      isMyTurn: this.state.isMyTurn,
-      currentPlayer: this.state.currentPlayer,
-      playerName: this.state.playerName,
-      requiredPieceCount: this.state.requiredPieceCount,
-      myHandLength: this.state.myHand.length
-    });
     
-    try {
-      this.validateAction('PLAY_PIECES', 'turn');
-    } catch (error) {
-      console.error('🎮 PLAY_DEBUG: validateAction failed:', error.message);
-      throw error;
-    }
+    this.validateAction('PLAY_PIECES', 'turn');
     
     if (!Array.isArray(indices) || indices.length === 0) {
-      console.error('🎮 PLAY_DEBUG: No pieces selected');
       throw new Error('Must select at least one piece to play');
     }
 
     if (indices.some(i => i < 0 || i >= this.state.myHand.length)) {
-      console.error('🎮 PLAY_DEBUG: Invalid piece indices');
       throw new Error('Invalid piece indices');
     }
 
     // Check if it's player's turn
     if (!this.state.isMyTurn) {
-      console.error('🎮 PLAY_DEBUG: Not player turn');
       throw new Error('Not your turn to play');
     }
 
     // Validate piece count matches required (if set)
     if (this.state.requiredPieceCount !== null && indices.length !== this.state.requiredPieceCount) {
-      console.error('🎮 PLAY_DEBUG: Wrong piece count');
       throw new Error(`Must play exactly ${this.state.requiredPieceCount} pieces`);
     }
 
@@ -219,11 +201,6 @@ export class GameService extends EventTarget {
     const selectedPieces = indices.map(i => this.state.myHand[i]);
     const totalValue = selectedPieces.reduce((sum, piece) => sum + (piece.point || piece.value || 0), 0);
 
-    console.log('🎮 PLAY_DEBUG: Sending play action with:', {
-      piece_indices: indices,
-      player_name: this.state.playerName,
-      play_value: totalValue
-    });
 
     this.sendAction('play', { 
       piece_indices: indices, 
@@ -434,11 +411,8 @@ export class GameService extends EventTarget {
     const customEvent = event as CustomEvent<NetworkEventDetail>;
     const { roomId, data } = customEvent.detail;
     
-    console.log(`🌐 FRONTEND_EVENT_DEBUG: Received ${event.type} event for room ${roomId}`, data);
-    
     // Only process events for our room
     if (roomId !== this.state.roomId) {
-      console.log(`🌐 FRONTEND_EVENT_DEBUG: Ignoring event for different room (ours: ${this.state.roomId})`);
       return;
     }
     
@@ -484,18 +458,14 @@ export class GameService extends EventTarget {
         break;
         
       case 'play':
-        console.log(`🌐 PROCESS_EVENT_DEBUG: Handling play event`);
         newState = this.handlePlay(newState, data);
         break;
         
       case 'turn_resolved':
-        console.log(`🌐 PROCESS_EVENT_DEBUG: Handling turn_resolved event`);
         newState = this.handleTurnResolved(newState, data);
         break;
         
       case 'turn_complete':
-        console.log(`🌐 PROCESS_EVENT_DEBUG: Handling turn_complete event with data:`, data);
-        console.log(`🏆 TURN_COMPLETE_RAW_DEBUG: Event data received:`, JSON.stringify(data, null, 2));
         newState = this.handleTurnComplete(newState, data);
         break;
         
@@ -511,11 +481,12 @@ export class GameService extends EventTarget {
         newState = this.handleGameEnded(newState, data);
         break;
         
-      case 'play_rejected':
+      case 'play_rejected': {
         const message = data.details || data.message || 'Invalid play. Please try again.';
         alert(message);
         // Keep play UI active for retry
         break;
+      }
         
       case 'critical_error':
         alert(data.message || 'Game ended due to critical error. Returning to lobby...');
@@ -523,15 +494,13 @@ export class GameService extends EventTarget {
         break;
         
       default:
-        console.warn(`🌐 PROCESS_EVENT_DEBUG: Unknown game event: ${eventType}`, data);
+        console.warn(`Unknown game event: ${eventType}`, data);
         return newState;
     }
     
-    console.log(`🌐 PROCESS_EVENT_DEBUG: Event ${eventType} processed, updating derived state`);
     // Update derived state
     newState = this.updateDerivedState(newState);
     
-    console.log(`🌐 PROCESS_EVENT_DEBUG: Finished processing ${eventType} event`);
     return newState;
   }
 
@@ -544,10 +513,6 @@ export class GameService extends EventTarget {
     newState.phase = data.phase;
     newState.currentRound = data.round || state.currentRound;
     
-    console.log(`🔄 PHASE_CHANGE_DEBUG: Phase: ${data.phase}`);
-    console.log(`🔄 PHASE_CHANGE_DEBUG: Data players:`, data.players);
-    console.log(`🔄 PHASE_CHANGE_DEBUG: Data phase_data:`, data.phase_data);
-    console.log(`🔄 PHASE_CHANGE_DEBUG: First player raw:`, Object.keys(data.players)[0], data.players[Object.keys(data.players)[0]]);
     
     // Extract my hand from players data (sent by backend)
     if (data.players && state.playerName && data.players[state.playerName]) {
@@ -582,8 +547,6 @@ export class GameService extends EventTarget {
         zero_declares_in_a_row: playerData.zero_declares_in_a_row || 0,
         hand_size: playerData.hand_size || 0 // Include hand_size from backend
       }));
-      console.log(`🔄 PHASE_CHANGE_DEBUG: Converted players array:`, newState.players);
-      console.log(`🔄 PHASE_CHANGE_DEBUG: Sample player object:`, newState.players[0]);
     }
     
     // Extract phase-specific data
@@ -664,43 +627,25 @@ export class GameService extends EventTarget {
           break;
           
         case 'turn':
-          // Force phase to turn if we're receiving turn phase data but currently in turn_results
-          if (state.phase === 'turn_results') {
-            console.log('🔄 PHASE_FIX: Transitioning from turn_results to turn for new turn');
-          }
           
           if (phaseData.turn_order) newState.turnOrder = phaseData.turn_order;
           if (phaseData.current_turn_starter) newState.currentTurnStarter = phaseData.current_turn_starter;
           if (phaseData.current_player) newState.currentPlayer = phaseData.current_player;
           
-          // 🚀 ENTERPRISE FIX: Use backend's required_piece_count as single source of truth
+          // Use backend's required_piece_count as single source of truth
           if (phaseData.required_piece_count !== undefined) {
             newState.requiredPieceCount = phaseData.required_piece_count;
-            console.log(`🎯 REQUIRED_COUNT_FIX: Set requiredPieceCount to ${phaseData.required_piece_count} from backend phase_data`);
           }
           
-          // 🎯 ROUND/TURN TRACKING DEBUG: Log comprehensive turn state
-          const roundNum = newState.currentRound || 0;
-          const turnNum = phaseData.current_turn_number || 0;
-          const starter = phaseData.current_turn_starter || 'unknown';
-          const currentPlayer = phaseData.current_player || 'unknown';
-          const requiredCount = phaseData.required_piece_count;
-          const playsCount = phaseData.turn_plays ? Object.keys(phaseData.turn_plays).length : 0;
-          
-          console.log(`🔢 FRONTEND_ROUND_TURN_DEBUG: Round ${roundNum}, Turn ${turnNum}`);
-          console.log(`🎯 FRONTEND_TURN_STATE: Starter: ${starter}, Current: ${currentPlayer}, Required: ${requiredCount}, Plays: ${playsCount}`);
           
           // Convert backend's turn_plays dictionary to frontend's currentTurnPlays array
           if (phaseData.turn_plays !== undefined) {
             // Check if turn_plays is an empty object or array
             if (typeof phaseData.turn_plays === 'object' && Object.keys(phaseData.turn_plays).length === 0) {
-              console.log('🔄 TURN_PLAYS_DEBUG: Empty turn_plays received, clearing currentTurnPlays');
               newState.currentTurnPlays = [];
             } else if (phaseData.turn_plays && typeof phaseData.turn_plays === 'object') {
               newState.currentTurnPlays = Object.entries(phaseData.turn_plays).map(([playerName, playData]: [string, any]) => {
-                console.log(`🎯 TURN_PLAY_DEBUG: Player ${playerName}, playData:`, playData);
                 const playType = playData.type || playData.play_type || 'UNKNOWN';
-                console.log(`🎯 TURN_PLAY_DEBUG: Extracted playType: ${playType} from type: ${playData.type}, play_type: ${playData.play_type}`);
                 // A play is invalid if explicitly marked as invalid OR if play_type is 'INVALID'
                 const isValid = playData.is_valid !== false && playType !== 'INVALID';
                 
@@ -712,13 +657,11 @@ export class GameService extends EventTarget {
                   totalValue: playData.play_value || 0
                 };
               });
-              console.log(`🎲 TURN_PLAYS_DEBUG: Converted ${Object.keys(phaseData.turn_plays).length} plays to currentTurnPlays:`, newState.currentTurnPlays);
             }
           } else {
             newState.currentTurnPlays = phaseData.current_turn_plays || [];
           }
           
-          console.log(`🔢 FRONTEND_TURN_DEBUG: phaseData.current_turn_number = ${phaseData.current_turn_number}`);
           newState.currentTurnNumber = phaseData.current_turn_number || 0;
           
           // Calculate turn-specific UI state
@@ -726,16 +669,10 @@ export class GameService extends EventTarget {
           newState.selectedPlayValue = 0; // Will be updated when player selects pieces
           break;
           
-        case 'scoring':
-          console.log('🏆 SCORING_FRONTEND_DEBUG: Processing scoring phase data');
-          console.log('📊 Raw phase data:', phaseData);
-          console.log('👥 Available players in newState:', newState.players);
-          
+        case 'scoring': {
           // Process backend scoring objects to extract numeric values
           const processedRoundScores: Record<string, number> = {};
           const rawRoundScores = phaseData.round_scores || {};
-          
-          console.log('📊 SCORING_DEBUG: Raw round scores:', rawRoundScores);
           
           Object.entries(rawRoundScores).forEach(([playerName, scoreData]) => {
             // Handle backend scoring objects vs simple numbers
@@ -780,15 +717,9 @@ export class GameService extends EventTarget {
           newState.winners = phaseData.winners || [];
           newState.redealMultiplier = phaseData.redeal_multiplier || 1;
           
-          console.log('✅ SCORING_DEBUG: Processed round scores:', processedRoundScores);
-          console.log('✅ SCORING_DEBUG: Processed total scores:', processedTotalScores);
-          console.log('✅ SCORING_DEBUG: Game over:', newState.gameOver);
-          console.log('✅ SCORING_DEBUG: Winners:', newState.winners);
-          console.log('✅ SCORING_DEBUG: Redeal multiplier:', newState.redealMultiplier);
           
           // Calculate scoring-specific UI state
           if (phaseData.players && phaseData.round_scores && phaseData.total_scores) {
-            console.log('🧮 SCORING_DEBUG: Calculating playersWithScores...');
             newState.playersWithScores = this.calculatePlayersWithScores(
               phaseData.players, 
               phaseData.round_scores, 
@@ -796,16 +727,9 @@ export class GameService extends EventTarget {
               phaseData.redeal_multiplier || 1,
               phaseData.winners || []
             );
-            console.log('🧮 SCORING_DEBUG: Generated playersWithScores:', newState.playersWithScores);
           } else {
-            console.log('⚠️ SCORING_DEBUG: Missing data for playersWithScores calculation');
-            console.log('   players available:', !!phaseData.players, phaseData.players);
-            console.log('   round_scores available:', !!phaseData.round_scores, Object.keys(phaseData.round_scores || {}));
-            console.log('   total_scores available:', !!phaseData.total_scores, phaseData.total_scores);
-            
             // Fallback: try to use newState.players if phaseData.players is missing
             if (!phaseData.players && newState.players && newState.players.length > 0) {
-              console.log('🔧 SCORING_DEBUG: Using newState.players as fallback...');
               if (phaseData.round_scores && phaseData.total_scores) {
                 newState.playersWithScores = this.calculatePlayersWithScores(
                   newState.players,
@@ -814,11 +738,11 @@ export class GameService extends EventTarget {
                   phaseData.redeal_multiplier || 1,
                   phaseData.winners || []
                 );
-                console.log('🧮 SCORING_DEBUG: Generated playersWithScores with fallback:', newState.playersWithScores);
               }
             }
           }
           break;
+        }
           
         case 'game_over':
           // Handle game over phase
@@ -832,9 +756,6 @@ export class GameService extends EventTarget {
           if (phaseData.game_stats) {
             newState.game_stats = phaseData.game_stats;
           }
-          console.log('🎮 GAME_OVER_DEBUG: Game ended with winners:', newState.winners);
-          console.log('🎮 GAME_OVER_DEBUG: Final rankings:', newState.final_rankings);
-          console.log('🎮 GAME_OVER_DEBUG: Game stats:', newState.game_stats);
           break;
       }
     }
@@ -884,7 +805,6 @@ export class GameService extends EventTarget {
    * Handle declare event
    */
   private handleDeclare(state: GameState, data: any): GameState {
-    console.log(`🎯 DECLARE_DEBUG: RECEIVED declare event!`, data);
     const newDeclarations = {
       ...state.declarations,
       [data.player]: data.value
@@ -898,10 +818,6 @@ export class GameService extends EventTarget {
     const nextDeclarer = nextIndex < state.declarationOrder.length ? 
       state.declarationOrder[nextIndex] : null;
     
-    console.log(`🎯 DECLARE_DEBUG: Player ${data.player} declared ${data.value}`);
-    console.log(`🎯 DECLARE_DEBUG: New declarations:`, newDeclarations);
-    console.log(`🎯 DECLARE_DEBUG: Declaration total: ${declarationTotal}`);
-    console.log(`🎯 DECLARE_DEBUG: Next declarer: ${nextDeclarer}`);
     
     // Calculate derived state for declaration phase
     const newState = {
@@ -924,8 +840,6 @@ export class GameService extends EventTarget {
       total: totalPlayers
     };
     
-    console.log(`🎯 DECLARE_DEBUG: Updated state currentTotal: ${newState.currentTotal}`);
-    console.log(`🎯 DECLARE_DEBUG: Updated declarationProgress:`, newState.declarationProgress);
     
     return newState;
   }
@@ -939,9 +853,6 @@ export class GameService extends EventTarget {
     const turnNum = state.currentTurnNumber || 0;
     const requiredCount = data.required_count || state.requiredPieceCount;
     
-    console.log(`🎲 PLAY_DEBUG: Round ${roundNum}, Turn ${turnNum} - ${data.player} played ${data.pieces?.length || 0} pieces`);
-    console.log(`🎲 PLAY_DEBUG: Required count: ${requiredCount}, Turn complete: ${data.turn_complete}, Next: ${data.next_player}`);
-    console.log(`🎲 PLAY_DEBUG: Pieces data:`, data.pieces);
     
     // 🚀 ENTERPRISE: With enterprise architecture, phase_change events contain complete turn_plays data
     // Individual play events are only used for immediate UI feedback, phase_change has authoritative data
@@ -951,7 +862,6 @@ export class GameService extends EventTarget {
     
     if (state.phase === 'turn_results') {
       // We're getting a play event while in turn_results, this means a new turn has started
-      console.log(`🎯 PHASE_TRANSITION_DEBUG: Transitioning from turn_results to turn (new turn started)`);
       newPhase = 'turn';
     }
     
@@ -964,8 +874,6 @@ export class GameService extends EventTarget {
       totalValue: data.play_value || 0
     };
     
-    console.log(`🎲 PLAY_DEBUG: Transformed play data:`, playData);
-    console.log(`🎲 PLAY_DEBUG: Cards array:`, playData.cards);
     
     // Note: We don't update currentTurnPlays here anymore since enterprise phase_change events
     // contain the authoritative turn_plays data. This prevents conflicts and ensures consistency.
@@ -973,27 +881,24 @@ export class GameService extends EventTarget {
     // 🚀 ENTERPRISE FIX: Don't set requiredPieceCount from play events
     // The backend phase_change events contain the authoritative required_piece_count
     // Setting it here from play events can cause stale data conflicts
-    console.log(`🎯 PLAY_EVENT_DEBUG: NOT setting requiredPieceCount from play event (backend phase_change is authoritative)`);
     
     // Reset required piece count when starting new turn  
     let requiredPieceCount = state.requiredPieceCount;
     if (newPhase === 'turn' && state.phase === 'turn_results') {
       requiredPieceCount = null;
-      console.log(`🎯 PHASE_TRANSITION_DEBUG: Reset requiredPieceCount for new turn`);
     }
     
     // Update current player from the play event
     let newCurrentPlayer = state.currentPlayer;
     if (data.next_player) {
       newCurrentPlayer = data.next_player;
-      console.log(`🎯 PLAY_DEBUG: Updated currentPlayer from ${state.currentPlayer} to ${data.next_player}`);
     } else if (data.turn_complete) {
-      console.log(`🎯 PLAY_DEBUG: Turn is complete but no next_player - turn should be finishing`);
+      // Turn complete - next player will be set
     }
     
     // Check if turn is complete
     if (data.turn_complete) {
-      console.log(`🎯 TURN_COMPLETE_FRONTEND: Turn marked as complete by backend`);
+      // Turn complete logic handled by phase_change events
     }
     
     return {
@@ -1034,9 +939,6 @@ export class GameService extends EventTarget {
     const turnNum = data.turn_number || state.currentTurnNumber || 0;
     const winner = data.winner || 'No winner';
     
-    console.log(`🏆 TURN_COMPLETE_DEBUG: Round ${roundNum}, Turn ${turnNum} completed!`);
-    console.log(`🏆 TURN_WINNER_DEBUG: Winner: ${winner}, Next starter: ${data.next_starter || 'Unknown'}`);
-    console.log(`🏆 TURN_COMPLETE_DATA:`, data);
     
     const newState = {
       ...state,
@@ -1050,14 +952,6 @@ export class GameService extends EventTarget {
       willContinue: data.will_continue || false
     };
     
-    console.log(`🏆 TURN_COMPLETE_DEBUG: Transitioning to turn_results phase with state:`, {
-      phase: newState.phase,
-      turnWinner: newState.turnWinner,
-      winningPlay: newState.winningPlay,
-      playerPiles: newState.playerPiles,
-      turnNumber: newState.turnNumber,
-      nextStarter: newState.nextStarter
-    });
     
     return newState;
   }
@@ -1129,9 +1023,6 @@ export class GameService extends EventTarget {
       case 'turn': {
         // Check if it's specifically this player's turn
         const isMyTurnCalc = state.currentPlayer === state.playerName;
-        console.log(`🎯 TURN_DEBUG: currentPlayer: ${state.currentPlayer}, playerName: ${state.playerName}, isMyTurn: ${isMyTurnCalc}`);
-        console.log(`🎯 TURN_DEBUG: turnOrder:`, state.turnOrder);
-        console.log(`🎯 TURN_DEBUG: currentTurnPlays:`, state.currentTurnPlays);
         return isMyTurnCalc;
       }
         

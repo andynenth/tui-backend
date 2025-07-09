@@ -25,7 +25,6 @@ async def websocket_endpoint(websocket: WebSocket, room_id: str):
             event_name = message.get("event")
             event_data = message.get("data", {})
 
-            print(f"DEBUG_WS_RECEIVE: Received event '{event_name}' from client in room {room_id} with data: {event_data}")
 
             # Handle reliable message delivery events
             if event_name == "ack":
@@ -60,7 +59,6 @@ async def websocket_endpoint(websocket: WebSocket, room_id: str):
                             "requested_by": event_data.get("player_name", "unknown")
                         }
                     })
-                    print(f"DEBUG_LOBBY_WS: Sent room list with {len(available_rooms)} rooms")
 
                 elif event_name == "client_ready":
                     # Send initial room list when client connects to lobby
@@ -74,7 +72,6 @@ async def websocket_endpoint(websocket: WebSocket, room_id: str):
                             "initial": True
                         }
                     })
-                    print(f"DEBUG_LOBBY_WS: Sent initial room list to new lobby client")
 
                 elif event_name == "create_room":
                     # Create new room
@@ -93,7 +90,6 @@ async def websocket_endpoint(websocket: WebSocket, room_id: str):
                                 "success": True
                             }
                         })
-                        print(f"DEBUG_LOBBY_WS: Created room {room_id} for player {player_name}")
                         
                         # Notify all lobby clients about the new room
                         from .routes import notify_lobby_room_created
@@ -111,7 +107,6 @@ async def websocket_endpoint(websocket: WebSocket, room_id: str):
                                 "type": "room_creation_error"
                             }
                         })
-                        print(f"DEBUG_LOBBY_WS: Failed to create room for {player_name}: {str(e)}")
 
                 elif event_name == "get_rooms":
                     # Send current room list
@@ -124,7 +119,6 @@ async def websocket_endpoint(websocket: WebSocket, room_id: str):
                             "timestamp": asyncio.get_event_loop().time()
                         }
                     })
-                    print(f"DEBUG_LOBBY_WS: Sent room list with {len(available_rooms)} rooms")
 
                 elif event_name == "join_room":
                     # Handle room joining from lobby
@@ -139,7 +133,6 @@ async def websocket_endpoint(websocket: WebSocket, room_id: str):
                                 "type": "join_room_error"
                             }
                         })
-                        print(f"DEBUG_LOBBY_WS: Join room failed - no room_id provided")
                         continue
                     
                     try:
@@ -153,7 +146,6 @@ async def websocket_endpoint(websocket: WebSocket, room_id: str):
                                     "type": "join_room_error"
                                 }
                             })
-                            print(f"DEBUG_LOBBY_WS: Room {room_id_to_join} not found")
                             continue
                         
                         # Check if room is full
@@ -165,7 +157,6 @@ async def websocket_endpoint(websocket: WebSocket, room_id: str):
                                     "type": "join_room_error"
                                 }
                             })
-                            print(f"DEBUG_LOBBY_WS: Room {room_id_to_join} is full")
                             continue
                         
                         # Check if room has started
@@ -177,7 +168,6 @@ async def websocket_endpoint(websocket: WebSocket, room_id: str):
                                     "type": "join_room_error"
                                 }
                             })
-                            print(f"DEBUG_LOBBY_WS: Room {room_id_to_join} has already started")
                             continue
                         
                         # Try to join the room
@@ -194,7 +184,6 @@ async def websocket_endpoint(websocket: WebSocket, room_id: str):
                                     "success": True
                                 }
                             })
-                            print(f"DEBUG_LOBBY_WS: Player {player_name} joined room {room_id_to_join}")
                             
                             # Broadcast room update to all clients in the room
                             room_summary = result["room_state"]
@@ -205,7 +194,6 @@ async def websocket_endpoint(websocket: WebSocket, room_id: str):
                                 "room_id": room_id_to_join,
                                 "started": room_summary.get("started", False)
                             })
-                            print(f"DEBUG_LOBBY_WS: Broadcasted room state update to all clients in room {room_id_to_join}")
                             
                             # Notify all lobby clients about room update
                             from .routes import notify_lobby_room_updated
@@ -220,7 +208,6 @@ async def websocket_endpoint(websocket: WebSocket, room_id: str):
                                     "type": "join_room_error"
                                 }
                             })
-                            print(f"DEBUG_LOBBY_WS: Failed to join room {room_id_to_join}: {result.get('reason', 'Unknown error')}")
                         
                     except Exception as e:
                         # Send error response
@@ -231,7 +218,6 @@ async def websocket_endpoint(websocket: WebSocket, room_id: str):
                                 "type": "join_room_error"
                             }
                         })
-                        print(f"DEBUG_LOBBY_WS: Exception while joining room {room_id_to_join}: {str(e)}")
 
             # ✅ Handle room-specific events
             else:
@@ -279,12 +265,9 @@ async def websocket_endpoint(websocket: WebSocket, room_id: str):
                                         "players": players_data
                                     }
                                 })
-                                print(f"DEBUG_WS_RECEIVE: Sent current game phase {current_phase.value} to client in room {room_id}")
                         
                         await asyncio.sleep(0)
-                        print(f"DEBUG_WS_RECEIVE: Sent initial room state to client in room {room_id} after client_ready.")
                     else:
-                        print(f"DEBUG_WS_RECEIVE: Room {room_id} not found for client_ready event.")
                         await registered_ws.send_json({"event": "room_closed", "data": {"message": "Room not found."}})
                         await asyncio.sleep(0)
 
@@ -301,15 +284,12 @@ async def websocket_endpoint(websocket: WebSocket, room_id: str):
                                 "started": updated_summary.get("started", False)
                             }
                         })
-                        print(f"DEBUG_WS_RECEIVE: Sent room state to client in room {room_id}")
                     else:
                         await registered_ws.send_json({"event": "room_closed", "data": {"message": "Room not found."}})
-                        print(f"DEBUG_WS_RECEIVE: Room {room_id} not found for get_room_state")
 
                 elif event_name == "remove_player":
                     slot_id = event_data.get("slot_id")
                     if slot_id is None:
-                        print(f"DEBUG_WS_RECEIVE: Invalid remove_player data: {event_data}")
                         continue
 
                     room = room_manager.get_room(room_id)
@@ -985,9 +965,8 @@ async def websocket_endpoint(websocket: WebSocket, room_id: str):
     except WebSocketDisconnect:
         unregister(room_id, websocket)
         if room_id == "lobby":
-            print(f"DEBUG_LOBBY_WS: Client disconnected from lobby")
+            pass
         else:
-            print(f"DEBUG_WS_DISCONNECT: WebSocket client disconnected from room {room_id}.")
+            pass
     except Exception as e:
-        print(f"DEBUG_WS_ERROR: WebSocket error in room {room_id}: {e}")
         unregister(room_id, websocket)

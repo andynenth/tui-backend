@@ -33,9 +33,7 @@ class DeclarationState(GameState):
             # Fallback to first player name
             first_player = game.players[0]
             round_starter = getattr(first_player, 'name', str(first_player))
-            print(f"⚠️ DECL_STATE_DEBUG: No round_starter found, using first player: {round_starter}")
         
-        print(f"📢 DECL_STATE_DEBUG: Using round_starter: {round_starter}")
         declaration_order = game.get_player_order_from(round_starter)
         
         # 🚀 ENTERPRISE: Use automatic broadcasting system instead of manual phase_data updates

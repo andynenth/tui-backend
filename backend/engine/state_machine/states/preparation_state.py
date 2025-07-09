@@ -148,9 +148,6 @@ class PreparationState(GameState):
             self.decision_start_time = time.time()
             self.warning_sent = False
             
-            print(f"🔍 PREP_STATE_DEBUG: Play order: {play_order}")
-            print(f"🔍 PREP_STATE_DEBUG: Play order types: {[type(p) for p in play_order]}")
-            print(f"🎯 PREP_STATE_DEBUG: All weak players awaiting simultaneous decisions: {self.weak_players_awaiting}")
             
             # Notify about weak hands (frontend will prompt players)
             await self._notify_weak_hands()
@@ -166,14 +163,12 @@ class PreparationState(GameState):
                 # Starter already set (e.g., by scoring state for next round)
                 starter = game.current_player
                 game.round_starter = starter  # Ensure both are set
-                print(f"✅ PREP_STATE_DEBUG: No weak hands - keeping existing starter: {starter}")
                 self.logger.info(f"✅ No weak hands - keeping existing starter: {starter}")
             else:
                 # No starter set, determine one
                 starter = self._determine_starter()
                 game.current_player = starter
                 game.round_starter = starter  # Always set both
-                print(f"✅ PREP_STATE_DEBUG: No weak hands - determined new starter: {starter}")
                 self.logger.info(f"✅ No weak hands - determined new starter: {starter}")
             
     
@@ -218,13 +213,11 @@ class PreparationState(GameState):
         if action.action_type == ActionType.REDEAL_REQUEST:
             # Accept redeal
             action.payload["accept"] = True
-            print(f"🔍 REDEAL_DEBUG: Processing REDEAL_REQUEST as accept for {action.player_name}")
             return await self._handle_redeal_decision(action)
         
         elif action.action_type == ActionType.REDEAL_RESPONSE:
             # Handle redeal response - accept value is already set by WebSocket handler
             accept_value = action.payload.get("accept", False)
-            print(f"🔍 REDEAL_DEBUG: Processing REDEAL_RESPONSE for {action.player_name}, accept={accept_value}")
             return await self._handle_redeal_decision(action)
         
         elif action.action_type == ActionType.PLAYER_DISCONNECT:
@@ -249,7 +242,6 @@ class PreparationState(GameState):
             player_name = action.player_name
             accept = action.payload.get("accept", False)
             
-            print(f"🔍 REDEAL_DEBUG: _handle_redeal_decision - {player_name} decision: accept={accept}")
             
             # Validate player
             if player_name not in self.weak_players:
@@ -262,7 +254,6 @@ class PreparationState(GameState):
             self.redeal_decisions[player_name] = accept
             self.weak_players_awaiting.discard(player_name)
             
-            print(f"🔍 REDEAL_DEBUG: Recorded decision - redeal_decisions now: {self.redeal_decisions}")
             
             self.logger.info(f"{'♻️' if accept else '🚫'} {player_name} {'ACCEPTS' if accept else 'DECLINES'} redeal")
             
@@ -292,7 +283,6 @@ class PreparationState(GameState):
         """Process all collected decisions"""
         first_accepter = self._get_first_accepter_by_play_order()
         
-        print(f"🔍 REDEAL_DEBUG: _process_all_decisions - first_accepter: {first_accepter}, all decisions: {self.redeal_decisions}")
         
         if first_accepter:
             # Execute redeal
@@ -435,24 +425,18 @@ class PreparationState(GameState):
         round_num = getattr(game, 'round_number', 1)
         self.logger.info(f"🔍 STARTER_DEBUG: Current round number: {round_num}")
         if round_num == 1:
-            print(f"🔍 STARTER_DEBUG: Looking for GENERAL_RED holder in round {round_num}")
             # Check if game has player objects with hands
             if hasattr(game, 'players') and game.players:
                 for player in game.players:
                     player_name = getattr(player, 'name', str(player))
-                    print(f"🔍 STARTER_DEBUG: Checking player {player_name}")
                     if hasattr(player, 'hand'):
-                        print(f"🔍 STARTER_DEBUG: Player {player_name} hand: {[str(p) for p in player.hand]}")
                         for piece in player.hand:
                             piece_str = str(piece)
-                            print(f"🔍 STARTER_DEBUG: Checking piece '{piece_str}' for GENERAL_RED")
                             if "GENERAL_RED" in piece_str:
-                                print(f"✅ STARTER_DEBUG: Found GENERAL_RED in {player_name}'s hand!")
                                 self.logger.info(f"🎯 Starter: {player_name} (has GENERAL_RED)")
                                 return player_name
                     else:
-                        print(f"❌ STARTER_DEBUG: Player {player_name} has no hand attribute")
-            print(f"❌ STARTER_DEBUG: No GENERAL_RED found in any player's hand")
+                        pass
         
         # Priority 3: Previous round's last turn winner
         if hasattr(game, 'last_turn_winner') and game.last_turn_winner:
@@ -575,19 +559,13 @@ class PreparationState(GameState):
         """Check if ready to transition to Declaration phase"""
         # Only check basic conditions - redeal decisions now trigger transitions directly
         
-        print(f"🔍 PREP_STATE_DEBUG: Checking transition conditions...")
-        print(f"   - Initial deal complete: {self.initial_deal_complete}")
-        print(f"   - Weak players: {self.weak_players}")
         
         if not self.initial_deal_complete:
-            print(f"❌ PREP_STATE_DEBUG: Initial deal not complete, staying in preparation")
             return None
         
         if not self.weak_players:
             # No weak hands found - this is the only polling-based transition now
-            print(f"✅ PREP_STATE_DEBUG: No weak players, transitioning to DECLARATION")
             return GamePhase.DECLARATION
         
         # If we have weak players, wait for redeal decisions to trigger transition directly
-        print(f"⏳ PREP_STATE_DEBUG: Have weak players - waiting for event-based transition")
         return None

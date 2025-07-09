@@ -39,15 +39,6 @@ const TurnContent = ({
   // Check if it's my turn
   const isMyTurn = currentPlayer === myName;
   
-  // Debug logging for turn-selection-count
-  console.log('🎯 TURN_SELECTION_COUNT_DEBUG:', {
-    requiredPieceCount,
-    isMyTurn,
-    currentPlayer,
-    myName,
-    selectedPiecesLength: selectedPieces.length,
-    showConfirmPanel
-  });
   
   // Get my player index
   const myIndex = players.findIndex(p => p.name === myName);
@@ -141,42 +132,21 @@ const TurnContent = ({
   
   // Check if can play
   const canPlay = () => {
-    console.log('🎮 CANPLAY_DEBUG:', {
-      isMyTurn,
-      requiredPieceCount,
-      selectedPiecesLength: selectedPieces.length,
-      currentPlayer,
-      myName
-    });
-    
     if (!isMyTurn) {
-      console.log('🎮 CANPLAY_DEBUG: Not my turn');
       return false;
     }
     if (requiredPieceCount === 0 || requiredPieceCount === null) {
-      const canPlayResult = selectedPieces.length > 0;
-      console.log(`🎮 CANPLAY_DEBUG: Starter mode (count: ${requiredPieceCount}) - can play: ${canPlayResult}`);
-      return canPlayResult;
+      return selectedPieces.length > 0;
     }
-    const canPlayResult = selectedPieces.length === requiredPieceCount;
-    console.log(`🎮 CANPLAY_DEBUG: Must match count ${requiredPieceCount} - can play: ${canPlayResult}`);
-    return canPlayResult;
+    return selectedPieces.length === requiredPieceCount;
   };
   
   // Handle play
   const handlePlay = () => {
-    console.log('🎮 TURNCONTENT_DEBUG: handlePlay clicked');
-    console.log('🎮 TURNCONTENT_DEBUG: selectedPieces:', selectedPieces);
-    console.log('🎮 TURNCONTENT_DEBUG: canPlay():', canPlay());
-    console.log('🎮 TURNCONTENT_DEBUG: onPlayPieces:', typeof onPlayPieces);
-    
     if (canPlay() && onPlayPieces) {
       const pieceIndices = selectedPieces.map(p => p.index);
-      console.log('🎮 TURNCONTENT_DEBUG: Calling onPlayPieces with indices:', pieceIndices);
       onPlayPieces(pieceIndices);
       setSelectedPieces([]);
-    } else {
-      console.error('🎮 TURNCONTENT_DEBUG: Cannot play - canPlay:', canPlay(), 'onPlayPieces:', !!onPlayPieces);
     }
   };
   
@@ -304,25 +274,10 @@ const TurnContent = ({
               if (isStarter) {
                 if (selectedPieces.length >= 2) {
                   const playType = getPlayType(selectedPieces);
-                  const text = playType ? `✓ Valid ${playType}` : 'As starter, your play must be valid';
-                  
-                  console.log('🎯 TURN_SELECTION_TEXT (Starter 2+):', {
-                    isStarter: true,
-                    selectedCount: selectedPieces.length,
-                    playType,
-                    displayedText: text
-                  });
-                  
-                  return text;
+                  return playType ? `✓ Valid ${playType}` : 'As starter, your play must be valid';
                 }
                 
-                const text = 'As starter, your play must be valid';
-                console.log('🎯 TURN_SELECTION_TEXT (Starter default):', {
-                  isStarter: true,
-                  selectedCount: selectedPieces.length,
-                  displayedText: text
-                });
-                return text;
+                return 'As starter, your play must be valid';
               }
               
               // Follower logic
@@ -332,49 +287,22 @@ const TurnContent = ({
               if (selectedPieces.length === requiredPieceCount) {
                 // Single piece - always ready
                 if (requiredPieceCount === 1) {
-                  const text = '✓ Ready to play';
-                  console.log('🎯 TURN_SELECTION_TEXT (Single piece):', {
-                    isStarter: false,
-                    requiredPieceCount: 1,
-                    displayedText: text
-                  });
-                  return text;
+                  return '✓ Ready to play';
                 }
                 
                 // Multiple pieces - check validity
                 const selectedPlayType = getPlayType(selectedPieces);
                 
                 if (selectedPlayType) {
-                  const text = `✓ Your ${selectedPlayType} can compete this turn`;
-                  console.log('🎯 TURN_SELECTION_TEXT (Valid follower):', {
-                    isStarter: false,
-                    requiredPieceCount,
-                    selectedPlayType,
-                    displayedText: text
-                  });
-                  return text;
+                  return `✓ Your ${selectedPlayType} can compete this turn`;
                 } else {
                   // Use the actual play type from the starter if available
                   const starterPlayType = playType || 'combination';
-                  const text = `⚠️ Not a ${starterPlayType} - play to forfeit turn`;
-                  console.log('🎯 TURN_SELECTION_TEXT (Invalid follower):', {
-                    isStarter: false,
-                    requiredPieceCount,
-                    starterPlayType,
-                    actualPlayType: playType,
-                    displayedText: text
-                  });
-                  return text;
+                  return `⚠️ Not a ${starterPlayType} - play to forfeit turn`;
                 }
               }
               
               // Default follower text
-              console.log('🎯 TURN_SELECTION_TEXT (Follower default):', {
-                isStarter: false,
-                requiredPieceCount,
-                selectedCount: selectedPieces.length,
-                displayedText: defaultText
-              });
               return defaultText;
             })()}
           </div>
