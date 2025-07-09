@@ -1,7 +1,16 @@
 // ===== FRONTEND VALIDATION =====
-// frontend/utils/gameValidation.js
+// frontend/src/utils/gameValidation.js
 
-//import { PIECE_POINTS } from './constants.js';
+// Piece values for validation
+const PIECE_VALUES = {
+    GENERAL: 14,
+    ADVISOR: 13,
+    SOLDIER: 11,
+    ELEPHANT: 10,
+    CHARIOT: 9,
+    CANNON: 8,
+    HORSE: 7
+};
 
 /**
  * Validates if a play is a valid combination
@@ -12,7 +21,7 @@ export function isValidPlay(pieces) {
     if (pieces.length === 1) return true; // SINGLE
     
     if (pieces.length === 2) {
-        return pieces[0].name === pieces[1].name && pieces[0].color === pieces[1].color; // PAIR
+        return isPair(pieces);
     }
     
     if (pieces.length === 3) {
@@ -34,8 +43,31 @@ export function isValidPlay(pieces) {
     return false;
 }
 
+/**
+ * Get the value of a piece
+ */
+function getPieceValue(piece) {
+    // Handle different piece formats
+    if (piece.value !== undefined) return piece.value;
+    if (piece.point !== undefined) return piece.point;
+    if (piece.type && PIECE_VALUES[piece.type]) return PIECE_VALUES[piece.type];
+    if (piece.kind && PIECE_VALUES[piece.kind]) return PIECE_VALUES[piece.kind];
+    if (piece.name && PIECE_VALUES[piece.name]) return PIECE_VALUES[piece.name];
+    return 0;
+}
+
+/**
+ * Check if pieces form a pair (same value)
+ */
+function isPair(pieces) {
+    if (pieces.length !== 2) return false;
+    return getPieceValue(pieces[0]) === getPieceValue(pieces[1]);
+}
+
 function isThreeOfAKind(pieces) {
-    return pieces.every(p => p.name === "SOLDIER" && p.color === pieces[0].color);
+    if (pieces.length !== 3) return false;
+    const value = getPieceValue(pieces[0]);
+    return pieces.every(p => getPieceValue(p) === value);
 }
 
 function isStraight(pieces) {
@@ -49,7 +81,9 @@ function isStraight(pieces) {
 }
 
 function isFourOfAKind(pieces) {
-    return pieces.every(p => p.name === "SOLDIER" && p.color === pieces[0].color);
+    if (pieces.length !== 4) return false;
+    const value = getPieceValue(pieces[0]);
+    return pieces.every(p => getPieceValue(p) === value);
 }
 
 function isExtendedStraight(pieces) {
@@ -71,7 +105,9 @@ function isExtendedStraight(pieces) {
 }
 
 function isFiveOfAKind(pieces) {
-    return pieces.every(p => p.name === "SOLDIER" && p.color === pieces[0].color);
+    if (pieces.length !== 5) return false;
+    const value = getPieceValue(pieces[0]);
+    return pieces.every(p => getPieceValue(p) === value);
 }
 
 function isExtendedStraight5(pieces) {
@@ -101,4 +137,43 @@ function isDoubleStraight(pieces) {
     return pieces.every(p => p.color === color) &&
            Object.keys(counter).sort().join() === "CANNON,CHARIOT,HORSE" &&
            Object.values(counter).every(v => v === 2);
+}
+
+/**
+ * Get the play type name for a set of pieces
+ * Returns null if invalid or single piece
+ */
+export function getPlayType(pieces) {
+    if (!pieces || pieces.length === 0) return null;
+    if (pieces.length === 1) return null; // Don't show type for single piece
+    
+    // Check for pairs (by value)
+    if (pieces.length === 2 && isPair(pieces)) {
+        return "Pair";
+    }
+    
+    // Check for three of a kind
+    if (pieces.length === 3) {
+        if (isThreeOfAKind(pieces)) return "Three of a Kind";
+        if (isStraight(pieces)) return "Straight";
+    }
+    
+    // Check for four of a kind
+    if (pieces.length === 4) {
+        if (isFourOfAKind(pieces)) return "Four of a Kind";
+        if (isExtendedStraight(pieces)) return "Extended Straight";
+    }
+    
+    // Check for five of a kind
+    if (pieces.length === 5) {
+        if (isFiveOfAKind(pieces)) return "Five of a Kind";
+        if (isExtendedStraight5(pieces)) return "Extended Straight";
+    }
+    
+    // Check for double straight
+    if (pieces.length === 6 && isDoubleStraight(pieces)) {
+        return "Double Straight";
+    }
+    
+    return null; // Invalid combination
 }
