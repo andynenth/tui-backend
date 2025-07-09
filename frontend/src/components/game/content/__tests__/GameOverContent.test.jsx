@@ -12,10 +12,10 @@ const mockPlayers = [
 ];
 
 const mockFinalScores = {
-  'Alice': 58,
-  'Bob': 45,
-  'Charlie': 32,
-  'Diana': 38
+  Alice: 58,
+  Bob: 45,
+  Charlie: 32,
+  Diana: 38
 };
 
 const mockWinner = { id: 'Alice', name: 'Alice' };
@@ -77,7 +77,7 @@ describe('GameOverContent', () => {
   test('displays medals for top 3 players', () => {
     renderComponent();
     
-    const medals = screen.getAllByText(/[🥇🥈🥉]/);
+    const medals = screen.getAllByText(/[🥇🥈🥉]/u);
     expect(medals).toHaveLength(3); // Only top 3 get medals
   });
 

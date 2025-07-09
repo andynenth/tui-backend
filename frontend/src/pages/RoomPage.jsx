@@ -4,7 +4,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useApp } from '../contexts/AppContext';
-import { Layout } from '../components';
+import { Layout, Button } from '../components';
 import { networkService } from '../services';
 // CSS classes are imported globally
 

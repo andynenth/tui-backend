@@ -115,16 +115,13 @@ class SocketManager:
                     try:
                         # Check if WebSocket is still active before sending
                         if hasattr(ws, 'client_state') and ws.client_state.name in ['DISCONNECTED', 'CLOSED']:
-                            print(f"DEBUG_WS: Skipping send to closed WebSocket in room {room_id}")
                             failed_websockets.append(ws)
                             continue
                             
                         await ws.send_json({"event": event, "data": data})
                         success_count += 1
                     except Exception as e:
-                        print(f"DEBUG_WS: Error sending to client in room {room_id}: {e}")
                         if "not JSON serializable" in str(e):
-                            print(f"DEBUG_WS: JSON error data keys: {list(data.keys()) if isinstance(data, dict) else type(data)}")
                             # Try to identify which field has the issue
                             if isinstance(data, dict):
                                 for key, value in data.items():
@@ -132,7 +129,7 @@ class SocketManager:
                                         import json
                                         json.dumps(value)
                                     except:
-                                        print(f"DEBUG_WS: Non-serializable field '{key}': {type(value)}")
+                                        pass
                         failed_websockets.append(ws)
 
                 # Clean up failed connections
@@ -163,13 +160,11 @@ class SocketManager:
                     queue_has_messages = queue.qsize() > 0
                     
                     if not connections_exist and not queue_has_messages:
-                        print(f"DEBUG_WS: No connections and no messages for room {room_id}, stopping queue processor.")
                         break
                     elif not connections_exist:
-                        print(f"DEBUG_WS: No connections but {queue.qsize()} messages queued for room {room_id}, continuing processor")
+                        pass
                 continue
             except Exception as e:
-                print(f"DEBUG_WS: Queue processor error in room {room_id}: {e}")
                 if room_id in self.queue_stats:
                     self.queue_stats[room_id]["last_error"] = str(e)
                     self.queue_stats[room_id]["last_error_time"] = time.time()
@@ -181,10 +176,8 @@ class SocketManager:
             if room_id in self.broadcast_tasks:
                 del self.broadcast_tasks[room_id]
             if room_id in self.queue_stats:
-                print(f"DEBUG_WS: Queue stats for room {room_id}: {self.queue_stats[room_id]}")
                 del self.queue_stats[room_id]
                 
-        print(f"DEBUG_WS: Stopped enhanced broadcast queue processor for room {room_id}.")
 
     async def register(self, room_id: str, websocket: WebSocket) -> WebSocket:
         """
@@ -217,16 +210,13 @@ class SocketManager:
             if room_id not in self.broadcast_queues:
                 self.broadcast_queues[room_id] = asyncio.Queue()
                 self.broadcast_tasks[room_id] = asyncio.create_task(self._process_broadcast_queue(room_id))
-                print(f"DEBUG_WS: Created new enhanced broadcast queue and task for room {room_id}.")
             
             # IMPORTANT: Ensure lobby broadcast processor is always running
             elif room_id == "lobby" and room_id in self.broadcast_tasks:
                 task = self.broadcast_tasks[room_id]
                 if task.done() or task.cancelled():
-                    print(f"DEBUG_WS: Restarting lobby broadcast task...")
                     self.broadcast_tasks[room_id] = asyncio.create_task(self._process_broadcast_queue(room_id))
             
-            print(f"DEBUG_WS: Registered new connection for room {room_id}. Total connections: {stats['current_connections']}")
         
         return websocket
 
@@ -239,7 +229,6 @@ class SocketManager:
     async def _unregister_async(self, room_id: str, websocket: WebSocket):
         async with self.lock:
             if room_id not in self.room_connections:
-                print(f"DEBUG_WS: Attempted to unregister from non-existent room {room_id}")
                 return
                 
             self.room_connections[room_id].discard(websocket)
@@ -249,7 +238,6 @@ class SocketManager:
                 self.connection_stats[room_id]["current_connections"] = len(self.room_connections[room_id])
                 self.connection_stats[room_id]["last_disconnection"] = time.time()
             
-            print(f"DEBUG_WS: Unregistered connection for room {room_id}. Remaining connections: {len(self.room_connections[room_id])}")
             
             # Clean up empty rooms - BUT PROTECT ACTIVE GAMES
             if not self.room_connections[room_id]:
@@ -258,7 +246,6 @@ class SocketManager:
                 room = shared_room_manager.get_room(room_id)
                 
                 if room and room.game and not room.game._is_game_over():
-                    print(f"DEBUG_WS: Room {room_id} has active game - keeping broadcast queue alive")
                     # Keep the room in connections dict but empty, so queue stays alive
                     # Don't delete the broadcast task
                     return
@@ -267,7 +254,6 @@ class SocketManager:
                 del self.room_connections[room_id]
                 if room_id in self.broadcast_tasks:
                     self.broadcast_tasks[room_id].cancel()
-                print(f"DEBUG_WS: Cleaned up empty room {room_id}")
 
     async def broadcast(self, room_id: str, event: str, data: dict):
         """
@@ -275,36 +261,28 @@ class SocketManager:
         """
         # Add extra debugging for lobby
         if room_id == "lobby":
-            print(f"🔔 LOBBY_BROADCAST: Attempting to broadcast '{event}' to lobby")
-            print(f"🔔 LOBBY_BROADCAST: Data keys: {list(data.keys())}")
+            pass
         
         async with self.lock:
             # Check if we have connections for this room
             if room_id not in self.room_connections or not self.room_connections[room_id]:
-                print(f"DEBUG_WS: No connections for room {room_id}. Cannot broadcast event '{event}'.")
                 if room_id == "lobby":
-                    print(f"🔔 LOBBY_BROADCAST: No lobby connections found!")
-                    print(f"🔔 LOBBY_BROADCAST: Available rooms: {list(self.room_connections.keys())}")
+                    pass
                 return
             
             # Check if broadcast queue exists
             if room_id not in self.broadcast_queues:
-                print(f"DEBUG_WS: No broadcast queue for room {room_id}. This should not happen!")
                 if room_id == "lobby":
-                    print(f"🔔 LOBBY_BROADCAST: No lobby broadcast queue!")
-                    print(f"🔔 LOBBY_BROADCAST: Available queues: {list(self.broadcast_queues.keys())}")
+                    pass
                 return
             
             # Validate message
             if not isinstance(data, dict):
-                print(f"DEBUG_WS: Invalid data type for broadcast. Expected dict, got {type(data)}")
                 return
             
             # Show lobby connection count
             if room_id == "lobby":
                 connection_count = len(self.room_connections[room_id])
-                print(f"🔔 LOBBY_BROADCAST: Found {connection_count} lobby connections")
-                print(f"🔔 LOBBY_BROADCAST: Queue size: {self.broadcast_queues[room_id].qsize()}")
         
         # Add timestamp and room info to message
         enhanced_data = {
@@ -319,15 +297,13 @@ class SocketManager:
                 "event": event, 
                 "data": enhanced_data
             })
-            print(f"DEBUG_WS: Message for event '{event}' added to queue for room {room_id}.")
             
             if room_id == "lobby":
-                print(f"🔔 LOBBY_BROADCAST: Message added to lobby queue. New queue size: {self.broadcast_queues[room_id].qsize()}")
+                pass
                 
         except Exception as e:
-            print(f"DEBUG_WS: Failed to queue message for room {room_id}: {e}")
             if room_id == "lobby":
-                print(f"🔔 LOBBY_BROADCAST: Failed to add message to lobby queue: {e}")
+                pass
         
         # Give the queue processor a chance to run
         await asyncio.sleep(0)
@@ -631,11 +607,9 @@ class SocketManager:
         """
         if "lobby" not in self.broadcast_queues:
             self.broadcast_queues["lobby"] = asyncio.Queue()
-            print(f"🔔 LOBBY_BROADCAST: Created lobby broadcast queue")
         
         if "lobby" not in self.broadcast_tasks or self.broadcast_tasks["lobby"].done():
             self.broadcast_tasks["lobby"] = asyncio.create_task(self._process_broadcast_queue("lobby"))
-            print(f"🔔 LOBBY_BROADCAST: Created/restarted lobby broadcast task")
 
 
 # CREATE SINGLETON INSTANCE

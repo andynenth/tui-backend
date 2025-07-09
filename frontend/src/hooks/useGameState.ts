@@ -27,20 +27,6 @@ export function useGameState(): GameState {
       // Only update if state actually changed (deep comparison would be expensive)
       // GameService already handles immutable updates, so reference comparison is sufficient
       if (stateRef.current !== newState) {
-        // Debug logging for phase changes
-        if (stateRef.current.phase !== newState.phase) {
-          console.log(`🎮 GAME_STATE_DEBUG: Phase changed from '${stateRef.current.phase}' to '${newState.phase}'`);
-          
-          // Special logging for turn_results phase
-          if (newState.phase === 'turn_results') {
-            console.log('🏆 GAME_STATE_DEBUG: Entering turn_results phase with data:');
-            console.log('  🏅 turnWinner:', newState.turnWinner);
-            console.log('  🎯 winningPlay:', newState.winningPlay);
-            console.log('  📊 playerPiles:', newState.playerPiles);
-            console.log('  🔢 turnNumber:', newState.turnNumber);
-            console.log('  🎪 nextStarter:', newState.nextStarter);
-          }
-        }
         
         stateRef.current = newState;
         setState(newState);

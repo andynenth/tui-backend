@@ -7,31 +7,31 @@
 
 // Piece type to Chinese character mapping (Traditional Chinese Chess)
 export const PIECE_CHINESE_MAP = {
-  'GENERAL_RED': '帥',
-  'GENERAL_BLACK': '將',
-  'ADVISOR_RED': '仕',
-  'ADVISOR_BLACK': '士',
-  'ELEPHANT_RED': '相',
-  'ELEPHANT_BLACK': '象',
-  'CHARIOT_RED': '俥',
-  'CHARIOT_BLACK': '車',
-  'HORSE_RED': '傌',
-  'HORSE_BLACK': '馬',
-  'CANNON_RED': '炮',
-  'CANNON_BLACK': '砲',
-  'SOLDIER_RED': '兵',
-  'SOLDIER_BLACK': '卒'
+  GENERAL_RED: '帥',
+  GENERAL_BLACK: '將',
+  ADVISOR_RED: '仕',
+  ADVISOR_BLACK: '士',
+  ELEPHANT_RED: '相',
+  ELEPHANT_BLACK: '象',
+  CHARIOT_RED: '俥',
+  CHARIOT_BLACK: '車',
+  HORSE_RED: '傌',
+  HORSE_BLACK: '馬',
+  CANNON_RED: '炮',
+  CANNON_BLACK: '砲',
+  SOLDIER_RED: '兵',
+  SOLDIER_BLACK: '卒'
 };
 
 // Simplified mapping without color suffix
 export const PIECE_TYPE_MAP = {
-  'GENERAL': '帥/將',
-  'ADVISOR': '仕/士',
-  'ELEPHANT': '相/象',
-  'CHARIOT': '俥/車',
-  'HORSE': '傌/馬',
-  'CANNON': '炮/砲',
-  'SOLDIER': '兵/卒'
+  GENERAL: '帥/將',
+  ADVISOR: '仕/士',
+  ELEPHANT: '相/象',
+  CHARIOT: '俥/車',
+  HORSE: '傌/馬',
+  CANNON: '炮/砲',
+  SOLDIER: '兵/卒'
 };
 
 /**

@@ -94,12 +94,8 @@ class TurnState(GameState):
 
     async def _process_action(self, action: GameAction) -> Dict[str, Any]:
         """Process valid actions"""
-        print(
-            f"🎯 TURN_STATE_DEBUG: Processing action {action.action_type.value} from {action.player_name}"
-        )
         if action.action_type == ActionType.PLAY_PIECES:
             result = await self._handle_play_pieces(action)
-            print(f"🎯 TURN_STATE_DEBUG: Play pieces result: {result}")
             return result
         elif action.action_type == ActionType.PLAYER_DISCONNECT:
             return await self._handle_player_disconnect(action)
@@ -138,11 +134,8 @@ class TurnState(GameState):
         Start a new turn if the current turn is complete and hands are not empty.
         Returns True if a new turn was started, False if no action taken.
         """
-        print(f"🎯 START_NEXT_DEBUG: start_next_turn_if_needed() called")
-        print(f"🎯 START_NEXT_DEBUG: turn_complete: {self.turn_complete}")
 
         if not self.turn_complete:
-            print(f"🎯 START_NEXT_DEBUG: Turn not complete, returning False")
             return False
 
         game = self.state_machine.game
@@ -150,20 +143,12 @@ class TurnState(GameState):
         # Check if any hands are empty (use same logic as check_transition_conditions)
         if hasattr(game, "players") and game.players:
             all_hands_empty = all(len(player.hand) == 0 for player in game.players)
-            print(f"🎯 START_NEXT_DEBUG: all_hands_empty: {all_hands_empty}")
             if all_hands_empty:
                 # Don't start new turn - should transition to scoring
-                print(
-                    f"🎯 START_NEXT_DEBUG: All hands empty, not starting new turn (should transition to scoring)"
-                )
                 return False
 
         # Start new turn
-        print(
-            f"🎯 START_NEXT_DEBUG: Starting new turn with starter: {self.current_turn_starter}"
-        )
         await self._start_new_turn()
-        print(f"🎯 START_NEXT_DEBUG: _start_new_turn() completed")
         return True
 
     async def _start_new_turn(self) -> None:
@@ -173,9 +158,6 @@ class TurnState(GameState):
         # Increment turn number for new turn
         game.turn_number += 1
         current_round = getattr(game, "round_number", 1)
-        print(
-            f"🎯 NEW_TURN_DEBUG: Round {current_round}, Turn {game.turn_number} starting with starter {self.current_turn_starter}"
-        )
 
         # Get turn order starting from current starter
         if hasattr(game, "get_player_order_from"):
@@ -207,7 +189,6 @@ class TurnState(GameState):
         # 🚀 ENTERPRISE: Use automatic broadcasting system
         current_turn_number = game.turn_number
 
-        print(f"🔢 TURN_NUMBER_DEBUG: Backend game.turn_number = {current_turn_number}")
 
         await self.update_phase_data(
             {
@@ -234,9 +215,6 @@ class TurnState(GameState):
         """Validate a play pieces action"""
         payload = action.payload
         
-        print(f"🎯 VALIDATE_DEBUG: Validating play from {action.player_name}")
-        print(f"🎯 VALIDATE_DEBUG: Current turn_plays: {list(self.turn_plays.keys())}")
-        print(f"🎯 VALIDATE_DEBUG: turn_complete: {self.turn_complete}")
 
         # Check if it's this player's turn
         current_player = self._get_current_player()
@@ -311,24 +289,14 @@ class TurnState(GameState):
 
     async def _handle_play_pieces(self, action: GameAction) -> Dict[str, Any]:
         """Handle a valid play pieces action"""
-        print(
-            f"🎯 TURN_STATE_DEBUG: _handle_play_pieces called for {action.player_name}"
-        )
-        print(
-            f"🎯 TURN_STATE_DEBUG: Current state - player_index: {self.current_player_index}, turn_order: {self.turn_order}"
-        )
 
         payload = action.payload
         pieces = payload["pieces"]
         piece_count = len(pieces)
 
-        print(
-            f"🎯 TURN_STATE_DEBUG: Player {action.player_name} playing {piece_count} pieces: {[str(p) for p in pieces]}"
-        )
         
         # Calculate play type from pieces
         play_type = get_play_type(pieces) if pieces else "UNKNOWN"
-        print(f"🎯 TURN_STATE_DEBUG: Calculated play type: {play_type}")
         
         # Calculate total play value from piece points
         play_value = 0
@@ -336,18 +304,10 @@ class TurnState(GameState):
             for piece in pieces:
                 piece_key = f"{piece.name}_{piece.color}"
                 play_value += PIECE_POINTS.get(piece_key, 0)
-        print(f"🎯 TURN_STATE_DEBUG: Calculated play value: {play_value}")
 
         # If this is the starter, set the required piece count
         if self.required_piece_count is None:
             self.required_piece_count = piece_count
-            print(f"🎯 TURN_STATE_DEBUG: Setting required piece count to {piece_count}")
-            print(
-                f"🎯 TURN_STATE_DEBUG: Before setting - required_piece_count was: None"
-            )
-            print(
-                f"🎯 TURN_STATE_DEBUG: After setting - required_piece_count is: {self.required_piece_count}"
-            )
             self.logger.info(
                 f"🎲 {action.player_name} (starter) plays {piece_count} pieces - setting required count"
             )
@@ -379,23 +339,13 @@ class TurnState(GameState):
         else:
             self.logger.error(f"Could not find player {action.player_name} to remove pieces")
 
-        print(
-            f"🎯 TURN_STATE_DEBUG: Before advancing - current_player_index: {self.current_player_index}"
-        )
 
         # Move to next player
         self.current_player_index += 1
 
-        print(
-            f"🎯 TURN_STATE_DEBUG: After advancing - current_player_index: {self.current_player_index}"
-        )
-        print(f"🎯 TURN_STATE_DEBUG: Next player: {self._get_current_player()}")
 
         current_round = getattr(self.state_machine.game, "round_number", 1)
         turn_number = getattr(self.state_machine.game, "turn_number", 0)
-        print(
-            f"🎯 TURN_STATE_DEBUG: Round {current_round}, Turn {turn_number} - {action.player_name} played, next: {self._get_current_player()}"
-        )
 
         # 🚀 ENTERPRISE: Always broadcast the current state first
         # This ensures every player's move (including the last player) is immediately visible to frontend
@@ -407,9 +357,6 @@ class TurnState(GameState):
         # Keep last player as current when turn is complete to avoid breaking frontend
         next_player = self._get_current_player() if not is_turn_complete else action.player_name
         
-        print(
-            f"🎯 UPDATE_DEBUG: Broadcasting play - turn_complete: {is_turn_complete}, next_player: {next_player}"
-        )
 
         # Always broadcast the updated state including all plays
         await self.update_phase_data(
@@ -423,13 +370,9 @@ class TurnState(GameState):
             f"Player {action.player_name} played {piece_count} pieces",
         )
 
-        print(
-            f"🎯 UPDATE_DEBUG: Phase data broadcasted - all players should see the plays"
-        )
 
         # Check if turn is complete AFTER broadcasting
         if is_turn_complete:
-            print(f"🎯 TURN_STATE_DEBUG: Turn complete! Calling _complete_turn()")
             await self._complete_turn()
             # _complete_turn() will handle turn completion broadcasting and delay
             
@@ -462,16 +405,10 @@ class TurnState(GameState):
         """Complete the current turn and determine winner"""
         current_round = getattr(self.state_machine.game, "round_number", 1)
         turn_number = getattr(self.state_machine.game, "turn_number", 0)
-        print(
-            f"🎯 TURN_COMPLETE_DEBUG: Round {current_round}, Turn {turn_number} _complete_turn() called"
-        )
         self.turn_complete = True
 
         # Determine winner
         self.winner = self._determine_turn_winner()
-        print(
-            f"🎯 TURN_COMPLETE_DEBUG: Round {current_round}, Turn {turn_number} Winner determined: {self.winner}"
-        )
 
         if self.winner:
             # Award piles to winner
@@ -479,26 +416,18 @@ class TurnState(GameState):
             await self._award_piles(self.winner, piles_won)
 
             self.logger.info(f"🏆 {self.winner} wins turn and gets {piles_won} piles")
-            print(f"🎯 TURN_COMPLETE_DEBUG: Awarded {piles_won} piles to {self.winner}")
 
             # Winner starts next turn
             self.current_turn_starter = self.winner
-            print(f"🎯 TURN_COMPLETE_DEBUG: Next turn starter set to: {self.winner}")
         else:
             self.logger.info("🤝 No winner this turn")
-            print(f"🎯 TURN_COMPLETE_DEBUG: No winner determined")
 
         # 🎮 Add delay for frontend flip animation to complete
         import time
         delay_start = time.time()
         self.logger.info("🎮 Waiting 5s for piece flip animation to complete...")
-        print(f"🎮 FLIP_ANIMATION_DEBUG: Starting 5s delay for flip animation at {delay_start}")
-        print("🎮 FLIP_ANIMATION_DEBUG: Current phase before delay:", self.phase_name.value)
         await asyncio.sleep(5.0)  # Give frontend plenty of time for 800ms delay + 600ms animation
         delay_end = time.time()
-        print(f"🎮 FLIP_ANIMATION_DEBUG: 5s delay completed at {delay_end}, elapsed: {delay_end - delay_start:.2f}s")
-        print("🎮 FLIP_ANIMATION_DEBUG: Current phase after delay:", self.phase_name.value)
-        print("🎮 FLIP_ANIMATION_DEBUG: Now broadcasting turn completion event")
 
         # 🚀 ENTERPRISE: Use automatic broadcasting for turn completion
         await self.update_phase_data(
@@ -511,10 +440,8 @@ class TurnState(GameState):
             },
             f"Turn completed - winner: {self.winner}",
         )
-        print(f"🎯 TURN_COMPLETE_DEBUG: Phase data updated with turn completion")
 
         await self._process_turn_completion()
-        print(f"🎯 TURN_COMPLETE_DEBUG: _process_turn_completion() finished")
 
     def _determine_turn_winner(self) -> Optional[str]:
         """Determine the winner of the current turn using turn_resolution.py"""
@@ -628,9 +555,6 @@ class TurnState(GameState):
         for player in game.players:
             if player.name == winner:
                 player.captured_piles += pile_count
-                print(
-                    f"🎯 CAPTURED_PILES_DEBUG: {winner} captured_piles += {pile_count} = {player.captured_piles}"
-                )
                 break
 
         self.logger.info(f"💰 {winner} now has {game.player_piles[winner]} piles total")
@@ -639,7 +563,6 @@ class TurnState(GameState):
         """Process the completion of a turn"""
         game = self.state_machine.game
 
-        print(f"🏁 TURN_COMPLETION_DEBUG: Starting turn completion processing")
 
         # STEP 1: Remove played pieces from player hands FIRST
         # NOTE: Pieces are now removed immediately in _handle_play_pieces
@@ -652,9 +575,6 @@ class TurnState(GameState):
                     play_data = self.turn_plays[player_name]
                     pieces_to_remove = play_data["pieces"]
 
-                    print(
-                        f"🏁 TURN_COMPLETION_DEBUG: Removing {len(pieces_to_remove)} pieces from {player_name}"
-                    )
                     # Remove each piece from player's hand
                     for piece in pieces_to_remove:
                         if piece in player.hand:
@@ -671,10 +591,6 @@ class TurnState(GameState):
                 if hand_size > 0:
                     all_hands_empty = False
 
-        print(
-            f"🏁 TURN_COMPLETION_DEBUG: After removing pieces, checking if all hands are empty"
-        )
-        print(f"🏁 TURN_COMPLETION_DEBUG: all_hands_empty = {all_hands_empty}")
 
         # 🔧 FIX: Add defensive consistency check
         try:
@@ -682,12 +598,6 @@ class TurnState(GameState):
         except GameStateError as e:
             self.logger.critical(f"Hand size validation failed: {e}")
             return  # Exit early
-
-        if hasattr(game, "players") and game.players:
-            for player in game.players:
-                print(
-                    f"🏁 TURN_COMPLETION_DEBUG: {player.name} hand size: {len(player.hand)}"
-                )
 
         # STEP 3: Broadcast turn completion using centralized system
         await self._broadcast_turn_completion_enterprise()
@@ -702,9 +612,6 @@ class TurnState(GameState):
                 )
             else:
                 self.logger.info("🏁 All hands are now empty - round complete")
-            print(
-                f"🏁 TURN_COMPLETION_DEBUG: Round complete - will transition to scoring"
-            )
         else:
             # Update starter for next turn
             if self.winner:
@@ -713,9 +620,6 @@ class TurnState(GameState):
                 self._update_turn_order_for_new_starter(self.winner)
                 self.logger.info(f"🎯 Next turn starter: {self.winner}")
 
-                print(
-                    f"🏁 TURN_COMPLETION_DEBUG: Hands not empty - will start next turn after delay"
-                )
                 # Auto-start next turn after 7 second delay (give users time to see TurnResultsUI)
                 self.logger.info(
                     f"🎯 Turn complete - auto-starting next turn in 7 seconds"
@@ -896,9 +800,6 @@ class TurnState(GameState):
                 f"Player {player_name} played {piece_count} pieces",
             )
 
-            print(
-                f"🎯 TURN_STATE_DEBUG: Enterprise broadcast play event - next_player: {self._get_current_player()}"
-            )
 
         except Exception as e:
             self.logger.error(f"Failed to broadcast play event: {e}", exc_info=True)
@@ -915,7 +816,6 @@ class TurnState(GameState):
         """🚀 ENTERPRISE: Broadcast turn completion using centralized system"""
         import time
         broadcast_time = time.time()
-        print(f"🎮 FLIP_ANIMATION_DEBUG: _broadcast_turn_completion_enterprise called at {broadcast_time}")
         try:
             game = self.state_machine.game
 
@@ -954,7 +854,6 @@ class TurnState(GameState):
             turn_number = game.turn_number
 
             # Use enterprise broadcasting system with full turn resolution data
-            print(f"🎮 FLIP_ANIMATION_DEBUG: About to broadcast turn_complete event at {time.time()}")
             await self.broadcast_custom_event(
                 "turn_complete",
                 {
@@ -970,7 +869,6 @@ class TurnState(GameState):
                 },
                 f"Turn {turn_number} completed - winner: {self.winner}",
             )
-            print(f"🎮 FLIP_ANIMATION_DEBUG: turn_complete event broadcasted at {time.time()}")
 
             self.logger.info(
                 f"🚀 Enterprise broadcast turn completion - winner: {self.winner}, turn piles awarded: {player_piles}"
@@ -999,8 +897,6 @@ class TurnState(GameState):
         min_hand_size = min(hand_values)
         max_hand_size = max(hand_values)
 
-        print(f"🔧 CONSISTENCY_CHECK: Hand sizes: {hand_sizes}")
-        print(f"🔧 CONSISTENCY_CHECK: Min: {min_hand_size}, Max: {max_hand_size}")
 
         # If there's more than 1 card difference between players, something is wrong
         if max_hand_size - min_hand_size > 1:
@@ -1027,9 +923,7 @@ class TurnState(GameState):
                 self.logger.warning(
                     f"⚠️ MIXED STATE: Some players empty ({[name for name, size in hand_sizes.items() if size == 0]}), others with multiple cards"
                 )
-                print(f"⚠️ MIXED STATE WARNING: This may indicate piece removal issues")
 
-        print(f"✅ CONSISTENCY_CHECK: Hand size distribution is acceptable")
     
     async def _handle_critical_game_error(self, error_message: str, debug_data: dict) -> None:
         """Handle critical game errors by notifying all players and ending game"""

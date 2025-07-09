@@ -92,30 +92,24 @@ export function GameContainer({ roomId, onNavigateToLobby }) {
   const turnProps = useMemo(() => {
     if (gameState.phase !== 'turn') return null;
     
-    console.log(`🔢 GAMECONTAINER_DEBUG: gameState.currentTurnNumber = ${gameState.currentTurnNumber}`);
-    console.log(`🔢 GAMECONTAINER_DEBUG: currentTurnPlays =`, gameState.currentTurnPlays);
     
     // Extract play type from the starter's play
     let playType = '';
     if (gameState.currentTurnPlays && gameState.currentTurnPlays.length > 0 && gameState.currentTurnStarter) {
-      console.log('🎲 PLAYTYPE_DEBUG: currentTurnStarter:', gameState.currentTurnStarter);
-      console.log('🎲 PLAYTYPE_DEBUG: currentTurnPlays:', gameState.currentTurnPlays);
       
       // Find the starter's play
       const starterPlay = gameState.currentTurnPlays.find(play => 
         play.player === gameState.currentTurnStarter
       );
-      console.log('🎲 PLAYTYPE_DEBUG: starterPlay:', starterPlay);
       
       if (starterPlay) {
         // Check both camelCase and snake_case versions
         const extractedPlayType = starterPlay.playType || starterPlay.play_type;
         if (extractedPlayType && extractedPlayType !== 'UNKNOWN' && extractedPlayType !== 'unknown') {
           playType = extractedPlayType;
-          console.log('🎲 PLAYTYPE_DEBUG: Found play type:', playType);
         }
       } else {
-        console.log('🎲 PLAYTYPE_DEBUG: No starter play found');
+        // No starter play data available
       }
     }
     
@@ -145,11 +139,11 @@ export function GameContainer({ roomId, onNavigateToLobby }) {
       currentTurnPlays: gameState.currentTurnPlays || [],
       requiredPieceCount: gameState.requiredPieceCount,
       turnNumber: gameState.currentTurnNumber || 1,
-      piecesWonCount: piecesWonCount,
+      piecesWonCount,
       previousWinner: gameState.currentTurnStarter || '',
-      playType: playType,
+      playType,
       declarationData: gameState.declarations || {},
-      playerHandSizes: playerHandSizes,
+      playerHandSizes,
       
       // State calculated by backend
       isMyTurn: gameState.isMyTurn || false,
@@ -164,14 +158,6 @@ export function GameContainer({ roomId, onNavigateToLobby }) {
   const turnResultsProps = useMemo(() => {
     if (gameState.phase !== 'turn_results') return null;
     
-    console.log('🏆 GAMECONTAINER_DEBUG: Building turnResultsProps with gameState:');
-    console.log('  🎮 gameState.phase:', gameState.phase);
-    console.log('  🏅 gameState.turnWinner:', gameState.turnWinner);
-    console.log('  🎯 gameState.winningPlay:', gameState.winningPlay);
-    console.log('  📊 gameState.playerPiles:', gameState.playerPiles);
-    console.log('  👥 gameState.players:', gameState.players);
-    console.log('  🔢 gameState.turnNumber:', gameState.turnNumber);
-    console.log('  🎪 gameState.nextStarter:', gameState.nextStarter);
     
     // Determine if this is the last turn of the round
     const isLastTurn = gameState.players.every(player => {
@@ -189,7 +175,7 @@ export function GameContainer({ roomId, onNavigateToLobby }) {
       roundNumber: gameState.currentRound || 1,
       nextStarter: gameState.nextStarter || null,
       playerName: gameState.playerName || '',
-      isLastTurn: isLastTurn,
+      isLastTurn,
       currentTurnPlays: gameState.currentTurnPlays || [],
       
       // Actions
@@ -199,7 +185,6 @@ export function GameContainer({ roomId, onNavigateToLobby }) {
       }
     };
     
-    console.log('🏆 GAMECONTAINER_DEBUG: Final turnResultsProps:', props);
     return props;
   }, [gameState, gameActions]);
 
@@ -224,14 +209,6 @@ export function GameContainer({ roomId, onNavigateToLobby }) {
       onStartNextRound: gameState.gameOver ? null : gameActions.startNextRound
     };
     
-    console.log('🎮 GAME_CONTAINER_DEBUG: Passing props to ScoringUI:');
-    console.log('  👥 players:', props.players);
-    console.log('  📊 roundScores:', props.roundScores);
-    console.log('  💯 totalScores:', props.totalScores);
-    console.log('  🧮 playersWithScores:', props.playersWithScores);
-    console.log('  ⚗️ redealMultiplier:', props.redealMultiplier);
-    console.log('  🏁 gameOver:', props.gameOver);
-    console.log('  🏆 winners:', props.winners);
     
     return props;
   }, [gameState, gameActions]);
@@ -332,7 +309,7 @@ export function GameContainer({ roomId, onNavigateToLobby }) {
               </GameLayout>
             );
             
-          case 'turn':
+          case 'turn': {
             const turnRequirement = (() => {
               if (!turnProps) return null;
               const { currentPlayer, playerName, requiredPieceCount } = turnProps;
@@ -362,6 +339,7 @@ export function GameContainer({ roomId, onNavigateToLobby }) {
                 <TurnUI {...turnProps} />
               </GameLayout>
             );
+          }
             
           case 'turn_results':
             return (

@@ -110,27 +110,23 @@ class GameBotHandler:
             if action_hash in bot_cache:
                 age = current_time - bot_cache[action_hash]
                 if age < 0.5:  # Very recent same trigger
-                    print(f"🚫 REFINED_FIX: Blocking rapid same-source trigger for current player {bot_name} from {trigger_source} (age: {age:.1f}s)")
                     return True
                 else:
-                    print(f"✅ REFINED_FIX: Allowing delayed same-source trigger for current player {bot_name} from {trigger_source} (age: {age:.1f}s)")
+                    pass
             else:
-                print(f"✅ REFINED_FIX: Allowing new trigger for current player {bot_name} from {trigger_source}")
+                pass
         else:
             # For non-current players, be more strict - block any recent duplicates
             # Check all recent actions regardless of source
             for existing_hash, timestamp in bot_cache.items():
                 age = current_time - timestamp
                 if age < 1.0:  # Any recent action within 1 second
-                    print(f"🚫 REFINED_FIX: Blocking non-current player {bot_name} trigger (recent action age: {age:.1f}s)")
                     return True
             
-            print(f"✅ REFINED_FIX: Allowing trigger for non-current player {bot_name} from {trigger_source}")
         
         
         # Record this action
         bot_cache[action_hash] = current_time
-        print(f"✅ RACE_CONDITION_FIX: New action recorded for {bot_name} - {action_type} from {trigger_source} (hash: {action_hash})")
         return False
     
     def _should_skip_bot_trigger(self, bot_name: str, context: dict) -> bool:
@@ -143,14 +139,12 @@ class GameBotHandler:
         if bot_name in self._turn_sequence_tracking:
             last_turn = self._turn_sequence_tracking[bot_name]
             if last_turn == turn_number and phase == 'turn':
-                print(f"🚫 SEQUENCE_FIX: {bot_name} already acted in turn {turn_number} - skipping")
                 return True
         
         # Check phase sequence - skip if same phase context
         if bot_name in self._phase_sequence_tracking:
             last_context = self._phase_sequence_tracking[bot_name]
             if last_context == phase_context:
-                print(f"🚫 SEQUENCE_FIX: {bot_name} already processed phase context '{phase_context}' - skipping")
                 return True
         
         # Update tracking
@@ -167,12 +161,11 @@ class GameBotHandler:
         if event == "phase_change":
             new_phase = data.get("phase")
             if new_phase != self._last_processed_phase:
-                print(f"🔄 PHASE_TRACKING_FIX: New phase detected {self._last_processed_phase} -> {new_phase}")
                 # Clear action tracking for new phase
                 self._phase_action_triggered.clear()
                 self._last_processed_phase = new_phase
             else:
-                print(f"🔍 PHASE_TRACKING_FIX: Same phase update: {new_phase}")
+                pass
         
         async with self._lock:  # Prevent concurrent bot actions
             if event == "player_declared":
@@ -184,20 +177,17 @@ class GameBotHandler:
             # elif event == "player_played":
             #     await self._handle_play_phase(data["player_name"])
             elif event == "turn_started":
-                print(f"🔍 DUPLICATE_DEBUG: Received turn_started event for {data.get('starter')} from {data.get('source', 'unknown')}")
                 await self._handle_turn_start(data["starter"])
             elif event == "round_started":
                 
                 # 🔧 PHASE_TRACKING_FIX: Check if we already triggered actions for this phase
                 current_phase = data.get("phase", "unknown")
                 if current_phase in self._phase_action_triggered and self._phase_action_triggered[current_phase]:
-                    print(f"🚫 PHASE_TRACKING_FIX: Already triggered actions for {current_phase} phase via round_started - skipping")
                     return
                 
                 await self._handle_round_start()
             # 🔧 FIX: Add validation feedback events
             elif event == "action_rejected":
-                print(f"🚫 BOT_HANDLER_DEBUG: Handling action rejection")
                 await self._handle_action_rejected(data)
             elif event == "action_accepted":
                 await self._handle_action_accepted(data)
@@ -215,14 +205,12 @@ class GameBotHandler:
         phase_data = data.get("phase_data", {})
         reason = data.get("reason", "")
         
-        print(f"🚀 ENTERPRISE_BOT_DEBUG: _handle_enterprise_phase_change called - phase: {phase}")
         
         
         
         # 🔧 PHASE_TRACKING_FIX: Check if we already triggered actions for this phase
         # EXCEPTION: Declaration phase allows multiple bot actions (each bot must declare)
         if phase != "declaration" and phase in self._phase_action_triggered and self._phase_action_triggered[phase]:
-            print(f"🚫 PHASE_TRACKING_FIX: Already triggered actions for {phase} phase - skipping")
             return
         
         if phase == "declaration":
@@ -237,7 +225,6 @@ class GameBotHandler:
                             if getattr(player, 'is_bot', False):
                                 # 🔧 PHASE_TRACKING_FIX: Mark this phase as having triggered actions
                                 self._phase_action_triggered[phase] = True
-                                print(f"✅ PHASE_TRACKING_FIX: Marked {phase} phase as triggered")
                                 # Get last declarer to continue sequence
                                 declarations = phase_data.get('declarations', {})
                                 declared_players = list(declarations.keys())
@@ -248,7 +235,7 @@ class GameBotHandler:
                                     print(f"❌ BOT_MANAGER_ERROR: _handle_declaration_phase failed: {e}")
                                     raise
                             else:
-                                print(f"👤 ENTERPRISE_BOT_DEBUG: Current declarer {current_declarer} is human - waiting")
+                                pass
                             break
                             
         elif phase == "preparation":
@@ -263,48 +250,39 @@ class GameBotHandler:
             turn_plays = phase_data.get('turn_plays', {})
             current_player = data.get("current_player") or phase_data.get("current_player")
             
-            print(f"🚀 ENTERPRISE_BOT_DEBUG: Turn phase update - current_player: {current_player}, turn_plays: {list(turn_plays.keys())}")
             
             # If there are turn plays, find the last player who played
             if turn_plays:
                 # Get the last player who played from turn_plays
                 last_player = list(turn_plays.keys())[-1]
-                print(f"🚀 ENTERPRISE_BOT_DEBUG: Last player who played: {last_player}")
                 # Use sequential handler for next bot(s)
                 await self._handle_turn_play_phase(last_player)
             elif current_player:
                 # No plays yet, but current player is set
                 # Check if it's the turn starter (first play of the turn)
                 if phase_data.get('current_turn_starter') == current_player:
-                    print(f"🚀 ENTERPRISE_BOT_DEBUG: Turn starter {current_player} - using empty string to trigger from beginning")
                     # Start from beginning of turn order
                     await self._handle_turn_play_phase("")
                 else:
-                    print(f"🚀 ENTERPRISE_BOT_DEBUG: Mid-turn update, current player: {current_player}")
                     # Find who played before current player
                     turn_order = phase_data.get('turn_order', [])
                     if current_player in turn_order:
                         curr_idx = turn_order.index(current_player)
                         if curr_idx > 0:
                             last_player = turn_order[curr_idx - 1]
-                            print(f"🚀 ENTERPRISE_BOT_DEBUG: Previous player in order: {last_player}")
                             await self._handle_turn_play_phase(last_player)
                 
     async def _handle_declaration_phase(self, last_declarer: str):
         """Handle bot declarations in order"""
         from backend.socket_manager import broadcast
         
-        print(f"🔍 DECL_PHASE_DEBUG: _handle_declaration_phase called with last_declarer: '{last_declarer}'")
         
         # Get declaration order
         declaration_order = self._get_declaration_order()
-        print(f"🔍 DECL_PHASE_DEBUG: Declaration order: {[getattr(p, 'name', str(p)) for p in declaration_order] if declaration_order else 'None'}")
         
         # Find next bot to declare
         last_index = self._get_player_index(last_declarer, declaration_order)
-        print(f"🔍 DECL_PHASE_DEBUG: Last declarer '{last_declarer}' index: {last_index}")
         
-        print(f"🔍 DECL_PHASE_DEBUG: Starting loop from index {last_index + 1} to {len(declaration_order)}")
         
         # Get actual Player objects from game state
         game_state = self._get_game_state()
@@ -320,33 +298,25 @@ class GameBotHandler:
                     break
             
             if not player_obj:
-                print(f"❌ DECL_PHASE_DEBUG: Could not find Player object for {player_name}")
                 continue
             
-            print(f"🔍 DECL_PHASE_DEBUG: Checking player {i} ({player_name}), is_bot: {getattr(player_obj, 'is_bot', 'unknown')}")
             
             if not getattr(player_obj, 'is_bot', False):
-                print(f"🔍 DECL_PHASE_DEBUG: Player {player_name} is human, stopping bot declarations")
                 break  # Wait for human player
                 
             # Check if player has already declared in current phase (use state machine data)
             phase_declarations = self.state_machine.get_phase_data().get('declarations', {}) if self.state_machine else {}
             already_declared = player_name in phase_declarations
             declared_value = phase_declarations.get(player_name, 0)
-            print(f"🔍 DECL_PHASE_DEBUG: Player {player_name} declared value: {declared_value} (from phase data)")
-            print(f"🔍 DECL_PHASE_DEBUG: All phase declarations: {phase_declarations}")
             
             if already_declared:
-                print(f"🔍 DECL_PHASE_DEBUG: Player {player_name} already declared {declared_value}, skipping")
                 continue  # Already declared
                 
             # Bot declares with random delay (500-1500ms for realism)
             import random
             delay = random.uniform(0.5, 1.5)
-            print(f"🤖 DECL_PHASE_DEBUG: Bot {player_name} will declare in {delay:.1f}s...")
             await asyncio.sleep(delay)
             
-            print(f"🤖 DECL_PHASE_DEBUG: Bot {player_name} will now declare!")
             try:
                 await self._bot_declare(player_obj, i)
             except Exception as e:
@@ -402,7 +372,6 @@ class GameBotHandler:
                     is_bot=True
                 )
                 result = await self.state_machine.handle_action(action)
-                print(f"🔧 BOT_DECLARE_DEBUG: State machine result: {result}")
                 
                 # Wait a moment for action to be fully processed
                 await asyncio.sleep(0.05)
@@ -442,9 +411,6 @@ class GameBotHandler:
         """Handle start of a new round"""
         game_state = self._get_game_state()
         
-        print(f"🔍 BOT_ROUND_DEBUG: Game state current_order: {[getattr(p, 'name', str(p)) for p in game_state.current_order] if game_state.current_order else 'None'}")
-        print(f"🔍 BOT_ROUND_DEBUG: Game round_starter: {getattr(game_state, 'round_starter', 'None')}")
-        print(f"🔍 BOT_ROUND_DEBUG: Game current_player: {getattr(game_state, 'current_player', 'None')}")
         
         # Check if starter is a bot
         starter = game_state.current_order[0] if game_state.current_order else None
@@ -460,23 +426,18 @@ class GameBotHandler:
     
     async def _handle_turn_play_phase(self, last_player: str):
         """Handle bot plays in turn order - IDENTICAL to declaration pattern"""
-        print(f"🎯 TURN_PLAY_PHASE_DEBUG: _handle_turn_play_phase called with last_player: '{last_player}'")
         
         # Get turn order from phase data  
         turn_order = self._get_turn_order()
         if not turn_order:
-            print(f"🎯 TURN_PLAY_PHASE_DEBUG: No turn order available, skipping bot plays")
             return
             
         # Find next bot to play
         last_index = self._get_player_index(last_player, turn_order)
-        print(f"🎯 TURN_PLAY_PHASE_DEBUG: Last player '{last_player}' index: {last_index}")
         
         if last_index >= len(turn_order) - 1:
-            print(f"🎯 TURN_PLAY_PHASE_DEBUG: Last player was end of turn order, no more players")
             return
         
-        print(f"🎯 TURN_PLAY_PHASE_DEBUG: Starting loop from index {last_index + 1} to {len(turn_order)}")
         
         # Get actual Player objects from game state
         game_state = self._get_game_state()
@@ -484,7 +445,6 @@ class GameBotHandler:
         # Loop through remaining players - EXACT SAME PATTERN as declarations
         for i in range(last_index + 1, len(turn_order)):
             player_name = turn_order[i]
-            print(f"🎯 TURN_PLAY_PHASE_DEBUG: Checking player {i} ({player_name})")
             
             # Find the actual Player object
             player_obj = None
@@ -494,13 +454,10 @@ class GameBotHandler:
                     break
                     
             if not player_obj:
-                print(f"❌ TURN_PLAY_PHASE_DEBUG: Could not find Player object for {player_name}")
                 continue
                 
-            print(f"🎯 TURN_PLAY_PHASE_DEBUG: Found player {player_name}, is_bot: {getattr(player_obj, 'is_bot', False)}")
             
             if not getattr(player_obj, 'is_bot', False):
-                print(f"🎯 TURN_PLAY_PHASE_DEBUG: Player {player_name} is human, stopping bot plays")
                 break  # Stop at human player
             
             # Check if bot already played this turn (using phase data)
@@ -508,16 +465,13 @@ class GameBotHandler:
                 phase_data = self.state_machine.get_phase_data()
                 turn_plays = phase_data.get('turn_plays', {})
                 if player_name in turn_plays:
-                    print(f"🎯 TURN_PLAY_PHASE_DEBUG: Bot {player_name} already played this turn, skipping")
                     continue
             
             # Bot plays with SAME delay as declarations (0.5-1.5s)
             import random
             delay = random.uniform(0.5, 1.5)
-            print(f"🤖 TURN_PLAY_PHASE_DEBUG: Bot {player_name} will play in {delay:.1f}s...")
             await asyncio.sleep(delay)
             
-            print(f"🤖 TURN_PLAY_PHASE_DEBUG: Bot {player_name} will now play!")
             try:
                 await self._bot_play(player_obj)
             except Exception as e:
@@ -545,12 +499,10 @@ class GameBotHandler:
             if self.state_machine:
                 phase_data = self.state_machine.get_phase_data()
                 required_piece_count = phase_data.get('required_piece_count')
-                print(f"🎯 BOT_PLAY_DEBUG: Got required_piece_count from state machine: {required_piece_count}")
             else:
                 # Fallback to game state
                 game_state = self._get_game_state()
                 required_piece_count = getattr(game_state, 'required_piece_count', None)
-                print(f"🎯 BOT_PLAY_DEBUG: Got required_piece_count from game state: {required_piece_count}")
                 
             selected = ai.choose_best_play(
                 bot.hand,
@@ -560,8 +512,6 @@ class GameBotHandler:
             
             # Validate that bot respects required piece count
             if required_piece_count is not None and len(selected) != required_piece_count:
-                print(f"❌ BOT_PLAY_DEBUG: Bot {bot.name} selected {len(selected)} pieces but required {required_piece_count}")
-                print(f"🔧 BOT_PLAY_DEBUG: Forcing bot to select {required_piece_count} pieces")
                 # Force bot to select valid number of pieces
                 if len(selected) > required_piece_count:
                     selected = selected[:required_piece_count]
@@ -570,7 +520,6 @@ class GameBotHandler:
                     remaining = [p for p in bot.hand if p not in selected]
                     selected.extend(remaining[:required_piece_count - len(selected)])
             
-            print(f"🎯 BOT_PLAY_DEBUG: Final selection - {len(selected)} pieces: {[str(p) for p in selected]}")
             
             # Get indices and play type
             indices = self._get_piece_indices(bot.hand, selected)
@@ -588,7 +537,6 @@ class GameBotHandler:
                 result = await self.state_machine.handle_action(action)
                 
                 # Action is queued - state machine will process it and handle broadcasting
-                print(f"🎯 BOT_PLAY_DEBUG: Action queued successfully, state machine will handle updates and broadcasting")
                 print(f"✅ Bot {bot.name} action queued - state machine will broadcast with correct next_player")
                 
                 # Return early - state machine handles the rest
@@ -614,14 +562,12 @@ class GameBotHandler:
         weak_players_awaiting = phase_data.get("weak_players_awaiting", set())
         redeal_decisions = phase_data.get("redeal_decisions", {})
         
-        print(f"🎲 REDEAL_PHASE_DEBUG: Handling redeal decisions - awaiting: {weak_players_awaiting}")
         
         game_state = self._get_game_state()
         
         # Process one bot at a time, just like declarations and turns
         for player_name in weak_players_awaiting:
             if player_name in redeal_decisions:
-                print(f"🎲 REDEAL_PHASE_DEBUG: Player {player_name} already decided")
                 continue
                 
             # Find the actual Player object
@@ -632,20 +578,16 @@ class GameBotHandler:
                     break
                     
             if not player:
-                print(f"❌ REDEAL_PHASE_DEBUG: Could not find Player object for {player_name}")
                 continue
                 
             if not getattr(player, 'is_bot', False):
-                print(f"👤 REDEAL_PHASE_DEBUG: Player {player_name} is human, skipping")
                 continue
                 
             # Bot decides with standard delay (0.5-1.5s)
             import random
             delay = random.uniform(0.5, 1.5)
-            print(f"🤖 REDEAL_PHASE_DEBUG: Bot {player_name} will decide in {delay:.1f}s...")
             await asyncio.sleep(delay)
             
-            print(f"🤖 REDEAL_PHASE_DEBUG: Bot {player_name} making redeal decision")
             try:
                 await self._bot_redeal_decision(player)
             except Exception as e:
@@ -667,7 +609,6 @@ class GameBotHandler:
         
         # 🚀 ENTERPRISE: This should go through state machine, not manual broadcast
         # State machine automatically handles turn_resolved broadcasting via update_phase_data()
-        print(f"🚀 ENTERPRISE: Turn resolved - state machine handles broadcasting automatically")
         
         # Check if round is complete
         game_state = self._get_game_state()
@@ -718,7 +659,6 @@ class GameBotHandler:
             
             # If same turn and starter within 2 seconds, it's a duplicate
             if last_turn == current_turn and last_starter == starter_name and (current_time - last_time) < 2.0:
-                print(f"🚫 TURN_START_FIX: Skipping duplicate turn_started event for {starter_name} turn {current_turn}")
                 return
         
         # Record this turn start
@@ -738,7 +678,6 @@ class GameBotHandler:
             
         # 🚀 ENTERPRISE: Use sequential turn play handler for ALL bot plays
         # This ensures consistent 0.5-1.5s delays for turn starters too
-        print(f"🎯 TURN_START_DEBUG: Turn starter is {starter_name}, triggering sequential handler")
         
         # Start sequential processing from beginning of turn order
         # Empty string means start from index -1, so loop begins at index 0
@@ -763,7 +702,6 @@ class GameBotHandler:
             play_type = get_play_type(selected) if selected else "UNKNOWN"
             
             print(f"🤖 Bot {bot.name} will play {len(selected)} pieces: {[str(p) for p in selected]}")
-            print(f"🎯 BOT_MANAGER_DEBUG: state_machine exists: {self.state_machine is not None}")
             
             # Make the play via state machine
             if self.state_machine:
@@ -774,10 +712,8 @@ class GameBotHandler:
                     is_bot=True
                 )
                 result = await self.state_machine.handle_action(action)
-                print(f"🎯 BOT_PLAY_DEBUG: State machine result: {result}")
                 
                 # Action is queued - state machine will process it and handle broadcasting
-                print(f"🎯 BOT_PLAY_DEBUG: Action queued successfully, state machine will handle updates and broadcasting")
                 print(f"✅ Bot {bot.name} first play action queued - state machine will broadcast with correct next_player")
                 
                 # Return early - state machine handles the rest
@@ -808,7 +744,6 @@ class GameBotHandler:
             # Get declaration order from state machine phase data
             phase_data = self.state_machine.get_phase_data()
             declaration_order = phase_data.get('declaration_order', [])
-            print(f"🔍 BOT_DEBUG: Got declaration order from state machine: {[getattr(p, 'name', str(p)) for p in declaration_order] if declaration_order else 'None'}")
             return declaration_order
         else:
             # Fallback to game state
@@ -821,7 +756,6 @@ class GameBotHandler:
             # Get turn order from state machine phase data
             phase_data = self.state_machine.get_phase_data()
             turn_order = phase_data.get('turn_order', [])
-            print(f"🔍 TURN_ORDER_DEBUG: Got turn order from state machine: {turn_order}")
             return turn_order
         else:
             # Fallback to game state
@@ -889,20 +823,17 @@ class GameBotHandler:
         reason = data.get("reason", "Unknown reason")
         is_bot = data.get("is_bot", False)
         
-        print(f"🚫 BOT_VALIDATION_FIX: Action {action_type} from {player_name} was REJECTED: {reason}")
         
         if is_bot:
             # For rejected bot actions, we need to:
             # 1. NOT process any turn completion logic
             # 2. NOT remove pieces from hands
             # 3. Clear tracking to allow retry with valid state
-            print(f"🚫 BOT_VALIDATION_FIX: Bot {player_name} action rejected - preventing downstream processing")
             
             # 🔧 RACE_CONDITION_FIX: Clear tracking for rejected actions to allow retry
             if player_name in self._bot_action_cache:
                 # Clear recent action cache for this bot to allow legitimate retry
                 self._bot_action_cache[player_name].clear()
-                print(f"🔧 RACE_CONDITION_FIX: Cleared action cache for {player_name} after rejection")
             
             if player_name in self._turn_sequence_tracking:
                 # Don't clear turn tracking - bot should not retry same turn
@@ -911,14 +842,12 @@ class GameBotHandler:
             if player_name in self._phase_sequence_tracking:
                 # Clear phase tracking if it was an invalid attempt
                 del self._phase_sequence_tracking[player_name]
-                print(f"🔧 RACE_CONDITION_FIX: Cleared phase tracking for {player_name} after rejection")
             
             # Log the rejection for debugging
             game_state = self._get_game_state()
             if hasattr(game_state, 'players'):
                 for player in game_state.players:
                     if player.name == player_name:
-                        print(f"🚫 BOT_VALIDATION_FIX: Bot {player_name} hand size after rejection: {len(player.hand)}")
                         break
     
     async def _handle_action_accepted(self, data: dict):
@@ -935,7 +864,7 @@ class GameBotHandler:
             # 2. Advanced to next player
             # 3. Broadcast the play event
             # 4. Will handle piece removal during turn completion
-            print(f"✅ BOT_VALIDATION_FIX: Bot {player_name} play accepted - state machine handling all updates")
+            pass
     
     async def _handle_action_failed(self, data: dict):
         """Handle notification that a bot action failed during processing"""
@@ -944,8 +873,7 @@ class GameBotHandler:
         error = data.get("error", "Unknown error")
         is_bot = data.get("is_bot", False)
         
-        print(f"💥 BOT_VALIDATION_FIX: Action {action_type} from {player_name} FAILED: {error}")
         
         if is_bot:
             # For failed bot actions, similar to rejection - prevent downstream processing
-            print(f"💥 BOT_VALIDATION_FIX: Bot {player_name} action failed - preventing inconsistent state")
+            pass
