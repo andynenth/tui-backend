@@ -166,6 +166,7 @@ export interface GameState {
   // Turn phase
   canPlayAnyCount?: boolean;
   selectedPlayValue?: number;
+  animationPending?: boolean;
   
   // Scoring phase
   playersWithScores?: any[];

@@ -846,6 +846,51 @@ async def websocket_endpoint(websocket: WebSocket, room_id: str):
                             "data": {"message": "Failed to process redeal decline"}
                         })
 
+                elif event_name == "animation_complete":
+                    # Handle animation complete signal from frontend
+                    player_name = event_data.get("player_name")
+                    
+                    if not player_name:
+                        await registered_ws.send_json({
+                            "event": "error",
+                            "data": {"message": "Player name required"}
+                        })
+                        continue
+                        
+                    try:
+                        room = room_manager.get_room(room_id)
+                        if not room or not room.game_state_machine:
+                            await registered_ws.send_json({
+                                "event": "error",
+                                "data": {"message": "Game not found"}
+                            })
+                            continue
+                            
+                        # Create GameAction for animation complete
+                        from engine.state_machine.core import GameAction, ActionType
+                        action = GameAction(
+                            player_name=player_name,
+                            action_type=ActionType.ANIMATION_COMPLETE,
+                            payload={}
+                        )
+                        
+                        print(f"🎯 WS_ANIMATION_DEBUG: Processing animation_complete from {player_name}")
+                        result = await room.game_state_machine.handle_action(action)
+                        
+                        if result:
+                            print(f"✅ Animation complete processed: {result}")
+                        else:
+                            print(f"❌ Animation complete failed")
+                            
+                    except Exception as e:
+                        print(f"❌ Animation complete error: {e}")
+                        import traceback
+                        traceback.print_exc()
+                        await registered_ws.send_json({
+                            "event": "error",
+                            "data": {"message": "Failed to process animation complete"}
+                        })
+
                 elif event_name == "player_ready":
                     # Handle player ready (used in multiple phases)
                     player_name = event_data.get("player_name")

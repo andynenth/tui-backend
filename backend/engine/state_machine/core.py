@@ -35,6 +35,7 @@ class ActionType(str, Enum):
 
     # Turn phase actions
     PLAY_PIECES = "play_pieces"  # Play 1-6 pieces
+    ANIMATION_COMPLETE = "animation_complete"  # Frontend signals animation complete
 
     # General actions (any phase)
     PLAYER_DISCONNECT = "player_disconnect"

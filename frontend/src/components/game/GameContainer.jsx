@@ -154,6 +154,7 @@ export function GameContainer({ roomId, onNavigateToLobby }) {
       playType: playType,
       declarationData: gameState.declarations || {},
       playerHandSizes: playerHandSizes,
+      animationPending: gameState.animationPending || false,
       
       // State calculated by backend
       isMyTurn: gameState.isMyTurn || false,
@@ -161,7 +162,8 @@ export function GameContainer({ roomId, onNavigateToLobby }) {
       
       // Actions
       onPlayPieces: gameActions.playPieces,
-      onPass: gameActions.pass
+      onPass: gameActions.pass,
+      onAnimationComplete: gameActions.sendAnimationComplete
     };
   }, [gameState, gameActions]);
 
