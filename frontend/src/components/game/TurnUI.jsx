@@ -29,6 +29,7 @@ export function TurnUI({
   playType = '',
   declarationData = {},
   playerHandSizes = {},
+  animationPending = false,
   
   // State flags
   isMyTurn = false,
@@ -36,7 +37,8 @@ export function TurnUI({
   
   // Action props
   onPlayPieces,
-  onPass
+  onPass,
+  onAnimationComplete
 }) {
   // Build player pieces from turn plays
   const playerPieces = {};
@@ -89,8 +91,10 @@ export function TurnUI({
       playType={currentPlayType}
       playerStats={playerStats}
       playerHandSizes={playerHandSizes}
+      animationPending={animationPending}
       onPlayPieces={onPlayPieces}
       onPass={onPass}
+      onAnimationComplete={onAnimationComplete}
     />
   );
 }
@@ -110,6 +114,7 @@ TurnUI.propTypes = {
   playType: PropTypes.string,
   declarationData: PropTypes.object,
   playerHandSizes: PropTypes.object,
+  animationPending: PropTypes.bool,
   
   // State flags
   isMyTurn: PropTypes.bool,
@@ -117,7 +122,8 @@ TurnUI.propTypes = {
   
   // Actions
   onPlayPieces: PropTypes.func,
-  onPass: PropTypes.func
+  onPass: PropTypes.func,
+  onAnimationComplete: PropTypes.func
 };
 
 export default TurnUI;

@@ -215,6 +215,21 @@ export class GameService extends EventTarget {
     this.sendAction('start_next_round', {});
   }
 
+  /**
+   * Send animation complete signal (from turn phase)
+   */
+  sendAnimationComplete(): void {
+    if (!this.state.roomId || !this.state.playerName) {
+      console.warn('Cannot send animation complete: not connected to room');
+      return;
+    }
+    
+    // Send using the pattern that sendAction uses
+    this.sendAction('animation_complete', {
+      player_name: this.state.playerName
+    });
+  }
+
 
   // ===== STATE MANAGEMENT =====
 
@@ -646,6 +661,12 @@ export class GameService extends EventTarget {
           if (phaseData.required_piece_count !== undefined) {
             newState.requiredPieceCount = phaseData.required_piece_count;
             console.log(`🎯 REQUIRED_COUNT_FIX: Set requiredPieceCount to ${phaseData.required_piece_count} from backend phase_data`);
+          }
+          
+          // Handle animation pending flag
+          if (phaseData.animation_pending !== undefined) {
+            newState.animationPending = phaseData.animation_pending;
+            console.log(`🎯 ANIMATION_DEBUG: Animation pending: ${phaseData.animation_pending}`);
           }
           
           // 🎯 ROUND/TURN TRACKING DEBUG: Log comprehensive turn state

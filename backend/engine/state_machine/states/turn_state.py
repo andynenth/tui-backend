@@ -34,6 +34,7 @@ class TurnState(GameState):
         super().__init__(state_machine)
         self.allowed_actions = {
             ActionType.PLAY_PIECES,
+            ActionType.ANIMATION_COMPLETE,
             ActionType.PLAYER_DISCONNECT,
             ActionType.PLAYER_RECONNECT,
             ActionType.TIMEOUT,
@@ -51,6 +52,7 @@ class TurnState(GameState):
             None  # Cache to avoid duplicate resolve_turn calls
         )
         self._last_validation_error: Optional[str] = None  # Store validation error messages
+        self.pending_completion: bool = False  # Track if waiting for animation complete
 
     async def _setup_phase(self) -> None:
         """Initialize turn phase"""
@@ -88,6 +90,10 @@ class TurnState(GameState):
         """Validate play pieces action"""
         if action.action_type == ActionType.PLAY_PIECES:
             return await self._validate_play_pieces(action)
+        
+        if action.action_type == ActionType.ANIMATION_COMPLETE:
+            # Animation complete is valid only when pending completion
+            return self.pending_completion
 
         # Other actions (disconnect, reconnect, timeout) are always valid
         return True
@@ -101,6 +107,8 @@ class TurnState(GameState):
             result = await self._handle_play_pieces(action)
             print(f"🎯 TURN_STATE_DEBUG: Play pieces result: {result}")
             return result
+        elif action.action_type == ActionType.ANIMATION_COMPLETE:
+            return await self._handle_animation_complete(action)
         elif action.action_type == ActionType.PLAYER_DISCONNECT:
             return await self._handle_player_disconnect(action)
         elif action.action_type == ActionType.PLAYER_RECONNECT:
@@ -385,26 +393,20 @@ class TurnState(GameState):
         print(
             f"🎯 TURN_STATE_DEBUG: After advancing - current_player_index: {self.current_player_index}"
         )
-        print(f"🎯 TURN_STATE_DEBUG: Next player: {self._get_current_player()}")
-
+        
+        # Check if all players have played
+        is_turn_complete = self.current_player_index >= len(self.turn_order)
+        
         current_round = getattr(self.state_machine.game, "round_number", 1)
         turn_number = getattr(self.state_machine.game, "turn_number", 0)
-        print(
-            f"🎯 TURN_STATE_DEBUG: Round {current_round}, Turn {turn_number} - {action.player_name} played, next: {self._get_current_player()}"
-        )
-
-        # Check if turn is complete
-        if self.current_player_index >= len(self.turn_order):
-            print(f"🎯 TURN_STATE_DEBUG: Turn complete! Calling _complete_turn()")
-            await self._complete_turn()
-
-        # 🚀 ENTERPRISE: Use automatic broadcasting system
+        
+        # 🚀 ENTERPRISE: Always broadcast state INCLUDING last player's pieces
         game = self.state_machine.game
         current_turn_number = game.turn_number
-
-        next_player = self._get_current_player()
+        
+        next_player = self._get_current_player() if not is_turn_complete else None
         print(
-            f"🎯 UPDATE_DEBUG: About to update phase data with current_player: {next_player}, required_piece_count: {self.required_piece_count}"
+            f"🎯 UPDATE_DEBUG: About to update phase data with current_player: {next_player}, animation_pending: {is_turn_complete}"
         )
 
         await self.update_phase_data(
@@ -412,11 +414,18 @@ class TurnState(GameState):
                 "current_player": next_player,
                 "required_piece_count": self.required_piece_count,
                 "turn_plays": self.turn_plays.copy(),
-                "turn_complete": self.turn_complete,
+                "animation_pending": is_turn_complete,  # Signal frontend to start animation
+                "turn_complete": False,  # Keep false until animation completes
                 "current_turn_number": current_turn_number,
             },
             f"Player {action.player_name} played {piece_count} pieces",
         )
+        
+        # Mark pending completion but don't transition yet
+        if is_turn_complete:
+            print(f"🎯 TURN_STATE_DEBUG: Turn complete! Marking pending_completion=True")
+            self.pending_completion = True
+            # Don't call _complete_turn() here - wait for frontend signal
 
         print(
             f"🎯 UPDATE_DEBUG: Phase data updated - next_player should be: {next_player}"
@@ -1014,3 +1023,15 @@ class TurnState(GameState):
         
         # Force end game
         await self.state_machine.force_end_game("critical_error")
+    
+    async def _handle_animation_complete(self, action: GameAction) -> Dict[str, Any]:
+        """Handle animation complete signal from frontend"""
+        print(f"🎯 TURN_STATE_DEBUG: Animation complete received from {action.player_name}")
+        
+        if self.pending_completion:
+            print(f"🎯 TURN_STATE_DEBUG: Pending completion found, calling _complete_turn()")
+            self.pending_completion = False
+            await self._complete_turn()
+            return {"status": "turn_completed", "message": "Turn completed after animation"}
+        
+        return {"status": "no_pending_completion", "message": "No pending turn completion"}

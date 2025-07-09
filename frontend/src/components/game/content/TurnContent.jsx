@@ -27,13 +27,16 @@ const TurnContent = ({
   playType = '', // e.g., "Pair", "Straight", "Five of a Kind"
   playerStats = {}, // { playerName: { pilesWon: 0, declared: 0 } }
   playerHandSizes = {}, // { playerName: handSize }
+  animationPending = false, // New prop to signal animation should start
   onPlayPieces,
-  onPass
+  onPass,
+  onAnimationComplete // New callback prop
 }) => {
   const [selectedPieces, setSelectedPieces] = useState([]);
   const [showConfirmPanel, setShowConfirmPanel] = useState(false);
   const [flippedPieces, setFlippedPieces] = useState(new Set());
   const hasFlippedThisTurn = useRef(false);
+  const hasTriggeredAnimation = useRef(false);
   
   // Check if it's my turn
   const isMyTurn = currentPlayer === myName;
@@ -57,37 +60,43 @@ const TurnContent = ({
     setShowConfirmPanel(selectedPieces.length > 0 && isMyTurn);
   }, [selectedPieces, isMyTurn]);
   
-  // Last-player detection and flip animation
+  // Watch for animation_pending flag from backend
   useEffect(() => {
-    // Count how many players have played
-    const playedCount = Object.keys(playerPieces).filter(
-      player => playerPieces[player]?.length > 0
-    ).length;
-    
-    // Check if this is the final play
-    const isLastPlay = playedCount === players.length && !hasFlippedThisTurn.current;
-    
-    if (isLastPlay) {
-      hasFlippedThisTurn.current = true;
+    if (animationPending && !hasTriggeredAnimation.current) {
+      hasTriggeredAnimation.current = true;
       
-      // Start flip timer after last player plays
-      const timer = setTimeout(() => {
-        const allPieceIds = new Set();
-        Object.entries(playerPieces).forEach(([player, pieces]) => {
-          pieces.forEach((_, idx) => {
-            allPieceIds.add(`${player}-${idx}`);
-          });
+      // Collect all piece IDs for animation
+      const allPieceIds = new Set();
+      Object.entries(playerPieces).forEach(([player, pieces]) => {
+        pieces.forEach((_, idx) => {
+          allPieceIds.add(`${player}-${idx}`);
         });
-        setFlippedPieces(allPieceIds);
-      }, 800);
+      });
       
-      return () => clearTimeout(timer);
+      // Start flip animation sequence
+      const delayTimer = setTimeout(() => {
+        // Trigger flip animation
+        setFlippedPieces(allPieceIds);
+        
+        // Wait for animation to complete
+        const animationTimer = setTimeout(() => {
+          // Send completion signal to backend
+          if (onAnimationComplete) {
+            onAnimationComplete();
+          }
+        }, 600); // CSS animation duration
+        
+        return () => clearTimeout(animationTimer);
+      }, 800); // Initial delay before flip
+      
+      return () => clearTimeout(delayTimer);
     }
-  }, [playerPieces, players.length]);
+  }, [animationPending, playerPieces, onAnimationComplete]);
   
-  // Reset flip state when turn changes
+  // Reset animation state when turn changes
   useEffect(() => {
     hasFlippedThisTurn.current = false;
+    hasTriggeredAnimation.current = false;
     setFlippedPieces(new Set());
   }, [turnNumber]);
   
@@ -298,8 +307,10 @@ TurnContent.propTypes = {
   playType: PropTypes.string,
   playerStats: PropTypes.object,
   playerHandSizes: PropTypes.object,
+  animationPending: PropTypes.bool,
   onPlayPieces: PropTypes.func,
-  onPass: PropTypes.func
+  onPass: PropTypes.func,
+  onAnimationComplete: PropTypes.func
 };
 
 export default TurnContent;

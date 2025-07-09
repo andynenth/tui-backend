@@ -34,6 +34,7 @@ export interface GameActions {
   
   // Turn phase actions
   playPieces: (indices: number[]) => Promise<void>;
+  sendAnimationComplete: () => void;
   
   // Scoring phase actions
   startNextRound: () => Promise<void>;
@@ -272,6 +273,12 @@ export function useGameActions(config: GameActionsConfig = {}): GameActions {
     }
   }, [logAction, validateActionState, gameState.gameOver, handleActionError, throwOnError]);
 
+  // Animation Actions
+  const sendAnimationComplete = useCallback(() => {
+    logAction('sendAnimationComplete');
+    gameService.sendAnimationComplete();
+  }, [logAction]);
+
   // Recovery Actions
   const triggerRecovery = useCallback(async (errorType?: string): Promise<ErrorRecoveryResult> => {
     try {
@@ -314,6 +321,7 @@ export function useGameActions(config: GameActionsConfig = {}): GameActions {
     declineRedeal,
     makeDeclaration,
     playPieces,
+    sendAnimationComplete,
     startNextRound,
     triggerRecovery,
     emergencyReset,
@@ -326,6 +334,7 @@ export function useGameActions(config: GameActionsConfig = {}): GameActions {
     declineRedeal,
     makeDeclaration,
     playPieces,
+    sendAnimationComplete,
     startNextRound,
     triggerRecovery,
     emergencyReset,
