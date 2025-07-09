@@ -143,3 +143,42 @@ import { PieceTray } from '../shared';
 - Automatic piece selection state management
 - Staggered animation support
 - Responsive design
+
+### FooterTimer
+A countdown timer component that displays across game phases and executes a callback when complete.
+
+**Usage:**
+```jsx
+import { FooterTimer } from '../shared';
+
+// Inline countdown (turn results, scoring)
+<FooterTimer 
+  prefix="Continuing in"
+  onComplete={handleContinue}
+  variant="inline"
+/>
+
+// Fixed footer countdown (game over)
+<FooterTimer 
+  duration={10}
+  prefix="Returning to lobby in"
+  suffix="seconds..."
+  onComplete={returnToLobby}
+  variant="footer"
+/>
+```
+
+**Props:**
+- `duration` (number, optional) - Initial countdown value in seconds (default: 5)
+- `onComplete` (function) - Callback function when countdown reaches 0
+- `prefix` (string, optional) - Text to display before the countdown
+- `suffix` (string, optional) - Text to display after the countdown (default: "seconds")
+- `variant` (string, optional) - Display variant: 'inline' or 'footer' (default: 'inline')
+- `className` (string, optional) - Additional CSS classes
+
+**Features:**
+- Auto-starts countdown on mount
+- Inline variant for embedding in content
+- Footer variant with fixed positioning at bottom
+- Consistent styling across all game phases
+- Ensures proper navigation (e.g., return to lobby)

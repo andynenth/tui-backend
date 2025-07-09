@@ -1,0 +1,83 @@
+/* Footer Timer Component Styles */
+
+/* Base styles */
+.footer-timer {
+  font-size: 14px;
+  color: #6C757D;
+}
+
+/* Inline variant - for embedding in content */
+.footer-timer--inline {
+  display: inline;
+}
+
+.footer-timer--inline .footer-timer__text {
+  display: inline;
+}
+
+/* Footer variant - fixed at bottom */
+.footer-timer--footer {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 25; /* Same as piece-tray fixed positioning */
+  padding: 20px;
+  text-align: center;
+  background: 
+    linear-gradient(180deg, rgba(248, 249, 250, 0.9) 0%, rgba(233, 236, 239, 0.95) 100%),
+    radial-gradient(ellipse 100% 60% at 50% 0%, rgba(173, 181, 189, 0.2) 0%, transparent 100%);
+  border-top: 1px solid rgba(173, 181, 189, 0.2);
+}
+
+/* Top decoration line for footer variant */
+.footer-timer--footer::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 40px;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, #6C757D, transparent);
+}
+
+/* Text elements */
+.footer-timer__prefix {
+  color: #6C757D;
+}
+
+.footer-timer__count {
+  display: inline-block;
+  background: rgba(108, 117, 125, 0.1);
+  padding: 2px 8px;
+  border-radius: 6px;
+  font-weight: 600;
+  color: #495057;
+  margin: 0 4px;
+  min-width: 24px;
+  text-align: center;
+}
+
+.footer-timer__suffix {
+  color: #6C757D;
+}
+
+/* Animation for countdown change */
+.footer-timer__count {
+  transition: all 0.3s ease;
+}
+
+/* Responsive adjustments */
+@media (max-width: 480px) {
+  .footer-timer--footer {
+    padding: 16px;
+    font-size: 13px;
+  }
+}
+
+@media (max-height: 700px) {
+  .footer-timer--footer {
+    padding: 12px;
+  }
+}

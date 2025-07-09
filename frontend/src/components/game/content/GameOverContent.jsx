@@ -1,9 +1,9 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useCallback } from 'react';
 import PropTypes from 'prop-types';
+import { FooterTimer } from '../shared';
 import '../../../styles/components/game/gameover.css';
 
 const GameOverContent = ({ winner, finalScores, players, gameStats, onBackToLobby }) => {
-  const [countdown, setCountdown] = useState(10);
   
   // Create confetti particles
   const createConfetti = () => {
@@ -57,22 +57,6 @@ const GameOverContent = ({ winner, finalScores, players, gameStats, onBackToLobb
       onBackToLobby();
     }
   }, [onBackToLobby]);
-  
-  // Countdown timer
-  useEffect(() => {
-    const timer = setInterval(() => {
-      setCountdown(prev => {
-        if (prev <= 1) {
-          clearInterval(timer);
-          handleReturnToLobby();
-          return 0;
-        }
-        return prev - 1;
-      });
-    }, 1000);
-    
-    return () => clearInterval(timer);
-  }, [handleReturnToLobby]);
   
   // Format game duration
   const formatDuration = (seconds) => {
@@ -165,9 +149,13 @@ const GameOverContent = ({ winner, finalScores, players, gameStats, onBackToLobb
       </div>
       
       {/* Countdown */}
-      <div className="go-countdown">
-        Returning to lobby in <span className="go-countdown-time">{countdown}</span> seconds...
-      </div>
+      <FooterTimer
+        duration={10}
+        prefix="Returning to lobby in"
+        suffix="seconds..."
+        onComplete={handleReturnToLobby}
+        variant="footer"
+      />
     </div>
   );
 };
