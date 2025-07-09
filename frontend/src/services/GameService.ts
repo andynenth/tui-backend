@@ -579,7 +579,8 @@ export class GameService extends EventTarget {
         name: playerName, // Use the key as the name
         is_bot: playerData.is_bot || false,
         is_host: playerData.is_host || false,
-        zero_declares_in_a_row: playerData.zero_declares_in_a_row || 0
+        zero_declares_in_a_row: playerData.zero_declares_in_a_row || 0,
+        hand_size: playerData.hand_size || 0 // Include hand_size from backend
       }));
       console.log(`🔄 PHASE_CHANGE_DEBUG: Converted players array:`, newState.players);
       console.log(`🔄 PHASE_CHANGE_DEBUG: Sample player object:`, newState.players[0]);
