@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import PropTypes from 'prop-types';
 import { formatPlayType } from '../../../utils/playTypeFormatter';
+import { getPlayType } from '../../../utils/gameValidation';
 import { PlayerAvatar, GamePiece, PieceTray } from '../shared';
 
 /**
@@ -37,6 +38,16 @@ const TurnContent = ({
   
   // Check if it's my turn
   const isMyTurn = currentPlayer === myName;
+  
+  // Debug logging for turn-selection-count
+  console.log('🎯 TURN_SELECTION_COUNT_DEBUG:', {
+    requiredPieceCount,
+    isMyTurn,
+    currentPlayer,
+    myName,
+    selectedPiecesLength: selectedPieces.length,
+    showConfirmPanel
+  });
   
   // Get my player index
   const myIndex = players.findIndex(p => p.name === myName);
@@ -286,9 +297,86 @@ const TurnContent = ({
       <div className={`turn-confirm-panel ${showConfirmPanel ? 'show' : ''}`}>
         <div className="turn-selection-info">
           <div className="turn-selection-count">
-            {requiredPieceCount === 0 || requiredPieceCount === null
-              ? 'As starter, your play must be valid'
-              : `Must play exactly ${requiredPieceCount} piece${requiredPieceCount > 1 ? 's' : ''}`}
+            {(() => {
+              const isStarter = requiredPieceCount === 0 || requiredPieceCount === null;
+              
+              // Starter logic
+              if (isStarter) {
+                if (selectedPieces.length >= 2) {
+                  const playType = getPlayType(selectedPieces);
+                  const text = playType ? `✓ Valid ${playType}` : 'As starter, your play must be valid';
+                  
+                  console.log('🎯 TURN_SELECTION_TEXT (Starter 2+):', {
+                    isStarter: true,
+                    selectedCount: selectedPieces.length,
+                    playType,
+                    displayedText: text
+                  });
+                  
+                  return text;
+                }
+                
+                const text = 'As starter, your play must be valid';
+                console.log('🎯 TURN_SELECTION_TEXT (Starter default):', {
+                  isStarter: true,
+                  selectedCount: selectedPieces.length,
+                  displayedText: text
+                });
+                return text;
+              }
+              
+              // Follower logic
+              const defaultText = `Must play exactly ${requiredPieceCount} piece${requiredPieceCount > 1 ? 's' : ''}`;
+              
+              // Check if exact count is selected
+              if (selectedPieces.length === requiredPieceCount) {
+                // Single piece - always ready
+                if (requiredPieceCount === 1) {
+                  const text = '✓ Ready to play';
+                  console.log('🎯 TURN_SELECTION_TEXT (Single piece):', {
+                    isStarter: false,
+                    requiredPieceCount: 1,
+                    displayedText: text
+                  });
+                  return text;
+                }
+                
+                // Multiple pieces - check validity
+                const selectedPlayType = getPlayType(selectedPieces);
+                
+                if (selectedPlayType) {
+                  const text = `✓ Your ${selectedPlayType} can compete this turn`;
+                  console.log('🎯 TURN_SELECTION_TEXT (Valid follower):', {
+                    isStarter: false,
+                    requiredPieceCount,
+                    selectedPlayType,
+                    displayedText: text
+                  });
+                  return text;
+                } else {
+                  // Use the actual play type from the starter if available
+                  const starterPlayType = playType || 'combination';
+                  const text = `⚠️ Not a ${starterPlayType} - play to forfeit turn`;
+                  console.log('🎯 TURN_SELECTION_TEXT (Invalid follower):', {
+                    isStarter: false,
+                    requiredPieceCount,
+                    starterPlayType,
+                    actualPlayType: playType,
+                    displayedText: text
+                  });
+                  return text;
+                }
+              }
+              
+              // Default follower text
+              console.log('🎯 TURN_SELECTION_TEXT (Follower default):', {
+                isStarter: false,
+                requiredPieceCount,
+                selectedCount: selectedPieces.length,
+                displayedText: defaultText
+              });
+              return defaultText;
+            })()}
           </div>
         </div>
         
