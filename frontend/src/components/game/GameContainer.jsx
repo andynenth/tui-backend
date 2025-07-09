@@ -368,7 +368,6 @@ export function GameContainer({ roomId, onNavigateToLobby }) {
             );
             
           case 'turn_results':
-            console.log('🏆 GAMECONTAINER_DEBUG: Rendering TurnResultsUI with props:', turnResultsProps);
             return (
               <GameLayout 
                 phase="turn_results" 

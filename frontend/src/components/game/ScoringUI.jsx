@@ -35,15 +35,6 @@ export function ScoringUI({
   // Action props
   onStartNextRound
 }) {
-  // Debug logging
-  console.log('🏆 SCORING_UI_DEBUG: ScoringUI props received:');
-  console.log('  👥 players:', players);
-  console.log('  📊 roundScores:', roundScores);
-  console.log('  💯 totalScores:', totalScores);
-  console.log('  ⚗️ redealMultiplier:', redealMultiplier);
-  console.log('  🧮 playersWithScores:', playersWithScores);
-  console.log('  🏁 gameOver:', gameOver);
-  console.log('  🏆 winners:', winners);
   // Transform data for ScoringContent
   // Use backend-provided data or build from individual props
   const scores = playersWithScores.length > 0 
