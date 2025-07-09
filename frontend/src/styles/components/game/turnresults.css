@@ -223,14 +223,7 @@
   color: #6C757D;
 }
 
-.tr-countdown {
-  display: inline-block;
-  background: rgba(108, 117, 125, 0.1);
-  padding: 2px 8px;
-  border-radius: 6px;
-  font-weight: 600;
-  margin: 0 4px;
-}
+/* Countdown styles now handled by FooterTimer component */
 
 /* Animations */
 @keyframes fadeIn {

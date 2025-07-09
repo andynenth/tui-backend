@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import PropTypes from 'prop-types';
-import { PlayerAvatar, GamePiece } from '../shared';
+import { PlayerAvatar, GamePiece, FooterTimer } from '../shared';
 
 /**
  * TurnResultsContent Component
@@ -23,27 +23,6 @@ const TurnResultsContent = ({
   nextStarter = '',
   onContinue
 }) => {
-  const [countdown, setCountdown] = useState(5);
-  
-  // Auto-advance timer
-  useEffect(() => {
-    const timer = setInterval(() => {
-      setCountdown(prev => {
-        if (prev <= 1) {
-          clearInterval(timer);
-          if (onContinue) {
-            onContinue();
-          }
-          return 0;
-        }
-        return prev - 1;
-      });
-    }, 1000);
-    
-    return () => clearInterval(timer);
-  }, [onContinue]);
-  
-  
   // Get next phase text
   const getNextPhaseText = () => {
     if (isLastTurn) {
@@ -183,9 +162,11 @@ const TurnResultsContent = ({
       <div className="tr-next-turn-info">
         <div className="tr-next-starter">{nextPhase.starter}</div>
         <div className="tr-auto-continue">
-          {nextPhase.continue}
-          <span className="tr-countdown">{countdown}</span>
-          seconds
+          <FooterTimer
+            prefix={nextPhase.continue}
+            onComplete={onContinue}
+            variant="inline"
+          />
         </div>
       </div>
     </>

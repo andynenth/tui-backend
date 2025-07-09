@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import PropTypes from 'prop-types';
-import PlayerAvatar from '../shared/PlayerAvatar';
+import { PlayerAvatar, FooterTimer } from '../shared';
 
 /**
  * ScoringContent Component
@@ -22,26 +22,6 @@ const ScoringContent = ({
   myName = '',
   onContinue
 }) => {
-  const [countdown, setCountdown] = useState(5);
-  
-  // Auto-countdown timer
-  useEffect(() => {
-    const timer = setInterval(() => {
-      setCountdown(prev => {
-        if (prev <= 1) {
-          clearInterval(timer);
-          if (onContinue) {
-            onContinue();
-          }
-          return 0;
-        }
-        return prev - 1;
-      });
-    }, 1000);
-    
-    return () => clearInterval(timer);
-  }, [onContinue]);
-  
   // Get score class based on value
   const getScoreClass = (value) => {
     if (value > 0) return 'positive';
@@ -171,7 +151,11 @@ const ScoringContent = ({
         <div className="sc-continue-info">
           <div className="sc-next-round">Starting Round {roundNumber + 1}</div>
           <div className="sc-auto-continue">
-            Continuing in <span className="sc-countdown">{countdown}</span> seconds
+            <FooterTimer
+              prefix="Continuing in"
+              onComplete={onContinue}
+              variant="inline"
+            />
           </div>
         </div>
       </div>
