@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
-import { GamePiece } from '../shared';
+import { PieceTray } from '../shared';
 
 /**
  * PreparationContent Component
@@ -127,19 +127,12 @@ const PreparationContent = ({
       </div>
 
       {/* Hand section - ALWAYS visible at bottom like mockup */}
-      <div className="hand-section">
-        <div className="pieces-tray">
-          {myHand.map((piece, index) => (
-            <GamePiece
-              key={index}
-              piece={piece}
-              size="large"
-              showValue
-              animationDelay={index * 0.1}
-            />
-          ))}
-        </div>
-      </div>
+      <PieceTray
+        pieces={myHand}
+        variant="fixed"
+        showValues
+        animateAppear
+      />
     </>
   );
 };

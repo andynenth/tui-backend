@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
-import { PlayerAvatar, GamePiece } from '../shared';
+import { PlayerAvatar, PieceTray } from '../shared';
 
 /**
  * DeclarationContent Component
@@ -195,18 +195,10 @@ const DeclarationContent = ({
       </div>
       
       {/* Hand section - always visible at bottom */}
-      <div className="hand-section">
-        <div className="pieces-tray">
-          {myHand.map((piece, index) => (
-            <GamePiece
-              key={index}
-              piece={piece}
-              size="large"
-              showValue
-            />
-          ))}
-        </div>
-      </div>
+      <PieceTray
+        pieces={myHand}
+        showValues
+      />
     </>
   );
 };

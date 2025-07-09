@@ -84,3 +84,62 @@ import { GamePiece } from '../shared';
 - `default` - Standard piece display
 - `selectable` - Adds hover effects and selection state
 - `table` - Adds flip animation support for revealing pieces
+
+### PieceTray
+A unified component for displaying the player's hand of pieces with consistent styling across all game phases.
+
+**Usage:**
+```jsx
+import { PieceTray } from '../shared';
+
+// Basic tray
+<PieceTray 
+  pieces={myHand}
+  showValues
+/>
+
+// Active turn with selection
+<PieceTray 
+  pieces={myHand}
+  variant="active"
+  showValues
+  onPieceClick={handlePieceSelect}
+  selectedPieces={selectedPieces}
+/>
+
+// With animation
+<PieceTray 
+  pieces={myHand}
+  showValues
+  animateAppear
+/>
+
+// Fixed positioning
+<PieceTray 
+  pieces={myHand}
+  variant="fixed"
+  showValues
+  animateAppear
+/>
+```
+
+**Props:**
+- `pieces` (array) - Array of piece objects to display
+- `variant` (string, optional) - Display variant: 'default', 'active', or 'fixed' (default: 'default')
+- `onPieceClick` (function, optional) - Click handler for pieces (receives piece and index)
+- `selectedPieces` (array, optional) - Array of selected piece IDs for highlighting
+- `showValues` (boolean, optional) - Whether to show piece values (default: true)
+- `animateAppear` (boolean, optional) - Whether to animate pieces appearing (default: false)
+- `className` (string, optional) - Additional CSS classes for the container
+
+**Variants:**
+- `default` - Standard positioning within document flow
+- `active` - Highlighted with yellow border for player's turn
+- `fixed` - Absolutely positioned at bottom of container (useful for consistent positioning)
+
+**Features:**
+- Consistent 4-column grid layout
+- Active variant with yellow highlight for player's turn
+- Automatic piece selection state management
+- Staggered animation support
+- Responsive design
