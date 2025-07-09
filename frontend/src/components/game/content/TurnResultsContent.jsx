@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
-import { getPieceDisplay, getPieceColorClass } from '../../../utils/pieceMapping';
-import PlayerAvatar from '../shared/PlayerAvatar';
+import { PlayerAvatar, GamePiece } from '../shared';
 
 /**
  * TurnResultsContent Component
@@ -76,12 +75,12 @@ const TurnResultsContent = ({
               <div className="tr-play-label">Winning Play</div>
               <div className="tr-winning-pieces">
                 {winningPieces.map((piece, idx) => (
-                  <div 
+                  <GamePiece
                     key={idx}
-                    className={`tr-mini-piece ${getPieceColorClass(piece)}`}
-                  >
-                    {getPieceDisplay(piece)}
-                  </div>
+                    piece={piece}
+                    size="small"
+                    className="tr-mini-piece"
+                  />
                 ))}
               </div>
             </div>
@@ -113,12 +112,12 @@ const TurnResultsContent = ({
                       <span className="tr-pass-indicator">Passed</span>
                     ) : (
                       play.pieces.map((piece, idx) => (
-                        <div 
+                        <GamePiece
                           key={idx}
-                          className={`tr-played-piece ${getPieceColorClass(piece)}`}
-                        >
-                          {getPieceDisplay(piece)}
-                        </div>
+                          piece={piece}
+                          size="mini"
+                          className="tr-played-piece"
+                        />
                       ))
                     )}
                   </div>
@@ -165,12 +164,12 @@ const TurnResultsContent = ({
                     <span className="tr-pass-indicator">Passed</span>
                   ) : (
                     play.pieces.map((piece, idx) => (
-                      <div 
+                      <GamePiece
                         key={idx}
-                        className={`tr-played-piece ${getPieceColorClass(piece)}`}
-                      >
-                        {getPieceDisplay(piece)}
-                      </div>
+                        piece={piece}
+                        size="mini"
+                        className="tr-played-piece"
+                      />
                     ))
                   )}
                 </div>

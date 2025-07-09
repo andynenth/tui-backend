@@ -1,0 +1,103 @@
+import React from 'react';
+import PropTypes from 'prop-types';
+import { getPieceDisplay, getPieceColorClass, formatPieceValue } from '../../../utils/pieceMapping';
+
+/**
+ * GamePiece Component
+ * 
+ * A unified component for rendering game pieces across all phases.
+ * Supports different sizes, variants, and states.
+ * 
+ * @param {Object} piece - The piece data containing type, color, and value
+ * @param {string} size - Piece size: 'mini', 'small', 'medium', 'large' (default: 'medium')
+ * @param {string} variant - Display variant: 'default', 'table', 'selectable' (default: 'default')
+ * @param {boolean} selected - Whether the piece is selected (for selectable variant)
+ * @param {boolean} flipped - Whether the piece is flipped (for table variant)
+ * @param {boolean} showValue - Whether to show the piece value/points
+ * @param {function} onClick - Click handler function
+ * @param {string} className - Additional CSS classes
+ * @param {number} animationDelay - Animation delay in seconds for staggered effects
+ */
+const GamePiece = ({
+  piece,
+  size = 'medium',
+  variant = 'default',
+  selected = false,
+  flipped = false,
+  showValue = false,
+  onClick,
+  className = '',
+  animationDelay
+}) => {
+  // Build class names
+  const classes = [
+    'game-piece',
+    `game-piece--${size}`,
+    `game-piece--${variant}`,
+    getPieceColorClass(piece),
+    selected && 'selected',
+    flipped && 'flipped',
+    className
+  ].filter(Boolean).join(' ');
+
+  // Build style object
+  const style = {};
+  if (animationDelay !== undefined) {
+    style.animationDelay = `${animationDelay}s`;
+  }
+  if (variant === 'selectable' && onClick) {
+    style.cursor = 'pointer';
+  }
+
+  // Render table variant with flip animation
+  if (variant === 'table') {
+    return (
+      <div 
+        className={classes}
+        onClick={onClick}
+        style={style}
+      >
+        <div className="game-piece__face game-piece__face--back"></div>
+        <div className={`game-piece__face game-piece__face--front ${getPieceColorClass(piece)}`}>
+          {getPieceDisplay(piece)}
+        </div>
+      </div>
+    );
+  }
+
+  // Render default/selectable variants
+  return (
+    <div 
+      className={classes}
+      onClick={onClick}
+      style={style}
+    >
+      <div className="game-piece__character">
+        {getPieceDisplay(piece)}
+      </div>
+      {showValue && (
+        <div className="game-piece__value">
+          {formatPieceValue(piece)}
+        </div>
+      )}
+    </div>
+  );
+};
+
+GamePiece.propTypes = {
+  piece: PropTypes.shape({
+    type: PropTypes.string,
+    color: PropTypes.string,
+    value: PropTypes.number
+  }).isRequired,
+  size: PropTypes.oneOf(['mini', 'small', 'medium', 'large']),
+  variant: PropTypes.oneOf(['default', 'table', 'selectable']),
+  selected: PropTypes.bool,
+  flipped: PropTypes.bool,
+  showValue: PropTypes.bool,
+  onClick: PropTypes.func,
+  className: PropTypes.string,
+  animationDelay: PropTypes.number
+};
+
+export default GamePiece;
