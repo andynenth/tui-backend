@@ -176,29 +176,54 @@ export class GameService extends EventTarget {
    * Play pieces during turn phase
    */
   playPieces(indices: number[]): void {
-    this.validateAction('PLAY_PIECES', 'turn');
+    console.log('🎮 PLAY_DEBUG: playPieces called with indices:', indices);
+    console.log('🎮 PLAY_DEBUG: Current state:', {
+      phase: this.state.phase,
+      isMyTurn: this.state.isMyTurn,
+      currentPlayer: this.state.currentPlayer,
+      playerName: this.state.playerName,
+      requiredPieceCount: this.state.requiredPieceCount,
+      myHandLength: this.state.myHand.length
+    });
+    
+    try {
+      this.validateAction('PLAY_PIECES', 'turn');
+    } catch (error) {
+      console.error('🎮 PLAY_DEBUG: validateAction failed:', error.message);
+      throw error;
+    }
     
     if (!Array.isArray(indices) || indices.length === 0) {
+      console.error('🎮 PLAY_DEBUG: No pieces selected');
       throw new Error('Must select at least one piece to play');
     }
 
     if (indices.some(i => i < 0 || i >= this.state.myHand.length)) {
+      console.error('🎮 PLAY_DEBUG: Invalid piece indices');
       throw new Error('Invalid piece indices');
     }
 
     // Check if it's player's turn
     if (!this.state.isMyTurn) {
+      console.error('🎮 PLAY_DEBUG: Not player turn');
       throw new Error('Not your turn to play');
     }
 
     // Validate piece count matches required (if set)
     if (this.state.requiredPieceCount !== null && indices.length !== this.state.requiredPieceCount) {
+      console.error('🎮 PLAY_DEBUG: Wrong piece count');
       throw new Error(`Must play exactly ${this.state.requiredPieceCount} pieces`);
     }
 
     // Calculate total value of selected pieces
     const selectedPieces = indices.map(i => this.state.myHand[i]);
     const totalValue = selectedPieces.reduce((sum, piece) => sum + (piece.point || piece.value || 0), 0);
+
+    console.log('🎮 PLAY_DEBUG: Sending play action with:', {
+      piece_indices: indices,
+      player_name: this.state.playerName,
+      play_value: totalValue
+    });
 
     this.sendAction('play', { 
       piece_indices: indices, 
@@ -638,6 +663,11 @@ export class GameService extends EventTarget {
           break;
           
         case 'turn':
+          // Force phase to turn if we're receiving turn phase data but currently in turn_results
+          if (state.phase === 'turn_results') {
+            console.log('🔄 PHASE_FIX: Transitioning from turn_results to turn for new turn');
+          }
+          
           if (phaseData.turn_order) newState.turnOrder = phaseData.turn_order;
           if (phaseData.current_turn_starter) newState.currentTurnStarter = phaseData.current_turn_starter;
           if (phaseData.current_player) newState.currentPlayer = phaseData.current_player;
@@ -660,23 +690,29 @@ export class GameService extends EventTarget {
           console.log(`🎯 FRONTEND_TURN_STATE: Starter: ${starter}, Current: ${currentPlayer}, Required: ${requiredCount}, Plays: ${playsCount}`);
           
           // Convert backend's turn_plays dictionary to frontend's currentTurnPlays array
-          if (phaseData.turn_plays && typeof phaseData.turn_plays === 'object') {
-            newState.currentTurnPlays = Object.entries(phaseData.turn_plays).map(([playerName, playData]: [string, any]) => {
-              console.log(`🎯 TURN_PLAY_DEBUG: Player ${playerName}, playData:`, playData);
-              const playType = playData.type || playData.play_type || 'UNKNOWN';
-              console.log(`🎯 TURN_PLAY_DEBUG: Extracted playType: ${playType} from type: ${playData.type}, play_type: ${playData.play_type}`);
-              // A play is invalid if explicitly marked as invalid OR if play_type is 'INVALID'
-              const isValid = playData.is_valid !== false && playType !== 'INVALID';
-              
-              return {
-                player: playerName,
-                cards: playData.pieces || [],
-                isValid,
-                playType,
-                totalValue: playData.play_value || 0
-              };
-            });
-            console.log(`🎲 TURN_PLAYS_DEBUG: Converted ${Object.keys(phaseData.turn_plays).length} plays to currentTurnPlays:`, newState.currentTurnPlays);
+          if (phaseData.turn_plays !== undefined) {
+            // Check if turn_plays is an empty object or array
+            if (typeof phaseData.turn_plays === 'object' && Object.keys(phaseData.turn_plays).length === 0) {
+              console.log('🔄 TURN_PLAYS_DEBUG: Empty turn_plays received, clearing currentTurnPlays');
+              newState.currentTurnPlays = [];
+            } else if (phaseData.turn_plays && typeof phaseData.turn_plays === 'object') {
+              newState.currentTurnPlays = Object.entries(phaseData.turn_plays).map(([playerName, playData]: [string, any]) => {
+                console.log(`🎯 TURN_PLAY_DEBUG: Player ${playerName}, playData:`, playData);
+                const playType = playData.type || playData.play_type || 'UNKNOWN';
+                console.log(`🎯 TURN_PLAY_DEBUG: Extracted playType: ${playType} from type: ${playData.type}, play_type: ${playData.play_type}`);
+                // A play is invalid if explicitly marked as invalid OR if play_type is 'INVALID'
+                const isValid = playData.is_valid !== false && playType !== 'INVALID';
+                
+                return {
+                  player: playerName,
+                  cards: playData.pieces || [],
+                  isValid,
+                  playType,
+                  totalValue: playData.play_value || 0
+                };
+              });
+              console.log(`🎲 TURN_PLAYS_DEBUG: Converted ${Object.keys(phaseData.turn_plays).length} plays to currentTurnPlays:`, newState.currentTurnPlays);
+            }
           } else {
             newState.currentTurnPlays = phaseData.current_turn_plays || [];
           }
