@@ -71,7 +71,7 @@ function isThreeOfAKind(pieces) {
 }
 
 function isStraight(pieces) {
-    const names = pieces.map(p => p.name);
+    const names = pieces.map(p => p.type);
     const validGroups = [
         ["GENERAL", "ADVISOR", "ELEPHANT"],
         ["CHARIOT", "HORSE", "CANNON"]
@@ -88,7 +88,7 @@ function isFourOfAKind(pieces) {
 
 function isExtendedStraight(pieces) {
     const color = pieces[0].color;
-    const names = pieces.map(p => p.name);
+    const names = pieces.map(p => p.type);
     const counter = {};
     names.forEach(name => counter[name] = (counter[name] || 0) + 1);
     
@@ -112,7 +112,7 @@ function isFiveOfAKind(pieces) {
 
 function isExtendedStraight5(pieces) {
     const color = pieces[0].color;
-    const names = pieces.map(p => p.name);
+    const names = pieces.map(p => p.type);
     const counter = {};
     names.forEach(name => counter[name] = (counter[name] || 0) + 1);
     
@@ -130,7 +130,7 @@ function isDoubleStraight(pieces) {
     if (pieces.length !== 6) return false;
     
     const color = pieces[0].color;
-    const names = pieces.map(p => p.name);
+    const names = pieces.map(p => p.type);
     const counter = {};
     names.forEach(name => counter[name] = (counter[name] || 0) + 1);
     
