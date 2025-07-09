@@ -129,6 +129,9 @@ class GameState(ABC):
         This implements the automatic broadcasting guarantee from BENEFITS_GUARANTEE.md
         No manual broadcast calls needed - all phase data changes are automatically broadcast.
         """
+        import time as time_module
+        print(f"🎮 FLIP_ANIMATION_DEBUG: _auto_broadcast_phase_change called at {time_module.time()} for phase {self.phase_name.value}")
+        print(f"🎮 FLIP_ANIMATION_DEBUG: Reason: {reason}")
         try:
             # Import here to avoid circular imports
             try:
@@ -181,7 +184,9 @@ class GameState(ABC):
                 "timestamp": time.time()
             }
             
+            print(f"🎮 FLIP_ANIMATION_DEBUG: Broadcasting phase_change event at {time_module.time()}")
             await broadcast(room_id, "phase_change", broadcast_data)
+            print(f"🎮 FLIP_ANIMATION_DEBUG: phase_change event broadcast complete at {time_module.time()}")
             
             self.logger.info(f"📤 Auto-broadcast: phase_change to room {room_id} - {reason}")
             

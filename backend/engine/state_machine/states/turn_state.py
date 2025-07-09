@@ -393,50 +393,65 @@ class TurnState(GameState):
             f"🎯 TURN_STATE_DEBUG: Round {current_round}, Turn {turn_number} - {action.player_name} played, next: {self._get_current_player()}"
         )
 
-        # Check if turn is complete
-        if self.current_player_index >= len(self.turn_order):
-            print(f"🎯 TURN_STATE_DEBUG: Turn complete! Calling _complete_turn()")
-            await self._complete_turn()
-
-        # 🚀 ENTERPRISE: Use automatic broadcasting system
+        # 🚀 ENTERPRISE: Always broadcast the current state first
+        # This ensures every player's move (including the last player) is immediately visible to frontend
         game = self.state_machine.game
         current_turn_number = game.turn_number
-
-        next_player = self._get_current_player()
+        
+        # Determine if this is the last play of the turn
+        is_turn_complete = self.current_player_index >= len(self.turn_order)
+        next_player = None if is_turn_complete else self._get_current_player()
+        
         print(
-            f"🎯 UPDATE_DEBUG: About to update phase data with current_player: {next_player}, required_piece_count: {self.required_piece_count}"
+            f"🎯 UPDATE_DEBUG: Broadcasting play - turn_complete: {is_turn_complete}, next_player: {next_player}"
         )
 
+        # Always broadcast the updated state including all plays
         await self.update_phase_data(
             {
                 "current_player": next_player,
                 "required_piece_count": self.required_piece_count,
-                "turn_plays": self.turn_plays.copy(),
-                "turn_complete": self.turn_complete,
+                "turn_plays": self.turn_plays.copy(),  # This now includes the current player's play
+                "turn_complete": is_turn_complete,
                 "current_turn_number": current_turn_number,
             },
             f"Player {action.player_name} played {piece_count} pieces",
         )
 
         print(
-            f"🎯 UPDATE_DEBUG: Phase data updated - next_player should be: {next_player}"
+            f"🎯 UPDATE_DEBUG: Phase data broadcasted - all players should see the plays"
         )
 
-        # 🚀 ENTERPRISE: Enterprise architecture handles all broadcasting automatically via update_phase_data()
-        # Manual play event broadcasting removed to prevent bot race condition
+        # Check if turn is complete AFTER broadcasting
+        if is_turn_complete:
+            print(f"🎯 TURN_STATE_DEBUG: Turn complete! Calling _complete_turn()")
+            await self._complete_turn()
+            # _complete_turn() will handle turn completion broadcasting and delay
+            
+            # Return result for completed turn
+            result = {
+                "status": "play_accepted",
+                "player": action.player_name,
+                "pieces": pieces,
+                "piece_count": piece_count,
+                "required_count": self.required_piece_count,
+                "next_player": None,  # No next player - turn is complete
+                "turn_complete": True,
+            }
+            return result
 
-        # 🚀 ENTERPRISE: Bot triggering handled automatically by enterprise architecture via phase_change events
-        # Manual bot manager notification removed to prevent race condition (bots were triggered twice)
-
-        return {
+        # Return result for ongoing turn
+        result = {
             "status": "play_accepted",
             "player": action.player_name,
             "pieces": pieces,
             "piece_count": piece_count,
             "required_count": self.required_piece_count,
-            "next_player": self._get_current_player(),
-            "turn_complete": self.turn_complete,
+            "next_player": next_player,
+            "turn_complete": False,
         }
+        
+        return result
 
     async def _complete_turn(self) -> None:
         """Complete the current turn and determine winner"""
@@ -467,6 +482,18 @@ class TurnState(GameState):
         else:
             self.logger.info("🤝 No winner this turn")
             print(f"🎯 TURN_COMPLETE_DEBUG: No winner determined")
+
+        # 🎮 Add delay for frontend flip animation to complete
+        import time
+        delay_start = time.time()
+        self.logger.info("🎮 Waiting 5s for piece flip animation to complete...")
+        print(f"🎮 FLIP_ANIMATION_DEBUG: Starting 5s delay for flip animation at {delay_start}")
+        print("🎮 FLIP_ANIMATION_DEBUG: Current phase before delay:", self.phase_name.value)
+        await asyncio.sleep(5.0)  # Give frontend plenty of time for 800ms delay + 600ms animation
+        delay_end = time.time()
+        print(f"🎮 FLIP_ANIMATION_DEBUG: 5s delay completed at {delay_end}, elapsed: {delay_end - delay_start:.2f}s")
+        print("🎮 FLIP_ANIMATION_DEBUG: Current phase after delay:", self.phase_name.value)
+        print("🎮 FLIP_ANIMATION_DEBUG: Now broadcasting turn completion event")
 
         # 🚀 ENTERPRISE: Use automatic broadcasting for turn completion
         await self.update_phase_data(
@@ -881,6 +908,9 @@ class TurnState(GameState):
 
     async def _broadcast_turn_completion_enterprise(self):
         """🚀 ENTERPRISE: Broadcast turn completion using centralized system"""
+        import time
+        broadcast_time = time.time()
+        print(f"🎮 FLIP_ANIMATION_DEBUG: _broadcast_turn_completion_enterprise called at {broadcast_time}")
         try:
             game = self.state_machine.game
 
@@ -919,6 +949,7 @@ class TurnState(GameState):
             turn_number = game.turn_number
 
             # Use enterprise broadcasting system with full turn resolution data
+            print(f"🎮 FLIP_ANIMATION_DEBUG: About to broadcast turn_complete event at {time.time()}")
             await self.broadcast_custom_event(
                 "turn_complete",
                 {
@@ -934,6 +965,7 @@ class TurnState(GameState):
                 },
                 f"Turn {turn_number} completed - winner: {self.winner}",
             )
+            print(f"🎮 FLIP_ANIMATION_DEBUG: turn_complete event broadcasted at {time.time()}")
 
             self.logger.info(
                 f"🚀 Enterprise broadcast turn completion - winner: {self.winner}, turn piles awarded: {player_piles}"
