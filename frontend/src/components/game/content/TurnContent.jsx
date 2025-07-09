@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import PropTypes from 'prop-types';
 import { formatPlayType } from '../../../utils/playTypeFormatter';
-import { PlayerAvatar, GamePiece } from '../shared';
+import { PlayerAvatar, GamePiece, PieceTray } from '../shared';
 
 /**
  * TurnContent Component
@@ -274,26 +274,13 @@ const TurnContent = ({
       </div>
       
       {/* Hand section - always visible at bottom */}
-      <div className={`hand-section ${isMyTurn ? 'active-turn' : ''}`}>
-        <div className="pieces-tray">
-          {myHand.map((piece, index) => {
-            const pieceId = `${index}-${piece.type}-${piece.color}`;
-            const isSelected = selectedPieces.some(p => p.id === pieceId);
-            
-            return (
-              <GamePiece
-                key={index}
-                piece={piece}
-                size="large"
-                variant="selectable"
-                selected={isSelected}
-                showValue
-                onClick={isMyTurn ? () => handlePieceSelect(piece, index) : null}
-              />
-            );
-          })}
-        </div>
-      </div>
+      <PieceTray
+        pieces={myHand}
+        variant={isMyTurn ? 'active' : 'default'}
+        showValues
+        onPieceClick={isMyTurn ? handlePieceSelect : null}
+        selectedPieces={selectedPieces}
+      />
     </>
   );
 };

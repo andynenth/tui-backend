@@ -8,6 +8,8 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
+  /* Add padding bottom to prevent content overlap with fixed tray */
+  padding-bottom: 240px; /* Height of piece tray + some margin */
 }
 
 /* Dealing Animation Container */
@@ -223,36 +225,4 @@
   color: #6C757D;
 }
 
-/* Player Hand Section */
-.hand-section {
-  background: 
-    linear-gradient(180deg, #F8F9FA 0%, #E9ECEF 100%),
-    radial-gradient(ellipse 100% 60% at 50% 0%, rgba(173, 181, 189, 0.2) 0%, transparent 100%);
-  padding: 20px;
-  border-top: 1px solid rgba(173, 181, 189, 0.2);
-  position: relative;
-  z-index: 20;
-}
-
-.hand-section::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 40px;
-  height: 2px;
-  background: linear-gradient(90deg, transparent, #6C757D, transparent);
-}
-
-.pieces-tray {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 12px;
-  max-width: 350px;
-  margin: 0 auto;
-  min-height: 169px; /* Ensures space for 2 rows: 2 * 62px (piece height) + 12px (gap) + some padding */
-  align-content: start;
-}
-
-/* Piece styles now handled by GamePiece component */
+/* Hand section styles now handled by PieceTray component */

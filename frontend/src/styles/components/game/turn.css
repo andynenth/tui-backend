@@ -417,7 +417,7 @@
 /* Confirm Selection Panel - Sliding Tray */
 .turn-confirm-panel {
   position: absolute;
-  bottom: 220px;
+  bottom: 190px;
   left: 0;
   right: 0;
   background: 
@@ -505,16 +505,7 @@
 }
 
 
-/* Hand section enhancements */
-.hand-section.active-turn {
-  border-top: 2px solid rgba(255, 193, 7, 0.4);
-  background: linear-gradient(180deg, rgba(255, 248, 225, 1) 0%, #F8F9FA 100%);
-  box-shadow: 
-    inset 0 2px 0 rgba(255, 193, 7, 0.2),
-    0 -2px 12px rgba(255, 193, 7, 0.1);
-}
-
-/* Piece selected effect now handled by GamePiece component */
+/* Hand section styles now handled by PieceTray component */
 
 /* Responsive adjustments */
 @media (max-height: 700px) {

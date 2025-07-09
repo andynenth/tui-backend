@@ -1,0 +1,84 @@
+/* Piece Tray Component Styles */
+
+/* Base container styles */
+.piece-tray {
+  background: 
+    linear-gradient(180deg, #F8F9FA 0%, #E9ECEF 100%),
+    radial-gradient(ellipse 100% 60% at 50% 0%, rgba(173, 181, 189, 0.2) 0%, transparent 100%);
+  padding: 20px;
+  border-top: 1px solid rgba(173, 181, 189, 0.2);
+  position: relative;
+  z-index: 20;
+  transition: all 0.3s ease;
+}
+
+/* Top decoration line */
+.piece-tray::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 40px;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, #6C757D, transparent);
+}
+
+/* Active variant - highlighted when it's player's turn */
+.piece-tray--active {
+  border-top: 2px solid rgba(255, 193, 7, 0.4);
+  background: 
+    linear-gradient(180deg, rgba(255, 248, 225, 1) 0%, #F8F9FA 100%),
+    radial-gradient(ellipse 100% 60% at 50% 0%, rgba(255, 193, 7, 0.1) 0%, transparent 100%);
+  box-shadow: 
+    inset 0 2px 0 rgba(255, 193, 7, 0.2),
+    0 -2px 12px rgba(255, 193, 7, 0.1);
+}
+
+/* Active variant decoration line */
+.piece-tray--active::before {
+  background: linear-gradient(90deg, transparent, #FFC107, transparent);
+  height: 3px;
+}
+
+/* Fixed positioning variant - pins tray to bottom */
+.piece-tray--fixed {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 25; /* Higher than overlay to ensure it stays on top */
+}
+
+/* Grid layout for pieces */
+.piece-tray__grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+  max-width: 350px;
+  margin: 0 auto;
+  min-height: 136px; /* Ensures space for 2 rows: 2 * 62px (piece height) + 12px (gap) + some padding */
+  align-content: start;
+}
+
+/* Responsive adjustments */
+@media (max-width: 480px) {
+  .piece-tray {
+    padding: 16px;
+  }
+  
+  .piece-tray__grid {
+    gap: 8px;
+    max-width: 300px;
+  }
+}
+
+@media (max-height: 700px) {
+  .piece-tray {
+    padding: 12px;
+  }
+  
+  .piece-tray__grid {
+    min-height: 140px;
+  }
+}
