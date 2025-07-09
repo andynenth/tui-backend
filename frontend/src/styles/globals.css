@@ -9,6 +9,7 @@
 @import './components/waitingui.css';
 @import './components/game/_variables.css';
 @import './components/game/_animations.css';
+@import './components/game/shared/player-avatar.css';
 @import './components/game/gamelayout.css';
 @import './components/game/preparation.css';
 @import './components/game/declaration.css';

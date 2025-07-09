@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { getPieceDisplay, getPieceColorClass, formatPieceValue } from '../../../utils/pieceMapping';
+import PlayerAvatar from '../shared/PlayerAvatar';
 
 /**
  * DeclarationContent Component
@@ -110,10 +111,6 @@ const DeclarationContent = ({
     setSelectedValue(null);
   };
   
-  // Get player avatar initial
-  const getPlayerInitial = (name) => {
-    return name.charAt(0).toUpperCase();
-  };
   
   return (
     <>
@@ -136,9 +133,11 @@ const DeclarationContent = ({
                 key={player.name}
                 className={`dec-player-row ${isCurrentTurn ? 'current-turn' : ''} ${isDeclared ? 'declared' : ''}`}
               >
-                <div className="dec-player-avatar">
-                  {getPlayerInitial(player.name)}
-                </div>
+                <PlayerAvatar 
+                  name={player.name}
+                  className="dec-player-avatar"
+                  size="large"
+                />
                 <div className="dec-player-info">
                   <div className="dec-player-name">
                     {player.name}{player.name === myName ? ' (You)' : ''}
