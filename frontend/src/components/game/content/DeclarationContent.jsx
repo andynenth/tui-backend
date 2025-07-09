@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
-import { getPieceDisplay, getPieceColorClass, formatPieceValue } from '../../../utils/pieceMapping';
-import PlayerAvatar from '../shared/PlayerAvatar';
+import { PlayerAvatar, GamePiece } from '../shared';
 
 /**
  * DeclarationContent Component
@@ -199,17 +198,12 @@ const DeclarationContent = ({
       <div className="hand-section">
         <div className="pieces-tray">
           {myHand.map((piece, index) => (
-            <div 
+            <GamePiece
               key={index}
-              className={`piece ${getPieceColorClass(piece)}`}
-            >
-              <div className="piece-character">
-                {getPieceDisplay(piece)}
-              </div>
-              <div className="piece-points">
-                {formatPieceValue(piece)}
-              </div>
-            </div>
+              piece={piece}
+              size="large"
+              showValue
+            />
           ))}
         </div>
       </div>

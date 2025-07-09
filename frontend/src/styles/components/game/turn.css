@@ -275,72 +275,7 @@
   grid-template-rows: repeat(3, 1fr);
 }
 
-/* Table pieces with flip animation */
-.turn-table-piece {
-  width: 22px;
-  height: 22px;
-  border-radius: 50%;
-  position: relative;
-  transform-style: preserve-3d;
-  transition: transform 0.6s ease;
-  cursor: pointer;
-}
-
-.turn-table-piece.flipped {
-  transform: rotateY(180deg);
-}
-
-.turn-table-piece-face {
-  position: absolute;
-  width: 100%;
-  height: 100%;
-  border-radius: 50%;
-  background: 
-    linear-gradient(145deg, #FFFFFF 0%, #F8F9FA 100%),
-    radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.8) 0%, transparent 60%);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 10px;
-  font-weight: bold;
-  border: 1px solid rgba(173, 181, 189, 0.3);
-  font-family: 'SimSun', '宋体', serif;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
-  backface-visibility: hidden;
-}
-
-.turn-table-piece-back {
-  background: 
-    linear-gradient(145deg, #FFFFFF 0%, #F8F9FA 100%),
-    radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.8) 0%, transparent 60%);
-  border: 1px solid rgba(173, 181, 189, 0.7);
-}
-
-.turn-table-piece-back::after {
-  content: '?';
-  color: #6C757D;
-  font-size: 12px;
-  font-weight: bold;
-}
-
-.turn-table-piece-front {
-  transform: rotateY(180deg);
-}
-
-.turn-table-piece-front.red {
-  color: #DC3545;
-  border-color: rgba(220, 53, 69, 0.4);
-}
-
-.turn-table-piece-front.black {
-  color: #495057;
-  border-color: rgba(73, 80, 87, 0.4);
-}
-
-.turn-table-piece.flipped:hover {
-  transform: rotateY(180deg) scale(1.1);
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.12);
-}
+/* Table piece styles now handled by GamePiece component */
 
 /* Player summary bars - Edge positioned, table-center aligned */
 .turn-player-summary-bar {
@@ -579,17 +514,7 @@
     0 -2px 12px rgba(255, 193, 7, 0.1);
 }
 
-/* Piece selected effect */
-.piece.selected {
-  border-color: rgba(40, 167, 69, 0.6);
-  background: 
-    linear-gradient(145deg, #F0FFF4 0%, #F8FFF8 100%),
-    radial-gradient(circle at 30% 30%, rgba(40, 167, 69, 0.1) 0%, transparent 60%);
-  transform: translateY(-3px) scale(1.1);
-  box-shadow: 
-    0 8px 20px rgba(40, 167, 69, 0.2),
-    inset 0 1px 0 rgba(255, 255, 255, 1);
-}
+/* Piece selected effect now handled by GamePiece component */
 
 /* Responsive adjustments */
 @media (max-height: 700px) {

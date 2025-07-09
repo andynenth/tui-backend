@@ -1,8 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import PropTypes from 'prop-types';
-import { getPieceDisplay, getPieceColorClass, formatPieceValue } from '../../../utils/pieceMapping';
 import { formatPlayType } from '../../../utils/playTypeFormatter';
-import PlayerAvatar from '../shared/PlayerAvatar';
+import { PlayerAvatar, GamePiece } from '../shared';
 
 /**
  * TurnContent Component
@@ -202,15 +201,13 @@ const TurnContent = ({
                     const isFlipped = flippedPieces.has(pieceId);
                     
                     return (
-                      <div 
+                      <GamePiece
                         key={idx}
-                        className={`turn-table-piece ${isFlipped ? 'flipped' : ''}`}
-                      >
-                        <div className="turn-table-piece-face turn-table-piece-back"></div>
-                        <div className={`turn-table-piece-face turn-table-piece-front ${getPieceColorClass(piece)}`}>
-                          {getPieceDisplay(piece)}
-                        </div>
-                      </div>
+                        piece={piece}
+                        size="small"
+                        variant="table"
+                        flipped={isFlipped}
+                      />
                     );
                   })}
                 </div>
@@ -284,21 +281,15 @@ const TurnContent = ({
             const isSelected = selectedPieces.some(p => p.id === pieceId);
             
             return (
-              <div 
+              <GamePiece
                 key={index}
-                className={`piece ${getPieceColorClass(piece)} ${isSelected ? 'selected' : ''}`}
-                onClick={() => handlePieceSelect(piece, index)}
-                style={{
-                  cursor: isMyTurn ? 'pointer' : 'default'
-                }}
-              >
-                <div className="piece-character">
-                  {getPieceDisplay(piece)}
-                </div>
-                <div className="piece-points">
-                  {formatPieceValue(piece)}
-                </div>
-              </div>
+                piece={piece}
+                size="large"
+                variant="selectable"
+                selected={isSelected}
+                showValue
+                onClick={isMyTurn ? () => handlePieceSelect(piece, index) : null}
+              />
             );
           })}
         </div>
