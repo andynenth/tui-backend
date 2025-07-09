@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { getPieceDisplay, getPieceColorClass } from '../../../utils/pieceMapping';
+import PlayerAvatar from '../shared/PlayerAvatar';
 
 /**
  * TurnResultsContent Component
@@ -43,10 +44,6 @@ const TurnResultsContent = ({
     return () => clearInterval(timer);
   }, [onContinue]);
   
-  // Get player initial
-  const getPlayerInitial = (name) => {
-    return name.charAt(0).toUpperCase();
-  };
   
   // Get next phase text
   const getNextPhaseText = () => {
@@ -101,9 +98,11 @@ const TurnResultsContent = ({
               // No winner provided, showing all players
               return playerPlays.map((play, index) => (
                 <div key={play.playerName} className="tr-player-row">
-                  <div className="tr-player-avatar">
-                    {getPlayerInitial(play.playerName)}
-                  </div>
+                  <PlayerAvatar 
+                    name={play.playerName}
+                    className="tr-player-avatar"
+                    size="medium"
+                  />
                   <div className="tr-player-info">
                     <div className="tr-player-name">
                       {play.playerName}{play.playerName === myName ? ' (You)' : ''}
@@ -151,9 +150,11 @@ const TurnResultsContent = ({
             
             return reorderedPlays.map((play, index) => (
               <div key={play.playerName} className="tr-player-row">
-                <div className="tr-player-avatar">
-                  {getPlayerInitial(play.playerName)}
-                </div>
+                <PlayerAvatar 
+                  name={play.playerName}
+                  className="tr-player-avatar"
+                  size="medium"
+                />
                 <div className="tr-player-info">
                   <div className="tr-player-name">
                     {play.playerName}{play.playerName === myName ? ' (You)' : ''}

@@ -5,6 +5,45 @@ This document outlines the plan to extract duplicated UI code into reusable shar
 
 ## Current State Analysis
 
+### Actual File Structure (What Exists Now)
+```
+frontend/src/
+├── components/
+│   ├── game/
+│   │   ├── GameContainer.jsx
+│   │   ├── GameLayout.jsx
+│   │   ├── WaitingUI.jsx
+│   │   ├── PreparationUI.jsx
+│   │   ├── DeclarationUI.jsx
+│   │   ├── TurnUI.jsx
+│   │   ├── TurnResultsUI.jsx
+│   │   ├── ScoringUI.jsx
+│   │   ├── GameOverUI.jsx
+│   │   ├── content/
+│   │   │   ├── PreparationContent.jsx
+│   │   │   ├── DeclarationContent.jsx
+│   │   │   ├── TurnContent.jsx
+│   │   │   ├── TurnResultsContent.jsx
+│   │   │   ├── ScoringContent.jsx
+│   │   │   └── GameOverContent.jsx
+│   │   └── index.js
+│   ├── Lobby.jsx
+│   ├── RoomManagement.jsx
+│   ├── LoadingOverlay.jsx
+│   ├── ConnectionIndicator.jsx
+│   └── ErrorBoundary.jsx
+├── hooks/
+│   ├── useGameState.ts
+│   ├── useGameActions.ts
+│   └── useConnectionStatus.ts
+├── services/
+│   ├── GameService.js
+│   ├── NetworkService.js
+│   └── ServiceIntegration.js
+└── utils/
+    └── pieceMapping.js
+```
+
 ### Identified Duplications
 1. **Player Avatar** - Initial display in circles (4+ places)
 2. **Piece Tray** - Hand display grid (3 places)
@@ -20,39 +59,37 @@ This document outlines the plan to extract duplicated UI code into reusable shar
 
 ## Implementation Strategy
 
-### Phase 1: Minimal Structure Change (Current)
-**Goal**: Extract shared components with minimal disruption
+### Simple Approach: Add Shared Components Only
+**Goal**: Extract shared components without moving any existing files
 
 ```
 frontend/src/components/game/
 ├── shared/                    # NEW - Add only this folder
-│   ├── PlayerAvatar.jsx
-│   ├── PieceTray.jsx
-│   ├── Piece.jsx
-│   ├── CountdownTimer.jsx
-│   └── ScoreDisplay.jsx
-├── content/                   # Keep existing
+│   ├── PlayerAvatar.jsx      # NEW - extracted from duplicated code
+│   ├── PieceTray.jsx         # NEW - extracted from duplicated code
+│   ├── Piece.jsx             # NEW - extracted from duplicated code
+│   ├── CountdownTimer.jsx    # NEW - extracted from duplicated code
+│   └── ScoreDisplay.jsx      # NEW - extracted from duplicated code
+├── content/                   # KEEP AS IS - no changes
 │   ├── PreparationContent.jsx
 │   ├── DeclarationContent.jsx
-│   └── ...
-├── GameContainer.jsx          # Keep existing
-└── ...                        # Keep all other files
+│   ├── TurnContent.jsx
+│   ├── TurnResultsContent.jsx
+│   ├── ScoringContent.jsx
+│   └── GameOverContent.jsx
+├── GameContainer.jsx          # KEEP AS IS - no changes
+├── GameLayout.jsx             # KEEP AS IS - no changes
+├── WaitingUI.jsx              # KEEP AS IS - no changes
+├── PreparationUI.jsx          # KEEP AS IS - no changes
+├── DeclarationUI.jsx          # KEEP AS IS - no changes
+├── TurnUI.jsx                 # KEEP AS IS - no changes
+├── TurnResultsUI.jsx          # KEEP AS IS - no changes
+├── ScoringUI.jsx              # KEEP AS IS - no changes
+├── GameOverUI.jsx             # KEEP AS IS - no changes
+└── index.js                   # KEEP AS IS - no changes
 ```
 
-### Phase 2: Future Reorganization (After Learning)
-**Goal**: Reorganize based on patterns that emerge
-
-```
-frontend/src/
-├── features/
-│   ├── game/
-│   │   ├── components/
-│   │   ├── hooks/
-│   │   └── utils/
-│   └── shared/
-│       ├── components/
-│       └── hooks/
-```
+**NO FILE MOVES - Only creating new shared components from duplicated code**
 
 ## Component Extraction Order
 
@@ -178,9 +215,9 @@ For each component:
 
 ## Progress Tracking
 
-### Phase 1: Component Extraction
+### Shared Component Extraction
 - [ ] PlayerAvatar
-  - [ ] Component created
+  - [ ] Component created in `shared/PlayerAvatar.jsx`
   - [ ] Tests written
   - [ ] Replaced in TurnResultsContent
   - [ ] Replaced in ScoringContent
@@ -188,44 +225,44 @@ For each component:
   - [ ] Replaced in GameOverContent
   
 - [ ] Piece
-  - [ ] Component created
+  - [ ] Component created in `shared/Piece.jsx`
   - [ ] Tests written
   - [ ] All usages replaced
   
 - [ ] PieceTray
-  - [ ] Component created
+  - [ ] Component created in `shared/PieceTray.jsx`
   - [ ] Tests written
   - [ ] Replaced in PreparationContent
   - [ ] Replaced in DeclarationContent
   - [ ] Replaced in TurnContent
   
 - [ ] CountdownTimer
-  - [ ] Component created
+  - [ ] Component created in `shared/CountdownTimer.jsx`
   - [ ] Tests written
   - [ ] Replaced in all phases
   
 - [ ] ScoreDisplay
-  - [ ] Component created
+  - [ ] Component created in `shared/ScoreDisplay.jsx`
   - [ ] Tests written
   - [ ] All usages replaced
 
-### Phase 2: Architecture Decisions
-- [ ] Evaluate wrapper pattern necessity
-- [ ] Decide on final folder structure
-- [ ] Plan TypeScript migration
-- [ ] Consider state management options
+### Future Considerations (After Shared Components Done)
+- [ ] Evaluate if wrapper pattern is still needed
+- [ ] Consider TypeScript migration for shared components
+- [ ] Assess if any other components should be shared
 
-## Notes
-- Start small, learn, then expand
+## Important Notes
+- **NO FILE MOVES** - All existing files stay exactly where they are
+- Only creating new shared components from duplicated code
 - Keep existing code working throughout
-- Document decisions and learnings
-- Prioritize developer experience
+- Test each shared component thoroughly before using
+- Document any edge cases discovered
 
 ## Next Steps
-1. Create `shared/` folder
+1. Create `frontend/src/components/game/shared/` folder
 2. Implement PlayerAvatar component
 3. Write tests for PlayerAvatar
 4. Replace first usage and verify
 5. Continue with remaining usages
 
-Last Updated: [Current Date]
+Last Updated: 2025-01-09

@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
+import PlayerAvatar from '../shared/PlayerAvatar';
 
 /**
  * ScoringContent Component
@@ -40,10 +41,6 @@ const ScoringContent = ({
     
     return () => clearInterval(timer);
   }, [onContinue]);
-  // Get player initial
-  const getPlayerInitial = (name) => {
-    return name.charAt(0).toUpperCase();
-  };
   
   // Get score class based on value
   const getScoreClass = (value) => {
@@ -102,9 +99,11 @@ const ScoringContent = ({
               {/* Top row - player and total */}
               <div className="sc-top-row">
                 <div className="sc-player-info">
-                  <div className="sc-player-avatar">
-                    {getPlayerInitial(player.name)}
-                  </div>
+                  <PlayerAvatar 
+                    name={player.name}
+                    className="sc-player-avatar"
+                    size="medium"
+                  />
                   <div className="sc-player-name">
                     {player.name}{player.name === myName ? ' (You)' : ''}
                   </div>

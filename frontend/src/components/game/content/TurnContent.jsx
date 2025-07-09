@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import PropTypes from 'prop-types';
 import { getPieceDisplay, getPieceColorClass, formatPieceValue } from '../../../utils/pieceMapping';
 import { formatPlayType } from '../../../utils/playTypeFormatter';
+import PlayerAvatar from '../shared/PlayerAvatar';
 
 /**
  * TurnContent Component
@@ -235,9 +236,11 @@ const TurnContent = ({
                 className={`turn-player-summary-bar ${position} ${isActive ? 'active' : ''} ${hasPlayed ? 'played' : ''} ${isCurrentUser ? 'current-user' : ''}`}
               >
                 <div className="turn-player-summary-content">
-                  <div className="turn-player-avatar-small">
-                    {player.name.charAt(0).toUpperCase()}
-                  </div>
+                  <PlayerAvatar 
+                    name={player.name}
+                    className="turn-player-avatar-small"
+                    size="small"
+                  />
                   <span className="turn-player-name-short">{player.name}</span>
                   <div className="turn-player-stats-compact">
                     <span className="turn-stat-number">{stats.pilesWon}</span>

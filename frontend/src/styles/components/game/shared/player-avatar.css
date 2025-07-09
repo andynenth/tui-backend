@@ -1,0 +1,64 @@
+/* Player Avatar Shared Component Styles */
+
+/* Base player avatar styles */
+.player-avatar {
+  border-radius: 50%;
+  background: 
+    linear-gradient(145deg, #FFFFFF 0%, #F8F9FA 100%),
+    radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.8) 0%, transparent 60%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  border: 2px solid rgba(173, 181, 189, 0.3);
+  box-shadow: 
+    0 2px 4px rgba(0, 0, 0, 0.06),
+    inset 0 1px 0 rgba(255, 255, 255, 1);
+  color: #495057;
+  flex-shrink: 0;
+  transition: all 0.2s ease;
+}
+
+/* Size variants */
+.player-avatar--small {
+  width: 24px;
+  height: 24px;
+  font-size: 11px;
+  border-width: 1.5px;
+}
+
+.player-avatar--medium {
+  width: 32px;
+  height: 32px;
+  font-size: 14px;
+}
+
+.player-avatar--large {
+  width: 36px;
+  height: 36px;
+  font-size: 16px;
+}
+
+/* Hover effect (for interactive contexts) */
+.player-avatar:hover {
+  transform: translateY(-1px);
+  box-shadow: 
+    0 4px 8px rgba(0, 0, 0, 0.08),
+    inset 0 1px 0 rgba(255, 255, 255, 1);
+}
+
+/* Active player state */
+.player-avatar.active {
+  border-color: rgba(40, 167, 69, 0.5);
+  background: 
+    linear-gradient(145deg, #F8FFF9 0%, #E8F5E9 100%),
+    radial-gradient(circle at 30% 30%, rgba(40, 167, 69, 0.1) 0%, transparent 60%);
+}
+
+/* Winner state */
+.player-avatar.winner {
+  border-color: rgba(255, 193, 7, 0.5);
+  background: 
+    linear-gradient(145deg, #FFFBF0 0%, #FFF8E1 100%),
+    radial-gradient(circle at 30% 30%, rgba(255, 193, 7, 0.1) 0%, transparent 60%);
+}
