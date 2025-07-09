@@ -122,7 +122,7 @@ export function GameContainer({ roomId, onNavigateToLobby }) {
     // Build piles won count from previous turns (would need to be tracked)
     const piecesWonCount = gameState.playerPiles || {};
     
-    // Build player hand sizes - this would come from backend players data
+    // Build player hand sizes - use backend-provided hand_size data
     const playerHandSizes = {};
     if (gameState.players) {
       gameState.players.forEach(player => {
@@ -130,12 +130,8 @@ export function GameContainer({ roomId, onNavigateToLobby }) {
         if (player.name === gameState.playerName) {
           playerHandSizes[player.name] = gameState.myHand.length;
         } else {
-          // For others, backend should provide hand_size
-          // Fallback to 8 minus played pieces count
-          const playedCount = gameState.currentTurnPlays
-            ? gameState.currentTurnPlays.filter(p => p.player === player.name).length * (gameState.requiredPieceCount || 1)
-            : 0;
-          playerHandSizes[player.name] = Math.max(0, 8 - playedCount);
+          // Use backend-provided hand_size
+          playerHandSizes[player.name] = player.hand_size || 0;
         }
       });
     }

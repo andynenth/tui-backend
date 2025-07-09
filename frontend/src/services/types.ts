@@ -79,6 +79,7 @@ export interface Player {
   is_bot: boolean;
   pile_count?: number;
   zero_declares_in_a_row?: number;
+  hand_size?: number;
 }
 
 export interface TurnPlay {
