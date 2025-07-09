@@ -117,6 +117,11 @@ export function getPieceDisplay(pieceData) {
  * @returns {string} CSS class name for piece color
  */
 export function getPieceColorClass(pieceData) {
+  // Handle direct color property
+  if (pieceData && pieceData.color) {
+    return `piece-${pieceData.color.toLowerCase()}`;
+  }
+  
   const piece = parsePiece(pieceData);
   if (!piece || !piece.color) {
     return 'piece-unknown';
