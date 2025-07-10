@@ -20,6 +20,11 @@ const RoomPage = () => {
   // Calculate room occupancy
   const occupiedSlots = roomData?.players?.filter(player => player !== null).length || 0;
   const isRoomFull = occupiedSlots === 4;
+  
+  // Check if current player is the host
+  const isCurrentPlayerHost = roomData?.players?.some(
+    player => player?.name === app.playerName && player?.is_host
+  ) || false;
 
   // Connect to room and get room state
   useEffect(() => {
@@ -231,13 +236,15 @@ const RoomPage = () => {
               {isRoomFull ? 'All players ready!' : `Need ${4 - occupiedSlots} more player${4 - occupiedSlots > 1 ? 's' : ''} to start`}
             </div>
             <div className="rp-controlButtons">
-              <button
-                className="rp-controlButton rp-startButton"
-                onClick={startGame}
-                disabled={!isConnected || isStartingGame || !isRoomFull}
-              >
-                {isStartingGame ? 'Starting...' : 'Start Game'}
-              </button>
+              {isCurrentPlayerHost && (
+                <button
+                  className="rp-controlButton rp-startButton"
+                  onClick={startGame}
+                  disabled={!isConnected || isStartingGame || !isRoomFull}
+                >
+                  {isStartingGame ? 'Starting...' : 'Start Game'}
+                </button>
+              )}
               <button
                 className="rp-controlButton rp-leaveButton"
                 onClick={leaveRoom}
