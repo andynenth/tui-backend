@@ -325,7 +325,6 @@ async def websocket_endpoint(websocket: WebSocket, room_id: str):
                                     "timestamp": asyncio.get_event_loop().time()
                                 })
                                 
-                                print(f"DEBUG_WS_RECEIVE: Successfully removed player from slot {slot_id} in room {room_id}")
                             else:
                                 await registered_ws.send_json({
                                     "event": "error",
@@ -333,7 +332,6 @@ async def websocket_endpoint(websocket: WebSocket, room_id: str):
                                 })
                                 
                         except (ValueError, IndexError) as e:
-                            print(f"DEBUG_WS_RECEIVE: Invalid slot_id {slot_id}: {e}")
                             await registered_ws.send_json({
                                 "event": "error", 
                                 "data": {"message": f"Invalid slot ID: {slot_id}"}
@@ -347,7 +345,6 @@ async def websocket_endpoint(websocket: WebSocket, room_id: str):
                 elif event_name == "add_bot":
                     slot_id = event_data.get("slot_id")
                     if slot_id is None:
-                        print(f"DEBUG_WS_RECEIVE: Invalid add_bot data: {event_data}")
                         continue
 
                     room = room_manager.get_room(room_id)
@@ -379,7 +376,6 @@ async def websocket_endpoint(websocket: WebSocket, room_id: str):
                                     "timestamp": asyncio.get_event_loop().time()
                                 })
                                 
-                                print(f"DEBUG_WS_RECEIVE: Successfully added bot to slot {slot_id} in room {room_id}")
                             else:
                                 await registered_ws.send_json({
                                     "event": "error",
@@ -387,7 +383,6 @@ async def websocket_endpoint(websocket: WebSocket, room_id: str):
                                 })
                                 
                         except (ValueError, IndexError) as e:
-                            print(f"DEBUG_WS_RECEIVE: Invalid slot_id {slot_id}: {e}")
                             await registered_ws.send_json({
                                 "event": "error", 
                                 "data": {"message": f"Invalid slot ID: {slot_id}"}
@@ -407,7 +402,6 @@ async def websocket_endpoint(websocket: WebSocket, room_id: str):
                             player_name = event_data.get("player_name")
                             if not player_name:
                                 # If no player name provided, we can't identify who's leaving
-                                print(f"DEBUG_WS_RECEIVE: leave_room missing player_name: {event_data}")
                                 await registered_ws.send_json({
                                     "event": "error",
                                     "data": {"message": "Player name required for leave_room"}
@@ -427,7 +421,6 @@ async def websocket_endpoint(websocket: WebSocket, room_id: str):
                                 
                                 # Remove the room from the manager
                                 room_manager.delete_room(room_id)
-                                print(f"DEBUG_WS_RECEIVE: Host {player_name} left, room {room_id} closed")
                                 
                                 # Send confirmation to the leaving host
                                 await registered_ws.send_json({
@@ -461,10 +454,8 @@ async def websocket_endpoint(websocket: WebSocket, room_id: str):
                                     "data": {"player_name": player_name, "success": True}
                                 })
                                 
-                                print(f"DEBUG_WS_RECEIVE: Player {player_name} left room {room_id}")
                                 
                         except Exception as e:
-                            print(f"DEBUG_WS_RECEIVE: Error processing leave_room: {e}")
                             await registered_ws.send_json({
                                 "event": "error",
                                 "data": {"message": "Failed to leave room"}
@@ -553,7 +544,6 @@ async def websocket_endpoint(websocket: WebSocket, room_id: str):
                     player_name = event_data.get("player_name")
                     indices = event_data.get("piece_indices", [])
                     
-                    print(f"🎯 WS_PLAY_DEBUG: Received play event - player: {player_name}, indices: {indices}")
                     
                     if not player_name or not indices:
                         await registered_ws.send_json({
@@ -580,13 +570,10 @@ async def websocket_endpoint(websocket: WebSocket, room_id: str):
                             # Find the player and get pieces from their hand by indices
                             player = next((p for p in room.game.players if getattr(p, 'name', str(p)) == player_name), None)
                             if player and hasattr(player, 'hand'):
-                                print(f"🎯 WS_PLAY_DEBUG: Found player {player_name} with hand size {len(player.hand)}")
                                 for idx in indices:
                                     if 0 <= idx < len(player.hand):
                                         pieces.append(player.hand[idx])
-                                        print(f"🎯 WS_PLAY_DEBUG: Added piece at index {idx}: {player.hand[idx]}")
                         
-                        print(f"🎯 WS_PLAY_DEBUG: Final pieces to play: {[str(p) for p in pieces]}")
                         
                         action = GameAction(
                             player_name=player_name,
@@ -594,9 +581,7 @@ async def websocket_endpoint(websocket: WebSocket, room_id: str):
                             payload={"pieces": pieces}  # Send actual pieces, not indices
                         )
                         
-                        print(f"🎯 WS_PLAY_DEBUG: Queuing action for state machine...")
                         result = await room.game_state_machine.handle_action(action)
-                        print(f"🎯 WS_PLAY_DEBUG: State machine result: {result}")
                         
                         if not result:
                             # Handle None result (shouldn't happen with new base_state)
