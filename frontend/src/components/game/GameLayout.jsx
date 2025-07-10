@@ -64,7 +64,7 @@ const GameLayout = ({
   };
 
   const { title, subtitle } = getPhaseInfo();
-
+  
   return (
     <div className="gl-game-container">
       {/* Round indicator */}

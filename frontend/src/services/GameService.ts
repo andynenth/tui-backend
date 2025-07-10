@@ -298,7 +298,7 @@ export class GameService extends EventTarget {
       
       // Game state
       phase: 'waiting',
-      currentRound: 0,
+      currentRound: 1,
       players: [],
       roundStarter: null,
       
@@ -1217,6 +1217,11 @@ export class GameService extends EventTarget {
   private setState(newState: GameState, reason: string): void {
     const oldState = this.state;
     this.state = newState;
+    
+    // Debug round changes
+    if (oldState.currentRound !== newState.currentRound) {
+      console.log(`🔍 ROUND_DEBUG: Round changed from ${oldState.currentRound} to ${newState.currentRound} (reason: ${reason})`);
+    }
     
     // Add to event history
     const eventWithMeta: StateChangeEvent = {

@@ -256,13 +256,20 @@ async def websocket_endpoint(websocket: WebSocket, room_id: str):
                                             'score': getattr(player, 'score', 0)
                                         }
                                 
+                                # Get current round number
+                                current_round = 1
+                                if room.game:
+                                    current_round = getattr(room.game, 'round_number', 1)
+                                
+                                
                                 await registered_ws.send_json({
                                     "event": "phase_change",
                                     "data": {
                                         "phase": current_phase.value,
                                         "allowed_actions": allowed_actions,
                                         "phase_data": phase_data,
-                                        "players": players_data
+                                        "players": players_data,
+                                        "round": current_round
                                     }
                                 })
                         
