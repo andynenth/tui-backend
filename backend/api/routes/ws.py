@@ -951,9 +951,10 @@ async def websocket_endpoint(websocket: WebSocket, room_id: str):
                         result = await room.start_game_safe(room_broadcast)
                         
                         if result.get("success"):
-                            await registered_ws.send_json({
-                                "event": "game_started",
-                                "data": {"room_id": room_id, "success": True}
+                            # Broadcast to all players in the room so they all navigate to game
+                            await broadcast(room_id, "game_started", {
+                                "room_id": room_id,
+                                "success": True
                             })
                             print(f"✅ Game started in room {room_id}")
                         else:
