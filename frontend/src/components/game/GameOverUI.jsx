@@ -2,7 +2,6 @@
 
 import React from 'react';
 import PropTypes from 'prop-types';
-import GameLayout from './GameLayout';
 import GameOverContent from './content/GameOverContent';
 
 function GameOverUI({ finalRankings, gameStats, onBackToLobby }) {
@@ -39,20 +38,13 @@ function GameOverUI({ finalRankings, gameStats, onBackToLobby }) {
   }
   
   return (
-    <GameLayout
-      phase="game_over"
-      roundNumber={gameStats.total_rounds}
-      currentPlayer={null}
-      hasMultiplier={false}
-    >
-      <GameOverContent
-        winner={winnerData}
-        finalScores={finalScores}
-        players={players}
-        gameStats={transformedStats}
-        onBackToLobby={onBackToLobby}
-      />
-    </GameLayout>
+    <GameOverContent
+      winner={winnerData}
+      finalScores={finalScores}
+      players={players}
+      gameStats={transformedStats}
+      onBackToLobby={onBackToLobby}
+    />
   );
 }
 
