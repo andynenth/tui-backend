@@ -50,6 +50,18 @@ const PieceTray = ({
       selected.id === pieceId || selected === pieceId
     );
   };
+  
+  // Debug log to see piece order when rendering
+  React.useEffect(() => {
+    if (pieces && pieces.length > 0) {
+      console.log('🎴 PIECETRAY DEBUG: Rendering pieces in order:', pieces.map((p, i) => ({
+        index: i,
+        type: p.type,
+        color: p.color,
+        value: p.value
+      })));
+    }
+  }, [pieces]);
 
   return (
     <div className={containerClasses}>

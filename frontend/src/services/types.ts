@@ -71,6 +71,7 @@ export interface GamePiece {
   color: 'red' | 'black';
   value: number;
   id?: string;
+  originalIndex?: number; // Index in the original unsorted hand
 }
 
 export interface Player {

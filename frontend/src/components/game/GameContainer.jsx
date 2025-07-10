@@ -101,7 +101,7 @@ export function GameContainer({ roomId, onNavigateToLobby }) {
       isLastPlayer: gameState.isLastPlayer || false,
       estimatedPiles: gameState.estimatedPiles || 0,
       handStrength: gameState.handStrength || 0,
-      consecutiveZeros: consecutiveZeros,
+      consecutiveZeros,
       redealMultiplier: gameState.redealMultiplier || 1,
       
       // Actions

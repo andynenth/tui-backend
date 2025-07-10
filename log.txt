@@ -21,621 +21,336 @@ ServiceIntegration.ts:132 ✅ Service integration layer initialized successfully
 ServiceIntegration.ts:133 
 App.jsx:117 🎮 Global services initialized
 NetworkService.ts:337 🔗 Connection opened to room lobby
-GameService.ts:1255 🎮 State Change: NETWORK_CONNECTED
-GameService.ts:1256 Previous: {isConnected: false, roomId: null, playerName: null, phase: 'waiting', currentRound: 1, …}
-GameService.ts:1257 New: {isConnected: true, roomId: null, playerName: null, phase: 'waiting', currentRound: 1, …}
-GameService.ts:1258 Diff: {isConnected: {…}, lastEventSequence: {…}}
+GameService.ts:1353 🎮 State Change: NETWORK_CONNECTED
+GameService.ts:1354 Previous: {isConnected: false, roomId: null, playerName: null, phase: 'waiting', currentRound: 1, …}
+GameService.ts:1355 New: {isConnected: true, roomId: null, playerName: null, phase: 'waiting', currentRound: 1, …}
+GameService.ts:1356 Diff: {isConnected: {…}, lastEventSequence: {…}}
 NetworkService.ts:129 🌐 NetworkService: Connected to room lobby
-LobbyPage.jsx:45 Received room_list_update: {roomId: 'lobby', data: {…}, message: {…}, timestamp: 1752180012965}
-GameService.ts:1255 🎮 State Change: NETWORK_DISCONNECTED
-GameService.ts:1256 Previous: {isConnected: true, roomId: null, playerName: null, phase: 'waiting', currentRound: 1, …}
-GameService.ts:1257 New: {isConnected: false, roomId: null, playerName: null, phase: 'waiting', currentRound: 1, …}
-GameService.ts:1258 Diff: {isConnected: {…}, lastEventSequence: {…}}
+GameService.ts:1353 🎮 State Change: NETWORK_DISCONNECTED
+GameService.ts:1354 Previous: {isConnected: true, roomId: null, playerName: null, phase: 'waiting', currentRound: 1, …}
+GameService.ts:1355 New: {isConnected: false, roomId: null, playerName: null, phase: 'waiting', currentRound: 1, …}
+GameService.ts:1356 Diff: {isConnected: {…}, lastEventSequence: {…}}
 NetworkService.ts:171 🌐 NetworkService: Disconnected from room lobby
 NetworkService.ts:214 📤 Queued message for lobby: get_rooms (1 queued)
 NetworkService.ts:337 🔗 Connection opened to room lobby
-GameService.ts:1255 🎮 State Change: NETWORK_CONNECTED
-GameService.ts:1256 Previous: {isConnected: false, roomId: null, playerName: null, phase: 'waiting', currentRound: 1, …}
-GameService.ts:1257 New: {isConnected: true, roomId: null, playerName: null, phase: 'waiting', currentRound: 1, …}
-GameService.ts:1258 Diff: {isConnected: {…}, lastEventSequence: {…}}
+GameService.ts:1353 🎮 State Change: NETWORK_CONNECTED
+GameService.ts:1354 Previous: {isConnected: false, roomId: null, playerName: null, phase: 'waiting', currentRound: 1, …}
+GameService.ts:1355 New: {isConnected: true, roomId: null, playerName: null, phase: 'waiting', currentRound: 1, …}
+GameService.ts:1356 Diff: {isConnected: {…}, lastEventSequence: {…}}
 NetworkService.ts:129 🌐 NetworkService: Connected to room lobby
-LobbyPage.jsx:45 Received room_list_update: {roomId: 'lobby', data: {…}, message: {…}, timestamp: 1752180012978}
-GameService.ts:1255 🎮 State Change: NETWORK_DISCONNECTED
-GameService.ts:1256 Previous: {isConnected: true, roomId: null, playerName: null, phase: 'waiting', currentRound: 1, …}
-GameService.ts:1257 New: {isConnected: false, roomId: null, playerName: null, phase: 'waiting', currentRound: 1, …}
-GameService.ts:1258 Diff: {isConnected: {…}, lastEventSequence: {…}}
+LobbyPage.jsx:45 Received room_list_update: {roomId: 'lobby', data: {…}, message: {…}, timestamp: 1752188681548}
+GameService.ts:1353 🎮 State Change: NETWORK_DISCONNECTED
+GameService.ts:1354 Previous: {isConnected: true, roomId: null, playerName: null, phase: 'waiting', currentRound: 1, …}
+GameService.ts:1355 New: {isConnected: false, roomId: null, playerName: null, phase: 'waiting', currentRound: 1, …}
+GameService.ts:1356 Diff: {isConnected: {…}, lastEventSequence: {…}}
 NetworkService.ts:171 🌐 NetworkService: Disconnected from room lobby
 NetworkService.ts:214 📤 Queued message for lobby: get_rooms (1 queued)
 NetworkService.ts:337 🔗 Connection opened to room lobby
-GameService.ts:1255 🎮 State Change: NETWORK_CONNECTED
-GameService.ts:1256 Previous: {isConnected: false, roomId: null, playerName: null, phase: 'waiting', currentRound: 1, …}
-GameService.ts:1257 New: {isConnected: true, roomId: null, playerName: null, phase: 'waiting', currentRound: 1, …}
-GameService.ts:1258 Diff: {isConnected: {…}, lastEventSequence: {…}}
+GameService.ts:1353 🎮 State Change: NETWORK_CONNECTED
+GameService.ts:1354 Previous: {isConnected: false, roomId: null, playerName: null, phase: 'waiting', currentRound: 1, …}
+GameService.ts:1355 New: {isConnected: true, roomId: null, playerName: null, phase: 'waiting', currentRound: 1, …}
+GameService.ts:1356 Diff: {isConnected: {…}, lastEventSequence: {…}}
 NetworkService.ts:129 🌐 NetworkService: Connected to room lobby
-LobbyPage.jsx:45 Received room_list_update: {roomId: 'lobby', data: {…}, message: {…}, timestamp: 1752180014449}
-LobbyPage.jsx:56 Received room_created: {roomId: 'lobby', data: {…}, message: {…}, timestamp: 1752180014534}
-LobbyPage.jsx:57 🟢 Navigation: room_id = 0E1481 navigating to: /room/0E1481
-LobbyPage.jsx:61 ✅ Navigating to new room: 0E1481
-GameService.ts:1255 🎮 State Change: NETWORK_DISCONNECTED
-GameService.ts:1256 Previous: {isConnected: true, roomId: null, playerName: null, phase: 'waiting', currentRound: 1, …}
-GameService.ts:1257 New: {isConnected: false, roomId: null, playerName: null, phase: 'waiting', currentRound: 1, …}
-GameService.ts:1258 Diff: {isConnected: {…}, lastEventSequence: {…}}
+LobbyPage.jsx:45 Received room_list_update: {roomId: 'lobby', data: {…}, message: {…}, timestamp: 1752188682632}
+LobbyPage.jsx:56 Received room_created: {roomId: 'lobby', data: {…}, message: {…}, timestamp: 1752188682718}
+LobbyPage.jsx:57 🟢 Navigation: room_id = C0D144 navigating to: /room/C0D144
+LobbyPage.jsx:61 ✅ Navigating to new room: C0D144
+GameService.ts:1353 🎮 State Change: NETWORK_DISCONNECTED
+GameService.ts:1354 Previous: {isConnected: true, roomId: null, playerName: null, phase: 'waiting', currentRound: 1, …}
+GameService.ts:1355 New: {isConnected: false, roomId: null, playerName: null, phase: 'waiting', currentRound: 1, …}
+GameService.ts:1356 Diff: {isConnected: {…}, lastEventSequence: {…}}
 NetworkService.ts:171 🌐 NetworkService: Disconnected from room lobby
 NetworkService.ts:214 📤 Queued message for lobby: get_rooms (1 queued)
 NetworkService.ts:337 🔗 Connection opened to room lobby
-GameService.ts:1255 🎮 State Change: NETWORK_CONNECTED
-GameService.ts:1256 Previous: {isConnected: false, roomId: null, playerName: null, phase: 'waiting', currentRound: 1, …}
-GameService.ts:1257 New: {isConnected: true, roomId: null, playerName: null, phase: 'waiting', currentRound: 1, …}
-GameService.ts:1258 Diff: {isConnected: {…}, lastEventSequence: {…}}
+GameService.ts:1353 🎮 State Change: NETWORK_CONNECTED
+GameService.ts:1354 Previous: {isConnected: false, roomId: null, playerName: null, phase: 'waiting', currentRound: 1, …}
+GameService.ts:1355 New: {isConnected: true, roomId: null, playerName: null, phase: 'waiting', currentRound: 1, …}
+GameService.ts:1356 Diff: {isConnected: {…}, lastEventSequence: {…}}
 NetworkService.ts:129 🌐 NetworkService: Connected to room lobby
-NetworkService.ts:337 🔗 Connection opened to room 0E1481
-GameService.ts:1255 🎮 State Change: NETWORK_CONNECTED
-GameService.ts:1256 Previous: {isConnected: true, roomId: null, playerName: null, phase: 'waiting', currentRound: 1, …}
-GameService.ts:1257 New: {isConnected: true, roomId: null, playerName: null, phase: 'waiting', currentRound: 1, …}
-GameService.ts:1258 Diff: {lastEventSequence: {…}}
-NetworkService.ts:129 🌐 NetworkService: Connected to room 0E1481
-RoomPage.jsx:61 🏠 ROOM_UPDATE: Full data received: {players: Array(4), host_name: 'Andy', room_id: '0E1481', started: false}
-RoomPage.jsx:62 🏠 ROOM_UPDATE: Players array: (4) [{…}, {…}, {…}, {…}]
-RoomPage.jsx:63 🏠 ROOM_UPDATE: Players array type: object
-RoomPage.jsx:64 🏠 ROOM_UPDATE: Players array length: 4
-RoomPage.jsx:65 🏠 ROOM_UPDATE: Players array entries: (4) [Array(2), Array(2), Array(2), Array(2)]
-RoomPage.jsx:99 🎮 START_GAME: Button clicked
-RoomPage.jsx:100 🎮 START_GAME: Room ID: 0E1481
-RoomPage.jsx:72 Game started, navigating to game page
+NetworkService.ts:337 🔗 Connection opened to room C0D144
+GameService.ts:1353 🎮 State Change: NETWORK_CONNECTED
+GameService.ts:1354 Previous: {isConnected: true, roomId: null, playerName: null, phase: 'waiting', currentRound: 1, …}
+GameService.ts:1355 New: {isConnected: true, roomId: null, playerName: null, phase: 'waiting', currentRound: 1, …}
+GameService.ts:1356 Diff: {lastEventSequence: {…}}
+NetworkService.ts:129 🌐 NetworkService: Connected to room C0D144
+RoomPage.jsx:66 🏠 ROOM_UPDATE: Full data received: {players: Array(4), host_name: 'Andy', room_id: 'C0D144', started: false}
+RoomPage.jsx:67 🏠 ROOM_UPDATE: Players array: (4) [{…}, {…}, {…}, {…}]
+RoomPage.jsx:68 🏠 ROOM_UPDATE: Players array type: object
+RoomPage.jsx:69 🏠 ROOM_UPDATE: Players array length: 4
+RoomPage.jsx:70 🏠 ROOM_UPDATE: Players array entries: (4) [Array(2), Array(2), Array(2), Array(2)]
+RoomPage.jsx:104 🎮 START_GAME: Button clicked
+RoomPage.jsx:105 🎮 START_GAME: Room ID: C0D144
+ Game started, navigating to game page
  🎮 State Change: NETWORK_DISCONNECTED
  Previous: {isConnected: true, roomId: null, playerName: null, phase: 'waiting', currentRound: 1, …}
  New: {isConnected: false, roomId: null, playerName: null, phase: 'waiting', currentRound: 1, …}
-GameService.ts:1258 Diff: {isConnected: {…}, lastEventSequence: {…}}
-NetworkService.ts:171 🌐 NetworkService: Disconnected from room 0E1481
-ServiceIntegration.ts:157 🔗 Connecting to room 0E1481 as Andy...
-RecoveryService.ts:106 🔄 RecoveryService: Initialized tracking for room 0E1481
-GameService.ts:1255 🎮 State Change: JOIN_ROOM_INIT
-GameService.ts:1256 Previous: {isConnected: false, roomId: null, playerName: null, phase: 'waiting', currentRound: 1, …}
-GameService.ts:1257 New: {isConnected: false, roomId: '0E1481', playerName: 'Andy', phase: 'waiting', currentRound: 1, …}
-GameService.ts:1258 Diff: {roomId: {…}, playerName: {…}, lastEventSequence: {…}}
+ Diff: {isConnected: {…}, lastEventSequence: {…}}
+ 🌐 NetworkService: Disconnected from room C0D144
+ 🔗 Connecting to room C0D144 as Andy...
+RecoveryService.ts:106 🔄 RecoveryService: Initialized tracking for room C0D144
+GameService.ts:1353 🎮 State Change: JOIN_ROOM_INIT
+GameService.ts:1354 Previous: {isConnected: false, roomId: null, playerName: null, phase: 'waiting', currentRound: 1, …}
+GameService.ts:1355 New: {isConnected: false, roomId: 'C0D144', playerName: 'Andy', phase: 'waiting', currentRound: 1, …}
+GameService.ts:1356 Diff: {roomId: {…}, playerName: {…}, lastEventSequence: {…}}
 GameContext.jsx:36 🚀 GAME_CONTEXT: Phase 1-4 Enterprise Architecture initializing
-NetworkService.ts:337 🔗 Connection opened to room 0E1481
-GameService.ts:1255 🎮 State Change: NETWORK_CONNECTED
-GameService.ts:1256 Previous: {isConnected: false, roomId: '0E1481', playerName: 'Andy', phase: 'waiting', currentRound: 1, …}
-GameService.ts:1257 New: {isConnected: true, roomId: '0E1481', playerName: 'Andy', phase: 'waiting', currentRound: 1, …}
-GameService.ts:1258 Diff: {isConnected: {…}, lastEventSequence: {…}}
-NetworkService.ts:129 🌐 NetworkService: Connected to room 0E1481
-GameService.ts:1255 🎮 State Change: JOIN_ROOM_CONNECTED
-GameService.ts:1256 Previous: {isConnected: true, roomId: '0E1481', playerName: 'Andy', phase: 'waiting', currentRound: 1, …}
-GameService.ts:1257 New: {isConnected: true, roomId: '0E1481', playerName: 'Andy', phase: 'waiting', currentRound: 1, …}
-GameService.ts:1258 Diff: {lastEventSequence: {…}}
-GameService.ts:99 🎮 GameService: Joined room 0E1481 as Andy
-ServiceIntegration.ts:169 ✅ Successfully connected to room 0E1481
-GameService.ts:514 🎯 DEBUG: handlePhaseChange - phase=preparation, phase_data= {dealing_cards: false, redeal_multiplier: 1, weak_players: Array(2), weak_players_awaiting: Array(1), decisions_received: 1, …}
-GameService.ts:592 🎴 DEBUG: GameService - dealing_cards changed from undefined to false
-GameService.ts:1255 🎮 State Change: NETWORK_EVENT:PHASE_CHANGE
-GameService.ts:1256 Previous: {isConnected: true, roomId: '0E1481', playerName: 'Andy', phase: 'waiting', currentRound: 1, …}
-GameService.ts:1257 New: {isConnected: true, roomId: '0E1481', playerName: 'Andy', phase: 'preparation', currentRound: 1, …}
-GameService.ts:1258 Diff: {phase: {…}, players: {…}, myHand: {…}, lastEventSequence: {…}, simultaneousMode: {…}, …}
+NetworkService.ts:337 🔗 Connection opened to room C0D144
+GameService.ts:1353 🎮 State Change: NETWORK_CONNECTED
+GameService.ts:1354 Previous: {isConnected: false, roomId: 'C0D144', playerName: 'Andy', phase: 'waiting', currentRound: 1, …}
+GameService.ts:1355 New: {isConnected: true, roomId: 'C0D144', playerName: 'Andy', phase: 'waiting', currentRound: 1, …}
+GameService.ts:1356 Diff: {isConnected: {…}, lastEventSequence: {…}}
+NetworkService.ts:129 🌐 NetworkService: Connected to room C0D144
+GameService.ts:1353 🎮 State Change: JOIN_ROOM_CONNECTED
+GameService.ts:1354 Previous: {isConnected: true, roomId: 'C0D144', playerName: 'Andy', phase: 'waiting', currentRound: 1, …}
+GameService.ts:1355 New: {isConnected: true, roomId: 'C0D144', playerName: 'Andy', phase: 'waiting', currentRound: 1, …}
+GameService.ts:1356 Diff: {lastEventSequence: {…}}
+GameService.ts:99 🎮 GameService: Joined room C0D144 as Andy
+ServiceIntegration.ts:169 ✅ Successfully connected to room C0D144
+GameService.ts:514 🎯 DEBUG: handlePhaseChange - phase=preparation, phase_data= {dealing_cards: false, redeal_multiplier: 1, weak_players: Array(0)}
+GameService.ts:555 🎴 SORT DEBUG: Before sorting myHand: [{"type":"soldier","color":"red","value":2},{"type":"chariot","color":"black","value":7},{"type":"soldier","color":"black","value":1},{"type":"cannon","color":"black","value":3},{"type":"horse","color":"red","value":6},{"type":"soldier","color":"red","value":2},{"type":"soldier","color":"red","value":2},{"type":"advisor","color":"black","value":11}]
+GameService.ts:569 🎴 SORT DEBUG: After sorting myHand: [{"type":"horse","color":"red","value":6},{"type":"soldier","color":"red","value":2},{"type":"soldier","color":"red","value":2},{"type":"soldier","color":"red","value":2},{"type":"advisor","color":"black","value":11},{"type":"chariot","color":"black","value":7},{"type":"cannon","color":"black","value":3},{"type":"soldier","color":"black","value":1}]
+GameService.ts:646 🎴 DEBUG: GameService - dealing_cards changed from undefined to false
+GameService.ts:1353 🎮 State Change: NETWORK_EVENT:PHASE_CHANGE
+GameService.ts:1354 Previous: {isConnected: true, roomId: 'C0D144', playerName: 'Andy', phase: 'waiting', currentRound: 1, …}
+GameService.ts:1355 New: {isConnected: true, roomId: 'C0D144', playerName: 'Andy', phase: 'preparation', currentRound: 1, …}
+GameService.ts:1356 Diff: {phase: {…}, players: {…}, myHand: {…}, lastEventSequence: {…}, simultaneousMode: {…}, …}
 PreparationContent.jsx:34 🎴 DEBUG: PreparationContent - dealingCards=false, showDealing=true, isRedealing=false
+PieceTray.jsx:57 🎴 PIECETRAY DEBUG: Rendering pieces in order: (8) [{…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}]
 PreparationContent.jsx:38 🎴 DEBUG: dealingCards prop changed to: false
-PreparationContent.jsx:43 🎴 DEBUG: isMyHandWeak prop changed to: true
+PreparationContent.jsx:43 🎴 DEBUG: isMyHandWeak prop changed to: false
 PreparationContent.jsx:44 🎴 DEBUG: Current state - showDealing=true, isRedealing=false
 PreparationContent.jsx:49 🎴 DEBUG: Initial dealing effect - setting timer to hide after 3.5s
 PreparationContent.jsx:63 🎴 DEBUG: Redeal trigger effect - dealingCards=false, showDealing=true, isRedealing=false
 PreparationContent.jsx:74 🎴 DEBUG: Redeal timer effect - isRedealing=false
-PreparationContent.jsx:51 🎴 DEBUG: Initial dealing timer fired - setting showDealing=false
-PreparationContent.jsx:34 🎴 DEBUG: PreparationContent - dealingCards=false, showDealing=false, isRedealing=false
-PreparationContent.jsx:93 🎴 DEBUG: shouldShowWeakHandAlert() called:
-      - showDealing=false
-      - isRedealing=false
-      - isMyHandWeak=true
-      - simultaneousMode=true
-      - weakPlayersAwaiting=["Andy"]
-      - decisionsReceived=1
-      - decisionsNeeded=2
-      - RESULT=true
-PreparationContent.jsx:63 🎴 DEBUG: Redeal trigger effect - dealingCards=false, showDealing=false, isRedealing=false
-GameService.ts:1220 🎮 Action sent: accept_redeal {player_name: 'Andy'}
-PreparationContent.jsx:34 🎴 DEBUG: PreparationContent - dealingCards=false, showDealing=false, isRedealing=false
-PreparationContent.jsx:93 🎴 DEBUG: shouldShowWeakHandAlert() called:
-      - showDealing=false
-      - isRedealing=false
-      - isMyHandWeak=true
-      - simultaneousMode=true
-      - weakPlayersAwaiting=["Andy"]
-      - decisionsReceived=1
-      - decisionsNeeded=2
-      - RESULT=true
- 🎯 DEBUG: handlePhaseChange - phase=preparation, phase_data= {dealing_cards: true, redeal_multiplier: 2, weak_players: Array(2), weak_players_awaiting: Array(1), decisions_received: 1, …}
- 🎴 DEBUG: GameService - dealing_cards changed from false to true
- 🎮 State Change: NETWORK_EVENT:PHASE_CHANGE
- Previous: {isConnected: true, roomId: '0E1481', playerName: 'Andy', phase: 'preparation', currentRound: 1, …}
- New: {isConnected: true, roomId: '0E1481', playerName: 'Andy', phase: 'preparation', currentRound: 1, …}
- Diff: {redealMultiplier: {…}, lastEventSequence: {…}, dealingCards: {…}}
-PreparationContent.jsx:34 🎴 DEBUG: PreparationContent - dealingCards=true, showDealing=false, isRedealing=false
-PreparationContent.jsx:93 🎴 DEBUG: shouldShowWeakHandAlert() called:
-      - showDealing=false
-      - isRedealing=false
-      - isMyHandWeak=true
-      - simultaneousMode=true
-      - weakPlayersAwaiting=["Andy"]
-      - decisionsReceived=1
-      - decisionsNeeded=2
-      - RESULT=true
-GameService.ts:514 🎯 DEBUG: handlePhaseChange - phase=preparation, phase_data= {dealing_cards: true, redeal_multiplier: 2, weak_players: Array(2), weak_players_awaiting: Array(2), decisions_received: 0, …}
-GameService.ts:592 🎴 DEBUG: GameService - dealing_cards changed from true to true
-GameService.ts:1255 🎮 State Change: NETWORK_EVENT:PHASE_CHANGE
-GameService.ts:1256 Previous: {isConnected: true, roomId: '0E1481', playerName: 'Andy', phase: 'preparation', currentRound: 1, …}
-GameService.ts:1257 New: {isConnected: true, roomId: '0E1481', playerName: 'Andy', phase: 'preparation', currentRound: 1, …}
-GameService.ts:1258 Diff: {myHand: {…}, lastEventSequence: {…}, weakPlayersAwaiting: {…}, decisionsReceived: {…}, handValue: {…}, …}
-PreparationContent.jsx:38 🎴 DEBUG: dealingCards prop changed to: true
-PreparationContent.jsx:63 🎴 DEBUG: Redeal trigger effect - dealingCards=true, showDealing=false, isRedealing=false
-PreparationContent.jsx:67 🎴 DEBUG: Triggering redeal animation - setting isRedealing=true
-PreparationContent.jsx:74 🎴 DEBUG: Redeal timer effect - isRedealing=false
-PreparationContent.jsx:34 🎴 DEBUG: PreparationContent - dealingCards=true, showDealing=false, isRedealing=true
-GameService.ts:514 🎯 DEBUG: handlePhaseChange - phase=preparation, phase_data= {dealing_cards: false, redeal_multiplier: 2, weak_players: Array(2), weak_players_awaiting: Array(2), decisions_received: 0, …}
-GameService.ts:592 🎴 DEBUG: GameService - dealing_cards changed from true to false
-GameService.ts:1255 🎮 State Change: NETWORK_EVENT:PHASE_CHANGE
-GameService.ts:1256 Previous: {isConnected: true, roomId: '0E1481', playerName: 'Andy', phase: 'preparation', currentRound: 1, …}
-GameService.ts:1257 New: {isConnected: true, roomId: '0E1481', playerName: 'Andy', phase: 'preparation', currentRound: 1, …}
-GameService.ts:1258 Diff: {lastEventSequence: {…}, dealingCards: {…}}
-PreparationContent.jsx:74 🎴 DEBUG: Redeal timer effect - isRedealing=true
-PreparationContent.jsx:34 🎴 DEBUG: PreparationContent - dealingCards=false, showDealing=false, isRedealing=true
-GameService.ts:514 🎯 DEBUG: handlePhaseChange - phase=preparation, phase_data= {dealing_cards: false, redeal_multiplier: 2, weak_players: Array(2), weak_players_awaiting: Array(2), decisions_received: 0, …}
-GameService.ts:592 🎴 DEBUG: GameService - dealing_cards changed from false to false
-GameService.ts:1255 🎮 State Change: NETWORK_EVENT:PHASE_CHANGE
-GameService.ts:1256 Previous: {isConnected: true, roomId: '0E1481', playerName: 'Andy', phase: 'preparation', currentRound: 1, …}
-GameService.ts:1257 New: {isConnected: true, roomId: '0E1481', playerName: 'Andy', phase: 'preparation', currentRound: 1, …}
-GameService.ts:1258 Diff: {lastEventSequence: {…}}
-PreparationContent.jsx:84 🎴 DEBUG: Redeal timer cleanup
-PreparationContent.jsx:38 🎴 DEBUG: dealingCards prop changed to: false
-PreparationContent.jsx:63 🎴 DEBUG: Redeal trigger effect - dealingCards=false, showDealing=false, isRedealing=true
-PreparationContent.jsx:74 🎴 DEBUG: Redeal timer effect - isRedealing=true
-PreparationContent.jsx:34 🎴 DEBUG: PreparationContent - dealingCards=false, showDealing=false, isRedealing=true
-PreparationContent.jsx:84 🎴 DEBUG: Redeal timer cleanup
-PreparationContent.jsx:74 🎴 DEBUG: Redeal timer effect - isRedealing=true
-PreparationContent.jsx:78 🎴 DEBUG: Redeal timer fired - setting isRedealing=false
-PreparationContent.jsx:79 🎴 DEBUG: After redeal animation - isMyHandWeak=true, weakPlayersAwaiting=["Andy","Bot 2"]
-PreparationContent.jsx:34 🎴 DEBUG: PreparationContent - dealingCards=false, showDealing=false, isRedealing=false
-PreparationContent.jsx:93 🎴 DEBUG: shouldShowWeakHandAlert() called:
-      - showDealing=false
-      - isRedealing=false
-      - isMyHandWeak=true
-      - simultaneousMode=true
-      - weakPlayersAwaiting=["Andy","Bot 2"]
-      - decisionsReceived=0
-      - decisionsNeeded=2
-      - RESULT=true
-PreparationContent.jsx:84 🎴 DEBUG: Redeal timer cleanup
-PreparationContent.jsx:74 🎴 DEBUG: Redeal timer effect - isRedealing=false
-GameService.ts:1220 🎮 Action sent: accept_redeal {player_name: 'Andy'}
-PreparationContent.jsx:34 🎴 DEBUG: PreparationContent - dealingCards=false, showDealing=false, isRedealing=false
-PreparationContent.jsx:93 🎴 DEBUG: shouldShowWeakHandAlert() called:
-      - showDealing=false
-      - isRedealing=false
-      - isMyHandWeak=true
-      - simultaneousMode=true
-      - weakPlayersAwaiting=["Andy","Bot 2"]
-      - decisionsReceived=0
-      - decisionsNeeded=2
-      - RESULT=true
-GameService.ts:514 🎯 DEBUG: handlePhaseChange - phase=preparation, phase_data= {dealing_cards: false, redeal_multiplier: 2, weak_players: Array(2), weak_players_awaiting: Array(1), decisions_received: 1, …}
-GameService.ts:592 🎴 DEBUG: GameService - dealing_cards changed from false to false
-GameService.ts:1255 🎮 State Change: NETWORK_EVENT:PHASE_CHANGE
-GameService.ts:1256 Previous: {isConnected: true, roomId: '0E1481', playerName: 'Andy', phase: 'preparation', currentRound: 1, …}
-GameService.ts:1257 New: {isConnected: true, roomId: '0E1481', playerName: 'Andy', phase: 'preparation', currentRound: 1, …}
-GameService.ts:1258 Diff: {lastEventSequence: {…}, weakPlayersAwaiting: {…}, decisionsReceived: {…}, isMyDecision: {…}}
-PreparationContent.jsx:34 🎴 DEBUG: PreparationContent - dealingCards=false, showDealing=false, isRedealing=false
-PreparationContent.jsx:93 🎴 DEBUG: shouldShowWeakHandAlert() called:
-      - showDealing=false
-      - isRedealing=false
-      - isMyHandWeak=true
-      - simultaneousMode=true
-      - weakPlayersAwaiting=["Bot 2"]
-      - decisionsReceived=1
-      - decisionsNeeded=2
-      - RESULT=true
-PreparationContent.jsx:74 🎴 DEBUG: Redeal timer effect - isRedealing=false
-GameService.ts:514 🎯 DEBUG: handlePhaseChange - phase=preparation, phase_data= {dealing_cards: true, redeal_multiplier: 3, weak_players: Array(2), weak_players_awaiting: Array(1), decisions_received: 1, …}
-GameService.ts:592 🎴 DEBUG: GameService - dealing_cards changed from false to true
-GameService.ts:1255 🎮 State Change: NETWORK_EVENT:PHASE_CHANGE
-GameService.ts:1256 Previous: {isConnected: true, roomId: '0E1481', playerName: 'Andy', phase: 'preparation', currentRound: 1, …}
-GameService.ts:1257 New: {isConnected: true, roomId: '0E1481', playerName: 'Andy', phase: 'preparation', currentRound: 1, …}
-GameService.ts:1258 Diff: {redealMultiplier: {…}, lastEventSequence: {…}, dealingCards: {…}}
-PreparationContent.jsx:34 🎴 DEBUG: PreparationContent - dealingCards=true, showDealing=false, isRedealing=false
-PreparationContent.jsx:93 🎴 DEBUG: shouldShowWeakHandAlert() called:
-      - showDealing=false
-      - isRedealing=false
-      - isMyHandWeak=true
-      - simultaneousMode=true
-      - weakPlayersAwaiting=["Bot 2"]
-      - decisionsReceived=1
-      - decisionsNeeded=2
-      - RESULT=true
-GameService.ts:514 🎯 DEBUG: handlePhaseChange - phase=preparation, phase_data= {dealing_cards: true, redeal_multiplier: 3, weak_players: Array(2), weak_players_awaiting: Array(2), decisions_received: 0, …}
-GameService.ts:592 🎴 DEBUG: GameService - dealing_cards changed from true to true
-GameService.ts:1255 🎮 State Change: NETWORK_EVENT:PHASE_CHANGE
-GameService.ts:1256 Previous: {isConnected: true, roomId: '0E1481', playerName: 'Andy', phase: 'preparation', currentRound: 1, …}
-GameService.ts:1257 New: {isConnected: true, roomId: '0E1481', playerName: 'Andy', phase: 'preparation', currentRound: 1, …}
-GameService.ts:1258 Diff: {myHand: {…}, lastEventSequence: {…}, weakPlayersAwaiting: {…}, decisionsReceived: {…}, handValue: {…}, …}
-PreparationContent.jsx:38 🎴 DEBUG: dealingCards prop changed to: true
-PreparationContent.jsx:63 🎴 DEBUG: Redeal trigger effect - dealingCards=true, showDealing=false, isRedealing=false
-PreparationContent.jsx:67 🎴 DEBUG: Triggering redeal animation - setting isRedealing=true
-PreparationContent.jsx:74 🎴 DEBUG: Redeal timer effect - isRedealing=false
-PreparationContent.jsx:34 🎴 DEBUG: PreparationContent - dealingCards=true, showDealing=false, isRedealing=true
-PreparationContent.jsx:74 🎴 DEBUG: Redeal timer effect - isRedealing=true
-GameService.ts:514 🎯 DEBUG: handlePhaseChange - phase=preparation, phase_data= {dealing_cards: false, redeal_multiplier: 3, weak_players: Array(2), weak_players_awaiting: Array(2), decisions_received: 0, …}
-GameService.ts:592 🎴 DEBUG: GameService - dealing_cards changed from true to false
-GameService.ts:1255 🎮 State Change: NETWORK_EVENT:PHASE_CHANGE
-GameService.ts:1256 Previous: {isConnected: true, roomId: '0E1481', playerName: 'Andy', phase: 'preparation', currentRound: 1, …}
-GameService.ts:1257 New: {isConnected: true, roomId: '0E1481', playerName: 'Andy', phase: 'preparation', currentRound: 1, …}
-GameService.ts:1258 Diff: {lastEventSequence: {…}, dealingCards: {…}}
-PreparationContent.jsx:34 🎴 DEBUG: PreparationContent - dealingCards=false, showDealing=false, isRedealing=true
-PreparationContent.jsx:84 🎴 DEBUG: Redeal timer cleanup
-PreparationContent.jsx:38 🎴 DEBUG: dealingCards prop changed to: false
-PreparationContent.jsx:63 🎴 DEBUG: Redeal trigger effect - dealingCards=false, showDealing=false, isRedealing=true
-PreparationContent.jsx:74 🎴 DEBUG: Redeal timer effect - isRedealing=true
-GameService.ts:514 🎯 DEBUG: handlePhaseChange - phase=preparation, phase_data= {dealing_cards: false, redeal_multiplier: 3, weak_players: Array(2), weak_players_awaiting: Array(2), decisions_received: 0, …}
-GameService.ts:592 🎴 DEBUG: GameService - dealing_cards changed from false to false
-GameService.ts:1255 🎮 State Change: NETWORK_EVENT:PHASE_CHANGE
-GameService.ts:1256 Previous: {isConnected: true, roomId: '0E1481', playerName: 'Andy', phase: 'preparation', currentRound: 1, …}
-GameService.ts:1257 New: {isConnected: true, roomId: '0E1481', playerName: 'Andy', phase: 'preparation', currentRound: 1, …}
-GameService.ts:1258 Diff: {lastEventSequence: {…}}
-PreparationContent.jsx:34 🎴 DEBUG: PreparationContent - dealingCards=false, showDealing=false, isRedealing=true
-PreparationContent.jsx:84 🎴 DEBUG: Redeal timer cleanup
-PreparationContent.jsx:74 🎴 DEBUG: Redeal timer effect - isRedealing=true
-GameService.ts:514 🎯 DEBUG: handlePhaseChange - phase=preparation, phase_data= {dealing_cards: false, redeal_multiplier: 3, weak_players: Array(2), weak_players_awaiting: Array(1), decisions_received: 1, …}
-GameService.ts:592 🎴 DEBUG: GameService - dealing_cards changed from false to false
-GameService.ts:1255 🎮 State Change: NETWORK_EVENT:PHASE_CHANGE
-GameService.ts:1256 Previous: {isConnected: true, roomId: '0E1481', playerName: 'Andy', phase: 'preparation', currentRound: 1, …}
-GameService.ts:1257 New: {isConnected: true, roomId: '0E1481', playerName: 'Andy', phase: 'preparation', currentRound: 1, …}
-GameService.ts:1258 Diff: {lastEventSequence: {…}, weakPlayersAwaiting: {…}, decisionsReceived: {…}}
-PreparationContent.jsx:34 🎴 DEBUG: PreparationContent - dealingCards=false, showDealing=false, isRedealing=true
-PreparationContent.jsx:84 🎴 DEBUG: Redeal timer cleanup
-PreparationContent.jsx:74 🎴 DEBUG: Redeal timer effect - isRedealing=true
-PreparationContent.jsx:78 🎴 DEBUG: Redeal timer fired - setting isRedealing=false
-PreparationContent.jsx:79 🎴 DEBUG: After redeal animation - isMyHandWeak=true, weakPlayersAwaiting=["Andy"]
-PreparationContent.jsx:34 🎴 DEBUG: PreparationContent - dealingCards=false, showDealing=false, isRedealing=false
-PreparationContent.jsx:93 🎴 DEBUG: shouldShowWeakHandAlert() called:
-      - showDealing=false
-      - isRedealing=false
-      - isMyHandWeak=true
-      - simultaneousMode=true
-      - weakPlayersAwaiting=["Andy"]
-      - decisionsReceived=1
-      - decisionsNeeded=2
-      - RESULT=true
-PreparationContent.jsx:84 🎴 DEBUG: Redeal timer cleanup
-PreparationContent.jsx:74 🎴 DEBUG: Redeal timer effect - isRedealing=false
-GameService.ts:1220 🎮 Action sent: accept_redeal {player_name: 'Andy'}
- 🎴 DEBUG: PreparationContent - dealingCards=false, showDealing=false, isRedealing=false
- 🎴 DEBUG: shouldShowWeakHandAlert() called:
-      - showDealing=false
-      - isRedealing=false
-      - isMyHandWeak=true
-      - simultaneousMode=true
-      - weakPlayersAwaiting=["Andy"]
-      - decisionsReceived=1
-      - decisionsNeeded=2
-      - RESULT=true
- 🎯 DEBUG: handlePhaseChange - phase=preparation, phase_data= {dealing_cards: true, redeal_multiplier: 4, weak_players: Array(2), weak_players_awaiting: Array(1), decisions_received: 1, …}
- 🎴 DEBUG: GameService - dealing_cards changed from false to true
- 🎮 State Change: NETWORK_EVENT:PHASE_CHANGE
-GameService.ts:1256 Previous: {isConnected: true, roomId: '0E1481', playerName: 'Andy', phase: 'preparation', currentRound: 1, …}
-GameService.ts:1257 New: {isConnected: true, roomId: '0E1481', playerName: 'Andy', phase: 'preparation', currentRound: 1, …}
-GameService.ts:1258 Diff: {redealMultiplier: {…}, lastEventSequence: {…}, dealingCards: {…}}
-PreparationContent.jsx:34 🎴 DEBUG: PreparationContent - dealingCards=true, showDealing=false, isRedealing=false
-PreparationContent.jsx:93 🎴 DEBUG: shouldShowWeakHandAlert() called:
-      - showDealing=false
-      - isRedealing=false
-      - isMyHandWeak=true
-      - simultaneousMode=true
-      - weakPlayersAwaiting=["Andy"]
-      - decisionsReceived=1
-      - decisionsNeeded=2
-      - RESULT=true
-GameService.ts:514 🎯 DEBUG: handlePhaseChange - phase=preparation, phase_data= {dealing_cards: true, redeal_multiplier: 4, weak_players: Array(2), weak_players_awaiting: Array(2), decisions_received: 0, …}
-GameService.ts:592 🎴 DEBUG: GameService - dealing_cards changed from true to true
-GameService.ts:1255 🎮 State Change: NETWORK_EVENT:PHASE_CHANGE
-GameService.ts:1256 Previous: {isConnected: true, roomId: '0E1481', playerName: 'Andy', phase: 'preparation', currentRound: 1, …}
-GameService.ts:1257 New: {isConnected: true, roomId: '0E1481', playerName: 'Andy', phase: 'preparation', currentRound: 1, …}
-GameService.ts:1258 Diff: {myHand: {…}, lastEventSequence: {…}, weakPlayersAwaiting: {…}, decisionsReceived: {…}, handValue: {…}, …}
-PreparationContent.jsx:38 🎴 DEBUG: dealingCards prop changed to: true
-PreparationContent.jsx:63 🎴 DEBUG: Redeal trigger effect - dealingCards=true, showDealing=false, isRedealing=false
-PreparationContent.jsx:67 🎴 DEBUG: Triggering redeal animation - setting isRedealing=true
-PreparationContent.jsx:74 🎴 DEBUG: Redeal timer effect - isRedealing=false
-PreparationContent.jsx:34 🎴 DEBUG: PreparationContent - dealingCards=true, showDealing=false, isRedealing=true
-GameService.ts:514 🎯 DEBUG: handlePhaseChange - phase=preparation, phase_data= {dealing_cards: false, redeal_multiplier: 4, weak_players: Array(2), weak_players_awaiting: Array(2), decisions_received: 0, …}
-GameService.ts:592 🎴 DEBUG: GameService - dealing_cards changed from true to false
-GameService.ts:1255 🎮 State Change: NETWORK_EVENT:PHASE_CHANGE
-GameService.ts:1256 Previous: {isConnected: true, roomId: '0E1481', playerName: 'Andy', phase: 'preparation', currentRound: 1, …}
-GameService.ts:1257 New: {isConnected: true, roomId: '0E1481', playerName: 'Andy', phase: 'preparation', currentRound: 1, …}
-GameService.ts:1258 Diff: {lastEventSequence: {…}, dealingCards: {…}}
-GameService.ts:514 🎯 DEBUG: handlePhaseChange - phase=preparation, phase_data= {dealing_cards: false, redeal_multiplier: 4, weak_players: Array(2), weak_players_awaiting: Array(2), decisions_received: 0, …}
-GameService.ts:592 🎴 DEBUG: GameService - dealing_cards changed from false to false
-GameService.ts:1255 🎮 State Change: NETWORK_EVENT:PHASE_CHANGE
-GameService.ts:1256 Previous: {isConnected: true, roomId: '0E1481', playerName: 'Andy', phase: 'preparation', currentRound: 1, …}
-GameService.ts:1257 New: {isConnected: true, roomId: '0E1481', playerName: 'Andy', phase: 'preparation', currentRound: 1, …}
-GameService.ts:1258 Diff: {lastEventSequence: {…}}
-PreparationContent.jsx:74 🎴 DEBUG: Redeal timer effect - isRedealing=true
-PreparationContent.jsx:34 🎴 DEBUG: PreparationContent - dealingCards=false, showDealing=false, isRedealing=true
-PreparationContent.jsx:84 🎴 DEBUG: Redeal timer cleanup
-PreparationContent.jsx:38 🎴 DEBUG: dealingCards prop changed to: false
-PreparationContent.jsx:63 🎴 DEBUG: Redeal trigger effect - dealingCards=false, showDealing=false, isRedealing=true
-PreparationContent.jsx:74 🎴 DEBUG: Redeal timer effect - isRedealing=true
-PreparationContent.jsx:78 🎴 DEBUG: Redeal timer fired - setting isRedealing=false
-PreparationContent.jsx:79 🎴 DEBUG: After redeal animation - isMyHandWeak=true, weakPlayersAwaiting=["Andy","Bot 2"]
-PreparationContent.jsx:34 🎴 DEBUG: PreparationContent - dealingCards=false, showDealing=false, isRedealing=false
-PreparationContent.jsx:93 🎴 DEBUG: shouldShowWeakHandAlert() called:
-      - showDealing=false
-      - isRedealing=false
-      - isMyHandWeak=true
-      - simultaneousMode=true
-      - weakPlayersAwaiting=["Andy","Bot 2"]
-      - decisionsReceived=0
-      - decisionsNeeded=2
-      - RESULT=true
-PreparationContent.jsx:84 🎴 DEBUG: Redeal timer cleanup
-PreparationContent.jsx:74 🎴 DEBUG: Redeal timer effect - isRedealing=false
-GameService.ts:1220 🎮 Action sent: accept_redeal {player_name: 'Andy'}
-PreparationContent.jsx:34 🎴 DEBUG: PreparationContent - dealingCards=false, showDealing=false, isRedealing=false
-PreparationContent.jsx:93 🎴 DEBUG: shouldShowWeakHandAlert() called:
-      - showDealing=false
-      - isRedealing=false
-      - isMyHandWeak=true
-      - simultaneousMode=true
-      - weakPlayersAwaiting=["Andy","Bot 2"]
-      - decisionsReceived=0
-      - decisionsNeeded=2
-      - RESULT=true
-GameService.ts:514 🎯 DEBUG: handlePhaseChange - phase=preparation, phase_data= {dealing_cards: false, redeal_multiplier: 4, weak_players: Array(2), weak_players_awaiting: Array(1), decisions_received: 1, …}
-GameService.ts:592 🎴 DEBUG: GameService - dealing_cards changed from false to false
-GameService.ts:1255 🎮 State Change: NETWORK_EVENT:PHASE_CHANGE
-GameService.ts:1256 Previous: {isConnected: true, roomId: '0E1481', playerName: 'Andy', phase: 'preparation', currentRound: 1, …}
-GameService.ts:1257 New: {isConnected: true, roomId: '0E1481', playerName: 'Andy', phase: 'preparation', currentRound: 1, …}
-GameService.ts:1258 Diff: {lastEventSequence: {…}, weakPlayersAwaiting: {…}, decisionsReceived: {…}, isMyDecision: {…}}
-PreparationContent.jsx:34 🎴 DEBUG: PreparationContent - dealingCards=false, showDealing=false, isRedealing=false
-PreparationContent.jsx:93 🎴 DEBUG: shouldShowWeakHandAlert() called:
-      - showDealing=false
-      - isRedealing=false
-      - isMyHandWeak=true
-      - simultaneousMode=true
-      - weakPlayersAwaiting=["Bot 2"]
-      - decisionsReceived=1
-      - decisionsNeeded=2
-      - RESULT=true
-PreparationContent.jsx:74 🎴 DEBUG: Redeal timer effect - isRedealing=false
-PreparationContent.jsx:34 🎴 DEBUG: PreparationContent - dealingCards=false, showDealing=false, isRedealing=false
-PreparationContent.jsx:93 🎴 DEBUG: shouldShowWeakHandAlert() called:
-      - showDealing=false
-      - isRedealing=false
-      - isMyHandWeak=true
-      - simultaneousMode=true
-      - weakPlayersAwaiting=["Bot 2"]
-      - decisionsReceived=1
-      - decisionsNeeded=2
-      - RESULT=true
-GameService.ts:514 🎯 DEBUG: handlePhaseChange - phase=preparation, phase_data= {dealing_cards: true, redeal_multiplier: 5, weak_players: Array(2), weak_players_awaiting: Array(1), decisions_received: 1, …}
-GameService.ts:592 🎴 DEBUG: GameService - dealing_cards changed from false to true
-GameService.ts:1255 🎮 State Change: NETWORK_EVENT:PHASE_CHANGE
-GameService.ts:1256 Previous: {isConnected: true, roomId: '0E1481', playerName: 'Andy', phase: 'preparation', currentRound: 1, …}
-GameService.ts:1257 New: {isConnected: true, roomId: '0E1481', playerName: 'Andy', phase: 'preparation', currentRound: 1, …}
-GameService.ts:1258 Diff: {redealMultiplier: {…}, lastEventSequence: {…}, dealingCards: {…}}
-PreparationContent.jsx:34 🎴 DEBUG: PreparationContent - dealingCards=true, showDealing=false, isRedealing=false
-PreparationContent.jsx:93 🎴 DEBUG: shouldShowWeakHandAlert() called:
-      - showDealing=false
-      - isRedealing=false
-      - isMyHandWeak=true
-      - simultaneousMode=true
-      - weakPlayersAwaiting=["Bot 2"]
-      - decisionsReceived=1
-      - decisionsNeeded=2
-      - RESULT=true
-GameService.ts:514 🎯 DEBUG: handlePhaseChange - phase=preparation, phase_data= {dealing_cards: true, redeal_multiplier: 5, weak_players: Array(2), weak_players_awaiting: Array(2), decisions_received: 0, …}
-GameService.ts:592 🎴 DEBUG: GameService - dealing_cards changed from true to true
-GameService.ts:1255 🎮 State Change: NETWORK_EVENT:PHASE_CHANGE
-GameService.ts:1256 Previous: {isConnected: true, roomId: '0E1481', playerName: 'Andy', phase: 'preparation', currentRound: 1, …}
-GameService.ts:1257 New: {isConnected: true, roomId: '0E1481', playerName: 'Andy', phase: 'preparation', currentRound: 1, …}
-GameService.ts:1258 Diff: {myHand: {…}, lastEventSequence: {…}, weakPlayersAwaiting: {…}, decisionsReceived: {…}, handValue: {…}, …}
-PreparationContent.jsx:38 🎴 DEBUG: dealingCards prop changed to: true
-PreparationContent.jsx:63 🎴 DEBUG: Redeal trigger effect - dealingCards=true, showDealing=false, isRedealing=false
-PreparationContent.jsx:67 🎴 DEBUG: Triggering redeal animation - setting isRedealing=true
-PreparationContent.jsx:74 🎴 DEBUG: Redeal timer effect - isRedealing=false
-PreparationContent.jsx:34 🎴 DEBUG: PreparationContent - dealingCards=true, showDealing=false, isRedealing=true
-PreparationContent.jsx:74 🎴 DEBUG: Redeal timer effect - isRedealing=true
-GameService.ts:514 🎯 DEBUG: handlePhaseChange - phase=preparation, phase_data= {dealing_cards: false, redeal_multiplier: 5, weak_players: Array(2), weak_players_awaiting: Array(2), decisions_received: 0, …}
-GameService.ts:592 🎴 DEBUG: GameService - dealing_cards changed from true to false
-GameService.ts:1255 🎮 State Change: NETWORK_EVENT:PHASE_CHANGE
-GameService.ts:1256 Previous: {isConnected: true, roomId: '0E1481', playerName: 'Andy', phase: 'preparation', currentRound: 1, …}
-GameService.ts:1257 New: {isConnected: true, roomId: '0E1481', playerName: 'Andy', phase: 'preparation', currentRound: 1, …}
-GameService.ts:1258 Diff: {lastEventSequence: {…}, dealingCards: {…}}
-PreparationContent.jsx:34 🎴 DEBUG: PreparationContent - dealingCards=false, showDealing=false, isRedealing=true
-PreparationContent.jsx:84 🎴 DEBUG: Redeal timer cleanup
-PreparationContent.jsx:38 🎴 DEBUG: dealingCards prop changed to: false
-PreparationContent.jsx:63 🎴 DEBUG: Redeal trigger effect - dealingCards=false, showDealing=false, isRedealing=true
-PreparationContent.jsx:74 🎴 DEBUG: Redeal timer effect - isRedealing=true
-PreparationContent.jsx:34 🎴 DEBUG: PreparationContent - dealingCards=false, showDealing=false, isRedealing=true
-GameService.ts:514 🎯 DEBUG: handlePhaseChange - phase=preparation, phase_data= {dealing_cards: false, redeal_multiplier: 5, weak_players: Array(2), weak_players_awaiting: Array(2), decisions_received: 0, …}
-GameService.ts:592 🎴 DEBUG: GameService - dealing_cards changed from false to false
-GameService.ts:1255 🎮 State Change: NETWORK_EVENT:PHASE_CHANGE
-GameService.ts:1256 Previous: {isConnected: true, roomId: '0E1481', playerName: 'Andy', phase: 'preparation', currentRound: 1, …}
-GameService.ts:1257 New: {isConnected: true, roomId: '0E1481', playerName: 'Andy', phase: 'preparation', currentRound: 1, …}
-GameService.ts:1258 Diff: {lastEventSequence: {…}}
-PreparationContent.jsx:34 🎴 DEBUG: PreparationContent - dealingCards=false, showDealing=false, isRedealing=true
-PreparationContent.jsx:84 🎴 DEBUG: Redeal timer cleanup
-PreparationContent.jsx:74 🎴 DEBUG: Redeal timer effect - isRedealing=true
-GameService.ts:514 🎯 DEBUG: handlePhaseChange - phase=preparation, phase_data= {dealing_cards: false, redeal_multiplier: 5, weak_players: Array(2), weak_players_awaiting: Array(1), decisions_received: 1, …}
-GameService.ts:592 🎴 DEBUG: GameService - dealing_cards changed from false to false
-GameService.ts:1255 🎮 State Change: NETWORK_EVENT:PHASE_CHANGE
-GameService.ts:1256 Previous: {isConnected: true, roomId: '0E1481', playerName: 'Andy', phase: 'preparation', currentRound: 1, …}
-GameService.ts:1257 New: {isConnected: true, roomId: '0E1481', playerName: 'Andy', phase: 'preparation', currentRound: 1, …}
-GameService.ts:1258 Diff: {lastEventSequence: {…}, weakPlayersAwaiting: {…}, decisionsReceived: {…}}
-PreparationContent.jsx:34 🎴 DEBUG: PreparationContent - dealingCards=false, showDealing=false, isRedealing=true
-PreparationContent.jsx:84 🎴 DEBUG: Redeal timer cleanup
-PreparationContent.jsx:74 🎴 DEBUG: Redeal timer effect - isRedealing=true
-PreparationContent.jsx:78 🎴 DEBUG: Redeal timer fired - setting isRedealing=false
-PreparationContent.jsx:79 🎴 DEBUG: After redeal animation - isMyHandWeak=true, weakPlayersAwaiting=["Andy"]
-PreparationContent.jsx:34 🎴 DEBUG: PreparationContent - dealingCards=false, showDealing=false, isRedealing=false
-PreparationContent.jsx:93 🎴 DEBUG: shouldShowWeakHandAlert() called:
-      - showDealing=false
-      - isRedealing=false
-      - isMyHandWeak=true
-      - simultaneousMode=true
-      - weakPlayersAwaiting=["Andy"]
-      - decisionsReceived=1
-      - decisionsNeeded=2
-      - RESULT=true
-PreparationContent.jsx:84 🎴 DEBUG: Redeal timer cleanup
-PreparationContent.jsx:74 🎴 DEBUG: Redeal timer effect - isRedealing=false
-GameService.ts:1220 🎮 Action sent: accept_redeal {player_name: 'Andy'}
-PreparationContent.jsx:34 🎴 DEBUG: PreparationContent - dealingCards=false, showDealing=false, isRedealing=false
-PreparationContent.jsx:93 🎴 DEBUG: shouldShowWeakHandAlert() called:
-      - showDealing=false
-      - isRedealing=false
-      - isMyHandWeak=true
-      - simultaneousMode=true
-      - weakPlayersAwaiting=["Andy"]
-      - decisionsReceived=1
-      - decisionsNeeded=2
-      - RESULT=true
- 🎯 DEBUG: handlePhaseChange - phase=preparation, phase_data= {dealing_cards: true, redeal_multiplier: 6, weak_players: Array(2), weak_players_awaiting: Array(1), decisions_received: 1, …}
- 🎴 DEBUG: GameService - dealing_cards changed from false to true
- 🎮 State Change: NETWORK_EVENT:PHASE_CHANGE
- Previous: {isConnected: true, roomId: '0E1481', playerName: 'Andy', phase: 'preparation', currentRound: 1, …}
- New: {isConnected: true, roomId: '0E1481', playerName: 'Andy', phase: 'preparation', currentRound: 1, …}
- Diff: {redealMultiplier: {…}, lastEventSequence: {…}, dealingCards: {…}}
- 🎴 DEBUG: PreparationContent - dealingCards=true, showDealing=false, isRedealing=false
- 🎴 DEBUG: shouldShowWeakHandAlert() called:
-      - showDealing=false
-      - isRedealing=false
-      - isMyHandWeak=true
-      - simultaneousMode=true
-      - weakPlayersAwaiting=["Andy"]
-      - decisionsReceived=1
-      - decisionsNeeded=2
-      - RESULT=true
- 🎯 DEBUG: handlePhaseChange - phase=preparation, phase_data= {dealing_cards: false, redeal_multiplier: 6, weak_players: Array(0), weak_players_awaiting: Array(1), decisions_received: 1, …}
- 🎴 DEBUG: GameService - dealing_cards changed from true to false
- 🎮 State Change: NETWORK_EVENT:PHASE_CHANGE
-GameService.ts:1256 Previous: {isConnected: true, roomId: '0E1481', playerName: 'Andy', phase: 'preparation', currentRound: 1, …}
-GameService.ts:1257 New: {isConnected: true, roomId: '0E1481', playerName: 'Andy', phase: 'preparation', currentRound: 1, …}
-GameService.ts:1258 Diff: {myHand: {…}, lastEventSequence: {…}, dealingCards: {…}, isMyHandWeak: {…}, handValue: {…}, …}
-PreparationContent.jsx:38 🎴 DEBUG: dealingCards prop changed to: true
-PreparationContent.jsx:63 🎴 DEBUG: Redeal trigger effect - dealingCards=true, showDealing=false, isRedealing=false
-PreparationContent.jsx:67 🎴 DEBUG: Triggering redeal animation - setting isRedealing=true
-PreparationContent.jsx:74 🎴 DEBUG: Redeal timer effect - isRedealing=false
-PreparationContent.jsx:34 🎴 DEBUG: PreparationContent - dealingCards=false, showDealing=false, isRedealing=true
-GameService.ts:514 🎯 DEBUG: handlePhaseChange - phase=preparation, phase_data= {dealing_cards: false, redeal_multiplier: 6, weak_players: Array(0), weak_players_awaiting: Array(1), decisions_received: 1, …}
-GameService.ts:592 🎴 DEBUG: GameService - dealing_cards changed from false to false
-GameService.ts:1255 🎮 State Change: NETWORK_EVENT:PHASE_CHANGE
-GameService.ts:1256 Previous: {isConnected: true, roomId: '0E1481', playerName: 'Andy', phase: 'preparation', currentRound: 1, …}
-GameService.ts:1257 New: {isConnected: true, roomId: '0E1481', playerName: 'Andy', phase: 'preparation', currentRound: 1, …}
-GameService.ts:1258 Diff: {lastEventSequence: {…}}
-PreparationContent.jsx:38 🎴 DEBUG: dealingCards prop changed to: false
-PreparationContent.jsx:43 🎴 DEBUG: isMyHandWeak prop changed to: false
-PreparationContent.jsx:44 🎴 DEBUG: Current state - showDealing=false, isRedealing=true
-PreparationContent.jsx:63 🎴 DEBUG: Redeal trigger effect - dealingCards=false, showDealing=false, isRedealing=true
-PreparationContent.jsx:74 🎴 DEBUG: Redeal timer effect - isRedealing=true
-PreparationContent.jsx:34 🎴 DEBUG: PreparationContent - dealingCards=false, showDealing=false, isRedealing=true
 GameService.ts:514 🎯 DEBUG: handlePhaseChange - phase=declaration, phase_data= {declaration_order: Array(4), current_declarer_index: 0, declarations: {…}, declaration_total: 0}
-GameService.ts:1255 🎮 State Change: NETWORK_EVENT:PHASE_CHANGE
-GameService.ts:1256 Previous: {isConnected: true, roomId: '0E1481', playerName: 'Andy', phase: 'preparation', currentRound: 1, …}
-GameService.ts:1257 New: {isConnected: true, roomId: '0E1481', playerName: 'Andy', phase: 'declaration', currentRound: 1, …}
-GameService.ts:1258 Diff: {phase: {…}, declarationOrder: {…}, lastEventSequence: {…}, currentTotal: {…}, declarationProgress: {…}, …}
-GameService.ts:514 🎯 DEBUG: handlePhaseChange - phase=declaration, phase_data= {declaration_order: Array(4), current_declarer_index: 0, declarations: {…}, declaration_total: 0, current_declarer: 'Andy'}
-GameService.ts:1255 🎮 State Change: NETWORK_EVENT:PHASE_CHANGE
-GameService.ts:1256 Previous: {isConnected: true, roomId: '0E1481', playerName: 'Andy', phase: 'declaration', currentRound: 1, …}
-GameService.ts:1257 New: {isConnected: true, roomId: '0E1481', playerName: 'Andy', phase: 'declaration', currentRound: 1, …}
-GameService.ts:1258 Diff: {currentDeclarer: {…}, isMyTurn: {…}, allowedActions: {…}, validOptions: {…}, lastEventSequence: {…}}
-PreparationContent.jsx:84 🎴 DEBUG: Redeal timer cleanup
-PreparationContent.jsx:74 🎴 DEBUG: Redeal timer effect - isRedealing=true
+GameService.ts:555 🎴 SORT DEBUG: Before sorting myHand: [{"type":"soldier","color":"red","value":2},{"type":"chariot","color":"black","value":7},{"type":"soldier","color":"black","value":1},{"type":"cannon","color":"black","value":3},{"type":"horse","color":"red","value":6},{"type":"soldier","color":"red","value":2},{"type":"soldier","color":"red","value":2},{"type":"advisor","color":"black","value":11}]
+GameService.ts:569 🎴 SORT DEBUG: After sorting myHand: [{"type":"horse","color":"red","value":6},{"type":"soldier","color":"red","value":2},{"type":"soldier","color":"red","value":2},{"type":"soldier","color":"red","value":2},{"type":"advisor","color":"black","value":11},{"type":"chariot","color":"black","value":7},{"type":"cannon","color":"black","value":3},{"type":"soldier","color":"black","value":1}]
+GameService.ts:1353 🎮 State Change: NETWORK_EVENT:PHASE_CHANGE
+GameService.ts:1354 Previous: {isConnected: true, roomId: 'C0D144', playerName: 'Andy', phase: 'preparation', currentRound: 1, …}
+GameService.ts:1355 New: {isConnected: true, roomId: 'C0D144', playerName: 'Andy', phase: 'declaration', currentRound: 1, …}
+GameService.ts:1356 Diff: {phase: {…}, declarationOrder: {…}, lastEventSequence: {…}, currentTotal: {…}, declarationProgress: {…}, …}
+GameService.ts:514 🎯 DEBUG: handlePhaseChange - phase=declaration, phase_data= {declaration_order: Array(4), current_declarer_index: 0, declarations: {…}, declaration_total: 0, current_declarer: 'Bot 4'}
+GameService.ts:555 🎴 SORT DEBUG: Before sorting myHand: [{"type":"soldier","color":"red","value":2},{"type":"chariot","color":"black","value":7},{"type":"soldier","color":"black","value":1},{"type":"cannon","color":"black","value":3},{"type":"horse","color":"red","value":6},{"type":"soldier","color":"red","value":2},{"type":"soldier","color":"red","value":2},{"type":"advisor","color":"black","value":11}]
+GameService.ts:569 🎴 SORT DEBUG: After sorting myHand: [{"type":"horse","color":"red","value":6},{"type":"soldier","color":"red","value":2},{"type":"soldier","color":"red","value":2},{"type":"soldier","color":"red","value":2},{"type":"advisor","color":"black","value":11},{"type":"chariot","color":"black","value":7},{"type":"cannon","color":"black","value":3},{"type":"soldier","color":"black","value":1}]
+GameService.ts:1353 🎮 State Change: NETWORK_EVENT:PHASE_CHANGE
+GameService.ts:1354 Previous: {isConnected: true, roomId: 'C0D144', playerName: 'Andy', phase: 'declaration', currentRound: 1, …}
+GameService.ts:1355 New: {isConnected: true, roomId: 'C0D144', playerName: 'Andy', phase: 'declaration', currentRound: 1, …}
+GameService.ts:1356 Diff: {currentDeclarer: {…}, lastEventSequence: {…}}
 PreparationContent.jsx:56 🎴 DEBUG: Initial dealing effect cleanup
-PreparationContent.jsx:84 🎴 DEBUG: Redeal timer cleanup
+PieceTray.jsx:57 🎴 PIECETRAY DEBUG: Rendering pieces in order: (8) [{…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}]
+PieceTray.jsx:57 🎴 PIECETRAY DEBUG: Rendering pieces in order: (8) [{…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}]
+GameService.ts:514 🎯 DEBUG: handlePhaseChange - phase=declaration, phase_data= {declaration_order: Array(4), current_declarer_index: 1, declarations: {…}, declaration_total: 2, current_declarer: 'Andy'}
+GameService.ts:555 🎴 SORT DEBUG: Before sorting myHand: [{"type":"soldier","color":"red","value":2},{"type":"chariot","color":"black","value":7},{"type":"soldier","color":"black","value":1},{"type":"cannon","color":"black","value":3},{"type":"horse","color":"red","value":6},{"type":"soldier","color":"red","value":2},{"type":"soldier","color":"red","value":2},{"type":"advisor","color":"black","value":11}]
+GameService.ts:569 🎴 SORT DEBUG: After sorting myHand: [{"type":"horse","color":"red","value":6},{"type":"soldier","color":"red","value":2},{"type":"soldier","color":"red","value":2},{"type":"soldier","color":"red","value":2},{"type":"advisor","color":"black","value":11},{"type":"chariot","color":"black","value":7},{"type":"cannon","color":"black","value":3},{"type":"soldier","color":"black","value":1}]
+GameService.ts:1353 🎮 State Change: NETWORK_EVENT:PHASE_CHANGE
+GameService.ts:1354 Previous: {isConnected: true, roomId: 'C0D144', playerName: 'Andy', phase: 'declaration', currentRound: 1, …}
+GameService.ts:1355 New: {isConnected: true, roomId: 'C0D144', playerName: 'Andy', phase: 'declaration', currentRound: 1, …}
+GameService.ts:1356 Diff: {declarations: {…}, currentDeclarer: {…}, isMyTurn: {…}, allowedActions: {…}, validOptions: {…}, …}
+PieceTray.jsx:57 🎴 PIECETRAY DEBUG: Rendering pieces in order: (8) [{…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}]
+GameService.ts:1318 🎮 Action sent: declare {value: 4, player_name: 'Andy'}
+GameService.ts:514 🎯 DEBUG: handlePhaseChange - phase=declaration, phase_data= {declaration_order: Array(4), current_declarer_index: 2, declarations: {…}, declaration_total: 6, current_declarer: 'Bot 2'}
+GameService.ts:555 🎴 SORT DEBUG: Before sorting myHand: [{"type":"soldier","color":"red","value":2},{"type":"chariot","color":"black","value":7},{"type":"soldier","color":"black","value":1},{"type":"cannon","color":"black","value":3},{"type":"horse","color":"red","value":6},{"type":"soldier","color":"red","value":2},{"type":"soldier","color":"red","value":2},{"type":"advisor","color":"black","value":11}]
+GameService.ts:569 🎴 SORT DEBUG: After sorting myHand: [{"type":"horse","color":"red","value":6},{"type":"soldier","color":"red","value":2},{"type":"soldier","color":"red","value":2},{"type":"soldier","color":"red","value":2},{"type":"advisor","color":"black","value":11},{"type":"chariot","color":"black","value":7},{"type":"cannon","color":"black","value":3},{"type":"soldier","color":"black","value":1}]
+GameService.ts:1353 🎮 State Change: NETWORK_EVENT:PHASE_CHANGE
+GameService.ts:1354 Previous: {isConnected: true, roomId: 'C0D144', playerName: 'Andy', phase: 'declaration', currentRound: 1, …}
+GameService.ts:1355 New: {isConnected: true, roomId: 'C0D144', playerName: 'Andy', phase: 'declaration', currentRound: 1, …}
+GameService.ts:1356 Diff: {declarations: {…}, currentDeclarer: {…}, isMyTurn: {…}, allowedActions: {…}, validOptions: {…}, …}
+PieceTray.jsx:57 🎴 PIECETRAY DEBUG: Rendering pieces in order: (8) [{…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}]
+GameService.ts:514 🎯 DEBUG: handlePhaseChange - phase=declaration, phase_data= {declaration_order: Array(4), current_declarer_index: 3, declarations: {…}, declaration_total: 7, current_declarer: 'Bot 3'}
+GameService.ts:555 🎴 SORT DEBUG: Before sorting myHand: [{"type":"soldier","color":"red","value":2},{"type":"chariot","color":"black","value":7},{"type":"soldier","color":"black","value":1},{"type":"cannon","color":"black","value":3},{"type":"horse","color":"red","value":6},{"type":"soldier","color":"red","value":2},{"type":"soldier","color":"red","value":2},{"type":"advisor","color":"black","value":11}]
+GameService.ts:569 🎴 SORT DEBUG: After sorting myHand: [{"type":"horse","color":"red","value":6},{"type":"soldier","color":"red","value":2},{"type":"soldier","color":"red","value":2},{"type":"soldier","color":"red","value":2},{"type":"advisor","color":"black","value":11},{"type":"chariot","color":"black","value":7},{"type":"cannon","color":"black","value":3},{"type":"soldier","color":"black","value":1}]
+GameService.ts:1353 🎮 State Change: NETWORK_EVENT:PHASE_CHANGE
+GameService.ts:1354 Previous: {isConnected: true, roomId: 'C0D144', playerName: 'Andy', phase: 'declaration', currentRound: 1, …}
+GameService.ts:1355 New: {isConnected: true, roomId: 'C0D144', playerName: 'Andy', phase: 'declaration', currentRound: 1, …}
+GameService.ts:1356 Diff: {declarations: {…}, currentDeclarer: {…}, lastEventSequence: {…}, currentTotal: {…}, declarationProgress: {…}, …}
+PieceTray.jsx:57 🎴 PIECETRAY DEBUG: Rendering pieces in order: (8) [{…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}]
+GameService.ts:514 🎯 DEBUG: handlePhaseChange - phase=declaration, phase_data= {declaration_order: Array(4), current_declarer_index: 4, declarations: {…}, declaration_total: 8, current_declarer: null}
+GameService.ts:555 🎴 SORT DEBUG: Before sorting myHand: [{"type":"soldier","color":"red","value":2},{"type":"chariot","color":"black","value":7},{"type":"soldier","color":"black","value":1},{"type":"cannon","color":"black","value":3},{"type":"horse","color":"red","value":6},{"type":"soldier","color":"red","value":2},{"type":"soldier","color":"red","value":2},{"type":"advisor","color":"black","value":11}]
+GameService.ts:569 🎴 SORT DEBUG: After sorting myHand: [{"type":"horse","color":"red","value":6},{"type":"soldier","color":"red","value":2},{"type":"soldier","color":"red","value":2},{"type":"soldier","color":"red","value":2},{"type":"advisor","color":"black","value":11},{"type":"chariot","color":"black","value":7},{"type":"cannon","color":"black","value":3},{"type":"soldier","color":"black","value":1}]
+GameService.ts:1353 🎮 State Change: NETWORK_EVENT:PHASE_CHANGE
+GameService.ts:1354 Previous: {isConnected: true, roomId: 'C0D144', playerName: 'Andy', phase: 'declaration', currentRound: 1, …}
+GameService.ts:1355 New: {isConnected: true, roomId: 'C0D144', playerName: 'Andy', phase: 'declaration', currentRound: 1, …}
+GameService.ts:1356 Diff: {declarations: {…}, lastEventSequence: {…}, currentTotal: {…}, declarationProgress: {…}, isLastPlayer: {…}}
+GameService.ts:514 🎯 DEBUG: handlePhaseChange - phase=turn, phase_data= {current_turn_starter: 'Bot 4', current_player: 'Bot 4', turn_order: Array(4), required_piece_count: null, turn_plays: {…}, …}
+GameService.ts:555 🎴 SORT DEBUG: Before sorting myHand: [{"type":"soldier","color":"red","value":2},{"type":"chariot","color":"black","value":7},{"type":"soldier","color":"black","value":1},{"type":"cannon","color":"black","value":3},{"type":"horse","color":"red","value":6},{"type":"soldier","color":"red","value":2},{"type":"soldier","color":"red","value":2},{"type":"advisor","color":"black","value":11}]
+GameService.ts:569 🎴 SORT DEBUG: After sorting myHand: [{"type":"horse","color":"red","value":6},{"type":"soldier","color":"red","value":2},{"type":"soldier","color":"red","value":2},{"type":"soldier","color":"red","value":2},{"type":"advisor","color":"black","value":11},{"type":"chariot","color":"black","value":7},{"type":"cannon","color":"black","value":3},{"type":"soldier","color":"black","value":1}]
+GameService.ts:1353 🎮 State Change: NETWORK_EVENT:PHASE_CHANGE
+GameService.ts:1354 Previous: {isConnected: true, roomId: 'C0D144', playerName: 'Andy', phase: 'declaration', currentRound: 1, …}
+GameService.ts:1355 New: {isConnected: true, roomId: 'C0D144', playerName: 'Andy', phase: 'turn', currentRound: 1, …}
+GameService.ts:1356 Diff: {phase: {…}, currentTurnStarter: {…}, turnOrder: {…}, currentPlayer: {…}, currentTurnNumber: {…}, …}
+PieceTray.jsx:57 🎴 PIECETRAY DEBUG: Rendering pieces in order: (8) [{…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}]
+PieceTray.jsx:57 🎴 PIECETRAY DEBUG: Rendering pieces in order: (8) [{…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}]
+GameService.ts:514 🎯 DEBUG: handlePhaseChange - phase=turn, phase_data= {current_turn_starter: 'Bot 4', current_player: 'Andy', turn_order: Array(4), required_piece_count: 1, turn_plays: {…}, …}
+GameService.ts:555 🎴 SORT DEBUG: Before sorting myHand: [{"type":"soldier","color":"red","value":2},{"type":"chariot","color":"black","value":7},{"type":"soldier","color":"black","value":1},{"type":"cannon","color":"black","value":3},{"type":"horse","color":"red","value":6},{"type":"soldier","color":"red","value":2},{"type":"soldier","color":"red","value":2},{"type":"advisor","color":"black","value":11}]
+GameService.ts:569 🎴 SORT DEBUG: After sorting myHand: [{"type":"horse","color":"red","value":6},{"type":"soldier","color":"red","value":2},{"type":"soldier","color":"red","value":2},{"type":"soldier","color":"red","value":2},{"type":"advisor","color":"black","value":11},{"type":"chariot","color":"black","value":7},{"type":"cannon","color":"black","value":3},{"type":"soldier","color":"black","value":1}]
+GameService.ts:1353 🎮 State Change: NETWORK_EVENT:PHASE_CHANGE
+GameService.ts:1354 Previous: {isConnected: true, roomId: 'C0D144', playerName: 'Andy', phase: 'turn', currentRound: 1, …}
+GameService.ts:1355 New: {isConnected: true, roomId: 'C0D144', playerName: 'Andy', phase: 'turn', currentRound: 1, …}
+GameService.ts:1356 Diff: {players: {…}, currentPlayer: {…}, currentTurnPlays: {…}, requiredPieceCount: {…}, isMyTurn: {…}, …}
+PieceTray.jsx:57 🎴 PIECETRAY DEBUG: Rendering pieces in order: (8) [{…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}]
+GameService.ts:1318 🎮 Action sent: play {piece_indices: Array(1), player_name: 'Andy', play_value: 7}
+GameService.ts:514 🎯 DEBUG: handlePhaseChange - phase=turn, phase_data= {current_turn_starter: 'Bot 4', current_player: 'Bot 2', turn_order: Array(4), required_piece_count: 1, turn_plays: {…}, …}
+GameService.ts:555 🎴 SORT DEBUG: Before sorting myHand: [{"type":"soldier","color":"red","value":2},{"type":"chariot","color":"black","value":7},{"type":"soldier","color":"black","value":1},{"type":"cannon","color":"black","value":3},{"type":"horse","color":"red","value":6},{"type":"soldier","color":"red","value":2},{"type":"advisor","color":"black","value":11}]
+GameService.ts:569 🎴 SORT DEBUG: After sorting myHand: [{"type":"horse","color":"red","value":6},{"type":"soldier","color":"red","value":2},{"type":"soldier","color":"red","value":2},{"type":"advisor","color":"black","value":11},{"type":"chariot","color":"black","value":7},{"type":"cannon","color":"black","value":3},{"type":"soldier","color":"black","value":1}]
+GameService.ts:1353 🎮 State Change: NETWORK_EVENT:PHASE_CHANGE
+GameService.ts:1354 Previous: {isConnected: true, roomId: 'C0D144', playerName: 'Andy', phase: 'turn', currentRound: 1, …}
+GameService.ts:1355 New: {isConnected: true, roomId: 'C0D144', playerName: 'Andy', phase: 'turn', currentRound: 1, …}
+GameService.ts:1356 Diff: {players: {…}, myHand: {…}, currentPlayer: {…}, currentTurnPlays: {…}, isMyTurn: {…}, …}
+PieceTray.jsx:57 🎴 PIECETRAY DEBUG: Rendering pieces in order: (7) [{…}, {…}, {…}, {…}, {…}, {…}, {…}]
+GameService.ts:514 🎯 DEBUG: handlePhaseChange - phase=turn, phase_data= {current_turn_starter: 'Bot 4', current_player: 'Bot 3', turn_order: Array(4), required_piece_count: 1, turn_plays: {…}, …}
+GameService.ts:555 🎴 SORT DEBUG: Before sorting myHand: [{"type":"soldier","color":"red","value":2},{"type":"chariot","color":"black","value":7},{"type":"soldier","color":"black","value":1},{"type":"cannon","color":"black","value":3},{"type":"horse","color":"red","value":6},{"type":"soldier","color":"red","value":2},{"type":"advisor","color":"black","value":11}]
+GameService.ts:569 🎴 SORT DEBUG: After sorting myHand: [{"type":"horse","color":"red","value":6},{"type":"soldier","color":"red","value":2},{"type":"soldier","color":"red","value":2},{"type":"advisor","color":"black","value":11},{"type":"chariot","color":"black","value":7},{"type":"cannon","color":"black","value":3},{"type":"soldier","color":"black","value":1}]
+GameService.ts:1353 🎮 State Change: NETWORK_EVENT:PHASE_CHANGE
+GameService.ts:1354 Previous: {isConnected: true, roomId: 'C0D144', playerName: 'Andy', phase: 'turn', currentRound: 1, …}
+GameService.ts:1355 New: {isConnected: true, roomId: 'C0D144', playerName: 'Andy', phase: 'turn', currentRound: 1, …}
+GameService.ts:1356 Diff: {players: {…}, currentPlayer: {…}, currentTurnPlays: {…}, lastEventSequence: {…}}
+PieceTray.jsx:57 🎴 PIECETRAY DEBUG: Rendering pieces in order: (7) [{…}, {…}, {…}, {…}, {…}, {…}, {…}]
+GameService.ts:514 🎯 DEBUG: handlePhaseChange - phase=turn, phase_data= {current_turn_starter: 'Bot 4', current_player: 'Bot 3', turn_order: Array(4), required_piece_count: 1, turn_plays: {…}, …}
+GameService.ts:555 🎴 SORT DEBUG: Before sorting myHand: [{"type":"soldier","color":"red","value":2},{"type":"chariot","color":"black","value":7},{"type":"soldier","color":"black","value":1},{"type":"cannon","color":"black","value":3},{"type":"horse","color":"red","value":6},{"type":"soldier","color":"red","value":2},{"type":"advisor","color":"black","value":11}]
+GameService.ts:569 🎴 SORT DEBUG: After sorting myHand: [{"type":"horse","color":"red","value":6},{"type":"soldier","color":"red","value":2},{"type":"soldier","color":"red","value":2},{"type":"advisor","color":"black","value":11},{"type":"chariot","color":"black","value":7},{"type":"cannon","color":"black","value":3},{"type":"soldier","color":"black","value":1}]
+GameService.ts:1353 🎮 State Change: NETWORK_EVENT:PHASE_CHANGE
+GameService.ts:1354 Previous: {isConnected: true, roomId: 'C0D144', playerName: 'Andy', phase: 'turn', currentRound: 1, …}
+GameService.ts:1355 New: {isConnected: true, roomId: 'C0D144', playerName: 'Andy', phase: 'turn', currentRound: 1, …}
+GameService.ts:1356 Diff: {players: {…}, currentTurnPlays: {…}, lastEventSequence: {…}}
+PieceTray.jsx:57 🎴 PIECETRAY DEBUG: Rendering pieces in order: (7) [{…}, {…}, {…}, {…}, {…}, {…}, {…}]
+GameService.ts:514 🎯 DEBUG: handlePhaseChange - phase=turn, phase_data= {current_turn_starter: 'Bot 4', current_player: 'Bot 3', turn_order: Array(4), required_piece_count: 1, turn_plays: {…}, …}
+GameService.ts:555 🎴 SORT DEBUG: Before sorting myHand: [{"type":"soldier","color":"red","value":2},{"type":"chariot","color":"black","value":7},{"type":"soldier","color":"black","value":1},{"type":"cannon","color":"black","value":3},{"type":"horse","color":"red","value":6},{"type":"soldier","color":"red","value":2},{"type":"advisor","color":"black","value":11}]
+GameService.ts:569 🎴 SORT DEBUG: After sorting myHand: [{"type":"horse","color":"red","value":6},{"type":"soldier","color":"red","value":2},{"type":"soldier","color":"red","value":2},{"type":"advisor","color":"black","value":11},{"type":"chariot","color":"black","value":7},{"type":"cannon","color":"black","value":3},{"type":"soldier","color":"black","value":1}]
+GameService.ts:1353 🎮 State Change: NETWORK_EVENT:PHASE_CHANGE
+GameService.ts:1354 Previous: {isConnected: true, roomId: 'C0D144', playerName: 'Andy', phase: 'turn', currentRound: 1, …}
+GameService.ts:1355 New: {isConnected: true, roomId: 'C0D144', playerName: 'Andy', phase: 'turn', currentRound: 1, …}
+GameService.ts:1356 Diff: {lastEventSequence: {…}}
+GameService.ts:1353 🎮 State Change: NETWORK_EVENT:TURN_COMPLETE
+GameService.ts:1354 Previous: {isConnected: true, roomId: 'C0D144', playerName: 'Andy', phase: 'turn', currentRound: 1, …}
+GameService.ts:1355 New: {isConnected: true, roomId: 'C0D144', playerName: 'Andy', phase: 'turn_results', currentRound: 1, …}
+GameService.ts:1356 Diff: {phase: {…}, turnWinner: {…}, winningPlay: {…}, playerPiles: {…}, nextStarter: {…}, …}
+PieceTray.jsx:57 🎴 PIECETRAY DEBUG: Rendering pieces in order: (7) [{…}, {…}, {…}, {…}, {…}, {…}, {…}]
+GameContainer.jsx:204 Turn results continue requested
+GameService.ts:514 🎯 DEBUG: handlePhaseChange - phase=turn, phase_data= {current_turn_starter: 'Bot 4', current_player: 'Bot 4', turn_order: Array(4), required_piece_count: null, turn_plays: {…}, …}
+GameService.ts:555 🎴 SORT DEBUG: Before sorting myHand: [{"type":"soldier","color":"red","value":2},{"type":"chariot","color":"black","value":7},{"type":"soldier","color":"black","value":1},{"type":"cannon","color":"black","value":3},{"type":"horse","color":"red","value":6},{"type":"soldier","color":"red","value":2},{"type":"advisor","color":"black","value":11}]
+GameService.ts:569 🎴 SORT DEBUG: After sorting myHand: [{"type":"horse","color":"red","value":6},{"type":"soldier","color":"red","value":2},{"type":"soldier","color":"red","value":2},{"type":"advisor","color":"black","value":11},{"type":"chariot","color":"black","value":7},{"type":"cannon","color":"black","value":3},{"type":"soldier","color":"black","value":1}]
+GameService.ts:1353 🎮 State Change: NETWORK_EVENT:PHASE_CHANGE
+GameService.ts:1354 Previous: {isConnected: true, roomId: 'C0D144', playerName: 'Andy', phase: 'turn_results', currentRound: 1, …}
+GameService.ts:1355 New: {isConnected: true, roomId: 'C0D144', playerName: 'Andy', phase: 'turn', currentRound: 1, …}
+GameService.ts:1356 Diff: {phase: {…}, currentPlayer: {…}, currentTurnPlays: {…}, requiredPieceCount: {…}, currentTurnNumber: {…}, …}
+PieceTray.jsx:57 🎴 PIECETRAY DEBUG: Rendering pieces in order: (7) [{…}, {…}, {…}, {…}, {…}, {…}, {…}]
+GameService.ts:514 🎯 DEBUG: handlePhaseChange - phase=turn, phase_data= {current_turn_starter: 'Bot 4', current_player: 'Andy', turn_order: Array(4), required_piece_count: 1, turn_plays: {…}, …}
+GameService.ts:555 🎴 SORT DEBUG: Before sorting myHand: [{"type":"soldier","color":"red","value":2},{"type":"chariot","color":"black","value":7},{"type":"soldier","color":"black","value":1},{"type":"cannon","color":"black","value":3},{"type":"horse","color":"red","value":6},{"type":"soldier","color":"red","value":2},{"type":"advisor","color":"black","value":11}]
+GameService.ts:569 🎴 SORT DEBUG: After sorting myHand: [{"type":"horse","color":"red","value":6},{"type":"soldier","color":"red","value":2},{"type":"soldier","color":"red","value":2},{"type":"advisor","color":"black","value":11},{"type":"chariot","color":"black","value":7},{"type":"cannon","color":"black","value":3},{"type":"soldier","color":"black","value":1}]
+GameService.ts:1353 🎮 State Change: NETWORK_EVENT:PHASE_CHANGE
+GameService.ts:1354 Previous: {isConnected: true, roomId: 'C0D144', playerName: 'Andy', phase: 'turn', currentRound: 1, …}
+GameService.ts:1355 New: {isConnected: true, roomId: 'C0D144', playerName: 'Andy', phase: 'turn', currentRound: 1, …}
+GameService.ts:1356 Diff: {players: {…}, currentPlayer: {…}, currentTurnPlays: {…}, requiredPieceCount: {…}, isMyTurn: {…}, …}
+PieceTray.jsx:57 🎴 PIECETRAY DEBUG: Rendering pieces in order: (7) [{…}, {…}, {…}, {…}, {…}, {…}, {…}]
+GameService.ts:1318 🎮 Action sent: play {piece_indices: Array(1), player_name: 'Andy', play_value: 11}
+GameService.ts:514 🎯 DEBUG: handlePhaseChange - phase=turn, phase_data= {current_turn_starter: 'Bot 4', current_player: 'Bot 2', turn_order: Array(4), required_piece_count: 1, turn_plays: {…}, …}
+GameService.ts:555 🎴 SORT DEBUG: Before sorting myHand: [{"type":"soldier","color":"red","value":2},{"type":"chariot","color":"black","value":7},{"type":"soldier","color":"black","value":1},{"type":"horse","color":"red","value":6},{"type":"soldier","color":"red","value":2},{"type":"advisor","color":"black","value":11}]
+GameService.ts:569 🎴 SORT DEBUG: After sorting myHand: [{"type":"horse","color":"red","value":6},{"type":"soldier","color":"red","value":2},{"type":"soldier","color":"red","value":2},{"type":"advisor","color":"black","value":11},{"type":"chariot","color":"black","value":7},{"type":"soldier","color":"black","value":1}]
+GameService.ts:1353 🎮 State Change: NETWORK_EVENT:PHASE_CHANGE
+GameService.ts:1354 Previous: {isConnected: true, roomId: 'C0D144', playerName: 'Andy', phase: 'turn', currentRound: 1, …}
+GameService.ts:1355 New: {isConnected: true, roomId: 'C0D144', playerName: 'Andy', phase: 'turn', currentRound: 1, …}
+GameService.ts:1356 Diff: {players: {…}, myHand: {…}, currentPlayer: {…}, currentTurnPlays: {…}, isMyTurn: {…}, …}
+ 🎴 PIECETRAY DEBUG: Rendering pieces in order: (6) [{…}, {…}, {…}, {…}, {…}, {…}]
+ 🎯 DEBUG: handlePhaseChange - phase=turn, phase_data= {current_turn_starter: 'Bot 4', current_player: 'Bot 3', turn_order: Array(4), required_piece_count: 1, turn_plays: {…}, …}
+ 🎴 SORT DEBUG: Before sorting myHand: [{"type":"soldier","color":"red","value":2},{"type":"chariot","color":"black","value":7},{"type":"soldier","color":"black","value":1},{"type":"horse","color":"red","value":6},{"type":"soldier","color":"red","value":2},{"type":"advisor","color":"black","value":11}]
+ 🎴 SORT DEBUG: After sorting myHand: [{"type":"horse","color":"red","value":6},{"type":"soldier","color":"red","value":2},{"type":"soldier","color":"red","value":2},{"type":"advisor","color":"black","value":11},{"type":"chariot","color":"black","value":7},{"type":"soldier","color":"black","value":1}]
+ 🎮 State Change: NETWORK_EVENT:PHASE_CHANGE
+ Previous: {isConnected: true, roomId: 'C0D144', playerName: 'Andy', phase: 'turn', currentRound: 1, …}
+ New: {isConnected: true, roomId: 'C0D144', playerName: 'Andy', phase: 'turn', currentRound: 1, …}
+ Diff: {players: {…}, currentPlayer: {…}, currentTurnPlays: {…}, lastEventSequence: {…}}
+ 🎴 PIECETRAY DEBUG: Rendering pieces in order: (6) [{…}, {…}, {…}, {…}, {…}, {…}]
+ 🎯 DEBUG: handlePhaseChange - phase=turn, phase_data= {current_turn_starter: 'Bot 4', current_player: 'Bot 3', turn_order: Array(4), required_piece_count: 1, turn_plays: {…}, …}
+ 🎴 SORT DEBUG: Before sorting myHand: [{"type":"soldier","color":"red","value":2},{"type":"chariot","color":"black","value":7},{"type":"soldier","color":"black","value":1},{"type":"horse","color":"red","value":6},{"type":"soldier","color":"red","value":2},{"type":"advisor","color":"black","value":11}]
+ 🎴 SORT DEBUG: After sorting myHand: [{"type":"horse","color":"red","value":6},{"type":"soldier","color":"red","value":2},{"type":"soldier","color":"red","value":2},{"type":"advisor","color":"black","value":11},{"type":"chariot","color":"black","value":7},{"type":"soldier","color":"black","value":1}]
+ 🎮 State Change: NETWORK_EVENT:PHASE_CHANGE
+ Previous: {isConnected: true, roomId: 'C0D144', playerName: 'Andy', phase: 'turn', currentRound: 1, …}
+ New: {isConnected: true, roomId: 'C0D144', playerName: 'Andy', phase: 'turn', currentRound: 1, …}
+ Diff: {players: {…}, currentTurnPlays: {…}, lastEventSequence: {…}}
+ 🎴 PIECETRAY DEBUG: Rendering pieces in order: (6) [{…}, {…}, {…}, {…}, {…}, {…}]
+ 🎯 DEBUG: handlePhaseChange - phase=turn, phase_data= {current_turn_starter: 'Bot 4', current_player: 'Bot 3', turn_order: Array(4), required_piece_count: 1, turn_plays: {…}, …}
+ 🎴 SORT DEBUG: Before sorting myHand: [{"type":"soldier","color":"red","value":2},{"type":"chariot","color":"black","value":7},{"type":"soldier","color":"black","value":1},{"type":"horse","color":"red","value":6},{"type":"soldier","color":"red","value":2},{"type":"advisor","color":"black","value":11}]
+ 🎴 SORT DEBUG: After sorting myHand: [{"type":"horse","color":"red","value":6},{"type":"soldier","color":"red","value":2},{"type":"soldier","color":"red","value":2},{"type":"advisor","color":"black","value":11},{"type":"chariot","color":"black","value":7},{"type":"soldier","color":"black","value":1}]
+ 🎮 State Change: NETWORK_EVENT:PHASE_CHANGE
+ Previous: {isConnected: true, roomId: 'C0D144', playerName: 'Andy', phase: 'turn', currentRound: 1, …}
+ New: {isConnected: true, roomId: 'C0D144', playerName: 'Andy', phase: 'turn', currentRound: 1, …}
+ Diff: {lastEventSequence: {…}}
+ 🎮 State Change: NETWORK_EVENT:TURN_COMPLETE
+ Previous: {isConnected: true, roomId: 'C0D144', playerName: 'Andy', phase: 'turn', currentRound: 1, …}
+ New: {isConnected: true, roomId: 'C0D144', playerName: 'Andy', phase: 'turn_results', currentRound: 1, …}
+ Diff: {phase: {…}, winningPlay: {…}, turnNumber: {…}, lastEventSequence: {…}}
+ 🎴 PIECETRAY DEBUG: Rendering pieces in order: (6) [{…}, {…}, {…}, {…}, {…}, {…}]
+ Turn results continue requested
+ 🎯 DEBUG: handlePhaseChange - phase=turn, phase_data= {current_turn_starter: 'Bot 4', current_player: 'Bot 4', turn_order: Array(4), required_piece_count: null, turn_plays: {…}, …}
+ 🎴 SORT DEBUG: Before sorting myHand: [{"type":"soldier","color":"red","value":2},{"type":"chariot","color":"black","value":7},{"type":"soldier","color":"black","value":1},{"type":"horse","color":"red","value":6},{"type":"soldier","color":"red","value":2},{"type":"advisor","color":"black","value":11}]
+ 🎴 SORT DEBUG: After sorting myHand: [{"type":"horse","color":"red","value":6},{"type":"soldier","color":"red","value":2},{"type":"soldier","color":"red","value":2},{"type":"advisor","color":"black","value":11},{"type":"chariot","color":"black","value":7},{"type":"soldier","color":"black","value":1}]
+ 🎮 State Change: NETWORK_EVENT:PHASE_CHANGE
+ Previous: {isConnected: true, roomId: 'C0D144', playerName: 'Andy', phase: 'turn_results', currentRound: 1, …}
+ New: {isConnected: true, roomId: 'C0D144', playerName: 'Andy', phase: 'turn', currentRound: 1, …}
+ Diff: {phase: {…}, currentPlayer: {…}, currentTurnPlays: {…}, requiredPieceCount: {…}, currentTurnNumber: {…}, …}
+ 🎴 PIECETRAY DEBUG: Rendering pieces in order: (6) [{…}, {…}, {…}, {…}, {…}, {…}]
+ 🎯 DEBUG: handlePhaseChange - phase=turn, phase_data= {current_turn_starter: 'Bot 4', current_player: 'Andy', turn_order: Array(4), required_piece_count: 1, turn_plays: {…}, …}
+ 🎴 SORT DEBUG: Before sorting myHand: [{"type":"soldier","color":"red","value":2},{"type":"chariot","color":"black","value":7},{"type":"soldier","color":"black","value":1},{"type":"horse","color":"red","value":6},{"type":"soldier","color":"red","value":2},{"type":"advisor","color":"black","value":11}]
+ 🎴 SORT DEBUG: After sorting myHand: [{"type":"horse","color":"red","value":6},{"type":"soldier","color":"red","value":2},{"type":"soldier","color":"red","value":2},{"type":"advisor","color":"black","value":11},{"type":"chariot","color":"black","value":7},{"type":"soldier","color":"black","value":1}]
+ 🎮 State Change: NETWORK_EVENT:PHASE_CHANGE
+ Previous: {isConnected: true, roomId: 'C0D144', playerName: 'Andy', phase: 'turn', currentRound: 1, …}
+ New: {isConnected: true, roomId: 'C0D144', playerName: 'Andy', phase: 'turn', currentRound: 1, …}
+ Diff: {players: {…}, currentPlayer: {…}, currentTurnPlays: {…}, requiredPieceCount: {…}, isMyTurn: {…}, …}
+ 🎴 PIECETRAY DEBUG: Rendering pieces in order: (6) [{…}, {…}, {…}, {…}, {…}, {…}]
 
 ---
 
-🔒 [Room 0E1481] Starting game: op_id=0E1481_1
-🔄 New redeal decision cycle started - cleared tracking for 2 weak players
-🎴 REDEAL_DEBUG: Processing redeal decisions - weak_players_awaiting=['Andy', 'Bot 2'], decisions_received=0, already_triggered=[]
-🤖 Bot Bot 2 deciding: ACCEPT redeal
-✅ Bot Bot 2 ACCEPTED redeal
-✅ Triggered redeal decision for Bot 2
-🎴 REDEAL_DEBUG: Processing redeal decisions - weak_players_awaiting=['Andy'], decisions_received=1, already_triggered=['Bot 2']
-🎴 REDEAL_DEBUG: Processing redeal decisions - weak_players_awaiting=['Andy'], decisions_received=1, already_triggered=['Bot 2']
-✅ [Room 0E1481] Game and StateMachine started successfully: op_id=0E1481_1
-✅ [Room 0E1481] Bot manager registered for 3 bots
-✅ Game started in room 0E1481
+🔒 [Room C0D144] Starting game: op_id=C0D144_1
+✅ [Room C0D144] Game and StateMachine started successfully: op_id=C0D144_1
+✅ [Room C0D144] Bot manager registered for 3 bots
+✅ Game started in room C0D144
 INFO:     connection closed
-INFO:     ('127.0.0.1', 52482) - "WebSocket /ws/0E1481" [accepted]
+INFO:     ('127.0.0.1', 58116) - "WebSocket /ws/C0D144" [accepted]
 INFO:     connection open
-✅ Redeal accept queued: Andy
-🎴 REDEAL_DEBUG: Processing redeal decisions - weak_players_awaiting=['Andy'], decisions_received=1, already_triggered=['Bot 2']
-🔄 New redeal decision cycle started - cleared tracking for 2 weak players
-🎴 REDEAL_DEBUG: Processing redeal decisions - weak_players_awaiting=['Andy', 'Bot 2'], decisions_received=0, already_triggered=[]
-🔄 New redeal decision cycle started - cleared tracking for 2 weak players
-🎴 REDEAL_DEBUG: Processing redeal decisions - weak_players_awaiting=['Andy', 'Bot 2'], decisions_received=0, already_triggered=[]
-🔄 New redeal decision cycle started - cleared tracking for 2 weak players
-🎴 REDEAL_DEBUG: Processing redeal decisions - weak_players_awaiting=['Andy', 'Bot 2'], decisions_received=0, already_triggered=[]
-✅ Redeal accept queued: Andy
-🎴 REDEAL_DEBUG: Processing redeal decisions - weak_players_awaiting=['Bot 2'], decisions_received=1, already_triggered=[]
-🤖 Bot Bot 2 deciding: ACCEPT redeal
-✅ Bot Bot 2 ACCEPTED redeal
-✅ Triggered redeal decision for Bot 2
-🎴 REDEAL_DEBUG: Processing redeal decisions - weak_players_awaiting=['Bot 2'], decisions_received=1, already_triggered=['Bot 2']
-⏭️ Skipping Bot 2 - already triggered this cycle
-🔄 New redeal decision cycle started - cleared tracking for 2 weak players
-🎴 REDEAL_DEBUG: Processing redeal decisions - weak_players_awaiting=['Andy', 'Bot 2'], decisions_received=0, already_triggered=[]
-🤖 Bot Bot 2 deciding: ACCEPT redeal
-✅ Bot Bot 2 ACCEPTED redeal
-✅ Triggered redeal decision for Bot 2
-🔄 New redeal decision cycle started - cleared tracking for 2 weak players
-🎴 REDEAL_DEBUG: Processing redeal decisions - weak_players_awaiting=['Andy', 'Bot 2'], decisions_received=0, already_triggered=[]
-🤖 Bot Bot 2 deciding: ACCEPT redeal
-✅ Bot Bot 2 ACCEPTED redeal
-✅ Triggered redeal decision for Bot 2
-🔄 New redeal decision cycle started - cleared tracking for 2 weak players
-🎴 REDEAL_DEBUG: Processing redeal decisions - weak_players_awaiting=['Andy', 'Bot 2'], decisions_received=0, already_triggered=[]
-🤖 Bot Bot 2 deciding: ACCEPT redeal
-✅ Bot Bot 2 ACCEPTED redeal
-✅ Triggered redeal decision for Bot 2
-🎴 REDEAL_DEBUG: Processing redeal decisions - weak_players_awaiting=['Andy'], decisions_received=1, already_triggered=['Bot 2']
-❌ Duplicate redeal decision from: Bot 2
-Invalid action: GameAction(player_name='Bot 2', action_type=<ActionType.REDEAL_REQUEST: 'redeal_request'>, payload={'accept': True}, timestamp=datetime.datetime(2025, 7, 10, 13, 40, 30, 645338), sequence_id=5, is_bot=True)
-❌ Duplicate redeal decision from: Bot 2
-Invalid action: GameAction(player_name='Bot 2', action_type=<ActionType.REDEAL_REQUEST: 'redeal_request'>, payload={'accept': True}, timestamp=datetime.datetime(2025, 7, 10, 13, 40, 32, 3263), sequence_id=6, is_bot=True)
-✅ Redeal accept queued: Andy
-🎴 REDEAL_DEBUG: Processing redeal decisions - weak_players_awaiting=['Andy'], decisions_received=1, already_triggered=['Bot 2']
-🔄 New redeal decision cycle started - cleared tracking for 2 weak players
-🎴 REDEAL_DEBUG: Processing redeal decisions - weak_players_awaiting=['Andy', 'Bot 2'], decisions_received=0, already_triggered=[]
-🔄 New redeal decision cycle started - cleared tracking for 2 weak players
-🎴 REDEAL_DEBUG: Processing redeal decisions - weak_players_awaiting=['Andy', 'Bot 2'], decisions_received=0, already_triggered=[]
-🔄 New redeal decision cycle started - cleared tracking for 2 weak players
-🎴 REDEAL_DEBUG: Processing redeal decisions - weak_players_awaiting=['Andy', 'Bot 2'], decisions_received=0, already_triggered=[]
-✅ Redeal accept queued: Andy
-🎴 REDEAL_DEBUG: Processing redeal decisions - weak_players_awaiting=['Bot 2'], decisions_received=1, already_triggered=[]
-🤖 Bot Bot 2 deciding: ACCEPT redeal
-✅ Bot Bot 2 ACCEPTED redeal
-✅ Triggered redeal decision for Bot 2
-🎴 REDEAL_DEBUG: Processing redeal decisions - weak_players_awaiting=['Bot 2'], decisions_received=1, already_triggered=['Bot 2']
-⏭️ Skipping Bot 2 - already triggered this cycle
-🔄 New redeal decision cycle started - cleared tracking for 2 weak players
-🎴 REDEAL_DEBUG: Processing redeal decisions - weak_players_awaiting=['Andy', 'Bot 2'], decisions_received=0, already_triggered=[]
-🤖 Bot Bot 2 deciding: ACCEPT redeal
-✅ Bot Bot 2 ACCEPTED redeal
-✅ Triggered redeal decision for Bot 2
-🔄 New redeal decision cycle started - cleared tracking for 2 weak players
-🎴 REDEAL_DEBUG: Processing redeal decisions - weak_players_awaiting=['Andy', 'Bot 2'], decisions_received=0, already_triggered=[]
-🤖 Bot Bot 2 deciding: ACCEPT redeal
-✅ Bot Bot 2 ACCEPTED redeal
-✅ Triggered redeal decision for Bot 2
-🔄 New redeal decision cycle started - cleared tracking for 2 weak players
-🎴 REDEAL_DEBUG: Processing redeal decisions - weak_players_awaiting=['Andy', 'Bot 2'], decisions_received=0, already_triggered=[]
-🤖 Bot Bot 2 deciding: ACCEPT redeal
-✅ Bot Bot 2 ACCEPTED redeal
-✅ Triggered redeal decision for Bot 2
-🎴 REDEAL_DEBUG: Processing redeal decisions - weak_players_awaiting=['Andy'], decisions_received=1, already_triggered=['Bot 2']
-❌ Duplicate redeal decision from: Bot 2
-Invalid action: GameAction(player_name='Bot 2', action_type=<ActionType.REDEAL_REQUEST: 'redeal_request'>, payload={'accept': True}, timestamp=datetime.datetime(2025, 7, 10, 13, 40, 47, 283487), sequence_id=11, is_bot=True)
-❌ Duplicate redeal decision from: Bot 2
-Invalid action: GameAction(player_name='Bot 2', action_type=<ActionType.REDEAL_REQUEST: 'redeal_request'>, payload={'accept': True}, timestamp=datetime.datetime(2025, 7, 10, 13, 40, 48, 636064), sequence_id=12, is_bot=True)
-✅ Redeal accept queued: Andy
-🎴 REDEAL_DEBUG: Processing redeal decisions - weak_players_awaiting=['Andy'], decisions_received=1, already_triggered=['Bot 2']
-🎴 REDEAL_DEBUG: Processing redeal decisions - weak_players_awaiting=['Andy'], decisions_received=1, already_triggered=['Bot 2']
-🎴 REDEAL_DEBUG: Processing redeal decisions - weak_players_awaiting=['Andy'], decisions_received=1, already_triggered=['Bot 2']
-👤 Round starter is human or None: None
+✅ Bot Bot 4 declared 2
+INFO:     127.0.0.1:58142 - "GET / HTTP/1.1" 200 OK
+INFO:     127.0.0.1:58142 - "GET /bundle.css HTTP/1.1" 200 OK
+INFO:     127.0.0.1:58144 - "GET /bundle.js HTTP/1.1" 200 OK
+INFO:     127.0.0.1:58144 - "GET /favicon.ico HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:58144 - "GET /.well-known/appspecific/com.chrome.devtools.json HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:58144 - "GET /bundle.css.map HTTP/1.1" 200 OK
+INFO:     127.0.0.1:58142 - "GET /bundle.js.map HTTP/1.1" 200 OK
+✅ Declaration queued: Andy -> 4
+✅ Bot Bot 2 declared 1
+✅ Bot Bot 3 declared 1
+✅ Bot Bot 3 declared 1
+🤖 BOT chooses to play SINGLE (14 pts): GENERAL
+✅ Bot Bot 4 action queued - state machine will broadcast with correct next_player
+Action declare not allowed in turn
+🎯 WS_PLAY_DEBUG: Received play event - player: Andy, indices: [5]
+🎯 WS_PLAY_DEBUG: Found player Andy with hand size 8
+🎯 WS_PLAY_DEBUG: Added piece at index 5: SOLDIER_RED(2)
+🎯 WS_PLAY_DEBUG: Final pieces to play: ['SOLDIER_RED(2)']
+🎯 WS_PLAY_DEBUG: Queuing action for state machine...
+🎯 WS_PLAY_DEBUG: State machine result: {'success': True, 'queued': True}
+✅ Play accepted: Andy
+🤖 BOT chooses to play SINGLE (11 pts): ADVISOR
+✅ Bot Bot 2 action queued - state machine will broadcast with correct next_player
+🤖 BOT chooses to play SINGLE (12 pts): ADVISOR
+✅ Bot Bot 3 action queued - state machine will broadcast with correct next_player
+🤖 BOT chooses to play SINGLE (12 pts): ADVISOR
+✅ Bot Bot 3 action queued - state machine will broadcast with correct next_player
+🤖 BOT chooses to play SINGLE (13 pts): GENERAL
+✅ Bot Bot 4 action queued - state machine will broadcast with correct next_player
+Not Bot 3's turn - expected Bot 4
+Invalid action: GameAction(player_name='Bot 3', action_type=<ActionType.PLAY_PIECES: 'play_pieces'>, payload={'pieces': [ADVISOR_RED(12)]}, timestamp=datetime.datetime(2025, 7, 10, 16, 5, 12, 785222), sequence_id=9, is_bot=True)
+🎯 WS_PLAY_DEBUG: Received play event - player: Andy, indices: [3]
+🎯 WS_PLAY_DEBUG: Found player Andy with hand size 7
+🎯 WS_PLAY_DEBUG: Added piece at index 3: CANNON_BLACK(3)
+🎯 WS_PLAY_DEBUG: Final pieces to play: ['CANNON_BLACK(3)']
+🎯 WS_PLAY_DEBUG: Queuing action for state machine...
+🎯 WS_PLAY_DEBUG: State machine result: {'success': True, 'queued': True}
+✅ Play accepted: Andy
+🤖 BOT chooses to play SINGLE (8 pts): CHARIOT
+✅ Bot Bot 2 action queued - state machine will broadcast with correct next_player
+🤖 BOT chooses to play SINGLE (12 pts): ADVISOR
+✅ Bot Bot 3 action queued - state machine will broadcast with correct next_player
+🤖 BOT chooses to play SINGLE (12 pts): ADVISOR
+✅ Bot Bot 3 action queued - state machine will broadcast with correct next_player
+🤖 BOT chooses to play SINGLE (10 pts): ELEPHANT
+✅ Bot Bot 4 action queued - state machine will broadcast with correct next_player
+Not Bot 3's turn - expected Bot 4
+Invalid action: GameAction(player_name='Bot 3', action_type=<ActionType.PLAY_PIECES: 'play_pieces'>, payload={'pieces': [ADVISOR_RED(12)]}, timestamp=datetime.datetime(2025, 7, 10, 16, 5, 34, 820421), sequence_id=14, is_bot=True)

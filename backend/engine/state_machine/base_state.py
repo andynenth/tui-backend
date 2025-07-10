@@ -154,13 +154,32 @@ class GameState(ABC):
                     for player in game.players:
                         player_name = getattr(player, 'name', str(player))
                         player_hand = getattr(player, 'hand', [])
+                        
+                        # Debug logging for hand data
+                        self.logger.debug(f"🔍 Processing hand for player {player_name}:")
+                        self.logger.debug(f"   Raw hand: {player_hand}")
+                        self.logger.debug(f"   Hand type: {type(player_hand)}")
+                        self.logger.debug(f"   Hand length: {len(player_hand)}")
+                        
+                        # Convert hand to string representations
+                        hand_strings = [str(piece) for piece in player_hand]
+                        self.logger.debug(f"   Converted hand: {hand_strings}")
+                        
+                        # Add detailed debug for sorting check
+                        # self.logger.info(f"🎴 HAND ORDER DEBUG for {player_name}:")
+                        # for i, piece in enumerate(player_hand):
+                        #     piece_str = str(piece)
+                        #     self.logger.info(f"   Position {i}: {piece_str}")
+                        
                         players_data[player_name] = {
-                            'hand': [str(piece) for piece in player_hand],
+                            'hand': hand_strings,
                             'hand_size': len(player_hand),
                             'zero_declares_in_a_row': getattr(player, 'zero_declares_in_a_row', 0),
                             'declared': getattr(player, 'declared', 0),
                             'score': getattr(player, 'score', 0)
                         }
+                        
+                        self.logger.debug(f"   Final player data: {players_data[player_name]}")
             
             # Convert phase_data to JSON-safe format with recursive handling
             json_safe_phase_data = self._make_json_safe(self.phase_data)
@@ -182,6 +201,13 @@ class GameState(ABC):
                 "sequence": self._sequence_number,
                 "timestamp": time.time()
             }
+            
+            # Debug logging for broadcast data
+            self.logger.debug("📡 Broadcasting phase_change with data:")
+            self.logger.debug(f"   Phase: {broadcast_data['phase']}")
+            self.logger.debug(f"   Players data: {broadcast_data['players']}")
+            for player_name, player_info in broadcast_data['players'].items():
+                self.logger.debug(f"   {player_name} hand: {player_info.get('hand', [])} (length: {player_info.get('hand_size', 0)})")
             
             await broadcast(room_id, "phase_change", broadcast_data)
             
