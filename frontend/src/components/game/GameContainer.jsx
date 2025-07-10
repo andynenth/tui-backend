@@ -69,12 +69,23 @@ export function GameContainer({ roomId, onNavigateToLobby }) {
   const declarationProps = useMemo(() => {
     if (gameState.phase !== 'declaration') return null;
     
+    // Order players based on declaration order from backend
+    let orderedPlayers = gameState.players || [];
+    if (gameState.declarationOrder && gameState.declarationOrder.length > 0) {
+      // Map declaration order (player names) to player objects
+      orderedPlayers = gameState.declarationOrder.map(playerName => {
+        return gameState.players.find(p => p.name === playerName) || { name: playerName };
+      }).filter(p => p !== undefined);
+    }
+    
     return {
       // Data from backend
       myHand: gameState.myHand || [],
       declarations: gameState.declarations || {},
-      players: gameState.players || [],
+      players: orderedPlayers,
       currentTotal: gameState.currentTotal || 0,
+      currentPlayer: gameState.currentDeclarer || '',
+      myName: gameState.playerName || '',
       
       // State calculated by backend
       isMyTurn: gameState.isMyTurn || false,
@@ -83,6 +94,8 @@ export function GameContainer({ roomId, onNavigateToLobby }) {
       isLastPlayer: gameState.isLastPlayer || false,
       estimatedPiles: gameState.estimatedPiles || 0,
       handStrength: gameState.handStrength || 0,
+      consecutiveZeros: 0, // TODO: Get from backend if needed
+      redealMultiplier: gameState.redealMultiplier || 1,
       
       // Actions
       onDeclare: gameActions.makeDeclaration
