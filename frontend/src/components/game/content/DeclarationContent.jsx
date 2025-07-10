@@ -64,8 +64,6 @@ const DeclarationContent = ({
       restrictions.message = 'No third consecutive 0';
     }
     
-    console.log(`🎲 ZERO_STREAK_DEBUG: ${myName} has consecutiveZeros: ${consecutiveZeros}`);
-    
     return restrictions;
   };
   
