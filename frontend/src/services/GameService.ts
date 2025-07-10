@@ -511,7 +511,6 @@ export class GameService extends EventTarget {
   private handlePhaseChange(state: GameState, data: any): GameState {
     const newState = { ...state };
     
-    console.log(`🎯 DEBUG: handlePhaseChange - phase=${data.phase}, phase_data=`, data.phase_data);
     
     newState.phase = data.phase;
     newState.currentRound = data.round || state.currentRound;
@@ -554,12 +553,6 @@ export class GameService extends EventTarget {
         });
         
         // Sort myHand by color (red first) then by value (high to low)
-        console.log('🎴 SORT DEBUG: Before sorting myHand:', JSON.stringify(unsortedHand.map((p: any) => ({
-          type: p.type,
-          color: p.color,
-          value: p.value,
-          originalIndex: p.originalIndex
-        }))));
         
         newState.myHand = [...unsortedHand].sort((a, b) => {
           // First sort by color: red comes before black
@@ -569,12 +562,6 @@ export class GameService extends EventTarget {
           return (b.value || 0) - (a.value || 0);
         });
         
-        console.log('🎴 SORT DEBUG: After sorting myHand:', JSON.stringify(newState.myHand.map((p: any) => ({
-          type: p.type,
-          color: p.color,
-          value: p.value,
-          originalIndex: p.originalIndex
-        }))));
       }
     }
     
@@ -614,11 +601,6 @@ export class GameService extends EventTarget {
           if (phaseData.my_hand && !newState.myHand.length) {
             newState.myHand = phaseData.my_hand;
             // Sort myHand by color (red first) then by value (high to low)
-            console.log('🎴 SORT DEBUG (phase fallback): Before sorting:', JSON.stringify(newState.myHand.map(p => ({
-              type: p.type,
-              color: p.color,
-              value: p.value
-            }))));
             
             newState.myHand.sort((a, b) => {
               // First sort by color: red comes before black
@@ -628,11 +610,6 @@ export class GameService extends EventTarget {
               return (b.value || 0) - (a.value || 0);
             });
             
-            console.log('🎴 SORT DEBUG (phase fallback): After sorting:', JSON.stringify(newState.myHand.map(p => ({
-              type: p.type,
-              color: p.color,
-              value: p.value
-            }))));
           }
           if (phaseData.round_starter) newState.roundStarter = phaseData.round_starter;
           newState.redealMultiplier = phaseData.redeal_multiplier || 1;
@@ -647,7 +624,6 @@ export class GameService extends EventTarget {
           
           // Extract dealing cards flag
           if (phaseData.dealing_cards !== undefined) {
-            console.log(`🎴 DEBUG: GameService - dealing_cards changed from ${state.dealingCards} to ${phaseData.dealing_cards}`);
             newState.dealingCards = phaseData.dealing_cards;
           }
           
@@ -673,11 +649,6 @@ export class GameService extends EventTarget {
           if (phaseData.my_hand && !newState.myHand.length) {
             newState.myHand = phaseData.my_hand;
             // Sort myHand by color (red first) then by value (high to low)
-            console.log('🎴 SORT DEBUG (phase fallback): Before sorting:', JSON.stringify(newState.myHand.map(p => ({
-              type: p.type,
-              color: p.color,
-              value: p.value
-            }))));
             
             newState.myHand.sort((a, b) => {
               // First sort by color: red comes before black
@@ -687,11 +658,6 @@ export class GameService extends EventTarget {
               return (b.value || 0) - (a.value || 0);
             });
             
-            console.log('🎴 SORT DEBUG (phase fallback): After sorting:', JSON.stringify(newState.myHand.map(p => ({
-              type: p.type,
-              color: p.color,
-              value: p.value
-            }))));
           }
           if (phaseData.declaration_order) newState.declarationOrder = phaseData.declaration_order;
           if (phaseData.current_declarer) newState.currentDeclarer = phaseData.current_declarer;
@@ -1329,10 +1295,6 @@ export class GameService extends EventTarget {
     const oldState = this.state;
     this.state = newState;
     
-    // Debug round changes
-    if (oldState.currentRound !== newState.currentRound) {
-      console.log(`🔍 ROUND_DEBUG: Round changed from ${oldState.currentRound} to ${newState.currentRound} (reason: ${reason})`);
-    }
     
     // Add to event history
     const eventWithMeta: StateChangeEvent = {
