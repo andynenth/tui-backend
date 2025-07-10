@@ -772,6 +772,87 @@ class Game:
     def reset_weak_hand_counter(self):
         """Reset the weak hand deal counter (useful for new games or rounds)"""
         self.weak_hand_deal_count = 0
+    
+    def _deal_double_straight(self, player_index=0, color='RED'):
+        """
+        Deal a DOUBLE_STRAIGHT hand to a specific player.
+        DOUBLE_STRAIGHT requires: 2 CHARIOTs, 2 HORSEs, 2 CANNONs (same color)
+        
+        Args:
+            player_index (int): Index of player to receive DOUBLE_STRAIGHT (default: 0)
+            color (str): Color for the DOUBLE_STRAIGHT pieces ('RED' or 'BLACK')
+        """
+        # Validate inputs
+        if not (0 <= player_index < len(self.players)):
+            self._deal_pieces()  # Fallback to normal dealing
+            return
+        
+        if color not in ['RED', 'BLACK']:
+            color = 'RED'  # Default to RED
+        
+        # Use helper methods
+        deck = self._prepare_deck_and_hands()
+        
+        # Find required pieces for DOUBLE_STRAIGHT
+        required_pieces = {
+            f'CHARIOT_{color}': [],
+            f'HORSE_{color}': [],
+            f'CANNON_{color}': []
+        }
+        
+        remaining_pieces = []
+        
+        for piece in deck:
+            piece_str = str(piece)
+            # Check if this is one of our required pieces
+            found = False
+            for key in required_pieces:
+                if key in piece_str and len(required_pieces[key]) < 2:
+                    required_pieces[key].append(piece)
+                    found = True
+                    break
+            
+            if not found:
+                remaining_pieces.append(piece)
+        
+        # Verify we have enough of each required piece
+        for key, pieces in required_pieces.items():
+            if len(pieces) < 2:
+                # Not enough pieces for DOUBLE_STRAIGHT, fallback to normal dealing
+                self._deal_pieces()
+                return
+        
+        # Give DOUBLE_STRAIGHT to target player
+        target_player = self.players[player_index]
+        for pieces_list in required_pieces.values():
+            target_player.hand.extend(pieces_list[:2])  # Add 2 of each type
+        
+        # Fill remaining 2 slots (8 total - 6 DOUBLE_STRAIGHT = 2)
+        random.shuffle(remaining_pieces)
+        target_player.hand.extend(remaining_pieces[:2])
+        remaining_pieces = remaining_pieces[2:]
+        
+        # Deal to other players
+        random.shuffle(remaining_pieces)
+        piece_idx = 0
+        for i, player in enumerate(self.players):
+            if i != player_index:
+                # Give each other player 8 pieces
+                for _ in range(8):
+                    if piece_idx < len(remaining_pieces):
+                        player.hand.append(remaining_pieces[piece_idx])
+                        piece_idx += 1
+        
+        # Shuffle hands to randomize piece positions
+        for player in self.players:
+            random.shuffle(player.hand)
+        
+        # Verify the target player has DOUBLE_STRAIGHT
+        target_hand = target_player.hand
+        piece_names = [str(p) for p in target_hand]
+        chariot_count = sum(1 for p in piece_names if f'CHARIOT_{color}' in p)
+        horse_count = sum(1 for p in piece_names if f'HORSE_{color}' in p)
+        cannon_count = sum(1 for p in piece_names if f'CANNON_{color}' in p)
 
 
     def _set_round_start_player(self):

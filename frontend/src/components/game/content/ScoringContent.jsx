@@ -103,7 +103,7 @@ const ScoringContent = ({
                 <div className="sc-stat sc-target">
                   <span className="sc-stat-label">Target</span>
                   <span className={`sc-target-value ${getTargetClass(score)}`}>
-                    {score.declared}/{score.actual}
+                    {score.actual}/{score.declared}
                   </span>
                 </div>
                 
