@@ -88,11 +88,9 @@ const PreparationContent = ({
                 </div>
                 <div className="alert-message">
                   No piece greater than {highestCardValue} points. Would you like to request a redeal?
-                  {redealMultiplier > 1 && (
-                    <div className="multiplier-warning">
-                      Warning: {redealMultiplier}x penalty if you redeal!
-                    </div>
-                  )}
+                  <div className="multiplier-warning">
+                    Warning: {redealMultiplier + 1}x penalty if you redeal!
+                  </div>
                 </div>
                 <div className="alert-buttons">
                   <button 
@@ -113,14 +111,14 @@ const PreparationContent = ({
 
             {/* Simultaneous mode waiting indicator */}
             {simultaneousMode && weakPlayersAwaiting.length > 0 && !isMyDecision && (
-              <div className="waiting-indicator">
-                <div className="waiting-text">
-                  Waiting for weak hand decisions...
+                <div className="waiting-indicator">
+                  <div className="waiting-text">
+                    Waiting for weak hand decisions...
+                  </div>
+                  <div className="waiting-progress">
+                    {decisionsReceived} of {decisionsNeeded} players decided
+                  </div>
                 </div>
-                <div className="waiting-progress">
-                  {decisionsReceived} of {decisionsNeeded} players decided
-                </div>
-              </div>
             )}
           </>
         )}

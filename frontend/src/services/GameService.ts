@@ -436,6 +436,7 @@ export class GameService extends EventTarget {
   private processGameEvent(eventType: string, data: any): GameState {
     let newState = { ...this.state };
     
+    
     switch (eventType) {
       case 'phase_change':
         newState = this.handlePhaseChange(newState, data);
