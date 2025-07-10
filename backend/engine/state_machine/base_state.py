@@ -154,13 +154,15 @@ class GameState(ABC):
                     for player in game.players:
                         player_name = getattr(player, 'name', str(player))
                         player_hand = getattr(player, 'hand', [])
+                        zero_streak = getattr(player, 'zero_declares_in_a_row', 0)
                         players_data[player_name] = {
                             'hand': [str(piece) for piece in player_hand],
                             'hand_size': len(player_hand),
-                            'zero_declares_in_a_row': getattr(player, 'zero_declares_in_a_row', 0),
+                            'zero_declares_in_a_row': zero_streak,
                             'declared': getattr(player, 'declared', 0),
                             'score': getattr(player, 'score', 0)
                         }
+                        self.logger.debug(f"🎲 ZERO_STREAK_DEBUG: Sending {player_name} with zero_declares_in_a_row: {zero_streak}")
             
             # Convert phase_data to JSON-safe format with recursive handling
             json_safe_phase_data = self._make_json_safe(self.phase_data)
