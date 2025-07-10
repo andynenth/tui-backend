@@ -24,23 +24,83 @@ const PreparationContent = ({
   weakPlayersAwaiting = [],
   decisionsReceived = 0,
   decisionsNeeded = 0,
+  dealingCards = false,
   onAcceptRedeal,
   onDeclineRedeal
 }) => {
   const [showDealing, setShowDealing] = useState(true);
+  const [isRedealing, setIsRedealing] = useState(false);
+  
+  console.log(`🎴 DEBUG: PreparationContent - dealingCards=${dealingCards}, showDealing=${showDealing}, isRedealing=${isRedealing}`);
+  
+  // Track dealingCards prop changes
+  useEffect(() => {
+    console.log(`🎴 DEBUG: dealingCards prop changed to: ${dealingCards}`);
+  }, [dealingCards]);
+
+  // Track isMyHandWeak prop changes
+  useEffect(() => {
+    console.log(`🎴 DEBUG: isMyHandWeak prop changed to: ${isMyHandWeak}`);
+    console.log(`🎴 DEBUG: Current state - showDealing=${showDealing}, isRedealing=${isRedealing}`);
+  }, [isMyHandWeak]);
 
   // Auto-hide dealing animation after 3.5s
   useEffect(() => {
+    console.log(`🎴 DEBUG: Initial dealing effect - setting timer to hide after 3.5s`);
     const timer = setTimeout(() => {
+      console.log(`🎴 DEBUG: Initial dealing timer fired - setting showDealing=false`);
       setShowDealing(false);
     }, 3500);
 
-    return () => clearTimeout(timer);
+    return () => {
+      console.log(`🎴 DEBUG: Initial dealing effect cleanup`);
+      clearTimeout(timer);
+    };
   }, []);
+
+  // Watch for redeal animation trigger
+  useEffect(() => {
+    console.log(`🎴 DEBUG: Redeal trigger effect - dealingCards=${dealingCards}, showDealing=${showDealing}, isRedealing=${isRedealing}`);
+    
+    if (dealingCards === true && !showDealing) {
+      // Not initial deal, must be redeal!
+      console.log(`🎴 DEBUG: Triggering redeal animation - setting isRedealing=true`);
+      setIsRedealing(true);
+    }
+  }, [dealingCards, showDealing]);
+
+  // Separate effect for redeal animation timer
+  useEffect(() => {
+    console.log(`🎴 DEBUG: Redeal timer effect - isRedealing=${isRedealing}`);
+    
+    if (isRedealing) {
+      const timer = setTimeout(() => {
+        console.log(`🎴 DEBUG: Redeal timer fired - setting isRedealing=false`);
+        console.log(`🎴 DEBUG: After redeal animation - isMyHandWeak=${isMyHandWeak}, weakPlayersAwaiting=${JSON.stringify(weakPlayersAwaiting)}`);
+        setIsRedealing(false);
+      }, 3500);
+      
+      return () => {
+        console.log(`🎴 DEBUG: Redeal timer cleanup`);
+        clearTimeout(timer);
+      };
+    }
+  }, [isRedealing, isMyHandWeak, weakPlayersAwaiting]);
 
   // Check if we should show weak hand alert
   const shouldShowWeakHandAlert = () => {
-    if (!showDealing) {
+    const shouldShow = !showDealing && !isRedealing && isMyHandWeak;
+    console.log(`🎴 DEBUG: shouldShowWeakHandAlert() called:
+      - showDealing=${showDealing}
+      - isRedealing=${isRedealing}
+      - isMyHandWeak=${isMyHandWeak}
+      - simultaneousMode=${simultaneousMode}
+      - weakPlayersAwaiting=${JSON.stringify(weakPlayersAwaiting)}
+      - decisionsReceived=${decisionsReceived}
+      - decisionsNeeded=${decisionsNeeded}
+      - RESULT=${shouldShow}`);
+    
+    if (!showDealing && !isRedealing) {
       // Show alert if:
       // 1. Player has a weak hand (no piece > 9)
       // 2. It's their turn to decide (or in simultaneous mode, they haven't decided yet)
@@ -61,7 +121,7 @@ const PreparationContent = ({
     <>
       {/* Content section - shows dealing then weak hand alert */}
       <div className="content-section">
-        {showDealing ? (
+        {(showDealing || isRedealing) ? (
           /* Dealing animation */
           <div className="dealing-container">
             <div className="dealing-icon">
@@ -69,7 +129,7 @@ const PreparationContent = ({
               <div className="card-stack"></div>
               <div className="card-stack"></div>
             </div>
-            <div className="dealing-message">Dealing Cards</div>
+            <div className="dealing-message">{isRedealing ? "Redealing Cards" : "Dealing Cards"}</div>
             <div className="dealing-status">Please wait while cards are being dealt...</div>
             
             <div className="progress-container">
@@ -149,6 +209,7 @@ PreparationContent.propTypes = {
   weakPlayersAwaiting: PropTypes.array,
   decisionsReceived: PropTypes.number,
   decisionsNeeded: PropTypes.number,
+  dealingCards: PropTypes.bool,
   onAcceptRedeal: PropTypes.func,
   onDeclineRedeal: PropTypes.func
 };

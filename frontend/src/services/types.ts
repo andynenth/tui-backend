@@ -106,6 +106,7 @@ export interface GameState {
   currentWeakPlayer: string | null;
   redealRequests: Record<string, boolean>;
   redealMultiplier: number;
+  dealingCards?: boolean;
   
   // Declaration phase state
   myHand: GamePiece[];

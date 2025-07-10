@@ -60,6 +60,9 @@ export function GameContainer({ roomId, onNavigateToLobby }) {
       decisionsReceived: gameState.decisionsReceived || 0,
       decisionsNeeded: gameState.decisionsNeeded || 0,
       
+      // Dealing animation flag
+      dealingCards: gameState.dealingCards || false,
+      
       // Actions
       onAcceptRedeal: gameActions.acceptRedeal,
       onDeclineRedeal: gameActions.declineRedeal

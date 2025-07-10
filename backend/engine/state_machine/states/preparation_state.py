@@ -87,6 +87,17 @@ class PreparationState(GameState):
         """Deal cards and check for weak hands"""
         game = self.state_machine.game
         
+        # DEBUG: Log when dealing starts
+        current_multiplier = getattr(game, 'redeal_multiplier', 1)
+        self.logger.info(f"🎴 DEBUG: _deal_cards called, redeal_multiplier={current_multiplier}")
+        
+        # Signal that dealing is starting
+        self.logger.info(f"🎴 DEBUG: Sending dealing_cards=True, multiplier={current_multiplier}")
+        await self.update_phase_data({
+            'dealing_cards': True,
+            'redeal_multiplier': current_multiplier
+        }, "Starting to deal cards")
+        
         # Reset player round data before dealing
         for player in game.players:
             player.declared = 0
@@ -170,7 +181,15 @@ class PreparationState(GameState):
                 game.current_player = starter
                 game.round_starter = starter  # Always set both
                 self.logger.info(f"✅ No weak hands - determined new starter: {starter}")
-            
+        
+        # Signal that dealing is complete
+        final_multiplier = getattr(game, 'redeal_multiplier', 1)
+        self.logger.info(f"🎴 DEBUG: Sending dealing_cards=False, multiplier={final_multiplier}, weak_players={list(self.weak_players)}")
+        await self.update_phase_data({
+            'dealing_cards': False,
+            'weak_players': list(self.weak_players),
+            'redeal_multiplier': final_multiplier
+        }, "Cards dealt, checking for weak hands")
     
     async def _validate_action(self, action: GameAction) -> bool:
         """Validate action is allowed in current state"""
@@ -245,9 +264,11 @@ class PreparationState(GameState):
             
             # Validate player
             if player_name not in self.weak_players:
+                self.logger.warning(f"🎴 DEBUG: Rejecting decision - {player_name} not in weak_players: {self.weak_players}")
                 return {"success": False, "error": "Not a weak player"}
             
             if player_name in self.redeal_decisions:
+                self.logger.warning(f"🎴 DEBUG: Rejecting decision - {player_name} already in redeal_decisions: {self.redeal_decisions}")
                 return {"success": False, "error": "Already decided"}
             
             # Record decision
@@ -298,18 +319,37 @@ class PreparationState(GameState):
             self.logger.info(f"📈 Multiplier: {old_multiplier}x → {game.redeal_multiplier}x")
             
             # Reset for new deal
+            self.logger.info(f"🎴 DEBUG: Clearing state before redeal - redeal_decisions was: {self.redeal_decisions}")
             self.weak_players.clear()
             self.redeal_decisions.clear()
             self.weak_players_awaiting.clear()
             self.decision_start_time = None
             
             # Execute redeal
+            self.logger.info(f"🎴 DEBUG: About to execute redeal #{game.redeal_multiplier - 1}")
             await self._deal_cards()
             
             # Check if new weak hands were found after redeal
             if self.weak_players:
                 # New weak hands detected - stay in preparation phase
                 self.logger.info(f"🔄 New weak hands found after redeal: {self.weak_players}")
+                self.logger.info(f"🎴 DEBUG: Weak players need to decide again")
+                self.logger.info(f"🎴 DEBUG: Setting up new decision cycle...")
+                
+                # Set up new decision cycle
+                self.weak_players_awaiting = self.weak_players.copy()
+                self.decision_start_time = time.time()
+                self.warning_sent = False
+                
+                # Notify about new weak hands
+                self.logger.info(f"🎴 DEBUG: Calling _notify_weak_hands() for second decision cycle")
+                await self._notify_weak_hands()
+                
+                # Start timeout monitoring
+                asyncio.create_task(self._monitor_decision_timeout())
+                
+                self.logger.info(f"🎴 DEBUG: New decision cycle started for {len(self.weak_players)} players")
+                
                 return {
                     "success": True,
                     "redeal": True,
@@ -532,6 +572,8 @@ class PreparationState(GameState):
             'simultaneous_mode': True,
             'decision_timeout': self.decision_timeout
         }
+        
+        self.logger.info(f"🎴 DEBUG: _notify_weak_hands broadcasting data: {weak_hand_data}")
         
         # Use enterprise broadcasting
         await self.update_phase_data(

@@ -511,6 +511,8 @@ export class GameService extends EventTarget {
   private handlePhaseChange(state: GameState, data: any): GameState {
     const newState = { ...state };
     
+    console.log(`🎯 DEBUG: handlePhaseChange - phase=${data.phase}, phase_data=`, data.phase_data);
+    
     newState.phase = data.phase;
     newState.currentRound = data.round || state.currentRound;
     
@@ -584,6 +586,12 @@ export class GameService extends EventTarget {
           newState.weakPlayersAwaiting = phaseData.weak_players_awaiting || [];
           newState.decisionsReceived = phaseData.decisions_received || 0;
           newState.decisionsNeeded = phaseData.decisions_needed || 0;
+          
+          // Extract dealing cards flag
+          if (phaseData.dealing_cards !== undefined) {
+            console.log(`🎴 DEBUG: GameService - dealing_cards changed from ${state.dealingCards} to ${phaseData.dealing_cards}`);
+            newState.dealingCards = phaseData.dealing_cards;
+          }
           
           // Calculate preparation-specific UI state
           if (newState.myHand.length > 0) {
