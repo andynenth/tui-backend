@@ -51,25 +51,25 @@ class Game:
 
     def get_weak_hand_players(self, include_details=False):
         """
-        หา players ที่มี weak hand (ไม่มีไพ่ > 9 คะแนน)
+        Find players with weak hand (no card > 9 points)
         
         Args:
-            include_details (bool): ถ้า True จะ return ข้อมูลละเอียด
-                                   ถ้า False จะ return แค่ names (backward compatible)
+            include_details (bool): If True, will return detailed information
+                                   If False, will return only names (backward compatible)
         
         Returns:
-            List: ถ้า include_details=False → ['player1', 'player2']
-                  ถ้า include_details=True → [{'name': ..., 'is_bot': ..., ...}]
+            List: If include_details=False → ['player1', 'player2']
+                  If include_details=True → [{'name': ..., 'is_bot': ..., ...}]
         """
         weak_players = []
         
         for player in self.players:
-            # ใช้ logic เดิมที่ proven แล้ว
+            # Use the existing proven logic
             has_strong = any(p.point > 9 for p in player.hand)
             
             if not has_strong:
                 if include_details:
-                    # Return rich data สำหรับ controllers
+                    # Return rich data for controllers
                     hand_strength = sum(p.point for p in player.hand)
                     weak_players.append({
                         'name': player.name,
@@ -78,35 +78,35 @@ class Game:
                         'hand': [str(piece) for piece in player.hand]
                     })
                 else:
-                    # Return แค่ names (backward compatible)
+                    # Return only names (backward compatible)
                     weak_players.append(player.name)
         
-        # เรียงตาม hand strength ถ้า include_details=True
+        # Sort by hand strength if include_details=True
         if include_details:
             weak_players.sort(key=lambda p: p['hand_strength'])
         
         return weak_players
     
     def has_weak_hand_players(self) -> bool:
-        """Quick check ว่ามี weak hand players หรือไม่"""
+        """Quick check whether there are weak hand players or not"""
         return len(self.get_weak_hand_players()) > 0
     
     def execute_redeal_for_player(self, player_name: str) -> dict:
         """
-        ให้ไพ่ใหม่กับ player และ return ข้อมูลสำหรับ event
+        Deal new cards to player and return data for event
         
         Args:
-            player_name (str): ชื่อ player ที่จะ redeal
+            player_name (str): Name of player to redeal
             
         Returns:
-            dict: ข้อมูล redeal สำหรับ broadcast events
+            dict: Redeal data for broadcast events
         """
         player_obj = self.get_player(player_name)
         
-        # เพิ่ม multiplier
+        # Increase multiplier
         self.redeal_multiplier += 0.5
         
-        # สร้างไพ่ใหม่
+        # Create new cards
         new_hand = self._generate_new_hand_for_player(player_obj)
         player_obj.hand = new_hand
         
@@ -121,15 +121,15 @@ class Game:
     
     def _generate_new_hand_for_player(self, player):
         """
-        สร้างไพ่ใหม่สำหรับ redeal
+        Create new cards for redeal
         TODO: Implement proper redeal logic based on game rules
         """
         deck = Piece.build_deck()
         random.shuffle(deck)
-        return deck[:8]  # เอา 8 ใบแรก
+        return deck[:8]  # Take the first 8 cards
     
     def get_game_phase_info(self) -> dict:
-        """ข้อมูลสำหรับ controllers ตัดสินใจ phase ต่อไป"""
+        """Information for controllers to decide next phase"""
         return {
             'round_number': self.round_number,
             'redeal_multiplier': self.redeal_multiplier,
@@ -143,20 +143,20 @@ class Game:
         }
     
     def set_current_phase(self, phase_name: str):
-        """Controllers สามารถ track current phase"""
+        """Controllers can track current phase"""
         old_phase = self.current_phase
         self.current_phase = phase_name
     
     def get_declaration_eligible_players(self, include_details=False):
         """
-        หา players ที่ยังไม่ declare
+        Find players who haven't declared yet
         
         Args:
-            include_details (bool): ถ้า True จะ return ข้อมูลละเอียด
-                                   ถ้า False จะ return แค่ Player objects
+            include_details (bool): If True, will return detailed information
+                                   If False, will return only Player objects
         
         Returns:
-            List: players ที่ยังไม่ declare
+            List: players who haven't declared yet
         """
         eligible_players = [p for p in self.players if p.declared == 0]
         
@@ -173,7 +173,7 @@ class Game:
     
     def validate_player_declaration(self, player_name: str, declaration: int) -> dict:
         """
-        ตรวจสอบ declaration ว่าถูกต้องไหม
+        Check if declaration is valid
         
         Returns:
             dict: {'valid': bool, 'reason': str, 'valid_options': list}
@@ -221,10 +221,10 @@ class Game:
     
     def record_player_declaration(self, player_name: str, declaration: int) -> dict:
         """
-        บันทึก declaration และ return ข้อมูลสำหรับ events
+        Record declaration and return data for events
         
         Returns:
-            dict: ข้อมูล declaration สำหรับ broadcast
+            dict: Declaration data for broadcast
         """
         # Validate first
         validation = self.validate_player_declaration(player_name, declaration)
@@ -255,10 +255,10 @@ class Game:
     
     def get_turn_eligible_players(self, include_details=False):
         """
-        หา players ที่ยังไม่เล่น turn นี้
+        Find players who haven't played this turn
         TODO: Implement turn tracking logic
         """
-        # Placeholder - ต้อง implement turn tracking
+        # Placeholder - need to implement turn tracking
         eligible_players = [p for p in self.players]
         
         if include_details:
@@ -274,11 +274,11 @@ class Game:
     
     def validate_turn_play(self, player_name: str, piece_indexes: list) -> dict:
         """
-        ตรวจสอบการเล่น turn ว่าถูกต้องไหม
+        Check if turn play is valid
         
         Args:
-            player_name (str): ชื่อ player
-            piece_indexes (list): index ของไพ่ที่จะเล่น
+            player_name (str): Player name
+            piece_indexes (list): Index of cards to play
             
         Returns:
             dict: {'valid': bool, 'reason': str, 'play_type': str}
@@ -323,7 +323,7 @@ class Game:
     
     def execute_turn_play(self, player_name: str, piece_indexes: list) -> dict:
         """
-        บันทึกการเล่น turn และ return ผลลัพธ์
+        Record turn play and return results
         TODO: Implement full turn logic
         """
         # Validate first
