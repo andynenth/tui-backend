@@ -71,6 +71,9 @@ class GameBotHandler:
         
         # 🔧 TURN_START_FIX: Prevent duplicate turn_started events
         self._last_turn_start: Optional[Dict[str, Any]] = None  # {turn_number, starter, timestamp}
+        
+        # 🔧 REDEAL_DECISION_FIX: Track which bots have been triggered in current redeal cycle
+        self._current_redeal_cycle_triggered: Set[str] = set()  # Bot names triggered this cycle
     
     def _get_game_state(self):
         """Get current game state from state machine or fallback to direct game access"""
@@ -561,12 +564,26 @@ class GameBotHandler:
         """Handle bot redeal decisions one at a time - follows enterprise pattern"""
         weak_players_awaiting = phase_data.get("weak_players_awaiting", set())
         redeal_decisions = phase_data.get("redeal_decisions", {})
+        decisions_received = phase_data.get("decisions_received", 0)
         
+        # 🔧 REDEAL_DECISION_FIX: Detect new decision cycle
+        if decisions_received == 0:
+            self._current_redeal_cycle_triggered.clear()
+            # print(f"🔄 New redeal decision cycle started - cleared tracking for {len(weak_players_awaiting)} weak players")
+        
+        # Debug logging for state tracking (commented out for production)
+        # print(f"🎴 REDEAL_DEBUG: Processing redeal decisions - weak_players_awaiting={list(weak_players_awaiting)}, "
+        #       f"decisions_received={decisions_received}, already_triggered={list(self._current_redeal_cycle_triggered)}")
         
         game_state = self._get_game_state()
         
         # Process one bot at a time, just like declarations and turns
         for player_name in weak_players_awaiting:
+            # 🔧 REDEAL_DECISION_FIX: Skip if already triggered this cycle
+            if player_name in self._current_redeal_cycle_triggered:
+                # print(f"⏭️ Skipping {player_name} - already triggered this cycle")
+                continue
+                
             if player_name in redeal_decisions:
                 continue
                 
@@ -590,6 +607,9 @@ class GameBotHandler:
             
             try:
                 await self._bot_redeal_decision(player)
+                # 🔧 REDEAL_DECISION_FIX: Mark bot as triggered for this cycle
+                self._current_redeal_cycle_triggered.add(player_name)
+                # print(f"✅ Triggered redeal decision for {player_name}")
             except Exception as e:
                 print(f"❌ BOT_AI_ERROR: Bot redeal decision failed for {player_name}: {e}")
                 import traceback
