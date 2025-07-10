@@ -114,7 +114,8 @@ class DeclarationState(GameState):
         # Update the player object's declared attribute
         for player in self.state_machine.game.players:
             if getattr(player, 'name', str(player)) == player_name:
-                player.declared = declared_value
+                player.record_declaration(declared_value)  # This updates zero_declares_in_a_row
+                self.logger.info(f"🎲 ZERO_STREAK_DEBUG: {player_name} declared {declared_value}, streak: {player.zero_declares_in_a_row}")
                 break
         
         self.logger.info(f"Player {player_name} declared {declared_value}")

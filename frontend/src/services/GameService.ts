@@ -555,7 +555,15 @@ export class GameService extends EventTarget {
       
       // Update players list (prefer backend phase_data over data.players for player metadata)
       if (phaseData.players) {
-        newState.players = phaseData.players;
+        // Merge phase_data players with existing player data to preserve zero_declares_in_a_row
+        const existingPlayersMap = new Map(newState.players.map(p => [p.name, p]));
+        newState.players = phaseData.players.map((player: any) => {
+          const existing = existingPlayersMap.get(player.name);
+          return {
+            ...player,
+            zero_declares_in_a_row: existing?.zero_declares_in_a_row || 0
+          };
+        });
       }
       
       // Phase-specific updates

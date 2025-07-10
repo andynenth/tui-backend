@@ -78,6 +78,10 @@ export function GameContainer({ roomId, onNavigateToLobby }) {
       }).filter(p => p !== undefined);
     }
     
+    // Get consecutive zeros for current player
+    const currentPlayerData = gameState.players?.find(p => p.name === gameState.playerName);
+    const consecutiveZeros = currentPlayerData?.zero_declares_in_a_row || 0;
+    
     return {
       // Data from backend
       myHand: gameState.myHand || [],
@@ -94,7 +98,7 @@ export function GameContainer({ roomId, onNavigateToLobby }) {
       isLastPlayer: gameState.isLastPlayer || false,
       estimatedPiles: gameState.estimatedPiles || 0,
       handStrength: gameState.handStrength || 0,
-      consecutiveZeros: 0, // TODO: Get from backend if needed
+      consecutiveZeros: consecutiveZeros,
       redealMultiplier: gameState.redealMultiplier || 1,
       
       // Actions
