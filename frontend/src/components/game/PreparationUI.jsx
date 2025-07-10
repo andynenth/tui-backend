@@ -38,6 +38,9 @@ export function PreparationUI({
   decisionsReceived = 0,
   decisionsNeeded = 0,
   
+  // Dealing animation flag
+  dealingCards = false,
+  
   // Action props
   onAcceptRedeal,
   onDeclineRedeal
@@ -58,6 +61,7 @@ export function PreparationUI({
       weakPlayersAwaiting={weakPlayersAwaiting}
       decisionsReceived={decisionsReceived}
       decisionsNeeded={decisionsNeeded}
+      dealingCards={dealingCards}
       onAcceptRedeal={onAcceptRedeal}
       onDeclineRedeal={onDeclineRedeal}
     />
@@ -94,6 +98,9 @@ PreparationUI.propTypes = {
   decisionsReceived: PropTypes.number,
   decisionsNeeded: PropTypes.number,
   
+  // Dealing animation flag
+  dealingCards: PropTypes.bool,
+  
   // Action props
   onAcceptRedeal: PropTypes.func,
   onDeclineRedeal: PropTypes.func
@@ -111,6 +118,7 @@ PreparationUI.defaultProps = {
   weakPlayersAwaiting: [],
   decisionsReceived: 0,
   decisionsNeeded: 0,
+  dealingCards: false,
   onAcceptRedeal: () => {},
   onDeclineRedeal: () => {}
 };

@@ -600,9 +600,6 @@ class GameBotHandler:
             # Small delay for UI processing
             await asyncio.sleep(0.2)
             
-            # Process only one bot at a time - let enterprise phase change handle the rest
-            break
-            
     async def _handle_turn_resolved(self, result: dict):
         """Handle end of turn"""
         from backend.socket_manager import broadcast
