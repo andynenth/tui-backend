@@ -1,359 +1,481 @@
-🔒 [Room 59B0F0] Starting game: op_id=59B0F0_1
+RecoveryService.ts:66 🔄 RecoveryService: Initialized
+ServiceIntegration.ts:79 🔗 ServiceIntegration: Initialized
+ServiceIntegration.ts:98 
+ServiceIntegration.ts:99 🎯 =============================================
+ServiceIntegration.ts:100 🚀 PHASE 1-4 ENTERPRISE ARCHITECTURE STARTING
+ServiceIntegration.ts:101 🎯 =============================================
+ServiceIntegration.ts:102 🔧 Initializing integrated service layer...
+ServiceIntegration.ts:567 ✅ NetworkService integrated
+ServiceIntegration.ts:575 ✅ GameService integrated
+ServiceIntegration.ts:583 ✅ RecoveryService integrated
+ServiceIntegration.ts:594 🩺 Health monitoring started (30000ms interval)
+ServiceIntegration.ts:124 
+ServiceIntegration.ts:125 ✅ =============================================
+ServiceIntegration.ts:126 🎉 PHASE 1-4 ARCHITECTURE FULLY OPERATIONAL!
+ServiceIntegration.ts:127 ✅ =============================================
+ServiceIntegration.ts:128 🔗 NetworkService: Advanced WebSocket with auto-reconnection
+ServiceIntegration.ts:129 🎮 GameService: React hooks with TypeScript state management
+ServiceIntegration.ts:130 🛠️ RecoveryService: Automatic error recovery and health monitoring
+ServiceIntegration.ts:131 🏢 Enterprise Features: Event sourcing, logging, metrics
+ServiceIntegration.ts:132 ✅ Service integration layer initialized successfully
+ServiceIntegration.ts:133 
+App.jsx:117 🎮 Global services initialized
+NetworkService.ts:337 🔗 Connection opened to room lobby
+GameService.ts:1264 🎮 State Change: NETWORK_CONNECTED
+GameService.ts:1265 Previous: {isConnected: false, roomId: null, playerName: null, phase: 'waiting', currentRound: 1, …}
+GameService.ts:1266 New: {isConnected: true, roomId: null, playerName: null, phase: 'waiting', currentRound: 1, …}
+GameService.ts:1267 Diff: {isConnected: {…}, lastEventSequence: {…}}
+NetworkService.ts:129 🌐 NetworkService: Connected to room lobby
+LobbyPage.jsx:45 Received room_list_update: {roomId: 'lobby', data: {…}, message: {…}, timestamp: 1752138541933}
+GameService.ts:1264 🎮 State Change: NETWORK_DISCONNECTED
+GameService.ts:1265 Previous: {isConnected: true, roomId: null, playerName: null, phase: 'waiting', currentRound: 1, …}
+GameService.ts:1266 New: {isConnected: false, roomId: null, playerName: null, phase: 'waiting', currentRound: 1, …}
+GameService.ts:1267 Diff: {isConnected: {…}, lastEventSequence: {…}}
+NetworkService.ts:171 🌐 NetworkService: Disconnected from room lobby
+NetworkService.ts:214 📤 Queued message for lobby: get_rooms (1 queued)
+NetworkService.ts:337 🔗 Connection opened to room lobby
+GameService.ts:1264 🎮 State Change: NETWORK_CONNECTED
+GameService.ts:1265 Previous: {isConnected: false, roomId: null, playerName: null, phase: 'waiting', currentRound: 1, …}
+GameService.ts:1266 New: {isConnected: true, roomId: null, playerName: null, phase: 'waiting', currentRound: 1, …}
+GameService.ts:1267 Diff: {isConnected: {…}, lastEventSequence: {…}}
+NetworkService.ts:129 🌐 NetworkService: Connected to room lobby
+LobbyPage.jsx:45 Received room_list_update: {roomId: 'lobby', data: {…}, message: {…}, timestamp: 1752138541946}
+GameService.ts:1264 🎮 State Change: NETWORK_DISCONNECTED
+GameService.ts:1265 Previous: {isConnected: true, roomId: null, playerName: null, phase: 'waiting', currentRound: 1, …}
+GameService.ts:1266 New: {isConnected: false, roomId: null, playerName: null, phase: 'waiting', currentRound: 1, …}
+GameService.ts:1267 Diff: {isConnected: {…}, lastEventSequence: {…}}
+NetworkService.ts:171 🌐 NetworkService: Disconnected from room lobby
+NetworkService.ts:214 📤 Queued message for lobby: get_rooms (1 queued)
+NetworkService.ts:337 🔗 Connection opened to room lobby
+GameService.ts:1264 🎮 State Change: NETWORK_CONNECTED
+GameService.ts:1265 Previous: {isConnected: false, roomId: null, playerName: null, phase: 'waiting', currentRound: 1, …}
+GameService.ts:1266 New: {isConnected: true, roomId: null, playerName: null, phase: 'waiting', currentRound: 1, …}
+GameService.ts:1267 Diff: {isConnected: {…}, lastEventSequence: {…}}
+NetworkService.ts:129 🌐 NetworkService: Connected to room lobby
+LobbyPage.jsx:45 Received room_list_update: {roomId: 'lobby', data: {…}, message: {…}, timestamp: 1752138543093}
+LobbyPage.jsx:56 Received room_created: {roomId: 'lobby', data: {…}, message: {…}, timestamp: 1752138543184}
+LobbyPage.jsx:57 🟢 Navigation: room_id = CC28C0 navigating to: /room/CC28C0
+LobbyPage.jsx:61 ✅ Navigating to new room: CC28C0
+GameService.ts:1264 🎮 State Change: NETWORK_DISCONNECTED
+GameService.ts:1265 Previous: {isConnected: true, roomId: null, playerName: null, phase: 'waiting', currentRound: 1, …}
+GameService.ts:1266 New: {isConnected: false, roomId: null, playerName: null, phase: 'waiting', currentRound: 1, …}
+GameService.ts:1267 Diff: {isConnected: {…}, lastEventSequence: {…}}
+NetworkService.ts:171 🌐 NetworkService: Disconnected from room lobby
+NetworkService.ts:214 📤 Queued message for lobby: get_rooms (1 queued)
+NetworkService.ts:337 🔗 Connection opened to room lobby
+GameService.ts:1264 🎮 State Change: NETWORK_CONNECTED
+GameService.ts:1265 Previous: {isConnected: false, roomId: null, playerName: null, phase: 'waiting', currentRound: 1, …}
+GameService.ts:1266 New: {isConnected: true, roomId: null, playerName: null, phase: 'waiting', currentRound: 1, …}
+GameService.ts:1267 Diff: {isConnected: {…}, lastEventSequence: {…}}
+NetworkService.ts:129 🌐 NetworkService: Connected to room lobby
+NetworkService.ts:337 🔗 Connection opened to room CC28C0
+GameService.ts:1264 🎮 State Change: NETWORK_CONNECTED
+GameService.ts:1265 Previous: {isConnected: true, roomId: null, playerName: null, phase: 'waiting', currentRound: 1, …}
+GameService.ts:1266 New: {isConnected: true, roomId: null, playerName: null, phase: 'waiting', currentRound: 1, …}
+GameService.ts:1267 Diff: {lastEventSequence: {…}}
+NetworkService.ts:129 🌐 NetworkService: Connected to room CC28C0
+RoomPage.jsx:61 🏠 ROOM_UPDATE: Full data received: {players: Array(4), host_name: 'Andy', room_id: 'CC28C0', started: false}
+RoomPage.jsx:62 🏠 ROOM_UPDATE: Players array: (4) [{…}, {…}, {…}, {…}]
+RoomPage.jsx:63 🏠 ROOM_UPDATE: Players array type: object
+RoomPage.jsx:64 🏠 ROOM_UPDATE: Players array length: 4
+RoomPage.jsx:65 🏠 ROOM_UPDATE: Players array entries: (4) [Array(2), Array(2), Array(2), Array(2)]
+RoomPage.jsx:99 🎮 START_GAME: Button clicked
+RoomPage.jsx:100 🎮 START_GAME: Room ID: CC28C0
+RoomPage.jsx:72 Game started, navigating to game page
+GameService.ts:1264 🎮 State Change: NETWORK_DISCONNECTED
+GameService.ts:1265 Previous: {isConnected: true, roomId: null, playerName: null, phase: 'waiting', currentRound: 1, …}
+GameService.ts:1266 New: {isConnected: false, roomId: null, playerName: null, phase: 'waiting', currentRound: 1, …}
+GameService.ts:1267 Diff: {isConnected: {…}, lastEventSequence: {…}}
+NetworkService.ts:171 🌐 NetworkService: Disconnected from room CC28C0
+ServiceIntegration.ts:157 🔗 Connecting to room CC28C0 as Andy...
+RecoveryService.ts:106 🔄 RecoveryService: Initialized tracking for room CC28C0
+GameService.ts:1264 🎮 State Change: JOIN_ROOM_INIT
+GameService.ts:1265 Previous: {isConnected: false, roomId: null, playerName: null, phase: 'waiting', currentRound: 1, …}
+GameService.ts:1266 New: {isConnected: false, roomId: 'CC28C0', playerName: 'Andy', phase: 'waiting', currentRound: 1, …}
+GameService.ts:1267 Diff: {roomId: {…}, playerName: {…}, lastEventSequence: {…}}
+GameContext.jsx:36 🚀 GAME_CONTEXT: Phase 1-4 Enterprise Architecture initializing
+NetworkService.ts:337 🔗 Connection opened to room CC28C0
+GameService.ts:1264 🎮 State Change: NETWORK_CONNECTED
+GameService.ts:1265 Previous: {isConnected: false, roomId: 'CC28C0', playerName: 'Andy', phase: 'waiting', currentRound: 1, …}
+GameService.ts:1266 New: {isConnected: true, roomId: 'CC28C0', playerName: 'Andy', phase: 'waiting', currentRound: 1, …}
+GameService.ts:1267 Diff: {isConnected: {…}, lastEventSequence: {…}}
+NetworkService.ts:129 🌐 NetworkService: Connected to room CC28C0
+GameService.ts:1264 🎮 State Change: JOIN_ROOM_CONNECTED
+GameService.ts:1265 Previous: {isConnected: true, roomId: 'CC28C0', playerName: 'Andy', phase: 'waiting', currentRound: 1, …}
+GameService.ts:1266 New: {isConnected: true, roomId: 'CC28C0', playerName: 'Andy', phase: 'waiting', currentRound: 1, …}
+GameService.ts:1267 Diff: {lastEventSequence: {…}}
+GameService.ts:99 🎮 GameService: Joined room CC28C0 as Andy
+ServiceIntegration.ts:169 ✅ Successfully connected to room CC28C0
+GameService.ts:441 🔍 GAME_SERVICE_DEBUG: processGameEvent received multiplier: {eventType: 'phase_change', multiplier: 1, currentMultiplier: 1, phase: 'preparation'}
+GameService.ts:588 🔍 GAME_SERVICE_DEBUG: Preparation phase - redeal_multiplier: {fromBackend: 1, setValue: 1}
+GameService.ts:1264 🎮 State Change: NETWORK_EVENT:PHASE_CHANGE
+GameService.ts:1265 Previous: {isConnected: true, roomId: 'CC28C0', playerName: 'Andy', phase: 'waiting', currentRound: 1, …}
+GameService.ts:1266 New: {isConnected: true, roomId: 'CC28C0', playerName: 'Andy', phase: 'preparation', currentRound: 1, …}
+GameService.ts:1267 Diff: {phase: {…}, players: {…}, myHand: {…}, lastEventSequence: {…}, simultaneousMode: {…}, …}
+GameContainer.jsx:43 🔍 GAME_CONTAINER_DEBUG: Preparation props: {phase: 'preparation', redealMultiplier: 1, isMyHandWeak: true, simultaneousMode: true, weakPlayersAwaiting: Array(2), …}
+GameLayout.jsx:25 🔍 GAME_LAYOUT_DEBUG: Multiplier badge: {phase: 'preparation', showMultiplier: false, multiplierValue: 1, displayText: 'No multiplier shown'}
+PreparationContent.jsx:30 🔍 PREP_DEBUG: PreparationContent props: {redealMultiplier: 1, isMyHandWeak: true, isMyDecision: true, simultaneousMode: true, weakPlayersAwaiting: Array(2), …}
+GameService.ts:441 🔍 GAME_SERVICE_DEBUG: processGameEvent received multiplier: {eventType: 'phase_change', multiplier: 1, currentMultiplier: 1, phase: 'preparation'}
+GameService.ts:588 🔍 GAME_SERVICE_DEBUG: Preparation phase - redeal_multiplier: {fromBackend: 1, setValue: 1}
+GameService.ts:1264 🎮 State Change: NETWORK_EVENT:PHASE_CHANGE
+GameService.ts:1265 Previous: {isConnected: true, roomId: 'CC28C0', playerName: 'Andy', phase: 'preparation', currentRound: 1, …}
+GameService.ts:1266 New: {isConnected: true, roomId: 'CC28C0', playerName: 'Andy', phase: 'preparation', currentRound: 1, …}
+GameService.ts:1267 Diff: {lastEventSequence: {…}, weakPlayersAwaiting: {…}, decisionsReceived: {…}}
+GameContainer.jsx:43 🔍 GAME_CONTAINER_DEBUG: Preparation props: {phase: 'preparation', redealMultiplier: 1, isMyHandWeak: true, simultaneousMode: true, weakPlayersAwaiting: Array(1), …}
+GameLayout.jsx:25 🔍 GAME_LAYOUT_DEBUG: Multiplier badge: {phase: 'preparation', showMultiplier: false, multiplierValue: 1, displayText: 'No multiplier shown'}
+PreparationContent.jsx:30 🔍 PREP_DEBUG: PreparationContent props: {redealMultiplier: 1, isMyHandWeak: true, isMyDecision: true, simultaneousMode: true, weakPlayersAwaiting: Array(1), …}
+PreparationContent.jsx:30 🔍 PREP_DEBUG: PreparationContent props: {redealMultiplier: 1, isMyHandWeak: true, isMyDecision: true, simultaneousMode: true, weakPlayersAwaiting: Array(1), …}
+PreparationContent.jsx:138 🔍 PREP_DEBUG: Waiting indicator check: {simultaneousMode: true, weakPlayersAwaitingLength: 1, weakPlayersAwaiting: Array(1), isMyDecision: true, shouldShowWaiting: false, …}
+PreparationContent.jsx:110 🔍 PREP_DEBUG: Request Redeal clicked {currentMultiplier: 1, decisionsReceived: 1, decisionsNeeded: 2}
+GameService.ts:1229 🎮 Action sent: accept_redeal {player_name: 'Andy'}
+GameLayout.jsx:25 🔍 GAME_LAYOUT_DEBUG: Multiplier badge: {phase: 'preparation', showMultiplier: false, multiplierValue: 1, displayText: 'No multiplier shown'}
+PreparationContent.jsx:30 🔍 PREP_DEBUG: PreparationContent props: {redealMultiplier: 1, isMyHandWeak: true, isMyDecision: true, simultaneousMode: true, weakPlayersAwaiting: Array(1), …}
+PreparationContent.jsx:138 🔍 PREP_DEBUG: Waiting indicator check: {simultaneousMode: true, weakPlayersAwaitingLength: 1, weakPlayersAwaiting: Array(1), isMyDecision: true, shouldShowWaiting: false, …}
+GameService.ts:441 🔍 GAME_SERVICE_DEBUG: processGameEvent received multiplier: {eventType: 'phase_change', multiplier: 2, currentMultiplier: 1, phase: 'preparation'}
+GameService.ts:588 🔍 GAME_SERVICE_DEBUG: Preparation phase - redeal_multiplier: {fromBackend: 2, setValue: 2}
+GameService.ts:1264 🎮 State Change: NETWORK_EVENT:PHASE_CHANGE
+GameService.ts:1265 Previous: {isConnected: true, roomId: 'CC28C0', playerName: 'Andy', phase: 'preparation', currentRound: 1, …}
+GameService.ts:1266 New: {isConnected: true, roomId: 'CC28C0', playerName: 'Andy', phase: 'preparation', currentRound: 1, …}
+GameService.ts:1267 Diff: {redealMultiplier: {…}, myHand: {…}, lastEventSequence: {…}, weakPlayersAwaiting: {…}, decisionsReceived: {…}, …}
+GameContainer.jsx:43 🔍 GAME_CONTAINER_DEBUG: Preparation props: {phase: 'preparation', redealMultiplier: 2, isMyHandWeak: true, simultaneousMode: true, weakPlayersAwaiting: Array(2), …}
+GameLayout.jsx:25 🔍 GAME_LAYOUT_DEBUG: Multiplier badge: {phase: 'preparation', showMultiplier: true, multiplierValue: 2, displayText: '2x Multiplier'}
+PreparationContent.jsx:30 🔍 PREP_DEBUG: PreparationContent props: {redealMultiplier: 2, isMyHandWeak: true, isMyDecision: true, simultaneousMode: true, weakPlayersAwaiting: Array(2), …}
+PreparationContent.jsx:138 🔍 PREP_DEBUG: Waiting indicator check: {simultaneousMode: true, weakPlayersAwaitingLength: 2, weakPlayersAwaiting: Array(2), isMyDecision: true, shouldShowWaiting: false, …}
+PreparationContent.jsx:110 🔍 PREP_DEBUG: Request Redeal clicked {currentMultiplier: 2, decisionsReceived: 0, decisionsNeeded: 2}
+GameService.ts:1229 🎮 Action sent: accept_redeal {player_name: 'Andy'}
+GameLayout.jsx:25 🔍 GAME_LAYOUT_DEBUG: Multiplier badge: {phase: 'preparation', showMultiplier: true, multiplierValue: 2, displayText: '2x Multiplier'}
+PreparationContent.jsx:30 🔍 PREP_DEBUG: PreparationContent props: {redealMultiplier: 2, isMyHandWeak: true, isMyDecision: true, simultaneousMode: true, weakPlayersAwaiting: Array(2), …}
+PreparationContent.jsx:138 🔍 PREP_DEBUG: Waiting indicator check: {simultaneousMode: true, weakPlayersAwaitingLength: 2, weakPlayersAwaiting: Array(2), isMyDecision: true, shouldShowWaiting: false, …}
+GameService.ts:441 🔍 GAME_SERVICE_DEBUG: processGameEvent received multiplier: {eventType: 'phase_change', multiplier: 2, currentMultiplier: 2, phase: 'preparation'}
+GameService.ts:588 🔍 GAME_SERVICE_DEBUG: Preparation phase - redeal_multiplier: {fromBackend: 2, setValue: 2}
+GameService.ts:1264 🎮 State Change: NETWORK_EVENT:PHASE_CHANGE
+GameService.ts:1265 Previous: {isConnected: true, roomId: 'CC28C0', playerName: 'Andy', phase: 'preparation', currentRound: 1, …}
+GameService.ts:1266 New: {isConnected: true, roomId: 'CC28C0', playerName: 'Andy', phase: 'preparation', currentRound: 1, …}
+GameService.ts:1267 Diff: {lastEventSequence: {…}, weakPlayersAwaiting: {…}, decisionsReceived: {…}, isMyDecision: {…}}
+GameContainer.jsx:43 🔍 GAME_CONTAINER_DEBUG: Preparation props: {phase: 'preparation', redealMultiplier: 2, isMyHandWeak: true, simultaneousMode: true, weakPlayersAwaiting: Array(1), …}
+GameLayout.jsx:25 🔍 GAME_LAYOUT_DEBUG: Multiplier badge: {phase: 'preparation', showMultiplier: true, multiplierValue: 2, displayText: '2x Multiplier'}
+PreparationContent.jsx:30 🔍 PREP_DEBUG: PreparationContent props: {redealMultiplier: 2, isMyHandWeak: true, isMyDecision: false, simultaneousMode: true, weakPlayersAwaiting: Array(1), …}
+PreparationContent.jsx:138 🔍 PREP_DEBUG: Waiting indicator check: {simultaneousMode: true, weakPlayersAwaitingLength: 1, weakPlayersAwaiting: Array(1), isMyDecision: false, shouldShowWaiting: true, …}
+PreparationContent.jsx:110 🔍 PREP_DEBUG: Request Redeal clicked {currentMultiplier: 2, decisionsReceived: 1, decisionsNeeded: 2}
+useGameActions.ts:80 ❌ Action acceptRedeal failed: Error: Not your turn to make redeal decision
+    at useGameActions.ts:151:15
+    at onClick (PreparationContent.jsx:115:23)
+    at Jg (react-dom-client.production.js:11858:13)
+    at react-dom-client.production.js:12410:5
+    at t0 (react-dom-client.production.js:1470:36)
+    at Vc (react-dom-client.production.js:11996:3)
+    at Dd (react-dom-client.production.js:14699:7)
+    at Fw (react-dom-client.production.js:14667:7)
+overrideMethod @ hook.js:608
+(anonymous) @ useGameActions.ts:80
+(anonymous) @ useGameActions.ts:156
+onClick @ PreparationContent.jsx:115
+Jg @ react-dom-client.production.js:11858
+(anonymous) @ react-dom-client.production.js:12410
+t0 @ react-dom-client.production.js:1470
+Vc @ react-dom-client.production.js:11996
+Dd @ react-dom-client.production.js:14699
+Fw @ react-dom-client.production.js:14667
+GameService.ts:441 🔍 GAME_SERVICE_DEBUG: processGameEvent received multiplier: {eventType: 'phase_change', multiplier: 3, currentMultiplier: 2, phase: 'preparation'}
+GameService.ts:588 🔍 GAME_SERVICE_DEBUG: Preparation phase - redeal_multiplier: {fromBackend: 3, setValue: 3}
+GameService.ts:1264 🎮 State Change: NETWORK_EVENT:PHASE_CHANGE
+GameService.ts:1265 Previous: {isConnected: true, roomId: 'CC28C0', playerName: 'Andy', phase: 'preparation', currentRound: 1, …}
+GameService.ts:1266 New: {isConnected: true, roomId: 'CC28C0', playerName: 'Andy', phase: 'preparation', currentRound: 1, …}
+GameService.ts:1267 Diff: {redealMultiplier: {…}, myHand: {…}, lastEventSequence: {…}, weakPlayersAwaiting: {…}, decisionsReceived: {…}, …}
+GameContainer.jsx:43 🔍 GAME_CONTAINER_DEBUG: Preparation props: {phase: 'preparation', redealMultiplier: 3, isMyHandWeak: true, simultaneousMode: true, weakPlayersAwaiting: Array(2), …}
+GameLayout.jsx:25 🔍 GAME_LAYOUT_DEBUG: Multiplier badge: {phase: 'preparation', showMultiplier: true, multiplierValue: 3, displayText: '3x Multiplier'}
+PreparationContent.jsx:30 🔍 PREP_DEBUG: PreparationContent props: {redealMultiplier: 3, isMyHandWeak: true, isMyDecision: true, simultaneousMode: true, weakPlayersAwaiting: Array(2), …}
+PreparationContent.jsx:138 🔍 PREP_DEBUG: Waiting indicator check: {simultaneousMode: true, weakPlayersAwaitingLength: 2, weakPlayersAwaiting: Array(2), isMyDecision: true, shouldShowWaiting: false, …}
+PreparationContent.jsx:110 🔍 PREP_DEBUG: Request Redeal clicked {currentMultiplier: 3, decisionsReceived: 0, decisionsNeeded: 2}
+GameService.ts:1229 🎮 Action sent: accept_redeal {player_name: 'Andy'}
+GameLayout.jsx:25 🔍 GAME_LAYOUT_DEBUG: Multiplier badge: {phase: 'preparation', showMultiplier: true, multiplierValue: 3, displayText: '3x Multiplier'}
+PreparationContent.jsx:30 🔍 PREP_DEBUG: PreparationContent props: {redealMultiplier: 3, isMyHandWeak: true, isMyDecision: true, simultaneousMode: true, weakPlayersAwaiting: Array(2), …}
+PreparationContent.jsx:138 🔍 PREP_DEBUG: Waiting indicator check: {simultaneousMode: true, weakPlayersAwaitingLength: 2, weakPlayersAwaiting: Array(2), isMyDecision: true, shouldShowWaiting: false, …}
+GameService.ts:441 🔍 GAME_SERVICE_DEBUG: processGameEvent received multiplier: {eventType: 'phase_change', multiplier: 3, currentMultiplier: 3, phase: 'preparation'}
+GameService.ts:588 🔍 GAME_SERVICE_DEBUG: Preparation phase - redeal_multiplier: {fromBackend: 3, setValue: 3}
+GameService.ts:1264 🎮 State Change: NETWORK_EVENT:PHASE_CHANGE
+GameService.ts:1265 Previous: {isConnected: true, roomId: 'CC28C0', playerName: 'Andy', phase: 'preparation', currentRound: 1, …}
+GameService.ts:1266 New: {isConnected: true, roomId: 'CC28C0', playerName: 'Andy', phase: 'preparation', currentRound: 1, …}
+GameService.ts:1267 Diff: {lastEventSequence: {…}, weakPlayersAwaiting: {…}, decisionsReceived: {…}}
+GameContainer.jsx:43 🔍 GAME_CONTAINER_DEBUG: Preparation props: {phase: 'preparation', redealMultiplier: 3, isMyHandWeak: true, simultaneousMode: true, weakPlayersAwaiting: Array(1), …}
+GameLayout.jsx:25 🔍 GAME_LAYOUT_DEBUG: Multiplier badge: {phase: 'preparation', showMultiplier: true, multiplierValue: 3, displayText: '3x Multiplier'}
+PreparationContent.jsx:30 🔍 PREP_DEBUG: PreparationContent props: {redealMultiplier: 3, isMyHandWeak: true, isMyDecision: true, simultaneousMode: true, weakPlayersAwaiting: Array(1), …}
+PreparationContent.jsx:138 🔍 PREP_DEBUG: Waiting indicator check: {simultaneousMode: true, weakPlayersAwaitingLength: 1, weakPlayersAwaiting: Array(1), isMyDecision: true, shouldShowWaiting: false, …}
+GameService.ts:441 🔍 GAME_SERVICE_DEBUG: processGameEvent received multiplier: {eventType: 'phase_change', multiplier: 4, currentMultiplier: 3, phase: 'preparation'}
+GameService.ts:588 🔍 GAME_SERVICE_DEBUG: Preparation phase - redeal_multiplier: {fromBackend: 4, setValue: 4}
+GameService.ts:1264 🎮 State Change: NETWORK_EVENT:PHASE_CHANGE
+GameService.ts:1265 Previous: {isConnected: true, roomId: 'CC28C0', playerName: 'Andy', phase: 'preparation', currentRound: 1, …}
+GameService.ts:1266 New: {isConnected: true, roomId: 'CC28C0', playerName: 'Andy', phase: 'preparation', currentRound: 1, …}
+GameService.ts:1267 Diff: {redealMultiplier: {…}, myHand: {…}, lastEventSequence: {…}, weakPlayersAwaiting: {…}, decisionsReceived: {…}, …}
+GameContainer.jsx:43 🔍 GAME_CONTAINER_DEBUG: Preparation props: {phase: 'preparation', redealMultiplier: 4, isMyHandWeak: true, simultaneousMode: true, weakPlayersAwaiting: Array(2), …}
+GameLayout.jsx:25 🔍 GAME_LAYOUT_DEBUG: Multiplier badge: {phase: 'preparation', showMultiplier: true, multiplierValue: 4, displayText: '4x Multiplier'}
+PreparationContent.jsx:30 🔍 PREP_DEBUG: PreparationContent props: {redealMultiplier: 4, isMyHandWeak: true, isMyDecision: true, simultaneousMode: true, weakPlayersAwaiting: Array(2), …}
+PreparationContent.jsx:138 🔍 PREP_DEBUG: Waiting indicator check: {simultaneousMode: true, weakPlayersAwaitingLength: 2, weakPlayersAwaiting: Array(2), isMyDecision: true, shouldShowWaiting: false, …}
+PreparationContent.jsx:110 🔍 PREP_DEBUG: Request Redeal clicked {currentMultiplier: 4, decisionsReceived: 0, decisionsNeeded: 2}
+GameService.ts:1229 🎮 Action sent: accept_redeal {player_name: 'Andy'}
+GameLayout.jsx:25 🔍 GAME_LAYOUT_DEBUG: Multiplier badge: {phase: 'preparation', showMultiplier: true, multiplierValue: 4, displayText: '4x Multiplier'}
+PreparationContent.jsx:30 🔍 PREP_DEBUG: PreparationContent props: {redealMultiplier: 4, isMyHandWeak: true, isMyDecision: true, simultaneousMode: true, weakPlayersAwaiting: Array(2), …}
+PreparationContent.jsx:138 🔍 PREP_DEBUG: Waiting indicator check: {simultaneousMode: true, weakPlayersAwaitingLength: 2, weakPlayersAwaiting: Array(2), isMyDecision: true, shouldShowWaiting: false, …}
+GameService.ts:441 🔍 GAME_SERVICE_DEBUG: processGameEvent received multiplier: {eventType: 'phase_change', multiplier: 4, currentMultiplier: 4, phase: 'preparation'}
+GameService.ts:588 🔍 GAME_SERVICE_DEBUG: Preparation phase - redeal_multiplier: {fromBackend: 4, setValue: 4}
+GameService.ts:1264 🎮 State Change: NETWORK_EVENT:PHASE_CHANGE
+GameService.ts:1265 Previous: {isConnected: true, roomId: 'CC28C0', playerName: 'Andy', phase: 'preparation', currentRound: 1, …}
+GameService.ts:1266 New: {isConnected: true, roomId: 'CC28C0', playerName: 'Andy', phase: 'preparation', currentRound: 1, …}
+GameService.ts:1267 Diff: {lastEventSequence: {…}, weakPlayersAwaiting: {…}, decisionsReceived: {…}, isMyDecision: {…}}
+GameContainer.jsx:43 🔍 GAME_CONTAINER_DEBUG: Preparation props: {phase: 'preparation', redealMultiplier: 4, isMyHandWeak: true, simultaneousMode: true, weakPlayersAwaiting: Array(1), …}
+GameLayout.jsx:25 🔍 GAME_LAYOUT_DEBUG: Multiplier badge: {phase: 'preparation', showMultiplier: true, multiplierValue: 4, displayText: '4x Multiplier'}
+PreparationContent.jsx:30 🔍 PREP_DEBUG: PreparationContent props: {redealMultiplier: 4, isMyHandWeak: true, isMyDecision: false, simultaneousMode: true, weakPlayersAwaiting: Array(1), …}
+PreparationContent.jsx:138 🔍 PREP_DEBUG: Waiting indicator check: {simultaneousMode: true, weakPlayersAwaitingLength: 1, weakPlayersAwaiting: Array(1), isMyDecision: false, shouldShowWaiting: true, …}
+GameService.ts:441 🔍 GAME_SERVICE_DEBUG: processGameEvent received multiplier: {eventType: 'phase_change', multiplier: 5, currentMultiplier: 4, phase: 'preparation'}
+GameService.ts:588 🔍 GAME_SERVICE_DEBUG: Preparation phase - redeal_multiplier: {fromBackend: 5, setValue: 5}
+GameService.ts:1264 🎮 State Change: NETWORK_EVENT:PHASE_CHANGE
+GameService.ts:1265 Previous: {isConnected: true, roomId: 'CC28C0', playerName: 'Andy', phase: 'preparation', currentRound: 1, …}
+GameService.ts:1266 New: {isConnected: true, roomId: 'CC28C0', playerName: 'Andy', phase: 'preparation', currentRound: 1, …}
+GameService.ts:1267 Diff: {redealMultiplier: {…}, myHand: {…}, lastEventSequence: {…}, weakPlayersAwaiting: {…}, decisionsReceived: {…}, …}
+GameContainer.jsx:43 🔍 GAME_CONTAINER_DEBUG: Preparation props: {phase: 'preparation', redealMultiplier: 5, isMyHandWeak: true, simultaneousMode: true, weakPlayersAwaiting: Array(2), …}
+GameLayout.jsx:25 🔍 GAME_LAYOUT_DEBUG: Multiplier badge: {phase: 'preparation', showMultiplier: true, multiplierValue: 5, displayText: '5x Multiplier'}
+PreparationContent.jsx:30 🔍 PREP_DEBUG: PreparationContent props: {redealMultiplier: 5, isMyHandWeak: true, isMyDecision: true, simultaneousMode: true, weakPlayersAwaiting: Array(2), …}
+PreparationContent.jsx:138 🔍 PREP_DEBUG: Waiting indicator check: {simultaneousMode: true, weakPlayersAwaitingLength: 2, weakPlayersAwaiting: Array(2), isMyDecision: true, shouldShowWaiting: false, …}
+GameService.ts:441 🔍 GAME_SERVICE_DEBUG: processGameEvent received multiplier: {eventType: 'phase_change', multiplier: 5, currentMultiplier: 5, phase: 'preparation'}
+GameService.ts:588 🔍 GAME_SERVICE_DEBUG: Preparation phase - redeal_multiplier: {fromBackend: 5, setValue: 5}
+GameService.ts:1264 🎮 State Change: NETWORK_EVENT:PHASE_CHANGE
+GameService.ts:1265 Previous: {isConnected: true, roomId: 'CC28C0', playerName: 'Andy', phase: 'preparation', currentRound: 1, …}
+GameService.ts:1266 New: {isConnected: true, roomId: 'CC28C0', playerName: 'Andy', phase: 'preparation', currentRound: 1, …}
+GameService.ts:1267 Diff: {lastEventSequence: {…}, weakPlayersAwaiting: {…}, decisionsReceived: {…}}
+GameContainer.jsx:43 🔍 GAME_CONTAINER_DEBUG: Preparation props: {phase: 'preparation', redealMultiplier: 5, isMyHandWeak: true, simultaneousMode: true, weakPlayersAwaiting: Array(1), …}
+GameLayout.jsx:25 🔍 GAME_LAYOUT_DEBUG: Multiplier badge: {phase: 'preparation', showMultiplier: true, multiplierValue: 5, displayText: '5x Multiplier'}
+PreparationContent.jsx:30 🔍 PREP_DEBUG: PreparationContent props: {redealMultiplier: 5, isMyHandWeak: true, isMyDecision: true, simultaneousMode: true, weakPlayersAwaiting: Array(1), …}
+PreparationContent.jsx:138 🔍 PREP_DEBUG: Waiting indicator check: {simultaneousMode: true, weakPlayersAwaitingLength: 1, weakPlayersAwaiting: Array(1), isMyDecision: true, shouldShowWaiting: false, …}
+PreparationContent.jsx:110 🔍 PREP_DEBUG: Request Redeal clicked {currentMultiplier: 5, decisionsReceived: 1, decisionsNeeded: 2}
+GameService.ts:1229 🎮 Action sent: accept_redeal {player_name: 'Andy'}
+GameLayout.jsx:25 🔍 GAME_LAYOUT_DEBUG: Multiplier badge: {phase: 'preparation', showMultiplier: true, multiplierValue: 5, displayText: '5x Multiplier'}
+PreparationContent.jsx:30 🔍 PREP_DEBUG: PreparationContent props: {redealMultiplier: 5, isMyHandWeak: true, isMyDecision: true, simultaneousMode: true, weakPlayersAwaiting: Array(1), …}
+PreparationContent.jsx:138 🔍 PREP_DEBUG: Waiting indicator check: {simultaneousMode: true, weakPlayersAwaitingLength: 1, weakPlayersAwaiting: Array(1), isMyDecision: true, shouldShowWaiting: false, …}
+GameService.ts:441 🔍 GAME_SERVICE_DEBUG: processGameEvent received multiplier: {eventType: 'phase_change', multiplier: 6, currentMultiplier: 5, phase: 'preparation'}
+GameService.ts:588 🔍 GAME_SERVICE_DEBUG: Preparation phase - redeal_multiplier: {fromBackend: 6, setValue: 6}
+GameService.ts:1264 🎮 State Change: NETWORK_EVENT:PHASE_CHANGE
+GameService.ts:1265 Previous: {isConnected: true, roomId: 'CC28C0', playerName: 'Andy', phase: 'preparation', currentRound: 1, …}
+GameService.ts:1266 New: {isConnected: true, roomId: 'CC28C0', playerName: 'Andy', phase: 'preparation', currentRound: 1, …}
+GameService.ts:1267 Diff: {redealMultiplier: {…}, myHand: {…}, lastEventSequence: {…}, isMyHandWeak: {…}, handValue: {…}, …}
+GameContainer.jsx:43 🔍 GAME_CONTAINER_DEBUG: Preparation props: {phase: 'preparation', redealMultiplier: 6, isMyHandWeak: false, simultaneousMode: true, weakPlayersAwaiting: Array(1), …}
+GameLayout.jsx:25 🔍 GAME_LAYOUT_DEBUG: Multiplier badge: {phase: 'preparation', showMultiplier: true, multiplierValue: 6, displayText: '6x Multiplier'}
+PreparationContent.jsx:30 🔍 PREP_DEBUG: PreparationContent props: {redealMultiplier: 6, isMyHandWeak: false, isMyDecision: true, simultaneousMode: true, weakPlayersAwaiting: Array(1), …}
+PreparationContent.jsx:138 🔍 PREP_DEBUG: Waiting indicator check: {simultaneousMode: true, weakPlayersAwaitingLength: 1, weakPlayersAwaiting: Array(1), isMyDecision: true, shouldShowWaiting: false, …}
+GameService.ts:1264 🎮 State Change: NETWORK_EVENT:PHASE_CHANGE
+GameService.ts:1265 Previous: {isConnected: true, roomId: 'CC28C0', playerName: 'Andy', phase: 'preparation', currentRound: 1, …}
+GameService.ts:1266 New: {isConnected: true, roomId: 'CC28C0', playerName: 'Andy', phase: 'declaration', currentRound: 1, …}
+GameService.ts:1267 Diff: {phase: {…}, declarationOrder: {…}, lastEventSequence: {…}, currentTotal: {…}, declarationProgress: {…}, …}
+GameLayout.jsx:25 🔍 GAME_LAYOUT_DEBUG: Multiplier badge: {phase: 'declaration', showMultiplier: true, multiplierValue: 6, displayText: '6x Multiplier'}
+GameService.ts:1264 🎮 State Change: NETWORK_EVENT:PHASE_CHANGE
+GameService.ts:1265 Previous: {isConnected: true, roomId: 'CC28C0', playerName: 'Andy', phase: 'declaration', currentRound: 1, …}
+GameService.ts:1266 New: {isConnected: true, roomId: 'CC28C0', playerName: 'Andy', phase: 'declaration', currentRound: 1, …}
+GameService.ts:1267 Diff: {currentDeclarer: {…}, isMyTurn: {…}, allowedActions: {…}, validOptions: {…}, lastEventSequence: {…}}
+GameLayout.jsx:25 🔍 GAME_LAYOUT_DEBUG: Multiplier badge: {phase: 'declaration', showMultiplier: true, multiplierValue: 6, displayText: '6x Multiplier'}
+GameLayout.jsx:25 🔍 GAME_LAYOUT_DEBUG: Multiplier badge: {phase: 'declaration', showMultiplier: true, multiplierValue: 6, displayText: '6x Multiplier'}
+GameLayout.jsx:25 🔍 GAME_LAYOUT_DEBUG: Multiplier badge: {phase: 'declaration', showMultiplier: true, multiplierValue: 6, displayText: '6x Multiplier'}
+
+---
+
+🔒 [Room CC28C0] Starting game: op_id=CC28C0_1
+🔍 PREP_STATE_DEBUG: _notify_weak_hands sending data:
+  weak_players: ['Andy', 'Bot 2']
+  weak_players_awaiting: ['Andy', 'Bot 2']
+  redeal_multiplier: 1
+  decisions_received: 0
+  decisions_needed: 2
+🔍 BASE_STATE_DEBUG: update_phase_data called
+  Phase: preparation
+  Reason: Weak hands detected: ['Andy', 'Bot 2'] - awaiting simultaneous decisions
+  📊 MULTIPLIER UPDATE: 1
 🤖 Bot Bot 2 deciding: ACCEPT redeal
 ✅ Bot Bot 2 ACCEPTED redeal
-✅ [Room 59B0F0] Game and StateMachine started successfully: op_id=59B0F0_1
-✅ [Room 59B0F0] Bot manager registered for 3 bots
-✅ Game started in room 59B0F0
-INFO:     ('127.0.0.1', 54246) - "WebSocket /ws/59B0F0" [accepted]
-INFO:     connection open
+🔍 PREP_STATE_DEBUG: _notify_weak_hands complete
+✅ [Room CC28C0] Game and StateMachine started successfully: op_id=CC28C0_1
+✅ [Room CC28C0] Bot manager registered for 3 bots
+✅ Game started in room CC28C0
 INFO:     connection closed
+INFO:     ('127.0.0.1', 58309) - "WebSocket /ws/CC28C0" [accepted]
+INFO:     connection open
+🔍 PREP_STATE_DEBUG: Decision recorded for Bot 2: ACCEPT
+  Current decisions: {'Bot 2': True}
+  Remaining awaiting: {'Andy'}
+  Current multiplier: 1
+🔍 PREP_STATE_DEBUG: Broadcasting decision update:
+  Player: Bot 2 - ACCEPTED
+  Decisions received: 1/2
+  Current multiplier: 1
+🔍 BASE_STATE_DEBUG: update_phase_data called
+  Phase: preparation
+  Reason: Player Bot 2 accepted redeal (1/2 decided)
+  📊 MULTIPLIER UPDATE: 1
 ✅ Redeal accept queued: Andy
+🔍 PREP_STATE_DEBUG: Decision recorded for Andy: ACCEPT
+  Current decisions: {'Bot 2': True, 'Andy': True}
+  Remaining awaiting: set()
+  Current multiplier: 1
+🔍 PREP_STATE_DEBUG: REDEAL EXECUTED!
+  First accepter: Andy
+  Old multiplier: 1
+  New multiplier: 2
+🔍 PREP_STATE_DEBUG: About to deal new cards...
+🔍 PREP_STATE_DEBUG: Before _deal_cards - multiplier is 2
+🔍 PREP_STATE_DEBUG: _notify_weak_hands sending data:
+  weak_players: ['Andy', 'Bot 2']
+  weak_players_awaiting: ['Andy', 'Bot 2']
+  redeal_multiplier: 2
+  decisions_received: 0
+  decisions_needed: 2
+🔍 BASE_STATE_DEBUG: update_phase_data called
+  Phase: preparation
+  Reason: Weak hands detected: ['Andy', 'Bot 2'] - awaiting simultaneous decisions
+  📊 MULTIPLIER UPDATE: 2
+🔍 PREP_STATE_DEBUG: _notify_weak_hands complete
+🔍 PREP_STATE_DEBUG: After _deal_cards - multiplier is 2
 ✅ Redeal accept queued: Andy
+🔍 PREP_STATE_DEBUG: Decision recorded for Andy: ACCEPT
+  Current decisions: {'Andy': True}
+  Remaining awaiting: {'Bot 2'}
+  Current multiplier: 2
+🔍 PREP_STATE_DEBUG: Broadcasting decision update:
+  Player: Andy - ACCEPTED
+  Decisions received: 1/2
+  Current multiplier: 2
+🔍 BASE_STATE_DEBUG: update_phase_data called
+  Phase: preparation
+  Reason: Player Andy accepted redeal (1/2 decided)
+  📊 MULTIPLIER UPDATE: 2
 🤖 Bot Bot 2 deciding: ACCEPT redeal
 ✅ Bot Bot 2 ACCEPTED redeal
+🔍 PREP_STATE_DEBUG: Decision recorded for Bot 2: ACCEPT
+  Current decisions: {'Andy': True, 'Bot 2': True}
+  Remaining awaiting: set()
+  Current multiplier: 2
+🔍 PREP_STATE_DEBUG: REDEAL EXECUTED!
+  First accepter: Andy
+  Old multiplier: 2
+  New multiplier: 3
+🔍 PREP_STATE_DEBUG: About to deal new cards...
+🔍 PREP_STATE_DEBUG: Before _deal_cards - multiplier is 3
+🔍 PREP_STATE_DEBUG: _notify_weak_hands sending data:
+  weak_players: ['Andy', 'Bot 2']
+  weak_players_awaiting: ['Andy', 'Bot 2']
+  redeal_multiplier: 3
+  decisions_received: 0
+  decisions_needed: 2
+🔍 BASE_STATE_DEBUG: update_phase_data called
+  Phase: preparation
+  Reason: Weak hands detected: ['Andy', 'Bot 2'] - awaiting simultaneous decisions
+  📊 MULTIPLIER UPDATE: 3
+🤖 Bot Bot 2 deciding: ACCEPT redeal
+✅ Bot Bot 2 ACCEPTED redeal
+🔍 PREP_STATE_DEBUG: _notify_weak_hands complete
+🔍 PREP_STATE_DEBUG: After _deal_cards - multiplier is 3
+✅ Redeal accept queued: Andy
+🔍 PREP_STATE_DEBUG: Decision recorded for Bot 2: ACCEPT
+  Current decisions: {'Bot 2': True}
+  Remaining awaiting: {'Andy'}
+  Current multiplier: 3
+🔍 PREP_STATE_DEBUG: Broadcasting decision update:
+  Player: Bot 2 - ACCEPTED
+  Decisions received: 1/2
+  Current multiplier: 3
+🔍 BASE_STATE_DEBUG: update_phase_data called
+  Phase: preparation
+  Reason: Player Bot 2 accepted redeal (1/2 decided)
+  📊 MULTIPLIER UPDATE: 3
+🔍 PREP_STATE_DEBUG: Decision recorded for Andy: ACCEPT
+  Current decisions: {'Bot 2': True, 'Andy': True}
+  Remaining awaiting: set()
+  Current multiplier: 3
+🔍 PREP_STATE_DEBUG: REDEAL EXECUTED!
+  First accepter: Andy
+  Old multiplier: 3
+  New multiplier: 4
+🔍 PREP_STATE_DEBUG: About to deal new cards...
+🔍 PREP_STATE_DEBUG: Before _deal_cards - multiplier is 4
+🔍 PREP_STATE_DEBUG: _notify_weak_hands sending data:
+  weak_players: ['Andy', 'Bot 2']
+  weak_players_awaiting: ['Andy', 'Bot 2']
+  redeal_multiplier: 4
+  decisions_received: 0
+  decisions_needed: 2
+🔍 BASE_STATE_DEBUG: update_phase_data called
+  Phase: preparation
+  Reason: Weak hands detected: ['Andy', 'Bot 2'] - awaiting simultaneous decisions
+  📊 MULTIPLIER UPDATE: 4
+🔍 PREP_STATE_DEBUG: _notify_weak_hands complete
+🔍 PREP_STATE_DEBUG: After _deal_cards - multiplier is 4
+✅ Redeal accept queued: Andy
+🔍 PREP_STATE_DEBUG: Decision recorded for Andy: ACCEPT
+  Current decisions: {'Andy': True}
+  Remaining awaiting: {'Bot 2'}
+  Current multiplier: 4
+🔍 PREP_STATE_DEBUG: Broadcasting decision update:
+  Player: Andy - ACCEPTED
+  Decisions received: 1/2
+  Current multiplier: 4
+🔍 BASE_STATE_DEBUG: update_phase_data called
+  Phase: preparation
+  Reason: Player Andy accepted redeal (1/2 decided)
+  📊 MULTIPLIER UPDATE: 4
+🤖 Bot Bot 2 deciding: ACCEPT redeal
+✅ Bot Bot 2 ACCEPTED redeal
+🔍 PREP_STATE_DEBUG: Decision recorded for Bot 2: ACCEPT
+  Current decisions: {'Andy': True, 'Bot 2': True}
+  Remaining awaiting: set()
+  Current multiplier: 4
+🔍 PREP_STATE_DEBUG: REDEAL EXECUTED!
+  First accepter: Andy
+  Old multiplier: 4
+  New multiplier: 5
+🔍 PREP_STATE_DEBUG: About to deal new cards...
+🔍 PREP_STATE_DEBUG: Before _deal_cards - multiplier is 5
+🔍 PREP_STATE_DEBUG: _notify_weak_hands sending data:
+  weak_players: ['Andy', 'Bot 2']
+  weak_players_awaiting: ['Andy', 'Bot 2']
+  redeal_multiplier: 5
+  decisions_received: 0
+  decisions_needed: 2
+🔍 BASE_STATE_DEBUG: update_phase_data called
+  Phase: preparation
+  Reason: Weak hands detected: ['Andy', 'Bot 2'] - awaiting simultaneous decisions
+  📊 MULTIPLIER UPDATE: 5
+🤖 Bot Bot 2 deciding: ACCEPT redeal
+✅ Bot Bot 2 ACCEPTED redeal
+🔍 PREP_STATE_DEBUG: _notify_weak_hands complete
+🔍 PREP_STATE_DEBUG: After _deal_cards - multiplier is 5
+🔍 PREP_STATE_DEBUG: Decision recorded for Bot 2: ACCEPT
+  Current decisions: {'Bot 2': True}
+  Remaining awaiting: {'Andy'}
+  Current multiplier: 5
+🔍 PREP_STATE_DEBUG: Broadcasting decision update:
+  Player: Bot 2 - ACCEPTED
+  Decisions received: 1/2
+  Current multiplier: 5
+🔍 BASE_STATE_DEBUG: update_phase_data called
+  Phase: preparation
+  Reason: Player Bot 2 accepted redeal (1/2 decided)
+  📊 MULTIPLIER UPDATE: 5
+✅ Redeal accept queued: Andy
+🔍 PREP_STATE_DEBUG: Decision recorded for Andy: ACCEPT
+  Current decisions: {'Bot 2': True, 'Andy': True}
+  Remaining awaiting: set()
+  Current multiplier: 5
+🔍 PREP_STATE_DEBUG: REDEAL EXECUTED!
+  First accepter: Andy
+  Old multiplier: 5
+  New multiplier: 6
+🔍 PREP_STATE_DEBUG: About to deal new cards...
+🔍 PREP_STATE_DEBUG: Before _deal_cards - multiplier is 6
+🔍 PREP_STATE_DEBUG: After _deal_cards - multiplier is 6
+🔍 BASE_STATE_DEBUG: update_phase_data called
+  Phase: preparation
+  Reason: Redeal complete - no weak hands found, multiplier now 6x
+  📊 MULTIPLIER UPDATE: 6
+🔍 BASE_STATE_DEBUG: update_phase_data called
+  Phase: declaration
+  Reason: Declaration phase setup - basic data
+🔍 BASE_STATE_DEBUG: update_phase_data called
+  Phase: declaration
+  Reason: Declaration phase setup complete - current declarer: Andy
 👤 Round starter is human or None: None
-✅ Declaration queued: Andy -> 3
-✅ Bot Bot 2 declared 2
-✅ Bot Bot 3 declared 1
-✅ Bot Bot 4 declared 1
-✅ Bot Bot 3 declared 1
-✅ Bot Bot 4 declared 1
-✅ Bot Bot 4 declared 1
-Action declare not allowed in turn
-Action declare not allowed in turn
-Action declare not allowed in turn
-🎯 WS_PLAY_DEBUG: Received play event - player: Andy, indices: [5, 0]
-🎯 WS_PLAY_DEBUG: Found player Andy with hand size 8
-🎯 WS_PLAY_DEBUG: Added piece at index 5: SOLDIER_RED(2)
-🎯 WS_PLAY_DEBUG: Added piece at index 0: SOLDIER_RED(2)
-🎯 WS_PLAY_DEBUG: Final pieces to play: ['SOLDIER_RED(2)', 'SOLDIER_RED(2)']
-🎯 WS_PLAY_DEBUG: Queuing action for state machine...
-🎯 WS_PLAY_DEBUG: State machine result: {'success': True, 'queued': True}
-✅ Play accepted: Andy
-🤖 BOT chooses to play PAIR (2 pts): SOLDIER, SOLDIER
-✅ Bot Bot 2 action queued - state machine will broadcast with correct next_player
-🤖 BOT chooses to play PAIR (4 pts): SOLDIER, SOLDIER
-✅ Bot Bot 3 action queued - state machine will broadcast with correct next_player
-🤖 BOT has no valid play. Discards lowest pieces: SOLDIER, CANNON
-    🔍 Final play: ['SOLDIER', 'CANNON']
-    🧠 Hand left: ['ADVISOR', 'CANNON', 'ELEPHANT', 'GENERAL', 'SOLDIER', 'CANNON', 'CHARIOT', 'CHARIOT']
-✅ Bot Bot 4 action queued - state machine will broadcast with correct next_player
-🤖 BOT chooses to play PAIR (4 pts): SOLDIER, SOLDIER
-✅ Bot Bot 3 action queued - state machine will broadcast with correct next_player
-🤖 BOT has no valid play. Discards lowest pieces: SOLDIER, CANNON
-    🔍 Final play: ['SOLDIER', 'CANNON']
-    🧠 Hand left: ['ADVISOR', 'CANNON', 'ELEPHANT', 'GENERAL', 'SOLDIER', 'CANNON', 'CHARIOT', 'CHARIOT']
-✅ Bot Bot 4 action queued - state machine will broadcast with correct next_player
-🤖 BOT has no valid play. Discards lowest pieces: SOLDIER, CANNON
-    🔍 Final play: ['SOLDIER', 'CANNON']
-    🧠 Hand left: ['ADVISOR', 'CANNON', 'ELEPHANT', 'GENERAL', 'SOLDIER', 'CANNON', 'CHARIOT', 'CHARIOT']
-✅ Bot Bot 4 action queued - state machine will broadcast with correct next_player
-Not Bot 3's turn - expected Andy
-Invalid action: GameAction(player_name='Bot 3', action_type=<ActionType.PLAY_PIECES: 'play_pieces'>, payload={'pieces': [SOLDIER_RED(2), SOLDIER_RED(2)]}, timestamp=datetime.datetime(2025, 7, 9, 20, 59, 40, 660329), sequence_id=15, is_bot=True)
-Not Bot 4's turn - expected Andy
-Invalid action: GameAction(player_name='Bot 4', action_type=<ActionType.PLAY_PIECES: 'play_pieces'>, payload={'pieces': [SOLDIER_RED(2), CANNON_BLACK(3)]}, timestamp=datetime.datetime(2025, 7, 9, 20, 59, 42, 19850), sequence_id=16, is_bot=True)
-Not Bot 4's turn - expected Andy
-Invalid action: GameAction(player_name='Bot 4', action_type=<ActionType.PLAY_PIECES: 'play_pieces'>, payload={'pieces': [SOLDIER_RED(2), CANNON_BLACK(3)]}, timestamp=datetime.datetime(2025, 7, 9, 20, 59, 43, 326475), sequence_id=17, is_bot=True)
-🎯 WS_PLAY_DEBUG: Received play event - player: Andy, indices: [1]
-🎯 WS_PLAY_DEBUG: Found player Andy with hand size 6
-🎯 WS_PLAY_DEBUG: Added piece at index 1: ELEPHANT_RED(10)
-🎯 WS_PLAY_DEBUG: Final pieces to play: ['ELEPHANT_RED(10)']
-🎯 WS_PLAY_DEBUG: Queuing action for state machine...
-🎯 WS_PLAY_DEBUG: State machine result: {'success': True, 'queued': True}
-✅ Play accepted: Andy
-🤖 BOT chooses to play SINGLE (13 pts): GENERAL
-✅ Bot Bot 2 action queued - state machine will broadcast with correct next_player
-🤖 BOT chooses to play SINGLE (12 pts): ADVISOR
-✅ Bot Bot 3 action queued - state machine will broadcast with correct next_player
-🤖 BOT chooses to play SINGLE (14 pts): GENERAL
-✅ Bot Bot 4 action queued - state machine will broadcast with correct next_player
-🤖 BOT chooses to play SINGLE (12 pts): ADVISOR
-✅ Bot Bot 3 action queued - state machine will broadcast with correct next_player
-🤖 BOT chooses to play SINGLE (14 pts): GENERAL
-✅ Bot Bot 4 action queued - state machine will broadcast with correct next_player
-🤖 BOT chooses to play SINGLE (14 pts): GENERAL
-✅ Bot Bot 4 action queued - state machine will broadcast with correct next_player
-🤖 BOT chooses to play SINGLE (11 pts): ADVISOR
-✅ Bot Bot 4 action queued - state machine will broadcast with correct next_player
-Not Bot 3's turn - expected Bot 4
-Invalid action: GameAction(player_name='Bot 3', action_type=<ActionType.PLAY_PIECES: 'play_pieces'>, payload={'pieces': [ADVISOR_RED(12)]}, timestamp=datetime.datetime(2025, 7, 9, 21, 0, 6, 384230), sequence_id=22, is_bot=True)
-Player Bot 4 doesn't have piece: GENERAL_RED(14)
-Invalid action: GameAction(player_name='Bot 4', action_type=<ActionType.PLAY_PIECES: 'play_pieces'>, payload={'pieces': [GENERAL_RED(14)]}, timestamp=datetime.datetime(2025, 7, 9, 21, 0, 7, 790593), sequence_id=23, is_bot=True)
-Player Bot 4 doesn't have piece: GENERAL_RED(14)
-Invalid action: GameAction(player_name='Bot 4', action_type=<ActionType.PLAY_PIECES: 'play_pieces'>, payload={'pieces': [GENERAL_RED(14)]}, timestamp=datetime.datetime(2025, 7, 9, 21, 0, 9, 142212), sequence_id=24, is_bot=True)
-🎯 WS_PLAY_DEBUG: Received play event - player: Andy, indices: [2]
-🎯 WS_PLAY_DEBUG: Found player Andy with hand size 5
-🎯 WS_PLAY_DEBUG: Added piece at index 2: ELEPHANT_BLACK(9)
-🎯 WS_PLAY_DEBUG: Final pieces to play: ['ELEPHANT_BLACK(9)']
-🎯 WS_PLAY_DEBUG: Queuing action for state machine...
-🎯 WS_PLAY_DEBUG: State machine result: {'success': True, 'queued': True}
-✅ Play accepted: Andy
-🤖 BOT chooses to play SINGLE (7 pts): CHARIOT
-✅ Bot Bot 2 action queued - state machine will broadcast with correct next_player
-🤖 BOT chooses to play SINGLE (11 pts): ADVISOR
-✅ Bot Bot 3 action queued - state machine will broadcast with correct next_player
-🤖 BOT chooses to play SINGLE (11 pts): ADVISOR
-✅ Bot Bot 3 action queued - state machine will broadcast with correct next_player
-🤖 BOT chooses to play SINGLE (9 pts): ELEPHANT
-✅ Bot Bot 4 action queued - state machine will broadcast with correct next_player
-Not Bot 3's turn - expected Bot 4
-Invalid action: GameAction(player_name='Bot 3', action_type=<ActionType.PLAY_PIECES: 'play_pieces'>, payload={'pieces': [ADVISOR_BLACK(11)]}, timestamp=datetime.datetime(2025, 7, 9, 21, 0, 31, 822156), sequence_id=29, is_bot=True)
-🎯 WS_PLAY_DEBUG: Received play event - player: Andy, indices: [0]
-🎯 WS_PLAY_DEBUG: Found player Andy with hand size 4
-🎯 WS_PLAY_DEBUG: Added piece at index 0: CHARIOT_RED(8)
-🎯 WS_PLAY_DEBUG: Final pieces to play: ['CHARIOT_RED(8)']
-🎯 WS_PLAY_DEBUG: Queuing action for state machine...
-🎯 WS_PLAY_DEBUG: State machine result: {'success': True, 'queued': True}
-✅ Play accepted: Andy
-🤖 BOT chooses to play SINGLE (6 pts): HORSE
-✅ Bot Bot 2 action queued - state machine will broadcast with correct next_player
-🤖 BOT chooses to play SINGLE (10 pts): ELEPHANT
-✅ Bot Bot 3 action queued - state machine will broadcast with correct next_player
-🤖 BOT chooses to play SINGLE (10 pts): ELEPHANT
-✅ Bot Bot 3 action queued - state machine will broadcast with correct next_player
-🤖 BOT chooses to play SINGLE (5 pts): HORSE
-✅ Bot Bot 3 action queued - state machine will broadcast with correct next_player
-🤖 BOT chooses to play SINGLE (8 pts): CHARIOT
-✅ Bot Bot 4 action queued - state machine will broadcast with correct next_player
-Player Bot 3 doesn't have piece: ELEPHANT_RED(10)
-Invalid action: GameAction(player_name='Bot 3', action_type=<ActionType.PLAY_PIECES: 'play_pieces'>, payload={'pieces': [ELEPHANT_RED(10)]}, timestamp=datetime.datetime(2025, 7, 9, 21, 0, 53, 73708), sequence_id=34, is_bot=True)
-🤖 BOT chooses to play SINGLE (8 pts): CHARIOT
-✅ Bot Bot 4 action queued - state machine will broadcast with correct next_player
-Not Bot 4's turn - expected Andy
-Invalid action: GameAction(player_name='Bot 4', action_type=<ActionType.PLAY_PIECES: 'play_pieces'>, payload={'pieces': [CHARIOT_RED(8)]}, timestamp=datetime.datetime(2025, 7, 9, 21, 1, 9, 188586), sequence_id=37, is_bot=True)
-🎯 WS_PLAY_DEBUG: Received play event - player: Andy, indices: [0]
-🎯 WS_PLAY_DEBUG: Found player Andy with hand size 3
-🎯 WS_PLAY_DEBUG: Added piece at index 0: HORSE_RED(6)
-🎯 WS_PLAY_DEBUG: Final pieces to play: ['HORSE_RED(6)']
-🎯 WS_PLAY_DEBUG: Queuing action for state machine...
-🎯 WS_PLAY_DEBUG: State machine result: {'success': True, 'queued': True}
-✅ Play accepted: Andy
-🤖 BOT chooses to play SINGLE (4 pts): CANNON
-✅ Bot Bot 2 action queued - state machine will broadcast with correct next_player
-🤖 BOT chooses to play SINGLE (7 pts): CHARIOT
-✅ Bot Bot 4 action queued - state machine will broadcast with correct next_player
-🎯 WS_PLAY_DEBUG: Received play event - player: Andy, indices: [0]
-🎯 WS_PLAY_DEBUG: Found player Andy with hand size 2
-🎯 WS_PLAY_DEBUG: Added piece at index 0: HORSE_BLACK(5)
-🎯 WS_PLAY_DEBUG: Final pieces to play: ['HORSE_BLACK(5)']
-🎯 WS_PLAY_DEBUG: Queuing action for state machine...
-🎯 WS_PLAY_DEBUG: State machine result: {'success': True, 'queued': True}
-✅ Play accepted: Andy
-🤖 BOT chooses to play SINGLE (3 pts): CANNON
-✅ Bot Bot 2 action queued - state machine will broadcast with correct next_player
-🤖 BOT chooses to play SINGLE (1 pts): SOLDIER
-✅ Bot Bot 3 action queued - state machine will broadcast with correct next_player
-🤖 BOT chooses to play SINGLE (1 pts): SOLDIER
-✅ Bot Bot 3 action queued - state machine will broadcast with correct next_player
-🤖 BOT chooses to play SINGLE (4 pts): CANNON
-✅ Bot Bot 4 action queued - state machine will broadcast with correct next_player
-Not Bot 3's turn - expected Bot 4
-Invalid action: GameAction(player_name='Bot 3', action_type=<ActionType.PLAY_PIECES: 'play_pieces'>, payload={'pieces': [SOLDIER_BLACK(1)]}, timestamp=datetime.datetime(2025, 7, 9, 21, 1, 33, 629047), sequence_id=44, is_bot=True)
-🎯 WS_PLAY_DEBUG: Received play event - player: Andy, indices: [0]
-🎯 WS_PLAY_DEBUG: Found player Andy with hand size 1
-🎯 WS_PLAY_DEBUG: Added piece at index 0: ADVISOR_RED(12)
-🎯 WS_PLAY_DEBUG: Final pieces to play: ['ADVISOR_RED(12)']
-🎯 WS_PLAY_DEBUG: Queuing action for state machine...
-🎯 WS_PLAY_DEBUG: State machine result: {'success': True, 'queued': True}
-✅ Play accepted: Andy
-🤖 BOT chooses to play SINGLE (1 pts): SOLDIER
-✅ Bot Bot 2 action queued - state machine will broadcast with correct next_player
-🤖 BOT chooses to play SINGLE (1 pts): SOLDIER
-✅ Bot Bot 3 action queued - state machine will broadcast with correct next_player
-🤖 BOT chooses to play SINGLE (1 pts): SOLDIER
-✅ Bot Bot 3 action queued - state machine will broadcast with correct next_player
-Unhandled action in turn results phase: ActionType.PLAY_PIECES
-🔄 SCORING_SETUP_DEBUG: Reset display_delay_complete = False
-🗳️ DECLARATION_DEBUG: game.player_declarations = {'Andy': 3, 'Bot 2': 2, 'Bot 3': 1, 'Bot 4': 1}
-📋 SCORING_FIX_DEBUG: Andy - declared: 3, actual: 3
-🏆 SCORING_DEBUG: Andy scoring data:
-   📋 Declared: 3, Actual: 3
-   📊 Base Score: 8, Multiplier: 3x, Final: 24
-   💯 Total Score: 24
-📋 SCORING_FIX_DEBUG: Bot 2 - declared: 2, actual: 0
-🏆 SCORING_DEBUG: Bot 2 scoring data:
-   📋 Declared: 2, Actual: 0
-   📊 Base Score: -2, Multiplier: 3x, Final: -6
-   💯 Total Score: -6
-📋 SCORING_FIX_DEBUG: Bot 3 - declared: 1, actual: 1
-🏆 SCORING_DEBUG: Bot 3 scoring data:
-   📋 Declared: 1, Actual: 1
-   📊 Base Score: 6, Multiplier: 3x, Final: 18
-   💯 Total Score: 18
-📋 SCORING_FIX_DEBUG: Bot 4 - declared: 1, actual: 4
-🏆 SCORING_DEBUG: Bot 4 scoring data:
-   📋 Declared: 1, Actual: 4
-   📊 Base Score: -3, Multiplier: 3x, Final: -9
-   💯 Total Score: -9
-🚀 SCORING_BROADCAST_DEBUG: Broadcasting scoring data:
-   📊 Round scores: {'Andy': {'declared': 3, 'actual': 3, 'base_score': 8, 'multiplier': 3, 'final_score': 24, 'total_score': 24}, 'Bot 2': {'declared': 2, 'actual': 0, 'base_score': -2, 'multiplier': 3, 'final_score': -6, 'total_score': -6}, 'Bot 3': {'declared': 1, 'actual': 1, 'base_score': 6, 'multiplier': 3, 'final_score': 18, 'total_score': 18}, 'Bot 4': {'declared': 1, 'actual': 4, 'base_score': -3, 'multiplier': 3, 'final_score': -9, 'total_score': -9}}
-   🏁 Game complete: False
-   🏆 Winners: []
-🚀 SCORING_BROADCAST_DEBUG: Also sending:
-   💯 Total scores: {'Andy': 24, 'Bot 2': -6, 'Bot 3': 18, 'Bot 4': -9}
-   👥 Players data: [{'name': 'Andy', 'is_bot': False, 'pile_count': 3, 'captured_piles': 3}, {'name': 'Bot 2', 'is_bot': True, 'pile_count': 2, 'captured_piles': 0}, {'name': 'Bot 3', 'is_bot': True, 'pile_count': 1, 'captured_piles': 1}, {'name': 'Bot 4', 'is_bot': True, 'pile_count': 1, 'captured_piles': 4}]
-⏰ SCORING_DELAY_DEBUG: Starting 7-second display delay...
-⏰ SCORING_DELAY_DEBUG: 7-second delay complete - setting display_delay_complete = True
-🤖 Bot Bot 2 deciding: ACCEPT redeal
-✅ Bot Bot 2 ACCEPTED redeal
-✅ Redeal accept queued: Andy
-✅ Redeal accept queued: Andy
-🤖 Bot Bot 2 deciding: ACCEPT redeal
-✅ Bot Bot 2 ACCEPTED redeal
-👤 Round starter is human or None: None
-✅ Declaration queued: Andy -> 3
-✅ Bot Bot 2 declared 2
-✅ Bot Bot 3 declared 1
-✅ Bot Bot 4 declared 1
-✅ Bot Bot 3 declared 1
-✅ Bot Bot 4 declared 1
-✅ Bot Bot 4 declared 1
-Action declare not allowed in turn
-Action declare not allowed in turn
-Action declare not allowed in turn
-🎯 WS_PLAY_DEBUG: Received play event - player: Andy, indices: [0, 5, 2, 3]
-🎯 WS_PLAY_DEBUG: Found player Andy with hand size 8
-🎯 WS_PLAY_DEBUG: Added piece at index 0: CHARIOT_BLACK(7)
-🎯 WS_PLAY_DEBUG: Added piece at index 5: CANNON_BLACK(3)
-🎯 WS_PLAY_DEBUG: Added piece at index 2: HORSE_BLACK(5)
-🎯 WS_PLAY_DEBUG: Added piece at index 3: CANNON_BLACK(3)
-🎯 WS_PLAY_DEBUG: Final pieces to play: ['CHARIOT_BLACK(7)', 'CANNON_BLACK(3)', 'HORSE_BLACK(5)', 'CANNON_BLACK(3)']
-🎯 WS_PLAY_DEBUG: Queuing action for state machine...
-🎯 WS_PLAY_DEBUG: State machine result: {'success': True, 'queued': True}
-✅ Play accepted: Andy
-🤖 BOT has no valid play. Discards lowest pieces: SOLDIER, SOLDIER, CHARIOT, ELEPHANT
-    🔍 Final play: ['SOLDIER', 'SOLDIER', 'CHARIOT', 'ELEPHANT']
-    🧠 Hand left: ['GENERAL', 'CHARIOT', 'ELEPHANT', 'ADVISOR', 'ADVISOR', 'SOLDIER', 'SOLDIER', 'ELEPHANT']
-✅ Bot Bot 2 action queued - state machine will broadcast with correct next_player
-🤖 BOT has no valid play. Discards lowest pieces: SOLDIER, SOLDIER, SOLDIER, CANNON
-    🔍 Final play: ['SOLDIER', 'SOLDIER', 'SOLDIER', 'CANNON']
-    🧠 Hand left: ['CHARIOT', 'ADVISOR', 'SOLDIER', 'SOLDIER', 'CANNON', 'CHARIOT', 'ELEPHANT', 'SOLDIER']
-✅ Bot Bot 3 action queued - state machine will broadcast with correct next_player
-🤖 BOT has no valid play. Discards lowest pieces: SOLDIER, SOLDIER, SOLDIER, CANNON
-    🔍 Final play: ['SOLDIER', 'SOLDIER', 'SOLDIER', 'CANNON']
-    🧠 Hand left: ['SOLDIER', 'HORSE', 'HORSE', 'HORSE', 'SOLDIER', 'GENERAL', 'SOLDIER', 'CANNON']
-✅ Bot Bot 4 action queued - state machine will broadcast with correct next_player
-🤖 BOT has no valid play. Discards lowest pieces: SOLDIER, SOLDIER, SOLDIER, CANNON
-    🔍 Final play: ['SOLDIER', 'SOLDIER', 'SOLDIER', 'CANNON']
-    🧠 Hand left: ['CHARIOT', 'ADVISOR', 'SOLDIER', 'SOLDIER', 'CANNON', 'CHARIOT', 'ELEPHANT', 'SOLDIER']
-✅ Bot Bot 3 action queued - state machine will broadcast with correct next_player
-🤖 BOT has no valid play. Discards lowest pieces: SOLDIER, SOLDIER, SOLDIER, CANNON
-    🔍 Final play: ['SOLDIER', 'SOLDIER', 'SOLDIER', 'CANNON']
-    🧠 Hand left: ['SOLDIER', 'HORSE', 'HORSE', 'HORSE', 'SOLDIER', 'GENERAL', 'SOLDIER', 'CANNON']
-✅ Bot Bot 4 action queued - state machine will broadcast with correct next_player
-🤖 BOT has no valid play. Discards lowest pieces: SOLDIER, SOLDIER, SOLDIER, CANNON
-    🔍 Final play: ['SOLDIER', 'SOLDIER', 'SOLDIER', 'CANNON']
-    🧠 Hand left: ['SOLDIER', 'HORSE', 'HORSE', 'HORSE', 'SOLDIER', 'GENERAL', 'SOLDIER', 'CANNON']
-✅ Bot Bot 4 action queued - state machine will broadcast with correct next_player
-Not Bot 3's turn - expected Andy
-Invalid action: GameAction(player_name='Bot 3', action_type=<ActionType.PLAY_PIECES: 'play_pieces'>, payload={'pieces': [SOLDIER_BLACK(1), SOLDIER_BLACK(1), SOLDIER_RED(2), CANNON_RED(4)]}, timestamp=datetime.datetime(2025, 7, 9, 21, 2, 50, 580831), sequence_id=65, is_bot=True)
-Not Bot 4's turn - expected Andy
-Invalid action: GameAction(player_name='Bot 4', action_type=<ActionType.PLAY_PIECES: 'play_pieces'>, payload={'pieces': [SOLDIER_BLACK(1), SOLDIER_BLACK(1), SOLDIER_RED(2), CANNON_RED(4)]}, timestamp=datetime.datetime(2025, 7, 9, 21, 2, 51, 617751), sequence_id=66, is_bot=True)
-Not Bot 4's turn - expected Andy
-Invalid action: GameAction(player_name='Bot 4', action_type=<ActionType.PLAY_PIECES: 'play_pieces'>, payload={'pieces': [SOLDIER_BLACK(1), SOLDIER_BLACK(1), SOLDIER_RED(2), CANNON_RED(4)]}, timestamp=datetime.datetime(2025, 7, 9, 21, 2, 52, 511423), sequence_id=67, is_bot=True)
-🎯 WS_PLAY_DEBUG: Received play event - player: Andy, indices: [0]
-🎯 WS_PLAY_DEBUG: Found player Andy with hand size 4
-🎯 WS_PLAY_DEBUG: Added piece at index 0: ELEPHANT_RED(10)
-🎯 WS_PLAY_DEBUG: Final pieces to play: ['ELEPHANT_RED(10)']
-🎯 WS_PLAY_DEBUG: Queuing action for state machine...
-🎯 WS_PLAY_DEBUG: State machine result: {'success': True, 'queued': True}
-✅ Play accepted: Andy
-🤖 BOT chooses to play SINGLE (13 pts): GENERAL
-✅ Bot Bot 2 action queued - state machine will broadcast with correct next_player
-🤖 BOT chooses to play SINGLE (11 pts): ADVISOR
-✅ Bot Bot 3 action queued - state machine will broadcast with correct next_player
-🤖 BOT chooses to play SINGLE (14 pts): GENERAL
-✅ Bot Bot 4 action queued - state machine will broadcast with correct next_player
-🤖 BOT chooses to play SINGLE (11 pts): ADVISOR
-✅ Bot Bot 3 action queued - state machine will broadcast with correct next_player
-🤖 BOT chooses to play SINGLE (14 pts): GENERAL
-✅ Bot Bot 4 action queued - state machine will broadcast with correct next_player
-🤖 BOT chooses to play SINGLE (14 pts): GENERAL
-✅ Bot Bot 4 action queued - state machine will broadcast with correct next_player
-🤖 BOT chooses to play PAIR (12 pts): HORSE, HORSE
-✅ Bot Bot 4 action queued - state machine will broadcast with correct next_player
-Not Bot 3's turn - expected Bot 4
-Invalid action: GameAction(player_name='Bot 3', action_type=<ActionType.PLAY_PIECES: 'play_pieces'>, payload={'pieces': [ADVISOR_BLACK(11)]}, timestamp=datetime.datetime(2025, 7, 9, 21, 3, 16, 371034), sequence_id=72, is_bot=True)
-Player Bot 4 doesn't have piece: GENERAL_RED(14)
-Invalid action: GameAction(player_name='Bot 4', action_type=<ActionType.PLAY_PIECES: 'play_pieces'>, payload={'pieces': [GENERAL_RED(14)]}, timestamp=datetime.datetime(2025, 7, 9, 21, 3, 17, 435354), sequence_id=73, is_bot=True)
-Player Bot 4 doesn't have piece: GENERAL_RED(14)
-Invalid action: GameAction(player_name='Bot 4', action_type=<ActionType.PLAY_PIECES: 'play_pieces'>, payload={'pieces': [GENERAL_RED(14)]}, timestamp=datetime.datetime(2025, 7, 9, 21, 3, 18, 746659), sequence_id=74, is_bot=True)
-🎯 WS_PLAY_DEBUG: Received play event - player: Andy, indices: [0, 1]
-🎯 WS_PLAY_DEBUG: Found player Andy with hand size 3
-🎯 WS_PLAY_DEBUG: Added piece at index 0: SOLDIER_BLACK(1)
-🎯 WS_PLAY_DEBUG: Added piece at index 1: SOLDIER_RED(2)
-🎯 WS_PLAY_DEBUG: Final pieces to play: ['SOLDIER_BLACK(1)', 'SOLDIER_RED(2)']
-🎯 WS_PLAY_DEBUG: Queuing action for state machine...
-🎯 WS_PLAY_DEBUG: State machine result: {'success': True, 'queued': True}
-✅ Play accepted: Andy
-🤖 BOT has no valid play. Discards lowest pieces: ELEPHANT, ADVISOR
-    🔍 Final play: ['ELEPHANT', 'ADVISOR']
-    🧠 Hand left: ['ADVISOR', 'ADVISOR', 'ELEPHANT']
-✅ Bot Bot 2 action queued - state machine will broadcast with correct next_player
-🤖 BOT has no valid play. Discards lowest pieces: CHARIOT, CHARIOT
-    🔍 Final play: ['CHARIOT', 'CHARIOT']
-    🧠 Hand left: ['CHARIOT', 'CHARIOT', 'ELEPHANT']
-✅ Bot Bot 3 action queued - state machine will broadcast with correct next_player
-🤖 BOT has no valid play. Discards lowest pieces: CHARIOT, CHARIOT
-    🔍 Final play: ['CHARIOT', 'CHARIOT']
-    🧠 Hand left: ['CHARIOT', 'CHARIOT', 'ELEPHANT']
-✅ Bot Bot 3 action queued - state machine will broadcast with correct next_player
-🤖 BOT chooses to play SINGLE (5 pts): HORSE
-✅ Bot Bot 4 action queued - state machine will broadcast with correct next_player
-Not Bot 3's turn - expected Bot 4
-Invalid action: GameAction(player_name='Bot 3', action_type=<ActionType.PLAY_PIECES: 'play_pieces'>, payload={'pieces': [CHARIOT_BLACK(7), CHARIOT_RED(8)]}, timestamp=datetime.datetime(2025, 7, 9, 21, 3, 40, 604749), sequence_id=79, is_bot=True)
-🎯 WS_PLAY_DEBUG: Received play event - player: Andy, indices: [0]
-🎯 WS_PLAY_DEBUG: Found player Andy with hand size 1
-🎯 WS_PLAY_DEBUG: Added piece at index 0: ADVISOR_RED(12)
-🎯 WS_PLAY_DEBUG: Final pieces to play: ['ADVISOR_RED(12)']
-🎯 WS_PLAY_DEBUG: Queuing action for state machine...
-🎯 WS_PLAY_DEBUG: State machine result: {'success': True, 'queued': True}
-✅ Play accepted: Andy
-🤖 BOT chooses to play SINGLE (12 pts): ADVISOR
-✅ Bot Bot 2 action queued - state machine will broadcast with correct next_player
-🤖 BOT chooses to play SINGLE (9 pts): ELEPHANT
-✅ Bot Bot 3 action queued - state machine will broadcast with correct next_player
-🤖 BOT chooses to play SINGLE (9 pts): ELEPHANT
-✅ Bot Bot 3 action queued - state machine will broadcast with correct next_player
-Unhandled action in turn results phase: ActionType.PLAY_PIECES
-🔄 SCORING_SETUP_DEBUG: Reset display_delay_complete = False
-🗳️ DECLARATION_DEBUG: game.player_declarations = {'Andy': 3, 'Bot 2': 2, 'Bot 3': 1, 'Bot 4': 1}
-📋 SCORING_FIX_DEBUG: Andy - declared: 3, actual: 5
-🏆 SCORING_DEBUG: Andy scoring data:
-   📋 Declared: 3, Actual: 5
-   📊 Base Score: -2, Multiplier: 3x, Final: -6
-   💯 Total Score: 18
-📋 SCORING_FIX_DEBUG: Bot 2 - declared: 2, actual: 0
-🏆 SCORING_DEBUG: Bot 2 scoring data:
-   📋 Declared: 2, Actual: 0
-   📊 Base Score: -2, Multiplier: 3x, Final: -6
-   💯 Total Score: -12
-📋 SCORING_FIX_DEBUG: Bot 3 - declared: 1, actual: 0
-🏆 SCORING_DEBUG: Bot 3 scoring data:
-   📋 Declared: 1, Actual: 0
-   📊 Base Score: -1, Multiplier: 3x, Final: -3
-   💯 Total Score: 15
-📋 SCORING_FIX_DEBUG: Bot 4 - declared: 1, actual: 3
-🏆 SCORING_DEBUG: Bot 4 scoring data:
-   📋 Declared: 1, Actual: 3
-   📊 Base Score: -2, Multiplier: 3x, Final: -6
-   💯 Total Score: -15
-🚀 SCORING_BROADCAST_DEBUG: Broadcasting scoring data:
-   📊 Round scores: {'Andy': {'declared': 3, 'actual': 5, 'base_score': -2, 'multiplier': 3, 'final_score': -6, 'total_score': 18}, 'Bot 2': {'declared': 2, 'actual': 0, 'base_score': -2, 'multiplier': 3, 'final_score': -6, 'total_score': -12}, 'Bot 3': {'declared': 1, 'actual': 0, 'base_score': -1, 'multiplier': 3, 'final_score': -3, 'total_score': 15}, 'Bot 4': {'declared': 1, 'actual': 3, 'base_score': -2, 'multiplier': 3, 'final_score': -6, 'total_score': -15}}
-   🏁 Game complete: False
-   🏆 Winners: []
-🚀 SCORING_BROADCAST_DEBUG: Also sending:
-   💯 Total scores: {'Andy': 18, 'Bot 2': -12, 'Bot 3': 15, 'Bot 4': -15}
-   👥 Players data: [{'name': 'Andy', 'is_bot': False, 'pile_count': 3, 'captured_piles': 5}, {'name': 'Bot 2', 'is_bot': True, 'pile_count': 2, 'captured_piles': 0}, {'name': 'Bot 3', 'is_bot': True, 'pile_count': 1, 'captured_piles': 0}, {'name': 'Bot 4', 'is_bot': True, 'pile_count': 1, 'captured_piles': 3}]
-⏰ SCORING_DELAY_DEBUG: Starting 7-second display delay...
-⏰ SCORING_DELAY_DEBUG: 7-second delay complete - setting display_delay_complete = True
-🤖 Bot Bot 2 deciding: ACCEPT redeal
-✅ Bot Bot 2 ACCEPTED redeal
-✅ Bot Bot 2 declared 1
-✅ Bot Bot 3 declared 2
-✅ Bot Bot 4 declared 4
-✅ Bot Bot 3 declared 2
-✅ Bot Bot 4 declared 4
-✅ Bot Bot 4 declared 4
-Wrong player turn: Bot 3, expected: Andy
-Invalid action: GameAction(player_name='Bot 3', action_type=<ActionType.DECLARE: 'declare'>, payload={'value': 2}, timestamp=datetime.datetime(2025, 7, 9, 21, 5, 26, 111811), sequence_id=89, is_bot=True)

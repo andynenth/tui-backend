@@ -101,7 +101,7 @@ class PreparationState(GameState):
         # game._deal_guaranteed_no_redeal(red_general_player_index=1)
         
         # 3. Force weak hands (testing redeal logic)
-        game._deal_weak_hand(weak_player_indices=[0,1], max_weak_points=9, limit=2)
+        game._deal_weak_hand(weak_player_indices=[0,1], max_weak_points=9, limit=5)
         
         # Examples:
         # game._deal_guaranteed_no_redeal()                              # Random RED_GENERAL assignment
@@ -254,7 +254,6 @@ class PreparationState(GameState):
             self.redeal_decisions[player_name] = accept
             self.weak_players_awaiting.discard(player_name)
             
-            
             self.logger.info(f"{'♻️' if accept else '🚫'} {player_name} {'ACCEPTS' if accept else 'DECLINES'} redeal")
             
             # Check if all decided
@@ -321,6 +320,11 @@ class PreparationState(GameState):
                 }
             else:
                 # No new weak hands - redeal complete
+                # Broadcast the multiplier update before returning
+                await self.update_phase_data({
+                    'redeal_multiplier': game.redeal_multiplier
+                }, f"Redeal complete - no weak hands found, multiplier now {game.redeal_multiplier}x")
+                
                 return {
                     "success": True,
                     "redeal": True,
@@ -544,7 +548,8 @@ class PreparationState(GameState):
             'decisions_needed': len(self.weak_players),
             'weak_players_awaiting': list(self.weak_players_awaiting),
             'redeal_decisions': dict(self.redeal_decisions),  # Add this for bot manager
-            'all_decided': self._all_weak_decisions_received()
+            'all_decided': self._all_weak_decisions_received(),
+            'redeal_multiplier': getattr(self.state_machine.game, 'redeal_multiplier', 1)
         }
         
         # Use enterprise broadcasting
