@@ -170,6 +170,7 @@ class GameState(ABC):
             if hasattr(self.state_machine, 'game') and self.state_machine.game:
                 current_round = getattr(self.state_machine.game, 'round_number', 1)
             
+            
             # Broadcast complete phase change event
             broadcast_data = {
                 "phase": self.phase_name.value,

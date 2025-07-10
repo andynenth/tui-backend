@@ -25,6 +25,7 @@ class GameStateMachine:
 
     def __init__(self, game, broadcast_callback=None):
         self.game = game
+        logger.info(f"🔍 ROUND_DEBUG: GameStateMachine created with game: {game}, round_number: {getattr(game, 'round_number', 'NO_ATTR') if game else 'NO_GAME'}")
         # Initialize room_id as None - will be set by Room class before starting
         self.room_id = None
         # Pass room_id to ActionQueue for event storage
@@ -185,8 +186,9 @@ class GameStateMachine:
         # Store phase change event for replay capability
         await self._store_phase_change_event(old_phase, new_phase)
 
-        # 🔧 FIX: Broadcast phase change with player-specific data
-        await self._broadcast_phase_change_with_hands(new_phase)
+        # 🔧 REMOVED: Duplicate broadcast - enterprise architecture already handles this
+        # The base_state.py auto-broadcasts phase_change with round number included
+        # await self._broadcast_phase_change_with_hands(new_phase)
 
         # 🤖 Trigger bot manager for phase changes
         await self._notify_bot_manager(new_phase)

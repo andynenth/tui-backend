@@ -1,888 +1,154 @@
-RecoveryService.ts:66 🔄 RecoveryService: Initialized
-ServiceIntegration.ts:79 🔗 ServiceIntegration: Initialized
-ServiceIntegration.ts:98 
-ServiceIntegration.ts:99 🎯 =============================================
-ServiceIntegration.ts:100 🚀 PHASE 1-4 ENTERPRISE ARCHITECTURE STARTING
-ServiceIntegration.ts:101 🎯 =============================================
-ServiceIntegration.ts:102 🔧 Initializing integrated service layer...
-ServiceIntegration.ts:567 ✅ NetworkService integrated
-ServiceIntegration.ts:575 ✅ GameService integrated
-ServiceIntegration.ts:583 ✅ RecoveryService integrated
-ServiceIntegration.ts:594 🩺 Health monitoring started (30000ms interval)
-ServiceIntegration.ts:124 
-ServiceIntegration.ts:125 ✅ =============================================
-ServiceIntegration.ts:126 🎉 PHASE 1-4 ARCHITECTURE FULLY OPERATIONAL!
-ServiceIntegration.ts:127 ✅ =============================================
-ServiceIntegration.ts:128 🔗 NetworkService: Advanced WebSocket with auto-reconnection
-ServiceIntegration.ts:129 🎮 GameService: React hooks with TypeScript state management
-ServiceIntegration.ts:130 🛠️ RecoveryService: Automatic error recovery and health monitoring
-ServiceIntegration.ts:131 🏢 Enterprise Features: Event sourcing, logging, metrics
-ServiceIntegration.ts:132 ✅ Service integration layer initialized successfully
-ServiceIntegration.ts:133 
-App.jsx:117 🎮 Global services initialized
- 🔗 Connection opened to room lobby
- 🎮 State Change: NETWORK_CONNECTED
- Previous: {isConnected: false, roomId: null, playerName: null, phase: 'waiting', currentRound: 0, …}
- New: {isConnected: true, roomId: null, playerName: null, phase: 'waiting', currentRound: 0, …}
- Diff: {isConnected: {…}, lastEventSequence: {…}}
- 🌐 NetworkService: Connected to room lobby
- Received room_list_update: {roomId: 'lobby', data: {…}, message: {…}, timestamp: 1752107115277}
- 🎮 State Change: NETWORK_DISCONNECTED
- Previous: {isConnected: true, roomId: null, playerName: null, phase: 'waiting', currentRound: 0, …}
- New: {isConnected: false, roomId: null, playerName: null, phase: 'waiting', currentRound: 0, …}
- Diff: {isConnected: {…}, lastEventSequence: {…}}
- 🌐 NetworkService: Disconnected from room lobby
- 📤 Queued message for lobby: get_rooms (1 queued)
- 🔗 Connection opened to room lobby
- 🎮 State Change: NETWORK_CONNECTED
- Previous: {isConnected: false, roomId: null, playerName: null, phase: 'waiting', currentRound: 0, …}
- New: {isConnected: true, roomId: null, playerName: null, phase: 'waiting', currentRound: 0, …}
- Diff: {isConnected: {…}, lastEventSequence: {…}}
- 🌐 NetworkService: Connected to room lobby
- Received room_list_update: {roomId: 'lobby', data: {…}, message: {…}, timestamp: 1752107115294}
- 🎮 State Change: NETWORK_DISCONNECTED
- Previous: {isConnected: true, roomId: null, playerName: null, phase: 'waiting', currentRound: 0, …}
- New: {isConnected: false, roomId: null, playerName: null, phase: 'waiting', currentRound: 0, …}
- Diff: {isConnected: {…}, lastEventSequence: {…}}
- 🌐 NetworkService: Disconnected from room lobby
- 📤 Queued message for lobby: get_rooms (1 queued)
- 🔗 Connection opened to room lobby
- 🎮 State Change: NETWORK_CONNECTED
- Previous: {isConnected: false, roomId: null, playerName: null, phase: 'waiting', currentRound: 0, …}
- New: {isConnected: true, roomId: null, playerName: null, phase: 'waiting', currentRound: 0, …}
- Diff: {isConnected: {…}, lastEventSequence: {…}}
- 🌐 NetworkService: Connected to room lobby
- Received room_list_update: {roomId: 'lobby', data: {…}, message: {…}, timestamp: 1752107116595}
- Received room_created: {roomId: 'lobby', data: {…}, message: {…}, timestamp: 1752107116685}
- 🟢 Navigation: room_id = CED216 navigating to: /room/CED216
- ✅ Navigating to new room: CED216
- 🎮 State Change: NETWORK_DISCONNECTED
- Previous: {isConnected: true, roomId: null, playerName: null, phase: 'waiting', currentRound: 0, …}
- New: {isConnected: false, roomId: null, playerName: null, phase: 'waiting', currentRound: 0, …}
- Diff: {isConnected: {…}, lastEventSequence: {…}}
- 🌐 NetworkService: Disconnected from room lobby
- 📤 Queued message for lobby: get_rooms (1 queued)
- 🔗 Connection opened to room lobby
- 🎮 State Change: NETWORK_CONNECTED
- Previous: {isConnected: false, roomId: null, playerName: null, phase: 'waiting', currentRound: 0, …}
- New: {isConnected: true, roomId: null, playerName: null, phase: 'waiting', currentRound: 0, …}
- Diff: {isConnected: {…}, lastEventSequence: {…}}
- 🌐 NetworkService: Connected to room lobby
- 🔗 Connection opened to room CED216
- 🎮 State Change: NETWORK_CONNECTED
- Previous: {isConnected: true, roomId: null, playerName: null, phase: 'waiting', currentRound: 0, …}
- New: {isConnected: true, roomId: null, playerName: null, phase: 'waiting', currentRound: 0, …}
- Diff: {lastEventSequence: {…}}
- 🌐 NetworkService: Connected to room CED216
- 🏠 ROOM_UPDATE: Full data received: {players: Array(4), host_name: 'Andy', room_id: 'CED216', started: false}
- 🏠 ROOM_UPDATE: Players array: (4) [{…}, {…}, {…}, {…}]
- 🏠 ROOM_UPDATE: Players array type: object
-RoomPage.jsx:64 🏠 ROOM_UPDATE: Players array length: 4
-RoomPage.jsx:65 🏠 ROOM_UPDATE: Players array entries: (4) [Array(2), Array(2), Array(2), Array(2)]
-RoomPage.jsx:99 🎮 START_GAME: Button clicked
-RoomPage.jsx:100 🎮 START_GAME: Room ID: CED216
-RoomPage.jsx:72 Game started, navigating to game page
-GameService.ts:1233 🎮 State Change: NETWORK_DISCONNECTED
-GameService.ts:1234 Previous: {isConnected: true, roomId: null, playerName: null, phase: 'waiting', currentRound: 0, …}
-GameService.ts:1235 New: {isConnected: false, roomId: null, playerName: null, phase: 'waiting', currentRound: 0, …}
-GameService.ts:1236 Diff: {isConnected: {…}, lastEventSequence: {…}}
-NetworkService.ts:171 🌐 NetworkService: Disconnected from room CED216
-ServiceIntegration.ts:157 🔗 Connecting to room CED216 as Andy...
-RecoveryService.ts:106 🔄 RecoveryService: Initialized tracking for room CED216
-GameService.ts:1233 🎮 State Change: JOIN_ROOM_INIT
-GameService.ts:1234 Previous: {isConnected: false, roomId: null, playerName: null, phase: 'waiting', currentRound: 0, …}
-GameService.ts:1235 New: {isConnected: false, roomId: 'CED216', playerName: 'Andy', phase: 'waiting', currentRound: 0, …}
-GameService.ts:1236 Diff: {roomId: {…}, playerName: {…}, lastEventSequence: {…}}
-GameContext.jsx:36 🚀 GAME_CONTEXT: Phase 1-4 Enterprise Architecture initializing
-NetworkService.ts:337 🔗 Connection opened to room CED216
-GameService.ts:1233 🎮 State Change: NETWORK_CONNECTED
-GameService.ts:1234 Previous: {isConnected: false, roomId: 'CED216', playerName: 'Andy', phase: 'waiting', currentRound: 0, …}
-GameService.ts:1235 New: {isConnected: true, roomId: 'CED216', playerName: 'Andy', phase: 'waiting', currentRound: 0, …}
-GameService.ts:1236 Diff: {isConnected: {…}, lastEventSequence: {…}}
-NetworkService.ts:129 🌐 NetworkService: Connected to room CED216
-GameService.ts:1233 🎮 State Change: JOIN_ROOM_CONNECTED
-GameService.ts:1234 Previous: {isConnected: true, roomId: 'CED216', playerName: 'Andy', phase: 'waiting', currentRound: 0, …}
-GameService.ts:1235 New: {isConnected: true, roomId: 'CED216', playerName: 'Andy', phase: 'waiting', currentRound: 0, …}
-GameService.ts:1236 Diff: {lastEventSequence: {…}}
-GameService.ts:99 🎮 GameService: Joined room CED216 as Andy
-ServiceIntegration.ts:169 ✅ Successfully connected to room CED216
-GameService.ts:1233 🎮 State Change: NETWORK_EVENT:PHASE_CHANGE
-GameService.ts:1234 Previous: {isConnected: true, roomId: 'CED216', playerName: 'Andy', phase: 'waiting', currentRound: 0, …}
-GameService.ts:1235 New: {isConnected: true, roomId: 'CED216', playerName: 'Andy', phase: 'declaration', currentRound: 0, …}
-GameService.ts:1236 Diff: {phase: {…}, players: {…}, myHand: {…}, declarationOrder: {…}, currentDeclarer: {…}, …}
-DeclarationContent.jsx:67 🎲 ZERO_STREAK_DEBUG: Andy has consecutiveZeros: 0
-GameService.ts:1233 🎮 State Change: NETWORK_EVENT:PHASE_CHANGE
-GameService.ts:1234 Previous: {isConnected: true, roomId: 'CED216', playerName: 'Andy', phase: 'declaration', currentRound: 0, …}
-GameService.ts:1235 New: {isConnected: true, roomId: 'CED216', playerName: 'Andy', phase: 'declaration', currentRound: 0, …}
-GameService.ts:1236 Diff: {lastEventSequence: {…}}
-DeclarationContent.jsx:67 🎲 ZERO_STREAK_DEBUG: Andy has consecutiveZeros: 0
-GameService.ts:1233 🎮 State Change: NETWORK_EVENT:PHASE_CHANGE
-GameService.ts:1234 Previous: {isConnected: true, roomId: 'CED216', playerName: 'Andy', phase: 'declaration', currentRound: 0, …}
-GameService.ts:1235 New: {isConnected: true, roomId: 'CED216', playerName: 'Andy', phase: 'declaration', currentRound: 1, …}
-GameService.ts:1236 Diff: {currentRound: {…}, declarations: {…}, declarationOrder: {…}, currentDeclarer: {…}, lastEventSequence: {…}, …}
-DeclarationContent.jsx:67 🎲 ZERO_STREAK_DEBUG: Andy has consecutiveZeros: 0
-GameService.ts:1233 🎮 State Change: NETWORK_EVENT:PHASE_CHANGE
-GameService.ts:1234 Previous: {isConnected: true, roomId: 'CED216', playerName: 'Andy', phase: 'declaration', currentRound: 1, …}
-GameService.ts:1235 New: {isConnected: true, roomId: 'CED216', playerName: 'Andy', phase: 'declaration', currentRound: 1, …}
-GameService.ts:1236 Diff: {declarations: {…}, currentDeclarer: {…}, lastEventSequence: {…}, currentTotal: {…}, declarationProgress: {…}}
-DeclarationContent.jsx:67 🎲 ZERO_STREAK_DEBUG: Andy has consecutiveZeros: 0
-GameService.ts:1233 🎮 State Change: NETWORK_EVENT:PHASE_CHANGE
-GameService.ts:1234 Previous: {isConnected: true, roomId: 'CED216', playerName: 'Andy', phase: 'declaration', currentRound: 1, …}
-GameService.ts:1235 New: {isConnected: true, roomId: 'CED216', playerName: 'Andy', phase: 'declaration', currentRound: 1, …}
-GameService.ts:1236 Diff: {declarations: {…}, currentDeclarer: {…}, isMyTurn: {…}, allowedActions: {…}, validOptions: {…}, …}
-DeclarationContent.jsx:67 🎲 ZERO_STREAK_DEBUG: Andy has consecutiveZeros: 0
-DeclarationContent.jsx:67 🎲 ZERO_STREAK_DEBUG: Andy has consecutiveZeros: 0
-DeclarationContent.jsx:67 🎲 ZERO_STREAK_DEBUG: Andy has consecutiveZeros: 0
-GameService.ts:1203 🎮 Action sent: declare {value: 0, player_name: 'Andy'}
-DeclarationContent.jsx:67 🎲 ZERO_STREAK_DEBUG: Andy has consecutiveZeros: 0
-GameService.ts:1233 🎮 State Change: NETWORK_EVENT:PHASE_CHANGE
-GameService.ts:1234 Previous: {isConnected: true, roomId: 'CED216', playerName: 'Andy', phase: 'declaration', currentRound: 1, …}
-GameService.ts:1235 New: {isConnected: true, roomId: 'CED216', playerName: 'Andy', phase: 'declaration', currentRound: 1, …}
-GameService.ts:1236 Diff: {declarations: {…}, validOptions: {…}, lastEventSequence: {…}, declarationProgress: {…}, isLastPlayer: {…}}
-DeclarationContent.jsx:67 🎲 ZERO_STREAK_DEBUG: Andy has consecutiveZeros: 0
-GameService.ts:1233 🎮 State Change: NETWORK_EVENT:PHASE_CHANGE
-GameService.ts:1234 Previous: {isConnected: true, roomId: 'CED216', playerName: 'Andy', phase: 'declaration', currentRound: 1, …}
-GameService.ts:1235 New: {isConnected: true, roomId: 'CED216', playerName: 'Andy', phase: 'turn', currentRound: 1, …}
-GameService.ts:1236 Diff: {phase: {…}, players: {…}, currentTurnStarter: {…}, turnOrder: {…}, currentPlayer: {…}, …}
-GameService.ts:1233 🎮 State Change: NETWORK_EVENT:PHASE_CHANGE
-GameService.ts:1234 Previous: {isConnected: true, roomId: 'CED216', playerName: 'Andy', phase: 'turn', currentRound: 1, …}
-GameService.ts:1235 New: {isConnected: true, roomId: 'CED216', playerName: 'Andy', phase: 'turn', currentRound: 1, …}
-GameService.ts:1236 Diff: {players: {…}, lastEventSequence: {…}, canPlayAnyCount: {…}}
-GameService.ts:1233 🎮 State Change: NETWORK_EVENT:PHASE_CHANGE
-GameService.ts:1234 Previous: {isConnected: true, roomId: 'CED216', playerName: 'Andy', phase: 'turn', currentRound: 1, …}
-GameService.ts:1235 New: {isConnected: true, roomId: 'CED216', playerName: 'Andy', phase: 'turn', currentRound: 1, …}
-GameService.ts:1236 Diff: {players: {…}, currentPlayer: {…}, currentTurnPlays: {…}, requiredPieceCount: {…}, lastEventSequence: {…}}
-GameService.ts:1233 🎮 State Change: NETWORK_EVENT:PHASE_CHANGE
-GameService.ts:1234 Previous: {isConnected: true, roomId: 'CED216', playerName: 'Andy', phase: 'turn', currentRound: 1, …}
-GameService.ts:1235 New: {isConnected: true, roomId: 'CED216', playerName: 'Andy', phase: 'turn', currentRound: 1, …}
-GameService.ts:1236 Diff: {players: {…}, currentPlayer: {…}, currentTurnPlays: {…}, lastEventSequence: {…}}
-GameService.ts:1233 🎮 State Change: NETWORK_EVENT:PHASE_CHANGE
-GameService.ts:1234 Previous: {isConnected: true, roomId: 'CED216', playerName: 'Andy', phase: 'turn', currentRound: 1, …}
-GameService.ts:1235 New: {isConnected: true, roomId: 'CED216', playerName: 'Andy', phase: 'turn', currentRound: 1, …}
-GameService.ts:1236 Diff: {players: {…}, currentPlayer: {…}, currentTurnPlays: {…}, isMyTurn: {…}, allowedActions: {…}, …}
-GameService.ts:1203 🎮 Action sent: play {piece_indices: Array(1), player_name: 'Andy', play_value: 9}
-GameService.ts:1233 🎮 State Change: NETWORK_EVENT:PHASE_CHANGE
-GameService.ts:1234 Previous: {isConnected: true, roomId: 'CED216', playerName: 'Andy', phase: 'turn', currentRound: 1, …}
-GameService.ts:1235 New: {isConnected: true, roomId: 'CED216', playerName: 'Andy', phase: 'turn', currentRound: 1, …}
-GameService.ts:1236 Diff: {players: {…}, myHand: {…}, currentTurnPlays: {…}, validOptions: {…}, lastEventSequence: {…}}
-GameService.ts:1233 🎮 State Change: NETWORK_EVENT:PHASE_CHANGE
-GameService.ts:1234 Previous: {isConnected: true, roomId: 'CED216', playerName: 'Andy', phase: 'turn', currentRound: 1, …}
-GameService.ts:1235 New: {isConnected: true, roomId: 'CED216', playerName: 'Andy', phase: 'turn', currentRound: 1, …}
-GameService.ts:1236 Diff: {lastEventSequence: {…}}
-GameService.ts:1233 🎮 State Change: NETWORK_EVENT:TURN_COMPLETE
-GameService.ts:1234 Previous: {isConnected: true, roomId: 'CED216', playerName: 'Andy', phase: 'turn', currentRound: 1, …}
-GameService.ts:1235 New: {isConnected: true, roomId: 'CED216', playerName: 'Andy', phase: 'turn_results', currentRound: 1, …}
-GameService.ts:1236 Diff: {phase: {…}, turnWinner: {…}, winningPlay: {…}, playerPiles: {…}, nextStarter: {…}, …}
-GameContainer.jsx:201 Turn results continue requested
-GameService.ts:1233 🎮 State Change: NETWORK_EVENT:PHASE_CHANGE
-GameService.ts:1234 Previous: {isConnected: true, roomId: 'CED216', playerName: 'Andy', phase: 'turn_results', currentRound: 1, …}
-GameService.ts:1235 New: {isConnected: true, roomId: 'CED216', playerName: 'Andy', phase: 'turn', currentRound: 1, …}
-GameService.ts:1236 Diff: {phase: {…}, currentPlayer: {…}, currentTurnPlays: {…}, requiredPieceCount: {…}, currentTurnNumber: {…}, …}
-GameService.ts:1233 🎮 State Change: NETWORK_EVENT:PHASE_CHANGE
-GameService.ts:1234 Previous: {isConnected: true, roomId: 'CED216', playerName: 'Andy', phase: 'turn', currentRound: 1, …}
-GameService.ts:1235 New: {isConnected: true, roomId: 'CED216', playerName: 'Andy', phase: 'turn', currentRound: 1, …}
-GameService.ts:1236 Diff: {players: {…}, currentPlayer: {…}, currentTurnPlays: {…}, requiredPieceCount: {…}, lastEventSequence: {…}}
-GameService.ts:1233 🎮 State Change: NETWORK_EVENT:PHASE_CHANGE
-GameService.ts:1234 Previous: {isConnected: true, roomId: 'CED216', playerName: 'Andy', phase: 'turn', currentRound: 1, …}
-GameService.ts:1235 New: {isConnected: true, roomId: 'CED216', playerName: 'Andy', phase: 'turn', currentRound: 1, …}
-GameService.ts:1236 Diff: {players: {…}, currentPlayer: {…}, currentTurnPlays: {…}, lastEventSequence: {…}}
-GameService.ts:1233 🎮 State Change: NETWORK_EVENT:PHASE_CHANGE
-GameService.ts:1234 Previous: {isConnected: true, roomId: 'CED216', playerName: 'Andy', phase: 'turn', currentRound: 1, …}
-GameService.ts:1235 New: {isConnected: true, roomId: 'CED216', playerName: 'Andy', phase: 'turn', currentRound: 1, …}
-GameService.ts:1236 Diff: {players: {…}, currentPlayer: {…}, currentTurnPlays: {…}, isMyTurn: {…}, allowedActions: {…}, …}
-GameService.ts:1203 🎮 Action sent: play {piece_indices: Array(1), player_name: 'Andy', play_value: 6}
-GameService.ts:1233 🎮 State Change: NETWORK_EVENT:PHASE_CHANGE
-GameService.ts:1234 Previous: {isConnected: true, roomId: 'CED216', playerName: 'Andy', phase: 'turn', currentRound: 1, …}
-GameService.ts:1235 New: {isConnected: true, roomId: 'CED216', playerName: 'Andy', phase: 'turn', currentRound: 1, …}
-GameService.ts:1236 Diff: {players: {…}, myHand: {…}, currentTurnPlays: {…}, validOptions: {…}, lastEventSequence: {…}}
-GameService.ts:1233 🎮 State Change: NETWORK_EVENT:PHASE_CHANGE
-GameService.ts:1234 Previous: {isConnected: true, roomId: 'CED216', playerName: 'Andy', phase: 'turn', currentRound: 1, …}
-GameService.ts:1235 New: {isConnected: true, roomId: 'CED216', playerName: 'Andy', phase: 'turn', currentRound: 1, …}
-GameService.ts:1236 Diff: {lastEventSequence: {…}}
-GameService.ts:1233 🎮 State Change: NETWORK_EVENT:TURN_COMPLETE
-GameService.ts:1234 Previous: {isConnected: true, roomId: 'CED216', playerName: 'Andy', phase: 'turn', currentRound: 1, …}
-GameService.ts:1235 New: {isConnected: true, roomId: 'CED216', playerName: 'Andy', phase: 'turn_results', currentRound: 1, …}
-GameService.ts:1236 Diff: {phase: {…}, turnWinner: {…}, winningPlay: {…}, playerPiles: {…}, turnNumber: {…}, …}
-GameContainer.jsx:201 Turn results continue requested
-GameService.ts:1233 🎮 State Change: NETWORK_EVENT:PHASE_CHANGE
-GameService.ts:1234 Previous: {isConnected: true, roomId: 'CED216', playerName: 'Andy', phase: 'turn_results', currentRound: 1, …}
-GameService.ts:1235 New: {isConnected: true, roomId: 'CED216', playerName: 'Andy', phase: 'turn', currentRound: 1, …}
-GameService.ts:1236 Diff: {phase: {…}, currentTurnStarter: {…}, turnOrder: {…}, currentPlayer: {…}, currentTurnPlays: {…}, …}
-GameService.ts:1233 🎮 State Change: NETWORK_EVENT:PHASE_CHANGE
-GameService.ts:1234 Previous: {isConnected: true, roomId: 'CED216', playerName: 'Andy', phase: 'turn', currentRound: 1, …}
-GameService.ts:1235 New: {isConnected: true, roomId: 'CED216', playerName: 'Andy', phase: 'turn', currentRound: 1, …}
-GameService.ts:1236 Diff: {players: {…}, currentPlayer: {…}, currentTurnPlays: {…}, requiredPieceCount: {…}, lastEventSequence: {…}}
-GameService.ts:1233 🎮 State Change: NETWORK_EVENT:PHASE_CHANGE
-GameService.ts:1234 Previous: {isConnected: true, roomId: 'CED216', playerName: 'Andy', phase: 'turn', currentRound: 1, …}
-GameService.ts:1235 New: {isConnected: true, roomId: 'CED216', playerName: 'Andy', phase: 'turn', currentRound: 1, …}
-GameService.ts:1236 Diff: {players: {…}, currentPlayer: {…}, currentTurnPlays: {…}, isMyTurn: {…}, allowedActions: {…}, …}
-GameService.ts:1203 🎮 Action sent: play {piece_indices: Array(1), player_name: 'Andy', play_value: 8}
-GameService.ts:1233 🎮 State Change: NETWORK_EVENT:PHASE_CHANGE
-GameService.ts:1234 Previous: {isConnected: true, roomId: 'CED216', playerName: 'Andy', phase: 'turn', currentRound: 1, …}
-GameService.ts:1235 New: {isConnected: true, roomId: 'CED216', playerName: 'Andy', phase: 'turn', currentRound: 1, …}
-GameService.ts:1236 Diff: {players: {…}, myHand: {…}, currentPlayer: {…}, currentTurnPlays: {…}, isMyTurn: {…}, …}
-GameService.ts:1233 🎮 State Change: NETWORK_EVENT:PHASE_CHANGE
-GameService.ts:1234 Previous: {isConnected: true, roomId: 'CED216', playerName: 'Andy', phase: 'turn', currentRound: 1, …}
-GameService.ts:1235 New: {isConnected: true, roomId: 'CED216', playerName: 'Andy', phase: 'turn', currentRound: 1, …}
-GameService.ts:1236 Diff: {players: {…}, currentTurnPlays: {…}, lastEventSequence: {…}}
-GameService.ts:1233 🎮 State Change: NETWORK_EVENT:PHASE_CHANGE
-GameService.ts:1234 Previous: {isConnected: true, roomId: 'CED216', playerName: 'Andy', phase: 'turn', currentRound: 1, …}
-GameService.ts:1235 New: {isConnected: true, roomId: 'CED216', playerName: 'Andy', phase: 'turn', currentRound: 1, …}
-GameService.ts:1236 Diff: {lastEventSequence: {…}}
-GameService.ts:1233 🎮 State Change: NETWORK_EVENT:TURN_COMPLETE
-GameService.ts:1234 Previous: {isConnected: true, roomId: 'CED216', playerName: 'Andy', phase: 'turn', currentRound: 1, …}
-GameService.ts:1235 New: {isConnected: true, roomId: 'CED216', playerName: 'Andy', phase: 'turn_results', currentRound: 1, …}
-GameService.ts:1236 Diff: {phase: {…}, turnWinner: {…}, winningPlay: {…}, playerPiles: {…}, turnNumber: {…}, …}
-GameContainer.jsx:201 Turn results continue requested
-GameService.ts:1233 🎮 State Change: NETWORK_EVENT:PHASE_CHANGE
-GameService.ts:1234 Previous: {isConnected: true, roomId: 'CED216', playerName: 'Andy', phase: 'turn_results', currentRound: 1, …}
-GameService.ts:1235 New: {isConnected: true, roomId: 'CED216', playerName: 'Andy', phase: 'turn', currentRound: 1, …}
-GameService.ts:1236 Diff: {phase: {…}, currentTurnStarter: {…}, turnOrder: {…}, currentPlayer: {…}, currentTurnPlays: {…}, …}
-GameService.ts:1233 🎮 State Change: NETWORK_EVENT:PHASE_CHANGE
-GameService.ts:1234 Previous: {isConnected: true, roomId: 'CED216', playerName: 'Andy', phase: 'turn', currentRound: 1, …}
-GameService.ts:1235 New: {isConnected: true, roomId: 'CED216', playerName: 'Andy', phase: 'turn', currentRound: 1, …}
-GameService.ts:1236 Diff: {players: {…}, currentPlayer: {…}, currentTurnPlays: {…}, requiredPieceCount: {…}, isMyTurn: {…}, …}
-GameService.ts:1203 🎮 Action sent: play {piece_indices: Array(1), player_name: 'Andy', play_value: 5}
-GameService.ts:1233 🎮 State Change: NETWORK_EVENT:PHASE_CHANGE
-GameService.ts:1234 Previous: {isConnected: true, roomId: 'CED216', playerName: 'Andy', phase: 'turn', currentRound: 1, …}
-GameService.ts:1235 New: {isConnected: true, roomId: 'CED216', playerName: 'Andy', phase: 'turn', currentRound: 1, …}
-GameService.ts:1236 Diff: {players: {…}, myHand: {…}, currentPlayer: {…}, currentTurnPlays: {…}, isMyTurn: {…}, …}
-GameService.ts:1233 🎮 State Change: NETWORK_EVENT:PHASE_CHANGE
-GameService.ts:1234 Previous: {isConnected: true, roomId: 'CED216', playerName: 'Andy', phase: 'turn', currentRound: 1, …}
-GameService.ts:1235 New: {isConnected: true, roomId: 'CED216', playerName: 'Andy', phase: 'turn', currentRound: 1, …}
-GameService.ts:1236 Diff: {players: {…}, currentPlayer: {…}, currentTurnPlays: {…}, lastEventSequence: {…}}
-GameService.ts:1233 🎮 State Change: NETWORK_EVENT:PHASE_CHANGE
-GameService.ts:1234 Previous: {isConnected: true, roomId: 'CED216', playerName: 'Andy', phase: 'turn', currentRound: 1, …}
-GameService.ts:1235 New: {isConnected: true, roomId: 'CED216', playerName: 'Andy', phase: 'turn', currentRound: 1, …}
-GameService.ts:1236 Diff: {players: {…}, currentTurnPlays: {…}, lastEventSequence: {…}}
-GameService.ts:1233 🎮 State Change: NETWORK_EVENT:PHASE_CHANGE
-GameService.ts:1234 Previous: {isConnected: true, roomId: 'CED216', playerName: 'Andy', phase: 'turn', currentRound: 1, …}
-GameService.ts:1235 New: {isConnected: true, roomId: 'CED216', playerName: 'Andy', phase: 'turn', currentRound: 1, …}
-GameService.ts:1236 Diff: {lastEventSequence: {…}}
-GameService.ts:1233 🎮 State Change: NETWORK_EVENT:TURN_COMPLETE
-GameService.ts:1234 Previous: {isConnected: true, roomId: 'CED216', playerName: 'Andy', phase: 'turn', currentRound: 1, …}
-GameService.ts:1235 New: {isConnected: true, roomId: 'CED216', playerName: 'Andy', phase: 'turn_results', currentRound: 1, …}
-GameService.ts:1236 Diff: {phase: {…}, turnWinner: {…}, winningPlay: {…}, playerPiles: {…}, turnNumber: {…}, …}
-GameContainer.jsx:201 Turn results continue requested
-GameService.ts:1233 🎮 State Change: NETWORK_EVENT:PHASE_CHANGE
-GameService.ts:1234 Previous: {isConnected: true, roomId: 'CED216', playerName: 'Andy', phase: 'turn_results', currentRound: 1, …}
-GameService.ts:1235 New: {isConnected: true, roomId: 'CED216', playerName: 'Andy', phase: 'turn', currentRound: 1, …}
-GameService.ts:1236 Diff: {phase: {…}, currentTurnStarter: {…}, turnOrder: {…}, currentTurnPlays: {…}, requiredPieceCount: {…}, …}
-GameService.ts:1233 🎮 State Change: NETWORK_EVENT:PHASE_CHANGE
-GameService.ts:1234 Previous: {isConnected: true, roomId: 'CED216', playerName: 'Andy', phase: 'turn', currentRound: 1, …}
-GameService.ts:1235 New: {isConnected: true, roomId: 'CED216', playerName: 'Andy', phase: 'turn', currentRound: 1, …}
-GameService.ts:1236 Diff: {players: {…}, currentPlayer: {…}, currentTurnPlays: {…}, requiredPieceCount: {…}, lastEventSequence: {…}}
-GameService.ts:1233 🎮 State Change: NETWORK_EVENT:PHASE_CHANGE
-GameService.ts:1234 Previous: {isConnected: true, roomId: 'CED216', playerName: 'Andy', phase: 'turn', currentRound: 1, …}
-GameService.ts:1235 New: {isConnected: true, roomId: 'CED216', playerName: 'Andy', phase: 'turn', currentRound: 1, …}
-GameService.ts:1236 Diff: {players: {…}, currentPlayer: {…}, currentTurnPlays: {…}, isMyTurn: {…}, allowedActions: {…}, …}
-GameService.ts:1203 🎮 Action sent: play {piece_indices: Array(1), player_name: 'Andy', play_value: 2}
-GameService.ts:1233 🎮 State Change: NETWORK_EVENT:PHASE_CHANGE
-GameService.ts:1234 Previous: {isConnected: true, roomId: 'CED216', playerName: 'Andy', phase: 'turn', currentRound: 1, …}
-GameService.ts:1235 New: {isConnected: true, roomId: 'CED216', playerName: 'Andy', phase: 'turn', currentRound: 1, …}
-GameService.ts:1236 Diff: {players: {…}, myHand: {…}, currentPlayer: {…}, currentTurnPlays: {…}, isMyTurn: {…}, …}
-GameService.ts:1233 🎮 State Change: NETWORK_EVENT:PHASE_CHANGE
-GameService.ts:1234 Previous: {isConnected: true, roomId: 'CED216', playerName: 'Andy', phase: 'turn', currentRound: 1, …}
-GameService.ts:1235 New: {isConnected: true, roomId: 'CED216', playerName: 'Andy', phase: 'turn', currentRound: 1, …}
-GameService.ts:1236 Diff: {players: {…}, currentTurnPlays: {…}, lastEventSequence: {…}}
-GameService.ts:1233 🎮 State Change: NETWORK_EVENT:PHASE_CHANGE
-GameService.ts:1234 Previous: {isConnected: true, roomId: 'CED216', playerName: 'Andy', phase: 'turn', currentRound: 1, …}
-GameService.ts:1235 New: {isConnected: true, roomId: 'CED216', playerName: 'Andy', phase: 'turn', currentRound: 1, …}
-GameService.ts:1236 Diff: {lastEventSequence: {…}}
-GameService.ts:1233 🎮 State Change: NETWORK_EVENT:TURN_COMPLETE
-GameService.ts:1234 Previous: {isConnected: true, roomId: 'CED216', playerName: 'Andy', phase: 'turn', currentRound: 1, …}
-GameService.ts:1235 New: {isConnected: true, roomId: 'CED216', playerName: 'Andy', phase: 'turn_results', currentRound: 1, …}
-GameService.ts:1236 Diff: {phase: {…}, winningPlay: {…}, turnNumber: {…}, lastEventSequence: {…}}
-GameContainer.jsx:201 Turn results continue requested
-GameService.ts:1233 🎮 State Change: NETWORK_EVENT:PHASE_CHANGE
-GameService.ts:1234 Previous: {isConnected: true, roomId: 'CED216', playerName: 'Andy', phase: 'turn_results', currentRound: 1, …}
-GameService.ts:1235 New: {isConnected: true, roomId: 'CED216', playerName: 'Andy', phase: 'turn', currentRound: 1, …}
-GameService.ts:1236 Diff: {phase: {…}, currentPlayer: {…}, currentTurnPlays: {…}, requiredPieceCount: {…}, currentTurnNumber: {…}, …}
-GameService.ts:1233 🎮 State Change: NETWORK_EVENT:PHASE_CHANGE
-GameService.ts:1234 Previous: {isConnected: true, roomId: 'CED216', playerName: 'Andy', phase: 'turn', currentRound: 1, …}
-GameService.ts:1235 New: {isConnected: true, roomId: 'CED216', playerName: 'Andy', phase: 'turn', currentRound: 1, …}
-GameService.ts:1236 Diff: {players: {…}, currentPlayer: {…}, currentTurnPlays: {…}, requiredPieceCount: {…}, lastEventSequence: {…}}
-GameService.ts:1233 🎮 State Change: NETWORK_EVENT:PHASE_CHANGE
-GameService.ts:1234 Previous: {isConnected: true, roomId: 'CED216', playerName: 'Andy', phase: 'turn', currentRound: 1, …}
-GameService.ts:1235 New: {isConnected: true, roomId: 'CED216', playerName: 'Andy', phase: 'turn', currentRound: 1, …}
-GameService.ts:1236 Diff: {players: {…}, currentPlayer: {…}, currentTurnPlays: {…}, isMyTurn: {…}, allowedActions: {…}, …}
-GameService.ts:1203 🎮 Action sent: play {piece_indices: Array(2), player_name: 'Andy', play_value: 14}
-GameService.ts:1233 🎮 State Change: NETWORK_EVENT:PHASE_CHANGE
-GameService.ts:1234 Previous: {isConnected: true, roomId: 'CED216', playerName: 'Andy', phase: 'turn', currentRound: 1, …}
-GameService.ts:1235 New: {isConnected: true, roomId: 'CED216', playerName: 'Andy', phase: 'turn', currentRound: 1, …}
-GameService.ts:1236 Diff: {players: {…}, myHand: {…}, currentPlayer: {…}, currentTurnPlays: {…}, isMyTurn: {…}, …}
-GameService.ts:1233 🎮 State Change: NETWORK_EVENT:PHASE_CHANGE
-GameService.ts:1234 Previous: {isConnected: true, roomId: 'CED216', playerName: 'Andy', phase: 'turn', currentRound: 1, …}
-GameService.ts:1235 New: {isConnected: true, roomId: 'CED216', playerName: 'Andy', phase: 'turn', currentRound: 1, …}
-GameService.ts:1236 Diff: {players: {…}, currentTurnPlays: {…}, lastEventSequence: {…}}
-GameService.ts:1233 🎮 State Change: NETWORK_EVENT:PHASE_CHANGE
-GameService.ts:1234 Previous: {isConnected: true, roomId: 'CED216', playerName: 'Andy', phase: 'turn', currentRound: 1, …}
-GameService.ts:1235 New: {isConnected: true, roomId: 'CED216', playerName: 'Andy', phase: 'turn', currentRound: 1, …}
-GameService.ts:1236 Diff: {lastEventSequence: {…}}
-GameService.ts:1233 🎮 State Change: NETWORK_EVENT:TURN_COMPLETE
-GameService.ts:1234 Previous: {isConnected: true, roomId: 'CED216', playerName: 'Andy', phase: 'turn', currentRound: 1, …}
-GameService.ts:1235 New: {isConnected: true, roomId: 'CED216', playerName: 'Andy', phase: 'turn_results', currentRound: 1, …}
-GameService.ts:1236 Diff: {phase: {…}, turnWinner: {…}, winningPlay: {…}, playerPiles: {…}, turnNumber: {…}, …}
-GameContainer.jsx:201 Turn results continue requested
-GameService.ts:1233 🎮 State Change: NETWORK_EVENT:PHASE_CHANGE
-GameService.ts:1234 Previous: {isConnected: true, roomId: 'CED216', playerName: 'Andy', phase: 'turn_results', currentRound: 1, …}
-GameService.ts:1235 New: {isConnected: true, roomId: 'CED216', playerName: 'Andy', phase: 'turn', currentRound: 1, …}
-GameService.ts:1236 Diff: {phase: {…}, currentTurnStarter: {…}, turnOrder: {…}, currentPlayer: {…}, currentTurnPlays: {…}, …}
-GameService.ts:1203 🎮 Action sent: play {piece_indices: Array(1), player_name: 'Andy', play_value: 12}
-GameService.ts:1233 🎮 State Change: NETWORK_EVENT:PHASE_CHANGE
-GameService.ts:1234 Previous: {isConnected: true, roomId: 'CED216', playerName: 'Andy', phase: 'turn', currentRound: 1, …}
-GameService.ts:1235 New: {isConnected: true, roomId: 'CED216', playerName: 'Andy', phase: 'turn', currentRound: 1, …}
-GameService.ts:1236 Diff: {players: {…}, myHand: {…}, currentPlayer: {…}, currentTurnPlays: {…}, requiredPieceCount: {…}, …}
-GameService.ts:1233 🎮 State Change: NETWORK_EVENT:PHASE_CHANGE
-GameService.ts:1234 Previous: {isConnected: true, roomId: 'CED216', playerName: 'Andy', phase: 'turn', currentRound: 1, …}
-GameService.ts:1235 New: {isConnected: true, roomId: 'CED216', playerName: 'Andy', phase: 'turn', currentRound: 1, …}
-GameService.ts:1236 Diff: {players: {…}, currentPlayer: {…}, currentTurnPlays: {…}, lastEventSequence: {…}}
-GameService.ts:1233 🎮 State Change: NETWORK_EVENT:PHASE_CHANGE
-GameService.ts:1234 Previous: {isConnected: true, roomId: 'CED216', playerName: 'Andy', phase: 'turn', currentRound: 1, …}
-GameService.ts:1235 New: {isConnected: true, roomId: 'CED216', playerName: 'Andy', phase: 'turn', currentRound: 1, …}
-GameService.ts:1236 Diff: {players: {…}, currentPlayer: {…}, currentTurnPlays: {…}, lastEventSequence: {…}}
-GameService.ts:1233 🎮 State Change: NETWORK_EVENT:PHASE_CHANGE
-GameService.ts:1234 Previous: {isConnected: true, roomId: 'CED216', playerName: 'Andy', phase: 'turn', currentRound: 1, …}
-GameService.ts:1235 New: {isConnected: true, roomId: 'CED216', playerName: 'Andy', phase: 'turn', currentRound: 1, …}
-GameService.ts:1236 Diff: {players: {…}, currentTurnPlays: {…}, lastEventSequence: {…}}
-GameService.ts:1233 🎮 State Change: NETWORK_EVENT:PHASE_CHANGE
-GameService.ts:1234 Previous: {isConnected: true, roomId: 'CED216', playerName: 'Andy', phase: 'turn', currentRound: 1, …}
-GameService.ts:1235 New: {isConnected: true, roomId: 'CED216', playerName: 'Andy', phase: 'turn', currentRound: 1, …}
-GameService.ts:1236 Diff: {lastEventSequence: {…}}
-GameService.ts:1233 🎮 State Change: NETWORK_EVENT:TURN_COMPLETE
-GameService.ts:1234 Previous: {isConnected: true, roomId: 'CED216', playerName: 'Andy', phase: 'turn', currentRound: 1, …}
-GameService.ts:1235 New: {isConnected: true, roomId: 'CED216', playerName: 'Andy', phase: 'turn_results', currentRound: 1, …}
-GameService.ts:1236 Diff: {phase: {…}, winningPlay: {…}, playerPiles: {…}, turnNumber: {…}, allHandsEmpty: {…}, …}
-GameService.ts:1233 🎮 State Change: NETWORK_EVENT:PHASE_CHANGE
-GameService.ts:1234 Previous: {isConnected: true, roomId: 'CED216', playerName: 'Andy', phase: 'turn_results', currentRound: 1, …}
-GameService.ts:1235 New: {isConnected: true, roomId: 'CED216', playerName: 'Andy', phase: 'turn_results', currentRound: 1, …}
-GameService.ts:1236 Diff: {lastEventSequence: {…}}
-GameService.ts:1233 🎮 State Change: NETWORK_EVENT:PHASE_CHANGE
-GameService.ts:1234 Previous: {isConnected: true, roomId: 'CED216', playerName: 'Andy', phase: 'turn_results', currentRound: 1, …}
-GameService.ts:1235 New: {isConnected: true, roomId: 'CED216', playerName: 'Andy', phase: 'turn_results', currentRound: 1, …}
-GameService.ts:1236 Diff: {players: {…}, lastEventSequence: {…}}
-GameContainer.jsx:201 Turn results continue requested
-GameService.ts:1233 🎮 State Change: NETWORK_EVENT:PHASE_CHANGE
-GameService.ts:1234 Previous: {isConnected: true, roomId: 'CED216', playerName: 'Andy', phase: 'turn_results', currentRound: 1, …}
-GameService.ts:1235 New: {isConnected: true, roomId: 'CED216', playerName: 'Andy', phase: 'turn_results', currentRound: 1, …}
-GameService.ts:1236 Diff: {players: {…}, lastEventSequence: {…}}
-GameService.ts:1233 🎮 State Change: NETWORK_EVENT:PHASE_CHANGE
-GameService.ts:1234 Previous: {isConnected: true, roomId: 'CED216', playerName: 'Andy', phase: 'turn_results', currentRound: 1, …}
-GameService.ts:1235 New: {isConnected: true, roomId: 'CED216', playerName: 'Andy', phase: 'scoring', currentRound: 1, …}
-GameService.ts:1236 Diff: {phase: {…}, players: {…}, roundScores: {…}, totalScores: {…}, lastEventSequence: {…}, …}
-GameService.ts:1233 🎮 State Change: NETWORK_EVENT:PHASE_CHANGE
-GameService.ts:1234 Previous: {isConnected: true, roomId: 'CED216', playerName: 'Andy', phase: 'scoring', currentRound: 1, …}
-GameService.ts:1235 New: {isConnected: true, roomId: 'CED216', playerName: 'Andy', phase: 'scoring', currentRound: 1, …}
-GameService.ts:1236 Diff: {lastEventSequence: {…}}
-GameService.ts:1203 🎮 Action sent: start_next_round {}
-GameService.ts:1233 🎮 State Change: NETWORK_EVENT:PHASE_CHANGE
-GameService.ts:1234 Previous: {isConnected: true, roomId: 'CED216', playerName: 'Andy', phase: 'scoring', currentRound: 1, …}
-GameService.ts:1235 New: {isConnected: true, roomId: 'CED216', playerName: 'Andy', phase: 'preparation', currentRound: 1, …}
-GameService.ts:1236 Diff: {phase: {…}, players: {…}, myHand: {…}, lastEventSequence: {…}, simultaneousMode: {…}, …}
-GameService.ts:1233 🎮 State Change: NETWORK_EVENT:PHASE_CHANGE
-GameService.ts:1234 Previous: {isConnected: true, roomId: 'CED216', playerName: 'Andy', phase: 'preparation', currentRound: 1, …}
-GameService.ts:1235 New: {isConnected: true, roomId: 'CED216', playerName: 'Andy', phase: 'declaration', currentRound: 2, …}
-GameService.ts:1236 Diff: {phase: {…}, currentRound: {…}, players: {…}, declarations: {…}, declarationOrder: {…}, …}
-DeclarationContent.jsx:67 🎲 ZERO_STREAK_DEBUG: Andy has consecutiveZeros: 1
-GameService.ts:1233 🎮 State Change: NETWORK_EVENT:PHASE_CHANGE
-GameService.ts:1234 Previous: {isConnected: true, roomId: 'CED216', playerName: 'Andy', phase: 'declaration', currentRound: 2, …}
-GameService.ts:1235 New: {isConnected: true, roomId: 'CED216', playerName: 'Andy', phase: 'declaration', currentRound: 2, …}
-GameService.ts:1236 Diff: {lastEventSequence: {…}}
-DeclarationContent.jsx:67 🎲 ZERO_STREAK_DEBUG: Andy has consecutiveZeros: 1
-GameService.ts:1233 🎮 State Change: NETWORK_EVENT:PHASE_CHANGE
-GameService.ts:1234 Previous: {isConnected: true, roomId: 'CED216', playerName: 'Andy', phase: 'declaration', currentRound: 2, …}
-GameService.ts:1235 New: {isConnected: true, roomId: 'CED216', playerName: 'Andy', phase: 'declaration', currentRound: 2, …}
-GameService.ts:1236 Diff: {players: {…}, declarationOrder: {…}, lastEventSequence: {…}}
-DeclarationContent.jsx:67 🎲 ZERO_STREAK_DEBUG: Andy has consecutiveZeros: 0
-DeclarationContent.jsx:67 🎲 ZERO_STREAK_DEBUG: Andy has consecutiveZeros: 0
-GameService.ts:1203 🎮 Action sent: declare {value: 0, player_name: 'Andy'}
-DeclarationContent.jsx:67 🎲 ZERO_STREAK_DEBUG: Andy has consecutiveZeros: 0
-GameService.ts:1233 🎮 State Change: NETWORK_EVENT:PHASE_CHANGE
-GameService.ts:1234 Previous: {isConnected: true, roomId: 'CED216', playerName: 'Andy', phase: 'declaration', currentRound: 2, …}
-GameService.ts:1235 New: {isConnected: true, roomId: 'CED216', playerName: 'Andy', phase: 'declaration', currentRound: 2, …}
-GameService.ts:1236 Diff: {players: {…}, declarations: {…}, declarationOrder: {…}, currentDeclarer: {…}, isMyTurn: {…}, …}
-DeclarationContent.jsx:67 🎲 ZERO_STREAK_DEBUG: Andy has consecutiveZeros: 1
-DeclarationContent.jsx:67 🎲 ZERO_STREAK_DEBUG: Andy has consecutiveZeros: 1
-DeclarationContent.jsx:67 🎲 ZERO_STREAK_DEBUG: Andy has consecutiveZeros: 1
-DeclarationContent.jsx:67 🎲 ZERO_STREAK_DEBUG: Andy has consecutiveZeros: 1
-GameService.ts:1233 🎮 State Change: NETWORK_EVENT:PHASE_CHANGE
-GameService.ts:1234 Previous: {isConnected: true, roomId: 'CED216', playerName: 'Andy', phase: 'declaration', currentRound: 2, …}
-GameService.ts:1235 New: {isConnected: true, roomId: 'CED216', playerName: 'Andy', phase: 'declaration', currentRound: 2, …}
-GameService.ts:1236 Diff: {players: {…}, declarations: {…}, currentDeclarer: {…}, lastEventSequence: {…}, currentTotal: {…}, …}
-DeclarationContent.jsx:67 🎲 ZERO_STREAK_DEBUG: Andy has consecutiveZeros: 2
-GameService.ts:1233 🎮 State Change: NETWORK_EVENT:PHASE_CHANGE
-GameService.ts:1234 Previous: {isConnected: true, roomId: 'CED216', playerName: 'Andy', phase: 'declaration', currentRound: 2, …}
-GameService.ts:1235 New: {isConnected: true, roomId: 'CED216', playerName: 'Andy', phase: 'declaration', currentRound: 2, …}
-GameService.ts:1236 Diff: {declarations: {…}, currentDeclarer: {…}, lastEventSequence: {…}, currentTotal: {…}, declarationProgress: {…}, …}
-DeclarationContent.jsx:67 🎲 ZERO_STREAK_DEBUG: Andy has consecutiveZeros: 2
-GameService.ts:1233 🎮 State Change: NETWORK_EVENT:PHASE_CHANGE
-GameService.ts:1234 Previous: {isConnected: true, roomId: 'CED216', playerName: 'Andy', phase: 'declaration', currentRound: 2, …}
-GameService.ts:1235 New: {isConnected: true, roomId: 'CED216', playerName: 'Andy', phase: 'declaration', currentRound: 2, …}
-GameService.ts:1236 Diff: {declarations: {…}, lastEventSequence: {…}, currentTotal: {…}, declarationProgress: {…}, isLastPlayer: {…}}
-DeclarationContent.jsx:67 🎲 ZERO_STREAK_DEBUG: Andy has consecutiveZeros: 2
-GameService.ts:1233 🎮 State Change: NETWORK_EVENT:PHASE_CHANGE
-GameService.ts:1234 Previous: {isConnected: true, roomId: 'CED216', playerName: 'Andy', phase: 'declaration', currentRound: 2, …}
-GameService.ts:1235 New: {isConnected: true, roomId: 'CED216', playerName: 'Andy', phase: 'turn', currentRound: 2, …}
-GameService.ts:1236 Diff: {phase: {…}, currentPlayer: {…}, currentTurnPlays: {…}, requiredPieceCount: {…}, currentTurnNumber: {…}, …}
-GameService.ts:1233 🎮 State Change: NETWORK_EVENT:PHASE_CHANGE
-GameService.ts:1234 Previous: {isConnected: true, roomId: 'CED216', playerName: 'Andy', phase: 'turn', currentRound: 2, …}
-GameService.ts:1235 New: {isConnected: true, roomId: 'CED216', playerName: 'Andy', phase: 'turn', currentRound: 2, …}
-GameService.ts:1236 Diff: {players: {…}, lastEventSequence: {…}, canPlayAnyCount: {…}}
-GameService.ts:1203 🎮 Action sent: play {piece_indices: Array(1), player_name: 'Andy', play_value: 6}
-GameService.ts:1233 🎮 State Change: NETWORK_EVENT:PHASE_CHANGE
-GameService.ts:1234 Previous: {isConnected: true, roomId: 'CED216', playerName: 'Andy', phase: 'turn', currentRound: 2, …}
-GameService.ts:1235 New: {isConnected: true, roomId: 'CED216', playerName: 'Andy', phase: 'turn', currentRound: 2, …}
-GameService.ts:1236 Diff: {players: {…}, myHand: {…}, currentPlayer: {…}, currentTurnPlays: {…}, requiredPieceCount: {…}, …}
-GameService.ts:1233 🎮 State Change: NETWORK_EVENT:PHASE_CHANGE
-GameService.ts:1234 Previous: {isConnected: true, roomId: 'CED216', playerName: 'Andy', phase: 'turn', currentRound: 2, …}
-GameService.ts:1235 New: {isConnected: true, roomId: 'CED216', playerName: 'Andy', phase: 'turn', currentRound: 2, …}
-GameService.ts:1236 Diff: {players: {…}, currentPlayer: {…}, currentTurnPlays: {…}, lastEventSequence: {…}}
-GameService.ts:1233 🎮 State Change: NETWORK_EVENT:PHASE_CHANGE
-GameService.ts:1234 Previous: {isConnected: true, roomId: 'CED216', playerName: 'Andy', phase: 'turn', currentRound: 2, …}
-GameService.ts:1235 New: {isConnected: true, roomId: 'CED216', playerName: 'Andy', phase: 'turn', currentRound: 2, …}
-GameService.ts:1236 Diff: {players: {…}, currentPlayer: {…}, currentTurnPlays: {…}, lastEventSequence: {…}}
-GameService.ts:1233 🎮 State Change: NETWORK_EVENT:PHASE_CHANGE
-GameService.ts:1234 Previous: {isConnected: true, roomId: 'CED216', playerName: 'Andy', phase: 'turn', currentRound: 2, …}
-GameService.ts:1235 New: {isConnected: true, roomId: 'CED216', playerName: 'Andy', phase: 'turn', currentRound: 2, …}
-GameService.ts:1236 Diff: {players: {…}, currentTurnPlays: {…}, lastEventSequence: {…}}
-GameService.ts:1233 🎮 State Change: NETWORK_EVENT:PHASE_CHANGE
-GameService.ts:1234 Previous: {isConnected: true, roomId: 'CED216', playerName: 'Andy', phase: 'turn', currentRound: 2, …}
-GameService.ts:1235 New: {isConnected: true, roomId: 'CED216', playerName: 'Andy', phase: 'turn', currentRound: 2, …}
-GameService.ts:1236 Diff: {lastEventSequence: {…}}
-GameService.ts:1233 🎮 State Change: NETWORK_EVENT:TURN_COMPLETE
-GameService.ts:1234 Previous: {isConnected: true, roomId: 'CED216', playerName: 'Andy', phase: 'turn', currentRound: 2, …}
-GameService.ts:1235 New: {isConnected: true, roomId: 'CED216', playerName: 'Andy', phase: 'turn_results', currentRound: 2, …}
-GameService.ts:1236 Diff: {phase: {…}, turnWinner: {…}, winningPlay: {…}, playerPiles: {…}, turnNumber: {…}, …}
-GameContainer.jsx:201 Turn results continue requested
-GameService.ts:1233 🎮 State Change: NETWORK_EVENT:PHASE_CHANGE
-GameService.ts:1234 Previous: {isConnected: true, roomId: 'CED216', playerName: 'Andy', phase: 'turn_results', currentRound: 2, …}
-GameService.ts:1235 New: {isConnected: true, roomId: 'CED216', playerName: 'Andy', phase: 'turn', currentRound: 2, …}
-GameService.ts:1236 Diff: {phase: {…}, currentTurnStarter: {…}, turnOrder: {…}, currentPlayer: {…}, currentTurnPlays: {…}, …}
-GameService.ts:1233 🎮 State Change: NETWORK_EVENT:PHASE_CHANGE
-GameService.ts:1234 Previous: {isConnected: true, roomId: 'CED216', playerName: 'Andy', phase: 'turn', currentRound: 2, …}
-GameService.ts:1235 New: {isConnected: true, roomId: 'CED216', playerName: 'Andy', phase: 'turn', currentRound: 2, …}
-GameService.ts:1236 Diff: {players: {…}, currentPlayer: {…}, currentTurnPlays: {…}, requiredPieceCount: {…}, lastEventSequence: {…}}
-GameService.ts:1233 🎮 State Change: NETWORK_EVENT:PHASE_CHANGE
-GameService.ts:1234 Previous: {isConnected: true, roomId: 'CED216', playerName: 'Andy', phase: 'turn', currentRound: 2, …}
-GameService.ts:1235 New: {isConnected: true, roomId: 'CED216', playerName: 'Andy', phase: 'turn', currentRound: 2, …}
-GameService.ts:1236 Diff: {players: {…}, currentPlayer: {…}, currentTurnPlays: {…}, lastEventSequence: {…}}
-GameService.ts:1233 🎮 State Change: NETWORK_EVENT:PHASE_CHANGE
-GameService.ts:1234 Previous: {isConnected: true, roomId: 'CED216', playerName: 'Andy', phase: 'turn', currentRound: 2, …}
-GameService.ts:1235 New: {isConnected: true, roomId: 'CED216', playerName: 'Andy', phase: 'turn', currentRound: 2, …}
-GameService.ts:1236 Diff: {players: {…}, currentPlayer: {…}, currentTurnPlays: {…}, isMyTurn: {…}, allowedActions: {…}, …}
-GameService.ts:1203 🎮 Action sent: play {piece_indices: Array(1), player_name: 'Andy', play_value: 5}
-GameService.ts:1233 🎮 State Change: NETWORK_EVENT:PHASE_CHANGE
-GameService.ts:1234 Previous: {isConnected: true, roomId: 'CED216', playerName: 'Andy', phase: 'turn', currentRound: 2, …}
-GameService.ts:1235 New: {isConnected: true, roomId: 'CED216', playerName: 'Andy', phase: 'turn', currentRound: 2, …}
-GameService.ts:1236 Diff: {players: {…}, myHand: {…}, currentTurnPlays: {…}, validOptions: {…}, lastEventSequence: {…}}
-GameService.ts:1233 🎮 State Change: NETWORK_EVENT:PHASE_CHANGE
-GameService.ts:1234 Previous: {isConnected: true, roomId: 'CED216', playerName: 'Andy', phase: 'turn', currentRound: 2, …}
-GameService.ts:1235 New: {isConnected: true, roomId: 'CED216', playerName: 'Andy', phase: 'turn', currentRound: 2, …}
-GameService.ts:1236 Diff: {lastEventSequence: {…}}
-GameService.ts:1233 🎮 State Change: NETWORK_EVENT:TURN_COMPLETE
-GameService.ts:1234 Previous: {isConnected: true, roomId: 'CED216', playerName: 'Andy', phase: 'turn', currentRound: 2, …}
-GameService.ts:1235 New: {isConnected: true, roomId: 'CED216', playerName: 'Andy', phase: 'turn_results', currentRound: 2, …}
-GameService.ts:1236 Diff: {phase: {…}, winningPlay: {…}, turnNumber: {…}, isMyTurn: {…}, allowedActions: {…}, …}
-GameContainer.jsx:201 Turn results continue requested
-GameService.ts:1233 🎮 State Change: NETWORK_EVENT:PHASE_CHANGE
-GameService.ts:1234 Previous: {isConnected: true, roomId: 'CED216', playerName: 'Andy', phase: 'turn_results', currentRound: 2, …}
-GameService.ts:1235 New: {isConnected: true, roomId: 'CED216', playerName: 'Andy', phase: 'turn', currentRound: 2, …}
-GameService.ts:1236 Diff: {phase: {…}, currentPlayer: {…}, currentTurnPlays: {…}, requiredPieceCount: {…}, currentTurnNumber: {…}, …}
-GameService.ts:1233 🎮 State Change: NETWORK_EVENT:PHASE_CHANGE
-GameService.ts:1234 Previous: {isConnected: true, roomId: 'CED216', playerName: 'Andy', phase: 'turn', currentRound: 2, …}
-GameService.ts:1235 New: {isConnected: true, roomId: 'CED216', playerName: 'Andy', phase: 'turn', currentRound: 2, …}
-GameService.ts:1236 Diff: {players: {…}, currentPlayer: {…}, currentTurnPlays: {…}, requiredPieceCount: {…}, lastEventSequence: {…}}
-GameService.ts:1233 🎮 State Change: NETWORK_EVENT:PHASE_CHANGE
-GameService.ts:1234 Previous: {isConnected: true, roomId: 'CED216', playerName: 'Andy', phase: 'turn', currentRound: 2, …}
-GameService.ts:1235 New: {isConnected: true, roomId: 'CED216', playerName: 'Andy', phase: 'turn', currentRound: 2, …}
-GameService.ts:1236 Diff: {players: {…}, currentPlayer: {…}, currentTurnPlays: {…}, lastEventSequence: {…}}
-GameService.ts:1233 🎮 State Change: NETWORK_EVENT:PHASE_CHANGE
-GameService.ts:1234 Previous: {isConnected: true, roomId: 'CED216', playerName: 'Andy', phase: 'turn', currentRound: 2, …}
-GameService.ts:1235 New: {isConnected: true, roomId: 'CED216', playerName: 'Andy', phase: 'turn', currentRound: 2, …}
-GameService.ts:1236 Diff: {players: {…}, currentPlayer: {…}, currentTurnPlays: {…}, isMyTurn: {…}, allowedActions: {…}, …}
-GameService.ts:1203 🎮 Action sent: play {piece_indices: Array(1), player_name: 'Andy', play_value: 2}
-GameService.ts:1233 🎮 State Change: NETWORK_EVENT:PHASE_CHANGE
-GameService.ts:1234 Previous: {isConnected: true, roomId: 'CED216', playerName: 'Andy', phase: 'turn', currentRound: 2, …}
-GameService.ts:1235 New: {isConnected: true, roomId: 'CED216', playerName: 'Andy', phase: 'turn', currentRound: 2, …}
-GameService.ts:1236 Diff: {players: {…}, myHand: {…}, currentTurnPlays: {…}, validOptions: {…}, lastEventSequence: {…}}
-GameService.ts:1233 🎮 State Change: NETWORK_EVENT:PHASE_CHANGE
-GameService.ts:1234 Previous: {isConnected: true, roomId: 'CED216', playerName: 'Andy', phase: 'turn', currentRound: 2, …}
-GameService.ts:1235 New: {isConnected: true, roomId: 'CED216', playerName: 'Andy', phase: 'turn', currentRound: 2, …}
-GameService.ts:1236 Diff: {lastEventSequence: {…}}
-GameService.ts:1233 🎮 State Change: NETWORK_EVENT:TURN_COMPLETE
-GameService.ts:1234 Previous: {isConnected: true, roomId: 'CED216', playerName: 'Andy', phase: 'turn', currentRound: 2, …}
-GameService.ts:1235 New: {isConnected: true, roomId: 'CED216', playerName: 'Andy', phase: 'turn_results', currentRound: 2, …}
-GameService.ts:1236 Diff: {phase: {…}, winningPlay: {…}, turnNumber: {…}, isMyTurn: {…}, allowedActions: {…}, …}
-GameContainer.jsx:201 Turn results continue requested
-GameService.ts:1233 🎮 State Change: NETWORK_EVENT:PHASE_CHANGE
-GameService.ts:1234 Previous: {isConnected: true, roomId: 'CED216', playerName: 'Andy', phase: 'turn_results', currentRound: 2, …}
-GameService.ts:1235 New: {isConnected: true, roomId: 'CED216', playerName: 'Andy', phase: 'turn', currentRound: 2, …}
-GameService.ts:1236 Diff: {phase: {…}, currentPlayer: {…}, currentTurnPlays: {…}, requiredPieceCount: {…}, currentTurnNumber: {…}, …}
-GameService.ts:1233 🎮 State Change: NETWORK_EVENT:PHASE_CHANGE
-GameService.ts:1234 Previous: {isConnected: true, roomId: 'CED216', playerName: 'Andy', phase: 'turn', currentRound: 2, …}
-GameService.ts:1235 New: {isConnected: true, roomId: 'CED216', playerName: 'Andy', phase: 'turn', currentRound: 2, …}
-GameService.ts:1236 Diff: {players: {…}, currentPlayer: {…}, currentTurnPlays: {…}, requiredPieceCount: {…}, lastEventSequence: {…}}
-GameService.ts:1233 🎮 State Change: NETWORK_EVENT:PHASE_CHANGE
-GameService.ts:1234 Previous: {isConnected: true, roomId: 'CED216', playerName: 'Andy', phase: 'turn', currentRound: 2, …}
-GameService.ts:1235 New: {isConnected: true, roomId: 'CED216', playerName: 'Andy', phase: 'turn', currentRound: 2, …}
-GameService.ts:1236 Diff: {players: {…}, currentPlayer: {…}, currentTurnPlays: {…}, lastEventSequence: {…}}
-GameService.ts:1233 🎮 State Change: NETWORK_EVENT:PHASE_CHANGE
-GameService.ts:1234 Previous: {isConnected: true, roomId: 'CED216', playerName: 'Andy', phase: 'turn', currentRound: 2, …}
-GameService.ts:1235 New: {isConnected: true, roomId: 'CED216', playerName: 'Andy', phase: 'turn', currentRound: 2, …}
-GameService.ts:1236 Diff: {players: {…}, currentPlayer: {…}, currentTurnPlays: {…}, isMyTurn: {…}, allowedActions: {…}, …}
-GameService.ts:1203 🎮 Action sent: play {piece_indices: Array(1), player_name: 'Andy', play_value: 13}
-GameService.ts:1233 🎮 State Change: NETWORK_EVENT:PHASE_CHANGE
-GameService.ts:1234 Previous: {isConnected: true, roomId: 'CED216', playerName: 'Andy', phase: 'turn', currentRound: 2, …}
-GameService.ts:1235 New: {isConnected: true, roomId: 'CED216', playerName: 'Andy', phase: 'turn', currentRound: 2, …}
-GameService.ts:1236 Diff: {players: {…}, myHand: {…}, currentTurnPlays: {…}, validOptions: {…}, lastEventSequence: {…}}
-GameService.ts:1233 🎮 State Change: NETWORK_EVENT:PHASE_CHANGE
-GameService.ts:1234 Previous: {isConnected: true, roomId: 'CED216', playerName: 'Andy', phase: 'turn', currentRound: 2, …}
-GameService.ts:1235 New: {isConnected: true, roomId: 'CED216', playerName: 'Andy', phase: 'turn', currentRound: 2, …}
-GameService.ts:1236 Diff: {lastEventSequence: {…}}
-GameService.ts:1233 🎮 State Change: NETWORK_EVENT:TURN_COMPLETE
-GameService.ts:1234 Previous: {isConnected: true, roomId: 'CED216', playerName: 'Andy', phase: 'turn', currentRound: 2, …}
-GameService.ts:1235 New: {isConnected: true, roomId: 'CED216', playerName: 'Andy', phase: 'turn_results', currentRound: 2, …}
-GameService.ts:1236 Diff: {phase: {…}, turnWinner: {…}, winningPlay: {…}, playerPiles: {…}, turnNumber: {…}, …}
-GameContainer.jsx:201 Turn results continue requested
-GameService.ts:1233 🎮 State Change: NETWORK_EVENT:PHASE_CHANGE
-GameService.ts:1234 Previous: {isConnected: true, roomId: 'CED216', playerName: 'Andy', phase: 'turn_results', currentRound: 2, …}
-GameService.ts:1235 New: {isConnected: true, roomId: 'CED216', playerName: 'Andy', phase: 'turn', currentRound: 2, …}
-GameService.ts:1236 Diff: {phase: {…}, currentTurnStarter: {…}, turnOrder: {…}, currentTurnPlays: {…}, requiredPieceCount: {…}, …}
-GameService.ts:1203 🎮 Action sent: play {piece_indices: Array(1), player_name: 'Andy', play_value: 12}
-GameService.ts:1233 🎮 State Change: NETWORK_EVENT:PHASE_CHANGE
-GameService.ts:1234 Previous: {isConnected: true, roomId: 'CED216', playerName: 'Andy', phase: 'turn', currentRound: 2, …}
-GameService.ts:1235 New: {isConnected: true, roomId: 'CED216', playerName: 'Andy', phase: 'turn', currentRound: 2, …}
-GameService.ts:1236 Diff: {players: {…}, myHand: {…}, currentPlayer: {…}, currentTurnPlays: {…}, requiredPieceCount: {…}, …}
-GameService.ts:1233 🎮 State Change: NETWORK_EVENT:PHASE_CHANGE
-GameService.ts:1234 Previous: {isConnected: true, roomId: 'CED216', playerName: 'Andy', phase: 'turn', currentRound: 2, …}
-GameService.ts:1235 New: {isConnected: true, roomId: 'CED216', playerName: 'Andy', phase: 'turn', currentRound: 2, …}
-GameService.ts:1236 Diff: {players: {…}, currentPlayer: {…}, currentTurnPlays: {…}, lastEventSequence: {…}}
-GameService.ts:1233 🎮 State Change: NETWORK_EVENT:PHASE_CHANGE
-GameService.ts:1234 Previous: {isConnected: true, roomId: 'CED216', playerName: 'Andy', phase: 'turn', currentRound: 2, …}
-GameService.ts:1235 New: {isConnected: true, roomId: 'CED216', playerName: 'Andy', phase: 'turn', currentRound: 2, …}
-GameService.ts:1236 Diff: {players: {…}, currentPlayer: {…}, currentTurnPlays: {…}, lastEventSequence: {…}}
-GameService.ts:1233 🎮 State Change: NETWORK_EVENT:PHASE_CHANGE
-GameService.ts:1234 Previous: {isConnected: true, roomId: 'CED216', playerName: 'Andy', phase: 'turn', currentRound: 2, …}
-GameService.ts:1235 New: {isConnected: true, roomId: 'CED216', playerName: 'Andy', phase: 'turn', currentRound: 2, …}
-GameService.ts:1236 Diff: {players: {…}, currentTurnPlays: {…}, lastEventSequence: {…}}
-GameService.ts:1233 🎮 State Change: NETWORK_EVENT:PHASE_CHANGE
-GameService.ts:1234 Previous: {isConnected: true, roomId: 'CED216', playerName: 'Andy', phase: 'turn', currentRound: 2, …}
-GameService.ts:1235 New: {isConnected: true, roomId: 'CED216', playerName: 'Andy', phase: 'turn', currentRound: 2, …}
-GameService.ts:1236 Diff: {lastEventSequence: {…}}
-GameService.ts:1233 🎮 State Change: NETWORK_EVENT:TURN_COMPLETE
-GameService.ts:1234 Previous: {isConnected: true, roomId: 'CED216', playerName: 'Andy', phase: 'turn', currentRound: 2, …}
-GameService.ts:1235 New: {isConnected: true, roomId: 'CED216', playerName: 'Andy', phase: 'turn_results', currentRound: 2, …}
-GameService.ts:1236 Diff: {phase: {…}, winningPlay: {…}, turnNumber: {…}, lastEventSequence: {…}}
-GameContainer.jsx:201 Turn results continue requested
-GameService.ts:1233 🎮 State Change: NETWORK_EVENT:PHASE_CHANGE
-GameService.ts:1234 Previous: {isConnected: true, roomId: 'CED216', playerName: 'Andy', phase: 'turn_results', currentRound: 2, …}
-GameService.ts:1235 New: {isConnected: true, roomId: 'CED216', playerName: 'Andy', phase: 'turn', currentRound: 2, …}
-GameService.ts:1236 Diff: {phase: {…}, currentPlayer: {…}, currentTurnPlays: {…}, requiredPieceCount: {…}, currentTurnNumber: {…}, …}
-GameService.ts:1203 🎮 Action sent: play {piece_indices: Array(1), player_name: 'Andy', play_value: 11}
-GameService.ts:1233 🎮 State Change: NETWORK_EVENT:PHASE_CHANGE
-GameService.ts:1234 Previous: {isConnected: true, roomId: 'CED216', playerName: 'Andy', phase: 'turn', currentRound: 2, …}
-GameService.ts:1235 New: {isConnected: true, roomId: 'CED216', playerName: 'Andy', phase: 'turn', currentRound: 2, …}
-GameService.ts:1236 Diff: {players: {…}, myHand: {…}, currentPlayer: {…}, currentTurnPlays: {…}, requiredPieceCount: {…}, …}
-GameService.ts:1233 🎮 State Change: NETWORK_EVENT:PHASE_CHANGE
-GameService.ts:1234 Previous: {isConnected: true, roomId: 'CED216', playerName: 'Andy', phase: 'turn', currentRound: 2, …}
-GameService.ts:1235 New: {isConnected: true, roomId: 'CED216', playerName: 'Andy', phase: 'turn', currentRound: 2, …}
-GameService.ts:1236 Diff: {players: {…}, currentPlayer: {…}, currentTurnPlays: {…}, lastEventSequence: {…}}
-GameService.ts:1233 🎮 State Change: NETWORK_EVENT:PHASE_CHANGE
-GameService.ts:1234 Previous: {isConnected: true, roomId: 'CED216', playerName: 'Andy', phase: 'turn', currentRound: 2, …}
-GameService.ts:1235 New: {isConnected: true, roomId: 'CED216', playerName: 'Andy', phase: 'turn', currentRound: 2, …}
-GameService.ts:1236 Diff: {players: {…}, currentPlayer: {…}, currentTurnPlays: {…}, lastEventSequence: {…}}
-GameService.ts:1233 🎮 State Change: NETWORK_EVENT:PHASE_CHANGE
-GameService.ts:1234 Previous: {isConnected: true, roomId: 'CED216', playerName: 'Andy', phase: 'turn', currentRound: 2, …}
-GameService.ts:1235 New: {isConnected: true, roomId: 'CED216', playerName: 'Andy', phase: 'turn', currentRound: 2, …}
-GameService.ts:1236 Diff: {players: {…}, currentTurnPlays: {…}, lastEventSequence: {…}}
-GameService.ts:1233 🎮 State Change: NETWORK_EVENT:PHASE_CHANGE
-GameService.ts:1234 Previous: {isConnected: true, roomId: 'CED216', playerName: 'Andy', phase: 'turn', currentRound: 2, …}
-GameService.ts:1235 New: {isConnected: true, roomId: 'CED216', playerName: 'Andy', phase: 'turn', currentRound: 2, …}
-GameService.ts:1236 Diff: {lastEventSequence: {…}}
-GameService.ts:1233 🎮 State Change: NETWORK_EVENT:TURN_COMPLETE
-GameService.ts:1234 Previous: {isConnected: true, roomId: 'CED216', playerName: 'Andy', phase: 'turn', currentRound: 2, …}
-GameService.ts:1235 New: {isConnected: true, roomId: 'CED216', playerName: 'Andy', phase: 'turn_results', currentRound: 2, …}
-GameService.ts:1236 Diff: {phase: {…}, winningPlay: {…}, turnNumber: {…}, lastEventSequence: {…}}
-GameContainer.jsx:201 Turn results continue requested
-GameService.ts:1233 🎮 State Change: NETWORK_EVENT:PHASE_CHANGE
-GameService.ts:1234 Previous: {isConnected: true, roomId: 'CED216', playerName: 'Andy', phase: 'turn_results', currentRound: 2, …}
-GameService.ts:1235 New: {isConnected: true, roomId: 'CED216', playerName: 'Andy', phase: 'turn', currentRound: 2, …}
-GameService.ts:1236 Diff: {phase: {…}, currentPlayer: {…}, currentTurnPlays: {…}, requiredPieceCount: {…}, currentTurnNumber: {…}, …}
-GameService.ts:1203 🎮 Action sent: play {piece_indices: Array(2), player_name: 'Andy', play_value: 2}
-GameService.ts:1233 🎮 State Change: NETWORK_EVENT:PHASE_CHANGE
-GameService.ts:1234 Previous: {isConnected: true, roomId: 'CED216', playerName: 'Andy', phase: 'turn', currentRound: 2, …}
-GameService.ts:1235 New: {isConnected: true, roomId: 'CED216', playerName: 'Andy', phase: 'turn', currentRound: 2, …}
-GameService.ts:1236 Diff: {players: {…}, myHand: {…}, currentPlayer: {…}, currentTurnPlays: {…}, requiredPieceCount: {…}, …}
-GameService.ts:1233 🎮 State Change: NETWORK_EVENT:PHASE_CHANGE
-GameService.ts:1234 Previous: {isConnected: true, roomId: 'CED216', playerName: 'Andy', phase: 'turn', currentRound: 2, …}
-GameService.ts:1235 New: {isConnected: true, roomId: 'CED216', playerName: 'Andy', phase: 'turn', currentRound: 2, …}
-GameService.ts:1236 Diff: {players: {…}, currentPlayer: {…}, currentTurnPlays: {…}, lastEventSequence: {…}}
-GameService.ts:1233 🎮 State Change: NETWORK_EVENT:PHASE_CHANGE
-GameService.ts:1234 Previous: {isConnected: true, roomId: 'CED216', playerName: 'Andy', phase: 'turn', currentRound: 2, …}
-GameService.ts:1235 New: {isConnected: true, roomId: 'CED216', playerName: 'Andy', phase: 'turn', currentRound: 2, …}
-GameService.ts:1236 Diff: {players: {…}, currentPlayer: {…}, currentTurnPlays: {…}, lastEventSequence: {…}}
-GameService.ts:1233 🎮 State Change: NETWORK_EVENT:PHASE_CHANGE
-GameService.ts:1234 Previous: {isConnected: true, roomId: 'CED216', playerName: 'Andy', phase: 'turn', currentRound: 2, …}
-GameService.ts:1235 New: {isConnected: true, roomId: 'CED216', playerName: 'Andy', phase: 'turn', currentRound: 2, …}
-GameService.ts:1236 Diff: {players: {…}, currentTurnPlays: {…}, lastEventSequence: {…}}
-GameService.ts:1233 🎮 State Change: NETWORK_EVENT:PHASE_CHANGE
-GameService.ts:1234 Previous: {isConnected: true, roomId: 'CED216', playerName: 'Andy', phase: 'turn', currentRound: 2, …}
-GameService.ts:1235 New: {isConnected: true, roomId: 'CED216', playerName: 'Andy', phase: 'turn', currentRound: 2, …}
-GameService.ts:1236 Diff: {lastEventSequence: {…}}
-GameService.ts:1233 🎮 State Change: NETWORK_EVENT:TURN_COMPLETE
-GameService.ts:1234 Previous: {isConnected: true, roomId: 'CED216', playerName: 'Andy', phase: 'turn', currentRound: 2, …}
-GameService.ts:1235 New: {isConnected: true, roomId: 'CED216', playerName: 'Andy', phase: 'turn_results', currentRound: 2, …}
-GameService.ts:1236 Diff: {phase: {…}, winningPlay: {…}, playerPiles: {…}, turnNumber: {…}, allHandsEmpty: {…}, …}
-GameService.ts:1233 🎮 State Change: NETWORK_EVENT:PHASE_CHANGE
-GameService.ts:1234 Previous: {isConnected: true, roomId: 'CED216', playerName: 'Andy', phase: 'turn_results', currentRound: 2, …}
-GameService.ts:1235 New: {isConnected: true, roomId: 'CED216', playerName: 'Andy', phase: 'turn_results', currentRound: 2, …}
-GameService.ts:1236 Diff: {lastEventSequence: {…}}
-GameService.ts:1233 🎮 State Change: NETWORK_EVENT:PHASE_CHANGE
-GameService.ts:1234 Previous: {isConnected: true, roomId: 'CED216', playerName: 'Andy', phase: 'turn_results', currentRound: 2, …}
-GameService.ts:1235 New: {isConnected: true, roomId: 'CED216', playerName: 'Andy', phase: 'turn_results', currentRound: 2, …}
-GameService.ts:1236 Diff: {players: {…}, lastEventSequence: {…}}
-GameContainer.jsx:201 Turn results continue requested
-GameService.ts:1233 🎮 State Change: NETWORK_EVENT:PHASE_CHANGE
-GameService.ts:1234 Previous: {isConnected: true, roomId: 'CED216', playerName: 'Andy', phase: 'turn_results', currentRound: 2, …}
-GameService.ts:1235 New: {isConnected: true, roomId: 'CED216', playerName: 'Andy', phase: 'turn_results', currentRound: 2, …}
-GameService.ts:1236 Diff: {players: {…}, lastEventSequence: {…}}
-GameService.ts:1233 🎮 State Change: NETWORK_EVENT:PHASE_CHANGE
-GameService.ts:1234 Previous: {isConnected: true, roomId: 'CED216', playerName: 'Andy', phase: 'turn_results', currentRound: 2, …}
-GameService.ts:1235 New: {isConnected: true, roomId: 'CED216', playerName: 'Andy', phase: 'scoring', currentRound: 2, …}
-GameService.ts:1236 Diff: {phase: {…}, players: {…}, roundScores: {…}, totalScores: {…}, lastEventSequence: {…}, …}
-GameService.ts:1233 🎮 State Change: NETWORK_EVENT:PHASE_CHANGE
-GameService.ts:1234 Previous: {isConnected: true, roomId: 'CED216', playerName: 'Andy', phase: 'scoring', currentRound: 2, …}
-GameService.ts:1235 New: {isConnected: true, roomId: 'CED216', playerName: 'Andy', phase: 'scoring', currentRound: 2, …}
-GameService.ts:1236 Diff: {lastEventSequence: {…}}
-GameService.ts:1203 🎮 Action sent: start_next_round {}
-GameService.ts:1233 🎮 State Change: NETWORK_EVENT:PHASE_CHANGE
-GameService.ts:1234 Previous: {isConnected: true, roomId: 'CED216', playerName: 'Andy', phase: 'scoring', currentRound: 2, …}
-GameService.ts:1235 New: {isConnected: true, roomId: 'CED216', playerName: 'Andy', phase: 'preparation', currentRound: 2, …}
-GameService.ts:1236 Diff: {phase: {…}, players: {…}, myHand: {…}, lastEventSequence: {…}, handValue: {…}, …}
-GameService.ts:1233 🎮 State Change: NETWORK_EVENT:PHASE_CHANGE
-GameService.ts:1234 Previous: {isConnected: true, roomId: 'CED216', playerName: 'Andy', phase: 'preparation', currentRound: 2, …}
-GameService.ts:1235 New: {isConnected: true, roomId: 'CED216', playerName: 'Andy', phase: 'declaration', currentRound: 3, …}
-GameService.ts:1236 Diff: {phase: {…}, currentRound: {…}, players: {…}, declarations: {…}, declarationOrder: {…}, …}
-GameService.ts:1233 🎮 State Change: NETWORK_EVENT:PHASE_CHANGE
-GameService.ts:1234 Previous: {isConnected: true, roomId: 'CED216', playerName: 'Andy', phase: 'declaration', currentRound: 3, …}
-GameService.ts:1235 New: {isConnected: true, roomId: 'CED216', playerName: 'Andy', phase: 'declaration', currentRound: 3, …}
-GameService.ts:1236 Diff: {currentDeclarer: {…}, isMyTurn: {…}, allowedActions: {…}, validOptions: {…}, lastEventSequence: {…}}
-DeclarationContent.jsx:67 🎲 ZERO_STREAK_DEBUG: Andy has consecutiveZeros: 2
-GameService.ts:1233 🎮 State Change: NETWORK_EVENT:PHASE_CHANGE
-GameService.ts:1234 Previous: {isConnected: true, roomId: 'CED216', playerName: 'Andy', phase: 'declaration', currentRound: 3, …}
-GameService.ts:1235 New: {isConnected: true, roomId: 'CED216', playerName: 'Andy', phase: 'declaration', currentRound: 3, …}
-GameService.ts:1236 Diff: {players: {…}, declarationOrder: {…}, lastEventSequence: {…}}
-DeclarationContent.jsx:67 🎲 ZERO_STREAK_DEBUG: Andy has consecutiveZeros: 0
-DeclarationContent.jsx:67 🎲 ZERO_STREAK_DEBUG: Andy has consecutiveZeros: 0
-DeclarationContent.jsx:67 🎲 ZERO_STREAK_DEBUG: Andy has consecutiveZeros: 0
-DeclarationContent.jsx:67 🎲 ZERO_STREAK_DEBUG: Andy has consecutiveZeros: 0
-GameService.ts:1203 🎮 Action sent: declare {value: 0, player_name: 'Andy'}
-DeclarationContent.jsx:67 🎲 ZERO_STREAK_DEBUG: Andy has consecutiveZeros: 0
-GameService.ts:1233 🎮 State Change: NETWORK_EVENT:PHASE_CHANGE
-GameService.ts:1234 Previous: {isConnected: true, roomId: 'CED216', playerName: 'Andy', phase: 'declaration', currentRound: 3, …}
-GameService.ts:1235 New: {isConnected: true, roomId: 'CED216', playerName: 'Andy', phase: 'declaration', currentRound: 3, …}
-GameService.ts:1236 Diff: {players: {…}, declarations: {…}, declarationOrder: {…}, currentDeclarer: {…}, isMyTurn: {…}, …}
-DeclarationContent.jsx:67 🎲 ZERO_STREAK_DEBUG: Andy has consecutiveZeros: 2
-DeclarationContent.jsx:67 🎲 ZERO_STREAK_DEBUG: Andy has consecutiveZeros: 2
-GameService.ts:1233 🎮 State Change: NETWORK_EVENT:PHASE_CHANGE
-GameService.ts:1234 Previous: {isConnected: true, roomId: 'CED216', playerName: 'Andy', phase: 'declaration', currentRound: 3, …}
-GameService.ts:1235 New: {isConnected: true, roomId: 'CED216', playerName: 'Andy', phase: 'declaration', currentRound: 3, …}
-GameService.ts:1236 Diff: {players: {…}, declarations: {…}, currentDeclarer: {…}, lastEventSequence: {…}, currentTotal: {…}, …}
-DeclarationContent.jsx:67 🎲 ZERO_STREAK_DEBUG: Andy has consecutiveZeros: 3
-GameService.ts:1233 🎮 State Change: NETWORK_EVENT:PHASE_CHANGE
-GameService.ts:1234 Previous: {isConnected: true, roomId: 'CED216', playerName: 'Andy', phase: 'declaration', currentRound: 3, …}
-GameService.ts:1235 New: {isConnected: true, roomId: 'CED216', playerName: 'Andy', phase: 'declaration', currentRound: 3, …}
-GameService.ts:1236 Diff: {declarations: {…}, currentDeclarer: {…}, lastEventSequence: {…}, currentTotal: {…}, declarationProgress: {…}, …}
-DeclarationContent.jsx:67 🎲 ZERO_STREAK_DEBUG: Andy has consecutiveZeros: 3
-GameService.ts:1233 🎮 State Change: NETWORK_EVENT:PHASE_CHANGE
-GameService.ts:1234 Previous: {isConnected: true, roomId: 'CED216', playerName: 'Andy', phase: 'declaration', currentRound: 3, …}
-GameService.ts:1235 New: {isConnected: true, roomId: 'CED216', playerName: 'Andy', phase: 'declaration', currentRound: 3, …}
-GameService.ts:1236 Diff: {declarations: {…}, lastEventSequence: {…}, currentTotal: {…}, declarationProgress: {…}, isLastPlayer: {…}}
-DeclarationContent.jsx:67 🎲 ZERO_STREAK_DEBUG: Andy has consecutiveZeros: 3
-GameService.ts:1233 🎮 State Change: NETWORK_EVENT:PHASE_CHANGE
-GameService.ts:1234 Previous: {isConnected: true, roomId: 'CED216', playerName: 'Andy', phase: 'declaration', currentRound: 3, …}
-GameService.ts:1235 New: {isConnected: true, roomId: 'CED216', playerName: 'Andy', phase: 'turn', currentRound: 3, …}
-GameService.ts:1236 Diff: {phase: {…}, currentPlayer: {…}, currentTurnPlays: {…}, requiredPieceCount: {…}, currentTurnNumber: {…}, …}
-GameService.ts:1233 🎮 State Change: NETWORK_EVENT:PHASE_CHANGE
-GameService.ts:1234 Previous: {isConnected: true, roomId: 'CED216', playerName: 'Andy', phase: 'turn', currentRound: 3, …}
-GameService.ts:1235 New: {isConnected: true, roomId: 'CED216', playerName: 'Andy', phase: 'turn', currentRound: 3, …}
-GameService.ts:1236 Diff: {players: {…}, lastEventSequence: {…}, canPlayAnyCount: {…}}
-GameService.ts:1203 🎮 Action sent: play {piece_indices: Array(2), player_name: 'Andy', play_value: 6}
-GameService.ts:1233 🎮 State Change: NETWORK_EVENT:PHASE_CHANGE
-GameService.ts:1234 Previous: {isConnected: true, roomId: 'CED216', playerName: 'Andy', phase: 'turn', currentRound: 3, …}
-GameService.ts:1235 New: {isConnected: true, roomId: 'CED216', playerName: 'Andy', phase: 'turn', currentRound: 3, …}
-GameService.ts:1236 Diff: {players: {…}, myHand: {…}, currentPlayer: {…}, currentTurnPlays: {…}, requiredPieceCount: {…}, …}
-GameService.ts:1233 🎮 State Change: NETWORK_EVENT:PHASE_CHANGE
-GameService.ts:1234 Previous: {isConnected: true, roomId: 'CED216', playerName: 'Andy', phase: 'turn', currentRound: 3, …}
-GameService.ts:1235 New: {isConnected: true, roomId: 'CED216', playerName: 'Andy', phase: 'turn', currentRound: 3, …}
-GameService.ts:1236 Diff: {players: {…}, currentPlayer: {…}, currentTurnPlays: {…}, lastEventSequence: {…}}
-GameService.ts:1233 🎮 State Change: NETWORK_EVENT:PHASE_CHANGE
-GameService.ts:1234 Previous: {isConnected: true, roomId: 'CED216', playerName: 'Andy', phase: 'turn', currentRound: 3, …}
-GameService.ts:1235 New: {isConnected: true, roomId: 'CED216', playerName: 'Andy', phase: 'turn', currentRound: 3, …}
-GameService.ts:1236 Diff: {players: {…}, currentPlayer: {…}, currentTurnPlays: {…}, lastEventSequence: {…}}
-GameService.ts:1233 🎮 State Change: NETWORK_EVENT:PHASE_CHANGE
-GameService.ts:1234 Previous: {isConnected: true, roomId: 'CED216', playerName: 'Andy', phase: 'turn', currentRound: 3, …}
-GameService.ts:1235 New: {isConnected: true, roomId: 'CED216', playerName: 'Andy', phase: 'turn', currentRound: 3, …}
-GameService.ts:1236 Diff: {players: {…}, currentTurnPlays: {…}, lastEventSequence: {…}}
-GameService.ts:1233 🎮 State Change: NETWORK_EVENT:PHASE_CHANGE
-GameService.ts:1234 Previous: {isConnected: true, roomId: 'CED216', playerName: 'Andy', phase: 'turn', currentRound: 3, …}
-GameService.ts:1235 New: {isConnected: true, roomId: 'CED216', playerName: 'Andy', phase: 'turn', currentRound: 3, …}
-GameService.ts:1236 Diff: {lastEventSequence: {…}}
-GameService.ts:1233 🎮 State Change: NETWORK_EVENT:TURN_COMPLETE
-GameService.ts:1234 Previous: {isConnected: true, roomId: 'CED216', playerName: 'Andy', phase: 'turn', currentRound: 3, …}
-GameService.ts:1235 New: {isConnected: true, roomId: 'CED216', playerName: 'Andy', phase: 'turn_results', currentRound: 3, …}
-GameService.ts:1236 Diff: {phase: {…}, turnWinner: {…}, winningPlay: {…}, playerPiles: {…}, turnNumber: {…}, …}
-GameContainer.jsx:201 Turn results continue requested
-GameService.ts:1233 🎮 State Change: NETWORK_EVENT:PHASE_CHANGE
-GameService.ts:1234 Previous: {isConnected: true, roomId: 'CED216', playerName: 'Andy', phase: 'turn_results', currentRound: 3, …}
-GameService.ts:1235 New: {isConnected: true, roomId: 'CED216', playerName: 'Andy', phase: 'turn', currentRound: 3, …}
-GameService.ts:1236 Diff: {phase: {…}, currentTurnStarter: {…}, turnOrder: {…}, currentTurnPlays: {…}, requiredPieceCount: {…}, …}
-GameService.ts:1233 🎮 State Change: NETWORK_EVENT:PHASE_CHANGE
-GameService.ts:1234 Previous: {isConnected: true, roomId: 'CED216', playerName: 'Andy', phase: 'turn', currentRound: 3, …}
- New: {isConnected: true, roomId: 'CED216', playerName: 'Andy', phase: 'turn', currentRound: 3, …}
- Diff: {players: {…}, currentPlayer: {…}, currentTurnPlays: {…}, requiredPieceCount: {…}, isMyTurn: {…}, …}
-
----
-
-🔒 [Room CED216] Starting game: op_id=CED216_1
-✅ [Room CED216] Game and StateMachine started successfully: op_id=CED216_1
-✅ [Room CED216] Bot manager registered for 3 bots
-✅ Game started in room CED216
-INFO:     connection closed
-INFO:     ('127.0.0.1', 65170) - "WebSocket /ws/CED216" [accepted]
+🔒 [Room 59B0F0] Starting game: op_id=59B0F0_1
+🤖 Bot Bot 2 deciding: ACCEPT redeal
+✅ Bot Bot 2 ACCEPTED redeal
+✅ [Room 59B0F0] Game and StateMachine started successfully: op_id=59B0F0_1
+✅ [Room 59B0F0] Bot manager registered for 3 bots
+✅ Game started in room 59B0F0
+INFO:     ('127.0.0.1', 54246) - "WebSocket /ws/59B0F0" [accepted]
 INFO:     connection open
+INFO:     connection closed
+✅ Redeal accept queued: Andy
+✅ Redeal accept queued: Andy
+🤖 Bot Bot 2 deciding: ACCEPT redeal
+✅ Bot Bot 2 ACCEPTED redeal
+👤 Round starter is human or None: None
+✅ Declaration queued: Andy -> 3
 ✅ Bot Bot 2 declared 2
-✅ Bot Bot 3 declared 2
+✅ Bot Bot 3 declared 1
 ✅ Bot Bot 4 declared 1
-✅ Bot Bot 3 declared 2
+✅ Bot Bot 3 declared 1
 ✅ Bot Bot 4 declared 1
 ✅ Bot Bot 4 declared 1
-Wrong player turn: Bot 3, expected: Andy
-Invalid action: GameAction(player_name='Bot 3', action_type=<ActionType.DECLARE: 'declare'>, payload={'value': 2}, timestamp=datetime.datetime(2025, 7, 9, 17, 25, 21, 893422), sequence_id=3, is_bot=True)
-Wrong player turn: Bot 4, expected: Andy
-Invalid action: GameAction(player_name='Bot 4', action_type=<ActionType.DECLARE: 'declare'>, payload={'value': 1}, timestamp=datetime.datetime(2025, 7, 9, 17, 25, 23, 586208), sequence_id=4, is_bot=True)
-Wrong player turn: Bot 4, expected: Andy
-Invalid action: GameAction(player_name='Bot 4', action_type=<ActionType.DECLARE: 'declare'>, payload={'value': 1}, timestamp=datetime.datetime(2025, 7, 9, 17, 25, 24, 960896), sequence_id=5, is_bot=True)
-✅ Declaration queued: Andy -> 0
-🤖 BOT chooses to play SINGLE (14 pts): GENERAL
-✅ Bot Bot 2 action queued - state machine will broadcast with correct next_player
-🤖 BOT chooses to play STRAIGHT (33 pts): ADVISOR, GENERAL, ELEPHANT
-✅ Bot Bot 3 action queued - state machine will broadcast with correct next_player
-🤖 BOT chooses to play SINGLE (12 pts): ADVISOR
-✅ Bot Bot 4 action queued - state machine will broadcast with correct next_player
-🤖 BOT chooses to play SINGLE (13 pts): GENERAL
-✅ Bot Bot 3 action queued - state machine will broadcast with correct next_player
-🤖 BOT chooses to play SINGLE (12 pts): ADVISOR
-✅ Bot Bot 4 action queued - state machine will broadcast with correct next_player
-Must play 1 pieces, got 3
-Invalid action: GameAction(player_name='Bot 3', action_type=<ActionType.PLAY_PIECES: 'play_pieces'>, payload={'pieces': [ADVISOR_BLACK(11), GENERAL_BLACK(13), ELEPHANT_BLACK(9)]}, timestamp=datetime.datetime(2025, 7, 9, 17, 25, 30, 532676), sequence_id=8, is_bot=True)
-Not Bot 4's turn - expected Bot 3
-Invalid action: GameAction(player_name='Bot 4', action_type=<ActionType.PLAY_PIECES: 'play_pieces'>, payload={'pieces': [ADVISOR_RED(12)]}, timestamp=datetime.datetime(2025, 7, 9, 17, 25, 31, 816134), sequence_id=9, is_bot=True)
-🤖 BOT chooses to play SINGLE (12 pts): ADVISOR
-✅ Bot Bot 4 action queued - state machine will broadcast with correct next_player
-Not Bot 4's turn - expected Andy
-Invalid action: GameAction(player_name='Bot 4', action_type=<ActionType.PLAY_PIECES: 'play_pieces'>, payload={'pieces': [ADVISOR_RED(12)]}, timestamp=datetime.datetime(2025, 7, 9, 17, 25, 36, 320305), sequence_id=12, is_bot=True)
-🎯 WS_PLAY_DEBUG: Received play event - player: Andy, indices: [0]
+Action declare not allowed in turn
+Action declare not allowed in turn
+Action declare not allowed in turn
+🎯 WS_PLAY_DEBUG: Received play event - player: Andy, indices: [5, 0]
 🎯 WS_PLAY_DEBUG: Found player Andy with hand size 8
-🎯 WS_PLAY_DEBUG: Added piece at index 0: ELEPHANT_BLACK(9)
+🎯 WS_PLAY_DEBUG: Added piece at index 5: SOLDIER_RED(2)
+🎯 WS_PLAY_DEBUG: Added piece at index 0: SOLDIER_RED(2)
+🎯 WS_PLAY_DEBUG: Final pieces to play: ['SOLDIER_RED(2)', 'SOLDIER_RED(2)']
+🎯 WS_PLAY_DEBUG: Queuing action for state machine...
+🎯 WS_PLAY_DEBUG: State machine result: {'success': True, 'queued': True}
+✅ Play accepted: Andy
+🤖 BOT chooses to play PAIR (2 pts): SOLDIER, SOLDIER
+✅ Bot Bot 2 action queued - state machine will broadcast with correct next_player
+🤖 BOT chooses to play PAIR (4 pts): SOLDIER, SOLDIER
+✅ Bot Bot 3 action queued - state machine will broadcast with correct next_player
+🤖 BOT has no valid play. Discards lowest pieces: SOLDIER, CANNON
+    🔍 Final play: ['SOLDIER', 'CANNON']
+    🧠 Hand left: ['ADVISOR', 'CANNON', 'ELEPHANT', 'GENERAL', 'SOLDIER', 'CANNON', 'CHARIOT', 'CHARIOT']
+✅ Bot Bot 4 action queued - state machine will broadcast with correct next_player
+🤖 BOT chooses to play PAIR (4 pts): SOLDIER, SOLDIER
+✅ Bot Bot 3 action queued - state machine will broadcast with correct next_player
+🤖 BOT has no valid play. Discards lowest pieces: SOLDIER, CANNON
+    🔍 Final play: ['SOLDIER', 'CANNON']
+    🧠 Hand left: ['ADVISOR', 'CANNON', 'ELEPHANT', 'GENERAL', 'SOLDIER', 'CANNON', 'CHARIOT', 'CHARIOT']
+✅ Bot Bot 4 action queued - state machine will broadcast with correct next_player
+🤖 BOT has no valid play. Discards lowest pieces: SOLDIER, CANNON
+    🔍 Final play: ['SOLDIER', 'CANNON']
+    🧠 Hand left: ['ADVISOR', 'CANNON', 'ELEPHANT', 'GENERAL', 'SOLDIER', 'CANNON', 'CHARIOT', 'CHARIOT']
+✅ Bot Bot 4 action queued - state machine will broadcast with correct next_player
+Not Bot 3's turn - expected Andy
+Invalid action: GameAction(player_name='Bot 3', action_type=<ActionType.PLAY_PIECES: 'play_pieces'>, payload={'pieces': [SOLDIER_RED(2), SOLDIER_RED(2)]}, timestamp=datetime.datetime(2025, 7, 9, 20, 59, 40, 660329), sequence_id=15, is_bot=True)
+Not Bot 4's turn - expected Andy
+Invalid action: GameAction(player_name='Bot 4', action_type=<ActionType.PLAY_PIECES: 'play_pieces'>, payload={'pieces': [SOLDIER_RED(2), CANNON_BLACK(3)]}, timestamp=datetime.datetime(2025, 7, 9, 20, 59, 42, 19850), sequence_id=16, is_bot=True)
+Not Bot 4's turn - expected Andy
+Invalid action: GameAction(player_name='Bot 4', action_type=<ActionType.PLAY_PIECES: 'play_pieces'>, payload={'pieces': [SOLDIER_RED(2), CANNON_BLACK(3)]}, timestamp=datetime.datetime(2025, 7, 9, 20, 59, 43, 326475), sequence_id=17, is_bot=True)
+🎯 WS_PLAY_DEBUG: Received play event - player: Andy, indices: [1]
+🎯 WS_PLAY_DEBUG: Found player Andy with hand size 6
+🎯 WS_PLAY_DEBUG: Added piece at index 1: ELEPHANT_RED(10)
+🎯 WS_PLAY_DEBUG: Final pieces to play: ['ELEPHANT_RED(10)']
+🎯 WS_PLAY_DEBUG: Queuing action for state machine...
+🎯 WS_PLAY_DEBUG: State machine result: {'success': True, 'queued': True}
+✅ Play accepted: Andy
+🤖 BOT chooses to play SINGLE (13 pts): GENERAL
+✅ Bot Bot 2 action queued - state machine will broadcast with correct next_player
+🤖 BOT chooses to play SINGLE (12 pts): ADVISOR
+✅ Bot Bot 3 action queued - state machine will broadcast with correct next_player
+🤖 BOT chooses to play SINGLE (14 pts): GENERAL
+✅ Bot Bot 4 action queued - state machine will broadcast with correct next_player
+🤖 BOT chooses to play SINGLE (12 pts): ADVISOR
+✅ Bot Bot 3 action queued - state machine will broadcast with correct next_player
+🤖 BOT chooses to play SINGLE (14 pts): GENERAL
+✅ Bot Bot 4 action queued - state machine will broadcast with correct next_player
+🤖 BOT chooses to play SINGLE (14 pts): GENERAL
+✅ Bot Bot 4 action queued - state machine will broadcast with correct next_player
+🤖 BOT chooses to play SINGLE (11 pts): ADVISOR
+✅ Bot Bot 4 action queued - state machine will broadcast with correct next_player
+Not Bot 3's turn - expected Bot 4
+Invalid action: GameAction(player_name='Bot 3', action_type=<ActionType.PLAY_PIECES: 'play_pieces'>, payload={'pieces': [ADVISOR_RED(12)]}, timestamp=datetime.datetime(2025, 7, 9, 21, 0, 6, 384230), sequence_id=22, is_bot=True)
+Player Bot 4 doesn't have piece: GENERAL_RED(14)
+Invalid action: GameAction(player_name='Bot 4', action_type=<ActionType.PLAY_PIECES: 'play_pieces'>, payload={'pieces': [GENERAL_RED(14)]}, timestamp=datetime.datetime(2025, 7, 9, 21, 0, 7, 790593), sequence_id=23, is_bot=True)
+Player Bot 4 doesn't have piece: GENERAL_RED(14)
+Invalid action: GameAction(player_name='Bot 4', action_type=<ActionType.PLAY_PIECES: 'play_pieces'>, payload={'pieces': [GENERAL_RED(14)]}, timestamp=datetime.datetime(2025, 7, 9, 21, 0, 9, 142212), sequence_id=24, is_bot=True)
+🎯 WS_PLAY_DEBUG: Received play event - player: Andy, indices: [2]
+🎯 WS_PLAY_DEBUG: Found player Andy with hand size 5
+🎯 WS_PLAY_DEBUG: Added piece at index 2: ELEPHANT_BLACK(9)
 🎯 WS_PLAY_DEBUG: Final pieces to play: ['ELEPHANT_BLACK(9)']
 🎯 WS_PLAY_DEBUG: Queuing action for state machine...
 🎯 WS_PLAY_DEBUG: State machine result: {'success': True, 'queued': True}
 ✅ Play accepted: Andy
-🤖 BOT chooses to play SINGLE (10 pts): ELEPHANT
+🤖 BOT chooses to play SINGLE (7 pts): CHARIOT
 ✅ Bot Bot 2 action queued - state machine will broadcast with correct next_player
 🤖 BOT chooses to play SINGLE (11 pts): ADVISOR
 ✅ Bot Bot 3 action queued - state machine will broadcast with correct next_player
 🤖 BOT chooses to play SINGLE (11 pts): ADVISOR
-✅ Bot Bot 4 action queued - state machine will broadcast with correct next_player
-🤖 BOT chooses to play SINGLE (11 pts): ADVISOR
 ✅ Bot Bot 3 action queued - state machine will broadcast with correct next_player
-🤖 BOT chooses to play SINGLE (11 pts): ADVISOR
-✅ Bot Bot 4 action queued - state machine will broadcast with correct next_player
-🤖 BOT chooses to play SINGLE (11 pts): ADVISOR
-✅ Bot Bot 4 action queued - state machine will broadcast with correct next_player
-Not Bot 3's turn - expected Andy
-Invalid action: GameAction(player_name='Bot 3', action_type=<ActionType.PLAY_PIECES: 'play_pieces'>, payload={'pieces': [ADVISOR_BLACK(11)]}, timestamp=datetime.datetime(2025, 7, 9, 17, 26, 12, 474545), sequence_id=17, is_bot=True)
-Not Bot 4's turn - expected Andy
-Invalid action: GameAction(player_name='Bot 4', action_type=<ActionType.PLAY_PIECES: 'play_pieces'>, payload={'pieces': [ADVISOR_BLACK(11)]}, timestamp=datetime.datetime(2025, 7, 9, 17, 26, 13, 616957), sequence_id=18, is_bot=True)
-Not Bot 4's turn - expected Andy
-Invalid action: GameAction(player_name='Bot 4', action_type=<ActionType.PLAY_PIECES: 'play_pieces'>, payload={'pieces': [ADVISOR_BLACK(11)]}, timestamp=datetime.datetime(2025, 7, 9, 17, 26, 15, 119272), sequence_id=19, is_bot=True)
-🎯 WS_PLAY_DEBUG: Received play event - player: Andy, indices: [0]
-🎯 WS_PLAY_DEBUG: Found player Andy with hand size 7
-🎯 WS_PLAY_DEBUG: Added piece at index 0: HORSE_RED(6)
-🎯 WS_PLAY_DEBUG: Final pieces to play: ['HORSE_RED(6)']
-🎯 WS_PLAY_DEBUG: Queuing action for state machine...
-🎯 WS_PLAY_DEBUG: State machine result: {'success': True, 'queued': True}
-✅ Play accepted: Andy
 🤖 BOT chooses to play SINGLE (9 pts): ELEPHANT
-✅ Bot Bot 3 action queued - state machine will broadcast with correct next_player
-🤖 BOT chooses to play SINGLE (10 pts): ELEPHANT
 ✅ Bot Bot 4 action queued - state machine will broadcast with correct next_player
-🤖 BOT chooses to play SINGLE (10 pts): ELEPHANT
-✅ Bot Bot 4 action queued - state machine will broadcast with correct next_player
-Not Bot 4's turn - expected Andy
-Invalid action: GameAction(player_name='Bot 4', action_type=<ActionType.PLAY_PIECES: 'play_pieces'>, payload={'pieces': [ELEPHANT_RED(10)]}, timestamp=datetime.datetime(2025, 7, 9, 17, 26, 39, 9458), sequence_id=23, is_bot=True)
-🎯 WS_PLAY_DEBUG: Received play event - player: Andy, indices: [2]
-🎯 WS_PLAY_DEBUG: Found player Andy with hand size 6
-🎯 WS_PLAY_DEBUG: Added piece at index 2: CHARIOT_RED(8)
+Not Bot 3's turn - expected Bot 4
+Invalid action: GameAction(player_name='Bot 3', action_type=<ActionType.PLAY_PIECES: 'play_pieces'>, payload={'pieces': [ADVISOR_BLACK(11)]}, timestamp=datetime.datetime(2025, 7, 9, 21, 0, 31, 822156), sequence_id=29, is_bot=True)
+🎯 WS_PLAY_DEBUG: Received play event - player: Andy, indices: [0]
+🎯 WS_PLAY_DEBUG: Found player Andy with hand size 4
+🎯 WS_PLAY_DEBUG: Added piece at index 0: CHARIOT_RED(8)
 🎯 WS_PLAY_DEBUG: Final pieces to play: ['CHARIOT_RED(8)']
 🎯 WS_PLAY_DEBUG: Queuing action for state machine...
 🎯 WS_PLAY_DEBUG: State machine result: {'success': True, 'queued': True}
 ✅ Play accepted: Andy
 🤖 BOT chooses to play SINGLE (6 pts): HORSE
 ✅ Bot Bot 2 action queued - state machine will broadcast with correct next_player
+🤖 BOT chooses to play SINGLE (10 pts): ELEPHANT
+✅ Bot Bot 3 action queued - state machine will broadcast with correct next_player
+🤖 BOT chooses to play SINGLE (10 pts): ELEPHANT
+✅ Bot Bot 3 action queued - state machine will broadcast with correct next_player
 🤖 BOT chooses to play SINGLE (5 pts): HORSE
+✅ Bot Bot 3 action queued - state machine will broadcast with correct next_player
+🤖 BOT chooses to play SINGLE (8 pts): CHARIOT
 ✅ Bot Bot 4 action queued - state machine will broadcast with correct next_player
-🎯 WS_PLAY_DEBUG: Received play event - player: Andy, indices: [2]
-🎯 WS_PLAY_DEBUG: Found player Andy with hand size 5
-🎯 WS_PLAY_DEBUG: Added piece at index 2: HORSE_BLACK(5)
+Player Bot 3 doesn't have piece: ELEPHANT_RED(10)
+Invalid action: GameAction(player_name='Bot 3', action_type=<ActionType.PLAY_PIECES: 'play_pieces'>, payload={'pieces': [ELEPHANT_RED(10)]}, timestamp=datetime.datetime(2025, 7, 9, 21, 0, 53, 73708), sequence_id=34, is_bot=True)
+🤖 BOT chooses to play SINGLE (8 pts): CHARIOT
+✅ Bot Bot 4 action queued - state machine will broadcast with correct next_player
+Not Bot 4's turn - expected Andy
+Invalid action: GameAction(player_name='Bot 4', action_type=<ActionType.PLAY_PIECES: 'play_pieces'>, payload={'pieces': [CHARIOT_RED(8)]}, timestamp=datetime.datetime(2025, 7, 9, 21, 1, 9, 188586), sequence_id=37, is_bot=True)
+🎯 WS_PLAY_DEBUG: Received play event - player: Andy, indices: [0]
+🎯 WS_PLAY_DEBUG: Found player Andy with hand size 3
+🎯 WS_PLAY_DEBUG: Added piece at index 0: HORSE_RED(6)
+🎯 WS_PLAY_DEBUG: Final pieces to play: ['HORSE_RED(6)']
+🎯 WS_PLAY_DEBUG: Queuing action for state machine...
+🎯 WS_PLAY_DEBUG: State machine result: {'success': True, 'queued': True}
+✅ Play accepted: Andy
+🤖 BOT chooses to play SINGLE (4 pts): CANNON
+✅ Bot Bot 2 action queued - state machine will broadcast with correct next_player
+🤖 BOT chooses to play SINGLE (7 pts): CHARIOT
+✅ Bot Bot 4 action queued - state machine will broadcast with correct next_player
+🎯 WS_PLAY_DEBUG: Received play event - player: Andy, indices: [0]
+🎯 WS_PLAY_DEBUG: Found player Andy with hand size 2
+🎯 WS_PLAY_DEBUG: Added piece at index 0: HORSE_BLACK(5)
 🎯 WS_PLAY_DEBUG: Final pieces to play: ['HORSE_BLACK(5)']
 🎯 WS_PLAY_DEBUG: Queuing action for state machine...
 🎯 WS_PLAY_DEBUG: State machine result: {'success': True, 'queued': True}
 ✅ Play accepted: Andy
 🤖 BOT chooses to play SINGLE (3 pts): CANNON
 ✅ Bot Bot 2 action queued - state machine will broadcast with correct next_player
-🤖 BOT chooses to play SINGLE (8 pts): CHARIOT
+🤖 BOT chooses to play SINGLE (1 pts): SOLDIER
 ✅ Bot Bot 3 action queued - state machine will broadcast with correct next_player
-🤖 BOT chooses to play SINGLE (8 pts): CHARIOT
-✅ Bot Bot 3 action queued - state machine will broadcast with correct next_player
-🤖 BOT chooses to play SINGLE (4 pts): CANNON
+🤖 BOT chooses to play SINGLE (1 pts): SOLDIER
 ✅ Bot Bot 3 action queued - state machine will broadcast with correct next_player
 🤖 BOT chooses to play SINGLE (4 pts): CANNON
 ✅ Bot Bot 4 action queued - state machine will broadcast with correct next_player
-Player Bot 3 doesn't have piece: CHARIOT_RED(8)
-Invalid action: GameAction(player_name='Bot 3', action_type=<ActionType.PLAY_PIECES: 'play_pieces'>, payload={'pieces': [CHARIOT_RED(8)]}, timestamp=datetime.datetime(2025, 7, 9, 17, 27, 29, 887204), sequence_id=30, is_bot=True)
-🤖 BOT chooses to play SINGLE (4 pts): CANNON
-✅ Bot Bot 4 action queued - state machine will broadcast with correct next_player
-Not Bot 4's turn - expected Andy
-Invalid action: GameAction(player_name='Bot 4', action_type=<ActionType.PLAY_PIECES: 'play_pieces'>, payload={'pieces': [CANNON_RED(4)]}, timestamp=datetime.datetime(2025, 7, 9, 17, 27, 45, 773946), sequence_id=33, is_bot=True)
-🎯 WS_PLAY_DEBUG: Received play event - player: Andy, indices: [2]
-🎯 WS_PLAY_DEBUG: Found player Andy with hand size 4
-🎯 WS_PLAY_DEBUG: Added piece at index 2: SOLDIER_RED(2)
-🎯 WS_PLAY_DEBUG: Final pieces to play: ['SOLDIER_RED(2)']
-🎯 WS_PLAY_DEBUG: Queuing action for state machine...
-🎯 WS_PLAY_DEBUG: State machine result: {'success': True, 'queued': True}
-✅ Play accepted: Andy
-🤖 BOT chooses to play SINGLE (2 pts): SOLDIER
-✅ Bot Bot 2 action queued - state machine will broadcast with correct next_player
-🤖 BOT chooses to play PAIR (4 pts): SOLDIER, SOLDIER
-✅ Bot Bot 3 action queued - state machine will broadcast with correct next_player
-🤖 BOT chooses to play SINGLE (3 pts): CANNON
-✅ Bot Bot 4 action queued - state machine will broadcast with correct next_player
-🤖 BOT chooses to play PAIR (2 pts): SOLDIER, SOLDIER
-✅ Bot Bot 4 action queued - state machine will broadcast with correct next_player
-Must play 2 pieces, got 1
-Invalid action: GameAction(player_name='Bot 4', action_type=<ActionType.PLAY_PIECES: 'play_pieces'>, payload={'pieces': [CANNON_BLACK(3)]}, timestamp=datetime.datetime(2025, 7, 9, 17, 28, 5, 624106), sequence_id=37, is_bot=True)
-🎯 WS_PLAY_DEBUG: Received play event - player: Andy, indices: [0, 2]
-🎯 WS_PLAY_DEBUG: Found player Andy with hand size 3
-🎯 WS_PLAY_DEBUG: Added piece at index 0: CHARIOT_BLACK(7)
-🎯 WS_PLAY_DEBUG: Added piece at index 2: CHARIOT_BLACK(7)
-🎯 WS_PLAY_DEBUG: Final pieces to play: ['CHARIOT_BLACK(7)', 'CHARIOT_BLACK(7)']
-🎯 WS_PLAY_DEBUG: Queuing action for state machine...
-🎯 WS_PLAY_DEBUG: State machine result: {'success': True, 'queued': True}
-✅ Play accepted: Andy
-🤖 BOT chooses to play PAIR (2 pts): SOLDIER, SOLDIER
-✅ Bot Bot 2 action queued - state machine will broadcast with correct next_player
+Not Bot 3's turn - expected Bot 4
+Invalid action: GameAction(player_name='Bot 3', action_type=<ActionType.PLAY_PIECES: 'play_pieces'>, payload={'pieces': [SOLDIER_BLACK(1)]}, timestamp=datetime.datetime(2025, 7, 9, 21, 1, 33, 629047), sequence_id=44, is_bot=True)
 🎯 WS_PLAY_DEBUG: Received play event - player: Andy, indices: [0]
 🎯 WS_PLAY_DEBUG: Found player Andy with hand size 1
 🎯 WS_PLAY_DEBUG: Added piece at index 0: ADVISOR_RED(12)
@@ -890,55 +156,53 @@ Invalid action: GameAction(player_name='Bot 4', action_type=<ActionType.PLAY_PIE
 🎯 WS_PLAY_DEBUG: Queuing action for state machine...
 🎯 WS_PLAY_DEBUG: State machine result: {'success': True, 'queued': True}
 ✅ Play accepted: Andy
-🤖 BOT chooses to play SINGLE (2 pts): SOLDIER
+🤖 BOT chooses to play SINGLE (1 pts): SOLDIER
 ✅ Bot Bot 2 action queued - state machine will broadcast with correct next_player
 🤖 BOT chooses to play SINGLE (1 pts): SOLDIER
 ✅ Bot Bot 3 action queued - state machine will broadcast with correct next_player
-🤖 BOT chooses to play SINGLE (3 pts): CANNON
-✅ Bot Bot 4 action queued - state machine will broadcast with correct next_player
 🤖 BOT chooses to play SINGLE (1 pts): SOLDIER
 ✅ Bot Bot 3 action queued - state machine will broadcast with correct next_player
-🤖 BOT chooses to play SINGLE (3 pts): CANNON
-✅ Bot Bot 4 action queued - state machine will broadcast with correct next_player
-🤖 BOT chooses to play SINGLE (3 pts): CANNON
-✅ Bot Bot 4 action queued - state machine will broadcast with correct next_player
-Unhandled action in turn results phase: ActionType.PLAY_PIECES
-Unhandled action in turn results phase: ActionType.PLAY_PIECES
 Unhandled action in turn results phase: ActionType.PLAY_PIECES
 🔄 SCORING_SETUP_DEBUG: Reset display_delay_complete = False
-🗳️ DECLARATION_DEBUG: game.player_declarations = {'Bot 2': 2, 'Bot 3': 2, 'Bot 4': 1, 'Andy': 0}
-📋 SCORING_FIX_DEBUG: Andy - declared: 0, actual: 3
+🗳️ DECLARATION_DEBUG: game.player_declarations = {'Andy': 3, 'Bot 2': 2, 'Bot 3': 1, 'Bot 4': 1}
+📋 SCORING_FIX_DEBUG: Andy - declared: 3, actual: 3
 🏆 SCORING_DEBUG: Andy scoring data:
-   📋 Declared: 0, Actual: 3
-   📊 Base Score: -3, Multiplier: 1x, Final: -3
-   💯 Total Score: -3
-📋 SCORING_FIX_DEBUG: Bot 2 - declared: 2, actual: 1
+   📋 Declared: 3, Actual: 3
+   📊 Base Score: 8, Multiplier: 3x, Final: 24
+   💯 Total Score: 24
+📋 SCORING_FIX_DEBUG: Bot 2 - declared: 2, actual: 0
 🏆 SCORING_DEBUG: Bot 2 scoring data:
-   📋 Declared: 2, Actual: 1
-   📊 Base Score: -1, Multiplier: 1x, Final: -1
-   💯 Total Score: -1
-📋 SCORING_FIX_DEBUG: Bot 3 - declared: 2, actual: 3
+   📋 Declared: 2, Actual: 0
+   📊 Base Score: -2, Multiplier: 3x, Final: -6
+   💯 Total Score: -6
+📋 SCORING_FIX_DEBUG: Bot 3 - declared: 1, actual: 1
 🏆 SCORING_DEBUG: Bot 3 scoring data:
-   📋 Declared: 2, Actual: 3
-   📊 Base Score: -1, Multiplier: 1x, Final: -1
-   💯 Total Score: -1
-📋 SCORING_FIX_DEBUG: Bot 4 - declared: 1, actual: 1
-🏆 SCORING_DEBUG: Bot 4 scoring data:
    📋 Declared: 1, Actual: 1
-   📊 Base Score: 6, Multiplier: 1x, Final: 6
-   💯 Total Score: 6
+   📊 Base Score: 6, Multiplier: 3x, Final: 18
+   💯 Total Score: 18
+📋 SCORING_FIX_DEBUG: Bot 4 - declared: 1, actual: 4
+🏆 SCORING_DEBUG: Bot 4 scoring data:
+   📋 Declared: 1, Actual: 4
+   📊 Base Score: -3, Multiplier: 3x, Final: -9
+   💯 Total Score: -9
 🚀 SCORING_BROADCAST_DEBUG: Broadcasting scoring data:
-   📊 Round scores: {'Andy': {'declared': 0, 'actual': 3, 'base_score': -3, 'multiplier': 1, 'final_score': -3, 'total_score': -3}, 'Bot 2': {'declared': 2, 'actual': 1, 'base_score': -1, 'multiplier': 1, 'final_score': -1, 'total_score': -1}, 'Bot 3': {'declared': 2, 'actual': 3, 'base_score': -1, 'multiplier': 1, 'final_score': -1, 'total_score': -1}, 'Bot 4': {'declared': 1, 'actual': 1, 'base_score': 6, 'multiplier': 1, 'final_score': 6, 'total_score': 6}}
+   📊 Round scores: {'Andy': {'declared': 3, 'actual': 3, 'base_score': 8, 'multiplier': 3, 'final_score': 24, 'total_score': 24}, 'Bot 2': {'declared': 2, 'actual': 0, 'base_score': -2, 'multiplier': 3, 'final_score': -6, 'total_score': -6}, 'Bot 3': {'declared': 1, 'actual': 1, 'base_score': 6, 'multiplier': 3, 'final_score': 18, 'total_score': 18}, 'Bot 4': {'declared': 1, 'actual': 4, 'base_score': -3, 'multiplier': 3, 'final_score': -9, 'total_score': -9}}
    🏁 Game complete: False
    🏆 Winners: []
 🚀 SCORING_BROADCAST_DEBUG: Also sending:
-   💯 Total scores: {'Andy': -3, 'Bot 2': -1, 'Bot 3': -1, 'Bot 4': 6}
-   👥 Players data: [{'name': 'Andy', 'is_bot': False, 'pile_count': 0, 'captured_piles': 3}, {'name': 'Bot 2', 'is_bot': True, 'pile_count': 2, 'captured_piles': 1}, {'name': 'Bot 3', 'is_bot': True, 'pile_count': 2, 'captured_piles': 3}, {'name': 'Bot 4', 'is_bot': True, 'pile_count': 1, 'captured_piles': 1}]
+   💯 Total scores: {'Andy': 24, 'Bot 2': -6, 'Bot 3': 18, 'Bot 4': -9}
+   👥 Players data: [{'name': 'Andy', 'is_bot': False, 'pile_count': 3, 'captured_piles': 3}, {'name': 'Bot 2', 'is_bot': True, 'pile_count': 2, 'captured_piles': 0}, {'name': 'Bot 3', 'is_bot': True, 'pile_count': 1, 'captured_piles': 1}, {'name': 'Bot 4', 'is_bot': True, 'pile_count': 1, 'captured_piles': 4}]
 ⏰ SCORING_DELAY_DEBUG: Starting 7-second display delay...
 ⏰ SCORING_DELAY_DEBUG: 7-second delay complete - setting display_delay_complete = True
+🤖 Bot Bot 2 deciding: ACCEPT redeal
+✅ Bot Bot 2 ACCEPTED redeal
+✅ Redeal accept queued: Andy
+✅ Redeal accept queued: Andy
+🤖 Bot Bot 2 deciding: ACCEPT redeal
+✅ Bot Bot 2 ACCEPTED redeal
 👤 Round starter is human or None: None
-✅ Declaration queued: Andy -> 0
-✅ Bot Bot 2 declared 1
+✅ Declaration queued: Andy -> 3
+✅ Bot Bot 2 declared 2
 ✅ Bot Bot 3 declared 1
 ✅ Bot Bot 4 declared 1
 ✅ Bot Bot 3 declared 1
@@ -947,260 +211,149 @@ Unhandled action in turn results phase: ActionType.PLAY_PIECES
 Action declare not allowed in turn
 Action declare not allowed in turn
 Action declare not allowed in turn
-🎯 WS_PLAY_DEBUG: Received play event - player: Andy, indices: [5]
+🎯 WS_PLAY_DEBUG: Received play event - player: Andy, indices: [0, 5, 2, 3]
 🎯 WS_PLAY_DEBUG: Found player Andy with hand size 8
-🎯 WS_PLAY_DEBUG: Added piece at index 5: HORSE_RED(6)
-🎯 WS_PLAY_DEBUG: Final pieces to play: ['HORSE_RED(6)']
+🎯 WS_PLAY_DEBUG: Added piece at index 0: CHARIOT_BLACK(7)
+🎯 WS_PLAY_DEBUG: Added piece at index 5: CANNON_BLACK(3)
+🎯 WS_PLAY_DEBUG: Added piece at index 2: HORSE_BLACK(5)
+🎯 WS_PLAY_DEBUG: Added piece at index 3: CANNON_BLACK(3)
+🎯 WS_PLAY_DEBUG: Final pieces to play: ['CHARIOT_BLACK(7)', 'CANNON_BLACK(3)', 'HORSE_BLACK(5)', 'CANNON_BLACK(3)']
 🎯 WS_PLAY_DEBUG: Queuing action for state machine...
 🎯 WS_PLAY_DEBUG: State machine result: {'success': True, 'queued': True}
 ✅ Play accepted: Andy
-🤖 BOT chooses to play SINGLE (14 pts): GENERAL
+🤖 BOT has no valid play. Discards lowest pieces: SOLDIER, SOLDIER, CHARIOT, ELEPHANT
+    🔍 Final play: ['SOLDIER', 'SOLDIER', 'CHARIOT', 'ELEPHANT']
+    🧠 Hand left: ['GENERAL', 'CHARIOT', 'ELEPHANT', 'ADVISOR', 'ADVISOR', 'SOLDIER', 'SOLDIER', 'ELEPHANT']
 ✅ Bot Bot 2 action queued - state machine will broadcast with correct next_player
-🤖 BOT chooses to play SINGLE (12 pts): ADVISOR
+🤖 BOT has no valid play. Discards lowest pieces: SOLDIER, SOLDIER, SOLDIER, CANNON
+    🔍 Final play: ['SOLDIER', 'SOLDIER', 'SOLDIER', 'CANNON']
+    🧠 Hand left: ['CHARIOT', 'ADVISOR', 'SOLDIER', 'SOLDIER', 'CANNON', 'CHARIOT', 'ELEPHANT', 'SOLDIER']
 ✅ Bot Bot 3 action queued - state machine will broadcast with correct next_player
-🤖 BOT chooses to play SINGLE (11 pts): ADVISOR
+🤖 BOT has no valid play. Discards lowest pieces: SOLDIER, SOLDIER, SOLDIER, CANNON
+    🔍 Final play: ['SOLDIER', 'SOLDIER', 'SOLDIER', 'CANNON']
+    🧠 Hand left: ['SOLDIER', 'HORSE', 'HORSE', 'HORSE', 'SOLDIER', 'GENERAL', 'SOLDIER', 'CANNON']
 ✅ Bot Bot 4 action queued - state machine will broadcast with correct next_player
-🤖 BOT chooses to play SINGLE (12 pts): ADVISOR
+🤖 BOT has no valid play. Discards lowest pieces: SOLDIER, SOLDIER, SOLDIER, CANNON
+    🔍 Final play: ['SOLDIER', 'SOLDIER', 'SOLDIER', 'CANNON']
+    🧠 Hand left: ['CHARIOT', 'ADVISOR', 'SOLDIER', 'SOLDIER', 'CANNON', 'CHARIOT', 'ELEPHANT', 'SOLDIER']
 ✅ Bot Bot 3 action queued - state machine will broadcast with correct next_player
-🤖 BOT chooses to play SINGLE (11 pts): ADVISOR
+🤖 BOT has no valid play. Discards lowest pieces: SOLDIER, SOLDIER, SOLDIER, CANNON
+    🔍 Final play: ['SOLDIER', 'SOLDIER', 'SOLDIER', 'CANNON']
+    🧠 Hand left: ['SOLDIER', 'HORSE', 'HORSE', 'HORSE', 'SOLDIER', 'GENERAL', 'SOLDIER', 'CANNON']
 ✅ Bot Bot 4 action queued - state machine will broadcast with correct next_player
-🤖 BOT chooses to play SINGLE (11 pts): ADVISOR
-✅ Bot Bot 4 action queued - state machine will broadcast with correct next_player
-🤖 BOT chooses to play SINGLE (10 pts): ELEPHANT
-✅ Bot Bot 2 action queued - state machine will broadcast with correct next_player
-🤖 BOT chooses to play SINGLE (10 pts): ELEPHANT
-✅ Bot Bot 3 action queued - state machine will broadcast with correct next_player
-🤖 BOT chooses to play STRAIGHT (18 pts): HORSE, CANNON, CHARIOT
-✅ Bot Bot 4 action queued - state machine will broadcast with correct next_player
-Not Bot 3's turn - expected Bot 2
-Invalid action: GameAction(player_name='Bot 3', action_type=<ActionType.PLAY_PIECES: 'play_pieces'>, payload={'pieces': [ADVISOR_RED(12)]}, timestamp=datetime.datetime(2025, 7, 9, 17, 29, 49, 274121), sequence_id=59, is_bot=True)
-Not Bot 4's turn - expected Bot 2
-Invalid action: GameAction(player_name='Bot 4', action_type=<ActionType.PLAY_PIECES: 'play_pieces'>, payload={'pieces': [ADVISOR_BLACK(11)]}, timestamp=datetime.datetime(2025, 7, 9, 17, 29, 50, 519466), sequence_id=60, is_bot=True)
-Not Bot 4's turn - expected Bot 2
-Invalid action: GameAction(player_name='Bot 4', action_type=<ActionType.PLAY_PIECES: 'play_pieces'>, payload={'pieces': [ADVISOR_BLACK(11)]}, timestamp=datetime.datetime(2025, 7, 9, 17, 29, 51, 494073), sequence_id=61, is_bot=True)
-🤖 BOT chooses to play SINGLE (10 pts): ELEPHANT
-✅ Bot Bot 3 action queued - state machine will broadcast with correct next_player
-🤖 BOT chooses to play SINGLE (9 pts): ELEPHANT
-✅ Bot Bot 4 action queued - state machine will broadcast with correct next_player
-🤖 BOT chooses to play SINGLE (9 pts): ELEPHANT
-✅ Bot Bot 4 action queued - state machine will broadcast with correct next_player
-Must play 1 pieces, got 3
-Invalid action: GameAction(player_name='Bot 4', action_type=<ActionType.PLAY_PIECES: 'play_pieces'>, payload={'pieces': [HORSE_RED(6), CANNON_RED(4), CHARIOT_RED(8)]}, timestamp=datetime.datetime(2025, 7, 9, 17, 30, 7, 452483), sequence_id=64, is_bot=True)
-Not Bot 3's turn - expected Bot 4
-Invalid action: GameAction(player_name='Bot 3', action_type=<ActionType.PLAY_PIECES: 'play_pieces'>, payload={'pieces': [ELEPHANT_RED(10)]}, timestamp=datetime.datetime(2025, 7, 9, 17, 30, 8, 955196), sequence_id=65, is_bot=True)
-Not Bot 4's turn - expected Andy
-Invalid action: GameAction(player_name='Bot 4', action_type=<ActionType.PLAY_PIECES: 'play_pieces'>, payload={'pieces': [ELEPHANT_BLACK(9)]}, timestamp=datetime.datetime(2025, 7, 9, 17, 30, 10, 910078), sequence_id=67, is_bot=True)
-🎯 WS_PLAY_DEBUG: Received play event - player: Andy, indices: [6]
-🎯 WS_PLAY_DEBUG: Found player Andy with hand size 7
-🎯 WS_PLAY_DEBUG: Added piece at index 6: HORSE_BLACK(5)
-🎯 WS_PLAY_DEBUG: Final pieces to play: ['HORSE_BLACK(5)']
-🎯 WS_PLAY_DEBUG: Queuing action for state machine...
-🎯 WS_PLAY_DEBUG: State machine result: {'success': True, 'queued': True}
-✅ Play accepted: Andy
-🤖 BOT chooses to play SINGLE (9 pts): ELEPHANT
-✅ Bot Bot 2 action queued - state machine will broadcast with correct next_player
-🤖 BOT chooses to play SINGLE (7 pts): CHARIOT
-✅ Bot Bot 3 action queued - state machine will broadcast with correct next_player
-🤖 BOT chooses to play STRAIGHT (18 pts): HORSE, CANNON, CHARIOT
-✅ Bot Bot 4 action queued - state machine will broadcast with correct next_player
-🤖 BOT chooses to play SINGLE (7 pts): CHARIOT
-✅ Bot Bot 3 action queued - state machine will broadcast with correct next_player
-🤖 BOT chooses to play SINGLE (8 pts): CHARIOT
-✅ Bot Bot 4 action queued - state machine will broadcast with correct next_player
-🤖 BOT chooses to play SINGLE (8 pts): CHARIOT
-✅ Bot Bot 4 action queued - state machine will broadcast with correct next_player
-Must play 1 pieces, got 3
-Invalid action: GameAction(player_name='Bot 4', action_type=<ActionType.PLAY_PIECES: 'play_pieces'>, payload={'pieces': [HORSE_RED(6), CANNON_RED(4), CHARIOT_RED(8)]}, timestamp=datetime.datetime(2025, 7, 9, 17, 30, 32, 376220), sequence_id=71, is_bot=True)
-Not Bot 3's turn - expected Bot 4
-Invalid action: GameAction(player_name='Bot 3', action_type=<ActionType.PLAY_PIECES: 'play_pieces'>, payload={'pieces': [CHARIOT_BLACK(7)]}, timestamp=datetime.datetime(2025, 7, 9, 17, 30, 33, 722623), sequence_id=72, is_bot=True)
-Not Bot 4's turn - expected Andy
-Invalid action: GameAction(player_name='Bot 4', action_type=<ActionType.PLAY_PIECES: 'play_pieces'>, payload={'pieces': [CHARIOT_RED(8)]}, timestamp=datetime.datetime(2025, 7, 9, 17, 30, 35, 774127), sequence_id=74, is_bot=True)
-🎯 WS_PLAY_DEBUG: Received play event - player: Andy, indices: [2]
-🎯 WS_PLAY_DEBUG: Found player Andy with hand size 6
-🎯 WS_PLAY_DEBUG: Added piece at index 2: SOLDIER_RED(2)
-🎯 WS_PLAY_DEBUG: Final pieces to play: ['SOLDIER_RED(2)']
-🎯 WS_PLAY_DEBUG: Queuing action for state machine...
-🎯 WS_PLAY_DEBUG: State machine result: {'success': True, 'queued': True}
-✅ Play accepted: Andy
-🤖 BOT chooses to play SINGLE (8 pts): CHARIOT
-✅ Bot Bot 2 action queued - state machine will broadcast with correct next_player
-🤖 BOT chooses to play SINGLE (4 pts): CANNON
-✅ Bot Bot 3 action queued - state machine will broadcast with correct next_player
-🤖 BOT chooses to play SINGLE (6 pts): HORSE
-✅ Bot Bot 4 action queued - state machine will broadcast with correct next_player
-🤖 BOT chooses to play SINGLE (4 pts): CANNON
-✅ Bot Bot 3 action queued - state machine will broadcast with correct next_player
-🤖 BOT chooses to play SINGLE (6 pts): HORSE
-✅ Bot Bot 4 action queued - state machine will broadcast with correct next_player
-🤖 BOT chooses to play SINGLE (6 pts): HORSE
+🤖 BOT has no valid play. Discards lowest pieces: SOLDIER, SOLDIER, SOLDIER, CANNON
+    🔍 Final play: ['SOLDIER', 'SOLDIER', 'SOLDIER', 'CANNON']
+    🧠 Hand left: ['SOLDIER', 'HORSE', 'HORSE', 'HORSE', 'SOLDIER', 'GENERAL', 'SOLDIER', 'CANNON']
 ✅ Bot Bot 4 action queued - state machine will broadcast with correct next_player
 Not Bot 3's turn - expected Andy
-Invalid action: GameAction(player_name='Bot 3', action_type=<ActionType.PLAY_PIECES: 'play_pieces'>, payload={'pieces': [CANNON_RED(4)]}, timestamp=datetime.datetime(2025, 7, 9, 17, 31, 0, 231314), sequence_id=79, is_bot=True)
+Invalid action: GameAction(player_name='Bot 3', action_type=<ActionType.PLAY_PIECES: 'play_pieces'>, payload={'pieces': [SOLDIER_BLACK(1), SOLDIER_BLACK(1), SOLDIER_RED(2), CANNON_RED(4)]}, timestamp=datetime.datetime(2025, 7, 9, 21, 2, 50, 580831), sequence_id=65, is_bot=True)
 Not Bot 4's turn - expected Andy
-Invalid action: GameAction(player_name='Bot 4', action_type=<ActionType.PLAY_PIECES: 'play_pieces'>, payload={'pieces': [HORSE_RED(6)]}, timestamp=datetime.datetime(2025, 7, 9, 17, 31, 1, 74285), sequence_id=80, is_bot=True)
+Invalid action: GameAction(player_name='Bot 4', action_type=<ActionType.PLAY_PIECES: 'play_pieces'>, payload={'pieces': [SOLDIER_BLACK(1), SOLDIER_BLACK(1), SOLDIER_RED(2), CANNON_RED(4)]}, timestamp=datetime.datetime(2025, 7, 9, 21, 2, 51, 617751), sequence_id=66, is_bot=True)
 Not Bot 4's turn - expected Andy
-Invalid action: GameAction(player_name='Bot 4', action_type=<ActionType.PLAY_PIECES: 'play_pieces'>, payload={'pieces': [HORSE_RED(6)]}, timestamp=datetime.datetime(2025, 7, 9, 17, 31, 2, 407581), sequence_id=81, is_bot=True)
-🎯 WS_PLAY_DEBUG: Received play event - player: Andy, indices: [4]
-🎯 WS_PLAY_DEBUG: Found player Andy with hand size 5
-🎯 WS_PLAY_DEBUG: Added piece at index 4: GENERAL_BLACK(13)
-🎯 WS_PLAY_DEBUG: Final pieces to play: ['GENERAL_BLACK(13)']
+Invalid action: GameAction(player_name='Bot 4', action_type=<ActionType.PLAY_PIECES: 'play_pieces'>, payload={'pieces': [SOLDIER_BLACK(1), SOLDIER_BLACK(1), SOLDIER_RED(2), CANNON_RED(4)]}, timestamp=datetime.datetime(2025, 7, 9, 21, 2, 52, 511423), sequence_id=67, is_bot=True)
+🎯 WS_PLAY_DEBUG: Received play event - player: Andy, indices: [0]
+🎯 WS_PLAY_DEBUG: Found player Andy with hand size 4
+🎯 WS_PLAY_DEBUG: Added piece at index 0: ELEPHANT_RED(10)
+🎯 WS_PLAY_DEBUG: Final pieces to play: ['ELEPHANT_RED(10)']
 🎯 WS_PLAY_DEBUG: Queuing action for state machine...
 🎯 WS_PLAY_DEBUG: State machine result: {'success': True, 'queued': True}
 ✅ Play accepted: Andy
+🤖 BOT chooses to play SINGLE (13 pts): GENERAL
+✅ Bot Bot 2 action queued - state machine will broadcast with correct next_player
+🤖 BOT chooses to play SINGLE (11 pts): ADVISOR
+✅ Bot Bot 3 action queued - state machine will broadcast with correct next_player
+🤖 BOT chooses to play SINGLE (14 pts): GENERAL
+✅ Bot Bot 4 action queued - state machine will broadcast with correct next_player
+🤖 BOT chooses to play SINGLE (11 pts): ADVISOR
+✅ Bot Bot 3 action queued - state machine will broadcast with correct next_player
+🤖 BOT chooses to play SINGLE (14 pts): GENERAL
+✅ Bot Bot 4 action queued - state machine will broadcast with correct next_player
+🤖 BOT chooses to play SINGLE (14 pts): GENERAL
+✅ Bot Bot 4 action queued - state machine will broadcast with correct next_player
+🤖 BOT chooses to play PAIR (12 pts): HORSE, HORSE
+✅ Bot Bot 4 action queued - state machine will broadcast with correct next_player
+Not Bot 3's turn - expected Bot 4
+Invalid action: GameAction(player_name='Bot 3', action_type=<ActionType.PLAY_PIECES: 'play_pieces'>, payload={'pieces': [ADVISOR_BLACK(11)]}, timestamp=datetime.datetime(2025, 7, 9, 21, 3, 16, 371034), sequence_id=72, is_bot=True)
+Player Bot 4 doesn't have piece: GENERAL_RED(14)
+Invalid action: GameAction(player_name='Bot 4', action_type=<ActionType.PLAY_PIECES: 'play_pieces'>, payload={'pieces': [GENERAL_RED(14)]}, timestamp=datetime.datetime(2025, 7, 9, 21, 3, 17, 435354), sequence_id=73, is_bot=True)
+Player Bot 4 doesn't have piece: GENERAL_RED(14)
+Invalid action: GameAction(player_name='Bot 4', action_type=<ActionType.PLAY_PIECES: 'play_pieces'>, payload={'pieces': [GENERAL_RED(14)]}, timestamp=datetime.datetime(2025, 7, 9, 21, 3, 18, 746659), sequence_id=74, is_bot=True)
+🎯 WS_PLAY_DEBUG: Received play event - player: Andy, indices: [0, 1]
+🎯 WS_PLAY_DEBUG: Found player Andy with hand size 3
+🎯 WS_PLAY_DEBUG: Added piece at index 0: SOLDIER_BLACK(1)
+🎯 WS_PLAY_DEBUG: Added piece at index 1: SOLDIER_RED(2)
+🎯 WS_PLAY_DEBUG: Final pieces to play: ['SOLDIER_BLACK(1)', 'SOLDIER_RED(2)']
+🎯 WS_PLAY_DEBUG: Queuing action for state machine...
+🎯 WS_PLAY_DEBUG: State machine result: {'success': True, 'queued': True}
+✅ Play accepted: Andy
+🤖 BOT has no valid play. Discards lowest pieces: ELEPHANT, ADVISOR
+    🔍 Final play: ['ELEPHANT', 'ADVISOR']
+    🧠 Hand left: ['ADVISOR', 'ADVISOR', 'ELEPHANT']
+✅ Bot Bot 2 action queued - state machine will broadcast with correct next_player
+🤖 BOT has no valid play. Discards lowest pieces: CHARIOT, CHARIOT
+    🔍 Final play: ['CHARIOT', 'CHARIOT']
+    🧠 Hand left: ['CHARIOT', 'CHARIOT', 'ELEPHANT']
+✅ Bot Bot 3 action queued - state machine will broadcast with correct next_player
+🤖 BOT has no valid play. Discards lowest pieces: CHARIOT, CHARIOT
+    🔍 Final play: ['CHARIOT', 'CHARIOT']
+    🧠 Hand left: ['CHARIOT', 'CHARIOT', 'ELEPHANT']
+✅ Bot Bot 3 action queued - state machine will broadcast with correct next_player
+🤖 BOT chooses to play SINGLE (5 pts): HORSE
+✅ Bot Bot 4 action queued - state machine will broadcast with correct next_player
+Not Bot 3's turn - expected Bot 4
+Invalid action: GameAction(player_name='Bot 3', action_type=<ActionType.PLAY_PIECES: 'play_pieces'>, payload={'pieces': [CHARIOT_BLACK(7), CHARIOT_RED(8)]}, timestamp=datetime.datetime(2025, 7, 9, 21, 3, 40, 604749), sequence_id=79, is_bot=True)
 🎯 WS_PLAY_DEBUG: Received play event - player: Andy, indices: [0]
-🎯 WS_PLAY_DEBUG: Found player Andy with hand size 4
+🎯 WS_PLAY_DEBUG: Found player Andy with hand size 1
 🎯 WS_PLAY_DEBUG: Added piece at index 0: ADVISOR_RED(12)
 🎯 WS_PLAY_DEBUG: Final pieces to play: ['ADVISOR_RED(12)']
 🎯 WS_PLAY_DEBUG: Queuing action for state machine...
 🎯 WS_PLAY_DEBUG: State machine result: {'success': True, 'queued': True}
 ✅ Play accepted: Andy
-🤖 BOT chooses to play SINGLE (7 pts): CHARIOT
+🤖 BOT chooses to play SINGLE (12 pts): ADVISOR
 ✅ Bot Bot 2 action queued - state machine will broadcast with correct next_player
-🤖 BOT chooses to play SINGLE (3 pts): CANNON
+🤖 BOT chooses to play SINGLE (9 pts): ELEPHANT
 ✅ Bot Bot 3 action queued - state machine will broadcast with correct next_player
-🤖 BOT chooses to play SINGLE (5 pts): HORSE
-✅ Bot Bot 4 action queued - state machine will broadcast with correct next_player
-🤖 BOT chooses to play SINGLE (3 pts): CANNON
+🤖 BOT chooses to play SINGLE (9 pts): ELEPHANT
 ✅ Bot Bot 3 action queued - state machine will broadcast with correct next_player
-🤖 BOT chooses to play SINGLE (5 pts): HORSE
-✅ Bot Bot 4 action queued - state machine will broadcast with correct next_player
-🤖 BOT chooses to play SINGLE (5 pts): HORSE
-✅ Bot Bot 4 action queued - state machine will broadcast with correct next_player
-Not Bot 3's turn - expected Andy
-Invalid action: GameAction(player_name='Bot 3', action_type=<ActionType.PLAY_PIECES: 'play_pieces'>, payload={'pieces': [CANNON_BLACK(3)]}, timestamp=datetime.datetime(2025, 7, 9, 17, 31, 29, 830607), sequence_id=87, is_bot=True)
-Not Bot 4's turn - expected Andy
-Invalid action: GameAction(player_name='Bot 4', action_type=<ActionType.PLAY_PIECES: 'play_pieces'>, payload={'pieces': [HORSE_BLACK(5)]}, timestamp=datetime.datetime(2025, 7, 9, 17, 31, 31, 220018), sequence_id=88, is_bot=True)
-Not Bot 4's turn - expected Andy
-Invalid action: GameAction(player_name='Bot 4', action_type=<ActionType.PLAY_PIECES: 'play_pieces'>, payload={'pieces': [HORSE_BLACK(5)]}, timestamp=datetime.datetime(2025, 7, 9, 17, 31, 32, 536822), sequence_id=89, is_bot=True)
-🎯 WS_PLAY_DEBUG: Received play event - player: Andy, indices: [0]
-🎯 WS_PLAY_DEBUG: Found player Andy with hand size 3
-🎯 WS_PLAY_DEBUG: Added piece at index 0: ADVISOR_BLACK(11)
-🎯 WS_PLAY_DEBUG: Final pieces to play: ['ADVISOR_BLACK(11)']
-🎯 WS_PLAY_DEBUG: Queuing action for state machine...
-🎯 WS_PLAY_DEBUG: State machine result: {'success': True, 'queued': True}
-✅ Play accepted: Andy
-🤖 BOT chooses to play SINGLE (3 pts): CANNON
-✅ Bot Bot 2 action queued - state machine will broadcast with correct next_player
-🤖 BOT chooses to play SINGLE (2 pts): SOLDIER
-✅ Bot Bot 3 action queued - state machine will broadcast with correct next_player
-🤖 BOT chooses to play SINGLE (4 pts): CANNON
-✅ Bot Bot 4 action queued - state machine will broadcast with correct next_player
-🤖 BOT chooses to play SINGLE (2 pts): SOLDIER
-✅ Bot Bot 3 action queued - state machine will broadcast with correct next_player
-🤖 BOT chooses to play SINGLE (4 pts): CANNON
-✅ Bot Bot 4 action queued - state machine will broadcast with correct next_player
-🤖 BOT chooses to play SINGLE (4 pts): CANNON
-✅ Bot Bot 4 action queued - state machine will broadcast with correct next_player
-Not Bot 3's turn - expected Andy
-Invalid action: GameAction(player_name='Bot 3', action_type=<ActionType.PLAY_PIECES: 'play_pieces'>, payload={'pieces': [SOLDIER_RED(2)]}, timestamp=datetime.datetime(2025, 7, 9, 17, 31, 52, 923186), sequence_id=94, is_bot=True)
-Not Bot 4's turn - expected Andy
-Invalid action: GameAction(player_name='Bot 4', action_type=<ActionType.PLAY_PIECES: 'play_pieces'>, payload={'pieces': [CANNON_RED(4)]}, timestamp=datetime.datetime(2025, 7, 9, 17, 31, 53, 687706), sequence_id=95, is_bot=True)
-Not Bot 4's turn - expected Andy
-Invalid action: GameAction(player_name='Bot 4', action_type=<ActionType.PLAY_PIECES: 'play_pieces'>, payload={'pieces': [CANNON_RED(4)]}, timestamp=datetime.datetime(2025, 7, 9, 17, 31, 54, 998655), sequence_id=96, is_bot=True)
-🎯 WS_PLAY_DEBUG: Received play event - player: Andy, indices: [0, 1]
-🎯 WS_PLAY_DEBUG: Found player Andy with hand size 2
-🎯 WS_PLAY_DEBUG: Added piece at index 0: SOLDIER_BLACK(1)
-🎯 WS_PLAY_DEBUG: Added piece at index 1: SOLDIER_BLACK(1)
-🎯 WS_PLAY_DEBUG: Final pieces to play: ['SOLDIER_BLACK(1)', 'SOLDIER_BLACK(1)']
-🎯 WS_PLAY_DEBUG: Queuing action for state machine...
-🎯 WS_PLAY_DEBUG: State machine result: {'success': True, 'queued': True}
-✅ Play accepted: Andy
-🤖 BOT has no valid play. Discards lowest pieces: SOLDIER, SOLDIER
-    🔍 Final play: ['SOLDIER', 'SOLDIER']
-    🧠 Hand left: ['SOLDIER', 'SOLDIER']
-✅ Bot Bot 2 action queued - state machine will broadcast with correct next_player
-🤖 BOT has no valid play. Discards lowest pieces: SOLDIER, SOLDIER
-    🔍 Final play: ['SOLDIER', 'SOLDIER']
-    🧠 Hand left: ['SOLDIER', 'SOLDIER']
-✅ Bot Bot 3 action queued - state machine will broadcast with correct next_player
-🤖 BOT has no valid play. Discards lowest pieces: SOLDIER, SOLDIER
-    🔍 Final play: ['SOLDIER', 'SOLDIER']
-    🧠 Hand left: ['SOLDIER', 'SOLDIER']
-✅ Bot Bot 4 action queued - state machine will broadcast with correct next_player
-🤖 BOT has no valid play. Discards lowest pieces: SOLDIER, SOLDIER
-    🔍 Final play: ['SOLDIER', 'SOLDIER']
-    🧠 Hand left: ['SOLDIER', 'SOLDIER']
-✅ Bot Bot 3 action queued - state machine will broadcast with correct next_player
-🤖 BOT has no valid play. Discards lowest pieces: SOLDIER, SOLDIER
-    🔍 Final play: ['SOLDIER', 'SOLDIER']
-    🧠 Hand left: ['SOLDIER', 'SOLDIER']
-✅ Bot Bot 4 action queued - state machine will broadcast with correct next_player
-🤖 BOT has no valid play. Discards lowest pieces: SOLDIER, SOLDIER
-    🔍 Final play: ['SOLDIER', 'SOLDIER']
-    🧠 Hand left: ['SOLDIER', 'SOLDIER']
-✅ Bot Bot 4 action queued - state machine will broadcast with correct next_player
-Unhandled action in turn results phase: ActionType.PLAY_PIECES
-Unhandled action in turn results phase: ActionType.PLAY_PIECES
 Unhandled action in turn results phase: ActionType.PLAY_PIECES
 🔄 SCORING_SETUP_DEBUG: Reset display_delay_complete = False
-🗳️ DECLARATION_DEBUG: game.player_declarations = {'Andy': 0, 'Bot 2': 1, 'Bot 3': 1, 'Bot 4': 1}
-📋 SCORING_FIX_DEBUG: Andy - declared: 0, actual: 5
+🗳️ DECLARATION_DEBUG: game.player_declarations = {'Andy': 3, 'Bot 2': 2, 'Bot 3': 1, 'Bot 4': 1}
+📋 SCORING_FIX_DEBUG: Andy - declared: 3, actual: 5
 🏆 SCORING_DEBUG: Andy scoring data:
-   📋 Declared: 0, Actual: 5
-   📊 Base Score: -5, Multiplier: 1x, Final: -5
-   💯 Total Score: -8
-📋 SCORING_FIX_DEBUG: Bot 2 - declared: 1, actual: 3
+   📋 Declared: 3, Actual: 5
+   📊 Base Score: -2, Multiplier: 3x, Final: -6
+   💯 Total Score: 18
+📋 SCORING_FIX_DEBUG: Bot 2 - declared: 2, actual: 0
 🏆 SCORING_DEBUG: Bot 2 scoring data:
-   📋 Declared: 1, Actual: 3
-   📊 Base Score: -2, Multiplier: 1x, Final: -2
-   💯 Total Score: -3
+   📋 Declared: 2, Actual: 0
+   📊 Base Score: -2, Multiplier: 3x, Final: -6
+   💯 Total Score: -12
 📋 SCORING_FIX_DEBUG: Bot 3 - declared: 1, actual: 0
 🏆 SCORING_DEBUG: Bot 3 scoring data:
    📋 Declared: 1, Actual: 0
-   📊 Base Score: -1, Multiplier: 1x, Final: -1
-   💯 Total Score: -2
-📋 SCORING_FIX_DEBUG: Bot 4 - declared: 1, actual: 0
+   📊 Base Score: -1, Multiplier: 3x, Final: -3
+   💯 Total Score: 15
+📋 SCORING_FIX_DEBUG: Bot 4 - declared: 1, actual: 3
 🏆 SCORING_DEBUG: Bot 4 scoring data:
-   📋 Declared: 1, Actual: 0
-   📊 Base Score: -1, Multiplier: 1x, Final: -1
-   💯 Total Score: 5
+   📋 Declared: 1, Actual: 3
+   📊 Base Score: -2, Multiplier: 3x, Final: -6
+   💯 Total Score: -15
 🚀 SCORING_BROADCAST_DEBUG: Broadcasting scoring data:
-   📊 Round scores: {'Andy': {'declared': 0, 'actual': 5, 'base_score': -5, 'multiplier': 1, 'final_score': -5, 'total_score': -8}, 'Bot 2': {'declared': 1, 'actual': 3, 'base_score': -2, 'multiplier': 1, 'final_score': -2, 'total_score': -3}, 'Bot 3': {'declared': 1, 'actual': 0, 'base_score': -1, 'multiplier': 1, 'final_score': -1, 'total_score': -2}, 'Bot 4': {'declared': 1, 'actual': 0, 'base_score': -1, 'multiplier': 1, 'final_score': -1, 'total_score': 5}}
+   📊 Round scores: {'Andy': {'declared': 3, 'actual': 5, 'base_score': -2, 'multiplier': 3, 'final_score': -6, 'total_score': 18}, 'Bot 2': {'declared': 2, 'actual': 0, 'base_score': -2, 'multiplier': 3, 'final_score': -6, 'total_score': -12}, 'Bot 3': {'declared': 1, 'actual': 0, 'base_score': -1, 'multiplier': 3, 'final_score': -3, 'total_score': 15}, 'Bot 4': {'declared': 1, 'actual': 3, 'base_score': -2, 'multiplier': 3, 'final_score': -6, 'total_score': -15}}
    🏁 Game complete: False
    🏆 Winners: []
 🚀 SCORING_BROADCAST_DEBUG: Also sending:
-   💯 Total scores: {'Andy': -8, 'Bot 2': -3, 'Bot 3': -2, 'Bot 4': 5}
-   👥 Players data: [{'name': 'Andy', 'is_bot': False, 'pile_count': 0, 'captured_piles': 5}, {'name': 'Bot 2', 'is_bot': True, 'pile_count': 1, 'captured_piles': 3}, {'name': 'Bot 3', 'is_bot': True, 'pile_count': 1, 'captured_piles': 0}, {'name': 'Bot 4', 'is_bot': True, 'pile_count': 1, 'captured_piles': 0}]
+   💯 Total scores: {'Andy': 18, 'Bot 2': -12, 'Bot 3': 15, 'Bot 4': -15}
+   👥 Players data: [{'name': 'Andy', 'is_bot': False, 'pile_count': 3, 'captured_piles': 5}, {'name': 'Bot 2', 'is_bot': True, 'pile_count': 2, 'captured_piles': 0}, {'name': 'Bot 3', 'is_bot': True, 'pile_count': 1, 'captured_piles': 0}, {'name': 'Bot 4', 'is_bot': True, 'pile_count': 1, 'captured_piles': 3}]
 ⏰ SCORING_DELAY_DEBUG: Starting 7-second display delay...
 ⏰ SCORING_DELAY_DEBUG: 7-second delay complete - setting display_delay_complete = True
-👤 Round starter is human or None: None
-✅ Declaration queued: Andy -> 0
+🤖 Bot Bot 2 deciding: ACCEPT redeal
+✅ Bot Bot 2 ACCEPTED redeal
 ✅ Bot Bot 2 declared 1
-✅ Bot Bot 3 declared 1
-✅ Bot Bot 4 declared 1
-✅ Bot Bot 3 declared 1
-✅ Bot Bot 4 declared 1
-✅ Bot Bot 4 declared 1
-Action declare not allowed in turn
-Action declare not allowed in turn
-Action declare not allowed in turn
-🎯 WS_PLAY_DEBUG: Received play event - player: Andy, indices: [6, 3]
-🎯 WS_PLAY_DEBUG: Found player Andy with hand size 8
-🎯 WS_PLAY_DEBUG: Added piece at index 6: CANNON_BLACK(3)
-🎯 WS_PLAY_DEBUG: Added piece at index 3: CANNON_BLACK(3)
-🎯 WS_PLAY_DEBUG: Final pieces to play: ['CANNON_BLACK(3)', 'CANNON_BLACK(3)']
-🎯 WS_PLAY_DEBUG: Queuing action for state machine...
-🎯 WS_PLAY_DEBUG: State machine result: {'success': True, 'queued': True}
-✅ Play accepted: Andy
-🤖 BOT has no valid play. Discards lowest pieces: SOLDIER, SOLDIER
-    🔍 Final play: ['SOLDIER', 'SOLDIER']
-    🧠 Hand left: ['GENERAL', 'SOLDIER', 'HORSE', 'ELEPHANT', 'GENERAL', 'CANNON', 'HORSE', 'SOLDIER']
-✅ Bot Bot 2 action queued - state machine will broadcast with correct next_player
-🤖 BOT chooses to play PAIR (2 pts): SOLDIER, SOLDIER
-✅ Bot Bot 3 action queued - state machine will broadcast with correct next_player
-🤖 BOT chooses to play PAIR (18 pts): ELEPHANT, ELEPHANT
-✅ Bot Bot 4 action queued - state machine will broadcast with correct next_player
-🤖 BOT chooses to play PAIR (2 pts): SOLDIER, SOLDIER
-✅ Bot Bot 3 action queued - state machine will broadcast with correct next_player
-🤖 BOT chooses to play PAIR (18 pts): ELEPHANT, ELEPHANT
-✅ Bot Bot 4 action queued - state machine will broadcast with correct next_player
-🤖 BOT chooses to play PAIR (18 pts): ELEPHANT, ELEPHANT
-✅ Bot Bot 4 action queued - state machine will broadcast with correct next_player
-🤖 BOT chooses to play SINGLE (12 pts): ADVISOR
-✅ Bot Bot 4 action queued - state machine will broadcast with correct next_player
-Not Bot 3's turn - expected Bot 4
-Invalid action: GameAction(player_name='Bot 3', action_type=<ActionType.PLAY_PIECES: 'play_pieces'>, payload={'pieces': [SOLDIER_BLACK(1), SOLDIER_BLACK(1)]}, timestamp=datetime.datetime(2025, 7, 9, 17, 33, 49, 254008), sequence_id=115, is_bot=True)
-Player Bot 4 doesn't have piece: ELEPHANT_BLACK(9)
-Invalid action: GameAction(player_name='Bot 4', action_type=<ActionType.PLAY_PIECES: 'play_pieces'>, payload={'pieces': [ELEPHANT_BLACK(9), ELEPHANT_BLACK(9)]}, timestamp=datetime.datetime(2025, 7, 9, 17, 33, 50, 507550), sequence_id=116, is_bot=True)
-Player Bot 4 doesn't have piece: ELEPHANT_BLACK(9)
-Invalid action: GameAction(player_name='Bot 4', action_type=<ActionType.PLAY_PIECES: 'play_pieces'>, payload={'pieces': [ELEPHANT_BLACK(9), ELEPHANT_BLACK(9)]}, timestamp=datetime.datetime(2025, 7, 9, 17, 33, 52, 39289), sequence_id=117, is_bot=True)
+✅ Bot Bot 3 declared 2
+✅ Bot Bot 4 declared 4
+✅ Bot Bot 3 declared 2
+✅ Bot Bot 4 declared 4
+✅ Bot Bot 4 declared 4
+Wrong player turn: Bot 3, expected: Andy
+Invalid action: GameAction(player_name='Bot 3', action_type=<ActionType.DECLARE: 'declare'>, payload={'value': 2}, timestamp=datetime.datetime(2025, 7, 9, 21, 5, 26, 111811), sequence_id=89, is_bot=True)
