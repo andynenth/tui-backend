@@ -71,19 +71,41 @@ const DeclarationContent = ({
   
   // Get player status
   const getPlayerStatus = (player) => {
-    const playerName = player.name;
+    // Handle both string and object player formats
+    const playerName = typeof player === 'string' ? player : player.name;
+    // Extract clean name for declaration lookup (e.g., "Bot 2 - 0 pts" -> "Bot 2")
+    const cleanName = playerName.split(' - ')[0];
     
-    if (declarations[playerName] !== undefined) {
+    if (declarations[cleanName] !== undefined) {
       return {
         type: 'declared',
-        value: declarations[playerName]
+        value: declarations[cleanName]
       };
-    } else if (playerName === currentPlayer) {
+    } else if (cleanName === currentPlayer || playerName === currentPlayer) {
       return {
         type: 'current',
-        text: playerName === myName ? 'Declaring' : 'Their Turn'
+        text: 'Declaring'
       };
     } else {
+      // Check if this player will declare after current player
+      const currentIndex = players.findIndex(p => {
+        const pName = typeof p === 'string' ? p : p.name;
+        const pCleanName = pName.split(' - ')[0];
+        return pCleanName === currentPlayer || pName === currentPlayer;
+      });
+      const playerIndex = players.findIndex(p => {
+        const pName = typeof p === 'string' ? p : p.name;
+        const pCleanName = pName.split(' - ')[0];
+        return pCleanName === cleanName;
+      });
+      
+      if (currentIndex !== -1 && playerIndex !== -1 && playerIndex === currentIndex + 1) {
+        return {
+          type: 'pending',
+          text: 'Next'
+        };
+      }
+      
       return {
         type: 'waiting',
         text: 'Waiting'
@@ -123,23 +145,28 @@ const DeclarationContent = ({
         {/* Players list */}
         <div className="dec-players-list">
           {players.map((player) => {
+            // Handle both string and object player formats
+            const playerName = typeof player === 'string' ? player : player.name;
+            // Extract just the name without score (e.g., "Bot 2 - 0 pts" -> "Bot 2")
+            const displayName = playerName.split(' - ')[0];
+            
             const status = getPlayerStatus(player);
-            const isCurrentTurn = player.name === currentPlayer;
+            const isCurrentTurn = playerName === currentPlayer;
             const isDeclared = status.type === 'declared';
             
             return (
               <div
-                key={player.name}
+                key={playerName}
                 className={`dec-player-row ${isCurrentTurn ? 'current-turn' : ''} ${isDeclared ? 'declared' : ''}`}
               >
                 <PlayerAvatar 
-                  name={player.name}
+                  name={displayName}
                   className="dec-player-avatar"
                   size="large"
                 />
                 <div className="dec-player-info">
                   <div className="dec-player-name">
-                    {player.name}{player.name === myName ? ' (You)' : ''}
+                    {displayName}{playerName === myName ? ' (You)' : ''}
                   </div>
                 </div>
                 <div className="dec-player-status">

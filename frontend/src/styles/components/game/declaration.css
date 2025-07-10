@@ -125,7 +125,7 @@
 
 /* Player status */
 .dec-player-status {
-  text-align: right;
+  text-align: center;
   min-width: 60px;
 }
 
@@ -146,6 +146,12 @@
 }
 
 .dec-status-badge.waiting {
+  background: rgba(108, 117, 125, 0.1);
+  color: #6C757D;
+  border: 1px solid rgba(108, 117, 125, 0.2);
+}
+
+.dec-status-badge.pending {
   background: rgba(108, 117, 125, 0.1);
   color: #6C757D;
   border: 1px solid rgba(108, 117, 125, 0.2);
