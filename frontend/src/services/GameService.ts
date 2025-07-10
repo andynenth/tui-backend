@@ -199,7 +199,7 @@ export class GameService extends EventTarget {
 
     // Calculate total value of selected pieces
     const selectedPieces = indices.map(i => this.state.myHand[i]);
-    const totalValue = selectedPieces.reduce((sum, piece) => sum + (piece.point || piece.value || 0), 0);
+    const totalValue = selectedPieces.reduce((sum, piece) => sum + (piece.value || 0), 0);
 
 
     this.sendAction('play', { 
@@ -521,23 +521,60 @@ export class GameService extends EventTarget {
     if (data.players && state.playerName && data.players[state.playerName]) {
       const myPlayerData = data.players[state.playerName];
       if (myPlayerData.hand) {
-        // Convert string pieces back to objects for frontend
-        newState.myHand = myPlayerData.hand.map((pieceStr: string) => {
+        // Convert string pieces back to objects for frontend with original indices
+        const unsortedHand = myPlayerData.hand.map((pieceStr: string, index: number) => {
           // Parse piece strings like "ELEPHANT_RED(10)" into objects
           const match = pieceStr.match(/^(.+)\((\d+)\)$/);
           if (match) {
             const [, name, value] = match;
             const [piece, color] = name.split('_');
             return {
-              color, // Use 'color' property that GamePiece expects
+              type: piece.toLowerCase(),
+              color: color.toLowerCase() as 'red' | 'black', // Convert to lowercase for type compatibility
+              value: parseInt(value),
+              // Additional properties for backward compatibility
               point: parseInt(value),
               kind: piece,
               name: piece.toLowerCase(),
-              displayName: `${piece} ${color}`
+              displayName: `${piece} ${color}`,
+              originalIndex: index // Store the original index before sorting
             };
           }
-          return { color: 'UNKNOWN', point: 0, kind: 'UNKNOWN', name: pieceStr, displayName: pieceStr };
+          return { 
+            type: 'unknown',
+            color: 'red' as 'red' | 'black', // Default to red for unknown pieces
+            value: 0,
+            // Additional properties for backward compatibility
+            point: 0, 
+            kind: 'UNKNOWN', 
+            name: pieceStr, 
+            displayName: pieceStr,
+            originalIndex: index // Store the original index before sorting
+          };
         });
+        
+        // Sort myHand by color (red first) then by value (high to low)
+        console.log('🎴 SORT DEBUG: Before sorting myHand:', JSON.stringify(unsortedHand.map((p: any) => ({
+          type: p.type,
+          color: p.color,
+          value: p.value,
+          originalIndex: p.originalIndex
+        }))));
+        
+        newState.myHand = [...unsortedHand].sort((a, b) => {
+          // First sort by color: red comes before black
+          if (a.color === 'red' && b.color !== 'red') return -1;
+          if (a.color !== 'red' && b.color === 'red') return 1;
+          // Then sort by value (high to low)
+          return (b.value || 0) - (a.value || 0);
+        });
+        
+        console.log('🎴 SORT DEBUG: After sorting myHand:', JSON.stringify(newState.myHand.map((p: any) => ({
+          type: p.type,
+          color: p.color,
+          value: p.value,
+          originalIndex: p.originalIndex
+        }))));
       }
     }
     
@@ -545,6 +582,7 @@ export class GameService extends EventTarget {
     if (data.players) {
       newState.players = Object.entries(data.players).map(([playerName, playerData]: [string, any]) => ({
         name: playerName, // Use the key as the name
+        score: 0, // Default score, will be updated in scoring phase
         is_bot: playerData.is_bot || false,
         is_host: playerData.is_host || false,
         zero_declares_in_a_row: playerData.zero_declares_in_a_row || 0,
@@ -575,6 +613,26 @@ export class GameService extends EventTarget {
           // Fallback to phase_data.my_hand if data.players doesn't have it
           if (phaseData.my_hand && !newState.myHand.length) {
             newState.myHand = phaseData.my_hand;
+            // Sort myHand by color (red first) then by value (high to low)
+            console.log('🎴 SORT DEBUG (phase fallback): Before sorting:', JSON.stringify(newState.myHand.map(p => ({
+              type: p.type,
+              color: p.color,
+              value: p.value
+            }))));
+            
+            newState.myHand.sort((a, b) => {
+              // First sort by color: red comes before black
+              if (a.color === 'red' && b.color !== 'red') return -1;
+              if (a.color !== 'red' && b.color === 'red') return 1;
+              // Then sort by value (high to low)
+              return (b.value || 0) - (a.value || 0);
+            });
+            
+            console.log('🎴 SORT DEBUG (phase fallback): After sorting:', JSON.stringify(newState.myHand.map(p => ({
+              type: p.type,
+              color: p.color,
+              value: p.value
+            }))));
           }
           if (phaseData.round_starter) newState.roundStarter = phaseData.round_starter;
           newState.redealMultiplier = phaseData.redeal_multiplier || 1;
@@ -614,6 +672,26 @@ export class GameService extends EventTarget {
           // Fallback to phase_data.my_hand if data.players doesn't have it
           if (phaseData.my_hand && !newState.myHand.length) {
             newState.myHand = phaseData.my_hand;
+            // Sort myHand by color (red first) then by value (high to low)
+            console.log('🎴 SORT DEBUG (phase fallback): Before sorting:', JSON.stringify(newState.myHand.map(p => ({
+              type: p.type,
+              color: p.color,
+              value: p.value
+            }))));
+            
+            newState.myHand.sort((a, b) => {
+              // First sort by color: red comes before black
+              if (a.color === 'red' && b.color !== 'red') return -1;
+              if (a.color !== 'red' && b.color === 'red') return 1;
+              // Then sort by value (high to low)
+              return (b.value || 0) - (a.value || 0);
+            });
+            
+            console.log('🎴 SORT DEBUG (phase fallback): After sorting:', JSON.stringify(newState.myHand.map(p => ({
+              type: p.type,
+              color: p.color,
+              value: p.value
+            }))));
           }
           if (phaseData.declaration_order) newState.declarationOrder = phaseData.declaration_order;
           if (phaseData.current_declarer) newState.currentDeclarer = phaseData.current_declarer;
@@ -808,9 +886,21 @@ export class GameService extends EventTarget {
    * Handle redeal executed event
    */
   private handleRedealExecuted(state: GameState, data: any): GameState {
+    const newHand = data.my_hand || state.myHand;
+    // Sort myHand by color (red first) then by value (high to low)
+    if (Array.isArray(newHand)) {
+      newHand.sort((a, b) => {
+        // First sort by color: red comes before black
+        if (a.color === 'red' && b.color !== 'red') return -1;
+        if (a.color !== 'red' && b.color === 'red') return 1;
+        // Then sort by value (high to low)
+        return (b.value || 0) - (a.value || 0);
+      });
+    }
+    
     return {
       ...state,
-      myHand: data.my_hand || state.myHand,
+      myHand: newHand,
       redealMultiplier: data.redeal_multiplier || state.redealMultiplier,
       weakHands: [],
       currentWeakPlayer: null,
@@ -938,11 +1028,23 @@ export class GameService extends EventTarget {
    * Handle turn resolved event
    */
   private handleTurnResolved(state: GameState, data: any): GameState {
+    const newHand = data.my_hand || state.myHand;
+    // Sort myHand by color (red first) then by value (high to low)
+    if (Array.isArray(newHand)) {
+      newHand.sort((a, b) => {
+        // First sort by color: red comes before black
+        if (a.color === 'red' && b.color !== 'red') return -1;
+        if (a.color !== 'red' && b.color === 'red') return 1;
+        // Then sort by value (high to low)
+        return (b.value || 0) - (a.value || 0);
+      });
+    }
+    
     return {
       ...state,
       currentTurnPlays: [],
       requiredPieceCount: null,
-      myHand: data.my_hand || state.myHand,
+      myHand: newHand,
       currentTurnNumber: state.currentTurnNumber + 1
     };
   }
@@ -959,7 +1061,7 @@ export class GameService extends EventTarget {
     
     const newState = {
       ...state,
-      phase: 'turn_results',
+      phase: 'turn_results' as const,
       turnWinner: data.winner || null,
       winningPlay: data.winning_play || null,
       playerPiles: data.player_piles || {},
@@ -1333,7 +1435,7 @@ export class GameService extends EventTarget {
    */
   private calculateWeakHand(hand: any[]): boolean {
     if (!hand || hand.length === 0) return false;
-    return hand.every(piece => (piece.value || piece.point || 0) <= 9);
+    return hand.every(piece => (piece.value || 0) <= 9);
   }
 
   /**
@@ -1341,7 +1443,7 @@ export class GameService extends EventTarget {
    */
   private calculateHandValue(hand: any[]): number {
     if (!hand || hand.length === 0) return 0;
-    return hand.reduce((sum, piece) => sum + (piece.value || piece.point || 0), 0);
+    return hand.reduce((sum, piece) => sum + (piece.value || 0), 0);
   }
 
   /**
@@ -1349,7 +1451,7 @@ export class GameService extends EventTarget {
    */
   private calculateHighestCardValue(hand: any[]): number {
     if (!hand || hand.length === 0) return 0;
-    return Math.max(...hand.map(piece => piece.value || piece.point || 0));
+    return Math.max(...hand.map(piece => piece.value || 0));
   }
 
   /**
@@ -1358,7 +1460,7 @@ export class GameService extends EventTarget {
   private calculateEstimatedPiles(hand: any[]): number {
     if (!hand || hand.length === 0) return 0;
     
-    const values = hand.map(piece => piece.value || piece.point || 0);
+    const values = hand.map(piece => piece.value || 0);
     const averageValue = values.reduce((sum, val) => sum + val, 0) / values.length;
     const highCards = values.filter(val => val > 10).length;
     
@@ -1372,7 +1474,7 @@ export class GameService extends EventTarget {
   private calculateHandStrength(hand: any[]): number {
     if (!hand || hand.length === 0) return 0;
     
-    const values = hand.map(piece => piece.value || piece.point || 0);
+    const values = hand.map(piece => piece.value || 0);
     const averageValue = values.reduce((sum, val) => sum + val, 0) / values.length;
     const maxValue = Math.max(...values);
     

@@ -106,7 +106,9 @@ const TurnContent = ({
       }
       
       // New selection
-      const newPiece = { ...piece, id: pieceId, index };
+      // IMPORTANT: Use piece.originalIndex if available (for sorted hands)
+      const originalIndex = piece.originalIndex !== undefined ? piece.originalIndex : index;
+      const newPiece = { ...piece, id: pieceId, index: originalIndex, displayIndex: index };
       
       // If required count is set and we're at the limit
       if (requiredPieceCount > 0 && prev.length >= requiredPieceCount) {
