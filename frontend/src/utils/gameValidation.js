@@ -142,34 +142,34 @@ function isDoubleStraight(pieces) {
  */
 export function getPlayType(pieces) {
     if (!pieces || pieces.length === 0) return null;
-    if (pieces.length === 1) return null; // Don't show type for single piece
+    if (pieces.length === 1) return "SINGLE";
     
     // Check for pairs (by value)
     if (pieces.length === 2 && isPair(pieces)) {
-        return "Pair";
+        return "PAIR";
     }
     
     // Check for three of a kind
     if (pieces.length === 3) {
-        if (isThreeOfAKind(pieces)) return "Three of a Kind";
-        if (isStraight(pieces)) return "Straight";
+        if (isThreeOfAKind(pieces)) return "THREE_OF_A_KIND";
+        if (isStraight(pieces)) return "STRAIGHT";
     }
     
     // Check for four of a kind
     if (pieces.length === 4) {
-        if (isFourOfAKind(pieces)) return "Four of a Kind";
-        if (isExtendedStraight(pieces)) return "Extended Straight";
+        if (isFourOfAKind(pieces)) return "FOUR_OF_A_KIND";
+        if (isExtendedStraight(pieces)) return "EXTENDED_STRAIGHT";
     }
     
     // Check for five of a kind
     if (pieces.length === 5) {
-        if (isFiveOfAKind(pieces)) return "Five of a Kind";
-        if (isExtendedStraight5(pieces)) return "Extended Straight";
+        if (isFiveOfAKind(pieces)) return "FIVE_OF_A_KIND";
+        if (isExtendedStraight5(pieces)) return "EXTENDED_STRAIGHT_5";
     }
     
     // Check for double straight
     if (pieces.length === 6 && isDoubleStraight(pieces)) {
-        return "Double Straight";
+        return "DOUBLE_STRAIGHT";
     }
     
     return null; // Invalid combination
