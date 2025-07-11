@@ -28,13 +28,13 @@
 .game-piece--small {
   width: 32px;
   height: 32px;
-  font-size: 12px;
+  font-size: 20px;
 }
 
 .game-piece--medium {
   width: 44px;
   height: 44px;
-  font-size: 16px;
+  font-size: 24px;
 }
 
 .game-piece--large {
