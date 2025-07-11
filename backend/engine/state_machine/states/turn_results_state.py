@@ -35,6 +35,7 @@ class TurnResultsState(GameState):
         self.display_duration: float = 7.0  # 7 second display period
         self.turn_winner: Optional[str] = None
         self.winning_play: Optional[dict] = None
+        self.turn_plays: Dict[str, Any] = {}  # Store turn plays for display
         self.auto_transition_task: Optional[asyncio.Task] = None
         self.transition_target: Optional[GamePhase] = None
 
@@ -61,6 +62,7 @@ class TurnResultsState(GameState):
 
             self.turn_winner = phase_data.get("turn_winner") or phase_data.get("winner")
             self.winning_play = phase_data.get("winning_play")
+            self.turn_plays = phase_data.get("turn_plays", {})
 
             # Determine next phase based on game state
             all_hands_empty = self._check_all_hands_empty()
@@ -93,6 +95,7 @@ class TurnResultsState(GameState):
                 {
                     "turn_winner": self.turn_winner,
                     "winning_play": self.winning_play,
+                    "turn_plays": self.turn_plays,  # Include turn plays for display
                     "display_duration": self.display_duration,
                     "next_phase": self.transition_target.value,
                     "auto_transition": True,
