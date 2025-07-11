@@ -40,7 +40,7 @@ export function TurnResultsUI({
     const turnPlay = currentTurnPlays.find(play => play.player === player.name);
     return {
       playerName: player.name,
-      pieces: turnPlay?.cards || []
+      pieces: turnPlay?.pieces || turnPlay?.cards || []
     };
   });
   
