@@ -296,7 +296,12 @@ const TurnContent = ({
                 const selectedPlayType = getPlayType(selectedPieces);
                 
                 if (selectedPlayType) {
-                  return `✓ Your ${selectedPlayType} can compete this turn`;
+                  // Check if the selected play type matches the starter's play type
+                  if (selectedPlayType === playType) {
+                    return `✓ Your ${selectedPlayType} can compete this turn`;
+                  } else {
+                    return `⚠️ Your ${selectedPlayType} cannot compete against ${playType}`;
+                  }
                 } else {
                   // Use the actual play type from the starter if available
                   const starterPlayType = playType || 'combination';
