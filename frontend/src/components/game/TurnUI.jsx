@@ -41,9 +41,9 @@ export function TurnUI({
   // Build player pieces from turn plays
   const playerPieces = {};
   currentTurnPlays.forEach(play => {
-    if (play.player && play.cards) {
-      // Use cards property from the converted turn plays
-      playerPieces[play.player] = play.cards;
+    if (play.player && (play.pieces || play.cards)) {
+      // Use pieces property (or cards for backward compatibility)
+      playerPieces[play.player] = play.pieces || play.cards;
     }
   });
   
@@ -69,7 +69,7 @@ export function TurnUI({
   
   // Use current pile from props or derive from currentTurnPlays
   const pile = currentPile.length > 0 ? currentPile : 
-    currentTurnPlays.reduce((acc, play) => [...acc, ...(play.cards || [])], []);
+    currentTurnPlays.reduce((acc, play) => [...acc, ...(play.pieces || play.cards || [])], []);
   
   // Determine required count
   const required = canPlayAnyCount ? 0 : requiredPieceCount;

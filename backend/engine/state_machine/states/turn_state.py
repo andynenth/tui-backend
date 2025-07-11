@@ -50,7 +50,9 @@ class TurnState(GameState):
         self._turn_resolution_cache: Optional[Dict[str, Any]] = (
             None  # Cache to avoid duplicate resolve_turn calls
         )
-        self._last_validation_error: Optional[str] = None  # Store validation error messages
+        self._last_validation_error: Optional[str] = (
+            None  # Store validation error messages
+        )
 
     async def _setup_phase(self) -> None:
         """Initialize turn phase"""
@@ -189,6 +191,8 @@ class TurnState(GameState):
         # 🚀 ENTERPRISE: Use automatic broadcasting system
         current_turn_number = game.turn_number
 
+        # Get current pile counts
+        pile_counts = getattr(game, "pile_counts", {})
 
         await self.update_phase_data(
             {
@@ -199,6 +203,7 @@ class TurnState(GameState):
                 "turn_plays": {},
                 "turn_complete": False,
                 "current_turn_number": current_turn_number,
+                "pile_counts": pile_counts.copy(),  # Add accumulated pile counts
             },
             f"New turn {current_turn_number} started with starter {self.current_turn_starter}",
         )
@@ -214,7 +219,6 @@ class TurnState(GameState):
     async def _validate_play_pieces(self, action: GameAction) -> bool:
         """Validate a play pieces action"""
         payload = action.payload
-        
 
         # Check if it's this player's turn
         current_player = self._get_current_player()
@@ -258,7 +262,9 @@ class TurnState(GameState):
                 self.logger.warning(
                     f"Must play {self.required_piece_count} pieces, got {piece_count}"
                 )
-                self._last_validation_error = f"Must play exactly {self.required_piece_count} pieces"
+                self._last_validation_error = (
+                    f"Must play exactly {self.required_piece_count} pieces"
+                )
                 return False
 
         # Only validate combination if this is the starter
@@ -270,15 +276,19 @@ class TurnState(GameState):
                 self._last_validation_error = "Starter must play a valid combination"
                 return False
         # Non-starters can play any pieces as long as count matches
-        
+
         # Validate player owns all pieces
         game = self.state_machine.game
         player = next((p for p in game.players if p.name == action.player_name), None)
         if player:
             for piece in pieces:
                 if piece not in player.hand:
-                    self.logger.warning(f"Player {action.player_name} doesn't have piece: {piece}")
-                    self._last_validation_error = f"You don't have one or more of the selected pieces"
+                    self.logger.warning(
+                        f"Player {action.player_name} doesn't have piece: {piece}"
+                    )
+                    self._last_validation_error = (
+                        f"You don't have one or more of the selected pieces"
+                    )
                     return False
         else:
             self.logger.error(f"Player {action.player_name} not found in game")
@@ -294,10 +304,9 @@ class TurnState(GameState):
         pieces = payload["pieces"]
         piece_count = len(pieces)
 
-        
         # Calculate play type from pieces
         play_type = get_play_type(pieces) if pieces else "UNKNOWN"
-        
+
         # Calculate total play value from piece points
         play_value = 0
         if pieces:
@@ -327,7 +336,7 @@ class TurnState(GameState):
         self.logger.info(
             f"🎲 {action.player_name} plays: {pieces} (value: {play_data['play_value']})"
         )
-        
+
         # Remove pieces from player's hand immediately
         game = self.state_machine.game
         player = next((p for p in game.players if p.name == action.player_name), None)
@@ -335,14 +344,16 @@ class TurnState(GameState):
             for piece in pieces:
                 if piece in player.hand:
                     player.hand.remove(piece)
-            self.logger.info(f"Removed {len(pieces)} pieces from {action.player_name}'s hand")
+            self.logger.info(
+                f"Removed {len(pieces)} pieces from {action.player_name}'s hand"
+            )
         else:
-            self.logger.error(f"Could not find player {action.player_name} to remove pieces")
-
+            self.logger.error(
+                f"Could not find player {action.player_name} to remove pieces"
+            )
 
         # Move to next player
         self.current_player_index += 1
-
 
         current_round = getattr(self.state_machine.game, "round_number", 1)
         turn_number = getattr(self.state_machine.game, "turn_number", 0)
@@ -351,12 +362,16 @@ class TurnState(GameState):
         # This ensures every player's move (including the last player) is immediately visible to frontend
         game = self.state_machine.game
         current_turn_number = game.turn_number
-        
+
         # Determine if this is the last play of the turn
         is_turn_complete = self.current_player_index >= len(self.turn_order)
         # Keep last player as current when turn is complete to avoid breaking frontend
-        next_player = self._get_current_player() if not is_turn_complete else action.player_name
-        
+        next_player = (
+            self._get_current_player() if not is_turn_complete else action.player_name
+        )
+
+        # Get current pile counts
+        pile_counts = getattr(game, "pile_counts", {})
 
         # Always broadcast the updated state including all plays
         await self.update_phase_data(
@@ -366,16 +381,16 @@ class TurnState(GameState):
                 "turn_plays": self.turn_plays.copy(),  # This now includes the current player's play
                 "turn_complete": is_turn_complete,
                 "current_turn_number": current_turn_number,
+                "pile_counts": pile_counts.copy(),  # Add accumulated pile counts
             },
             f"Player {action.player_name} played {piece_count} pieces",
         )
-
 
         # Check if turn is complete AFTER broadcasting
         if is_turn_complete:
             await self._complete_turn()
             # _complete_turn() will handle turn completion broadcasting and delay
-            
+
             # Return result for completed turn
             result = {
                 "status": "play_accepted",
@@ -398,7 +413,7 @@ class TurnState(GameState):
             "next_player": next_player,
             "turn_complete": False,
         }
-        
+
         return result
 
     async def _complete_turn(self) -> None:
@@ -424,10 +439,17 @@ class TurnState(GameState):
 
         # 🎮 Add delay for frontend flip animation to complete
         import time
+
         delay_start = time.time()
         self.logger.info("🎮 Waiting 5s for piece flip animation to complete...")
-        await asyncio.sleep(5.0)  # Give frontend plenty of time for 800ms delay + 600ms animation
+        await asyncio.sleep(
+            5.0
+        )  # Give frontend plenty of time for 800ms delay + 600ms animation
         delay_end = time.time()
+
+        # Get updated pile counts after awarding
+        game = self.state_machine.game
+        pile_counts = getattr(game, "pile_counts", {})
 
         # 🚀 ENTERPRISE: Use automatic broadcasting for turn completion
         await self.update_phase_data(
@@ -437,6 +459,7 @@ class TurnState(GameState):
                 "piles_won": self.required_piece_count if self.winner else 0,
                 "turn_plays": self.turn_plays.copy(),  # Preserve the completed turn data
                 "next_turn_starter": self.winner or self.current_turn_starter,
+                "pile_counts": pile_counts.copy(),  # Include updated pile counts
             },
             f"Turn completed - winner: {self.winner}",
         )
@@ -542,7 +565,18 @@ class TurnState(GameState):
         """Award piles to the winner"""
         game = self.state_machine.game
 
-        # Initialize player piles if not exists
+        # Initialize pile_counts if not exists (should be initialized in preparation)
+        if not hasattr(game, "pile_counts"):
+            game.pile_counts = {}
+            for player in game.players:
+                game.pile_counts[player.name] = 0
+
+        # Update pile_counts (accumulated piles)
+        if winner not in game.pile_counts:
+            game.pile_counts[winner] = 0
+        game.pile_counts[winner] += pile_count
+
+        # Initialize player_piles if not exists (for turn-specific tracking)
         if not hasattr(game, "player_piles"):
             game.player_piles = {}
 
@@ -557,12 +591,13 @@ class TurnState(GameState):
                 player.captured_piles += pile_count
                 break
 
-        self.logger.info(f"💰 {winner} now has {game.player_piles[winner]} piles total")
+        self.logger.info(
+            f"💰 {winner} won {pile_count} piles this turn, total: {game.pile_counts[winner]} piles"
+        )
 
     async def _process_turn_completion(self) -> None:
         """Process the completion of a turn"""
         game = self.state_machine.game
-
 
         # STEP 1: Remove played pieces from player hands FIRST
         # NOTE: Pieces are now removed immediately in _handle_play_pieces
@@ -590,7 +625,6 @@ class TurnState(GameState):
                 hand_sizes[player.name] = hand_size
                 if hand_size > 0:
                     all_hands_empty = False
-
 
         # 🔧 FIX: Add defensive consistency check
         try:
@@ -800,7 +834,6 @@ class TurnState(GameState):
                 f"Player {player_name} played {piece_count} pieces",
             )
 
-
         except Exception as e:
             self.logger.error(f"Failed to broadcast play event: {e}", exc_info=True)
 
@@ -811,10 +844,10 @@ class TurnState(GameState):
         """DEPRECATED: Use _broadcast_play_event_enterprise instead"""
         await self._broadcast_play_event_enterprise(player_name, pieces, piece_count)
 
-
     async def _broadcast_turn_completion_enterprise(self):
         """🚀 ENTERPRISE: Broadcast turn completion using centralized system"""
         import time
+
         broadcast_time = time.time()
         try:
             game = self.state_machine.game
@@ -897,7 +930,6 @@ class TurnState(GameState):
         min_hand_size = min(hand_values)
         max_hand_size = max(hand_values)
 
-
         # If there's more than 1 card difference between players, something is wrong
         if max_hand_size - min_hand_size > 1:
             self.logger.critical(f"❌ CONSISTENCY ERROR: Uneven hand distribution!")
@@ -905,13 +937,12 @@ class TurnState(GameState):
             self.logger.critical(
                 f"   Max difference: {max_hand_size - min_hand_size} cards"
             )
-            
+
             # Trigger critical error handling
             await self._handle_critical_game_error(
-                "Game state corrupted: Players have different hand sizes",
-                hand_sizes
+                "Game state corrupted: Players have different hand sizes", hand_sizes
             )
-            
+
             # Raise exception to stop normal flow
             raise GameStateError("Critical game state error - uneven hands")
 
@@ -924,24 +955,25 @@ class TurnState(GameState):
                     f"⚠️ MIXED STATE: Some players empty ({[name for name, size in hand_sizes.items() if size == 0]}), others with multiple cards"
                 )
 
-    
-    async def _handle_critical_game_error(self, error_message: str, debug_data: dict) -> None:
+    async def _handle_critical_game_error(
+        self, error_message: str, debug_data: dict
+    ) -> None:
         """Handle critical game errors by notifying all players and ending game"""
-        
+
         # Broadcast error to all players
         await self.broadcast_custom_event(
             "critical_error",
             {
                 "message": error_message,
                 "reason": "Game state inconsistency detected",
-                "action": "returning_to_lobby"
+                "action": "returning_to_lobby",
             },
-            f"Critical error: {error_message}"
+            f"Critical error: {error_message}",
         )
-        
+
         # Log with full context
         self.logger.critical(f"GAME HALTED: {error_message}")
         self.logger.critical(f"Debug data: {debug_data}")
-        
+
         # Force end game
         await self.state_machine.force_end_game("critical_error")

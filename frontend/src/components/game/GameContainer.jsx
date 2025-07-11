@@ -133,8 +133,8 @@ export function GameContainer({ roomId, onNavigateToLobby }) {
       }
     }
     
-    // Build piles won count from previous turns (would need to be tracked)
-    const piecesWonCount = gameState.playerPiles || {};
+    // Use pile_counts from backend (accumulated piles won so far)
+    const piecesWonCount = gameState.pileCounts || gameState.pile_counts || {};
     
     // Build player hand sizes - use backend-provided hand_size data
     const playerHandSizes = {};
