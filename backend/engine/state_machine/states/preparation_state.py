@@ -120,12 +120,12 @@ class PreparationState(GameState):
         # game.deal_pieces()
 
         # 2. Guaranteed no weak hands (testing)
-        # game._deal_guaranteed_no_redeal(red_general_player_index=1)
+        game._deal_guaranteed_no_redeal(red_general_player_index=1)
 
         # 3. Force weak hands (testing redeal logic)
-        game._deal_weak_hand(weak_player_indices=[1], max_weak_points=9, limit=3)
+        # game._deal_weak_hand(weak_player_indices=[1], max_weak_points=9, limit=1)
         
-        game._deal_double_straight(0,'RED')
+        # game._deal_double_straight(0,'RED')
 
         # Examples:
         # game._deal_guaranteed_no_redeal()                              # Random RED_GENERAL assignment
@@ -192,8 +192,17 @@ class PreparationState(GameState):
                 # Starter already set (e.g., by scoring state for next round)
                 starter = game.current_player
                 game.round_starter = starter  # Ensure both are set
+                
+                # Set starter_reason based on why they're the starter
+                if game.round_number > 1 and hasattr(game, "last_turn_winner") and game.last_turn_winner == starter:
+                    game.starter_reason = 'won_last_turn'
+                else:
+                    # In case we don't have a specific reason, check existing reason or set default
+                    if not hasattr(game, 'starter_reason'):
+                        game.starter_reason = 'default'
+                
                 self.logger.info(
-                    f"✅ No weak hands - keeping existing starter: {starter}"
+                    f"✅ No weak hands - keeping existing starter: {starter} (reason: {game.starter_reason})"
                 )
             else:
                 # No starter set, determine one
@@ -350,6 +359,7 @@ class PreparationState(GameState):
             game.redeal_multiplier = old_multiplier + 1
             game.current_player = first_accepter
             game.round_starter = first_accepter
+            game.starter_reason = 'accepted_redeal'
 
             self.logger.info(f"♻️ Redeal accepted by {first_accepter} - new starter")
             self.logger.info(

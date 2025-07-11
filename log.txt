@@ -1,356 +1,127 @@
-RecoveryService.ts:66 🔄 RecoveryService: Initialized
-ServiceIntegration.ts:79 🔗 ServiceIntegration: Initialized
-ServiceIntegration.ts:98 
-ServiceIntegration.ts:99 🎯 =============================================
-ServiceIntegration.ts:100 🚀 PHASE 1-4 ENTERPRISE ARCHITECTURE STARTING
-ServiceIntegration.ts:101 🎯 =============================================
-ServiceIntegration.ts:102 🔧 Initializing integrated service layer...
-ServiceIntegration.ts:567 ✅ NetworkService integrated
-ServiceIntegration.ts:575 ✅ GameService integrated
-ServiceIntegration.ts:583 ✅ RecoveryService integrated
-ServiceIntegration.ts:594 🩺 Health monitoring started (30000ms interval)
-ServiceIntegration.ts:124 
-ServiceIntegration.ts:125 ✅ =============================================
-ServiceIntegration.ts:126 🎉 PHASE 1-4 ARCHITECTURE FULLY OPERATIONAL!
-ServiceIntegration.ts:127 ✅ =============================================
-ServiceIntegration.ts:128 🔗 NetworkService: Advanced WebSocket with auto-reconnection
-ServiceIntegration.ts:129 🎮 GameService: React hooks with TypeScript state management
-ServiceIntegration.ts:130 🛠️ RecoveryService: Automatic error recovery and health monitoring
-ServiceIntegration.ts:131 🏢 Enterprise Features: Event sourcing, logging, metrics
-ServiceIntegration.ts:132 ✅ Service integration layer initialized successfully
-ServiceIntegration.ts:133 
-App.jsx:117 🎮 Global services initialized
-NetworkService.ts:337 🔗 Connection opened to room lobby
-GameService.ts:1353 🎮 State Change: NETWORK_CONNECTED
-GameService.ts:1354 Previous: {isConnected: false, roomId: null, playerName: null, phase: 'waiting', currentRound: 1, …}
-GameService.ts:1355 New: {isConnected: true, roomId: null, playerName: null, phase: 'waiting', currentRound: 1, …}
-GameService.ts:1356 Diff: {isConnected: {…}, lastEventSequence: {…}}
-NetworkService.ts:129 🌐 NetworkService: Connected to room lobby
-GameService.ts:1353 🎮 State Change: NETWORK_DISCONNECTED
-GameService.ts:1354 Previous: {isConnected: true, roomId: null, playerName: null, phase: 'waiting', currentRound: 1, …}
-GameService.ts:1355 New: {isConnected: false, roomId: null, playerName: null, phase: 'waiting', currentRound: 1, …}
-GameService.ts:1356 Diff: {isConnected: {…}, lastEventSequence: {…}}
-NetworkService.ts:171 🌐 NetworkService: Disconnected from room lobby
-NetworkService.ts:214 📤 Queued message for lobby: get_rooms (1 queued)
-NetworkService.ts:337 🔗 Connection opened to room lobby
-GameService.ts:1353 🎮 State Change: NETWORK_CONNECTED
-GameService.ts:1354 Previous: {isConnected: false, roomId: null, playerName: null, phase: 'waiting', currentRound: 1, …}
-GameService.ts:1355 New: {isConnected: true, roomId: null, playerName: null, phase: 'waiting', currentRound: 1, …}
-GameService.ts:1356 Diff: {isConnected: {…}, lastEventSequence: {…}}
-NetworkService.ts:129 🌐 NetworkService: Connected to room lobby
-LobbyPage.jsx:45 Received room_list_update: {roomId: 'lobby', data: {…}, message: {…}, timestamp: 1752188681548}
-GameService.ts:1353 🎮 State Change: NETWORK_DISCONNECTED
-GameService.ts:1354 Previous: {isConnected: true, roomId: null, playerName: null, phase: 'waiting', currentRound: 1, …}
-GameService.ts:1355 New: {isConnected: false, roomId: null, playerName: null, phase: 'waiting', currentRound: 1, …}
-GameService.ts:1356 Diff: {isConnected: {…}, lastEventSequence: {…}}
-NetworkService.ts:171 🌐 NetworkService: Disconnected from room lobby
-NetworkService.ts:214 📤 Queued message for lobby: get_rooms (1 queued)
-NetworkService.ts:337 🔗 Connection opened to room lobby
-GameService.ts:1353 🎮 State Change: NETWORK_CONNECTED
-GameService.ts:1354 Previous: {isConnected: false, roomId: null, playerName: null, phase: 'waiting', currentRound: 1, …}
-GameService.ts:1355 New: {isConnected: true, roomId: null, playerName: null, phase: 'waiting', currentRound: 1, …}
-GameService.ts:1356 Diff: {isConnected: {…}, lastEventSequence: {…}}
-NetworkService.ts:129 🌐 NetworkService: Connected to room lobby
-LobbyPage.jsx:45 Received room_list_update: {roomId: 'lobby', data: {…}, message: {…}, timestamp: 1752188682632}
-LobbyPage.jsx:56 Received room_created: {roomId: 'lobby', data: {…}, message: {…}, timestamp: 1752188682718}
-LobbyPage.jsx:57 🟢 Navigation: room_id = C0D144 navigating to: /room/C0D144
-LobbyPage.jsx:61 ✅ Navigating to new room: C0D144
-GameService.ts:1353 🎮 State Change: NETWORK_DISCONNECTED
-GameService.ts:1354 Previous: {isConnected: true, roomId: null, playerName: null, phase: 'waiting', currentRound: 1, …}
-GameService.ts:1355 New: {isConnected: false, roomId: null, playerName: null, phase: 'waiting', currentRound: 1, …}
-GameService.ts:1356 Diff: {isConnected: {…}, lastEventSequence: {…}}
-NetworkService.ts:171 🌐 NetworkService: Disconnected from room lobby
-NetworkService.ts:214 📤 Queued message for lobby: get_rooms (1 queued)
-NetworkService.ts:337 🔗 Connection opened to room lobby
-GameService.ts:1353 🎮 State Change: NETWORK_CONNECTED
-GameService.ts:1354 Previous: {isConnected: false, roomId: null, playerName: null, phase: 'waiting', currentRound: 1, …}
-GameService.ts:1355 New: {isConnected: true, roomId: null, playerName: null, phase: 'waiting', currentRound: 1, …}
-GameService.ts:1356 Diff: {isConnected: {…}, lastEventSequence: {…}}
-NetworkService.ts:129 🌐 NetworkService: Connected to room lobby
-NetworkService.ts:337 🔗 Connection opened to room C0D144
-GameService.ts:1353 🎮 State Change: NETWORK_CONNECTED
-GameService.ts:1354 Previous: {isConnected: true, roomId: null, playerName: null, phase: 'waiting', currentRound: 1, …}
-GameService.ts:1355 New: {isConnected: true, roomId: null, playerName: null, phase: 'waiting', currentRound: 1, …}
-GameService.ts:1356 Diff: {lastEventSequence: {…}}
-NetworkService.ts:129 🌐 NetworkService: Connected to room C0D144
-RoomPage.jsx:66 🏠 ROOM_UPDATE: Full data received: {players: Array(4), host_name: 'Andy', room_id: 'C0D144', started: false}
-RoomPage.jsx:67 🏠 ROOM_UPDATE: Players array: (4) [{…}, {…}, {…}, {…}]
-RoomPage.jsx:68 🏠 ROOM_UPDATE: Players array type: object
-RoomPage.jsx:69 🏠 ROOM_UPDATE: Players array length: 4
-RoomPage.jsx:70 🏠 ROOM_UPDATE: Players array entries: (4) [Array(2), Array(2), Array(2), Array(2)]
-RoomPage.jsx:104 🎮 START_GAME: Button clicked
-RoomPage.jsx:105 🎮 START_GAME: Room ID: C0D144
- Game started, navigating to game page
- 🎮 State Change: NETWORK_DISCONNECTED
- Previous: {isConnected: true, roomId: null, playerName: null, phase: 'waiting', currentRound: 1, …}
- New: {isConnected: false, roomId: null, playerName: null, phase: 'waiting', currentRound: 1, …}
- Diff: {isConnected: {…}, lastEventSequence: {…}}
- 🌐 NetworkService: Disconnected from room C0D144
- 🔗 Connecting to room C0D144 as Andy...
-RecoveryService.ts:106 🔄 RecoveryService: Initialized tracking for room C0D144
-GameService.ts:1353 🎮 State Change: JOIN_ROOM_INIT
-GameService.ts:1354 Previous: {isConnected: false, roomId: null, playerName: null, phase: 'waiting', currentRound: 1, …}
-GameService.ts:1355 New: {isConnected: false, roomId: 'C0D144', playerName: 'Andy', phase: 'waiting', currentRound: 1, …}
-GameService.ts:1356 Diff: {roomId: {…}, playerName: {…}, lastEventSequence: {…}}
-GameContext.jsx:36 🚀 GAME_CONTEXT: Phase 1-4 Enterprise Architecture initializing
-NetworkService.ts:337 🔗 Connection opened to room C0D144
-GameService.ts:1353 🎮 State Change: NETWORK_CONNECTED
-GameService.ts:1354 Previous: {isConnected: false, roomId: 'C0D144', playerName: 'Andy', phase: 'waiting', currentRound: 1, …}
-GameService.ts:1355 New: {isConnected: true, roomId: 'C0D144', playerName: 'Andy', phase: 'waiting', currentRound: 1, …}
-GameService.ts:1356 Diff: {isConnected: {…}, lastEventSequence: {…}}
-NetworkService.ts:129 🌐 NetworkService: Connected to room C0D144
-GameService.ts:1353 🎮 State Change: JOIN_ROOM_CONNECTED
-GameService.ts:1354 Previous: {isConnected: true, roomId: 'C0D144', playerName: 'Andy', phase: 'waiting', currentRound: 1, …}
-GameService.ts:1355 New: {isConnected: true, roomId: 'C0D144', playerName: 'Andy', phase: 'waiting', currentRound: 1, …}
-GameService.ts:1356 Diff: {lastEventSequence: {…}}
-GameService.ts:99 🎮 GameService: Joined room C0D144 as Andy
-ServiceIntegration.ts:169 ✅ Successfully connected to room C0D144
-GameService.ts:514 🎯 DEBUG: handlePhaseChange - phase=preparation, phase_data= {dealing_cards: false, redeal_multiplier: 1, weak_players: Array(0)}
-GameService.ts:555 🎴 SORT DEBUG: Before sorting myHand: [{"type":"soldier","color":"red","value":2},{"type":"chariot","color":"black","value":7},{"type":"soldier","color":"black","value":1},{"type":"cannon","color":"black","value":3},{"type":"horse","color":"red","value":6},{"type":"soldier","color":"red","value":2},{"type":"soldier","color":"red","value":2},{"type":"advisor","color":"black","value":11}]
-GameService.ts:569 🎴 SORT DEBUG: After sorting myHand: [{"type":"horse","color":"red","value":6},{"type":"soldier","color":"red","value":2},{"type":"soldier","color":"red","value":2},{"type":"soldier","color":"red","value":2},{"type":"advisor","color":"black","value":11},{"type":"chariot","color":"black","value":7},{"type":"cannon","color":"black","value":3},{"type":"soldier","color":"black","value":1}]
-GameService.ts:646 🎴 DEBUG: GameService - dealing_cards changed from undefined to false
-GameService.ts:1353 🎮 State Change: NETWORK_EVENT:PHASE_CHANGE
-GameService.ts:1354 Previous: {isConnected: true, roomId: 'C0D144', playerName: 'Andy', phase: 'waiting', currentRound: 1, …}
-GameService.ts:1355 New: {isConnected: true, roomId: 'C0D144', playerName: 'Andy', phase: 'preparation', currentRound: 1, …}
-GameService.ts:1356 Diff: {phase: {…}, players: {…}, myHand: {…}, lastEventSequence: {…}, simultaneousMode: {…}, …}
-PreparationContent.jsx:34 🎴 DEBUG: PreparationContent - dealingCards=false, showDealing=true, isRedealing=false
-PieceTray.jsx:57 🎴 PIECETRAY DEBUG: Rendering pieces in order: (8) [{…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}]
-PreparationContent.jsx:38 🎴 DEBUG: dealingCards prop changed to: false
-PreparationContent.jsx:43 🎴 DEBUG: isMyHandWeak prop changed to: false
-PreparationContent.jsx:44 🎴 DEBUG: Current state - showDealing=true, isRedealing=false
-PreparationContent.jsx:49 🎴 DEBUG: Initial dealing effect - setting timer to hide after 3.5s
-PreparationContent.jsx:63 🎴 DEBUG: Redeal trigger effect - dealingCards=false, showDealing=true, isRedealing=false
-PreparationContent.jsx:74 🎴 DEBUG: Redeal timer effect - isRedealing=false
-GameService.ts:514 🎯 DEBUG: handlePhaseChange - phase=declaration, phase_data= {declaration_order: Array(4), current_declarer_index: 0, declarations: {…}, declaration_total: 0}
-GameService.ts:555 🎴 SORT DEBUG: Before sorting myHand: [{"type":"soldier","color":"red","value":2},{"type":"chariot","color":"black","value":7},{"type":"soldier","color":"black","value":1},{"type":"cannon","color":"black","value":3},{"type":"horse","color":"red","value":6},{"type":"soldier","color":"red","value":2},{"type":"soldier","color":"red","value":2},{"type":"advisor","color":"black","value":11}]
-GameService.ts:569 🎴 SORT DEBUG: After sorting myHand: [{"type":"horse","color":"red","value":6},{"type":"soldier","color":"red","value":2},{"type":"soldier","color":"red","value":2},{"type":"soldier","color":"red","value":2},{"type":"advisor","color":"black","value":11},{"type":"chariot","color":"black","value":7},{"type":"cannon","color":"black","value":3},{"type":"soldier","color":"black","value":1}]
-GameService.ts:1353 🎮 State Change: NETWORK_EVENT:PHASE_CHANGE
-GameService.ts:1354 Previous: {isConnected: true, roomId: 'C0D144', playerName: 'Andy', phase: 'preparation', currentRound: 1, …}
-GameService.ts:1355 New: {isConnected: true, roomId: 'C0D144', playerName: 'Andy', phase: 'declaration', currentRound: 1, …}
-GameService.ts:1356 Diff: {phase: {…}, declarationOrder: {…}, lastEventSequence: {…}, currentTotal: {…}, declarationProgress: {…}, …}
-GameService.ts:514 🎯 DEBUG: handlePhaseChange - phase=declaration, phase_data= {declaration_order: Array(4), current_declarer_index: 0, declarations: {…}, declaration_total: 0, current_declarer: 'Bot 4'}
-GameService.ts:555 🎴 SORT DEBUG: Before sorting myHand: [{"type":"soldier","color":"red","value":2},{"type":"chariot","color":"black","value":7},{"type":"soldier","color":"black","value":1},{"type":"cannon","color":"black","value":3},{"type":"horse","color":"red","value":6},{"type":"soldier","color":"red","value":2},{"type":"soldier","color":"red","value":2},{"type":"advisor","color":"black","value":11}]
-GameService.ts:569 🎴 SORT DEBUG: After sorting myHand: [{"type":"horse","color":"red","value":6},{"type":"soldier","color":"red","value":2},{"type":"soldier","color":"red","value":2},{"type":"soldier","color":"red","value":2},{"type":"advisor","color":"black","value":11},{"type":"chariot","color":"black","value":7},{"type":"cannon","color":"black","value":3},{"type":"soldier","color":"black","value":1}]
-GameService.ts:1353 🎮 State Change: NETWORK_EVENT:PHASE_CHANGE
-GameService.ts:1354 Previous: {isConnected: true, roomId: 'C0D144', playerName: 'Andy', phase: 'declaration', currentRound: 1, …}
-GameService.ts:1355 New: {isConnected: true, roomId: 'C0D144', playerName: 'Andy', phase: 'declaration', currentRound: 1, …}
-GameService.ts:1356 Diff: {currentDeclarer: {…}, lastEventSequence: {…}}
-PreparationContent.jsx:56 🎴 DEBUG: Initial dealing effect cleanup
-PieceTray.jsx:57 🎴 PIECETRAY DEBUG: Rendering pieces in order: (8) [{…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}]
-PieceTray.jsx:57 🎴 PIECETRAY DEBUG: Rendering pieces in order: (8) [{…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}]
-GameService.ts:514 🎯 DEBUG: handlePhaseChange - phase=declaration, phase_data= {declaration_order: Array(4), current_declarer_index: 1, declarations: {…}, declaration_total: 2, current_declarer: 'Andy'}
-GameService.ts:555 🎴 SORT DEBUG: Before sorting myHand: [{"type":"soldier","color":"red","value":2},{"type":"chariot","color":"black","value":7},{"type":"soldier","color":"black","value":1},{"type":"cannon","color":"black","value":3},{"type":"horse","color":"red","value":6},{"type":"soldier","color":"red","value":2},{"type":"soldier","color":"red","value":2},{"type":"advisor","color":"black","value":11}]
-GameService.ts:569 🎴 SORT DEBUG: After sorting myHand: [{"type":"horse","color":"red","value":6},{"type":"soldier","color":"red","value":2},{"type":"soldier","color":"red","value":2},{"type":"soldier","color":"red","value":2},{"type":"advisor","color":"black","value":11},{"type":"chariot","color":"black","value":7},{"type":"cannon","color":"black","value":3},{"type":"soldier","color":"black","value":1}]
-GameService.ts:1353 🎮 State Change: NETWORK_EVENT:PHASE_CHANGE
-GameService.ts:1354 Previous: {isConnected: true, roomId: 'C0D144', playerName: 'Andy', phase: 'declaration', currentRound: 1, …}
-GameService.ts:1355 New: {isConnected: true, roomId: 'C0D144', playerName: 'Andy', phase: 'declaration', currentRound: 1, …}
-GameService.ts:1356 Diff: {declarations: {…}, currentDeclarer: {…}, isMyTurn: {…}, allowedActions: {…}, validOptions: {…}, …}
-PieceTray.jsx:57 🎴 PIECETRAY DEBUG: Rendering pieces in order: (8) [{…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}]
-GameService.ts:1318 🎮 Action sent: declare {value: 4, player_name: 'Andy'}
-GameService.ts:514 🎯 DEBUG: handlePhaseChange - phase=declaration, phase_data= {declaration_order: Array(4), current_declarer_index: 2, declarations: {…}, declaration_total: 6, current_declarer: 'Bot 2'}
-GameService.ts:555 🎴 SORT DEBUG: Before sorting myHand: [{"type":"soldier","color":"red","value":2},{"type":"chariot","color":"black","value":7},{"type":"soldier","color":"black","value":1},{"type":"cannon","color":"black","value":3},{"type":"horse","color":"red","value":6},{"type":"soldier","color":"red","value":2},{"type":"soldier","color":"red","value":2},{"type":"advisor","color":"black","value":11}]
-GameService.ts:569 🎴 SORT DEBUG: After sorting myHand: [{"type":"horse","color":"red","value":6},{"type":"soldier","color":"red","value":2},{"type":"soldier","color":"red","value":2},{"type":"soldier","color":"red","value":2},{"type":"advisor","color":"black","value":11},{"type":"chariot","color":"black","value":7},{"type":"cannon","color":"black","value":3},{"type":"soldier","color":"black","value":1}]
-GameService.ts:1353 🎮 State Change: NETWORK_EVENT:PHASE_CHANGE
-GameService.ts:1354 Previous: {isConnected: true, roomId: 'C0D144', playerName: 'Andy', phase: 'declaration', currentRound: 1, …}
-GameService.ts:1355 New: {isConnected: true, roomId: 'C0D144', playerName: 'Andy', phase: 'declaration', currentRound: 1, …}
-GameService.ts:1356 Diff: {declarations: {…}, currentDeclarer: {…}, isMyTurn: {…}, allowedActions: {…}, validOptions: {…}, …}
-PieceTray.jsx:57 🎴 PIECETRAY DEBUG: Rendering pieces in order: (8) [{…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}]
-GameService.ts:514 🎯 DEBUG: handlePhaseChange - phase=declaration, phase_data= {declaration_order: Array(4), current_declarer_index: 3, declarations: {…}, declaration_total: 7, current_declarer: 'Bot 3'}
-GameService.ts:555 🎴 SORT DEBUG: Before sorting myHand: [{"type":"soldier","color":"red","value":2},{"type":"chariot","color":"black","value":7},{"type":"soldier","color":"black","value":1},{"type":"cannon","color":"black","value":3},{"type":"horse","color":"red","value":6},{"type":"soldier","color":"red","value":2},{"type":"soldier","color":"red","value":2},{"type":"advisor","color":"black","value":11}]
-GameService.ts:569 🎴 SORT DEBUG: After sorting myHand: [{"type":"horse","color":"red","value":6},{"type":"soldier","color":"red","value":2},{"type":"soldier","color":"red","value":2},{"type":"soldier","color":"red","value":2},{"type":"advisor","color":"black","value":11},{"type":"chariot","color":"black","value":7},{"type":"cannon","color":"black","value":3},{"type":"soldier","color":"black","value":1}]
-GameService.ts:1353 🎮 State Change: NETWORK_EVENT:PHASE_CHANGE
-GameService.ts:1354 Previous: {isConnected: true, roomId: 'C0D144', playerName: 'Andy', phase: 'declaration', currentRound: 1, …}
-GameService.ts:1355 New: {isConnected: true, roomId: 'C0D144', playerName: 'Andy', phase: 'declaration', currentRound: 1, …}
-GameService.ts:1356 Diff: {declarations: {…}, currentDeclarer: {…}, lastEventSequence: {…}, currentTotal: {…}, declarationProgress: {…}, …}
-PieceTray.jsx:57 🎴 PIECETRAY DEBUG: Rendering pieces in order: (8) [{…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}]
-GameService.ts:514 🎯 DEBUG: handlePhaseChange - phase=declaration, phase_data= {declaration_order: Array(4), current_declarer_index: 4, declarations: {…}, declaration_total: 8, current_declarer: null}
-GameService.ts:555 🎴 SORT DEBUG: Before sorting myHand: [{"type":"soldier","color":"red","value":2},{"type":"chariot","color":"black","value":7},{"type":"soldier","color":"black","value":1},{"type":"cannon","color":"black","value":3},{"type":"horse","color":"red","value":6},{"type":"soldier","color":"red","value":2},{"type":"soldier","color":"red","value":2},{"type":"advisor","color":"black","value":11}]
-GameService.ts:569 🎴 SORT DEBUG: After sorting myHand: [{"type":"horse","color":"red","value":6},{"type":"soldier","color":"red","value":2},{"type":"soldier","color":"red","value":2},{"type":"soldier","color":"red","value":2},{"type":"advisor","color":"black","value":11},{"type":"chariot","color":"black","value":7},{"type":"cannon","color":"black","value":3},{"type":"soldier","color":"black","value":1}]
-GameService.ts:1353 🎮 State Change: NETWORK_EVENT:PHASE_CHANGE
-GameService.ts:1354 Previous: {isConnected: true, roomId: 'C0D144', playerName: 'Andy', phase: 'declaration', currentRound: 1, …}
-GameService.ts:1355 New: {isConnected: true, roomId: 'C0D144', playerName: 'Andy', phase: 'declaration', currentRound: 1, …}
-GameService.ts:1356 Diff: {declarations: {…}, lastEventSequence: {…}, currentTotal: {…}, declarationProgress: {…}, isLastPlayer: {…}}
-GameService.ts:514 🎯 DEBUG: handlePhaseChange - phase=turn, phase_data= {current_turn_starter: 'Bot 4', current_player: 'Bot 4', turn_order: Array(4), required_piece_count: null, turn_plays: {…}, …}
-GameService.ts:555 🎴 SORT DEBUG: Before sorting myHand: [{"type":"soldier","color":"red","value":2},{"type":"chariot","color":"black","value":7},{"type":"soldier","color":"black","value":1},{"type":"cannon","color":"black","value":3},{"type":"horse","color":"red","value":6},{"type":"soldier","color":"red","value":2},{"type":"soldier","color":"red","value":2},{"type":"advisor","color":"black","value":11}]
-GameService.ts:569 🎴 SORT DEBUG: After sorting myHand: [{"type":"horse","color":"red","value":6},{"type":"soldier","color":"red","value":2},{"type":"soldier","color":"red","value":2},{"type":"soldier","color":"red","value":2},{"type":"advisor","color":"black","value":11},{"type":"chariot","color":"black","value":7},{"type":"cannon","color":"black","value":3},{"type":"soldier","color":"black","value":1}]
-GameService.ts:1353 🎮 State Change: NETWORK_EVENT:PHASE_CHANGE
-GameService.ts:1354 Previous: {isConnected: true, roomId: 'C0D144', playerName: 'Andy', phase: 'declaration', currentRound: 1, …}
-GameService.ts:1355 New: {isConnected: true, roomId: 'C0D144', playerName: 'Andy', phase: 'turn', currentRound: 1, …}
-GameService.ts:1356 Diff: {phase: {…}, currentTurnStarter: {…}, turnOrder: {…}, currentPlayer: {…}, currentTurnNumber: {…}, …}
-PieceTray.jsx:57 🎴 PIECETRAY DEBUG: Rendering pieces in order: (8) [{…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}]
-PieceTray.jsx:57 🎴 PIECETRAY DEBUG: Rendering pieces in order: (8) [{…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}]
-GameService.ts:514 🎯 DEBUG: handlePhaseChange - phase=turn, phase_data= {current_turn_starter: 'Bot 4', current_player: 'Andy', turn_order: Array(4), required_piece_count: 1, turn_plays: {…}, …}
-GameService.ts:555 🎴 SORT DEBUG: Before sorting myHand: [{"type":"soldier","color":"red","value":2},{"type":"chariot","color":"black","value":7},{"type":"soldier","color":"black","value":1},{"type":"cannon","color":"black","value":3},{"type":"horse","color":"red","value":6},{"type":"soldier","color":"red","value":2},{"type":"soldier","color":"red","value":2},{"type":"advisor","color":"black","value":11}]
-GameService.ts:569 🎴 SORT DEBUG: After sorting myHand: [{"type":"horse","color":"red","value":6},{"type":"soldier","color":"red","value":2},{"type":"soldier","color":"red","value":2},{"type":"soldier","color":"red","value":2},{"type":"advisor","color":"black","value":11},{"type":"chariot","color":"black","value":7},{"type":"cannon","color":"black","value":3},{"type":"soldier","color":"black","value":1}]
-GameService.ts:1353 🎮 State Change: NETWORK_EVENT:PHASE_CHANGE
-GameService.ts:1354 Previous: {isConnected: true, roomId: 'C0D144', playerName: 'Andy', phase: 'turn', currentRound: 1, …}
-GameService.ts:1355 New: {isConnected: true, roomId: 'C0D144', playerName: 'Andy', phase: 'turn', currentRound: 1, …}
-GameService.ts:1356 Diff: {players: {…}, currentPlayer: {…}, currentTurnPlays: {…}, requiredPieceCount: {…}, isMyTurn: {…}, …}
-PieceTray.jsx:57 🎴 PIECETRAY DEBUG: Rendering pieces in order: (8) [{…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}]
-GameService.ts:1318 🎮 Action sent: play {piece_indices: Array(1), player_name: 'Andy', play_value: 7}
-GameService.ts:514 🎯 DEBUG: handlePhaseChange - phase=turn, phase_data= {current_turn_starter: 'Bot 4', current_player: 'Bot 2', turn_order: Array(4), required_piece_count: 1, turn_plays: {…}, …}
-GameService.ts:555 🎴 SORT DEBUG: Before sorting myHand: [{"type":"soldier","color":"red","value":2},{"type":"chariot","color":"black","value":7},{"type":"soldier","color":"black","value":1},{"type":"cannon","color":"black","value":3},{"type":"horse","color":"red","value":6},{"type":"soldier","color":"red","value":2},{"type":"advisor","color":"black","value":11}]
-GameService.ts:569 🎴 SORT DEBUG: After sorting myHand: [{"type":"horse","color":"red","value":6},{"type":"soldier","color":"red","value":2},{"type":"soldier","color":"red","value":2},{"type":"advisor","color":"black","value":11},{"type":"chariot","color":"black","value":7},{"type":"cannon","color":"black","value":3},{"type":"soldier","color":"black","value":1}]
-GameService.ts:1353 🎮 State Change: NETWORK_EVENT:PHASE_CHANGE
-GameService.ts:1354 Previous: {isConnected: true, roomId: 'C0D144', playerName: 'Andy', phase: 'turn', currentRound: 1, …}
-GameService.ts:1355 New: {isConnected: true, roomId: 'C0D144', playerName: 'Andy', phase: 'turn', currentRound: 1, …}
-GameService.ts:1356 Diff: {players: {…}, myHand: {…}, currentPlayer: {…}, currentTurnPlays: {…}, isMyTurn: {…}, …}
-PieceTray.jsx:57 🎴 PIECETRAY DEBUG: Rendering pieces in order: (7) [{…}, {…}, {…}, {…}, {…}, {…}, {…}]
-GameService.ts:514 🎯 DEBUG: handlePhaseChange - phase=turn, phase_data= {current_turn_starter: 'Bot 4', current_player: 'Bot 3', turn_order: Array(4), required_piece_count: 1, turn_plays: {…}, …}
-GameService.ts:555 🎴 SORT DEBUG: Before sorting myHand: [{"type":"soldier","color":"red","value":2},{"type":"chariot","color":"black","value":7},{"type":"soldier","color":"black","value":1},{"type":"cannon","color":"black","value":3},{"type":"horse","color":"red","value":6},{"type":"soldier","color":"red","value":2},{"type":"advisor","color":"black","value":11}]
-GameService.ts:569 🎴 SORT DEBUG: After sorting myHand: [{"type":"horse","color":"red","value":6},{"type":"soldier","color":"red","value":2},{"type":"soldier","color":"red","value":2},{"type":"advisor","color":"black","value":11},{"type":"chariot","color":"black","value":7},{"type":"cannon","color":"black","value":3},{"type":"soldier","color":"black","value":1}]
-GameService.ts:1353 🎮 State Change: NETWORK_EVENT:PHASE_CHANGE
-GameService.ts:1354 Previous: {isConnected: true, roomId: 'C0D144', playerName: 'Andy', phase: 'turn', currentRound: 1, …}
-GameService.ts:1355 New: {isConnected: true, roomId: 'C0D144', playerName: 'Andy', phase: 'turn', currentRound: 1, …}
-GameService.ts:1356 Diff: {players: {…}, currentPlayer: {…}, currentTurnPlays: {…}, lastEventSequence: {…}}
-PieceTray.jsx:57 🎴 PIECETRAY DEBUG: Rendering pieces in order: (7) [{…}, {…}, {…}, {…}, {…}, {…}, {…}]
-GameService.ts:514 🎯 DEBUG: handlePhaseChange - phase=turn, phase_data= {current_turn_starter: 'Bot 4', current_player: 'Bot 3', turn_order: Array(4), required_piece_count: 1, turn_plays: {…}, …}
-GameService.ts:555 🎴 SORT DEBUG: Before sorting myHand: [{"type":"soldier","color":"red","value":2},{"type":"chariot","color":"black","value":7},{"type":"soldier","color":"black","value":1},{"type":"cannon","color":"black","value":3},{"type":"horse","color":"red","value":6},{"type":"soldier","color":"red","value":2},{"type":"advisor","color":"black","value":11}]
-GameService.ts:569 🎴 SORT DEBUG: After sorting myHand: [{"type":"horse","color":"red","value":6},{"type":"soldier","color":"red","value":2},{"type":"soldier","color":"red","value":2},{"type":"advisor","color":"black","value":11},{"type":"chariot","color":"black","value":7},{"type":"cannon","color":"black","value":3},{"type":"soldier","color":"black","value":1}]
-GameService.ts:1353 🎮 State Change: NETWORK_EVENT:PHASE_CHANGE
-GameService.ts:1354 Previous: {isConnected: true, roomId: 'C0D144', playerName: 'Andy', phase: 'turn', currentRound: 1, …}
-GameService.ts:1355 New: {isConnected: true, roomId: 'C0D144', playerName: 'Andy', phase: 'turn', currentRound: 1, …}
-GameService.ts:1356 Diff: {players: {…}, currentTurnPlays: {…}, lastEventSequence: {…}}
-PieceTray.jsx:57 🎴 PIECETRAY DEBUG: Rendering pieces in order: (7) [{…}, {…}, {…}, {…}, {…}, {…}, {…}]
-GameService.ts:514 🎯 DEBUG: handlePhaseChange - phase=turn, phase_data= {current_turn_starter: 'Bot 4', current_player: 'Bot 3', turn_order: Array(4), required_piece_count: 1, turn_plays: {…}, …}
-GameService.ts:555 🎴 SORT DEBUG: Before sorting myHand: [{"type":"soldier","color":"red","value":2},{"type":"chariot","color":"black","value":7},{"type":"soldier","color":"black","value":1},{"type":"cannon","color":"black","value":3},{"type":"horse","color":"red","value":6},{"type":"soldier","color":"red","value":2},{"type":"advisor","color":"black","value":11}]
-GameService.ts:569 🎴 SORT DEBUG: After sorting myHand: [{"type":"horse","color":"red","value":6},{"type":"soldier","color":"red","value":2},{"type":"soldier","color":"red","value":2},{"type":"advisor","color":"black","value":11},{"type":"chariot","color":"black","value":7},{"type":"cannon","color":"black","value":3},{"type":"soldier","color":"black","value":1}]
-GameService.ts:1353 🎮 State Change: NETWORK_EVENT:PHASE_CHANGE
-GameService.ts:1354 Previous: {isConnected: true, roomId: 'C0D144', playerName: 'Andy', phase: 'turn', currentRound: 1, …}
-GameService.ts:1355 New: {isConnected: true, roomId: 'C0D144', playerName: 'Andy', phase: 'turn', currentRound: 1, …}
-GameService.ts:1356 Diff: {lastEventSequence: {…}}
-GameService.ts:1353 🎮 State Change: NETWORK_EVENT:TURN_COMPLETE
-GameService.ts:1354 Previous: {isConnected: true, roomId: 'C0D144', playerName: 'Andy', phase: 'turn', currentRound: 1, …}
-GameService.ts:1355 New: {isConnected: true, roomId: 'C0D144', playerName: 'Andy', phase: 'turn_results', currentRound: 1, …}
-GameService.ts:1356 Diff: {phase: {…}, turnWinner: {…}, winningPlay: {…}, playerPiles: {…}, nextStarter: {…}, …}
-PieceTray.jsx:57 🎴 PIECETRAY DEBUG: Rendering pieces in order: (7) [{…}, {…}, {…}, {…}, {…}, {…}, {…}]
-GameContainer.jsx:204 Turn results continue requested
-GameService.ts:514 🎯 DEBUG: handlePhaseChange - phase=turn, phase_data= {current_turn_starter: 'Bot 4', current_player: 'Bot 4', turn_order: Array(4), required_piece_count: null, turn_plays: {…}, …}
-GameService.ts:555 🎴 SORT DEBUG: Before sorting myHand: [{"type":"soldier","color":"red","value":2},{"type":"chariot","color":"black","value":7},{"type":"soldier","color":"black","value":1},{"type":"cannon","color":"black","value":3},{"type":"horse","color":"red","value":6},{"type":"soldier","color":"red","value":2},{"type":"advisor","color":"black","value":11}]
-GameService.ts:569 🎴 SORT DEBUG: After sorting myHand: [{"type":"horse","color":"red","value":6},{"type":"soldier","color":"red","value":2},{"type":"soldier","color":"red","value":2},{"type":"advisor","color":"black","value":11},{"type":"chariot","color":"black","value":7},{"type":"cannon","color":"black","value":3},{"type":"soldier","color":"black","value":1}]
-GameService.ts:1353 🎮 State Change: NETWORK_EVENT:PHASE_CHANGE
-GameService.ts:1354 Previous: {isConnected: true, roomId: 'C0D144', playerName: 'Andy', phase: 'turn_results', currentRound: 1, …}
-GameService.ts:1355 New: {isConnected: true, roomId: 'C0D144', playerName: 'Andy', phase: 'turn', currentRound: 1, …}
-GameService.ts:1356 Diff: {phase: {…}, currentPlayer: {…}, currentTurnPlays: {…}, requiredPieceCount: {…}, currentTurnNumber: {…}, …}
-PieceTray.jsx:57 🎴 PIECETRAY DEBUG: Rendering pieces in order: (7) [{…}, {…}, {…}, {…}, {…}, {…}, {…}]
-GameService.ts:514 🎯 DEBUG: handlePhaseChange - phase=turn, phase_data= {current_turn_starter: 'Bot 4', current_player: 'Andy', turn_order: Array(4), required_piece_count: 1, turn_plays: {…}, …}
-GameService.ts:555 🎴 SORT DEBUG: Before sorting myHand: [{"type":"soldier","color":"red","value":2},{"type":"chariot","color":"black","value":7},{"type":"soldier","color":"black","value":1},{"type":"cannon","color":"black","value":3},{"type":"horse","color":"red","value":6},{"type":"soldier","color":"red","value":2},{"type":"advisor","color":"black","value":11}]
-GameService.ts:569 🎴 SORT DEBUG: After sorting myHand: [{"type":"horse","color":"red","value":6},{"type":"soldier","color":"red","value":2},{"type":"soldier","color":"red","value":2},{"type":"advisor","color":"black","value":11},{"type":"chariot","color":"black","value":7},{"type":"cannon","color":"black","value":3},{"type":"soldier","color":"black","value":1}]
-GameService.ts:1353 🎮 State Change: NETWORK_EVENT:PHASE_CHANGE
-GameService.ts:1354 Previous: {isConnected: true, roomId: 'C0D144', playerName: 'Andy', phase: 'turn', currentRound: 1, …}
-GameService.ts:1355 New: {isConnected: true, roomId: 'C0D144', playerName: 'Andy', phase: 'turn', currentRound: 1, …}
-GameService.ts:1356 Diff: {players: {…}, currentPlayer: {…}, currentTurnPlays: {…}, requiredPieceCount: {…}, isMyTurn: {…}, …}
-PieceTray.jsx:57 🎴 PIECETRAY DEBUG: Rendering pieces in order: (7) [{…}, {…}, {…}, {…}, {…}, {…}, {…}]
-GameService.ts:1318 🎮 Action sent: play {piece_indices: Array(1), player_name: 'Andy', play_value: 11}
-GameService.ts:514 🎯 DEBUG: handlePhaseChange - phase=turn, phase_data= {current_turn_starter: 'Bot 4', current_player: 'Bot 2', turn_order: Array(4), required_piece_count: 1, turn_plays: {…}, …}
-GameService.ts:555 🎴 SORT DEBUG: Before sorting myHand: [{"type":"soldier","color":"red","value":2},{"type":"chariot","color":"black","value":7},{"type":"soldier","color":"black","value":1},{"type":"horse","color":"red","value":6},{"type":"soldier","color":"red","value":2},{"type":"advisor","color":"black","value":11}]
-GameService.ts:569 🎴 SORT DEBUG: After sorting myHand: [{"type":"horse","color":"red","value":6},{"type":"soldier","color":"red","value":2},{"type":"soldier","color":"red","value":2},{"type":"advisor","color":"black","value":11},{"type":"chariot","color":"black","value":7},{"type":"soldier","color":"black","value":1}]
-GameService.ts:1353 🎮 State Change: NETWORK_EVENT:PHASE_CHANGE
-GameService.ts:1354 Previous: {isConnected: true, roomId: 'C0D144', playerName: 'Andy', phase: 'turn', currentRound: 1, …}
-GameService.ts:1355 New: {isConnected: true, roomId: 'C0D144', playerName: 'Andy', phase: 'turn', currentRound: 1, …}
-GameService.ts:1356 Diff: {players: {…}, myHand: {…}, currentPlayer: {…}, currentTurnPlays: {…}, isMyTurn: {…}, …}
- 🎴 PIECETRAY DEBUG: Rendering pieces in order: (6) [{…}, {…}, {…}, {…}, {…}, {…}]
- 🎯 DEBUG: handlePhaseChange - phase=turn, phase_data= {current_turn_starter: 'Bot 4', current_player: 'Bot 3', turn_order: Array(4), required_piece_count: 1, turn_plays: {…}, …}
- 🎴 SORT DEBUG: Before sorting myHand: [{"type":"soldier","color":"red","value":2},{"type":"chariot","color":"black","value":7},{"type":"soldier","color":"black","value":1},{"type":"horse","color":"red","value":6},{"type":"soldier","color":"red","value":2},{"type":"advisor","color":"black","value":11}]
- 🎴 SORT DEBUG: After sorting myHand: [{"type":"horse","color":"red","value":6},{"type":"soldier","color":"red","value":2},{"type":"soldier","color":"red","value":2},{"type":"advisor","color":"black","value":11},{"type":"chariot","color":"black","value":7},{"type":"soldier","color":"black","value":1}]
- 🎮 State Change: NETWORK_EVENT:PHASE_CHANGE
- Previous: {isConnected: true, roomId: 'C0D144', playerName: 'Andy', phase: 'turn', currentRound: 1, …}
- New: {isConnected: true, roomId: 'C0D144', playerName: 'Andy', phase: 'turn', currentRound: 1, …}
- Diff: {players: {…}, currentPlayer: {…}, currentTurnPlays: {…}, lastEventSequence: {…}}
- 🎴 PIECETRAY DEBUG: Rendering pieces in order: (6) [{…}, {…}, {…}, {…}, {…}, {…}]
- 🎯 DEBUG: handlePhaseChange - phase=turn, phase_data= {current_turn_starter: 'Bot 4', current_player: 'Bot 3', turn_order: Array(4), required_piece_count: 1, turn_plays: {…}, …}
- 🎴 SORT DEBUG: Before sorting myHand: [{"type":"soldier","color":"red","value":2},{"type":"chariot","color":"black","value":7},{"type":"soldier","color":"black","value":1},{"type":"horse","color":"red","value":6},{"type":"soldier","color":"red","value":2},{"type":"advisor","color":"black","value":11}]
- 🎴 SORT DEBUG: After sorting myHand: [{"type":"horse","color":"red","value":6},{"type":"soldier","color":"red","value":2},{"type":"soldier","color":"red","value":2},{"type":"advisor","color":"black","value":11},{"type":"chariot","color":"black","value":7},{"type":"soldier","color":"black","value":1}]
- 🎮 State Change: NETWORK_EVENT:PHASE_CHANGE
- Previous: {isConnected: true, roomId: 'C0D144', playerName: 'Andy', phase: 'turn', currentRound: 1, …}
- New: {isConnected: true, roomId: 'C0D144', playerName: 'Andy', phase: 'turn', currentRound: 1, …}
- Diff: {players: {…}, currentTurnPlays: {…}, lastEventSequence: {…}}
- 🎴 PIECETRAY DEBUG: Rendering pieces in order: (6) [{…}, {…}, {…}, {…}, {…}, {…}]
- 🎯 DEBUG: handlePhaseChange - phase=turn, phase_data= {current_turn_starter: 'Bot 4', current_player: 'Bot 3', turn_order: Array(4), required_piece_count: 1, turn_plays: {…}, …}
- 🎴 SORT DEBUG: Before sorting myHand: [{"type":"soldier","color":"red","value":2},{"type":"chariot","color":"black","value":7},{"type":"soldier","color":"black","value":1},{"type":"horse","color":"red","value":6},{"type":"soldier","color":"red","value":2},{"type":"advisor","color":"black","value":11}]
- 🎴 SORT DEBUG: After sorting myHand: [{"type":"horse","color":"red","value":6},{"type":"soldier","color":"red","value":2},{"type":"soldier","color":"red","value":2},{"type":"advisor","color":"black","value":11},{"type":"chariot","color":"black","value":7},{"type":"soldier","color":"black","value":1}]
- 🎮 State Change: NETWORK_EVENT:PHASE_CHANGE
- Previous: {isConnected: true, roomId: 'C0D144', playerName: 'Andy', phase: 'turn', currentRound: 1, …}
- New: {isConnected: true, roomId: 'C0D144', playerName: 'Andy', phase: 'turn', currentRound: 1, …}
- Diff: {lastEventSequence: {…}}
- 🎮 State Change: NETWORK_EVENT:TURN_COMPLETE
- Previous: {isConnected: true, roomId: 'C0D144', playerName: 'Andy', phase: 'turn', currentRound: 1, …}
- New: {isConnected: true, roomId: 'C0D144', playerName: 'Andy', phase: 'turn_results', currentRound: 1, …}
- Diff: {phase: {…}, winningPlay: {…}, turnNumber: {…}, lastEventSequence: {…}}
- 🎴 PIECETRAY DEBUG: Rendering pieces in order: (6) [{…}, {…}, {…}, {…}, {…}, {…}]
- Turn results continue requested
- 🎯 DEBUG: handlePhaseChange - phase=turn, phase_data= {current_turn_starter: 'Bot 4', current_player: 'Bot 4', turn_order: Array(4), required_piece_count: null, turn_plays: {…}, …}
- 🎴 SORT DEBUG: Before sorting myHand: [{"type":"soldier","color":"red","value":2},{"type":"chariot","color":"black","value":7},{"type":"soldier","color":"black","value":1},{"type":"horse","color":"red","value":6},{"type":"soldier","color":"red","value":2},{"type":"advisor","color":"black","value":11}]
- 🎴 SORT DEBUG: After sorting myHand: [{"type":"horse","color":"red","value":6},{"type":"soldier","color":"red","value":2},{"type":"soldier","color":"red","value":2},{"type":"advisor","color":"black","value":11},{"type":"chariot","color":"black","value":7},{"type":"soldier","color":"black","value":1}]
- 🎮 State Change: NETWORK_EVENT:PHASE_CHANGE
- Previous: {isConnected: true, roomId: 'C0D144', playerName: 'Andy', phase: 'turn_results', currentRound: 1, …}
- New: {isConnected: true, roomId: 'C0D144', playerName: 'Andy', phase: 'turn', currentRound: 1, …}
- Diff: {phase: {…}, currentPlayer: {…}, currentTurnPlays: {…}, requiredPieceCount: {…}, currentTurnNumber: {…}, …}
- 🎴 PIECETRAY DEBUG: Rendering pieces in order: (6) [{…}, {…}, {…}, {…}, {…}, {…}]
- 🎯 DEBUG: handlePhaseChange - phase=turn, phase_data= {current_turn_starter: 'Bot 4', current_player: 'Andy', turn_order: Array(4), required_piece_count: 1, turn_plays: {…}, …}
- 🎴 SORT DEBUG: Before sorting myHand: [{"type":"soldier","color":"red","value":2},{"type":"chariot","color":"black","value":7},{"type":"soldier","color":"black","value":1},{"type":"horse","color":"red","value":6},{"type":"soldier","color":"red","value":2},{"type":"advisor","color":"black","value":11}]
- 🎴 SORT DEBUG: After sorting myHand: [{"type":"horse","color":"red","value":6},{"type":"soldier","color":"red","value":2},{"type":"soldier","color":"red","value":2},{"type":"advisor","color":"black","value":11},{"type":"chariot","color":"black","value":7},{"type":"soldier","color":"black","value":1}]
- 🎮 State Change: NETWORK_EVENT:PHASE_CHANGE
- Previous: {isConnected: true, roomId: 'C0D144', playerName: 'Andy', phase: 'turn', currentRound: 1, …}
- New: {isConnected: true, roomId: 'C0D144', playerName: 'Andy', phase: 'turn', currentRound: 1, …}
- Diff: {players: {…}, currentPlayer: {…}, currentTurnPlays: {…}, requiredPieceCount: {…}, isMyTurn: {…}, …}
- 🎴 PIECETRAY DEBUG: Rendering pieces in order: (6) [{…}, {…}, {…}, {…}, {…}, {…}]
-
----
-
-🔒 [Room C0D144] Starting game: op_id=C0D144_1
-✅ [Room C0D144] Game and StateMachine started successfully: op_id=C0D144_1
-✅ [Room C0D144] Bot manager registered for 3 bots
-✅ Game started in room C0D144
-INFO:     connection closed
-INFO:     ('127.0.0.1', 58116) - "WebSocket /ws/C0D144" [accepted]
+🔒 [Room 7F1852] Starting game: op_id=7F1852_1
+✅ [Room 7F1852] Game and StateMachine started successfully: op_id=7F1852_1
+✅ [Room 7F1852] Bot manager registered for 3 bots
+✅ Game started in room 7F1852
+INFO:     ('127.0.0.1', 49846) - "WebSocket /ws/7F1852" [accepted]
 INFO:     connection open
-✅ Bot Bot 4 declared 2
-INFO:     127.0.0.1:58142 - "GET / HTTP/1.1" 200 OK
-INFO:     127.0.0.1:58142 - "GET /bundle.css HTTP/1.1" 200 OK
-INFO:     127.0.0.1:58144 - "GET /bundle.js HTTP/1.1" 200 OK
-INFO:     127.0.0.1:58144 - "GET /favicon.ico HTTP/1.1" 404 Not Found
-INFO:     127.0.0.1:58144 - "GET /.well-known/appspecific/com.chrome.devtools.json HTTP/1.1" 404 Not Found
-INFO:     127.0.0.1:58144 - "GET /bundle.css.map HTTP/1.1" 200 OK
-INFO:     127.0.0.1:58142 - "GET /bundle.js.map HTTP/1.1" 200 OK
+INFO:     connection closed
+✅ Bot Bot 2 declared 2
+✅ Bot Bot 3 declared 2
+✅ Bot Bot 4 declared 1
+✅ Bot Bot 3 declared 2
+✅ Bot Bot 4 declared 1
+✅ Bot Bot 4 declared 1
+Wrong player turn: Bot 3, expected: Andy
+Invalid action: GameAction(player_name='Bot 3', action_type=<ActionType.DECLARE: 'declare'>, payload={'value': 2}, timestamp=datetime.datetime(2025, 7, 11, 9, 38, 27, 89869), sequence_id=3, is_bot=True)
+Wrong player turn: Bot 4, expected: Andy
+Invalid action: GameAction(player_name='Bot 4', action_type=<ActionType.DECLARE: 'declare'>, payload={'value': 1}, timestamp=datetime.datetime(2025, 7, 11, 9, 38, 28, 167056), sequence_id=4, is_bot=True)
+Wrong player turn: Bot 4, expected: Andy
+Invalid action: GameAction(player_name='Bot 4', action_type=<ActionType.DECLARE: 'declare'>, payload={'value': 1}, timestamp=datetime.datetime(2025, 7, 11, 9, 38, 29, 564362), sequence_id=5, is_bot=True)
 ✅ Declaration queued: Andy -> 4
-✅ Bot Bot 2 declared 1
-✅ Bot Bot 3 declared 1
-✅ Bot Bot 3 declared 1
 🤖 BOT chooses to play SINGLE (14 pts): GENERAL
-✅ Bot Bot 4 action queued - state machine will broadcast with correct next_player
-Action declare not allowed in turn
-🎯 WS_PLAY_DEBUG: Received play event - player: Andy, indices: [5]
-🎯 WS_PLAY_DEBUG: Found player Andy with hand size 8
-🎯 WS_PLAY_DEBUG: Added piece at index 5: SOLDIER_RED(2)
-🎯 WS_PLAY_DEBUG: Final pieces to play: ['SOLDIER_RED(2)']
-🎯 WS_PLAY_DEBUG: Queuing action for state machine...
-🎯 WS_PLAY_DEBUG: State machine result: {'success': True, 'queued': True}
-✅ Play accepted: Andy
+✅ Bot Bot 2 action queued - state machine will broadcast with correct next_player
+🤖 BOT chooses to play PAIR (16 pts): CHARIOT, CHARIOT
+✅ Bot Bot 3 action queued - state machine will broadcast with correct next_player
 🤖 BOT chooses to play SINGLE (11 pts): ADVISOR
-✅ Bot Bot 2 action queued - state machine will broadcast with correct next_player
-🤖 BOT chooses to play SINGLE (12 pts): ADVISOR
-✅ Bot Bot 3 action queued - state machine will broadcast with correct next_player
-🤖 BOT chooses to play SINGLE (12 pts): ADVISOR
-✅ Bot Bot 3 action queued - state machine will broadcast with correct next_player
-🤖 BOT chooses to play SINGLE (13 pts): GENERAL
 ✅ Bot Bot 4 action queued - state machine will broadcast with correct next_player
-Not Bot 3's turn - expected Bot 4
-Invalid action: GameAction(player_name='Bot 3', action_type=<ActionType.PLAY_PIECES: 'play_pieces'>, payload={'pieces': [ADVISOR_RED(12)]}, timestamp=datetime.datetime(2025, 7, 10, 16, 5, 12, 785222), sequence_id=9, is_bot=True)
-🎯 WS_PLAY_DEBUG: Received play event - player: Andy, indices: [3]
-🎯 WS_PLAY_DEBUG: Found player Andy with hand size 7
-🎯 WS_PLAY_DEBUG: Added piece at index 3: CANNON_BLACK(3)
-🎯 WS_PLAY_DEBUG: Final pieces to play: ['CANNON_BLACK(3)']
-🎯 WS_PLAY_DEBUG: Queuing action for state machine...
-🎯 WS_PLAY_DEBUG: State machine result: {'success': True, 'queued': True}
-✅ Play accepted: Andy
-🤖 BOT chooses to play SINGLE (8 pts): CHARIOT
-✅ Bot Bot 2 action queued - state machine will broadcast with correct next_player
-🤖 BOT chooses to play SINGLE (12 pts): ADVISOR
+🤖 BOT chooses to play SINGLE (13 pts): GENERAL
 ✅ Bot Bot 3 action queued - state machine will broadcast with correct next_player
+🤖 BOT chooses to play SINGLE (11 pts): ADVISOR
+✅ Bot Bot 4 action queued - state machine will broadcast with correct next_player
+Must play 1 pieces, got 2
+Invalid action: GameAction(player_name='Bot 3', action_type=<ActionType.PLAY_PIECES: 'play_pieces'>, payload={'pieces': [CHARIOT_RED(8), CHARIOT_RED(8)]}, timestamp=datetime.datetime(2025, 7, 11, 9, 38, 36, 796394), sequence_id=8, is_bot=True)
+Not Bot 4's turn - expected Bot 3
+Invalid action: GameAction(player_name='Bot 4', action_type=<ActionType.PLAY_PIECES: 'play_pieces'>, payload={'pieces': [ADVISOR_BLACK(11)]}, timestamp=datetime.datetime(2025, 7, 11, 9, 38, 37, 914644), sequence_id=9, is_bot=True)
+🤖 BOT chooses to play SINGLE (11 pts): ADVISOR
+✅ Bot Bot 4 action queued - state machine will broadcast with correct next_player
+Not Bot 4's turn - expected Andy
+Invalid action: GameAction(player_name='Bot 4', action_type=<ActionType.PLAY_PIECES: 'play_pieces'>, payload={'pieces': [ADVISOR_BLACK(11)]}, timestamp=datetime.datetime(2025, 7, 11, 9, 38, 41, 340855), sequence_id=12, is_bot=True)
+✅ Play accepted: Andy
+🤖 BOT chooses to play SINGLE (10 pts): ELEPHANT
+✅ Bot Bot 2 action queued - state machine will broadcast with correct next_player
+🤖 BOT chooses to play PAIR (16 pts): CHARIOT, CHARIOT
+✅ Bot Bot 3 action queued - state machine will broadcast with correct next_player
+🤖 BOT chooses to play SINGLE (10 pts): ELEPHANT
+✅ Bot Bot 4 action queued - state machine will broadcast with correct next_player
 🤖 BOT chooses to play SINGLE (12 pts): ADVISOR
 ✅ Bot Bot 3 action queued - state machine will broadcast with correct next_player
 🤖 BOT chooses to play SINGLE (10 pts): ELEPHANT
 ✅ Bot Bot 4 action queued - state machine will broadcast with correct next_player
-Not Bot 3's turn - expected Bot 4
-Invalid action: GameAction(player_name='Bot 3', action_type=<ActionType.PLAY_PIECES: 'play_pieces'>, payload={'pieces': [ADVISOR_RED(12)]}, timestamp=datetime.datetime(2025, 7, 10, 16, 5, 34, 820421), sequence_id=14, is_bot=True)
+Must play 1 pieces, got 2
+Invalid action: GameAction(player_name='Bot 3', action_type=<ActionType.PLAY_PIECES: 'play_pieces'>, payload={'pieces': [CHARIOT_RED(8), CHARIOT_RED(8)]}, timestamp=datetime.datetime(2025, 7, 11, 9, 39, 2, 352107), sequence_id=15, is_bot=True)
+Not Bot 4's turn - expected Bot 3
+Invalid action: GameAction(player_name='Bot 4', action_type=<ActionType.PLAY_PIECES: 'play_pieces'>, payload={'pieces': [ELEPHANT_RED(10)]}, timestamp=datetime.datetime(2025, 7, 11, 9, 39, 3, 649486), sequence_id=16, is_bot=True)
+🤖 BOT chooses to play SINGLE (10 pts): ELEPHANT
+✅ Bot Bot 4 action queued - state machine will broadcast with correct next_player
+Not Bot 4's turn - expected Andy
+Invalid action: GameAction(player_name='Bot 4', action_type=<ActionType.PLAY_PIECES: 'play_pieces'>, payload={'pieces': [ELEPHANT_RED(10)]}, timestamp=datetime.datetime(2025, 7, 11, 9, 39, 8, 749558), sequence_id=19, is_bot=True)
+✅ Play accepted: Andy
+🤖 BOT chooses to play PAIR (16 pts): CHARIOT, CHARIOT
+✅ Bot Bot 3 action queued - state machine will broadcast with correct next_player
+🤖 BOT chooses to play SINGLE (9 pts): ELEPHANT
+✅ Bot Bot 4 action queued - state machine will broadcast with correct next_player
+🤖 BOT chooses to play PAIR (2 pts): SOLDIER, SOLDIER
+✅ Bot Bot 4 action queued - state machine will broadcast with correct next_player
+Must play 2 pieces, got 1
+Invalid action: GameAction(player_name='Bot 4', action_type=<ActionType.PLAY_PIECES: 'play_pieces'>, payload={'pieces': [ELEPHANT_BLACK(9)]}, timestamp=datetime.datetime(2025, 7, 11, 9, 39, 33, 337728), sequence_id=22, is_bot=True)
+✅ Play accepted: Andy
+🤖 BOT chooses to play PAIR (2 pts): SOLDIER, SOLDIER
+✅ Bot Bot 2 action queued - state machine will broadcast with correct next_player
+🤖 BOT chooses to play STRAIGHT (15 pts): HORSE, CHARIOT, CANNON
+✅ Bot Bot 3 action queued - state machine will broadcast with correct next_player
+🤖 BOT chooses to play SINGLE (9 pts): ELEPHANT
+✅ Bot Bot 4 action queued - state machine will broadcast with correct next_player
+🤖 BOT has no valid play. Discards lowest pieces: CANNON, HORSE, CHARIOT
+    🔍 Final play: ['CANNON', 'HORSE', 'CHARIOT']
+    🧠 Hand left: ['CHARIOT', 'CANNON', 'HORSE', 'ELEPHANT']
+✅ Bot Bot 4 action queued - state machine will broadcast with correct next_player
+Must play 3 pieces, got 1
+Invalid action: GameAction(player_name='Bot 4', action_type=<ActionType.PLAY_PIECES: 'play_pieces'>, payload={'pieces': [ELEPHANT_BLACK(9)]}, timestamp=datetime.datetime(2025, 7, 11, 9, 39, 56, 347833), sequence_id=27, is_bot=True)
+✅ Play accepted: Andy
+🤖 BOT has no valid play. Discards lowest pieces: SOLDIER, CANNON, HORSE
+    🔍 Final play: ['SOLDIER', 'CANNON', 'HORSE']
+    🧠 Hand left: ['HORSE', 'SOLDIER', 'CANNON', 'HORSE']
+✅ Bot Bot 2 action queued - state machine will broadcast with correct next_player
+🤖 BOT chooses to play SINGLE (11 pts): ADVISOR
+✅ Bot Bot 3 action queued - state machine will broadcast with correct next_player
+🤖 BOT chooses to play SINGLE (9 pts): ELEPHANT
+✅ Bot Bot 4 action queued - state machine will broadcast with correct next_player
+🤖 BOT chooses to play SINGLE (9 pts): ELEPHANT
+✅ Bot Bot 4 action queued - state machine will broadcast with correct next_player
+Not Bot 4's turn - expected Andy
+Invalid action: GameAction(player_name='Bot 4', action_type=<ActionType.PLAY_PIECES: 'play_pieces'>, payload={'pieces': [ELEPHANT_BLACK(9)]}, timestamp=datetime.datetime(2025, 7, 11, 9, 40, 46, 931404), sequence_id=33, is_bot=True)
+✅ Play accepted: Andy
+🤖 BOT chooses to play SINGLE (6 pts): HORSE
+✅ Bot Bot 2 action queued - state machine will broadcast with correct next_player
+🔄 SCORING_SETUP_DEBUG: Reset display_delay_complete = False
+🗳️ DECLARATION_DEBUG: game.player_declarations = {'Bot 2': 2, 'Bot 3': 2, 'Bot 4': 1, 'Andy': 4}
+📋 SCORING_FIX_DEBUG: Andy - declared: 4, actual: 1
+🏆 SCORING_DEBUG: Andy scoring data:
+   📋 Declared: 4, Actual: 1
+   📊 Base Score: -3, Multiplier: 1x, Final: -3
+   💯 Total Score: -3
+📋 SCORING_FIX_DEBUG: Bot 2 - declared: 2, actual: 1
+🏆 SCORING_DEBUG: Bot 2 scoring data:
+   📋 Declared: 2, Actual: 1
+   📊 Base Score: -1, Multiplier: 1x, Final: -1
+   💯 Total Score: -1
+📋 SCORING_FIX_DEBUG: Bot 3 - declared: 2, actual: 6
+🏆 SCORING_DEBUG: Bot 3 scoring data:
+   📋 Declared: 2, Actual: 6
+   📊 Base Score: -4, Multiplier: 1x, Final: -4
+   💯 Total Score: -4
+📋 SCORING_FIX_DEBUG: Bot 4 - declared: 1, actual: 0
+🏆 SCORING_DEBUG: Bot 4 scoring data:
+   📋 Declared: 1, Actual: 0
+   📊 Base Score: -1, Multiplier: 1x, Final: -1
+   💯 Total Score: -1
+🚀 SCORING_BROADCAST_DEBUG: Broadcasting scoring data:
+   📊 Round scores: {'Andy': {'declared': 4, 'actual': 1, 'base_score': -3, 'bonus': 0, 'hit_value': -3, 'multiplier': 1, 'final_score': -3, 'total_score': -3}, 'Bot 2': {'declared': 2, 'actual': 1, 'base_score': -1, 'bonus': 0, 'hit_value': -1, 'multiplier': 1, 'final_score': -1, 'total_score': -1}, 'Bot 3': {'declared': 2, 'actual': 6, 'base_score': -4, 'bonus': 0, 'hit_value': -4, 'multiplier': 1, 'final_score': -4, 'total_score': -4}, 'Bot 4': {'declared': 1, 'actual': 0, 'base_score': -1, 'bonus': 0, 'hit_value': -1, 'multiplier': 1, 'final_score': -1, 'total_score': -1}}
+   🏁 Game complete: False
+   🏆 Winners: []
+🚀 SCORING_BROADCAST_DEBUG: Also sending:
+   💯 Total scores: {'Andy': -3, 'Bot 2': -1, 'Bot 3': -4, 'Bot 4': -1}
+   👥 Players data: [{'name': 'Andy', 'is_bot': False, 'pile_count': 4, 'captured_piles': 1}, {'name': 'Bot 2', 'is_bot': True, 'pile_count': 2, 'captured_piles': 1}, {'name': 'Bot 3', 'is_bot': True, 'pile_count': 2, 'captured_piles': 6}, {'name': 'Bot 4', 'is_bot': True, 'pile_count': 1, 'captured_piles': 0}]
+⏰ SCORING_DELAY_DEBUG: Starting 7-second display delay...
+⏰ SCORING_DELAY_DEBUG: 7-second delay complete - setting display_delay_complete = True
+👤 Round starter is human or None: None
