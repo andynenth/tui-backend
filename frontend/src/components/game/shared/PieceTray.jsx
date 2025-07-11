@@ -45,7 +45,7 @@ const PieceTray = ({
     if (!selectedPieces.length) return false;
     
     // Create piece ID matching the format used in TurnContent
-    const pieceId = `${index}-${piece.type}-${piece.color}`;
+    const pieceId = `${index}-${piece.kind}-${piece.color}`;
     return selectedPieces.some(selected => 
       selected.id === pieceId || selected === pieceId
     );

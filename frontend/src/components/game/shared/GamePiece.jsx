@@ -86,7 +86,7 @@ const GamePiece = ({
 
 GamePiece.propTypes = {
   piece: PropTypes.shape({
-    type: PropTypes.string,
+    kind: PropTypes.string,
     color: PropTypes.string,
     value: PropTypes.number
   }).isRequired,

@@ -528,25 +528,17 @@ export class GameService extends EventTarget {
             const [, name, value] = match;
             const [piece, color] = name.split('_');
             return {
-              type: piece.toLowerCase(),
+              kind: piece,  // Keep uppercase "GENERAL"
               color: color.toLowerCase() as 'red' | 'black', // Convert to lowercase for type compatibility
               value: parseInt(value),
-              // Additional properties for backward compatibility
-              point: parseInt(value),
-              kind: piece,
-              name: piece.toLowerCase(),
               displayName: `${piece} ${color}`,
               originalIndex: index // Store the original index before sorting
             };
           }
           return { 
-            type: 'unknown',
+            kind: 'UNKNOWN',
             color: 'red' as 'red' | 'black', // Default to red for unknown pieces
             value: 0,
-            // Additional properties for backward compatibility
-            point: 0, 
-            kind: 'UNKNOWN', 
-            name: pieceStr, 
             displayName: pieceStr,
             originalIndex: index // Store the original index before sorting
           };

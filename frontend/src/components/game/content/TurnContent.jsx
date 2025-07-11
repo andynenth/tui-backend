@@ -97,7 +97,7 @@ const TurnContent = ({
   const handlePieceSelect = (piece, index) => {
     if (!isMyTurn) return;
     
-    const pieceId = `${index}-${piece.type}-${piece.color}`;
+    const pieceId = `${index}-${piece.kind}-${piece.color}`;
     
     setSelectedPieces(prev => {
       // Check if already selected (toggle off)
