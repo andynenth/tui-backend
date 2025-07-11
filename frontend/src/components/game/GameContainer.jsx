@@ -192,10 +192,7 @@ export function GameContainer({ roomId, onNavigateToLobby }) {
     
     
     // Determine if this is the last turn of the round
-    const isLastTurn = gameState.players.every(player => {
-      // Check if all players have empty hands (would need backend data)
-      return false; // Default to false, backend should provide this
-    });
+    const isLastTurn = gameState.allHandsEmpty || false;
     
     const props = {
       // Data from backend
