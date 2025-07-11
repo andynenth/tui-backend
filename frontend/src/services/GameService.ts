@@ -636,6 +636,16 @@ export class GameService extends EventTarget {
           }
           break;
           
+        case 'round_start':
+          // Extract round start specific data
+          if (phaseData.current_starter) {
+            newState.currentStarter = phaseData.current_starter;
+          }
+          if (phaseData.starter_reason) {
+            newState.starterReason = phaseData.starter_reason;
+          }
+          break;
+          
         case 'declaration':
           // Fallback to phase_data.my_hand if data.players doesn't have it
           if (phaseData.my_hand && !newState.myHand.length) {

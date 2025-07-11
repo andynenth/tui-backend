@@ -12,6 +12,7 @@ from .states import PreparationState, DeclarationState, TurnState, ScoringState
 from .states.game_over_state import GameOverState
 from .states.waiting_state import WaitingState
 from .states.turn_results_state import TurnResultsState
+from .states.round_start_state import RoundStartState
 
 
 logger = logging.getLogger(__name__)
@@ -41,6 +42,7 @@ class GameStateMachine:
         self.states: Dict[GamePhase, GameState] = {
             GamePhase.WAITING: WaitingState(self),
             GamePhase.PREPARATION: PreparationState(self),
+            GamePhase.ROUND_START: RoundStartState(self),
             GamePhase.DECLARATION: DeclarationState(self),
             GamePhase.TURN: TurnState(self),
             GamePhase.TURN_RESULTS: TurnResultsState(self),
@@ -51,7 +53,8 @@ class GameStateMachine:
         # Transition validation map
         self._valid_transitions = {
             GamePhase.WAITING: {GamePhase.PREPARATION},
-            GamePhase.PREPARATION: {GamePhase.DECLARATION},
+            GamePhase.PREPARATION: {GamePhase.ROUND_START},
+            GamePhase.ROUND_START: {GamePhase.DECLARATION},
             GamePhase.DECLARATION: {GamePhase.TURN},
             GamePhase.TURN: {GamePhase.TURN_RESULTS},
             GamePhase.TURN_RESULTS: {GamePhase.TURN, GamePhase.SCORING},
@@ -278,8 +281,18 @@ class GameStateMachine:
 
             logger.info(f"Notifying bot manager about phase {new_phase.value}")
 
-            if new_phase == GamePhase.DECLARATION:
-                # Trigger bot declarations
+            if new_phase == GamePhase.ROUND_START:
+                # Just notify about round start, don't trigger bot actions yet
+                await bot_manager.handle_game_event(
+                    room_id,
+                    "phase_change",
+                    {
+                        "phase": new_phase.value,
+                        "phase_data": self.get_phase_data(),
+                    }
+                )
+            elif new_phase == GamePhase.DECLARATION:
+                # Now trigger bot declarations
                 await bot_manager.handle_game_event(
                     room_id,
                     "round_started",

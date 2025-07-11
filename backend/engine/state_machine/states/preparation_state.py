@@ -17,7 +17,7 @@ class PreparationState(GameState):
     - Weak hand detection (no piece > 9 points)
     - Redeal requests and responses
     - Starter determination based on game rules
-    - Transition to Declaration phase
+    - Transition to Round Start phase
     """
 
     @property
@@ -26,7 +26,7 @@ class PreparationState(GameState):
 
     @property
     def next_phases(self) -> List[GamePhase]:
-        return [GamePhase.DECLARATION]
+        return [GamePhase.ROUND_START]
 
     def __init__(self, state_machine):
         super().__init__(state_machine)
@@ -322,7 +322,7 @@ class PreparationState(GameState):
                                 "🎴 Waiting for dealing animation to complete..."
                             )
                             await asyncio.sleep(4.0)
-                        await self.state_machine._transition_to(GamePhase.DECLARATION)
+                        await self.state_machine._transition_to(GamePhase.ROUND_START)
 
                     return result
                 finally:
@@ -504,6 +504,7 @@ class PreparationState(GameState):
         # Priority 1: Redeal requester (overrides all)
         if self.redeal_requester:
             self.logger.info(f"🎯 Starter: {self.redeal_requester} (requested redeal)")
+            game.starter_reason = 'accepted_redeal'
             return self.redeal_requester
 
         # Priority 2: Round 1 - player with GENERAL_RED
@@ -521,6 +522,7 @@ class PreparationState(GameState):
                                 self.logger.info(
                                     f"🎯 Starter: {player_name} (has GENERAL_RED)"
                                 )
+                                game.starter_reason = 'has_general_red'
                                 return player_name
                     else:
                         pass
@@ -528,6 +530,7 @@ class PreparationState(GameState):
         # Priority 3: Previous round's last turn winner
         if hasattr(game, "last_turn_winner") and game.last_turn_winner:
             self.logger.info(f"🎯 Starter: {game.last_turn_winner} (won last turn)")
+            game.starter_reason = 'won_last_turn'
             return game.last_turn_winner
 
         # Fallback: First player
@@ -540,6 +543,7 @@ class PreparationState(GameState):
             starter = "Player1"
 
         self.logger.info(f"🎯 Starter: {starter} (fallback - first player)")
+        game.starter_reason = 'default'
         return starter
 
     def _all_weak_decisions_received(self) -> bool:
@@ -663,8 +667,8 @@ class PreparationState(GameState):
             return None
 
         if not self.weak_players:
-            # No weak hands found - this is the only polling-based transition now
-            return GamePhase.DECLARATION
+            # No weak hands found - transition to ROUND_START phase
+            return GamePhase.ROUND_START
 
         # If we have weak players, wait for redeal decisions to trigger transition directly
         return None

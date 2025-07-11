@@ -100,10 +100,14 @@ export interface GameState {
   playerName: string | null;
   
   // Game state
-  phase: 'waiting' | 'preparation' | 'declaration' | 'turn' | 'turn_results' | 'scoring' | 'game_over';
+  phase: 'waiting' | 'preparation' | 'round_start' | 'declaration' | 'turn' | 'turn_results' | 'scoring' | 'game_over';
   currentRound: number;
   players: Player[];
   roundStarter: string | null;
+  
+  // Round start phase state
+  currentStarter?: string;
+  starterReason?: string;
   
   // Preparation phase state
   weakHands: string[];
@@ -214,6 +218,10 @@ export interface PhaseData {
   decisions_received?: number;
   decisions_needed?: number;
   dealing_cards?: boolean;
+  
+  // Round start phase
+  current_starter?: string;
+  starter_reason?: string;
   
   // Declaration phase
   declaration_order?: string[];
