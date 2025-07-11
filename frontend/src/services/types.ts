@@ -88,6 +88,9 @@ export interface TurnPlay {
   pieces: GamePiece[];
   indices?: number[];
   timestamp?: number;
+  isValid?: boolean;
+  playType?: string;
+  totalValue?: number;
 }
 
 export interface GameState {
@@ -123,6 +126,7 @@ export interface GameState {
   currentTurnPlays: TurnPlay[];
   requiredPieceCount: number | null;
   currentTurnNumber: number;
+  pileCounts?: Record<string, number>;  // Accumulated piles won by each player
   
   // Scoring phase state
   roundScores: Record<string, number>;
@@ -209,6 +213,7 @@ export interface PhaseData {
   weak_players_awaiting?: string[];
   decisions_received?: number;
   decisions_needed?: number;
+  dealing_cards?: boolean;
   
   // Declaration phase
   declaration_order?: string[];
@@ -222,12 +227,29 @@ export interface PhaseData {
   current_player?: string;
   current_turn_plays?: TurnPlay[];
   current_turn_number?: number;
+  pile_counts?: Record<string, number>;  // Accumulated piles won by each player
+  required_piece_count?: number | null;
+  turn_plays?: Record<string, any>;
   
   // Scoring phase
-  round_scores?: Record<string, number>;
-  total_scores?: Record<string, number>;
+  round_scores?: Record<string, number | any>;
+  total_scores?: Record<string, number | any>;
   final_scores?: Record<string, number>;
   winners?: string[];
+  game_complete?: boolean;
+  
+  // Game over phase
+  final_rankings?: Array<{
+    name: string;
+    score: number;
+    rank: number;
+  }>;
+  game_stats?: {
+    total_rounds: number;
+    game_duration: string;
+    start_time?: number;
+    end_time?: number;
+  };
 }
 
 export interface GameEvent {

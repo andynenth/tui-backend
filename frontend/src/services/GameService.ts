@@ -698,6 +698,11 @@ export class GameService extends EventTarget {
             newState.requiredPieceCount = phaseData.required_piece_count;
           }
           
+          // Get accumulated pile counts from backend
+          if (phaseData.pile_counts !== undefined) {
+            newState.pileCounts = phaseData.pile_counts;
+          }
+          
           
           // Convert backend's turn_plays dictionary to frontend's currentTurnPlays array
           if (phaseData.turn_plays !== undefined) {
@@ -712,7 +717,7 @@ export class GameService extends EventTarget {
                 
                 return {
                   player: playerName,
-                  cards: playData.pieces || [],
+                  pieces: playData.pieces || [],
                   isValid,
                   playType,
                   totalValue: playData.play_value || 0
