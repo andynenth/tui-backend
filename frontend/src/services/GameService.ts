@@ -1482,6 +1482,15 @@ export class GameService extends EventTarget {
         ? playerRoundScore.total_score
         : (totalScores[player.name] || 0);
       
+      // Extract bonus and hit_value from backend
+      const bonus = (typeof playerRoundScore === 'object' && playerRoundScore?.bonus !== undefined)
+        ? playerRoundScore.bonus
+        : 0;
+      
+      const hitValue = (typeof playerRoundScore === 'object' && playerRoundScore?.hit_value !== undefined)
+        ? playerRoundScore.hit_value
+        : (actualPiles === declaredPiles ? declaredPiles : -Math.abs(declaredPiles - actualPiles));
+      
       return {
         ...player,
         roundScore,
@@ -1489,6 +1498,8 @@ export class GameService extends EventTarget {
         baseScore,
         actualPiles,
         pile_count: declaredPiles,  // Add declared value for ScoringUI
+        bonus,  // Add bonus from backend
+        hitValue,  // Add hit value from backend
         scoreExplanation: this.generateScoreExplanation(player, roundScore, redealMultiplier),
         isWinner: winners.includes(player.name)
       };

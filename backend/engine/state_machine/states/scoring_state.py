@@ -308,6 +308,23 @@ class ScoringState(GameState):
             # Calculate base score using dedicated scoring module
             base_score = calculate_score(declared, actual)
 
+            # Calculate bonus and hit_value separately for frontend display
+            if declared == 0 and actual == 0:
+                # Perfect zero prediction
+                bonus = 3
+                hit_value = 0
+            elif declared > 0 and declared == actual:
+                # Perfect non-zero prediction
+                bonus = 5
+                hit_value = declared
+            else:
+                # Miss - no bonus
+                bonus = 0
+                if declared == 0:
+                    hit_value = -actual  # Penalty for breaking zero
+                else:
+                    hit_value = -abs(declared - actual)  # Penalty for missing target
+
             # Apply redeal multiplier
             multiplier = getattr(game, "redeal_multiplier", 1)
             final_score = base_score * multiplier
@@ -321,6 +338,8 @@ class ScoringState(GameState):
                 "declared": declared,
                 "actual": actual,
                 "base_score": base_score,
+                "bonus": bonus,  # Separate bonus for frontend display
+                "hit_value": hit_value,  # Separate hit value for frontend display
                 "multiplier": multiplier,
                 "final_score": final_score,
                 "total_score": player.score,
