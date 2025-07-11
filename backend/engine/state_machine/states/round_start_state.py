@@ -53,7 +53,7 @@ class RoundStartState(GameState):
         # Send phase data to frontend
         await self.update_phase_data({
             'round_number': game.round_number,
-            'starter': starter,
+            'current_starter': starter,
             'starter_reason': starter_reason,
             'display_duration': self.display_duration
         }, f"Round {game.round_number} starting with {starter}")
@@ -137,7 +137,7 @@ class RoundStartState(GameState):
             "message": f"Player {player_name} reconnected",
             "phase_data": {
                 'round_number': game.round_number,
-                'starter': game.current_player,
+                'current_starter': game.current_player,
                 'starter_reason': getattr(game, 'starter_reason', 'default'),
                 'display_duration': self.display_duration,
                 'elapsed': time.time() - self.start_time if self.start_time else 0
