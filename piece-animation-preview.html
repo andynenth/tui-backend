@@ -1,0 +1,1011 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Game Piece Animation Preview</title>
+    <style>
+        body {
+            font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: #f8f9fa;
+            margin: 0;
+            padding: 20px;
+            color: #343a40;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.07);
+        }
+
+        h1 {
+            margin-top: 0;
+            color: #212529;
+        }
+
+        .controls {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 30px;
+        }
+
+        .control-group {
+            margin-bottom: 15px;
+        }
+
+        label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 5px;
+            color: #495057;
+        }
+
+        select, input {
+            width: 100%;
+            padding: 8px 12px;
+            border: 1px solid #dee2e6;
+            border-radius: 6px;
+            font-size: 14px;
+        }
+
+        button {
+            background: #0d6efd;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 6px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-right: 10px;
+            transition: background 0.2s;
+        }
+
+        button:hover {
+            background: #0b5ed7;
+        }
+
+        /* Piece Tray Mockup */
+        .piece-tray {
+            background: linear-gradient(180deg, #F8F9FA 0%, #E9ECEF 100%);
+            padding: 20px;
+            border-top: 1px solid rgba(173, 181, 189, 0.2);
+            border-radius: 8px;
+            margin-bottom: 30px;
+        }
+
+        .piece-tray__grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 12px;
+            max-width: 350px;
+            margin: 0 auto;
+        }
+
+        /* Base Game Piece Styles */
+        .game-piece {
+            width: 62px;
+            height: 62px;
+            border-radius: 50%;
+            background: linear-gradient(145deg, #FFFFFF 0%, #F8F9FA 100%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            border: 1px solid rgba(173, 181, 189, 0.3);
+            font-family: 'SimSun', '宋体', serif;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.06);
+            position: relative;
+            font-size: 20px;
+            cursor: pointer;
+        }
+
+        .game-piece.red {
+            color: #DC3545;
+            border-color: rgba(220, 53, 69, 0.4);
+        }
+
+        .game-piece.black {
+            color: #495057;
+            border-color: rgba(73, 80, 87, 0.4);
+        }
+
+        .game-piece:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.12);
+        }
+
+        /* Animation Styles */
+        /* Current Animation */
+        .animation-pieceAppear {
+            animation: pieceAppear var(--duration) ease-out forwards;
+            opacity: 0;
+            transform: scale(0.8) translateY(10px);
+        }
+
+        @keyframes pieceAppear {
+            to {
+                opacity: 1;
+                transform: scale(1) translateY(0);
+            }
+        }
+
+        /* Fade In */
+        .animation-fadeIn {
+            animation: fadeIn var(--duration) ease-out forwards;
+            opacity: 0;
+        }
+
+        @keyframes fadeIn {
+            to {
+                opacity: 1;
+            }
+        }
+
+        /* Bounce In */
+        .animation-bounceIn {
+            animation: bounceIn var(--duration) ease-out forwards;
+            opacity: 0;
+            transform: scale(0.3);
+        }
+
+        @keyframes bounceIn {
+            0% {
+                opacity: 0;
+                transform: scale(0.3);
+            }
+            50% {
+                opacity: 1;
+                transform: scale(1.05);
+            }
+            70% {
+                transform: scale(0.9);
+            }
+            100% {
+                transform: scale(1);
+            }
+        }
+
+        /* Slide Up */
+        .animation-slideUp {
+            animation: slideUp var(--duration) ease-out forwards;
+            opacity: 0;
+            transform: translateY(30px);
+        }
+
+        @keyframes slideUp {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Flip In */
+        .animation-flipIn {
+            animation: flipIn var(--duration) ease-out forwards;
+            opacity: 0;
+            transform: perspective(400px) rotateX(-90deg);
+        }
+
+        @keyframes flipIn {
+            to {
+                opacity: 1;
+                transform: perspective(400px) rotateX(0deg);
+            }
+        }
+
+        /* Rotate In */
+        .animation-rotateIn {
+            animation: rotateIn var(--duration) ease-out forwards;
+            opacity: 0;
+            transform: rotate(-180deg) scale(0.5);
+        }
+
+        @keyframes rotateIn {
+            to {
+                opacity: 1;
+                transform: rotate(0deg) scale(1);
+            }
+        }
+
+        /* Elastic Bounce */
+        .animation-elastic {
+            animation: elastic var(--duration) ease-out forwards;
+            opacity: 0;
+            transform: scale(0);
+        }
+
+        @keyframes elastic {
+            0% {
+                opacity: 0;
+                transform: scale(0);
+            }
+            55% {
+                opacity: 1;
+                transform: scale(1.15);
+            }
+            70% {
+                transform: scale(0.95);
+            }
+            85% {
+                transform: scale(1.05);
+            }
+            100% {
+                transform: scale(1);
+            }
+        }
+
+        /* Wave Effect */
+        .animation-wave {
+            animation: wave var(--duration) ease-out forwards;
+            opacity: 0;
+            transform: translateY(20px) rotateZ(-5deg);
+        }
+
+        @keyframes wave {
+            to {
+                opacity: 1;
+                transform: translateY(0) rotateZ(0deg);
+            }
+        }
+
+        /* Vertical Drop Bounce */
+        .animation-verticalBounce {
+            animation: verticalBounce var(--duration) ease-out forwards;
+            opacity: 1;
+            transform: translateY(-50px);
+        }
+
+        @keyframes verticalBounce {
+            0% {
+                opacity: 1;
+                transform: translateY(-50px);
+            }
+            30% {
+                transform: translateY(0px);
+            }
+            45% {
+                transform: translateY(-15px);
+            }
+            60% {
+                transform: translateY(0px);
+            }
+            75% {
+                transform: translateY(-5px);
+            }
+            90% {
+                transform: translateY(0px);
+            }
+            100% {
+                transform: translateY(0px);
+            }
+        }
+
+        /* Spring Bounce */
+        .animation-springBounce {
+            animation: springBounce var(--duration) ease-out forwards;
+            opacity: 1;
+            transform: translateY(0px);
+        }
+
+        @keyframes springBounce {
+            0% {
+                opacity: 1;
+                transform: translateY(0px);
+            }
+            15% {
+                transform: translateY(-8px);
+            }
+            30% {
+                transform: translateY(4px);
+            }
+            45% {
+                transform: translateY(-4px);
+            }
+            60% {
+                transform: translateY(2px);
+            }
+            75% {
+                transform: translateY(-1px);
+            }
+            90% {
+                transform: translateY(0px);
+            }
+            100% {
+                transform: translateY(0px);
+            }
+        }
+
+        /* Gentle Vertical Bounce */
+        .animation-gentleBounce {
+            animation: gentleBounce var(--duration) ease-out forwards;
+            opacity: 1;
+            transform: translateY(0px);
+        }
+
+        @keyframes gentleBounce {
+            0% {
+                opacity: 1;
+                transform: translateY(0px);
+            }
+            50% {
+                transform: translateY(-6px);
+            }
+            100% {
+                transform: translateY(0px);
+            }
+        }
+
+        /* Pogo Bounce */
+        .animation-pogoBounce {
+            animation: pogoBounce var(--duration) ease-out forwards;
+            opacity: 1;
+            transform: translateY(0px);
+        }
+
+        @keyframes pogoBounce {
+            0% {
+                opacity: 1;
+                transform: translateY(0px);
+            }
+            10% {
+                transform: translateY(-10px);
+            }
+            20% {
+                transform: translateY(0px);
+            }
+            30% {
+                transform: translateY(-8px);
+            }
+            40% {
+                transform: translateY(0px);
+            }
+            50% {
+                transform: translateY(-6px);
+            }
+            60% {
+                transform: translateY(0px);
+            }
+            70% {
+                transform: translateY(-4px);
+            }
+            80% {
+                transform: translateY(0px);
+            }
+            90% {
+                transform: translateY(-2px);
+            }
+            100% {
+                transform: translateY(0px);
+            }
+        }
+
+        /* Vertical Drop Bounce (Staggered) */
+        .animation-verticalBounceStagger {
+            animation: verticalBounceStagger var(--duration) ease-out forwards;
+            opacity: 0;
+            transform: translateY(-50px);
+        }
+
+        @keyframes verticalBounceStagger {
+            0% {
+                opacity: 1;
+                transform: translateY(-50px);
+            }
+            30% {
+                opacity: 1;
+                transform: translateY(0px);
+            }
+            45% {
+                opacity: 1;
+                transform: translateY(-15px);
+            }
+            60% {
+                opacity: 1;
+                transform: translateY(0px);
+            }
+            75% {
+                opacity: 1;
+                transform: translateY(-5px);
+            }
+            90% {
+                opacity: 1;
+                transform: translateY(0px);
+            }
+            100% {
+                opacity: 1;
+                transform: translateY(0px);
+            }
+        }
+
+        /* Vertical Drop (Simple) */
+        .animation-verticalDrop {
+            animation: verticalDrop var(--duration) ease-out forwards;
+            opacity: 1;
+            transform: translateY(-50px);
+        }
+
+        @keyframes verticalDrop {
+            0% {
+                opacity: 1;
+                transform: translateY(-50px);
+            }
+            100% {
+                transform: translateY(0px);
+            }
+        }
+
+        /* Vertical Drop (Staggered) */
+        .animation-verticalDropStagger {
+            animation: verticalDropStagger var(--duration) ease-out forwards;
+            opacity: 0;
+            transform: translateY(-50px);
+        }
+
+        @keyframes verticalDropStagger {
+            0% {
+                opacity: 0;
+                transform: translateY(-50px);
+            }
+            20% {
+                opacity: 0.5;
+                transform: translateY(-30px);
+            }
+            60% {
+                opacity: 1;
+                transform: translateY(-10px);
+            }
+            100% {
+                opacity: 1;
+                transform: translateY(0px);
+            }
+        }
+
+        /* No Animation */
+        .animation-none {
+            opacity: 1;
+        }
+
+        /* Code Display */
+        .code-display {
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 6px;
+            padding: 15px;
+            font-family: 'Consolas', 'Monaco', monospace;
+            font-size: 13px;
+            white-space: pre-wrap;
+            overflow-x: auto;
+        }
+
+        .info {
+            background: #e7f3ff;
+            border: 1px solid #b6d4fe;
+            padding: 15px;
+            border-radius: 6px;
+            margin-bottom: 20px;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Game Piece Animation Preview</h1>
+        
+        <div class="info">
+            This preview shows different animation options for when pieces become selectable at the start of your turn.
+            Choose an animation style and click "Trigger Animation" to see it in action.
+        </div>
+
+        <div class="controls">
+            <div class="control-group">
+                <label for="animation-select">Animation Style:</label>
+                <select id="animation-select">
+                    <option value="pieceAppear">Current - Scale & Slide Up</option>
+                    <option value="fadeIn">Fade In</option>
+                    <option value="bounceIn">Bounce In</option>
+                    <option value="slideUp">Slide Up</option>
+                    <option value="flipIn">Flip In</option>
+                    <option value="rotateIn">Rotate In</option>
+                    <option value="elastic">Elastic Bounce</option>
+                    <option value="verticalBounce">Vertical Drop Bounce</option>
+                    <option value="verticalBounceStagger">Vertical Drop Bounce (Staggered)</option>
+                    <option value="verticalDrop">Vertical Drop</option>
+                    <option value="verticalDropStagger">Vertical Drop (Staggered)</option>
+                    <option value="springBounce">Spring Bounce</option>
+                    <option value="gentleBounce">Gentle Vertical Bounce</option>
+                    <option value="pogoBounce">Pogo Bounce</option>
+                    <option value="wave">Wave Effect (with stagger)</option>
+                    <option value="none">No Animation</option>
+                </select>
+            </div>
+            
+            <div class="control-group">
+                <label for="duration-input">Animation Duration:</label>
+                <input type="range" id="duration-input" min="100" max="1000" value="300" step="50">
+                <span id="duration-display">300ms</span>
+            </div>
+            
+            <div class="control-group">
+                <button onclick="triggerAnimation()">Trigger Animation</button>
+                <button onclick="resetPieces()">Reset</button>
+            </div>
+        </div>
+
+        <div class="piece-tray">
+            <div class="piece-tray__grid" id="piece-grid">
+                <!-- Pieces will be generated here -->
+            </div>
+        </div>
+
+        <h3>CSS Code:</h3>
+        <div class="code-display" id="code-display"></div>
+    </div>
+
+    <script>
+        // Mock piece data
+        const pieces = [
+            { char: '將', color: 'red' },
+            { char: '士', color: 'red' },
+            { char: '兵', color: 'black' },
+            { char: '象', color: 'black' },
+            { char: '車', color: 'red' },
+            { char: '砲', color: 'black' },
+            { char: '馬', color: 'red' },
+            { char: '兵', color: 'black' }
+        ];
+
+        // Animation CSS code snippets
+        const animationCode = {
+            pieceAppear: `/* Current Animation - Scale & Slide Up */
+.game-piece--selectable {
+    animation: pieceAppear 0.3s ease-out forwards;
+    opacity: 0;
+    transform: scale(0.8) translateY(10px);
+}
+
+@keyframes pieceAppear {
+    to {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+    }
+}`,
+            fadeIn: `/* Fade In Animation */
+.game-piece--selectable {
+    animation: fadeIn 0.3s ease-out forwards;
+    opacity: 0;
+}
+
+@keyframes fadeIn {
+    to {
+        opacity: 1;
+    }
+}`,
+            bounceIn: `/* Bounce In Animation */
+.game-piece--selectable {
+    animation: bounceIn 0.3s ease-out forwards;
+    opacity: 0;
+    transform: scale(0.3);
+}
+
+@keyframes bounceIn {
+    0% {
+        opacity: 0;
+        transform: scale(0.3);
+    }
+    50% {
+        opacity: 1;
+        transform: scale(1.05);
+    }
+    70% {
+        transform: scale(0.9);
+    }
+    100% {
+        transform: scale(1);
+    }
+}`,
+            slideUp: `/* Slide Up Animation */
+.game-piece--selectable {
+    animation: slideUp 0.3s ease-out forwards;
+    opacity: 0;
+    transform: translateY(30px);
+}
+
+@keyframes slideUp {
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}`,
+            flipIn: `/* Flip In Animation */
+.game-piece--selectable {
+    animation: flipIn 0.3s ease-out forwards;
+    opacity: 0;
+    transform: perspective(400px) rotateX(-90deg);
+}
+
+@keyframes flipIn {
+    to {
+        opacity: 1;
+        transform: perspective(400px) rotateX(0deg);
+    }
+}`,
+            rotateIn: `/* Rotate In Animation */
+.game-piece--selectable {
+    animation: rotateIn 0.3s ease-out forwards;
+    opacity: 0;
+    transform: rotate(-180deg) scale(0.5);
+}
+
+@keyframes rotateIn {
+    to {
+        opacity: 1;
+        transform: rotate(0deg) scale(1);
+    }
+}`,
+            elastic: `/* Elastic Bounce Animation */
+.game-piece--selectable {
+    animation: elastic 0.5s ease-out forwards;
+    opacity: 0;
+    transform: scale(0);
+}
+
+@keyframes elastic {
+    0% {
+        opacity: 0;
+        transform: scale(0);
+    }
+    55% {
+        opacity: 1;
+        transform: scale(1.15);
+    }
+    70% {
+        transform: scale(0.95);
+    }
+    85% {
+        transform: scale(1.05);
+    }
+    100% {
+        transform: scale(1);
+    }
+}`,
+            wave: `/* Wave Effect Animation (with stagger) */
+.game-piece--selectable {
+    animation: wave 0.3s ease-out forwards;
+    opacity: 0;
+    transform: translateY(20px) rotateZ(-5deg);
+}
+
+/* In PieceTray component, set animationDelay */
+/* animationDelay={index * 0.05} for stagger effect */
+
+@keyframes wave {
+    to {
+        opacity: 1;
+        transform: translateY(0) rotateZ(0deg);
+    }
+}`,
+            verticalBounce: `/* Vertical Drop Bounce Animation */
+.game-piece--selectable {
+    animation: verticalBounce 0.6s ease-out forwards;
+    opacity: 1;
+    transform: translateY(-50px);
+}
+
+@keyframes verticalBounce {
+    0% {
+        opacity: 1;
+        transform: translateY(-50px);
+    }
+    30% {
+        transform: translateY(0px);
+    }
+    45% {
+        transform: translateY(-15px);
+    }
+    60% {
+        transform: translateY(0px);
+    }
+    75% {
+        transform: translateY(-5px);
+    }
+    90% {
+        transform: translateY(0px);
+    }
+    100% {
+        transform: translateY(0px);
+    }
+}`,
+            springBounce: `/* Spring Bounce Animation */
+.game-piece--selectable {
+    animation: springBounce 0.5s ease-out forwards;
+    opacity: 1;
+    transform: translateY(0px);
+}
+
+@keyframes springBounce {
+    0% {
+        opacity: 1;
+        transform: translateY(0px);
+    }
+    15% {
+        transform: translateY(-8px);
+    }
+    30% {
+        transform: translateY(4px);
+    }
+    45% {
+        transform: translateY(-4px);
+    }
+    60% {
+        transform: translateY(2px);
+    }
+    75% {
+        transform: translateY(-1px);
+    }
+    90% {
+        transform: translateY(0px);
+    }
+    100% {
+        transform: translateY(0px);
+    }
+}`,
+            gentleBounce: `/* Gentle Vertical Bounce Animation */
+.game-piece--selectable {
+    animation: gentleBounce 0.4s ease-out forwards;
+    opacity: 1;
+    transform: translateY(0px);
+}
+
+@keyframes gentleBounce {
+    0% {
+        opacity: 1;
+        transform: translateY(0px);
+    }
+    50% {
+        transform: translateY(-6px);
+    }
+    100% {
+        transform: translateY(0px);
+    }
+}`,
+            pogoBounce: `/* Pogo Bounce Animation */
+.game-piece--selectable {
+    animation: pogoBounce 0.8s ease-out forwards;
+    opacity: 1;
+    transform: translateY(0px);
+}
+
+@keyframes pogoBounce {
+    0% {
+        opacity: 1;
+        transform: translateY(0px);
+    }
+    10% {
+        transform: translateY(-10px);
+    }
+    20% {
+        transform: translateY(0px);
+    }
+    30% {
+        transform: translateY(-8px);
+    }
+    40% {
+        transform: translateY(0px);
+    }
+    50% {
+        transform: translateY(-6px);
+    }
+    60% {
+        transform: translateY(0px);
+    }
+    70% {
+        transform: translateY(-4px);
+    }
+    80% {
+        transform: translateY(0px);
+    }
+    90% {
+        transform: translateY(-2px);
+    }
+    100% {
+        transform: translateY(0px);
+    }
+}`,
+            verticalBounceStagger: `/* Vertical Drop Bounce (Staggered) Animation */
+.game-piece--selectable {
+    animation: verticalBounceStagger 0.6s ease-out forwards;
+    opacity: 0;
+    transform: translateY(-50px);
+}
+
+/* In PieceTray component, set animationDelay */
+/* animationDelay={index * 0.1} for stagger effect */
+
+@keyframes verticalBounceStagger {
+    0% {
+        opacity: 1;
+        transform: translateY(-50px);
+    }
+    30% {
+        opacity: 1;
+        transform: translateY(0px);
+    }
+    45% {
+        opacity: 1;
+        transform: translateY(-15px);
+    }
+    60% {
+        opacity: 1;
+        transform: translateY(0px);
+    }
+    75% {
+        opacity: 1;
+        transform: translateY(-5px);
+    }
+    90% {
+        opacity: 1;
+        transform: translateY(0px);
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0px);
+    }
+}`,
+            verticalDrop: `/* Vertical Drop (Simple) Animation */
+.game-piece--selectable {
+    animation: verticalDrop 0.4s ease-out forwards;
+    opacity: 1;
+    transform: translateY(-50px);
+}
+
+@keyframes verticalDrop {
+    0% {
+        opacity: 1;
+        transform: translateY(-50px);
+    }
+    100% {
+        transform: translateY(0px);
+    }
+}`,
+            verticalDropStagger: `/* Vertical Drop (Staggered) Animation */
+.game-piece--selectable {
+    animation: verticalDropStagger 0.4s ease-out forwards;
+    opacity: 0;
+    transform: translateY(-50px);
+}
+
+/* In PieceTray component, set animationDelay */
+/* animationDelay={index * 0.08} for stagger effect */
+
+@keyframes verticalDropStagger {
+    0% {
+        opacity: 0;
+        transform: translateY(-50px);
+    }
+    20% {
+        opacity: 0.5;
+        transform: translateY(-30px);
+    }
+    60% {
+        opacity: 1;
+        transform: translateY(-10px);
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0px);
+    }
+}`,
+            none: `/* No Animation */
+.game-piece--selectable {
+    /* No animation - pieces appear immediately */
+    opacity: 1;
+}`
+        };
+
+        // Initialize pieces
+        function initializePieces() {
+            const grid = document.getElementById('piece-grid');
+            grid.innerHTML = '';
+            
+            pieces.forEach((piece, index) => {
+                const pieceEl = document.createElement('div');
+                pieceEl.className = `game-piece ${piece.color}`;
+                pieceEl.textContent = piece.char;
+                pieceEl.style.setProperty('--duration', getDuration());
+                
+                // Add stagger delay for staggered animations
+                const animationType = document.getElementById('animation-select').value;
+                if (animationType === 'wave') {
+                    pieceEl.style.animationDelay = `${index * 50}ms`;
+                } else if (animationType === 'verticalBounceStagger') {
+                    pieceEl.style.animationDelay = `${index * 100}ms`;
+                } else if (animationType === 'verticalDropStagger') {
+                    pieceEl.style.animationDelay = `${index * 80}ms`;
+                }
+                
+                grid.appendChild(pieceEl);
+            });
+        }
+
+        // Get duration value
+        function getDuration() {
+            const ms = document.getElementById('duration-input').value;
+            return `${ms}ms`;
+        }
+
+        // Update duration display
+        document.getElementById('duration-input').addEventListener('input', (e) => {
+            document.getElementById('duration-display').textContent = `${e.target.value}ms`;
+        });
+
+        // Update code display
+        function updateCodeDisplay() {
+            const animation = document.getElementById('animation-select').value;
+            const code = animationCode[animation];
+            const duration = getDuration();
+            
+            // Replace 0.3s with actual duration
+            const updatedCode = code.replace(/0\.\d+s/g, duration.replace('ms', 'ms').replace('000', 's').replace('ms', 'ms'));
+            
+            document.getElementById('code-display').textContent = updatedCode;
+        }
+
+        // Trigger animation
+        function triggerAnimation() {
+            const animation = document.getElementById('animation-select').value;
+            const pieces = document.querySelectorAll('.game-piece');
+            
+            // Remove all animation classes
+            pieces.forEach(piece => {
+                piece.className = piece.className.replace(/animation-\w+/g, '').trim();
+            });
+            
+            // Force reflow
+            void document.body.offsetHeight;
+            
+            // Add new animation class
+            pieces.forEach((piece, index) => {
+                piece.className += ` animation-${animation}`;
+                piece.style.setProperty('--duration', getDuration());
+                
+                // Add stagger delay for staggered animations
+                if (animation === 'wave') {
+                    piece.style.animationDelay = `${index * 50}ms`;
+                } else if (animation === 'verticalBounceStagger') {
+                    piece.style.animationDelay = `${index * 100}ms`;
+                } else if (animation === 'verticalDropStagger') {
+                    piece.style.animationDelay = `${index * 80}ms`;
+                } else {
+                    piece.style.animationDelay = '';
+                }
+            });
+        }
+
+        // Reset pieces
+        function resetPieces() {
+            initializePieces();
+        }
+
+        // Update when animation changes
+        document.getElementById('animation-select').addEventListener('change', () => {
+            updateCodeDisplay();
+            triggerAnimation();
+        });
+
+        // Initialize on load
+        initializePieces();
+        updateCodeDisplay();
+        
+        // Auto-trigger first animation
+        setTimeout(() => {
+            triggerAnimation();
+        }, 500);
+    </script>
+</body>
+</html>
