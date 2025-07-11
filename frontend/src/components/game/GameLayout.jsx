@@ -20,7 +20,9 @@ const GameLayout = ({
   // Additional props for turn phase
   playType = '',
   currentPlayer = '',
-  turnRequirement = null
+  turnRequirement = null,
+  // Additional props for turn results phase
+  winner = ''
 }) => {
   // Get phase title and subtitle based on current phase
   const getPhaseInfo = () => {
@@ -43,7 +45,7 @@ const GameLayout = ({
       case 'turn_results':
         return {
           title: 'Turn Results',
-          subtitle: 'See who won this turn'
+          subtitle: winner ? `${winner} wins this turn!` : 'See who won this turn'
         };
       case 'scoring':
         return {
@@ -109,7 +111,8 @@ GameLayout.propTypes = {
   turnRequirement: PropTypes.shape({
     type: PropTypes.string,
     text: PropTypes.string
-  })
+  }),
+  winner: PropTypes.string
 };
 
 export default GameLayout;

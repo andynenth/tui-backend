@@ -1,6 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { PlayerAvatar, GamePiece, FooterTimer } from '../shared';
+import { GamePiece, FooterTimer } from '../shared';
 
 /**
  * TurnResultsContent Component
@@ -42,119 +42,66 @@ const TurnResultsContent = ({
   
   return (
     <>
-      {/* Winner announcement */}
-      <div className="tr-winner-section">
-        <div className="tr-winner-announcement">
-          <div className="tr-crown-icon">👑</div>
-          <div className="tr-winner-name">{winner} Wins!</div>
-          
-          {/* Winning play display */}
-          {winningPieces.length > 0 && (
-            <div className="tr-winning-play">
-              <div className="tr-play-label">Winning Play</div>
-              <div className="tr-winning-pieces">
-                {winningPieces.map((piece, idx) => (
-                  <GamePiece
-                    key={idx}
-                    piece={piece}
-                    size="small"
-                    className="tr-mini-piece"
-                  />
-                ))}
-              </div>
-            </div>
-          )}
-        </div>
-      </div>
-      
-      {/* Players summary */}
+      {/* Players summary - Show all 4 players with winner highlighted */}
       <div className="tr-players-summary">
         <div className="tr-player-list">
-          {(() => {
-            // Filter out the winner - simple string comparison
-            if (!winner) {
-              // No winner provided, showing all players
-              return playerPlays.map((play, index) => (
-                <div key={play.playerName} className="tr-player-row">
-                  <PlayerAvatar 
-                    name={play.playerName}
-                    className="tr-player-avatar"
-                    size="medium"
-                  />
-                  <div className="tr-player-info">
-                    <div className="tr-player-name">
-                      {play.playerName}{play.playerName === myName ? ' (You)' : ''}
-                    </div>
-                  </div>
-                  <div className="tr-played-pieces">
-                    {play.pieces.length === 0 ? (
-                      <span className="tr-pass-indicator">Passed</span>
-                    ) : (
-                      play.pieces.map((piece, idx) => (
-                        <GamePiece
-                          key={idx}
-                          piece={piece}
-                          size="mini"
-                          className="tr-played-piece"
-                        />
-                      ))
-                    )}
-                  </div>
-                </div>
-              ));
-            }
+          {playerPlays.map((play) => {
+            const isWinner = play.playerName === winner;
+            const pieceCount = play.pieces.length;
+            const useTwoRows = pieceCount > 3;
             
-            // Filter out the winner
-            const nonWinnerPlays = playerPlays.filter(play => play.playerName !== winner);
-            
-            // Find winner's index in original order
-            const winnerIndex = playerPlays.findIndex(play => play.playerName === winner);
-            
-            // Reorder starting from player after winner
-            const reorderedPlays = [];
-            if (winnerIndex !== -1 && nonWinnerPlays.length > 0) {
-              // Start from the player after the winner
-              for (let i = 0; i < playerPlays.length - 1; i++) {
-                const index = (winnerIndex + 1 + i) % playerPlays.length;
-                const play = playerPlays[index];
-                if (play.playerName !== winner) {
-                  reorderedPlays.push(play);
-                }
-              }
-            } else {
-              // Fallback to original order without winner
-              reorderedPlays.push(...nonWinnerPlays);
-            }
-            
-            return reorderedPlays.map((play, index) => (
-              <div key={play.playerName} className="tr-player-row">
-                <PlayerAvatar 
-                  name={play.playerName}
-                  className="tr-player-avatar"
-                  size="medium"
-                />
+            return (
+              <div 
+                key={play.playerName} 
+                className={`tr-player-row ${isWinner ? 'winner' : ''}`}
+              >
                 <div className="tr-player-info">
                   <div className="tr-player-name">
-                    {play.playerName}{play.playerName === myName ? ' (You)' : ''}
+                    {play.playerName}
                   </div>
                 </div>
-                <div className="tr-played-pieces">
-                  {play.pieces.length === 0 ? (
+                <div className={`tr-played-pieces ${useTwoRows ? 'two-rows' : ''}`}>
+                  {pieceCount === 0 ? (
                     <span className="tr-pass-indicator">Passed</span>
+                  ) : useTwoRows ? (
+                    // For >3 pieces, split into two rows
+                    <>
+                      <div className="pieces-row">
+                        {play.pieces.slice(0, Math.ceil(pieceCount / 2)).map((piece, idx) => (
+                          <GamePiece
+                            key={idx}
+                            piece={piece}
+                            size="small"
+                            className="tr-played-piece"
+                          />
+                        ))}
+                      </div>
+                      <div className="pieces-row">
+                        {play.pieces.slice(Math.ceil(pieceCount / 2)).map((piece, idx) => (
+                          <GamePiece
+                            key={idx + Math.ceil(pieceCount / 2)}
+                            piece={piece}
+                            size="small"
+                            className="tr-played-piece"
+                          />
+                        ))}
+                      </div>
+                    </>
                   ) : (
+                    // For ≤3 pieces, single row with larger size
                     play.pieces.map((piece, idx) => (
                       <GamePiece
                         key={idx}
                         piece={piece}
-                        size="mini"
+                        size="medium"
                         className="tr-played-piece"
                       />
                     ))
                   )}
                 </div>
               </div>
-            ));
-          })()}
+            );
+          })}
         </div>
       </div>
       

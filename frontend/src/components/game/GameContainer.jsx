@@ -368,6 +368,7 @@ export function GameContainer({ roomId, onNavigateToLobby }) {
                 roundNumber={gameState.currentRound}
                 showMultiplier={gameState.redealMultiplier > 1}
                 multiplierValue={gameState.redealMultiplier}
+                winner={gameState.turnWinner}
               >
                 <TurnResultsUI {...turnResultsProps} />
               </GameLayout>
