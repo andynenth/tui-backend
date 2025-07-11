@@ -123,10 +123,10 @@ class PreparationState(GameState):
         # game._deal_guaranteed_no_redeal(red_general_player_index=1)
 
         # 3. Force weak hands (testing redeal logic)
-        # game._deal_weak_hand(weak_player_indices=[1], max_weak_points=9, limit=1)
+        game._deal_weak_hand(weak_player_indices=[0], max_weak_points=9, limit=3)
         
         # 4.
-        game._deal_double_straight(1,'RED')
+        # game._deal_double_straight(1,'RED')
 
         # Examples:
         # game._deal_guaranteed_no_redeal()                              # Random RED_GENERAL assignment
@@ -205,6 +205,8 @@ class PreparationState(GameState):
                 self.logger.info(
                     f"✅ No weak hands - keeping existing starter: {starter} (reason: {game.starter_reason})"
                 )
+                # Allow time for dealing animation to complete
+                await asyncio.sleep(2.0)
             else:
                 # No starter set, determine one
                 starter = self._determine_starter()
@@ -213,6 +215,8 @@ class PreparationState(GameState):
                 self.logger.info(
                     f"✅ No weak hands - determined new starter: {starter}"
                 )
+                # Allow time for dealing animation to complete
+                await asyncio.sleep(2.0)
 
         # Signal that dealing is complete
         final_multiplier = getattr(game, "redeal_multiplier", 1)

@@ -30,6 +30,7 @@ const PreparationContent = ({
 }) => {
   const [showDealing, setShowDealing] = useState(true);
   const [isRedealing, setIsRedealing] = useState(false);
+  const [dealCount, setDealCount] = useState(0);
   
   
 
@@ -50,6 +51,8 @@ const PreparationContent = ({
     if (dealingCards === true && !showDealing) {
       // Not initial deal, must be redeal!
       setIsRedealing(true);
+      // Increment deal count to force re-animation
+      setDealCount(prev => prev + 1);
     }
   }, [dealingCards, showDealing]);
 
@@ -157,6 +160,7 @@ const PreparationContent = ({
 
       {/* Hand section - ALWAYS visible at bottom like mockup */}
       <PieceTray
+        key={`deal-${dealCount}`}
         pieces={myHand}
         variant="fixed"
         showValues

@@ -144,3 +144,5 @@ _Add implementation notes, decisions, and updates here as work progresses_
 ### Update Log
 - **Created**: Initial plan document created
 - **Implementation Complete**: All code changes implemented, ready for testing
+- **Animation Timing Fix**: Added 2-second delay in backend when no weak hands found to allow animation to complete before phase transition
+- **Redeal Animation Fix**: Added key prop with dealCount to force React to re-mount PieceTray and replay animation on redeal
