@@ -16,6 +16,7 @@ class GamePhase(str, Enum):
 
     WAITING = "waiting"  # Room setup, player connections, lobby
     PREPARATION = "preparation"  # Deal cards, check weak hands, redeals
+    ROUND_START = "round_start"  # Display round info and starter
     DECLARATION = "declaration"  # Players declare target piles
     TURN = "turn"  # Players play pieces in turns
     TURN_RESULTS = "turn_results"  # Display turn results, auto-transition

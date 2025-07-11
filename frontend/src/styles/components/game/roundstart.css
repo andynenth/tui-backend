@@ -1,0 +1,148 @@
+/* Round Start Phase Styles */
+/* Prefix: rs- */
+
+/* Main content container */
+.rs-content {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  animation: fadeIn 0.5s ease-out;
+}
+
+/* Round number section */
+.rs-round-section {
+  text-align: center;
+  margin-bottom: 40px;
+  animation: slideDown 0.6s ease-out;
+}
+
+.rs-round-label {
+  font-size: 20px;
+  font-weight: 600;
+  color: #718096;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  margin-bottom: 8px;
+}
+
+.rs-round-number {
+  font-size: 72px;
+  font-weight: 800;
+  color: #2D3748;
+  font-family: 'Crimson Pro', serif;
+  line-height: 1;
+  text-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  animation: scaleIn 0.8s ease-out 0.3s both;
+}
+
+/* Starter information section */
+.rs-starter-section {
+  text-align: center;
+  margin-bottom: 40px;
+  animation: fadeIn 0.6s ease-out 0.6s both;
+}
+
+.rs-starter-name {
+  font-size: 32px;
+  font-weight: 700;
+  color: #4A5568;
+  margin-bottom: 8px;
+  font-family: 'Crimson Pro', serif;
+}
+
+.rs-starter-reason {
+  font-size: 18px;
+  color: #718096;
+  font-style: italic;
+}
+
+/* Special styling for different reasons */
+.rs-starter-section[data-reason="has_general_red"] .rs-starter-reason {
+  color: #E53E3E;
+}
+
+.rs-starter-section[data-reason="won_last_turn"] .rs-starter-reason {
+  color: #48BB78;
+}
+
+.rs-starter-section[data-reason="accepted_redeal"] .rs-starter-reason {
+  color: #4299E1;
+}
+
+/* Timer section */
+.rs-timer-section {
+  margin-top: 20px;
+  animation: fadeIn 0.6s ease-out 0.9s both;
+}
+
+/* Animations */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes scaleIn {
+  from {
+    opacity: 0;
+    transform: scale(0.5);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* Background decoration */
+.rs-content::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: radial-gradient(circle at center, rgba(66, 153, 225, 0.05) 0%, transparent 70%);
+  pointer-events: none;
+  z-index: -1;
+}
+
+/* Responsive adjustments */
+@media (max-height: 700px) {
+  .rs-round-number {
+    font-size: 56px;
+  }
+  
+  .rs-starter-name {
+    font-size: 28px;
+  }
+  
+  .rs-starter-reason {
+    font-size: 16px;
+  }
+  
+  .rs-round-section {
+    margin-bottom: 30px;
+  }
+  
+  .rs-starter-section {
+    margin-bottom: 30px;
+  }
+}

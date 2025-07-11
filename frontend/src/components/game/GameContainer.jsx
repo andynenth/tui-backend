@@ -20,6 +20,7 @@ import useConnectionStatus from "../../hooks/useConnectionStatus";
 // Import Pure UI Components
 import WaitingUI from './WaitingUI';
 import PreparationUI from './PreparationUI';
+import RoundStartUI from './RoundStartUI';
 import DeclarationUI from './DeclarationUI';
 import TurnUI from './TurnUI';
 import TurnResultsUI from './TurnResultsUI';
@@ -68,6 +69,17 @@ export function GameContainer({ roomId, onNavigateToLobby }) {
       onDeclineRedeal: gameActions.declineRedeal
     };
   }, [gameState, gameActions]);
+
+  const roundStartProps = useMemo(() => {
+    if (gameState.phase !== 'round_start') return null;
+    
+    return {
+      // Data from backend
+      roundNumber: gameState.currentRound || 1,
+      starter: gameState.currentStarter || '',
+      starterReason: gameState.starterReason || 'default'
+    };
+  }, [gameState]);
 
   const declarationProps = useMemo(() => {
     if (gameState.phase !== 'declaration') return null;
@@ -317,6 +329,18 @@ export function GameContainer({ roomId, onNavigateToLobby }) {
               </GameLayout>
             );
             
+          case 'round_start':
+            return (
+              <GameLayout 
+                phase="round_start" 
+                roundNumber={gameState.currentRound}
+                showMultiplier={gameState.redealMultiplier > 1}
+                multiplierValue={gameState.redealMultiplier}
+              >
+                <RoundStartUI {...roundStartProps} />
+              </GameLayout>
+            );
+            
           case 'declaration':
             return (
               <GameLayout 
@@ -421,6 +445,8 @@ function getWaitingMessage(gameState, connectionStatus) {
       return "Waiting for game to start...";
     case 'preparation':
       return "Preparing for next phase...";
+    case 'round_start':
+      return "Starting new round...";
     case 'declaration':
       return "Declaration phase in progress...";
     case 'turn':
