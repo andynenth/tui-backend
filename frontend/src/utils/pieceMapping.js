@@ -37,21 +37,13 @@ export const PIECE_TYPE_MAP = {
 /**
  * Parse piece string from backend format
  * @param {string|Object} pieceData - Either "GENERAL_RED(14)" string or piece object
- * @returns {Object} Parsed piece object with type, color, and value
+ * @returns {Object} Parsed piece object with kind, color, and value
  */
 export function parsePiece(pieceData) {
   // If already an object
   if (typeof pieceData === 'object' && pieceData !== null) {
-    // Handle GameService format: { color, point, kind, name }
+    // Already has kind property
     if (pieceData.kind) {
-      return {
-        type: pieceData.kind,
-        color: pieceData.color.toLowerCase(),
-        value: pieceData.point
-      };
-    }
-    // Already in correct format
-    if (pieceData.type) {
       return pieceData;
     }
   }
@@ -60,9 +52,9 @@ export function parsePiece(pieceData) {
   if (typeof pieceData === 'string') {
     const match = pieceData.match(/^([A-Z]+)_([A-Z]+)\((\d+)\)$/);
     if (match) {
-      const [, type, color, value] = match;
+      const [, kind, color, value] = match;
       return {
-        type,
+        kind,
         color: color.toLowerCase(),
         value: parseInt(value, 10)
       };
@@ -71,7 +63,7 @@ export function parsePiece(pieceData) {
 
   // Fallback
   return {
-    type: 'UNKNOWN',
+    kind: 'UNKNOWN',
     color: 'black',
     value: 0
   };
@@ -85,30 +77,30 @@ export function parsePiece(pieceData) {
 export function getPieceDisplay(pieceData) {
   const piece = parsePiece(pieceData);
   
-  if (!piece || !piece.type) {
+  if (!piece || !piece.kind) {
     return '?';
   }
 
   // Try full type with color first
-  const fullType = `${piece.type}_${piece.color?.toUpperCase()}`;
+  const fullType = `${piece.kind}_${piece.color?.toUpperCase()}`;
   if (PIECE_CHINESE_MAP[fullType]) {
     return PIECE_CHINESE_MAP[fullType];
   }
 
   // Try just the type
-  if (PIECE_CHINESE_MAP[piece.type]) {
-    return PIECE_CHINESE_MAP[piece.type];
+  if (PIECE_CHINESE_MAP[piece.kind]) {
+    return PIECE_CHINESE_MAP[piece.kind];
   }
 
   // Try simplified type map
-  const baseType = piece.type.replace(/_RED|_BLACK/i, '');
+  const baseType = piece.kind.replace(/_RED|_BLACK/i, '');
   if (PIECE_TYPE_MAP[baseType]) {
     const chars = PIECE_TYPE_MAP[baseType].split('/');
     return piece.color?.toLowerCase() === 'red' ? chars[0] : chars[1] || chars[0];
   }
 
   // Fallback - use first character of type
-  return piece.type.charAt(0).toUpperCase();
+  return piece.kind.charAt(0).toUpperCase();
 }
 
 /**
