@@ -151,6 +151,14 @@
   border-color: rgba(73, 80, 87, 0.4);
 }
 
+/* Dealing variant - for vertical drop animation during deal/redeal */
+.game-piece--dealing {
+  cursor: default;
+  animation: verticalDropStagger 0.35s ease-out forwards;
+  opacity: 0;
+  transform: translateY(-50px);
+}
+
 /* Animation keyframes */
 @keyframes gentleBounce {
   0% {
@@ -161,6 +169,25 @@
     transform: translateY(-6px);
   }
   100% {
+    transform: translateY(0px);
+  }
+}
+
+@keyframes verticalDropStagger {
+  0% {
+    opacity: 0;
+    transform: translateY(-50px);
+  }
+  20% {
+    opacity: 0.5;
+    transform: translateY(-30px);
+  }
+  60% {
+    opacity: 1;
+    transform: translateY(-10px);
+  }
+  100% {
+    opacity: 1;
     transform: translateY(0px);
   }
 }

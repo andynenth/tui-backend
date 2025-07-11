@@ -23,6 +23,7 @@ const PieceTray = ({
   selectedPieces = [],
   showValues = true,
   animateAppear = false,
+  animationType = 'bounce',
   className = ''
 }) => {
   // Build container class names
@@ -59,16 +60,29 @@ const PieceTray = ({
           const isSelectable = !!onPieceClick;
           const isSelected = isPieceSelected(piece, index);
           
+          // Determine variant based on animation type and selectability
+          let pieceVariant = 'default';
+          if (animateAppear && animationType === 'verticalDrop') {
+            pieceVariant = 'dealing';
+          } else if (isSelectable) {
+            pieceVariant = 'selectable';
+          }
+          
+          // Calculate animation delay based on animation type
+          const delay = animateAppear ? 
+            (animationType === 'verticalDrop' ? index * 0.08 : index * 0.1) : 
+            undefined;
+          
           return (
             <GamePiece
               key={index}
               piece={piece}
               size="large"
-              variant={isSelectable ? 'selectable' : 'default'}
+              variant={pieceVariant}
               selected={isSelected}
               showValue={showValues}
               onClick={isSelectable ? () => handlePieceClick(piece, index) : null}
-              animationDelay={animateAppear ? index * 0.1 : undefined}
+              animationDelay={delay}
             />
           );
         })}
@@ -88,6 +102,7 @@ PieceTray.propTypes = {
   selectedPieces: PropTypes.array,
   showValues: PropTypes.bool,
   animateAppear: PropTypes.bool,
+  animationType: PropTypes.oneOf(['bounce', 'verticalDrop']),
   className: PropTypes.string
 };
 

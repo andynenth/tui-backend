@@ -91,7 +91,7 @@ GamePiece.propTypes = {
     value: PropTypes.number
   }).isRequired,
   size: PropTypes.oneOf(['mini', 'small', 'medium', 'large']),
-  variant: PropTypes.oneOf(['default', 'table', 'selectable']),
+  variant: PropTypes.oneOf(['default', 'table', 'selectable', 'dealing']),
   selected: PropTypes.bool,
   flipped: PropTypes.bool,
   showValue: PropTypes.bool,
