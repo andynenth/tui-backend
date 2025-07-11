@@ -161,6 +161,7 @@ const PreparationContent = ({
         variant="fixed"
         showValues
         animateAppear
+        animationType="verticalDrop"
       />
     </>
   );
