@@ -1,127 +1,35 @@
-🔒 [Room 7F1852] Starting game: op_id=7F1852_1
-✅ [Room 7F1852] Game and StateMachine started successfully: op_id=7F1852_1
-✅ [Room 7F1852] Bot manager registered for 3 bots
-✅ Game started in room 7F1852
-INFO:     ('127.0.0.1', 49846) - "WebSocket /ws/7F1852" [accepted]
-INFO:     connection open
+🔒 [Room EC4351] Starting game: op_id=EC4351_1
+✅ [Room EC4351] Game and StateMachine started successfully: op_id=EC4351_1
+✅ [Room EC4351] Bot manager registered for 3 bots
+✅ Game started in room EC4351
 INFO:     connection closed
+INFO:     ('127.0.0.1', 63138) - "WebSocket /ws/EC4351" [accepted]
+INFO:     connection open
+✅ Bot Bot 3 declared 3
+✅ Bot Bot 4 declared 1
+✅ Bot Bot 4 declared 1
+Wrong player turn: Bot 4, expected: Andy
+Invalid action: GameAction(player_name='Bot 4', action_type=<ActionType.DECLARE: 'declare'>, payload={'value': 1}, timestamp=datetime.datetime(2025, 7, 11, 10, 28, 32, 690645), sequence_id=2, is_bot=True)
+✅ Declaration queued: Andy -> 5
 ✅ Bot Bot 2 declared 2
-✅ Bot Bot 3 declared 2
-✅ Bot Bot 4 declared 1
-✅ Bot Bot 3 declared 2
-✅ Bot Bot 4 declared 1
-✅ Bot Bot 4 declared 1
-Wrong player turn: Bot 3, expected: Andy
-Invalid action: GameAction(player_name='Bot 3', action_type=<ActionType.DECLARE: 'declare'>, payload={'value': 2}, timestamp=datetime.datetime(2025, 7, 11, 9, 38, 27, 89869), sequence_id=3, is_bot=True)
-Wrong player turn: Bot 4, expected: Andy
-Invalid action: GameAction(player_name='Bot 4', action_type=<ActionType.DECLARE: 'declare'>, payload={'value': 1}, timestamp=datetime.datetime(2025, 7, 11, 9, 38, 28, 167056), sequence_id=4, is_bot=True)
-Wrong player turn: Bot 4, expected: Andy
-Invalid action: GameAction(player_name='Bot 4', action_type=<ActionType.DECLARE: 'declare'>, payload={'value': 1}, timestamp=datetime.datetime(2025, 7, 11, 9, 38, 29, 564362), sequence_id=5, is_bot=True)
-✅ Declaration queued: Andy -> 4
-🤖 BOT chooses to play SINGLE (14 pts): GENERAL
-✅ Bot Bot 2 action queued - state machine will broadcast with correct next_player
-🤖 BOT chooses to play PAIR (16 pts): CHARIOT, CHARIOT
+🤖 BOT chooses to play STRAIGHT (36 pts): GENERAL, ELEPHANT, ADVISOR
 ✅ Bot Bot 3 action queued - state machine will broadcast with correct next_player
-🤖 BOT chooses to play SINGLE (11 pts): ADVISOR
-✅ Bot Bot 4 action queued - state machine will broadcast with correct next_player
-🤖 BOT chooses to play SINGLE (13 pts): GENERAL
-✅ Bot Bot 3 action queued - state machine will broadcast with correct next_player
-🤖 BOT chooses to play SINGLE (11 pts): ADVISOR
-✅ Bot Bot 4 action queued - state machine will broadcast with correct next_player
-Must play 1 pieces, got 2
-Invalid action: GameAction(player_name='Bot 3', action_type=<ActionType.PLAY_PIECES: 'play_pieces'>, payload={'pieces': [CHARIOT_RED(8), CHARIOT_RED(8)]}, timestamp=datetime.datetime(2025, 7, 11, 9, 38, 36, 796394), sequence_id=8, is_bot=True)
-Not Bot 4's turn - expected Bot 3
-Invalid action: GameAction(player_name='Bot 4', action_type=<ActionType.PLAY_PIECES: 'play_pieces'>, payload={'pieces': [ADVISOR_BLACK(11)]}, timestamp=datetime.datetime(2025, 7, 11, 9, 38, 37, 914644), sequence_id=9, is_bot=True)
-🤖 BOT chooses to play SINGLE (11 pts): ADVISOR
-✅ Bot Bot 4 action queued - state machine will broadcast with correct next_player
-Not Bot 4's turn - expected Andy
-Invalid action: GameAction(player_name='Bot 4', action_type=<ActionType.PLAY_PIECES: 'play_pieces'>, payload={'pieces': [ADVISOR_BLACK(11)]}, timestamp=datetime.datetime(2025, 7, 11, 9, 38, 41, 340855), sequence_id=12, is_bot=True)
-✅ Play accepted: Andy
-🤖 BOT chooses to play SINGLE (10 pts): ELEPHANT
-✅ Bot Bot 2 action queued - state machine will broadcast with correct next_player
-🤖 BOT chooses to play PAIR (16 pts): CHARIOT, CHARIOT
-✅ Bot Bot 3 action queued - state machine will broadcast with correct next_player
-🤖 BOT chooses to play SINGLE (10 pts): ELEPHANT
-✅ Bot Bot 4 action queued - state machine will broadcast with correct next_player
 🤖 BOT chooses to play SINGLE (12 pts): ADVISOR
-✅ Bot Bot 3 action queued - state machine will broadcast with correct next_player
-🤖 BOT chooses to play SINGLE (10 pts): ELEPHANT
 ✅ Bot Bot 4 action queued - state machine will broadcast with correct next_player
-Must play 1 pieces, got 2
-Invalid action: GameAction(player_name='Bot 3', action_type=<ActionType.PLAY_PIECES: 'play_pieces'>, payload={'pieces': [CHARIOT_RED(8), CHARIOT_RED(8)]}, timestamp=datetime.datetime(2025, 7, 11, 9, 39, 2, 352107), sequence_id=15, is_bot=True)
-Not Bot 4's turn - expected Bot 3
-Invalid action: GameAction(player_name='Bot 4', action_type=<ActionType.PLAY_PIECES: 'play_pieces'>, payload={'pieces': [ELEPHANT_RED(10)]}, timestamp=datetime.datetime(2025, 7, 11, 9, 39, 3, 649486), sequence_id=16, is_bot=True)
-🤖 BOT chooses to play SINGLE (10 pts): ELEPHANT
-✅ Bot Bot 4 action queued - state machine will broadcast with correct next_player
-Not Bot 4's turn - expected Andy
-Invalid action: GameAction(player_name='Bot 4', action_type=<ActionType.PLAY_PIECES: 'play_pieces'>, payload={'pieces': [ELEPHANT_RED(10)]}, timestamp=datetime.datetime(2025, 7, 11, 9, 39, 8, 749558), sequence_id=19, is_bot=True)
-✅ Play accepted: Andy
-🤖 BOT chooses to play PAIR (16 pts): CHARIOT, CHARIOT
-✅ Bot Bot 3 action queued - state machine will broadcast with correct next_player
-🤖 BOT chooses to play SINGLE (9 pts): ELEPHANT
-✅ Bot Bot 4 action queued - state machine will broadcast with correct next_player
-🤖 BOT chooses to play PAIR (2 pts): SOLDIER, SOLDIER
-✅ Bot Bot 4 action queued - state machine will broadcast with correct next_player
-Must play 2 pieces, got 1
-Invalid action: GameAction(player_name='Bot 4', action_type=<ActionType.PLAY_PIECES: 'play_pieces'>, payload={'pieces': [ELEPHANT_BLACK(9)]}, timestamp=datetime.datetime(2025, 7, 11, 9, 39, 33, 337728), sequence_id=22, is_bot=True)
-✅ Play accepted: Andy
-🤖 BOT chooses to play PAIR (2 pts): SOLDIER, SOLDIER
-✅ Bot Bot 2 action queued - state machine will broadcast with correct next_player
-🤖 BOT chooses to play STRAIGHT (15 pts): HORSE, CHARIOT, CANNON
-✅ Bot Bot 3 action queued - state machine will broadcast with correct next_player
-🤖 BOT chooses to play SINGLE (9 pts): ELEPHANT
-✅ Bot Bot 4 action queued - state machine will broadcast with correct next_player
-🤖 BOT has no valid play. Discards lowest pieces: CANNON, HORSE, CHARIOT
-    🔍 Final play: ['CANNON', 'HORSE', 'CHARIOT']
-    🧠 Hand left: ['CHARIOT', 'CANNON', 'HORSE', 'ELEPHANT']
+🤖 BOT has no valid play. Discards lowest pieces: SOLDIER, SOLDIER, SOLDIER
+    🔍 Final play: ['SOLDIER', 'SOLDIER', 'SOLDIER']
+    🧠 Hand left: ['ADVISOR', 'SOLDIER', 'CHARIOT', 'ADVISOR', 'CANNON', 'ELEPHANT', 'SOLDIER', 'SOLDIER']
 ✅ Bot Bot 4 action queued - state machine will broadcast with correct next_player
 Must play 3 pieces, got 1
-Invalid action: GameAction(player_name='Bot 4', action_type=<ActionType.PLAY_PIECES: 'play_pieces'>, payload={'pieces': [ELEPHANT_BLACK(9)]}, timestamp=datetime.datetime(2025, 7, 11, 9, 39, 56, 347833), sequence_id=27, is_bot=True)
+Invalid action: GameAction(player_name='Bot 4', action_type=<ActionType.PLAY_PIECES: 'play_pieces'>, payload={'pieces': [ADVISOR_RED(12)]}, timestamp=datetime.datetime(2025, 7, 11, 10, 28, 40, 722202), sequence_id=6, is_bot=True)
 ✅ Play accepted: Andy
-🤖 BOT has no valid play. Discards lowest pieces: SOLDIER, CANNON, HORSE
-    🔍 Final play: ['SOLDIER', 'CANNON', 'HORSE']
-    🧠 Hand left: ['HORSE', 'SOLDIER', 'CANNON', 'HORSE']
+🤖 BOT chooses to play THREE_OF_A_KIND (3 pts): SOLDIER, SOLDIER, SOLDIER
 ✅ Bot Bot 2 action queued - state machine will broadcast with correct next_player
-🤖 BOT chooses to play SINGLE (11 pts): ADVISOR
+🤖 BOT chooses to play SINGLE (9 pts): ELEPHANT
 ✅ Bot Bot 3 action queued - state machine will broadcast with correct next_player
-🤖 BOT chooses to play SINGLE (9 pts): ELEPHANT
+🤖 BOT chooses to play SINGLE (12 pts): ADVISOR
 ✅ Bot Bot 4 action queued - state machine will broadcast with correct next_player
-🤖 BOT chooses to play SINGLE (9 pts): ELEPHANT
+🤖 BOT chooses to play SINGLE (12 pts): ADVISOR
 ✅ Bot Bot 4 action queued - state machine will broadcast with correct next_player
 Not Bot 4's turn - expected Andy
-Invalid action: GameAction(player_name='Bot 4', action_type=<ActionType.PLAY_PIECES: 'play_pieces'>, payload={'pieces': [ELEPHANT_BLACK(9)]}, timestamp=datetime.datetime(2025, 7, 11, 9, 40, 46, 931404), sequence_id=33, is_bot=True)
-✅ Play accepted: Andy
-🤖 BOT chooses to play SINGLE (6 pts): HORSE
-✅ Bot Bot 2 action queued - state machine will broadcast with correct next_player
-🔄 SCORING_SETUP_DEBUG: Reset display_delay_complete = False
-🗳️ DECLARATION_DEBUG: game.player_declarations = {'Bot 2': 2, 'Bot 3': 2, 'Bot 4': 1, 'Andy': 4}
-📋 SCORING_FIX_DEBUG: Andy - declared: 4, actual: 1
-🏆 SCORING_DEBUG: Andy scoring data:
-   📋 Declared: 4, Actual: 1
-   📊 Base Score: -3, Multiplier: 1x, Final: -3
-   💯 Total Score: -3
-📋 SCORING_FIX_DEBUG: Bot 2 - declared: 2, actual: 1
-🏆 SCORING_DEBUG: Bot 2 scoring data:
-   📋 Declared: 2, Actual: 1
-   📊 Base Score: -1, Multiplier: 1x, Final: -1
-   💯 Total Score: -1
-📋 SCORING_FIX_DEBUG: Bot 3 - declared: 2, actual: 6
-🏆 SCORING_DEBUG: Bot 3 scoring data:
-   📋 Declared: 2, Actual: 6
-   📊 Base Score: -4, Multiplier: 1x, Final: -4
-   💯 Total Score: -4
-📋 SCORING_FIX_DEBUG: Bot 4 - declared: 1, actual: 0
-🏆 SCORING_DEBUG: Bot 4 scoring data:
-   📋 Declared: 1, Actual: 0
-   📊 Base Score: -1, Multiplier: 1x, Final: -1
-   💯 Total Score: -1
-🚀 SCORING_BROADCAST_DEBUG: Broadcasting scoring data:
-   📊 Round scores: {'Andy': {'declared': 4, 'actual': 1, 'base_score': -3, 'bonus': 0, 'hit_value': -3, 'multiplier': 1, 'final_score': -3, 'total_score': -3}, 'Bot 2': {'declared': 2, 'actual': 1, 'base_score': -1, 'bonus': 0, 'hit_value': -1, 'multiplier': 1, 'final_score': -1, 'total_score': -1}, 'Bot 3': {'declared': 2, 'actual': 6, 'base_score': -4, 'bonus': 0, 'hit_value': -4, 'multiplier': 1, 'final_score': -4, 'total_score': -4}, 'Bot 4': {'declared': 1, 'actual': 0, 'base_score': -1, 'bonus': 0, 'hit_value': -1, 'multiplier': 1, 'final_score': -1, 'total_score': -1}}
-   🏁 Game complete: False
-   🏆 Winners: []
-🚀 SCORING_BROADCAST_DEBUG: Also sending:
-   💯 Total scores: {'Andy': -3, 'Bot 2': -1, 'Bot 3': -4, 'Bot 4': -1}
-   👥 Players data: [{'name': 'Andy', 'is_bot': False, 'pile_count': 4, 'captured_piles': 1}, {'name': 'Bot 2', 'is_bot': True, 'pile_count': 2, 'captured_piles': 1}, {'name': 'Bot 3', 'is_bot': True, 'pile_count': 2, 'captured_piles': 6}, {'name': 'Bot 4', 'is_bot': True, 'pile_count': 1, 'captured_piles': 0}]
-⏰ SCORING_DELAY_DEBUG: Starting 7-second display delay...
-⏰ SCORING_DELAY_DEBUG: 7-second delay complete - setting display_delay_complete = True
-👤 Round starter is human or None: None
+Invalid action: GameAction(player_name='Bot 4', action_type=<ActionType.PLAY_PIECES: 'play_pieces'>, payload={'pieces': [ADVISOR_RED(12)]}, timestamp=datetime.datetime(2025, 7, 11, 10, 30, 21, 700272), sequence_id=12, is_bot=True)

@@ -276,7 +276,7 @@ const TurnContent = ({
               if (isStarter) {
                 if (selectedPieces.length >= 2) {
                   const playType = getPlayType(selectedPieces);
-                  return playType ? `✓ Valid ${playType}` : 'As starter, your play must be valid';
+                  return playType ? `✓ Valid ${formatPlayType(playType)}` : 'As starter, your play must be valid';
                 }
                 
                 return 'As starter, your play must be valid';
@@ -298,14 +298,14 @@ const TurnContent = ({
                 if (selectedPlayType) {
                   // Check if the selected play type matches the starter's play type
                   if (selectedPlayType === playType) {
-                    return `✓ Your ${selectedPlayType} can compete this turn`;
+                    return `✓ Your ${formatPlayType(selectedPlayType)} can compete this turn`;
                   } else {
-                    return `⚠️ Your ${selectedPlayType} cannot compete against ${playType}`;
+                    return `⚠️ Your ${formatPlayType(selectedPlayType)} cannot compete against ${formatPlayType(playType)}`;
                   }
                 } else {
                   // Use the actual play type from the starter if available
                   const starterPlayType = playType || 'combination';
-                  return `⚠️ Not a ${starterPlayType} - play to forfeit turn`;
+                  return `⚠️ Not a ${formatPlayType(starterPlayType)} - play to forfeit turn`;
                 }
               }
               

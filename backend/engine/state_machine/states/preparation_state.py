@@ -126,7 +126,7 @@ class PreparationState(GameState):
         # game._deal_weak_hand(weak_player_indices=[1], max_weak_points=9, limit=1)
         
         # 4.
-        game._deal_double_straight(0,'RED')
+        game._deal_double_straight(1,'RED')
 
         # Examples:
         # game._deal_guaranteed_no_redeal()                              # Random RED_GENERAL assignment
