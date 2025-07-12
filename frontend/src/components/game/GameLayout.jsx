@@ -1,5 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import { formatPlayType } from '../../utils/playTypeFormatter';
 
 /**
  * GameLayout Component
@@ -39,7 +40,7 @@ const GameLayout = ({
         };
       case 'turn':
         return {
-          title: playType || 'Turn Phase',
+          title: playType ? formatPlayType(playType) : 'Turn Phase',
           subtitle: currentPlayer ? `Round ${roundNumber} • ${currentPlayer}'s Turn` : 'Play your pieces strategically'
         };
       case 'turn_results':

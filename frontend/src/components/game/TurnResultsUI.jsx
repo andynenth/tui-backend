@@ -40,6 +40,7 @@ export function TurnResultsUI({
     const turnPlay = currentTurnPlays.find(play => play.player === player.name);
     return {
       playerName: player.name,
+      player: player,  // Include full player object for captured/declared data
       pieces: turnPlay?.pieces || turnPlay?.cards || []
     };
   });

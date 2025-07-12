@@ -1038,6 +1038,7 @@ export class GameService extends EventTarget {
       turnWinner: data.winner || null,
       winningPlay: data.winning_play || null,
       playerPiles: data.player_piles || {},
+      players: data.players || state.players,  // Update players with captured_piles and declared
       turnNumber: data.turn_number || state.currentTurnNumber || 1,
       nextStarter: data.next_starter || null,
       allHandsEmpty: data.all_hands_empty || false,

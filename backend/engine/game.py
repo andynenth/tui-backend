@@ -35,6 +35,7 @@ class Game:
         self.current_player = None         # Current player (for round start/declarations)
         self.round_starter = None          # Player who starts the round
         self.player_declarations = {}      # Track player declarations for state machine
+        self.pile_counts = {}              # Track piles won per player per round
         
         # Event-driven support
         self.current_phase = None          # Track current phase for controllers
