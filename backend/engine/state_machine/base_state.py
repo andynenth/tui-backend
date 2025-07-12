@@ -171,13 +171,22 @@ class GameState(ABC):
                         #     piece_str = str(piece)
                         #     self.logger.info(f"   Position {i}: {piece_str}")
                         
+                        # Debug captured_piles value
+                        captured_piles_value = getattr(player, 'captured_piles', 0)
+                        declared_value = getattr(player, 'declared', 0)
+                        
                         players_data[player_name] = {
                             'hand': hand_strings,
                             'hand_size': len(player_hand),
                             'zero_declares_in_a_row': getattr(player, 'zero_declares_in_a_row', 0),
-                            'declared': getattr(player, 'declared', 0),
+                            'declared': declared_value,
+                            'captured_piles': captured_piles_value,
                             'score': getattr(player, 'score', 0)
                         }
+                        
+                        # Special debug for captured_piles
+                        if self.phase_name.value in ['turn_results', 'scoring']:
+                            self.logger.info(f"🔍 CAPTURED_PILES_DEBUG [{self.phase_name.value}] {player_name}: captured_piles={captured_piles_value}, declared={declared_value}")
                         
                         self.logger.debug(f"   Final player data: {players_data[player_name]}")
             

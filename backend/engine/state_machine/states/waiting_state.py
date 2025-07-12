@@ -92,7 +92,7 @@ class WaitingState(GameState):
                     "connected_players": len(self.connected_players),
                     "required_players": self.room_capacity,
                     "room_ready": len(self.connected_players) >= self.room_capacity,
-                    "players": list(self.connected_players.keys()),
+                    "connected_player_names": list(self.connected_players.keys()),  # Just names (base_state.py handles full players data)
                 },
                 "Initialized waiting room state",
             )
@@ -226,7 +226,7 @@ class WaitingState(GameState):
             {
                 "game_start_requested": True,
                 "transitioning_to": GamePhase.PREPARATION.value,
-                "final_players": list(self.connected_players.keys()),
+                "final_player_names": list(self.connected_players.keys()),  # Just names (base_state.py handles full players data)
             },
             "Game start requested - transitioning to preparation",
         )

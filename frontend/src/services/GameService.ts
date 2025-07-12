@@ -509,6 +509,13 @@ export class GameService extends EventTarget {
    * Handle phase change events
    */
   private handlePhaseChange(state: GameState, data: any): GameState {
+    console.log('🔍 PHASE_CHANGE_DEBUG:', data.phase, 'players data:', data.players);
+    if (data.phase === 'turn_results' && data.players) {
+      Object.entries(data.players).forEach(([name, playerData]: [string, any]) => {
+        console.log(`  ${name}: captured_piles=${playerData.captured_piles}, declared=${playerData.declared}`);
+      });
+    }
+    
     const newState = { ...state };
     
     
@@ -559,14 +566,24 @@ export class GameService extends EventTarget {
     
     // Convert players dictionary to array for UI components
     if (data.players) {
-      newState.players = Object.entries(data.players).map(([playerName, playerData]: [string, any]) => ({
-        name: playerName, // Use the key as the name
-        score: 0, // Default score, will be updated in scoring phase
-        is_bot: playerData.is_bot || false,
-        is_host: playerData.is_host || false,
-        zero_declares_in_a_row: playerData.zero_declares_in_a_row || 0,
-        hand_size: playerData.hand_size || 0 // Include hand_size from backend
-      }));
+      newState.players = Object.entries(data.players).map(([playerName, playerData]: [string, any]) => {
+        const player = {
+          name: playerName, // Use the key as the name
+          score: 0, // Default score, will be updated in scoring phase
+          is_bot: playerData.is_bot || false,
+          is_host: playerData.is_host || false,
+          zero_declares_in_a_row: playerData.zero_declares_in_a_row || 0,
+          hand_size: playerData.hand_size || 0, // Include hand_size from backend
+          captured_piles: playerData.captured_piles || 0,
+          declared: playerData.declared || 0
+        };
+        
+        if (data.phase === 'turn_results') {
+          console.log(`🔍 PLAYER_ARRAY_DEBUG ${playerName}: captured_piles=${player.captured_piles}, declared=${player.declared}`);
+        }
+        
+        return player;
+      });
     }
     
     // Extract phase-specific data
@@ -787,17 +804,17 @@ export class GameService extends EventTarget {
           
           
           // Calculate scoring-specific UI state
-          if (phaseData.players && phaseData.round_scores && phaseData.total_scores) {
+          if (phaseData.scoring_players_data && phaseData.round_scores && phaseData.total_scores) {
             newState.playersWithScores = this.calculatePlayersWithScores(
-              phaseData.players, 
+              phaseData.scoring_players_data, 
               phaseData.round_scores, 
               phaseData.total_scores,
               phaseData.redeal_multiplier || 1,
               phaseData.winners || []
             );
           } else {
-            // Fallback: try to use newState.players if phaseData.players is missing
-            if (!phaseData.players && newState.players && newState.players.length > 0) {
+            // Fallback: try to use newState.players if phaseData.scoring_players_data is missing
+            if (!phaseData.scoring_players_data && newState.players && newState.players.length > 0) {
               if (phaseData.round_scores && phaseData.total_scores) {
                 newState.playersWithScores = this.calculatePlayersWithScores(
                   newState.players,
@@ -1031,6 +1048,13 @@ export class GameService extends EventTarget {
     const turnNum = data.turn_number || state.currentTurnNumber || 0;
     const winner = data.winner || 'No winner';
     
+    console.log('🔍 TURN_COMPLETE_DEBUG:', data);
+    if (data.turn_players_data) {
+      console.log('  turn_players_data:');
+      data.turn_players_data.forEach((player: any) => {
+        console.log(`    ${player.name}: captured_piles=${player.captured_piles}, declared=${player.declared}`);
+      });
+    }
     
     const newState = {
       ...state,
@@ -1038,7 +1062,7 @@ export class GameService extends EventTarget {
       turnWinner: data.winner || null,
       winningPlay: data.winning_play || null,
       playerPiles: data.player_piles || {},
-      players: data.players || state.players,  // Update players with captured_piles and declared
+      players: data.turn_players_data || state.players,  // Update players with captured_piles and declared
       turnNumber: data.turn_number || state.currentTurnNumber || 1,
       nextStarter: data.next_starter || null,
       allHandsEmpty: data.all_hands_empty || false,

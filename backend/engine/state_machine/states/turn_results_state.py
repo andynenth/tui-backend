@@ -42,6 +42,14 @@ class TurnResultsState(GameState):
     async def _setup_phase(self) -> None:
         """Initialize turn results phase with display data"""
         self.logger.info("🏆 Turn results phase starting - displaying turn outcome")
+        
+        # Debug: Log player data when entering turn results
+        game = self.state_machine.game
+        if hasattr(game, 'players') and game.players:
+            for player in game.players:
+                captured = getattr(player, 'captured_piles', 0)
+                declared = getattr(player, 'declared', 0)
+                self.logger.info(f"🔍 TURN_RESULTS_ENTRY_DEBUG {player.name}: captured_piles={captured}, declared={declared}")
 
         # Get turn result data from previous turn state
         await self._load_turn_results()

@@ -23,6 +23,14 @@ const TurnResultsContent = ({
   nextStarter = '',
   onContinue
 }) => {
+  // Debug logging for captured_piles issue
+  console.log('🔍 TURN_RESULTS_CONTENT_DEBUG:');
+  console.log('  playerPlays:', playerPlays);
+  playerPlays.forEach(play => {
+    if (play.player) {
+      console.log(`  ${play.playerName}: captured_piles=${play.player.captured_piles}, declared=${play.player.declared}`);
+    }
+  });
   // Get next phase text
   const getNextPhaseText = () => {
     if (isLastTurn) {
