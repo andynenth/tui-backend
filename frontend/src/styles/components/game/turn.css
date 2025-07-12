@@ -413,6 +413,23 @@
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.06);
 }
 
+/* Pile status color variants */
+.pile-status-none { 
+  color: #007bff; /* Blue for 0/0 */
+}
+
+.pile-status-perfect { 
+  color: #28a745; /* Green for hitting target */
+}
+
+.pile-status-over { 
+  color: #dc3545; /* Red for exceeding target */
+}
+
+.pile-status-under { 
+  color: #6c757d; /* Gray for under target */
+}
+
 
 /* Confirm Selection Panel - Sliding Tray */
 .turn-confirm-panel {
