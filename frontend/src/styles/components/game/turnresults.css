@@ -183,6 +183,23 @@
   margin-top: 2px;
 }
 
+/* Pile status color variants */
+.tr-player-piles.pile-status-none { 
+  color: #007bff; /* Blue for 0/0 */
+}
+
+.tr-player-piles.pile-status-perfect { 
+  color: #28a745; /* Green for hitting target */
+}
+
+.tr-player-piles.pile-status-over { 
+  color: #dc3545; /* Red for exceeding target */
+}
+
+.tr-player-piles.pile-status-under { 
+  color: #6c757d; /* Gray for under target */
+}
+
 /* Winner badge - displayed below player name */
 .tr-winner-badge {
   background-color: #4CAF50;

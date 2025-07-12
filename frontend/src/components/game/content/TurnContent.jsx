@@ -165,6 +165,14 @@ const TurnContent = ({
     return playerStats[playerName] || { pilesWon: 0, declared: 0 };
   };
   
+  // Get color class based on pile count vs declaration
+  const getPileColorClass = (captured, declared) => {
+    if (captured === 0 && declared === 0) return 'pile-status-none';
+    if (captured === declared && declared > 0) return 'pile-status-perfect';
+    if (captured > declared) return 'pile-status-over';
+    return 'pile-status-under';
+  };
+  
   // Get turn requirement message
   const getTurnRequirement = () => {
     if (!isMyTurn) {
@@ -183,7 +191,7 @@ const TurnContent = ({
   return (
     <>
       {/* Turn indicator */}
-      <div className="turn-indicator">
+      <div className={`turn-indicator ${getPileColorClass(getPlayerStats(myName).pilesWon, getPlayerStats(myName).declared)}`}>
         {getPlayerStats(myName).pilesWon}/{getPlayerStats(myName).declared}
       </div>
       
@@ -248,7 +256,7 @@ const TurnContent = ({
                   />
                   <span className="turn-player-name-short">{player.name}</span>
                   <div className="turn-player-stats-compact">
-                    <span className="turn-stat-number">{stats.pilesWon}</span>
+                    <span className={`turn-stat-number ${getPileColorClass(stats.pilesWon, stats.declared)}`}>{stats.pilesWon}</span>
                     <span className="turn-stat-separator">/</span>
                     <span className="turn-stat-number">{stats.declared}</span>
                   </div>

@@ -40,6 +40,14 @@ const TurnResultsContent = ({
   
   const nextPhase = getNextPhaseText();
   
+  // Get color class based on pile count vs declaration
+  const getPileColorClass = (captured, declared) => {
+    if (captured === 0 && declared === 0) return 'pile-status-none';
+    if (captured === declared && declared > 0) return 'pile-status-perfect';
+    if (captured > declared) return 'pile-status-over';
+    return 'pile-status-under';
+  };
+  
   return (
     <>
       {/* Players summary - Show all 4 players with winner highlighted */}
@@ -59,7 +67,7 @@ const TurnResultsContent = ({
                   <div className="tr-player-name">
                     {play.playerName}
                   </div>
-                  <div className="tr-player-piles">
+                  <div className={`tr-player-piles ${getPileColorClass(play.player?.captured_piles || 0, play.player?.declared || 0)}`}>
                     {play.player?.captured_piles || 0}/{play.player?.declared || 0} piles
                   </div>
                 </div>
