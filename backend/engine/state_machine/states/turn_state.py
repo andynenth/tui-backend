@@ -873,10 +873,17 @@ class TurnState(GameState):
                         if player_name != self.winner:
                             player_piles[player_name] = 0
 
-            # Get player list
+            # Get player list with full data including captured_piles and declared
             players = []
             if hasattr(game, "players") and game.players:
-                players = [{"name": player.name} for player in game.players]
+                players = [
+                    {
+                        "name": player.name,
+                        "captured_piles": getattr(player, "captured_piles", 0),
+                        "declared": getattr(player, "declared", 0)
+                    } 
+                    for player in game.players
+                ]
 
             # Check if all hands are empty (determines next phase)
             all_hands_empty = True

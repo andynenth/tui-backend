@@ -59,6 +59,9 @@ const TurnResultsContent = ({
                   <div className="tr-player-name">
                     {play.playerName}
                   </div>
+                  <div className="tr-player-piles">
+                    {play.player?.captured_piles || 0}/{play.player?.declared || 0} piles
+                  </div>
                 </div>
                 <div className={`tr-played-pieces ${useTwoRows ? 'two-rows' : ''}`}>
                   {pieceCount === 0 ? (
