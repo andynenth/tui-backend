@@ -190,14 +190,6 @@ export function GameContainer({ roomId, onNavigateToLobby }) {
   const turnResultsProps = useMemo(() => {
     if (gameState.phase !== 'turn_results') return null;
     
-    // Debug logging for captured_piles
-    console.log('🔍 GAME_CONTAINER_TURN_RESULTS_DEBUG:');
-    console.log('  gameState.players:', gameState.players);
-    if (gameState.players) {
-      gameState.players.forEach(player => {
-        console.log(`  ${player.name}: captured_piles=${player.captured_piles}, declared=${player.declared}`);
-      });
-    }
     
     // Determine if this is the last turn of the round
     const isLastTurn = gameState.allHandsEmpty || false;
