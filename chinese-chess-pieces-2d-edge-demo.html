@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chinese Chess Pieces: 2D with Fake Edge Effect</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f0f0f0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .container {
+            background: white;
+            padding: 40px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+
+        h1 {
+            color: #333;
+            margin-bottom: 30px;
+        }
+
+        .piece-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 200px;
+            margin: 40px 0;
+        }
+
+        /* Base piece wrapper */
+        .game-piece {
+            width: 80px;
+            height: 84px;
+            position: relative;
+            cursor: pointer;
+            transition: transform 0.15s ease;
+        }
+
+        /* Cylinder top face */
+        .piece-top {
+            position: absolute;
+            top: 0;
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: 
+                linear-gradient(145deg, #FFFFFF 0%, #F8F9FA 100%),
+                radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.8) 0%, transparent 60%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            border: 1px solid rgba(173, 181, 189, 0.3);
+            font-family: 'SimSun', '宋体', serif;
+            box-shadow: 
+                0 2px 8px rgba(0, 0, 0, 0.15),
+                inset 0 1px 2px rgba(255, 255, 255, 0.5);
+            z-index: 2;
+            font-size: 32px;
+        }
+
+        /* Bottom ellipse to show thickness (top-down perspective) */
+        .piece-bottom {
+            position: absolute;
+            top: 4px;
+            left: 0;
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: 
+                radial-gradient(ellipse at 50% 50%, 
+                    rgba(173, 181, 189, 0.2) 0%, 
+                    rgba(108, 117, 125, 0.3) 70%, 
+                    rgba(73, 80, 87, 0.4) 100%);
+            z-index: 1;
+            transform: scaleY(0.15);
+            filter: blur(2px);
+        }
+
+        /* Shadow for depth */
+        .piece-shadow {
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 70px;
+            height: 20px;
+            background: radial-gradient(ellipse at center, 
+                rgba(0, 0, 0, 0.2) 0%, 
+                transparent 70%);
+            border-radius: 50%;
+            filter: blur(4px);
+            z-index: 0;
+        }
+
+        .game-piece.red .piece-top {
+            color: #DC3545;
+            border-color: rgba(220, 53, 69, 0.4);
+        }
+
+        .game-piece.black .piece-top {
+            color: #495057;
+            border-color: rgba(73, 80, 87, 0.4);
+        }
+
+        /* Character display with transition */
+        .piece-char {
+            position: relative;
+            z-index: 2;
+            transition: opacity 0.3s ease;
+        }
+
+        .piece-char-back {
+            position: absolute;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        /* Fake cylindrical edge */
+        .piece-edge {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            background: linear-gradient(90deg,
+                transparent 0%,
+                rgba(108, 117, 125, 0.1) 10%,
+                rgba(108, 117, 125, 0.3) 25%,
+                rgba(73, 80, 87, 0.5) 50%,
+                rgba(108, 117, 125, 0.3) 75%,
+                rgba(108, 117, 125, 0.1) 90%,
+                transparent 100%);
+            opacity: 0;
+            transform: scaleX(0);
+            transition: all 0.6s ease;
+            z-index: 3;
+        }
+
+        /* Flip animations */
+        @keyframes flipTopFace {
+            0% {
+                transform: scaleX(1);
+            }
+            45% {
+                transform: scaleX(0.05);
+            }
+            55% {
+                transform: scaleX(0.05);
+            }
+            100% {
+                transform: scaleX(1);
+            }
+        }
+
+        @keyframes flipBottom {
+            0% {
+                transform: scaleY(0.15) scaleX(1);
+                opacity: 0.5;
+            }
+            45% {
+                transform: scaleY(0.5) scaleX(0.05);
+                opacity: 1;
+            }
+            55% {
+                transform: scaleY(0.5) scaleX(0.05);
+                opacity: 1;
+            }
+            100% {
+                transform: scaleY(0.15) scaleX(1);
+                opacity: 0.5;
+            }
+        }
+
+        @keyframes showEdge {
+            0%, 100% {
+                opacity: 0;
+                transform: scaleX(0);
+            }
+            35% {
+                opacity: 0.8;
+                transform: scaleX(0.6);
+            }
+            50% {
+                opacity: 1;
+                transform: scaleX(0.8);
+            }
+            65% {
+                opacity: 0.8;
+                transform: scaleX(0.6);
+            }
+        }
+
+        @keyframes changeBackground {
+            0%, 45% {
+                background: 
+                    linear-gradient(145deg, #FFFFFF 0%, #F8F9FA 100%),
+                    radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.8) 0%, transparent 60%);
+            }
+            55%, 100% {
+                background: 
+                    linear-gradient(145deg, #F8F9FA 0%, #E9ECEF 100%),
+                    radial-gradient(circle at 70% 70%, rgba(255, 255, 255, 0.6) 0%, transparent 60%);
+            }
+        }
+
+        /* Apply animations during flip */
+        .game-piece.flipping .piece-top {
+            animation: flipTopFace 0.6s ease-in-out, changeBackground 0.6s ease-in-out;
+        }
+
+        .game-piece.flipping .piece-bottom {
+            animation: flipBottom 0.6s ease-in-out;
+        }
+
+        .game-piece.flipping .piece-edge {
+            animation: showEdge 0.6s ease-in-out;
+        }
+
+        /* Flipped state */
+        .game-piece.flipped .piece-top {
+            background: 
+                linear-gradient(145deg, #F8F9FA 0%, #E9ECEF 100%),
+                radial-gradient(circle at 70% 70%, rgba(255, 255, 255, 0.6) 0%, transparent 60%);
+        }
+
+        .game-piece.flipped .piece-char {
+            opacity: 0;
+        }
+
+        .game-piece.flipped .piece-char-back {
+            opacity: 1;
+        }
+
+        /* Instructions */
+        .instructions {
+            color: #666;
+            font-style: italic;
+            margin-top: 20px;
+        }
+
+        /* Demo pieces */
+        .demo-pieces {
+            display: flex;
+            justify-content: center;
+            gap: 60px;
+            margin-top: 40px;
+        }
+
+        .demo-section {
+            text-align: center;
+        }
+
+        .demo-section h3 {
+            color: #555;
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Chinese Chess Pieces with Fake Edge Effect</h1>
+        
+        <div class="piece-container">
+            <div class="game-piece red" id="mainPiece">
+                <div class="piece-shadow"></div>
+                <div class="piece-bottom"></div>
+                <div class="piece-top">
+                    <div class="piece-edge"></div>
+                    <span class="piece-char">帥</span>
+                    <span class="piece-char-back">楚</span>
+                </div>
+            </div>
+        </div>
+        
+        <p class="instructions">Click the piece to flip it</p>
+
+        <div class="demo-pieces">
+            <div class="demo-section">
+                <h3>Red Pieces</h3>
+                <div style="display: flex; gap: 20px;">
+                    <div class="game-piece red demo-piece">
+                        <div class="piece-shadow"></div>
+                        <div class="piece-bottom"></div>
+                        <div class="piece-top">
+                            <div class="piece-edge"></div>
+                            <span class="piece-char">將</span>
+                            <span class="piece-char-back">漢</span>
+                        </div>
+                    </div>
+                    <div class="game-piece red demo-piece">
+                        <div class="piece-shadow"></div>
+                        <div class="piece-bottom"></div>
+                        <div class="piece-top">
+                            <div class="piece-edge"></div>
+                            <span class="piece-char">車</span>
+                            <span class="piece-char-back">界</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="demo-section">
+                <h3>Black Pieces</h3>
+                <div style="display: flex; gap: 20px;">
+                    <div class="game-piece black demo-piece">
+                        <div class="piece-shadow"></div>
+                        <div class="piece-bottom"></div>
+                        <div class="piece-top">
+                            <div class="piece-edge"></div>
+                            <span class="piece-char">卒</span>
+                            <span class="piece-char-back">河</span>
+                        </div>
+                    </div>
+                    <div class="game-piece black demo-piece">
+                        <div class="piece-shadow"></div>
+                        <div class="piece-bottom"></div>
+                        <div class="piece-top">
+                            <div class="piece-edge"></div>
+                            <span class="piece-char">馬</span>
+                            <span class="piece-char-back">楚</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Add flip functionality to all pieces
+        document.querySelectorAll('.game-piece').forEach(piece => {
+            piece.addEventListener('click', function() {
+                // Add flipping class for animation
+                this.classList.add('flipping');
+                
+                // Toggle flipped state
+                this.classList.toggle('flipped');
+                
+                // Remove flipping class after animation
+                setTimeout(() => {
+                    this.classList.remove('flipping');
+                }, 600);
+            });
+        });
+    </script>
+</body>
+</html>

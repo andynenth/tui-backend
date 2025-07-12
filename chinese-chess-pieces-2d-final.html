@@ -1,0 +1,592 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chinese Chess Pieces - Final 2D with Cylinder Effect</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f0f0f0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .container {
+            background: white;
+            padding: 40px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            max-width: 900px;
+        }
+
+        h1 {
+            color: #333;
+            margin-bottom: 30px;
+        }
+
+        .main-demo {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 80px;
+            margin: 40px 0;
+        }
+
+        .piece-showcase {
+            text-align: center;
+        }
+
+        .piece-showcase h3 {
+            color: #555;
+            margin-bottom: 20px;
+            font-size: 16px;
+        }
+
+        /* Base piece wrapper with thickness */
+        .game-piece {
+            width: 80px;
+            height: 86px;
+            position: relative;
+            cursor: pointer;
+            transition: transform 0.15s ease;
+        }
+
+        /* Piece structure */
+        .piece-structure {
+            position: relative;
+            width: 100%;
+            height: 100%;
+        }
+
+        /* Static visible edge (always shows thickness) */
+        .piece-edge-static {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 80px;
+            height: 6px;
+            background: linear-gradient(to bottom,
+                #E9ECEF 0%,
+                #DEE2E6 30%,
+                #CED4DA 70%,
+                #ADB5BD 100%);
+            border-radius: 50%;
+            box-shadow: 
+                0 1px 2px rgba(0, 0, 0, 0.15),
+                inset 0 -1px 1px rgba(0, 0, 0, 0.1);
+            z-index: 1;
+        }
+
+        /* Main face of the piece */
+        .piece-face {
+            position: absolute;
+            top: 0;
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: 
+                linear-gradient(145deg, #FFFFFF 0%, #F8F9FA 100%),
+                radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.8) 0%, transparent 60%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            border: 1px solid rgba(173, 181, 189, 0.3);
+            font-family: 'SimSun', '宋体', serif;
+            box-shadow: 
+                0 2px 8px rgba(0, 0, 0, 0.15),
+                inset 0 1px 2px rgba(255, 255, 255, 0.5);
+            z-index: 4;
+            font-size: 32px;
+            transition: all 0.6s ease;
+            transform-origin: center center;
+        }
+
+        /* Dynamic edge layers that appear during flip */
+        .piece-edge-dynamic {
+            position: absolute;
+            top: 40px;
+            left: 0;
+            width: 80px;
+            height: 6px;
+            border-radius: 50%;
+            opacity: 0;
+            z-index: 3;
+            transition: all 0.6s ease;
+            transform-origin: center center;
+        }
+
+        .edge-layer-1 {
+            background: linear-gradient(to right,
+                transparent 0%,
+                #DEE2E6 15%,
+                #CED4DA 30%,
+                #ADB5BD 50%,
+                #CED4DA 70%,
+                #DEE2E6 85%,
+                transparent 100%);
+            transform: scaleX(0) scaleY(1);
+        }
+
+        .edge-layer-2 {
+            background: linear-gradient(to right,
+                transparent 0%,
+                #E9ECEF 20%,
+                #DEE2E6 35%,
+                #CED4DA 50%,
+                #DEE2E6 65%,
+                #E9ECEF 80%,
+                transparent 100%);
+            transform: scaleX(0) scaleY(0.8);
+        }
+
+        /* Shadow */
+        .piece-shadow {
+            position: absolute;
+            bottom: -12px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 70px;
+            height: 20px;
+            background: radial-gradient(ellipse at center, 
+                rgba(0, 0, 0, 0.2) 0%, 
+                transparent 70%);
+            border-radius: 50%;
+            filter: blur(4px);
+            z-index: 0;
+            transition: all 0.6s ease;
+        }
+
+        /* Color variants */
+        .game-piece.red .piece-face {
+            color: #DC3545;
+            border-color: rgba(220, 53, 69, 0.4);
+        }
+
+        .game-piece.black .piece-face {
+            color: #495057;
+            border-color: rgba(73, 80, 87, 0.4);
+        }
+
+        /* Character displays */
+        .piece-char-front {
+            position: relative;
+            z-index: 2;
+            transition: opacity 0.3s ease;
+        }
+
+        .piece-char-back {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        /* Flip animations */
+        @keyframes flipFace {
+            0% {
+                transform: rotateY(0deg) scaleX(1);
+                filter: brightness(1);
+            }
+            25% {
+                transform: rotateY(45deg) scaleX(0.7);
+                filter: brightness(0.97);
+            }
+            50% {
+                transform: rotateY(90deg) scaleX(0);
+                filter: brightness(0.9);
+            }
+            75% {
+                transform: rotateY(135deg) scaleX(0.7);
+                filter: brightness(0.97);
+            }
+            100% {
+                transform: rotateY(180deg) scaleX(1);
+                filter: brightness(1);
+            }
+        }
+
+        @keyframes expandStaticEdge {
+            0%, 100% {
+                height: 6px;
+                background: linear-gradient(to bottom,
+                    #E9ECEF 0%,
+                    #DEE2E6 30%,
+                    #CED4DA 70%,
+                    #ADB5BD 100%);
+            }
+            50% {
+                height: 12px;
+                background: linear-gradient(to bottom,
+                    #DEE2E6 0%,
+                    #CED4DA 30%,
+                    #ADB5BD 70%,
+                    #868E96 100%);
+            }
+        }
+
+        @keyframes showDynamicEdge1 {
+            0%, 100% {
+                opacity: 0;
+                transform: scaleX(0) scaleY(1) translateY(0);
+            }
+            25% {
+                opacity: 0.7;
+                transform: scaleX(0.5) scaleY(1.5) translateY(-20px);
+            }
+            50% {
+                opacity: 1;
+                transform: scaleX(1) scaleY(2) translateY(-40px);
+            }
+            75% {
+                opacity: 0.7;
+                transform: scaleX(0.5) scaleY(1.5) translateY(-20px);
+            }
+        }
+
+        @keyframes showDynamicEdge2 {
+            0%, 100% {
+                opacity: 0;
+                transform: scaleX(0) scaleY(0.8) translateY(0);
+            }
+            30% {
+                opacity: 0.5;
+                transform: scaleX(0.4) scaleY(1.2) translateY(-15px);
+            }
+            50% {
+                opacity: 0.8;
+                transform: scaleX(0.8) scaleY(1.6) translateY(-35px);
+            }
+            70% {
+                opacity: 0.5;
+                transform: scaleX(0.4) scaleY(1.2) translateY(-15px);
+            }
+        }
+
+        @keyframes moveShadow {
+            0%, 100% {
+                transform: translateX(-50%) scaleX(1);
+                opacity: 0.2;
+            }
+            50% {
+                transform: translateX(-50%) scaleX(0.7);
+                opacity: 0.25;
+            }
+        }
+
+        /* Apply animations during flip */
+        .game-piece.flipping .piece-face {
+            animation: flipFace 0.6s ease;
+        }
+
+        .game-piece.flipping .piece-edge-static {
+            animation: expandStaticEdge 0.6s ease;
+        }
+
+        .game-piece.flipping .edge-layer-1 {
+            animation: showDynamicEdge1 0.6s ease;
+        }
+
+        .game-piece.flipping .edge-layer-2 {
+            animation: showDynamicEdge2 0.6s ease;
+        }
+
+        .game-piece.flipping .piece-shadow {
+            animation: moveShadow 0.6s ease;
+        }
+
+        /* Flipped state */
+        .game-piece.flipped .piece-face {
+            transform: rotateY(180deg);
+            background: 
+                linear-gradient(145deg, #F8F9FA 0%, #E9ECEF 100%),
+                radial-gradient(circle at 70% 70%, rgba(255, 255, 255, 0.6) 0%, transparent 60%);
+        }
+
+        .game-piece.flipped .piece-char-front {
+            opacity: 0;
+        }
+
+        .game-piece.flipped .piece-char-back {
+            opacity: 1;
+        }
+
+        /* Hover effect */
+        .game-piece:hover {
+            transform: translateY(-2px);
+        }
+
+        .game-piece:hover .piece-shadow {
+            transform: translateX(-50%) scaleX(1.1);
+            opacity: 0.25;
+        }
+
+        /* Demo grid */
+        .demo-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 30px;
+            margin-top: 40px;
+            padding: 20px;
+            background: #f8f8f8;
+            border-radius: 8px;
+        }
+
+        .demo-piece-wrapper {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .piece-label {
+            font-size: 12px;
+            color: #666;
+        }
+
+        .instructions {
+            color: #666;
+            font-style: italic;
+            margin-top: 20px;
+        }
+
+        /* Animation states display */
+        .state-indicator {
+            display: inline-block;
+            padding: 4px 12px;
+            background: #e3f2fd;
+            border-radius: 4px;
+            font-size: 12px;
+            color: #1976d2;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Chinese Chess Pieces - 2D with Cylindrical Effect</h1>
+        
+        <div class="main-demo">
+            <div class="piece-showcase">
+                <h3>Front Face</h3>
+                <div class="game-piece red">
+                    <div class="piece-shadow"></div>
+                    <div class="piece-structure">
+                        <div class="piece-edge-static"></div>
+                        <div class="piece-edge-dynamic edge-layer-1"></div>
+                        <div class="piece-edge-dynamic edge-layer-2"></div>
+                        <div class="piece-face">
+                            <span class="piece-char-front">帥</span>
+                            <span class="piece-char-back">楚</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="state-indicator">Static View</div>
+            </div>
+
+            <div class="piece-showcase">
+                <h3>Interactive Demo</h3>
+                <div class="game-piece red" id="mainDemo">
+                    <div class="piece-shadow"></div>
+                    <div class="piece-structure">
+                        <div class="piece-edge-static"></div>
+                        <div class="piece-edge-dynamic edge-layer-1"></div>
+                        <div class="piece-edge-dynamic edge-layer-2"></div>
+                        <div class="piece-face">
+                            <span class="piece-char-front">帥</span>
+                            <span class="piece-char-back">楚</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="state-indicator" id="stateText">Click to Flip</div>
+            </div>
+
+            <div class="piece-showcase">
+                <h3>Back Face</h3>
+                <div class="game-piece red flipped">
+                    <div class="piece-shadow"></div>
+                    <div class="piece-structure">
+                        <div class="piece-edge-static"></div>
+                        <div class="piece-edge-dynamic edge-layer-1"></div>
+                        <div class="piece-edge-dynamic edge-layer-2"></div>
+                        <div class="piece-face">
+                            <span class="piece-char-front">帥</span>
+                            <span class="piece-char-back">楚</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="state-indicator">Flipped View</div>
+            </div>
+        </div>
+        
+        <p class="instructions">Click any piece to see the flip animation with cylindrical edge effect</p>
+
+        <div class="demo-grid">
+            <div class="demo-piece-wrapper">
+                <div class="game-piece red demo-piece">
+                    <div class="piece-shadow"></div>
+                    <div class="piece-structure">
+                        <div class="piece-edge-static"></div>
+                        <div class="piece-edge-dynamic edge-layer-1"></div>
+                        <div class="piece-edge-dynamic edge-layer-2"></div>
+                        <div class="piece-face">
+                            <span class="piece-char-front">將</span>
+                            <span class="piece-char-back">漢</span>
+                        </div>
+                    </div>
+                </div>
+                <span class="piece-label">General (Red)</span>
+            </div>
+
+            <div class="demo-piece-wrapper">
+                <div class="game-piece red demo-piece">
+                    <div class="piece-shadow"></div>
+                    <div class="piece-structure">
+                        <div class="piece-edge-static"></div>
+                        <div class="piece-edge-dynamic edge-layer-1"></div>
+                        <div class="piece-edge-dynamic edge-layer-2"></div>
+                        <div class="piece-face">
+                            <span class="piece-char-front">車</span>
+                            <span class="piece-char-back">界</span>
+                        </div>
+                    </div>
+                </div>
+                <span class="piece-label">Chariot (Red)</span>
+            </div>
+
+            <div class="demo-piece-wrapper">
+                <div class="game-piece red demo-piece">
+                    <div class="piece-shadow"></div>
+                    <div class="piece-structure">
+                        <div class="piece-edge-static"></div>
+                        <div class="piece-edge-dynamic edge-layer-1"></div>
+                        <div class="piece-edge-dynamic edge-layer-2"></div>
+                        <div class="piece-face">
+                            <span class="piece-char-front">馬</span>
+                            <span class="piece-char-back">楚</span>
+                        </div>
+                    </div>
+                </div>
+                <span class="piece-label">Horse (Red)</span>
+            </div>
+
+            <div class="demo-piece-wrapper">
+                <div class="game-piece red demo-piece">
+                    <div class="piece-shadow"></div>
+                    <div class="piece-structure">
+                        <div class="piece-edge-static"></div>
+                        <div class="piece-edge-dynamic edge-layer-1"></div>
+                        <div class="piece-edge-dynamic edge-layer-2"></div>
+                        <div class="piece-face">
+                            <span class="piece-char-front">炮</span>
+                            <span class="piece-char-back">河</span>
+                        </div>
+                    </div>
+                </div>
+                <span class="piece-label">Cannon (Red)</span>
+            </div>
+
+            <div class="demo-piece-wrapper">
+                <div class="game-piece black demo-piece">
+                    <div class="piece-shadow"></div>
+                    <div class="piece-structure">
+                        <div class="piece-edge-static"></div>
+                        <div class="piece-edge-dynamic edge-layer-1"></div>
+                        <div class="piece-edge-dynamic edge-layer-2"></div>
+                        <div class="piece-face">
+                            <span class="piece-char-front">將</span>
+                            <span class="piece-char-back">漢</span>
+                        </div>
+                    </div>
+                </div>
+                <span class="piece-label">General (Black)</span>
+            </div>
+
+            <div class="demo-piece-wrapper">
+                <div class="game-piece black demo-piece">
+                    <div class="piece-shadow"></div>
+                    <div class="piece-structure">
+                        <div class="piece-edge-static"></div>
+                        <div class="piece-edge-dynamic edge-layer-1"></div>
+                        <div class="piece-edge-dynamic edge-layer-2"></div>
+                        <div class="piece-face">
+                            <span class="piece-char-front">車</span>
+                            <span class="piece-char-back">界</span>
+                        </div>
+                    </div>
+                </div>
+                <span class="piece-label">Chariot (Black)</span>
+            </div>
+
+            <div class="demo-piece-wrapper">
+                <div class="game-piece black demo-piece">
+                    <div class="piece-shadow"></div>
+                    <div class="piece-structure">
+                        <div class="piece-edge-static"></div>
+                        <div class="piece-edge-dynamic edge-layer-1"></div>
+                        <div class="piece-edge-dynamic edge-layer-2"></div>
+                        <div class="piece-face">
+                            <span class="piece-char-front">象</span>
+                            <span class="piece-char-back">楚</span>
+                        </div>
+                    </div>
+                </div>
+                <span class="piece-label">Elephant (Black)</span>
+            </div>
+
+            <div class="demo-piece-wrapper">
+                <div class="game-piece black demo-piece">
+                    <div class="piece-shadow"></div>
+                    <div class="piece-structure">
+                        <div class="piece-edge-static"></div>
+                        <div class="piece-edge-dynamic edge-layer-1"></div>
+                        <div class="piece-edge-dynamic edge-layer-2"></div>
+                        <div class="piece-face">
+                            <span class="piece-char-front">卒</span>
+                            <span class="piece-char-back">河</span>
+                        </div>
+                    </div>
+                </div>
+                <span class="piece-label">Soldier (Black)</span>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Add flip functionality to all pieces
+        document.querySelectorAll('.game-piece').forEach(piece => {
+            piece.addEventListener('click', function() {
+                // Skip static demo pieces
+                if (this.classList.contains('flipped') && this !== document.getElementById('mainDemo')) {
+                    return;
+                }
+                
+                // Add flipping class for animation
+                this.classList.add('flipping');
+                
+                // Toggle flipped state
+                this.classList.toggle('flipped');
+                
+                // Update state indicator for main demo
+                if (this.id === 'mainDemo') {
+                    const stateText = document.getElementById('stateText');
+                    stateText.textContent = this.classList.contains('flipped') ? 'Flipped' : 'Front Face';
+                }
+                
+                // Remove flipping class after animation
+                setTimeout(() => {
+                    this.classList.remove('flipping');
+                }, 600);
+            });
+        });
+    </script>
+</body>
+</html>

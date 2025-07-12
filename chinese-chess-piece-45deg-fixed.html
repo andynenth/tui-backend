@@ -1,0 +1,542 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chinese Chess Piece - 45° Y-Axis View (Fixed)</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f0f0f0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .container {
+            background: white;
+            padding: 40px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            max-width: 800px;
+        }
+
+        h1 {
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        h2 {
+            color: #666;
+            font-size: 18px;
+            margin-bottom: 30px;
+            font-weight: normal;
+        }
+
+        .pieces-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 40px;
+            margin-top: 40px;
+            align-items: center;
+            justify-items: center;
+        }
+
+        .piece-view {
+            text-align: center;
+        }
+
+        .piece-view h3 {
+            color: #555;
+            margin-bottom: 20px;
+            font-size: 16px;
+        }
+
+        .piece-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 150px;
+            perspective: 800px;
+        }
+
+        /* Base piece wrapper */
+        .game-piece {
+            width: 80px;
+            height: 80px;
+            position: relative;
+            transform-style: preserve-3d;
+        }
+
+        /* Different rotation states */
+        .rotation-0 {
+            transform: rotateX(-20deg) rotateY(0deg);
+        }
+
+        .rotation-45 {
+            transform: rotateX(-20deg) rotateY(45deg);
+        }
+
+        .rotation-90 {
+            transform: rotateX(-20deg) rotateY(90deg);
+        }
+
+        /* Cylinder container */
+        .piece-cylinder {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            transform-style: preserve-3d;
+        }
+
+        /* Top face of cylinder */
+        .piece-top {
+            position: absolute;
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: 
+                linear-gradient(135deg, #FFFFFF 0%, #F8F9FA 50%, #E9ECEF 100%),
+                radial-gradient(circle at 35% 35%, rgba(255, 255, 255, 0.9) 0%, transparent 50%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            border: 1px solid rgba(173, 181, 189, 0.4);
+            font-family: 'SimSun', '宋体', serif;
+            box-shadow: 
+                0 -2px 4px rgba(255, 255, 255, 0.8) inset,
+                0 2px 8px rgba(0, 0, 0, 0.2) inset,
+                0 4px 12px rgba(0, 0, 0, 0.15);
+            font-size: 32px;
+            transform: translateZ(15px);
+            backface-visibility: hidden;
+            color: #DC3545;
+        }
+
+        /* Bottom face of cylinder */
+        .piece-bottom {
+            position: absolute;
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: 
+                linear-gradient(135deg, #E9ECEF 0%, #DEE2E6 50%, #CED4DA 100%),
+                radial-gradient(circle at 65% 65%, rgba(206, 212, 218, 0.5) 0%, transparent 50%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            border: 1px solid rgba(134, 142, 150, 0.6);
+            font-family: 'SimSun', '宋体', serif;
+            box-shadow: 
+                0 2px 4px rgba(0, 0, 0, 0.3) inset,
+                0 -2px 4px rgba(255, 255, 255, 0.3) inset;
+            font-size: 32px;
+            transform: translateZ(-15px);
+            backface-visibility: hidden;
+            color: #DC3545;
+        }
+
+        /* Cylinder side segments - HORIZONTAL orientation */
+        .piece-side {
+            position: absolute;
+            width: 80px;
+            height: 4px;
+            left: 0;
+            top: 38px;
+            transform-origin: center;
+            backface-visibility: visible;
+            transform-style: preserve-3d;
+        }
+
+        /* Generate side segments - now rotating around X axis to create horizontal bands */
+        .piece-side:nth-child(3) { 
+            transform: rotateX(0deg) translateZ(40px) rotateX(90deg); 
+            background: linear-gradient(to right, #FFFFFF 0%, #F8F9FA 50%, #E9ECEF 100%); 
+        }
+        .piece-side:nth-child(4) { 
+            transform: rotateY(10deg) rotateX(0deg) translateZ(40px) rotateX(90deg); 
+            background: linear-gradient(to right, #FCFCFC 0%, #F5F6F7 50%, #E6E9EC 100%); 
+        }
+        .piece-side:nth-child(5) { 
+            transform: rotateY(20deg) rotateX(0deg) translateZ(40px) rotateX(90deg); 
+            background: linear-gradient(to right, #F9FAFB 0%, #F2F3F4 50%, #E3E6E9 100%); 
+        }
+        .piece-side:nth-child(6) { 
+            transform: rotateY(30deg) rotateX(0deg) translateZ(40px) rotateX(90deg); 
+            background: linear-gradient(to right, #F6F7F8 0%, #EFF0F1 50%, #E0E3E6 100%); 
+        }
+        .piece-side:nth-child(7) { 
+            transform: rotateY(40deg) rotateX(0deg) translateZ(40px) rotateX(90deg); 
+            background: linear-gradient(to right, #F3F4F5 0%, #ECEDEE 50%, #DDE0E3 100%); 
+        }
+        .piece-side:nth-child(8) { 
+            transform: rotateY(50deg) rotateX(0deg) translateZ(40px) rotateX(90deg); 
+            background: linear-gradient(to right, #F0F1F2 0%, #E9EAEB 50%, #DADDE0 100%); 
+        }
+        .piece-side:nth-child(9) { 
+            transform: rotateY(60deg) rotateX(0deg) translateZ(40px) rotateX(90deg); 
+            background: linear-gradient(to right, #EDEEEF 0%, #E6E7E8 50%, #D7DADD 100%); 
+        }
+        .piece-side:nth-child(10) { 
+            transform: rotateY(70deg) rotateX(0deg) translateZ(40px) rotateX(90deg); 
+            background: linear-gradient(to right, #EAEBEC 0%, #E3E4E5 50%, #D4D7DA 100%); 
+        }
+        .piece-side:nth-child(11) { 
+            transform: rotateY(80deg) rotateX(0deg) translateZ(40px) rotateX(90deg); 
+            background: linear-gradient(to right, #E7E8E9 0%, #E0E1E2 50%, #D1D4D7 100%); 
+        }
+        .piece-side:nth-child(12) { 
+            transform: rotateY(90deg) rotateX(0deg) translateZ(40px) rotateX(90deg); 
+            background: linear-gradient(to right, #E4E5E6 0%, #DDDEE0 50%, #CED1D4 100%); 
+        }
+        .piece-side:nth-child(13) { 
+            transform: rotateY(100deg) rotateX(0deg) translateZ(40px) rotateX(90deg); 
+            background: linear-gradient(to right, #E1E2E3 0%, #DADBDD 50%, #CBCED1 100%); 
+        }
+        .piece-side:nth-child(14) { 
+            transform: rotateY(110deg) rotateX(0deg) translateZ(40px) rotateX(90deg); 
+            background: linear-gradient(to right, #DEDFEO 0%, #D7D8DA 50%, #C8CBCE 100%); 
+        }
+        .piece-side:nth-child(15) { 
+            transform: rotateY(120deg) rotateX(0deg) translateZ(40px) rotateX(90deg); 
+            background: linear-gradient(to right, #DBDCDD 0%, #D4D5D7 50%, #C5C8CB 100%); 
+        }
+        .piece-side:nth-child(16) { 
+            transform: rotateY(130deg) rotateX(0deg) translateZ(40px) rotateX(90deg); 
+            background: linear-gradient(to right, #D8D9DA 0%, #D1D2D4 50%, #C2C5C8 100%); 
+        }
+        .piece-side:nth-child(17) { 
+            transform: rotateY(140deg) rotateX(0deg) translateZ(40px) rotateX(90deg); 
+            background: linear-gradient(to right, #D5D6D7 0%, #CECFD1 50%, #BFC2C5 100%); 
+        }
+        .piece-side:nth-child(18) { 
+            transform: rotateY(150deg) rotateX(0deg) translateZ(40px) rotateX(90deg); 
+            background: linear-gradient(to right, #D2D3D4 0%, #CBCCCE 50%, #BCBFC2 100%); 
+        }
+        .piece-side:nth-child(19) { 
+            transform: rotateY(160deg) rotateX(0deg) translateZ(40px) rotateX(90deg); 
+            background: linear-gradient(to right, #CFD0D1 0%, #C8C9CB 50%, #B9BCBF 100%); 
+        }
+        .piece-side:nth-child(20) { 
+            transform: rotateY(170deg) rotateX(0deg) translateZ(40px) rotateX(90deg); 
+            background: linear-gradient(to right, #CCCDCE 0%, #C5C6C8 50%, #B6B9BC 100%); 
+        }
+        .piece-side:nth-child(21) { 
+            transform: rotateY(180deg) rotateX(0deg) translateZ(40px) rotateX(90deg); 
+            background: linear-gradient(to right, #C9CACB 0%, #C2C3C5 50%, #B3B6B9 100%); 
+        }
+        .piece-side:nth-child(22) { 
+            transform: rotateY(190deg) rotateX(0deg) translateZ(40px) rotateX(90deg); 
+            background: linear-gradient(to right, #C6C7C8 0%, #BFCOC2 50%, #B0B3B6 100%); 
+        }
+        .piece-side:nth-child(23) { 
+            transform: rotateY(200deg) rotateX(0deg) translateZ(40px) rotateX(90deg); 
+            background: linear-gradient(to right, #C3C4C5 0%, #BCBDBF 50%, #ADB0B3 100%); 
+        }
+        .piece-side:nth-child(24) { 
+            transform: rotateY(210deg) rotateX(0deg) translateZ(40px) rotateX(90deg); 
+            background: linear-gradient(to right, #C0C1C2 0%, #B9BABC 50%, #AAADB0 100%); 
+        }
+        .piece-side:nth-child(25) { 
+            transform: rotateY(220deg) rotateX(0deg) translateZ(40px) rotateX(90deg); 
+            background: linear-gradient(to right, #BDBEBF 0%, #B6B7B9 50%, #A7AAAD 100%); 
+        }
+        .piece-side:nth-child(26) { 
+            transform: rotateY(230deg) rotateX(0deg) translateZ(40px) rotateX(90deg); 
+            background: linear-gradient(to right, #BABBBC 0%, #B3B4B6 50%, #A4A7AA 100%); 
+        }
+        .piece-side:nth-child(27) { 
+            transform: rotateY(240deg) rotateX(0deg) translateZ(40px) rotateX(90deg); 
+            background: linear-gradient(to right, #B7B8B9 0%, #B0B1B3 50%, #A1A4A7 100%); 
+        }
+        .piece-side:nth-child(28) { 
+            transform: rotateY(250deg) rotateX(0deg) translateZ(40px) rotateX(90deg); 
+            background: linear-gradient(to right, #B4B5B6 0%, #ADAEB0 50%, #9EA1A4 100%); 
+        }
+        .piece-side:nth-child(29) { 
+            transform: rotateY(260deg) rotateX(0deg) translateZ(40px) rotateX(90deg); 
+            background: linear-gradient(to right, #B1B2B3 0%, #AAABAD 50%, #9B9EA1 100%); 
+        }
+        .piece-side:nth-child(30) { 
+            transform: rotateY(270deg) rotateX(0deg) translateZ(40px) rotateX(90deg); 
+            background: linear-gradient(to right, #AEAFB0 0%, #A7A8AA 50%, #989B9E 100%); 
+        }
+        .piece-side:nth-child(31) { 
+            transform: rotateY(280deg) rotateX(0deg) translateZ(40px) rotateX(90deg); 
+            background: linear-gradient(to right, #ABACAD 0%, #A4A5A7 50%, #95989B 100%); 
+        }
+        .piece-side:nth-child(32) { 
+            transform: rotateY(290deg) rotateX(0deg) translateZ(40px) rotateX(90deg); 
+            background: linear-gradient(to right, #A8A9AA 0%, #A1A2A4 50%, #929598 100%); 
+        }
+        .piece-side:nth-child(33) { 
+            transform: rotateY(300deg) rotateX(0deg) translateZ(40px) rotateX(90deg); 
+            background: linear-gradient(to right, #A5A6A7 0%, #9E9FA1 50%, #8F9295 100%); 
+        }
+        .piece-side:nth-child(34) { 
+            transform: rotateY(310deg) rotateX(0deg) translateZ(40px) rotateX(90deg); 
+            background: linear-gradient(to right, #A2A3A4 0%, #9B9C9E 50%, #8C8F92 100%); 
+        }
+        .piece-side:nth-child(35) { 
+            transform: rotateY(320deg) rotateX(0deg) translateZ(40px) rotateX(90deg); 
+            background: linear-gradient(to right, #9FA0A1 0%, #98999B 50%, #898C8F 100%); 
+        }
+        .piece-side:nth-child(36) { 
+            transform: rotateY(330deg) rotateX(0deg) translateZ(40px) rotateX(90deg); 
+            background: linear-gradient(to right, #9C9D9E 0%, #959698 50%, #868983C 100%); 
+        }
+        .piece-side:nth-child(37) { 
+            transform: rotateY(340deg) rotateX(0deg) translateZ(40px) rotateX(90deg); 
+            background: linear-gradient(to right, #999A9B 0%, #929395 50%, #838689 100%); 
+        }
+        .piece-side:nth-child(38) { 
+            transform: rotateY(350deg) rotateX(0deg) translateZ(40px) rotateX(90deg); 
+            background: linear-gradient(to right, #969798 0%, #8F9092 50%, #808386 100%); 
+        }
+
+        /* Shadow */
+        .piece-shadow {
+            position: absolute;
+            width: 90px;
+            height: 90px;
+            left: -5px;
+            top: -5px;
+            border-radius: 50%;
+            background: radial-gradient(ellipse at center, 
+                rgba(0, 0, 0, 0.3) 0%, 
+                rgba(0, 0, 0, 0.15) 40%,
+                transparent 70%);
+            transform: translateZ(-20px) rotateX(90deg) scaleY(0.3);
+            opacity: 0.6;
+            filter: blur(8px);
+        }
+
+        /* 2D representation for comparison */
+        .piece-2d {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: 
+                linear-gradient(145deg, #FFFFFF 0%, #F8F9FA 100%),
+                radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.8) 0%, transparent 60%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            border: 1px solid rgba(173, 181, 189, 0.3);
+            font-family: 'SimSun', '宋体', serif;
+            box-shadow: 
+                0 2px 8px rgba(0, 0, 0, 0.15),
+                inset 0 1px 2px rgba(255, 255, 255, 0.5);
+            font-size: 32px;
+            color: #DC3545;
+            margin: 0 auto;
+        }
+
+        .annotation {
+            margin-top: 20px;
+            font-size: 14px;
+            color: #666;
+        }
+
+        .visible-features {
+            text-align: left;
+            margin-top: 10px;
+            font-size: 13px;
+            color: #777;
+        }
+
+        .visible-features li {
+            margin: 5px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Chinese Chess Piece - 45° Rotation Analysis</h1>
+        <h2>Comparing different Y-axis rotations with proper horizontal cylinder sides</h2>
+        
+        <div class="pieces-grid">
+            <!-- 0 degrees - Front view -->
+            <div class="piece-view">
+                <h3>0° (Front View)</h3>
+                <div class="piece-container">
+                    <div class="game-piece rotation-0">
+                        <div class="piece-shadow"></div>
+                        <div class="piece-cylinder">
+                            <div class="piece-top">帥</div>
+                            <div class="piece-bottom">楚</div>
+                            <!-- Many cylinder sides -->
+                            <div class="piece-side"></div>
+                            <div class="piece-side"></div>
+                            <div class="piece-side"></div>
+                            <div class="piece-side"></div>
+                            <div class="piece-side"></div>
+                            <div class="piece-side"></div>
+                            <div class="piece-side"></div>
+                            <div class="piece-side"></div>
+                            <div class="piece-side"></div>
+                            <div class="piece-side"></div>
+                            <div class="piece-side"></div>
+                            <div class="piece-side"></div>
+                            <div class="piece-side"></div>
+                            <div class="piece-side"></div>
+                            <div class="piece-side"></div>
+                            <div class="piece-side"></div>
+                            <div class="piece-side"></div>
+                            <div class="piece-side"></div>
+                            <div class="piece-side"></div>
+                            <div class="piece-side"></div>
+                            <div class="piece-side"></div>
+                            <div class="piece-side"></div>
+                            <div class="piece-side"></div>
+                            <div class="piece-side"></div>
+                            <div class="piece-side"></div>
+                            <div class="piece-side"></div>
+                            <div class="piece-side"></div>
+                            <div class="piece-side"></div>
+                            <div class="piece-side"></div>
+                            <div class="piece-side"></div>
+                            <div class="piece-side"></div>
+                            <div class="piece-side"></div>
+                            <div class="piece-side"></div>
+                            <div class="piece-side"></div>
+                            <div class="piece-side"></div>
+                            <div class="piece-side"></div>
+                        </div>
+                    </div>
+                </div>
+                <ul class="visible-features">
+                    <li>Full circular top face visible</li>
+                    <li>Character clearly readable</li>
+                    <li>Edge appears as thin line</li>
+                </ul>
+            </div>
+
+            <!-- 45 degrees - Mid rotation -->
+            <div class="piece-view">
+                <h3>45° (Mid-Flip)</h3>
+                <div class="piece-container">
+                    <div class="game-piece rotation-45">
+                        <div class="piece-shadow"></div>
+                        <div class="piece-cylinder">
+                            <div class="piece-top">帥</div>
+                            <div class="piece-bottom">楚</div>
+                            <!-- Many cylinder sides -->
+                            <div class="piece-side"></div>
+                            <div class="piece-side"></div>
+                            <div class="piece-side"></div>
+                            <div class="piece-side"></div>
+                            <div class="piece-side"></div>
+                            <div class="piece-side"></div>
+                            <div class="piece-side"></div>
+                            <div class="piece-side"></div>
+                            <div class="piece-side"></div>
+                            <div class="piece-side"></div>
+                            <div class="piece-side"></div>
+                            <div class="piece-side"></div>
+                            <div class="piece-side"></div>
+                            <div class="piece-side"></div>
+                            <div class="piece-side"></div>
+                            <div class="piece-side"></div>
+                            <div class="piece-side"></div>
+                            <div class="piece-side"></div>
+                            <div class="piece-side"></div>
+                            <div class="piece-side"></div>
+                            <div class="piece-side"></div>
+                            <div class="piece-side"></div>
+                            <div class="piece-side"></div>
+                            <div class="piece-side"></div>
+                            <div class="piece-side"></div>
+                            <div class="piece-side"></div>
+                            <div class="piece-side"></div>
+                            <div class="piece-side"></div>
+                            <div class="piece-side"></div>
+                            <div class="piece-side"></div>
+                            <div class="piece-side"></div>
+                            <div class="piece-side"></div>
+                            <div class="piece-side"></div>
+                            <div class="piece-side"></div>
+                            <div class="piece-side"></div>
+                            <div class="piece-side"></div>
+                        </div>
+                    </div>
+                </div>
+                <ul class="visible-features">
+                    <li>Elliptical top face (foreshortened)</li>
+                    <li>Horizontal cylinder bands visible</li>
+                    <li>Proper cylindrical form</li>
+                </ul>
+            </div>
+
+            <!-- 90 degrees - Side view -->
+            <div class="piece-view">
+                <h3>90° (Side View)</h3>
+                <div class="piece-container">
+                    <div class="game-piece rotation-90">
+                        <div class="piece-shadow"></div>
+                        <div class="piece-cylinder">
+                            <div class="piece-top">帥</div>
+                            <div class="piece-bottom">楚</div>
+                            <!-- Many cylinder sides -->
+                            <div class="piece-side"></div>
+                            <div class="piece-side"></div>
+                            <div class="piece-side"></div>
+                            <div class="piece-side"></div>
+                            <div class="piece-side"></div>
+                            <div class="piece-side"></div>
+                            <div class="piece-side"></div>
+                            <div class="piece-side"></div>
+                            <div class="piece-side"></div>
+                            <div class="piece-side"></div>
+                            <div class="piece-side"></div>
+                            <div class="piece-side"></div>
+                            <div class="piece-side"></div>
+                            <div class="piece-side"></div>
+                            <div class="piece-side"></div>
+                            <div class="piece-side"></div>
+                            <div class="piece-side"></div>
+                            <div class="piece-side"></div>
+                            <div class="piece-side"></div>
+                            <div class="piece-side"></div>
+                            <div class="piece-side"></div>
+                            <div class="piece-side"></div>
+                            <div class="piece-side"></div>
+                            <div class="piece-side"></div>
+                            <div class="piece-side"></div>
+                            <div class="piece-side"></div>
+                            <div class="piece-side"></div>
+                            <div class="piece-side"></div>
+                            <div class="piece-side"></div>
+                            <div class="piece-side"></div>
+                            <div class="piece-side"></div>
+                            <div class="piece-side"></div>
+                            <div class="piece-side"></div>
+                            <div class="piece-side"></div>
+                            <div class="piece-side"></div>
+                            <div class="piece-side"></div>
+                        </div>
+                    </div>
+                </div>
+                <ul class="visible-features">
+                    <li>Top face appears as thin line</li>
+                    <li>Full cylinder thickness visible</li>
+                    <li>Horizontal bands show depth</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="annotation">
+            <h3>2D Representation for Comparison</h3>
+            <div class="piece-2d">帥</div>
+            <p>Standard flat view without 3D rotation</p>
+        </div>
+    </div>
+</body>
+</html>
