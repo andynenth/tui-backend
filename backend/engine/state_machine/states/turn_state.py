@@ -876,15 +876,14 @@ class TurnState(GameState):
             # Get turn-specific player data (base_state.py handles standard player data)
             turn_players_data = []
             if hasattr(game, "players") and game.players:
-                for player in game.players:
-                    captured = getattr(player, "captured_piles", 0)
-                    declared = getattr(player, "declared", 0)
-                    self.logger.info(f"🔍 TURN_COMPLETE_DEBUG {player.name}: captured_piles={captured}, declared={declared}")
-                    turn_players_data.append({
+                turn_players_data = [
+                    {
                         "name": player.name,
-                        "captured_piles": captured,
-                        "declared": declared
-                    })
+                        "captured_piles": getattr(player, "captured_piles", 0),
+                        "declared": getattr(player, "declared", 0)
+                    } 
+                    for player in game.players
+                ]
 
             # Check if all hands are empty (determines next phase)
             all_hands_empty = True
