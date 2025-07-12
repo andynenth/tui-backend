@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chinese Chess Pieces - Improved Cylindrical Design</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f0f0f0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .container {
+            background: white;
+            padding: 40px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            max-width: 800px;
+        }
+
+        h1 {
+            color: #333;
+            margin-bottom: 30px;
+        }
+
+        .piece-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 200px;
+            margin: 40px 0;
+        }
+
+        /* Base piece wrapper - includes thickness */
+        .game-piece {
+            width: 80px;
+            height: 88px; /* Extra height for cylinder thickness */
+            position: relative;
+            cursor: pointer;
+            transition: transform 0.15s ease;
+            transform-style: preserve-3d;
+        }
+
+        /* Cylinder structure */
+        .piece-cylinder {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            transform-style: preserve-3d;
+            transition: transform 0.6s ease;
+        }
+
+        /* Top face of cylinder */
+        .piece-top {
+            position: absolute;
+            top: 0;
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: 
+                linear-gradient(145deg, #FFFFFF 0%, #F8F9FA 100%),
+                radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.8) 0%, transparent 60%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            border: 1px solid rgba(173, 181, 189, 0.3);
+            font-family: 'SimSun', '宋体', serif;
+            box-shadow: 
+                0 2px 8px rgba(0, 0, 0, 0.15),
+                inset 0 1px 2px rgba(255, 255, 255, 0.5);
+            z-index: 3;
+            font-size: 32px;
+            backface-visibility: hidden;
+        }
+
+        /* Bottom face (visible when flipped) */
+        .piece-bottom {
+            position: absolute;
+            top: 0;
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: 
+                linear-gradient(145deg, #F8F9FA 0%, #E9ECEF 100%),
+                radial-gradient(circle at 70% 70%, rgba(255, 255, 255, 0.6) 0%, transparent 60%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            border: 1px solid rgba(173, 181, 189, 0.3);
+            font-family: 'SimSun', '宋体', serif;
+            box-shadow: 
+                0 2px 8px rgba(0, 0, 0, 0.15),
+                inset 0 1px 2px rgba(255, 255, 255, 0.5);
+            z-index: 3;
+            font-size: 32px;
+            transform: rotateY(180deg);
+            backface-visibility: hidden;
+        }
+
+        /* Cylinder side - visible at bottom */
+        .piece-edge {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 80px;
+            height: 8px;
+            background: linear-gradient(to bottom,
+                #E9ECEF 0%,
+                #DEE2E6 50%,
+                #CED4DA 100%);
+            border-radius: 50%;
+            box-shadow: 
+                0 2px 4px rgba(0, 0, 0, 0.1),
+                inset 0 -1px 2px rgba(0, 0, 0, 0.1);
+            z-index: 1;
+        }
+
+        /* Cylinder side wall during flip */
+        .piece-side-wall {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: linear-gradient(90deg,
+                transparent 0%,
+                rgba(173, 181, 189, 0.1) 10%,
+                rgba(173, 181, 189, 0.3) 25%,
+                rgba(134, 142, 150, 0.5) 50%,
+                rgba(173, 181, 189, 0.3) 75%,
+                rgba(173, 181, 189, 0.1) 90%,
+                transparent 100%);
+            opacity: 0;
+            transform: scaleX(0) scaleY(1.1);
+            transition: all 0.6s ease;
+            z-index: 2;
+        }
+
+        /* Shadow for depth */
+        .piece-shadow {
+            position: absolute;
+            bottom: -15px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 70px;
+            height: 20px;
+            background: radial-gradient(ellipse at center, 
+                rgba(0, 0, 0, 0.2) 0%, 
+                transparent 70%);
+            border-radius: 50%;
+            filter: blur(4px);
+            z-index: 0;
+            transition: all 0.6s ease;
+        }
+
+        /* Colors for pieces */
+        .game-piece.red .piece-top,
+        .game-piece.red .piece-bottom {
+            color: #DC3545;
+            border-color: rgba(220, 53, 69, 0.4);
+        }
+
+        .game-piece.black .piece-top,
+        .game-piece.black .piece-bottom {
+            color: #495057;
+            border-color: rgba(73, 80, 87, 0.4);
+        }
+
+        /* Flip animation */
+        @keyframes showSideWall {
+            0%, 100% {
+                opacity: 0;
+                transform: scaleX(0) scaleY(1.1);
+            }
+            20% {
+                opacity: 0.6;
+                transform: scaleX(0.3) scaleY(1.1);
+            }
+            50% {
+                opacity: 1;
+                transform: scaleX(0.8) scaleY(1.1);
+            }
+            80% {
+                opacity: 0.6;
+                transform: scaleX(0.3) scaleY(1.1);
+            }
+        }
+
+        @keyframes expandEdge {
+            0%, 100% {
+                height: 8px;
+                background: linear-gradient(to bottom,
+                    #E9ECEF 0%,
+                    #DEE2E6 50%,
+                    #CED4DA 100%);
+            }
+            50% {
+                height: 20px;
+                background: linear-gradient(to bottom,
+                    #DEE2E6 0%,
+                    #ADB5BD 50%,
+                    #868E96 100%);
+            }
+        }
+
+        @keyframes moveShadow {
+            0%, 100% {
+                transform: translateX(-50%) scaleX(1);
+                opacity: 0.2;
+            }
+            50% {
+                transform: translateX(-50%) scaleX(0.8);
+                opacity: 0.4;
+            }
+        }
+
+        /* Apply animations during flip */
+        .game-piece.flipping .piece-cylinder {
+            animation: none;
+            transition: transform 0.6s ease;
+        }
+
+        .game-piece.flipping .piece-side-wall {
+            animation: showSideWall 0.6s ease-in-out;
+        }
+
+        .game-piece.flipping .piece-edge {
+            animation: expandEdge 0.6s ease-in-out;
+        }
+
+        .game-piece.flipping .piece-shadow {
+            animation: moveShadow 0.6s ease-in-out;
+        }
+
+        /* Flipped state */
+        .game-piece.flipped .piece-cylinder {
+            transform: rotateY(180deg);
+        }
+
+        /* Hover effect */
+        .game-piece:hover {
+            transform: translateY(-2px);
+        }
+
+        .game-piece:hover .piece-shadow {
+            transform: translateX(-50%) scaleX(1.1);
+            opacity: 0.3;
+        }
+
+        /* Instructions */
+        .instructions {
+            color: #666;
+            font-style: italic;
+            margin-top: 20px;
+        }
+
+        /* Demo pieces */
+        .demo-pieces {
+            display: flex;
+            justify-content: center;
+            gap: 60px;
+            margin-top: 40px;
+        }
+
+        .demo-section {
+            text-align: center;
+        }
+
+        .demo-section h3 {
+            color: #555;
+            margin-bottom: 20px;
+        }
+
+        .pieces-row {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+        }
+
+        /* Animation for initial drop */
+        @keyframes dropIn {
+            0% {
+                opacity: 0;
+                transform: translateY(-50px);
+            }
+            60% {
+                opacity: 1;
+                transform: translateY(5px);
+            }
+            80% {
+                transform: translateY(-2px);
+            }
+            100% {
+                transform: translateY(0);
+            }
+        }
+
+        .game-piece {
+            animation: dropIn 0.5s ease-out;
+        }
+
+        .game-piece:nth-child(1) { animation-delay: 0.1s; }
+        .game-piece:nth-child(2) { animation-delay: 0.2s; }
+        .game-piece:nth-child(3) { animation-delay: 0.3s; }
+        .game-piece:nth-child(4) { animation-delay: 0.4s; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Chinese Chess Pieces with Cylindrical Effect</h1>
+        
+        <div class="piece-container">
+            <div class="game-piece red" id="mainPiece">
+                <div class="piece-shadow"></div>
+                <div class="piece-edge"></div>
+                <div class="piece-cylinder">
+                    <div class="piece-side-wall"></div>
+                    <div class="piece-top">帥</div>
+                    <div class="piece-bottom">楚</div>
+                </div>
+            </div>
+        </div>
+        
+        <p class="instructions">Click the piece to flip it</p>
+
+        <div class="demo-pieces">
+            <div class="demo-section">
+                <h3>Red Pieces</h3>
+                <div class="pieces-row">
+                    <div class="game-piece red demo-piece">
+                        <div class="piece-shadow"></div>
+                        <div class="piece-edge"></div>
+                        <div class="piece-cylinder">
+                            <div class="piece-side-wall"></div>
+                            <div class="piece-top">將</div>
+                            <div class="piece-bottom">漢</div>
+                        </div>
+                    </div>
+                    <div class="game-piece red demo-piece">
+                        <div class="piece-shadow"></div>
+                        <div class="piece-edge"></div>
+                        <div class="piece-cylinder">
+                            <div class="piece-side-wall"></div>
+                            <div class="piece-top">車</div>
+                            <div class="piece-bottom">界</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="demo-section">
+                <h3>Black Pieces</h3>
+                <div class="pieces-row">
+                    <div class="game-piece black demo-piece">
+                        <div class="piece-shadow"></div>
+                        <div class="piece-edge"></div>
+                        <div class="piece-cylinder">
+                            <div class="piece-side-wall"></div>
+                            <div class="piece-top">卒</div>
+                            <div class="piece-bottom">河</div>
+                        </div>
+                    </div>
+                    <div class="game-piece black demo-piece">
+                        <div class="piece-shadow"></div>
+                        <div class="piece-edge"></div>
+                        <div class="piece-cylinder">
+                            <div class="piece-side-wall"></div>
+                            <div class="piece-top">馬</div>
+                            <div class="piece-bottom">楚</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Add flip functionality to all pieces
+        document.querySelectorAll('.game-piece').forEach(piece => {
+            piece.addEventListener('click', function() {
+                // Add flipping class for animation
+                this.classList.add('flipping');
+                
+                // Toggle flipped state
+                this.classList.toggle('flipped');
+                
+                // Remove flipping class after animation
+                setTimeout(() => {
+                    this.classList.remove('flipping');
+                }, 600);
+            });
+        });
+    </script>
+</body>
+</html>
