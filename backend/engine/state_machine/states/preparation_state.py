@@ -123,7 +123,7 @@ class PreparationState(GameState):
         # game._deal_guaranteed_no_redeal(red_general_player_index=1)
 
         # 3. Force weak hands (testing redeal logic)
-        game._deal_weak_hand(weak_player_indices=[0], max_weak_points=9, limit=3)
+        game._deal_weak_hand(weak_player_indices=[0], max_weak_points=9, limit=5)
         
         # 4.
         # game._deal_double_straight(1,'RED')

@@ -24,6 +24,7 @@ const GameOverContent = ({ winner, finalScores, players, gameStats, onBackToLobb
           className={`go-confetti ${color} ${size}`}
           style={{
             left: `${left}%`,
+            top: '-20px',
             animationDelay: `${delay}s`,
             animationDuration: `${duration}s`
           }}
@@ -61,8 +62,7 @@ const GameOverContent = ({ winner, finalScores, players, gameStats, onBackToLobb
   // Format game duration
   const formatDuration = (seconds) => {
     const minutes = Math.floor(seconds / 60);
-    const secs = seconds % 60;
-    return `${minutes}:${secs.toString().padStart(2, '0')}`;
+    return `${minutes}`;
   };
   
   return (
@@ -85,7 +85,6 @@ const GameOverContent = ({ winner, finalScores, players, gameStats, onBackToLobb
       
       {/* Final rankings */}
       <div className="go-rankings-container">
-        <div className="go-rankings-title">Final Rankings</div>
         <div className="go-rankings">
           {sortedPlayers.map((player, index) => {
             const position = index + 1;
@@ -99,8 +98,9 @@ const GameOverContent = ({ winner, finalScores, players, gameStats, onBackToLobb
                 <div className="go-player-info">
                   <div className="go-player-name">{player.name}</div>
                   <div className="go-player-score">
-                    {player.turns_won > 0 ? `Won ${player.turns_won} turn${player.turns_won > 1 ? 's' : ''}` : 'No turns won'}
-                    {player.perfect_rounds > 0 && ` • ${player.perfect_rounds} perfect round${player.perfect_rounds > 1 ? 's' : ''}`}
+                    {player.perfect_rounds > 0 
+                      ? `${player.perfect_rounds} perfect round${player.perfect_rounds > 1 ? 's' : ''}` 
+                      : 'Aim needs work 🎯'}
                   </div>
                 </div>
                 <div className="go-final-score">{score}</div>
@@ -114,7 +114,7 @@ const GameOverContent = ({ winner, finalScores, players, gameStats, onBackToLobb
       {gameStats && (
         <div className="go-stats">
           <div className="go-stats-title">Game Statistics</div>
-          {gameStats.duration && (
+          {gameStats.duration !== undefined && (
             <div className="go-stat-item">
               <span className="go-stat-label">Game Duration</span>
               <span className="go-stat-value">{formatDuration(gameStats.duration)}</span>
