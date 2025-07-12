@@ -90,7 +90,7 @@ class GameOverState(GameState):
             reverse=True
         )
         
-        return [
+        rankings = [
             {
                 "name": player.name, 
                 "score": player.score, 
@@ -100,6 +100,12 @@ class GameOverState(GameState):
             }
             for i, player in enumerate(sorted_players)
         ]
+        
+        # Debug logging
+        for ranking in rankings:
+            self.logger.info(f"Player {ranking['name']}: turns_won={ranking['turns_won']}, perfect_rounds={ranking['perfect_rounds']}")
+        
+        return rankings
     
     def _calculate_game_statistics(self):
         """Calculate game stats for display"""

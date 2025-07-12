@@ -2,6 +2,14 @@
 // Add custom jest matchers from jest-dom
 import '@testing-library/jest-dom';
 
+// Add TextEncoder/TextDecoder polyfills for JSDOM
+if (typeof TextEncoder === 'undefined') {
+  global.TextEncoder = require('util').TextEncoder;
+}
+if (typeof TextDecoder === 'undefined') {
+  global.TextDecoder = require('util').TextDecoder;
+}
+
 // Mock window.matchMedia
 Object.defineProperty(window, 'matchMedia', {
   writable: true,

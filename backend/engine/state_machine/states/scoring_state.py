@@ -332,6 +332,14 @@ class ScoringState(GameState):
             # Update player's total score
             current_score = getattr(player, "score", 0)
             player.score = current_score + final_score
+            
+            # Increment perfect rounds counter for non-zero perfect predictions
+            if declared > 0 and declared == actual:
+                old_perfect_rounds = player.perfect_rounds
+                player.perfect_rounds += 1
+                self.logger.info(
+                    f"🎯 PERFECT_ROUNDS_DEBUG: {player.name} had perfect round! perfect_rounds: {old_perfect_rounds} -> {player.perfect_rounds}"
+                )
 
             # Store round score data
             self.round_scores[player.name] = {

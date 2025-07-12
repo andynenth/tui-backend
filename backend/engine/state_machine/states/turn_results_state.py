@@ -76,10 +76,15 @@ class TurnResultsState(GameState):
                     (p for p in game.players if p.name == self.turn_winner), None
                 )
                 if winner_player:
+                    old_turns_won = winner_player.turns_won
                     winner_player.turns_won += 1
                     self.logger.info(
-                        f"Player {self.turn_winner} now has {winner_player.turns_won} turns won"
+                        f"🏆 TURNS_WON_DEBUG: Player {self.turn_winner} turns_won: {old_turns_won} -> {winner_player.turns_won}"
                     )
+                else:
+                    self.logger.warning(f"⚠️ TURNS_WON_DEBUG: Could not find player {self.turn_winner} to update turns_won!")
+            else:
+                self.logger.info("ℹ️ TURNS_WON_DEBUG: No turn winner to update")
 
             # Prepare player statistics for broadcast
             player_stats = {
