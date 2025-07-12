@@ -64,16 +64,17 @@ class ScoringState(GameState):
             print(f"   🏁 Game complete: {self.game_complete}")
             print(f"   🏆 Winners: {self.winners}")
 
-            # Prepare total scores and player data for frontend
+            # Prepare total scores and scoring-specific data for frontend
+            # (base_state.py automatically handles standard player data)
             game = self.state_machine.game
             total_scores = {}
-            players_data = []
+            scoring_players_data = []  # Scoring-specific data only
             player_stats = {}
 
             if hasattr(game, "players") and game.players:
                 for player in game.players:
                     total_scores[player.name] = player.score
-                    players_data.append(
+                    scoring_players_data.append(
                         {
                             "name": player.name,
                             "is_bot": player.name.startswith(
@@ -93,13 +94,13 @@ class ScoringState(GameState):
 
             print(f"🚀 SCORING_BROADCAST_DEBUG: Also sending:")
             print(f"   💯 Total scores: {total_scores}")
-            print(f"   👥 Players data: {players_data}")
+            print(f"   👥 Scoring players data: {scoring_players_data}")
 
             await self.update_phase_data(
                 {
                     "round_scores": self.round_scores,
                     "total_scores": total_scores,
-                    "players": players_data,
+                    "scoring_players_data": scoring_players_data,  # Scoring-specific data (base_state.py handles standard players data)
                     "player_stats": player_stats,
                     "game_complete": self.game_complete,
                     "winners": self.winners,
