@@ -1,35 +1,661 @@
-🔒 [Room EC4351] Starting game: op_id=EC4351_1
-✅ [Room EC4351] Game and StateMachine started successfully: op_id=EC4351_1
-✅ [Room EC4351] Bot manager registered for 3 bots
-✅ Game started in room EC4351
-INFO:     connection closed
-INFO:     ('127.0.0.1', 63138) - "WebSocket /ws/EC4351" [accepted]
-INFO:     connection open
-✅ Bot Bot 3 declared 3
-✅ Bot Bot 4 declared 1
-✅ Bot Bot 4 declared 1
-Wrong player turn: Bot 4, expected: Andy
-Invalid action: GameAction(player_name='Bot 4', action_type=<ActionType.DECLARE: 'declare'>, payload={'value': 1}, timestamp=datetime.datetime(2025, 7, 11, 10, 28, 32, 690645), sequence_id=2, is_bot=True)
-✅ Declaration queued: Andy -> 5
-✅ Bot Bot 2 declared 2
-🤖 BOT chooses to play STRAIGHT (36 pts): GENERAL, ELEPHANT, ADVISOR
-✅ Bot Bot 3 action queued - state machine will broadcast with correct next_player
-🤖 BOT chooses to play SINGLE (12 pts): ADVISOR
-✅ Bot Bot 4 action queued - state machine will broadcast with correct next_player
-🤖 BOT has no valid play. Discards lowest pieces: SOLDIER, SOLDIER, SOLDIER
-    🔍 Final play: ['SOLDIER', 'SOLDIER', 'SOLDIER']
-    🧠 Hand left: ['ADVISOR', 'SOLDIER', 'CHARIOT', 'ADVISOR', 'CANNON', 'ELEPHANT', 'SOLDIER', 'SOLDIER']
-✅ Bot Bot 4 action queued - state machine will broadcast with correct next_player
-Must play 3 pieces, got 1
-Invalid action: GameAction(player_name='Bot 4', action_type=<ActionType.PLAY_PIECES: 'play_pieces'>, payload={'pieces': [ADVISOR_RED(12)]}, timestamp=datetime.datetime(2025, 7, 11, 10, 28, 40, 722202), sequence_id=6, is_bot=True)
-✅ Play accepted: Andy
-🤖 BOT chooses to play THREE_OF_A_KIND (3 pts): SOLDIER, SOLDIER, SOLDIER
-✅ Bot Bot 2 action queued - state machine will broadcast with correct next_player
-🤖 BOT chooses to play SINGLE (9 pts): ELEPHANT
-✅ Bot Bot 3 action queued - state machine will broadcast with correct next_player
-🤖 BOT chooses to play SINGLE (12 pts): ADVISOR
-✅ Bot Bot 4 action queued - state machine will broadcast with correct next_player
-🤖 BOT chooses to play SINGLE (12 pts): ADVISOR
-✅ Bot Bot 4 action queued - state machine will broadcast with correct next_player
-Not Bot 4's turn - expected Andy
-Invalid action: GameAction(player_name='Bot 4', action_type=<ActionType.PLAY_PIECES: 'play_pieces'>, payload={'pieces': [ADVISOR_RED(12)]}, timestamp=datetime.datetime(2025, 7, 11, 10, 30, 21, 700272), sequence_id=12, is_bot=True)
+RecoveryService.ts:66 🔄 RecoveryService: Initialized
+ServiceIntegration.ts:79 🔗 ServiceIntegration: Initialized
+ServiceIntegration.ts:98 
+ServiceIntegration.ts:99 🎯 =============================================
+ServiceIntegration.ts:100 🚀 PHASE 1-4 ENTERPRISE ARCHITECTURE STARTING
+ServiceIntegration.ts:101 🎯 =============================================
+ServiceIntegration.ts:102 🔧 Initializing integrated service layer...
+ServiceIntegration.ts:567 ✅ NetworkService integrated
+ServiceIntegration.ts:575 ✅ GameService integrated
+ServiceIntegration.ts:583 ✅ RecoveryService integrated
+ServiceIntegration.ts:594 🩺 Health monitoring started (30000ms interval)
+ServiceIntegration.ts:124 
+ServiceIntegration.ts:125 ✅ =============================================
+ServiceIntegration.ts:126 🎉 PHASE 1-4 ARCHITECTURE FULLY OPERATIONAL!
+ServiceIntegration.ts:127 ✅ =============================================
+ServiceIntegration.ts:128 🔗 NetworkService: Advanced WebSocket with auto-reconnection
+ServiceIntegration.ts:129 🎮 GameService: React hooks with TypeScript state management
+ServiceIntegration.ts:130 🛠️ RecoveryService: Automatic error recovery and health monitoring
+ServiceIntegration.ts:131 🏢 Enterprise Features: Event sourcing, logging, metrics
+ServiceIntegration.ts:132 ✅ Service integration layer initialized successfully
+ServiceIntegration.ts:133 
+App.jsx:117 🎮 Global services initialized
+NetworkService.ts:337 🔗 Connection opened to room lobby
+GameService.ts:1334 🎮 State Change: NETWORK_CONNECTED
+GameService.ts:1335 Previous: {isConnected: false, roomId: null, playerName: null, phase: 'waiting', currentRound: 1, …}
+GameService.ts:1336 New: {isConnected: true, roomId: null, playerName: null, phase: 'waiting', currentRound: 1, …}
+GameService.ts:1337 Diff: {isConnected: {…}, lastEventSequence: {…}}
+NetworkService.ts:129 🌐 NetworkService: Connected to room lobby
+LobbyPage.jsx:45 Received room_list_update: {roomId: 'lobby', data: {…}, message: {…}, timestamp: 1752402584664}
+GameService.ts:1334 🎮 State Change: NETWORK_DISCONNECTED
+GameService.ts:1335 Previous: {isConnected: true, roomId: null, playerName: null, phase: 'waiting', currentRound: 1, …}
+GameService.ts:1336 New: {isConnected: false, roomId: null, playerName: null, phase: 'waiting', currentRound: 1, …}
+GameService.ts:1337 Diff: {isConnected: {…}, lastEventSequence: {…}}
+NetworkService.ts:171 🌐 NetworkService: Disconnected from room lobby
+NetworkService.ts:214 📤 Queued message for lobby: get_rooms (1 queued)
+NetworkService.ts:337 🔗 Connection opened to room lobby
+GameService.ts:1334 🎮 State Change: NETWORK_CONNECTED
+GameService.ts:1335 Previous: {isConnected: false, roomId: null, playerName: null, phase: 'waiting', currentRound: 1, …}
+GameService.ts:1336 New: {isConnected: true, roomId: null, playerName: null, phase: 'waiting', currentRound: 1, …}
+GameService.ts:1337 Diff: {isConnected: {…}, lastEventSequence: {…}}
+NetworkService.ts:129 🌐 NetworkService: Connected to room lobby
+LobbyPage.jsx:45 Received room_list_update: {roomId: 'lobby', data: {…}, message: {…}, timestamp: 1752402584679}
+GameService.ts:1334 🎮 State Change: NETWORK_DISCONNECTED
+GameService.ts:1335 Previous: {isConnected: true, roomId: null, playerName: null, phase: 'waiting', currentRound: 1, …}
+GameService.ts:1336 New: {isConnected: false, roomId: null, playerName: null, phase: 'waiting', currentRound: 1, …}
+GameService.ts:1337 Diff: {isConnected: {…}, lastEventSequence: {…}}
+NetworkService.ts:171 🌐 NetworkService: Disconnected from room lobby
+NetworkService.ts:214 📤 Queued message for lobby: get_rooms (1 queued)
+NetworkService.ts:337 🔗 Connection opened to room lobby
+GameService.ts:1334 🎮 State Change: NETWORK_CONNECTED
+GameService.ts:1335 Previous: {isConnected: false, roomId: null, playerName: null, phase: 'waiting', currentRound: 1, …}
+GameService.ts:1336 New: {isConnected: true, roomId: null, playerName: null, phase: 'waiting', currentRound: 1, …}
+GameService.ts:1337 Diff: {isConnected: {…}, lastEventSequence: {…}}
+NetworkService.ts:129 🌐 NetworkService: Connected to room lobby
+LobbyPage.jsx:45 Received room_list_update: {roomId: 'lobby', data: {…}, message: {…}, timestamp: 1752402586018}
+LobbyPage.jsx:56 Received room_created: {roomId: 'lobby', data: {…}, message: {…}, timestamp: 1752402586105}
+LobbyPage.jsx:57 🟢 Navigation: room_id = 44A938 navigating to: /room/44A938
+LobbyPage.jsx:61 ✅ Navigating to new room: 44A938
+GameService.ts:1334 🎮 State Change: NETWORK_DISCONNECTED
+GameService.ts:1335 Previous: {isConnected: true, roomId: null, playerName: null, phase: 'waiting', currentRound: 1, …}
+GameService.ts:1336 New: {isConnected: false, roomId: null, playerName: null, phase: 'waiting', currentRound: 1, …}
+GameService.ts:1337 Diff: {isConnected: {…}, lastEventSequence: {…}}
+NetworkService.ts:171 🌐 NetworkService: Disconnected from room lobby
+NetworkService.ts:214 📤 Queued message for lobby: get_rooms (1 queued)
+NetworkService.ts:337 🔗 Connection opened to room lobby
+GameService.ts:1334 🎮 State Change: NETWORK_CONNECTED
+GameService.ts:1335 Previous: {isConnected: false, roomId: null, playerName: null, phase: 'waiting', currentRound: 1, …}
+GameService.ts:1336 New: {isConnected: true, roomId: null, playerName: null, phase: 'waiting', currentRound: 1, …}
+GameService.ts:1337 Diff: {isConnected: {…}, lastEventSequence: {…}}
+NetworkService.ts:129 🌐 NetworkService: Connected to room lobby
+NetworkService.ts:337 🔗 Connection opened to room 44A938
+GameService.ts:1334 🎮 State Change: NETWORK_CONNECTED
+GameService.ts:1335 Previous: {isConnected: true, roomId: null, playerName: null, phase: 'waiting', currentRound: 1, …}
+GameService.ts:1336 New: {isConnected: true, roomId: null, playerName: null, phase: 'waiting', currentRound: 1, …}
+GameService.ts:1337 Diff: {lastEventSequence: {…}}
+NetworkService.ts:129 🌐 NetworkService: Connected to room 44A938
+RoomPage.jsx:66 🏠 ROOM_UPDATE: Full data received: {players: Array(4), host_name: 'Andy', room_id: '44A938', started: false}
+RoomPage.jsx:67 🏠 ROOM_UPDATE: Players array: (4) [{…}, {…}, {…}, {…}]
+RoomPage.jsx:68 🏠 ROOM_UPDATE: Players array type: object
+RoomPage.jsx:69 🏠 ROOM_UPDATE: Players array length: 4
+RoomPage.jsx:70 🏠 ROOM_UPDATE: Players array entries: (4) [Array(2), Array(2), Array(2), Array(2)]
+RoomPage.jsx:104 🎮 START_GAME: Button clicked
+RoomPage.jsx:105 🎮 START_GAME: Room ID: 44A938
+RoomPage.jsx:77 Game started, navigating to game page
+GameService.ts:1334 🎮 State Change: NETWORK_DISCONNECTED
+GameService.ts:1335 Previous: {isConnected: true, roomId: null, playerName: null, phase: 'waiting', currentRound: 1, …}
+GameService.ts:1336 New: {isConnected: false, roomId: null, playerName: null, phase: 'waiting', currentRound: 1, …}
+GameService.ts:1337 Diff: {isConnected: {…}, lastEventSequence: {…}}
+NetworkService.ts:171 🌐 NetworkService: Disconnected from room 44A938
+ServiceIntegration.ts:157 🔗 Connecting to room 44A938 as Andy...
+RecoveryService.ts:106 🔄 RecoveryService: Initialized tracking for room 44A938
+GameService.ts:1334 🎮 State Change: JOIN_ROOM_INIT
+GameService.ts:1335 Previous: {isConnected: false, roomId: null, playerName: null, phase: 'waiting', currentRound: 1, …}
+GameService.ts:1336 New: {isConnected: false, roomId: '44A938', playerName: 'Andy', phase: 'waiting', currentRound: 1, …}
+GameService.ts:1337 Diff: {roomId: {…}, playerName: {…}, lastEventSequence: {…}}
+GameContext.jsx:36 🚀 GAME_CONTEXT: Phase 1-4 Enterprise Architecture initializing
+NetworkService.ts:337 🔗 Connection opened to room 44A938
+GameService.ts:1334 🎮 State Change: NETWORK_CONNECTED
+GameService.ts:1335 Previous: {isConnected: false, roomId: '44A938', playerName: 'Andy', phase: 'waiting', currentRound: 1, …}
+GameService.ts:1336 New: {isConnected: true, roomId: '44A938', playerName: 'Andy', phase: 'waiting', currentRound: 1, …}
+GameService.ts:1337 Diff: {isConnected: {…}, lastEventSequence: {…}}
+NetworkService.ts:129 🌐 NetworkService: Connected to room 44A938
+GameService.ts:1334 🎮 State Change: JOIN_ROOM_CONNECTED
+GameService.ts:1335 Previous: {isConnected: true, roomId: '44A938', playerName: 'Andy', phase: 'waiting', currentRound: 1, …}
+GameService.ts:1336 New: {isConnected: true, roomId: '44A938', playerName: 'Andy', phase: 'waiting', currentRound: 1, …}
+GameService.ts:1337 Diff: {lastEventSequence: {…}}
+GameService.ts:100 🎮 GameService: Joined room 44A938 as Andy
+ServiceIntegration.ts:169 ✅ Successfully connected to room 44A938
+GameService.ts:1334 🎮 State Change: NETWORK_EVENT:PHASE_CHANGE
+GameService.ts:1335 Previous: {isConnected: true, roomId: '44A938', playerName: 'Andy', phase: 'waiting', currentRound: 1, …}
+GameService.ts:1336 New: {isConnected: true, roomId: '44A938', playerName: 'Andy', phase: 'preparation', currentRound: 1, …}
+GameService.ts:1337 Diff: {phase: {…}, players: {…}, redealMultiplier: {…}, myHand: {…}, lastEventSequence: {…}, …}
+GameService.ts:1334 🎮 State Change: NETWORK_EVENT:PHASE_CHANGE
+GameService.ts:1335 Previous: {isConnected: true, roomId: '44A938', playerName: 'Andy', phase: 'preparation', currentRound: 1, …}
+GameService.ts:1336 New: {isConnected: true, roomId: '44A938', playerName: 'Andy', phase: 'preparation', currentRound: 1, …}
+GameService.ts:1337 Diff: {lastEventSequence: {…}}
+GameService.ts:1334 🎮 State Change: NETWORK_EVENT:PHASE_CHANGE
+GameService.ts:1335 Previous: {isConnected: true, roomId: '44A938', playerName: 'Andy', phase: 'preparation', currentRound: 1, …}
+GameService.ts:1336 New: {isConnected: true, roomId: '44A938', playerName: 'Andy', phase: 'preparation', currentRound: 1, …}
+GameService.ts:1337 Diff: {lastEventSequence: {…}}
+GameService.ts:1334 🎮 State Change: NETWORK_EVENT:PHASE_CHANGE
+GameService.ts:1335 Previous: {isConnected: true, roomId: '44A938', playerName: 'Andy', phase: 'preparation', currentRound: 1, …}
+GameService.ts:1336 New: {isConnected: true, roomId: '44A938', playerName: 'Andy', phase: 'round_start', currentRound: 1, …}
+GameService.ts:1337 Diff: {phase: {…}, lastEventSequence: {…}, currentStarter: {…}, starterReason: {…}}
+GameService.ts:1334 🎮 State Change: NETWORK_EVENT:PHASE_CHANGE
+GameService.ts:1335 Previous: {isConnected: true, roomId: '44A938', playerName: 'Andy', phase: 'round_start', currentRound: 1, …}
+GameService.ts:1336 New: {isConnected: true, roomId: '44A938', playerName: 'Andy', phase: 'declaration', currentRound: 1, …}
+GameService.ts:1337 Diff: {phase: {…}, declarationOrder: {…}, lastEventSequence: {…}, currentTotal: {…}, declarationProgress: {…}, …}
+GameService.ts:1334 🎮 State Change: NETWORK_EVENT:PHASE_CHANGE
+GameService.ts:1335 Previous: {isConnected: true, roomId: '44A938', playerName: 'Andy', phase: 'declaration', currentRound: 1, …}
+GameService.ts:1336 New: {isConnected: true, roomId: '44A938', playerName: 'Andy', phase: 'declaration', currentRound: 1, …}
+GameService.ts:1337 Diff: {currentDeclarer: {…}, lastEventSequence: {…}}
+GameService.ts:1334 🎮 State Change: NETWORK_EVENT:PHASE_CHANGE
+GameService.ts:1335 Previous: {isConnected: true, roomId: '44A938', playerName: 'Andy', phase: 'declaration', currentRound: 1, …}
+GameService.ts:1336 New: {isConnected: true, roomId: '44A938', playerName: 'Andy', phase: 'declaration', currentRound: 1, …}
+GameService.ts:1337 Diff: {declarations: {…}, currentDeclarer: {…}, isMyTurn: {…}, allowedActions: {…}, validOptions: {…}, …}
+GameService.ts:1303 🎮 Action sent: declare {value: 3, player_name: 'Andy'}
+GameService.ts:1334 🎮 State Change: NETWORK_EVENT:PHASE_CHANGE
+GameService.ts:1335 Previous: {isConnected: true, roomId: '44A938', playerName: 'Andy', phase: 'declaration', currentRound: 1, …}
+GameService.ts:1336 New: {isConnected: true, roomId: '44A938', playerName: 'Andy', phase: 'declaration', currentRound: 1, …}
+GameService.ts:1337 Diff: {players: {…}, declarations: {…}, currentDeclarer: {…}, isMyTurn: {…}, allowedActions: {…}, …}
+GameService.ts:1334 🎮 State Change: NETWORK_EVENT:PHASE_CHANGE
+GameService.ts:1335 Previous: {isConnected: true, roomId: '44A938', playerName: 'Andy', phase: 'declaration', currentRound: 1, …}
+GameService.ts:1336 New: {isConnected: true, roomId: '44A938', playerName: 'Andy', phase: 'declaration', currentRound: 1, …}
+GameService.ts:1337 Diff: {players: {…}, declarations: {…}, currentDeclarer: {…}, lastEventSequence: {…}, currentTotal: {…}, …}
+GameService.ts:1334 🎮 State Change: NETWORK_EVENT:PHASE_CHANGE
+GameService.ts:1335 Previous: {isConnected: true, roomId: '44A938', playerName: 'Andy', phase: 'declaration', currentRound: 1, …}
+GameService.ts:1336 New: {isConnected: true, roomId: '44A938', playerName: 'Andy', phase: 'declaration', currentRound: 1, …}
+GameService.ts:1337 Diff: {players: {…}, declarations: {…}, lastEventSequence: {…}, currentTotal: {…}, declarationProgress: {…}, …}
+GameService.ts:1334 🎮 State Change: NETWORK_EVENT:PHASE_CHANGE
+GameService.ts:1335 Previous: {isConnected: true, roomId: '44A938', playerName: 'Andy', phase: 'declaration', currentRound: 1, …}
+GameService.ts:1336 New: {isConnected: true, roomId: '44A938', playerName: 'Andy', phase: 'turn', currentRound: 1, …}
+GameService.ts:1337 Diff: {phase: {…}, players: {…}, currentTurnStarter: {…}, turnOrder: {…}, currentPlayer: {…}, …}
+TurnUI.jsx:43 [TurnUI] Building playerPieces from currentTurnPlays: []
+TurnUI.jsx:81 [TurnUI] No valid plays found, returning empty play type
+GameService.ts:1334 🎮 State Change: NETWORK_EVENT:PHASE_CHANGE
+GameService.ts:1335 Previous: {isConnected: true, roomId: '44A938', playerName: 'Andy', phase: 'turn', currentRound: 1, …}
+GameService.ts:1336 New: {isConnected: true, roomId: '44A938', playerName: 'Andy', phase: 'turn', currentRound: 1, …}
+GameService.ts:1337 Diff: {players: {…}, currentPlayer: {…}, currentTurnPlays: {…}, requiredPieceCount: {…}, isMyTurn: {…}, …}
+TurnUI.jsx:43 [TurnUI] Building playerPieces from currentTurnPlays: [{…}]
+TurnUI.jsx:47 [TurnUI] Turn play 1: {player: 'Bot 4', hasPieces: true, hasCards: false, playType: 'SINGLE', isValid: true, …}
+TurnUI.jsx:43 [TurnUI] Building playerPieces from currentTurnPlays: [{…}]
+TurnUI.jsx:47 [TurnUI] Turn play 1: {player: 'Bot 4', hasPieces: true, hasCards: false, playType: 'SINGLE', isValid: true, …}
+GameService.ts:1303 🎮 Action sent: play {piece_indices: Array(1), player_name: 'Andy', play_value: 4}
+TurnUI.jsx:43 [TurnUI] Building playerPieces from currentTurnPlays: [{…}]
+TurnUI.jsx:47 [TurnUI] Turn play 1: {player: 'Bot 4', hasPieces: true, hasCards: false, playType: 'SINGLE', isValid: true, …}
+GameService.ts:1334 🎮 State Change: NETWORK_EVENT:PHASE_CHANGE
+GameService.ts:1335 Previous: {isConnected: true, roomId: '44A938', playerName: 'Andy', phase: 'turn', currentRound: 1, …}
+GameService.ts:1336 New: {isConnected: true, roomId: '44A938', playerName: 'Andy', phase: 'turn', currentRound: 1, …}
+GameService.ts:1337 Diff: {players: {…}, myHand: {…}, currentPlayer: {…}, currentTurnPlays: {…}, isMyTurn: {…}, …}
+TurnUI.jsx:43 [TurnUI] Building playerPieces from currentTurnPlays: (2) [{…}, {…}]
+TurnUI.jsx:47 [TurnUI] Turn play 1: {player: 'Bot 4', hasPieces: true, hasCards: false, playType: 'SINGLE', isValid: true, …}
+TurnUI.jsx:47 [TurnUI] Turn play 2: {player: 'Andy', hasPieces: true, hasCards: false, playType: 'SINGLE', isValid: true, …}
+GameService.ts:1334 🎮 State Change: NETWORK_EVENT:PHASE_CHANGE
+GameService.ts:1335 Previous: {isConnected: true, roomId: '44A938', playerName: 'Andy', phase: 'turn', currentRound: 1, …}
+GameService.ts:1336 New: {isConnected: true, roomId: '44A938', playerName: 'Andy', phase: 'turn', currentRound: 1, …}
+GameService.ts:1337 Diff: {players: {…}, currentPlayer: {…}, currentTurnPlays: {…}, lastEventSequence: {…}}
+TurnUI.jsx:43 [TurnUI] Building playerPieces from currentTurnPlays: (3) [{…}, {…}, {…}]
+TurnUI.jsx:47 [TurnUI] Turn play 1: {player: 'Bot 4', hasPieces: true, hasCards: false, playType: 'SINGLE', isValid: true, …}
+TurnUI.jsx:47 [TurnUI] Turn play 2: {player: 'Andy', hasPieces: true, hasCards: false, playType: 'SINGLE', isValid: true, …}
+TurnUI.jsx:47 [TurnUI] Turn play 3: {player: 'Bot 2', hasPieces: true, hasCards: false, playType: 'SINGLE', isValid: true, …}
+GameService.ts:1334 🎮 State Change: NETWORK_EVENT:PHASE_CHANGE
+GameService.ts:1335 Previous: {isConnected: true, roomId: '44A938', playerName: 'Andy', phase: 'turn', currentRound: 1, …}
+GameService.ts:1336 New: {isConnected: true, roomId: '44A938', playerName: 'Andy', phase: 'turn', currentRound: 1, …}
+GameService.ts:1337 Diff: {players: {…}, currentTurnPlays: {…}, lastEventSequence: {…}}
+TurnUI.jsx:43 [TurnUI] Building playerPieces from currentTurnPlays: (4) [{…}, {…}, {…}, {…}]
+TurnUI.jsx:47 [TurnUI] Turn play 1: {player: 'Bot 4', hasPieces: true, hasCards: false, playType: 'SINGLE', isValid: true, …}
+TurnUI.jsx:47 [TurnUI] Turn play 2: {player: 'Andy', hasPieces: true, hasCards: false, playType: 'SINGLE', isValid: true, …}
+TurnUI.jsx:47 [TurnUI] Turn play 3: {player: 'Bot 2', hasPieces: true, hasCards: false, playType: 'SINGLE', isValid: true, …}
+TurnUI.jsx:47 [TurnUI] Turn play 4: {player: 'Bot 3', hasPieces: true, hasCards: false, playType: 'SINGLE', isValid: true, …}
+TurnUI.jsx:43 [TurnUI] Building playerPieces from currentTurnPlays: (4) [{…}, {…}, {…}, {…}]
+TurnUI.jsx:47 [TurnUI] Turn play 1: {player: 'Bot 4', hasPieces: true, hasCards: false, playType: 'SINGLE', isValid: true, …}
+TurnUI.jsx:47 [TurnUI] Turn play 2: {player: 'Andy', hasPieces: true, hasCards: false, playType: 'SINGLE', isValid: true, …}
+TurnUI.jsx:47 [TurnUI] Turn play 3: {player: 'Bot 2', hasPieces: true, hasCards: false, playType: 'SINGLE', isValid: true, …}
+TurnUI.jsx:47 [TurnUI] Turn play 4: {player: 'Bot 3', hasPieces: true, hasCards: false, playType: 'SINGLE', isValid: true, …}
+GameService.ts:1334 🎮 State Change: NETWORK_EVENT:PHASE_CHANGE
+GameService.ts:1335 Previous: {isConnected: true, roomId: '44A938', playerName: 'Andy', phase: 'turn', currentRound: 1, …}
+GameService.ts:1336 New: {isConnected: true, roomId: '44A938', playerName: 'Andy', phase: 'turn', currentRound: 1, …}
+GameService.ts:1337 Diff: {players: {…}, lastEventSequence: {…}, pileCounts: {…}}
+TurnUI.jsx:43 [TurnUI] Building playerPieces from currentTurnPlays: (4) [{…}, {…}, {…}, {…}]
+TurnUI.jsx:47 [TurnUI] Turn play 1: {player: 'Bot 4', hasPieces: true, hasCards: false, playType: 'SINGLE', isValid: true, …}
+TurnUI.jsx:47 [TurnUI] Turn play 2: {player: 'Andy', hasPieces: true, hasCards: false, playType: 'SINGLE', isValid: true, …}
+TurnUI.jsx:47 [TurnUI] Turn play 3: {player: 'Bot 2', hasPieces: true, hasCards: false, playType: 'SINGLE', isValid: true, …}
+TurnUI.jsx:47 [TurnUI] Turn play 4: {player: 'Bot 3', hasPieces: true, hasCards: false, playType: 'SINGLE', isValid: true, …}
+GameService.ts:1334 🎮 State Change: NETWORK_EVENT:TURN_COMPLETE
+GameService.ts:1335 Previous: {isConnected: true, roomId: '44A938', playerName: 'Andy', phase: 'turn', currentRound: 1, …}
+GameService.ts:1336 New: {isConnected: true, roomId: '44A938', playerName: 'Andy', phase: 'turn_results', currentRound: 1, …}
+GameService.ts:1337 Diff: {phase: {…}, players: {…}, turnWinner: {…}, winningPlay: {…}, playerPiles: {…}, …}
+TurnResultsUI.jsx:38 [TurnResultsUI] Building playerPlays from currentTurnPlays: (4) [{…}, {…}, {…}, {…}]
+TurnResultsUI.jsx:42 [TurnResultsUI] Turn play 1: {player: 'Bot 4', hasPieces: true, hasCards: false, playType: 'SINGLE', isValid: true, …}
+TurnResultsUI.jsx:42 [TurnResultsUI] Turn play 2: {player: 'Andy', hasPieces: true, hasCards: false, playType: 'SINGLE', isValid: true, …}
+TurnResultsUI.jsx:42 [TurnResultsUI] Turn play 3: {player: 'Bot 2', hasPieces: true, hasCards: false, playType: 'SINGLE', isValid: true, …}
+TurnResultsUI.jsx:42 [TurnResultsUI] Turn play 4: {player: 'Bot 3', hasPieces: true, hasCards: false, playType: 'SINGLE', isValid: true, …}
+TurnResultsUI.jsx:69 [TurnResultsUI] Extracting starter info: {currentTurnPlays: Array(4), starterPlay: undefined, starterName: 'Bot 3', starterPlayType: 'SINGLE', winningPlay: {…}}
+TurnResultsContent.jsx:57 [TurnResultsContent] Determining pieces to reveal: {effectiveStarterPlayType: 'SINGLE', starterName: 'Bot 3', winner: 'Bot 3', playerPiecesMap: {…}}
+playTypeMatching.js:74 [determinePiecesToReveal] Input: {playerPieces: {…}, starterPlayType: 'SINGLE', starterName: 'Bot 3'}
+playTypeMatching.js:112 [determinePiecesToReveal] Checking player: Andy {pieces: Array(1), pieceCount: 1}
+playTypeMatching.js:18 [doesPlayMatchStarterType] Input: {starterPlayType: 'SINGLE', pieceCount: 1, pieceDetails: '[{"kind":"CHARIOT","color":"black","value":7}]'}
+gameValidation.js:150 [getPlayType] Analyzing pieces: {count: 1, pieces: '[{"kind":"CHARIOT","color":"black","value":7}]'}
+playTypeMatching.js:41 [doesPlayMatchStarterType] Player play type: SINGLE
+playTypeMatching.js:51 [doesPlayMatchStarterType] Single piece match, returning true
+playTypeMatching.js:133 [determinePiecesToReveal] Andy matches starter type: true
+playTypeMatching.js:112 [determinePiecesToReveal] Checking player: Bot 2 {pieces: Array(1), pieceCount: 1}
+playTypeMatching.js:18 [doesPlayMatchStarterType] Input: {starterPlayType: 'SINGLE', pieceCount: 1, pieceDetails: '[{"kind":"GENERAL","color":"black","value":13}]'}
+gameValidation.js:150 [getPlayType] Analyzing pieces: {count: 1, pieces: '[{"kind":"GENERAL","color":"black","value":13}]'}
+playTypeMatching.js:41 [doesPlayMatchStarterType] Player play type: SINGLE
+playTypeMatching.js:51 [doesPlayMatchStarterType] Single piece match, returning true
+playTypeMatching.js:133 [determinePiecesToReveal] Bot 2 matches starter type: true
+playTypeMatching.js:112 [determinePiecesToReveal] Checking player: Bot 3 {pieces: Array(1), pieceCount: 1}
+playTypeMatching.js:124 [determinePiecesToReveal] Bot 3 is the starter, revealing all pieces
+playTypeMatching.js:112 [determinePiecesToReveal] Checking player: Bot 4 {pieces: Array(1), pieceCount: 1}
+playTypeMatching.js:18 [doesPlayMatchStarterType] Input: {starterPlayType: 'SINGLE', pieceCount: 1, pieceDetails: '[{"kind":"ELEPHANT","color":"red","value":10}]'}
+gameValidation.js:150 [getPlayType] Analyzing pieces: {count: 1, pieces: '[{"kind":"ELEPHANT","color":"red","value":10}]'}
+playTypeMatching.js:41 [doesPlayMatchStarterType] Player play type: SINGLE
+playTypeMatching.js:51 [doesPlayMatchStarterType] Single piece match, returning true
+playTypeMatching.js:133 [determinePiecesToReveal] Bot 4 matches starter type: true
+playTypeMatching.js:142 [determinePiecesToReveal] Final pieces to reveal: (4) ['Andy-0', 'Bot 2-0', 'Bot 3-0', 'Bot 4-0']
+TurnResultsContent.jsx:70 [TurnResultsContent] Pieces to reveal: Set(4) {'Andy-0', 'Bot 2-0', 'Bot 3-0', 'Bot 4-0'}
+GameContainer.jsx:213 Turn results continue requested
+GameService.ts:1334 🎮 State Change: NETWORK_EVENT:PHASE_CHANGE
+GameService.ts:1335 Previous: {isConnected: true, roomId: '44A938', playerName: 'Andy', phase: 'turn_results', currentRound: 1, …}
+GameService.ts:1336 New: {isConnected: true, roomId: '44A938', playerName: 'Andy', phase: 'turn', currentRound: 1, …}
+GameService.ts:1337 Diff: {phase: {…}, players: {…}, currentTurnStarter: {…}, turnOrder: {…}, currentTurnPlays: {…}, …}
+TurnUI.jsx:43 [TurnUI] Building playerPieces from currentTurnPlays: []
+TurnUI.jsx:81 [TurnUI] No valid plays found, returning empty play type
+GameService.ts:1334 🎮 State Change: NETWORK_EVENT:PHASE_CHANGE
+GameService.ts:1335 Previous: {isConnected: true, roomId: '44A938', playerName: 'Andy', phase: 'turn', currentRound: 1, …}
+GameService.ts:1336 New: {isConnected: true, roomId: '44A938', playerName: 'Andy', phase: 'turn', currentRound: 1, …}
+GameService.ts:1337 Diff: {players: {…}, currentPlayer: {…}, currentTurnPlays: {…}, requiredPieceCount: {…}, lastEventSequence: {…}}
+TurnUI.jsx:43 [TurnUI] Building playerPieces from currentTurnPlays: [{…}]
+TurnUI.jsx:47 [TurnUI] Turn play 1: {player: 'Bot 3', hasPieces: true, hasCards: false, playType: 'SINGLE', isValid: true, …}
+GameService.ts:1334 🎮 State Change: NETWORK_EVENT:PHASE_CHANGE
+GameService.ts:1335 Previous: {isConnected: true, roomId: '44A938', playerName: 'Andy', phase: 'turn', currentRound: 1, …}
+GameService.ts:1336 New: {isConnected: true, roomId: '44A938', playerName: 'Andy', phase: 'turn', currentRound: 1, …}
+GameService.ts:1337 Diff: {players: {…}, currentPlayer: {…}, currentTurnPlays: {…}, isMyTurn: {…}, allowedActions: {…}, …}
+TurnUI.jsx:43 [TurnUI] Building playerPieces from currentTurnPlays: (2) [{…}, {…}]
+TurnUI.jsx:47 [TurnUI] Turn play 1: {player: 'Bot 3', hasPieces: true, hasCards: false, playType: 'SINGLE', isValid: true, …}
+TurnUI.jsx:47 [TurnUI] Turn play 2: {player: 'Bot 4', hasPieces: true, hasCards: false, playType: 'SINGLE', isValid: true, …}
+GameService.ts:1303 🎮 Action sent: play {piece_indices: Array(1), player_name: 'Andy', play_value: 6}
+TurnUI.jsx:43 [TurnUI] Building playerPieces from currentTurnPlays: (2) [{…}, {…}]
+TurnUI.jsx:47 [TurnUI] Turn play 1: {player: 'Bot 3', hasPieces: true, hasCards: false, playType: 'SINGLE', isValid: true, …}
+TurnUI.jsx:47 [TurnUI] Turn play 2: {player: 'Bot 4', hasPieces: true, hasCards: false, playType: 'SINGLE', isValid: true, …}
+GameService.ts:1334 🎮 State Change: NETWORK_EVENT:PHASE_CHANGE
+GameService.ts:1335 Previous: {isConnected: true, roomId: '44A938', playerName: 'Andy', phase: 'turn', currentRound: 1, …}
+GameService.ts:1336 New: {isConnected: true, roomId: '44A938', playerName: 'Andy', phase: 'turn', currentRound: 1, …}
+ Diff: {players: {…}, myHand: {…}, currentPlayer: {…}, currentTurnPlays: {…}, isMyTurn: {…}, …}
+ [TurnUI] Building playerPieces from currentTurnPlays: (3) [{…}, {…}, {…}]
+ [TurnUI] Turn play 1: {player: 'Bot 3', hasPieces: true, hasCards: false, playType: 'SINGLE', isValid: true, …}
+ [TurnUI] Turn play 2: {player: 'Bot 4', hasPieces: true, hasCards: false, playType: 'SINGLE', isValid: true, …}
+ [TurnUI] Turn play 3: {player: 'Andy', hasPieces: true, hasCards: false, playType: 'SINGLE', isValid: true, …}
+ 🎮 State Change: NETWORK_EVENT:PHASE_CHANGE
+ Previous: {isConnected: true, roomId: '44A938', playerName: 'Andy', phase: 'turn', currentRound: 1, …}
+ New: {isConnected: true, roomId: '44A938', playerName: 'Andy', phase: 'turn', currentRound: 1, …}
+ Diff: {players: {…}, currentTurnPlays: {…}, lastEventSequence: {…}}
+ [TurnUI] Building playerPieces from currentTurnPlays: (4) [{…}, {…}, {…}, {…}]
+ [TurnUI] Turn play 1: {player: 'Bot 3', hasPieces: true, hasCards: false, playType: 'SINGLE', isValid: true, …}
+ [TurnUI] Turn play 2: {player: 'Bot 4', hasPieces: true, hasCards: false, playType: 'SINGLE', isValid: true, …}
+ [TurnUI] Turn play 3: {player: 'Andy', hasPieces: true, hasCards: false, playType: 'SINGLE', isValid: true, …}
+ [TurnUI] Turn play 4: {player: 'Bot 2', hasPieces: true, hasCards: false, playType: 'SINGLE', isValid: true, …}
+ [TurnContent] Determining pieces to reveal: {playType: 'SINGLE', lastWinner: 'Bot 3', playerPieces: {…}}
+ [determinePiecesToReveal] Input: {playerPieces: {…}, starterPlayType: 'SINGLE', starterName: 'Bot 3'}
+ [determinePiecesToReveal] Checking player: Bot 3 {pieces: Array(1), pieceCount: 1}
+ [determinePiecesToReveal] Bot 3 is the starter, revealing all pieces
+ [determinePiecesToReveal] Checking player: Bot 4 {pieces: Array(1), pieceCount: 1}
+ [doesPlayMatchStarterType] Input: {starterPlayType: 'SINGLE', pieceCount: 1, pieceDetails: '[{"kind":"ELEPHANT","color":"black","value":9}]'}
+ [getPlayType] Analyzing pieces: {count: 1, pieces: '[{"kind":"ELEPHANT","color":"black","value":9}]'}
+ [doesPlayMatchStarterType] Player play type: SINGLE
+ [doesPlayMatchStarterType] Single piece match, returning true
+ [determinePiecesToReveal] Bot 4 matches starter type: true
+ [determinePiecesToReveal] Checking player: Andy {pieces: Array(1), pieceCount: 1}
+ [doesPlayMatchStarterType] Input: {starterPlayType: 'SINGLE', pieceCount: 1, pieceDetails: '[{"kind":"ELEPHANT","color":"red","value":10}]'}
+ [getPlayType] Analyzing pieces: {count: 1, pieces: '[{"kind":"ELEPHANT","color":"red","value":10}]'}
+ [doesPlayMatchStarterType] Player play type: SINGLE
+ [doesPlayMatchStarterType] Single piece match, returning true
+ [determinePiecesToReveal] Andy matches starter type: true
+ [determinePiecesToReveal] Checking player: Bot 2 {pieces: Array(1), pieceCount: 1}
+ [doesPlayMatchStarterType] Input: {starterPlayType: 'SINGLE', pieceCount: 1, pieceDetails: '[{"kind":"ADVISOR","color":"red","value":12}]'}
+ [getPlayType] Analyzing pieces: {count: 1, pieces: '[{"kind":"ADVISOR","color":"red","value":12}]'}
+ [doesPlayMatchStarterType] Player play type: SINGLE
+ [doesPlayMatchStarterType] Single piece match, returning true
+ [determinePiecesToReveal] Bot 2 matches starter type: true
+ [determinePiecesToReveal] Final pieces to reveal: (4) ['Bot 3-0', 'Bot 4-0', 'Andy-0', 'Bot 2-0']
+ [TurnContent] Pieces to reveal: Set(4) {'Bot 3-0', 'Bot 4-0', 'Andy-0', 'Bot 2-0'}
+ [TurnUI] Building playerPieces from currentTurnPlays: (4) [{…}, {…}, {…}, {…}]
+ [TurnUI] Turn play 1: {player: 'Bot 3', hasPieces: true, hasCards: false, playType: 'SINGLE', isValid: true, …}
+ [TurnUI] Turn play 2: {player: 'Bot 4', hasPieces: true, hasCards: false, playType: 'SINGLE', isValid: true, …}
+ [TurnUI] Turn play 3: {player: 'Andy', hasPieces: true, hasCards: false, playType: 'SINGLE', isValid: true, …}
+ [TurnUI] Turn play 4: {player: 'Bot 2', hasPieces: true, hasCards: false, playType: 'SINGLE', isValid: true, …}
+ 🎮 State Change: NETWORK_EVENT:PHASE_CHANGE
+ Previous: {isConnected: true, roomId: '44A938', playerName: 'Andy', phase: 'turn', currentRound: 1, …}
+ New: {isConnected: true, roomId: '44A938', playerName: 'Andy', phase: 'turn', currentRound: 1, …}
+ Diff: {players: {…}, lastEventSequence: {…}, pileCounts: {…}}
+ [TurnUI] Building playerPieces from currentTurnPlays: (4) [{…}, {…}, {…}, {…}]
+ [TurnUI] Turn play 1: {player: 'Bot 3', hasPieces: true, hasCards: false, playType: 'SINGLE', isValid: true, …}
+ [TurnUI] Turn play 2: {player: 'Bot 4', hasPieces: true, hasCards: false, playType: 'SINGLE', isValid: true, …}
+ [TurnUI] Turn play 3: {player: 'Andy', hasPieces: true, hasCards: false, playType: 'SINGLE', isValid: true, …}
+ [TurnUI] Turn play 4: {player: 'Bot 2', hasPieces: true, hasCards: false, playType: 'SINGLE', isValid: true, …}
+ 🎮 State Change: NETWORK_EVENT:TURN_COMPLETE
+ Previous: {isConnected: true, roomId: '44A938', playerName: 'Andy', phase: 'turn', currentRound: 1, …}
+ New: {isConnected: true, roomId: '44A938', playerName: 'Andy', phase: 'turn_results', currentRound: 1, …}
+ Diff: {phase: {…}, players: {…}, winningPlay: {…}, turnNumber: {…}, lastEventSequence: {…}}
+ [TurnResultsUI] Building playerPlays from currentTurnPlays: (4) [{…}, {…}, {…}, {…}]
+ [TurnResultsUI] Turn play 1: {player: 'Bot 3', hasPieces: true, hasCards: false, playType: 'SINGLE', isValid: true, …}
+ [TurnResultsUI] Turn play 2: {player: 'Bot 4', hasPieces: true, hasCards: false, playType: 'SINGLE', isValid: true, …}
+ [TurnResultsUI] Turn play 3: {player: 'Andy', hasPieces: true, hasCards: false, playType: 'SINGLE', isValid: true, …}
+ [TurnResultsUI] Turn play 4: {player: 'Bot 2', hasPieces: true, hasCards: false, playType: 'SINGLE', isValid: true, …}
+ [TurnResultsUI] Extracting starter info: {currentTurnPlays: Array(4), starterPlay: undefined, starterName: 'Bot 3', starterPlayType: 'SINGLE', winningPlay: {…}}
+ [TurnResultsContent] Determining pieces to reveal: {effectiveStarterPlayType: 'SINGLE', starterName: 'Bot 3', winner: 'Bot 3', playerPiecesMap: {…}}
+ [determinePiecesToReveal] Input: {playerPieces: {…}, starterPlayType: 'SINGLE', starterName: 'Bot 3'}
+ [determinePiecesToReveal] Checking player: Andy {pieces: Array(1), pieceCount: 1}
+ [doesPlayMatchStarterType] Input: {starterPlayType: 'SINGLE', pieceCount: 1, pieceDetails: '[{"kind":"ELEPHANT","color":"red","value":10}]'}
+ [getPlayType] Analyzing pieces: {count: 1, pieces: '[{"kind":"ELEPHANT","color":"red","value":10}]'}
+ [doesPlayMatchStarterType] Player play type: SINGLE
+ [doesPlayMatchStarterType] Single piece match, returning true
+ [determinePiecesToReveal] Andy matches starter type: true
+ [determinePiecesToReveal] Checking player: Bot 2 {pieces: Array(1), pieceCount: 1}
+ [doesPlayMatchStarterType] Input: {starterPlayType: 'SINGLE', pieceCount: 1, pieceDetails: '[{"kind":"ADVISOR","color":"red","value":12}]'}
+ [getPlayType] Analyzing pieces: {count: 1, pieces: '[{"kind":"ADVISOR","color":"red","value":12}]'}
+ [doesPlayMatchStarterType] Player play type: SINGLE
+ [doesPlayMatchStarterType] Single piece match, returning true
+ [determinePiecesToReveal] Bot 2 matches starter type: true
+ [determinePiecesToReveal] Checking player: Bot 3 {pieces: Array(1), pieceCount: 1}
+ [determinePiecesToReveal] Bot 3 is the starter, revealing all pieces
+ [determinePiecesToReveal] Checking player: Bot 4 {pieces: Array(1), pieceCount: 1}
+ [doesPlayMatchStarterType] Input: {starterPlayType: 'SINGLE', pieceCount: 1, pieceDetails: '[{"kind":"ELEPHANT","color":"black","value":9}]'}
+ [getPlayType] Analyzing pieces: {count: 1, pieces: '[{"kind":"ELEPHANT","color":"black","value":9}]'}
+ [doesPlayMatchStarterType] Player play type: SINGLE
+ [doesPlayMatchStarterType] Single piece match, returning true
+ [determinePiecesToReveal] Bot 4 matches starter type: true
+ [determinePiecesToReveal] Final pieces to reveal: (4) ['Andy-0', 'Bot 2-0', 'Bot 3-0', 'Bot 4-0']
+ [TurnResultsContent] Pieces to reveal: Set(4) {'Andy-0', 'Bot 2-0', 'Bot 3-0', 'Bot 4-0'}
+ [TurnResultsUI] Building playerPlays from currentTurnPlays: (4) [{…}, {…}, {…}, {…}]
+ [TurnResultsUI] Turn play 1: {player: 'Bot 3', hasPieces: true, hasCards: false, playType: 'SINGLE', isValid: true, …}
+ [TurnResultsUI] Turn play 2: {player: 'Bot 4', hasPieces: true, hasCards: false, playType: 'SINGLE', isValid: true, …}
+ [TurnResultsUI] Turn play 3: {player: 'Andy', hasPieces: true, hasCards: false, playType: 'SINGLE', isValid: true, …}
+ [TurnResultsUI] Turn play 4: {player: 'Bot 2', hasPieces: true, hasCards: false, playType: 'SINGLE', isValid: true, …}
+ [TurnResultsUI] Extracting starter info: {currentTurnPlays: Array(4), starterPlay: undefined, starterName: 'Bot 3', starterPlayType: 'SINGLE', winningPlay: {…}}
+ [TurnResultsContent] Determining pieces to reveal: {effectiveStarterPlayType: 'SINGLE', starterName: 'Bot 3', winner: 'Bot 3', playerPiecesMap: {…}}
+ [determinePiecesToReveal] Input: {playerPieces: {…}, starterPlayType: 'SINGLE', starterName: 'Bot 3'}
+ [determinePiecesToReveal] Checking player: Andy {pieces: Array(1), pieceCount: 1}
+ [doesPlayMatchStarterType] Input: {starterPlayType: 'SINGLE', pieceCount: 1, pieceDetails: '[{"kind":"ELEPHANT","color":"red","value":10}]'}
+ [getPlayType] Analyzing pieces: {count: 1, pieces: '[{"kind":"ELEPHANT","color":"red","value":10}]'}
+ [doesPlayMatchStarterType] Player play type: SINGLE
+ [doesPlayMatchStarterType] Single piece match, returning true
+ [determinePiecesToReveal] Andy matches starter type: true
+ [determinePiecesToReveal] Checking player: Bot 2 {pieces: Array(1), pieceCount: 1}
+ [doesPlayMatchStarterType] Input: {starterPlayType: 'SINGLE', pieceCount: 1, pieceDetails: '[{"kind":"ADVISOR","color":"red","value":12}]'}
+ [getPlayType] Analyzing pieces: {count: 1, pieces: '[{"kind":"ADVISOR","color":"red","value":12}]'}
+ [doesPlayMatchStarterType] Player play type: SINGLE
+ [doesPlayMatchStarterType] Single piece match, returning true
+ [determinePiecesToReveal] Bot 2 matches starter type: true
+ [determinePiecesToReveal] Checking player: Bot 3 {pieces: Array(1), pieceCount: 1}
+ [determinePiecesToReveal] Bot 3 is the starter, revealing all pieces
+ [determinePiecesToReveal] Checking player: Bot 4 {pieces: Array(1), pieceCount: 1}
+ [doesPlayMatchStarterType] Input: {starterPlayType: 'SINGLE', pieceCount: 1, pieceDetails: '[{"kind":"ELEPHANT","color":"black","value":9}]'}
+ [getPlayType] Analyzing pieces: {count: 1, pieces: '[{"kind":"ELEPHANT","color":"black","value":9}]'}
+ [doesPlayMatchStarterType] Player play type: SINGLE
+ [doesPlayMatchStarterType] Single piece match, returning true
+ [determinePiecesToReveal] Bot 4 matches starter type: true
+ [determinePiecesToReveal] Final pieces to reveal: (4) ['Andy-0', 'Bot 2-0', 'Bot 3-0', 'Bot 4-0']
+ [TurnResultsContent] Pieces to reveal: Set(4) {'Andy-0', 'Bot 2-0', 'Bot 3-0', 'Bot 4-0'}
+ Turn results continue requested
+ 🎮 State Change: NETWORK_EVENT:PHASE_CHANGE
+ Previous: {isConnected: true, roomId: '44A938', playerName: 'Andy', phase: 'turn_results', currentRound: 1, …}
+ New: {isConnected: true, roomId: '44A938', playerName: 'Andy', phase: 'turn', currentRound: 1, …}
+ Diff: {phase: {…}, players: {…}, currentPlayer: {…}, currentTurnPlays: {…}, requiredPieceCount: {…}, …}
+ [TurnUI] Building playerPieces from currentTurnPlays: []
+ [TurnUI] No valid plays found, returning empty play type
+ 🎮 State Change: NETWORK_EVENT:PHASE_CHANGE
+ Previous: {isConnected: true, roomId: '44A938', playerName: 'Andy', phase: 'turn', currentRound: 1, …}
+ New: {isConnected: true, roomId: '44A938', playerName: 'Andy', phase: 'turn', currentRound: 1, …}
+ Diff: {players: {…}, currentPlayer: {…}, currentTurnPlays: {…}, requiredPieceCount: {…}, lastEventSequence: {…}}
+ [TurnUI] Building playerPieces from currentTurnPlays: [{…}]
+ [TurnUI] Turn play 1: {player: 'Bot 3', hasPieces: true, hasCards: false, playType: 'SINGLE', isValid: true, …}
+ 🎮 State Change: NETWORK_EVENT:PHASE_CHANGE
+ Previous: {isConnected: true, roomId: '44A938', playerName: 'Andy', phase: 'turn', currentRound: 1, …}
+ New: {isConnected: true, roomId: '44A938', playerName: 'Andy', phase: 'turn', currentRound: 1, …}
+ Diff: {players: {…}, currentPlayer: {…}, currentTurnPlays: {…}, isMyTurn: {…}, allowedActions: {…}, …}
+ [TurnUI] Building playerPieces from currentTurnPlays: (2) [{…}, {…}]
+ [TurnUI] Turn play 1: {player: 'Bot 3', hasPieces: true, hasCards: false, playType: 'SINGLE', isValid: true, …}
+ [TurnUI] Turn play 2: {player: 'Bot 4', hasPieces: true, hasCards: false, playType: 'SINGLE', isValid: true, …}
+ 🎮 Action sent: play {piece_indices: Array(1), player_name: 'Andy', play_value: 8}
+ [TurnUI] Building playerPieces from currentTurnPlays: (2) [{…}, {…}]
+ [TurnUI] Turn play 1: {player: 'Bot 3', hasPieces: true, hasCards: false, playType: 'SINGLE', isValid: true, …}
+ [TurnUI] Turn play 2: {player: 'Bot 4', hasPieces: true, hasCards: false, playType: 'SINGLE', isValid: true, …}
+ 🎮 State Change: NETWORK_EVENT:PHASE_CHANGE
+ Previous: {isConnected: true, roomId: '44A938', playerName: 'Andy', phase: 'turn', currentRound: 1, …}
+ New: {isConnected: true, roomId: '44A938', playerName: 'Andy', phase: 'turn', currentRound: 1, …}
+ Diff: {players: {…}, myHand: {…}, currentPlayer: {…}, currentTurnPlays: {…}, isMyTurn: {…}, …}
+ [TurnUI] Building playerPieces from currentTurnPlays: (3) [{…}, {…}, {…}]
+ [TurnUI] Turn play 1: {player: 'Bot 3', hasPieces: true, hasCards: false, playType: 'SINGLE', isValid: true, …}
+ [TurnUI] Turn play 2: {player: 'Bot 4', hasPieces: true, hasCards: false, playType: 'SINGLE', isValid: true, …}
+ [TurnUI] Turn play 3: {player: 'Andy', hasPieces: true, hasCards: false, playType: 'SINGLE', isValid: true, …}
+ 🎮 State Change: NETWORK_EVENT:PHASE_CHANGE
+ Previous: {isConnected: true, roomId: '44A938', playerName: 'Andy', phase: 'turn', currentRound: 1, …}
+ New: {isConnected: true, roomId: '44A938', playerName: 'Andy', phase: 'turn', currentRound: 1, …}
+ Diff: {players: {…}, currentTurnPlays: {…}, lastEventSequence: {…}}
+ [TurnUI] Building playerPieces from currentTurnPlays: (4) [{…}, {…}, {…}, {…}]
+ [TurnUI] Turn play 1: {player: 'Bot 3', hasPieces: true, hasCards: false, playType: 'SINGLE', isValid: true, …}
+ [TurnUI] Turn play 2: {player: 'Bot 4', hasPieces: true, hasCards: false, playType: 'SINGLE', isValid: true, …}
+ [TurnUI] Turn play 3: {player: 'Andy', hasPieces: true, hasCards: false, playType: 'SINGLE', isValid: true, …}
+ [TurnUI] Turn play 4: {player: 'Bot 2', hasPieces: true, hasCards: false, playType: 'SINGLE', isValid: true, …}
+ [TurnContent] Determining pieces to reveal: {playType: 'SINGLE', lastWinner: 'Bot 3', playerPieces: {…}}
+ [determinePiecesToReveal] Input: {playerPieces: {…}, starterPlayType: 'SINGLE', starterName: 'Bot 3'}
+ [determinePiecesToReveal] Checking player: Bot 3 {pieces: Array(1), pieceCount: 1}
+ [determinePiecesToReveal] Bot 3 is the starter, revealing all pieces
+ [determinePiecesToReveal] Checking player: Bot 4 {pieces: Array(1), pieceCount: 1}
+ [doesPlayMatchStarterType] Input: {starterPlayType: 'SINGLE', pieceCount: 1, pieceDetails: '[{"kind":"CHARIOT","color":"black","value":7}]'}
+ [getPlayType] Analyzing pieces: {count: 1, pieces: '[{"kind":"CHARIOT","color":"black","value":7}]'}
+ [doesPlayMatchStarterType] Player play type: SINGLE
+ [doesPlayMatchStarterType] Single piece match, returning true
+ [determinePiecesToReveal] Bot 4 matches starter type: true
+ [determinePiecesToReveal] Checking player: Andy {pieces: Array(1), pieceCount: 1}
+ [doesPlayMatchStarterType] Input: {starterPlayType: 'SINGLE', pieceCount: 1, pieceDetails: '[{"kind":"CHARIOT","color":"red","value":8}]'}
+ [getPlayType] Analyzing pieces: {count: 1, pieces: '[{"kind":"CHARIOT","color":"red","value":8}]'}
+ [doesPlayMatchStarterType] Player play type: SINGLE
+ [doesPlayMatchStarterType] Single piece match, returning true
+ [determinePiecesToReveal] Andy matches starter type: true
+ [determinePiecesToReveal] Checking player: Bot 2 {pieces: Array(1), pieceCount: 1}
+ [doesPlayMatchStarterType] Input: {starterPlayType: 'SINGLE', pieceCount: 1, pieceDetails: '[{"kind":"ADVISOR","color":"black","value":11}]'}
+ [getPlayType] Analyzing pieces: {count: 1, pieces: '[{"kind":"ADVISOR","color":"black","value":11}]'}
+ [doesPlayMatchStarterType] Player play type: SINGLE
+ [doesPlayMatchStarterType] Single piece match, returning true
+ [determinePiecesToReveal] Bot 2 matches starter type: true
+ [determinePiecesToReveal] Final pieces to reveal: (4) ['Bot 3-0', 'Bot 4-0', 'Andy-0', 'Bot 2-0']
+ [TurnContent] Pieces to reveal: Set(4) {'Bot 3-0', 'Bot 4-0', 'Andy-0', 'Bot 2-0'}
+ 🎮 State Change: NETWORK_EVENT:PHASE_CHANGE
+ Previous: {isConnected: true, roomId: '44A938', playerName: 'Andy', phase: 'turn', currentRound: 1, …}
+ New: {isConnected: true, roomId: '44A938', playerName: 'Andy', phase: 'turn', currentRound: 1, …}
+ Diff: {players: {…}, lastEventSequence: {…}, pileCounts: {…}}
+ [TurnUI] Building playerPieces from currentTurnPlays: (4) [{…}, {…}, {…}, {…}]
+ [TurnUI] Turn play 1: {player: 'Bot 3', hasPieces: true, hasCards: false, playType: 'SINGLE', isValid: true, …}
+ [TurnUI] Turn play 2: {player: 'Bot 4', hasPieces: true, hasCards: false, playType: 'SINGLE', isValid: true, …}
+ [TurnUI] Turn play 3: {player: 'Andy', hasPieces: true, hasCards: false, playType: 'SINGLE', isValid: true, …}
+ [TurnUI] Turn play 4: {player: 'Bot 2', hasPieces: true, hasCards: false, playType: 'SINGLE', isValid: true, …}
+ 🎮 State Change: NETWORK_EVENT:TURN_COMPLETE
+ Previous: {isConnected: true, roomId: '44A938', playerName: 'Andy', phase: 'turn', currentRound: 1, …}
+ New: {isConnected: true, roomId: '44A938', playerName: 'Andy', phase: 'turn_results', currentRound: 1, …}
+ Diff: {phase: {…}, players: {…}, winningPlay: {…}, turnNumber: {…}, lastEventSequence: {…}}
+ [TurnResultsUI] Building playerPlays from currentTurnPlays: (4) [{…}, {…}, {…}, {…}]
+ [TurnResultsUI] Turn play 1: {player: 'Bot 3', hasPieces: true, hasCards: false, playType: 'SINGLE', isValid: true, …}
+ [TurnResultsUI] Turn play 2: {player: 'Bot 4', hasPieces: true, hasCards: false, playType: 'SINGLE', isValid: true, …}
+ [TurnResultsUI] Turn play 3: {player: 'Andy', hasPieces: true, hasCards: false, playType: 'SINGLE', isValid: true, …}
+ [TurnResultsUI] Turn play 4: {player: 'Bot 2', hasPieces: true, hasCards: false, playType: 'SINGLE', isValid: true, …}
+ [TurnResultsUI] Extracting starter info: {currentTurnPlays: Array(4), starterPlay: undefined, starterName: 'Bot 3', starterPlayType: 'SINGLE', winningPlay: {…}}
+ [TurnResultsContent] Determining pieces to reveal: {effectiveStarterPlayType: 'SINGLE', starterName: 'Bot 3', winner: 'Bot 3', playerPiecesMap: {…}}
+ [determinePiecesToReveal] Input: {playerPieces: {…}, starterPlayType: 'SINGLE', starterName: 'Bot 3'}
+ [determinePiecesToReveal] Checking player: Andy {pieces: Array(1), pieceCount: 1}
+ [doesPlayMatchStarterType] Input: {starterPlayType: 'SINGLE', pieceCount: 1, pieceDetails: '[{"kind":"CHARIOT","color":"red","value":8}]'}
+ [getPlayType] Analyzing pieces: {count: 1, pieces: '[{"kind":"CHARIOT","color":"red","value":8}]'}
+ [doesPlayMatchStarterType] Player play type: SINGLE
+ [doesPlayMatchStarterType] Single piece match, returning true
+ [determinePiecesToReveal] Andy matches starter type: true
+ [determinePiecesToReveal] Checking player: Bot 2 {pieces: Array(1), pieceCount: 1}
+ [doesPlayMatchStarterType] Input: {starterPlayType: 'SINGLE', pieceCount: 1, pieceDetails: '[{"kind":"ADVISOR","color":"black","value":11}]'}
+ [getPlayType] Analyzing pieces: {count: 1, pieces: '[{"kind":"ADVISOR","color":"black","value":11}]'}
+ [doesPlayMatchStarterType] Player play type: SINGLE
+ [doesPlayMatchStarterType] Single piece match, returning true
+ [determinePiecesToReveal] Bot 2 matches starter type: true
+ [determinePiecesToReveal] Checking player: Bot 3 {pieces: Array(1), pieceCount: 1}
+ [determinePiecesToReveal] Bot 3 is the starter, revealing all pieces
+ [determinePiecesToReveal] Checking player: Bot 4 {pieces: Array(1), pieceCount: 1}
+ [doesPlayMatchStarterType] Input: {starterPlayType: 'SINGLE', pieceCount: 1, pieceDetails: '[{"kind":"CHARIOT","color":"black","value":7}]'}
+ [getPlayType] Analyzing pieces: {count: 1, pieces: '[{"kind":"CHARIOT","color":"black","value":7}]'}
+ [doesPlayMatchStarterType] Player play type: SINGLE
+ [doesPlayMatchStarterType] Single piece match, returning true
+ [determinePiecesToReveal] Bot 4 matches starter type: true
+ [determinePiecesToReveal] Final pieces to reveal: (4) ['Andy-0', 'Bot 2-0', 'Bot 3-0', 'Bot 4-0']
+ [TurnResultsContent] Pieces to reveal: Set(4) {'Andy-0', 'Bot 2-0', 'Bot 3-0', 'Bot 4-0'}
+ Turn results continue requested
+ [TurnResultsUI] Building playerPlays from currentTurnPlays: (4) [{…}, {…}, {…}, {…}]
+ [TurnResultsUI] Turn play 1: {player: 'Bot 3', hasPieces: true, hasCards: false, playType: 'SINGLE', isValid: true, …}
+ [TurnResultsUI] Turn play 2: {player: 'Bot 4', hasPieces: true, hasCards: false, playType: 'SINGLE', isValid: true, …}
+ [TurnResultsUI] Turn play 3: {player: 'Andy', hasPieces: true, hasCards: false, playType: 'SINGLE', isValid: true, …}
+ [TurnResultsUI] Turn play 4: {player: 'Bot 2', hasPieces: true, hasCards: false, playType: 'SINGLE', isValid: true, …}
+ [TurnResultsUI] Extracting starter info: {currentTurnPlays: Array(4), starterPlay: undefined, starterName: 'Bot 3', starterPlayType: 'SINGLE', winningPlay: {…}}
+ [TurnResultsContent] Determining pieces to reveal: {effectiveStarterPlayType: 'SINGLE', starterName: 'Bot 3', winner: 'Bot 3', playerPiecesMap: {…}}
+ [determinePiecesToReveal] Input: {playerPieces: {…}, starterPlayType: 'SINGLE', starterName: 'Bot 3'}
+ [determinePiecesToReveal] Checking player: Andy {pieces: Array(1), pieceCount: 1}
+ [doesPlayMatchStarterType] Input: {starterPlayType: 'SINGLE', pieceCount: 1, pieceDetails: '[{"kind":"CHARIOT","color":"red","value":8}]'}
+ [getPlayType] Analyzing pieces: {count: 1, pieces: '[{"kind":"CHARIOT","color":"red","value":8}]'}
+ [doesPlayMatchStarterType] Player play type: SINGLE
+ [doesPlayMatchStarterType] Single piece match, returning true
+ [determinePiecesToReveal] Andy matches starter type: true
+ [determinePiecesToReveal] Checking player: Bot 2 {pieces: Array(1), pieceCount: 1}
+ [doesPlayMatchStarterType] Input: {starterPlayType: 'SINGLE', pieceCount: 1, pieceDetails: '[{"kind":"ADVISOR","color":"black","value":11}]'}
+ [getPlayType] Analyzing pieces: {count: 1, pieces: '[{"kind":"ADVISOR","color":"black","value":11}]'}
+ [doesPlayMatchStarterType] Player play type: SINGLE
+ [doesPlayMatchStarterType] Single piece match, returning true
+ [determinePiecesToReveal] Bot 2 matches starter type: true
+ [determinePiecesToReveal] Checking player: Bot 3 {pieces: Array(1), pieceCount: 1}
+ [determinePiecesToReveal] Bot 3 is the starter, revealing all pieces
+ [determinePiecesToReveal] Checking player: Bot 4 {pieces: Array(1), pieceCount: 1}
+ [doesPlayMatchStarterType] Input: {starterPlayType: 'SINGLE', pieceCount: 1, pieceDetails: '[{"kind":"CHARIOT","color":"black","value":7}]'}
+ [getPlayType] Analyzing pieces: {count: 1, pieces: '[{"kind":"CHARIOT","color":"black","value":7}]'}
+ [doesPlayMatchStarterType] Player play type: SINGLE
+ [doesPlayMatchStarterType] Single piece match, returning true
+ [determinePiecesToReveal] Bot 4 matches starter type: true
+ [determinePiecesToReveal] Final pieces to reveal: (4) ['Andy-0', 'Bot 2-0', 'Bot 3-0', 'Bot 4-0']
+ [TurnResultsContent] Pieces to reveal: Set(4) {'Andy-0', 'Bot 2-0', 'Bot 3-0', 'Bot 4-0'}
+ 🎮 State Change: NETWORK_EVENT:PHASE_CHANGE
+ Previous: {isConnected: true, roomId: '44A938', playerName: 'Andy', phase: 'turn_results', currentRound: 1, …}
+ New: {isConnected: true, roomId: '44A938', playerName: 'Andy', phase: 'turn', currentRound: 1, …}
+ Diff: {phase: {…}, players: {…}, currentPlayer: {…}, currentTurnPlays: {…}, requiredPieceCount: {…}, …}
+ [TurnUI] Building playerPieces from currentTurnPlays: []
+ [TurnUI] No valid plays found, returning empty play type
+ [TurnUI] Building playerPieces from currentTurnPlays: []
+ [TurnUI] No valid plays found, returning empty play type
+ 🎮 State Change: NETWORK_EVENT:PHASE_CHANGE
+ Previous: {isConnected: true, roomId: '44A938', playerName: 'Andy', phase: 'turn', currentRound: 1, …}
+ New: {isConnected: true, roomId: '44A938', playerName: 'Andy', phase: 'turn', currentRound: 1, …}
+ Diff: {players: {…}, currentPlayer: {…}, currentTurnPlays: {…}, requiredPieceCount: {…}, lastEventSequence: {…}}
+ [TurnUI] Building playerPieces from currentTurnPlays: [{…}]
+ [TurnUI] Turn play 1: {player: 'Bot 3', hasPieces: true, hasCards: false, playType: 'SINGLE', isValid: true, …}
+ 🎮 State Change: NETWORK_EVENT:PHASE_CHANGE
+ Previous: {isConnected: true, roomId: '44A938', playerName: 'Andy', phase: 'turn', currentRound: 1, …}
+ New: {isConnected: true, roomId: '44A938', playerName: 'Andy', phase: 'turn', currentRound: 1, …}
+ Diff: {players: {…}, currentPlayer: {…}, currentTurnPlays: {…}, isMyTurn: {…}, allowedActions: {…}, …}
+ [TurnUI] Building playerPieces from currentTurnPlays: (2) [{…}, {…}]
+ [TurnUI] Turn play 1: {player: 'Bot 3', hasPieces: true, hasCards: false, playType: 'SINGLE', isValid: true, …}
+ [TurnUI] Turn play 2: {player: 'Bot 4', hasPieces: true, hasCards: false, playType: 'SINGLE', isValid: true, …}
+ 🎮 Action sent: play {piece_indices: Array(1), player_name: 'Andy', play_value: 4}
+ [TurnUI] Building playerPieces from currentTurnPlays: (2) [{…}, {…}]
+ [TurnUI] Turn play 1: {player: 'Bot 3', hasPieces: true, hasCards: false, playType: 'SINGLE', isValid: true, …}
+ [TurnUI] Turn play 2: {player: 'Bot 4', hasPieces: true, hasCards: false, playType: 'SINGLE', isValid: true, …}
+ 🎮 State Change: NETWORK_EVENT:PHASE_CHANGE
+ Previous: {isConnected: true, roomId: '44A938', playerName: 'Andy', phase: 'turn', currentRound: 1, …}
+ New: {isConnected: true, roomId: '44A938', playerName: 'Andy', phase: 'turn', currentRound: 1, …}
+ Diff: {players: {…}, myHand: {…}, currentPlayer: {…}, currentTurnPlays: {…}, isMyTurn: {…}, …}
+ [TurnUI] Building playerPieces from currentTurnPlays: (3) [{…}, {…}, {…}]
+ [TurnUI] Turn play 1: {player: 'Bot 3', hasPieces: true, hasCards: false, playType: 'SINGLE', isValid: true, …}
+ [TurnUI] Turn play 2: {player: 'Bot 4', hasPieces: true, hasCards: false, playType: 'SINGLE', isValid: true, …}
+ [TurnUI] Turn play 3: {player: 'Andy', hasPieces: true, hasCards: false, playType: 'SINGLE', isValid: true, …}
+ 🎮 State Change: NETWORK_EVENT:PHASE_CHANGE
+ Previous: {isConnected: true, roomId: '44A938', playerName: 'Andy', phase: 'turn', currentRound: 1, …}
+ New: {isConnected: true, roomId: '44A938', playerName: 'Andy', phase: 'turn', currentRound: 1, …}
+ Diff: {players: {…}, currentTurnPlays: {…}, lastEventSequence: {…}}
+ [TurnUI] Building playerPieces from currentTurnPlays: (4) [{…}, {…}, {…}, {…}]
+ [TurnUI] Turn play 1: {player: 'Bot 3', hasPieces: true, hasCards: false, playType: 'SINGLE', isValid: true, …}
+ [TurnUI] Turn play 2: {player: 'Bot 4', hasPieces: true, hasCards: false, playType: 'SINGLE', isValid: true, …}
+ [TurnUI] Turn play 3: {player: 'Andy', hasPieces: true, hasCards: false, playType: 'SINGLE', isValid: true, …}
+ [TurnUI] Turn play 4: {player: 'Bot 2', hasPieces: true, hasCards: false, playType: 'SINGLE', isValid: true, …}
+ [TurnContent] Determining pieces to reveal: {playType: 'SINGLE', lastWinner: 'Bot 3', playerPieces: {…}}
+ [determinePiecesToReveal] Input: {playerPieces: {…}, starterPlayType: 'SINGLE', starterName: 'Bot 3'}
+ [determinePiecesToReveal] Checking player: Bot 3 {pieces: Array(1), pieceCount: 1}
+ [determinePiecesToReveal] Bot 3 is the starter, revealing all pieces
+ [determinePiecesToReveal] Checking player: Bot 4 {pieces: Array(1), pieceCount: 1}
+ [doesPlayMatchStarterType] Input: {starterPlayType: 'SINGLE', pieceCount: 1, pieceDetails: '[{"kind":"HORSE","color":"black","value":5}]'}
+ [getPlayType] Analyzing pieces: {count: 1, pieces: '[{"kind":"HORSE","color":"black","value":5}]'}
+ [doesPlayMatchStarterType] Player play type: SINGLE
+ [doesPlayMatchStarterType] Single piece match, returning true
+ [determinePiecesToReveal] Bot 4 matches starter type: true
+ [determinePiecesToReveal] Checking player: Andy {pieces: Array(1), pieceCount: 1}
+ [doesPlayMatchStarterType] Input: {starterPlayType: 'SINGLE', pieceCount: 1, pieceDetails: '[{"kind":"CANNON","color":"red","value":4}]'}
+ [getPlayType] Analyzing pieces: {count: 1, pieces: '[{"kind":"CANNON","color":"red","value":4}]'}
+ [doesPlayMatchStarterType] Player play type: SINGLE
+ [doesPlayMatchStarterType] Single piece match, returning true
+ [determinePiecesToReveal] Andy matches starter type: true
+ [determinePiecesToReveal] Checking player: Bot 2 {pieces: Array(1), pieceCount: 1}
+ [doesPlayMatchStarterType] Input: {starterPlayType: 'SINGLE', pieceCount: 1, pieceDetails: '[{"kind":"ELEPHANT","color":"black","value":9}]'}
+ [getPlayType] Analyzing pieces: {count: 1, pieces: '[{"kind":"ELEPHANT","color":"black","value":9}]'}
+ [doesPlayMatchStarterType] Player play type: SINGLE
+ [doesPlayMatchStarterType] Single piece match, returning true
+ [determinePiecesToReveal] Bot 2 matches starter type: true
+ [determinePiecesToReveal] Final pieces to reveal: (4) ['Bot 3-0', 'Bot 4-0', 'Andy-0', 'Bot 2-0']
+ [TurnContent] Pieces to reveal: Set(4) {'Bot 3-0', 'Bot 4-0', 'Andy-0', 'Bot 2-0'}
+ 🎮 State Change: NETWORK_EVENT:PHASE_CHANGE
+ Previous: {isConnected: true, roomId: '44A938', playerName: 'Andy', phase: 'turn', currentRound: 1, …}
+ New: {isConnected: true, roomId: '44A938', playerName: 'Andy', phase: 'turn', currentRound: 1, …}
+ Diff: {players: {…}, lastEventSequence: {…}, pileCounts: {…}}
+ [TurnUI] Building playerPieces from currentTurnPlays: (4) [{…}, {…}, {…}, {…}]
+ [TurnUI] Turn play 1: {player: 'Bot 3', hasPieces: true, hasCards: false, playType: 'SINGLE', isValid: true, …}
+ [TurnUI] Turn play 2: {player: 'Bot 4', hasPieces: true, hasCards: false, playType: 'SINGLE', isValid: true, …}
+ [TurnUI] Turn play 3: {player: 'Andy', hasPieces: true, hasCards: false, playType: 'SINGLE', isValid: true, …}
+ [TurnUI] Turn play 4: {player: 'Bot 2', hasPieces: true, hasCards: false, playType: 'SINGLE', isValid: true, …}
+ 🎮 State Change: NETWORK_EVENT:TURN_COMPLETE
+ Previous: {isConnected: true, roomId: '44A938', playerName: 'Andy', phase: 'turn', currentRound: 1, …}
+ New: {isConnected: true, roomId: '44A938', playerName: 'Andy', phase: 'turn_results', currentRound: 1, …}
+ Diff: {phase: {…}, players: {…}, turnWinner: {…}, winningPlay: {…}, playerPiles: {…}, …}
+ [TurnResultsUI] Building playerPlays from currentTurnPlays: (4) [{…}, {…}, {…}, {…}]
+ [TurnResultsUI] Turn play 1: {player: 'Bot 3', hasPieces: true, hasCards: false, playType: 'SINGLE', isValid: true, …}
+ [TurnResultsUI] Turn play 2: {player: 'Bot 4', hasPieces: true, hasCards: false, playType: 'SINGLE', isValid: true, …}
+ [TurnResultsUI] Turn play 3: {player: 'Andy', hasPieces: true, hasCards: false, playType: 'SINGLE', isValid: true, …}
+ [TurnResultsUI] Turn play 4: {player: 'Bot 2', hasPieces: true, hasCards: false, playType: 'SINGLE', isValid: true, …}
+ [TurnResultsUI] Extracting starter info: {currentTurnPlays: Array(4), starterPlay: undefined, starterName: 'Bot 2', starterPlayType: 'SINGLE', winningPlay: {…}}
+ [TurnResultsContent] Determining pieces to reveal: {effectiveStarterPlayType: 'SINGLE', starterName: 'Bot 2', winner: 'Bot 2', playerPiecesMap: {…}}
+ [determinePiecesToReveal] Input: {playerPieces: {…}, starterPlayType: 'SINGLE', starterName: 'Bot 2'}
+ [determinePiecesToReveal] Checking player: Andy {pieces: Array(1), pieceCount: 1}
+ [doesPlayMatchStarterType] Input: {starterPlayType: 'SINGLE', pieceCount: 1, pieceDetails: '[{"kind":"CANNON","color":"red","value":4}]'}
+ [getPlayType] Analyzing pieces: {count: 1, pieces: '[{"kind":"CANNON","color":"red","value":4}]'}
+ [doesPlayMatchStarterType] Player play type: SINGLE
+ [doesPlayMatchStarterType] Single piece match, returning true
+ [determinePiecesToReveal] Andy matches starter type: true
+ [determinePiecesToReveal] Checking player: Bot 2 {pieces: Array(1), pieceCount: 1}
+ [determinePiecesToReveal] Bot 2 is the starter, revealing all pieces
+ [determinePiecesToReveal] Checking player: Bot 3 {pieces: Array(1), pieceCount: 1}
+ [doesPlayMatchStarterType] Input: {starterPlayType: 'SINGLE', pieceCount: 1, pieceDetails: '[{"kind":"HORSE","color":"black","value":5}]'}
+ [getPlayType] Analyzing pieces: {count: 1, pieces: '[{"kind":"HORSE","color":"black","value":5}]'}
+ [doesPlayMatchStarterType] Player play type: SINGLE
+ [doesPlayMatchStarterType] Single piece match, returning true
+ [determinePiecesToReveal] Bot 3 matches starter type: true
+ [determinePiecesToReveal] Checking player: Bot 4 {pieces: Array(1), pieceCount: 1}
+ [doesPlayMatchStarterType] Input: {starterPlayType: 'SINGLE', pieceCount: 1, pieceDetails: '[{"kind":"HORSE","color":"black","value":5}]'}
+ [getPlayType] Analyzing pieces: {count: 1, pieces: '[{"kind":"HORSE","color":"black","value":5}]'}
+ [doesPlayMatchStarterType] Player play type: SINGLE
+ [doesPlayMatchStarterType] Single piece match, returning true
+ [determinePiecesToReveal] Bot 4 matches starter type: true
+ [determinePiecesToReveal] Final pieces to reveal: (4) ['Andy-0', 'Bot 2-0', 'Bot 3-0', 'Bot 4-0']
+ [TurnResultsContent] Pieces to reveal: Set(4) {'Andy-0', 'Bot 2-0', 'Bot 3-0', 'Bot 4-0'}
+ Turn results continue requested
+ 🎮 State Change: NETWORK_EVENT:PHASE_CHANGE
+ Previous: {isConnected: true, roomId: '44A938', playerName: 'Andy', phase: 'turn_results', currentRound: 1, …}
+ New: {isConnected: true, roomId: '44A938', playerName: 'Andy', phase: 'turn', currentRound: 1, …}
+ Diff: {phase: {…}, players: {…}, currentTurnStarter: {…}, turnOrder: {…}, currentTurnPlays: {…}, …}
+ [TurnUI] Building playerPieces from currentTurnPlays: []
+ [TurnUI] No valid plays found, returning empty play type
+ 🎮 State Change: NETWORK_EVENT:PHASE_CHANGE
+ Previous: {isConnected: true, roomId: '44A938', playerName: 'Andy', phase: 'turn', currentRound: 1, …}
+ New: {isConnected: true, roomId: '44A938', playerName: 'Andy', phase: 'turn', currentRound: 1, …}
+ Diff: {players: {…}, currentPlayer: {…}, currentTurnPlays: {…}, requiredPieceCount: {…}, lastEventSequence: {…}}
+ [TurnUI] Building playerPieces from currentTurnPlays: [{…}]
+ [TurnUI] Turn play 1: {player: 'Bot 2', hasPieces: true, hasCards: false, playType: 'PAIR', isValid: true, …}
+ 🎮 State Change: NETWORK_EVENT:PHASE_CHANGE
+ Previous: {isConnected: true, roomId: '44A938', playerName: 'Andy', phase: 'turn', currentRound: 1, …}
+ New: {isConnected: true, roomId: '44A938', playerName: 'Andy', phase: 'turn', currentRound: 1, …}
+ Diff: {players: {…}, currentPlayer: {…}, currentTurnPlays: {…}, lastEventSequence: {…}}
+ [TurnUI] Building playerPieces from currentTurnPlays: (2) [{…}, {…}]
+ [TurnUI] Turn play 1: {player: 'Bot 2', hasPieces: true, hasCards: false, playType: 'PAIR', isValid: true, …}
+ [TurnUI] Turn play 2: {player: 'Bot 3', hasPieces: true, hasCards: false, playType: 'PAIR', isValid: true, …}
+ 🎮 State Change: NETWORK_EVENT:PHASE_CHANGE
+ Previous: {isConnected: true, roomId: '44A938', playerName: 'Andy', phase: 'turn', currentRound: 1, …}
+ New: {isConnected: true, roomId: '44A938', playerName: 'Andy', phase: 'turn', currentRound: 1, …}
+ Diff: {players: {…}, currentPlayer: {…}, currentTurnPlays: {…}, isMyTurn: {…}, allowedActions: {…}, …}
+ [TurnUI] Building playerPieces from currentTurnPlays: (3) [{…}, {…}, {…}]
+ [TurnUI] Turn play 1: {player: 'Bot 2', hasPieces: true, hasCards: false, playType: 'PAIR', isValid: true, …}
+ [TurnUI] Turn play 2: {player: 'Bot 3', hasPieces: true, hasCards: false, playType: 'PAIR', isValid: true, …}
+ [TurnUI] Turn play 3: {player: 'Bot 4', hasPieces: true, hasCards: false, playType: 'PAIR', isValid: true, …}
+ [TurnUI] Building playerPieces from currentTurnPlays: (3) [{…}, {…}, {…}]
+ [TurnUI] Turn play 1: {player: 'Bot 2', hasPieces: true, hasCards: false, playType: 'PAIR', isValid: true, …}
+ [TurnUI] Turn play 2: {player: 'Bot 3', hasPieces: true, hasCards: false, playType: 'PAIR', isValid: true, …}
+ [TurnUI] Turn play 3: {player: 'Bot 4', hasPieces: true, hasCards: false, playType: 'PAIR', isValid: true, …}

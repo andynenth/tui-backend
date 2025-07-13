@@ -40,6 +40,21 @@ export function TurnUI({
 }) {
   // Build player pieces from turn plays
   const playerPieces = {};
+  console.log('[TurnUI] Building playerPieces from currentTurnPlays:', currentTurnPlays);
+  
+  // Log details of each play
+  currentTurnPlays.forEach((play, index) => {
+    console.log(`[TurnUI] Turn play ${index + 1}:`, {
+      player: play.player,
+      hasPieces: !!play.pieces,
+      hasCards: !!play.cards,
+      playType: play.playType || play.play_type,
+      isValid: play.isValid,
+      pieces: play.pieces ? JSON.stringify(play.pieces) : 'null',
+      cards: play.cards ? JSON.stringify(play.cards) : 'null'
+    });
+  });
+  
   currentTurnPlays.forEach(play => {
     if (play.player && (play.pieces || play.cards)) {
       // Use pieces property (or cards for backward compatibility)
@@ -53,8 +68,17 @@ export function TurnUI({
     if (validPlays.length > 0) {
       const lastPlay = validPlays[validPlays.length - 1];
       // Check both camelCase and snake_case
-      return lastPlay.playType || lastPlay.play_type || '';
+      const extractedType = lastPlay.playType || lastPlay.play_type || '';
+      console.log('[TurnUI] Extracting play type:', {
+        playType,
+        currentTurnPlays,
+        validPlays,
+        lastPlay,
+        extractedType
+      });
+      return extractedType;
     }
+    console.log('[TurnUI] No valid plays found, returning empty play type');
     return '';
   })();
   

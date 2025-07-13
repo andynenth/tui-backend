@@ -10,6 +10,7 @@ module.exports = {
     'plugin:@typescript-eslint/recommended',
     'plugin:react/recommended',
     'plugin:react-hooks/recommended',
+    'plugin:prettier/recommended', // This must be last
   ],
   parser: '@typescript-eslint/parser',
   parserOptions: {
@@ -23,6 +24,7 @@ module.exports = {
     'react',
     'react-hooks',
     '@typescript-eslint',
+    'prettier',
   ],
   rules: {
     // Prevent the constructor.name minification issue

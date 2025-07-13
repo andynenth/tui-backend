@@ -15,26 +15,51 @@ import { getPlayType } from './gameValidation';
  * @returns {boolean} - True if the play types match, false otherwise
  */
 export function doesPlayMatchStarterType(playerPieces, starterPlayType) {
+  console.log('[doesPlayMatchStarterType] Input:', {
+    starterPlayType,
+    pieceCount: playerPieces?.length,
+    pieceDetails: JSON.stringify(playerPieces?.map(p => ({
+      kind: p.kind || p.type,
+      color: p.color,
+      value: p.value
+    })))
+  });
+  
   // Handle edge cases
-  if (!playerPieces || !starterPlayType) {
+  if (!playerPieces) {
+    console.log('[doesPlayMatchStarterType] Missing pieces, returning false');
+    return false;
+  }
+  
+  if (!starterPlayType) {
+    console.log('[doesPlayMatchStarterType] Missing starterPlayType, returning false');
     return false;
   }
   
   // Get the play type of the player's pieces
   const playerPlayType = getPlayType(playerPieces);
+  console.log('[doesPlayMatchStarterType] Player play type:', playerPlayType);
   
   // Handle invalid or unknown play types
   if (!playerPlayType || playerPlayType === 'INVALID' || playerPlayType === 'UNKNOWN') {
+    console.log('[doesPlayMatchStarterType] Invalid/unknown play type, returning false');
     return false;
   }
   
   // Special case: SINGLE always matches (any single piece is valid)
   if (starterPlayType === 'SINGLE' && playerPieces.length === 1) {
+    console.log('[doesPlayMatchStarterType] Single piece match, returning true');
     return true;
   }
   
   // Compare play types
-  return playerPlayType === starterPlayType;
+  const matches = playerPlayType === starterPlayType;
+  console.log('[doesPlayMatchStarterType] Comparison result:', {
+    playerPlayType,
+    starterPlayType,
+    matches
+  });
+  return matches;
 }
 
 /**
@@ -46,19 +71,57 @@ export function doesPlayMatchStarterType(playerPieces, starterPlayType) {
  * @returns {Set} - Set of piece IDs that should be revealed
  */
 export function determinePiecesToReveal(playerPieces, starterPlayType, starterName) {
+  console.log('[determinePiecesToReveal] Input:', {
+    playerPieces,
+    starterPlayType,
+    starterName
+  });
+  
   const piecesToReveal = new Set();
   
-  if (!playerPieces || !starterPlayType) {
+  if (!playerPieces) {
+    console.log('[determinePiecesToReveal] Missing playerPieces, returning empty set');
+    return piecesToReveal;
+  }
+  
+  // If starterPlayType is empty, calculate it from starter's pieces
+  let effectiveStarterPlayType = starterPlayType;
+  if (!starterPlayType && starterName && playerPieces[starterName]) {
+    effectiveStarterPlayType = getPlayType(playerPieces[starterName]);
+    console.log('[determinePiecesToReveal] Calculated starter play type from pieces:', {
+      starterName,
+      starterPieces: playerPieces[starterName],
+      calculatedType: effectiveStarterPlayType
+    });
+  }
+  
+  if (!effectiveStarterPlayType) {
+    console.log('[determinePiecesToReveal] No starter play type available, revealing all pieces');
+    // If we still can't determine play type, reveal all pieces
+    Object.entries(playerPieces).forEach(([playerName, pieces]) => {
+      if (pieces && pieces.length > 0) {
+        pieces.forEach((_, idx) => {
+          piecesToReveal.add(`${playerName}-${idx}`);
+        });
+      }
+    });
     return piecesToReveal;
   }
   
   Object.entries(playerPieces).forEach(([playerName, pieces]) => {
+    console.log(`[determinePiecesToReveal] Checking player: ${playerName}`, {
+      pieces,
+      pieceCount: pieces?.length
+    });
+    
     if (!pieces || pieces.length === 0) {
+      console.log(`[determinePiecesToReveal] ${playerName} has no pieces, skipping`);
       return;
     }
     
     // Always reveal starter's pieces
     if (playerName === starterName) {
+      console.log(`[determinePiecesToReveal] ${playerName} is the starter, revealing all pieces`);
       pieces.forEach((_, idx) => {
         piecesToReveal.add(`${playerName}-${idx}`);
       });
@@ -66,13 +129,17 @@ export function determinePiecesToReveal(playerPieces, starterPlayType, starterNa
     }
     
     // Check if player's play matches starter's type
-    if (doesPlayMatchStarterType(pieces, starterPlayType)) {
+    const matches = doesPlayMatchStarterType(pieces, effectiveStarterPlayType);
+    console.log(`[determinePiecesToReveal] ${playerName} matches starter type: ${matches}`);
+    
+    if (matches) {
       pieces.forEach((_, idx) => {
         piecesToReveal.add(`${playerName}-${idx}`);
       });
     }
   });
   
+  console.log('[determinePiecesToReveal] Final pieces to reveal:', Array.from(piecesToReveal));
   return piecesToReveal;
 }
 
