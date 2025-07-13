@@ -245,6 +245,7 @@ export interface PhaseData {
   final_scores?: Record<string, number>;
   winners?: string[];
   game_complete?: boolean;
+  scoring_players_data?: any[];
   
   // Game over phase
   final_rankings?: Array<{
