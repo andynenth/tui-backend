@@ -35,6 +35,22 @@ export function TurnResultsUI({
   
   // Build player plays array from turn plays data
   // The currentTurnPlays should contain what each player played
+  console.log('[TurnResultsUI] Building playerPlays from currentTurnPlays:', currentTurnPlays);
+  
+  // Log details of each play
+  currentTurnPlays.forEach((play, index) => {
+    console.log(`[TurnResultsUI] Turn play ${index + 1}:`, {
+      player: play.player,
+      hasPieces: !!play.pieces,
+      hasCards: !!play.cards,
+      playType: play.playType || play.play_type,
+      isValid: play.isValid,
+      isStarter: play.isStarter,
+      pieces: play.pieces ? JSON.stringify(play.pieces) : 'null',
+      cards: play.cards ? JSON.stringify(play.cards) : 'null'
+    });
+  });
+  
   const playerPlays = players.map(player => {
     // Find what this player played in the turn
     const turnPlay = currentTurnPlays.find(play => play.player === player.name);
@@ -49,6 +65,14 @@ export function TurnResultsUI({
   const starterPlay = currentTurnPlays.find(play => play.isStarter || play.player === winningPlay?.starter);
   const starterName = starterPlay?.player || winner;
   const starterPlayType = starterPlay?.playType || starterPlay?.play_type || winningPlay?.type || '';
+  
+  console.log('[TurnResultsUI] Extracting starter info:', {
+    currentTurnPlays,
+    starterPlay,
+    starterName,
+    starterPlayType,
+    winningPlay
+  });
   
   // Pass through props to TurnResultsContent
   return (

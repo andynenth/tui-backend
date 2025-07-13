@@ -80,7 +80,13 @@ function isStraight(pieces) {
 function isFourOfAKind(pieces) {
     if (pieces.length !== 4) return false;
     const value = getPieceValue(pieces[0]);
-    return pieces.every(p => getPieceValue(p) === value);
+    const allSameValue = pieces.every(p => getPieceValue(p) === value);
+    console.log('[isFourOfAKind] Check:', {
+        firstPieceValue: value,
+        allPieceValues: pieces.map(p => getPieceValue(p)),
+        result: allSameValue
+    });
+    return allSameValue;
 }
 
 function isExtendedStraight(pieces) {
@@ -141,6 +147,15 @@ function isDoubleStraight(pieces) {
  * Returns null if invalid or single piece
  */
 export function getPlayType(pieces) {
+    console.log('[getPlayType] Analyzing pieces:', {
+        count: pieces?.length,
+        pieces: JSON.stringify(pieces?.map(p => ({
+            kind: p.kind || p.type,
+            color: p.color,
+            value: p.value
+        })))
+    });
+    
     if (!pieces || pieces.length === 0) return null;
     if (pieces.length === 1) return "SINGLE";
     
@@ -157,8 +172,14 @@ export function getPlayType(pieces) {
     
     // Check for four of a kind
     if (pieces.length === 4) {
-        if (isFourOfAKind(pieces)) return "FOUR_OF_A_KIND";
-        if (isExtendedStraight(pieces)) return "EXTENDED_STRAIGHT";
+        if (isFourOfAKind(pieces)) {
+            console.log('[getPlayType] Detected FOUR_OF_A_KIND');
+            return "FOUR_OF_A_KIND";
+        }
+        if (isExtendedStraight(pieces)) {
+            console.log('[getPlayType] Detected EXTENDED_STRAIGHT');
+            return "EXTENDED_STRAIGHT";
+        }
     }
     
     // Check for five of a kind

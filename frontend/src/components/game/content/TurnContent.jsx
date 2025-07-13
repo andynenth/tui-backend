@@ -75,6 +75,12 @@ const TurnContent = ({
       
       // Start flip timer after last player plays
       const timer = setTimeout(() => {
+        console.log('[TurnContent] Determining pieces to reveal:', {
+          playType,
+          lastWinner,
+          playerPieces
+        });
+        
         // Determine which pieces to reveal based on play type matching
         const piecesToReveal = determinePiecesToReveal(
           playerPieces,
@@ -82,6 +88,7 @@ const TurnContent = ({
           lastWinner // The starter is the last winner
         );
         
+        console.log('[TurnContent] Pieces to reveal:', piecesToReveal);
         setFlippedPieces(piecesToReveal);
       }, 800);
       

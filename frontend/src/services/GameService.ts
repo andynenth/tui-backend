@@ -26,6 +26,7 @@ import type {
   CleanupFunction,
   NetworkEventDetail
 } from './types';
+import { parsePieces } from '../utils/pieceParser';
 
 export class GameService extends EventTarget {
   // Singleton instance
@@ -721,7 +722,7 @@ export class GameService extends EventTarget {
                 
                 return {
                   player: playerName,
-                  pieces: playData.pieces || [],
+                  pieces: parsePieces(playData.pieces || []),
                   isValid,
                   playType,
                   totalValue: playData.play_value || 0
@@ -729,7 +730,11 @@ export class GameService extends EventTarget {
               });
             }
           } else {
-            newState.currentTurnPlays = phaseData.current_turn_plays || [];
+            // Parse pieces in current_turn_plays array format
+            newState.currentTurnPlays = (phaseData.current_turn_plays || []).map((play: any) => ({
+              ...play,
+              pieces: parsePieces(play.pieces || play.cards || [])
+            }));
           }
           
           newState.currentTurnNumber = phaseData.current_turn_number || 0;

@@ -32,7 +32,15 @@ const TurnResultsContent = ({
   // Determine starter play type if not provided
   const effectiveStarterPlayType = starterPlayType || (() => {
     const starterPlay = playerPlays.find(p => p.playerName === starterName || p.playerName === winner);
-    return starterPlay ? getPlayType(starterPlay.pieces) : '';
+    const calculatedType = starterPlay ? getPlayType(starterPlay.pieces) : '';
+    console.log('[TurnResultsContent] Calculating starter play type:', {
+      starterPlayType,
+      starterName,
+      winner,
+      starterPlay,
+      calculatedType
+    });
+    return calculatedType;
   })();
   
   // Animate pieces on mount
@@ -46,12 +54,20 @@ const TurnResultsContent = ({
       });
       
       // Determine which pieces to reveal
+      console.log('[TurnResultsContent] Determining pieces to reveal:', {
+        effectiveStarterPlayType,
+        starterName,
+        winner,
+        playerPiecesMap
+      });
+      
       const piecesToReveal = determinePiecesToReveal(
         playerPiecesMap,
         effectiveStarterPlayType,
         starterName || winner
       );
       
+      console.log('[TurnResultsContent] Pieces to reveal:', piecesToReveal);
       setFlippedPieces(piecesToReveal);
     }, 200); // Small delay before starting animation
     
