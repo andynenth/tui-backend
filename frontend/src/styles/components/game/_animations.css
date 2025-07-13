@@ -189,3 +189,42 @@
     transform: scale(1);
   }
 }
+
+/* Piece flip animation - selective reveal */
+@keyframes pieceFlipReveal {
+  0% {
+    transform: rotateY(0deg);
+  }
+  100% {
+    transform: rotateY(180deg);
+  }
+}
+
+/* Piece entrance with flip */
+@keyframes pieceEntranceFlip {
+  0% {
+    opacity: 0;
+    transform: scale(0.8) rotateY(0deg);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.05) rotateY(90deg);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1) rotateY(180deg);
+  }
+}
+
+/* Invalid play shake */
+@keyframes invalidPlayShake {
+  0%, 100% {
+    transform: translateX(0) rotateY(0deg);
+  }
+  25% {
+    transform: translateX(-3px) rotateY(5deg);
+  }
+  75% {
+    transform: translateX(3px) rotateY(-5deg);
+  }
+}

@@ -1,6 +1,8 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { GamePiece, FooterTimer } from '../shared';
+import { determinePiecesToReveal, calculateRevealDelay } from '../../../utils/playTypeMatching';
+import { getPlayType } from '../../../utils/gameValidation';
 
 /**
  * TurnResultsContent Component
@@ -21,8 +23,40 @@ const TurnResultsContent = ({
   roundNumber = 1,
   isLastTurn = false,
   nextStarter = '',
+  starterPlayType = '',
+  starterName = '',
   onContinue
 }) => {
+  const [flippedPieces, setFlippedPieces] = useState(new Set());
+  
+  // Determine starter play type if not provided
+  const effectiveStarterPlayType = starterPlayType || (() => {
+    const starterPlay = playerPlays.find(p => p.playerName === starterName || p.playerName === winner);
+    return starterPlay ? getPlayType(starterPlay.pieces) : '';
+  })();
+  
+  // Animate pieces on mount
+  useEffect(() => {
+    // Start with all pieces hidden
+    const timer = setTimeout(() => {
+      // Build playerPieces object for utility function
+      const playerPiecesMap = {};
+      playerPlays.forEach(play => {
+        playerPiecesMap[play.playerName] = play.pieces;
+      });
+      
+      // Determine which pieces to reveal
+      const piecesToReveal = determinePiecesToReveal(
+        playerPiecesMap,
+        effectiveStarterPlayType,
+        starterName || winner
+      );
+      
+      setFlippedPieces(piecesToReveal);
+    }, 200); // Small delay before starting animation
+    
+    return () => clearTimeout(timer);
+  }, [playerPlays, effectiveStarterPlayType, starterName, winner]);
   // Get next phase text
   const getNextPhaseText = () => {
     if (isLastTurn) {
@@ -78,36 +112,67 @@ const TurnResultsContent = ({
                     // For >3 pieces, split into two rows
                     <>
                       <div className="pieces-row">
-                        {play.pieces.slice(0, Math.ceil(pieceCount / 2)).map((piece, idx) => (
-                          <GamePiece
-                            key={idx}
-                            piece={piece}
-                            size="small"
-                            className="tr-played-piece"
-                          />
-                        ))}
+                        {play.pieces.slice(0, Math.ceil(pieceCount / 2)).map((piece, idx) => {
+                          const pieceId = `${play.playerName}-${idx}`;
+                          const isFlipped = flippedPieces.has(pieceId);
+                          const isInvalidPlay = !isFlipped && flippedPieces.size > 0;
+                          const animationDelay = calculateRevealDelay(play.playerName, playerPlays.map(p => ({ name: p.playerName }))) / 1000;
+                          
+                          return (
+                            <GamePiece
+                              key={idx}
+                              piece={piece}
+                              size="small"
+                              flippable
+                              flipped={isFlipped}
+                              className={`tr-played-piece ${isInvalidPlay ? 'invalid-play' : ''}`}
+                              animationDelay={isFlipped ? animationDelay : undefined}
+                            />
+                          );
+                        })}
                       </div>
                       <div className="pieces-row">
-                        {play.pieces.slice(Math.ceil(pieceCount / 2)).map((piece, idx) => (
-                          <GamePiece
-                            key={idx + Math.ceil(pieceCount / 2)}
-                            piece={piece}
-                            size="small"
-                            className="tr-played-piece"
-                          />
-                        ))}
+                        {play.pieces.slice(Math.ceil(pieceCount / 2)).map((piece, idx) => {
+                          const actualIdx = idx + Math.ceil(pieceCount / 2);
+                          const pieceId = `${play.playerName}-${actualIdx}`;
+                          const isFlipped = flippedPieces.has(pieceId);
+                          const isInvalidPlay = !isFlipped && flippedPieces.size > 0;
+                          const animationDelay = calculateRevealDelay(play.playerName, playerPlays.map(p => ({ name: p.playerName }))) / 1000;
+                          
+                          return (
+                            <GamePiece
+                              key={actualIdx}
+                              piece={piece}
+                              size="small"
+                              flippable
+                              flipped={isFlipped}
+                              className={`tr-played-piece ${isInvalidPlay ? 'invalid-play' : ''}`}
+                              animationDelay={isFlipped ? animationDelay : undefined}
+                            />
+                          );
+                        })}
                       </div>
                     </>
                   ) : (
                     // For ≤3 pieces, single row with larger size
-                    play.pieces.map((piece, idx) => (
-                      <GamePiece
-                        key={idx}
-                        piece={piece}
-                        size="medium"
-                        className="tr-played-piece"
-                      />
-                    ))
+                    play.pieces.map((piece, idx) => {
+                      const pieceId = `${play.playerName}-${idx}`;
+                      const isFlipped = flippedPieces.has(pieceId);
+                      const isInvalidPlay = !isFlipped && flippedPieces.size > 0;
+                      const animationDelay = calculateRevealDelay(play.playerName, playerPlays.map(p => ({ name: p.playerName }))) / 1000;
+                      
+                      return (
+                        <GamePiece
+                          key={idx}
+                          piece={piece}
+                          size="medium"
+                          flippable
+                          flipped={isFlipped}
+                          className={`tr-played-piece ${isInvalidPlay ? 'invalid-play' : ''}`}
+                          animationDelay={isFlipped ? animationDelay : undefined}
+                        />
+                      );
+                    })
                   )}
                 </div>
               </div>
@@ -136,13 +201,16 @@ TurnResultsContent.propTypes = {
   winningPieces: PropTypes.array,
   playerPlays: PropTypes.arrayOf(PropTypes.shape({
     playerName: PropTypes.string,
-    pieces: PropTypes.array
+    pieces: PropTypes.array,
+    player: PropTypes.object
   })),
   myName: PropTypes.string,
   turnNumber: PropTypes.number,
   roundNumber: PropTypes.number,
   isLastTurn: PropTypes.bool,
   nextStarter: PropTypes.string,
+  starterPlayType: PropTypes.string,
+  starterName: PropTypes.string,
   onContinue: PropTypes.func
 };
 

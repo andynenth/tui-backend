@@ -45,6 +45,11 @@ export function TurnResultsUI({
     };
   });
   
+  // Find the starter and their play type
+  const starterPlay = currentTurnPlays.find(play => play.isStarter || play.player === winningPlay?.starter);
+  const starterName = starterPlay?.player || winner;
+  const starterPlayType = starterPlay?.playType || starterPlay?.play_type || winningPlay?.type || '';
+  
   // Pass through props to TurnResultsContent
   return (
     <TurnResultsContent 
@@ -56,6 +61,8 @@ export function TurnResultsUI({
       roundNumber={roundNumber}
       isLastTurn={isLastTurn}
       nextStarter={nextStarter}
+      starterPlayType={starterPlayType}
+      starterName={starterName}
       onContinue={onContinue}
     />
   );

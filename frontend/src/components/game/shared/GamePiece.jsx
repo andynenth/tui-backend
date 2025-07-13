@@ -12,7 +12,8 @@ import { getPieceDisplay, getPieceColorClass, formatPieceValue } from '../../../
  * @param {string} size - Piece size: 'mini', 'small', 'medium', 'large' (default: 'medium')
  * @param {string} variant - Display variant: 'default', 'table', 'selectable' (default: 'default')
  * @param {boolean} selected - Whether the piece is selected (for selectable variant)
- * @param {boolean} flipped - Whether the piece is flipped (for table variant)
+ * @param {boolean} flipped - Whether the piece is flipped (for flippable pieces)
+ * @param {boolean} flippable - Whether the piece can be flipped (shows front/back faces)
  * @param {boolean} showValue - Whether to show the piece value/points
  * @param {function} onClick - Click handler function
  * @param {string} className - Additional CSS classes
@@ -24,6 +25,7 @@ const GamePiece = ({
   variant = 'default',
   selected = false,
   flipped = false,
+  flippable = false,
   showValue = false,
   onClick,
   className = '',
@@ -36,6 +38,7 @@ const GamePiece = ({
     `game-piece--${variant}`,
     getPieceColorClass(piece),
     selected && 'selected',
+    flippable && 'flippable',
     flipped && 'flipped',
     className
   ].filter(Boolean).join(' ');
@@ -49,13 +52,14 @@ const GamePiece = ({
     style.cursor = 'pointer';
   }
 
-  // Render table variant with flip animation
-  if (variant === 'table') {
+  // Render flippable piece with front/back faces
+  if (flippable) {
     return (
       <div 
         className={classes}
         onClick={onClick}
         style={style}
+        title={className.includes('invalid-play') ? 'Play type doesn\'t match' : ''}
       >
         <div className="game-piece__face game-piece__face--back"></div>
         <div className={`game-piece__face game-piece__face--front ${getPieceColorClass(piece)}`}>
@@ -94,6 +98,7 @@ GamePiece.propTypes = {
   variant: PropTypes.oneOf(['default', 'table', 'selectable', 'dealing']),
   selected: PropTypes.bool,
   flipped: PropTypes.bool,
+  flippable: PropTypes.bool,
   showValue: PropTypes.bool,
   onClick: PropTypes.func,
   className: PropTypes.string,

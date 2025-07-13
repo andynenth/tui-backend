@@ -91,17 +91,18 @@
   border-color: #0D6EFD;
 }
 
-/* Table variant with flip animation */
+/* Table variant - no longer forces size */
 .game-piece--table {
-  width: 22px;
-  height: 22px;
-  font-size: 10px;
-  transform-style: preserve-3d;
-  transition: transform 0.6s ease;
   cursor: pointer;
 }
 
-.game-piece--table.flipped {
+/* Flippable pieces with flip animation */
+.game-piece.flippable {
+  transform-style: preserve-3d;
+  transition: transform 0.6s ease;
+}
+
+.game-piece.flippable.flipped {
   transform: rotateY(180deg);
 }
 
@@ -190,4 +191,27 @@
     opacity: 1;
     transform: translateY(0px);
   }
+}
+
+/* Invalid play state - pieces that don't match starter's type */
+.game-piece.flippable.invalid-play:not(.flipped) {
+  opacity: 0.8;
+  filter: grayscale(30%);
+}
+
+.game-piece.flippable.invalid-play:not(.flipped):hover {
+  cursor: help;
+  opacity: 1;
+  filter: grayscale(0%);
+}
+
+/* Allow peeking at invalid plays on hover */
+.game-piece.flippable.invalid-play:not(.flipped):hover {
+  animation: invalidPlayShake 0.5s ease;
+}
+
+/* Staggered flip animation */
+.game-piece.flippable.flipped {
+  animation: pieceFlipReveal 0.6s ease-out forwards;
+  animation-fill-mode: both;
 }

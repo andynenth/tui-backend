@@ -244,10 +244,18 @@
 
 .tr-played-piece {
   /* Piece styles now handled by GamePiece component */
-  justify-content: center;
-  font-weight: bold;
-  font-family: 'SimSun', '宋体', serif;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
+  position: relative;
+}
+
+/* Initial state for table pieces before flip */
+.tr-played-piece.game-piece--table:not(.flipped) {
+  transform: rotateY(0deg);
+}
+
+/* Revealed pieces get entrance animation */
+.tr-played-piece.game-piece--table.flipped {
+  animation: pieceEntranceFlip 0.6s ease-out forwards;
+  animation-fill-mode: both;
 }
 
 .tr-played-piece.red {

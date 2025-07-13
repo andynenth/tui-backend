@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import PropTypes from 'prop-types';
 import { formatPlayType } from '../../../utils/playTypeFormatter';
 import { getPlayType } from '../../../utils/gameValidation';
+import { determinePiecesToReveal, calculateRevealDelay } from '../../../utils/playTypeMatching';
 import { PlayerAvatar, GamePiece, PieceTray } from '../shared';
 
 /**
@@ -59,7 +60,7 @@ const TurnContent = ({
     setShowConfirmPanel(selectedPieces.length > 0 && isMyTurn);
   }, [selectedPieces, isMyTurn]);
   
-  // Last-player detection and flip animation
+  // Last-player detection and selective flip animation
   useEffect(() => {
     // Count how many players have played
     const playedCount = Object.keys(playerPieces).filter(
@@ -74,18 +75,19 @@ const TurnContent = ({
       
       // Start flip timer after last player plays
       const timer = setTimeout(() => {
-        const allPieceIds = new Set();
-        Object.entries(playerPieces).forEach(([player, pieces]) => {
-          pieces.forEach((_, idx) => {
-            allPieceIds.add(`${player}-${idx}`);
-          });
-        });
-        setFlippedPieces(allPieceIds);
+        // Determine which pieces to reveal based on play type matching
+        const piecesToReveal = determinePiecesToReveal(
+          playerPieces,
+          playType,
+          lastWinner // The starter is the last winner
+        );
+        
+        setFlippedPieces(piecesToReveal);
       }, 800);
       
       return () => clearTimeout(timer);
     }
-  }, [playerPieces, players.length]);
+  }, [playerPieces, players.length, playType, lastWinner]);
   
   // Reset flip state when turn changes
   useEffect(() => {
@@ -215,14 +217,19 @@ const TurnContent = ({
                   {pieces.map((piece, idx) => {
                     const pieceId = `${player.name}-${idx}`;
                     const isFlipped = flippedPieces.has(pieceId);
+                    const isInvalidPlay = !isFlipped && hasFlippedThisTurn.current;
+                    const animationDelay = calculateRevealDelay(player.name, players) / 1000; // Convert to seconds
                     
                     return (
                       <GamePiece
                         key={idx}
                         piece={piece}
-                        size="small"
+                        size="mini"
                         variant="table"
+                        flippable
                         flipped={isFlipped}
+                        className={isInvalidPlay ? 'invalid-play' : ''}
+                        animationDelay={isFlipped ? animationDelay : undefined}
                       />
                     );
                   })}
