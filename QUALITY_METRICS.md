@@ -38,12 +38,12 @@
 | Module | Functions | With Docstrings | Progress |
 |--------|-----------|-----------------|----------|
 | engine/player.py | 2 | 2 ✅ | 100% |
-| engine/rules.py | 10 | 6 | 60% |
+| engine/rules.py | 10 | 10 ✅ | 100% |
 | engine/bot_manager.py | 3 | 3 ✅ | 100% |
-| engine/state_machine/game_state_machine.py | 10 | 6 | 60% |
-| api/validation/websocket_validators.py | 11 | 7 | 64% |
-| api/validation/rest_validators.py | 13 | 0 | 0% |
-| **Total** | **49** | **24** | **49%** |
+| engine/state_machine/game_state_machine.py | 19 | 19 ✅ | 100% |
+| api/validation/websocket_validators.py | 11 | 11 ✅ | 100% |
+| api/validation/rest_validators.py | 13 | 13 ✅ | 100% |
+| **Total** | **58** | **58** | **100%** ✅ |
 
 ### Manual Reviews
 
