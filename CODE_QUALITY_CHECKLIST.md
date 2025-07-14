@@ -34,9 +34,9 @@ A comprehensive checklist for maintaining high code quality standards across our
   - **Impact**: Cleaner codebase, better organization
 
 ### High-Impact Improvements (1-2 days each)
-- [ ] **Implement rate limiting** 🔴 Critical
-  - Add rate limiting to WebSocket connections
-  - Implement API endpoint rate limits
+- [x] **Implement rate limiting** 🔴 Critical ✅ COMPLETED
+  - Add rate limiting to WebSocket connections ✅
+  - Implement API endpoint rate limits ✅
   - **Impact**: Prevent abuse and DoS attacks
 
 - [x] **Extract magic numbers to constants** 🟡 Important ✅ COMPLETED
@@ -304,7 +304,7 @@ grep -r "TODO\|FIXME" --exclude-dir=node_modules . | wc -l
 - [ ] Authorization checks are in place ⚠️ Basic room-based checks only
 - [x] Sensitive data is encrypted ✅ No sensitive data stored
 - [x] Passwords are hashed with bcrypt/scrypt ✅ No password system
-- [ ] API rate limiting prevents abuse ❌ Not implemented per checklist
+- [x] API rate limiting prevents abuse ✅ Token bucket implementation with configurable limits
 - [ ] CORS is configured correctly ⛔ Not verified
 - [ ] Security headers are set ⛔ Not verified
 - [x] Logs don't contain sensitive information ✅ Only game state logged
@@ -425,10 +425,10 @@ grep -r "TODO\|FIXME" --exclude-dir=node_modules . | wc -l
   - Some endpoints return different error formats
   - Need standardized error response model
 
-- [ ] **No rate limiting** 🔴
-  - WebSocket connections unlimited
-  - API endpoints have no rate limits
-  - Security vulnerability
+- [x] **No rate limiting** 🔴 ✅ RESOLVED
+  - WebSocket connections limited to 5/minute per IP ✅
+  - API endpoints have configurable rate limits ✅
+  - Security vulnerability addressed ✅
 
 - [x] **Dead code in game.py** 🟡 ✅ COMPLETED
   - Empty function: _verify_and_report_hands() ✅ Removed
