@@ -34,16 +34,41 @@ class BotManager:
             self.active_games: Dict[str, GameBotHandler] = {}
 
     def register_game(self, room_id: str, game, state_machine=None):
-        """Register a game for bot management"""
+        """
+        Register a game for bot management.
+        
+        Creates a GameBotHandler instance to manage bot actions for the game.
+        
+        Args:
+            room_id: Unique identifier for the game room
+            game: Game instance to manage
+            state_machine: Optional state machine for coordinating bot actions
+        """
         self.active_games[room_id] = GameBotHandler(room_id, game, state_machine)
 
     def unregister_game(self, room_id: str):
-        """Remove game from bot management"""
+        """
+        Remove a game from bot management.
+        
+        Cleans up the GameBotHandler instance when a game ends.
+        
+        Args:
+            room_id: Unique identifier for the game room to remove
+        """
         if room_id in self.active_games:
             del self.active_games[room_id]
 
     async def handle_game_event(self, room_id: str, event: str, data: dict):
-        """Handle game events that might need bot actions"""
+        """
+        Handle game events that might trigger bot actions.
+        
+        Delegates event handling to the appropriate GameBotHandler.
+        
+        Args:
+            room_id: Unique identifier for the game room
+            event: Name of the game event (e.g., 'phase_change', 'player_action')
+            data: Event data containing relevant game state information
+        """
         if room_id not in self.active_games:
             return
 

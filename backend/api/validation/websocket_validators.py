@@ -52,7 +52,17 @@ class WebSocketMessageValidator:
 
     @staticmethod
     def validate_base_message(message: Dict[str, Any]) -> Tuple[bool, Optional[str]]:
-        """Validate basic message structure"""
+        """
+        Validate basic WebSocket message structure.
+        
+        Args:
+            message: The WebSocket message to validate
+            
+        Returns:
+            Tuple of (is_valid, error_message)
+            - is_valid: True if message is valid, False otherwise
+            - error_message: Description of validation error, or None if valid
+        """
         if not isinstance(message, dict):
             return False, "Message must be a dictionary"
 
@@ -80,7 +90,22 @@ class WebSocketMessageValidator:
     def validate_player_name(
         player_name: Any, required: bool = True
     ) -> Tuple[bool, Optional[str]]:
-        """Validate player name"""
+        """
+        Validate and sanitize player name.
+        
+        Checks for:
+        - Proper type (string)
+        - Non-empty value
+        - Maximum length limit
+        - Dangerous characters (XSS prevention)
+        
+        Args:
+            player_name: The player name to validate
+            required: Whether the field is required (default: True)
+            
+        Returns:
+            Tuple of (is_valid, error_message)
+        """
         if player_name is None:
             if required:
                 return False, "Player name is required"
@@ -103,7 +128,22 @@ class WebSocketMessageValidator:
 
     @staticmethod
     def validate_room_id(room_id: Any, required: bool = True) -> Tuple[bool, Optional[str]]:
-        """Validate room ID"""
+        """
+        Validate and sanitize room ID.
+        
+        Checks for:
+        - Proper type (string)
+        - Non-empty value
+        - Maximum length limit
+        - Dangerous characters
+        
+        Args:
+            room_id: The room ID to validate
+            required: Whether the field is required (default: True)
+            
+        Returns:
+            Tuple of (is_valid, error_message)
+        """
         if room_id is None:
             if required:
                 return False, "Room ID is required"
@@ -126,7 +166,19 @@ class WebSocketMessageValidator:
 
     @staticmethod
     def validate_declaration_value(value: Any) -> Tuple[bool, Optional[str]]:
-        """Validate declaration value"""
+        """
+        Validate player's pile declaration value.
+        
+        Ensures the value is:
+        - An integer
+        - Within valid range (0-8)
+        
+        Args:
+            value: The declaration value to validate
+            
+        Returns:
+            Tuple of (is_valid, error_message)
+        """
         if value is None:
             return False, "Declaration value is required"
 
@@ -147,7 +199,22 @@ class WebSocketMessageValidator:
 
     @staticmethod
     def validate_piece_indices(indices: Any) -> Tuple[bool, Optional[str]]:
-        """Validate piece indices array"""
+        """
+        Validate array of piece indices for playing cards.
+        
+        Checks for:
+        - Proper type (list)
+        - Non-empty array
+        - Maximum pieces per play (6)
+        - Valid index range (0-31)
+        - No duplicate indices
+        
+        Args:
+            indices: List of piece indices to validate
+            
+        Returns:
+            Tuple of (is_valid, error_message)
+        """
         if not isinstance(indices, list):
             return False, "Piece indices must be an array"
 
@@ -178,7 +245,19 @@ class WebSocketMessageValidator:
 
     @staticmethod
     def validate_slot_id(slot_id: Any) -> Tuple[bool, Optional[str]]:
-        """Validate slot ID"""
+        """
+        Validate player slot ID.
+        
+        Ensures the slot ID is:
+        - Numeric (handles both string and int)
+        - Within valid range (1-4)
+        
+        Args:
+            slot_id: The slot ID to validate
+            
+        Returns:
+            Tuple of (is_valid, error_message)
+        """
         if slot_id is None:
             return False, "Slot ID is required"
 

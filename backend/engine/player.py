@@ -45,6 +45,13 @@ class Player:
             self.zero_declares_in_a_row = 0
 
     def reset_for_next_round(self):
+        """
+        Reset player state for the next round.
+        
+        Clears the player's hand and resets round-specific counters
+        (declared value and captured piles) while preserving game-level
+        state like score and zero declaration tracking.
+        """
         self.declared = 0
         self.captured_piles = 0
         self.hand.clear()

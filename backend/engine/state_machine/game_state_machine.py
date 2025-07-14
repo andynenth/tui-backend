@@ -134,7 +134,13 @@ class GameStateMachine:
         logger.info("State machine process loop ended")
 
     async def process_pending_actions(self):
-        """Process all actions in queue"""
+        """
+        Process all pending actions in the queue.
+        
+        Dequeues and processes actions one by one, delegating to the
+        current state's handle_action method. Includes error handling
+        and logging for each action processed.
+        """
         if not self.current_state:
             return
 
@@ -198,17 +204,39 @@ class GameStateMachine:
         await self._notify_bot_manager(new_phase)
 
     def get_current_phase(self) -> Optional[GamePhase]:
-        """Get current game phase"""
+        """
+        Get the current game phase.
+        
+        Returns:
+            GamePhase enum value representing the current phase,
+            or None if state machine is not initialized.
+        """
         return self.current_phase
 
     def get_allowed_actions(self) -> Set[ActionType]:
-        """Get currently allowed action types"""
+        """
+        Get the set of currently allowed action types.
+        
+        The allowed actions depend on the current game phase and state.
+        
+        Returns:
+            Set of ActionType enum values that are valid in the current state,
+            or empty set if no state is active.
+        """
         if not self.current_state:
             return set()
         return self.current_state.allowed_actions
 
     def get_phase_data(self) -> Dict:
-        """Get current phase-specific data (JSON serializable)"""
+        """
+        Get current phase-specific data in JSON-serializable format.
+        
+        Converts complex objects (like Player instances) to strings or
+        simple data types that can be serialized for WebSocket transmission.
+        
+        Returns:
+            Dictionary containing phase-specific data, safe for JSON serialization.
+        """
         if not self.current_state:
             return {}
 
