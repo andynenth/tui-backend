@@ -1,8 +1,8 @@
 /**
  * 🎮 **useGameState Hook** - Optimized Game State Integration (TypeScript)
- * 
+ *
  * Phase 2, Task 2.1: Clean React Hooks
- * 
+ *
  * Features:
  * ✅ Single responsibility - only game state
  * ✅ Optimized re-rendering with selective updates
@@ -27,7 +27,6 @@ export function useGameState(): GameState {
       // Only update if state actually changed (deep comparison would be expensive)
       // GameService already handles immutable updates, so reference comparison is sufficient
       if (stateRef.current !== newState) {
-        
         stateRef.current = newState;
         setState(newState);
       }
@@ -57,7 +56,7 @@ export function useGameStateSlice<T>(
   selector: (state: GameState) => T,
   equalityFn?: (a: T, b: T) => boolean
 ): T {
-  const [selectedState, setSelectedState] = useState<T>(() => 
+  const [selectedState, setSelectedState] = useState<T>(() =>
     selector(gameService.getState())
   );
   const selectedStateRef = useRef(selectedState);
@@ -67,9 +66,9 @@ export function useGameStateSlice<T>(
   useEffect(() => {
     const handleStateChange = (newState: GameState) => {
       const newSelectedState = selectorRef.current(newState);
-      
+
       // Use custom equality function or default shallow comparison
-      const hasChanged = equalityFn 
+      const hasChanged = equalityFn
         ? !equalityFn(selectedStateRef.current, newSelectedState)
         : selectedStateRef.current !== newSelectedState;
 
@@ -104,10 +103,10 @@ export function useConnectionState() {
       isConnected: state.isConnected,
       roomId: state.roomId,
       playerName: state.playerName,
-      error: state.error
+      error: state.error,
     }),
     // Custom equality for connection state
-    (a, b) => 
+    (a, b) =>
       a.isConnected === b.isConnected &&
       a.roomId === b.roomId &&
       a.playerName === b.playerName &&
@@ -124,7 +123,7 @@ export function usePhaseState<T>(
   selector: (state: GameState) => T
 ): T | null {
   return useGameStateSlice(
-    (state) => state.phase === phase ? selector(state) : null,
+    (state) => (state.phase === phase ? selector(state) : null),
     (a, b) => {
       if (a === null && b === null) return true;
       if (a === null || b === null) return false;
@@ -144,10 +143,10 @@ export function usePlayerState() {
       isMyTurn: state.isMyTurn,
       allowedActions: state.allowedActions,
       validOptions: state.validOptions,
-      myHand: state.myHand
+      myHand: state.myHand,
     }),
     // Custom equality for player state
-    (a, b) => 
+    (a, b) =>
       a.playerName === b.playerName &&
       a.isMyTurn === b.isMyTurn &&
       JSON.stringify(a.allowedActions) === JSON.stringify(b.allowedActions) &&
@@ -167,10 +166,10 @@ export function useGameMeta() {
       currentRound: state.currentRound,
       lastEventSequence: state.lastEventSequence,
       gameOver: state.gameOver,
-      winners: state.winners
+      winners: state.winners,
     }),
     // Custom equality for meta state
-    (a, b) => 
+    (a, b) =>
       a.phase === b.phase &&
       a.currentRound === b.currentRound &&
       a.lastEventSequence === b.lastEventSequence &&
@@ -190,23 +189,29 @@ export function useGameStateDebug(componentName: string) {
   useEffect(() => {
     if (process.env.NODE_ENV === 'development') {
       const prevState = prevStateRef.current;
-      
+
       if (prevState !== state) {
         console.group(`🎮 State Change in ${componentName}`);
         console.log('Previous:', prevState);
         console.log('Current:', state);
-        
+
         // Log specific changes
         const changes: string[] = [];
-        if (prevState.phase !== state.phase) changes.push(`phase: ${prevState.phase} → ${state.phase}`);
-        if (prevState.isMyTurn !== state.isMyTurn) changes.push(`isMyTurn: ${prevState.isMyTurn} → ${state.isMyTurn}`);
-        if (prevState.isConnected !== state.isConnected) changes.push(`isConnected: ${prevState.isConnected} → ${state.isConnected}`);
-        if (prevState.error !== state.error) changes.push(`error: ${prevState.error} → ${state.error}`);
-        
+        if (prevState.phase !== state.phase)
+          changes.push(`phase: ${prevState.phase} → ${state.phase}`);
+        if (prevState.isMyTurn !== state.isMyTurn)
+          changes.push(`isMyTurn: ${prevState.isMyTurn} → ${state.isMyTurn}`);
+        if (prevState.isConnected !== state.isConnected)
+          changes.push(
+            `isConnected: ${prevState.isConnected} → ${state.isConnected}`
+          );
+        if (prevState.error !== state.error)
+          changes.push(`error: ${prevState.error} → ${state.error}`);
+
         if (changes.length > 0) {
           console.log('Key changes:', changes.join(', '));
         }
-        
+
         console.groupEnd();
         prevStateRef.current = state;
       }
@@ -225,7 +230,7 @@ export function useDerivedGameState<T>(
   dependencies?: any[]
 ): T {
   const state = useGameState();
-  
+
   return useMemo(() => {
     return deriveFn(state);
   }, [state, ...(dependencies || [])]);
@@ -233,20 +238,23 @@ export function useDerivedGameState<T>(
 
 // Export helper functions for common state checks
 export const gameStateSelectors = {
-  isInPhase: (phase: GameState['phase']) => (state: GameState) => state.phase === phase,
+  isInPhase: (phase: GameState['phase']) => (state: GameState) =>
+    state.phase === phase,
   hasError: (state: GameState) => state.error !== null,
   isConnected: (state: GameState) => state.isConnected,
   isMyTurn: (state: GameState) => state.isMyTurn,
-  canPerformAction: (action: string) => (state: GameState) => 
+  canPerformAction: (action: string) => (state: GameState) =>
     state.allowedActions.includes(action),
-  getPlayerByName: (name: string) => (state: GameState) => 
-    state.players.find(p => p.name === name),
-  getCurrentPlayer: (state: GameState) => 
-    state.players.find(p => p.name === state.playerName),
-  getPlayersInOrder: (state: GameState) => 
-    state.declarationOrder.length > 0 
-      ? state.declarationOrder.map(name => state.players.find(p => p.name === name)).filter(Boolean)
-      : state.players
+  getPlayerByName: (name: string) => (state: GameState) =>
+    state.players.find((p) => p.name === name),
+  getCurrentPlayer: (state: GameState) =>
+    state.players.find((p) => p.name === state.playerName),
+  getPlayersInOrder: (state: GameState) =>
+    state.declarationOrder.length > 0
+      ? state.declarationOrder
+          .map((name) => state.players.find((p) => p.name === name))
+          .filter(Boolean)
+      : state.players,
 };
 
 export default useGameState;

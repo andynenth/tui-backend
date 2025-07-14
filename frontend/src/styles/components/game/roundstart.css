@@ -32,7 +32,7 @@
 .rs-round-number {
   font-size: 72px;
   font-weight: 800;
-  color: #2D3748;
+  color: #2d3748;
   font-family: 'Crimson Pro', serif;
   line-height: 1;
   text-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
@@ -49,7 +49,7 @@
 .rs-starter-name {
   font-size: 32px;
   font-weight: 700;
-  color: #4A5568;
+  color: #4a5568;
   margin-bottom: 8px;
   font-family: 'Crimson Pro', serif;
 }
@@ -61,16 +61,16 @@
 }
 
 /* Special styling for different reasons */
-.rs-starter-section[data-reason="has_general_red"] .rs-starter-reason {
-  color: #E53E3E;
+.rs-starter-section[data-reason='has_general_red'] .rs-starter-reason {
+  color: #e53e3e;
 }
 
-.rs-starter-section[data-reason="won_last_turn"] .rs-starter-reason {
-  color: #48BB78;
+.rs-starter-section[data-reason='won_last_turn'] .rs-starter-reason {
+  color: #48bb78;
 }
 
-.rs-starter-section[data-reason="accepted_redeal"] .rs-starter-reason {
-  color: #4299E1;
+.rs-starter-section[data-reason='accepted_redeal'] .rs-starter-reason {
+  color: #4299e1;
 }
 
 /* Timer section */
@@ -119,7 +119,11 @@
   left: 0;
   right: 0;
   bottom: 0;
-  background: radial-gradient(circle at center, rgba(66, 153, 225, 0.05) 0%, transparent 70%);
+  background: radial-gradient(
+    circle at center,
+    rgba(66, 153, 225, 0.05) 0%,
+    transparent 70%
+  );
   pointer-events: none;
   z-index: -1;
 }
@@ -129,19 +133,19 @@
   .rs-round-number {
     font-size: 56px;
   }
-  
+
   .rs-starter-name {
     font-size: 28px;
   }
-  
+
   .rs-starter-reason {
     font-size: 16px;
   }
-  
+
   .rs-round-section {
     margin-bottom: 30px;
   }
-  
+
   .rs-starter-section {
     margin-bottom: 30px;
   }

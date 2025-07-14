@@ -5,7 +5,7 @@ import { JSDOM } from 'jsdom';
 const dom = new JSDOM('<!DOCTYPE html><html><body></body></html>', {
   url: 'http://localhost',
   pretendToBeVisual: true,
-  resources: 'usable'
+  resources: 'usable',
 });
 
 global.window = dom.window;
@@ -28,11 +28,11 @@ global.WebSocket = class MockWebSocket {
     this.onmessage = null;
     this.onerror = null;
   }
-  
+
   send(data) {
     // Mock send
   }
-  
+
   close() {
     this.readyState = 3; // CLOSED
   }
@@ -52,7 +52,7 @@ global.localStorage = {
   },
   clear() {
     this.store = {};
-  }
+  },
 };
 
 // Mock console.warn for testing

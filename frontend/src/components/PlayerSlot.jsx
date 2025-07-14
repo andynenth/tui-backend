@@ -1,9 +1,9 @@
 import React from 'react';
 import Button from './Button';
 
-const PlayerSlot = ({ 
-  slotId, 
-  occupant, 
+const PlayerSlot = ({
+  slotId,
+  occupant,
   isHost = false,
   isCurrentPlayer = false,
   canModify = false,
@@ -12,7 +12,7 @@ const PlayerSlot = ({
   onJoin,
   onAddBot,
   onRemove,
-  className = ''
+  className = '',
 }) => {
   const getSlotClasses = () => {
     const baseClasses = `
@@ -20,7 +20,7 @@ const PlayerSlot = ({
       transition-all duration-300 ease-out hover:shadow-lg transform-gpu
       hover:scale-105
     `;
-    
+
     if (!occupant) {
       return `${baseClasses} border-dashed border-gray-300 bg-gradient-to-br from-gray-50 to-gray-100 hover:border-gray-400 hover:from-gray-100 hover:to-gray-200`;
     }
@@ -42,7 +42,7 @@ const PlayerSlot = ({
         <div className="flex flex-col items-center space-y-3">
           <div className="text-sm text-gray-500 font-medium">Slot {slotId}</div>
           <div className="text-xs text-gray-400">Empty</div>
-          
+
           <div className="flex flex-col space-y-2 w-full">
             {onJoin && (
               <Button size="sm" fullWidth onClick={() => onJoin(slotId)}>
@@ -50,7 +50,12 @@ const PlayerSlot = ({
               </Button>
             )}
             {onAddBot && canModify && (
-              <Button variant="outline" size="sm" fullWidth onClick={() => onAddBot(slotId)}>
+              <Button
+                variant="outline"
+                size="sm"
+                fullWidth
+                onClick={() => onAddBot(slotId)}
+              >
                 Add Bot
               </Button>
             )}
@@ -66,15 +71,24 @@ const PlayerSlot = ({
       <div className="flex flex-col items-center space-y-2 w-full">
         {/* Player info header */}
         <div className="flex items-center space-x-2">
-          {isHost && <span className="text-lg" title="Host">👑</span>}
-          {isBot && <span className="text-lg" title="Bot">🤖</span>}
+          {isHost && (
+            <span className="text-lg" title="Host">
+              👑
+            </span>
+          )}
+          {isBot && (
+            <span className="text-lg" title="Bot">
+              🤖
+            </span>
+          )}
           <div className="text-center">
-            <div className="font-medium text-sm truncate max-w-[100px]" title={displayName}>
+            <div
+              className="font-medium text-sm truncate max-w-[100px]"
+              title={displayName}
+            >
               {displayName}
             </div>
-            <div className="text-xs text-gray-500">
-              Slot {slotId}
-            </div>
+            <div className="text-xs text-gray-500">Slot {slotId}</div>
           </div>
           {isCurrentPlayer && (
             <span className="text-xs font-bold text-blue-600 bg-blue-100 px-2 py-1 rounded">
@@ -89,22 +103,22 @@ const PlayerSlot = ({
             Score: {score}
           </div>
         )}
-        
+
         {/* Action buttons for host/moderator */}
         {canModify && onRemove && !isCurrentPlayer && (
           <div className="flex flex-col space-y-1 w-full">
-            <Button 
-              variant="danger" 
-              size="sm" 
+            <Button
+              variant="danger"
+              size="sm"
               fullWidth
               onClick={() => onRemove(slotId)}
             >
               {isBot ? 'Remove Bot' : 'Kick Player'}
             </Button>
             {!isBot && onAddBot && (
-              <Button 
-                variant="ghost" 
-                size="sm" 
+              <Button
+                variant="ghost"
+                size="sm"
                 fullWidth
                 onClick={() => onAddBot(slotId)}
               >

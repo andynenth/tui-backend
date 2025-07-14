@@ -17,11 +17,11 @@ const StartPage = () => {
     handleSubmit,
     formState: { errors },
     setValue,
-    watch
+    watch,
   } = useForm({
     defaultValues: {
-      playerName: app.playerName || ''
-    }
+      playerName: app.playerName || '',
+    },
   });
 
   const playerNameValue = watch('playerName');
@@ -35,11 +35,11 @@ const StartPage = () => {
 
   const onSubmit = async (data) => {
     setIsSubmitting(true);
-    
+
     try {
       // Update player name in app context
       app.updatePlayerName(data.playerName);
-      
+
       // Navigate to lobby
       navigate('/lobby');
     } catch (error) {
@@ -58,12 +58,15 @@ const StartPage = () => {
 
   return (
     <>
-      <Layout 
+      <Layout
         title="Liap TUI - Welcome"
         showConnection={false}
         showHeader={false}
       >
-        <div className="min-h-screen flex items-center justify-center" style={{ background: 'var(--gradient-gray)' }}>
+        <div
+          className="min-h-screen flex items-center justify-center"
+          style={{ background: 'var(--gradient-gray)' }}
+        >
           <div className="sp-game-container">
             <div className="sp-content-wrapper">
               {/* Game Icon with rotating pieces */}
@@ -72,13 +75,18 @@ const StartPage = () => {
                 <div className="sp-icon-pieces sp-icon-piece-1">帥</div>
                 <div className="sp-icon-pieces sp-icon-piece-2">卒</div>
               </div>
-              
+
               {/* Header */}
               <h1 className="sp-game-title">Welcome to Liap TUI</h1>
-              <p className="sp-game-subtitle">Enter your player name to start playing</p>
-              
+              <p className="sp-game-subtitle">
+                Enter your player name to start playing
+              </p>
+
               {/* Player name form */}
-              <form onSubmit={handleSubmit(onSubmit)} className="sp-form-container">
+              <form
+                onSubmit={handleSubmit(onSubmit)}
+                className="sp-form-container"
+              >
                 <div className="sp-input-wrapper">
                   <label className="sp-input-label">Player Name</label>
                   <input
@@ -89,16 +97,17 @@ const StartPage = () => {
                       required: 'Player name is required',
                       minLength: {
                         value: 2,
-                        message: 'Name must be at least 2 characters'
+                        message: 'Name must be at least 2 characters',
                       },
                       maxLength: {
                         value: 20,
-                        message: 'Name must be less than 20 characters'
+                        message: 'Name must be less than 20 characters',
                       },
                       pattern: {
                         value: /^[a-zA-Z0-9_-]+$/,
-                        message: 'Only letters, numbers, underscore and dash allowed'
-                      }
+                        message:
+                          'Only letters, numbers, underscore and dash allowed',
+                      },
                     })}
                   />
                   {errors.playerName ? (
@@ -138,7 +147,8 @@ const StartPage = () => {
               {/* Game info */}
               <div className="sp-game-info">
                 <p className="sp-game-info-text">
-                  A strategic board game for 4 players.<br/>
+                  A strategic board game for 4 players.
+                  <br />
                   Create or join a room to start playing!
                 </p>
               </div>

@@ -1,8 +1,8 @@
 /**
  * 🔄 **RecoveryService** - Event Sequence Tracking and Recovery (TypeScript)
- * 
+ *
  * Phase 1, Task 1.3: Foundation Services
- * 
+ *
  * Features:
  * ✅ Event sequence tracking with gap detection
  * ✅ State recovery and replay functionality
@@ -23,13 +23,13 @@ import type {
   SequenceGap,
   RecoveryEventDetail,
   RecoveryStatus,
-  EventBuffer
+  EventBuffer,
 } from './types';
 
 export class RecoveryService extends EventTarget {
   // Singleton instance
   private static instance: RecoveryService | null = null;
-  
+
   /**
    * Get the singleton instance
    */
@@ -47,9 +47,11 @@ export class RecoveryService extends EventTarget {
 
   private constructor() {
     super();
-    
+
     if (RecoveryService.instance) {
-      throw new Error('RecoveryService is a singleton. Use RecoveryService.getInstance()');
+      throw new Error(
+        'RecoveryService is a singleton. Use RecoveryService.getInstance()'
+      );
     }
 
     // Default configuration
@@ -59,7 +61,7 @@ export class RecoveryService extends EventTarget {
       recoveryTimeout: 30000, // 30 second timeout for recovery
       enablePersistence: true, // Enable localStorage persistence
       maxRetries: 3, // Max recovery attempts
-      gapDetectionThreshold: 5 // Detect gaps > 5 sequence numbers
+      gapDetectionThreshold: 5, // Detect gaps > 5 sequence numbers
     };
 
     this.setupEventListeners();
@@ -90,14 +92,14 @@ export class RecoveryService extends EventTarget {
       recoveryAttempts: 0,
       gapsDetected: [],
       lastSnapshotSequence: 0,
-      recoveryStartTime: null
+      recoveryStartTime: null,
     };
 
     this.roomStates.set(roomId, initialState);
     this.eventBuffers.set(roomId, {
       events: [],
       maxSize: this.config.maxEventBuffer,
-      nextExpectedSequence: 1
+      nextExpectedSequence: 1,
     });
 
     // Try to restore from persistence
@@ -112,7 +114,7 @@ export class RecoveryService extends EventTarget {
   recordEvent(roomId: string, event: EventSequence): void {
     const recoveryState = this.roomStates.get(roomId);
     const eventBuffer = this.eventBuffers.get(roomId);
-    
+
     if (!recoveryState || !eventBuffer) {
       console.warn(`RecoveryService: Room ${roomId} not initialized`);
       return;
@@ -125,7 +127,10 @@ export class RecoveryService extends EventTarget {
     this.addToEventBuffer(roomId, event);
 
     // Update recovery state
-    recoveryState.lastSequence = Math.max(recoveryState.lastSequence, event.sequence);
+    recoveryState.lastSequence = Math.max(
+      recoveryState.lastSequence,
+      event.sequence
+    );
     recoveryState.expectedSequence = recoveryState.lastSequence + 1;
 
     // Create snapshot if needed
@@ -138,7 +143,9 @@ export class RecoveryService extends EventTarget {
       this.persistState(roomId);
     }
 
-    console.log(`🔄 Event recorded: ${event.type} (seq: ${event.sequence}) for room ${roomId}`);
+    console.log(
+      `🔄 Event recorded: ${event.type} (seq: ${event.sequence}) for room ${roomId}`
+    );
   }
 
   /**
@@ -159,54 +166,72 @@ export class RecoveryService extends EventTarget {
     recoveryState.recoveryStartTime = Date.now();
     recoveryState.recoveryAttempts++;
 
-    this.dispatchEvent(new CustomEvent<RecoveryEventDetail>('recoveryStarted', {
-      detail: { roomId, attempt: recoveryState.recoveryAttempts, timestamp: Date.now() }
-    }));
+    this.dispatchEvent(
+      new CustomEvent<RecoveryEventDetail>('recoveryStarted', {
+        detail: {
+          roomId,
+          attempt: recoveryState.recoveryAttempts,
+          timestamp: Date.now(),
+        },
+      })
+    );
 
     try {
-      const startSequence = fromSequence || this.findOptimalRecoveryPoint(roomId);
-      console.log(`🔄 Starting recovery for room ${roomId} from sequence ${startSequence}`);
+      const startSequence =
+        fromSequence || this.findOptimalRecoveryPoint(roomId);
+      console.log(
+        `🔄 Starting recovery for room ${roomId} from sequence ${startSequence}`
+      );
 
       // Request missing events from backend
       await this.requestMissingEvents(roomId, startSequence);
 
       // Apply recovery if successful
       const success = await this.applyRecovery(roomId, startSequence);
-      
+
       if (success) {
         recoveryState.isRecovering = false;
         recoveryState.recoveryAttempts = 0;
         recoveryState.gapsDetected = [];
 
-        this.dispatchEvent(new CustomEvent<RecoveryEventDetail>('recoveryCompleted', {
-          detail: { roomId, timestamp: Date.now() }
-        }));
+        this.dispatchEvent(
+          new CustomEvent<RecoveryEventDetail>('recoveryCompleted', {
+            detail: { roomId, timestamp: Date.now() },
+          })
+        );
 
         console.log(`✅ Recovery completed for room ${roomId}`);
         return true;
       } else {
         throw new Error('Recovery application failed');
       }
-
     } catch (error) {
       recoveryState.isRecovering = false;
-      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-      
+      const errorMessage =
+        error instanceof Error ? error.message : 'Unknown error';
+
       console.error(`❌ Recovery failed for room ${roomId}:`, error);
-      
-      this.dispatchEvent(new CustomEvent<RecoveryEventDetail>('recoveryFailed', {
-        detail: { 
-          roomId, 
-          error: errorMessage,
-          attempt: recoveryState.recoveryAttempts,
-          timestamp: Date.now() 
-        }
-      }));
+
+      this.dispatchEvent(
+        new CustomEvent<RecoveryEventDetail>('recoveryFailed', {
+          detail: {
+            roomId,
+            error: errorMessage,
+            attempt: recoveryState.recoveryAttempts,
+            timestamp: Date.now(),
+          },
+        })
+      );
 
       // Retry if under limit
       if (recoveryState.recoveryAttempts < this.config.maxRetries) {
-        console.log(`🔄 Scheduling retry for room ${roomId} (attempt ${recoveryState.recoveryAttempts + 1})`);
-        setTimeout(() => this.startRecovery(roomId), 2000 * recoveryState.recoveryAttempts);
+        console.log(
+          `🔄 Scheduling retry for room ${roomId} (attempt ${recoveryState.recoveryAttempts + 1})`
+        );
+        setTimeout(
+          () => this.startRecovery(roomId),
+          2000 * recoveryState.recoveryAttempts
+        );
       }
 
       return false;
@@ -230,7 +255,7 @@ export class RecoveryService extends EventTarget {
         gapsDetected: 0,
         snapshotCount: 0,
         eventBufferSize: 0,
-        recoveryAttempts: 0
+        recoveryAttempts: 0,
       };
     }
 
@@ -245,7 +270,7 @@ export class RecoveryService extends EventTarget {
       eventBufferSize: eventBuffer.events.length,
       recoveryAttempts: recoveryState.recoveryAttempts,
       lastSnapshotSequence: recoveryState.lastSnapshotSequence,
-      recoveryStartTime: recoveryState.recoveryStartTime
+      recoveryStartTime: recoveryState.recoveryStartTime,
     };
   }
 
@@ -262,7 +287,7 @@ export class RecoveryService extends EventTarget {
         sequence: recoveryState.lastSequence,
         timestamp: Date.now(),
         gameState: JSON.parse(JSON.stringify(gameState)), // Deep clone
-        roomId
+        roomId,
       };
 
       recoveryState.snapshots.push(snapshot);
@@ -277,9 +302,10 @@ export class RecoveryService extends EventTarget {
         this.persistState(roomId);
       }
 
-      console.log(`📸 Snapshot created for room ${roomId} at sequence ${snapshot.sequence}`);
+      console.log(
+        `📸 Snapshot created for room ${roomId} at sequence ${snapshot.sequence}`
+      );
       return true;
-
     } catch (error) {
       console.error(`Failed to create snapshot for room ${roomId}:`, error);
       return false;
@@ -292,7 +318,7 @@ export class RecoveryService extends EventTarget {
   cleanupRoom(roomId: string): void {
     this.roomStates.delete(roomId);
     this.eventBuffers.delete(roomId);
-    
+
     if (this.config.enablePersistence) {
       this.clearPersistedState(roomId);
     }
@@ -305,7 +331,7 @@ export class RecoveryService extends EventTarget {
    */
   destroy(): void {
     this.isDestroyed = true;
-    
+
     // Clean up all rooms
     const roomIds = Array.from(this.roomStates.keys());
     for (const roomId of roomIds) {
@@ -314,7 +340,7 @@ export class RecoveryService extends EventTarget {
 
     // Reset singleton
     RecoveryService.instance = null;
-    
+
     console.log('🔄 RecoveryService: Destroyed');
   }
 
@@ -325,14 +351,26 @@ export class RecoveryService extends EventTarget {
    */
   private setupEventListeners(): void {
     // Listen for network events to track sequences
-    networkService.addEventListener('message', this.handleNetworkMessage.bind(this));
-    
+    networkService.addEventListener(
+      'message',
+      this.handleNetworkMessage.bind(this)
+    );
+
     // Listen for connection events to trigger recovery
-    networkService.addEventListener('connected', this.handleReconnection.bind(this));
-    networkService.addEventListener('reconnected', this.handleReconnection.bind(this));
-    
+    networkService.addEventListener(
+      'connected',
+      this.handleReconnection.bind(this)
+    );
+    networkService.addEventListener(
+      'reconnected',
+      this.handleReconnection.bind(this)
+    );
+
     // Listen for game state changes to create snapshots
-    gameService.addEventListener('stateChange', this.handleStateChange.bind(this));
+    gameService.addEventListener(
+      'stateChange',
+      this.handleStateChange.bind(this)
+    );
   }
 
   /**
@@ -349,7 +387,7 @@ export class RecoveryService extends EventTarget {
       type: message.event,
       data: message.data,
       timestamp: message.timestamp,
-      id: message.id
+      id: message.id,
     };
 
     this.recordEvent(roomId, eventSequence);
@@ -365,7 +403,9 @@ export class RecoveryService extends EventTarget {
     // Check if recovery is needed
     const recoveryState = this.roomStates.get(roomId);
     if (recoveryState && this.hasSequenceGaps(roomId)) {
-      console.log(`🔄 Detected sequence gaps after reconnection, starting recovery for ${roomId}`);
+      console.log(
+        `🔄 Detected sequence gaps after reconnection, starting recovery for ${roomId}`
+      );
       this.startRecovery(roomId);
     }
   }
@@ -386,25 +426,31 @@ export class RecoveryService extends EventTarget {
     if (!recoveryState) return;
 
     const expectedSeq = recoveryState.expectedSequence;
-    
+
     if (sequence > expectedSeq) {
       const gap: SequenceGap = {
         start: expectedSeq,
         end: sequence - 1,
-        detected: Date.now()
+        detected: Date.now(),
       };
 
       recoveryState.gapsDetected.push(gap);
-      
-      console.warn(`⚠️ Sequence gap detected in room ${roomId}: ${gap.start}-${gap.end}`);
-      
-      this.dispatchEvent(new CustomEvent<RecoveryEventDetail>('sequenceGap', {
-        detail: { roomId, gap, timestamp: Date.now() }
-      }));
+
+      console.warn(
+        `⚠️ Sequence gap detected in room ${roomId}: ${gap.start}-${gap.end}`
+      );
+
+      this.dispatchEvent(
+        new CustomEvent<RecoveryEventDetail>('sequenceGap', {
+          detail: { roomId, gap, timestamp: Date.now() },
+        })
+      );
 
       // Auto-start recovery if gap is significant
       if (sequence - expectedSeq >= this.config.gapDetectionThreshold) {
-        console.log(`🔄 Large gap detected, starting automatic recovery for room ${roomId}`);
+        console.log(
+          `🔄 Large gap detected, starting automatic recovery for room ${roomId}`
+        );
         this.startRecovery(roomId);
       }
     }
@@ -418,9 +464,13 @@ export class RecoveryService extends EventTarget {
     if (!buffer) return;
 
     // Check for duplicates
-    const existing = buffer.events.find(e => e.sequence === event.sequence && e.id === event.id);
+    const existing = buffer.events.find(
+      (e) => e.sequence === event.sequence && e.id === event.id
+    );
     if (existing) {
-      console.log(`Duplicate event detected: ${event.type} (seq: ${event.sequence})`);
+      console.log(
+        `Duplicate event detected: ${event.type} (seq: ${event.sequence})`
+      );
       return;
     }
 
@@ -440,7 +490,8 @@ export class RecoveryService extends EventTarget {
    * Check if snapshot should be created
    */
   private shouldCreateSnapshot(recoveryState: RecoveryState): boolean {
-    const eventsSinceSnapshot = recoveryState.lastSequence - recoveryState.lastSnapshotSequence;
+    const eventsSinceSnapshot =
+      recoveryState.lastSequence - recoveryState.lastSnapshotSequence;
     return eventsSinceSnapshot >= this.config.snapshotInterval;
   }
 
@@ -453,7 +504,8 @@ export class RecoveryService extends EventTarget {
 
     // Use latest snapshot if available
     if (recoveryState.snapshots.length > 0) {
-      const latestSnapshot = recoveryState.snapshots[recoveryState.snapshots.length - 1];
+      const latestSnapshot =
+        recoveryState.snapshots[recoveryState.snapshots.length - 1];
       return latestSnapshot.sequence + 1;
     }
 
@@ -469,7 +521,10 @@ export class RecoveryService extends EventTarget {
   /**
    * Request missing events from backend
    */
-  private async requestMissingEvents(roomId: string, fromSequence: number): Promise<void> {
+  private async requestMissingEvents(
+    roomId: string,
+    fromSequence: number
+  ): Promise<void> {
     return new Promise((resolve, reject) => {
       const timeout = setTimeout(() => {
         reject(new Error('Recovery request timeout'));
@@ -480,7 +535,10 @@ export class RecoveryService extends EventTarget {
         const customEvent = event as CustomEvent;
         if (customEvent.detail.roomId === roomId) {
           clearTimeout(timeout);
-          networkService.removeEventListener('recovery_response', handleRecovery);
+          networkService.removeEventListener(
+            'recovery_response',
+            handleRecovery
+          );
           resolve();
         }
       };
@@ -490,7 +548,7 @@ export class RecoveryService extends EventTarget {
       // Send recovery request
       const success = networkService.send(roomId, 'request_recovery', {
         from_sequence: fromSequence,
-        to_sequence: this.roomStates.get(roomId)?.lastSequence || fromSequence
+        to_sequence: this.roomStates.get(roomId)?.lastSequence || fromSequence,
       });
 
       if (!success) {
@@ -504,25 +562,29 @@ export class RecoveryService extends EventTarget {
   /**
    * Apply recovery to game state
    */
-  private async applyRecovery(roomId: string, fromSequence: number): Promise<boolean> {
+  private async applyRecovery(
+    roomId: string,
+    fromSequence: number
+  ): Promise<boolean> {
     const recoveryState = this.roomStates.get(roomId);
     if (!recoveryState) return false;
 
     try {
       // Find best snapshot to restore from
       const snapshot = this.findBestSnapshot(roomId, fromSequence);
-      
+
       if (snapshot) {
-        console.log(`🔄 Restoring from snapshot at sequence ${snapshot.sequence}`);
+        console.log(
+          `🔄 Restoring from snapshot at sequence ${snapshot.sequence}`
+        );
         // Note: This would require GameService to support state restoration
         // For now, we rely on the backend to send state updates
       }
 
       // Clear gaps since we're recovering
       recoveryState.gapsDetected = [];
-      
-      return true;
 
+      return true;
     } catch (error) {
       console.error(`Failed to apply recovery for room ${roomId}:`, error);
       return false;
@@ -532,13 +594,16 @@ export class RecoveryService extends EventTarget {
   /**
    * Find best snapshot for recovery
    */
-  private findBestSnapshot(roomId: string, targetSequence: number): RecoverySnapshot | null {
+  private findBestSnapshot(
+    roomId: string,
+    targetSequence: number
+  ): RecoverySnapshot | null {
     const recoveryState = this.roomStates.get(roomId);
     if (!recoveryState || recoveryState.snapshots.length === 0) return null;
 
     // Find snapshot closest to but not exceeding target sequence
     let bestSnapshot: RecoverySnapshot | null = null;
-    
+
     for (const snapshot of recoveryState.snapshots) {
       if (snapshot.sequence <= targetSequence) {
         if (!bestSnapshot || snapshot.sequence > bestSnapshot.sequence) {
@@ -565,20 +630,23 @@ export class RecoveryService extends EventTarget {
     try {
       const recoveryState = this.roomStates.get(roomId);
       const eventBuffer = this.eventBuffers.get(roomId);
-      
+
       if (recoveryState && eventBuffer) {
         const persistData = {
           recoveryState,
           eventBuffer: {
             ...eventBuffer,
-            events: eventBuffer.events.slice(-100) // Keep last 100 events only
-          }
+            events: eventBuffer.events.slice(-100), // Keep last 100 events only
+          },
         };
-        
+
         localStorage.setItem(`recovery_${roomId}`, JSON.stringify(persistData));
       }
     } catch (error) {
-      console.warn(`Failed to persist recovery state for room ${roomId}:`, error);
+      console.warn(
+        `Failed to persist recovery state for room ${roomId}:`,
+        error
+      );
     }
   }
 
@@ -590,19 +658,24 @@ export class RecoveryService extends EventTarget {
       const stored = localStorage.getItem(`recovery_${roomId}`);
       if (stored) {
         const persistData = JSON.parse(stored);
-        
+
         if (persistData.recoveryState) {
           this.roomStates.set(roomId, persistData.recoveryState);
         }
-        
+
         if (persistData.eventBuffer) {
           this.eventBuffers.set(roomId, persistData.eventBuffer);
         }
-        
-        console.log(`🔄 Restored recovery state for room ${roomId} from persistence`);
+
+        console.log(
+          `🔄 Restored recovery state for room ${roomId} from persistence`
+        );
       }
     } catch (error) {
-      console.warn(`Failed to restore recovery state for room ${roomId}:`, error);
+      console.warn(
+        `Failed to restore recovery state for room ${roomId}:`,
+        error
+      );
     }
   }
 
@@ -613,7 +686,10 @@ export class RecoveryService extends EventTarget {
     try {
       localStorage.removeItem(`recovery_${roomId}`);
     } catch (error) {
-      console.warn(`Failed to clear persisted state for room ${roomId}:`, error);
+      console.warn(
+        `Failed to clear persisted state for room ${roomId}:`,
+        error
+      );
     }
   }
 }

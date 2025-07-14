@@ -4,7 +4,7 @@ import { formatPlayType } from '../../utils/playTypeFormatter';
 
 /**
  * GameLayout Component
- * 
+ *
  * Provides consistent layout wrapper for all game phases:
  * - Fixed 9:16 aspect ratio container
  * - Round indicator badge
@@ -12,10 +12,10 @@ import { formatPlayType } from '../../utils/playTypeFormatter';
  * - Phase header with title/subtitle
  * - Content area for phase-specific content
  */
-const GameLayout = ({ 
-  children, 
-  phase, 
-  roundNumber = 1, 
+const GameLayout = ({
+  children,
+  phase,
+  roundNumber = 1,
   showMultiplier = false,
   multiplierValue = 2,
   // Additional props for turn phase
@@ -23,7 +23,7 @@ const GameLayout = ({
   currentPlayer = '',
   turnRequirement = null,
   // Additional props for turn results phase
-  winner = ''
+  winner = '',
 }) => {
   // Get phase title and subtitle based on current phase
   const getPhaseInfo = () => {
@@ -31,49 +31,51 @@ const GameLayout = ({
       case 'preparation':
         return {
           title: 'Preparation Phase',
-          subtitle: 'Dealing cards to all players'
+          subtitle: 'Dealing cards to all players',
         };
       case 'declaration':
         return {
           title: 'Declaration',
-          subtitle: 'Choose your target piles'
+          subtitle: 'Choose your target piles',
         };
       case 'turn':
         return {
           title: playType ? formatPlayType(playType) : 'Turn Phase',
-          subtitle: currentPlayer ? `Round ${roundNumber} • ${currentPlayer}'s Turn` : 'Play your pieces strategically'
+          subtitle: currentPlayer
+            ? `Round ${roundNumber} • ${currentPlayer}'s Turn`
+            : 'Play your pieces strategically',
         };
       case 'turn_results':
         return {
           title: 'Turn Results',
-          subtitle: winner ? `${winner} wins this turn!` : 'See who won this turn'
+          subtitle: winner
+            ? `${winner} wins this turn!`
+            : 'See who won this turn',
         };
       case 'scoring':
         return {
           title: 'Scoring',
-          subtitle: 'Round complete'
+          subtitle: 'Round complete',
         };
       case 'game_over':
         return {
           title: 'Game Over',
-          subtitle: 'Final results'
+          subtitle: 'Final results',
         };
       default:
         return {
           title: 'Loading',
-          subtitle: 'Please wait...'
+          subtitle: 'Please wait...',
         };
     }
   };
 
   const { title, subtitle } = getPhaseInfo();
-  
+
   return (
     <div className="gl-game-container">
       {/* Round indicator */}
-      <div className="gl-round-indicator">
-        Round {roundNumber}
-      </div>
+      <div className="gl-round-indicator">Round {roundNumber}</div>
 
       {/* Multiplier badge (shown conditionally) */}
       <div className={`gl-multiplier-badge ${showMultiplier ? 'show' : ''}`}>
@@ -82,14 +84,16 @@ const GameLayout = ({
 
       {/* Phase header */}
       <div className="gl-phase-header">
-        <h1 className={`gl-phase-title ${phase === 'turn' && playType ? 'turn-play-type' : ''}`}>{title}</h1>
+        <h1
+          className={`gl-phase-title ${phase === 'turn' && playType ? 'turn-play-type' : ''}`}
+        >
+          {title}
+        </h1>
         <p className="gl-phase-subtitle">{subtitle}</p>
       </div>
 
       {/* Content section */}
-      <div className="gl-content-section">
-        {children}
-      </div>
+      <div className="gl-content-section">{children}</div>
     </div>
   );
 };
@@ -102,7 +106,7 @@ GameLayout.propTypes = {
     'turn',
     'turn_results',
     'scoring',
-    'game_over'
+    'game_over',
   ]).isRequired,
   roundNumber: PropTypes.number,
   showMultiplier: PropTypes.bool,
@@ -111,9 +115,9 @@ GameLayout.propTypes = {
   currentPlayer: PropTypes.string,
   turnRequirement: PropTypes.shape({
     type: PropTypes.string,
-    text: PropTypes.string
+    text: PropTypes.string,
   }),
-  winner: PropTypes.string
+  winner: PropTypes.string,
 };
 
 export default GameLayout;

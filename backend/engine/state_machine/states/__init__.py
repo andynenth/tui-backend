@@ -7,9 +7,9 @@ from .scoring_state import ScoringState
 from .round_start_state import RoundStartState
 
 __all__ = [
-    'DeclarationState',
-    'PreparationState',
-    'TurnState',
-    'ScoringState',
-    'RoundStartState',
+    "DeclarationState",
+    "PreparationState",
+    "TurnState",
+    "ScoringState",
+    "RoundStartState",
 ]

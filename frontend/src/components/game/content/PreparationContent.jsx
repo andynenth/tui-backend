@@ -4,7 +4,7 @@ import { PieceTray } from '../shared';
 
 /**
  * PreparationContent Component
- * 
+ *
  * Displays the preparation phase with:
  * - Dealing animation (3.5s) in content-section
  * - Weak hand alert after dealing
@@ -26,13 +26,11 @@ const PreparationContent = ({
   decisionsNeeded = 0,
   dealingCards = false,
   onAcceptRedeal,
-  onDeclineRedeal
+  onDeclineRedeal,
 }) => {
   const [showDealing, setShowDealing] = useState(true);
   const [isRedealing, setIsRedealing] = useState(false);
   const [dealCount, setDealCount] = useState(0);
-  
-  
 
   // Auto-hide dealing animation after 3.5s
   useEffect(() => {
@@ -47,23 +45,21 @@ const PreparationContent = ({
 
   // Watch for redeal animation trigger
   useEffect(() => {
-    
     if (dealingCards === true && !showDealing) {
       // Not initial deal, must be redeal!
       setIsRedealing(true);
       // Increment deal count to force re-animation
-      setDealCount(prev => prev + 1);
+      setDealCount((prev) => prev + 1);
     }
   }, [dealingCards, showDealing]);
 
   // Separate effect for redeal animation timer
   useEffect(() => {
-    
     if (isRedealing) {
       const timer = setTimeout(() => {
         setIsRedealing(false);
       }, 3500);
-      
+
       return () => {
         clearTimeout(timer);
       };
@@ -73,7 +69,7 @@ const PreparationContent = ({
   // Check if we should show weak hand alert
   const shouldShowWeakHandAlert = () => {
     const shouldShow = !showDealing && !isRedealing && isMyHandWeak;
-    
+
     if (!showDealing && !isRedealing) {
       // Show alert if:
       // 1. Player has a weak hand (no piece > 9)
@@ -95,7 +91,7 @@ const PreparationContent = ({
     <>
       {/* Content section - shows dealing then weak hand alert */}
       <div className="content-section">
-        {(showDealing || isRedealing) ? (
+        {showDealing || isRedealing ? (
           /* Dealing animation */
           <div className="dealing-container">
             <div className="dealing-icon">
@@ -103,9 +99,13 @@ const PreparationContent = ({
               <div className="card-stack"></div>
               <div className="card-stack"></div>
             </div>
-            <div className="dealing-message">{isRedealing ? "Redealing Cards" : "Dealing Cards"}</div>
-            <div className="dealing-status">Please wait while cards are being dealt...</div>
-            
+            <div className="dealing-message">
+              {isRedealing ? 'Redealing Cards' : 'Dealing Cards'}
+            </div>
+            <div className="dealing-status">
+              Please wait while cards are being dealt...
+            </div>
+
             <div className="progress-container">
               <div className="progress-bar">
                 <div className="progress-fill"></div>
@@ -117,23 +117,22 @@ const PreparationContent = ({
             {/* Weak hand alert - only show after dealing */}
             {shouldShowWeakHandAlert() && (
               <div className="weak-hand-alert show">
-                <div className="alert-title">
-                  ⚠️ Weak Hand Detected
-                </div>
+                <div className="alert-title">⚠️ Weak Hand Detected</div>
                 <div className="alert-message">
-                  No piece greater than {highestCardValue} points. Would you like to request a redeal?
+                  No piece greater than {highestCardValue} points. Would you
+                  like to request a redeal?
                   <div className="multiplier-warning">
                     Warning: {redealMultiplier + 1}x penalty if you redeal!
                   </div>
                 </div>
                 <div className="alert-buttons">
-                  <button 
+                  <button
                     className="alert-button primary"
                     onClick={onAcceptRedeal}
                   >
                     Request Redeal
                   </button>
-                  <button 
+                  <button
                     className="alert-button secondary"
                     onClick={onDeclineRedeal}
                   >
@@ -144,7 +143,9 @@ const PreparationContent = ({
             )}
 
             {/* Simultaneous mode waiting indicator */}
-            {simultaneousMode && weakPlayersAwaiting.length > 0 && !isMyDecision && (
+            {simultaneousMode &&
+              weakPlayersAwaiting.length > 0 &&
+              !isMyDecision && (
                 <div className="waiting-indicator">
                   <div className="waiting-text">
                     Waiting for weak hand decisions...
@@ -153,7 +154,7 @@ const PreparationContent = ({
                     {decisionsReceived} of {decisionsNeeded} players decided
                   </div>
                 </div>
-            )}
+              )}
           </>
         )}
       </div>
@@ -187,7 +188,7 @@ PreparationContent.propTypes = {
   decisionsNeeded: PropTypes.number,
   dealingCards: PropTypes.bool,
   onAcceptRedeal: PropTypes.func,
-  onDeclineRedeal: PropTypes.func
+  onDeclineRedeal: PropTypes.func,
 };
 
 export default PreparationContent;

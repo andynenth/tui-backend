@@ -13,9 +13,9 @@ export function formatPlayType(playType) {
     FIVE_OF_A_KIND: 'Five of a Kind',
     DOUBLE_STRAIGHT: 'Double Straight',
     INVALID: 'Invalid Play',
-    UNKNOWN: 'Unknown'
+    UNKNOWN: 'Unknown',
   };
-  
+
   return typeMap[playType] || playType;
 }
 
@@ -32,8 +32,8 @@ export function getPlayTypeDescription(playType) {
     EXTENDED_STRAIGHT: '4 cards from valid group with 1 duplicate',
     EXTENDED_STRAIGHT_5: '5 cards from valid group with 2 duplicates',
     FIVE_OF_A_KIND: '5 SOLDIERs of the same color',
-    DOUBLE_STRAIGHT: '2 CHARIOTs, 2 HORSEs, 2 CANNONs (same color)'
+    DOUBLE_STRAIGHT: '2 CHARIOTs, 2 HORSEs, 2 CANNONs (same color)',
   };
-  
+
   return descriptions[playType] || '';
 }

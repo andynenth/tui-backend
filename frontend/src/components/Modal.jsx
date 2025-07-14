@@ -12,7 +12,7 @@ const Modal = ({
   showCloseButton = true,
   closeOnOverlayClick = true,
   closeOnEscape = true,
-  className = ''
+  className = '',
 }) => {
   const modalRef = useRef(null);
   const overlayRef = useRef(null);
@@ -62,13 +62,12 @@ const Modal = ({
     md: 'max-w-lg',
     lg: 'max-w-2xl',
     xl: 'max-w-4xl',
-    full: 'max-w-full mx-4'
+    full: 'max-w-full mx-4',
   };
 
   if (!isOpen) {
     return null;
   }
-
 
   return (
     <div
@@ -91,11 +90,14 @@ const Modal = ({
         {(title || showCloseButton) && (
           <div className="flex items-center justify-between p-4 border-b border-gray-200">
             {title && (
-              <h2 id="modal-title" className="text-lg font-semibold text-gray-900">
+              <h2
+                id="modal-title"
+                className="text-lg font-semibold text-gray-900"
+              >
                 {title}
               </h2>
             )}
-            
+
             {showCloseButton && (
               <Button
                 variant="ghost"

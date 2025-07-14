@@ -4,34 +4,41 @@
 
 :root {
   /* Primary Colors */
-  --color-primary: #0D6EFD;
-  --color-primary-dark: #0056B3;
-  --color-success: #28A745;
-  --color-success-light: #20C997;
-  --color-warning: #FFC107;
-  --color-warning-dark: #FF9800;
-  --color-danger: #DC3545;
-  --color-danger-dark: #C82333;
-  
+  --color-primary: #0d6efd;
+  --color-primary-dark: #0056b3;
+  --color-success: #28a745;
+  --color-success-light: #20c997;
+  --color-warning: #ffc107;
+  --color-warning-dark: #ff9800;
+  --color-danger: #dc3545;
+  --color-danger-dark: #c82333;
+
   /* Neutral Colors */
-  --color-gray-50: #F8F9FA;
-  --color-gray-100: #E9ECEF;
-  --color-gray-200: #DEE2E6;
-  --color-gray-300: #CED4DA;
-  --color-gray-400: #ADB5BD;
-  --color-gray-500: #6C757D;
+  --color-gray-50: #f8f9fa;
+  --color-gray-100: #e9ecef;
+  --color-gray-200: #dee2e6;
+  --color-gray-300: #ced4da;
+  --color-gray-400: #adb5bd;
+  --color-gray-500: #6c757d;
   --color-gray-600: #495057;
-  --color-gray-700: #343A40;
+  --color-gray-700: #343a40;
   --color-gray-800: #212529;
-  
+
   /* Gradients */
-  --gradient-gray: linear-gradient(135deg, #F8F9FA 0%, #E9ECEF 25%, #DEE2E6 50%, #CED4DA 75%, #ADB5BD 100%);
-  --gradient-success: linear-gradient(135deg, #28A745 0%, #20C997 100%);
-  --gradient-warning: linear-gradient(135deg, #FFC107 0%, #FF9800 100%);
-  --gradient-danger: linear-gradient(135deg, #DC3545 0%, #C82333 100%);
-  --gradient-primary: linear-gradient(135deg, #0D6EFD 0%, #0056B3 100%);
-  --gradient-white: linear-gradient(145deg, #FFFFFF 0%, #F8F9FA 100%);
-  
+  --gradient-gray: linear-gradient(
+    135deg,
+    #f8f9fa 0%,
+    #e9ecef 25%,
+    #dee2e6 50%,
+    #ced4da 75%,
+    #adb5bd 100%
+  );
+  --gradient-success: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+  --gradient-warning: linear-gradient(135deg, #ffc107 0%, #ff9800 100%);
+  --gradient-danger: linear-gradient(135deg, #dc3545 0%, #c82333 100%);
+  --gradient-primary: linear-gradient(135deg, #0d6efd 0%, #0056b3 100%);
+  --gradient-white: linear-gradient(145deg, #ffffff 0%, #f8f9fa 100%);
+
   /* Shadows */
   --shadow-sm: 0 2px 6px rgba(0, 0, 0, 0.04);
   --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.08);
@@ -39,36 +46,62 @@
   --shadow-xl: 0 20px 40px rgba(0, 0, 0, 0.15);
   --shadow-inset-white: inset 0 1px 0 rgba(255, 255, 255, 1);
   --shadow-border: 0 0 0 1px rgba(255, 255, 255, 0.9);
-  
+
   /* Table Surface (Wood Texture) */
-  --gradient-wood: linear-gradient(135deg, #E8D5B7 0%, #D4A574 50%, #C19A6B 100%);
-  --gradient-wood-texture: linear-gradient(90deg, rgba(255, 255, 255, 0.1) 0%, transparent 50%, rgba(0, 0, 0, 0.1) 100%);
+  --gradient-wood: linear-gradient(
+    135deg,
+    #e8d5b7 0%,
+    #d4a574 50%,
+    #c19a6b 100%
+  );
+  --gradient-wood-texture: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0.1) 0%,
+    transparent 50%,
+    rgba(0, 0, 0, 0.1) 100%
+  );
   --color-felt: rgba(34, 139, 34, 0.15);
   --color-felt-border: rgba(34, 139, 34, 0.2);
-  
+
   /* Paper Texture */
-  --gradient-paper: radial-gradient(circle at 25% 25%, rgba(255, 255, 255, 0.1) 0%, transparent 50%),
-                    radial-gradient(circle at 75% 75%, rgba(0, 0, 0, 0.02) 0%, transparent 50%);
-  
+  --gradient-paper:
+    radial-gradient(
+      circle at 25% 25%,
+      rgba(255, 255, 255, 0.1) 0%,
+      transparent 50%
+    ),
+    radial-gradient(circle at 75% 75%, rgba(0, 0, 0, 0.02) 0%, transparent 50%);
+
   /* Container Gradients */
-  --gradient-container: linear-gradient(145deg, #FFFFFF 0%, #F8F9FA 100%),
-                        radial-gradient(circle at 20% 30%, rgba(255, 193, 7, 0.03) 0%, transparent 70%),
-                        radial-gradient(circle at 80% 70%, rgba(13, 110, 253, 0.02) 0%, transparent 70%);
-  
+  --gradient-container:
+    linear-gradient(145deg, #ffffff 0%, #f8f9fa 100%),
+    radial-gradient(
+      circle at 20% 30%,
+      rgba(255, 193, 7, 0.03) 0%,
+      transparent 70%
+    ),
+    radial-gradient(
+      circle at 80% 70%,
+      rgba(13, 110, 253, 0.02) 0%,
+      transparent 70%
+    );
+
   /* Animations */
   --transition-base: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   --transition-fast: all 0.15s ease;
-  
+
   /* Typography */
-  --font-primary: 'Plus Jakarta Sans', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-primary:
+    'Plus Jakarta Sans', system-ui, -apple-system, BlinkMacSystemFont,
+    sans-serif;
   --font-serif: 'Crimson Pro', serif;
-  
+
   /* Container Dimensions */
   --container-width: min(100vw, 56.25vh);
   --container-height: min(100vh, 177.78vw);
   --container-max-width: 400px;
   --container-max-height: 711px;
-  
+
   /* Border Radius */
   --radius-sm: 6px;
   --radius-md: 10px;
@@ -78,45 +111,65 @@
 
 /* Animation Keyframes */
 @keyframes float {
-  0%, 100% { transform: translateY(0) rotate(0deg); }
-  33% { transform: translateY(-10px) rotate(5deg); }
-  66% { transform: translateY(-5px) rotate(-3deg); }
+  0%,
+  100% {
+    transform: translateY(0) rotate(0deg);
+  }
+  33% {
+    transform: translateY(-10px) rotate(5deg);
+  }
+  66% {
+    transform: translateY(-5px) rotate(-3deg);
+  }
 }
 
 @keyframes pulse {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.5; }
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
 }
 
 @keyframes spin {
-  from { transform: rotate(0deg); }
-  to { transform: rotate(360deg); }
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 @keyframes slideInFromBottom {
-  from { 
-    transform: translateY(20px); 
-    opacity: 0; 
+  from {
+    transform: translateY(20px);
+    opacity: 0;
   }
-  to { 
-    transform: translateY(0); 
-    opacity: 1; 
+  to {
+    transform: translateY(0);
+    opacity: 1;
   }
 }
 
 @keyframes fadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
 }
 
 @keyframes scaleIn {
-  from { 
-    transform: scale(0.95); 
-    opacity: 0; 
+  from {
+    transform: scale(0.95);
+    opacity: 0;
   }
-  to { 
-    transform: scale(1); 
-    opacity: 1; 
+  to {
+    transform: scale(1);
+    opacity: 1;
   }
 }
 
@@ -157,9 +210,13 @@
 
 /* Primary Button - Yellow/Orange */
 .btn-primary {
-  background: 
-    linear-gradient(135deg, #FFC107 0%, #FF9800 100%),
-    radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.2) 0%, transparent 60%);
+  background:
+    linear-gradient(135deg, #ffc107 0%, #ff9800 100%),
+    radial-gradient(
+      circle at 30% 30%,
+      rgba(255, 255, 255, 0.2) 0%,
+      transparent 60%
+    );
   color: #212529;
   border: 1px solid rgba(255, 193, 7, 0.4);
   box-shadow: 0 4px 8px rgba(255, 193, 7, 0.2);
@@ -171,20 +228,23 @@
 }
 
 .btn-primary:disabled {
-  background: 
-    linear-gradient(145deg, #E9ECEF 0%, #DEE2E6 100%);
-  color: #6C757D;
+  background: linear-gradient(145deg, #e9ecef 0%, #dee2e6 100%);
+  color: #6c757d;
   border-color: rgba(173, 181, 189, 0.3);
-  box-shadow: 
+  box-shadow:
     0 2px 4px rgba(0, 0, 0, 0.04),
     inset 0 1px 0 rgba(255, 255, 255, 1);
 }
 
 /* Success Button - Green */
 .btn-success {
-  background: 
-    linear-gradient(135deg, #28A745 0%, #20C997 100%),
-    radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.2) 0%, transparent 60%);
+  background:
+    linear-gradient(135deg, #28a745 0%, #20c997 100%),
+    radial-gradient(
+      circle at 30% 30%,
+      rgba(255, 255, 255, 0.2) 0%,
+      transparent 60%
+    );
   color: white;
   border: 1px solid rgba(40, 167, 69, 0.4);
   box-shadow: 0 4px 8px rgba(40, 167, 69, 0.2);
@@ -196,17 +256,20 @@
 }
 
 .btn-success:disabled {
-  background: 
-    linear-gradient(145deg, #E9ECEF 0%, #DEE2E6 100%);
-  color: #6C757D;
+  background: linear-gradient(145deg, #e9ecef 0%, #dee2e6 100%);
+  color: #6c757d;
   border-color: rgba(173, 181, 189, 0.3);
 }
 
 /* Secondary Button - White/Gray */
 .btn-secondary {
-  background: 
-    linear-gradient(145deg, #FFFFFF 0%, #F8F9FA 100%),
-    radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.8) 0%, transparent 60%);
+  background:
+    linear-gradient(145deg, #ffffff 0%, #f8f9fa 100%),
+    radial-gradient(
+      circle at 30% 30%,
+      rgba(255, 255, 255, 0.8) 0%,
+      transparent 60%
+    );
   color: #495057;
   border: 1px solid rgba(173, 181, 189, 0.3);
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.06);
@@ -220,8 +283,7 @@
 
 /* Danger Button - Red */
 .btn-danger {
-  background: 
-    linear-gradient(135deg, #DC3545 0%, #C82333 100%);
+  background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);
   color: white;
   border: 1px solid rgba(220, 53, 69, 0.4);
   box-shadow: 0 2px 4px rgba(220, 53, 69, 0.2);
@@ -234,8 +296,7 @@
 
 /* Info Button - Blue */
 .btn-info {
-  background: 
-    linear-gradient(135deg, #0D6EFD 0%, #0056B3 100%);
+  background: linear-gradient(135deg, #0d6efd 0%, #0056b3 100%);
   color: white;
   border: 1px solid rgba(13, 110, 253, 0.4);
   box-shadow: 0 2px 4px rgba(13, 110, 253, 0.2);
@@ -331,7 +392,9 @@
   padding: 6px 12px;
   border-radius: 16px;
   border: 1px solid rgba(40, 167, 69, 0.4);
-  box-shadow: 0 4px 12px rgba(40, 167, 69, 0.2), var(--shadow-inset-white);
+  box-shadow:
+    0 4px 12px rgba(40, 167, 69, 0.2),
+    var(--shadow-inset-white);
   font-weight: 600;
   font-size: 11px;
   z-index: 1000;

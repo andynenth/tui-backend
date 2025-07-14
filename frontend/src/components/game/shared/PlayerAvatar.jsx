@@ -3,10 +3,10 @@ import PropTypes from 'prop-types';
 
 /**
  * PlayerAvatar Component
- * 
+ *
  * A reusable component that displays player initials in a circular avatar.
  * Extracts the common avatar pattern used across game phases.
- * 
+ *
  * @param {string} name - The player's name (required)
  * @param {string} className - Additional CSS class names (optional)
  * @param {string} size - Avatar size: 'small', 'medium', 'large' (default: 'medium')
@@ -40,7 +40,7 @@ const PlayerAvatar = ({ name, className = '', size = 'medium' }) => {
 PlayerAvatar.propTypes = {
   name: PropTypes.string.isRequired,
   className: PropTypes.string,
-  size: PropTypes.oneOf(['small', 'medium', 'large'])
+  size: PropTypes.oneOf(['small', 'medium', 'large']),
 };
 
 export default PlayerAvatar;

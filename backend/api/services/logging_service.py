@@ -13,21 +13,24 @@ from dataclasses import dataclass, asdict
 from contextlib import contextmanager
 import threading
 
+
 @dataclass
 class LogContext:
     """Context information for structured logging"""
+
     correlation_id: str
     room_id: Optional[str] = None
     player_id: Optional[str] = None
     session_id: Optional[str] = None
     operation: Optional[str] = None
-    
+
     def to_dict(self) -> Dict[str, Any]:
         return {k: v for k, v in asdict(self).items() if v is not None}
 
+
 class JsonFormatter(logging.Formatter):
     """Custom JSON formatter for structured logging"""
-    
+
     def format(self, record: logging.LogRecord) -> str:
         """Format log record as JSON"""
         log_entry = {
@@ -37,58 +40,78 @@ class JsonFormatter(logging.Formatter):
             "message": record.getMessage(),
             "module": record.module,
             "function": record.funcName,
-            "line": record.lineno
+            "line": record.lineno,
         }
-        
+
         # Add context if available
-        if hasattr(record, 'context'):
+        if hasattr(record, "context"):
             log_entry["context"] = record.context
-            
+
         # Add extra fields
         for key, value in record.__dict__.items():
-            if key not in ['name', 'msg', 'args', 'levelname', 'levelno', 'pathname', 
-                          'filename', 'module', 'lineno', 'funcName', 'created', 'msecs',
-                          'relativeCreated', 'thread', 'threadName', 'processName', 
-                          'process', 'stack_info', 'exc_info', 'exc_text', 'context']:
+            if key not in [
+                "name",
+                "msg",
+                "args",
+                "levelname",
+                "levelno",
+                "pathname",
+                "filename",
+                "module",
+                "lineno",
+                "funcName",
+                "created",
+                "msecs",
+                "relativeCreated",
+                "thread",
+                "threadName",
+                "processName",
+                "process",
+                "stack_info",
+                "exc_info",
+                "exc_text",
+                "context",
+            ]:
                 log_entry[key] = value
-                
+
         # Add exception info if present
         if record.exc_info:
             log_entry["exception"] = self.formatException(record.exc_info)
-            
+
         return json.dumps(log_entry)
+
 
 class GameLogger:
     """Centralized logging service with structured output and correlation IDs"""
-    
+
     def __init__(self):
         self._context_storage = threading.local()
         self.setup_loggers()
-        
+
     def setup_loggers(self):
         """Set up specialized loggers with JSON formatting"""
         # Create formatters
         json_formatter = JsonFormatter()
-        
+
         # Console handler for development
         console_handler = logging.StreamHandler()
         console_handler.setFormatter(json_formatter)
         console_handler.setLevel(logging.INFO)
-        
+
         # Create specialized loggers
-        self.game_logger = self._create_logger('game', console_handler)
-        self.websocket_logger = self._create_logger('websocket', console_handler)
-        self.performance_logger = self._create_logger('performance', console_handler)
-        self.security_logger = self._create_logger('security', console_handler)
-        self.error_logger = self._create_logger('error', console_handler)
-        
+        self.game_logger = self._create_logger("game", console_handler)
+        self.websocket_logger = self._create_logger("websocket", console_handler)
+        self.performance_logger = self._create_logger("performance", console_handler)
+        self.security_logger = self._create_logger("security", console_handler)
+        self.error_logger = self._create_logger("error", console_handler)
+
         # Set levels
         self.game_logger.setLevel(logging.INFO)
         self.websocket_logger.setLevel(logging.INFO)
         self.performance_logger.setLevel(logging.INFO)
         self.security_logger.setLevel(logging.WARNING)
         self.error_logger.setLevel(logging.ERROR)
-        
+
     def _create_logger(self, name: str, handler: logging.Handler) -> logging.Logger:
         """Create a logger with the specified handler"""
         logger = logging.getLogger(name)
@@ -96,47 +119,51 @@ class GameLogger:
         logger.addHandler(handler)
         logger.propagate = False
         return logger
-    
+
     @contextmanager
     def log_context(self, **context_kwargs):
         """Context manager for setting log context"""
-        old_context = getattr(self._context_storage, 'context', None)
-        
+        old_context = getattr(self._context_storage, "context", None)
+
         # Generate correlation ID if not provided
-        if 'correlation_id' not in context_kwargs:
-            context_kwargs['correlation_id'] = str(uuid.uuid4())[:8]
-            
+        if "correlation_id" not in context_kwargs:
+            context_kwargs["correlation_id"] = str(uuid.uuid4())[:8]
+
         self._context_storage.context = LogContext(**context_kwargs)
         try:
             yield self._context_storage.context
         finally:
             self._context_storage.context = old_context
-    
+
     def _get_context(self) -> Optional[Dict[str, Any]]:
         """Get current log context"""
-        context = getattr(self._context_storage, 'context', None)
+        context = getattr(self._context_storage, "context", None)
         return context.to_dict() if context else None
-    
-    def _log_with_context(self, logger: logging.Logger, level: int, message: str, **extra):
+
+    def _log_with_context(
+        self, logger: logging.Logger, level: int, message: str, **extra
+    ):
         """Log message with current context"""
         context = self._get_context()
         if context:
-            extra['context'] = context
+            extra["context"] = context
         logger.log(level, message, extra=extra)
-    
+
     # Game-specific logging methods
-    def log_game_event(self, event: str, room_id: str = None, player_id: str = None, **extra):
+    def log_game_event(
+        self, event: str, room_id: str = None, player_id: str = None, **extra
+    ):
         """Log game-specific events with context"""
         self._log_with_context(
-            self.game_logger, 
-            logging.INFO, 
+            self.game_logger,
+            logging.INFO,
             f"Game event: {event}",
             event_type=event,
             room_id=room_id,
             player_id=player_id,
-            **extra
+            **extra,
         )
-    
+
     def log_phase_change(self, room_id: str, old_phase: str, new_phase: str, **extra):
         """Log phase transitions"""
         self._log_with_context(
@@ -147,9 +174,9 @@ class GameLogger:
             room_id=room_id,
             old_phase=old_phase,
             new_phase=new_phase,
-            **extra
+            **extra,
         )
-    
+
     def log_player_action(self, room_id: str, player_id: str, action: str, **extra):
         """Log player actions"""
         self._log_with_context(
@@ -160,11 +187,13 @@ class GameLogger:
             room_id=room_id,
             player_id=player_id,
             action=action,
-            **extra
+            **extra,
         )
-    
+
     # WebSocket logging methods
-    def log_websocket_event(self, room_id: str, action: str, connection_id: str = None, **extra):
+    def log_websocket_event(
+        self, room_id: str, action: str, connection_id: str = None, **extra
+    ):
         """Log WebSocket events with connection context"""
         self._log_with_context(
             self.websocket_logger,
@@ -174,10 +203,17 @@ class GameLogger:
             room_id=room_id,
             connection_id=connection_id,
             action=action,
-            **extra
+            **extra,
         )
-    
-    def log_message_delivery(self, room_id: str, sequence: int, status: str, latency_ms: float = None, **extra):
+
+    def log_message_delivery(
+        self,
+        room_id: str,
+        sequence: int,
+        status: str,
+        latency_ms: float = None,
+        **extra,
+    ):
         """Log message delivery events"""
         self._log_with_context(
             self.websocket_logger,
@@ -188,10 +224,12 @@ class GameLogger:
             sequence=sequence,
             status=status,
             latency_ms=latency_ms,
-            **extra
+            **extra,
         )
-    
-    def log_connection_event(self, room_id: str, event: str, client_info: dict = None, **extra):
+
+    def log_connection_event(
+        self, room_id: str, event: str, client_info: dict = None, **extra
+    ):
         """Log connection events"""
         self._log_with_context(
             self.websocket_logger,
@@ -201,9 +239,9 @@ class GameLogger:
             room_id=room_id,
             connection_event=event,
             client_info=client_info,
-            **extra
+            **extra,
         )
-    
+
     # Performance logging methods
     def log_performance(self, operation: str, duration_ms: float, **extra):
         """Log performance metrics"""
@@ -214,10 +252,12 @@ class GameLogger:
             event_type="performance",
             operation=operation,
             duration_ms=duration_ms,
-            **extra
+            **extra,
         )
-    
-    def log_slow_operation(self, operation: str, duration_ms: float, threshold_ms: float = 1000, **extra):
+
+    def log_slow_operation(
+        self, operation: str, duration_ms: float, threshold_ms: float = 1000, **extra
+    ):
         """Log slow operations that exceed threshold"""
         if duration_ms > threshold_ms:
             self._log_with_context(
@@ -228,9 +268,9 @@ class GameLogger:
                 operation=operation,
                 duration_ms=duration_ms,
                 threshold_ms=threshold_ms,
-                **extra
+                **extra,
             )
-    
+
     # Security logging methods
     def log_security_event(self, event: str, severity: str = "medium", **extra):
         """Log security-related events"""
@@ -242,10 +282,12 @@ class GameLogger:
             event_type="security",
             security_event=event,
             severity=severity,
-            **extra
+            **extra,
         )
-    
-    def log_authentication_event(self, player_id: str, event: str, success: bool, **extra):
+
+    def log_authentication_event(
+        self, player_id: str, event: str, success: bool, **extra
+    ):
         """Log authentication events"""
         self._log_with_context(
             self.security_logger,
@@ -255,9 +297,9 @@ class GameLogger:
             player_id=player_id,
             auth_event=event,
             success=success,
-            **extra
+            **extra,
         )
-    
+
     # Error logging methods
     def log_error(self, error: Exception, context: str = None, **extra):
         """Log errors with full context"""
@@ -269,9 +311,9 @@ class GameLogger:
             error_type=type(error).__name__,
             error_message=str(error),
             context=context,
-            **extra
+            **extra,
         )
-    
+
     def log_critical_error(self, error: Exception, context: str = None, **extra):
         """Log critical errors that affect system stability"""
         self._log_with_context(
@@ -282,9 +324,9 @@ class GameLogger:
             error_type=type(error).__name__,
             error_message=str(error),
             context=context,
-            **extra
+            **extra,
         )
-    
+
     # Utility methods
     @contextmanager
     def timed_operation(self, operation: str, **context):
@@ -296,40 +338,52 @@ class GameLogger:
             duration_ms = (time.time() - start_time) * 1000
             self.log_performance(operation, duration_ms, **context)
             self.log_slow_operation(operation, duration_ms, **context)
-    
+
     def get_logger(self, name: str) -> logging.Logger:
         """Get a specific logger by name"""
         loggers = {
-            'game': self.game_logger,
-            'websocket': self.websocket_logger,
-            'performance': self.performance_logger,
-            'security': self.security_logger,
-            'error': self.error_logger
+            "game": self.game_logger,
+            "websocket": self.websocket_logger,
+            "performance": self.performance_logger,
+            "security": self.security_logger,
+            "error": self.error_logger,
         }
         return loggers.get(name, self.game_logger)
 
+
 # Global logger instance
 game_logger = GameLogger()
+
 
 # Convenience functions for easy importing
 def log_game_event(event: str, **kwargs):
     """Convenience function for logging game events"""
     game_logger.log_game_event(event, **kwargs)
 
+
 def log_websocket_event(room_id: str, action: str, **kwargs):
     """Convenience function for logging WebSocket events"""
     game_logger.log_websocket_event(room_id, action, **kwargs)
+
 
 def log_performance(operation: str, duration_ms: float, **kwargs):
     """Convenience function for logging performance"""
     game_logger.log_performance(operation, duration_ms, **kwargs)
 
+
 def log_error(error: Exception, context: str = None, **kwargs):
     """Convenience function for logging errors"""
     game_logger.log_error(error, context, **kwargs)
 
+
 # Export for easy importing
 __all__ = [
-    'GameLogger', 'LogContext', 'JsonFormatter', 'game_logger',
-    'log_game_event', 'log_websocket_event', 'log_performance', 'log_error'
+    "GameLogger",
+    "LogContext",
+    "JsonFormatter",
+    "game_logger",
+    "log_game_event",
+    "log_websocket_event",
+    "log_performance",
+    "log_error",
 ]

@@ -1,6 +1,6 @@
 /**
  * 🏆 **TurnResultsUI Component** - Turn Results Interface
- * 
+ *
  * Features:
  * ✅ Uses new TurnResultsContent for consistent UI
  * ✅ Maps game state to content props
@@ -26,17 +26,20 @@ export function TurnResultsUI({
   playerName = '',
   isLastTurn = false,
   currentTurnPlays = [], // Turn plays data from turn phase
-  
+
   // Action props
-  onContinue
+  onContinue,
 }) {
   // Extract winning pieces from winning play
   const winningPieces = winningPlay?.pieces || [];
-  
+
   // Build player plays array from turn plays data
   // The currentTurnPlays should contain what each player played
-  console.log('[TurnResultsUI] Building playerPlays from currentTurnPlays:', currentTurnPlays);
-  
+  console.log(
+    '[TurnResultsUI] Building playerPlays from currentTurnPlays:',
+    currentTurnPlays
+  );
+
   // Log details of each play
   currentTurnPlays.forEach((play, index) => {
     console.log(`[TurnResultsUI] Turn play ${index + 1}:`, {
@@ -47,36 +50,41 @@ export function TurnResultsUI({
       isValid: play.isValid,
       isStarter: play.isStarter,
       pieces: play.pieces ? JSON.stringify(play.pieces) : 'null',
-      cards: play.cards ? JSON.stringify(play.cards) : 'null'
+      cards: play.cards ? JSON.stringify(play.cards) : 'null',
     });
   });
-  
-  const playerPlays = players.map(player => {
+
+  const playerPlays = players.map((player) => {
     // Find what this player played in the turn
-    const turnPlay = currentTurnPlays.find(play => play.player === player.name);
+    const turnPlay = currentTurnPlays.find(
+      (play) => play.player === player.name
+    );
     return {
       playerName: player.name,
-      player: player,  // Include full player object for captured/declared data
-      pieces: turnPlay?.pieces || turnPlay?.cards || []
+      player, // Include full player object for captured/declared data
+      pieces: turnPlay?.pieces || turnPlay?.cards || [],
     };
   });
-  
+
   // Find the starter and their play type
-  const starterPlay = currentTurnPlays.find(play => play.isStarter || play.player === winningPlay?.starter);
+  const starterPlay = currentTurnPlays.find(
+    (play) => play.isStarter || play.player === winningPlay?.starter
+  );
   const starterName = starterPlay?.player || winner;
-  const starterPlayType = starterPlay?.playType || starterPlay?.play_type || winningPlay?.type || '';
-  
+  const starterPlayType =
+    starterPlay?.playType || starterPlay?.play_type || winningPlay?.type || '';
+
   console.log('[TurnResultsUI] Extracting starter info:', {
     currentTurnPlays,
     starterPlay,
     starterName,
     starterPlayType,
-    winningPlay
+    winningPlay,
   });
-  
+
   // Pass through props to TurnResultsContent
   return (
-    <TurnResultsContent 
+    <TurnResultsContent
       winner={winner}
       winningPieces={winningPieces}
       playerPlays={playerPlays}
@@ -99,7 +107,7 @@ TurnResultsUI.propTypes = {
     pieces: PropTypes.array,
     value: PropTypes.number,
     type: PropTypes.string,
-    pilesWon: PropTypes.number
+    pilesWon: PropTypes.number,
   }),
   playerPiles: PropTypes.object,
   players: PropTypes.array,
@@ -109,9 +117,9 @@ TurnResultsUI.propTypes = {
   playerName: PropTypes.string,
   isLastTurn: PropTypes.bool,
   currentTurnPlays: PropTypes.array,
-  
+
   // Actions
-  onContinue: PropTypes.func
+  onContinue: PropTypes.func,
 };
 
 export default TurnResultsUI;

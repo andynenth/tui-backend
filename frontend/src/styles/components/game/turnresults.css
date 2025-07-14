@@ -9,13 +9,17 @@
 
 /* Winner announcement box */
 .tr-winner-announcement {
-  background: 
-    linear-gradient(145deg, #FFF8E1 0%, #FFFBF0 100%),
-    radial-gradient(circle at 30% 30%, rgba(255, 193, 7, 0.1) 0%, transparent 60%);
+  background:
+    linear-gradient(145deg, #fff8e1 0%, #fffbf0 100%),
+    radial-gradient(
+      circle at 30% 30%,
+      rgba(255, 193, 7, 0.1) 0%,
+      transparent 60%
+    );
   border: 1px solid rgba(255, 193, 7, 0.3);
   border-radius: 16px;
   padding: 12px;
-  box-shadow: 
+  box-shadow:
     0 8px 24px rgba(255, 193, 7, 0.15),
     inset 0 1px 0 rgba(255, 255, 255, 1);
   position: relative;
@@ -56,7 +60,7 @@
   font-family: var(--font-serif);
   font-size: 20px;
   font-weight: 700;
-  color: #F57F17;
+  color: #f57f17;
   margin-bottom: 4px;
 }
 
@@ -72,7 +76,7 @@
 .tr-play-label {
   font-size: 12px;
   font-weight: 600;
-  color: #6C757D;
+  color: #6c757d;
   text-transform: uppercase;
   letter-spacing: 0.5px;
   margin-bottom: 12px;
@@ -103,13 +107,17 @@
   display: flex;
   align-items: stretch;
   justify-content: space-between;
-  background: 
-    linear-gradient(145deg, #FFFFFF 0%, #F8F9FA 100%),
-    radial-gradient(circle at 15% 50%, rgba(255, 255, 255, 0.8) 0%, transparent 50%);
+  background:
+    linear-gradient(145deg, #ffffff 0%, #f8f9fa 100%),
+    radial-gradient(
+      circle at 15% 50%,
+      rgba(255, 255, 255, 0.8) 0%,
+      transparent 50%
+    );
   padding: 12px 16px;
   border-radius: 10px;
   border: 1px solid rgba(173, 181, 189, 0.15);
-  box-shadow: 
+  box-shadow:
     0 2px 6px rgba(0, 0, 0, 0.04),
     inset 0 1px 0 rgba(255, 255, 255, 1);
   animation: fadeIn 0.6s ease-out;
@@ -120,30 +128,46 @@
 
 /* Winner highlight */
 .tr-player-row.winner {
-  background: 
-    linear-gradient(145deg, #F8FFF8 0%, #F0FBF0 100%),
-    radial-gradient(circle at 15% 50%, rgba(76, 175, 80, 0.1) 0%, transparent 50%);
+  background:
+    linear-gradient(145deg, #f8fff8 0%, #f0fbf0 100%),
+    radial-gradient(
+      circle at 15% 50%,
+      rgba(76, 175, 80, 0.1) 0%,
+      transparent 50%
+    );
   border: 2px solid rgba(76, 175, 80, 0.5);
-  box-shadow: 
+  box-shadow:
     0 4px 12px rgba(76, 175, 80, 0.15),
     inset 0 1px 0 rgba(255, 255, 255, 1);
   padding: 11px 15px; /* Adjust padding to account for thicker border */
 }
 
 /* Stagger animations */
-.tr-player-row:nth-child(1) { animation-delay: 0.1s; }
-.tr-player-row:nth-child(2) { animation-delay: 0.2s; }
-.tr-player-row:nth-child(3) { animation-delay: 0.3s; }
-.tr-player-row:nth-child(4) { animation-delay: 0.4s; }
+.tr-player-row:nth-child(1) {
+  animation-delay: 0.1s;
+}
+.tr-player-row:nth-child(2) {
+  animation-delay: 0.2s;
+}
+.tr-player-row:nth-child(3) {
+  animation-delay: 0.3s;
+}
+.tr-player-row:nth-child(4) {
+  animation-delay: 0.4s;
+}
 
 /* Player avatar */
 .tr-player-avatar {
   width: 32px;
   height: 32px;
   border-radius: 50%;
-  background: 
-    linear-gradient(145deg, #FFFFFF 0%, #F8F9FA 100%),
-    radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.8) 0%, transparent 60%);
+  background:
+    linear-gradient(145deg, #ffffff 0%, #f8f9fa 100%),
+    radial-gradient(
+      circle at 30% 30%,
+      rgba(255, 255, 255, 0.8) 0%,
+      transparent 60%
+    );
   display: flex;
   align-items: center;
   justify-content: center;
@@ -151,7 +175,7 @@
   font-size: 12px;
   margin-right: 12px;
   border: 2px solid rgba(173, 181, 189, 0.3);
-  box-shadow: 
+  box-shadow:
     0 2px 4px rgba(0, 0, 0, 0.06),
     inset 0 1px 0 rgba(255, 255, 255, 1);
   color: #495057;
@@ -184,25 +208,25 @@
 }
 
 /* Pile status color variants */
-.tr-player-piles.pile-status-none { 
+.tr-player-piles.pile-status-none {
   color: #007bff; /* Blue for 0/0 */
 }
 
-.tr-player-piles.pile-status-perfect { 
+.tr-player-piles.pile-status-perfect {
   color: #28a745; /* Green for hitting target */
 }
 
-.tr-player-piles.pile-status-over { 
+.tr-player-piles.pile-status-over {
   color: #dc3545; /* Red for exceeding target */
 }
 
-.tr-player-piles.pile-status-under { 
+.tr-player-piles.pile-status-under {
   color: #6c757d; /* Gray for under target */
 }
 
 /* Winner badge - displayed below player name */
 .tr-winner-badge {
-  background-color: #4CAF50;
+  background-color: #4caf50;
   color: white;
   padding: 2px 8px;
   border-radius: 10px;
@@ -259,7 +283,7 @@
 }
 
 .tr-played-piece.red {
-  color: #DC3545;
+  color: #dc3545;
   border: 1px solid rgba(220, 53, 69, 0.4);
 }
 
@@ -271,15 +295,23 @@
 /* Pass indicator */
 .tr-pass-indicator {
   font-size: 12px;
-  color: #6C757D;
+  color: #6c757d;
   font-style: italic;
 }
 
 /* Next turn info section */
 .tr-next-turn-info {
-  background: 
-    linear-gradient(180deg, rgba(248, 249, 250, 0.6) 0%, rgba(233, 236, 239, 0.8) 100%),
-    radial-gradient(ellipse 100% 60% at 50% 0%, rgba(173, 181, 189, 0.1) 0%, transparent 100%);
+  background:
+    linear-gradient(
+      180deg,
+      rgba(248, 249, 250, 0.6) 0%,
+      rgba(233, 236, 239, 0.8) 100%
+    ),
+    radial-gradient(
+      ellipse 100% 60% at 50% 0%,
+      rgba(173, 181, 189, 0.1) 0%,
+      transparent 100%
+    );
   padding: 20px;
   border-top: 1px solid rgba(173, 181, 189, 0.2);
   text-align: center;
@@ -295,19 +327,19 @@
   transform: translateX(-50%);
   width: 40px;
   height: 2px;
-  background: linear-gradient(90deg, transparent, #6C757D, transparent);
+  background: linear-gradient(90deg, transparent, #6c757d, transparent);
 }
 
 .tr-next-starter {
   font-size: 16px;
   font-weight: 600;
-  color: #343A40;
+  color: #343a40;
   margin-bottom: 8px;
 }
 
 .tr-auto-continue {
   font-size: 12px;
-  color: #6C757D;
+  color: #6c757d;
 }
 
 /* Countdown styles now handled by FooterTimer component */
@@ -336,8 +368,13 @@
 }
 
 @keyframes bounce {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-10px); }
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
 }
 
 /* Responsive adjustments */
@@ -345,11 +382,11 @@
   .tr-winner-announcement {
     padding: 12px;
   }
-  
+
   .tr-crown-icon {
     font-size: 28px;
   }
-  
+
   .tr-winner-name {
     font-size: 20px;
   }

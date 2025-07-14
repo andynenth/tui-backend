@@ -1,6 +1,6 @@
 /**
  * Piece Mapping Utility
- * 
+ *
  * Maps game piece types to their Chinese character representations
  * Used throughout the UI to display pieces consistently
  */
@@ -20,7 +20,7 @@ export const PIECE_CHINESE_MAP = {
   CANNON_RED: '炮',
   CANNON_BLACK: '砲',
   SOLDIER_RED: '兵',
-  SOLDIER_BLACK: '卒'
+  SOLDIER_BLACK: '卒',
 };
 
 // Simplified mapping without color suffix
@@ -31,7 +31,7 @@ export const PIECE_TYPE_MAP = {
   CHARIOT: '俥/車',
   HORSE: '傌/馬',
   CANNON: '炮/砲',
-  SOLDIER: '兵/卒'
+  SOLDIER: '兵/卒',
 };
 
 /**
@@ -56,7 +56,7 @@ export function parsePiece(pieceData) {
       return {
         kind,
         color: color.toLowerCase(),
-        value: parseInt(value, 10)
+        value: parseInt(value, 10),
       };
     }
   }
@@ -65,7 +65,7 @@ export function parsePiece(pieceData) {
   return {
     kind: 'UNKNOWN',
     color: 'black',
-    value: 0
+    value: 0,
   };
 }
 
@@ -76,7 +76,7 @@ export function parsePiece(pieceData) {
  */
 export function getPieceDisplay(pieceData) {
   const piece = parsePiece(pieceData);
-  
+
   if (!piece || !piece.kind) {
     return '?';
   }
@@ -96,7 +96,9 @@ export function getPieceDisplay(pieceData) {
   const baseType = piece.kind.replace(/_RED|_BLACK/i, '');
   if (PIECE_TYPE_MAP[baseType]) {
     const chars = PIECE_TYPE_MAP[baseType].split('/');
-    return piece.color?.toLowerCase() === 'red' ? chars[0] : chars[1] || chars[0];
+    return piece.color?.toLowerCase() === 'red'
+      ? chars[0]
+      : chars[1] || chars[0];
   }
 
   // Fallback - use first character of type
@@ -113,7 +115,7 @@ export function getPieceColorClass(pieceData) {
   if (pieceData && pieceData.color) {
     return `piece-${pieceData.color.toLowerCase()}`;
   }
-  
+
   const piece = parsePiece(pieceData);
   if (!piece || !piece.color) {
     return 'piece-unknown';

@@ -4,6 +4,7 @@ from itertools import combinations
 from engine.rules import is_valid_play, get_play_type
 from collections import Counter
 
+
 # ------------------------------------------------------------------
 # Find all valid combinations from a hand (1 to 6 pieces per combo)
 # ------------------------------------------------------------------
@@ -17,6 +18,7 @@ def find_all_valid_combos(hand):
                 results.append((play_type, pieces))
     return results
 
+
 # ------------------------------------------------------------------
 # Decide how many piles the bot should declare at the start of a round
 # ------------------------------------------------------------------
@@ -26,7 +28,7 @@ def choose_declare(
     position_in_order: int,
     previous_declarations: list[int],
     must_declare_nonzero: bool,
-    verbose: bool = True
+    verbose: bool = True,
 ) -> int:
     # Categorize hand pieces
     high_pieces = [p for p in hand if p.point >= 9]
@@ -34,13 +36,24 @@ def choose_declare(
 
     # Search for powerful combinations
     combos = find_all_valid_combos(hand)
-    strong_combos = [c for c in combos if c[0] in {
-        "THREE_OF_A_KIND", "STRAIGHT", "FOUR_OF_A_KIND",
-        "EXTENDED_STRAIGHT", "FIVE_OF_A_KIND", "DOUBLE_STRAIGHT"
-    }]
+    strong_combos = [
+        c
+        for c in combos
+        if c[0]
+        in {
+            "THREE_OF_A_KIND",
+            "STRAIGHT",
+            "FOUR_OF_A_KIND",
+            "EXTENDED_STRAIGHT",
+            "FIVE_OF_A_KIND",
+            "DOUBLE_STRAIGHT",
+        }
+    ]
 
     # Determine if the hand has a strong opener (e.g. GENERAL or high STRAIGHT)
-    has_strong_opening = any(p.name.startswith("GENERAL") or p.point >= 13 for p in hand)
+    has_strong_opening = any(
+        p.name.startswith("GENERAL") or p.point >= 13 for p in hand
+    )
     for combo_type, pieces in strong_combos:
         if combo_type in {"STRAIGHT", "EXTENDED_STRAIGHT"}:
             if sum(p.point for p in pieces) >= 20:
@@ -66,21 +79,21 @@ def choose_declare(
         print(f"  Position in order: {position_in_order} (First: {is_first_player})")
         print(f"  Must declare ≥1: {must_declare_nonzero}")
         print(f"  Previous declarations: {previous_declarations}")
-        
+
         # 🔧 Sorting: RED first (reverse lexicographically), then by descending point
         sorted_hand = sorted(
             [(i, piece) for i, piece in enumerate(hand)],
-            key=lambda pair: (pair[1].color != "RED", -pair[1].point)
+            key=lambda pair: (pair[1].color != "RED", -pair[1].point),
         )
-        print(f"  Hand: ") 
+        print(f"  Hand: ")
         for shown_idx, (real_idx, piece) in enumerate(sorted_hand):
             print(f"    [{real_idx}] {piece}")
-        
+
         print(f"  High pieces (>=9): {[p.name for p in high_pieces]}")
         print(f"  Mid pieces (7–8): {[p.name for p in mid_pieces]}")
         print(f"  Found {len(strong_combos)} strong combo(s):")
         for play_type, pieces in strong_combos:
-            summary = ', '.join(p.name for p in pieces)
+            summary = ", ".join(p.name for p in pieces)
             print(f"    - {play_type}: {summary}")
         print(f"  Has strong opening: {has_strong_opening}")
         print(f"  Raw declare score (before filtering): {score}")
@@ -109,8 +122,9 @@ def choose_declare(
     if verbose:
         print(f"  Forbidden declares: {sorted(forbidden_declares)}")
         print(f"  Final declare chosen: {final}")
-        
+
     return final
+
 
 # ------------------------------------------------------------------
 # Utility function to check if all pieces in a play exist in hand
@@ -120,6 +134,7 @@ def pieces_exist_in_hand(play, hand):
     play_counts = Counter(play)
     hand_counts = Counter(hand)
     return all(play_counts[p] <= hand_counts[p] for p in play)
+
 
 # ------------------------------------------------------------------
 # Choose the best play (set of 1–6 pieces) based on total point value
@@ -147,14 +162,14 @@ def choose_best_play(hand: list, required_count, verbose: bool = True) -> list:
     # Return best found play
     if best_play:
         if verbose:
-            summary = ', '.join(p.name for p in best_play)
+            summary = ", ".join(p.name for p in best_play)
             print(f"🤖 BOT chooses to play {best_type} ({best_score} pts): {summary}")
         return best_play
 
     # Fallback: discard lowest-point pieces if no valid play
-    fallback = sorted(hand, key=lambda p: p.point)[:required_count or 1]
+    fallback = sorted(hand, key=lambda p: p.point)[: required_count or 1]
     if verbose:
-        summary = ', '.join(p.name for p in fallback)
+        summary = ", ".join(p.name for p in fallback)
         print(f"🤖 BOT has no valid play. Discards lowest pieces: {summary}")
         print(f"    🔍 Final play: {[p.name for p in fallback]}")
         print(f"    🧠 Hand left: {[p.name for p in hand]}")

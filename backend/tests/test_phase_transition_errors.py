@@ -19,35 +19,38 @@ class TestPhaseTransitionErrors:
         players = [Player(f"Player{i}") for i in range(1, 5)]
         game = Game(players)  # Add empty players list
         sm = GameStateMachine(game)
-        
+
         # Check the validation map
         valid_from_prep = sm._valid_transitions.get(GamePhase.PREPARATION, set())
-        
+
         # This assertion would FAIL before our fix
-        assert GamePhase.DECLARATION not in valid_from_prep, \
-            "PREPARATION should NOT be able to transition directly to DECLARATION"
-        
+        assert (
+            GamePhase.DECLARATION not in valid_from_prep
+        ), "PREPARATION should NOT be able to transition directly to DECLARATION"
+
         # This assertion should PASS after our fix
-        assert GamePhase.ROUND_START in valid_from_prep, \
-            "PREPARATION should be able to transition to ROUND_START"
+        assert (
+            GamePhase.ROUND_START in valid_from_prep
+        ), "PREPARATION should be able to transition to ROUND_START"
 
     def test_round_start_can_go_to_declaration(self):
         """Ensure ROUND_START can transition to DECLARATION"""
         players = [Player(f"Player{i}") for i in range(1, 5)]
         game = Game(players)
         sm = GameStateMachine(game)
-        
+
         valid_from_round_start = sm._valid_transitions.get(GamePhase.ROUND_START, set())
-        
-        assert GamePhase.DECLARATION in valid_from_round_start, \
-            "ROUND_START should be able to transition to DECLARATION"
+
+        assert (
+            GamePhase.DECLARATION in valid_from_round_start
+        ), "ROUND_START should be able to transition to DECLARATION"
 
     def test_complete_phase_flow_validation(self):
         """Test the complete phase flow is valid"""
         players = [Player(f"Player{i}") for i in range(1, 5)]
         game = Game(players)
         sm = GameStateMachine(game)
-        
+
         # Define expected flow
         phase_flow = [
             (None, GamePhase.PREPARATION),  # Initial state
@@ -60,14 +63,15 @@ class TestPhaseTransitionErrors:
             (GamePhase.SCORING, GamePhase.PREPARATION),  # Next round
             (GamePhase.SCORING, GamePhase.GAME_OVER),
         ]
-        
+
         for from_phase, to_phase in phase_flow:
             if from_phase is None:
                 continue  # Skip initial state
-                
+
             valid_transitions = sm._valid_transitions.get(from_phase, set())
-            assert to_phase in valid_transitions, \
-                f"Invalid flow: {from_phase} should be able to transition to {to_phase}"
+            assert (
+                to_phase in valid_transitions
+            ), f"Invalid flow: {from_phase} should be able to transition to {to_phase}"
 
     @pytest.mark.asyncio
     async def test_actual_transition_attempt(self):
@@ -75,23 +79,25 @@ class TestPhaseTransitionErrors:
         players = [Player(f"Player{i}") for i in range(1, 5)]
         game = Game(players)
         sm = GameStateMachine(game)
-        
+
         # Start in PREPARATION phase
         await sm.start(GamePhase.PREPARATION)
-        
+
         # Should be in PREPARATION
         assert sm.current_phase == GamePhase.PREPARATION
-        
+
         # Try invalid transition (should be blocked)
         await sm._transition_to(GamePhase.DECLARATION)
-        assert sm.current_phase == GamePhase.PREPARATION, \
-            "Invalid transition should be blocked"
-        
+        assert (
+            sm.current_phase == GamePhase.PREPARATION
+        ), "Invalid transition should be blocked"
+
         # Try valid transition
         await sm._transition_to(GamePhase.ROUND_START)
-        assert sm.current_phase == GamePhase.ROUND_START, \
-            "Valid transition should succeed"
-        
+        assert (
+            sm.current_phase == GamePhase.ROUND_START
+        ), "Valid transition should succeed"
+
         # Clean up
         await sm.stop()
 
@@ -104,7 +110,7 @@ class TestQuickValidation:
         players = [Player(f"Player{i}") for i in range(1, 5)]
         game = Game(players)
         sm = GameStateMachine(game)
-        
+
         # This single line would have caught the bug
         assert GamePhase.DECLARATION not in sm._valid_transitions[GamePhase.PREPARATION]
 
@@ -113,10 +119,10 @@ class TestQuickValidation:
         players = [Player(f"Player{i}") for i in range(1, 5)]
         game = Game(players)
         sm = GameStateMachine(game)
-        
+
         # ROUND_START should be reachable from PREPARATION
         assert GamePhase.ROUND_START in sm._valid_transitions[GamePhase.PREPARATION]
-        
+
         # ROUND_START should lead to DECLARATION
         assert GamePhase.DECLARATION in sm._valid_transitions[GamePhase.ROUND_START]
 
@@ -130,21 +136,27 @@ def test_phase_transitions_are_valid():
     players = [Player(f"Player{i}") for i in range(1, 5)]
     game = Game(players)
     sm = GameStateMachine(game)
-    
+
     # Key assertions that would catch transition bugs
     errors = []
-    
+
     # Check PREPARATION transitions
     if GamePhase.DECLARATION in sm._valid_transitions.get(GamePhase.PREPARATION, set()):
-        errors.append("ERROR: PREPARATION can transition directly to DECLARATION (should go through ROUND_START)")
-    
-    if GamePhase.ROUND_START not in sm._valid_transitions.get(GamePhase.PREPARATION, set()):
+        errors.append(
+            "ERROR: PREPARATION can transition directly to DECLARATION (should go through ROUND_START)"
+        )
+
+    if GamePhase.ROUND_START not in sm._valid_transitions.get(
+        GamePhase.PREPARATION, set()
+    ):
         errors.append("ERROR: PREPARATION cannot transition to ROUND_START")
-    
+
     # Check ROUND_START transitions
-    if GamePhase.DECLARATION not in sm._valid_transitions.get(GamePhase.ROUND_START, set()):
+    if GamePhase.DECLARATION not in sm._valid_transitions.get(
+        GamePhase.ROUND_START, set()
+    ):
         errors.append("ERROR: ROUND_START cannot transition to DECLARATION")
-    
+
     # Print all errors
     if errors:
         for error in errors:

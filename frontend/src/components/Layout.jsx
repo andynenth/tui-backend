@@ -10,7 +10,7 @@ const Layout = ({
   connectionProps = {},
   showHeader = true,
   headerContent = null,
-  className = ''
+  className = '',
 }) => {
   return (
     <div className={`${className}`}>
@@ -21,15 +21,13 @@ const Layout = ({
             <div>
               {/* Title/Logo */}
               <div>
-                <h1>
-                  {title}
-                </h1>
+                <h1>{title}</h1>
               </div>
 
               {/* Header content */}
               <div>
                 {headerContent}
-                
+
                 {/* Connection indicator */}
                 {showConnection && (
                   <ConnectionIndicator
@@ -44,9 +42,7 @@ const Layout = ({
       )}
 
       {/* Main content */}
-      <main>
-        {children}
-      </main>
+      <main>{children}</main>
     </div>
   );
 };

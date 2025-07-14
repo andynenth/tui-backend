@@ -27,8 +27,9 @@ PLAY_TYPE_PRIORITY = [
     "EXTENDED_STRAIGHT",
     "EXTENDED_STRAIGHT_5",
     "FIVE_OF_A_KIND",
-    "DOUBLE_STRAIGHT"
+    "DOUBLE_STRAIGHT",
 ]
+
 
 # -------------------------------------------------
 # Determine the type of a given play
@@ -58,35 +59,38 @@ def get_play_type(pieces):
 
     return "INVALID"
 
+
 # -------------------------------------------------
 # Check if the play is valid
 # -------------------------------------------------
 def is_valid_play(pieces):
     return get_play_type(pieces) != "INVALID"
 
+
 # -------------------------------------------------
 # Validation functions for each type
 # -------------------------------------------------
 
+
 def is_pair(pieces):
     return pieces[0].name == pieces[1].name and pieces[0].color == pieces[1].color
+
 
 def is_three_of_a_kind(pieces):
     return all(p.name == "SOLDIER" and p.color == pieces[0].color for p in pieces)
 
+
 def is_straight(pieces):
     names = [p.name for p in pieces]
-    valid_groups = [
-        {"GENERAL", "ADVISOR", "ELEPHANT"},
-        {"CHARIOT", "HORSE", "CANNON"}
-    ]
-    return (
-        all(p.color == pieces[0].color for p in pieces) and
-        any(set(names) == group for group in valid_groups)
+    valid_groups = [{"GENERAL", "ADVISOR", "ELEPHANT"}, {"CHARIOT", "HORSE", "CANNON"}]
+    return all(p.color == pieces[0].color for p in pieces) and any(
+        set(names) == group for group in valid_groups
     )
+
 
 def is_four_of_a_kind(pieces):
     return all(p.name == "SOLDIER" and p.color == pieces[0].color for p in pieces)
+
 
 def is_extended_straight(pieces):
     """
@@ -103,6 +107,7 @@ def is_extended_straight(pieces):
                 return True
     return False
 
+
 def is_extended_straight_5(pieces):
     """
     5 pieces from a valid group, same color,
@@ -116,19 +121,18 @@ def is_extended_straight_5(pieces):
     counter = Counter(names)
     name_set = set(names)
 
-    valid_groups = [
-        {"GENERAL", "ADVISOR", "ELEPHANT"},
-        {"CHARIOT", "HORSE", "CANNON"}
-    ]
+    valid_groups = [{"GENERAL", "ADVISOR", "ELEPHANT"}, {"CHARIOT", "HORSE", "CANNON"}]
 
     return (
-        all(p.color == color for p in pieces) and
-        any(name_set.issubset(group) for group in valid_groups) and
-        sorted(counter.values()) == [1, 2, 2]  # Exactly two duplicated piece types
+        all(p.color == color for p in pieces)
+        and any(name_set.issubset(group) for group in valid_groups)
+        and sorted(counter.values()) == [1, 2, 2]  # Exactly two duplicated piece types
     )
+
 
 def is_five_of_a_kind(pieces):
     return all(p.name == "SOLDIER" and p.color == pieces[0].color for p in pieces)
+
 
 def is_double_straight(pieces):
     """
@@ -142,11 +146,15 @@ def is_double_straight(pieces):
 
     names = [p.name for p in pieces]
     counter = Counter(names)
-    return set(counter.keys()) == {"CHARIOT", "HORSE", "CANNON"} and all(v == 2 for v in counter.values())
+    return set(counter.keys()) == {"CHARIOT", "HORSE", "CANNON"} and all(
+        v == 2 for v in counter.values()
+    )
+
 
 # -------------------------------------------------
 # Compare two plays of the same type
 # -------------------------------------------------
+
 
 def compare_plays(p1, p2):
     """
@@ -191,9 +199,11 @@ def compare_plays(p1, p2):
     else:
         return 0
 
+
 # -------------------------------------------------
 # Determine valid declaration options for a player
 # -------------------------------------------------
+
 
 def get_valid_declares(player, declared_total, is_last):
     """

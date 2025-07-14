@@ -14,15 +14,15 @@ const tailwindClasses = [
   'items-center',
   'justify-center',
   'min-h-screen',
-  'bg-gradient-to-br'
+  'bg-gradient-to-br',
 ];
 
 // Function to search for classes in a file
 const searchFile = (filePath) => {
   try {
     const content = fs.readFileSync(filePath, 'utf8');
-    const foundClasses = tailwindClasses.filter(cls => content.includes(cls));
-    
+    const foundClasses = tailwindClasses.filter((cls) => content.includes(cls));
+
     if (foundClasses.length > 0) {
       console.log(`✅ ${path.relative('.', filePath)}`);
       console.log(`   Found: ${foundClasses.join(', ')}`);
@@ -38,14 +38,18 @@ const searchFile = (filePath) => {
 // Function to recursively search directories
 const searchDirectory = (dir, pattern = /\.(jsx?|tsx?)$/) => {
   let foundCount = 0;
-  
+
   try {
     const files = fs.readdirSync(dir, { withFileTypes: true });
-    
+
     for (const file of files) {
       const fullPath = path.join(dir, file.name);
-      
-      if (file.isDirectory() && !file.name.startsWith('.') && file.name !== 'node_modules') {
+
+      if (
+        file.isDirectory() &&
+        !file.name.startsWith('.') &&
+        file.name !== 'node_modules'
+      ) {
         foundCount += searchDirectory(fullPath, pattern);
       } else if (file.isFile() && pattern.test(file.name)) {
         if (searchFile(fullPath)) {
@@ -56,19 +60,14 @@ const searchDirectory = (dir, pattern = /\.(jsx?|tsx?)$/) => {
   } catch (error) {
     console.log(`❌ Error reading directory ${dir}: ${error.message}`);
   }
-  
+
   return foundCount;
 };
 
 console.log('Starting search from current directory...\n');
 
 // Search common directories
-const directories = [
-  './src',
-  './pages',
-  './components',
-  '.'
-];
+const directories = ['./src', './pages', './components', '.'];
 
 let totalFound = 0;
 
@@ -91,7 +90,7 @@ console.log(`\n📁 Actual file structure:`);
 try {
   const srcFiles = fs.readdirSync('./src', { withFileTypes: true });
   console.log('./src/');
-  srcFiles.forEach(file => {
+  srcFiles.forEach((file) => {
     console.log(`  ${file.isDirectory() ? '📁' : '📄'} ${file.name}`);
   });
 } catch (error) {

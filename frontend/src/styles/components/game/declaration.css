@@ -12,7 +12,7 @@
 /* Declaration requirement badge */
 .dec-requirement-badge {
   font-size: 14px;
-  color: #FFC107;
+  color: #ffc107;
   background: rgba(255, 193, 7, 0.1);
   padding: 8px 16px;
   border-radius: 12px;
@@ -36,14 +36,18 @@
 .dec-player-row {
   display: flex;
   align-items: center;
-  background: 
-    linear-gradient(145deg, #FFFFFF 0%, #F8F9FA 100%),
-    radial-gradient(circle at 15% 50%, rgba(255, 255, 255, 0.8) 0%, transparent 50%);
+  background:
+    linear-gradient(145deg, #ffffff 0%, #f8f9fa 100%),
+    radial-gradient(
+      circle at 15% 50%,
+      rgba(255, 255, 255, 0.8) 0%,
+      transparent 50%
+    );
   padding: 8px 16px;
   border-radius: 10px;
   border: 1px solid rgba(173, 181, 189, 0.15);
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  box-shadow: 
+  box-shadow:
     0 2px 6px rgba(0, 0, 0, 0.04),
     inset 0 1px 0 rgba(255, 255, 255, 1);
   position: relative;
@@ -66,28 +70,36 @@
 /* Current turn styling */
 .dec-player-row.current-turn {
   border-color: rgba(255, 193, 7, 0.4);
-  background: 
-    linear-gradient(145deg, #FFF8E1 0%, #FFFBF0 100%),
-    radial-gradient(circle at 15% 50%, rgba(255, 193, 7, 0.1) 0%, transparent 50%);
-  box-shadow: 
+  background:
+    linear-gradient(145deg, #fff8e1 0%, #fffbf0 100%),
+    radial-gradient(
+      circle at 15% 50%,
+      rgba(255, 193, 7, 0.1) 0%,
+      transparent 50%
+    );
+  box-shadow:
     0 3px 8px rgba(255, 193, 7, 0.12),
     inset 0 1px 0 rgba(255, 255, 255, 1);
 }
 
 .dec-player-row.current-turn::before {
-  background: linear-gradient(180deg, #FFC107, #FF9800);
+  background: linear-gradient(180deg, #ffc107, #ff9800);
 }
 
 /* Declared player styling */
 .dec-player-row.declared {
   border-color: rgba(40, 167, 69, 0.3);
-  background: 
-    linear-gradient(145deg, #F0FFF4 0%, #F8FFF8 100%),
-    radial-gradient(circle at 15% 50%, rgba(40, 167, 69, 0.08) 0%, transparent 50%);
+  background:
+    linear-gradient(145deg, #f0fff4 0%, #f8fff8 100%),
+    radial-gradient(
+      circle at 15% 50%,
+      rgba(40, 167, 69, 0.08) 0%,
+      transparent 50%
+    );
 }
 
 .dec-player-row.declared::before {
-  background: linear-gradient(180deg, #28A745, #20C997);
+  background: linear-gradient(180deg, #28a745, #20c997);
 }
 
 /* Player avatar */
@@ -95,9 +107,13 @@
   width: 36px;
   height: 36px;
   border-radius: 50%;
-  background: 
-    linear-gradient(145deg, #FFFFFF 0%, #F8F9FA 100%),
-    radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.8) 0%, transparent 60%);
+  background:
+    linear-gradient(145deg, #ffffff 0%, #f8f9fa 100%),
+    radial-gradient(
+      circle at 30% 30%,
+      rgba(255, 255, 255, 0.8) 0%,
+      transparent 60%
+    );
   display: flex;
   align-items: center;
   justify-content: center;
@@ -105,7 +121,7 @@
   font-size: 14px;
   margin-right: 12px;
   border: 2px solid rgba(173, 181, 189, 0.3);
-  box-shadow: 
+  box-shadow:
     0 2px 4px rgba(0, 0, 0, 0.06),
     inset 0 1px 0 rgba(255, 255, 255, 1);
   color: #495057;
@@ -140,20 +156,20 @@
 }
 
 .dec-status-badge.current {
-  background: linear-gradient(135deg, #FFC107 0%, #FF9800 100%);
+  background: linear-gradient(135deg, #ffc107 0%, #ff9800 100%);
   color: #212529;
   border: 1px solid rgba(255, 193, 7, 0.4);
 }
 
 .dec-status-badge.waiting {
   background: rgba(108, 117, 125, 0.1);
-  color: #6C757D;
+  color: #6c757d;
   border: 1px solid rgba(108, 117, 125, 0.2);
 }
 
 .dec-status-badge.pending {
   background: rgba(108, 117, 125, 0.1);
-  color: #6C757D;
+  color: #6c757d;
   border: 1px solid rgba(108, 117, 125, 0.2);
 }
 
@@ -161,7 +177,7 @@
 .dec-declared-value {
   font-size: 16px;
   font-weight: 700;
-  color: #28A745;
+  color: #28a745;
   background: rgba(40, 167, 69, 0.1);
   padding: 3px 8px;
   border-radius: 6px;
@@ -174,14 +190,18 @@
   bottom: 190px;
   left: 0;
   right: 0;
-  background: 
-    linear-gradient(145deg, #FFF8E1 0%, #FFFBF0 100%),
-    radial-gradient(circle at 30% 30%, rgba(255, 193, 7, 0.1) 0%, transparent 60%);
+  background:
+    linear-gradient(145deg, #fff8e1 0%, #fffbf0 100%),
+    radial-gradient(
+      circle at 30% 30%,
+      rgba(255, 193, 7, 0.1) 0%,
+      transparent 60%
+    );
   border: 1px solid rgba(255, 193, 7, 0.3);
   border-radius: 16px;
   margin: 0 16px;
   padding: 20px;
-  box-shadow: 
+  box-shadow:
     0 4px 20px rgba(255, 193, 7, 0.15),
     0 0 0 1px rgba(255, 255, 255, 0.9),
     inset 0 1px 0 rgba(255, 255, 255, 1);
@@ -219,17 +239,21 @@
 /* Declaration option button */
 .dec-option {
   padding: 12px 6px;
-  background: 
-    linear-gradient(145deg, #FFFFFF 0%, #F8F9FA 100%),
-    radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.8) 0%, transparent 60%);
+  background:
+    linear-gradient(145deg, #ffffff 0%, #f8f9fa 100%),
+    radial-gradient(
+      circle at 30% 30%,
+      rgba(255, 255, 255, 0.8) 0%,
+      transparent 60%
+    );
   border: 1px solid rgba(173, 181, 189, 0.3);
   border-radius: 8px;
   cursor: pointer;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   font-size: 16px;
   font-weight: 600;
-  color: #343A40;
-  box-shadow: 
+  color: #343a40;
+  box-shadow:
     0 2px 4px rgba(0, 0, 0, 0.04),
     inset 0 1px 0 rgba(255, 255, 255, 1);
   text-align: center;
@@ -240,8 +264,8 @@
 /* Disabled option */
 .dec-option:disabled,
 .dec-option.disabled {
-  background: linear-gradient(145deg, #E9ECEF 0%, #DEE2E6 100%);
-  color: #6C757D;
+  background: linear-gradient(145deg, #e9ecef 0%, #dee2e6 100%);
+  color: #6c757d;
   border-color: rgba(173, 181, 189, 0.2);
   cursor: not-allowed;
   opacity: 0.5;
@@ -250,32 +274,36 @@
 .dec-option:disabled:hover,
 .dec-option.disabled:hover {
   transform: none;
-  background: linear-gradient(145deg, #E9ECEF 0%, #DEE2E6 100%);
+  background: linear-gradient(145deg, #e9ecef 0%, #dee2e6 100%);
   border-color: rgba(173, 181, 189, 0.2);
-  box-shadow: 
+  box-shadow:
     0 2px 4px rgba(0, 0, 0, 0.04),
     inset 0 1px 0 rgba(255, 255, 255, 1);
 }
 
 /* Option hover state */
 .dec-option:not(:disabled):hover {
-  background: 
-    linear-gradient(145deg, #FFF8E1 0%, #FFFBF0 100%),
-    radial-gradient(circle at 30% 30%, rgba(255, 193, 7, 0.1) 0%, transparent 60%);
+  background:
+    linear-gradient(145deg, #fff8e1 0%, #fffbf0 100%),
+    radial-gradient(
+      circle at 30% 30%,
+      rgba(255, 193, 7, 0.1) 0%,
+      transparent 60%
+    );
   border-color: rgba(255, 193, 7, 0.4);
   transform: translateY(-1px) scale(1.02);
-  box-shadow: 
+  box-shadow:
     0 4px 8px rgba(255, 193, 7, 0.15),
     inset 0 1px 0 rgba(255, 255, 255, 1);
 }
 
 /* Selected option */
 .dec-option.selected {
-  background: linear-gradient(135deg, #FFC107 0%, #FF9800 100%);
+  background: linear-gradient(135deg, #ffc107 0%, #ff9800 100%);
   border-color: rgba(255, 193, 7, 0.6);
   color: #212529;
   transform: translateY(-1px) scale(1.05);
-  box-shadow: 
+  box-shadow:
     0 4px 12px rgba(255, 193, 7, 0.3),
     inset 0 1px 0 rgba(255, 255, 255, 0.8);
 }
@@ -288,9 +316,13 @@
 }
 
 .dec-action-btn {
-  background: 
-    linear-gradient(135deg, #28A745 0%, #20C997 100%),
-    radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.2) 0%, transparent 60%);
+  background:
+    linear-gradient(135deg, #28a745 0%, #20c997 100%),
+    radial-gradient(
+      circle at 30% 30%,
+      rgba(255, 255, 255, 0.2) 0%,
+      transparent 60%
+    );
   color: white;
   border: 1px solid rgba(40, 167, 69, 0.4);
   padding: 8px 16px;
@@ -311,12 +343,12 @@
 }
 
 .dec-action-btn:disabled {
-  background: linear-gradient(145deg, #E9ECEF 0%, #DEE2E6 100%);
-  color: #6C757D;
+  background: linear-gradient(145deg, #e9ecef 0%, #dee2e6 100%);
+  color: #6c757d;
   border-color: rgba(173, 181, 189, 0.3);
   cursor: not-allowed;
   transform: none;
-  box-shadow: 
+  box-shadow:
     0 2px 4px rgba(0, 0, 0, 0.04),
     inset 0 1px 0 rgba(255, 255, 255, 1);
   opacity: 0.7;
@@ -324,9 +356,13 @@
 
 /* Secondary button */
 .dec-action-btn.secondary {
-  background: 
-    linear-gradient(135deg, #6C757D 0%, #495057 100%),
-    radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.1) 0%, transparent 60%);
+  background:
+    linear-gradient(135deg, #6c757d 0%, #495057 100%),
+    radial-gradient(
+      circle at 30% 30%,
+      rgba(255, 255, 255, 0.1) 0%,
+      transparent 60%
+    );
   border-color: rgba(108, 117, 125, 0.4);
   box-shadow: 0 2px 4px rgba(108, 117, 125, 0.2);
 }
@@ -340,7 +376,7 @@
   .dec-panel {
     bottom: 200px;
   }
-  
+
   .dec-option {
     padding: 10px 4px;
     font-size: 14px;

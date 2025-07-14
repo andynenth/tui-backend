@@ -1,11 +1,11 @@
 /**
  * 📋 **RoundStartUI Component** - Round Start Phase Interface
- * 
+ *
  * Displays round information before declaration phase:
  * - Round number
  * - Starter name
  * - Reason for being starter
- * 
+ *
  * Auto-transitions to Declaration after 5 seconds
  */
 
@@ -20,7 +20,7 @@ export function RoundStartUI({
   // Data props
   roundNumber = 1,
   starter = '',
-  starterReason = 'default'
+  starterReason = 'default',
 }) {
   // Pass props to content component
   return (
@@ -40,14 +40,14 @@ RoundStartUI.propTypes = {
     'has_general_red',
     'won_last_turn',
     'accepted_redeal',
-    'default'
-  ]).isRequired
+    'default',
+  ]).isRequired,
 };
 
 RoundStartUI.defaultProps = {
   roundNumber: 1,
   starter: '',
-  starterReason: 'default'
+  starterReason: 'default',
 };
 
 export default RoundStartUI;

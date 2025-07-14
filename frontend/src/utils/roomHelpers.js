@@ -19,23 +19,23 @@ export const getPlayerDisplayName = (player, slotNumber) => {
 };
 
 export const getRoomOccupancyText = (room) => {
-  const playerCount = room.players?.filter(p => p !== null).length || 0;
+  const playerCount = room.players?.filter((p) => p !== null).length || 0;
   const maxPlayers = room.total_slots || 4;
-  
+
   if (room.started || room.status === 'playing') {
     return `🎮 In Game (${playerCount}/${maxPlayers})`;
   }
-  
+
   if (playerCount >= maxPlayers) {
     return `🔒 Full (${playerCount}/${maxPlayers})`;
   }
-  
+
   return `⏳ Waiting (${playerCount}/${maxPlayers})`;
 };
 
 export const canJoinRoom = (room) => {
-  const playerCount = room.players?.filter(p => p !== null).length || 0;
+  const playerCount = room.players?.filter((p) => p !== null).length || 0;
   const maxPlayers = room.total_slots || 4;
-  
+
   return !room.started && playerCount < maxPlayers;
 };

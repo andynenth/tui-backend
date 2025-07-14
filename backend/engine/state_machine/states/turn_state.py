@@ -880,8 +880,8 @@ class TurnState(GameState):
                     {
                         "name": player.name,
                         "captured_piles": getattr(player, "captured_piles", 0),
-                        "declared": getattr(player, "declared", 0)
-                    } 
+                        "declared": getattr(player, "declared", 0),
+                    }
                     for player in game.players
                 ]
 

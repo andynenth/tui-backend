@@ -1,6 +1,10 @@
-# Backend Code Review Status
+# Backend Module Review Status
 
-Track the review status of all backend modules, API endpoints, and state machine components.
+## Review Summary
+- **Total Modules**: 25
+- **Reviewed**: 0 (0%)
+- **Pending**: 25 (100%)
+- **Last Update**: 2025-07-13
 
 **Legend**:
 - ✅ **Pass** - Meets all quality standards
@@ -8,106 +12,82 @@ Track the review status of all backend modules, API endpoints, and state machine
 - ❌ **Pending** - Not yet reviewed
 - 🔄 **In Progress** - Currently being reviewed/fixed
 
-## Engine Components Review Status
+## Modules
 
-### Core Game Engine
-| File | Last Reviewed | Reviewer | Status | Issues | Ticket | Notes |
-|------|--------------|----------|---------|---------|--------|--------|
-| engine/game.py | - | - | ❌ Pending | - | - | Main game logic |
-| engine/player.py | - | - | ❌ Pending | - | - | - |
-| engine/piece.py | - | - | ❌ Pending | - | - | - |
-| engine/rules.py | - | - | ❌ Pending | - | - | Game rule validation |
-| engine/scoring.py | - | - | ❌ Pending | - | - | - |
-| engine/bot_player.py | - | - | ❌ Pending | - | - | AI logic |
-| engine/bot_manager.py | - | - | ❌ Pending | - | - | - |
+### Core Engine
+| File | Last Reviewed | Reviewer | Status | Issues | Notes |
+|------|---------------|----------|---------|--------|-------|
+| engine/game.py | - | - | ❌ Pending | - | 880 lines, needs docstrings |
+| engine/player.py | - | - | ❌ Pending | - | - |
+| engine/piece.py | - | - | ❌ Pending | - | - |
+| engine/rules.py | - | - | ❌ Pending | - | Good comments |
+| engine/scoring.py | - | - | ❌ Pending | - | - |
+| engine/room.py | - | - | ❌ Pending | - | 450 lines |
+| engine/room_manager.py | - | - | ❌ Pending | - | - |
+| engine/turn_resolution.py | - | - | ❌ Pending | - | - |
+| engine/win_conditions.py | - | - | ❌ Pending | - | - |
+| engine/bot_manager.py | - | - | ❌ Pending | - | 896 lines, too large |
+| engine/ai.py | - | - | ❌ Pending | - | - |
+| engine/constants.py | - | - | ❌ Pending | - | Well documented |
 
 ### State Machine (Enterprise Architecture)
-| File | Last Reviewed | Reviewer | Status | Issues | Ticket | Notes |
-|------|--------------|----------|---------|---------|--------|--------|
-| engine/state_machine/game_state_machine.py | - | - | ❌ Pending | - | - | Well documented |
-| engine/state_machine/states/preparation_state.py | - | - | ❌ Pending | - | - | Enterprise ready |
-| engine/state_machine/states/declaration_state.py | - | - | ❌ Pending | - | - | Enterprise ready |
-| engine/state_machine/states/turn_state.py | - | - | ❌ Pending | - | - | Enterprise ready |
-| engine/state_machine/states/scoring_state.py | - | - | ❌ Pending | - | - | Enterprise ready |
-| engine/state_machine/states/turn_results_state.py | - | - | ❌ Pending | - | - | - |
-| engine/state_machine/base.py | - | - | ❌ Pending | - | - | - |
+| File | Last Reviewed | Reviewer | Status | Issues | Notes |
+|------|---------------|----------|---------|--------|-------|
+| engine/state_machine/base_state.py | - | - | ❌ Pending | - | 289 lines, missing docstrings |
+| engine/state_machine/core.py | - | - | ❌ Pending | - | - |
+| engine/state_machine/game_state_machine.py | - | - | ❌ Pending | - | 584 lines |
+| engine/state_machine/action_queue.py | - | - | ❌ Pending | - | - |
 
-## API Layer Review Status
+### State Implementations
+| File | Last Reviewed | Reviewer | Status | Issues | Notes |
+|------|---------------|----------|---------|--------|-------|
+| engine/state_machine/states/waiting_state.py | - | - | ❌ Pending | - | 278 lines |
+| engine/state_machine/states/round_start_state.py | - | - | ❌ Pending | - | - |
+| engine/state_machine/states/preparation_state.py | - | - | ❌ Pending | - | 689 lines, too large |
+| engine/state_machine/states/declaration_state.py | - | - | ❌ Pending | - | - |
+| engine/state_machine/states/turn_state.py | - | - | ❌ Pending | - | 986 lines, needs refactoring |
+| engine/state_machine/states/turn_results_state.py | - | - | ❌ Pending | - | 253 lines |
+| engine/state_machine/states/scoring_state.py | - | - | ❌ Pending | - | 447 lines |
+| engine/state_machine/states/game_over_state.py | - | - | ❌ Pending | - | - |
 
-### Routes
-| File | Last Reviewed | Reviewer | Status | Issues | Ticket | Notes |
-|------|--------------|----------|---------|---------|--------|--------|
-| api/routes/routes.py | - | - | ❌ Pending | - | - | Main REST endpoints |
-| api/routes/ws.py | - | - | ❌ Pending | - | - | WebSocket handlers |
-| api/routes/health.py | - | - | ❌ Pending | - | - | Health checks |
-| api/routes/monitoring.py | - | - | ❌ Pending | - | - | Metrics endpoint |
+### API Layer
+| File | Last Reviewed | Reviewer | Status | Issues | Notes |
+|------|---------------|----------|---------|--------|-------|
+| api/main.py | - | - | ❌ Pending | - | Import organization needed |
+| api/routes/routes.py | - | - | ❌ Pending | - | - |
+| api/routes/ws.py | - | - | ❌ Pending | - | No input validation |
 
 ### Services
-| File | Last Reviewed | Reviewer | Status | Issues | Ticket | Notes |
-|------|--------------|----------|---------|---------|--------|--------|
-| api/services/health_monitor.py | - | - | ❌ Pending | - | - | - |
-| api/services/recovery_manager.py | - | - | ❌ Pending | - | - | - |
+| File | Last Reviewed | Reviewer | Status | Issues | Notes |
+|------|---------------|----------|---------|--------|-------|
+| api/services/event_store.py | - | - | ❌ Pending | - | - |
+| api/services/health_monitor.py | - | - | ❌ Pending | - | - |
+| api/services/logging_service.py | - | - | ❌ Pending | - | - |
+| api/services/recovery_manager.py | - | - | ❌ Pending | - | - |
 
-### Core API
-| File | Last Reviewed | Reviewer | Status | Issues | Ticket | Notes |
-|------|--------------|----------|---------|---------|--------|--------|
-| main.py | - | - | ❌ Pending | - | - | FastAPI app setup |
-| socket_manager.py | - | - | ❌ Pending | - | - | WebSocket management |
-| config.py | - | - | ❌ Pending | - | - | Configuration |
+### Other
+| File | Last Reviewed | Reviewer | Status | Issues | Notes |
+|------|---------------|----------|---------|--------|-------|
+| socket_manager.py | - | - | ❌ Pending | - | - |
+| shared_instances.py | - | - | ❌ Pending | - | Good DI pattern |
 
-## Test Files Review Status
+## Review Process
 
-### Test Coverage
-| Category | Files | Status | Coverage | Notes |
-|----------|-------|---------|----------|--------|
-| Engine Tests | 79 | ❌ Not Analyzed | Unknown | Good test count |
-| API Tests | Unknown | ❌ Not Analyzed | Unknown | Need to identify |
-| Integration Tests | Multiple | ❌ Not Analyzed | Unknown | - |
+### How to Review
+1. Check module against CODE_QUALITY_CHECKLIST.md criteria
+2. Run pylint on the file: `pylint engine/module.py`
+3. Check for test coverage: `pytest --cov=module`
+4. Update this table with findings
 
-## API Documentation Status
+### Priority Files for Review
+1. game.py - Core game logic
+2. turn_state.py - Complex state handling (986 lines!)
+3. bot_manager.py - AI logic (896 lines)
+4. ws.py - WebSocket security concerns
 
-### Endpoints Documentation
-| Endpoint | Method | Documented | Request Schema | Response Schema | Examples |
-|----------|---------|------------|----------------|-----------------|----------|
-| /api/health | GET | ❌ No | N/A | ❌ Missing | ❌ No |
-| /api/metrics | GET | ❌ No | N/A | ❌ Missing | ❌ No |
-| /api/rooms | GET | ❌ No | N/A | ❌ Missing | ❌ No |
-| /api/rooms | POST | ❌ No | ❌ Missing | ❌ Missing | ❌ No |
-| /ws/{room_id} | WS | ❌ No | ❌ Missing | ❌ Missing | ❌ No |
-
-## Summary Statistics
-
-### Review Progress
-- **Total Python Files**: ~25 (excluding tests)
-- **Reviewed**: 0 (0%)
-- **Passed**: 0 (0%)
-- **Has Issues**: 0 (0%)
-- **Pending**: 25 (100%)
-
-### Priority Review Queue
-1. **api/routes/ws.py** - Critical WebSocket handler
-2. **engine/state_machine/states/turn_state.py** - Complex game logic
-3. **engine/game.py** - Core game engine
-4. **main.py** - App configuration and security
-5. **All API endpoints** - Need documentation
-
-### Common Issues to Check
-- [ ] Missing OpenAPI documentation
-- [ ] Inconsistent error response formats
-- [ ] No rate limiting implementation
-- [ ] Missing type hints in some modules
-- [ ] No request validation middleware
-- [ ] Security headers configuration
-
-### Architecture Strengths (Already Implemented)
-- ✅ Enterprise state machine pattern
-- ✅ Event sourcing with history
-- ✅ Automatic broadcasting system
-- ✅ Health monitoring endpoints
-- ✅ Recovery mechanisms
-- ✅ Comprehensive test suite
-
----
-
-**Last Updated**: 2025-01-13  
-**Next Review Session**: TBD
+### Common Issues Found
+- Missing docstrings
+- Import organization
+- Files exceeding 500 lines
+- Trailing whitespace
+- Long lines (>100 characters)

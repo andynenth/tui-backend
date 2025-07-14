@@ -89,7 +89,7 @@ class ScoringState(GameState):
                     # Include player statistics
                     player_stats[player.name] = {
                         "turns_won": getattr(player, "turns_won", 0),
-                        "perfect_rounds": getattr(player, "perfect_rounds", 0)
+                        "perfect_rounds": getattr(player, "perfect_rounds", 0),
                     }
 
             print(f"🚀 SCORING_BROADCAST_DEBUG: Also sending:")
@@ -333,7 +333,7 @@ class ScoringState(GameState):
             # Update player's total score
             current_score = getattr(player, "score", 0)
             player.score = current_score + final_score
-            
+
             # Increment perfect rounds counter for non-zero perfect predictions
             if declared > 0 and declared == actual:
                 old_perfect_rounds = player.perfect_rounds

@@ -6,11 +6,15 @@ console.log('🔍 Checking React files for syntax errors...\n');
 const checkFile = (filePath) => {
   try {
     const content = fs.readFileSync(filePath, 'utf8');
-    
+
     // Basic syntax checks
-    const hasCorrectImport = content.includes('import React') || content.includes('import {') || !content.includes('React');
-    const hasProperExport = content.includes('export default') || content.includes('export {');
-    
+    const hasCorrectImport =
+      content.includes('import React') ||
+      content.includes('import {') ||
+      !content.includes('React');
+    const hasProperExport =
+      content.includes('export default') || content.includes('export {');
+
     if (hasCorrectImport && hasProperExport) {
       console.log('✅', path.basename(filePath));
     } else {
@@ -25,7 +29,7 @@ const checkFile = (filePath) => {
 const filesToCheck = [
   'src/App.jsx',
   'src/hooks/useGameState.js',
-  'src/hooks/usePhaseManager.js', 
+  'src/hooks/usePhaseManager.js',
   'src/hooks/useSocket.js',
   'src/contexts/GameContext.jsx',
   'src/contexts/AppContext.jsx',
@@ -35,7 +39,7 @@ const filesToCheck = [
   'src/pages/StartPage.jsx',
   'src/pages/LobbyPage.jsx',
   'src/pages/RoomPage.jsx',
-  'src/pages/GamePage.jsx'
+  'src/pages/GamePage.jsx',
 ];
 
 filesToCheck.forEach(checkFile);

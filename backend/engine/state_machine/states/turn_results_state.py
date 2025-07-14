@@ -82,7 +82,9 @@ class TurnResultsState(GameState):
                         f"🏆 TURNS_WON_DEBUG: Player {self.turn_winner} turns_won: {old_turns_won} -> {winner_player.turns_won}"
                     )
                 else:
-                    self.logger.warning(f"⚠️ TURNS_WON_DEBUG: Could not find player {self.turn_winner} to update turns_won!")
+                    self.logger.warning(
+                        f"⚠️ TURNS_WON_DEBUG: Could not find player {self.turn_winner} to update turns_won!"
+                    )
             else:
                 self.logger.info("ℹ️ TURNS_WON_DEBUG: No turn winner to update")
 

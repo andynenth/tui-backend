@@ -3,7 +3,7 @@
 /* Base styles */
 .footer-timer {
   font-size: 14px;
-  color: #6C757D;
+  color: #6c757d;
 }
 
 /* Inline variant - for embedding in content */
@@ -24,9 +24,17 @@
   z-index: 25; /* Same as piece-tray fixed positioning */
   padding: 20px;
   text-align: center;
-  background: 
-    linear-gradient(180deg, rgba(248, 249, 250, 0.9) 0%, rgba(233, 236, 239, 0.95) 100%),
-    radial-gradient(ellipse 100% 60% at 50% 0%, rgba(173, 181, 189, 0.2) 0%, transparent 100%);
+  background:
+    linear-gradient(
+      180deg,
+      rgba(248, 249, 250, 0.9) 0%,
+      rgba(233, 236, 239, 0.95) 100%
+    ),
+    radial-gradient(
+      ellipse 100% 60% at 50% 0%,
+      rgba(173, 181, 189, 0.2) 0%,
+      transparent 100%
+    );
   border-top: 1px solid rgba(173, 181, 189, 0.2);
 }
 
@@ -39,12 +47,12 @@
   transform: translateX(-50%);
   width: 40px;
   height: 2px;
-  background: linear-gradient(90deg, transparent, #6C757D, transparent);
+  background: linear-gradient(90deg, transparent, #6c757d, transparent);
 }
 
 /* Text elements */
 .footer-timer__prefix {
-  color: #6C757D;
+  color: #6c757d;
 }
 
 .footer-timer__count {
@@ -60,7 +68,7 @@
 }
 
 .footer-timer__suffix {
-  color: #6C757D;
+  color: #6c757d;
 }
 
 /* Animation for countdown change */

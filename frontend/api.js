@@ -1,6 +1,6 @@
 // frontend/api.js
 
-console.log("📡 API module loaded"); // Log a message to the console when this API module is loaded.
+console.log('📡 API module loaded'); // Log a message to the console when this API module is loaded.
 
 /**
  * Sends a request to the backend to create a new game room.
@@ -20,7 +20,7 @@ export async function createRoom(name) {
     return JSON.parse(text);
   } catch (err) {
     // Log an error if JSON parsing fails and re-throw the error.
-    console.error("❌ Failed to parse JSON:", text);
+    console.error('❌ Failed to parse JSON:', text);
     throw err;
   }
 }
@@ -44,23 +44,23 @@ export async function listRooms() {
  * @throws {Error} If the request fails or the API returns an error.
  */
 export async function joinRoom(roomId, name) {
-    // Send a POST request to the backend API to join a room.
-    const res = await fetch(`/api/join-room?room_id=${roomId}&name=${name}`, {
-        method: 'POST',
-    });
-    
-    // Check if the HTTP response indicates an error (status code outside 200-299 range).
-    if (!res.ok) {
-        // Parse the error details from the response body.
-        const errorData = await res.json();
-        // Create and throw an Error object with details from the backend.
-        const error = new Error(errorData.detail || 'Failed to join room');
-        error.status = res.status; // Attach the HTTP status code.
-        throw error;
-    }
-    
-    // If the response is successful, parse and return the JSON data.
-    return res.json();
+  // Send a POST request to the backend API to join a room.
+  const res = await fetch(`/api/join-room?room_id=${roomId}&name=${name}`, {
+    method: 'POST',
+  });
+
+  // Check if the HTTP response indicates an error (status code outside 200-299 range).
+  if (!res.ok) {
+    // Parse the error details from the response body.
+    const errorData = await res.json();
+    // Create and throw an Error object with details from the backend.
+    const error = new Error(errorData.detail || 'Failed to join room');
+    error.status = res.status; // Attach the HTTP status code.
+    throw error;
+  }
+
+  // If the response is successful, parse and return the JSON data.
+  return res.json();
 }
 
 /**
@@ -70,7 +70,9 @@ export async function joinRoom(roomId, name) {
  */
 export async function startGame(roomId) {
   // Send a POST request to the '/api/start-game' endpoint, with the room ID.
-  const res = await fetch(`/api/start-game?room_id=${roomId}`, { method: 'POST' });
+  const res = await fetch(`/api/start-game?room_id=${roomId}`, {
+    method: 'POST',
+  });
   return res.json(); // Parse and return the JSON response.
 }
 
@@ -84,12 +86,12 @@ export async function startGame(roomId) {
 export async function assignSlot(roomId, name, slot) {
   // If name is null or undefined, don't include it in the query string
   let url = `/api/assign-slot?room_id=${roomId}&slot=${slot}`;
-  
+
   // Only add name parameter if it's not null
   if (name !== null && name !== undefined) {
     url += `&name=${encodeURIComponent(name)}`;
   }
-  
+
   const res = await fetch(url, {
     method: 'POST',
   });
@@ -113,7 +115,7 @@ export async function getRoomStateData(roomId) {
     return JSON.parse(text);
   } catch (err) {
     // Log an error if JSON parsing fails and re-throw the error.
-    console.error("❌ Failed to parse JSON for getRoomStateData:", text);
+    console.error('❌ Failed to parse JSON for getRoomStateData:', text);
     throw err;
   }
 }

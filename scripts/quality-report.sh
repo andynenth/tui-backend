@@ -35,7 +35,18 @@ echo ""
 
 echo "Test Coverage:"
 if [ -f "jest.config.js" ]; then
-    echo "  - Run 'npm run test:coverage' for detailed report"
+    # Try to get actual coverage percentage
+    COVERAGE_OUTPUT=$(npm run test:coverage -- --silent --json 2>/dev/null)
+    if [ $? -eq 0 ] && [ -n "$COVERAGE_OUTPUT" ]; then
+        COVERAGE=$(echo "$COVERAGE_OUTPUT" | grep -o '"pct":[0-9.]*' | head -1 | cut -d: -f2)
+        if [ -n "$COVERAGE" ]; then
+            echo "  - Overall Coverage: ${COVERAGE}%"
+        else
+            echo "  - Run 'npm run test:coverage' for detailed report"
+        fi
+    else
+        echo "  - Run 'npm run test:coverage' for detailed report"
+    fi
 else
     echo "  - Jest not configured"
 fi
@@ -50,7 +61,41 @@ echo "Python Code Quality:"
 if command -v python &> /dev/null; then
     cd backend 2>/dev/null && {
         echo "  Running pylint analysis..."
-        python -m pylint engine/ api/ --exit-zero 2>/dev/null | grep "Your code has been rated" || echo "  - Pylint not installed"
+        PYLINT_OUTPUT=$(python -m pylint engine/ api/ --exit-zero 2>/dev/null | grep "Your code has been rated")
+        if [ -n "$PYLINT_OUTPUT" ]; then
+            echo "  $PYLINT_OUTPUT"
+        else
+            echo "  - Pylint not installed or no rating available"
+        fi
+        
+        # Check Black formatting
+        echo "  Black formatting check:"
+        if command -v black &> /dev/null; then
+            BLACK_CHECK=$(black . --check 2>&1)
+            if [ $? -eq 0 ]; then
+                echo "  - ✅ All files properly formatted"
+            else
+                UNFORMATTED=$(echo "$BLACK_CHECK" | grep "would be reformatted" | wc -l | tr -d ' ')
+                echo "  - ❌ $UNFORMATTED files need formatting"
+            fi
+        else
+            echo "  - Black not installed"
+        fi
+        
+        # Backend test coverage
+        echo "  Test Coverage:"
+        if command -v pytest &> /dev/null; then
+            PYTEST_OUTPUT=$(pytest --cov=engine --cov=api --cov-report=term --quiet 2>/dev/null | grep "TOTAL")
+            if [ -n "$PYTEST_OUTPUT" ]; then
+                BACKEND_COVERAGE=$(echo "$PYTEST_OUTPUT" | awk '{print $4}')
+                echo "  - Overall Coverage: $BACKEND_COVERAGE"
+            else
+                echo "  - Run 'pytest --cov=engine --cov=api' for coverage"
+            fi
+        else
+            echo "  - Pytest not installed"
+        fi
+        
         cd - > /dev/null
     } || echo "  - Backend directory not found"
 else
@@ -118,6 +163,32 @@ if [ -f "CODE_QUALITY_CHECKLIST.md" ]; then
 else
     echo "  - CODE_QUALITY_CHECKLIST.md not found"
 fi
+echo ""
+
+echo "📊 QUALITY SUMMARY TABLE"
+echo "======================="
+echo ""
+echo "| Metric | Frontend | Backend |"
+echo "|--------|----------|---------|"
+
+# Frontend linting from earlier
+FRONTEND_ERRORS=${ERROR_COUNT:-0}
+FRONTEND_WARNINGS=${WARNING_COUNT:-0}
+FRONTEND_ISSUES=$((FRONTEND_ERRORS + FRONTEND_WARNINGS))
+
+# Backend score extraction
+BACKEND_SCORE="N/A"
+if [ -n "$PYLINT_OUTPUT" ]; then
+    BACKEND_SCORE=$(echo "$PYLINT_OUTPUT" | grep -o '[0-9.]*/' | tr -d '/')
+fi
+
+# Coverage values
+FRONTEND_COV="${COVERAGE:-N/A}"
+BACKEND_COV="${BACKEND_COVERAGE:-N/A}"
+
+echo "| Linting Issues | $FRONTEND_ISSUES | ${BACKEND_SCORE}/10 |"
+echo "| Test Coverage | ${FRONTEND_COV}% | $BACKEND_COV |"
+echo "| TODO/FIXME | $(grep -r "TODO\|FIXME" --exclude-dir=node_modules --exclude-dir=.git . 2>/dev/null | wc -l) (total) | - |"
 echo ""
 
 echo "========================================"

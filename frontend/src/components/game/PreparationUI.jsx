@@ -1,8 +1,8 @@
 /**
  * 🃏 **PreparationUI Component** - Pure Preparation Phase Interface
- * 
+ *
  * Phase 2, Task 2.2: Pure UI Components
- * 
+ *
  * Features:
  * ✅ Pure functional component (props in, JSX out)
  * ✅ No hooks except local UI state
@@ -24,30 +24,30 @@ export function PreparationUI({
   players = [],
   weakHands = [],
   redealMultiplier = 1,
-  
+
   // State props (calculated by backend)
   currentWeakPlayer = null,
   isMyDecision = false,
   isMyHandWeak = false,
   handValue = 0,
   highestCardValue = 0,
-  
+
   // Simultaneous mode props
   simultaneousMode = false,
   weakPlayersAwaiting = [],
   decisionsReceived = 0,
   decisionsNeeded = 0,
-  
+
   // Dealing animation flag
   dealingCards = false,
-  
+
   // Action props
   onAcceptRedeal,
-  onDeclineRedeal
+  onDeclineRedeal,
 }) {
   // Simply pass all props through to PreparationContent
   return (
-    <PreparationContent 
+    <PreparationContent
       myHand={myHand}
       players={players}
       weakHands={weakHands}
@@ -73,37 +73,41 @@ export function PreparationUI({
 // PropTypes definition
 PreparationUI.propTypes = {
   // Data props
-  myHand: PropTypes.arrayOf(PropTypes.shape({
-    type: PropTypes.string.isRequired,
-    color: PropTypes.oneOf(['red', 'black']).isRequired,
-    value: PropTypes.number.isRequired
-  })),
-  players: PropTypes.arrayOf(PropTypes.shape({
-    name: PropTypes.string.isRequired,
-    isActive: PropTypes.bool
-  })).isRequired,
+  myHand: PropTypes.arrayOf(
+    PropTypes.shape({
+      type: PropTypes.string.isRequired,
+      color: PropTypes.oneOf(['red', 'black']).isRequired,
+      value: PropTypes.number.isRequired,
+    })
+  ),
+  players: PropTypes.arrayOf(
+    PropTypes.shape({
+      name: PropTypes.string.isRequired,
+      isActive: PropTypes.bool,
+    })
+  ).isRequired,
   weakHands: PropTypes.arrayOf(PropTypes.string),
   redealMultiplier: PropTypes.number,
-  
+
   // State props (calculated by backend)
   currentWeakPlayer: PropTypes.string,
   isMyDecision: PropTypes.bool.isRequired,
   isMyHandWeak: PropTypes.bool,
   handValue: PropTypes.number,
   highestCardValue: PropTypes.number,
-  
+
   // Simultaneous mode props
   simultaneousMode: PropTypes.bool,
   weakPlayersAwaiting: PropTypes.arrayOf(PropTypes.string),
   decisionsReceived: PropTypes.number,
   decisionsNeeded: PropTypes.number,
-  
+
   // Dealing animation flag
   dealingCards: PropTypes.bool,
-  
+
   // Action props
   onAcceptRedeal: PropTypes.func,
-  onDeclineRedeal: PropTypes.func
+  onDeclineRedeal: PropTypes.func,
 };
 
 PreparationUI.defaultProps = {
@@ -120,7 +124,7 @@ PreparationUI.defaultProps = {
   decisionsNeeded: 0,
   dealingCards: false,
   onAcceptRedeal: () => {},
-  onDeclineRedeal: () => {}
+  onDeclineRedeal: () => {},
 };
 
 export default PreparationUI;
