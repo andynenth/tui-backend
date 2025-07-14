@@ -42,6 +42,7 @@ class Game:
         self.round_starter = None  # Player who starts the round
         self.player_declarations = {}  # Track player declarations for state machine
         self.pile_counts = {}  # Track piles won per player per round
+        self.round_scores = {}  # Track round scores for each player
 
         # Event-driven support
         self.current_phase = None  # Track current phase for controllers
@@ -147,11 +148,6 @@ class Game:
             "max_score": self.max_score,
             "max_rounds": self.max_rounds,
         }
-
-    def set_current_phase(self, phase_name: str):
-        """Controllers can track current phase"""
-        old_phase = self.current_phase
-        self.current_phase = phase_name
 
     def get_declaration_eligible_players(self, include_details=False):
         """
@@ -325,36 +321,6 @@ class Game:
         except Exception as e:
             return {"valid": False, "reason": str(e), "play_type": None}
 
-    def execute_turn_play(self, player_name: str, piece_indexes: list) -> dict:
-        """
-        Record turn play and return results
-        TODO: Implement full turn logic
-        """
-        # Validate first
-        validation = self.validate_turn_play(player_name, piece_indexes)
-        if not validation["valid"]:
-            return {
-                "success": False,
-                "reason": validation["reason"],
-                "player": player_name,
-            }
-
-        # Execute turn (placeholder)
-        player = self.get_player(player_name)
-        pieces = [player.hand[i] for i in piece_indexes]
-
-        # Remove pieces from hand
-        for i in sorted(piece_indexes, reverse=True):
-            player.hand.pop(i)
-
-        return {
-            "success": True,
-            "player": player_name,
-            "pieces_played": [str(p) for p in pieces],
-            "play_type": validation["play_type"],
-            "remaining_hand_size": len(player.hand),
-        }
-
     # ======================================
     # ✅ EXISTING METHODS (PRESERVED)
     # ======================================
@@ -396,35 +362,6 @@ class Game:
         except (ValueError, AttributeError):
             # Fallback: return players in original order
             return self.players
-
-    def declare(self, player_name: str, value: int) -> dict:
-        """Allow a player to declare how many piles they plan to win this round."""
-        player = self.get_player(player_name)
-
-        if player.declared != 0:
-            return {
-                "status": "already_declared",
-                "message": f"{player.name} has already declared {player.declared}.",
-            }
-
-        if player.zero_declares_in_a_row >= 2 and value == 0:
-            return {
-                "status": "error",
-                "message": f"{player.name} must declare at least 1 after two zeros in a row.",
-            }
-
-        player.record_declaration(value)
-
-        total_declared = sum(p.declared for p in self.players)
-        declarations = {p.name: p.declared for p in self.players}
-
-        return {
-            "status": "ok",
-            "declared_by": player.name,
-            "value": value,
-            "total_declared": total_declared,
-            "declarations": declarations,
-        }
 
     def all_players_declared(self) -> bool:
         """Check if all players have declared."""
@@ -561,10 +498,6 @@ class Game:
 
         return categories
 
-    def _verify_and_report_hands(self, expected_starter=None):
-        """Helper: Verify final hands and report results"""
-        pass
-
     def _fill_remaining_slots(self, available_pieces):
         """Helper: Fill remaining hand slots for all players"""
         random.shuffle(available_pieces)
@@ -693,9 +626,6 @@ class Game:
             # Shuffle hand to randomize strong piece position
             random.shuffle(player.hand)
 
-        # Verify results
-        self._verify_and_report_hands()
-
     def _deal_weak_hand_legacy(
         self, weak_player_index=0, max_weak_points=9, limit=None
     ):
@@ -776,15 +706,8 @@ class Game:
         for player in self.players:
             random.shuffle(player.hand)
 
-        # Verify results
-        self._verify_and_report_hands()
-
         # Confirm no weak hands
         weak_players = self.get_weak_hand_players(include_details=False)
-
-    def reset_weak_hand_counter(self):
-        """Reset the weak hand deal counter (useful for new games or rounds)"""
-        self.weak_hand_deal_count = 0
 
     def _deal_double_straight(self, player_index=0, color="RED"):
         """
@@ -867,23 +790,3 @@ class Game:
         horse_count = sum(1 for p in piece_names if f"HORSE_{color}" in p)
         cannon_count = sum(1 for p in piece_names if f"CANNON_{color}" in p)
 
-    def _set_round_start_player(self):
-        """Set the starting player order for the round based on game rules."""
-        # Check if this is a redeal (multiplier > 1)
-        if self.redeal_multiplier > 1:
-            # Redeal: The player who requested redeal should start
-            # For now, we'll keep the same starter as before
-            # (In a full implementation, track who requested the redeal)
-            pass
-        elif self.last_round_winner:
-            # Subsequent rounds: Last round winner starts
-            start_index = self.players.index(self.last_round_winner)
-            self.current_order = self.players[start_index:] + self.players[:start_index]
-        else:
-            # First round: find player with RED_GENERAL
-            start_index = 0
-            for i, player in enumerate(self.players):
-                if any("GENERAL_RED" in str(piece) for piece in player.hand):
-                    start_index = i
-                    break
-            self.current_order = self.players[start_index:] + self.players[:start_index]

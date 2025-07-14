@@ -27,10 +27,10 @@ A comprehensive checklist for maintaining high code quality standards across our
   - Add docstrings to public functions (many missing)
   - **Impact**: Better code maintainability and IDE support
 
-- [ ] **Remove dead code and reorganize tests** 🟡 Important
-  - Remove 7 dead code instances from game.py
-  - Move 42 test files from backend/ to backend/tests/
-  - Clean up commented-out debug statements
+- [x] **Remove dead code and reorganize tests** 🟡 Important ✅ COMPLETED
+  - Remove 7 dead code instances from game.py ✅
+  - Move 42 test files from backend/ to backend/tests/ ✅
+  - Clean up commented-out debug statements ✅
   - **Impact**: Cleaner codebase, better organization
 
 ### High-Impact Improvements (1-2 days each)
@@ -430,16 +430,16 @@ grep -r "TODO\|FIXME" --exclude-dir=node_modules . | wc -l
   - API endpoints have no rate limits
   - Security vulnerability
 
-- [ ] **Dead code in game.py** 🟡
-  - Empty function: _verify_and_report_hands()
-  - Unused: reset_weak_hand_counter(), set_current_phase(), _set_round_start_player()
-  - Missing initialization: self.round_scores
-  - Duplicate functions need consolidation
+- [x] **Dead code in game.py** 🟡 ✅ COMPLETED
+  - Empty function: _verify_and_report_hands() ✅ Removed
+  - Unused: reset_weak_hand_counter(), set_current_phase(), _set_round_start_player() ✅ Removed
+  - Missing initialization: self.round_scores ✅ Fixed
+  - Duplicate functions need consolidation ✅ Removed declare() and execute_turn_play()
 
-- [ ] **Test files in wrong location** 🟡
-  - 42 test_*.py files in backend/ root
-  - Should be in backend/tests/ directory
-  - Makes it harder to distinguish production code from tests
+- [x] **Test files in wrong location** 🟡 ✅ COMPLETED
+  - 42 test_*.py files in backend/ root ✅ Moved
+  - Should be in backend/tests/ directory ✅ Done
+  - Makes it harder to distinguish production code from tests ✅ Resolved
 
 #### Architecture Issues
 - [ ] **No CI/CD pipeline** 🟡
@@ -459,8 +459,8 @@ grep -r "TODO\|FIXME" --exclude-dir=node_modules . | wc -l
 | Test Coverage | 2025-07-13 | Claude Code | ✅ Enabled | Week 2 |
 | API Documentation | - | - | Not Started | Week 2 |
 | Security Review | - | - | Not Started | Week 1 |
-| Dead Code Removal | 2025-07-14 | - | Not Started | Week 2 |
-| Test Reorganization | 2025-07-14 | - | Not Started | Week 2 |
+| Dead Code Removal | 2025-07-14 | Claude Code | ✅ Completed | Week 2 |
+| Test Reorganization | 2025-07-14 | Claude Code | ✅ Completed | Week 2 |
 
 ---
 
