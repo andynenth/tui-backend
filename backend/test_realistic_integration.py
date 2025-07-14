@@ -4,16 +4,16 @@ Test integration with realistic hand data - NOT all players having weak hands
 """
 
 import asyncio
-import sys
 import os
+import sys
 
 # Add backend to path
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 
+from engine.piece import Piece
 from engine.room import Room
 from engine.state_machine.core import ActionType, GameAction, GamePhase
-from tests.test_helpers import create_test_hand_realistic, create_strong_hand
-from engine.piece import Piece
+from tests.test_helpers import create_strong_hand, create_test_hand_realistic
 
 
 async def test_realistic_integration():

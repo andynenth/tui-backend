@@ -4,13 +4,14 @@ Monitors system health and triggers automatic recovery procedures
 """
 
 import asyncio
-import time
-import psutil
 import sqlite3
-from typing import Dict, Any, List, Optional
+import time
 from dataclasses import dataclass, field
 from datetime import datetime, timedelta
 from enum import Enum
+from typing import Any, Dict, List, Optional
+
+import psutil
 
 # Import our services
 try:

@@ -16,6 +16,7 @@
 import { networkService } from './NetworkService';
 import { gameService } from './GameService';
 import { recoveryService } from './RecoveryService';
+import { TIMING } from '../constants';
 import type {
   IntegrationConfig,
   ServiceError,
@@ -67,13 +68,13 @@ export class ServiceIntegration extends EventTarget {
 
     // Default configuration
     this.config = {
-      healthCheckInterval: 30000, // 30 seconds
+      healthCheckInterval: TIMING.HEARTBEAT_INTERVAL,
       errorRetention: 100, // Keep last 100 errors
       autoRecovery: true,
-      recoveryTimeout: 60000, // 1 minute
+      recoveryTimeout: TIMING.RECOVERY_TIMEOUT,
       maxRecoveryAttempts: 3,
       errorThreshold: 10, // Alert after 10 errors in window
-      errorWindowMs: 300000, // 5 minute window
+      errorWindowMs: TIMING.ERROR_WINDOW_MS,
       enableMetrics: true,
     };
 

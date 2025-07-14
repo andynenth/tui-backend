@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { PieceTray } from '../shared';
+import { TIMING } from '../../../constants';
 
 /**
  * PreparationContent Component
@@ -36,7 +37,7 @@ const PreparationContent = ({
   useEffect(() => {
     const timer = setTimeout(() => {
       setShowDealing(false);
-    }, 3500);
+    }, TIMING.DEALING_ANIMATION_DURATION);
 
     return () => {
       clearTimeout(timer);
@@ -58,7 +59,7 @@ const PreparationContent = ({
     if (isRedealing) {
       const timer = setTimeout(() => {
         setIsRedealing(false);
-      }, 3500);
+      }, TIMING.DEALING_ANIMATION_DURATION);
 
       return () => {
         clearTimeout(timer);

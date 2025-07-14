@@ -1,11 +1,12 @@
 # backend/engine/state_machine/states/preparation_state.py
 
-from typing import Dict, Any, Optional, List, Set
-from ..core import GamePhase, ActionType, GameAction
-from ..base_state import GameState
-import random
 import asyncio
+import random
 import time
+from typing import Any, Dict, List, Optional, Set
+
+from ..base_state import GameState
+from ..core import ActionType, GameAction, GamePhase
 
 
 class PreparationState(GameState):
@@ -123,7 +124,7 @@ class PreparationState(GameState):
         # game._deal_guaranteed_no_redeal(red_general_player_index=1)
 
         # 3. Force weak hands (testing redeal logic)
-        # game._deal_weak_hand(weak_player_indices=[0], max_weak_points=9, limit=5)
+        # game._deal_weak_hand(weak_player_indices=[1], max_weak_points=9, limit=6)
 
         # 4.
         game._deal_double_straight(0, "RED")

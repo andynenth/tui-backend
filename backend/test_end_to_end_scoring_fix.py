@@ -11,11 +11,11 @@ This test simulates the COMPLETE game flow that caused React error #31:
 This test will catch ANY remaining issues with object vs number handling.
 """
 
-import sys
-import os
 import asyncio
 import json
-from typing import Dict, Any, List
+import os
+import sys
+from typing import Any, Dict, List
 
 # Add backend to path
 sys.path.append(os.path.join(os.path.dirname(__file__), ".."))

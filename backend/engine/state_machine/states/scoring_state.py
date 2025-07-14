@@ -1,9 +1,10 @@
 # backend/engine/state_machine/states/scoring_state.py
 
-from typing import Dict, Any, Optional, List
-from ..base_state import GameState
-from ..core import GamePhase, ActionType, GameAction
+from typing import Any, Dict, List, Optional
+
 from ...scoring import calculate_score
+from ..base_state import GameState
+from ..core import ActionType, GameAction, GamePhase
 
 
 class ScoringState(GameState):

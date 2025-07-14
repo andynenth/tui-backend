@@ -1,8 +1,9 @@
 # backend/engine/state_machine/states/declaration_state.py
 
-from typing import Dict, List, Optional, Any
+from typing import Any, Dict, List, Optional
+
 from ..base_state import GameState
-from ..core import GamePhase, ActionType, GameAction
+from ..core import ActionType, GameAction, GamePhase
 
 
 class DeclarationState(GameState):

@@ -4,17 +4,16 @@ Test script to verify the bot manager validation fix
 """
 
 import asyncio
-import sys
 import os
+import sys
 
 sys.path.append(os.path.dirname(__file__))
 
-from engine.state_machine.core import GameAction, ActionType
-from engine.state_machine.game_state_machine import GameStateMachine
-from engine.state_machine.core import GamePhase
 from engine.game import Game
-from engine.player import Player
 from engine.piece import Piece
+from engine.player import Player
+from engine.state_machine.core import ActionType, GameAction, GamePhase
+from engine.state_machine.game_state_machine import GameStateMachine
 
 
 async def test_bot_validation_fix():

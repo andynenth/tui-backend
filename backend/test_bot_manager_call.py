@@ -5,12 +5,13 @@ Test to check what the bot manager gets when calling the state machine.
 """
 
 import asyncio
-from engine.state_machine.game_state_machine import GameStateMachine
-from engine.state_machine.core import GameAction, ActionType
-from engine.game import Game
-from engine.player import Player
-from engine.piece import Piece
+
 from engine.bot_manager import BotManager
+from engine.game import Game
+from engine.piece import Piece
+from engine.player import Player
+from engine.state_machine.core import ActionType, GameAction
+from engine.state_machine.game_state_machine import GameStateMachine
 
 
 async def mock_broadcast(room_id, event, data):

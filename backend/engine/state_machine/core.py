@@ -1,9 +1,9 @@
 # backend/engine/state_machine/core.py
 
-from enum import Enum
 from dataclasses import dataclass
-from typing import Dict, Any, Optional
 from datetime import datetime
+from enum import Enum
+from typing import Any, Dict, Optional
 
 
 class GameStateError(Exception):

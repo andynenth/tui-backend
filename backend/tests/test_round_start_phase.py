@@ -5,13 +5,15 @@ Tests the new phase flow: PREPARATION → ROUND_START → DECLARATION
 Ensures no invalid transitions occur and all edge cases are handled.
 """
 
-import pytest
 import asyncio
 from unittest.mock import AsyncMock, MagicMock, patch
-from engine.state_machine.game_state_machine import GameStateMachine
-from engine.state_machine.core import GamePhase, GameAction, ActionType
+
+import pytest
+
 from engine.game import Game
 from engine.player import Player
+from engine.state_machine.core import ActionType, GameAction, GamePhase
+from engine.state_machine.game_state_machine import GameStateMachine
 
 
 class TestRoundStartPhaseTransitions:

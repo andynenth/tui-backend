@@ -1,16 +1,17 @@
 # backend/engine/room.py
 
-from engine.game import Game  # Import the Game class, representing the core game logic.
-from engine.player import (
-    Player,
-)  # Import the Player class, representing a player in the game.
-from engine.state_machine.game_state_machine import GameStateMachine
-from engine.state_machine.core import GamePhase
-from typing import (
-    Optional,
-)  # Import Optional for type hinting variables that can be None.
 import asyncio
 import time
+from typing import (  # Import Optional for type hinting variables that can be None.
+    Optional,
+)
+
+from engine.game import Game  # Import the Game class, representing the core game logic.
+from engine.player import (  # Import the Player class, representing a player in the game.
+    Player,
+)
+from engine.state_machine.core import GamePhase
+from engine.state_machine.game_state_machine import GameStateMachine
 
 
 class Room:

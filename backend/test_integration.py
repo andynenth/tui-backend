@@ -4,8 +4,8 @@ Test the complete state machine integration
 """
 
 import asyncio
-import sys
 import os
+import sys
 
 # Add backend to path
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))

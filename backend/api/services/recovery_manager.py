@@ -5,10 +5,10 @@ Automatic recovery procedures for system failures and error conditions
 
 import asyncio
 import time
-from typing import Dict, Any, List, Optional, Callable
 from dataclasses import dataclass
 from datetime import datetime, timedelta
 from enum import Enum
+from typing import Any, Callable, Dict, List, Optional
 
 # Import our services
 try:
@@ -20,7 +20,7 @@ except ImportError:
     game_logger = None
 
 try:
-    from .health_monitor import health_monitor, HealthStatus
+    from .health_monitor import HealthStatus, health_monitor
 
     HEALTH_MONITOR_AVAILABLE = True
 except ImportError:

@@ -1,21 +1,22 @@
 # backend/api/main.py
 
-from fastapi import FastAPI  # Import FastAPI framework for building the API.
-from fastapi.middleware.cors import (
-    CORSMiddleware,
-)  # Middleware for handling Cross-Origin Resource Sharing (CORS).
-from fastapi.staticfiles import StaticFiles  # Utility to serve static files.
-from fastapi.responses import FileResponse  # Used to return a file as a response.
-from backend.api.routes.routes import (
-    router as api_router,
-)  # Import the API router for REST endpoints.
-from backend.api.routes.ws import (
-    router as ws_router,
-)  # Import the WebSocket router for real-time communication.
 import os  # Standard library for interacting with the operating system (e.g., environment variables).
-from dotenv import (
+
+from backend.api.routes.routes import (
+    router as api_router,  # Import the API router for REST endpoints.
+)
+from backend.api.routes.ws import (
+    router as ws_router,  # Import the WebSocket router for real-time communication.
+)
+from dotenv import (  # Library to load environment variables from a .env file.
     load_dotenv,
-)  # Library to load environment variables from a .env file.
+)
+from fastapi import FastAPI  # Import FastAPI framework for building the API.
+from fastapi.middleware.cors import (  # Middleware for handling Cross-Origin Resource Sharing (CORS).
+    CORSMiddleware,
+)
+from fastapi.responses import FileResponse  # Used to return a file as a response.
+from fastapi.staticfiles import StaticFiles  # Utility to serve static files.
 
 # ✅ Load environment variables from the .env file.
 # This makes configuration values available via os.getenv().

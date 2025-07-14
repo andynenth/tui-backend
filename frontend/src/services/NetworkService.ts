@@ -26,6 +26,7 @@ import type {
   ReconnectionEventDetail,
   NetworkEventDetail,
 } from './types';
+import { TIMING, GAME, NETWORK } from '../constants';
 
 export class NetworkService extends EventTarget {
   // Singleton instance
@@ -60,12 +61,12 @@ export class NetworkService extends EventTarget {
 
     // Default configuration
     this.config = {
-      baseUrl: 'ws://localhost:5050/ws',
-      heartbeatInterval: 30000, // 30 seconds
-      maxReconnectAttempts: 10,
-      reconnectBackoff: [1000, 2000, 4000, 8000, 16000], // exponential backoff
-      messageQueueLimit: 1000,
-      connectionTimeout: 10000,
+      baseUrl: NETWORK.WEBSOCKET_BASE_URL,
+      heartbeatInterval: TIMING.HEARTBEAT_INTERVAL,
+      maxReconnectAttempts: GAME.MAX_RECONNECT_ATTEMPTS,
+      reconnectBackoff: [...NETWORK.RECONNECT_BACKOFF],
+      messageQueueLimit: GAME.MESSAGE_QUEUE_LIMIT,
+      connectionTimeout: TIMING.CONNECTION_TIMEOUT,
     };
   }
 

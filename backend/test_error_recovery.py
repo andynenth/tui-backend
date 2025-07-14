@@ -5,11 +5,11 @@ Tests health monitoring, automatic recovery, and centralized logging
 """
 
 import asyncio
-import time
-import tempfile
 import os
-from unittest.mock import AsyncMock, MagicMock, patch
 import sys
+import tempfile
+import time
+from unittest.mock import AsyncMock, MagicMock, patch
 
 sys.path.insert(0, "/Users/nrw/python/tui-project/liap-tui/backend")
 
@@ -93,9 +93,9 @@ async def test_health_monitor():
 
     try:
         from api.services.health_monitor import (
+            HealthMetric,
             HealthMonitor,
             HealthStatus,
-            HealthMetric,
         )
 
         # Test 1: Health monitor initialization
@@ -178,8 +178,8 @@ async def test_recovery_manager():
 
     try:
         from api.services.recovery_manager import (
-            RecoveryManager,
             RecoveryAction,
+            RecoveryManager,
             recovery_manager,
         )
 
@@ -339,9 +339,9 @@ async def test_integration_scenarios():
     print("\n🧪 Testing Integration Scenarios...")
 
     try:
-        from api.services.health_monitor import health_monitor, HealthStatus
-        from api.services.recovery_manager import recovery_manager
+        from api.services.health_monitor import HealthStatus, health_monitor
         from api.services.logging_service import game_logger
+        from api.services.recovery_manager import recovery_manager
 
         # Test 1: Health trigger recovery scenario
         print("📝 Test 1: Health-triggered recovery scenario...")

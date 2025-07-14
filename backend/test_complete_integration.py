@@ -2,15 +2,15 @@
 """Test complete integration: Room → Game → StateMachine → BotManager"""
 
 import asyncio
-import sys
 import os
+import sys
 
 sys.path.append(os.path.join(os.path.dirname(__file__)))
 
-from engine.room import Room
-from engine.player import Player
 from engine.bot_manager import BotManager
-from engine.state_machine.core import GamePhase, ActionType, GameAction
+from engine.player import Player
+from engine.room import Room
+from engine.state_machine.core import ActionType, GameAction, GamePhase
 
 # Initialize singleton bot manager
 bot_manager = BotManager()

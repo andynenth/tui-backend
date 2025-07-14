@@ -4,8 +4,8 @@
 Test helper functions for creating realistic test data
 """
 
-from engine.piece import Piece
 from engine.constants import PIECE_POINTS
+from engine.piece import Piece
 
 
 def create_test_hand_realistic():

@@ -14,6 +14,7 @@
 import { useState, useEffect, useCallback, useMemo } from 'react';
 import { networkService } from '../services/NetworkService';
 import { serviceIntegration } from '../services/ServiceIntegration';
+import { TIMING } from '../constants';
 import type {
   NetworkStatus,
   ConnectionStatus,
@@ -309,7 +310,9 @@ export function useConnectionMetrics(): ConnectionMetrics {
         sum + (conn.messagesSent || 0) + (conn.messagesReceived || 0),
       0
     );
-    const messageRate = uptime ? totalMessages / (uptime / 60000) : 0; // per minute
+    const messageRate = uptime
+      ? totalMessages / (uptime / TIMING.RECOVERY_TIMEOUT)
+      : 0; // per minute
 
     return {
       totalConnections: networkStatus.activeConnections,

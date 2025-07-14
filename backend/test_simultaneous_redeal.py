@@ -4,16 +4,16 @@ Test script for simultaneous weak hand decision system
 """
 
 import asyncio
-import sys
 import os
+import sys
 
 # Add backend to path
 sys.path.insert(0, os.path.join(os.path.dirname(__file__)))
 
-from engine.state_machine.states.preparation_state import PreparationState
-from engine.state_machine.core import GameAction, ActionType
 from engine.game import Game
 from engine.player import Player
+from engine.state_machine.core import ActionType, GameAction
+from engine.state_machine.states.preparation_state import PreparationState
 
 
 class MockStateMachine:

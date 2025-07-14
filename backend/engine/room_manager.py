@@ -1,10 +1,11 @@
 # backend/engine/room_manager.py
 
-from typing import Dict  # Import Dict for type hinting dictionaries.
-from engine.room import (
-    Room,
-)  # Import the Room class, which represents a single game room.
 import uuid  # Import the uuid module for generating unique identifiers.
+from typing import Dict  # Import Dict for type hinting dictionaries.
+
+from engine.room import (  # Import the Room class, which represents a single game room.
+    Room,
+)
 
 
 class RoomManager:

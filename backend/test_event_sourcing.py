@@ -5,13 +5,13 @@ Tests EventStore functionality, state reconstruction, and recovery capabilities
 """
 
 import asyncio
-import os
 import json
-import tempfile
-from pathlib import Path
+import os
 
 # Add the backend directory to the Python path
 import sys
+import tempfile
+from pathlib import Path
 
 sys.path.insert(0, "/Users/nrw/python/tui-project/liap-tui/backend")
 
@@ -135,7 +135,7 @@ async def test_action_queue_integration():
     try:
         # Import after path setup
         from engine.state_machine.action_queue import ActionQueue
-        from engine.state_machine.core import GameAction, ActionType
+        from engine.state_machine.core import ActionType, GameAction
 
         # Create ActionQueue with room_id
         action_queue = ActionQueue(room_id="test_room_2")
@@ -257,8 +257,8 @@ async def test_game_state_machine_integration():
                 self.round_number = 1
                 self.current_player = None
 
-        from engine.state_machine.game_state_machine import GameStateMachine
         from engine.state_machine.core import GamePhase
+        from engine.state_machine.game_state_machine import GameStateMachine
 
         # Create mock game and state machine
         mock_game = MockGame()

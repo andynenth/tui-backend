@@ -3,15 +3,17 @@ Simple focused tests for Round Start functionality
 These tests are more isolated and don't rely on full state machine flow
 """
 
-import pytest
 import time
 from unittest.mock import AsyncMock, MagicMock, patch
-from engine.state_machine.states.round_start_state import RoundStartState
-from engine.state_machine.game_state_machine import GameStateMachine
-from engine.state_machine.core import GamePhase
+
+import pytest
+
 from engine.game import Game
-from engine.player import Player
 from engine.piece import Piece
+from engine.player import Player
+from engine.state_machine.core import GamePhase
+from engine.state_machine.game_state_machine import GameStateMachine
+from engine.state_machine.states.round_start_state import RoundStartState
 
 
 class TestRoundStartSimple:

@@ -9,8 +9,8 @@ import sys
 # Add current directory to path
 sys.path.append(".")
 
-from engine.state_machine.game_state_machine import GameStateMachine
 from engine.state_machine.core import GamePhase
+from engine.state_machine.game_state_machine import GameStateMachine
 
 
 async def test_transition_fixes():

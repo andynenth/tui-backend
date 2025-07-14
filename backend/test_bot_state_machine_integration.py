@@ -2,16 +2,16 @@
 """Test bot manager integration with state machine"""
 
 import asyncio
-import sys
 import os
+import sys
 
 sys.path.append(os.path.join(os.path.dirname(__file__)))
 
+from engine.bot_manager import BotManager
 from engine.game import Game
 from engine.player import Player
-from engine.bot_manager import BotManager
-from engine.state_machine.game_state_machine import GameStateMachine
 from engine.state_machine.core import GamePhase
+from engine.state_machine.game_state_machine import GameStateMachine
 
 
 async def test_bot_state_machine_integration():
@@ -47,7 +47,7 @@ async def test_bot_state_machine_integration():
     print(f"✅ Bot manager can access game state: {len(game_state.players)} players")
 
     # Test bot action creation (without executing)
-    from engine.state_machine.core import GameAction, ActionType
+    from engine.state_machine.core import ActionType, GameAction
 
     test_action = GameAction(
         player_name="Bot1",

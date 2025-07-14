@@ -6,15 +6,15 @@ Tests complete state machine cycle: Preparation → Declaration → Turn → Sco
 """
 
 import asyncio
-import sys
 import os
+import sys
 from datetime import datetime
 
 # Add backend to path for imports
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 
 try:
-    from engine.state_machine.core import GamePhase, ActionType, GameAction
+    from engine.state_machine.core import ActionType, GameAction, GamePhase
     from engine.state_machine.game_state_machine import GameStateMachine
     from tests.test_helpers import create_test_hand_realistic, create_test_play_data
 
