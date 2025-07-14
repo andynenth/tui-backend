@@ -73,14 +73,45 @@ def is_valid_play(pieces):
 
 
 def is_pair(pieces):
+    """
+    Check if two pieces form a valid pair (same name and color).
+    
+    Args:
+        pieces: List of exactly 2 Piece objects
+        
+    Returns:
+        bool: True if pieces form a pair, False otherwise
+    """
     return pieces[0].name == pieces[1].name and pieces[0].color == pieces[1].color
 
 
 def is_three_of_a_kind(pieces):
+    """
+    Check if three pieces form a valid three-of-a-kind (all soldiers of same color).
+    
+    Args:
+        pieces: List of exactly 3 Piece objects
+        
+    Returns:
+        bool: True if pieces form three-of-a-kind, False otherwise
+    """
     return all(p.name == "SOLDIER" and p.color == pieces[0].color for p in pieces)
 
 
 def is_straight(pieces):
+    """
+    Check if three pieces form a valid straight.
+    
+    Valid straights are:
+    - GENERAL, ADVISOR, ELEPHANT (same color)
+    - CHARIOT, HORSE, CANNON (same color)
+    
+    Args:
+        pieces: List of exactly 3 Piece objects
+        
+    Returns:
+        bool: True if pieces form a straight, False otherwise
+    """
     names = [p.name for p in pieces]
     valid_groups = [{"GENERAL", "ADVISOR", "ELEPHANT"}, {"CHARIOT", "HORSE", "CANNON"}]
     return all(p.color == pieces[0].color for p in pieces) and any(
@@ -89,6 +120,15 @@ def is_straight(pieces):
 
 
 def is_four_of_a_kind(pieces):
+    """
+    Check if four pieces form a valid four-of-a-kind (all soldiers of same color).
+    
+    Args:
+        pieces: List of exactly 4 Piece objects
+        
+    Returns:
+        bool: True if pieces form four-of-a-kind, False otherwise
+    """
     return all(p.name == "SOLDIER" and p.color == pieces[0].color for p in pieces)
 
 

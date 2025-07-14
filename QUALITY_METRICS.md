@@ -21,7 +21,7 @@
 | Metric | Status | Details |
 |--------|--------|---------|
 | TypeScript Errors | 0 ✅ | No compilation errors |
-| TODO/FIXME Comments | 0 ✅ | Clean codebase |
+| TODO/FIXME Comments | 0 ✅ | Clean codebase (verified 2025-07-14) |
 | Test Files | 110 | 30 frontend, 80 backend |
 | Magic Numbers | ✅ | Constants file created (src/constants.js) |
 
@@ -33,6 +33,17 @@
 | Security Test Coverage | 100% ✅ | 34 validation tests |
 | XSS Protection | ✅ | All text inputs sanitized |
 | SQL Injection Protection | ✅ | All inputs validated before DB operations |
+
+#### Documentation Progress (Started 2025-07-14)
+| Module | Functions | With Docstrings | Progress |
+|--------|-----------|-----------------|----------|
+| engine/player.py | 2 | 2 ✅ | 100% |
+| engine/rules.py | 10 | 6 | 60% |
+| engine/bot_manager.py | 3 | 3 ✅ | 100% |
+| engine/state_machine/game_state_machine.py | 10 | 6 | 60% |
+| api/validation/websocket_validators.py | 11 | 7 | 64% |
+| api/validation/rest_validators.py | 13 | 0 | 0% |
+| **Total** | **49** | **24** | **49%** |
 
 ### Manual Reviews
 

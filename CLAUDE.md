@@ -180,3 +180,4 @@ Key classes **ALL ENTERPRISE**:
 ## Claude Memories
 
 - When I tell you to read log, read it from `/log.txt`
+- As you complete each task listed in CODE_QUALITY_CHECKLIST.md, follow the documentation procedures outlined in CODE_QUALITY_TRACKING_GUIDE.md
