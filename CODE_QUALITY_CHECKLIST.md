@@ -27,6 +27,12 @@ A comprehensive checklist for maintaining high code quality standards across our
   - Add docstrings to public functions (many missing)
   - **Impact**: Better code maintainability and IDE support
 
+- [ ] **Remove dead code and reorganize tests** 🟡 Important
+  - Remove 7 dead code instances from game.py
+  - Move 42 test files from backend/ to backend/tests/
+  - Clean up commented-out debug statements
+  - **Impact**: Cleaner codebase, better organization
+
 ### High-Impact Improvements (1-2 days each)
 - [ ] **Implement rate limiting** 🔴 Critical
   - Add rate limiting to WebSocket connections
@@ -107,6 +113,8 @@ This approach is working well - no need to convert JSX to TSX unless experiencin
 | Type Safety | Good | Good | Excellent |
 | Performance | Unknown | Good | Optimized |
 | TODO/FIXME | 0 | 0 | < 10 |
+| Dead Code | - | 7+ | 0 |
+| Misplaced Tests | - | 42 | 0 |
 
 ### Weekly Review Checklist
 - [ ] Linting issues decreased by at least 100
@@ -184,6 +192,10 @@ grep -r "TODO\|FIXME" --exclude-dir=node_modules . | wc -l
 - [x] Configuration is centralized ✅ config.py and constants.py
 - [ ] Database migrations are versioned ⛔ Not using traditional DB
 - [x] Third-party integrations are wrapped in adapters ✅ WebSocket management abstracted
+- [ ] No dead/unused code in modules
+- [ ] All class attributes initialized in __init__
+- [ ] No duplicate functions with similar purpose
+- [ ] Test files located in proper test directories
 
 ---
 
@@ -418,6 +430,17 @@ grep -r "TODO\|FIXME" --exclude-dir=node_modules . | wc -l
   - API endpoints have no rate limits
   - Security vulnerability
 
+- [ ] **Dead code in game.py** 🟡
+  - Empty function: _verify_and_report_hands()
+  - Unused: reset_weak_hand_counter(), set_current_phase(), _set_round_start_player()
+  - Missing initialization: self.round_scores
+  - Duplicate functions need consolidation
+
+- [ ] **Test files in wrong location** 🟡
+  - 42 test_*.py files in backend/ root
+  - Should be in backend/tests/ directory
+  - Makes it harder to distinguish production code from tests
+
 #### Architecture Issues
 - [ ] **No CI/CD pipeline** 🟡
   - Manual deployment process
@@ -436,6 +459,8 @@ grep -r "TODO\|FIXME" --exclude-dir=node_modules . | wc -l
 | Test Coverage | 2025-07-13 | Claude Code | ✅ Enabled | Week 2 |
 | API Documentation | - | - | Not Started | Week 2 |
 | Security Review | - | - | Not Started | Week 1 |
+| Dead Code Removal | 2025-07-14 | - | Not Started | Week 2 |
+| Test Reorganization | 2025-07-14 | - | Not Started | Week 2 |
 
 ---
 
