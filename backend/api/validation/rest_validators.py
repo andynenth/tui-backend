@@ -19,7 +19,21 @@ class RestApiValidator:
 
     @staticmethod
     def validate_player_name(name: str) -> str:
-        """Validate and sanitize player name"""
+        """
+        Validate and sanitize player name for security and data integrity.
+        
+        Checks for proper string type, non-empty value, length limits,
+        and dangerous characters that could be used for XSS attacks.
+        
+        Args:
+            name: The player name to validate
+            
+        Returns:
+            Sanitized player name string
+            
+        Raises:
+            HTTPException: If validation fails with 400 status code
+        """
         if not name or not isinstance(name, str):
             raise HTTPException(status_code=400, detail="Player name is required")
 
@@ -43,7 +57,21 @@ class RestApiValidator:
 
     @staticmethod
     def validate_room_id(room_id: str) -> str:
-        """Validate and sanitize room ID"""
+        """
+        Validate and sanitize room ID for security and data integrity.
+        
+        Ensures room ID is a proper string, non-empty, within length limits,
+        and doesn't contain characters that could be used for injection attacks.
+        
+        Args:
+            room_id: The room identifier to validate
+            
+        Returns:
+            Sanitized room ID string
+            
+        Raises:
+            HTTPException: If validation fails with 400 status code
+        """
         if not room_id or not isinstance(room_id, str):
             raise HTTPException(status_code=400, detail="Room ID is required")
 
@@ -67,7 +95,21 @@ class RestApiValidator:
 
     @staticmethod
     def validate_declaration_value(value: int) -> int:
-        """Validate declaration value"""
+        """
+        Validate player's pile declaration value.
+        
+        Ensures the declaration is within game rules (0-8 piles)
+        and is a valid integer.
+        
+        Args:
+            value: The number of piles player declares to win
+            
+        Returns:
+            Validated declaration value as integer
+            
+        Raises:
+            HTTPException: If value is not an integer or out of range (0-8)
+        """
         if value is None:
             raise HTTPException(status_code=400, detail="Declaration value is required")
 
@@ -92,7 +134,21 @@ class RestApiValidator:
 
     @staticmethod
     def validate_slot_index(slot: int) -> int:
-        """Validate slot index"""
+        """
+        Validate player slot index in the game.
+        
+        Ensures slot index is within valid range (0-3) for 4-player game
+        and is a proper integer.
+        
+        Args:
+            slot: The player slot index to validate
+            
+        Returns:
+            Validated slot index as integer
+            
+        Raises:
+            HTTPException: If slot is not an integer or out of range (0-3)
+        """
         if slot is None:
             raise HTTPException(status_code=400, detail="Slot index is required")
 
@@ -113,7 +169,25 @@ class RestApiValidator:
 
     @staticmethod
     def validate_piece_indices_string(piece_indexes: str) -> list[int]:
-        """Validate comma-separated piece indices string"""
+        """
+        Validate and parse comma-separated piece indices for turn play.
+        
+        Converts string like "1,3,5" to list of integers, ensuring:
+        - Valid format (comma-separated integers)
+        - At least 1 piece selected
+        - No more than 6 pieces (game rule)
+        - All indices in valid range (0-31)
+        - No duplicate indices
+        
+        Args:
+            piece_indexes: Comma-separated string of piece indices
+            
+        Returns:
+            List of validated piece indices as integers
+            
+        Raises:
+            HTTPException: If format invalid, too many pieces, or indices out of range
+        """
         if not piece_indexes or not isinstance(piece_indexes, str):
             raise HTTPException(status_code=400, detail="Piece indices are required")
 
@@ -154,7 +228,20 @@ class RestApiValidator:
 
     @staticmethod
     def validate_redeal_choice(choice: str) -> str:
-        """Validate redeal choice"""
+        """
+        Validate player's response to weak hand redeal offer.
+        
+        Ensures choice is either 'accept' or 'decline' (case-insensitive).
+        
+        Args:
+            choice: Player's redeal decision
+            
+        Returns:
+            Normalized choice as lowercase string ('accept' or 'decline')
+            
+        Raises:
+            HTTPException: If choice is not 'accept' or 'decline'
+        """
         if not choice or not isinstance(choice, str):
             raise HTTPException(status_code=400, detail="Redeal choice is required")
 
@@ -168,7 +255,21 @@ class RestApiValidator:
 
     @staticmethod
     def validate_older_than_hours(hours: int) -> int:
-        """Validate cleanup parameter"""
+        """
+        Validate hours parameter for cleaning up old game data.
+        
+        Used for maintenance endpoints to clean up games older than
+        specified hours. Defaults to 24 hours if not provided.
+        
+        Args:
+            hours: Number of hours for cleanup threshold
+            
+        Returns:
+            Validated hours as integer (1-720)
+            
+        Raises:
+            HTTPException: If hours is not an integer or out of range (1-720)
+        """
         if hours is None:
             return 24  # Default value
 
@@ -193,7 +294,21 @@ class RestApiValidator:
 
     @staticmethod
     def validate_sequence_number(sequence: int) -> int:
-        """Validate sequence number for event queries"""
+        """
+        Validate sequence number for event store queries.
+        
+        Used for event sourcing to query events after a specific
+        sequence number. Must be non-negative.
+        
+        Args:
+            sequence: Event sequence number to validate
+            
+        Returns:
+            Validated sequence number as integer
+            
+        Raises:
+            HTTPException: If sequence is not an integer or negative
+        """
         if sequence is None:
             raise HTTPException(status_code=400, detail="Sequence number is required")
 
@@ -213,7 +328,21 @@ class RestApiValidator:
 
     @staticmethod
     def validate_event_limit(limit: Optional[int]) -> Optional[int]:
-        """Validate event query limit"""
+        """
+        Validate limit parameter for event store queries.
+        
+        Controls maximum number of events returned in a single query.
+        Returns None if not provided (no limit).
+        
+        Args:
+            limit: Maximum number of events to return
+            
+        Returns:
+            Validated limit as integer (1-1000) or None
+            
+        Raises:
+            HTTPException: If limit is not an integer or out of range (1-1000)
+        """
         if limit is None:
             return None
 
@@ -235,19 +364,62 @@ class RestApiValidator:
 
 # Convenience functions for common validations
 def get_validated_player_name(name: str = Query(...)) -> str:
-    """FastAPI dependency for validating player name"""
+    """
+    FastAPI dependency for validating player name in route handlers.
+    
+    Use as a dependency in FastAPI routes to automatically validate
+    and sanitize player names from query parameters.
+    
+    Args:
+        name: Player name from query parameter
+        
+    Returns:
+        Validated and sanitized player name
+        
+    Raises:
+        HTTPException: If validation fails
+    """
     return RestApiValidator.validate_player_name(name)
 
 
 def get_validated_room_id(room_id: str = Query(...)) -> str:
-    """FastAPI dependency for validating room ID"""
+    """
+    FastAPI dependency for validating room ID in route handlers.
+    
+    Use as a dependency in FastAPI routes to automatically validate
+    and sanitize room IDs from query parameters.
+    
+    Args:
+        room_id: Room ID from query parameter
+        
+    Returns:
+        Validated and sanitized room ID
+        
+    Raises:
+        HTTPException: If validation fails
+    """
     return RestApiValidator.validate_room_id(room_id)
 
 
 def get_validated_declaration(
     player_name: str = Query(...), value: int = Query(...)
 ) -> Tuple[str, int]:
-    """FastAPI dependency for validating declaration"""
+    """
+    FastAPI dependency for validating player declaration.
+    
+    Validates both player name and declaration value for the
+    declaration phase of the game.
+    
+    Args:
+        player_name: Player name from query parameter
+        value: Declaration value from query parameter
+        
+    Returns:
+        Tuple of (validated_player_name, validated_declaration_value)
+        
+    Raises:
+        HTTPException: If either validation fails
+    """
     return (
         RestApiValidator.validate_player_name(player_name),
         RestApiValidator.validate_declaration_value(value),
@@ -257,7 +429,22 @@ def get_validated_declaration(
 def get_validated_play_turn(
     player_name: str = Query(...), piece_indexes: str = Query(...)
 ) -> Tuple[str, list[int]]:
-    """FastAPI dependency for validating play turn"""
+    """
+    FastAPI dependency for validating turn play action.
+    
+    Validates player name and parses comma-separated piece indices
+    for the turn phase of the game.
+    
+    Args:
+        player_name: Player name from query parameter
+        piece_indexes: Comma-separated piece indices from query parameter
+        
+    Returns:
+        Tuple of (validated_player_name, list_of_piece_indices)
+        
+    Raises:
+        HTTPException: If validation fails
+    """
     return (
         RestApiValidator.validate_player_name(player_name),
         RestApiValidator.validate_piece_indices_string(piece_indexes),

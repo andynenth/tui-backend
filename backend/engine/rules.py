@@ -35,6 +35,20 @@ PLAY_TYPE_PRIORITY = [
 # Determine the type of a given play
 # -------------------------------------------------
 def get_play_type(pieces):
+    """
+    Determine the type of play from a list of pieces.
+    
+    Analyzes the combination of pieces to identify valid play types
+    according to game rules.
+    
+    Args:
+        pieces: List of Piece objects to analyze
+        
+    Returns:
+        str: One of: 'SINGLE', 'PAIR', 'THREE_OF_A_KIND', 'STRAIGHT',
+             'FOUR_OF_A_KIND', 'EXTENDED_STRAIGHT', 'FIVE_OF_A_KIND',
+             'EXTENDED_STRAIGHT_5', 'DOUBLE_STRAIGHT', or 'INVALID'
+    """
     if len(pieces) == 1:
         return "SINGLE"
     if len(pieces) == 2 and is_pair(pieces):
@@ -64,6 +78,18 @@ def get_play_type(pieces):
 # Check if the play is valid
 # -------------------------------------------------
 def is_valid_play(pieces):
+    """
+    Check if a combination of pieces forms a valid play.
+    
+    A play is valid if it matches one of the recognized play types
+    in the game rules.
+    
+    Args:
+        pieces: List of Piece objects to validate
+        
+    Returns:
+        bool: True if the play is valid, False otherwise
+    """
     return get_play_type(pieces) != "INVALID"
 
 
@@ -134,8 +160,18 @@ def is_four_of_a_kind(pieces):
 
 def is_extended_straight(pieces):
     """
-    4 pieces from the same group (GENERAL–ELEPHANT or CHARIOT–CANNON), same color,
-    with exactly one duplicated piece type.
+    Check if four pieces form a valid extended straight.
+    
+    An extended straight requires:
+    - 4 pieces from the same group (GENERAL-ADVISOR-ELEPHANT or CHARIOT-HORSE-CANNON)
+    - All pieces must be the same color
+    - Exactly one piece type must be duplicated (e.g., 2 HORSEs, 1 CHARIOT, 1 CANNON)
+    
+    Args:
+        pieces: List of exactly 4 Piece objects
+        
+    Returns:
+        bool: True if pieces form an extended straight, False otherwise
     """
     color = pieces[0].color
     names = [p.name for p in pieces]
@@ -150,8 +186,19 @@ def is_extended_straight(pieces):
 
 def is_extended_straight_5(pieces):
     """
-    5 pieces from a valid group, same color,
-    with two duplicated types (e.g., HORSE x2, CANNON x2, CHARIOT x1).
+    Check if five pieces form a valid 5-piece extended straight.
+    
+    A 5-piece extended straight requires:
+    - 5 pieces from a valid group (GENERAL-ADVISOR-ELEPHANT or CHARIOT-HORSE-CANNON)
+    - All pieces must be the same color
+    - Exactly two piece types must be duplicated
+    - Distribution must be 2-2-1 (e.g., 2 HORSEs, 2 CANNONs, 1 CHARIOT)
+    
+    Args:
+        pieces: List of exactly 5 Piece objects
+        
+    Returns:
+        bool: True if pieces form a 5-piece extended straight, False otherwise
     """
     if len(pieces) != 5:
         return False
@@ -171,12 +218,34 @@ def is_extended_straight_5(pieces):
 
 
 def is_five_of_a_kind(pieces):
+    """
+    Check if five pieces form a valid five-of-a-kind.
+    
+    All five pieces must be SOLDIERs of the same color.
+    
+    Args:
+        pieces: List of exactly 5 Piece objects
+        
+    Returns:
+        bool: True if pieces form five-of-a-kind, False otherwise
+    """
     return all(p.name == "SOLDIER" and p.color == pieces[0].color for p in pieces)
 
 
 def is_double_straight(pieces):
     """
-    Must be exactly 6 pieces: 2 CHARIOTs, 2 HORSEs, 2 CANNONs of the same color.
+    Check if six pieces form a valid double straight.
+    
+    A double straight is the strongest play type and requires:
+    - Exactly 6 pieces
+    - 2 CHARIOTs, 2 HORSEs, 2 CANNONs
+    - All pieces must be the same color
+    
+    Args:
+        pieces: List of Piece objects (should be exactly 6)
+        
+    Returns:
+        bool: True if pieces form a double straight, False otherwise
     """
     if len(pieces) != 6:
         return False
@@ -198,12 +267,21 @@ def is_double_straight(pieces):
 
 def compare_plays(p1, p2):
     """
-    Compare two sets of pieces with the same play type.
+    Compare two plays to determine which is stronger.
+    
+    Compares plays based on type priority and piece values.
+    Different play types have different comparison rules.
+    
+    For EXTENDED_STRAIGHT and EXTENDED_STRAIGHT_5, compares only
+    the top 3 highest-value unique piece types. For other types,
+    compares total point values.
+    
+    Args:
+        p1: First list of Piece objects
+        p2: Second list of Piece objects
+        
     Returns:
-    - 1 if p1 wins
-    - 2 if p2 wins
-    - 0 if tied
-    - -1 if invalid comparison (different types)
+        int: 1 if p1 wins, 2 if p2 wins, 0 if tie, -1 if invalid comparison
     """
 
     type1 = get_play_type(p1)
@@ -247,10 +325,20 @@ def compare_plays(p1, p2):
 
 def get_valid_declares(player, declared_total, is_last):
     """
-    Determine what declare values (0–8) the player is allowed to choose this round.
-    Rules:
-    - The total sum of declarations must NOT equal exactly 8
-    - If player declared 0 in the last 2 rounds → they must declare ≥1
+    Determine valid declaration values for a player.
+    
+    Enforces game rules for pile declarations:
+    - Players can declare 0-8 piles they plan to win
+    - Total sum of all declarations must NOT equal exactly 8
+    - If a player declared 0 for 2 consecutive rounds, they must declare ≥1
+    
+    Args:
+        player: Player object (or hand for simplified version)
+        declared_total: Sum of declarations made by other players
+        is_last: Whether this is the last player to declare
+        
+    Returns:
+        list: Valid declaration values the player can choose
     """
     max_pile = 8
     options = list(range(0, max_pile + 1))

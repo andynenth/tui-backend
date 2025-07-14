@@ -67,7 +67,15 @@ class GameStateMachine:
         }
 
     async def start(self, initial_phase: GamePhase = GamePhase.WAITING):
-        """Start the state machine with initial phase"""
+        """
+        Start the state machine with initial phase.
+        
+        Initializes the processing loop and transitions to the specified
+        initial phase. Does nothing if already running.
+        
+        Args:
+            initial_phase: The phase to start in (default: WAITING)
+        """
         if self.is_running:
             logger.warning("State machine already running")
             return
@@ -82,7 +90,12 @@ class GameStateMachine:
         await self._transition_to(initial_phase)
 
     async def stop(self):
-        """Stop the state machine"""
+        """
+        Stop the state machine gracefully.
+        
+        Cancels the processing task, exits current state, and
+        cleans up resources. Safe to call even if not running.
+        """
         logger.info("🛑 Stopping state machine")
         self.is_running = False
 
@@ -101,7 +114,15 @@ class GameStateMachine:
     async def handle_action(self, action: GameAction) -> Dict:
         """
         Add action to queue for processing.
-        Returns immediately with acknowledgment.
+        
+        Actions are processed asynchronously by the processing loop.
+        This method returns immediately with an acknowledgment.
+        
+        Args:
+            action: GameAction to be processed
+            
+        Returns:
+            Dict with 'success' and either 'queued' or 'error' keys
         """
         if not self.is_running:
             return {"success": False, "error": "State machine not running"}
@@ -110,7 +131,12 @@ class GameStateMachine:
         return {"success": True, "queued": True}
 
     async def _process_loop(self):
-        """Main processing loop for queued actions and polling-based transitions"""
+        """
+        Main processing loop for queued actions and polling-based transitions.
+        
+        Continuously processes pending actions and checks for phase transitions
+        while the state machine is running. Uses 0.5s polling interval.
+        """
         logger.info("State machine process loop started")
         while self.is_running:
             try:
@@ -163,7 +189,15 @@ class GameStateMachine:
                 await self._notify_bot_manager_action_failed(action, str(e))
 
     async def _transition_to(self, new_phase: GamePhase):
-        """Transition to a new phase"""
+        """
+        Transition to a new game phase.
+        
+        Validates the transition, exits current state, enters new state,
+        and stores the phase change event. Invalid transitions are blocked.
+        
+        Args:
+            new_phase: The GamePhase to transition to
+        """
         logger.info(f"Transitioning from {self.current_phase} to {new_phase}")
 
         # Validate transition (skip validation for initial transition)
@@ -260,7 +294,15 @@ class GameStateMachine:
         return serializable_data
 
     async def _broadcast_phase_change_with_hands(self, phase: GamePhase):
-        """Broadcast phase change with all player hand data"""
+        """
+        Broadcast phase change with all player hand data.
+        
+        Sends phase change event including current phase data,
+        allowed actions, and each player's hand information.
+        
+        Args:
+            phase: The new GamePhase that was entered
+        """
         base_data = {
             "phase": phase.value,
             "allowed_actions": [action.value for action in self.get_allowed_actions()],
@@ -289,14 +331,31 @@ class GameStateMachine:
         await self.broadcast_event("phase_change", base_data)
 
     async def broadcast_event(self, event_type: str, event_data: Dict):
-        """Broadcast WebSocket event if callback is available"""
+        """
+        Broadcast WebSocket event if callback is available.
+        
+        Used for sending game events to all connected clients via
+        the WebSocket broadcast callback.
+        
+        Args:
+            event_type: Type of event (e.g., 'phase_change', 'turn_result')
+            event_data: Dictionary of event data to broadcast
+        """
         if self.broadcast_callback:
             await self.broadcast_callback(event_type, event_data)
         else:
             logger.debug(f"No broadcast callback set - event {event_type} not sent")
 
     async def _notify_bot_manager(self, new_phase: GamePhase):
-        """Notify bot manager about phase changes to trigger bot actions"""
+        """
+        Notify bot manager about phase changes to trigger bot actions.
+        
+        Sends appropriate events to bot manager based on the new phase,
+        allowing bots to take actions at the right time.
+        
+        Args:
+            new_phase: The GamePhase that was just entered
+        """
         try:
             from ..bot_manager import BotManager
 
@@ -504,7 +563,14 @@ class GameStateMachine:
     # 🔧 FIX: Bot Manager Validation Feedback Methods
 
     async def _notify_bot_manager_action_rejected(self, action: GameAction):
-        """Notify bot manager that an action was rejected by state machine"""
+        """
+        Notify bot manager that an action was rejected by state machine.
+        
+        Helps bots learn from invalid actions and adjust their behavior.
+        
+        Args:
+            action: The GameAction that was rejected
+        """
         try:
             from ..bot_manager import BotManager
 
@@ -536,7 +602,15 @@ class GameStateMachine:
     async def _notify_bot_manager_action_accepted(
         self, action: GameAction, result: dict
     ):
-        """Notify bot manager that an action was accepted and processed"""
+        """
+        Notify bot manager that an action was accepted and processed.
+        
+        Provides feedback to bots about successful actions.
+        
+        Args:
+            action: The GameAction that was accepted
+            result: The result dictionary from processing the action
+        """
         try:
             from ..bot_manager import BotManager
 
@@ -568,7 +642,15 @@ class GameStateMachine:
     async def _notify_bot_manager_action_failed(
         self, action: GameAction, error_message: str
     ):
-        """Notify bot manager that an action failed during processing"""
+        """
+        Notify bot manager that an action failed during processing.
+        
+        Helps bots handle errors and retry if appropriate.
+        
+        Args:
+            action: The GameAction that failed
+            error_message: Description of the failure
+        """
         try:
             from ..bot_manager import BotManager
 
@@ -598,7 +680,15 @@ class GameStateMachine:
             )
 
     async def force_end_game(self, reason: str) -> None:
-        """Force end the game due to critical error"""
+        """
+        Force end the game due to critical error.
+        
+        Immediately stops the state machine and notifies the room manager
+        about the critical error. Used for unrecoverable situations.
+        
+        Args:
+            reason: Description of why the game is being force-ended
+        """
         logger.critical(f"Force ending game: {reason}")
         self.is_running = False
 

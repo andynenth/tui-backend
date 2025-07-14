@@ -281,7 +281,18 @@ class WebSocketMessageValidator:
 
     @staticmethod
     def validate_redeal_choice(choice: Any) -> Tuple[bool, Optional[str]]:
-        """Validate redeal choice"""
+        """
+        Validate player's response to weak hand redeal offer.
+        
+        Ensures choice is a string and one of the allowed values
+        ('accept' or 'decline').
+        
+        Args:
+            choice: The redeal choice to validate
+            
+        Returns:
+            Tuple of (is_valid, error_message)
+        """
         if not isinstance(choice, str):
             return False, "Redeal choice must be a string"
 
@@ -292,7 +303,18 @@ class WebSocketMessageValidator:
 
     @staticmethod
     def validate_sequence_number(sequence: Any) -> Tuple[bool, Optional[str]]:
-        """Validate sequence number for acknowledgments"""
+        """
+        Validate sequence number for message acknowledgments.
+        
+        Used for reliable messaging to track which messages have been
+        received. Must be a non-negative integer.
+        
+        Args:
+            sequence: The sequence number to validate
+            
+        Returns:
+            Tuple of (is_valid, error_message)
+        """
         if sequence is None:
             return False, "Sequence number is required"
 
@@ -306,7 +328,18 @@ class WebSocketMessageValidator:
 
     @staticmethod
     def validate_client_id(client_id: Any) -> Tuple[bool, Optional[str]]:
-        """Validate client ID"""
+        """
+        Validate client session identifier.
+        
+        Ensures client ID is a non-empty string within length limits.
+        Used for tracking client connections and sessions.
+        
+        Args:
+            client_id: The client identifier to validate
+            
+        Returns:
+            Tuple of (is_valid, error_message)
+        """
         if not isinstance(client_id, str):
             return False, "Client ID must be a string"
 
@@ -321,8 +354,20 @@ class WebSocketMessageValidator:
     @classmethod
     def validate_message(cls, message: Dict[str, Any]) -> Tuple[bool, Optional[str], Optional[Dict[str, Any]]]:
         """
-        Validate a complete WebSocket message
-        Returns: (is_valid, error_message, sanitized_data)
+        Validate a complete WebSocket message.
+        
+        Performs comprehensive validation based on event type,
+        checking both message structure and event-specific data.
+        Returns sanitized data for safe processing.
+        
+        Args:
+            message: The complete WebSocket message dictionary
+            
+        Returns:
+            Tuple of (is_valid, error_message, sanitized_data)
+            - is_valid: Whether the message passed all validation
+            - error_message: Description of validation failure (if any)
+            - sanitized_data: Cleaned data safe for processing
         """
         # First validate base structure
         is_valid, error = cls.validate_base_message(message)
