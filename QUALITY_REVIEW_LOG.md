@@ -392,3 +392,63 @@ Completed adding comprehensive docstrings to all remaining Python functions, ach
 **Review Type**: Documentation Enhancement
 **Duration**: 30 minutes
 **Tools Used**: Python docstring standards, MultiEdit tool
+
+## Review Session: Dead Code Removal and Test Reorganization
+**Date**: 2025-07-14
+**Reviewer**: Claude Code
+**Focus Area**: Code Cleanup - Remove Dead Code and Reorganize Tests
+
+### Summary
+Successfully removed all identified dead code from game.py and moved all test files to the proper directory structure, improving code maintainability and organization.
+
+### Actions Taken
+
+1. **✅ Removed Dead Functions from game.py**
+   - Removed `_verify_and_report_hands()` - empty function with just `pass`
+   - Removed `set_current_phase()` - unused function
+   - Removed `reset_weak_hand_counter()` - unused function referencing non-existent attribute
+   - Removed `_set_round_start_player()` - unused function
+   - Removed all calls to `_verify_and_report_hands()` (2 locations)
+
+2. **✅ Fixed Missing Attribute**
+   - Added `self.round_scores = {}` to Game.__init__() method
+   - Prevents AttributeError when play_turn() is called
+
+3. **✅ Consolidated Duplicate Functions**
+   - Removed `declare()` - kept `record_player_declaration()` (better validation, event-driven)
+   - Removed `execute_turn_play()` - kept `play_turn()` (more complete implementation)
+
+4. **✅ Reorganized Test Files**
+   - Moved 42 test_*.py files from `/backend/` to `/backend/tests/`
+   - Verified all files moved successfully
+   - Better separation of production and test code
+
+### Metrics Update
+
+| Category | Before | After | Change |
+|----------|--------|-------|--------|
+| Dead Code Functions | 7 | 0 | -7 ✅ |
+| Misplaced Test Files | 42 | 0 | -42 ✅ |
+| Lines Removed | - | ~85 | Cleaner |
+| Code Organization | Mixed | Clean | ✅ |
+
+### Benefits Achieved
+
+1. **Cleaner Codebase** - No confusing dead code
+2. **Better Organization** - Clear separation of tests and production code
+3. **Prevented Errors** - Fixed uninitialized attribute
+4. **Reduced Confusion** - No duplicate functions with similar purposes
+5. **Easier Navigation** - Test files in expected location
+
+### Lessons Learned
+
+The user correctly pointed out that dead code should be removed BEFORE adding documentation. This prevents wasted effort documenting code that will be deleted. The proper order should be:
+1. Remove dead code
+2. Fix bugs/issues
+3. Then add documentation
+
+---
+
+**Review Type**: Code Cleanup
+**Duration**: 35 minutes
+**Tools Used**: grep, MultiEdit, file operations
