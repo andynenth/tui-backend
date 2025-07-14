@@ -3,15 +3,15 @@ Centralized Logging Service for Liap Tui Game
 Provides structured JSON logging with correlation IDs and context
 """
 
-import logging
 import json
+import logging
+import threading
 import time
 import uuid
-from datetime import datetime
-from typing import Dict, Any, Optional
-from dataclasses import dataclass, asdict
 from contextlib import contextmanager
-import threading
+from dataclasses import asdict, dataclass
+from datetime import datetime
+from typing import Any, Dict, Optional
 
 
 @dataclass

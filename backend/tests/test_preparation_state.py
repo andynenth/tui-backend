@@ -1,10 +1,12 @@
 # backend/tests/test_preparation_state.py
 
+from datetime import datetime
+from unittest.mock import AsyncMock, MagicMock, Mock, patch
+
 import pytest
 import pytest_asyncio
-from unittest.mock import Mock, MagicMock, patch, AsyncMock
-from datetime import datetime
-from engine.state_machine.core import GamePhase, ActionType, GameAction
+
+from engine.state_machine.core import ActionType, GameAction, GamePhase
 from engine.state_machine.states.preparation_state import PreparationState
 
 

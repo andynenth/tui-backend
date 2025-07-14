@@ -4,10 +4,11 @@ Deep test to find any Player objects hiding in phase data structures
 """
 import asyncio
 import json
-from engine.state_machine.game_state_machine import GameStateMachine
-from engine.state_machine.core import GamePhase, ActionType, GameAction
+
 from engine.game import Game
 from engine.player import Player
+from engine.state_machine.core import ActionType, GameAction, GamePhase
+from engine.state_machine.game_state_machine import GameStateMachine
 
 
 def deep_inspect_for_objects(obj, path="root"):

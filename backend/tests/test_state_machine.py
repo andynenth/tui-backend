@@ -1,14 +1,15 @@
 # File: backend/tests/test_state_machine.py
 # Clean version with proper indentation
 
-import pytest
-import pytest_asyncio
 import asyncio
 from datetime import datetime
-from unittest.mock import Mock, AsyncMock
+from unittest.mock import AsyncMock, Mock
 
-from engine.state_machine.core import GamePhase, ActionType, GameAction
+import pytest
+import pytest_asyncio
+
 from engine.state_machine.action_queue import ActionQueue
+from engine.state_machine.core import ActionType, GameAction, GamePhase
 from engine.state_machine.game_state_machine import GameStateMachine
 from engine.state_machine.states.declaration_state import DeclarationState
 

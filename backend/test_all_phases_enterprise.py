@@ -7,16 +7,16 @@ use the enterprise architecture with automatic broadcasting.
 """
 
 import asyncio
-import sys
 import os
+import sys
 
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 
 from engine.game import Game
-from engine.player import Player
 from engine.piece import Piece
+from engine.player import Player
+from engine.state_machine.core import ActionType, GameAction, GamePhase
 from engine.state_machine.game_state_machine import GameStateMachine
-from engine.state_machine.core import GameAction, ActionType, GamePhase
 
 
 async def test_all_phases_enterprise():

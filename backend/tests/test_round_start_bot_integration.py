@@ -5,14 +5,16 @@ Tests bot behavior during phase transitions to ensure no invalid
 transition attempts occur.
 """
 
-import pytest
 import asyncio
 from unittest.mock import AsyncMock, MagicMock, patch
-from engine.state_machine.game_state_machine import GameStateMachine
-from engine.state_machine.core import GamePhase, GameAction, ActionType
+
+import pytest
+
 from engine.bot_manager import BotManager, GameBotHandler
 from engine.game import Game
 from engine.player import Player
+from engine.state_machine.core import ActionType, GameAction, GamePhase
+from engine.state_machine.game_state_machine import GameStateMachine
 
 
 class TestBotManagerRoundStartIntegration:

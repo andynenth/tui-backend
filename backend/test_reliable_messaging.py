@@ -5,9 +5,9 @@ Tests acknowledgment system, automatic retry, and client synchronization
 """
 
 import asyncio
+import sys
 import time
 from unittest.mock import AsyncMock, MagicMock
-import sys
 
 sys.path.insert(0, "/Users/nrw/python/tui-project/liap-tui/backend")
 
@@ -17,7 +17,7 @@ async def test_socket_manager_enhancements():
     print("🧪 Testing SocketManager Reliable Messaging...")
 
     try:
-        from socket_manager import SocketManager, PendingMessage, MessageStats
+        from socket_manager import MessageStats, PendingMessage, SocketManager
 
         # Create SocketManager
         socket_manager = SocketManager()
@@ -177,7 +177,7 @@ async def test_retry_mechanism():
     print("\n🧪 Testing Automatic Retry Mechanism...")
 
     try:
-        from socket_manager import SocketManager, PendingMessage
+        from socket_manager import PendingMessage, SocketManager
 
         socket_manager = SocketManager()
 
@@ -372,7 +372,7 @@ async def test_statistics_and_monitoring():
     print("\n🧪 Testing Statistics and Monitoring...")
 
     try:
-        from socket_manager import SocketManager, MessageStats
+        from socket_manager import MessageStats, SocketManager
 
         socket_manager = SocketManager()
 

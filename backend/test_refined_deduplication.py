@@ -4,15 +4,15 @@ Test script to verify the refined deduplication logic allows legitimate sequenti
 """
 
 import asyncio
-import sys
 import os
+import sys
 
 sys.path.append(os.path.dirname(__file__))
 
 from engine.bot_manager import BotManager, GameBotHandler
 from engine.game import Game
-from engine.player import Player
 from engine.piece import Piece
+from engine.player import Player
 
 
 async def test_legitimate_sequential_triggers():

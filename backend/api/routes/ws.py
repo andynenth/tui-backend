@@ -1,11 +1,12 @@
 # backend/api/routes/ws.py
 
-from fastapi import WebSocket, WebSocketDisconnect, APIRouter
-from backend.socket_manager import register, unregister, broadcast
-from backend.shared_instances import shared_room_manager
 import asyncio
 
 import backend.socket_manager
+from api.validation import validate_websocket_message
+from backend.shared_instances import shared_room_manager
+from backend.socket_manager import broadcast, register, unregister
+from fastapi import APIRouter, WebSocket, WebSocketDisconnect
 
 print(f"socket_manager id in {__name__}: {id(backend.socket_manager)}")
 
@@ -24,8 +25,22 @@ async def websocket_endpoint(websocket: WebSocket, room_id: str):
     try:
         while True:
             message = await websocket.receive_json()
+            
+            # Validate the message structure and content
+            is_valid, error_msg, sanitized_data = validate_websocket_message(message)
+            if not is_valid:
+                await registered_ws.send_json({
+                    "event": "error",
+                    "data": {
+                        "message": f"Invalid message: {error_msg}",
+                        "type": "validation_error"
+                    }
+                })
+                continue
+            
             event_name = message.get("event")
-            event_data = message.get("data", {})
+            # Use sanitized data instead of raw event data
+            event_data = sanitized_data or message.get("data", {})
 
             # Handle reliable message delivery events
             if event_name == "ack":
@@ -85,8 +100,8 @@ async def websocket_endpoint(websocket: WebSocket, room_id: str):
                     )
 
                 elif event_name == "create_room":
-                    # Create new room
-                    player_name = event_data.get("player_name", "Unknown Player")
+                    # Create new room (using validated/sanitized data)
+                    player_name = event_data.get("player_name")
 
                     try:
                         # Create the room
@@ -138,21 +153,9 @@ async def websocket_endpoint(websocket: WebSocket, room_id: str):
                     )
 
                 elif event_name == "join_room":
-                    # Handle room joining from lobby
+                    # Handle room joining from lobby (using validated data)
                     room_id_to_join = event_data.get("room_id")
-                    player_name = event_data.get("player_name", "Unknown Player")
-
-                    if not room_id_to_join:
-                        await registered_ws.send_json(
-                            {
-                                "event": "error",
-                                "data": {
-                                    "message": "Room ID is required",
-                                    "type": "join_room_error",
-                                },
-                            }
-                        )
-                        continue
+                    player_name = event_data.get("player_name")
 
                     try:
                         # Get the room
@@ -362,9 +365,8 @@ async def websocket_endpoint(websocket: WebSocket, room_id: str):
                         )
 
                 elif event_name == "remove_player":
+                    # Already validated - slot_id is guaranteed to be present and valid
                     slot_id = event_data.get("slot_id")
-                    if slot_id is None:
-                        continue
 
                     room = room_manager.get_room(room_id)
                     if room:
@@ -428,9 +430,8 @@ async def websocket_endpoint(websocket: WebSocket, room_id: str):
                         )
 
                 elif event_name == "add_bot":
+                    # Already validated - slot_id is guaranteed to be present and valid
                     slot_id = event_data.get("slot_id")
-                    if slot_id is None:
-                        continue
 
                     room = room_manager.get_room(room_id)
                     if room:
@@ -603,12 +604,9 @@ async def websocket_endpoint(websocket: WebSocket, room_id: str):
 
                 # 🔧 FIX: Add missing redeal decision handler
                 elif event_name == "redeal_decision":
+                    # Already validated
                     player_name = event_data.get("player_name")
                     choice = event_data.get("choice")
-
-                    if not player_name or not choice:
-                        print(f"❌ Invalid redeal_decision data: {event_data}")
-                        continue
 
                     try:
                         # Import inside function to avoid circular imports
@@ -635,22 +633,9 @@ async def websocket_endpoint(websocket: WebSocket, room_id: str):
 
                 # ✅ ADD: Missing game WebSocket handlers
                 elif event_name == "declare":
-                    # Handle player declaration
+                    # Handle player declaration (already validated)
                     player_name = event_data.get("player_name")
-                    value = event_data.get(
-                        "value"
-                    )  # Fixed: Frontend sends "value", not "declaration"
-
-                    if not player_name or value is None:
-                        await registered_ws.send_json(
-                            {
-                                "event": "error",
-                                "data": {
-                                    "message": "Player name and declaration value required"
-                                },
-                            }
-                        )
-                        continue
+                    value = event_data.get("value")
 
                     try:
                         room = room_manager.get_room(room_id)
@@ -664,7 +649,7 @@ async def websocket_endpoint(websocket: WebSocket, room_id: str):
                             continue
 
                         # Create GameAction for declaration (same as REST endpoint)
-                        from engine.state_machine.core import GameAction, ActionType
+                        from engine.state_machine.core import ActionType, GameAction
 
                         action = GameAction(
                             player_name=player_name,
@@ -699,20 +684,9 @@ async def websocket_endpoint(websocket: WebSocket, room_id: str):
                         )
 
                 elif event_name == "play":
-                    # Handle piece playing (frontend sends 'play' event)
+                    # Handle piece playing (already validated)
                     player_name = event_data.get("player_name")
-                    indices = event_data.get("piece_indices", [])
-
-                    if not player_name or not indices:
-                        await registered_ws.send_json(
-                            {
-                                "event": "error",
-                                "data": {
-                                    "message": "Player name and piece indices required"
-                                },
-                            }
-                        )
-                        continue
+                    indices = event_data.get("indices", [])
 
                     try:
                         room = room_manager.get_room(room_id)
@@ -726,7 +700,7 @@ async def websocket_endpoint(websocket: WebSocket, room_id: str):
                             continue
 
                         # Create GameAction for piece playing (convert indices to pieces)
-                        from engine.state_machine.core import GameAction, ActionType
+                        from engine.state_machine.core import ActionType, GameAction
 
                         # Convert indices to actual pieces
                         pieces = []
@@ -792,20 +766,9 @@ async def websocket_endpoint(websocket: WebSocket, room_id: str):
                         )
 
                 elif event_name == "play_pieces":
-                    # Handle piece playing (legacy handler)
+                    # Handle piece playing (legacy handler - already validated)
                     player_name = event_data.get("player_name")
                     indices = event_data.get("indices", [])
-
-                    if not player_name or not indices:
-                        await registered_ws.send_json(
-                            {
-                                "event": "error",
-                                "data": {
-                                    "message": "Player name and piece indices required"
-                                },
-                            }
-                        )
-                        continue
 
                     try:
                         room = room_manager.get_room(room_id)
@@ -819,7 +782,7 @@ async def websocket_endpoint(websocket: WebSocket, room_id: str):
                             continue
 
                         # Create GameAction for piece playing (convert indices to pieces)
-                        from engine.state_machine.core import GameAction, ActionType
+                        from engine.state_machine.core import ActionType, GameAction
 
                         # Convert indices to actual pieces
                         pieces = []
@@ -879,17 +842,8 @@ async def websocket_endpoint(websocket: WebSocket, room_id: str):
                         )
 
                 elif event_name == "request_redeal":
-                    # Handle redeal request
+                    # Handle redeal request (already validated)
                     player_name = event_data.get("player_name")
-
-                    if not player_name:
-                        await registered_ws.send_json(
-                            {
-                                "event": "error",
-                                "data": {"message": "Player name required"},
-                            }
-                        )
-                        continue
 
                     try:
                         room = room_manager.get_room(room_id)
@@ -903,7 +857,7 @@ async def websocket_endpoint(websocket: WebSocket, room_id: str):
                             continue
 
                         # Create GameAction for redeal request (same as REST endpoint)
-                        from engine.state_machine.core import GameAction, ActionType
+                        from engine.state_machine.core import ActionType, GameAction
 
                         action = GameAction(
                             player_name=player_name,
@@ -967,7 +921,7 @@ async def websocket_endpoint(websocket: WebSocket, room_id: str):
                             continue
 
                         # Create GameAction for redeal acceptance
-                        from engine.state_machine.core import GameAction, ActionType
+                        from engine.state_machine.core import ActionType, GameAction
 
                         action = GameAction(
                             player_name=player_name,
@@ -1036,7 +990,7 @@ async def websocket_endpoint(websocket: WebSocket, room_id: str):
                             continue
 
                         # Create GameAction for redeal decline
-                        from engine.state_machine.core import GameAction, ActionType
+                        from engine.state_machine.core import ActionType, GameAction
 
                         action = GameAction(
                             player_name=player_name,
@@ -1103,7 +1057,7 @@ async def websocket_endpoint(websocket: WebSocket, room_id: str):
                             continue
 
                         # Create GameAction for player ready
-                        from engine.state_machine.core import GameAction, ActionType
+                        from engine.state_machine.core import ActionType, GameAction
 
                         action = GameAction(
                             player_name=player_name,

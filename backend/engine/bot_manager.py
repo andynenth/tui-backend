@@ -1,13 +1,14 @@
 # backend/engine/bot_manager.py
 
 import asyncio
-import time
 import hashlib
 import random
+import time
 from typing import Dict, List, Optional, Set
-from engine.player import Player
+
 import engine.ai as ai
-from engine.state_machine.core import GameAction, ActionType
+from engine.player import Player
+from engine.state_machine.core import ActionType, GameAction
 
 
 class BotManager:
@@ -682,7 +683,6 @@ class GameBotHandler:
 
         # 🚀 ENTERPRISE: This should go through state machine, not manual broadcast
         # State machine automatically handles turn_resolved broadcasting via update_phase_data()
-
         # Check if round is complete
         game_state = self._get_game_state()
         if all(len(p.hand) == 0 for p in game_state.players):
@@ -695,7 +695,8 @@ class GameBotHandler:
     async def _handle_round_complete(self):
         """Handle round scoring"""
         from backend.socket_manager import broadcast
-        from engine.win_conditions import is_game_over, get_winners
+
+        from engine.win_conditions import get_winners, is_game_over
 
         # Handle scoring via state machine or fallback
         if self.state_machine:

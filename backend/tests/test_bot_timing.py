@@ -1,15 +1,17 @@
 # backend/tests/test_bot_timing.py
 
 import asyncio
-import pytest
+import random
 import time
-from unittest.mock import Mock, patch, AsyncMock, MagicMock, PropertyMock
-from engine.state_machine.game_state_machine import GameStateMachine
-from engine.state_machine.core import GameAction, ActionType, GamePhase
+from unittest.mock import AsyncMock, MagicMock, Mock, PropertyMock, patch
+
+import pytest
+
+from engine.bot_manager import BotManager
 from engine.game import Game
 from engine.player import Player
-from engine.bot_manager import BotManager
-import random
+from engine.state_machine.core import ActionType, GameAction, GamePhase
+from engine.state_machine.game_state_machine import GameStateMachine
 
 
 @pytest.mark.asyncio

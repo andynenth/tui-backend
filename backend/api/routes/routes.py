@@ -2,15 +2,24 @@
 
 import asyncio
 import time
-from fastapi import APIRouter, HTTPException, Query
-from engine.game import Game
-from engine.rules import is_valid_play, get_play_type
-from engine.win_conditions import is_game_over, get_winners
-from backend.socket_manager import broadcast
-from backend.shared_instances import shared_room_manager, shared_bot_manager
-from engine.state_machine.core import ActionType, GameAction
-from typing import Optional, List, Dict, Any
+from typing import Any, Dict, List, Optional
+
 import backend.socket_manager
+from api.validation import (
+    RestApiValidator,
+    get_validated_declaration,
+    get_validated_play_turn,
+    get_validated_player_name,
+    get_validated_room_id,
+)
+from backend.shared_instances import shared_bot_manager, shared_room_manager
+from backend.socket_manager import broadcast
+from fastapi import APIRouter, HTTPException, Query
+
+from engine.game import Game
+from engine.rules import get_play_type, is_valid_play
+from engine.state_machine.core import ActionType, GameAction
+from engine.win_conditions import get_winners, is_game_over
 
 # Import EventStore for recovery endpoints
 try:
@@ -49,6 +58,8 @@ async def create_room(name: str = Query(...)):
     """
     Creates a new game room and notifies lobby clients.
     """
+    # Validate and sanitize the player name
+    name = RestApiValidator.validate_player_name(name)
     room_id = room_manager.create_room(name)
     room = room_manager.get_room(room_id)
 
@@ -70,6 +81,10 @@ async def join_room(room_id: str = Query(...), name: str = Query(...)):
     """
     ✅ FIXED: Single, complete join_room implementation with enhanced features
     """
+    # Validate inputs
+    room_id = RestApiValidator.validate_room_id(room_id)
+    name = RestApiValidator.validate_player_name(name)
+    
     room = room_manager.get_room(room_id)
     if not room:
         raise HTTPException(status_code=404, detail="Room not found")
@@ -157,6 +172,12 @@ async def assign_slot(
     room_id: str = Query(...), slot: int = Query(...), name: Optional[str] = Query(None)
 ):
     """Assign a player or bot to a specific slot"""
+    # Validate inputs
+    room_id = RestApiValidator.validate_room_id(room_id)
+    slot = RestApiValidator.validate_slot_index(slot)
+    if name and name != "null":
+        name = RestApiValidator.validate_player_name(name)
+    
     room = room_manager.get_room(room_id)
     if not room:
         raise HTTPException(status_code=404, detail="Room not found")
@@ -254,6 +275,11 @@ async def handle_redeal_decision(
     choice: str = Query(...),  # "accept" or "decline"
 ):
     """Handle redeal decision from player - REPLACED: Now uses state machine only"""
+    # Validate inputs
+    room_id = RestApiValidator.validate_room_id(room_id)
+    player_name = RestApiValidator.validate_player_name(player_name)
+    choice = RestApiValidator.validate_redeal_choice(choice)
+    
     room = room_manager.get_room(room_id)
     if not room or not room.game_state_machine:
         raise HTTPException(status_code=404, detail="Game not found")
@@ -285,6 +311,10 @@ async def handle_redeal_decision(
 @router.post("/exit-room")
 async def exit_room(room_id: str = Query(...), name: str = Query(...)):
     """Exit a room (delete if host leaves)"""
+    # Validate inputs
+    room_id = RestApiValidator.validate_room_id(room_id)
+    name = RestApiValidator.validate_player_name(name)
+    
     room = room_manager.get_room(room_id)
     if not room:
         return {"ok": True, "message": "Room does not exist"}
@@ -334,6 +364,11 @@ async def declare(
     room_id: str = Query(...), player_name: str = Query(...), value: int = Query(...)
 ):
     """Player declares their expected score for the round - STATE MACHINE VERSION"""
+    # Validate inputs
+    room_id = RestApiValidator.validate_room_id(room_id)
+    player_name = RestApiValidator.validate_player_name(player_name)
+    value = RestApiValidator.validate_declaration_value(value)
+    
     room = room_manager.get_room(room_id)
     if not room or not room.game_state_machine:
         raise HTTPException(status_code=404, detail="Game or state machine not found")
@@ -376,16 +411,16 @@ async def play_turn(
     piece_indexes: str = Query(...),
 ):
     """Player plays pieces on their turn - STATE MACHINE VERSION"""
+    # Validate inputs
+    room_id = RestApiValidator.validate_room_id(room_id)
+    player_name = RestApiValidator.validate_player_name(player_name)
+    indices = RestApiValidator.validate_piece_indices_string(piece_indexes)
+    
     room = room_manager.get_room(room_id)
     if not room or not room.game_state_machine:
         raise HTTPException(status_code=404, detail="Game or state machine not found")
 
     try:
-        # Parse comma-separated indices
-        try:
-            indices = [int(i) for i in piece_indexes.split(",")]
-        except ValueError:
-            raise HTTPException(status_code=400, detail="Invalid piece indices format")
 
         print(f"🎮 {player_name} playing pieces at indices: {indices}")
 
@@ -442,6 +477,10 @@ async def play_turn(
 @router.post("/redeal")
 async def redeal(room_id: str = Query(...), player_name: str = Query(...)):
     """Handle redeal request from a player - REPLACED: Now uses state machine only"""
+    # Validate inputs
+    room_id = RestApiValidator.validate_room_id(room_id)
+    player_name = RestApiValidator.validate_player_name(player_name)
+    
     room = room_manager.get_room(room_id)
     if not room or not room.game_state_machine:
         raise HTTPException(status_code=404, detail="Game not found")
@@ -645,6 +684,10 @@ async def get_room_events_since(room_id: str, since_sequence: int):
     Returns:
         Dict: Events for client recovery
     """
+    # Validate inputs
+    room_id = RestApiValidator.validate_room_id(room_id)
+    since_sequence = RestApiValidator.validate_sequence_number(since_sequence)
+    
     if not EVENT_STORE_AVAILABLE or not event_store:
         raise HTTPException(status_code=501, detail="Event store not available")
 
@@ -815,6 +858,9 @@ async def cleanup_old_events(
     Returns:
         Dict: Cleanup results
     """
+    # Validate input
+    older_than_hours = RestApiValidator.validate_older_than_hours(older_than_hours)
+    
     if not EVENT_STORE_AVAILABLE or not event_store:
         raise HTTPException(status_code=501, detail="Event store not available")
 
@@ -928,8 +974,9 @@ async def health_metrics():
     """
     try:
         # Import health monitor and socket manager
-        from api.services.health_monitor import health_monitor
         import sys
+
+        from api.services.health_monitor import health_monitor
 
         sys.path.append("/Users/nrw/python/tui-project/liap-tui/backend")
         from socket_manager import _socket_manager as socket_manager
@@ -1077,9 +1124,10 @@ async def system_stats():
     """
     try:
         # Import all services
+        import sys
+
         from api.services.health_monitor import health_monitor
         from api.services.recovery_manager import recovery_manager
-        import sys
 
         sys.path.append("/Users/nrw/python/tui-project/liap-tui/backend")
         from socket_manager import _socket_manager as socket_manager

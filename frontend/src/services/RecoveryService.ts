@@ -15,6 +15,7 @@
 
 import { networkService } from './NetworkService';
 import { gameService } from './GameService';
+import { TIMING, GAME } from '../constants';
 import type {
   RecoveryState,
   EventSequence,
@@ -57,8 +58,8 @@ export class RecoveryService extends EventTarget {
     // Default configuration
     this.config = {
       snapshotInterval: 50, // Take snapshot every 50 events
-      maxEventBuffer: 1000, // Keep last 1000 events
-      recoveryTimeout: 30000, // 30 second timeout for recovery
+      maxEventBuffer: GAME.EVENT_BUFFER_SIZE,
+      recoveryTimeout: TIMING.HEARTBEAT_INTERVAL,
       enablePersistence: true, // Enable localStorage persistence
       maxRetries: 3, // Max recovery attempts
       gapDetectionThreshold: 5, // Detect gaps > 5 sequence numbers

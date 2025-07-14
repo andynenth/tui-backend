@@ -5,20 +5,21 @@ Game Over Transition Test
 Tests that the game properly transitions to GAME_OVER phase after finding a winner
 """
 
+import asyncio
+import os
+import sys
+from unittest.mock import AsyncMock, Mock
+
 import pytest
 import pytest_asyncio
-import asyncio
-import sys
-import os
-from unittest.mock import Mock, AsyncMock
 
 # Add backend to path for imports
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 
-from engine.state_machine.core import GamePhase, ActionType, GameAction
+from engine.state_machine.core import ActionType, GameAction, GamePhase
 from engine.state_machine.game_state_machine import GameStateMachine
-from engine.state_machine.states.scoring_state import ScoringState
 from engine.state_machine.states.game_over_state import GameOverState
+from engine.state_machine.states.scoring_state import ScoringState
 from engine.win_conditions import WinConditionType
 
 

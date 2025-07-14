@@ -2,9 +2,9 @@
 
 from .declaration_state import DeclarationState
 from .preparation_state import PreparationState
-from .turn_state import TurnState
-from .scoring_state import ScoringState
 from .round_start_state import RoundStartState
+from .scoring_state import ScoringState
+from .turn_state import TurnState
 
 __all__ = [
     "DeclarationState",

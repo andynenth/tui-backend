@@ -1,12 +1,13 @@
 # File: backend/tests/test_integration.py
 
-import pytest
-import pytest_asyncio
 import asyncio
 from datetime import datetime
 
+import pytest
+import pytest_asyncio
+
+from engine.state_machine.core import ActionType, GameAction, GamePhase
 from engine.state_machine.game_state_machine import GameStateMachine
-from engine.state_machine.core import GameAction, ActionType, GamePhase
 
 
 class GameMock:  # FIX: Renamed to avoid pytest collecting it

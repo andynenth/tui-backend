@@ -7,21 +7,20 @@ to ensure all 7 phases work correctly with the new implementation.
 """
 
 import asyncio
-import sys
 import logging
+import sys
 from datetime import datetime
 from typing import Dict, List
 
 # Add current directory to path for imports
 sys.path.append(".")
 
-from engine.state_machine.game_state_machine import GameStateMachine
-from engine.state_machine.core import GamePhase, ActionType, GameAction
-from engine.game import Game
-from engine.player import Player
-from engine.piece import Piece
 from engine.constants import PIECE_POINTS
-
+from engine.game import Game
+from engine.piece import Piece
+from engine.player import Player
+from engine.state_machine.core import ActionType, GameAction, GamePhase
+from engine.state_machine.game_state_machine import GameStateMachine
 
 # Configure logging
 logging.basicConfig(

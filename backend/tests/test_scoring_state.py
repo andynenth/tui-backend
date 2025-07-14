@@ -1,10 +1,12 @@
 # backend/tests/test_scoring_state.py
 
+from unittest.mock import AsyncMock, Mock
+
 import pytest
 import pytest_asyncio
-from unittest.mock import Mock, AsyncMock
+
+from engine.state_machine.core import ActionType, GameAction, GamePhase
 from engine.state_machine.states.scoring_state import ScoringState
-from engine.state_machine.core import GamePhase, ActionType, GameAction
 
 
 class TestScoringState:

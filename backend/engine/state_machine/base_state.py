@@ -4,8 +4,9 @@ import asyncio
 import logging
 import time
 from abc import ABC, abstractmethod
-from typing import Dict, List, Optional, Any, Set
-from .core import GamePhase, ActionType, GameAction
+from typing import Any, Dict, List, Optional, Set
+
+from .core import ActionType, GameAction, GamePhase
 
 
 class GameState(ABC):
@@ -144,8 +145,8 @@ class GameState(ABC):
                 from backend.socket_manager import broadcast
             except ImportError:
                 # Handle different import paths
-                import sys
                 import os
+                import sys
 
                 sys.path.append(
                     os.path.dirname(os.path.dirname(os.path.dirname(__file__)))
@@ -293,8 +294,8 @@ class GameState(ABC):
                 from backend.socket_manager import broadcast
             except ImportError:
                 # Handle different import paths
-                import sys
                 import os
+                import sys
 
                 sys.path.append(
                     os.path.dirname(os.path.dirname(os.path.dirname(__file__)))

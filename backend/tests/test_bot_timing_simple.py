@@ -1,12 +1,14 @@
 # backend/tests/test_bot_timing_simple.py
 
 import asyncio
-import pytest
 import time
-from unittest.mock import Mock, patch, AsyncMock
+from unittest.mock import AsyncMock, Mock, patch
+
+import pytest
+
 from engine.bot_manager import BotManager, GameBotHandler
-from engine.player import Player
 from engine.game import Game
+from engine.player import Player
 
 
 @pytest.mark.asyncio

@@ -3,10 +3,11 @@
 Test script to verify that phase transitions are properly broadcast
 """
 import asyncio
-from engine.state_machine.game_state_machine import GameStateMachine
-from engine.state_machine.core import GamePhase
+
 from engine.game import Game
 from engine.player import Player
+from engine.state_machine.core import GamePhase
+from engine.state_machine.game_state_machine import GameStateMachine
 
 
 async def test_phase_broadcast():

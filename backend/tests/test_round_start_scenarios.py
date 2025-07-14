@@ -5,15 +5,17 @@ Tests all scenarios outlined in the test plan to ensure ROUND_START phase
 works correctly in all situations.
 """
 
-import pytest
 import asyncio
 import time
-from unittest.mock import AsyncMock, MagicMock, patch, PropertyMock
-from engine.state_machine.game_state_machine import GameStateMachine
-from engine.state_machine.core import GamePhase, GameAction, ActionType
+from unittest.mock import AsyncMock, MagicMock, PropertyMock, patch
+
+import pytest
+
 from engine.game import Game
-from engine.player import Player
 from engine.piece import Piece
+from engine.player import Player
+from engine.state_machine.core import ActionType, GameAction, GamePhase
+from engine.state_machine.game_state_machine import GameStateMachine
 
 
 class TestRoundStartScenarios:

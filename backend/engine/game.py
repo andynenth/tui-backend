@@ -2,13 +2,14 @@
 
 import random
 from typing import List
+
+import engine.ai as ai
 from engine.piece import Piece
 from engine.player import Player
-import engine.ai as ai
-from engine.rules import is_valid_play, get_play_type, get_valid_declares
+from engine.rules import get_play_type, get_valid_declares, is_valid_play
 from engine.scoring import calculate_round_scores
-from engine.win_conditions import is_game_over, get_winners, WinConditionType
-from engine.turn_resolution import resolve_turn, TurnPlay
+from engine.turn_resolution import TurnPlay, resolve_turn
+from engine.win_conditions import WinConditionType, get_winners, is_game_over
 
 
 class Game:

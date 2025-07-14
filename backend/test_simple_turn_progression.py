@@ -5,11 +5,12 @@ Simple test to check if turn state machine returns correct next_player data.
 """
 
 import asyncio
-from engine.state_machine.states.turn_state import TurnState
-from engine.state_machine.core import GameAction, ActionType, GamePhase
+
 from engine.game import Game
-from engine.player import Player
 from engine.piece import Piece
+from engine.player import Player
+from engine.state_machine.core import ActionType, GameAction, GamePhase
+from engine.state_machine.states.turn_state import TurnState
 
 
 class MockStateMachine:

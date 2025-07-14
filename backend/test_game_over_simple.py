@@ -6,8 +6,8 @@ Tests that the game properly transitions to GAME_OVER phase after finding a winn
 """
 
 import asyncio
-import sys
 import os
+import sys
 from unittest.mock import AsyncMock
 
 # Add backend to path for imports

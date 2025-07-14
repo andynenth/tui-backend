@@ -4,16 +4,16 @@ Test script to verify turn state action processing and phase data updates
 """
 
 import asyncio
-import sys
 import os
+import sys
 
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 
-from engine.state_machine.game_state_machine import GameStateMachine
-from engine.state_machine.core import GameAction, ActionType, GamePhase
 from engine.game import Game
-from engine.player import Player
 from engine.piece import Piece
+from engine.player import Player
+from engine.state_machine.core import ActionType, GameAction, GamePhase
+from engine.state_machine.game_state_machine import GameStateMachine
 
 
 class MockGame:
