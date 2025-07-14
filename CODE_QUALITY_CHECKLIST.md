@@ -23,8 +23,17 @@ A comprehensive checklist for maintaining high code quality standards across our
   - **Impact**: Visibility into test gaps
 
 - [ ] **Fix Python imports and docstrings** 🟡 Important
-  - Reorganize imports: standard lib → third-party → local
-  - Add docstrings to public functions (many missing)
+  - [x] Add docstrings to public functions ✅ COMPLETED
+  - [ ] Reorganize imports: standard lib → third-party → local
+    - [ ] Check if isort is installed in virtual environment
+    - [ ] Create .isort.cfg configuration file with project settings
+    - [ ] Test isort on one file first to verify configuration
+    - [ ] Run isort on backend/engine/ directory
+    - [ ] Run isort on backend/api/ directory
+    - [ ] Run isort on backend/tests/ directory
+    - [ ] Run isort on individual files in backend/ root
+    - [ ] Run pylint to check for any import errors
+    - [ ] Test application to ensure nothing broke
   - **Impact**: Better code maintainability and IDE support
 
 - [x] **Remove dead code and reorganize tests** 🟡 Important ✅ COMPLETED
@@ -34,15 +43,21 @@ A comprehensive checklist for maintaining high code quality standards across our
   - **Impact**: Cleaner codebase, better organization
 
 ### High-Impact Improvements (1-2 days each)
-- [ ] **Implement rate limiting** 🔴 Critical
-  - Add rate limiting to WebSocket connections
-  - Implement API endpoint rate limits
-  - **Impact**: Prevent abuse and DoS attacks
-
-- [x] **Extract magic numbers to constants** 🟡 Important ✅ COMPLETED
-  - Create constants file for animation delays (3500ms) ✅ Created src/constants.js
-  - Define time conversion constants (MS_TO_SECONDS) ✅
-  - Replace inline numbers with named constants (refactoring pending)
+- [ ] **Extract magic numbers to constants** 🟡 Important (Partially Complete)
+  - [x] Create constants file for animation delays (3500ms) ✅ Created src/constants.js
+  - [x] Define time conversion constants (MS_TO_SECONDS) ✅
+  - [ ] Replace inline numbers with named constants
+    - [ ] Search for all occurrences of timing numbers (3500, 800, 200, etc.)
+    - [ ] Create mapping of numbers to constants
+    - [ ] Import constants.js in files using magic numbers
+    - [ ] Replace 3500 with DEALING_ANIMATION_DURATION
+    - [ ] Replace 800 with TURN_FLIP_DELAY
+    - [ ] Replace 200 with TURN_RESULTS_REVEAL_DELAY
+    - [ ] Replace 100 with appropriate constants
+    - [ ] Replace 1000 with REFRESH_ANIMATION_DURATION
+    - [ ] Replace 500 with CHECKMARK_DISPLAY_DURATION
+    - [ ] Test each component after changes
+    - [ ] Add any missing constants to constants.js
   - **Impact**: Better maintainability and clarity
 
 - [x] **Add input validation** 🔴 Critical ✅ COMPLETED
@@ -414,21 +429,66 @@ grep -r "TODO\|FIXME" --exclude-dir=node_modules . | wc -l
   - GameService.ts has no test coverage
   - NetworkService.ts has no test coverage
   - Critical for reliability
+  - **Subtasks:**
+    - [ ] Review existing test setup and patterns
+    - [ ] Create test file structure for services
+    - [ ] Set up mock WebSocket and fetch utilities
+    - [ ] **GameService.ts Tests:**
+      - [ ] Test getRooms() with mock responses
+      - [ ] Test createRoom() with success/failure cases
+      - [ ] Test joinRoom() with various scenarios
+      - [ ] Test startGame() functionality
+      - [ ] Test error handling for each method
+    - [ ] **NetworkService.ts Tests:**
+      - [ ] Test WebSocket connection establishment
+      - [ ] Test message sending and receiving
+      - [ ] Test reconnection logic
+      - [ ] Test error handling and recovery
+      - [ ] Test message queuing during disconnection
+    - [ ] Run all tests to ensure coverage
+    - [ ] Add test scripts to package.json if missing
 
 #### Backend Issues  
 - [ ] **No OpenAPI documentation** 🟡
   - FastAPI generates it automatically
   - Need to add descriptions and examples
   - Missing response models documentation
+  - **Subtasks:**
+    - [ ] Review current auto-generated docs at /docs
+    - [ ] Identify endpoints lacking descriptions
+    - [ ] Create documentation template
+    - [ ] Add endpoint descriptions and summaries
+    - [ ] Add request body examples
+    - [ ] Add response examples for success/error
+    - [ ] Add parameter descriptions
+    - [ ] Document authentication requirements
+    - [ ] Add tags for endpoint grouping
+    - [ ] Add overview section to main API docs
+    - [ ] Create usage examples
+    - [ ] Document WebSocket endpoints manually
 
 - [ ] **Inconsistent error handling** 🔴
   - Some endpoints return different error formats
   - Need standardized error response model
+  - **Subtasks:**
+    - [ ] Define standard error response schema
+    - [ ] Create error types enum/constants
+    - [ ] Document error codes and meanings
+    - [ ] Create error response models in Pydantic
+    - [ ] Create centralized error handler middleware
+    - [ ] Update all endpoints to use standard errors
+    - [ ] Update WebSocket error responses
+    - [ ] Create error parsing utilities in frontend
+    - [ ] Update error handling in frontend services
+    - [ ] Standardize error display to users
+    - [ ] Add error boundary components if missing
+    - [ ] Test each endpoint with invalid data
+    - [ ] Verify consistent error formats
 
-- [ ] **No rate limiting** 🔴
+- [ ] **No rate limiting** 🔴 (See High-Risk Tasks section at end)
   - WebSocket connections unlimited
   - API endpoints have no rate limits
-  - Security vulnerability
+  - Security vulnerability - but implementation is risky
 
 - [x] **Dead code in game.py** 🟡 ✅ COMPLETED
   - Empty function: _verify_and_report_hands() ✅ Removed
@@ -483,6 +543,18 @@ grep -r "TODO\|FIXME" --exclude-dir=node_modules . | wc -l
 2. Explains team's quality standards
 3. Provides concrete examples
 4. Sets clear expectations
+
+---
+
+## 🚨 High-Risk Tasks (Do Last)
+
+### Rate Limiting Implementation
+- [ ] **Implement rate limiting** 🔴 Critical but RISKY
+  - Add rate limiting to WebSocket connections
+  - Implement API endpoint rate limits
+  - **Impact**: Prevent abuse and DoS attacks
+  - **Warning**: This task has broken the WebSocket connection before. Test thoroughly!
+  - **Recommendation**: Complete all other tasks first, then tackle this with careful testing
 
 ---
 
