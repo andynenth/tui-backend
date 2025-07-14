@@ -3,10 +3,11 @@
 import asyncio
 
 import backend.socket_manager
-from api.validation import validate_websocket_message
 from backend.shared_instances import shared_room_manager
 from backend.socket_manager import broadcast, register, unregister
 from fastapi import APIRouter, WebSocket, WebSocketDisconnect
+
+from api.validation import validate_websocket_message
 
 print(f"socket_manager id in {__name__}: {id(backend.socket_manager)}")
 

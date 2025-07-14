@@ -6,6 +6,7 @@ import {
   calculateRevealDelay,
 } from '../../../utils/playTypeMatching';
 import { getPlayType } from '../../../utils/gameValidation';
+import { TIMING } from '../../../constants';
 
 /**
  * TurnResultsContent Component
@@ -76,7 +77,7 @@ const TurnResultsContent = ({
 
       console.log('[TurnResultsContent] Pieces to reveal:', piecesToReveal);
       setFlippedPieces(piecesToReveal);
-    }, 200); // Small delay before starting animation
+    }, TIMING.TURN_RESULTS_REVEAL_DELAY); // Small delay before starting animation
 
     return () => clearTimeout(timer);
   }, [playerPlays, effectiveStarterPlayType, starterName, winner]);
