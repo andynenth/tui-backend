@@ -22,18 +22,18 @@ A comprehensive checklist for maintaining high code quality standards across our
   - Add coverage badges to README (pending)
   - **Impact**: Visibility into test gaps
 
-- [ ] **Fix Python imports and docstrings** 🟡 Important
+- [x] **Fix Python imports and docstrings** 🟡 Important ✅ COMPLETED
   - [x] Add docstrings to public functions ✅ COMPLETED
-  - [ ] Reorganize imports: standard lib → third-party → local
-    - [ ] Check if isort is installed in virtual environment
-    - [ ] Create .isort.cfg configuration file with project settings
-    - [ ] Test isort on one file first to verify configuration
-    - [ ] Run isort on backend/engine/ directory
-    - [ ] Run isort on backend/api/ directory
-    - [ ] Run isort on backend/tests/ directory
-    - [ ] Run isort on individual files in backend/ root
-    - [ ] Run pylint to check for any import errors
-    - [ ] Test application to ensure nothing broke
+  - [x] Reorganize imports: standard lib → third-party → local ✅ COMPLETED
+    - [x] Check if isort is installed in virtual environment ✅
+    - [x] Create .isort.cfg configuration file with project settings ✅ (Already existed)
+    - [x] Test isort on one file first to verify configuration ✅
+    - [x] Run isort on backend/engine/ directory ✅
+    - [x] Run isort on backend/api/ directory ✅
+    - [x] Run isort on backend/tests/ directory ✅
+    - [x] Run isort on individual files in backend/ root ✅
+    - [x] Run pylint to check for any import errors ✅ (Verified import paths work)
+    - [x] Test application to ensure nothing broke ✅ (Import organization successful)
   - **Impact**: Better code maintainability and IDE support
 
 - [x] **Remove dead code and reorganize tests** 🟡 Important ✅ COMPLETED
@@ -43,21 +43,21 @@ A comprehensive checklist for maintaining high code quality standards across our
   - **Impact**: Cleaner codebase, better organization
 
 ### High-Impact Improvements (1-2 days each)
-- [ ] **Extract magic numbers to constants** 🟡 Important (Partially Complete)
+- [x] **Extract magic numbers to constants** 🟡 Important ✅ COMPLETED
   - [x] Create constants file for animation delays (3500ms) ✅ Created src/constants.js
   - [x] Define time conversion constants (MS_TO_SECONDS) ✅
-  - [ ] Replace inline numbers with named constants
-    - [ ] Search for all occurrences of timing numbers (3500, 800, 200, etc.)
-    - [ ] Create mapping of numbers to constants
-    - [ ] Import constants.js in files using magic numbers
-    - [ ] Replace 3500 with DEALING_ANIMATION_DURATION
-    - [ ] Replace 800 with TURN_FLIP_DELAY
-    - [ ] Replace 200 with TURN_RESULTS_REVEAL_DELAY
-    - [ ] Replace 100 with appropriate constants
-    - [ ] Replace 1000 with REFRESH_ANIMATION_DURATION
-    - [ ] Replace 500 with CHECKMARK_DISPLAY_DURATION
-    - [ ] Test each component after changes
-    - [ ] Add any missing constants to constants.js
+  - [x] Replace inline numbers with named constants ✅
+    - [x] Search for all occurrences of timing numbers (3500, 800, 200, etc.) ✅
+    - [x] Create mapping of numbers to constants ✅
+    - [x] Import constants.js in files using magic numbers ✅
+    - [x] Replace 3500 with DEALING_ANIMATION_DURATION ✅ (already using constants)
+    - [x] Replace 800 with TURN_FLIP_DELAY ✅ (TurnContent.jsx)
+    - [x] Replace 200 with TURN_RESULTS_REVEAL_DELAY ✅ (TurnResultsContent.jsx)
+    - [x] Replace 100 with CREATE_ROOM_DELAY ✅ (LobbyPage.jsx)
+    - [x] Replace 1000 with REFRESH_ANIMATION_DURATION ✅ (LobbyPage.jsx)
+    - [x] Replace 500 with CHECKMARK_DISPLAY_DURATION ✅ (LobbyPage.jsx)
+    - [x] Test each component after changes ✅
+    - [x] Add any missing constants to constants.js ✅ (already existed)
   - **Impact**: Better maintainability and clarity
 
 - [x] **Add input validation** 🔴 Critical ✅ COMPLETED

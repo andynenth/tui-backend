@@ -6,6 +6,7 @@ import { useApp } from '../contexts/AppContext';
 import { Layout } from '../components';
 // Phase 1-4 Enterprise Architecture
 import { networkService } from '../services';
+import { TIMING } from '../constants';
 // CSS classes are imported globally
 
 const LobbyPage = () => {
@@ -147,7 +148,7 @@ const LobbyPage = () => {
       networkService.send('lobby', 'create_room', {
         player_name: app.playerName,
       });
-    }, 100);
+    }, TIMING.CREATE_ROOM_DELAY);
   };
 
   // Join room by ID
@@ -194,9 +195,9 @@ const LobbyPage = () => {
         icon.textContent = '✓';
         setTimeout(() => {
           icon.textContent = originalText;
-        }, 500);
+        }, TIMING.CHECKMARK_DISPLAY_DURATION);
       }
-    }, 1000);
+    }, TIMING.REFRESH_ANIMATION_DURATION);
   };
 
   // Format last update time

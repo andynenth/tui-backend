@@ -5,6 +5,10 @@ import time
 from typing import Any, Dict, List, Optional
 
 import backend.socket_manager
+from backend.shared_instances import shared_bot_manager, shared_room_manager
+from backend.socket_manager import broadcast
+from fastapi import APIRouter, HTTPException, Query
+
 from api.validation import (
     RestApiValidator,
     get_validated_declaration,
@@ -12,10 +16,6 @@ from api.validation import (
     get_validated_player_name,
     get_validated_room_id,
 )
-from backend.shared_instances import shared_bot_manager, shared_room_manager
-from backend.socket_manager import broadcast
-from fastapi import APIRouter, HTTPException, Query
-
 from engine.game import Game
 from engine.rules import get_play_type, is_valid_play
 from engine.state_machine.core import ActionType, GameAction

@@ -7,6 +7,7 @@ import {
   calculateRevealDelay,
 } from '../../../utils/playTypeMatching';
 import { PlayerAvatar, GamePiece, PieceTray } from '../shared';
+import { TIMING } from '../../../constants';
 
 /**
  * TurnContent Component
@@ -93,7 +94,7 @@ const TurnContent = ({
 
         console.log('[TurnContent] Pieces to reveal:', piecesToReveal);
         setFlippedPieces(piecesToReveal);
-      }, 800);
+      }, TIMING.TURN_FLIP_DELAY);
 
       return () => clearTimeout(timer);
     }
