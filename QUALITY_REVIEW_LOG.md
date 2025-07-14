@@ -517,3 +517,135 @@ Cleaned up commented-out debug statements throughout the backend codebase, focus
 **Review Type**: Code Cleanup
 **Duration**: 25 minutes
 **Tools Used**: grep, sed, autoflake, file analysis
+
+## Review Session: WebSocket API Documentation
+**Date**: 2025-07-14
+**Reviewer**: Claude Code
+**Focus Area**: API Documentation - WebSocket Protocol
+
+### Summary
+Created comprehensive WebSocket API documentation covering all client-server communication, message formats, validation rules, and integration guidelines.
+
+### Actions Taken
+
+1. **✅ Analyzed WebSocket Implementation**
+   - Searched entire codebase for WebSocket events and handlers
+   - Identified 19 client→server events
+   - Identified 23 server→client events
+   - Mapped all event payloads and validation rules
+
+2. **✅ Created WEBSOCKET_API.md**
+   - Created docs/WEBSOCKET_API.md with complete API reference
+   - Documented all 42 WebSocket events with examples
+   - Included validation rules and security features
+   - Added connection best practices and error handling
+   - Provided integration examples with JavaScript
+
+3. **✅ Documented Key Features**
+   - Connection endpoint format: `ws://localhost:8000/ws/{room_id}`
+   - Special lobby connection for room management
+   - Consistent JSON message format for all events
+   - Comprehensive input validation and sanitization
+   - Enterprise architecture automatic broadcasting via phase_change
+
+### Documentation Coverage
+
+| Category | Events | Documented |
+|----------|--------|------------|
+| Client→Server | 19 | 19 ✅ |
+| Server→Client | 23 | 23 ✅ |
+| Validation Rules | 10+ | All ✅ |
+| Error Types | 4 | 4 ✅ |
+| Examples | - | Multiple ✅ |
+
+### Key Documentation Sections
+
+1. **Connection Management** - Endpoint URLs, connection setup
+2. **Message Formats** - Request/response JSON structures  
+3. **Event Reference** - All events with payloads and validation
+4. **Security Features** - XSS, injection, overflow prevention
+5. **Error Handling** - Consistent error format and types
+6. **Best Practices** - Connection, reconnection, state management
+7. **Integration Example** - Complete JavaScript code sample
+
+### Next Steps
+
+1. Consider generating OpenAPI/AsyncAPI spec from documentation
+2. Add WebSocket client SDK examples in multiple languages
+3. Create interactive WebSocket testing tool
+4. Add performance guidelines and rate limiting docs
+
+---
+
+**Review Type**: API Documentation
+**Duration**: 20 minutes
+**Tools Used**: Task agent, grep, file analysis
+
+## Review Session: Rate Limiting Implementation
+**Date**: 2025-07-14
+**Reviewer**: Claude Code
+**Focus Area**: Security - Rate Limiting for DoS Prevention
+
+### Summary
+Implemented comprehensive rate limiting for both REST API and WebSocket connections to prevent abuse and DoS attacks, addressing a critical security vulnerability.
+
+### Actions Taken
+
+1. **✅ Created Rate Limiting Middleware**
+   - Created api/middleware/rate_limiter.py with token bucket algorithm
+   - Configurable limits per endpoint and event type
+   - Automatic token refill over time
+   - Per-IP and per-connection tracking
+
+2. **✅ Integrated with FastAPI Application**
+   - Added RateLimitMiddleware to main.py
+   - Configured startup/shutdown events for cleanup tasks
+   - Added rate limit headers to REST responses
+
+3. **✅ Protected WebSocket Connections**
+   - Connection rate limiting (5 connections/minute per IP)
+   - Message rate limiting (120 messages/minute per connection)
+   - Event-specific limits (declarations: 10/min, plays: 30/min)
+   - Cleanup on disconnect to prevent memory leaks
+
+4. **✅ Created Comprehensive Tests**
+   - Unit tests for token bucket algorithm
+   - Tests for refill mechanics and max token caps
+   - WebSocket rate limiting tests
+   - Cleanup verification tests
+
+### Rate Limiting Configuration
+
+| Endpoint/Event | Max Tokens | Refill Rate | Effective Limit |
+|----------------|------------|-------------|-----------------|
+| REST Default | 60 | 1.0/sec | 60/minute |
+| Create Room | 30 | 0.5/sec | 30/minute |
+| Join Room | 10 | 0.17/sec | 10/minute |
+| Start Game | 5 | 0.08/sec | 5/minute |
+| WS Connect | 5 | 0.08/sec | 5/minute |
+| WS Messages | 120 | 2.0/sec | 120/minute |
+| WS Declare | 10 | 0.17/sec | 10/minute |
+| WS Play | 30 | 0.5/sec | 30/minute |
+
+### Security Features Implemented
+
+1. **Token Bucket Algorithm** - Flexible rate limiting with burst allowance
+2. **Per-IP Tracking** - Prevents single IP from overwhelming the server
+3. **Per-Connection Limits** - Prevents resource exhaustion per WebSocket
+4. **Automatic Cleanup** - Hourly cleanup of old rate limit buckets
+5. **Graceful Degradation** - Clear error messages when rate limited
+6. **Standard Headers** - X-RateLimit-* headers for client awareness
+
+### Next Steps
+
+1. Monitor rate limit effectiveness in production
+2. Adjust limits based on actual usage patterns
+3. Consider implementing user-based rate limits (vs IP-based)
+4. Add rate limiting metrics and monitoring
+5. Document rate limits in API documentation
+
+---
+
+**Review Type**: Security Enhancement
+**Duration**: 40 minutes
+**Tools Used**: Python, FastAPI middleware, WebSocket handling
