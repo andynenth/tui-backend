@@ -11,10 +11,10 @@ import { networkService } from '../services';
 const LobbyPage = () => {
   const navigate = useNavigate();
   const app = useApp();
-  
+
   const [rooms, setRooms] = useState([]);
   const [isConnected, setIsConnected] = useState(false);
-  
+
   const [showJoinModal, setShowJoinModal] = useState(false);
   const [isCreatingRoom, setIsCreatingRoom] = useState(false);
   const [isJoiningRoom, setIsJoiningRoom] = useState(false);
@@ -47,15 +47,25 @@ const LobbyPage = () => {
       setLastUpdateTime(Date.now());
     };
     networkService.addEventListener('room_list_update', handleRoomListUpdate);
-    unsubscribers.push(() => networkService.removeEventListener('room_list_update', handleRoomListUpdate));
+    unsubscribers.push(() =>
+      networkService.removeEventListener(
+        'room_list_update',
+        handleRoomListUpdate
+      )
+    );
 
     // Room created successfully
     const handleRoomCreated = (event) => {
       const eventData = event.detail;
       const roomData = eventData.data; // The actual room_created data from backend
       console.log('Received room_created:', eventData);
-      console.log('🟢 Navigation: room_id =', roomData.room_id, 'navigating to:', `/room/${roomData.room_id}`);
-      
+      console.log(
+        '🟢 Navigation: room_id =',
+        roomData.room_id,
+        'navigating to:',
+        `/room/${roomData.room_id}`
+      );
+
       // Only navigate if this is a real room ID (not 'lobby') and we're currently creating a room
       if (roomData.room_id && roomData.room_id !== 'lobby' && isCreatingRoom) {
         console.log('✅ Navigating to new room:', roomData.room_id);
@@ -65,15 +75,18 @@ const LobbyPage = () => {
         networkService.disconnectFromRoom('lobby');
         navigate(`/room/${roomData.room_id}`);
       } else {
-        console.log('⏭️ Ignoring room_created event:', { 
-          roomId: roomData.room_id, 
-          isCreatingRoom, 
-          reason: roomData.room_id === 'lobby' ? 'lobby event' : 'not creating room'
+        console.log('⏭️ Ignoring room_created event:', {
+          roomId: roomData.room_id,
+          isCreatingRoom,
+          reason:
+            roomData.room_id === 'lobby' ? 'lobby event' : 'not creating room',
         });
       }
     };
     networkService.addEventListener('room_created', handleRoomCreated);
-    unsubscribers.push(() => networkService.removeEventListener('room_created', handleRoomCreated));
+    unsubscribers.push(() =>
+      networkService.removeEventListener('room_created', handleRoomCreated)
+    );
 
     // Room joined successfully
     const handleRoomJoined = (event) => {
@@ -87,7 +100,9 @@ const LobbyPage = () => {
       }
     };
     networkService.addEventListener('room_joined', handleRoomJoined);
-    unsubscribers.push(() => networkService.removeEventListener('room_joined', handleRoomJoined));
+    unsubscribers.push(() =>
+      networkService.removeEventListener('room_joined', handleRoomJoined)
+    );
 
     // Error handling
     const handleError = (event) => {
@@ -99,7 +114,9 @@ const LobbyPage = () => {
       alert(errorData?.message || 'An error occurred');
     };
     networkService.addEventListener('error', handleError);
-    unsubscribers.push(() => networkService.removeEventListener('error', handleError));
+    unsubscribers.push(() =>
+      networkService.removeEventListener('error', handleError)
+    );
 
     // Request initial room list
     if (isConnected) {
@@ -108,7 +125,7 @@ const LobbyPage = () => {
 
     // Cleanup
     return () => {
-      unsubscribers.forEach(unsub => unsub());
+      unsubscribers.forEach((unsub) => unsub());
       // Disconnect from lobby when component unmounts
       networkService.disconnectFromRoom('lobby');
     };
@@ -124,11 +141,11 @@ const LobbyPage = () => {
   // Create new room
   const createRoom = () => {
     setIsCreatingRoom(true);
-    
+
     // Add delay to ensure connection stability before sending
     setTimeout(() => {
       networkService.send('lobby', 'create_room', {
-        player_name: app.playerName
+        player_name: app.playerName,
       });
     }, 100);
   };
@@ -136,11 +153,11 @@ const LobbyPage = () => {
   // Join room by ID
   const joinRoomById = () => {
     if (!joinRoomId.trim()) return;
-    
+
     setIsJoiningRoom(true);
     networkService.send('lobby', 'join_room', {
       room_id: joinRoomId.trim(),
-      player_name: app.playerName
+      player_name: app.playerName,
     });
   };
 
@@ -148,18 +165,17 @@ const LobbyPage = () => {
   const joinRoom = (roomId) => {
     networkService.send('lobby', 'join_room', {
       room_id: roomId,
-      player_name: app.playerName
+      player_name: app.playerName,
     });
   };
 
-
   const canJoinRoom = (room) => {
     // Use players array if available, fallback to occupied_slots
-    const playerCount = room.players 
-      ? room.players.filter(player => player !== null).length 
-      : (room.occupied_slots || 0);
+    const playerCount = room.players
+      ? room.players.filter((player) => player !== null).length
+      : room.occupied_slots || 0;
     const maxPlayers = room.total_slots || 4;
-    
+
     return !room.started && playerCount < maxPlayers;
   };
 
@@ -187,7 +203,7 @@ const LobbyPage = () => {
   const formatLastUpdate = () => {
     const now = Date.now();
     const diff = Math.floor((now - lastUpdateTime) / 1000);
-    
+
     if (diff < 5) return 'just now';
     if (diff < 60) return `${diff}s ago`;
     return `${Math.floor(diff / 60)}m ago`;
@@ -197,42 +213,53 @@ const LobbyPage = () => {
   useEffect(() => {
     const interval = setInterval(() => {
       // Force re-render to update time display
-      setLastUpdateTime(prev => prev);
+      setLastUpdateTime((prev) => prev);
     }, 1000);
 
     return () => clearInterval(interval);
   }, []);
 
   const renderRoomCard = (room) => {
-    const playerCount = room.players?.filter(p => p !== null).length || 0;
+    const playerCount = room.players?.filter((p) => p !== null).length || 0;
     const canJoin = canJoinRoom(room);
     const roomId = room.room_id || room.id;
-    
+
     return (
-      <div 
-        key={roomId} 
+      <div
+        key={roomId}
         className={`lp-roomCard ${!canJoin ? 'lp-full' : ''}`}
         onClick={() => canJoin && joinRoom(roomId)}
       >
         <div className="lp-roomCardHeader">
           <div className="lp-roomInfo">
             <div className="lp-roomId">{roomId}</div>
-            <span className="lp-hostName">Host: {room.host_name || room.players?.find(p => p?.is_host)?.name || 'Unknown'}</span>
+            <span className="lp-hostName">
+              Host:{' '}
+              {room.host_name ||
+                room.players?.find((p) => p?.is_host)?.name ||
+                'Unknown'}
+            </span>
           </div>
-          <div className={`lp-roomOccupancy ${playerCount === 4 ? 'lp-full' : ''}`}>
+          <div
+            className={`lp-roomOccupancy ${playerCount === 4 ? 'lp-full' : ''}`}
+          >
             {playerCount}/4
           </div>
         </div>
-        
+
         <div className="lp-roomPlayers">
           {[0, 1, 2, 3].map((slot) => {
             const player = room.players?.[slot];
             return (
-              <div 
-                key={slot} 
+              <div
+                key={slot}
                 className={`lp-playerSlot ${player ? (player.is_bot ? 'lp-bot' : 'lp-filled') : 'lp-empty'}`}
               >
-                {player ? (player.is_bot ? `Bot ${slot + 1}` : player.name) : 'Empty'}
+                {player
+                  ? player.is_bot
+                    ? `Bot ${slot + 1}`
+                    : player.name
+                  : 'Empty'}
               </div>
             );
           })}
@@ -243,12 +270,11 @@ const LobbyPage = () => {
 
   return (
     <>
-      <Layout
-        title=""
-        showConnection={false}
-        showHeader={false}
-      >
-        <div className="min-h-screen flex items-center justify-center" style={{ background: 'var(--gradient-gray)' }}>
+      <Layout title="" showConnection={false} showHeader={false}>
+        <div
+          className="min-h-screen flex items-center justify-center"
+          style={{ background: 'var(--gradient-gray)' }}
+        >
           <div className="lp-gameContainer">
             {/* Player Info Badge */}
             <div className="lp-playerInfoBadge">
@@ -259,7 +285,9 @@ const LobbyPage = () => {
             </div>
 
             {/* Connection Status */}
-            <div className={`connection-status ${!isConnected ? 'disconnected' : ''}`}>
+            <div
+              className={`connection-status ${!isConnected ? 'disconnected' : ''}`}
+            >
               <span className="status-dot"></span>
               {isConnected ? 'Connected' : 'Disconnected'}
             </div>
@@ -273,14 +301,15 @@ const LobbyPage = () => {
             {/* Action Bar */}
             <div className="lp-actionBar">
               <div className="lp-actionButtonsLeft">
-                <button 
+                <button
                   className="btn btn-success btn-sm"
                   onClick={createRoom}
                   disabled={!isConnected || isCreatingRoom}
                 >
-                  <span>➕</span> {isCreatingRoom ? 'Creating...' : 'Create Room'}
+                  <span>➕</span>{' '}
+                  {isCreatingRoom ? 'Creating...' : 'Create Room'}
                 </button>
-                <button 
+                <button
                   className="btn btn-secondary btn-sm"
                   onClick={() => setShowJoinModal(true)}
                   disabled={!isConnected}
@@ -288,7 +317,7 @@ const LobbyPage = () => {
                   <span>🔗</span> Join by ID
                 </button>
               </div>
-              <button 
+              <button
                 className={`btn btn-secondary btn-sm btn-icon-only ${isRefreshing ? 'lp-loading' : ''}`}
                 onClick={handleRefreshRooms}
                 disabled={!isConnected || isRefreshing}
@@ -301,8 +330,12 @@ const LobbyPage = () => {
             {/* Room List Section */}
             <div className="lp-roomListSection">
               <div className="lp-roomListHeader">
-                <h2 className="lp-roomCount">Available Rooms ({rooms.length})</h2>
-                <span className="lp-lastUpdated">Updated: {formatLastUpdate()}</span>
+                <h2 className="lp-roomCount">
+                  Available Rooms ({rooms.length})
+                </h2>
+                <span className="lp-lastUpdated">
+                  Updated: {formatLastUpdate()}
+                </span>
               </div>
 
               {rooms.length === 0 ? (
@@ -310,7 +343,9 @@ const LobbyPage = () => {
                   <div className="lp-emptyIcon">
                     <div className="lp-iconCircle">帥</div>
                   </div>
-                  <div className="lp-emptyText">No rooms available right now</div>
+                  <div className="lp-emptyText">
+                    No rooms available right now
+                  </div>
                 </div>
               ) : (
                 <div className="lp-roomList custom-scrollbar">
@@ -321,17 +356,22 @@ const LobbyPage = () => {
 
             {/* Footer Actions */}
             <div className="lp-footerActions">
-              <button className="btn btn-secondary btn-sm" onClick={() => navigate('/')}>
+              <button
+                className="btn btn-secondary btn-sm"
+                onClick={() => navigate('/')}
+              >
                 <span>←</span> Back to Start Page
               </button>
             </div>
 
             {/* Join Modal (Custom styled) */}
-            <div className={`lp-modalOverlay ${showJoinModal ? 'lp-show' : ''}`}>
+            <div
+              className={`lp-modalOverlay ${showJoinModal ? 'lp-show' : ''}`}
+            >
               <div className="lp-modalContent">
                 <h3 className="lp-modalTitle">Join Room by ID</h3>
-                <input 
-                  type="text" 
+                <input
+                  type="text"
                   className="lp-modalInput"
                   placeholder="Enter Room ID"
                   maxLength="6"
@@ -344,15 +384,15 @@ const LobbyPage = () => {
                   }}
                 />
                 <div className="lp-modalButtons">
-                  <button 
-                    className="btn btn-info btn-sm" 
+                  <button
+                    className="btn btn-info btn-sm"
                     onClick={joinRoomById}
                     disabled={!joinRoomId.trim() || isJoiningRoom}
                   >
                     {isJoiningRoom ? 'Joining...' : 'Join'}
                   </button>
-                  <button 
-                    className="btn btn-secondary btn-sm" 
+                  <button
+                    className="btn btn-secondary btn-sm"
                     onClick={() => {
                       setShowJoinModal(false);
                       setJoinRoomId('');
@@ -365,14 +405,14 @@ const LobbyPage = () => {
             </div>
 
             {/* Loading Overlay */}
-            <div className={`lp-loadingOverlay ${(isCreatingRoom || isJoiningRoom) ? 'lp-show' : ''}`}>
+            <div
+              className={`lp-loadingOverlay ${isCreatingRoom || isJoiningRoom ? 'lp-show' : ''}`}
+            >
               <div className="lp-loadingSpinner"></div>
             </div>
           </div>
         </div>
       </Layout>
-
-
     </>
   );
 };

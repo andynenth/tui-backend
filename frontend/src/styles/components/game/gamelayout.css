@@ -8,19 +8,27 @@
   aspect-ratio: 9 / 16;
   max-height: var(--game-max-height);
   margin: 0 auto;
-  
+
   /* Visual styling - matching mockup */
-  background: 
-    linear-gradient(145deg, #FFFFFF 0%, #F8F9FA 100%),
-    radial-gradient(circle at 20% 30%, rgba(255, 193, 7, 0.03) 0%, transparent 70%),
-    radial-gradient(circle at 80% 70%, rgba(13, 110, 253, 0.02) 0%, transparent 70%);
+  background:
+    linear-gradient(145deg, #ffffff 0%, #f8f9fa 100%),
+    radial-gradient(
+      circle at 20% 30%,
+      rgba(255, 193, 7, 0.03) 0%,
+      transparent 70%
+    ),
+    radial-gradient(
+      circle at 80% 70%,
+      rgba(13, 110, 253, 0.02) 0%,
+      transparent 70%
+    );
   border-radius: 20px;
   border: 1px solid rgba(173, 181, 189, 0.3);
-  box-shadow: 
+  box-shadow:
     0 20px 40px rgba(0, 0, 0, 0.08),
     0 0 0 1px rgba(255, 255, 255, 0.9),
     inset 0 1px 0 rgba(255, 255, 255, 1);
-  
+
   /* Layout */
   display: flex;
   flex-direction: column;
@@ -34,22 +42,26 @@
   top: var(--game-spacing-md);
   right: var(--game-spacing-md);
   z-index: var(--z-game-overlay);
-  
+
   /* Styling - matching mockup */
-  background: 
-    linear-gradient(145deg, #FFFFFF 0%, #F8F9FA 100%),
-    radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.8) 0%, transparent 60%);
+  background:
+    linear-gradient(145deg, #ffffff 0%, #f8f9fa 100%),
+    radial-gradient(
+      circle at 30% 30%,
+      rgba(255, 255, 255, 0.8) 0%,
+      transparent 60%
+    );
   padding: 8px 16px;
   border-radius: 16px;
   border: 1px solid rgba(173, 181, 189, 0.3);
-  box-shadow: 
+  box-shadow:
     0 4px 12px rgba(0, 0, 0, 0.08),
     inset 0 1px 0 rgba(255, 255, 255, 1);
-  
+
   /* Typography */
   font-size: 14px;
   font-weight: 700;
-  color: #343A40;
+  color: #343a40;
   font-family: var(--font-primary);
   letter-spacing: 0.5px;
 }
@@ -60,23 +72,27 @@
   top: var(--game-spacing-md);
   left: var(--game-spacing-md);
   z-index: var(--z-game-overlay);
-  
+
   /* Hidden by default */
   opacity: 0;
   transform: scale(0.8);
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  
+
   /* Styling - Purple to distinguish from penalties */
-  background: 
-    linear-gradient(135deg, #6F42C1 0%, #5A32A3 100%),
-    radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.3) 0%, transparent 60%);
+  background:
+    linear-gradient(135deg, #6f42c1 0%, #5a32a3 100%),
+    radial-gradient(
+      circle at 30% 30%,
+      rgba(255, 255, 255, 0.3) 0%,
+      transparent 60%
+    );
   padding: 8px 16px;
   border-radius: 16px;
   border: 1px solid rgba(111, 66, 193, 0.4);
-  box-shadow: 
+  box-shadow:
     0 4px 12px rgba(111, 66, 193, 0.2),
     inset 0 1px 0 rgba(255, 255, 255, 0.6);
-  
+
   /* Typography */
   font-size: 14px;
   font-weight: 700;
@@ -96,9 +112,14 @@
 .gl-phase-header {
   position: relative;
   padding: 50px 24px 20px;
-  background: 
+  background:
     linear-gradient(180deg, rgba(248, 249, 250, 0.8) 0%, transparent 100%),
-    linear-gradient(90deg, transparent 0%, rgba(173, 181, 189, 0.1) 50%, transparent 100%);
+    linear-gradient(
+      90deg,
+      transparent 0%,
+      rgba(173, 181, 189, 0.1) 50%,
+      transparent 100%
+    );
   border-bottom: 1px solid rgba(173, 181, 189, 0.2);
   text-align: center;
 }
@@ -112,7 +133,7 @@
   transform: translateX(-50%);
   width: 40px;
   height: 2px;
-  background: linear-gradient(90deg, transparent, #6C757D, transparent);
+  background: linear-gradient(90deg, transparent, #6c757d, transparent);
 }
 
 /* Phase title */
@@ -120,7 +141,7 @@
   font-family: var(--font-serif);
   font-size: 28px;
   font-weight: 700;
-  color: #343A40;
+  color: #343a40;
   margin: 0 0 4px 0;
   letter-spacing: -0.5px;
 }
@@ -129,7 +150,7 @@
 .gl-phase-subtitle {
   font-size: 14px;
   font-weight: 500;
-  color: #6C757D;
+  color: #6c757d;
   margin: 0;
 }
 
@@ -145,13 +166,14 @@
 /* Responsive adjustments */
 @media (max-height: 800px) {
   .gl-phase-header {
-    padding: var(--game-spacing-lg) var(--game-spacing-lg) var(--game-spacing-md);
+    padding: var(--game-spacing-lg) var(--game-spacing-lg)
+      var(--game-spacing-md);
   }
-  
+
   .gl-phase-title {
     font-size: 28px;
   }
-  
+
   .gl-phase-subtitle {
     font-size: 13px;
   }

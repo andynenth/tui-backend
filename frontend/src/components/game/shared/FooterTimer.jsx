@@ -3,10 +3,10 @@ import PropTypes from 'prop-types';
 
 /**
  * FooterTimer Component
- * 
+ *
  * A unified countdown timer component used across game phases.
  * Displays a countdown and executes a callback when complete.
- * 
+ *
  * @param {number} duration - Initial countdown value in seconds (default: 5)
  * @param {function} onComplete - Callback function when countdown reaches 0
  * @param {string} prefix - Text to display before the countdown number
@@ -20,14 +20,14 @@ const FooterTimer = ({
   prefix = '',
   suffix = 'seconds',
   variant = 'inline',
-  className = ''
+  className = '',
 }) => {
   const [countdown, setCountdown] = useState(duration);
 
   // Auto-advance timer
   useEffect(() => {
     const timer = setInterval(() => {
-      setCountdown(prev => {
+      setCountdown((prev) => {
         if (prev <= 1) {
           clearInterval(timer);
           if (onComplete) {
@@ -46,8 +46,10 @@ const FooterTimer = ({
   const containerClasses = [
     'footer-timer',
     `footer-timer--${variant}`,
-    className
-  ].filter(Boolean).join(' ');
+    className,
+  ]
+    .filter(Boolean)
+    .join(' ');
 
   return (
     <div className={containerClasses}>
@@ -66,7 +68,7 @@ FooterTimer.propTypes = {
   prefix: PropTypes.string,
   suffix: PropTypes.string,
   variant: PropTypes.oneOf(['inline', 'footer']),
-  className: PropTypes.string
+  className: PropTypes.string,
 };
 
 export default FooterTimer;

@@ -25,16 +25,6 @@
     },
     "types": ["node"]
   },
-  "include": [
-    "**/*.js",
-    "**/*.jsx",
-    "**/*.ts", 
-    "**/*.tsx"
-  ],
-  "exclude": [
-    "node_modules",
-    "dist",
-    "**/*.test.*",
-    "../backend"
-  ]
+  "include": ["**/*.js", "**/*.jsx", "**/*.ts", "**/*.tsx"],
+  "exclude": ["node_modules", "dist", "**/*.test.*", "../backend"]
 }

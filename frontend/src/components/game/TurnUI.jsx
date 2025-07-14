@@ -1,6 +1,6 @@
 /**
  * 🎲 **TurnUI Component** - Turn Phase Interface
- * 
+ *
  * Features:
  * ✅ Uses new TurnContent for consistent UI
  * ✅ Maps game state to content props
@@ -29,19 +29,22 @@ export function TurnUI({
   playType = '',
   declarationData = {},
   playerHandSizes = {},
-  
+
   // State flags
   isMyTurn = false,
   canPlayAnyCount = false,
-  
+
   // Action props
   onPlayPieces,
-  onPass
+  onPass,
 }) {
   // Build player pieces from turn plays
   const playerPieces = {};
-  console.log('[TurnUI] Building playerPieces from currentTurnPlays:', currentTurnPlays);
-  
+  console.log(
+    '[TurnUI] Building playerPieces from currentTurnPlays:',
+    currentTurnPlays
+  );
+
   // Log details of each play
   currentTurnPlays.forEach((play, index) => {
     console.log(`[TurnUI] Turn play ${index + 1}:`, {
@@ -51,56 +54,65 @@ export function TurnUI({
       playType: play.playType || play.play_type,
       isValid: play.isValid,
       pieces: play.pieces ? JSON.stringify(play.pieces) : 'null',
-      cards: play.cards ? JSON.stringify(play.cards) : 'null'
+      cards: play.cards ? JSON.stringify(play.cards) : 'null',
     });
   });
-  
-  currentTurnPlays.forEach(play => {
+
+  currentTurnPlays.forEach((play) => {
     if (play.player && (play.pieces || play.cards)) {
       // Use pieces property (or cards for backward compatibility)
       playerPieces[play.player] = play.pieces || play.cards;
     }
   });
-  
+
   // Extract play type from the current turn plays
-  const currentPlayType = playType || (() => {
-    const validPlays = currentTurnPlays.filter(play => play.isValid !== false);
-    if (validPlays.length > 0) {
-      const lastPlay = validPlays[validPlays.length - 1];
-      // Check both camelCase and snake_case
-      const extractedType = lastPlay.playType || lastPlay.play_type || '';
-      console.log('[TurnUI] Extracting play type:', {
-        playType,
-        currentTurnPlays,
-        validPlays,
-        lastPlay,
-        extractedType
-      });
-      return extractedType;
-    }
-    console.log('[TurnUI] No valid plays found, returning empty play type');
-    return '';
-  })();
-  
+  const currentPlayType =
+    playType ||
+    (() => {
+      const validPlays = currentTurnPlays.filter(
+        (play) => play.isValid !== false
+      );
+      if (validPlays.length > 0) {
+        const lastPlay = validPlays[validPlays.length - 1];
+        // Check both camelCase and snake_case
+        const extractedType = lastPlay.playType || lastPlay.play_type || '';
+        console.log('[TurnUI] Extracting play type:', {
+          playType,
+          currentTurnPlays,
+          validPlays,
+          lastPlay,
+          extractedType,
+        });
+        return extractedType;
+      }
+      console.log('[TurnUI] No valid plays found, returning empty play type');
+      return '';
+    })();
+
   // Build player stats from declaration and piles won
   const playerStats = {};
-  players.forEach(player => {
+  players.forEach((player) => {
     playerStats[player.name] = {
       pilesWon: piecesWonCount[player.name] || 0,
-      declared: declarationData[player.name] || 0
+      declared: declarationData[player.name] || 0,
     };
   });
-  
+
   // Use current pile from props or derive from currentTurnPlays
-  const pile = currentPile.length > 0 ? currentPile : 
-    currentTurnPlays.reduce((acc, play) => [...acc, ...(play.pieces || play.cards || [])], []);
-  
+  const pile =
+    currentPile.length > 0
+      ? currentPile
+      : currentTurnPlays.reduce(
+          (acc, play) => [...acc, ...(play.pieces || play.cards || [])],
+          []
+        );
+
   // Determine required count
   const required = canPlayAnyCount ? 0 : requiredPieceCount;
-  
+
   // Pass through props to TurnContent
   return (
-    <TurnContent 
+    <TurnContent
       myHand={myHand}
       players={players}
       currentPlayer={currentPlayer}
@@ -134,14 +146,14 @@ TurnUI.propTypes = {
   playType: PropTypes.string,
   declarationData: PropTypes.object,
   playerHandSizes: PropTypes.object,
-  
+
   // State flags
   isMyTurn: PropTypes.bool,
   canPlayAnyCount: PropTypes.bool,
-  
+
   // Actions
   onPlayPieces: PropTypes.func,
-  onPass: PropTypes.func
+  onPass: PropTypes.func,
 };
 
 export default TurnUI;

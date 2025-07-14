@@ -1,12 +1,12 @@
 /**
  * 🌐 **NetworkService** - Robust WebSocket Connection Manager (TypeScript)
- * 
+ *
  * Phase 1, Task 1.1: Foundation Services
- * 
+ *
  * Features:
  * ✅ Singleton pattern for global state management
  * ✅ Auto-reconnection with exponential backoff
- * ✅ Message queuing during disconnections  
+ * ✅ Message queuing during disconnections
  * ✅ Heartbeat/ping system for connection health
  * ✅ Event-based architecture (extends EventTarget)
  * ✅ Graceful error handling and recovery
@@ -24,13 +24,13 @@ import type {
   NetworkStatus,
   ConnectionEventDetail,
   ReconnectionEventDetail,
-  NetworkEventDetail
+  NetworkEventDetail,
 } from './types';
 
 export class NetworkService extends EventTarget {
   // Singleton instance
   private static instance: NetworkService | null = null;
-  
+
   /**
    * Get the singleton instance
    */
@@ -51,9 +51,11 @@ export class NetworkService extends EventTarget {
 
   private constructor() {
     super();
-    
+
     if (NetworkService.instance) {
-      throw new Error('NetworkService is a singleton. Use NetworkService.getInstance()');
+      throw new Error(
+        'NetworkService is a singleton. Use NetworkService.getInstance()'
+      );
     }
 
     // Default configuration
@@ -63,7 +65,7 @@ export class NetworkService extends EventTarget {
       maxReconnectAttempts: 10,
       reconnectBackoff: [1000, 2000, 4000, 8000, 16000], // exponential backoff
       messageQueueLimit: 1000,
-      connectionTimeout: 10000
+      connectionTimeout: 10000,
     };
   }
 
@@ -87,10 +89,10 @@ export class NetworkService extends EventTarget {
     }
 
     const url = `${this.config.baseUrl}/${roomId}`;
-    
+
     try {
       const connection = await this.createConnection(url, roomId);
-      
+
       // Initialize room state
       this.connections.set(roomId, {
         websocket: connection,
@@ -101,7 +103,7 @@ export class NetworkService extends EventTarget {
         messagesSent: 0,
         messagesReceived: 0,
         lastActivity: Date.now(),
-        latency: null
+        latency: null,
       });
 
       this.messageQueues.set(roomId, []);
@@ -109,7 +111,7 @@ export class NetworkService extends EventTarget {
       this.reconnectStates.set(roomId, {
         attempts: 0,
         isReconnecting: false,
-        abortController: null
+        abortController: null,
       });
 
       // Start heartbeat monitoring
@@ -122,18 +124,22 @@ export class NetworkService extends EventTarget {
       this.processQueuedMessages(roomId);
 
       // Emit connection event
-      this.dispatchEvent(new CustomEvent<ConnectionEventDetail>('connected', {
-        detail: { roomId, url, timestamp: Date.now() }
-      }));
+      this.dispatchEvent(
+        new CustomEvent<ConnectionEventDetail>('connected', {
+          detail: { roomId, url, timestamp: Date.now() },
+        })
+      );
 
       console.log(`🌐 NetworkService: Connected to room ${roomId}`);
       return connection;
-
     } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-      this.dispatchEvent(new CustomEvent<ConnectionEventDetail>('connectionFailed', {
-        detail: { roomId, timestamp: Date.now() }
-      }));
+      const errorMessage =
+        error instanceof Error ? error.message : 'Unknown error';
+      this.dispatchEvent(
+        new CustomEvent<ConnectionEventDetail>('connectionFailed', {
+          detail: { roomId, timestamp: Date.now() },
+        })
+      );
       throw new Error(`Failed to connect to ${roomId}: ${errorMessage}`);
     }
   }
@@ -164,9 +170,11 @@ export class NetworkService extends EventTarget {
     }
     this.reconnectStates.delete(roomId);
 
-    this.dispatchEvent(new CustomEvent<ConnectionEventDetail>('disconnected', {
-      detail: { roomId, intentional, timestamp: Date.now() }
-    }));
+    this.dispatchEvent(
+      new CustomEvent<ConnectionEventDetail>('disconnected', {
+        detail: { roomId, intentional, timestamp: Date.now() },
+      })
+    );
 
     console.log(`🌐 NetworkService: Disconnected from room ${roomId}`);
   }
@@ -186,22 +194,24 @@ export class NetworkService extends EventTarget {
       data,
       sequence: sequenceNumber,
       timestamp: Date.now(),
-      id: crypto.randomUUID()
+      id: crypto.randomUUID(),
     };
 
     const connectionData = this.connections.get(roomId);
-    
+
     if (connectionData?.websocket?.readyState === WebSocket.OPEN) {
       // Send immediately
       try {
         connectionData.websocket.send(JSON.stringify(message));
         connectionData.messagesSent++;
         connectionData.lastActivity = Date.now();
-        
-        this.dispatchEvent(new CustomEvent<NetworkEventDetail>('messageSent', {
-          detail: { roomId, message, timestamp: Date.now() }
-        }));
-        
+
+        this.dispatchEvent(
+          new CustomEvent<NetworkEventDetail>('messageSent', {
+            detail: { roomId, message, timestamp: Date.now() },
+          })
+        );
+
         return true;
       } catch (error) {
         console.error(`Failed to send message to ${roomId}:`, error);
@@ -211,7 +221,9 @@ export class NetworkService extends EventTarget {
     } else {
       // Queue for later delivery
       this.queueMessage(roomId, message);
-      console.log(`📤 Queued message for ${roomId}: ${event} (${this.getQueueSize(roomId)} queued)`);
+      console.log(
+        `📤 Queued message for ${roomId}: ${event} (${this.getQueueSize(roomId)} queued)`
+      );
       return false;
     }
   }
@@ -230,7 +242,7 @@ export class NetworkService extends EventTarget {
         status: 'disconnected',
         connected: false,
         queueSize,
-        reconnecting: reconnectState?.isReconnecting || false
+        reconnecting: reconnectState?.isReconnecting || false,
       };
     }
 
@@ -246,7 +258,7 @@ export class NetworkService extends EventTarget {
       latency: connectionData.latency,
       queueSize,
       reconnecting: reconnectState?.isReconnecting || false,
-      reconnectAttempts: reconnectState?.attempts || 0
+      reconnectAttempts: reconnectState?.attempts || 0,
     };
   }
 
@@ -262,9 +274,11 @@ export class NetworkService extends EventTarget {
     return {
       isDestroyed: this.isDestroyed,
       activeConnections: this.connections.size,
-      totalQueuedMessages: Array.from(this.messageQueues.values())
-        .reduce((total, queue) => total + queue.length, 0),
-      rooms
+      totalQueuedMessages: Array.from(this.messageQueues.values()).reduce(
+        (total, queue) => total + queue.length,
+        0
+      ),
+      rooms,
     };
   }
 
@@ -298,10 +312,13 @@ export class NetworkService extends EventTarget {
   /**
    * Create a WebSocket connection
    */
-  private async createConnection(url: string, roomId: string): Promise<WebSocket> {
+  private async createConnection(
+    url: string,
+    roomId: string
+  ): Promise<WebSocket> {
     return new Promise((resolve, reject) => {
       const websocket = new WebSocket(url);
-      
+
       const timeout = setTimeout(() => {
         websocket.close();
         reject(new Error(`Connection timeout to ${url}`));
@@ -356,24 +373,34 @@ export class NetworkService extends EventTarget {
       }
 
       // Emit the specific event
-      this.dispatchEvent(new CustomEvent<NetworkEventDetail>(message.event, {
-        detail: { roomId, data: message.data, message, timestamp: Date.now() }
-      }));
+      this.dispatchEvent(
+        new CustomEvent<NetworkEventDetail>(message.event, {
+          detail: {
+            roomId,
+            data: message.data,
+            message,
+            timestamp: Date.now(),
+          },
+        })
+      );
 
       // Also emit a general message event
-      this.dispatchEvent(new CustomEvent<NetworkEventDetail>('message', {
-        detail: { roomId, message, timestamp: Date.now() }
-      }));
-
+      this.dispatchEvent(
+        new CustomEvent<NetworkEventDetail>('message', {
+          detail: { roomId, message, timestamp: Date.now() },
+        })
+      );
     } catch (error) {
       console.error(`Failed to parse message from ${roomId}:`, error);
-      this.dispatchEvent(new CustomEvent<NetworkEventDetail>('messageError', {
-        detail: { 
-          roomId, 
-          error: error instanceof Error ? error.message : 'Parse error',
-          timestamp: Date.now()
-        }
-      }));
+      this.dispatchEvent(
+        new CustomEvent<NetworkEventDetail>('messageError', {
+          detail: {
+            roomId,
+            error: error instanceof Error ? error.message : 'Parse error',
+            timestamp: Date.now(),
+          },
+        })
+      );
     }
   }
 
@@ -389,16 +416,18 @@ export class NetworkService extends EventTarget {
 
     this.stopHeartbeat(roomId);
 
-    this.dispatchEvent(new CustomEvent<ConnectionEventDetail>('disconnected', {
-      detail: { 
-        roomId, 
-        code: event.code,
-        reason: event.reason,
-        wasClean: event.wasClean,
-        intentional: event.code === 1000,
-        timestamp: Date.now()
-      }
-    }));
+    this.dispatchEvent(
+      new CustomEvent<ConnectionEventDetail>('disconnected', {
+        detail: {
+          roomId,
+          code: event.code,
+          reason: event.reason,
+          wasClean: event.wasClean,
+          intentional: event.code === 1000,
+          timestamp: Date.now(),
+        },
+      })
+    );
 
     // Attempt reconnection if it wasn't intentional and we were connected
     if (wasConnected && event.code !== 1000 && !this.isDestroyed) {
@@ -411,10 +440,12 @@ export class NetworkService extends EventTarget {
    */
   private handleConnectionError(roomId: string): void {
     console.error(`WebSocket error for room ${roomId}`);
-    
-    this.dispatchEvent(new CustomEvent<NetworkEventDetail>('connectionError', {
-      detail: { roomId, error: 'Connection error', timestamp: Date.now() }
-    }));
+
+    this.dispatchEvent(
+      new CustomEvent<NetworkEventDetail>('connectionError', {
+        detail: { roomId, error: 'Connection error', timestamp: Date.now() },
+      })
+    );
   }
 
   /**
@@ -425,27 +456,37 @@ export class NetworkService extends EventTarget {
     if (!reconnectState || reconnectState.isReconnecting) return;
 
     if (reconnectState.attempts >= this.config.maxReconnectAttempts) {
-      this.dispatchEvent(new CustomEvent<ReconnectionEventDetail>('reconnectionFailed', {
-        detail: { 
-          roomId, 
-          attempts: reconnectState.attempts,
-          reason: 'Max attempts reached',
-          timestamp: Date.now()
-        }
-      }));
+      this.dispatchEvent(
+        new CustomEvent<ReconnectionEventDetail>('reconnectionFailed', {
+          detail: {
+            roomId,
+            attempts: reconnectState.attempts,
+            reason: 'Max attempts reached',
+            timestamp: Date.now(),
+          },
+        })
+      );
       return;
     }
 
     reconnectState.isReconnecting = true;
     reconnectState.abortController = new AbortController();
 
-    this.dispatchEvent(new CustomEvent<ReconnectionEventDetail>('reconnecting', {
-      detail: { roomId, attempt: reconnectState.attempts + 1, timestamp: Date.now() }
-    }));
+    this.dispatchEvent(
+      new CustomEvent<ReconnectionEventDetail>('reconnecting', {
+        detail: {
+          roomId,
+          attempt: reconnectState.attempts + 1,
+          timestamp: Date.now(),
+        },
+      })
+    );
 
     try {
       const delay = this.calculateReconnectDelay(reconnectState.attempts);
-      console.log(`🔄 Reconnecting to ${roomId} in ${delay}ms (attempt ${reconnectState.attempts + 1})`);
+      console.log(
+        `🔄 Reconnecting to ${roomId} in ${delay}ms (attempt ${reconnectState.attempts + 1})`
+      );
 
       await new Promise<void>((resolve, reject) => {
         const timer = setTimeout(resolve, delay);
@@ -464,27 +505,33 @@ export class NetworkService extends EventTarget {
       reconnectState.attempts = 0;
       reconnectState.isReconnecting = false;
 
-      this.dispatchEvent(new CustomEvent<ReconnectionEventDetail>('reconnected', {
-        detail: { roomId, timestamp: Date.now() }
-      }));
-
+      this.dispatchEvent(
+        new CustomEvent<ReconnectionEventDetail>('reconnected', {
+          detail: { roomId, timestamp: Date.now() },
+        })
+      );
     } catch (error) {
       if (!reconnectState.abortController!.signal.aborted) {
-        console.error(`Reconnection attempt ${reconnectState.attempts} failed for ${roomId}:`, error);
-        
+        console.error(
+          `Reconnection attempt ${reconnectState.attempts} failed for ${roomId}:`,
+          error
+        );
+
         // Try again if under limit
         if (reconnectState.attempts < this.config.maxReconnectAttempts) {
           setTimeout(() => this.attemptReconnection(roomId), 1000);
         } else {
           reconnectState.isReconnecting = false;
-          this.dispatchEvent(new CustomEvent<ReconnectionEventDetail>('reconnectionFailed', {
-            detail: { 
-              roomId, 
-              attempts: reconnectState.attempts,
-              error: error instanceof Error ? error.message : 'Unknown error',
-              timestamp: Date.now()
-            }
-          }));
+          this.dispatchEvent(
+            new CustomEvent<ReconnectionEventDetail>('reconnectionFailed', {
+              detail: {
+                roomId,
+                attempts: reconnectState.attempts,
+                error: error instanceof Error ? error.message : 'Unknown error',
+                timestamp: Date.now(),
+              },
+            })
+          );
         }
       }
     }
@@ -494,9 +541,12 @@ export class NetworkService extends EventTarget {
    * Calculate reconnection delay with exponential backoff
    */
   private calculateReconnectDelay(attempt: number): number {
-    const backoffIndex = Math.min(attempt, this.config.reconnectBackoff.length - 1);
+    const backoffIndex = Math.min(
+      attempt,
+      this.config.reconnectBackoff.length - 1
+    );
     const delay = this.config.reconnectBackoff[backoffIndex];
-    
+
     // Add jitter (±10%)
     const jitter = delay * 0.1;
     return delay + (Math.random() * 2 - 1) * jitter;
@@ -507,7 +557,7 @@ export class NetworkService extends EventTarget {
    */
   private startHeartbeat(roomId: string): void {
     this.stopHeartbeat(roomId);
-    
+
     const timer = setInterval(() => {
       const connectionData = this.connections.get(roomId);
       if (connectionData?.websocket?.readyState === WebSocket.OPEN) {
@@ -559,10 +609,12 @@ export class NetworkService extends EventTarget {
     }
 
     queue.push(message);
-    
-    this.dispatchEvent(new CustomEvent<NetworkEventDetail>('messageQueued', {
-      detail: { roomId, message, timestamp: Date.now() }
-    }));
+
+    this.dispatchEvent(
+      new CustomEvent<NetworkEventDetail>('messageQueued', {
+        detail: { roomId, message, timestamp: Date.now() },
+      })
+    );
   }
 
   /**
@@ -573,12 +625,15 @@ export class NetworkService extends EventTarget {
     if (!queue || queue.length === 0) return;
 
     const connectionData = this.connections.get(roomId);
-    if (!connectionData?.websocket || connectionData.websocket.readyState !== WebSocket.OPEN) {
+    if (
+      !connectionData?.websocket ||
+      connectionData.websocket.readyState !== WebSocket.OPEN
+    ) {
       return;
     }
 
     console.log(`📤 Processing ${queue.length} queued messages for ${roomId}`);
-    
+
     const messages = [...queue];
     queue.length = 0; // Clear queue
 

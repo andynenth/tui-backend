@@ -9,7 +9,7 @@ import { AppContext } from '../../contexts/AppContext.jsx';
 const mockNavigate = jest.fn();
 jest.mock('react-router-dom', () => ({
   ...jest.requireActual('react-router-dom'),
-  useNavigate: () => mockNavigate
+  useNavigate: () => mockNavigate,
 }));
 
 const TestWrapper = ({ children, contextValue = {} }) => {
@@ -19,7 +19,7 @@ const TestWrapper = ({ children, contextValue = {} }) => {
     gameState: null,
     setGameState: jest.fn(),
     connectionStatus: 'disconnected',
-    ...contextValue
+    ...contextValue,
   };
 
   return (
@@ -46,7 +46,9 @@ describe('StartPage Component', () => {
 
     expect(screen.getByText(/Enter your name/i)).toBeInTheDocument();
     expect(screen.getByPlaceholderText(/Your name/i)).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: /Enter Game/i })).toBeInTheDocument();
+    expect(
+      screen.getByRole('button', { name: /Enter Game/i })
+    ).toBeInTheDocument();
   });
 
   test('updates player name on input change', async () => {
@@ -67,7 +69,7 @@ describe('StartPage Component', () => {
 
   test('navigates to lobby when form is submitted with valid name', async () => {
     const user = userEvent.setup();
-    
+
     render(
       <TestWrapper contextValue={{ playerName: 'TestPlayer' }}>
         <StartPage />
@@ -82,7 +84,7 @@ describe('StartPage Component', () => {
 
   test('does not navigate with empty name', async () => {
     const user = userEvent.setup();
-    
+
     render(
       <TestWrapper contextValue={{ playerName: '' }}>
         <StartPage />

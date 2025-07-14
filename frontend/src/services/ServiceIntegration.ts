@@ -1,8 +1,8 @@
 /**
  * 🔗 **ServiceIntegration** - Unified Service Layer with Global Error Handling (TypeScript)
- * 
+ *
  * Phase 1, Task 1.4: Foundation Services Integration
- * 
+ *
  * Features:
  * ✅ Unified service initialization and lifecycle management
  * ✅ Global error handling and recovery coordination
@@ -25,13 +25,13 @@ import type {
   ErrorSeverity,
   RecoveryStrategy,
   ServiceMetrics,
-  IntegrationEventDetail
+  IntegrationEventDetail,
 } from './types';
 
 export class ServiceIntegration extends EventTarget {
   // Singleton instance
   private static instance: ServiceIntegration | null = null;
-  
+
   /**
    * Get the singleton instance
    */
@@ -49,7 +49,7 @@ export class ServiceIntegration extends EventTarget {
     recoveryAttempts: 0,
     successfulRecoveries: 0,
     uptime: Date.now(),
-    lastHealthCheck: 0
+    lastHealthCheck: 0,
   };
   private isInitialized = false;
   private isDestroyed = false;
@@ -58,9 +58,11 @@ export class ServiceIntegration extends EventTarget {
 
   private constructor() {
     super();
-    
+
     if (ServiceIntegration.instance) {
-      throw new Error('ServiceIntegration is a singleton. Use ServiceIntegration.getInstance()');
+      throw new Error(
+        'ServiceIntegration is a singleton. Use ServiceIntegration.getInstance()'
+      );
     }
 
     // Default configuration
@@ -72,7 +74,7 @@ export class ServiceIntegration extends EventTarget {
       maxRecoveryAttempts: 3,
       errorThreshold: 10, // Alert after 10 errors in window
       errorWindowMs: 300000, // 5 minute window
-      enableMetrics: true
+      enableMetrics: true,
     };
 
     this.setupRecoveryStrategies();
@@ -117,21 +119,28 @@ export class ServiceIntegration extends EventTarget {
 
       this.isInitialized = true;
 
-      this.dispatchEvent(new CustomEvent<IntegrationEventDetail>('initialized', {
-        detail: { timestamp: Date.now() }
-      }));
+      this.dispatchEvent(
+        new CustomEvent<IntegrationEventDetail>('initialized', {
+          detail: { timestamp: Date.now() },
+        })
+      );
 
       console.log('');
       console.log('✅ =============================================');
       console.log('🎉 PHASE 1-4 ARCHITECTURE FULLY OPERATIONAL!');
       console.log('✅ =============================================');
-      console.log('🔗 NetworkService: Advanced WebSocket with auto-reconnection');
-      console.log('🎮 GameService: React hooks with TypeScript state management');
-      console.log('🛠️ RecoveryService: Automatic error recovery and health monitoring');
+      console.log(
+        '🔗 NetworkService: Advanced WebSocket with auto-reconnection'
+      );
+      console.log(
+        '🎮 GameService: React hooks with TypeScript state management'
+      );
+      console.log(
+        '🛠️ RecoveryService: Automatic error recovery and health monitoring'
+      );
       console.log('🏢 Enterprise Features: Event sourcing, logging, metrics');
       console.log('✅ Service integration layer initialized successfully');
       console.log('');
-
     } catch (error) {
       const serviceError = this.createServiceError(
         'INITIALIZATION_FAILED',
@@ -141,7 +150,9 @@ export class ServiceIntegration extends EventTarget {
       );
 
       this.handleError(serviceError);
-      throw new Error(`Service integration initialization failed: ${serviceError.message}`);
+      throw new Error(
+        `Service integration initialization failed: ${serviceError.message}`
+      );
     }
   }
 
@@ -162,12 +173,13 @@ export class ServiceIntegration extends EventTarget {
       // Connect via GameService (which uses NetworkService)
       await gameService.joinRoom(roomId, playerName);
 
-      this.dispatchEvent(new CustomEvent<IntegrationEventDetail>('roomConnected', {
-        detail: { roomId, playerName, timestamp: Date.now() }
-      }));
+      this.dispatchEvent(
+        new CustomEvent<IntegrationEventDetail>('roomConnected', {
+          detail: { roomId, playerName, timestamp: Date.now() },
+        })
+      );
 
       console.log(`✅ Successfully connected to room ${roomId}`);
-
     } catch (error) {
       const serviceError = this.createServiceError(
         'ROOM_CONNECTION_FAILED',
@@ -199,13 +211,14 @@ export class ServiceIntegration extends EventTarget {
         // Cleanup recovery service
         recoveryService.cleanupRoom(roomId);
 
-        this.dispatchEvent(new CustomEvent<IntegrationEventDetail>('roomDisconnected', {
-          detail: { roomId, timestamp: Date.now() }
-        }));
+        this.dispatchEvent(
+          new CustomEvent<IntegrationEventDetail>('roomDisconnected', {
+            detail: { roomId, timestamp: Date.now() },
+          })
+        );
 
         console.log(`✅ Successfully disconnected from room ${roomId}`);
       }
-
     } catch (error) {
       const serviceError = this.createServiceError(
         'ROOM_DISCONNECTION_FAILED',
@@ -224,16 +237,22 @@ export class ServiceIntegration extends EventTarget {
   getHealthStatus(): ServiceHealthStatus {
     const networkStatus = networkService.getStatus();
     const gameState = gameService.getState();
-    const recoveryStatus = gameState.roomId ? 
-      recoveryService.getRecoveryStatus(gameState.roomId) : null;
+    const recoveryStatus = gameState.roomId
+      ? recoveryService.getRecoveryStatus(gameState.roomId)
+      : null;
 
     return {
-      overall: this.calculateOverallHealth(networkStatus, gameState, recoveryStatus),
+      overall: this.calculateOverallHealth(
+        networkStatus,
+        gameState,
+        recoveryStatus
+      ),
       network: {
-        healthy: !networkStatus.isDestroyed && networkStatus.activeConnections >= 0,
+        healthy:
+          !networkStatus.isDestroyed && networkStatus.activeConnections >= 0,
         connections: networkStatus.activeConnections,
         queuedMessages: networkStatus.totalQueuedMessages,
-        status: networkStatus.isDestroyed ? 'destroyed' : 'operational'
+        status: networkStatus.isDestroyed ? 'destroyed' : 'operational',
       },
       game: {
         healthy: gameState.error === null && !gameState.gameOver,
@@ -241,19 +260,22 @@ export class ServiceIntegration extends EventTarget {
         phase: gameState.phase,
         roomId: gameState.roomId,
         playersCount: gameState.players.length,
-        status: gameState.error ? 'error' : 'operational'
+        status: gameState.error ? 'error' : 'operational',
       },
-      recovery: recoveryStatus ? {
-        healthy: !recoveryStatus.isRecovering && recoveryStatus.gapsDetected === 0,
-        initialized: recoveryStatus.initialized,
-        isRecovering: recoveryStatus.isRecovering,
-        eventBufferSize: recoveryStatus.eventBufferSize,
-        gapsDetected: recoveryStatus.gapsDetected,
-        status: recoveryStatus.isRecovering ? 'recovering' : 'operational'
-      } : null,
+      recovery: recoveryStatus
+        ? {
+            healthy:
+              !recoveryStatus.isRecovering && recoveryStatus.gapsDetected === 0,
+            initialized: recoveryStatus.initialized,
+            isRecovering: recoveryStatus.isRecovering,
+            eventBufferSize: recoveryStatus.eventBufferSize,
+            gapsDetected: recoveryStatus.gapsDetected,
+            status: recoveryStatus.isRecovering ? 'recovering' : 'operational',
+          }
+        : null,
       integration: this.getIntegrationStatus(),
       metrics: { ...this.metrics },
-      errors: this.getRecentErrors(5)
+      errors: this.getRecentErrors(5),
     };
   }
 
@@ -265,18 +287,20 @@ export class ServiceIntegration extends EventTarget {
       throw new Error('ServiceIntegration not initialized');
     }
 
-    console.log(`🔄 Triggering manual recovery${errorType ? ` for ${errorType}` : ''}...`);
+    console.log(
+      `🔄 Triggering manual recovery${errorType ? ` for ${errorType}` : ''}...`
+    );
 
     try {
       this.metrics.recoveryAttempts++;
 
       // Get current game state for context
       const gameState = gameService.getState();
-      
+
       // Apply recovery strategies
-      const strategies = errorType ? 
-        this.recoveryStrategies.get(errorType) || [] :
-        this.getAllRecoveryStrategies();
+      const strategies = errorType
+        ? this.recoveryStrategies.get(errorType) || []
+        : this.getAllRecoveryStrategies();
 
       let recoverySuccess = false;
       const appliedStrategies: string[] = [];
@@ -294,24 +318,28 @@ export class ServiceIntegration extends EventTarget {
 
       if (recoverySuccess) {
         this.metrics.successfulRecoveries++;
-        console.log(`✅ Recovery completed with strategies: ${appliedStrategies.join(', ')}`);
+        console.log(
+          `✅ Recovery completed with strategies: ${appliedStrategies.join(', ')}`
+        );
       }
 
       const result: ErrorRecoveryResult = {
         success: recoverySuccess,
         appliedStrategies,
         timestamp: Date.now(),
-        errorType: errorType || 'MANUAL_RECOVERY'
+        errorType: errorType || 'MANUAL_RECOVERY',
       };
 
-      this.dispatchEvent(new CustomEvent<IntegrationEventDetail>('recoveryCompleted', {
-        detail: { recoveryResult: result, timestamp: Date.now() }
-      }));
+      this.dispatchEvent(
+        new CustomEvent<IntegrationEventDetail>('recoveryCompleted', {
+          detail: { recoveryResult: result, timestamp: Date.now() },
+        })
+      );
 
       return result;
-
     } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : 'Unknown recovery error';
+      const errorMessage =
+        error instanceof Error ? error.message : 'Unknown recovery error';
       console.error('❌ Recovery failed:', error);
 
       return {
@@ -319,7 +347,7 @@ export class ServiceIntegration extends EventTarget {
         appliedStrategies: [],
         timestamp: Date.now(),
         errorType: errorType || 'MANUAL_RECOVERY',
-        error: errorMessage
+        error: errorMessage,
       };
     }
   }
@@ -355,12 +383,13 @@ export class ServiceIntegration extends EventTarget {
       this.metrics.successfulRecoveries = 0;
       this.metrics.uptime = Date.now();
 
-      this.dispatchEvent(new CustomEvent<IntegrationEventDetail>('emergencyReset', {
-        detail: { timestamp: Date.now() }
-      }));
+      this.dispatchEvent(
+        new CustomEvent<IntegrationEventDetail>('emergencyReset', {
+          detail: { timestamp: Date.now() },
+        })
+      );
 
       console.log('✅ Emergency reset completed');
-
     } catch (error) {
       console.error('❌ Emergency reset failed:', error);
       throw error;
@@ -407,8 +436,8 @@ export class ServiceIntegration extends EventTarget {
           if (gameState.roomId) {
             await networkService.connectToRoom(gameState.roomId);
           }
-        }
-      }
+        },
+      },
     ]);
 
     // Sequence gap recovery
@@ -419,8 +448,8 @@ export class ServiceIntegration extends EventTarget {
           if (gameState.roomId) {
             await recoveryService.startRecovery(gameState.roomId);
           }
-        }
-      }
+        },
+      },
     ]);
 
     // Game state corruption recovery
@@ -431,8 +460,8 @@ export class ServiceIntegration extends EventTarget {
           if (gameState.roomId && gameState.isConnected) {
             networkService.send(gameState.roomId, 'request_state_sync', {});
           }
-        }
-      }
+        },
+      },
     ]);
 
     // Generic connection recovery
@@ -444,8 +473,8 @@ export class ServiceIntegration extends EventTarget {
             await networkService.connectToRoom(gameState.roomId);
             await recoveryService.startRecovery(gameState.roomId);
           }
-        }
-      }
+        },
+      },
     ]);
   }
 
@@ -507,7 +536,7 @@ export class ServiceIntegration extends EventTarget {
     gameService.addEventListener('stateChange', (event) => {
       const customEvent = event as CustomEvent;
       const gameState = customEvent.detail.state;
-      
+
       if (gameState.error) {
         const error = this.createServiceError(
           'GAME_STATE_ERROR',
@@ -529,9 +558,11 @@ export class ServiceIntegration extends EventTarget {
     gameService.addEventListener('stateChange', (event) => {
       const customEvent = event as CustomEvent;
       const gameState = customEvent.detail.state;
-      
+
       if (gameState.roomId && gameState.isConnected) {
-        const recoveryStatus = recoveryService.getRecoveryStatus(gameState.roomId);
+        const recoveryStatus = recoveryService.getRecoveryStatus(
+          gameState.roomId
+        );
         if (!recoveryStatus.initialized) {
           recoveryService.initializeRoom(gameState.roomId);
         }
@@ -542,7 +573,7 @@ export class ServiceIntegration extends EventTarget {
     recoveryService.addEventListener('sequenceGap', (event) => {
       const customEvent = event as CustomEvent;
       const { roomId, gap } = customEvent.detail;
-      
+
       // Trigger recovery for large gaps
       if (gap.end - gap.start >= 5) {
         console.log(`🔄 Auto-triggering recovery for large gap in ${roomId}`);
@@ -554,7 +585,9 @@ export class ServiceIntegration extends EventTarget {
     networkService.addEventListener('disconnected', (event) => {
       const customEvent = event as CustomEvent;
       if (!customEvent.detail.intentional) {
-        console.log('🔄 Unintentional disconnection detected, monitoring for recovery');
+        console.log(
+          '🔄 Unintentional disconnection detected, monitoring for recovery'
+        );
       }
     });
   }
@@ -591,7 +624,9 @@ export class ServiceIntegration extends EventTarget {
       this.performHealthCheck();
     }, this.config.healthCheckInterval);
 
-    console.log(`🩺 Health monitoring started (${this.config.healthCheckInterval}ms interval)`);
+    console.log(
+      `🩺 Health monitoring started (${this.config.healthCheckInterval}ms interval)`
+    );
   }
 
   /**
@@ -599,16 +634,18 @@ export class ServiceIntegration extends EventTarget {
    */
   private performHealthCheck(): void {
     this.metrics.lastHealthCheck = Date.now();
-    
+
     const health = this.getHealthStatus();
-    
+
     if (!health.overall.healthy) {
       console.warn('⚠️ Health check detected issues:', health.overall.issues);
-      
-      this.dispatchEvent(new CustomEvent<IntegrationEventDetail>('healthIssue', {
-        detail: { healthStatus: health, timestamp: Date.now() }
-      }));
-      
+
+      this.dispatchEvent(
+        new CustomEvent<IntegrationEventDetail>('healthIssue', {
+          detail: { healthStatus: health, timestamp: Date.now() },
+        })
+      );
+
       // Auto-trigger recovery if enabled
       if (this.config.autoRecovery) {
         this.triggerRecovery();
@@ -628,11 +665,17 @@ export class ServiceIntegration extends EventTarget {
       this.errorHistory.shift();
     }
 
-    console.error(`🚨 Service Error [${error.severity}] ${error.type}:`, error.message, error.context);
+    console.error(
+      `🚨 Service Error [${error.severity}] ${error.type}:`,
+      error.message,
+      error.context
+    );
 
-    this.dispatchEvent(new CustomEvent<IntegrationEventDetail>('error', {
-      detail: { error, timestamp: Date.now() }
-    }));
+    this.dispatchEvent(
+      new CustomEvent<IntegrationEventDetail>('error', {
+        detail: { error, timestamp: Date.now() },
+      })
+    );
 
     // Check if we should trigger automatic recovery
     if (this.config.autoRecovery && this.shouldTriggerAutoRecovery(error)) {
@@ -659,7 +702,7 @@ export class ServiceIntegration extends EventTarget {
       message,
       source,
       timestamp: Date.now(),
-      context
+      context,
     };
   }
 
@@ -675,17 +718,21 @@ export class ServiceIntegration extends EventTarget {
    */
   private checkErrorThreshold(): void {
     const recentErrors = this.getRecentErrors(this.config.errorWindowMs);
-    
+
     if (recentErrors.length >= this.config.errorThreshold) {
-      console.warn(`⚠️ Error threshold exceeded: ${recentErrors.length} errors in ${this.config.errorWindowMs}ms`);
-      
-      this.dispatchEvent(new CustomEvent<IntegrationEventDetail>('errorThresholdExceeded', {
-        detail: { 
-          errorCount: recentErrors.length,
-          windowMs: this.config.errorWindowMs,
-          timestamp: Date.now() 
-        }
-      }));
+      console.warn(
+        `⚠️ Error threshold exceeded: ${recentErrors.length} errors in ${this.config.errorWindowMs}ms`
+      );
+
+      this.dispatchEvent(
+        new CustomEvent<IntegrationEventDetail>('errorThresholdExceeded', {
+          detail: {
+            errorCount: recentErrors.length,
+            windowMs: this.config.errorWindowMs,
+            timestamp: Date.now(),
+          },
+        })
+      );
     }
   }
 
@@ -694,13 +741,17 @@ export class ServiceIntegration extends EventTarget {
    */
   private getRecentErrors(windowMs: number): ServiceError[] {
     const cutoff = Date.now() - windowMs;
-    return this.errorHistory.filter(error => error.timestamp >= cutoff);
+    return this.errorHistory.filter((error) => error.timestamp >= cutoff);
   }
 
   /**
    * Calculate overall system health
    */
-  private calculateOverallHealth(networkStatus: any, gameState: any, recoveryStatus: any): {
+  private calculateOverallHealth(
+    networkStatus: any,
+    gameState: any,
+    recoveryStatus: any
+  ): {
     healthy: boolean;
     issues: string[];
   } {
@@ -724,7 +775,7 @@ export class ServiceIntegration extends EventTarget {
 
     return {
       healthy: issues.length === 0,
-      issues
+      issues,
     };
   }
 
@@ -738,7 +789,7 @@ export class ServiceIntegration extends EventTarget {
       errorCount: this.errorHistory.length,
       lastError: this.errorHistory[this.errorHistory.length - 1] || null,
       healthCheckEnabled: this.healthCheckInterval !== null,
-      autoRecoveryEnabled: this.config.autoRecovery
+      autoRecoveryEnabled: this.config.autoRecovery,
     };
   }
 

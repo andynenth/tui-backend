@@ -62,26 +62,26 @@ export const AppProvider = ({ children }) => {
         case 'start':
           setCurrentRoomId(null);
           break;
-          
+
         case 'lobby':
           if (!playerName) {
             throw new Error('Player name required for lobby');
           }
           break;
-          
+
         case 'room':
           if (!playerName || !options.roomId) {
             throw new Error('Player name and room ID required for room');
           }
           setCurrentRoomId(options.roomId);
           break;
-          
+
         case 'game':
           if (!playerName || !currentRoomId) {
             throw new Error('Player name and room ID required for game');
           }
           break;
-          
+
         default:
           throw new Error(`Unknown scene: ${sceneName}`);
       }
@@ -171,12 +171,8 @@ export const AppProvider = ({ children }) => {
 
     // Utilities
     clearError,
-    canNavigateToScene
+    canNavigateToScene,
   };
 
-  return (
-    <AppContext.Provider value={value}>
-      {children}
-    </AppContext.Provider>
-  );
+  return <AppContext.Provider value={value}>{children}</AppContext.Provider>;
 };

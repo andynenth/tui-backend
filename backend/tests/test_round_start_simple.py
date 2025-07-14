@@ -26,17 +26,17 @@ class TestRoundStartSimple:
         game.round_number = 3
         game.current_player = "Player2"
         game.starter_reason = "won_last_turn"
-        
+
         # Create state machine
         sm = GameStateMachine(game)
         sm.current_phase = GamePhase.ROUND_START
-        
+
         # Create round start state
         round_start_state = RoundStartState(sm)
-        
+
         # Setup phase
         await round_start_state._setup_phase()
-        
+
         # Check phase data
         assert round_start_state.phase_data["round_number"] == 3
         assert round_start_state.phase_data["starter"] == "Player2"
@@ -49,23 +49,26 @@ class TestRoundStartSimple:
         players = [Player(f"Player{i}") for i in range(1, 5)]
         game = Game(players)
         sm = GameStateMachine(game)
-        
+
         round_start_state = RoundStartState(sm)
-        
+
         # Initially no transition
         assert await round_start_state.check_transition_conditions() is None
-        
+
         # Set start time
         round_start_state.start_time = time.time()
-        
+
         # Still no transition immediately
         assert await round_start_state.check_transition_conditions() is None
-        
+
         # Mock time passed
         round_start_state.start_time = time.time() - 6  # 6 seconds ago
-        
+
         # Should transition now
-        assert await round_start_state.check_transition_conditions() == GamePhase.DECLARATION
+        assert (
+            await round_start_state.check_transition_conditions()
+            == GamePhase.DECLARATION
+        )
 
     @pytest.mark.asyncio
     async def test_starter_determination_general_red(self):
@@ -73,18 +76,19 @@ class TestRoundStartSimple:
         players = [Player(f"Player{i}") for i in range(1, 5)]
         game = Game(players)
         game.round_number = 1
-        
+
         # Give Player3 the GENERAL_RED
         players[2].hand = [Piece("GENERAL_RED"), Piece("HORSE_BLACK")]
-        
+
         # Create state machine and preparation state
         sm = GameStateMachine(game)
         from engine.state_machine.states.preparation_state import PreparationState
+
         prep_state = PreparationState(sm)
-        
+
         # Determine starter
         starter = prep_state._determine_starter()
-        
+
         assert starter == "Player3"
         assert game.starter_reason == "has_general_red"
 
@@ -95,13 +99,14 @@ class TestRoundStartSimple:
         game = Game(players)
         game.round_number = 2
         game.last_turn_winner = "Player4"
-        
+
         sm = GameStateMachine(game)
         from engine.state_machine.states.preparation_state import PreparationState
+
         prep_state = PreparationState(sm)
-        
+
         starter = prep_state._determine_starter()
-        
+
         assert starter == "Player4"
         assert game.starter_reason == "won_last_turn"
 
@@ -110,14 +115,15 @@ class TestRoundStartSimple:
         """Test starter determination after redeal"""
         players = [Player(f"Player{i}") for i in range(1, 5)]
         game = Game(players)
-        
+
         sm = GameStateMachine(game)
         from engine.state_machine.states.preparation_state import PreparationState
+
         prep_state = PreparationState(sm)
         prep_state.redeal_requester = "Player1"
-        
+
         starter = prep_state._determine_starter()
-        
+
         assert starter == "Player1"
         assert game.starter_reason == "accepted_redeal"
 
@@ -129,20 +135,20 @@ class TestRoundStartSimple:
         game.round_number = 2
         game.current_player = "Player3"
         game.starter_reason = "has_general_red"
-        
+
         sm = GameStateMachine(game)
         sm.current_phase = GamePhase.ROUND_START
-        
+
         # Mock the update_phase_data method
         round_start_state = RoundStartState(sm)
         round_start_state.update_phase_data = AsyncMock()
-        
+
         await round_start_state._setup_phase()
-        
+
         # Verify update_phase_data was called with correct data
         round_start_state.update_phase_data.assert_called_once()
         call_args = round_start_state.update_phase_data.call_args[0]
-        
+
         assert call_args[0]["round_number"] == 2
         assert call_args[0]["starter"] == "Player3"
         assert call_args[0]["starter_reason"] == "has_general_red"
@@ -153,7 +159,7 @@ class TestRoundStartSimple:
         players = [Player(f"Player{i}") for i in range(1, 5)]
         game = Game(players)
         sm = GameStateMachine(game)
-        
+
         # Check transition map
         assert GamePhase.ROUND_START in sm._valid_transitions[GamePhase.PREPARATION]
         assert GamePhase.DECLARATION not in sm._valid_transitions[GamePhase.PREPARATION]
@@ -163,7 +169,7 @@ class TestRoundStartSimple:
         players = [Player(f"Player{i}") for i in range(1, 5)]
         game = Game(players)
         sm = GameStateMachine(game)
-        
+
         # Check transition map
         assert GamePhase.DECLARATION in sm._valid_transitions[GamePhase.ROUND_START]
         assert GamePhase.TURN not in sm._valid_transitions[GamePhase.ROUND_START]

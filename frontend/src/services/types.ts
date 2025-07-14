@@ -1,6 +1,6 @@
 /**
  * 🔷 **Service Type Definitions**
- * 
+ *
  * TypeScript interfaces for NetworkService and GameService
  * Provides type safety for complex game state management
  */
@@ -98,31 +98,39 @@ export interface GameState {
   isConnected: boolean;
   roomId: string | null;
   playerName: string | null;
-  
+
   // Game state
-  phase: 'waiting' | 'preparation' | 'round_start' | 'declaration' | 'turn' | 'turn_results' | 'scoring' | 'game_over';
+  phase:
+    | 'waiting'
+    | 'preparation'
+    | 'round_start'
+    | 'declaration'
+    | 'turn'
+    | 'turn_results'
+    | 'scoring'
+    | 'game_over';
   currentRound: number;
   players: Player[];
   roundStarter: string | null;
-  
+
   // Round start phase state
   currentStarter?: string;
   starterReason?: string;
-  
+
   // Preparation phase state
   weakHands: string[];
   currentWeakPlayer: string | null;
   redealRequests: Record<string, boolean>;
   redealMultiplier: number;
   dealingCards?: boolean;
-  
+
   // Declaration phase state
   myHand: GamePiece[];
   declarations: Record<string, number>;
   declarationOrder: string[];
   currentDeclarer: string | null;
   declarationTotal: number;
-  
+
   // Turn phase state
   currentTurnStarter: string | null;
   turnOrder: string[];
@@ -130,13 +138,13 @@ export interface GameState {
   currentTurnPlays: TurnPlay[];
   requiredPieceCount: number | null;
   currentTurnNumber: number;
-  pileCounts?: Record<string, number>;  // Accumulated piles won by each player
-  
+  pileCounts?: Record<string, number>; // Accumulated piles won by each player
+
   // Scoring phase state
   roundScores: Record<string, number>;
   totalScores: Record<string, number>;
   winners: string[];
-  
+
   // Game over phase state
   final_rankings?: Array<{
     name: string;
@@ -149,12 +157,12 @@ export interface GameState {
     start_time?: number;
     end_time?: number;
   };
-  
+
   // UI state
   isMyTurn: boolean;
   allowedActions: string[];
   validOptions: number[] | number[][];
-  
+
   // Calculated UI state (computed from backend data)
   // Preparation phase
   isMyDecision?: boolean;
@@ -166,21 +174,21 @@ export interface GameState {
   weakPlayersAwaiting?: string[];
   decisionsReceived?: number;
   decisionsNeeded?: number;
-  
+
   // Declaration phase
   currentTotal?: number;
   declarationProgress?: { declared: number; total: number };
   isLastPlayer?: boolean;
   estimatedPiles?: number;
   handStrength?: number;
-  
+
   // Turn phase
   canPlayAnyCount?: boolean;
   selectedPlayValue?: number;
-  
+
   // Scoring phase
   playersWithScores?: any[];
-  
+
   // Turn results phase
   turnWinner?: string | null;
   winningPlay?: {
@@ -194,7 +202,7 @@ export interface GameState {
   nextStarter?: string | null;
   allHandsEmpty?: boolean;
   willContinue?: boolean;
-  
+
   // Meta state
   lastEventSequence: number;
   error: string | null;
@@ -208,7 +216,7 @@ export interface PhaseData {
   my_hand?: GamePiece[];
   round_starter?: string;
   redeal_multiplier?: number;
-  
+
   // Preparation phase
   weak_hands?: string[];
   current_weak_player?: string;
@@ -218,27 +226,27 @@ export interface PhaseData {
   decisions_received?: number;
   decisions_needed?: number;
   dealing_cards?: boolean;
-  
+
   // Round start phase
   current_starter?: string;
   starter_reason?: string;
-  
+
   // Declaration phase
   declaration_order?: string[];
   current_declarer?: string;
   declarations?: Record<string, number>;
   declaration_total?: number;
-  
+
   // Turn phase
   turn_order?: string[];
   current_turn_starter?: string;
   current_player?: string;
   current_turn_plays?: TurnPlay[];
   current_turn_number?: number;
-  pile_counts?: Record<string, number>;  // Accumulated piles won by each player
+  pile_counts?: Record<string, number>; // Accumulated piles won by each player
   required_piece_count?: number | null;
   turn_plays?: Record<string, any>;
-  
+
   // Scoring phase
   round_scores?: Record<string, number | any>;
   total_scores?: Record<string, number | any>;
@@ -246,7 +254,7 @@ export interface PhaseData {
   winners?: string[];
   game_complete?: boolean;
   scoring_players_data?: any[];
-  
+
   // Game over phase
   final_rankings?: Array<{
     name: string;
@@ -276,7 +284,7 @@ export interface StateChangeEvent {
   timestamp: number;
 }
 
-export type GameEventType = 
+export type GameEventType =
   | 'phase_change'
   | 'weak_hands_found'
   | 'redeal_decision_needed'
@@ -289,7 +297,7 @@ export type GameEventType =
   | 'round_complete'
   | 'game_ended';
 
-export type GameAction = 
+export type GameAction =
   | 'acceptRedeal'
   | 'declineRedeal'
   | 'makeDeclaration'

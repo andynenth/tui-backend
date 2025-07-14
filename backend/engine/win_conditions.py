@@ -2,14 +2,17 @@
 
 from enum import Enum
 
+
 class WinConditionType(Enum):
     FIRST_TO_REACH_50 = "first_to_50"
     AFTER_20_ROUNDS = "after_20_rounds"
-    EXACTLY_50_POINTS = "exactly_50_points"              # Only a score of exactly 50 wins
+    EXACTLY_50_POINTS = "exactly_50_points"  # Only a score of exactly 50 wins
+
 
 # -----------------------------------------------
 # Check if the game should end
 # -----------------------------------------------
+
 
 def is_game_over(game):
     condition = game.win_condition_type
@@ -25,9 +28,11 @@ def is_game_over(game):
 
     return False
 
+
 # -----------------------------------------------
 # Determine the winner(s) based on win condition
 # -----------------------------------------------
+
 
 def get_winners(game):
     condition = game.win_condition_type

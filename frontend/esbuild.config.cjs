@@ -17,41 +17,45 @@ const cssPlugin = {
     // Handle all CSS files
     build.onLoad({ filter: /\.css$/ }, async (args) => {
       const css = await fs.promises.readFile(args.path, 'utf8');
-      
+
       // Process CSS with PostCSS and Tailwind
       const result = await postcss([
-        tailwindcss,  // Pass the imported module directly, not as a function call
-        autoprefixer
+        tailwindcss, // Pass the imported module directly, not as a function call
+        autoprefixer,
       ]).process(css, { from: args.path });
-      
+
       return {
         contents: result.css,
-        loader: 'css'
+        loader: 'css',
       };
     });
-  }
+  },
 };
 
-esbuild.context({
-  entryPoints: [entry],
-  bundle: true,
-  outdir: '../backend/static',
-  entryNames: 'bundle',
-  loader: { 
-    '.js': 'jsx',
-    '.jsx': 'jsx',
-    '.ts': 'ts',
-    '.tsx': 'tsx',
-    '.css': 'css'
-  },
-  jsx: 'automatic',
-  minify: true,
-  sourcemap: true,
-  plugins: [
-    cssPlugin
-  ],
-}).then(ctx => {
-  return ctx.watch();
-}).then(() => {
-  console.log(`👀 Watching for changes to ${entry}, output to ../backend/static/`);
-}).catch(() => process.exit(1));
+esbuild
+  .context({
+    entryPoints: [entry],
+    bundle: true,
+    outdir: '../backend/static',
+    entryNames: 'bundle',
+    loader: {
+      '.js': 'jsx',
+      '.jsx': 'jsx',
+      '.ts': 'ts',
+      '.tsx': 'tsx',
+      '.css': 'css',
+    },
+    jsx: 'automatic',
+    minify: true,
+    sourcemap: true,
+    plugins: [cssPlugin],
+  })
+  .then((ctx) => {
+    return ctx.watch();
+  })
+  .then(() => {
+    console.log(
+      `👀 Watching for changes to ${entry}, output to ../backend/static/`
+    );
+  })
+  .catch(() => process.exit(1));

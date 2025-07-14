@@ -20,8 +20,13 @@
   position: absolute;
   top: 20px;
   left: 20px;
-  background: var(--gradient-white),
-              radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.8) 0%, transparent 60%);
+  background:
+    var(--gradient-white),
+    radial-gradient(
+      circle at 30% 30%,
+      rgba(255, 255, 255, 0.8) 0%,
+      transparent 60%
+    );
   padding: 8px 16px;
   border-radius: 16px;
   border: 1px solid rgba(173, 181, 189, 0.3);
@@ -45,15 +50,21 @@
   justify-content: center;
   font-size: 10px;
   font-weight: 700;
-  color: #F57F17;
+  color: #f57f17;
 }
 
 /* Lobby Header */
 .lp-lobbyHeader {
   text-align: center;
   padding: 60px 24px 20px;
-  background: linear-gradient(180deg, rgba(248, 249, 250, 0.8) 0%, transparent 100%),
-              linear-gradient(90deg, transparent 0%, rgba(173, 181, 189, 0.1) 50%, transparent 100%);
+  background:
+    linear-gradient(180deg, rgba(248, 249, 250, 0.8) 0%, transparent 100%),
+    linear-gradient(
+      90deg,
+      transparent 0%,
+      rgba(173, 181, 189, 0.1) 50%,
+      transparent 100%
+    );
   border-bottom: 1px solid rgba(173, 181, 189, 0.2);
   position: relative;
 }
@@ -66,7 +77,12 @@
   transform: translateX(-50%);
   width: 40px;
   height: 2px;
-  background: linear-gradient(90deg, transparent, var(--color-gray-500), transparent);
+  background: linear-gradient(
+    90deg,
+    transparent,
+    var(--color-gray-500),
+    transparent
+  );
 }
 
 .lp-lobbyTitle {
@@ -115,8 +131,13 @@
 }
 
 .lp-actionButton.primary {
-  background: var(--gradient-success),
-              radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.2) 0%, transparent 60%);
+  background:
+    var(--gradient-success),
+    radial-gradient(
+      circle at 30% 30%,
+      rgba(255, 255, 255, 0.2) 0%,
+      transparent 60%
+    );
   color: white;
   border: 1px solid rgba(40, 167, 69, 0.4);
   box-shadow: 0 2px 4px rgba(40, 167, 69, 0.2);
@@ -128,8 +149,13 @@
 }
 
 .lp-actionButton.secondary {
-  background: var(--gradient-white),
-              radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.8) 0%, transparent 60%);
+  background:
+    var(--gradient-white),
+    radial-gradient(
+      circle at 30% 30%,
+      rgba(255, 255, 255, 0.8) 0%,
+      transparent 60%
+    );
   color: var(--color-gray-600);
   border: 1px solid rgba(173, 181, 189, 0.3);
   box-shadow: var(--shadow-sm);
@@ -209,8 +235,13 @@
 
 /* Room Cards */
 .lp-roomCard {
-  background: var(--gradient-white),
-              radial-gradient(circle at 15% 50%, rgba(255, 255, 255, 0.8) 0%, transparent 50%);
+  background:
+    var(--gradient-white),
+    radial-gradient(
+      circle at 15% 50%,
+      rgba(255, 255, 255, 0.8) 0%,
+      transparent 50%
+    );
   border: 1px solid rgba(173, 181, 189, 0.15);
   border-radius: 10px;
   padding: 12px;
@@ -223,14 +254,18 @@
 
 .lp-roomCard:hover {
   transform: translateY(-2px);
-  box-shadow: 
+  box-shadow:
     0 8px 24px rgba(0, 0, 0, 0.12),
     0 0 0 1px rgba(255, 255, 255, 0.9),
     inset 0 1px 0 rgba(255, 255, 255, 1);
   border-color: rgba(13, 110, 253, 0.3);
-  background: 
-    linear-gradient(145deg, #FFFBF0 0%, #FFF8E1 100%),
-    radial-gradient(circle at 15% 50%, rgba(255, 193, 7, 0.05) 0%, transparent 50%);
+  background:
+    linear-gradient(145deg, #fffbf0 0%, #fff8e1 100%),
+    radial-gradient(
+      circle at 15% 50%,
+      rgba(255, 193, 7, 0.05) 0%,
+      transparent 50%
+    );
 }
 
 .lp-roomCard.full {
@@ -242,9 +277,13 @@
   transform: none;
   border-color: rgba(173, 181, 189, 0.15);
   box-shadow: var(--shadow-sm), var(--shadow-inset-white);
-  background: 
-    linear-gradient(145deg, #FFFFFF 0%, #F8F9FA 100%),
-    radial-gradient(circle at 15% 50%, rgba(255, 255, 255, 0.8) 0%, transparent 50%);
+  background:
+    linear-gradient(145deg, #ffffff 0%, #f8f9fa 100%),
+    radial-gradient(
+      circle at 15% 50%,
+      rgba(255, 255, 255, 0.8) 0%,
+      transparent 50%
+    );
 }
 
 .lp-roomCardHeader {
@@ -348,19 +387,23 @@
 .lp-iconCircle {
   width: 80px;
   height: 80px;
-  background: 
-    linear-gradient(145deg, #F8F9FA 0%, #E9ECEF 100%),
-    radial-gradient(circle at 30% 30%, rgba(173, 181, 189, 0.2) 0%, transparent 60%);
+  background:
+    linear-gradient(145deg, #f8f9fa 0%, #e9ecef 100%),
+    radial-gradient(
+      circle at 30% 30%,
+      rgba(173, 181, 189, 0.2) 0%,
+      transparent 60%
+    );
   border-radius: 50%;
   border: 3px solid rgba(173, 181, 189, 0.3);
-  box-shadow: 
+  box-shadow:
     0 8px 24px rgba(173, 181, 189, 0.15),
     inset 0 1px 0 rgba(255, 255, 255, 1);
   display: flex;
   align-items: center;
   justify-content: center;
   font-size: 36px;
-  color: #6C757D;
+  color: #6c757d;
   font-family: 'SimSun', '宋体', serif;
   opacity: 0.5;
 }
@@ -374,8 +417,17 @@
 /* Footer Actions */
 .lp-footerActions {
   padding: 16px 20px;
-  background: linear-gradient(180deg, rgba(248, 249, 250, 0.6) 0%, rgba(233, 236, 239, 0.8) 100%),
-              radial-gradient(ellipse 100% 60% at 50% 0%, rgba(173, 181, 189, 0.1) 0%, transparent 100%);
+  background:
+    linear-gradient(
+      180deg,
+      rgba(248, 249, 250, 0.6) 0%,
+      rgba(233, 236, 239, 0.8) 100%
+    ),
+    radial-gradient(
+      ellipse 100% 60% at 50% 0%,
+      rgba(173, 181, 189, 0.1) 0%,
+      transparent 100%
+    );
   border-top: 1px solid rgba(173, 181, 189, 0.2);
   text-align: center;
 }
@@ -497,8 +549,12 @@
 
 /* Animation for refresh icon */
 @keyframes fadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
 }
 
 /* Loading Overlay */

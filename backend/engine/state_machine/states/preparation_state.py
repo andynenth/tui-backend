@@ -124,9 +124,9 @@ class PreparationState(GameState):
 
         # 3. Force weak hands (testing redeal logic)
         # game._deal_weak_hand(weak_player_indices=[0], max_weak_points=9, limit=5)
-        
+
         # 4.
-        game._deal_double_straight(0,'RED')
+        game._deal_double_straight(0, "RED")
 
         # Examples:
         # game._deal_guaranteed_no_redeal()                              # Random RED_GENERAL assignment
@@ -193,15 +193,19 @@ class PreparationState(GameState):
                 # Starter already set (e.g., by scoring state for next round)
                 starter = game.current_player
                 game.round_starter = starter  # Ensure both are set
-                
+
                 # Set starter_reason based on why they're the starter
-                if game.round_number > 1 and hasattr(game, "last_turn_winner") and game.last_turn_winner == starter:
-                    game.starter_reason = 'won_last_turn'
+                if (
+                    game.round_number > 1
+                    and hasattr(game, "last_turn_winner")
+                    and game.last_turn_winner == starter
+                ):
+                    game.starter_reason = "won_last_turn"
                 else:
                     # In case we don't have a specific reason, check existing reason or set default
-                    if not hasattr(game, 'starter_reason'):
-                        game.starter_reason = 'default'
-                
+                    if not hasattr(game, "starter_reason"):
+                        game.starter_reason = "default"
+
                 self.logger.info(
                     f"✅ No weak hands - keeping existing starter: {starter} (reason: {game.starter_reason})"
                 )
@@ -364,7 +368,7 @@ class PreparationState(GameState):
             game.redeal_multiplier = old_multiplier + 1
             game.current_player = first_accepter
             game.round_starter = first_accepter
-            game.starter_reason = 'accepted_redeal'
+            game.starter_reason = "accepted_redeal"
 
             self.logger.info(f"♻️ Redeal accepted by {first_accepter} - new starter")
             self.logger.info(
@@ -519,7 +523,7 @@ class PreparationState(GameState):
         # Priority 1: Redeal requester (overrides all)
         if self.redeal_requester:
             self.logger.info(f"🎯 Starter: {self.redeal_requester} (requested redeal)")
-            game.starter_reason = 'accepted_redeal'
+            game.starter_reason = "accepted_redeal"
             return self.redeal_requester
 
         # Priority 2: Round 1 - player with GENERAL_RED
@@ -537,7 +541,7 @@ class PreparationState(GameState):
                                 self.logger.info(
                                     f"🎯 Starter: {player_name} (has GENERAL_RED)"
                                 )
-                                game.starter_reason = 'has_general_red'
+                                game.starter_reason = "has_general_red"
                                 return player_name
                     else:
                         pass
@@ -545,7 +549,7 @@ class PreparationState(GameState):
         # Priority 3: Previous round's last turn winner
         if hasattr(game, "last_turn_winner") and game.last_turn_winner:
             self.logger.info(f"🎯 Starter: {game.last_turn_winner} (won last turn)")
-            game.starter_reason = 'won_last_turn'
+            game.starter_reason = "won_last_turn"
             return game.last_turn_winner
 
         # Fallback: First player
@@ -558,7 +562,7 @@ class PreparationState(GameState):
             starter = "Player1"
 
         self.logger.info(f"🎯 Starter: {starter} (fallback - first player)")
-        game.starter_reason = 'default'
+        game.starter_reason = "default"
         return starter
 
     def _all_weak_decisions_received(self) -> bool:

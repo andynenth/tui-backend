@@ -29,12 +29,16 @@
   position: absolute;
   width: 90px;
   height: 90px;
-  background: 
-    linear-gradient(145deg, #FFFFFF 0%, #F8F9FA 100%),
-    radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.8) 0%, transparent 60%);
+  background:
+    linear-gradient(145deg, #ffffff 0%, #f8f9fa 100%),
+    radial-gradient(
+      circle at 30% 30%,
+      rgba(255, 255, 255, 0.8) 0%,
+      transparent 60%
+    );
   border-radius: 50%;
   border: 4px solid rgba(173, 181, 189, 0.8);
-  box-shadow: 
+  box-shadow:
     0 6px 16px rgba(0, 0, 0, 0.12),
     inset 0 1px 0 rgba(255, 255, 255, 1);
   top: 50%;
@@ -45,7 +49,7 @@
   justify-content: center;
   font-size: 32px;
   font-weight: bold;
-  color: #6C757D;
+  color: #6c757d;
   font-family: 'SimSun', '宋体', serif;
 }
 
@@ -70,13 +74,13 @@
 .dealing-message {
   font-size: 20px;
   font-weight: 600;
-  color: #343A40;
+  color: #343a40;
   margin-bottom: 8px;
 }
 
 .dealing-status {
   font-size: 14px;
-  color: #6C757D;
+  color: #6c757d;
 }
 
 /* Progress Bar */
@@ -96,8 +100,7 @@
 
 .progress-fill {
   height: 100%;
-  background: 
-    linear-gradient(90deg, #28A745 0%, #20C997 100%);
+  background: linear-gradient(90deg, #28a745 0%, #20c997 100%);
   border-radius: 4px;
   width: 0;
   animation: progress 3s ease-out forwards;
@@ -105,15 +108,23 @@
 }
 
 @keyframes progress {
-  0% { width: 0; }
-  100% { width: 100%; }
+  0% {
+    width: 0;
+  }
+  100% {
+    width: 100%;
+  }
 }
 
 /* Weak Hand Alert */
 .weak-hand-alert {
-  background: 
-    linear-gradient(145deg, #FFF8E1 0%, #FFFBF0 100%),
-    radial-gradient(circle at 30% 30%, rgba(255, 193, 7, 0.1) 0%, transparent 60%);
+  background:
+    linear-gradient(145deg, #fff8e1 0%, #fffbf0 100%),
+    radial-gradient(
+      circle at 30% 30%,
+      rgba(255, 193, 7, 0.1) 0%,
+      transparent 60%
+    );
   border: 1px solid rgba(255, 193, 7, 0.3);
   border-radius: 12px;
   padding: 16px;
@@ -142,7 +153,7 @@
 .alert-title {
   font-size: 16px;
   font-weight: 600;
-  color: #F57F17;
+  color: #f57f17;
   margin-bottom: 8px;
   display: flex;
   align-items: center;
@@ -151,13 +162,13 @@
 
 .alert-message {
   font-size: 14px;
-  color: #6C757D;
+  color: #6c757d;
   margin-bottom: 16px;
 }
 
 .multiplier-warning {
   margin-top: 8px;
-  color: #DC3545;
+  color: #dc3545;
   font-weight: 600;
 }
 
@@ -179,8 +190,7 @@
 }
 
 .alert-button.primary {
-  background: 
-    linear-gradient(135deg, #FFC107 0%, #FF9800 100%);
+  background: linear-gradient(135deg, #ffc107 0%, #ff9800 100%);
   color: #212529;
   border: 1px solid rgba(255, 193, 7, 0.4);
   box-shadow: 0 2px 4px rgba(255, 193, 7, 0.2);
@@ -192,16 +202,14 @@
 }
 
 .alert-button.secondary {
-  background: 
-    linear-gradient(145deg, #FFFFFF 0%, #F8F9FA 100%);
+  background: linear-gradient(145deg, #ffffff 0%, #f8f9fa 100%);
   color: #495057;
   border: 1px solid rgba(173, 181, 189, 0.3);
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.06);
 }
 
 .alert-button.secondary:hover {
-  background: 
-    linear-gradient(145deg, #F8F9FA 0%, #E9ECEF 100%);
+  background: linear-gradient(145deg, #f8f9fa 0%, #e9ecef 100%);
 }
 
 /* Waiting Indicator */
@@ -216,13 +224,13 @@
 
 .waiting-text {
   font-size: 14px;
-  color: #6C757D;
+  color: #6c757d;
   margin-bottom: 8px;
 }
 
 .waiting-progress {
   font-size: 12px;
-  color: #6C757D;
+  color: #6c757d;
 }
 
 /* Hand section styles now handled by PieceTray component */

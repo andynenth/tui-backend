@@ -12,9 +12,9 @@ describe('Button Component', () => {
   test('calls onClick when clicked', async () => {
     const user = userEvent.setup();
     const mockClick = jest.fn();
-    
+
     render(<Button onClick={mockClick}>Click me</Button>);
-    
+
     await user.click(screen.getByRole('button'));
     expect(mockClick).toHaveBeenCalledTimes(1);
   });
@@ -22,7 +22,7 @@ describe('Button Component', () => {
   test('applies variant styles correctly', () => {
     const { rerender } = render(<Button variant="primary">Primary</Button>);
     expect(screen.getByRole('button')).toHaveClass('bg-blue-600');
-    
+
     rerender(<Button variant="danger">Danger</Button>);
     expect(screen.getByRole('button')).toHaveClass('bg-red-600');
   });

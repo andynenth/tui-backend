@@ -8,6 +8,7 @@ from datetime import datetime
 
 class GameStateError(Exception):
     """Raised when game state becomes corrupted or invalid"""
+
     pass
 
 

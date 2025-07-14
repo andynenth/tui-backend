@@ -1,8 +1,8 @@
 /**
  * 🎮 **GamePage Component** - Updated Game Page with New Architecture
- * 
+ *
  * Phase 2, Task 2.3: Smart Container Components
- * 
+ *
  * Features:
  * ✅ Uses new GameContainer for game state management
  * ✅ Service integration for robust connection handling
@@ -27,12 +27,12 @@ const GamePage = () => {
   const navigate = useNavigate();
   const { roomId } = useParams();
   const app = useApp();
-  
+
   // New service-based state management
   const gameState = useGameState();
   const gameActions = useGameActions();
   const connectionStatus = useConnectionStatus(roomId);
-  
+
   const [isInitialized, setIsInitialized] = useState(false);
 
   // Initialize services and connect to room
@@ -41,13 +41,13 @@ const GamePage = () => {
       try {
         // Get player name from AppContext
         const playerName = app.playerName;
-        
+
         if (!playerName) {
           console.error('No player name found, redirecting to start page');
           navigate('/');
           return;
         }
-        
+
         if (roomId) {
           await serviceIntegration.connectToRoom(roomId, playerName);
           setIsInitialized(true);
@@ -66,7 +66,7 @@ const GamePage = () => {
     // Cleanup on unmount
     return () => {
       if (roomId) {
-        serviceIntegration.disconnectFromRoom().catch(err => {
+        serviceIntegration.disconnectFromRoom().catch((err) => {
           console.error('Error disconnecting on unmount:', err);
         });
       }
@@ -96,7 +96,7 @@ const GamePage = () => {
     <ErrorBoundary>
       <div className="game-page-wrapper">
         {/* GameContainer now handles all UI including layout */}
-        <GameContainer 
+        <GameContainer
           roomId={roomId}
           onNavigateToLobby={() => navigate('/lobby')}
         />

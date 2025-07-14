@@ -33,12 +33,24 @@
   animation: confetti-fall 3s ease-out infinite;
 }
 
-.go-confetti.color-1 { background: #ff6b6b; }
-.go-confetti.color-2 { background: #4ecdc4; }
-.go-confetti.color-3 { background: #45b7d1; }
-.go-confetti.color-4 { background: #f9ca24; }
-.go-confetti.color-5 { background: #6c5ce7; }
-.go-confetti.color-6 { background: #a29bfe; }
+.go-confetti.color-1 {
+  background: #ff6b6b;
+}
+.go-confetti.color-2 {
+  background: #4ecdc4;
+}
+.go-confetti.color-3 {
+  background: #45b7d1;
+}
+.go-confetti.color-4 {
+  background: #f9ca24;
+}
+.go-confetti.color-5 {
+  background: #6c5ce7;
+}
+.go-confetti.color-6 {
+  background: #a29bfe;
+}
 
 .go-confetti.size-small {
   width: 8px;
@@ -73,8 +85,13 @@
 }
 
 @keyframes trophy-glow {
-  0%, 100% { transform: scale(1) rotate(0deg); }
-  50% { transform: scale(1.1) rotate(5deg); }
+  0%,
+  100% {
+    transform: scale(1) rotate(0deg);
+  }
+  50% {
+    transform: scale(1.1) rotate(5deg);
+  }
 }
 
 /* Winner announcement */
@@ -89,7 +106,7 @@
   font-size: 28px;
   font-weight: 700;
   color: #2d3748;
-  text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
   margin-bottom: 6px;
 }
 
@@ -127,15 +144,23 @@
   display: flex;
   align-items: center;
   gap: 12px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
   opacity: 0;
   animation: slideIn 0.5s ease-out forwards;
 }
 
-.go-rank-item:nth-child(1) { animation-delay: 0.6s; }
-.go-rank-item:nth-child(2) { animation-delay: 0.8s; }
-.go-rank-item:nth-child(3) { animation-delay: 1.0s; }
-.go-rank-item:nth-child(4) { animation-delay: 1.2s; }
+.go-rank-item:nth-child(1) {
+  animation-delay: 0.6s;
+}
+.go-rank-item:nth-child(2) {
+  animation-delay: 0.8s;
+}
+.go-rank-item:nth-child(3) {
+  animation-delay: 1s;
+}
+.go-rank-item:nth-child(4) {
+  animation-delay: 1.2s;
+}
 
 .go-rank-position {
   font-size: 18px;
@@ -150,8 +175,13 @@
 }
 
 @keyframes medal-shine {
-  0%, 100% { transform: scale(1) rotate(0deg); }
-  50% { transform: scale(1.2) rotate(10deg); }
+  0%,
+  100% {
+    transform: scale(1) rotate(0deg);
+  }
+  50% {
+    transform: scale(1.2) rotate(10deg);
+  }
 }
 
 .go-player-info {
@@ -182,12 +212,12 @@
 /* Game stats */
 .go-stats {
   margin-top: 20px;
-  background: rgba(255,255,255,0.8);
+  background: rgba(255, 255, 255, 0.8);
   border-radius: 12px;
   padding: 16px;
   text-align: center;
   max-width: 320px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
 }
 
 .go-stats-title {
@@ -292,15 +322,15 @@
   .go-trophy {
     font-size: 48px;
   }
-  
+
   .go-winner-name {
     font-size: 24px;
   }
-  
+
   .go-rank-item {
     padding: 10px;
   }
-  
+
   .go-stats {
     margin-top: 16px;
     padding: 12px;

@@ -26,7 +26,9 @@ class GameStateMachine:
 
     def __init__(self, game, broadcast_callback=None):
         self.game = game
-        logger.info(f"🔍 ROUND_DEBUG: GameStateMachine created with game: {game}, round_number: {getattr(game, 'round_number', 'NO_ATTR') if game else 'NO_GAME'}")
+        logger.info(
+            f"🔍 ROUND_DEBUG: GameStateMachine created with game: {game}, round_number: {getattr(game, 'round_number', 'NO_ATTR') if game else 'NO_GAME'}"
+        )
         # Initialize room_id as None - will be set by Room class before starting
         self.room_id = None
         # Pass room_id to ActionQueue for event storage
@@ -289,7 +291,7 @@ class GameStateMachine:
                     {
                         "phase": new_phase.value,
                         "phase_data": self.get_phase_data(),
-                    }
+                    },
                 )
             elif new_phase == GamePhase.DECLARATION:
                 # Now trigger bot declarations
@@ -393,7 +395,7 @@ class GameStateMachine:
                             "reason": reason,
                         },
                     )
-                    
+
             elif self.current_phase == GamePhase.TURN:
                 current_player = phase_data.get("current_player")
                 if current_player:
@@ -572,13 +574,14 @@ class GameStateMachine:
         """Force end the game due to critical error"""
         logger.critical(f"Force ending game: {reason}")
         self.is_running = False
-        
+
         if self._process_task and not self._process_task.done():
             self._process_task.cancel()
-        
+
         # Notify room manager if available
-        if hasattr(self, 'room_id') and self.room_id:
+        if hasattr(self, "room_id") and self.room_id:
             from ...room_manager import room_manager
+
             room = room_manager.get_room(self.room_id)
             if room:
                 await room.handle_critical_error(reason)

@@ -1,6 +1,6 @@
 /**
  * 🔧 **Services Module** - Foundation Services (TypeScript)
- * 
+ *
  * Phase 1: Foundation Services for robust architecture
  * Provides core services for network communication and state management
  */
@@ -45,7 +45,10 @@ export function cleanupServices(): void {
 /**
  * Connect to a game room with full integration
  */
-export async function connectToRoom(roomId: string, playerName: string): Promise<void> {
+export async function connectToRoom(
+  roomId: string,
+  playerName: string
+): Promise<void> {
   await serviceIntegration.connectToRoom(roomId, playerName);
 }
 

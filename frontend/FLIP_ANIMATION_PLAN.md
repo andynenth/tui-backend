@@ -1,11 +1,13 @@
 # 🧾 Turn Phase Animation Enhancement Implementation Plan
 
 ## 📋 Executive Summary
+
 This plan outlines the implementation of selective piece reveal animations based on the starter's declared play type. Currently, all pieces are revealed after all players submit their plays. The enhancement will modify this behavior to only reveal pieces that match the starter's play type.
 
 ## 🔍 Current State Analysis
 
 ### Data Flow
+
 1. **Backend** sends play data including:
    - `playType` - The starter's declared type (e.g., "PAIR", "STRAIGHT", "THREE_OF_A_KIND")
    - `playerPieces` - Each player's played pieces
@@ -17,11 +19,13 @@ This plan outlines the implementation of selective piece reveal animations based
    - Both phases receive the starter's `playType`
 
 ### Current Animation Behavior
+
 - **Turn UI**: All pieces flip after 800ms when last player submits
 - **Turn Results**: No flip animation - pieces shown immediately
 - **Flip Trigger**: Based on player count, not play validity
 
 ### Validation Logic
+
 - Backend only validates piece count matches starter's play
 - Frontend shows warnings for mismatched types but allows play
 - No actual prevention of type mismatches
@@ -29,6 +33,7 @@ This plan outlines the implementation of selective piece reveal animations based
 ## 🎯 Implementation Requirements
 
 ### 1. Play Type Matching Logic
+
 Create a function to determine if a play matches the starter's type:
 
 ```javascript
@@ -36,24 +41,25 @@ Create a function to determine if a play matches the starter's type:
 export function doesPlayMatchStarterType(playerPieces, starterPlayType) {
   // Get the play type of the player's pieces
   const playerPlayType = getPlayType(playerPieces);
-  
+
   // Special cases:
   // - SINGLE always matches (any single piece is valid)
   // - INVALID or UNKNOWN never match
   // - null/undefined never match
-  
+
   return playerPlayType === starterPlayType;
 }
 ```
 
 ### 2. Selective Reveal Logic
+
 Modify flip animation to only reveal matching pieces:
 
 ```javascript
 // In TurnContent.jsx
 const determineWhichPiecesToReveal = () => {
   const piecesToReveal = new Set();
-  
+
   Object.entries(playerPieces).forEach(([playerName, pieces]) => {
     // Always reveal starter's pieces
     if (playerName === lastWinner || playerName === currentTurnStarter) {
@@ -62,7 +68,7 @@ const determineWhichPiecesToReveal = () => {
       });
       return;
     }
-    
+
     // Check if player's play matches starter's type
     if (doesPlayMatchStarterType(pieces, playType)) {
       pieces.forEach((_, idx) => {
@@ -70,12 +76,13 @@ const determineWhichPiecesToReveal = () => {
       });
     }
   });
-  
+
   return piecesToReveal;
 };
 ```
 
 ### 3. Visual Design for Unrevealed Pieces
+
 Unrevealed pieces should remain face-down with enhanced visual feedback:
 
 ```css
@@ -100,17 +107,20 @@ Unrevealed pieces should remain face-down with enhanced visual feedback:
 ## 📝 Implementation Checklist
 
 ### Task 1: Add Flip Animation Keyframe ✅
+
 - [x] Review existing animations in `_animations.css`
 - [ ] Add new `pieceFlipSelective` keyframe with proper 3D rotation
 - [ ] Add staggered delay calculations for dramatic effect
 
 ### Task 2: Create Play Type Matching Utility
+
 - [ ] Create `utils/playTypeMatching.js`
 - [ ] Implement `doesPlayMatchStarterType()` function
 - [ ] Add unit tests for all play type combinations
 - [ ] Handle edge cases (null, undefined, INVALID types)
 
 ### Task 3: Enhance TurnContent.jsx
+
 - [ ] Modify flip detection logic to use selective reveal
 - [ ] Add `determineWhichPiecesToReveal()` function
 - [ ] Update flip animation trigger to use new logic
@@ -118,24 +128,28 @@ Unrevealed pieces should remain face-down with enhanced visual feedback:
 - [ ] Implement staggered animation delays
 
 ### Task 4: Update GamePiece Component
+
 - [ ] Add `invalidPlay` prop to GamePiece
 - [ ] Add CSS classes for invalid play state
 - [ ] Implement hover-to-reveal for unrevealed pieces
 - [ ] Add smooth transition animations
 
 ### Task 5: Add Flip Animation to TurnResultsContent
+
 - [ ] Add initial hidden state for all pieces
 - [ ] Implement same selective reveal logic as Turn UI
 - [ ] Add entrance animation with staggered delays
 - [ ] Ensure consistency with Turn UI behavior
 
 ### Task 6: CSS Enhancements
+
 - [ ] Add `.invalid-play` styling
 - [ ] Implement hover effects for unrevealed pieces
 - [ ] Add visual feedback for matching vs non-matching plays
 - [ ] Ensure mobile-friendly interactions
 
 ### Task 7: Testing & Polish
+
 - [ ] Test all play type combinations
 - [ ] Verify animation timing and smoothness
 - [ ] Test on different screen sizes
@@ -144,14 +158,17 @@ Unrevealed pieces should remain face-down with enhanced visual feedback:
 ## 🏗️ Affected Components & Files
 
 ### Components to Modify:
+
 1. `/frontend/src/components/game/content/TurnContent.jsx`
 2. `/frontend/src/components/game/content/TurnResultsContent.jsx`
 3. `/frontend/src/components/game/shared/GamePiece.jsx`
 
 ### New Files to Create:
+
 1. `/frontend/src/utils/playTypeMatching.js`
 
 ### Styles to Update:
+
 1. `/frontend/src/styles/components/game/_animations.css`
 2. `/frontend/src/styles/components/game/shared/game-piece.css`
 3. `/frontend/src/styles/components/game/content/turn-content.css`
@@ -160,6 +177,7 @@ Unrevealed pieces should remain face-down with enhanced visual feedback:
 ## 🔄 Animation Flow
 
 ### Turn UI Phase:
+
 1. All players submit their plays
 2. 800ms delay begins
 3. Determine which pieces match starter's type
@@ -168,6 +186,7 @@ Unrevealed pieces should remain face-down with enhanced visual feedback:
 6. Users can hover to peek at unrevealed pieces
 
 ### Turn Results Phase:
+
 1. Component mounts with all pieces hidden
 2. 200ms initial delay
 3. Replay the reveal animation from Turn UI

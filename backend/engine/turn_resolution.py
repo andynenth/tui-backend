@@ -6,11 +6,13 @@ from engine.player import Player
 from engine.piece import Piece
 from engine.rules import compare_plays
 
+
 @dataclass
 class TurnPlay:
     """
     A data structure representing one player's action during a single turn.
     """
+
     player: Player
     pieces: List[Piece]
     is_valid: bool
@@ -21,8 +23,9 @@ class TurnResult:
     """
     Encapsulates the result of a full turn, including all plays and the winner.
     """
-    plays: List[TurnPlay]                 # All plays in order
-    winner: Optional[TurnPlay] = None     # Winning play (or None if no valid plays)
+
+    plays: List[TurnPlay]  # All plays in order
+    winner: Optional[TurnPlay] = None  # Winning play (or None if no valid plays)
 
 
 def resolve_turn(turn_plays: List[TurnPlay]) -> TurnResult:

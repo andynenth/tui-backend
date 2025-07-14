@@ -3,15 +3,19 @@
 /* Base player avatar styles */
 .player-avatar {
   border-radius: 50%;
-  background: 
-    linear-gradient(145deg, #FFFFFF 0%, #F8F9FA 100%),
-    radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.8) 0%, transparent 60%);
+  background:
+    linear-gradient(145deg, #ffffff 0%, #f8f9fa 100%),
+    radial-gradient(
+      circle at 30% 30%,
+      rgba(255, 255, 255, 0.8) 0%,
+      transparent 60%
+    );
   display: flex;
   align-items: center;
   justify-content: center;
   font-weight: 700;
   border: 2px solid rgba(173, 181, 189, 0.3);
-  box-shadow: 
+  box-shadow:
     0 2px 4px rgba(0, 0, 0, 0.06),
     inset 0 1px 0 rgba(255, 255, 255, 1);
   color: #495057;
@@ -42,7 +46,7 @@
 /* Hover effect (for interactive contexts) */
 .player-avatar:hover {
   transform: translateY(-1px);
-  box-shadow: 
+  box-shadow:
     0 4px 8px rgba(0, 0, 0, 0.08),
     inset 0 1px 0 rgba(255, 255, 255, 1);
 }
@@ -50,15 +54,23 @@
 /* Active player state */
 .player-avatar.active {
   border-color: rgba(40, 167, 69, 0.5);
-  background: 
-    linear-gradient(145deg, #F8FFF9 0%, #E8F5E9 100%),
-    radial-gradient(circle at 30% 30%, rgba(40, 167, 69, 0.1) 0%, transparent 60%);
+  background:
+    linear-gradient(145deg, #f8fff9 0%, #e8f5e9 100%),
+    radial-gradient(
+      circle at 30% 30%,
+      rgba(40, 167, 69, 0.1) 0%,
+      transparent 60%
+    );
 }
 
 /* Winner state */
 .player-avatar.winner {
   border-color: rgba(255, 193, 7, 0.5);
-  background: 
-    linear-gradient(145deg, #FFFBF0 0%, #FFF8E1 100%),
-    radial-gradient(circle at 30% 30%, rgba(255, 193, 7, 0.1) 0%, transparent 60%);
+  background:
+    linear-gradient(145deg, #fffbf0 0%, #fff8e1 100%),
+    radial-gradient(
+      circle at 30% 30%,
+      rgba(255, 193, 7, 0.1) 0%,
+      transparent 60%
+    );
 }

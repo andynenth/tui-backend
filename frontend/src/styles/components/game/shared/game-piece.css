@@ -3,9 +3,13 @@
 /* Base piece styles */
 .game-piece {
   border-radius: 50%;
-  background: 
-    linear-gradient(145deg, #FFFFFF 0%, #F8F9FA 100%),
-    radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.8) 0%, transparent 60%);
+  background:
+    linear-gradient(145deg, #ffffff 0%, #f8f9fa 100%),
+    radial-gradient(
+      circle at 30% 30%,
+      rgba(255, 255, 255, 0.8) 0%,
+      transparent 60%
+    );
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -46,7 +50,7 @@
 /* Color variants (not applied to table variant - colors only show on front face) */
 .game-piece:not(.game-piece--table).piece-red,
 .game-piece:not(.game-piece--table).red {
-  color: #DC3545;
+  color: #dc3545;
   border-color: rgba(220, 53, 69, 0.4);
 }
 
@@ -85,10 +89,10 @@
 
 .game-piece--selectable.selected {
   transform: translateY(-6px);
-  box-shadow: 
+  box-shadow:
     0 8px 16px rgba(13, 110, 253, 0.3),
     0 0 0 3px rgba(13, 110, 253, 0.2);
-  border-color: #0D6EFD;
+  border-color: #0d6efd;
 }
 
 /* Table variant - no longer forces size */
@@ -111,9 +115,13 @@
   width: 100%;
   height: 100%;
   border-radius: 50%;
-  background: 
-    linear-gradient(145deg, #FFFFFF 0%, #F8F9FA 100%),
-    radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.8) 0%, transparent 60%);
+  background:
+    linear-gradient(145deg, #ffffff 0%, #f8f9fa 100%),
+    radial-gradient(
+      circle at 30% 30%,
+      rgba(255, 255, 255, 0.8) 0%,
+      transparent 60%
+    );
   display: flex;
   align-items: center;
   justify-content: center;
@@ -123,15 +131,19 @@
 }
 
 .game-piece__face--back {
-  background: 
-    linear-gradient(145deg, #FFFFFF 0%, #F8F9FA 100%),
-    radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.8) 0%, transparent 60%);
+  background:
+    linear-gradient(145deg, #ffffff 0%, #f8f9fa 100%),
+    radial-gradient(
+      circle at 30% 30%,
+      rgba(255, 255, 255, 0.8) 0%,
+      transparent 60%
+    );
   border: 1px solid rgba(173, 181, 189, 0.7);
 }
 
 .game-piece__face--back::after {
   content: '?';
-  color: #6C757D;
+  color: #6c757d;
   font-size: 12px;
   font-weight: bold;
 }
@@ -142,7 +154,7 @@
 
 .game-piece__face--front.piece-red,
 .game-piece__face--front.red {
-  color: #DC3545;
+  color: #dc3545;
   border-color: rgba(220, 53, 69, 0.4);
 }
 

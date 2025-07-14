@@ -4,7 +4,7 @@ import { PlayerAvatar, PieceTray } from '../shared';
 
 /**
  * DeclarationContent Component
- * 
+ *
  * Displays the declaration phase with:
  * - Players list showing declaration status
  * - Declaration panel with number selection (0-8)
@@ -20,14 +20,14 @@ const DeclarationContent = ({
   totalDeclared = 0,
   consecutiveZeros = 0,
   redealMultiplier = 1,
-  onDeclare
+  onDeclare,
 }) => {
   const [selectedValue, setSelectedValue] = useState(null);
   const [showPanel, setShowPanel] = useState(false);
-  
+
   // Check if it's my turn
   const isMyTurn = currentPlayer === myName;
-  
+
   // Show panel when it's my turn
   useEffect(() => {
     if (isMyTurn) {
@@ -37,18 +37,18 @@ const DeclarationContent = ({
       setSelectedValue(null);
     }
   }, [isMyTurn]);
-  
+
   // Calculate restrictions
   const getRestrictions = () => {
     const restrictions = {
       message: 'Declare your target pile count',
-      disabledValues: []
+      disabledValues: [],
     };
-    
+
     // Check if player is last to declare
     const declaredCount = Object.keys(declarations).length;
     const isLastPlayer = declaredCount === players.length - 1;
-    
+
     if (isLastPlayer) {
       // Total cannot equal 8
       const remainingForEight = 8 - totalDeclared;
@@ -57,116 +57,119 @@ const DeclarationContent = ({
         restrictions.message = 'The total number cannot be 8';
       }
     }
-    
+
     // Check consecutive zeros (player declared 0 twice in a row)
     if (consecutiveZeros >= 2) {
       restrictions.disabledValues.push(0);
       restrictions.message = 'No third consecutive 0';
     }
-    
+
     return restrictions;
   };
-  
+
   const restrictions = getRestrictions();
-  
+
   // Get player status
   const getPlayerStatus = (player) => {
     // Handle both string and object player formats
     const playerName = typeof player === 'string' ? player : player.name;
     // Extract clean name for declaration lookup (e.g., "Bot 2 - 0 pts" -> "Bot 2")
     const cleanName = playerName.split(' - ')[0];
-    
+
     if (declarations[cleanName] !== undefined) {
       return {
         type: 'declared',
-        value: declarations[cleanName]
+        value: declarations[cleanName],
       };
     } else if (cleanName === currentPlayer || playerName === currentPlayer) {
       return {
         type: 'current',
-        text: 'Declaring'
+        text: 'Declaring',
       };
     } else {
       // Check if this player will declare after current player
-      const currentIndex = players.findIndex(p => {
+      const currentIndex = players.findIndex((p) => {
         const pName = typeof p === 'string' ? p : p.name;
         const pCleanName = pName.split(' - ')[0];
         return pCleanName === currentPlayer || pName === currentPlayer;
       });
-      const playerIndex = players.findIndex(p => {
+      const playerIndex = players.findIndex((p) => {
         const pName = typeof p === 'string' ? p : p.name;
         const pCleanName = pName.split(' - ')[0];
         return pCleanName === cleanName;
       });
-      
-      if (currentIndex !== -1 && playerIndex !== -1 && playerIndex === currentIndex + 1) {
+
+      if (
+        currentIndex !== -1 &&
+        playerIndex !== -1 &&
+        playerIndex === currentIndex + 1
+      ) {
         return {
           type: 'pending',
-          text: 'Next'
+          text: 'Next',
         };
       }
-      
+
       return {
         type: 'waiting',
-        text: 'Waiting'
+        text: 'Waiting',
       };
     }
   };
-  
+
   // Handle declaration selection
   const handleSelectValue = (value) => {
     if (!restrictions.disabledValues.includes(value)) {
       setSelectedValue(value);
     }
   };
-  
+
   // Handle confirm
   const handleConfirm = () => {
     if (selectedValue !== null && onDeclare) {
       onDeclare(selectedValue);
     }
   };
-  
+
   // Handle clear
   const handleClear = () => {
     setSelectedValue(null);
   };
-  
-  
+
   return (
     <>
       {/* Game status section */}
       <div className="dec-game-status-section">
         {/* Declaration requirement */}
-        <div className="dec-requirement-badge">
-          {restrictions.message}
-        </div>
-        
+        <div className="dec-requirement-badge">{restrictions.message}</div>
+
         {/* Players list */}
         <div className="dec-players-list">
           {players.map((player) => {
             // Handle both string and object player formats
-            const playerName = typeof player === 'string' ? player : player.name;
+            const playerName =
+              typeof player === 'string' ? player : player.name;
             // Extract just the name without score (e.g., "Bot 2 - 0 pts" -> "Bot 2")
             const displayName = playerName.split(' - ')[0];
-            
+
             const status = getPlayerStatus(player);
             const isCurrentTurn = playerName === currentPlayer;
             const isDeclared = status.type === 'declared';
-            
+
             return (
               <div
                 key={playerName}
                 className={`dec-player-row ${isCurrentTurn ? 'current-turn' : ''} ${isDeclared ? 'declared' : ''}`}
               >
-                <PlayerAvatar 
+                <PlayerAvatar
                   name={displayName}
                   className="dec-player-avatar"
                   size="large"
                 />
                 <div className="dec-player-info">
                   <div className="dec-player-name">
-                    {displayName}{playerName === myName ? ' (You)' : ''}
+                    {displayName}
+                    {playerName === myName ? ' (You)' : ''}
                   </div>
                 </div>
                 <div className="dec-player-status">
@@ -183,14 +186,14 @@ const DeclarationContent = ({
           })}
         </div>
       </div>
-      
+
       {/* Declaration panel - sliding tray */}
       <div className={`dec-panel ${showPanel ? 'show' : ''}`}>
         <div className="dec-options">
           {[0, 1, 2, 3, 4, 5, 6, 7, 8].map((value) => {
             const isDisabled = restrictions.disabledValues.includes(value);
             const isSelected = selectedValue === value;
-            
+
             return (
               <button
                 key={value}
@@ -203,7 +206,7 @@ const DeclarationContent = ({
             );
           })}
         </div>
-        
+
         <div className="dec-actions">
           <button
             className="dec-action-btn"
@@ -212,20 +215,14 @@ const DeclarationContent = ({
           >
             Confirm
           </button>
-          <button
-            className="dec-action-btn secondary"
-            onClick={handleClear}
-          >
+          <button className="dec-action-btn secondary" onClick={handleClear}>
             Clear
           </button>
         </div>
       </div>
-      
+
       {/* Hand section - always visible at bottom */}
-      <PieceTray
-        pieces={myHand}
-        showValues
-      />
+      <PieceTray pieces={myHand} showValues />
     </>
   );
 };
@@ -239,7 +236,7 @@ DeclarationContent.propTypes = {
   totalDeclared: PropTypes.number,
   consecutiveZeros: PropTypes.number,
   redealMultiplier: PropTypes.number,
-  onDeclare: PropTypes.func
+  onDeclare: PropTypes.func,
 };
 
 export default DeclarationContent;

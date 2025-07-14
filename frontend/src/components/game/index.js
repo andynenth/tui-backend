@@ -1,8 +1,8 @@
 /**
  * 🎮 **Game Components Index** - Unified exports for game-related components
- * 
+ *
  * Phase 2, Task 2.3: Smart Container Components
- * 
+ *
  * Exports:
  * ✅ Pure UI Components (Task 2.2)
  * ✅ Smart Container Components (Task 2.3)

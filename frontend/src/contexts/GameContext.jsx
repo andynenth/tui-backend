@@ -20,7 +20,7 @@ export const GameProvider = ({
   children,
   roomId,
   playerName,
-  initialData = {}
+  initialData = {},
 }) => {
   const [isInitialized, setIsInitialized] = useState(false);
   const [error, setError] = useState(null);
@@ -31,22 +31,26 @@ export const GameProvider = ({
     const initializeGame = async () => {
       try {
         const health = getServicesHealth();
-        
+
         if (health.overall.healthy && roomId && playerName) {
-          console.log('🚀 GAME_CONTEXT: Phase 1-4 Enterprise Architecture initializing');
-          
+          console.log(
+            '🚀 GAME_CONTEXT: Phase 1-4 Enterprise Architecture initializing'
+          );
+
           // Subscribe to game service state changes
           const unsubscribe = gameService.addListener((state) => {
             setGameState(state);
           });
-          
+
           // Get initial state
           setGameState(gameService.getState());
           setIsInitialized(true);
-          
+
           return unsubscribe;
         } else {
-          throw new Error('Phase 1-4 services not healthy or missing room/player data');
+          throw new Error(
+            'Phase 1-4 services not healthy or missing room/player data'
+          );
         }
       } catch (err) {
         console.error('Failed to initialize GameContext:', err);
@@ -66,22 +70,22 @@ export const GameProvider = ({
     error,
     playerName,
     roomId,
-    
+
     // Game state from Phase 1-4 services
     gameState,
-    
+
     // Current phase from game state
     currentPhase: gameState?.phase || 'waiting',
-    
+
     // Connection status (from services)
     isConnected: getServicesHealth().network.healthy,
-    
+
     // Simple action methods that delegate to services
     actions: {
       // Services handle the actual implementation
       leaveGame: () => gameService.disconnect(),
     },
-    
+
     // Legacy compatibility properties (simplified)
     myHand: gameState?.hand || [],
     scores: gameState?.scores || {},
@@ -89,8 +93,6 @@ export const GameProvider = ({
   };
 
   return (
-    <GameContext.Provider value={contextValue}>
-      {children}
-    </GameContext.Provider>
+    <GameContext.Provider value={contextValue}>{children}</GameContext.Provider>
   );
 };

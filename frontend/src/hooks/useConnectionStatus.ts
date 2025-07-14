@@ -1,8 +1,8 @@
 /**
  * 🌐 **useConnectionStatus Hook** - Network Connection State Management (TypeScript)
- * 
+ *
  * Phase 2, Task 2.1: Clean React Hooks
- * 
+ *
  * Features:
  * ✅ Single responsibility - only connection status
  * ✅ Real-time connection monitoring
@@ -14,11 +14,11 @@
 import { useState, useEffect, useCallback, useMemo } from 'react';
 import { networkService } from '../services/NetworkService';
 import { serviceIntegration } from '../services/ServiceIntegration';
-import type { 
-  NetworkStatus, 
-  ConnectionStatus, 
+import type {
+  NetworkStatus,
+  ConnectionStatus,
   ServiceHealthStatus,
-  NetworkHealthInfo
+  NetworkHealthInfo,
 } from '../services/types';
 
 /**
@@ -29,23 +29,28 @@ export interface ConnectionState {
   isConnected: boolean;
   isConnecting: boolean;
   isReconnecting: boolean;
-  
+
   // Connection details
   roomId: string | null;
   connectedAt: number | null;
   uptime: number | null;
-  
+
   // Network metrics
   latency: number | null;
   messagesSent: number;
   messagesReceived: number;
   queuedMessages: number;
-  
+
   // Connection health
-  status: 'connected' | 'disconnected' | 'connecting' | 'reconnecting' | 'error';
+  status:
+    | 'connected'
+    | 'disconnected'
+    | 'connecting'
+    | 'reconnecting'
+    | 'error';
   error: string | null;
   reconnectAttempts: number;
-  
+
   // Last activity
   lastActivity: number | null;
 }
@@ -66,37 +71,44 @@ export interface ConnectionMetrics {
  * Hook for monitoring connection status
  */
 export function useConnectionStatus(roomId?: string): ConnectionState {
-  const [connectionState, setConnectionState] = useState<ConnectionState>(() => 
+  const [connectionState, setConnectionState] = useState<ConnectionState>(() =>
     getInitialConnectionState(roomId)
   );
 
   const updateConnectionState = useCallback(() => {
     const networkStatus = networkService.getStatus();
     const healthStatus = serviceIntegration.getHealthStatus();
-    
+
     // Get specific room status or overall status
     const roomStatus = roomId ? networkStatus.rooms[roomId] : null;
     const overallHealthy = healthStatus.network.healthy;
-    
+
     const newState: ConnectionState = {
-      isConnected: roomStatus ? roomStatus.connected : healthStatus.network.connections > 0,
+      isConnected: roomStatus
+        ? roomStatus.connected
+        : healthStatus.network.connections > 0,
       isConnecting: roomStatus?.status === 'connecting' || false,
       isReconnecting: roomStatus ? roomStatus.reconnecting : false,
-      
+
       roomId: roomStatus?.roomId || null,
       connectedAt: roomStatus?.connectedAt || null,
       uptime: roomStatus?.uptime || null,
-      
+
       latency: roomStatus?.latency || null,
       messagesSent: roomStatus?.messagesSent || 0,
       messagesReceived: roomStatus?.messagesReceived || 0,
-      queuedMessages: roomStatus?.queueSize || healthStatus.network.queuedMessages,
-      
+      queuedMessages:
+        roomStatus?.queueSize || healthStatus.network.queuedMessages,
+
       status: determineConnectionStatus(roomStatus, overallHealthy),
-      error: roomStatus ? null : (healthStatus.network.healthy ? null : 'Network error'),
+      error: roomStatus
+        ? null
+        : healthStatus.network.healthy
+          ? null
+          : 'Network error',
       reconnectAttempts: roomStatus?.reconnectAttempts || 0,
-      
-      lastActivity: roomStatus?.lastActivity || null
+
+      lastActivity: roomStatus?.lastActivity || null,
     };
 
     setConnectionState(newState);
@@ -116,7 +128,7 @@ export function useConnectionStatus(roomId?: string): ConnectionState {
       'connectionFailed',
       'connectionError',
       'messageSent',
-      'messageReceived'
+      'messageReceived',
     ];
 
     const handleNetworkEvent = () => {
@@ -124,7 +136,7 @@ export function useConnectionStatus(roomId?: string): ConnectionState {
     };
 
     // Add listeners to network service
-    eventTypes.forEach(eventType => {
+    eventTypes.forEach((eventType) => {
       networkService.addEventListener(eventType, handleNetworkEvent);
     });
 
@@ -138,13 +150,16 @@ export function useConnectionStatus(roomId?: string): ConnectionState {
 
     return () => {
       // Cleanup event listeners
-      eventTypes.forEach(eventType => {
+      eventTypes.forEach((eventType) => {
         networkService.removeEventListener(eventType, handleNetworkEvent);
       });
-      
+
       serviceIntegration.removeEventListener('healthIssue', handleNetworkEvent);
       serviceIntegration.removeEventListener('initialized', handleNetworkEvent);
-      serviceIntegration.removeEventListener('metricsUpdated', handleNetworkEvent);
+      serviceIntegration.removeEventListener(
+        'metricsUpdated',
+        handleNetworkEvent
+      );
       networkService.removeEventListener('metricsUpdated', handleNetworkEvent);
     };
   }, [updateConnectionState]);
@@ -156,7 +171,7 @@ export function useConnectionStatus(roomId?: string): ConnectionState {
  * Hook for accessing overall network status
  */
 export function useNetworkStatus(): NetworkStatus {
-  const [networkStatus, setNetworkStatus] = useState<NetworkStatus>(() => 
+  const [networkStatus, setNetworkStatus] = useState<NetworkStatus>(() =>
     networkService.getStatus()
   );
 
@@ -171,22 +186,28 @@ export function useNetworkStatus(): NetworkStatus {
       'disconnected',
       'messageSent',
       'messageReceived',
-      'messageQueued'
+      'messageQueued',
     ];
 
-    eventTypes.forEach(eventType => {
+    eventTypes.forEach((eventType) => {
       networkService.addEventListener(eventType, updateNetworkStatus);
     });
 
     // Event-driven updates for service health changes
-    serviceIntegration.addEventListener('healthStatusChanged', updateNetworkStatus);
+    serviceIntegration.addEventListener(
+      'healthStatusChanged',
+      updateNetworkStatus
+    );
     networkService.addEventListener('statusChanged', updateNetworkStatus);
 
     return () => {
-      eventTypes.forEach(eventType => {
+      eventTypes.forEach((eventType) => {
         networkService.removeEventListener(eventType, updateNetworkStatus);
       });
-      serviceIntegration.removeEventListener('healthStatusChanged', updateNetworkStatus);
+      serviceIntegration.removeEventListener(
+        'healthStatusChanged',
+        updateNetworkStatus
+      );
       networkService.removeEventListener('statusChanged', updateNetworkStatus);
     };
   }, []);
@@ -201,14 +222,15 @@ export function useConnectionQuality(roomId?: string) {
   const connectionState = useConnectionStatus(roomId);
 
   return useMemo(() => {
-    const { latency, isConnected, reconnectAttempts, queuedMessages, uptime } = connectionState;
+    const { latency, isConnected, reconnectAttempts, queuedMessages, uptime } =
+      connectionState;
 
     // Calculate quality score (0-100)
     let qualityScore = 0;
 
     if (isConnected) {
       qualityScore += 40; // Base score for being connected
-      
+
       // Latency score (0-30 points)
       if (latency !== null) {
         if (latency < 50) qualityScore += 30;
@@ -219,13 +241,13 @@ export function useConnectionQuality(roomId?: string) {
       } else {
         qualityScore += 15; // Unknown latency gets average score
       }
-      
+
       // Stability score (0-20 points)
       if (reconnectAttempts === 0) qualityScore += 20;
       else if (reconnectAttempts < 3) qualityScore += 15;
       else if (reconnectAttempts < 5) qualityScore += 10;
       else qualityScore += 5;
-      
+
       // Queue health score (0-10 points)
       if (queuedMessages === 0) qualityScore += 10;
       else if (queuedMessages < 5) qualityScore += 8;
@@ -253,7 +275,7 @@ export function useConnectionQuality(roomId?: string) {
       latency,
       isStable: reconnectAttempts < 3,
       hasQueueBacklog: queuedMessages > 0,
-      uptime: uptime || 0
+      uptime: uptime || 0,
     };
   }, [connectionState]);
 }
@@ -267,31 +289,43 @@ export function useConnectionMetrics(): ConnectionMetrics {
 
   return useMemo(() => {
     const now = Date.now();
-    const uptime = healthStatus.metrics.uptime ? now - healthStatus.metrics.uptime : null;
-    
+    const uptime = healthStatus.metrics.uptime
+      ? now - healthStatus.metrics.uptime
+      : null;
+
     // Calculate average latency across all connections
     const connections = Object.values(networkStatus.rooms);
     const latencies = connections
-      .map(conn => conn.latency)
+      .map((conn) => conn.latency)
       .filter((lat): lat is number => lat !== null);
-    const averageLatency = latencies.length > 0 
-      ? latencies.reduce((sum, lat) => sum + lat, 0) / latencies.length 
-      : null;
+    const averageLatency =
+      latencies.length > 0
+        ? latencies.reduce((sum, lat) => sum + lat, 0) / latencies.length
+        : null;
 
     // Calculate message rate (messages per minute)
     const totalMessages = connections.reduce(
-      (sum, conn) => sum + (conn.messagesSent || 0) + (conn.messagesReceived || 0), 
+      (sum, conn) =>
+        sum + (conn.messagesSent || 0) + (conn.messagesReceived || 0),
       0
     );
-    const messageRate = uptime ? (totalMessages / (uptime / 60000)) : 0; // per minute
+    const messageRate = uptime ? totalMessages / (uptime / 60000) : 0; // per minute
 
     return {
       totalConnections: networkStatus.activeConnections,
       uptime,
       averageLatency,
       messageRate,
-      errorRate: healthStatus.metrics.totalErrors / Math.max(1, healthStatus.metrics.totalErrors + healthStatus.metrics.successfulRecoveries),
-      reconnectionRate: healthStatus.metrics.recoveryAttempts / Math.max(1, healthStatus.metrics.totalErrors)
+      errorRate:
+        healthStatus.metrics.totalErrors /
+        Math.max(
+          1,
+          healthStatus.metrics.totalErrors +
+            healthStatus.metrics.successfulRecoveries
+        ),
+      reconnectionRate:
+        healthStatus.metrics.recoveryAttempts /
+        Math.max(1, healthStatus.metrics.totalErrors),
     };
   }, [networkStatus, healthStatus]);
 }
@@ -331,17 +365,25 @@ export function useConnectionEvents(
     };
 
     // Add event listeners
-    if (onConnected) networkService.addEventListener('connected', handleConnected);
-    if (onDisconnected) networkService.addEventListener('disconnected', handleDisconnected);
-    if (onReconnecting) networkService.addEventListener('reconnecting', handleReconnecting);
-    if (onError) networkService.addEventListener('connectionError', handleError);
+    if (onConnected)
+      networkService.addEventListener('connected', handleConnected);
+    if (onDisconnected)
+      networkService.addEventListener('disconnected', handleDisconnected);
+    if (onReconnecting)
+      networkService.addEventListener('reconnecting', handleReconnecting);
+    if (onError)
+      networkService.addEventListener('connectionError', handleError);
 
     return () => {
       // Cleanup
-      if (onConnected) networkService.removeEventListener('connected', handleConnected);
-      if (onDisconnected) networkService.removeEventListener('disconnected', handleDisconnected);
-      if (onReconnecting) networkService.removeEventListener('reconnecting', handleReconnecting);
-      if (onError) networkService.removeEventListener('connectionError', handleError);
+      if (onConnected)
+        networkService.removeEventListener('connected', handleConnected);
+      if (onDisconnected)
+        networkService.removeEventListener('disconnected', handleDisconnected);
+      if (onReconnecting)
+        networkService.removeEventListener('reconnecting', handleReconnecting);
+      if (onError)
+        networkService.removeEventListener('connectionError', handleError);
     };
   }, [onConnected, onDisconnected, onReconnecting, onError]);
 }
@@ -365,7 +407,7 @@ function getInitialConnectionState(roomId?: string): ConnectionState {
     status: roomStatus?.connected ? 'connected' : 'disconnected',
     error: null,
     reconnectAttempts: roomStatus?.reconnectAttempts || 0,
-    lastActivity: roomStatus?.lastActivity || null
+    lastActivity: roomStatus?.lastActivity || null,
   };
 }
 
@@ -380,7 +422,7 @@ function determineConnectionStatus(
   if (roomStatus.reconnecting) return 'reconnecting';
   if (roomStatus.connected) return 'connected';
   if (roomStatus.status === 'connecting') return 'connecting';
-  
+
   return 'disconnected';
 }
 

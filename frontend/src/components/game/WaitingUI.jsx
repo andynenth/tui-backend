@@ -1,8 +1,8 @@
 /**
  * 🎮 **WaitingUI Component** - Pure Waiting State Interface
- * 
+ *
  * Phase 2, Task 2.2: Pure UI Components
- * 
+ *
  * Features:
  * ✅ Pure functional component (props in, JSX out)
  * ✅ No hooks except local UI state
@@ -25,21 +25,21 @@ export function WaitingUI({
   isConnecting,
   isReconnecting,
   connectionError,
-  
+
   // Status props
-  message = "Waiting...",
-  phase = "waiting",
-  
+  message = 'Waiting...',
+  phase = 'waiting',
+
   // Action props
   onRetry,
-  onCancel
+  onCancel,
 }) {
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-900 to-purple-900 flex items-center justify-center p-4">
       <div className="bg-white/10 backdrop-blur-md rounded-2xl p-8 max-w-md w-full text-center">
         {/* Connection Status */}
         <div className="mb-6">
-          <ConnectionIndicator 
+          <ConnectionIndicator
             isConnected={isConnected}
             isConnecting={isConnecting}
             isReconnecting={isReconnecting}
@@ -49,23 +49,21 @@ export function WaitingUI({
 
         {/* Main Status */}
         <div className="mb-8">
-          <div className="text-6xl mb-4">
-            {getPhaseIcon(phase)}
-          </div>
-          
+          <div className="text-6xl mb-4">{getPhaseIcon(phase)}</div>
+
           <h1 className="text-2xl font-bold text-white mb-2">
             {getPhaseTitle(phase)}
           </h1>
-          
-          <p className="text-blue-200 text-lg">
-            {message}
-          </p>
+
+          <p className="text-blue-200 text-lg">{message}</p>
         </div>
 
         {/* Loading Animation */}
         {(isConnecting || isReconnecting) && (
           <div className="mb-6">
-            <LoadingOverlay message={isReconnecting ? "Reconnecting..." : "Connecting..."} />
+            <LoadingOverlay
+              message={isReconnecting ? 'Reconnecting...' : 'Connecting...'}
+            />
           </div>
         )}
 
@@ -75,7 +73,7 @@ export function WaitingUI({
             <div className="text-red-200 text-sm mb-3">
               Connection Error: {connectionError}
             </div>
-            
+
             {onRetry && (
               <button
                 onClick={onRetry}
@@ -93,10 +91,7 @@ export function WaitingUI({
           <div className="mb-6">
             <div className="waiting-dots">
               {[0, 1, 2].map((i) => (
-                <div
-                  key={i}
-                  className="waiting-dot"
-                />
+                <div key={i} className="waiting-dot" />
               ))}
             </div>
           </div>
@@ -104,8 +99,20 @@ export function WaitingUI({
 
         {/* Phase Information */}
         <div className="text-blue-300 text-sm space-y-1">
-          <div>Phase: <span className="font-medium text-blue-200">{phase}</span></div>
-          <div>Status: <span className="font-medium text-blue-200">{getConnectionStatus(isConnected, isConnecting, isReconnecting, connectionError)}</span></div>
+          <div>
+            Phase: <span className="font-medium text-blue-200">{phase}</span>
+          </div>
+          <div>
+            Status:{' '}
+            <span className="font-medium text-blue-200">
+              {getConnectionStatus(
+                isConnected,
+                isConnecting,
+                isReconnecting,
+                connectionError
+              )}
+            </span>
+          </div>
         </div>
 
         {/* Cancel Button */}
@@ -128,23 +135,35 @@ export function WaitingUI({
 // Helper functions
 function getPhaseIcon(phase) {
   switch (phase) {
-    case 'waiting': return '⏳';
-    case 'preparation': return '🃏';
-    case 'declaration': return '🎯';
-    case 'turn': return '🎮';
-    case 'scoring': return '🏆';
-    default: return '⏳';
+    case 'waiting':
+      return '⏳';
+    case 'preparation':
+      return '🃏';
+    case 'declaration':
+      return '🎯';
+    case 'turn':
+      return '🎮';
+    case 'scoring':
+      return '🏆';
+    default:
+      return '⏳';
   }
 }
 
 function getPhaseTitle(phase) {
   switch (phase) {
-    case 'waiting': return 'Waiting for Game';
-    case 'preparation': return 'Preparing Cards';
-    case 'declaration': return 'Making Declarations';
-    case 'turn': return 'Playing Turn';
-    case 'scoring': return 'Calculating Scores';
-    default: return 'Waiting';
+    case 'waiting':
+      return 'Waiting for Game';
+    case 'preparation':
+      return 'Preparing Cards';
+    case 'declaration':
+      return 'Making Declarations';
+    case 'turn':
+      return 'Playing Turn';
+    case 'scoring':
+      return 'Calculating Scores';
+    default:
+      return 'Waiting';
   }
 }
 
@@ -163,24 +182,30 @@ WaitingUI.propTypes = {
   isConnecting: PropTypes.bool,
   isReconnecting: PropTypes.bool,
   connectionError: PropTypes.string,
-  
+
   // Status props
   message: PropTypes.string,
-  phase: PropTypes.oneOf(['waiting', 'preparation', 'declaration', 'turn', 'scoring']),
-  
+  phase: PropTypes.oneOf([
+    'waiting',
+    'preparation',
+    'declaration',
+    'turn',
+    'scoring',
+  ]),
+
   // Action props
   onRetry: PropTypes.func,
-  onCancel: PropTypes.func
+  onCancel: PropTypes.func,
 };
 
 WaitingUI.defaultProps = {
   isConnecting: false,
   isReconnecting: false,
   connectionError: null,
-  message: "Waiting...",
-  phase: "waiting",
+  message: 'Waiting...',
+  phase: 'waiting',
   onRetry: null,
-  onCancel: null
+  onCancel: null,
 };
 
 export default WaitingUI;

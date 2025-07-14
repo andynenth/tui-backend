@@ -1,6 +1,6 @@
 # backend/shared_instances.py
 
-from engine.room_manager import RoomManager # Import the RoomManager class.
+from engine.room_manager import RoomManager  # Import the RoomManager class.
 from engine.bot_manager import BotManager
 
 # Create a single instance of RoomManager.

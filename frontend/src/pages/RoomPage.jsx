@@ -12,24 +12,26 @@ const RoomPage = () => {
   const navigate = useNavigate();
   const { roomId } = useParams();
   const app = useApp();
-  
+
   const [roomData, setRoomData] = useState(null);
   const [isConnected, setIsConnected] = useState(false);
   const [isStartingGame, setIsStartingGame] = useState(false);
-  
+
   // Calculate room occupancy
-  const occupiedSlots = roomData?.players?.filter(player => player !== null).length || 0;
+  const occupiedSlots =
+    roomData?.players?.filter((player) => player !== null).length || 0;
   const isRoomFull = occupiedSlots === 4;
-  
+
   // Check if current player is the host
-  const isCurrentPlayerHost = roomData?.players?.some(
-    player => player?.name === app.playerName && player?.is_host
-  ) || false;
+  const isCurrentPlayerHost =
+    roomData?.players?.some(
+      (player) => player?.name === app.playerName && player?.is_host
+    ) || false;
 
   // Connect to room and get room state
   useEffect(() => {
     let mounted = true;
-    
+
     const initializeRoom = async () => {
       try {
         await networkService.connectToRoom(roomId);
@@ -65,9 +67,18 @@ const RoomPage = () => {
       const roomUpdate = eventData.data;
       console.log('🏠 ROOM_UPDATE: Full data received:', roomUpdate);
       console.log('🏠 ROOM_UPDATE: Players array:', roomUpdate.players);
-      console.log('🏠 ROOM_UPDATE: Players array type:', typeof roomUpdate.players);
-      console.log('🏠 ROOM_UPDATE: Players array length:', roomUpdate.players?.length);
-      console.log('🏠 ROOM_UPDATE: Players array entries:', Object.entries(roomUpdate.players || {}));
+      console.log(
+        '🏠 ROOM_UPDATE: Players array type:',
+        typeof roomUpdate.players
+      );
+      console.log(
+        '🏠 ROOM_UPDATE: Players array length:',
+        roomUpdate.players?.length
+      );
+      console.log(
+        '🏠 ROOM_UPDATE: Players array entries:',
+        Object.entries(roomUpdate.players || {})
+      );
       setRoomData(roomUpdate);
     };
 
@@ -84,7 +95,7 @@ const RoomPage = () => {
       console.log('🏠 ROOM_CLOSED: Room was closed, navigating to lobby');
       console.log('🏠 ROOM_CLOSED: Reason:', closeData.reason);
       console.log('🏠 ROOM_CLOSED: Message:', closeData.message);
-      
+
       // Navigate back to lobby when room is closed
       navigate('/lobby');
     };
@@ -124,7 +135,7 @@ const RoomPage = () => {
     console.log('🚪 LEAVE_ROOM: Player name:', app.playerName);
     console.log('🚪 LEAVE_ROOM: Room ID:', roomId);
     networkService.send(roomId, 'leave_room', {
-      player_name: app.playerName
+      player_name: app.playerName,
     });
     navigate('/lobby');
   };
@@ -139,24 +150,23 @@ const RoomPage = () => {
           <p className="text-gray-600 mb-6">
             Please set your player name first.
           </p>
-          <Button onClick={() => navigate('/')}>
-            Go to Start Page
-          </Button>
+          <Button onClick={() => navigate('/')}>Go to Start Page</Button>
         </div>
       </Layout>
     );
   }
 
   return (
-    <Layout 
-      title=""
-      showConnection={false}
-      showHeader={false}
-    >
-      <div className="min-h-screen flex items-center justify-center" style={{ background: 'var(--gradient-gray)' }}>
+    <Layout title="" showConnection={false} showHeader={false}>
+      <div
+        className="min-h-screen flex items-center justify-center"
+        style={{ background: 'var(--gradient-gray)' }}
+      >
         <div className="rp-gameContainer">
           {/* Connection Status */}
-          <div className={`connection-status ${!isConnected ? 'disconnected' : ''}`}>
+          <div
+            className={`connection-status ${!isConnected ? 'disconnected' : ''}`}
+          >
             <span className="status-dot"></span>
             {isConnected ? 'Connected' : 'Disconnected'}
           </div>
@@ -165,7 +175,9 @@ const RoomPage = () => {
           <div className="rp-roomHeader">
             <h1 className="rp-roomTitle">Game Room</h1>
             <p className={`rp-roomSubtitle ${isRoomFull ? 'rp-ready' : ''}`}>
-              {isRoomFull ? 'All players ready - Start the game!' : 'Waiting for players to join'}
+              {isRoomFull
+                ? 'All players ready - Start the game!'
+                : 'Waiting for players to join'}
             </p>
             <div className="rp-roomIdBadge">
               <span className="rp-roomIdLabel">Room ID:</span>
@@ -181,29 +193,38 @@ const RoomPage = () => {
                 {occupiedSlots} / 4
               </div>
             </div>
-            
+
             {/* Game Table Visualization */}
             <div className="rp-gameTable">
               <div className="rp-tableSurface">
                 {/* Table felt is created with CSS ::before */}
-                
+
                 {/* Player positions around the table */}
                 {[1, 2, 3, 4].map((position) => {
                   const player = roomData?.players?.[position - 1];
                   const isEmpty = !player;
                   const isHost = player?.is_host;
                   const isBot = player?.is_bot;
-                  const playerName = player ? (isBot ? `Bot ${position}` : player.name) : 'Waiting...';
-                  
+                  const playerName = player
+                    ? isBot
+                      ? `Bot ${position}`
+                      : player.name
+                    : 'Waiting...';
+
                   return (
-                    <div key={position} className={`rp-playerSeat rp-position-${position}`}>
+                    <div
+                      key={position}
+                      className={`rp-playerSeat rp-position-${position}`}
+                    >
                       <div className="rp-seatNumber">Seat {position}</div>
-                      <div className={`rp-playerCard ${!isEmpty ? 'rp-filled' : 'rp-empty'} ${isHost ? 'rp-host' : ''}`}>
+                      <div
+                        className={`rp-playerCard ${!isEmpty ? 'rp-filled' : 'rp-empty'} ${isHost ? 'rp-host' : ''}`}
+                      >
                         <div className="rp-playerName">{playerName}</div>
                         {isHost && <span className="rp-hostBadge">Host</span>}
                         {isEmpty ? (
                           <div className="rp-playerAction">
-                            <button 
+                            <button
                               className="rp-actionBtn rp-addBotBtn"
                               onClick={() => addBot(position)}
                               disabled={!isConnected}
@@ -211,17 +232,19 @@ const RoomPage = () => {
                               Add Bot
                             </button>
                           </div>
-                        ) : (!isHost && (
-                          <div className="rp-playerAction">
-                            <button 
-                              className="rp-actionBtn rp-removeBtn"
-                              onClick={() => removePlayer(position)}
-                              disabled={!isConnected}
-                            >
-                              Remove
-                            </button>
-                          </div>
-                        ))}
+                        ) : (
+                          !isHost && (
+                            <div className="rp-playerAction">
+                              <button
+                                className="rp-actionBtn rp-removeBtn"
+                                onClick={() => removePlayer(position)}
+                                disabled={!isConnected}
+                              >
+                                Remove
+                              </button>
+                            </div>
+                          )
+                        )}
                       </div>
                     </div>
                   );
@@ -233,7 +256,9 @@ const RoomPage = () => {
           {/* Game Controls */}
           <div className="rp-gameControls">
             <div className={`rp-roomStatus ${isRoomFull ? 'rp-ready' : ''}`}>
-              {isRoomFull ? 'All players ready!' : `Need ${4 - occupiedSlots} more player${4 - occupiedSlots > 1 ? 's' : ''} to start`}
+              {isRoomFull
+                ? 'All players ready!'
+                : `Need ${4 - occupiedSlots} more player${4 - occupiedSlots > 1 ? 's' : ''} to start`}
             </div>
             <div className="rp-controlButtons">
               {isCurrentPlayerHost && (

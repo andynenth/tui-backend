@@ -2,14 +2,15 @@
 
 from engine.constants import PIECE_POINTS
 
+
 class Piece:
     def __init__(self, kind):
         """
         Create a piece from a given kind string, e.g. "GENERAL_RED", "CANNON_BLACK"
         Assigns point value using PIECE_POINTS from constants.py
         """
-        self.kind = kind                  # Combined string identifier, e.g., "GENERAL_RED"
-        self.point = PIECE_POINTS[kind]   # Point value for scoring and comparison
+        self.kind = kind  # Combined string identifier, e.g., "GENERAL_RED"
+        self.point = PIECE_POINTS[kind]  # Point value for scoring and comparison
 
     def __repr__(self):
         # Display format, e.g., GENERAL_RED(14)
@@ -38,8 +39,8 @@ class Piece:
 
         # How many copies of each piece type to include in the deck
         counts = {
-            "GENERAL": 1,   # Only one of each GENERAL (RED and BLACK)
-            "SOLDIER": 5    # Five of each SOLDIER (RED and BLACK)
+            "GENERAL": 1,  # Only one of each GENERAL (RED and BLACK)
+            "SOLDIER": 5,  # Five of each SOLDIER (RED and BLACK)
             # All others default to 2
         }
 

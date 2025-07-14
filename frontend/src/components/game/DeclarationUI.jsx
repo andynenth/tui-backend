@@ -1,6 +1,6 @@
 /**
  * 🎯 **DeclarationUI Component** - Declaration Phase Interface
- * 
+ *
  * Features:
  * ✅ Uses new DeclarationContent for consistent UI
  * ✅ Maps game state to content props
@@ -20,7 +20,7 @@ export function DeclarationUI({
   declarations = {},
   players = [],
   currentTotal = 0,
-  
+
   // State props
   isMyTurn = false,
   validOptions = [],
@@ -32,13 +32,13 @@ export function DeclarationUI({
   myName = '',
   consecutiveZeros = 0,
   redealMultiplier = 1,
-  
+
   // Action props
-  onDeclare
+  onDeclare,
 }) {
   // Simply pass through props to DeclarationContent
   return (
-    <DeclarationContent 
+    <DeclarationContent
       myHand={myHand}
       players={players}
       currentPlayer={currentPlayer}
@@ -58,13 +58,13 @@ DeclarationUI.propTypes = {
   declarations: PropTypes.object,
   players: PropTypes.array,
   currentTotal: PropTypes.number,
-  
+
   // State props
   isMyTurn: PropTypes.bool,
   validOptions: PropTypes.array,
   declarationProgress: PropTypes.shape({
     declared: PropTypes.number,
-    total: PropTypes.number
+    total: PropTypes.number,
   }),
   isLastPlayer: PropTypes.bool,
   estimatedPiles: PropTypes.number,
@@ -73,9 +73,9 @@ DeclarationUI.propTypes = {
   myName: PropTypes.string,
   consecutiveZeros: PropTypes.number,
   redealMultiplier: PropTypes.number,
-  
+
   // Action props
-  onDeclare: PropTypes.func
+  onDeclare: PropTypes.func,
 };
 
 export default DeclarationUI;

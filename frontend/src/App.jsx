@@ -1,7 +1,12 @@
 // frontend/src/App.jsx
 
 import React, { useEffect, useState } from 'react';
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import {
+  BrowserRouter as Router,
+  Routes,
+  Route,
+  Navigate,
+} from 'react-router-dom';
 import { AppProvider, useApp } from './contexts/AppContext';
 import { GameProvider } from './contexts/GameContext';
 import { ErrorBoundary } from './components';
@@ -18,9 +23,9 @@ import { initializeServices, cleanupServices } from './services';
 // Protected Route component
 const ProtectedRoute = ({ children, requiredData = [] }) => {
   const app = useApp();
-  
+
   // Check if required data is available
-  const hasRequiredData = requiredData.every(key => {
+  const hasRequiredData = requiredData.every((key) => {
     switch (key) {
       case 'playerName':
         return !!app.playerName;
@@ -47,7 +52,7 @@ const ProtectedRoute = ({ children, requiredData = [] }) => {
 // Game Route wrapper that provides GameContext
 const GameRoute = ({ children }) => {
   const app = useApp();
-  
+
   if (!app.playerName || !app.currentRoomId) {
     return <Navigate to="/" replace />;
   }
@@ -66,37 +71,37 @@ const AppRouter = () => {
       <Routes>
         {/* Start page - no requirements */}
         <Route path="/" element={<StartPage />} />
-        
+
         {/* Lobby - requires player name */}
-        <Route 
-          path="/lobby" 
+        <Route
+          path="/lobby"
           element={
             <ProtectedRoute requiredData={['playerName']}>
               <LobbyPage />
             </ProtectedRoute>
-          } 
+          }
         />
-        
+
         {/* Room - requires player name and room ID */}
-        <Route 
-          path="/room/:roomId" 
+        <Route
+          path="/room/:roomId"
           element={
             <ProtectedRoute requiredData={['playerName', 'roomId']}>
               <RoomPage />
             </ProtectedRoute>
-          } 
+          }
         />
-        
+
         {/* Game - requires player name and room ID, provides GameContext */}
-        <Route 
-          path="/game/:roomId" 
+        <Route
+          path="/game/:roomId"
           element={
             <GameRoute>
               <GamePage />
             </GameRoute>
-          } 
+          }
         />
-        
+
         {/* Catch all - redirect to start */}
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
@@ -136,8 +141,8 @@ const AppWithServices = () => {
         <div className="service-init-container">
           <h1 className="service-error-title">Service Initialization Failed</h1>
           <p className="service-error-message">{initializationError}</p>
-          <button 
-            onClick={() => window.location.reload()} 
+          <button
+            onClick={() => window.location.reload()}
             className="service-retry-button"
           >
             Retry
