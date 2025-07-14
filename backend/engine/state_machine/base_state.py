@@ -181,12 +181,6 @@ class GameState(ABC):
                         hand_strings = [str(piece) for piece in player_hand]
                         self.logger.debug(f"   Converted hand: {hand_strings}")
 
-                        # Add detailed debug for sorting check
-                        # self.logger.info(f"🎴 HAND ORDER DEBUG for {player_name}:")
-                        # for i, piece in enumerate(player_hand):
-                        #     piece_str = str(piece)
-                        #     self.logger.info(f"   Position {i}: {piece_str}")
-
                         players_data[player_name] = {
                             "hand": hand_strings,
                             "hand_size": len(player_hand),

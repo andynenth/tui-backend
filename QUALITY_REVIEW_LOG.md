@@ -452,3 +452,68 @@ The user correctly pointed out that dead code should be removed BEFORE adding do
 **Review Type**: Code Cleanup
 **Duration**: 35 minutes
 **Tools Used**: grep, MultiEdit, file operations
+
+## Review Session: Commented Code Cleanup
+**Date**: 2025-07-14
+**Reviewer**: Claude Code
+**Focus Area**: Code Cleanup - Remove Commented Debug Statements
+
+### Summary
+Cleaned up commented-out debug statements throughout the backend codebase, focusing on removing debug print statements and commented logger calls while preserving legitimate documentation comments.
+
+### Actions Taken
+
+1. **✅ Analyzed Commented Code Patterns**
+   - Initially found 115 files with potential commented code
+   - Many were in venv directory (excluded from cleanup)
+   - Focused on actual project code with debug patterns
+
+2. **✅ Removed Commented Print Statements**
+   - Removed 5 commented print debug statements from:
+     - engine/state_machine/action_queue.py (1)
+     - engine/bot_manager.py (4)
+
+3. **✅ Removed Commented Logger Statements**
+   - Cleaned up commented logger.info debug calls from:
+     - engine/state_machine/base_state.py (4 lines)
+     - engine/state_machine/states/preparation_state.py (10 lines)
+
+4. **✅ Verified No Unused Code**
+   - Checked for unused imports: 0 found
+   - Checked for unused variables: 0 found
+   - Confirmed services and validators are actively used
+
+### Metrics Update
+
+| Category | Before | After | Change |
+|----------|--------|-------|--------|
+| Commented Debug Prints | 5 | 0 | -5 ✅ |
+| Commented Logger Calls | 14 | 0 | -14 ✅ |
+| Unused Imports | 0 | 0 | ✅ |
+| Unused Variables | 0 | 0 | ✅ |
+
+### What Was Preserved
+
+- Legitimate TODO/FIXME comments documenting future work
+- Comments explaining removed functionality (e.g., "REMOVED: ...")
+- Documentation comments about logger instances
+- All active code (services, validators, socket manager methods)
+
+### Key Insights
+
+1. **Most "dead code" was actually active** - Initial analysis overestimated dead code
+2. **Services are used for monitoring** - Event store, recovery manager, logging service
+3. **Validators are actively used** - REST validators used in routes.py
+4. **Socket manager methods are features** - Reliability and statistics features
+
+### Next Steps
+
+1. Consider adding a pre-commit hook to prevent debug comments
+2. Document the active monitoring and reliability features
+3. Continue with WebSocket API documentation
+
+---
+
+**Review Type**: Code Cleanup
+**Duration**: 25 minutes
+**Tools Used**: grep, sed, autoflake, file analysis

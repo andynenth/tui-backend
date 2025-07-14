@@ -647,11 +647,6 @@ class GameBotHandler:
         # 🔧 REDEAL_DECISION_FIX: Detect new decision cycle
         if decisions_received == 0:
             self._current_redeal_cycle_triggered.clear()
-            # print(f"🔄 New redeal decision cycle started - cleared tracking for {len(weak_players_awaiting)} weak players")
-
-        # Debug logging for state tracking (commented out for production)
-        # print(f"🎴 REDEAL_DEBUG: Processing redeal decisions - weak_players_awaiting={list(weak_players_awaiting)}, "
-        #       f"decisions_received={decisions_received}, already_triggered={list(self._current_redeal_cycle_triggered)}")
 
         game_state = self._get_game_state()
 
@@ -659,7 +654,6 @@ class GameBotHandler:
         for player_name in weak_players_awaiting:
             # 🔧 REDEAL_DECISION_FIX: Skip if already triggered this cycle
             if player_name in self._current_redeal_cycle_triggered:
-                # print(f"⏭️ Skipping {player_name} - already triggered this cycle")
                 continue
 
             if player_name in redeal_decisions:
@@ -688,7 +682,6 @@ class GameBotHandler:
                 await self._bot_redeal_decision(player)
                 # 🔧 REDEAL_DECISION_FIX: Mark bot as triggered for this cycle
                 self._current_redeal_cycle_triggered.add(player_name)
-                # print(f"✅ Triggered redeal decision for {player_name}")
             except Exception as e:
                 print(
                     f"❌ BOT_AI_ERROR: Bot redeal decision failed for {player_name}: {e}"
