@@ -3,10 +3,6 @@
 import asyncio
 
 import backend.socket_manager
-from api.middleware.rate_limiter import (
-    check_websocket_rate_limit,
-    cleanup_websocket_limiter,
-)
 from api.validation import validate_websocket_message
 from backend.shared_instances import shared_room_manager
 from backend.socket_manager import broadcast, register, unregister
@@ -24,31 +20,11 @@ async def websocket_endpoint(websocket: WebSocket, room_id: str):
     WebSocket endpoint for real-time communication within a specific room.
     Also handles special 'lobby' room for lobby updates.
     """
-    # Check connection rate limit before registering
-    allowed, error_msg = await check_websocket_rate_limit(websocket, "ws_connect")
-    if not allowed:
-        await websocket.close(code=1008, reason=error_msg)  # 1008 = Policy Violation
-        return
-    
     registered_ws = await register(room_id, websocket)
 
     try:
         while True:
             message = await websocket.receive_json()
-            
-            # Check message rate limit
-            event_name = message.get("event", "")
-            rate_limit_event = f"ws_{event_name}" if event_name in ["declare", "play"] else "ws_message"
-            allowed, rate_limit_error = await check_websocket_rate_limit(websocket, rate_limit_event)
-            if not allowed:
-                await registered_ws.send_json({
-                    "event": "error",
-                    "data": {
-                        "message": rate_limit_error,
-                        "type": "rate_limit_error"
-                    }
-                })
-                continue
             
             # Validate the message structure and content
             is_valid, error_msg, sanitized_data = validate_websocket_message(message)
@@ -62,6 +38,7 @@ async def websocket_endpoint(websocket: WebSocket, room_id: str):
                 })
                 continue
             
+            event_name = message.get("event")
             # Use sanitized data instead of raw event data
             event_data = sanitized_data or message.get("data", {})
 
@@ -1236,11 +1213,9 @@ async def websocket_endpoint(websocket: WebSocket, room_id: str):
 
     except WebSocketDisconnect:
         unregister(room_id, websocket)
-        cleanup_websocket_limiter(websocket)
         if room_id == "lobby":
             pass
         else:
             pass
     except Exception as e:
         unregister(room_id, websocket)
-        cleanup_websocket_limiter(websocket)

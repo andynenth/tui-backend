@@ -1,12 +1,7 @@
 # backend/api/main.py
 
-import asyncio
 import os  # Standard library for interacting with the operating system (e.g., environment variables).
 
-from backend.api.middleware.rate_limiter import (
-    RateLimitMiddleware,
-    cleanup_old_rate_limit_buckets,
-)
 from backend.api.routes.routes import (
     router as api_router,  # Import the API router for REST endpoints.
 )
@@ -56,10 +51,6 @@ app.add_middleware(
     allow_headers=["*"],  # Allows all HTTP headers.
 )
 
-# ✅ Add rate limiting middleware to prevent abuse and DoS attacks.
-# This middleware tracks requests per IP and enforces configurable limits.
-app.add_middleware(RateLimitMiddleware)
-
 # ✅ Include the API and WebSocket routers.
 # These routers define the specific endpoints and their handlers for the application.
 app.include_router(
@@ -82,38 +73,3 @@ app.mount("/", StaticFiles(directory=STATIC_DIR, html=True), name="static")
 def read_index():
     # Returns the index.html file from the static directory.
     return FileResponse(os.path.join(STATIC_DIR, INDEX_FILE))
-
-
-# ✅ Background task for periodic cleanup of old rate limit buckets
-cleanup_task = None
-
-
-@app.on_event("startup")
-async def startup_event():
-    """
-    Initialize background tasks on application startup.
-    """
-    global cleanup_task
-    
-    # Start periodic cleanup task
-    async def periodic_cleanup():
-        while True:
-            await asyncio.sleep(3600)  # Run every hour
-            await cleanup_old_rate_limit_buckets()
-    
-    cleanup_task = asyncio.create_task(periodic_cleanup())
-
-
-@app.on_event("shutdown")
-async def shutdown_event():
-    """
-    Clean up background tasks on application shutdown.
-    """
-    global cleanup_task
-    
-    if cleanup_task:
-        cleanup_task.cancel()
-        try:
-            await cleanup_task
-        except asyncio.CancelledError:
-            pass

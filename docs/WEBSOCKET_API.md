@@ -580,40 +580,6 @@ Turn has finished.
 - Buffer overflow protection via length limits
 - Resource exhaustion prevention via array size limits
 
-## Rate Limiting
-
-The API implements rate limiting to prevent abuse:
-
-### Connection Limits
-- **5 connections per minute** per IP address
-- Exceeding limit results in WebSocket close with code 1008 (Policy Violation)
-
-### Message Limits
-| Event Type | Limit | Period |
-|------------|-------|--------|
-| General messages | 120 | per minute |
-| Declarations | 10 | per minute |
-| Plays | 30 | per minute |
-
-### Rate Limit Errors
-When rate limited, you'll receive:
-```json
-{
-  "event": "error",
-  "data": {
-    "message": "Rate limit exceeded for ws_play. Slow down!",
-    "type": "rate_limit_error"
-  }
-}
-```
-
-### REST API Rate Limits
-REST endpoints include rate limit headers:
-- `X-RateLimit-Limit`: Maximum requests allowed
-- `X-RateLimit-Remaining`: Requests remaining
-- `X-RateLimit-Reset`: Unix timestamp when limit resets
-- `Retry-After`: Seconds to wait (on 429 responses)
-
 ## Error Handling
 
 All errors follow this format:
