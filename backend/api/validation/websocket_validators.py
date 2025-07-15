@@ -1,6 +1,12 @@
 # backend/api/validation/websocket_validators.py
 
 from typing import Any, Dict, List, Optional, Tuple, Union
+import sys
+import os
+
+# Add the shared directory to the path for importing error codes
+sys.path.append(os.path.join(os.path.dirname(__file__), '../../../shared'))
+from error_codes import ErrorCode, create_standard_error
 
 
 class WebSocketMessageValidator:
@@ -64,25 +70,54 @@ class WebSocketMessageValidator:
             - error_message: Description of validation error, or None if valid
         """
         if not isinstance(message, dict):
-            return False, "Message must be a dictionary"
+            error = create_standard_error(
+                ErrorCode.VALIDATION_INVALID_TYPE,
+                "Message must be a dictionary",
+                context={"received_type": type(message).__name__}
+            )
+            return False, error.message
 
         if "event" not in message:
-            return False, "Message must contain 'event' field"
+            error = create_standard_error(
+                ErrorCode.VALIDATION_REQUIRED_FIELD,
+                "Message must contain 'event' field"
+            )
+            return False, error.message
 
         event_name = message.get("event")
         if not isinstance(event_name, str):
-            return False, "Event name must be a string"
+            error = create_standard_error(
+                ErrorCode.VALIDATION_INVALID_TYPE,
+                "Event name must be a string",
+                context={"field": "event", "received_type": type(event_name).__name__}
+            )
+            return False, error.message
 
         if len(event_name) > 100:
-            return False, "Event name too long"
+            error = create_standard_error(
+                ErrorCode.VALIDATION_OUT_OF_RANGE,
+                "Event name too long",
+                context={"field": "event", "max_length": 100, "actual_length": len(event_name)}
+            )
+            return False, error.message
 
         if event_name not in WebSocketMessageValidator.ALLOWED_EVENTS:
-            return False, f"Unknown event type: {event_name}"
+            error = create_standard_error(
+                ErrorCode.NETWORK_INVALID_MESSAGE,
+                f"Unknown event type: {event_name}",
+                context={"event": event_name, "allowed_events": list(WebSocketMessageValidator.ALLOWED_EVENTS)}
+            )
+            return False, error.message
 
         # event_data is optional but must be dict if present
         if "data" in message:
             if not isinstance(message["data"], dict):
-                return False, "Event data must be a dictionary"
+                error = create_standard_error(
+                    ErrorCode.VALIDATION_INVALID_TYPE,
+                    "Event data must be a dictionary",
+                    context={"field": "data", "received_type": type(message["data"]).__name__}
+                )
+                return False, error.message
 
         return True, None
 
@@ -108,21 +143,56 @@ class WebSocketMessageValidator:
         """
         if player_name is None:
             if required:
-                return False, "Player name is required"
+                error = create_standard_error(
+                    ErrorCode.VALIDATION_REQUIRED_FIELD,
+                    "Player name is required",
+                    context={"field": "player_name"}
+                )
+                return False, error.message
             return True, None
 
         if not isinstance(player_name, str):
-            return False, "Player name must be a string"
+            error = create_standard_error(
+                ErrorCode.VALIDATION_INVALID_TYPE,
+                "Player name must be a string",
+                context={"field": "player_name", "received_type": type(player_name).__name__}
+            )
+            return False, error.message
 
         if len(player_name) == 0:
-            return False, "Player name cannot be empty"
+            error = create_standard_error(
+                ErrorCode.VALIDATION_REQUIRED_FIELD,
+                "Player name cannot be empty",
+                context={"field": "player_name"}
+            )
+            return False, error.message
 
         if len(player_name) > WebSocketMessageValidator.MAX_PLAYER_NAME_LENGTH:
-            return False, "Player name too long"
+            error = create_standard_error(
+                ErrorCode.VALIDATION_OUT_OF_RANGE,
+                "Player name too long",
+                context={
+                    "field": "player_name", 
+                    "max_length": WebSocketMessageValidator.MAX_PLAYER_NAME_LENGTH,
+                    "actual_length": len(player_name)
+                }
+            )
+            return False, error.message
 
         # Check for dangerous characters
-        if any(char in player_name for char in ["<", ">", "&", '"', "'", "\n", "\r"]):
-            return False, "Player name contains invalid characters"
+        dangerous_chars = ["<", ">", "&", '"', "'", "\n", "\r"]
+        found_chars = [char for char in dangerous_chars if char in player_name]
+        if found_chars:
+            error = create_standard_error(
+                ErrorCode.VALIDATION_CONSTRAINT_VIOLATION,
+                "Player name contains invalid characters",
+                context={
+                    "field": "player_name",
+                    "invalid_characters": found_chars,
+                    "reason": "XSS prevention"
+                }
+            )
+            return False, error.message
 
         return True, None
 
