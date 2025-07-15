@@ -3,80 +3,26 @@ Pydantic request models for API endpoints.
 
 These models define the structure and validation for request bodies
 sent to the Liap Tui game API endpoints.
+
+NOTE: Room management models have been removed as part of the WebSocket-only
+migration. Room operations now use WebSocket events exclusively.
+See REST_TO_WEBSOCKET_MIGRATION.md for details.
 """
 
 from typing import List, Optional
 from pydantic import BaseModel, Field
 
 
-class CreateRoomRequest(BaseModel):
-    """Request to create a new game room."""
-    player_name: str = Field(..., min_length=1, max_length=50, description="Name of the player creating the room")
-    room_name: Optional[str] = Field(None, max_length=100, description="Optional display name for the room")
-    
-    class Config:
-        schema_extra = {
-            "example": {
-                "player_name": "Alice",
-                "room_name": "Alice's Game"
-            }
-        }
-
-
-class JoinRoomRequest(BaseModel):
-    """Request to join an existing game room."""
-    room_id: str = Field(..., min_length=1, max_length=50, description="ID of the room to join")
-    player_name: str = Field(..., min_length=1, max_length=50, description="Name of the player joining")
-    
-    class Config:
-        schema_extra = {
-            "example": {
-                "room_id": "room_abc123",
-                "player_name": "Bob"
-            }
-        }
-
-
-class AssignSlotRequest(BaseModel):
-    """Request to assign a player or bot to a slot."""
-    room_id: str = Field(..., min_length=1, max_length=50, description="Room ID")
-    slot_id: int = Field(..., ge=1, le=4, description="Slot position (1-4)")
-    player_name: Optional[str] = Field(None, min_length=1, max_length=50, description="Player name (for human players)")
-    is_bot: bool = Field(False, description="Whether to assign a bot to this slot")
-    
-    class Config:
-        schema_extra = {
-            "example": {
-                "room_id": "room_abc123",
-                "slot_id": 2,
-                "player_name": "Charlie",
-                "is_bot": False
-            }
-        }
-
-
-class StartGameRequest(BaseModel):
-    """Request to start a game in a room."""
-    room_id: str = Field(..., min_length=1, max_length=50, description="Room ID")
-    
-    class Config:
-        schema_extra = {
-            "example": {
-                "room_id": "room_abc123"
-            }
-        }
-
-
-class ExitRoomRequest(BaseModel):
-    """Request to exit/delete a room."""
-    room_id: str = Field(..., min_length=1, max_length=50, description="Room ID")
-    
-    class Config:
-        schema_extra = {
-            "example": {
-                "room_id": "room_abc123"
-            }
-        }
+# ============================================================================
+# REMOVED: Room Management Models - Use WebSocket events instead
+# ============================================================================
+# The following models have been removed:
+# - CreateRoomRequest: Use WebSocket event 'create_room'
+# - JoinRoomRequest: Use WebSocket event 'join_room'
+# - AssignSlotRequest: Use WebSocket events 'add_bot' or 'remove_player'
+# - StartGameRequest: Use WebSocket event 'start_game'
+# - ExitRoomRequest: Use WebSocket event 'leave_room'
+# ============================================================================
 
 
 class DeclareRequest(BaseModel):

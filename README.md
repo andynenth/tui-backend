@@ -7,8 +7,8 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
 > A real-time online multiplayer board game inspired by *Liap Tui*, a traditional Chinese-Thai game.  
-> Built with **FastAPI** for the backend and **PixiJS + ESBuild** for the frontend.  
-> Supports real-time interaction via **WebSocket**, and packaged in a single Docker container.
+> Built with **FastAPI** for the backend and **React 19 + ESBuild** for the frontend.  
+> Uses **WebSocket-first architecture** for all game operations, packaged in a single Docker container.
 
 ---
 
@@ -102,6 +102,23 @@ Then open your browser:
 
 > The frontend is served from FastAPI’s static files.  
 > WebSocket and API routes are available under `/ws/` and `/api`.
+
+---
+
+## 🏗️ API Architecture
+
+This project uses a **WebSocket-first architecture**:
+
+- **WebSocket (`/ws/`)**: All game operations including room management, game actions, and real-time updates
+- **REST API (`/api/`)**: Limited to health checks, monitoring, and administrative functions
+
+### Why WebSocket-Only for Game Operations?
+- **Real-time Updates**: Instant state synchronization across all clients
+- **Bidirectional Communication**: Server can push updates without polling
+- **Simplified Architecture**: Single communication channel for all game logic
+- **Better Performance**: Persistent connections reduce overhead
+
+For detailed WebSocket API documentation, see [docs/WEBSOCKET_API.md](docs/WEBSOCKET_API.md).
 
 ---
 
