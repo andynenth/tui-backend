@@ -7,7 +7,20 @@ from typing import Any, Dict, List, Optional
 import backend.socket_manager
 from backend.shared_instances import shared_bot_manager, shared_room_manager
 from backend.socket_manager import broadcast
-from fastapi import APIRouter, HTTPException, Query
+from fastapi import APIRouter, HTTPException, Query, Body, status
+from fastapi.responses import JSONResponse
+
+# Import Pydantic models for OpenAPI documentation
+from api.models.game_models import (
+    GameState, Room, HealthCheck, DetailedHealthCheck, 
+    ErrorResponse, SuccessResponse
+)
+from api.models.request_models import (
+    CreateRoomRequest, JoinRoomRequest, AssignSlotRequest,
+    StartGameRequest, ExitRoomRequest, DeclareRequest,
+    PlayTurnRequest, RedealRequest, RedealDecisionRequest,
+    ScoreRoundRequest, TriggerRecoveryRequest
+)
 
 from api.validation import (
     RestApiValidator,
@@ -42,10 +55,29 @@ bot_manager = shared_bot_manager
 # ---------- ROOM MANAGEMENT ----------
 
 
-@router.get("/get-room-state")
-async def get_room_state(room_id: str = Query(...)):
+@router.get("/get-room-state",
+    response_model=Dict[str, Any],
+    responses={
+        200: {"description": "Room state retrieved successfully"},
+        404: {"model": ErrorResponse, "description": "Room not found"}
+    },
+    tags=["rooms"],
+    summary="Get Room State",
+    description="Retrieves the complete current state of a specific game room"
+)
+async def get_room_state(
+    room_id: str = Query(..., description="Unique identifier of the room")
+):
     """
     Retrieves the current state of a specific game room.
+    
+    Returns comprehensive room information including:
+    - Room metadata (ID, status, players)
+    - Current game phase and state
+    - Player hands and game progression
+    - Score information
+    
+    Used by clients to sync game state after reconnection.
     """
     room = room_manager.get_room(room_id)
     if not room:
@@ -53,13 +85,31 @@ async def get_room_state(room_id: str = Query(...)):
     return room.summary()
 
 
-@router.post("/create-room")
-async def create_room(name: str = Query(...)):
+@router.post("/create-room",
+    response_model=SuccessResponse,
+    responses={
+        200: {"description": "Room created successfully"},
+        400: {"model": ErrorResponse, "description": "Invalid player name or room creation failed"}
+    },
+    tags=["rooms"],
+    summary="Create Game Room",
+    description="Creates a new game room with the specified player as the host"
+)
+async def create_room(request: CreateRoomRequest = Body(...)):
     """
     Creates a new game room and notifies lobby clients.
+    
+    This endpoint:
+    - Creates a new game room with a unique ID
+    - Adds the requesting player as the room host
+    - Notifies all lobby clients about the new room
+    - Returns the room ID for the client to join
+    
+    The player name is validated for length and safety.
+    Room names are optional and can be provided for better UX.
     """
     # Validate and sanitize the player name
-    name = RestApiValidator.validate_player_name(name)
+    name = RestApiValidator.validate_player_name(request.player_name)
     room_id = room_manager.create_room(name)
     room = room_manager.get_room(room_id)
 
@@ -153,9 +203,26 @@ async def join_room(room_id: str = Query(...), name: str = Query(...)):
             raise HTTPException(status_code=400, detail=str(ve))
 
 
-@router.get("/list-rooms")
+@router.get("/list-rooms",
+    response_model=List[Dict[str, Any]],
+    responses={
+        200: {"description": "List of available rooms"}
+    },
+    tags=["rooms"],
+    summary="List Available Rooms",
+    description="Returns a list of all game rooms that are available to join"
+)
 async def list_rooms():
-    """Lists all available rooms (not started and not full)"""
+    """
+    Lists all available rooms (not started and not full).
+    
+    Returns rooms that are:
+    - In waiting status (not started)
+    - Not full (less than 4 players)
+    - Available for new players to join
+    
+    Used by the lobby to show joinable games.
+    """
     all_rooms = room_manager.list_rooms()
 
     available_rooms = [
@@ -883,13 +950,26 @@ async def cleanup_old_events(
 # ---------- HEALTH MONITORING & RECOVERY ENDPOINTS ----------
 
 
-@router.get("/health")
+@router.get("/health",
+    response_model=HealthCheck,
+    responses={
+        200: {"description": "Service is healthy"},
+        503: {"model": ErrorResponse, "description": "Service is unhealthy"}
+    },
+    tags=["health"],
+    summary="Basic Health Check",
+    description="Provides a basic health status for load balancers and monitoring systems"
+)
 async def health_check():
     """
-    Basic health check for load balancers and monitoring systems
-
-    Returns:
-        Dict: Basic health status
+    Basic health check for load balancers and monitoring systems.
+    
+    This endpoint is designed for:
+    - Load balancer health checks
+    - Simple uptime monitoring
+    - Basic service availability verification
+    
+    Returns basic health status with minimal overhead.
     """
     try:
         # Import health monitor
@@ -932,13 +1012,28 @@ async def health_check():
         )
 
 
-@router.get("/health/detailed")
+@router.get("/health/detailed",
+    response_model=DetailedHealthCheck,
+    responses={
+        200: {"description": "Detailed health information"},
+        503: {"model": ErrorResponse, "description": "Service is unhealthy"}
+    },
+    tags=["health"],
+    summary="Detailed Health Check",
+    description="Provides comprehensive health information including system metrics and component status"
+)
 async def detailed_health_check():
     """
-    Detailed health information for monitoring and debugging
-
-    Returns:
-        Dict: Comprehensive health information
+    Detailed health information for monitoring and debugging.
+    
+    This endpoint provides:
+    - System resource usage (memory, CPU)
+    - Component health status (database, WebSocket, game engine)
+    - Active connections and room counts
+    - Server uptime statistics
+    - Performance metrics
+    
+    Useful for debugging performance issues and monitoring system health.
     """
     try:
         # Import health monitor

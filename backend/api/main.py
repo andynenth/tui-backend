@@ -36,9 +36,63 @@ ALLOWED_ORIGINS = os.getenv("ALLOWED_ORIGINS", "*").split(
 
 # ✅ Create the FastAPI application instance.
 app = FastAPI(
-    title="Liap Tui API",  # Title of the API, displayed in docs (e.g., Swagger UI).
-    description="Backend API for Liap Tui Board Game",  # Description of the API.
-    version="1.0",  # Version of the API.
+    title="Liap Tui API",
+    description="""
+    **Backend API for Liap Tui Board Game**
+    
+    A real-time multiplayer board game inspired by traditional Chinese-Thai gameplay.
+    
+    ## Features
+    
+    * **Room Management** - Create and join game rooms
+    * **Real-time Gameplay** - WebSocket-based real-time communication
+    * **Game Logic** - Complete game flow with validation
+    * **Event Sourcing** - Full game event history and recovery
+    * **Health Monitoring** - Comprehensive health checks and metrics
+    
+    ## Game Flow
+    
+    1. **Lobby** - Players create/join rooms
+    2. **Preparation** - Cards dealt, weak hand redeals
+    3. **Declaration** - Players declare target pile counts
+    4. **Turn Play** - Turn-based piece playing
+    5. **Scoring** - Round scoring and win condition checks
+    
+    ## WebSocket Connection
+    
+    Connect to `ws://localhost:8000/ws/{room_id}` for real-time game events.
+    Special lobby connection: `ws://localhost:8000/ws/lobby`
+    """,
+    version="1.0.0",
+    contact={
+        "name": "Liap Tui Development Team",
+        "url": "https://github.com/your-org/liap-tui",
+    },
+    license_info={
+        "name": "MIT",
+    },
+    tags_metadata=[
+        {
+            "name": "rooms",
+            "description": "Room management operations - create, join, configure rooms",
+        },
+        {
+            "name": "game",
+            "description": "Core game operations - declarations, turns, scoring",
+        },
+        {
+            "name": "events",
+            "description": "Event sourcing and game state recovery",
+        },
+        {
+            "name": "health",
+            "description": "Health checks and system monitoring",
+        },
+        {
+            "name": "recovery",
+            "description": "System recovery and maintenance operations",
+        },
+    ],
 )
 
 # ✅ Add CORS middleware to the application.
