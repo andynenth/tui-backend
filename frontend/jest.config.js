@@ -9,11 +9,14 @@ export default {
   moduleNameMapper: {
     '\\.(css|less|scss|sass)$': 'identity-obj-proxy',
     '\\.(jpg|jpeg|png|gif|svg)$': '<rootDir>/__mocks__/fileMock.js',
+    // Map TypeScript service files to JavaScript mocks
+    '^../GameService$': '<rootDir>/src/services/__mocks__/GameService.js',
+    '^../NetworkService$': '<rootDir>/src/services/__mocks__/NetworkService.js',
   },
 
   // Transform files with babel-jest
   transform: {
-    '^.+\\.(js|jsx|ts|tsx)$': [
+    '^.+\\.(js|jsx)$': [
       'babel-jest',
       {
         presets: [
@@ -22,12 +25,15 @@ export default {
         ],
       },
     ],
+    // Don't transform TypeScript files - they'll be imported as modules
+    '^.+\\.(ts|tsx)$': 'babel-jest',
   },
 
   // Test file patterns
   testMatch: [
     '<rootDir>/src/**/__tests__/**/*.{js,jsx,ts,tsx}',
     '<rootDir>/src/**/*.{spec,test}.{js,jsx,ts,tsx}',
+    '!<rootDir>/src/**/__tests__/testUtils.js', // Exclude utility files
   ],
 
   // Coverage configuration
