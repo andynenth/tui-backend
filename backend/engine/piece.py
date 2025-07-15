@@ -18,12 +18,22 @@ class Piece:
 
     @property
     def name(self):
-        # Extract the piece type (e.g., "GENERAL") from kind
+        """
+        Get the piece type name.
+
+        Returns:
+            str: The piece type (e.g., "GENERAL", "SOLDIER", "HORSE")
+        """
         return self.kind.split("_")[0]
 
     @property
     def color(self):
-        # Extract the piece color (e.g., "RED" or "BLACK") from kind
+        """
+        Get the piece color.
+
+        Returns:
+            str: The piece color ("RED" or "BLACK")
+        """
         return self.kind.split("_")[1]
 
     @staticmethod

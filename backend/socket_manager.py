@@ -694,20 +694,60 @@ _socket_manager = SocketManager()
 
 # EXPORT MODULE-LEVEL FUNCTIONS (THIS WAS MISSING!)
 async def register(room_id: str, websocket: WebSocket) -> WebSocket:
+    """
+    Register a WebSocket connection to a room.
+
+    Args:
+        room_id: The ID of the room to register to
+        websocket: The WebSocket connection to register
+
+    Returns:
+        WebSocket: The registered WebSocket connection
+    """
     return await _socket_manager.register(room_id, websocket)
 
 
 def unregister(room_id: str, websocket: WebSocket):
+    """
+    Unregister a WebSocket connection from a room.
+
+    Args:
+        room_id: The ID of the room to unregister from
+        websocket: The WebSocket connection to unregister
+    """
     _socket_manager.unregister(room_id, websocket)
 
 
 async def broadcast(room_id: str, event: str, data: dict):
+    """
+    Broadcast a message to all connections in a room.
+
+    Args:
+        room_id: The ID of the room to broadcast to
+        event: The event type to send
+        data: The event data payload
+    """
     await _socket_manager.broadcast(room_id, event, data)
 
 
 def get_room_stats(room_id: str = None) -> dict:
+    """
+    Get statistics for WebSocket connections.
+
+    Args:
+        room_id: Optional room ID to get stats for. If None, returns stats for all rooms.
+
+    Returns:
+        dict: Connection statistics including active connections, queue sizes, etc.
+    """
     return _socket_manager.get_room_stats(room_id)
 
 
 def ensure_lobby_ready():
+    """
+    Ensure the lobby broadcast task is running.
+
+    Creates the lobby broadcast task if it doesn't exist or has completed.
+    This maintains real-time room list updates for all lobby connections.
+    """
     _socket_manager.ensure_lobby_broadcast_task()
