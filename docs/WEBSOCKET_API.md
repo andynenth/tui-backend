@@ -2,6 +2,8 @@
 
 This document provides a complete reference for the Liap Tui WebSocket API, including all events, message formats, and validation rules.
 
+> **Important**: As of January 2025, WebSocket is the **ONLY** supported method for room management operations. REST API endpoints for room management have been removed to eliminate redundancy and simplify the architecture.
+
 ## Connection
 
 ### WebSocket Endpoint
@@ -86,6 +88,22 @@ Acknowledge message receipt (reliability system).
   }
 }
 ```
+
+## Room Management (WebSocket Only)
+
+All room management operations MUST use WebSocket events. There are no REST API endpoints for these operations.
+
+### Room Operations Overview
+| Operation | WebSocket Event | Description |
+|-----------|----------------|-------------|
+| List Rooms | `get_rooms` or `request_room_list` | Get available rooms |
+| Create Room | `create_room` | Create a new game room |
+| Join Room | `join_room` | Join an existing room |
+| Get Room State | `get_room_state` | Get current room details |
+| Add Bot | `add_bot` | Add bot to a slot |
+| Remove Player | `remove_player` | Remove player/bot from slot |
+| Leave Room | `leave_room` | Exit the current room |
+| Start Game | `start_game` | Begin the game (host only) |
 
 ### Lobby Events
 

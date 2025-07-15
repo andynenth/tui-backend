@@ -12,14 +12,23 @@ from fastapi.responses import JSONResponse
 
 # Import Pydantic models for OpenAPI documentation
 from api.models.game_models import (
-    GameState, Room, HealthCheck, DetailedHealthCheck, 
-    ErrorResponse, SuccessResponse
+    GameState,
+    Room,
+    HealthCheck,
+    DetailedHealthCheck,
+    ErrorResponse,
+    SuccessResponse,
 )
 from api.models.request_models import (
-    CreateRoomRequest, JoinRoomRequest, AssignSlotRequest,
-    StartGameRequest, ExitRoomRequest, DeclareRequest,
-    PlayTurnRequest, RedealRequest, RedealDecisionRequest,
-    ScoreRoundRequest, TriggerRecoveryRequest
+    # Room management models removed - using WebSocket only
+    # CreateRoomRequest, JoinRoomRequest, AssignSlotRequest,
+    # StartGameRequest, ExitRoomRequest,
+    DeclareRequest,
+    PlayTurnRequest,
+    RedealRequest,
+    RedealDecisionRequest,
+    ScoreRoundRequest,
+    TriggerRecoveryRequest,
 )
 
 from api.validation import (
@@ -53,375 +62,10 @@ bot_manager = shared_bot_manager
 # REMOVED: All redeal controller endpoints - state machine handles redeal logic
 
 # ---------- ROOM MANAGEMENT ----------
-
-
-@router.get("/get-room-state",
-    response_model=Dict[str, Any],
-    responses={
-        200: {"description": "Room state retrieved successfully"},
-        404: {"model": ErrorResponse, "description": "Room not found"}
-    },
-    tags=["rooms"],
-    summary="Get Room State",
-    description="Retrieves the complete current state of a specific game room"
-)
-async def get_room_state(
-    room_id: str = Query(..., description="Unique identifier of the room")
-):
-    """
-    Retrieves the current state of a specific game room.
-    
-    Returns comprehensive room information including:
-    - Room metadata (ID, status, players)
-    - Current game phase and state
-    - Player hands and game progression
-    - Score information
-    
-    Used by clients to sync game state after reconnection.
-    """
-    room = room_manager.get_room(room_id)
-    if not room:
-        raise HTTPException(status_code=404, detail="Room not found")
-    return room.summary()
-
-
-@router.post("/create-room",
-    response_model=SuccessResponse,
-    responses={
-        200: {"description": "Room created successfully"},
-        400: {"model": ErrorResponse, "description": "Invalid player name or room creation failed"}
-    },
-    tags=["rooms"],
-    summary="Create Game Room",
-    description="Creates a new game room with the specified player as the host"
-)
-async def create_room(request: CreateRoomRequest = Body(...)):
-    """
-    Creates a new game room and notifies lobby clients.
-    
-    This endpoint:
-    - Creates a new game room with a unique ID
-    - Adds the requesting player as the room host
-    - Notifies all lobby clients about the new room
-    - Returns the room ID for the client to join
-    
-    The player name is validated for length and safety.
-    Room names are optional and can be provided for better UX.
-    """
-    # Validate and sanitize the player name
-    name = RestApiValidator.validate_player_name(request.player_name)
-    room_id = room_manager.create_room(name)
-    room = room_manager.get_room(room_id)
-
-    # Prepare room data for notification
-    room_summary = room.summary()
-
-    # Notify lobby about new room (async, don't wait)
-    asyncio.create_task(
-        notify_lobby_room_created(
-            {"room_id": room_id, "host_name": room.host_name, "room_data": room_summary}
-        )
-    )
-
-    return {"room_id": room_id, "host_name": room.host_name}
-
-
-@router.post("/join-room")
-async def join_room(room_id: str = Query(...), name: str = Query(...)):
-    """
-    ✅ FIXED: Single, complete join_room implementation with enhanced features
-    """
-    # Validate inputs
-    room_id = RestApiValidator.validate_room_id(room_id)
-    name = RestApiValidator.validate_player_name(name)
-    
-    room = room_manager.get_room(room_id)
-    if not room:
-        raise HTTPException(status_code=404, detail="Room not found")
-
-    if room.is_full():
-        raise HTTPException(status_code=409, detail="Selected room is already full.")
-
-    # Store previous occupancy
-    old_occupancy = room.get_occupied_slots()
-
-    try:
-        result = await room.join_room_safe(name)
-
-        if not result["success"]:
-            raise HTTPException(status_code=400, detail=result["reason"])
-
-        new_occupancy = room.get_occupied_slots()
-
-        # Broadcast to room
-        await broadcast(
-            room_id,
-            "room_state_update",
-            {
-                "slots": result["room_state"]["slots"],
-                "host_name": result["room_state"]["host_name"],
-                "operation_id": result["operation_id"],
-            },
-        )
-
-        # Notify lobby about occupancy change
-        if old_occupancy != new_occupancy:
-            await notify_lobby_room_updated(result["room_state"])
-
-        return {
-            "slots": result["room_state"]["slots"],
-            "host_name": result["room_state"]["host_name"],
-            "assigned_slot": result["assigned_slot"],
-            "operation_id": result["operation_id"],
-        }
-
-    except Exception as e:
-        # Fallback to simple join if enhanced method fails
-        try:
-            slot_index = room.join_room(name)
-
-            # Broadcast updates
-            updated_summary = room.summary()
-            await broadcast(
-                room_id,
-                "room_state_update",
-                {
-                    "slots": updated_summary["slots"],
-                    "host_name": updated_summary["host_name"],
-                },
-            )
-
-            # Notify lobby
-            await notify_lobby_room_updated(updated_summary)
-
-            return {
-                "slots": updated_summary["slots"],
-                "host_name": updated_summary["host_name"],
-                "assigned_slot": slot_index,
-            }
-        except ValueError as ve:
-            raise HTTPException(status_code=400, detail=str(ve))
-
-
-@router.get("/list-rooms",
-    response_model=List[Dict[str, Any]],
-    responses={
-        200: {"description": "List of available rooms"}
-    },
-    tags=["rooms"],
-    summary="List Available Rooms",
-    description="Returns a list of all game rooms that are available to join"
-)
-async def list_rooms():
-    """
-    Lists all available rooms (not started and not full).
-    
-    Returns rooms that are:
-    - In waiting status (not started)
-    - Not full (less than 4 players)
-    - Available for new players to join
-    
-    Used by the lobby to show joinable games.
-    """
-    all_rooms = room_manager.list_rooms()
-
-    available_rooms = [
-        room
-        for room in all_rooms
-        if room.get("occupied_slots", 0) < room.get("total_slots", 4)
-    ]
-
-    return {"rooms": available_rooms}
-
-
-@router.post("/assign-slot")
-async def assign_slot(
-    room_id: str = Query(...), slot: int = Query(...), name: Optional[str] = Query(None)
-):
-    """Assign a player or bot to a specific slot"""
-    # Validate inputs
-    room_id = RestApiValidator.validate_room_id(room_id)
-    slot = RestApiValidator.validate_slot_index(slot)
-    if name and name != "null":
-        name = RestApiValidator.validate_player_name(name)
-    
-    room = room_manager.get_room(room_id)
-    if not room:
-        raise HTTPException(status_code=404, detail="Room not found")
-
-    try:
-        if name == "null":
-            name = None
-
-        # Store previous occupancy for comparison
-        old_occupancy = room.get_occupied_slots()
-
-        result = await room.assign_slot_safe(slot, name)
-
-        if not result["success"]:
-            raise HTTPException(
-                status_code=400, detail=result.get("reason", "Assignment failed")
-            )
-
-        new_occupancy = room.get_occupied_slots()
-        updated_summary = room.summary()
-
-        # Broadcast to room
-        await broadcast(
-            room_id,
-            "room_state_update",
-            {
-                "slots": updated_summary["slots"],
-                "host_name": updated_summary["host_name"],
-                "operation_id": result["operation_id"],
-            },
-        )
-
-        # Notify lobby if occupancy changed
-        if old_occupancy != new_occupancy:
-            await notify_lobby_room_updated(updated_summary)
-
-        # Handle kicked player
-        kicked_player = result.get("kicked_player")
-        if kicked_player:
-            await broadcast(
-                room_id,
-                "player_kicked",
-                {
-                    "player": kicked_player,
-                    "reason": "Host assigned a bot to your slot",
-                    "operation_id": result["operation_id"],
-                },
-            )
-
-        return {"ok": True, "operation_id": result["operation_id"]}
-
-    except ValueError as e:
-        raise HTTPException(status_code=400, detail=str(e))
-
-
-@router.post("/start-game")
-async def start_game(room_id: str = Query(...)):
-    """Start the game in a specific room"""
-    room = room_manager.get_room(room_id)
-    if not room:
-        raise HTTPException(status_code=404, detail="Room not found")
-
-    try:
-        # Create broadcast callback for this room
-        async def room_broadcast(event_type: str, event_data: dict):
-            await broadcast(room_id, event_type, event_data)
-
-        # Start game with state machine
-        result = await room.start_game_safe(broadcast_callback=room_broadcast)
-
-        if not result["success"]:
-            raise HTTPException(status_code=400, detail="Failed to start game")
-
-        # Register game with bot manager and state machine
-        bot_manager.register_game(room_id, room.game, room.game_state_machine)
-
-        print(f"🎯 Game started with StateMachine for room {room_id}")
-
-        # State machine handles all PREPARATION phase logic automatically
-        # including dealing, weak hand detection, redeal logic, etc.
-
-        return {"ok": True, "operation_id": result["operation_id"]}
-
-    except ValueError as e:
-        raise HTTPException(status_code=400, detail=str(e))
-    except Exception as e:
-        print(f"❌ Unexpected error in start_game: {str(e)}")
-        raise HTTPException(status_code=500, detail="Internal server error")
-
-
-@router.post("/redeal-decision")
-async def handle_redeal_decision(
-    room_id: str = Query(...),
-    player_name: str = Query(...),
-    choice: str = Query(...),  # "accept" or "decline"
-):
-    """Handle redeal decision from player - REPLACED: Now uses state machine only"""
-    # Validate inputs
-    room_id = RestApiValidator.validate_room_id(room_id)
-    player_name = RestApiValidator.validate_player_name(player_name)
-    choice = RestApiValidator.validate_redeal_choice(choice)
-    
-    room = room_manager.get_room(room_id)
-    if not room or not room.game_state_machine:
-        raise HTTPException(status_code=404, detail="Game not found")
-
-    # Convert choice to boolean
-    accept = choice.lower() == "accept"
-
-    # Create GameAction for redeal decision - NO controller needed
-    action = GameAction(
-        player_name=player_name,
-        action_type=ActionType.REDEAL_RESPONSE,
-        payload={"accept": accept},
-    )
-
-    try:
-        # Route through state machine ONLY
-        result = await room.game_state_machine.handle_action(action)
-        return {
-            "status": "ok",
-            "choice": choice,
-            "processed": result.get("success", False),
-        }
-
-    except Exception as e:
-        # Error recovery
-        return {"status": "error", "choice": choice, "error": str(e)}
-
-
-@router.post("/exit-room")
-async def exit_room(room_id: str = Query(...), name: str = Query(...)):
-    """Exit a room (delete if host leaves)"""
-    # Validate inputs
-    room_id = RestApiValidator.validate_room_id(room_id)
-    name = RestApiValidator.validate_player_name(name)
-    
-    room = room_manager.get_room(room_id)
-    if not room:
-        return {"ok": True, "message": "Room does not exist"}
-
-    # Store previous occupancy
-    old_occupancy = room.get_occupied_slots()
-    is_host = room.exit_room(name)
-
-    if is_host:
-        # Host is leaving - room will be deleted
-        await broadcast(
-            room_id, "room_closed", {"message": "Host has exited the room."}
-        )
-        await asyncio.sleep(0.1)
-
-        # Notify lobby about room closure
-        await notify_lobby_room_closed(room_id, "Host exited")
-
-        room_manager.delete_room(room_id)
-    else:
-        # Player (not host) is leaving
-        new_occupancy = room.get_occupied_slots()
-        updated_summary = room.summary()
-
-        await broadcast(
-            room_id,
-            "room_state_update",
-            {
-                "slots": updated_summary["slots"],
-                "host_name": updated_summary["host_name"],
-            },
-        )
-        await broadcast(room_id, "player_left", {"player": name})
-
-        # Notify lobby about occupancy change
-        if old_occupancy != new_occupancy:
-            await notify_lobby_room_updated(updated_summary)
-
-    return {"ok": True}
-
+# NOTE: Room management has been migrated to WebSocket-only implementation.
+# All room operations now use WebSocket events exclusively.
+# Migration completed: January 2025
+# See REST_TO_WEBSOCKET_MIGRATION.md for details.
 
 # ---------- GAME PHASES ----------
 
@@ -435,7 +79,7 @@ async def declare(
     room_id = RestApiValidator.validate_room_id(room_id)
     player_name = RestApiValidator.validate_player_name(player_name)
     value = RestApiValidator.validate_declaration_value(value)
-    
+
     room = room_manager.get_room(room_id)
     if not room or not room.game_state_machine:
         raise HTTPException(status_code=404, detail="Game or state machine not found")
@@ -482,7 +126,7 @@ async def play_turn(
     room_id = RestApiValidator.validate_room_id(room_id)
     player_name = RestApiValidator.validate_player_name(player_name)
     indices = RestApiValidator.validate_piece_indices_string(piece_indexes)
-    
+
     room = room_manager.get_room(room_id)
     if not room or not room.game_state_machine:
         raise HTTPException(status_code=404, detail="Game or state machine not found")
@@ -547,7 +191,7 @@ async def redeal(room_id: str = Query(...), player_name: str = Query(...)):
     # Validate inputs
     room_id = RestApiValidator.validate_room_id(room_id)
     player_name = RestApiValidator.validate_player_name(player_name)
-    
+
     room = room_manager.get_room(room_id)
     if not room or not room.game_state_machine:
         raise HTTPException(status_code=404, detail="Game not found")
@@ -638,6 +282,8 @@ async def get_room_stats(room_id: Optional[str] = Query(None)):
 
 
 # ---------- LOBBY NOTIFICATION FUNCTIONS ----------
+# NOTE: These functions are used by WebSocket room management.
+# They remain active even though REST endpoints are removed.
 
 
 async def notify_lobby_room_created(room_data):
@@ -754,7 +400,7 @@ async def get_room_events_since(room_id: str, since_sequence: int):
     # Validate inputs
     room_id = RestApiValidator.validate_room_id(room_id)
     since_sequence = RestApiValidator.validate_sequence_number(since_sequence)
-    
+
     if not EVENT_STORE_AVAILABLE or not event_store:
         raise HTTPException(status_code=501, detail="Event store not available")
 
@@ -927,7 +573,7 @@ async def cleanup_old_events(
     """
     # Validate input
     older_than_hours = RestApiValidator.validate_older_than_hours(older_than_hours)
-    
+
     if not EVENT_STORE_AVAILABLE or not event_store:
         raise HTTPException(status_code=501, detail="Event store not available")
 
@@ -950,25 +596,26 @@ async def cleanup_old_events(
 # ---------- HEALTH MONITORING & RECOVERY ENDPOINTS ----------
 
 
-@router.get("/health",
+@router.get(
+    "/health",
     response_model=HealthCheck,
     responses={
         200: {"description": "Service is healthy"},
-        503: {"model": ErrorResponse, "description": "Service is unhealthy"}
+        503: {"model": ErrorResponse, "description": "Service is unhealthy"},
     },
     tags=["health"],
     summary="Basic Health Check",
-    description="Provides a basic health status for load balancers and monitoring systems"
+    description="Provides a basic health status for load balancers and monitoring systems",
 )
 async def health_check():
     """
     Basic health check for load balancers and monitoring systems.
-    
+
     This endpoint is designed for:
     - Load balancer health checks
     - Simple uptime monitoring
     - Basic service availability verification
-    
+
     Returns basic health status with minimal overhead.
     """
     try:
@@ -1012,27 +659,28 @@ async def health_check():
         )
 
 
-@router.get("/health/detailed",
+@router.get(
+    "/health/detailed",
     response_model=DetailedHealthCheck,
     responses={
         200: {"description": "Detailed health information"},
-        503: {"model": ErrorResponse, "description": "Service is unhealthy"}
+        503: {"model": ErrorResponse, "description": "Service is unhealthy"},
     },
     tags=["health"],
     summary="Detailed Health Check",
-    description="Provides comprehensive health information including system metrics and component status"
+    description="Provides comprehensive health information including system metrics and component status",
 )
 async def detailed_health_check():
     """
     Detailed health information for monitoring and debugging.
-    
+
     This endpoint provides:
     - System resource usage (memory, CPU)
     - Component health status (database, WebSocket, game engine)
     - Active connections and room counts
     - Server uptime statistics
     - Performance metrics
-    
+
     Useful for debugging performance issues and monitoring system health.
     """
     try:
