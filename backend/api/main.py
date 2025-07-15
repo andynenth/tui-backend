@@ -8,6 +8,7 @@ from backend.api.routes.routes import (
 from backend.api.routes.ws import (
     router as ws_router,  # Import the WebSocket router for real-time communication.
 )
+from backend.api.middleware import RateLimitMiddleware  # Import rate limiting middleware
 from dotenv import (  # Library to load environment variables from a .env file.
     load_dotenv,
 )
@@ -21,6 +22,13 @@ from fastapi.staticfiles import StaticFiles  # Utility to serve static files.
 # ✅ Load environment variables from the .env file.
 # This makes configuration values available via os.getenv().
 load_dotenv()
+
+# ✅ Set up logging configuration
+try:
+    from config.logging_config import setup_logging
+    setup_logging()
+except ImportError:
+    print("Warning: Logging configuration not available, using defaults")
 
 # ✅ Read configuration values from environment variables.
 # These variables control the static file directory, the main HTML file, and allowed origins for CORS.
@@ -105,6 +113,15 @@ app.add_middleware(
     allow_headers=["*"],  # Allows all HTTP headers.
 )
 
+# ✅ Add Rate Limiting middleware (if enabled)
+# This protects the API from abuse and ensures fair usage
+rate_limit_enabled = os.getenv("RATE_LIMIT_ENABLED", "true").lower() == "true"
+if rate_limit_enabled:
+    app.add_middleware(RateLimitMiddleware)
+    print("Rate limiting is enabled")
+else:
+    print("WARNING: Rate limiting is disabled")
+
 # ✅ Include the API and WebSocket routers.
 # These routers define the specific endpoints and their handlers for the application.
 app.include_router(
@@ -125,5 +142,13 @@ app.mount("/", StaticFiles(directory=STATIC_DIR, html=True), name="static")
 # or for direct access, index.html is still served.
 @app.get("/")
 def read_index():
-    # Returns the index.html file from the static directory.
+    """
+    Serve the main index.html file.
+    
+    This is a fallback endpoint in case the static file mount
+    doesn't catch the root path for some reason.
+    
+    Returns:
+        FileResponse: The index.html file from the static directory
+    """
     return FileResponse(os.path.join(STATIC_DIR, INDEX_FILE))

@@ -38,7 +38,16 @@ export type GameConfigKey = keyof typeof GAME;
 // Network Configuration Constants
 export const NETWORK = {
   RECONNECT_BACKOFF: [1000, 2000, 4000, 8000, 16000] as const,
-  WEBSOCKET_BASE_URL: 'ws://localhost:5050/ws',
+  // Build WebSocket URL dynamically based on current location
+  get WEBSOCKET_BASE_URL(): string {
+    if (typeof window !== 'undefined') {
+      const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+      const host = window.location.host;
+      return `${protocol}//${host}/ws`;
+    }
+    // Fallback for server-side rendering or tests
+    return 'ws://localhost:5050/ws';
+  },
 } as const;
 
 // Type for NETWORK keys

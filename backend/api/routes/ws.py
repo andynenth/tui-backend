@@ -1,6 +1,7 @@
 # backend/api/routes/ws.py
 
 import asyncio
+import logging
 
 import backend.socket_manager
 from backend.shared_instances import shared_room_manager
@@ -8,6 +9,10 @@ from backend.socket_manager import broadcast, register, unregister
 from fastapi import APIRouter, WebSocket, WebSocketDisconnect
 
 from api.validation import validate_websocket_message
+from api.middleware.websocket_rate_limit import check_websocket_rate_limit, send_rate_limit_error
+
+# Set up logging
+logger = logging.getLogger(__name__)
 
 print(f"socket_manager id in {__name__}: {id(backend.socket_manager)}")
 
@@ -42,6 +47,34 @@ async def websocket_endpoint(websocket: WebSocket, room_id: str):
             event_name = message.get("event")
             # Use sanitized data instead of raw event data
             event_data = sanitized_data or message.get("data", {})
+            
+            # Check rate limit for this event with proper error handling
+            try:
+                rate_limit_allowed, rate_limit_info = await check_websocket_rate_limit(
+                    websocket, room_id, event_name
+                )
+                
+                if not rate_limit_allowed:
+                    # Send rate limit error and continue
+                    try:
+                        await send_rate_limit_error(registered_ws, rate_limit_info)
+                    except Exception as e:
+                        logger.warning(f"Error sending rate limit message: {e}")
+                    continue
+                elif rate_limit_info and "warning" in rate_limit_info:
+                    # Send rate limit warning but allow the event to proceed
+                    try:
+                        await registered_ws.send_json({
+                            "event": "rate_limit_warning",
+                            "data": rate_limit_info["warning"]
+                        })
+                    except Exception as e:
+                        logger.debug(f"Could not send rate limit warning: {e}")
+            except Exception as e:
+                # Log the error but don't close the connection
+                logger.error(f"Rate limit check error for {event_name}: {e}", exc_info=True)
+                # Allow the event to proceed to prevent connection disruption
+                rate_limit_allowed = True
 
             # Handle reliable message delivery events
             if event_name == "ack":
