@@ -156,7 +156,7 @@ This document tracks the migration of room management functionality from REST AP
 
 ### Frontend Files
 - [x] Verify no changes needed (already using WebSocket)
-- [ ] Remove any unused REST client code (no REST client code found)
+- [x] Remove any unused REST client code (removed frontend/api.js)
 - [ ] Update any API documentation references (future task)
 
 ## Testing Checklist

@@ -26,6 +26,8 @@ class WebSocketMessageValidator:
 
     # Allowed event names
     ALLOWED_EVENTS = {
+        # System events
+        "ping",  # Heartbeat from client
         # Lobby events
         "request_room_list",
         "get_rooms",

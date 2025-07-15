@@ -286,6 +286,99 @@ class SocketManager:
 - Automatic retry with exponential backoff
 - Message deduplication on client side
 
+### WebSocket Heartbeat Mechanism
+
+#### The Problem
+
+WebSocket connections can be silently dropped by intermediate network infrastructure:
+- **Corporate Proxies**: Often timeout idle connections after 60-120 seconds
+- **Firewalls**: May close connections deemed inactive
+- **Load Balancers**: Typically have idle timeouts (AWS ELB: 60s default)
+- **NAT Gateways**: Can forget connection mappings during inactivity
+- **Mobile Networks**: Aggressive power-saving drops idle connections
+
+Without heartbeats, clients might not realize they're disconnected until they try to send data, leading to:
+- Delayed error detection
+- Poor user experience
+- Inconsistent game state
+- "Ghost" connections on the server
+
+#### The Solution
+
+The frontend NetworkService implements automatic heartbeat monitoring for all WebSocket connections:
+
+```typescript
+// frontend/src/services/NetworkService.ts
+class NetworkService {
+  private heartbeatInterval: NodeJS.Timeout | null = null;
+  
+  private startHeartbeat(roomId: string): void {
+    this.heartbeatInterval = setInterval(() => {
+      if (this.isConnected(roomId)) {
+        this.send(roomId, 'ping', { timestamp: Date.now() });
+      }
+    }, HEARTBEAT_INTERVAL); // 30 seconds
+  }
+}
+```
+
+#### Implementation Details
+
+1. **Automatic Activation**: Heartbeat starts immediately upon successful connection
+2. **Universal Coverage**: All connections (lobby, room, game) automatically get heartbeat
+3. **30-Second Interval**: Chosen to be well under typical 60-120 second timeouts
+4. **Bidirectional Monitoring**: Both client ping and server pong confirm connection health
+
+#### Backend Handling
+
+The backend recognizes and responds to heartbeat pings:
+
+```python
+# backend/api/routes/ws.py
+elif event_name == "ping":
+    await websocket.send_json({
+        "event": "pong",
+        "data": {
+            "timestamp": event_data.get("timestamp"),
+            "server_time": asyncio.get_event_loop().time()
+        }
+    })
+```
+
+#### Benefits
+
+1. **Connection Reliability**
+   - Prevents silent connection drops
+   - Maintains persistent game sessions
+   - Works across all network environments
+
+2. **Early Detection**
+   - Identifies connection issues within 30 seconds
+   - Triggers reconnection logic promptly
+   - Minimizes game disruption
+
+3. **Network Compatibility**
+   - Works with strict corporate firewalls
+   - Handles mobile network transitions
+   - Compatible with all proxy configurations
+
+4. **Performance Impact**
+   - Minimal: ~100 bytes every 30 seconds
+   - No gameplay interference
+   - Negligible battery impact on mobile
+
+#### Connection Lifecycle
+
+```
+1. WebSocket connects → startHeartbeat()
+2. Every 30s: send ping → receive pong
+3. If pong missing: connection likely dead
+4. Disconnect detected → stopHeartbeat()
+5. Reconnect initiated → new heartbeat starts
+```
+
+This heartbeat mechanism is a critical component of the enterprise architecture, ensuring reliable real-time communication across diverse network environments.
+
 ### Real-time Synchronization
 
 #### Enterprise Broadcasting
