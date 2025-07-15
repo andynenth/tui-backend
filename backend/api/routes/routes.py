@@ -2,6 +2,7 @@
 
 import asyncio
 import time
+from datetime import datetime
 from typing import Any, Dict, List, Optional
 
 import backend.socket_manager
@@ -15,6 +16,7 @@ from api.models.game_models import (
     HealthCheck,
     DetailedHealthCheck,
     ErrorResponse,
+    HealthStatus,
 )
 
 from api.validation import RestApiValidator
@@ -465,21 +467,43 @@ async def detailed_health_check():
     Useful for debugging performance issues and monitoring system health.
     """
     try:
-        # Import health monitor
+        # Import health monitor and get system stats
         from api.services.health_monitor import health_monitor
-
+        import psutil
+        
         health_status = await health_monitor.get_health_status()
-
+        
+        # Convert component status to HealthStatus enum
+        components = {
+            "event_store": HealthStatus.HEALTHY if EVENT_STORE_AVAILABLE else HealthStatus.UNHEALTHY,
+            "health_monitor": HealthStatus.HEALTHY,
+            "recovery_manager": HealthStatus.HEALTHY,
+            "websocket_manager": HealthStatus.HEALTHY,
+            "room_manager": HealthStatus.HEALTHY,
+        }
+        
+        # Get memory usage
+        process = psutil.Process()
+        memory_usage_mb = process.memory_info().rss / 1024 / 1024
+        
+        # Get active rooms and connections
+        active_rooms = len(room_manager.rooms)
+        active_connections = sum(
+            len(conns) for conns in backend.socket_manager._socket_manager.room_connections.values()
+        )
+        
+        # Return in the expected DetailedHealthCheck format
         return {
-            "success": True,
-            "health": health_status.to_dict(),
-            "components": {
-                "event_store": EVENT_STORE_AVAILABLE,
-                "health_monitor": True,
-                "recovery_manager": True,
-                "websocket_manager": True,
-                "room_manager": True,
-            },
+            "status": HealthStatus.HEALTHY if health_status.status.value == "healthy" else (
+                HealthStatus.DEGRADED if health_status.status.value == "warning" else HealthStatus.UNHEALTHY
+            ),
+            "timestamp": datetime.now().isoformat(),
+            "version": "1.0.0",
+            "uptime_seconds": health_status.uptime_seconds,
+            "components": components,
+            "memory_usage_mb": memory_usage_mb,
+            "active_rooms": active_rooms,
+            "active_connections": active_connections,
         }
 
     except Exception as e:
