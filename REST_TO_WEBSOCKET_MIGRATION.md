@@ -5,6 +5,7 @@
 This document tracks the migration of room management functionality from REST API to WebSocket-only implementation in the Liap Tui game project. The goal is to eliminate redundancy, simplify the codebase, and create a single source of truth for room operations.
 
 ### Key Benefits
+
 - **Eliminate Redundancy**: Remove duplicate implementations of room management
 - **Simplify Architecture**: One system instead of two for room operations
 - **Improve Real-time Experience**: All operations use WebSocket's real-time capabilities
@@ -12,12 +13,14 @@ This document tracks the migration of room management functionality from REST AP
 - **Clear Separation**: REST for health/admin, WebSocket for gameplay
 
 ### Current State (January 2025)
+
 - **REST Endpoints**: ~~24~~ 10 total endpoints (14 removed), ~~7~~ 0 for room management
 - **WebSocket Events**: Complete room management and game action implementation
 - **Frontend Usage**: Already using WebSocket exclusively for all game operations
 - **Code Duplication**: ~~Both systems call same underlying RoomManager~~ Eliminated
 
 ## Additional Completed Tasks (Not in Original Checklist)
+
 - [x] Create WEBSOCKET_MIGRATION_COMPLETE.md summary document
 - [x] Fix duplicate JSONResponse imports
 - [x] Run linter and verify no syntax errors
@@ -28,6 +31,7 @@ This document tracks the migration of room management functionality from REST AP
 ## Migration Phases
 
 ### Phase 1: Analysis and Planning ✅
+
 - [x] Analyze current REST endpoint usage
 - [x] Verify WebSocket has complete functionality
 - [x] Confirm frontend uses WebSocket only
@@ -35,6 +39,7 @@ This document tracks the migration of room management functionality from REST AP
 - [ ] ~~Get stakeholder approval~~ (proceeded without formal approval)
 
 ### Phase 2: Documentation Updates
+
 - [x] Update WEBSOCKET_API.md with room management as primary
 - [ ] ~~Create migration guide for any external integrations~~ (no external integrations identified)
 - [x] Update README.md to reflect WebSocket-first approach
@@ -42,14 +47,17 @@ This document tracks the migration of room management functionality from REST AP
 - [ ] Update architecture diagrams (future task)
 
 ### Phase 3: Code Migration
+
 #### 3.1 Backend Changes
+
 - [x] Comment out room REST endpoints (test first)
 - [x] Remove room REST endpoint implementations
 - [x] Remove unused import statements
-- [x] Keep helper functions (notify_lobby_*) - used by WebSocket
+- [x] Keep helper functions (notify*lobby*\*) - used by WebSocket
 - [x] Clean up routes.py file structure
 
 #### 3.2 Model Cleanup
+
 - [x] Remove CreateRoomRequest from request_models.py
 - [x] Remove JoinRoomRequest from request_models.py
 - [x] Remove AssignSlotRequest from request_models.py
@@ -58,12 +66,14 @@ This document tracks the migration of room management functionality from REST AP
 - [x] Update model imports in routes.py
 
 #### 3.3 Test Updates
+
 - [ ] ~~Remove/update REST room endpoint tests~~ (deferred - tests not blocking)
 - [ ] ~~Ensure WebSocket tests cover all scenarios~~ (existing tests sufficient)
 - [ ] ~~Update integration tests~~ (deferred - tests not blocking)
 - [ ] ~~Verify test coverage remains high~~ (manual testing completed)
 
 ### Phase 4: Testing and Validation
+
 - [x] Run full backend test suite
 - [x] Run frontend test suite
 - [x] Manual testing checklist:
@@ -77,6 +87,7 @@ This document tracks the migration of room management functionality from REST AP
 - [x] Load testing with multiple concurrent rooms ✅ (multiple connections handled)
 
 ### Phase 5: Cleanup and Optimization ✅
+
 - [x] Remove any dead code found during migration
 - [x] Update OpenAPI documentation
 - [x] Optimize WebSocket message handling
@@ -84,6 +95,7 @@ This document tracks the migration of room management functionality from REST AP
 - [x] Update all documentation
 
 ### Phase 6: Complete Game Action Migration ✅ (January 2025)
+
 - [x] Identify that frontend uses WebSocket for ALL game actions
 - [x] Remove dead REST endpoints: /declare, /play-turn, /redeal, /score-round
 - [x] Remove associated unused imports
@@ -94,45 +106,47 @@ This document tracks the migration of room management functionality from REST AP
 
 ### Room Management Endpoints (Phase 1-5)
 
-| REST Endpoint | WebSocket Event | Status | Notes |
-|--------------|-----------------|--------|-------|
-| GET /get-room-state | get_room_state | ✅ Removed | Migrated to WebSocket |
-| POST /create-room | create_room | ✅ Removed | Migrated to WebSocket |
-| POST /join-room | join_room | ✅ Removed | Migrated to WebSocket |
-| GET /list-rooms | get_rooms/request_room_list | ✅ Removed | Migrated to WebSocket |
-| POST /assign-slot | add_bot/remove_player | ✅ Removed | Migrated to WebSocket |
-| POST /start-game | start_game | ✅ Removed | Migrated to WebSocket |
-| POST /exit-room | leave_room | ✅ Removed | Migrated to WebSocket |
+| REST Endpoint       | WebSocket Event             | Status     | Notes                 |
+| ------------------- | --------------------------- | ---------- | --------------------- |
+| GET /get-room-state | get_room_state              | ✅ Removed | Migrated to WebSocket |
+| POST /create-room   | create_room                 | ✅ Removed | Migrated to WebSocket |
+| POST /join-room     | join_room                   | ✅ Removed | Migrated to WebSocket |
+| GET /list-rooms     | get_rooms/request_room_list | ✅ Removed | Migrated to WebSocket |
+| POST /assign-slot   | add_bot/remove_player       | ✅ Removed | Migrated to WebSocket |
+| POST /start-game    | start_game                  | ✅ Removed | Migrated to WebSocket |
+| POST /exit-room     | leave_room                  | ✅ Removed | Migrated to WebSocket |
 
 ### Game Action Endpoints (Phase 6)
 
-| REST Endpoint | WebSocket Event | Status | Notes |
-|--------------|-----------------|--------|-------|
-| POST /declare | declare | ✅ Removed | Frontend uses WebSocket |
-| POST /play-turn | play | ✅ Removed | Frontend uses WebSocket |
-| POST /redeal | accept_redeal/decline_redeal | ✅ Removed | Frontend uses WebSocket |
-| POST /score-round | (automatic) | ✅ Removed | Backend triggers automatically |
+| REST Endpoint     | WebSocket Event              | Status     | Notes                          |
+| ----------------- | ---------------------------- | ---------- | ------------------------------ |
+| POST /declare     | declare                      | ✅ Removed | Frontend uses WebSocket        |
+| POST /play-turn   | play                         | ✅ Removed | Frontend uses WebSocket        |
+| POST /redeal      | accept_redeal/decline_redeal | ✅ Removed | Frontend uses WebSocket        |
+| POST /score-round | (automatic)                  | ✅ Removed | Backend triggers automatically |
 
 ## Preserved REST Endpoints
 
-| Endpoint | Purpose | Reason for Keeping |
-|----------|---------|-------------------|
-| /health | Basic health check | Standard monitoring |
-| /health/detailed | System health metrics | DevOps requirements |
-| /debug/room-stats | Debug information | Admin tooling |
-| /system/stats | System statistics | Performance monitoring |
-| /event-store/* | Event management | Admin operations |
-| /recovery/* | Recovery procedures | System maintenance |
+| Endpoint          | Purpose               | Reason for Keeping     |
+| ----------------- | --------------------- | ---------------------- |
+| /health           | Basic health check    | Standard monitoring    |
+| /health/detailed  | System health metrics | DevOps requirements    |
+| /debug/room-stats | Debug information     | Admin tooling          |
+| /system/stats     | System statistics     | Performance monitoring |
+| /event-store/\*   | Event management      | Admin operations       |
+| /recovery/\*      | Recovery procedures   | System maintenance     |
 
 ## Risk Assessment
 
 ### Risks
+
 1. **External Integrations**: Unknown external tools might use REST endpoints
 2. **Testing Tools**: Postman/curl workflows might break
 3. **Monitoring**: Health dashboards might expect REST endpoints
 4. **Documentation**: Outdated docs might confuse developers
 
 ### Mitigation Strategies
+
 1. **Deprecation Period**: Add deprecation warnings before removal
 2. **Test Coverage**: Ensure 100% WebSocket test coverage first
 3. **Documentation**: Update all docs before code changes
@@ -142,6 +156,7 @@ This document tracks the migration of room management functionality from REST AP
 ## File Modification Checklist
 
 ### Backend Files
+
 - [x] `backend/api/routes/routes.py` - Remove room endpoints
 - [x] `backend/api/models/request_models.py` - Remove room models
 - [x] `backend/api/models/__init__.py` - Update exports
@@ -149,12 +164,14 @@ This document tracks the migration of room management functionality from REST AP
 - [ ] `backend/tests/test_*.py` - Update/remove REST tests
 
 ### Documentation Files
+
 - [x] `docs/WEBSOCKET_API.md` - Enhance room documentation
 - [x] `README.md` - Update architecture section
-- [ ] `CODE_QUALITY_CHECKLIST.md` - Update API section
-- [ ] `QUALITY_REVIEW_LOG.md` - Document this migration
+- [x] `CODE_QUALITY_CHECKLIST.md` - Update API section
+- [x] `QUALITY_REVIEW_LOG.md` - Document this migration ✅ COMPLETE
 
 ### Frontend Files
+
 - [x] Verify no changes needed (already using WebSocket)
 - [x] Remove any unused REST client code (removed frontend/api.js)
 - [ ] Update any API documentation references (future task)
@@ -162,18 +179,21 @@ This document tracks the migration of room management functionality from REST AP
 ## Testing Checklist
 
 ### Unit Tests
+
 - [ ] All room operations work via WebSocket
 - [ ] Error handling works correctly
 - [ ] Validation works as expected
 - [ ] Concurrent operations handled properly
 
 ### Integration Tests
+
 - [ ] Full game flow works without REST
 - [ ] Lobby updates work correctly
 - [ ] Reconnection scenarios work
 - [ ] Bot management works
 
 ### Performance Tests
+
 - [ ] WebSocket handles load adequately
 - [ ] No memory leaks in long-running connections
 - [ ] Message queuing works under load
@@ -182,12 +202,14 @@ This document tracks the migration of room management functionality from REST AP
 ## Success Metrics
 
 ### Before Migration
+
 - Total REST endpoints: 24
 - Room management endpoints: 7
 - Lines of code in routes.py: ~1200
 - Duplicate implementations: 2 (REST + WS)
 
 ### After Migration (Actual) ✅
+
 - Total REST endpoints: 10 (-14) ✅
   - Room management endpoints removed: 7
   - Game action endpoints removed: 7 (Phase 6)
@@ -198,6 +220,7 @@ This document tracks the migration of room management functionality from REST AP
 - All game operations now WebSocket-only ✅
 
 ### Performance Improvements
+
 - [ ] Measure average room creation time
 - [ ] Measure room list update latency
 - [ ] Measure memory usage reduction
@@ -210,7 +233,7 @@ If issues arise during migration:
 1. **Phase-based Rollback**: Each phase creates a git commit
 2. **Feature Flags**: Could add to enable/disable REST
 3. **Parallel Running**: Keep REST commented, not deleted initially
-4. **Quick Restore**: 
+4. **Quick Restore**:
    ```bash
    git checkout <commit-before-phase-X>
    ./start.sh
@@ -229,6 +252,7 @@ If issues arise during migration:
 ## Notes and Decisions
 
 ### Why Remove REST Room Management?
+
 1. Frontend already uses WebSocket exclusively
 2. Reduces complexity and maintenance burden
 3. Eliminates synchronization bugs
@@ -236,12 +260,14 @@ If issues arise during migration:
 5. Simplifies architecture for new developers
 
 ### What We're Keeping
+
 1. Health check endpoints (monitoring)
 2. Admin/debug endpoints (operations)
 3. Event store endpoints (admin tools)
 4. ~~Game action endpoints~~ (removed in Phase 6)
 
 ### Future Considerations
+
 - ~~Consider removing game action REST endpoints if unused~~ (completed in Phase 6)
 - Implement WebSocket-based admin tools
 - Add WebSocket connection monitoring
