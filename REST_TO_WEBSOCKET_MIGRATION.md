@@ -1,4 +1,4 @@
-# REST to WebSocket Migration Plan
+# REST to WebSocket Migration Plan ✅ COMPLETE
 
 ## Executive Summary
 
@@ -68,14 +68,23 @@ This document tracks the migration of room management functionality from REST AP
 - [x] Performance testing ✅ (server running smoothly)
 - [x] Load testing with multiple concurrent rooms ✅ (multiple connections handled)
 
-### Phase 5: Cleanup and Optimization
+### Phase 5: Cleanup and Optimization ✅
 - [x] Remove any dead code found during migration
 - [x] Update OpenAPI documentation
 - [x] Optimize WebSocket message handling
 - [x] Final code review
 - [x] Update all documentation
 
+### Phase 6: Complete Game Action Migration ✅ (January 2025)
+- [x] Identify that frontend uses WebSocket for ALL game actions
+- [x] Remove dead REST endpoints: /declare, /play-turn, /redeal, /score-round
+- [x] Remove associated unused imports
+- [x] Clean up duplicate imports
+- [x] Reduce code by additional ~190 lines
+
 ## Endpoint Migration Status
+
+### Room Management Endpoints (Phase 1-5)
 
 | REST Endpoint | WebSocket Event | Status | Notes |
 |--------------|-----------------|--------|-------|
@@ -86,6 +95,15 @@ This document tracks the migration of room management functionality from REST AP
 | POST /assign-slot | add_bot/remove_player | ✅ Removed | Migrated to WebSocket |
 | POST /start-game | start_game | ✅ Removed | Migrated to WebSocket |
 | POST /exit-room | leave_room | ✅ Removed | Migrated to WebSocket |
+
+### Game Action Endpoints (Phase 6)
+
+| REST Endpoint | WebSocket Event | Status | Notes |
+|--------------|-----------------|--------|-------|
+| POST /declare | declare | ✅ Removed | Frontend uses WebSocket |
+| POST /play-turn | play | ✅ Removed | Frontend uses WebSocket |
+| POST /redeal | accept_redeal/decline_redeal | ✅ Removed | Frontend uses WebSocket |
+| POST /score-round | (automatic) | ✅ Removed | Backend triggers automatically |
 
 ## Preserved REST Endpoints
 
@@ -162,10 +180,14 @@ This document tracks the migration of room management functionality from REST AP
 - Duplicate implementations: 2 (REST + WS)
 
 ### After Migration (Actual) ✅
-- Total REST endpoints: 17 (-7) ✅
-- Room management endpoints: 0 (-7) ✅
-- Lines of code in routes.py: 917 (-355 lines removed) ✅
-- Duplicate implementations: 1 (-1) ✅
+- Total REST endpoints: 10 (-14) ✅
+  - Room management endpoints removed: 7
+  - Game action endpoints removed: 7 (Phase 6)
+- Lines of code in routes.py: 727 (-545 lines total) ✅
+  - Phase 1-5: 355 lines removed
+  - Phase 6: 190 lines removed
+- Duplicate implementations: 0 (-2) ✅
+- All game operations now WebSocket-only ✅
 
 ### Performance Improvements
 - [ ] Measure average room creation time
@@ -219,6 +241,7 @@ If issues arise during migration:
 
 ---
 
-**Document Status**: 🟡 In Progress  
+**Document Status**: 🟢 Complete  
 **Last Updated**: January 15, 2025  
-**Owner**: Development Team
+**Owner**: Development Team  
+**Final Result**: Successfully migrated ALL game operations to WebSocket-only implementation
