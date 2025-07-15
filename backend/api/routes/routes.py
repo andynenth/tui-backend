@@ -7,41 +7,18 @@ from typing import Any, Dict, List, Optional
 import backend.socket_manager
 from backend.shared_instances import shared_bot_manager, shared_room_manager
 from backend.socket_manager import broadcast
-from fastapi import APIRouter, HTTPException, Query, Body, status
+from fastapi import APIRouter, HTTPException, Query
 from fastapi.responses import JSONResponse
 
 # Import Pydantic models for OpenAPI documentation
 from api.models.game_models import (
-    GameState,
-    Room,
     HealthCheck,
     DetailedHealthCheck,
     ErrorResponse,
-    SuccessResponse,
-)
-from api.models.request_models import (
-    # Room management models removed - using WebSocket only
-    # CreateRoomRequest, JoinRoomRequest, AssignSlotRequest,
-    # StartGameRequest, ExitRoomRequest,
-    DeclareRequest,
-    PlayTurnRequest,
-    RedealRequest,
-    RedealDecisionRequest,
-    ScoreRoundRequest,
-    TriggerRecoveryRequest,
 )
 
-from api.validation import (
-    RestApiValidator,
-    get_validated_declaration,
-    get_validated_play_turn,
-    get_validated_player_name,
-    get_validated_room_id,
-)
-from engine.game import Game
-from engine.rules import get_play_type, is_valid_play
+from api.validation import RestApiValidator
 from engine.state_machine.core import ActionType, GameAction
-from engine.win_conditions import get_winners, is_game_over
 
 # Import EventStore for recovery endpoints
 try:
@@ -61,204 +38,12 @@ bot_manager = shared_bot_manager
 
 # REMOVED: All redeal controller endpoints - state machine handles redeal logic
 
-# ---------- ROOM MANAGEMENT ----------
-# NOTE: Room management has been migrated to WebSocket-only implementation.
-# All room operations now use WebSocket events exclusively.
+# ---------- WEBSOCKET MIGRATION COMPLETE ----------
+# NOTE: ALL game operations have been migrated to WebSocket-only implementation.
+# This includes both room management AND game actions (declare, play, redeal, etc.)
+# The frontend exclusively uses WebSocket events for all game mechanics.
 # Migration completed: January 2025
 # See REST_TO_WEBSOCKET_MIGRATION.md for details.
-
-# ---------- GAME PHASES ----------
-
-
-@router.post("/declare")
-async def declare(
-    room_id: str = Query(...), player_name: str = Query(...), value: int = Query(...)
-):
-    """Player declares their expected score for the round - STATE MACHINE VERSION"""
-    # Validate inputs
-    room_id = RestApiValidator.validate_room_id(room_id)
-    player_name = RestApiValidator.validate_player_name(player_name)
-    value = RestApiValidator.validate_declaration_value(value)
-
-    room = room_manager.get_room(room_id)
-    if not room or not room.game_state_machine:
-        raise HTTPException(status_code=404, detail="Game or state machine not found")
-
-    try:
-        # Create GameAction for declaration
-        action = GameAction(
-            player_name=player_name,
-            action_type=ActionType.DECLARE,
-            payload={"value": value},
-        )
-
-        # Send action to state machine
-        result = await room.game_state_machine.handle_action(action)
-
-        if not result.get("success"):
-            raise HTTPException(
-                status_code=400, detail=result.get("error", "Declaration failed")
-            )
-
-        print(f"🎯 Declaration action queued for {player_name}: {value}")
-
-        # State machine handles:
-        # - Declaration validation
-        # - Broadcasting to clients
-        # - Bot notifications
-        # - Transition to TURN phase when all players declared
-
-        return {"status": "ok", "queued": True}
-
-    except Exception as e:
-        print(f"❌ Declaration error: {str(e)}")
-        raise HTTPException(status_code=500, detail=str(e))
-
-
-@router.post("/play-turn")
-async def play_turn(
-    room_id: str = Query(...),
-    player_name: str = Query(...),
-    piece_indexes: str = Query(...),
-):
-    """Player plays pieces on their turn - STATE MACHINE VERSION"""
-    # Validate inputs
-    room_id = RestApiValidator.validate_room_id(room_id)
-    player_name = RestApiValidator.validate_player_name(player_name)
-    indices = RestApiValidator.validate_piece_indices_string(piece_indexes)
-
-    room = room_manager.get_room(room_id)
-    if not room or not room.game_state_machine:
-        raise HTTPException(status_code=404, detail="Game or state machine not found")
-
-    try:
-
-        print(f"🎮 {player_name} playing pieces at indices: {indices}")
-
-        # Create GameAction for piece playing (convert indices to pieces)
-        pieces = []
-        if hasattr(room.game, "players"):
-            # Find the player and get pieces from their hand by indices
-            player = next(
-                (
-                    p
-                    for p in room.game.players
-                    if getattr(p, "name", str(p)) == player_name
-                ),
-                None,
-            )
-            if player and hasattr(player, "hand"):
-                for idx in indices:
-                    if 0 <= idx < len(player.hand):
-                        pieces.append(player.hand[idx])
-
-        action = GameAction(
-            player_name=player_name,
-            action_type=ActionType.PLAY_PIECES,
-            payload={"pieces": pieces},  # Send actual pieces, not indices
-        )
-
-        # Send action to state machine
-        result = await room.game_state_machine.handle_action(action)
-
-        if not result.get("success"):
-            raise HTTPException(
-                status_code=400, detail=result.get("error", "Play failed")
-            )
-
-        print(f"🎯 Play action queued for {player_name}: {indices}")
-
-        # State machine handles:
-        # - Turn validation (correct player, piece count, etc.)
-        # - Piece removal from hands
-        # - Winner determination
-        # - Broadcasting to clients
-        # - Bot notifications
-        # - Transition to next turn or SCORING phase
-
-        return {"status": "ok", "queued": True}
-
-    except HTTPException:
-        raise  # Re-raise HTTP exceptions
-    except Exception as e:
-        print(f"❌ Play turn error: {str(e)}")
-        raise HTTPException(status_code=500, detail=str(e))
-
-
-@router.post("/redeal")
-async def redeal(room_id: str = Query(...), player_name: str = Query(...)):
-    """Handle redeal request from a player - REPLACED: Now uses state machine only"""
-    # Validate inputs
-    room_id = RestApiValidator.validate_room_id(room_id)
-    player_name = RestApiValidator.validate_player_name(player_name)
-
-    room = room_manager.get_room(room_id)
-    if not room or not room.game_state_machine:
-        raise HTTPException(status_code=404, detail="Game not found")
-
-    # Create GameAction for redeal request - NO direct game calls
-    action = GameAction(
-        player_name=player_name,
-        action_type=ActionType.REDEAL_REQUEST,
-        payload={"accept": True},  # This endpoint implies acceptance
-    )
-
-    try:
-        # Route through state machine ONLY
-        result = await room.game_state_machine.handle_action(action)
-
-        if not result.get("success"):
-            return {
-                "redeal_allowed": False,
-                "error": result.get("error", "Redeal not allowed"),
-            }
-
-        # State machine handles all broadcasting internally
-        return {"redeal_allowed": True, "message": "Redeal processed by state machine"}
-
-    except Exception as e:
-        # Error recovery - never crash the game
-        return {"redeal_allowed": False, "error": f"State machine error: {str(e)}"}
-
-
-@router.post("/score-round")
-async def score_round(room_id: str = Query(...)):
-    """Score the current round and check for game over conditions - STATE MACHINE VERSION"""
-    room = room_manager.get_room(room_id)
-    if not room or not room.game_state_machine:
-        raise HTTPException(status_code=404, detail="Game or state machine not found")
-
-    try:
-        # Create GameAction for viewing scores/game state
-        action = GameAction(
-            player_name="system",  # System-initiated action
-            action_type=ActionType.GAME_STATE_UPDATE,
-            payload={},
-        )
-
-        # Send action to state machine
-        result = await room.game_state_machine.handle_action(action)
-
-        if not result.get("success"):
-            raise HTTPException(
-                status_code=400, detail=result.get("error", "Scoring failed")
-            )
-
-        print(f"🎯 Scoring action queued for room {room_id}")
-
-        # State machine handles:
-        # - Score calculation for all players
-        # - Redeal multiplier application
-        # - Game over detection
-        # - Broadcasting results to clients
-        # - Transition to next round (PREPARATION) or game end
-
-        return {"status": "ok", "queued": True}
-
-    except Exception as e:
-        print(f"❌ Scoring error: {str(e)}")
-        raise HTTPException(status_code=500, detail=str(e))
-
 
 # ---------- DEBUG / STATUS ----------
 
@@ -641,13 +426,9 @@ async def health_check():
             "service": "liap-tui-backend",
         }
 
-        from fastapi.responses import JSONResponse
-
         return JSONResponse(content=response_data, status_code=status_code)
 
     except Exception as e:
-        from fastapi.responses import JSONResponse
-
         return JSONResponse(
             content={
                 "status": "critical",
