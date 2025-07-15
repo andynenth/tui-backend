@@ -85,6 +85,18 @@ async def websocket_endpoint(websocket: WebSocket, room_id: str):
                         }
                     )
 
+                elif event_name == "ping":
+                    # Respond to heartbeat ping with pong
+                    await registered_ws.send_json(
+                        {
+                            "event": "pong",
+                            "data": {
+                                "timestamp": event_data.get("timestamp", asyncio.get_event_loop().time()),
+                                "server_time": asyncio.get_event_loop().time(),
+                            },
+                        }
+                    )
+
                 elif event_name == "client_ready":
                     # Send initial room list when client connects to lobby
                     available_rooms = room_manager.list_rooms()
@@ -263,7 +275,20 @@ async def websocket_endpoint(websocket: WebSocket, room_id: str):
 
             # ✅ Handle room-specific events
             else:
-                if event_name == "client_ready":
+                if event_name == "ping":
+                    # Respond to heartbeat ping with pong
+                    await registered_ws.send_json(
+                        {
+                            "event": "pong",
+                            "data": {
+                                "timestamp": event_data.get("timestamp", asyncio.get_event_loop().time()),
+                                "server_time": asyncio.get_event_loop().time(),
+                                "room_id": room_id,
+                            },
+                        }
+                    )
+
+                elif event_name == "client_ready":
                     room = room_manager.get_room(room_id)
                     if room:
                         updated_summary = room.summary()

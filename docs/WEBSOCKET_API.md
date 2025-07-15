@@ -89,6 +89,50 @@ Acknowledge message receipt (reliability system).
 }
 ```
 
+### Heartbeat/Keep-Alive Mechanism
+
+The WebSocket connection includes an automatic heartbeat mechanism to prevent connection timeouts and monitor connection health.
+
+#### `ping`
+Client heartbeat to keep connection alive.
+
+**Request:**
+```json
+{
+  "event": "ping",
+  "data": {
+    "timestamp": 1752572748420
+  }
+}
+```
+
+**Response:** Server immediately responds with `pong` event.
+
+**Notes:**
+- Sent automatically by NetworkService every 30 seconds
+- All WebSocket connections (lobby, room, game) automatically get heartbeat monitoring
+- Prevents proxy/firewall timeouts that typically occur after 60-120 seconds of inactivity
+- No manual implementation needed - NetworkService handles this automatically
+
+#### `pong` (Server → Client)
+Server response to client ping.
+
+**Response:**
+```json
+{
+  "event": "pong",
+  "data": {
+    "timestamp": 1752572748420,      // Echo of client timestamp
+    "server_time": 1752572748.425    // Server's current time
+  }
+}
+```
+
+**Purpose:**
+- Confirms connection is alive and responsive
+- Provides round-trip time measurement capability
+- Can be used for latency monitoring if needed
+
 ## Room Management (WebSocket Only)
 
 All room management operations MUST use WebSocket events. There are no REST API endpoints for these operations.
