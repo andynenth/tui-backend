@@ -66,6 +66,9 @@ export const setTheme = (themeId) => {
 export const applyThemeColors = (theme) => {
   const root = document.documentElement;
 
+  // Add theme class to root element
+  root.className = 'theme-' + theme.id;
+
   // Piece colors for UI elements (borders, value badges)
   root.style.setProperty('--piece-color-red', theme.pieceColors.red);
   root.style.setProperty('--piece-color-black', theme.pieceColors.black);
