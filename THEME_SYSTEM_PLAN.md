@@ -8,7 +8,7 @@ This document outlines the implementation plan for a theme system that allows pl
 
 ### Primary Goals
 - Allow players to choose between different visual themes
-- Change piece colors and display style (SVG vs Chinese characters)
+- Change piece colors and SVG styles (different SVG designs)
 - Apply theme colors to UI decorative elements
 - Persist theme selection across sessions
 - Keep implementation simple and maintainable
@@ -33,14 +33,15 @@ const theme = {
     red: '#dc3545',                // Color for red pieces
     black: '#495057'               // Color for black pieces
   },
-  useSVG: true,                    // true = SVG images, false = Chinese characters
+  pieceStyle: 'classic',           // Which SVG set to use
+  svgPath: '/assets/pieces/',      // Base path for SVG assets
   uiElements: {
-    startIcon: {                   // Start page animated icon
-      main: '將',                  // Main circle character
-      piece1: '帥',                // Top-right rotating piece
-      piece2: '卒'                 // Bottom-left rotating piece
+    startIcon: {                   // Start page animated icon (SVG assets)
+      main: 'GENERAL_BLACK',       // Main circle piece
+      piece1: 'GENERAL_RED',       // Top-right rotating piece
+      piece2: 'SOLDIER_BLACK'      // Bottom-left rotating piece
     },
-    lobbyEmpty: '將'               // Empty lobby background character
+    lobbyEmpty: 'GENERAL_BLACK'    // Empty lobby background piece
   }
 }
 ```
@@ -50,21 +51,44 @@ const theme = {
 #### Classic Theme (Default)
 - **ID**: `classic`
 - **Colors**: Red (#dc3545), Black (#495057)
-- **Display**: SVG images from existing assets
+- **Display**: Current SVG assets with traditional Chinese characters
 - **Description**: Traditional xiangqi appearance
 
-#### Modern Blue Theme
+#### Modern Theme
 - **ID**: `modern`
-- **Colors**: Blue (#0d6efd), Green (#28a745)
-- **Display**: Chinese characters (no images)
-- **Description**: Fresh, modern color scheme
+- **Colors**: Yellow (#ffc107), Blue (#0d6efd)
+- **Display**: Alternative SVG designs (could be simplified or stylized)
+- **Description**: Fresh, vibrant color scheme
 
 ### 3. Technical Components
 
 #### 3.1 Theme Manager (`utils/themeManager.js`)
 ```javascript
 // Theme definitions
-export const themes = { classic: {...}, modern: {...} };
+export const themes = {
+  classic: {
+    id: 'classic',
+    name: 'Classic',
+    pieceColors: { red: '#dc3545', black: '#495057' },
+    pieceStyle: 'classic',
+    svgPath: '/assets/pieces/',
+    uiElements: {
+      startIcon: { main: 'GENERAL_BLACK', piece1: 'GENERAL_RED', piece2: 'SOLDIER_BLACK' },
+      lobbyEmpty: 'GENERAL_BLACK'
+    }
+  },
+  modern: {
+    id: 'modern', 
+    name: 'Modern',
+    pieceColors: { red: '#ffc107', black: '#0d6efd' }, // Yellow and Blue
+    pieceStyle: 'modern',
+    svgPath: '/assets/pieces/modern/', // Alternative SVG set
+    uiElements: {
+      startIcon: { main: 'GENERAL_BLACK', piece1: 'GENERAL_RED', piece2: 'SOLDIER_BLACK' },
+      lobbyEmpty: 'GENERAL_BLACK'
+    }
+  }
+};
 
 // Get current theme from localStorage
 export const getTheme = () => {
@@ -124,10 +148,19 @@ export const useTheme = () => useContext(ThemeContext);
 
 #### 4.1 GamePiece Component
 ```javascript
-// Check theme for SVG vs character display
-const displayContent = currentTheme.useSVG 
-  ? <img src={getPieceSVG(piece)} alt={getPieceDisplay(piece)} />
-  : getPieceDisplay(piece);
+// Get SVG path based on theme
+const getPieceThemeSVG = (piece, theme) => {
+  const pieceType = `${piece.kind}_${piece.color.toUpperCase()}`;
+  return `${theme.svgPath}${pieceType}.svg`;
+};
+
+// Use theme-specific SVG
+const displayContent = (
+  <img 
+    src={getPieceThemeSVG(piece, currentTheme)} 
+    alt={getPieceDisplay(piece)} 
+  />
+);
 ```
 
 #### 4.2 CSS Variables
@@ -143,20 +176,34 @@ const displayContent = currentTheme.useSVG
   border-color: color-mix(in srgb, var(--piece-color-black) 40%, transparent);
 }
 
-/* UI elements */
-.sp-icon-piece-1 {
-  color: var(--ui-piece-red, #dc3545);
+/* UI elements - SVG tinting via CSS filters */
+.sp-icon-piece-1 img {
+  filter: var(--piece-filter-red);
 }
 
-.lp-emptyState {
-  color: var(--ui-piece-black, #6c757d);
+.sp-icon-piece-2 img {
+  filter: var(--piece-filter-black);
+}
+
+.lp-emptyState img {
+  filter: var(--piece-filter-black);
+  opacity: 0.5;
 }
 ```
 
 #### 4.3 UI Element Updates
-- **StartPage**: Read theme for animated icon characters
-- **LobbyPage**: Read theme for empty state character
-- Both use `useTheme()` hook to access current theme
+- **StartPage**: Load theme-specific SVGs for animated icons
+- **LobbyPage**: Load theme-specific SVG for empty state
+- Both use `useTheme()` hook to access current theme and SVG paths
+
+```javascript
+// StartPage example
+const { currentTheme } = useTheme();
+
+<div className="sp-icon-circle">
+  <img src={`${currentTheme.svgPath}${currentTheme.uiElements.startIcon.main}.svg`} />
+</div>
+```
 
 ## Implementation Steps
 
@@ -164,7 +211,7 @@ const displayContent = currentTheme.useSVG
 1. Create `themeManager.js` with theme definitions
 2. Create `ThemeContext.jsx` provider
 3. Wrap App component with ThemeProvider
-4. Update `pieceMapping.js` to check theme for SVG usage
+4. Update `pieceMapping.js` to use theme-specific SVG paths
 
 ### Phase 2: CSS Variable Integration (1-2 hours)
 1. Update `game-piece.css` to use CSS variables
@@ -179,9 +226,9 @@ const displayContent = currentTheme.useSVG
 4. Integrate with StartPage
 
 ### Phase 4: UI Element Integration (1-2 hours)
-1. Update StartPage to use theme characters
-2. Update LobbyPage empty state
-3. Update GamePiece for dynamic rendering
+1. Update StartPage to use theme SVGs
+2. Update LobbyPage empty state SVG
+3. Update GamePiece for theme-specific SVG paths
 4. Test all integration points
 
 ### Phase 5: Testing & Polish (1-2 hours)
@@ -200,10 +247,10 @@ const displayContent = currentTheme.useSVG
 
 ### Modified Files
 1. `frontend/src/App.jsx` - Wrap with ThemeProvider
-2. `frontend/src/utils/pieceMapping.js` - Dynamic SVG check
+2. `frontend/src/utils/pieceMapping.js` - Theme-specific SVG paths
 3. `frontend/src/components/game/shared/GamePiece.jsx` - Theme integration
-4. `frontend/src/pages/StartPage.jsx` - Settings button and theme
-5. `frontend/src/pages/LobbyPage.jsx` - Theme for empty state
+4. `frontend/src/pages/StartPage.jsx` - Settings button and theme SVGs
+5. `frontend/src/pages/LobbyPage.jsx` - Theme SVG for empty state
 6. `frontend/src/styles/components/game/shared/game-piece.css` - CSS variables
 7. `frontend/src/styles/components/startpage.css` - CSS variables
 8. `frontend/src/styles/components/lobbypage.css` - CSS variables
@@ -226,10 +273,10 @@ const displayContent = currentTheme.useSVG
 4. Theme automatically appears in settings
 
 ### Potential Future Themes
-- **Dark Mode**: Dark backgrounds with neon pieces
-- **Traditional Calligraphy**: Artistic brush-stroke characters
-- **Seasonal**: Holiday-themed pieces and colors
-- **High Contrast**: Accessibility-focused theme
+- **Dark Mode**: Dark backgrounds with neon-colored SVGs
+- **Minimalist**: Simplified geometric SVG designs
+- **Seasonal**: Holiday-themed SVG pieces and colors
+- **High Contrast**: Accessibility-focused SVG designs
 
 ### Advanced Features
 - Custom theme creator
