@@ -73,6 +73,27 @@
   opacity: 0.8;
 }
 
+/* SVG image sizing within game pieces */
+.game-piece img {
+  width: 80%;
+}
+
+.game-piece--mini img {
+  width: 60%;
+}
+
+.game-piece--small img {
+  width: 65%;
+}
+
+.game-piece--medium img {
+  width: 62%;
+}
+
+.game-piece--large img {
+  width: 80%;
+}
+
 /* Selectable variant */
 .game-piece--selectable {
   cursor: pointer;

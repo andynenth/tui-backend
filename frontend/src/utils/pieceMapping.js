@@ -3,7 +3,11 @@
  *
  * Maps game piece types to their Chinese character representations
  * Used throughout the UI to display pieces consistently
+ * Now supports both font-based and SVG-based rendering
  */
+
+// Import SVG assets for conditional rendering
+import * as PieceAssets from '../assets/pieces';
 
 // Piece type to Chinese character mapping (Traditional Chinese Chess)
 export const PIECE_CHINESE_MAP = {
@@ -135,6 +139,30 @@ export function formatPieceValue(pieceData) {
   }
   return piece.value.toString();
 }
+
+/**
+ * Get the SVG asset path for a piece
+ * @param {string|Object} pieceData - Either piece string or object
+ * @returns {string} The SVG asset path for the piece
+ */
+export function getPieceSVG(pieceData) {
+  const piece = parsePiece(pieceData);
+
+  if (!piece || !piece.kind) {
+    return null;
+  }
+
+  // Create full type with color (e.g., "GENERAL_RED")
+  const fullType = `${piece.kind}_${piece.color?.toUpperCase()}`;
+  return PieceAssets.getPieceAsset(fullType);
+}
+
+/**
+ * Feature flag to control SVG vs font rendering
+ * Set to false to use traditional font-based Chinese characters
+ * Set to true to use SVG assets
+ */
+export const USE_SVG_PIECES = true;
 
 // Export the mapping object for direct access if needed
 export default PIECE_CHINESE_MAP;

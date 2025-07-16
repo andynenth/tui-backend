@@ -4,6 +4,8 @@ import {
   getPieceDisplay,
   getPieceColorClass,
   formatPieceValue,
+  getPieceSVG,
+  USE_SVG_PIECES,
 } from '../../../utils/pieceMapping';
 
 /**
@@ -73,7 +75,11 @@ const GamePiece = ({
         <div
           className={`game-piece__face game-piece__face--front ${getPieceColorClass(piece)}`}
         >
-          {getPieceDisplay(piece)}
+          {USE_SVG_PIECES ? (
+            <img src={getPieceSVG(piece)} alt={getPieceDisplay(piece)} />
+          ) : (
+            getPieceDisplay(piece)
+          )}
         </div>
       </div>
     );
@@ -82,7 +88,13 @@ const GamePiece = ({
   // Render default/selectable variants
   return (
     <div className={classes} onClick={onClick} style={style}>
-      <div className="game-piece__character">{getPieceDisplay(piece)}</div>
+      <div className="game-piece__character">
+        {USE_SVG_PIECES ? (
+          <img src={getPieceSVG(piece)} alt={getPieceDisplay(piece)} />
+        ) : (
+          getPieceDisplay(piece)
+        )}
+      </div>
       {showValue && (
         <div className="game-piece__value">{formatPieceValue(piece)}</div>
       )}
