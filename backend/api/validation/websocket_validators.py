@@ -4,9 +4,8 @@ from typing import Any, Dict, List, Optional, Tuple, Union
 import sys
 import os
 
-# Add the shared directory to the path for importing error codes
-sys.path.append(os.path.join(os.path.dirname(__file__), '../../../shared'))
-from error_codes import ErrorCode, create_standard_error
+# Import error codes from shared module
+from backend.shared.error_codes import ErrorCode, create_standard_error
 
 
 class WebSocketMessageValidator:

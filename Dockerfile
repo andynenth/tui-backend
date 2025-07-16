@@ -17,6 +17,6 @@ ENV PYTHONPATH=/app/backend
 # 🌐 Expose API port (actual value controlled by .env and docker-compose)
 EXPOSE 5050
 
-# 🏁 Let docker-compose set the command via `command:` and `.env`
-# Leave CMD minimal
-CMD ["uvicorn", "backend.api.main:app"]
+# 🏁 Default command for standalone Docker
+# docker-compose can override this with its own command
+CMD ["uvicorn", "backend.api.main:app", "--host", "0.0.0.0", "--port", "5050"]
