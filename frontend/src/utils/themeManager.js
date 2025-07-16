@@ -16,8 +16,8 @@ export const themes = {
     pieceAssets: ClassicPieces, // Reference to classic SVG set
     uiElements: {
       startIcon: {
-        main: ClassicPieces.GENERAL_BLACK,
-        piece1: ClassicPieces.GENERAL_RED,
+        main: ClassicPieces.GENERAL_RED,
+        piece1: ClassicPieces.HORSE_RED,
         piece2: ClassicPieces.SOLDIER_BLACK,
       },
       lobbyEmpty: ClassicPieces.GENERAL_BLACK,
@@ -35,8 +35,8 @@ export const themes = {
     pieceAssets: ModernPieces, // Uses modern SVGs with fixed colors
     uiElements: {
       startIcon: {
-        main: ModernPieces.GENERAL_BLACK,
-        piece1: ModernPieces.GENERAL_RED,
+        main: ModernPieces.GENERAL_RED,
+        piece1: ModernPieces.CANNON_BLACK,
         piece2: ModernPieces.SOLDIER_BLACK,
       },
       lobbyEmpty: ModernPieces.GENERAL_BLACK,
@@ -67,7 +67,7 @@ export const applyThemeColors = (theme) => {
   const root = document.documentElement;
 
   // Add theme class to root element
-  root.className = 'theme-' + theme.id;
+  root.className = `theme-${theme.id}`;
 
   // Piece colors for UI elements (borders, value badges)
   root.style.setProperty('--piece-color-red', theme.pieceColors.red);

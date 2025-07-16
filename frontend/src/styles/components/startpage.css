@@ -72,8 +72,8 @@
 }
 
 .sp-icon-circle img {
-  width: 70%;
-  height: 70%;
+  width: 100%;
+  height: 100%;
   filter: var(--piece-filter-black);
 }
 
@@ -94,8 +94,8 @@
 }
 
 .sp-icon-pieces img {
-  width: 80%;
-  height: 80%;
+  width: 100%;
+  height: 100%;
 }
 
 .sp-icon-piece-1 {
