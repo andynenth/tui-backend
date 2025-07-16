@@ -50,12 +50,20 @@
 /* Color variants (not applied to table variant - colors only show on front face) */
 .game-piece:not(.game-piece--table).piece-red,
 .game-piece:not(.game-piece--table).red {
-  border-color: color-mix(in srgb, var(--piece-color-red, #dc3545) 40%, transparent);
+  border-color: color-mix(
+    in srgb,
+    var(--piece-color-red, #dc3545) 40%,
+    transparent
+  );
 }
 
 .game-piece:not(.game-piece--table).piece-black,
 .game-piece:not(.game-piece--table).black {
-  border-color: color-mix(in srgb, var(--piece-color-black, #495057) 40%, transparent);
+  border-color: color-mix(
+    in srgb,
+    var(--piece-color-black, #495057) 40%,
+    transparent
+  );
 }
 
 /* Character display */
@@ -91,12 +99,20 @@
 /* Color-specific value badge styling */
 .game-piece.piece-red .game-piece__value {
   color: var(--piece-color-red, #dc3545);
-  border-color: color-mix(in srgb, var(--piece-color-red, #dc3545) 30%, transparent);
+  border-color: color-mix(
+    in srgb,
+    var(--piece-color-red, #dc3545) 30%,
+    transparent
+  );
 }
 
 .game-piece.piece-black .game-piece__value {
   color: var(--piece-color-black, #495057);
-  border-color: color-mix(in srgb, var(--piece-color-black, #495057) 30%, transparent);
+  border-color: color-mix(
+    in srgb,
+    var(--piece-color-black, #495057) 30%,
+    transparent
+  );
 }
 
 /* Flippable pieces value badge styling */
@@ -120,12 +136,20 @@
 
 .game-piece__face--front.piece-red .game-piece__value {
   color: var(--piece-color-red, #dc3545);
-  border-color: color-mix(in srgb, var(--piece-color-red, #dc3545) 30%, transparent);
+  border-color: color-mix(
+    in srgb,
+    var(--piece-color-red, #dc3545) 30%,
+    transparent
+  );
 }
 
 .game-piece__face--front.piece-black .game-piece__value {
   color: var(--piece-color-black, #495057);
-  border-color: color-mix(in srgb, var(--piece-color-black, #495057) 30%, transparent);
+  border-color: color-mix(
+    in srgb,
+    var(--piece-color-black, #495057) 30%,
+    transparent
+  );
 }
 
 /* SVG image sizing within game pieces */
@@ -169,19 +193,19 @@
 
 /* Modern theme - adjusted sizing for modern SVGs */
 .theme-modern .game-piece--mini img {
-  width: 85%;
+  width: 100%;
 }
 
 .theme-modern .game-piece--small img {
-  width: 85%;
+  width: 100%;
 }
 
 .theme-modern .game-piece--medium img {
-  width: 85%;
+  width: 100%;
 }
 
 .theme-modern .game-piece--large img {
-  width: 85%;
+  width: 100%;
 }
 
 /* SVG images - no filters applied */
@@ -276,13 +300,21 @@
 .game-piece__face--front.piece-red,
 .game-piece__face--front.red {
   color: var(--piece-color-red, #dc3545);
-  border-color: color-mix(in srgb, var(--piece-color-red, #dc3545) 40%, transparent);
+  border-color: color-mix(
+    in srgb,
+    var(--piece-color-red, #dc3545) 40%,
+    transparent
+  );
 }
 
 .game-piece__face--front.piece-black,
 .game-piece__face--front.black {
   color: var(--piece-color-black, #495057);
-  border-color: color-mix(in srgb, var(--piece-color-black, #495057) 40%, transparent);
+  border-color: color-mix(
+    in srgb,
+    var(--piece-color-black, #495057) 40%,
+    transparent
+  );
 }
 
 /* Dealing variant - for vertical drop animation during deal/redeal */
