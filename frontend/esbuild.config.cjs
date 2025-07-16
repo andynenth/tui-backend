@@ -44,6 +44,7 @@ esbuild
       '.ts': 'ts',
       '.tsx': 'tsx',
       '.css': 'css',
+      '.svg': 'dataurl',
     },
     jsx: 'automatic',
     minify: true,
