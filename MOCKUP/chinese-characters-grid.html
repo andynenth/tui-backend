@@ -1,0 +1,557 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chinese Chess Characters - 2x8 Grid</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+            background: #f8f9fa;
+            margin: 0;
+            padding: 20px;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            padding: 40px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            color: #333;
+            text-align: center;
+            margin-bottom: 40px;
+            font-size: 28px;
+        }
+
+        .character-grid {
+            display: grid;
+            grid-template-columns: repeat(8, 1fr);
+            grid-template-rows: repeat(2, 1fr);
+            gap: 10px;
+            margin: 20px 0;
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+        }
+
+        .character {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-family: 'SimSun', '宋体', serif;
+            font-size: 48px;
+            line-height: 1;
+            width: 80px;
+            height: 80px;
+            transition: all 0.15s ease;
+        }
+
+        /* Color variants using exact project colors */
+        .character.red {
+            color: #dc3545;
+        }
+
+        .character.black {
+            color: #495057;
+        }
+
+        .character:hover {
+            transform: scale(1.1);
+            background: rgba(255, 255, 255, 0.8);
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            cursor: pointer;
+        }
+
+        .character.clickable {
+            cursor: pointer;
+            position: relative;
+        }
+
+        .character.clickable::after {
+            content: '📷';
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            font-size: 12px;
+            opacity: 0;
+            transition: opacity 0.2s ease;
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 50%;
+            padding: 2px;
+        }
+
+        .character.clickable:hover::after {
+            opacity: 1;
+        }
+
+        /* SVG Download Section */
+        .svg-section {
+            margin-top: 50px;
+            border-top: 2px solid #e9ecef;
+            padding-top: 40px;
+        }
+
+        .character-svg {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-family: 'SimSun', '宋体', serif;
+            font-size: 48px;
+            line-height: 1;
+            width: 80px;
+            height: 80px;
+            transition: all 0.15s ease;
+            cursor: pointer;
+            position: relative;
+            border: 2px dashed #dee2e6;
+            border-radius: 8px;
+        }
+
+        .character-svg:hover {
+            transform: scale(1.1);
+            background: rgba(255, 255, 255, 0.8);
+            border-color: #007bff;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        .character-svg.red {
+            color: #dc3545;
+        }
+
+        .character-svg.black {
+            color: #495057;
+        }
+
+        .character-svg::after {
+            content: '📄';
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            font-size: 12px;
+            opacity: 0;
+            transition: opacity 0.2s ease;
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 50%;
+            padding: 2px;
+        }
+
+        .character-svg:hover::after {
+            opacity: 1;
+        }
+
+        .svg-grid {
+            display: grid;
+            grid-template-columns: repeat(8, 1fr);
+            grid-template-rows: repeat(2, 1fr);
+            gap: 10px;
+            margin: 20px 0;
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            border: 2px dashed #007bff;
+        }
+
+        .info {
+            text-align: center;
+            margin: 30px 0;
+            color: #6c757d;
+        }
+
+        .legend {
+            display: flex;
+            justify-content: center;
+            gap: 40px;
+            margin: 30px 0;
+            font-size: 18px;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .legend-color {
+            width: 20px;
+            height: 20px;
+            border-radius: 3px;
+        }
+
+        .legend-red {
+            background-color: #dc3545;
+        }
+
+        .legend-black {
+            background-color: #495057;
+        }
+
+        .character-info {
+            background: #e8f4f8;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 30px 0;
+        }
+
+        .character-list {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+            margin: 20px 0;
+        }
+
+        .piece-type {
+            background: white;
+            padding: 15px;
+            border-radius: 6px;
+            border-left: 4px solid #007bff;
+        }
+
+        .piece-type h3 {
+            margin: 0 0 10px 0;
+            color: #333;
+        }
+
+        .piece-chars {
+            font-family: 'SimSun', '宋体', serif;
+            font-size: 24px;
+            font-weight: bold;
+        }
+
+        .red-char {
+            color: #dc3545;
+        }
+
+        .black-char {
+            color: #495057;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Chinese Chess Characters - 2×8 Grid Display</h1>
+        
+        <div class="legend">
+            <div class="legend-item">
+                <div class="legend-color legend-red"></div>
+                <span>Red Army (帥 side)</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-color legend-black"></div>
+                <span>Black Army (將 side)</span>
+            </div>
+        </div>
+
+        <div class="character-grid">
+            <!-- Row 1: All Red Pieces -->
+            <div class="character red clickable" data-char="帥" data-color="red">帥</div>
+            <div class="character red clickable" data-char="仕" data-color="red">仕</div>
+            <div class="character red clickable" data-char="相" data-color="red">相</div>
+            <div class="character red clickable" data-char="俥" data-color="red">俥</div>
+            <div class="character red clickable" data-char="傌" data-color="red">傌</div>
+            <div class="character red clickable" data-char="炮" data-color="red">炮</div>
+            <div class="character red clickable" data-char="兵" data-color="red">兵</div>
+            <div class="character"></div>
+
+            <!-- Row 2: All Black Pieces -->
+            <div class="character black clickable" data-char="將" data-color="black">將</div>
+            <div class="character black clickable" data-char="士" data-color="black">士</div>
+            <div class="character black clickable" data-char="象" data-color="black">象</div>
+            <div class="character black clickable" data-char="車" data-color="black">車</div>
+            <div class="character black clickable" data-char="馬" data-color="black">馬</div>
+            <div class="character black clickable" data-char="砲" data-color="black">砲</div>
+            <div class="character black clickable" data-char="卒" data-color="black">卒</div>
+            <div class="character"></div>
+        </div>
+
+        <div class="info">
+            <p>Displaying <strong>ALL 14</strong> Traditional Chinese characters used in xiangqi (Chinese chess)</p>
+            <p><strong>Row 1 (Red pieces):</strong> 帥仕相俥傌炮兵</p>
+            <p><strong>Row 2 (Black pieces):</strong> 將士象車馬砲卒</p>
+            <p>Using exact project styling: SimSun/宋体 font, red (#dc3545) and black (#495057) colors</p>
+        </div>
+
+        <div class="character-info">
+            <h2>Character Reference</h2>
+            <div class="character-list">
+                <div class="piece-type">
+                    <h3>General (King)</h3>
+                    <div class="piece-chars">
+                        <span class="red-char">帥</span> (Red) / <span class="black-char">將</span> (Black)
+                    </div>
+                    <small>Shuài / Jiàng</small>
+                </div>
+
+                <div class="piece-type">
+                    <h3>Advisor (Guard)</h3>
+                    <div class="piece-chars">
+                        <span class="red-char">仕</span> (Red) / <span class="black-char">士</span> (Black)
+                    </div>
+                    <small>Shì / Shì</small>
+                </div>
+
+                <div class="piece-type">
+                    <h3>Elephant (Bishop)</h3>
+                    <div class="piece-chars">
+                        <span class="red-char">相</span> (Red) / <span class="black-char">象</span> (Black)
+                    </div>
+                    <small>Xiàng / Xiàng</small>
+                </div>
+
+                <div class="piece-type">
+                    <h3>Chariot (Rook)</h3>
+                    <div class="piece-chars">
+                        <span class="red-char">俥</span> (Red) / <span class="black-char">車</span> (Black)
+                    </div>
+                    <small>Jū / Chē</small>
+                </div>
+
+                <div class="piece-type">
+                    <h3>Horse (Knight)</h3>
+                    <div class="piece-chars">
+                        <span class="red-char">傌</span> (Red) / <span class="black-char">馬</span> (Black)
+                    </div>
+                    <small>Mǎ / Mǎ</small>
+                </div>
+
+                <div class="piece-type">
+                    <h3>Cannon</h3>
+                    <div class="piece-chars">
+                        <span class="red-char">炮</span> (Red) / <span class="black-char">砲</span> (Black)
+                    </div>
+                    <small>Pào / Pào</small>
+                </div>
+
+                <div class="piece-type">
+                    <h3>Soldier (Pawn)</h3>
+                    <div class="piece-chars">
+                        <span class="red-char">兵</span> (Red) / <span class="black-char">卒</span> (Black)
+                    </div>
+                    <small>Bīng / Zú</small>
+                </div>
+            </div>
+        </div>
+
+        <div style="background: #f8f9fa; padding: 20px; border-radius: 8px; margin: 30px 0; font-family: monospace; font-size: 14px;">
+            <h3>Technical Details</h3>
+            <p><strong>Font Stack:</strong> 'SimSun', '宋体', serif</p>
+            <p><strong>Red Color:</strong> #dc3545 (rgba(220, 53, 69))</p>
+            <p><strong>Black Color:</strong> #495057 (rgba(73, 80, 87))</p>
+            <p><strong>Font Size:</strong> 48px</p>
+            <p><strong>Grid:</strong> 2 rows × 8 columns</p>
+            <p><strong>Character Count:</strong> 14 unique characters (no duplicates)</p>
+            <p><strong>Layout:</strong> Row 1 = Red pieces, Row 2 = Black pieces</p>
+        </div>
+
+        <div style="text-align: center; margin: 30px 0; color: #6c757d;">
+            <p><strong>📷 Click any character to download as PNG</strong></p>
+            <p>Transparent background • Exact project styling • High resolution</p>
+            <p>These characters use the exact same styling as your game pieces</p>
+        </div>
+
+        <!-- Hidden canvas for PNG generation -->
+        <canvas id="downloadCanvas" style="display: none;"></canvas>
+
+        <!-- SVG Download Section -->
+        <div class="svg-section">
+            <h2 style="text-align: center; color: #333; margin-bottom: 20px;">📄 SVG Downloads</h2>
+            
+            <div style="text-align: center; margin: 20px 0; color: #6c757d;">
+                <p><strong>Click any character to download as SVG</strong></p>
+                <p>Vector format • Scalable • Exact project styling • No background</p>
+            </div>
+
+            <div class="svg-grid">
+                <!-- Row 1: All Red Pieces SVG -->
+                <div class="character-svg red" data-char="帥" data-color="red">帥</div>
+                <div class="character-svg red" data-char="仕" data-color="red">仕</div>
+                <div class="character-svg red" data-char="相" data-color="red">相</div>
+                <div class="character-svg red" data-char="俥" data-color="red">俥</div>
+                <div class="character-svg red" data-char="傌" data-color="red">傌</div>
+                <div class="character-svg red" data-char="炮" data-color="red">炮</div>
+                <div class="character-svg red" data-char="兵" data-color="red">兵</div>
+                <div class="character-svg"></div>
+
+                <!-- Row 2: All Black Pieces SVG -->
+                <div class="character-svg black" data-char="將" data-color="black">將</div>
+                <div class="character-svg black" data-char="士" data-color="black">士</div>
+                <div class="character-svg black" data-char="象" data-color="black">象</div>
+                <div class="character-svg black" data-char="車" data-color="black">車</div>
+                <div class="character-svg black" data-char="馬" data-color="black">馬</div>
+                <div class="character-svg black" data-char="砲" data-color="black">砲</div>
+                <div class="character-svg black" data-char="卒" data-color="black">卒</div>
+                <div class="character-svg"></div>
+            </div>
+
+            <div style="background: #e3f2fd; padding: 20px; border-radius: 8px; margin: 30px 0;">
+                <h3>Download Comparison</h3>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 30px;">
+                    <div>
+                        <h4>📷 PNG Downloads (Above)</h4>
+                        <ul style="text-align: left;">
+                            <li>Raster format (pixels)</li>
+                            <li>High resolution (512×512)</li>
+                            <li>Perfect for UI integration</li>
+                            <li>File size: ~5-15KB each</li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h4>📄 SVG Downloads (Here)</h4>
+                        <ul style="text-align: left;">
+                            <li>Vector format (scalable)</li>
+                            <li>Infinite resolution</li>
+                            <li>Perfect for web/print</li>
+                            <li>File size: ~1-3KB each</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // SVG Download functionality
+        function downloadCharacterAsSVG(character, color) {
+            // Set color based on piece type (exact project colors)
+            const fillColor = color === 'red' ? '#dc3545' : '#495057';
+            
+            // Create SVG content with exact project styling
+            const svgContent = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+    <text x="50" y="50" 
+          font-family="'SimSun', '宋体', serif" 
+          font-size="70" 
+          font-weight="bold" 
+          fill="${fillColor}" 
+          text-anchor="middle" 
+          dominant-baseline="central">${character}</text>
+</svg>`;
+            
+            // Create blob and download
+            const blob = new Blob([svgContent], { type: 'image/svg+xml' });
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.download = `xiangqi-${character}-${color}.svg`;
+            link.href = url;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            URL.revokeObjectURL(url);
+        }
+
+        // PNG Download functionality
+        function downloadCharacterAsPNG(character, color) {
+            const canvas = document.getElementById('downloadCanvas');
+            const ctx = canvas.getContext('2d');
+            
+            // Set high resolution canvas size
+            const size = 512; // High resolution for crisp output
+            canvas.width = size;
+            canvas.height = size;
+            
+            // Clear canvas with transparent background
+            ctx.clearRect(0, 0, size, size);
+            
+            // Set font properties to match exact project styling
+            ctx.font = `bold ${size * 0.7}px 'SimSun', '宋体', serif`;
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            
+            // Set color based on piece type (exact project colors)
+            if (color === 'red') {
+                ctx.fillStyle = '#dc3545'; // Exact red from project
+            } else {
+                ctx.fillStyle = '#495057'; // Exact black from project
+            }
+            
+            // Draw character centered
+            ctx.fillText(character, size / 2, size / 2);
+            
+            // Convert to PNG and download
+            canvas.toBlob(function(blob) {
+                const url = URL.createObjectURL(blob);
+                const link = document.createElement('a');
+                link.download = `xiangqi-${character}-${color}.png`;
+                link.href = url;
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+                URL.revokeObjectURL(url);
+            }, 'image/png');
+        }
+
+        // Add interactive effects and download functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            // PNG Download functionality for main grid
+            const characters = document.querySelectorAll('.character');
+            
+            characters.forEach(character => {
+                character.addEventListener('mouseenter', function() {
+                    // Add subtle animation on hover
+                    this.style.transform = 'scale(1.1)';
+                    this.style.zIndex = '10';
+                });
+                
+                character.addEventListener('mouseleave', function() {
+                    this.style.transform = 'scale(1)';
+                    this.style.zIndex = '1';
+                });
+                
+                character.addEventListener('click', function() {
+                    const char = this.dataset.char;
+                    const color = this.dataset.color;
+                    
+                    if (char && color) {
+                        // Flash effect to indicate download
+                        this.style.background = 'rgba(40, 167, 69, 0.3)'; // Green flash
+                        setTimeout(() => {
+                            this.style.background = '';
+                        }, 300);
+                        
+                        // Download PNG
+                        downloadCharacterAsPNG(char, color);
+                    }
+                });
+            });
+
+            // SVG Download functionality for SVG grid
+            const svgCharacters = document.querySelectorAll('.character-svg');
+            
+            svgCharacters.forEach(character => {
+                character.addEventListener('mouseenter', function() {
+                    this.style.transform = 'scale(1.1)';
+                    this.style.zIndex = '10';
+                });
+                
+                character.addEventListener('mouseleave', function() {
+                    this.style.transform = 'scale(1)';
+                    this.style.zIndex = '1';
+                });
+                
+                character.addEventListener('click', function() {
+                    const char = this.dataset.char;
+                    const color = this.dataset.color;
+                    
+                    if (char && color) {
+                        // Flash effect to indicate download (blue for SVG)
+                        this.style.background = 'rgba(0, 123, 255, 0.3)'; // Blue flash
+                        setTimeout(() => {
+                            this.style.background = '';
+                        }, 300);
+                        
+                        // Download SVG
+                        downloadCharacterAsSVG(char, color);
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>
