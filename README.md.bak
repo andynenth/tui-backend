@@ -135,9 +135,8 @@ docker run -p 5050:5050 liap-tui
 Then open your browser:  
 👉 `http://localhost:5050`
 
-> **Note**: The frontend bundle must be built before creating the Docker image.  
-> FastAPI serves the pre-built frontend files from `backend/static/`.  
-> WebSocket and API routes are available under `/ws/` and `/api/`.
+> The frontend is served from FastAPI’s static files.  
+> WebSocket and API routes are available under `/ws/` and `/api`.
 
 ---
 
@@ -200,28 +199,10 @@ npm run lint:fix           # Auto-fix linting issues
 
 ---
 
-## ⚙️ Development
+## ⚙️ Development (Local with Hot Reload)
 
-### Understanding Build vs Dev Mode
+### Option 1: With `./start.sh`
 
-| Command | Purpose | When to Use |
-|---------|---------|-------------|
-| `npm run build` | Builds frontend to `backend/static/` | Before Docker build or production |
-| `npm run dev` | Runs dev server with hot reload | Active frontend development |
-
-### Option 1: Docker Development (No Hot Reload)
-```bash
-# Build frontend first
-cd frontend && npm run build
-
-# Then run Docker
-docker run -p 5050:5050 liap-tui
-```
-> Frontend changes require rebuild: `npm run build` then restart container
-
-### Option 2: Hot Reload Development
-
-#### Quick Start with `./start.sh`
 ```bash
 ./start.sh
 ```
@@ -229,33 +210,25 @@ docker run -p 5050:5050 liap-tui
 This launches:
 - `uvicorn` backend server with hot reload
 - `esbuild` frontend watch mode
-- Auto-copies changes to `static/`
+- Auto-copies `index.html` into `static/`
 
-#### Manual Setup
+---
+
+### Option 2: Manually (Local Dev)
+
+#### Backend (Docker)
+
 ```bash
-# First time or after dependency changes:
-docker-compose -f docker-compose.dev.yml build
-
-# Terminal 1: Backend (Docker)
 docker-compose -f docker-compose.dev.yml up backend
-
-# Terminal 2: Frontend (Hot Reload)
-cd frontend && npm run dev
 ```
 
-> Frontend dev server runs on port 3050, proxies API calls to backend
-
-### Stopping Containers
+#### Frontend Development (Live Build)
 
 ```bash
-# Stop docker-compose services
-docker-compose -f docker-compose.dev.yml down
-
-# Stop standalone Docker container
-# Press Ctrl+C if running in foreground, or:
-docker ps                    # Find container ID
-docker stop <container-id>   # Graceful shutdown
+npm run dev
 ```
+
+> This ensures backend runs in Docker, while frontend is live-rebuilt by host.
 
 ---
 
