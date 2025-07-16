@@ -1,0 +1,578 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Piece Tray Redesign Mockup - Value Position</title>
+    <style>
+        /* Reset and base styles */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+            background: #f8f9fa;
+            color: #333;
+            line-height: 1.6;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            padding: 40px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 40px;
+        }
+
+        h2 {
+            color: #495057;
+            margin-top: 40px;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #e9ecef;
+            padding-bottom: 10px;
+        }
+
+        .section {
+            margin-bottom: 50px;
+        }
+
+        /* Piece Tray Styles - Exact copy from production */
+        .piece-tray {
+            background:
+                linear-gradient(180deg, #f8f9fa 0%, #e9ecef 100%),
+                radial-gradient(
+                    ellipse 100% 60% at 50% 0%,
+                    rgba(173, 181, 189, 0.2) 0%,
+                    transparent 100%
+                );
+            padding: 20px;
+            border-top: 1px solid rgba(173, 181, 189, 0.2);
+            position: relative;
+            z-index: 20;
+            transition: all 0.3s ease;
+            margin: 20px auto;
+            max-width: 400px;
+            border-radius: 8px;
+        }
+
+        .piece-tray::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 40px;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, #6c757d, transparent);
+        }
+
+        .piece-tray--active {
+            border-top: 2px solid rgba(255, 193, 7, 0.4);
+            background:
+                linear-gradient(180deg, rgba(255, 248, 225, 1) 0%, #f8f9fa 100%),
+                radial-gradient(
+                    ellipse 100% 60% at 50% 0%,
+                    rgba(255, 193, 7, 0.1) 0%,
+                    transparent 100%
+                );
+            box-shadow:
+                inset 0 2px 0 rgba(255, 193, 7, 0.2),
+                0 -2px 12px rgba(255, 193, 7, 0.1);
+        }
+
+        .piece-tray--active::before {
+            background: linear-gradient(90deg, transparent, #ffc107, transparent);
+            height: 3px;
+        }
+
+        .piece-tray__grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 12px;
+            max-width: 350px;
+            margin: 0 auto;
+            min-height: 136px;
+            align-content: start;
+        }
+
+        /* Current Game Piece Styles */
+        .game-piece {
+            border-radius: 50%;
+            background:
+                linear-gradient(145deg, #ffffff 0%, #f8f9fa 100%),
+                radial-gradient(
+                    circle at 30% 30%,
+                    rgba(255, 255, 255, 0.8) 0%,
+                    transparent 60%
+                );
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            border: 1px solid rgba(173, 181, 189, 0.3);
+            font-family: 'SimSun', '宋体', serif;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.06);
+            transition: all 0.15s ease;
+            position: relative;
+            width: 62px;
+            height: 62px;
+            cursor: pointer;
+        }
+
+        .game-piece img {
+            width: 80%;
+        }
+
+        .game-piece.piece-red {
+            color: #dc3545;
+            border-color: rgba(220, 53, 69, 0.4);
+        }
+
+        .game-piece.piece-black {
+            color: #495057;
+            border-color: rgba(73, 80, 87, 0.4);
+        }
+
+        .game-piece__character {
+            font-size: 20px;
+            line-height: 1;
+        }
+
+        .game-piece__value {
+            font-size: 10px;
+            margin-top: 2px;
+            opacity: 0.8;
+        }
+
+        .game-piece:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.12);
+            border-color: rgba(13, 110, 253, 0.4);
+        }
+
+        .game-piece.selected {
+            transform: translateY(-6px);
+            box-shadow:
+                0 8px 16px rgba(13, 110, 253, 0.3),
+                0 0 0 3px rgba(13, 110, 253, 0.2);
+            border-color: #0d6efd;
+        }
+
+        /* NEW REDESIGNED PIECE STYLES */
+        .game-piece--redesigned {
+            position: relative;
+        }
+
+        .game-piece--redesigned .game-piece__character {
+            font-size: 20px;
+            margin: 0;
+        }
+
+        .game-piece--redesigned .game-piece__value {
+            position: absolute;
+            top: -2px;
+            left: -2px;
+            background: rgba(255, 255, 255, 0.95);
+            border: 1px solid rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+            padding: 2px 4px;
+            font-size: 10px;
+            font-weight: bold;
+            line-height: 1;
+            margin: 0;
+            min-width: 16px;
+            text-align: center;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            z-index: 10;
+        }
+
+        .game-piece--redesigned.piece-red .game-piece__value {
+            color: #dc3545;
+            border-color: rgba(220, 53, 69, 0.3);
+        }
+
+        .game-piece--redesigned.piece-black .game-piece__value {
+            color: #495057;
+            border-color: rgba(73, 80, 87, 0.3);
+        }
+
+        /* Demo grid */
+        .demo-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            margin: 30px 0;
+        }
+
+        .demo-item {
+            text-align: center;
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+        }
+
+        .demo-item h3 {
+            margin-bottom: 15px;
+            color: #495057;
+        }
+
+        /* State demonstration */
+        .states-demo {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            align-items: center;
+            margin: 20px 0;
+            flex-wrap: wrap;
+        }
+
+        .state-group {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .state-label {
+            font-size: 12px;
+            color: #6c757d;
+            text-align: center;
+        }
+
+        /* Badge styling variants */
+        .badge-variant-1 .game-piece__value {
+            background: linear-gradient(135deg, #fff 0%, #f8f9fa 100%);
+            border: 1px solid rgba(0, 0, 0, 0.15);
+            border-radius: 50%;
+            width: 18px;
+            height: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            top: -3px;
+            left: -3px;
+        }
+
+        .badge-variant-2 .game-piece__value {
+            background: rgba(0, 0, 0, 0.8);
+            color: white !important;
+            border: none;
+            border-radius: 3px;
+            font-size: 9px;
+            padding: 1px 3px;
+        }
+
+        .badge-variant-3 .game-piece__value {
+            background: transparent;
+            border: 2px solid currentColor;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            top: -4px;
+            left: -4px;
+            font-size: 9px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Piece Tray Redesign Mockup - Value Position</h1>
+        
+        <div class="section">
+            <h2>Current Implementation</h2>
+            <p>Current piece design with value displayed below the character:</p>
+            
+            <div class="piece-tray">
+                <div class="piece-tray__grid">
+                    <!-- Sample hand with current design -->
+                    <div class="game-piece piece-red">
+                        <img src="../frontend/src/assets/pieces/GENERAL_RED.svg" alt="Red General">
+                        <div class="game-piece__value">14</div>
+                    </div>
+                    <div class="game-piece piece-red">
+                        <img src="../frontend/src/assets/pieces/CHARIOT_RED.svg" alt="Red Chariot">
+                        <div class="game-piece__value">8</div>
+                    </div>
+                    <div class="game-piece piece-black">
+                        <img src="../frontend/src/assets/pieces/HORSE_BLACK.svg" alt="Black Horse">
+                        <div class="game-piece__value">5</div>
+                    </div>
+                    <div class="game-piece piece-red">
+                        <img src="../frontend/src/assets/pieces/CANNON_RED.svg" alt="Red Cannon">
+                        <div class="game-piece__value">4</div>
+                    </div>
+                    <div class="game-piece piece-black">
+                        <img src="../frontend/src/assets/pieces/ADVISOR_BLACK.svg" alt="Black Advisor">
+                        <div class="game-piece__value">11</div>
+                    </div>
+                    <div class="game-piece piece-red">
+                        <img src="../frontend/src/assets/pieces/SOLDIER_RED.svg" alt="Red Soldier">
+                        <div class="game-piece__value">2</div>
+                    </div>
+                    <div class="game-piece piece-black selected">
+                        <img src="../frontend/src/assets/pieces/ELEPHANT_BLACK.svg" alt="Black Elephant">
+                        <div class="game-piece__value">9</div>
+                    </div>
+                    <div class="game-piece piece-red">
+                        <img src="../frontend/src/assets/pieces/HORSE_RED.svg" alt="Red Horse">
+                        <div class="game-piece__value">6</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>Redesigned Implementation - Value in Top-Left</h2>
+            <p>New piece design with value badge positioned in the top-left corner:</p>
+            
+            <div class="piece-tray">
+                <div class="piece-tray__grid">
+                    <!-- Sample hand with redesigned pieces -->
+                    <div class="game-piece game-piece--redesigned piece-red">
+                        <img src="../frontend/src/assets/pieces/GENERAL_RED.svg" alt="Red General">
+                        <div class="game-piece__value">14</div>
+                    </div>
+                    <div class="game-piece game-piece--redesigned piece-red">
+                        <img src="../frontend/src/assets/pieces/CHARIOT_RED.svg" alt="Red Chariot">
+                        <div class="game-piece__value">8</div>
+                    </div>
+                    <div class="game-piece game-piece--redesigned piece-black">
+                        <img src="../frontend/src/assets/pieces/HORSE_BLACK.svg" alt="Black Horse">
+                        <div class="game-piece__value">5</div>
+                    </div>
+                    <div class="game-piece game-piece--redesigned piece-red">
+                        <img src="../frontend/src/assets/pieces/CANNON_RED.svg" alt="Red Cannon">
+                        <div class="game-piece__value">4</div>
+                    </div>
+                    <div class="game-piece game-piece--redesigned piece-black">
+                        <img src="../frontend/src/assets/pieces/ADVISOR_BLACK.svg" alt="Black Advisor">
+                        <div class="game-piece__value">11</div>
+                    </div>
+                    <div class="game-piece game-piece--redesigned piece-red">
+                        <img src="../frontend/src/assets/pieces/SOLDIER_RED.svg" alt="Red Soldier">
+                        <div class="game-piece__value">2</div>
+                    </div>
+                    <div class="game-piece game-piece--redesigned piece-black selected">
+                        <img src="../frontend/src/assets/pieces/ELEPHANT_BLACK.svg" alt="Black Elephant">
+                        <div class="game-piece__value">9</div>
+                    </div>
+                    <div class="game-piece game-piece--redesigned piece-red">
+                        <img src="../frontend/src/assets/pieces/HORSE_RED.svg" alt="Red Horse">
+                        <div class="game-piece__value">6</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>Interactive States Comparison</h2>
+            
+            <div class="demo-grid">
+                <div class="demo-item">
+                    <h3>Current Design States</h3>
+                    <div class="states-demo">
+                        <div class="state-group">
+                            <div class="game-piece piece-red">
+                                <img src="../frontend/src/assets/pieces/CANNON_RED.svg" alt="Red Cannon">
+                                <div class="game-piece__value">4</div>
+                            </div>
+                            <div class="state-label">Normal</div>
+                        </div>
+                        <div class="state-group">
+                            <div class="game-piece piece-red selected">
+                                <img src="../frontend/src/assets/pieces/CANNON_RED.svg" alt="Red Cannon">
+                                <div class="game-piece__value">4</div>
+                            </div>
+                            <div class="state-label">Selected</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="demo-item">
+                    <h3>Redesigned States</h3>
+                    <div class="states-demo">
+                        <div class="state-group">
+                            <div class="game-piece game-piece--redesigned piece-red">
+                                <img src="../frontend/src/assets/pieces/CANNON_RED.svg" alt="Red Cannon">
+                                <div class="game-piece__value">4</div>
+                            </div>
+                            <div class="state-label">Normal</div>
+                        </div>
+                        <div class="state-group">
+                            <div class="game-piece game-piece--redesigned piece-red selected">
+                                <img src="../frontend/src/assets/pieces/CANNON_RED.svg" alt="Red Cannon">
+                                <div class="game-piece__value">4</div>
+                            </div>
+                            <div class="state-label">Selected</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>Active Piece Tray (Player's Turn)</h2>
+            <p>Redesigned pieces in an active tray with golden highlighting:</p>
+            
+            <div class="piece-tray piece-tray--active">
+                <div class="piece-tray__grid">
+                    <div class="game-piece game-piece--redesigned piece-red">
+                        <img src="../frontend/src/assets/pieces/GENERAL_RED.svg" alt="Red General">
+                        <div class="game-piece__value">14</div>
+                    </div>
+                    <div class="game-piece game-piece--redesigned piece-black">
+                        <img src="../frontend/src/assets/pieces/CHARIOT_BLACK.svg" alt="Black Chariot">
+                        <div class="game-piece__value">7</div>
+                    </div>
+                    <div class="game-piece game-piece--redesigned piece-red">
+                        <img src="../frontend/src/assets/pieces/ELEPHANT_RED.svg" alt="Red Elephant">
+                        <div class="game-piece__value">10</div>
+                    </div>
+                    <div class="game-piece game-piece--redesigned piece-black">
+                        <img src="../frontend/src/assets/pieces/ADVISOR_BLACK.svg" alt="Black Advisor">
+                        <div class="game-piece__value">11</div>
+                    </div>
+                    <div class="game-piece game-piece--redesigned piece-red">
+                        <img src="../frontend/src/assets/pieces/HORSE_RED.svg" alt="Red Horse">
+                        <div class="game-piece__value">6</div>
+                    </div>
+                    <div class="game-piece game-piece--redesigned piece-black">
+                        <img src="../frontend/src/assets/pieces/CANNON_BLACK.svg" alt="Black Cannon">
+                        <div class="game-piece__value">3</div>
+                    </div>
+                    <div class="game-piece game-piece--redesigned piece-red">
+                        <img src="../frontend/src/assets/pieces/SOLDIER_RED.svg" alt="Red Soldier">
+                        <div class="game-piece__value">2</div>
+                    </div>
+                    <div class="game-piece game-piece--redesigned piece-black">
+                        <img src="../frontend/src/assets/pieces/SOLDIER_BLACK.svg" alt="Black Soldier">
+                        <div class="game-piece__value">1</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>Value Badge Style Variations</h2>
+            <p>Different styling approaches for the top-left value badge:</p>
+            
+            <div class="demo-grid">
+                <div class="demo-item">
+                    <h3>Default Style</h3>
+                    <div class="states-demo">
+                        <div class="game-piece game-piece--redesigned piece-red">
+                            <img src="../frontend/src/assets/pieces/GENERAL_RED.svg" alt="Red General">
+                            <div class="game-piece__value">14</div>
+                        </div>
+                        <div class="game-piece game-piece--redesigned piece-black">
+                            <img src="../frontend/src/assets/pieces/GENERAL_BLACK.svg" alt="Black General">
+                            <div class="game-piece__value">13</div>
+                        </div>
+                    </div>
+                    <p style="font-size: 12px; color: #6c757d;">Rounded rectangle with border</p>
+                </div>
+
+                <div class="demo-item">
+                    <h3>Circular Badge</h3>
+                    <div class="states-demo">
+                        <div class="game-piece game-piece--redesigned badge-variant-1 piece-red">
+                            <img src="../frontend/src/assets/pieces/GENERAL_RED.svg" alt="Red General">
+                            <div class="game-piece__value">14</div>
+                        </div>
+                        <div class="game-piece game-piece--redesigned badge-variant-1 piece-black">
+                            <img src="../frontend/src/assets/pieces/GENERAL_BLACK.svg" alt="Black General">
+                            <div class="game-piece__value">13</div>
+                        </div>
+                    </div>
+                    <p style="font-size: 12px; color: #6c757d;">Perfect circle with gradient</p>
+                </div>
+
+                <div class="demo-item">
+                    <h3>Dark Badge</h3>
+                    <div class="states-demo">
+                        <div class="game-piece game-piece--redesigned badge-variant-2 piece-red">
+                            <img src="../frontend/src/assets/pieces/GENERAL_RED.svg" alt="Red General">
+                            <div class="game-piece__value">14</div>
+                        </div>
+                        <div class="game-piece game-piece--redesigned badge-variant-2 piece-black">
+                            <img src="../frontend/src/assets/pieces/GENERAL_BLACK.svg" alt="Black General">
+                            <div class="game-piece__value">13</div>
+                        </div>
+                    </div>
+                    <p style="font-size: 12px; color: #6c757d;">Dark background with white text</p>
+                </div>
+
+                <div class="demo-item">
+                    <h3>Outline Badge</h3>
+                    <div class="states-demo">
+                        <div class="game-piece game-piece--redesigned badge-variant-3 piece-red">
+                            <img src="../frontend/src/assets/pieces/GENERAL_RED.svg" alt="Red General">
+                            <div class="game-piece__value">14</div>
+                        </div>
+                        <div class="game-piece game-piece--redesigned badge-variant-3 piece-black">
+                            <img src="../frontend/src/assets/pieces/GENERAL_BLACK.svg" alt="Black General">
+                            <div class="game-piece__value">13</div>
+                        </div>
+                    </div>
+                    <p style="font-size: 12px; color: #6c757d;">Circular outline with colored border</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>Implementation Benefits</h2>
+            <div style="background: #e8f4f8; padding: 20px; border-radius: 8px;">
+                <h3>Advantages of Top-Left Value Position:</h3>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; text-align: left; margin-top: 15px;">
+                    <div>
+                        <h4>✅ Visual Benefits:</h4>
+                        <ul>
+                            <li>Piece character remains centered and prominent</li>
+                            <li>Value is always visible without obscuring the piece</li>
+                            <li>Consistent visual hierarchy across all pieces</li>
+                            <li>Badge style is modern and intuitive</li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h4>🎯 UX Improvements:</h4>
+                        <ul>
+                            <li>Faster piece value recognition</li>
+                            <li>Better use of available space</li>
+                            <li>Values don't interfere with selection states</li>
+                            <li>Scales well across different piece sizes</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Add click handlers for demonstration
+        document.addEventListener('DOMContentLoaded', function() {
+            const pieces = document.querySelectorAll('.game-piece');
+            pieces.forEach(piece => {
+                piece.addEventListener('click', function() {
+                    // Toggle selected state
+                    this.classList.toggle('selected');
+                });
+            });
+        });
+    </script>
+</body>
+</html>
