@@ -1,6 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { FooterTimer } from '../shared';
+import { FooterTimer, GamePiece } from '../shared';
 
 /**
  * RoundStartContent Component
@@ -35,8 +35,19 @@ const RoundStartContent = ({ roundNumber, starter, starterReason }) => {
 
       {/* Starter information */}
       <div className="rs-starter-section">
+        <div className="rs-starter-label">Starter</div>
         <div className="rs-starter-name">{starter}</div>
-        <div className="rs-starter-reason">{getReasonText()}</div>
+        {starterReason === 'has_general_red' ? (
+          <div className="rs-general-piece">
+            <GamePiece
+              piece={{ kind: 'GENERAL', color: 'red', value: 14 }}
+              size="large"
+              showValue={false}
+            />
+          </div>
+        ) : (
+          <div className="rs-starter-reason">{getReasonText()}</div>
+        )}
       </div>
 
       {/* Auto-advance timer */}

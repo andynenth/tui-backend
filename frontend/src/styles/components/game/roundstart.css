@@ -46,6 +46,15 @@
   animation: fadeIn 0.6s ease-out 0.6s both;
 }
 
+.rs-starter-label {
+  font-size: 20px;
+  font-weight: 600;
+  color: #718096;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  margin-bottom: 8px;
+}
+
 .rs-starter-name {
   font-size: 32px;
   font-weight: 700;
@@ -77,6 +86,14 @@
 .rs-timer-section {
   margin-top: 20px;
   animation: fadeIn 0.6s ease-out 0.9s both;
+}
+
+/* General piece display */
+.rs-general-piece {
+  margin-top: 20px;
+  animation: fadeIn 0.6s ease-out 0.7s both;
+  display: flex;
+  justify-content: center;
 }
 
 /* Animations */
