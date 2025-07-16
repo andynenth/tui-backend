@@ -56,9 +56,6 @@ const GamePiece = ({
   if (animationDelay !== undefined) {
     style.animationDelay = `${animationDelay}s`;
   }
-  if (variant === 'selectable' && onClick) {
-    style.cursor = 'pointer';
-  }
 
   // Render flippable piece with front/back faces
   if (flippable) {
