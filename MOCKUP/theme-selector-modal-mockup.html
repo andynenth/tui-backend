@@ -1,0 +1,581 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Theme Selector Modal - Settings Button Mockup</title>
+    <style>
+        /* Base styles from existing Start Page */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 25%, #dee2e6 50%, #ced4da 75%, #adb5bd 100%);
+            color: #333;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+
+        /* Settings Button (inside container) */
+        .settings-button {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(145deg, #ffffff 0%, #f8f9fa 100%);
+            border: 1px solid rgba(173, 181, 189, 0.3);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            z-index: 10;
+        }
+
+        .settings-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+            border-color: #ffc107;
+        }
+
+        .settings-button:active {
+            transform: translateY(0);
+        }
+
+        .settings-icon {
+            width: 20px;
+            height: 20px;
+            color: #495057;
+            transition: transform 0.3s ease;
+        }
+
+        .settings-button:hover .settings-icon {
+            transform: rotate(45deg);
+        }
+
+        /* Modal Overlay */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 2000;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .modal-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        /* Modal Content */
+        .modal {
+            background: linear-gradient(145deg, #ffffff 0%, #f8f9fa 100%);
+            border-radius: 20px;
+            width: 90%;
+            max-width: 400px;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+            transform: scale(0.9) translateY(20px);
+            transition: all 0.3s ease;
+        }
+
+        .modal-overlay.active .modal {
+            transform: scale(1) translateY(0);
+        }
+
+        .modal-header {
+            padding: 30px 30px 20px;
+            border-bottom: 1px solid rgba(173, 181, 189, 0.2);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .modal-title {
+            font-size: 28px;
+            font-weight: 700;
+            color: #212529;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+        }
+
+        .modal-close {
+            width: 32px;
+            height: 32px;
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 8px;
+            transition: all 0.2s ease;
+        }
+
+        .modal-close:hover {
+            background: rgba(0, 0, 0, 0.05);
+        }
+
+        .modal-close-icon {
+            width: 20px;
+            height: 20px;
+            color: #6c757d;
+        }
+
+        .modal-body {
+            padding: 30px;
+        }
+
+        /* Settings Section */
+        .settings-section {
+            margin-bottom: 32px;
+        }
+
+        .settings-section:last-child {
+            margin-bottom: 0;
+        }
+
+        .settings-section-title {
+            font-size: 12px;
+            font-weight: 600;
+            color: #495057;
+            margin-bottom: 16px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        /* Theme Options */
+        .theme-options {
+            display: grid;
+            gap: 12px;
+        }
+
+        .theme-option {
+            display: flex;
+            align-items: center;
+            padding: 16px;
+            border: 2px solid rgba(173, 181, 189, 0.3);
+            border-radius: 12px;
+            background: white;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .theme-option:hover {
+            border-color: #ffc107;
+            background: rgba(255, 193, 7, 0.05);
+        }
+
+        .theme-option.active {
+            border-color: #ffc107;
+            background: rgba(255, 193, 7, 0.1);
+        }
+
+        .theme-option-preview {
+            display: flex;
+            gap: 8px;
+            font-size: 32px;
+            margin-right: 16px;
+        }
+
+        .theme-option-info {
+            flex: 1;
+        }
+
+        .theme-option-name {
+            font-weight: 600;
+            font-size: 16px;
+            color: #212529;
+            margin-bottom: 4px;
+        }
+
+        .theme-option-desc {
+            font-size: 14px;
+            color: #6c757d;
+        }
+
+        .theme-option-check {
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            width: 24px;
+            height: 24px;
+            background: #ffc107;
+            border-radius: 50%;
+            display: none;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .theme-option.active .theme-option-check {
+            display: flex;
+        }
+
+        .check-icon {
+            width: 14px;
+            height: 14px;
+            color: white;
+        }
+
+        /* Chinese piece characters */
+        .piece-char {
+            font-family: 'SimSun', '宋体', serif;
+            font-weight: bold;
+        }
+
+        /* Start Page Container (background content) */
+        .sp-game-container {
+            max-width: 400px;
+            background: linear-gradient(145deg, #ffffff 0%, #f8f9fa 100%);
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+            position: relative;
+        }
+
+        .sp-game-icon {
+            width: 80px;
+            height: 80px;
+            margin: 0 auto 20px;
+            position: relative;
+        }
+
+        .sp-icon-circle {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, #ffc107 0%, #ff9800 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 40px;
+            font-weight: bold;
+            color: #212529;
+            box-shadow: 0 4px 12px rgba(255, 193, 7, 0.3);
+        }
+
+        .sp-game-title {
+            font-size: 28px;
+            font-weight: 700;
+            text-align: center;
+            margin-bottom: 10px;
+            color: #212529;
+        }
+
+        .sp-game-subtitle {
+            text-align: center;
+            color: #6c757d;
+            margin-bottom: 30px;
+        }
+
+        /* Form elements */
+        .sp-input-wrapper {
+            margin-bottom: 20px;
+        }
+
+        .sp-input-label {
+            display: block;
+            font-size: 12px;
+            font-weight: 600;
+            color: #495057;
+            margin-bottom: 6px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .sp-glowing-input {
+            width: 100%;
+            padding: 14px 16px;
+            border: 2px solid rgba(173, 181, 189, 0.3);
+            border-radius: 12px;
+            font-size: 16px;
+            font-family: inherit;
+            background: white;
+            transition: all 0.3s ease;
+        }
+
+        .sp-glowing-input:focus {
+            outline: none;
+            border-color: #ffc107;
+            box-shadow: 0 0 0 3px rgba(255, 193, 7, 0.2);
+        }
+
+        .sp-input-helper-text {
+            font-size: 12px;
+            color: #6c757d;
+            margin-top: 6px;
+        }
+
+        /* Button styles */
+        .btn {
+            padding: 14px 24px;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            border: none;
+            width: 100%;
+            margin-top: 20px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #ffc107 0%, #ff9800 100%);
+            color: #212529;
+            box-shadow: 0 4px 8px rgba(255, 193, 7, 0.2);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 16px rgba(255, 193, 7, 0.3);
+        }
+
+        /* Apply button in modal */
+        .modal-footer {
+            padding: 20px 30px 30px;
+            border-top: 1px solid rgba(173, 181, 189, 0.2);
+            display: flex;
+            gap: 12px;
+        }
+
+        .btn-modal {
+            padding: 14px 24px;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            border: none;
+            flex: 1;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+        }
+
+        .btn-apply {
+            background: linear-gradient(135deg, #ffc107 0%, #ff9800 100%);
+            color: #212529;
+            box-shadow: 0 4px 8px rgba(255, 193, 7, 0.2);
+        }
+
+        .btn-apply:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 16px rgba(255, 193, 7, 0.3);
+        }
+
+        .btn-cancel {
+            background: linear-gradient(145deg, #ffffff 0%, #f8f9fa 100%);
+            color: #495057;
+            border: 1px solid rgba(173, 181, 189, 0.3);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.06);
+        }
+
+        .btn-cancel:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            border-color: rgba(173, 181, 189, 0.4);
+        }
+
+        /* Future settings placeholder */
+        .settings-placeholder {
+            padding: 40px;
+            text-align: center;
+            background: linear-gradient(145deg, #f8f9fa 0%, #e9ecef 100%);
+            border: 1px solid rgba(173, 181, 189, 0.2);
+            border-radius: 12px;
+            color: #6c757d;
+            font-size: 14px;
+        }
+
+        /* Demo note */
+        .demo-note {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0, 0, 0, 0.8);
+            color: white;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-size: 14px;
+            z-index: 3000;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Settings Modal -->
+    <div class="modal-overlay" id="settingsModal">
+        <div class="modal">
+            <div class="modal-header">
+                <h2 class="modal-title">Settings</h2>
+                <button class="modal-close" onclick="closeSettings()">
+                    <svg class="modal-close-icon" viewBox="0 0 20 20" fill="currentColor">
+                        <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L8.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L11.414 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"/>
+                    </svg>
+                </button>
+            </div>
+            
+            <div class="modal-body">
+                <!-- Theme Selection Section -->
+                <div class="settings-section">
+                    <h3 class="settings-section-title">Theme</h3>
+                    <div class="theme-options">
+                        <div class="theme-option active" data-theme="classic">
+                            <div class="theme-option-preview">
+                                <span class="piece-char" style="color: #dc3545;">帥</span>
+                                <span class="piece-char" style="color: #495057;">將</span>
+                            </div>
+                            <div class="theme-option-info">
+                                <div class="theme-option-name">Classic</div>
+                                <div class="theme-option-desc">Traditional red and black pieces with SVG graphics</div>
+                            </div>
+                            <div class="theme-option-check">
+                                <svg class="check-icon" viewBox="0 0 20 20" fill="currentColor">
+                                    <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
+                                </svg>
+                            </div>
+                        </div>
+                        
+                        <div class="theme-option" data-theme="modern">
+                            <div class="theme-option-preview">
+                                <span class="piece-char" style="color: #0d6efd;">帥</span>
+                                <span class="piece-char" style="color: #28a745;">將</span>
+                            </div>
+                            <div class="theme-option-info">
+                                <div class="theme-option-name">Modern Blue</div>
+                                <div class="theme-option-desc">Blue and green character pieces for a fresh look</div>
+                            </div>
+                            <div class="theme-option-check">
+                                <svg class="check-icon" viewBox="0 0 20 20" fill="currentColor">
+                                    <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
+                                </svg>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Future Settings Placeholder -->
+                <div class="settings-section">
+                    <h3 class="settings-section-title">Other Settings</h3>
+                    <div class="settings-placeholder">
+                        More settings coming soon...<br>
+                        (Sound, Animations, etc.)
+                    </div>
+                </div>
+            </div>
+            
+            <div class="modal-footer">
+                <button class="btn-modal btn-cancel" onclick="closeSettings()">Cancel</button>
+                <button class="btn-modal btn-apply" onclick="applySettings()">Apply Changes</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Start Page Content -->
+    <div class="sp-game-container">
+        <!-- Settings Button (inside container) -->
+        <button class="settings-button" onclick="openSettings()">
+            <svg class="settings-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="3"></circle>
+                <path d="M12 1v6m0 6v6m9-9h-6m-6 0H3m16.36-6.36l-4.24 4.24M7.88 7.88L3.64 3.64m16.72 16.72l-4.24-4.24m-8.24 0l-4.24 4.24"></path>
+            </svg>
+        </button>
+        
+        <div class="sp-game-icon">
+            <div class="sp-icon-circle">將</div>
+        </div>
+        
+        <h1 class="sp-game-title">Welcome to Liap TUI</h1>
+        <p class="sp-game-subtitle">Enter your player name to start playing</p>
+        
+        <form>
+            <div class="sp-input-wrapper">
+                <label class="sp-input-label">Player Name</label>
+                <input type="text" class="sp-glowing-input" placeholder="Enter your name..." value="Andy">
+                <p class="sp-input-helper-text">2-20 characters, letters and numbers only</p>
+            </div>
+            
+            <button type="submit" class="btn btn-primary">Enter Lobby</button>
+        </form>
+    </div>
+
+    <!-- Demo Note -->
+    <div class="demo-note">
+        Click the gear icon in the top-right corner of the game container to open settings
+    </div>
+
+    <script>
+        let selectedTheme = 'classic';
+
+        function openSettings() {
+            document.getElementById('settingsModal').classList.add('active');
+        }
+
+        function closeSettings() {
+            document.getElementById('settingsModal').classList.remove('active');
+        }
+
+        function applySettings() {
+            // Save the selected theme
+            localStorage.setItem('liap-tui-theme', selectedTheme);
+            console.log('Theme saved:', selectedTheme);
+            
+            // Close modal
+            closeSettings();
+            
+            // In real implementation, this would trigger theme update
+            alert(`Theme changed to: ${selectedTheme}`);
+        }
+
+        // Theme selection
+        document.querySelectorAll('.theme-option').forEach(option => {
+            option.addEventListener('click', function() {
+                // Remove active from all
+                document.querySelectorAll('.theme-option').forEach(opt => {
+                    opt.classList.remove('active');
+                });
+                
+                // Add active to clicked
+                this.classList.add('active');
+                selectedTheme = this.dataset.theme;
+            });
+        });
+
+        // Close modal when clicking overlay
+        document.getElementById('settingsModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeSettings();
+            }
+        });
+
+        // Escape key to close
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                closeSettings();
+            }
+        });
+    </script>
+</body>
+</html>
