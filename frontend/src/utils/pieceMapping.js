@@ -142,6 +142,7 @@ export function formatPieceValue(pieceData) {
 
 /**
  * Get the SVG asset path for a piece
+ * @deprecated Use getThemePieceSVG instead for theme-aware piece rendering
  * @param {string|Object} pieceData - Either piece string or object
  * @returns {string} The SVG asset path for the piece
  */
@@ -154,7 +155,26 @@ export function getPieceSVG(pieceData) {
 
   // Create full type with color (e.g., "GENERAL_RED")
   const fullType = `${piece.kind}_${piece.color?.toUpperCase()}`;
+
+  // Default to classic SVG assets
   return PieceAssets.getPieceAsset(fullType);
+}
+
+/**
+ * Get the theme-aware SVG path for a piece
+ * @param {Object} piece - Piece object with kind and color
+ * @param {Object} theme - Theme object with pieceAssets
+ * @returns {string} The SVG import for the piece
+ */
+export function getThemePieceSVG(piece, theme) {
+  if (!piece || !piece.kind || !theme || !theme.pieceAssets) {
+    return null;
+  }
+
+  const pieceType = `${piece.kind}_${piece.color.toUpperCase()}`;
+
+  // Get the SVG from the theme's piece assets
+  return theme.pieceAssets[pieceType] || null;
 }
 
 /**

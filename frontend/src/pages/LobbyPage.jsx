@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useApp } from '../contexts/AppContext';
+import { useTheme } from '../contexts/ThemeContext';
 import { Layout } from '../components';
 // Phase 1-4 Enterprise Architecture
 import { networkService } from '../services';
@@ -12,6 +13,7 @@ import { TIMING } from '../constants';
 const LobbyPage = () => {
   const navigate = useNavigate();
   const app = useApp();
+  const { currentTheme } = useTheme();
 
   const [rooms, setRooms] = useState([]);
   const [isConnected, setIsConnected] = useState(false);
@@ -342,7 +344,12 @@ const LobbyPage = () => {
               {rooms.length === 0 ? (
                 <div className="lp-emptyState">
                   <div className="lp-emptyIcon">
-                    <div className="lp-iconCircle">帥</div>
+                    <div className="lp-iconCircle">
+                      <img
+                        src={currentTheme.uiElements.lobbyEmpty}
+                        alt="Empty lobby"
+                      />
+                    </div>
                   </div>
                   <div className="lp-emptyText">
                     No rooms available right now

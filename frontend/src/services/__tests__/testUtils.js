@@ -1,6 +1,6 @@
 /**
  * Test Utilities for Service Testing
- * 
+ *
  * Common utilities and helpers for testing GameService and NetworkService
  */
 
@@ -19,18 +19,18 @@ export const createMockNetworkService = () => {
     addEventListener: jest.fn(),
     removeEventListener: jest.fn(),
     destroy: jest.fn(),
-    
+
     // Test helpers
     mockEvents: new Map(),
-    
+
     // Simulate events
     emit(eventType, detail) {
       const listeners = this.mockEvents.get(eventType) || [];
-      listeners.forEach(listener => {
+      listeners.forEach((listener) => {
         listener({ detail });
       });
     },
-    
+
     // Override addEventListener to track listeners
     addEventListener: jest.fn((eventType, listener) => {
       if (!mockNetworkService.mockEvents.has(eventType)) {
@@ -38,18 +38,20 @@ export const createMockNetworkService = () => {
       }
       mockNetworkService.mockEvents.get(eventType).push(listener);
     }),
-    
+
     removeEventListener: jest.fn((eventType, listener) => {
       const listeners = mockNetworkService.mockEvents.get(eventType) || [];
       const index = listeners.indexOf(listener);
       if (index > -1) {
         listeners.splice(index, 1);
       }
-    })
+    }),
   };
-  
+
   // Default implementations
-  mockNetworkService.connectToRoom.mockResolvedValue(new MockWebSocket('ws://test'));
+  mockNetworkService.connectToRoom.mockResolvedValue(
+    new MockWebSocket('ws://test')
+  );
   mockNetworkService.disconnectFromRoom.mockResolvedValue();
   mockNetworkService.send.mockReturnValue(true);
   mockNetworkService.getConnectionStatus.mockReturnValue({
@@ -57,15 +59,15 @@ export const createMockNetworkService = () => {
     status: 'connected',
     connected: true,
     queueSize: 0,
-    reconnecting: false
+    reconnecting: false,
   });
   mockNetworkService.getStatus.mockReturnValue({
     isDestroyed: false,
     activeConnections: 1,
     totalQueuedMessages: 0,
-    rooms: {}
+    rooms: {},
   });
-  
+
   return mockNetworkService;
 };
 
@@ -83,7 +85,7 @@ export const createTestGameState = (overrides = {}) => ({
   myHand: [],
   currentPlayer: '',
   declarations: {},
-  ...overrides
+  ...overrides,
 });
 
 /**
@@ -96,10 +98,10 @@ export const createTestPhaseData = (phase, overrides = {}) => {
       { name: 'Player1', id: 'p1' },
       { name: 'Player2', id: 'p2' },
       { name: 'Player3', id: 'p3' },
-      { name: 'Player4', id: 'p4' }
-    ]
+      { name: 'Player4', id: 'p4' },
+    ],
   };
-  
+
   switch (phase) {
     case 'preparation':
       return {
@@ -107,27 +109,27 @@ export const createTestPhaseData = (phase, overrides = {}) => {
         my_hand: [
           { value: 12, color: 'red', suit: 'hearts' },
           { value: 11, color: 'red', suit: 'diamonds' },
-          { value: 10, color: 'black', suit: 'spades' }
+          { value: 10, color: 'black', suit: 'spades' },
         ],
         weak_hand_players: [],
         redeal_responses: {},
-        ...overrides
+        ...overrides,
       };
-      
+
     case 'declaration':
       return {
         ...baseData,
         my_hand: [
           { value: 12, color: 'red', suit: 'hearts' },
-          { value: 11, color: 'red', suit: 'diamonds' }
+          { value: 11, color: 'red', suit: 'diamonds' },
         ],
         declaration_order: ['Player1', 'Player2', 'Player3', 'Player4'],
         current_declarer: 'Player1',
         declarations: {},
         declaration_total: 0,
-        ...overrides
+        ...overrides,
       };
-      
+
     case 'turn':
       return {
         ...baseData,
@@ -137,18 +139,18 @@ export const createTestPhaseData = (phase, overrides = {}) => {
         required_piece_count: 0,
         turn_plays: {},
         pile_counts: { Player1: 0, Player2: 0, Player3: 0, Player4: 0 },
-        ...overrides
+        ...overrides,
       };
-      
+
     case 'scoring':
       return {
         ...baseData,
         scores: { Player1: 10, Player2: 5, Player3: 8, Player4: 12 },
         round_scores: { Player1: 2, Player2: -1, Player3: 0, Player4: 3 },
         winner: 'Player4',
-        ...overrides
+        ...overrides,
       };
-      
+
     default:
       return { ...baseData, ...overrides };
   }
@@ -157,12 +159,13 @@ export const createTestPhaseData = (phase, overrides = {}) => {
 /**
  * Wait for next tick (useful for async operations)
  */
-export const waitForNextTick = () => new Promise(resolve => setTimeout(resolve, 0));
+export const waitForNextTick = () =>
+  new Promise((resolve) => setTimeout(resolve, 0));
 
 /**
  * Wait for specific time
  */
-export const wait = (ms) => new Promise(resolve => setTimeout(resolve, ms));
+export const wait = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
 /**
  * Create a mock event detail object
@@ -176,8 +179,8 @@ export const createMockEventDetail = (eventType, data = {}) => ({
     data,
     sequence: 1,
     timestamp: Date.now(),
-    id: 'test-id'
-  }
+    id: 'test-id',
+  },
 });
 
 /**
@@ -190,12 +193,12 @@ export const expectToThrow = async (fn, expectedMessage) => {
   } catch (e) {
     error = e;
   }
-  
+
   expect(error).toBeDefined();
   if (expectedMessage) {
     expect(error.message).toContain(expectedMessage);
   }
-  
+
   return error;
 };
 
@@ -204,13 +207,13 @@ export const expectToThrow = async (fn, expectedMessage) => {
  */
 export const mockConsole = () => {
   const originalConsole = { ...console };
-  
+
   beforeEach(() => {
     console.log = jest.fn();
     console.error = jest.fn();
     console.warn = jest.fn();
   });
-  
+
   afterEach(() => {
     Object.assign(console, originalConsole);
   });
