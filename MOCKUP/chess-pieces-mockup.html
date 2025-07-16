@@ -1,0 +1,812 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chinese Chess Pieces - Current vs SVG Comparison</title>
+    <style>
+        /* Exact CSS from game-piece.css */
+        
+        /* Base piece styles */
+        .game-piece {
+            border-radius: 50%;
+            background:
+                linear-gradient(145deg, #ffffff 0%, #f8f9fa 100%),
+                radial-gradient(
+                    circle at 30% 30%,
+                    rgba(255, 255, 255, 0.8) 0%,
+                    transparent 60%
+                );
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            border: 1px solid rgba(173, 181, 189, 0.3);
+            font-family: 'SimSun', '宋体', serif;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.06);
+            transition: all 0.15s ease;
+            position: relative;
+        }
+
+        /* Size variants */
+        .game-piece--mini {
+            width: 34px;
+            height: 34px;
+            font-size: 20px;
+        }
+
+        .game-piece--small {
+            width: 38px;
+            height: 38px;
+            font-size: 24px;
+        }
+
+        .game-piece--medium {
+            width: 68px;
+            height: 68px;
+            font-size: 42px;
+        }
+
+        .game-piece--large {
+            width: 62px;
+            height: 62px;
+            font-size: 20px;
+        }
+
+        /* Color variants */
+        .game-piece:not(.game-piece--table).piece-red,
+        .game-piece:not(.game-piece--table).red {
+            color: #dc3545;
+            border-color: rgba(220, 53, 69, 0.4);
+        }
+
+        .game-piece:not(.game-piece--table).piece-black,
+        .game-piece:not(.game-piece--table).black {
+            color: #495057;
+            border-color: rgba(73, 80, 87, 0.4);
+        }
+
+        /* Character display */
+        .game-piece__character {
+            font-size: 0.9em;
+            line-height: 1;
+        }
+
+        /* Value display */
+        .game-piece__value {
+            font-size: 0.5em;
+            margin-top: 2px;
+            opacity: 0.8;
+        }
+
+        /* SVG image sizing within game pieces */
+        .game-piece img {
+            width: 80%;
+        }
+
+        .game-piece--mini img {
+            width: 60%;
+        }
+
+        .game-piece--small img {
+            width: 65%;
+        }
+
+        .game-piece--medium img {
+            width: 62%;
+        }
+
+        .game-piece--large img {
+            width: 80%;
+        }
+
+        /* Selectable variant */
+        .game-piece--selectable {
+            cursor: pointer;
+        }
+
+        .game-piece--selectable:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.12);
+            border-color: rgba(13, 110, 253, 0.4);
+        }
+
+        .game-piece--selectable.selected {
+            transform: translateY(-6px);
+            box-shadow:
+                0 8px 16px rgba(13, 110, 253, 0.3),
+                0 0 0 3px rgba(13, 110, 253, 0.2);
+            border-color: #0d6efd;
+        }
+
+        /* Flippable pieces with flip animation */
+        .game-piece.flippable {
+            transform-style: preserve-3d;
+            transition: transform 0.6s ease;
+        }
+
+        .game-piece.flippable.flipped {
+            transform: rotateY(180deg);
+        }
+
+        .game-piece__face {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            background:
+                linear-gradient(145deg, #ffffff 0%, #f8f9fa 100%),
+                radial-gradient(
+                    circle at 30% 30%,
+                    rgba(255, 255, 255, 0.8) 0%,
+                    transparent 60%
+                );
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 1px solid rgba(173, 181, 189, 0.3);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
+            backface-visibility: hidden;
+        }
+
+        .game-piece__face--back {
+            background:
+                linear-gradient(145deg, #ffffff 0%, #f8f9fa 100%),
+                radial-gradient(
+                    circle at 30% 30%,
+                    rgba(255, 255, 255, 0.8) 0%,
+                    transparent 60%
+                );
+            border: 1px solid rgba(173, 181, 189, 0.7);
+        }
+
+        .game-piece__face--back::after {
+            content: '?';
+            color: #6c757d;
+            font-weight: bold;
+        }
+
+        .game-piece__face--front {
+            transform: rotateY(180deg);
+        }
+
+        .game-piece__face--front.piece-red,
+        .game-piece__face--front.red {
+            color: #dc3545;
+            border-color: rgba(220, 53, 69, 0.4);
+        }
+
+        .game-piece__face--front.piece-black,
+        .game-piece__face--front.black {
+            color: #495057;
+            border-color: rgba(73, 80, 87, 0.4);
+        }
+
+        /* Page styling */
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+            background: #f8f9fa;
+            margin: 0;
+            padding: 20px;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            padding: 40px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            color: #333;
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        h2 {
+            color: #495057;
+            margin-top: 40px;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #e9ecef;
+            padding-bottom: 10px;
+        }
+
+        .section {
+            margin-bottom: 50px;
+        }
+
+        .pieces-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .piece-demo {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 8px;
+        }
+
+        .piece-label {
+            margin-top: 10px;
+            font-size: 14px;
+            color: #6c757d;
+            text-align: center;
+        }
+
+        .sizes-demo {
+            display: flex;
+            gap: 30px;
+            align-items: center;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .size-group {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .flippable-demo {
+            display: flex;
+            gap: 20px;
+            align-items: center;
+            justify-content: center;
+            margin: 20px 0;
+        }
+
+        .comparison-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+            margin-top: 30px;
+        }
+
+        .comparison-item {
+            text-align: center;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 8px;
+        }
+
+        .comparison-item h3 {
+            margin-bottom: 20px;
+            color: #495057;
+        }
+
+
+        .interactive-demo {
+            text-align: center;
+            margin: 30px 0;
+        }
+
+        .interactive-demo p {
+            color: #6c757d;
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Chinese Chess Pieces - Current Implementation vs SVG Alternatives</h1>
+        
+        <div class="section">
+            <h2>Current Implementation - All 14 Chinese Chess Pieces</h2>
+            <div class="pieces-grid">
+                <!-- Red Pieces -->
+                <div class="piece-demo">
+                    <div class="game-piece game-piece--medium piece-red">
+                        <div class="game-piece__character">帥</div>
+                    </div>
+                    <div class="piece-label">Red General<br>帥 (Shuài)</div>
+                </div>
+
+                <div class="piece-demo">
+                    <div class="game-piece game-piece--medium piece-red">
+                        <div class="game-piece__character">仕</div>
+                    </div>
+                    <div class="piece-label">Red Advisor<br>仕 (Shì)</div>
+                </div>
+
+                <div class="piece-demo">
+                    <div class="game-piece game-piece--medium piece-red">
+                        <div class="game-piece__character">相</div>
+                    </div>
+                    <div class="piece-label">Red Elephant<br>相 (Xiàng)</div>
+                </div>
+
+                <div class="piece-demo">
+                    <div class="game-piece game-piece--medium piece-red">
+                        <div class="game-piece__character">俥</div>
+                    </div>
+                    <div class="piece-label">Red Chariot<br>俥 (Jū)</div>
+                </div>
+
+                <div class="piece-demo">
+                    <div class="game-piece game-piece--medium piece-red">
+                        <div class="game-piece__character">傌</div>
+                    </div>
+                    <div class="piece-label">Red Horse<br>傌 (Mǎ)</div>
+                </div>
+
+                <div class="piece-demo">
+                    <div class="game-piece game-piece--medium piece-red">
+                        <div class="game-piece__character">炮</div>
+                    </div>
+                    <div class="piece-label">Red Cannon<br>炮 (Pào)</div>
+                </div>
+
+                <div class="piece-demo">
+                    <div class="game-piece game-piece--medium piece-red">
+                        <div class="game-piece__character">兵</div>
+                    </div>
+                    <div class="piece-label">Red Soldier<br>兵 (Bīng)</div>
+                </div>
+
+                <!-- Black Pieces -->
+                <div class="piece-demo">
+                    <div class="game-piece game-piece--medium piece-black">
+                        <div class="game-piece__character">將</div>
+                    </div>
+                    <div class="piece-label">Black General<br>將 (Jiàng)</div>
+                </div>
+
+                <div class="piece-demo">
+                    <div class="game-piece game-piece--medium piece-black">
+                        <div class="game-piece__character">士</div>
+                    </div>
+                    <div class="piece-label">Black Advisor<br>士 (Shì)</div>
+                </div>
+
+                <div class="piece-demo">
+                    <div class="game-piece game-piece--medium piece-black">
+                        <div class="game-piece__character">象</div>
+                    </div>
+                    <div class="piece-label">Black Elephant<br>象 (Xiàng)</div>
+                </div>
+
+                <div class="piece-demo">
+                    <div class="game-piece game-piece--medium piece-black">
+                        <div class="game-piece__character">車</div>
+                    </div>
+                    <div class="piece-label">Black Chariot<br>車 (Chē)</div>
+                </div>
+
+                <div class="piece-demo">
+                    <div class="game-piece game-piece--medium piece-black">
+                        <div class="game-piece__character">馬</div>
+                    </div>
+                    <div class="piece-label">Black Horse<br>馬 (Mǎ)</div>
+                </div>
+
+                <div class="piece-demo">
+                    <div class="game-piece game-piece--medium piece-black">
+                        <div class="game-piece__character">砲</div>
+                    </div>
+                    <div class="piece-label">Black Cannon<br>砲 (Pào)</div>
+                </div>
+
+                <div class="piece-demo">
+                    <div class="game-piece game-piece--medium piece-black">
+                        <div class="game-piece__character">卒</div>
+                    </div>
+                    <div class="piece-label">Black Soldier<br>卒 (Zú)</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>Different Sizes</h2>
+            
+            <h3>Font Characters</h3>
+            <div class="sizes-demo">
+                <div class="size-group">
+                    <div class="game-piece game-piece--mini piece-red">
+                        <div class="game-piece__character">車</div>
+                    </div>
+                    <span>Mini (34px)</span>
+                </div>
+                <div class="size-group">
+                    <div class="game-piece game-piece--small piece-red">
+                        <div class="game-piece__character">車</div>
+                    </div>
+                    <span>Small (38px)</span>
+                </div>
+                <div class="size-group">
+                    <div class="game-piece game-piece--medium piece-red">
+                        <div class="game-piece__character">車</div>
+                    </div>
+                    <span>Medium (68px)</span>
+                </div>
+                <div class="size-group">
+                    <div class="game-piece game-piece--large piece-red">
+                        <div class="game-piece__character">車</div>
+                    </div>
+                    <span>Large (62px)</span>
+                </div>
+            </div>
+
+            <h3>SVG Assets</h3>
+            <div class="sizes-demo">
+                <div class="size-group">
+                    <div class="game-piece game-piece--mini piece-red">
+                        <img src="../frontend/src/assets/pieces/CHARIOT_RED.svg" alt="Red Chariot">
+                    </div>
+                    <span>Mini (60%)</span>
+                </div>
+                <div class="size-group">
+                    <div class="game-piece game-piece--small piece-red">
+                        <img src="../frontend/src/assets/pieces/CHARIOT_RED.svg" alt="Red Chariot">
+                    </div>
+                    <span>Small (65%)</span>
+                </div>
+                <div class="size-group">
+                    <div class="game-piece game-piece--medium piece-red">
+                        <img src="../frontend/src/assets/pieces/CHARIOT_RED.svg" alt="Red Chariot">
+                    </div>
+                    <span>Medium (62%)</span>
+                </div>
+                <div class="size-group">
+                    <div class="game-piece game-piece--large piece-red">
+                        <img src="../frontend/src/assets/pieces/CHARIOT_RED.svg" alt="Red Chariot">
+                    </div>
+                    <span>Large (80%)</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>Interactive Features</h2>
+            
+            <h3>Flippable Pieces (Click to flip)</h3>
+            <div class="flippable-demo">
+                <div class="game-piece game-piece--medium flippable" onclick="this.classList.toggle('flipped')">
+                    <div class="game-piece__face game-piece__face--back"></div>
+                    <div class="game-piece__face game-piece__face--front piece-red">炮</div>
+                </div>
+                <div class="game-piece game-piece--medium flippable" onclick="this.classList.toggle('flipped')">
+                    <div class="game-piece__face game-piece__face--back"></div>
+                    <div class="game-piece__face game-piece__face--front piece-black">砲</div>
+                </div>
+            </div>
+
+            <h3>Selectable Pieces (Hover to see effect)</h3>
+            <div class="interactive-demo">
+                <p>Hover over these pieces to see the selection effect:</p>
+                <div style="display: flex; gap: 20px; justify-content: center;">
+                    <div class="game-piece game-piece--medium game-piece--selectable piece-red">
+                        <div class="game-piece__character">將</div>
+                    </div>
+                    <div class="game-piece game-piece--medium game-piece--selectable piece-black selected">
+                        <div class="game-piece__character">帥</div>
+                    </div>
+                </div>
+            </div>
+
+            <h3>With Values</h3>
+            <div style="display: flex; gap: 20px; justify-content: center; margin: 20px 0;">
+                <div class="game-piece game-piece--medium piece-red">
+                    <div class="game-piece__character">車</div>
+                    <div class="game-piece__value">14</div>
+                </div>
+                <div class="game-piece game-piece--medium piece-black">
+                    <div class="game-piece__character">炮</div>
+                    <div class="game-piece__value">8</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>Direct Comparison: Characters vs Production SVGs</h2>
+            
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 30px; margin: 30px 0;">
+                
+                <!-- General Comparison -->
+                <div class="comparison-item">
+                    <h3>General (帥/將)</h3>
+                    <div style="display: flex; gap: 20px; justify-content: center; align-items: center;">
+                        <div>
+                            <div class="game-piece game-piece--medium piece-red">
+                                <div class="game-piece__character">帥</div>
+                            </div>
+                            <small>Font Character</small>
+                        </div>
+                        <div>
+                            <div class="game-piece game-piece--medium piece-red">
+                                <img src="../frontend/src/assets/pieces/GENERAL_RED.svg" alt="Red General">
+                            </div>
+                            <small>Production SVG</small>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Chariot Comparison -->
+                <div class="comparison-item">
+                    <h3>Chariot (俥/車)</h3>
+                    <div style="display: flex; gap: 20px; justify-content: center; align-items: center;">
+                        <div>
+                            <div class="game-piece game-piece--medium piece-black">
+                                <div class="game-piece__character">車</div>
+                            </div>
+                            <small>Font Character</small>
+                        </div>
+                        <div>
+                            <div class="game-piece game-piece--medium piece-black">
+                                <img src="../frontend/src/assets/pieces/CHARIOT_BLACK.svg" alt="Black Chariot">
+                            </div>
+                            <small>Production SVG</small>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Horse Comparison -->
+                <div class="comparison-item">
+                    <h3>Horse (傌/馬)</h3>
+                    <div style="display: flex; gap: 20px; justify-content: center; align-items: center;">
+                        <div>
+                            <div class="game-piece game-piece--medium piece-red">
+                                <div class="game-piece__character">馬</div>
+                            </div>
+                            <small>Font Character</small>
+                        </div>
+                        <div>
+                            <div class="game-piece game-piece--medium piece-red">
+                                <img src="../frontend/src/assets/pieces/HORSE_RED.svg" alt="Red Horse">
+                            </div>
+                            <small>Production SVG</small>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Cannon Comparison -->
+                <div class="comparison-item">
+                    <h3>Cannon (炮/砲)</h3>
+                    <div style="display: flex; gap: 20px; justify-content: center; align-items: center;">
+                        <div>
+                            <div class="game-piece game-piece--medium piece-black">
+                                <div class="game-piece__character">砲</div>
+                            </div>
+                            <small>Font Character</small>
+                        </div>
+                        <div>
+                            <div class="game-piece game-piece--medium piece-black">
+                                <img src="../frontend/src/assets/pieces/CANNON_BLACK.svg" alt="Black Cannon">
+                            </div>
+                            <small>Production SVG</small>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <div style="background: #f8f9fa; padding: 20px; border-radius: 8px; margin: 30px 0;">
+                <h3>Comparison Summary</h3>
+                <div class="comparison-grid">
+                    <div>
+                        <h4>Chinese Characters</h4>
+                        <p><strong>✅ Pros:</strong></p>
+                        <ul>
+                            <li>Authentic traditional xiangqi appearance</li>
+                            <li>Culturally accurate and historically correct</li>
+                            <li>Familiar to xiangqi players worldwide</li>
+                        </ul>
+                        <p><strong>❌ Cons:</strong></p>
+                        <ul>
+                            <li>Requires Chinese font loading (SimSun/宋体)</li>
+                            <li>Font rendering inconsistencies across platforms</li>
+                            <li>Potential scaling issues at small sizes</li>
+                        </ul>
+                    </div>
+                    
+                    <div>
+                        <h4>Production SVG Assets</h4>
+                        <p><strong>✅ Pros:</strong></p>
+                        <ul>
+                            <li>Perfect scaling at all sizes (34px-68px+)</li>
+                            <li>No font dependencies or loading delays</li>
+                            <li>Consistent rendering across all platforms</li>
+                            <li>Maintains authentic Chinese character appearance</li>
+                            <li>Better accessibility (screen reader support)</li>
+                            <li>Smaller file sizes than font loading</li>
+                            <li>Organized asset structure for easy import</li>
+                            <li>Named to match backend constants</li>
+                        </ul>
+                        <p><strong>❌ Cons:</strong></p>
+                        <ul>
+                            <li>Requires SVG support (universal in modern browsers)</li>
+                            <li>Slightly more complex implementation than fonts</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <div style="margin-top: 30px; text-align: center;">
+                <h3>Production-Ready Chinese Character SVGs</h3>
+                <p style="color: #6c757d; margin-bottom: 30px;">Clean, optimized SVGs using Chinese character text with exact project styling</p>
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 30px; margin: 30px 0;">
+                    
+                    <!-- All Red Pieces -->
+                    <div style="text-align: center; background: #fff5f5; padding: 20px; border-radius: 8px; border: 2px solid #dc3545;">
+                        <h4 style="color: #dc3545; margin-bottom: 20px;">Red Pieces (帥 Army)</h4>
+                        <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px;">
+                            <!-- Red General -->
+                            <div style="text-align: center;">
+                                <div class="game-piece game-piece--medium piece-red">
+                                    <img src="../frontend/src/assets/pieces/GENERAL_RED.svg" alt="Red General">
+                                </div>
+                                <small>General</small>
+                            </div>
+                            <!-- Red Advisor -->
+                            <div style="text-align: center;">
+                                <div class="game-piece game-piece--medium piece-red">
+                                    <img src="../frontend/src/assets/pieces/ADVISOR_RED.svg" alt="Red Advisor">
+                                </div>
+                                <small>Advisor</small>
+                            </div>
+                            <!-- Red Elephant -->
+                            <div style="text-align: center;">
+                                <div class="game-piece game-piece--medium piece-red">
+                                    <img src="../frontend/src/assets/pieces/ELEPHANT_RED.svg" alt="Red Elephant">
+                                </div>
+                                <small>Elephant</small>
+                            </div>
+                            <!-- Red Chariot -->
+                            <div style="text-align: center;">
+                                <div class="game-piece game-piece--medium piece-red">
+                                    <img src="../frontend/src/assets/pieces/CHARIOT_RED.svg" alt="Red Chariot">
+                                </div>
+                                <small>Chariot</small>
+                            </div>
+                            <!-- Red Horse -->
+                            <div style="text-align: center;">
+                                <div class="game-piece game-piece--medium piece-red">
+                                    <img src="../frontend/src/assets/pieces/HORSE_RED.svg" alt="Red Horse">
+                                </div>
+                                <small>Horse</small>
+                            </div>
+                            <!-- Red Cannon -->
+                            <div style="text-align: center;">
+                                <div class="game-piece game-piece--medium piece-red">
+                                    <img src="../frontend/src/assets/pieces/CANNON_RED.svg" alt="Red Cannon">
+                                </div>
+                                <small>Cannon</small>
+                            </div>
+                            <!-- Red Soldier -->
+                            <div style="text-align: center;">
+                                <div class="game-piece game-piece--medium piece-red">
+                                    <img src="../frontend/src/assets/pieces/SOLDIER_RED.svg" alt="Red Soldier">
+                                </div>
+                                <small>Soldier</small>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- All Black Pieces -->
+                    <div style="text-align: center; background: #f8f9fa; padding: 20px; border-radius: 8px; border: 2px solid #495057;">
+                        <h4 style="color: #495057; margin-bottom: 20px;">Black Pieces (將 Army)</h4>
+                        <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px;">
+                            <!-- Black General -->
+                            <div style="text-align: center;">
+                                <div class="game-piece game-piece--medium piece-black">
+                                    <img src="../frontend/src/assets/pieces/GENERAL_BLACK.svg" alt="Black General">
+                                </div>
+                                <small>General</small>
+                            </div>
+                            <!-- Black Advisor -->
+                            <div style="text-align: center;">
+                                <div class="game-piece game-piece--medium piece-black">
+                                    <img src="../frontend/src/assets/pieces/ADVISOR_BLACK.svg" alt="Black Advisor">
+                                </div>
+                                <small>Advisor</small>
+                            </div>
+                            <!-- Black Elephant -->
+                            <div style="text-align: center;">
+                                <div class="game-piece game-piece--medium piece-black">
+                                    <img src="../frontend/src/assets/pieces/ELEPHANT_BLACK.svg" alt="Black Elephant">
+                                </div>
+                                <small>Elephant</small>
+                            </div>
+                            <!-- Black Chariot -->
+                            <div style="text-align: center;">
+                                <div class="game-piece game-piece--medium piece-black">
+                                    <img src="../frontend/src/assets/pieces/CHARIOT_BLACK.svg" alt="Black Chariot">
+                                </div>
+                                <small>Chariot</small>
+                            </div>
+                            <!-- Black Horse -->
+                            <div style="text-align: center;">
+                                <div class="game-piece game-piece--medium piece-black">
+                                    <img src="../frontend/src/assets/pieces/HORSE_BLACK.svg" alt="Black Horse">
+                                </div>
+                                <small>Horse</small>
+                            </div>
+                            <!-- Black Cannon -->
+                            <div style="text-align: center;">
+                                <div class="game-piece game-piece--medium piece-black">
+                                    <img src="../frontend/src/assets/pieces/CANNON_BLACK.svg" alt="Black Cannon">
+                                </div>
+                                <small>Cannon</small>
+                            </div>
+                            <!-- Black Soldier -->
+                            <div style="text-align: center;">
+                                <div class="game-piece game-piece--medium piece-black">
+                                    <img src="../frontend/src/assets/pieces/SOLDIER_BLACK.svg" alt="Black Soldier">
+                                </div>
+                                <small>Soldier</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div style="background: #e8f4f8; padding: 20px; border-radius: 8px; margin: 30px 0;">
+                    <h3>Production-Ready SVG Implementation</h3>
+                    <p>These SVGs use <strong>actual Chinese character text</strong> with exact project styling instead of complex stroke paths:</p>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; text-align: left;">
+                        <div>
+                            <h4>✅ Technical Benefits:</h4>
+                            <ul>
+                                <li>Simple, maintainable SVG structure</li>
+                                <li>Smaller file sizes (~300 bytes each)</li>
+                                <li>Perfect character recognition</li>
+                                <li>No font dependencies needed</li>
+                                <li>Scalable vector graphics</li>
+                                <li>Consistent cross-platform rendering</li>
+                            </ul>
+                        </div>
+                        <div>
+                            <h4>🎯 Implementation Ready:</h4>
+                            <ul>
+                                <li>Organized in <code>frontend/src/assets/pieces/</code></li>
+                                <li>Named to match backend constants</li>
+                                <li>Easy import with <code>index.js</code></li>
+                                <li>Drop-in replacement for font rendering</li>
+                                <li>All 14 pieces included</li>
+                                <li>Exact project colors maintained</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+        </div>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>Technical Details</h2>
+            <div style="background: #f8f9fa; padding: 20px; border-radius: 8px; font-family: monospace; font-size: 14px;">
+                <p><strong>Current Font Stack:</strong> 'SimSun', '宋体', serif</p>
+                <p><strong>Red Color:</strong> #dc3545 (rgba(220, 53, 69))</p>
+                <p><strong>Black Color:</strong> #495057 (rgba(73, 80, 87))</p>
+                <p><strong>Background:</strong> Linear + radial gradients with light gray tones</p>
+                <p><strong>Effects:</strong> Box shadows, border radius 50%, hover transforms</p>
+                <p><strong>Sizes:</strong> Mini (34px), Small (38px), Medium (68px), Large (62px)</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Add click handlers for demonstration
+        document.addEventListener('DOMContentLoaded', function() {
+            // Add click-to-select functionality for demo
+            const selectablePieces = document.querySelectorAll('.game-piece--selectable:not(.selected)');
+            selectablePieces.forEach(piece => {
+                piece.addEventListener('click', function() {
+                    // Remove selected from others
+                    selectablePieces.forEach(p => p.classList.remove('selected'));
+                    // Add selected to this one
+                    this.classList.add('selected');
+                });
+            });
+        });
+    </script>
+</body>
+</html>
