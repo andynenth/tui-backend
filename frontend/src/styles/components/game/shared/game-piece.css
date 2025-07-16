@@ -149,6 +149,41 @@
   width: 90%;
 }
 
+/* Theme-specific SVG sizing adjustments */
+/* Classic theme - traditional sizing */
+.theme-classic .game-piece--mini img {
+  width: 90%;
+}
+
+.theme-classic .game-piece--small img {
+  width: 90%;
+}
+
+.theme-classic .game-piece--medium img {
+  width: 90%;
+}
+
+.theme-classic .game-piece--large img {
+  width: 90%;
+}
+
+/* Modern theme - adjusted sizing for modern SVGs */
+.theme-modern .game-piece--mini img {
+  width: 85%;
+}
+
+.theme-modern .game-piece--small img {
+  width: 85%;
+}
+
+.theme-modern .game-piece--medium img {
+  width: 85%;
+}
+
+.theme-modern .game-piece--large img {
+  width: 85%;
+}
+
 /* SVG images - no filters applied */
 .game-piece.piece-red img,
 .game-piece__face--front.piece-red img {
