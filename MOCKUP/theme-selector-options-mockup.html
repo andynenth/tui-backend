@@ -1,0 +1,630 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Theme Selector Options - Start Page Mockup</title>
+    <style>
+        /* Base styles from existing Start Page */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 25%, #dee2e6 50%, #ced4da 75%, #adb5bd 100%);
+            color: #333;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .mockup-container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .mockup-option {
+            background: white;
+            border-radius: 16px;
+            padding: 40px;
+            margin-bottom: 40px;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+        }
+
+        .mockup-title {
+            font-size: 24px;
+            font-weight: 700;
+            color: #212529;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+
+        /* Start Page Container (shared across all options) */
+        .sp-game-container {
+            max-width: 400px;
+            margin: 0 auto;
+            background: linear-gradient(145deg, #ffffff 0%, #f8f9fa 100%);
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+        }
+
+        .sp-game-icon {
+            width: 80px;
+            height: 80px;
+            margin: 0 auto 20px;
+            position: relative;
+        }
+
+        .sp-icon-circle {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, #ffc107 0%, #ff9800 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 40px;
+            font-weight: bold;
+            color: #212529;
+            box-shadow: 0 4px 12px rgba(255, 193, 7, 0.3);
+        }
+
+        .sp-game-title {
+            font-size: 28px;
+            font-weight: 700;
+            text-align: center;
+            margin-bottom: 10px;
+            color: #212529;
+        }
+
+        .sp-game-subtitle {
+            text-align: center;
+            color: #6c757d;
+            margin-bottom: 30px;
+        }
+
+        /* Form elements */
+        .sp-input-wrapper {
+            margin-bottom: 20px;
+        }
+
+        .sp-input-label {
+            display: block;
+            font-size: 12px;
+            font-weight: 600;
+            color: #495057;
+            margin-bottom: 6px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .sp-glowing-input {
+            width: 100%;
+            padding: 14px 16px;
+            border: 2px solid rgba(173, 181, 189, 0.3);
+            border-radius: 12px;
+            font-size: 16px;
+            font-family: inherit;
+            background: white;
+            transition: all 0.3s ease;
+        }
+
+        .sp-glowing-input:focus {
+            outline: none;
+            border-color: #ffc107;
+            box-shadow: 0 0 0 3px rgba(255, 193, 7, 0.2);
+        }
+
+        .sp-input-helper-text {
+            font-size: 12px;
+            color: #6c757d;
+            margin-top: 6px;
+        }
+
+        /* Button styles */
+        .btn {
+            padding: 14px 24px;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            border: none;
+            width: 100%;
+            margin-top: 20px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #ffc107 0%, #ff9800 100%);
+            color: #212529;
+            box-shadow: 0 4px 8px rgba(255, 193, 7, 0.2);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 16px rgba(255, 193, 7, 0.3);
+        }
+
+        /* Chinese piece characters */
+        .piece-char {
+            font-family: 'SimSun', '宋体', serif;
+            font-weight: bold;
+        }
+
+        /* ========== OPTION 1: Button Group Style ========== */
+        .theme-selector-buttons {
+            margin: 20px 0;
+            padding: 20px 0;
+            border-top: 1px solid rgba(0, 0, 0, 0.1);
+            border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+        }
+
+        .theme-btn-group {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-top: 12px;
+        }
+
+        .theme-btn {
+            padding: 16px;
+            border: 2px solid rgba(173, 181, 189, 0.3);
+            border-radius: 12px;
+            background: white;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: center;
+        }
+
+        .theme-btn:hover {
+            border-color: #ffc107;
+            background: rgba(255, 193, 7, 0.05);
+        }
+
+        .theme-btn.active {
+            border-color: #ffc107;
+            background: rgba(255, 193, 7, 0.1);
+            box-shadow: 0 0 0 3px rgba(255, 193, 7, 0.2);
+        }
+
+        .theme-btn-preview {
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+            margin-bottom: 8px;
+            font-size: 32px;
+        }
+
+        .theme-btn-name {
+            font-weight: 600;
+            font-size: 14px;
+            color: #495057;
+        }
+
+        /* ========== OPTION 2: Card Style ========== */
+        .theme-selector-cards {
+            margin: 20px 0;
+        }
+
+        .theme-cards-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 12px;
+            margin-top: 12px;
+        }
+
+        .theme-card {
+            display: flex;
+            align-items: center;
+            padding: 16px;
+            border: 2px solid rgba(173, 181, 189, 0.3);
+            border-radius: 12px;
+            background: white;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .theme-card:hover {
+            border-color: #ffc107;
+            transform: translateX(4px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        .theme-card.active {
+            border-color: #ffc107;
+            background: linear-gradient(to right, rgba(255, 193, 7, 0.1) 0%, transparent 100%);
+        }
+
+        .theme-card-preview {
+            display: flex;
+            gap: 6px;
+            font-size: 28px;
+            margin-right: 16px;
+        }
+
+        .theme-card-info {
+            flex: 1;
+        }
+
+        .theme-card-name {
+            font-weight: 600;
+            font-size: 16px;
+            color: #212529;
+            margin-bottom: 4px;
+        }
+
+        .theme-card-desc {
+            font-size: 13px;
+            color: #6c757d;
+        }
+
+        .theme-card-check {
+            width: 20px;
+            height: 20px;
+            border: 2px solid #ffc107;
+            border-radius: 50%;
+            position: relative;
+            display: none;
+        }
+
+        .theme-card.active .theme-card-check {
+            display: block;
+        }
+
+        .theme-card-check::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 10px;
+            height: 10px;
+            background: #ffc107;
+            border-radius: 50%;
+        }
+
+        /* ========== OPTION 3: Dropdown Style ========== */
+        .theme-selector-dropdown {
+            margin: 20px 0;
+        }
+
+        .theme-dropdown {
+            position: relative;
+        }
+
+        .theme-dropdown-toggle {
+            width: 100%;
+            padding: 14px 16px;
+            border: 2px solid rgba(173, 181, 189, 0.3);
+            border-radius: 12px;
+            background: white;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            transition: all 0.3s ease;
+            font-size: 16px;
+        }
+
+        .theme-dropdown-toggle:hover {
+            border-color: #ffc107;
+        }
+
+        .theme-dropdown-toggle.open {
+            border-color: #ffc107;
+            border-bottom-left-radius: 0;
+            border-bottom-right-radius: 0;
+        }
+
+        .theme-dropdown-current {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .theme-dropdown-preview {
+            display: flex;
+            gap: 6px;
+            font-size: 24px;
+        }
+
+        .theme-dropdown-arrow {
+            width: 20px;
+            height: 20px;
+            transition: transform 0.3s ease;
+        }
+
+        .theme-dropdown-toggle.open .theme-dropdown-arrow {
+            transform: rotate(180deg);
+        }
+
+        .theme-dropdown-menu {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: white;
+            border: 2px solid #ffc107;
+            border-top: none;
+            border-bottom-left-radius: 12px;
+            border-bottom-right-radius: 12px;
+            overflow: hidden;
+            display: none;
+            z-index: 10;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+        }
+
+        .theme-dropdown-menu.show {
+            display: block;
+        }
+
+        .theme-dropdown-item {
+            padding: 14px 16px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            cursor: pointer;
+            transition: background 0.2s ease;
+        }
+
+        .theme-dropdown-item:hover {
+            background: rgba(255, 193, 7, 0.1);
+        }
+
+        .theme-dropdown-item-preview {
+            display: flex;
+            gap: 6px;
+            font-size: 24px;
+        }
+
+        .theme-dropdown-item-name {
+            flex: 1;
+            font-weight: 500;
+        }
+
+        /* Demo controls */
+        .demo-controls {
+            text-align: center;
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px solid rgba(0, 0, 0, 0.1);
+        }
+
+        .demo-note {
+            font-size: 14px;
+            color: #6c757d;
+            font-style: italic;
+        }
+    </style>
+</head>
+<body>
+    <div class="mockup-container">
+        <!-- OPTION 1: Button Group Style -->
+        <div class="mockup-option">
+            <h2 class="mockup-title">Option 1: Button Group Style</h2>
+            
+            <div class="sp-game-container">
+                <div class="sp-game-icon">
+                    <div class="sp-icon-circle">將</div>
+                </div>
+                
+                <h1 class="sp-game-title">Welcome to Liap TUI</h1>
+                <p class="sp-game-subtitle">Enter your player name to start playing</p>
+                
+                <form>
+                    <div class="sp-input-wrapper">
+                        <label class="sp-input-label">Player Name</label>
+                        <input type="text" class="sp-glowing-input" placeholder="Enter your name..." value="Andy">
+                        <p class="sp-input-helper-text">2-20 characters, letters and numbers only</p>
+                    </div>
+                    
+                    <!-- THEME SELECTOR OPTION 1 -->
+                    <div class="theme-selector-buttons">
+                        <label class="sp-input-label">Choose Theme</label>
+                        <div class="theme-btn-group">
+                            <button type="button" class="theme-btn active">
+                                <div class="theme-btn-preview">
+                                    <span class="piece-char" style="color: #dc3545;">帥</span>
+                                    <span class="piece-char" style="color: #495057;">將</span>
+                                </div>
+                                <div class="theme-btn-name">Classic</div>
+                            </button>
+                            <button type="button" class="theme-btn">
+                                <div class="theme-btn-preview">
+                                    <span class="piece-char" style="color: #0d6efd;">帥</span>
+                                    <span class="piece-char" style="color: #28a745;">將</span>
+                                </div>
+                                <div class="theme-btn-name">Modern Blue</div>
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <button type="submit" class="btn btn-primary">Enter Lobby</button>
+                </form>
+            </div>
+            
+            <div class="demo-controls">
+                <p class="demo-note">Pros: Quick visual selection, both options visible at once</p>
+                <p class="demo-note">Cons: Takes more vertical space</p>
+            </div>
+        </div>
+
+        <!-- OPTION 2: Card Style -->
+        <div class="mockup-option">
+            <h2 class="mockup-title">Option 2: Card Style with Details</h2>
+            
+            <div class="sp-game-container">
+                <div class="sp-game-icon">
+                    <div class="sp-icon-circle">將</div>
+                </div>
+                
+                <h1 class="sp-game-title">Welcome to Liap TUI</h1>
+                <p class="sp-game-subtitle">Enter your player name to start playing</p>
+                
+                <form>
+                    <div class="sp-input-wrapper">
+                        <label class="sp-input-label">Player Name</label>
+                        <input type="text" class="sp-glowing-input" placeholder="Enter your name..." value="Andy">
+                        <p class="sp-input-helper-text">2-20 characters, letters and numbers only</p>
+                    </div>
+                    
+                    <!-- THEME SELECTOR OPTION 2 -->
+                    <div class="theme-selector-cards">
+                        <label class="sp-input-label">Choose Theme</label>
+                        <div class="theme-cards-grid">
+                            <div class="theme-card active">
+                                <div class="theme-card-preview">
+                                    <span class="piece-char" style="color: #dc3545;">帥</span>
+                                    <span class="piece-char" style="color: #495057;">將</span>
+                                </div>
+                                <div class="theme-card-info">
+                                    <div class="theme-card-name">Classic</div>
+                                    <div class="theme-card-desc">Traditional red and black pieces</div>
+                                </div>
+                                <div class="theme-card-check"></div>
+                            </div>
+                            <div class="theme-card">
+                                <div class="theme-card-preview">
+                                    <span class="piece-char" style="color: #0d6efd;">帥</span>
+                                    <span class="piece-char" style="color: #28a745;">將</span>
+                                </div>
+                                <div class="theme-card-info">
+                                    <div class="theme-card-name">Modern Blue</div>
+                                    <div class="theme-card-desc">Blue and green character pieces</div>
+                                </div>
+                                <div class="theme-card-check"></div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <button type="submit" class="btn btn-primary">Enter Lobby</button>
+                </form>
+            </div>
+            
+            <div class="demo-controls">
+                <p class="demo-note">Pros: More information, clear selection state, room for more themes</p>
+                <p class="demo-note">Cons: Takes most vertical space</p>
+            </div>
+        </div>
+
+        <!-- OPTION 3: Dropdown Style -->
+        <div class="mockup-option">
+            <h2 class="mockup-title">Option 3: Dropdown Style</h2>
+            
+            <div class="sp-game-container">
+                <div class="sp-game-icon">
+                    <div class="sp-icon-circle">將</div>
+                </div>
+                
+                <h1 class="sp-game-title">Welcome to Liap TUI</h1>
+                <p class="sp-game-subtitle">Enter your player name to start playing</p>
+                
+                <form>
+                    <div class="sp-input-wrapper">
+                        <label class="sp-input-label">Player Name</label>
+                        <input type="text" class="sp-glowing-input" placeholder="Enter your name..." value="Andy">
+                        <p class="sp-input-helper-text">2-20 characters, letters and numbers only</p>
+                    </div>
+                    
+                    <!-- THEME SELECTOR OPTION 3 -->
+                    <div class="theme-selector-dropdown">
+                        <label class="sp-input-label">Choose Theme</label>
+                        <div class="theme-dropdown">
+                            <div class="theme-dropdown-toggle" onclick="toggleDropdown(this)">
+                                <div class="theme-dropdown-current">
+                                    <div class="theme-dropdown-preview">
+                                        <span class="piece-char" style="color: #dc3545;">帥</span>
+                                        <span class="piece-char" style="color: #495057;">將</span>
+                                    </div>
+                                    <span>Classic</span>
+                                </div>
+                                <svg class="theme-dropdown-arrow" viewBox="0 0 20 20" fill="currentColor">
+                                    <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
+                                </svg>
+                            </div>
+                            <div class="theme-dropdown-menu">
+                                <div class="theme-dropdown-item">
+                                    <div class="theme-dropdown-item-preview">
+                                        <span class="piece-char" style="color: #dc3545;">帥</span>
+                                        <span class="piece-char" style="color: #495057;">將</span>
+                                    </div>
+                                    <span class="theme-dropdown-item-name">Classic</span>
+                                </div>
+                                <div class="theme-dropdown-item">
+                                    <div class="theme-dropdown-item-preview">
+                                        <span class="piece-char" style="color: #0d6efd;">帥</span>
+                                        <span class="piece-char" style="color: #28a745;">將</span>
+                                    </div>
+                                    <span class="theme-dropdown-item-name">Modern Blue</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <button type="submit" class="btn btn-primary">Enter Lobby</button>
+                </form>
+            </div>
+            
+            <div class="demo-controls">
+                <p class="demo-note">Pros: Minimal space, familiar UI pattern, scales to many themes</p>
+                <p class="demo-note">Cons: Requires click to see options</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Interactive demos
+        document.querySelectorAll('.theme-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                this.parentElement.querySelectorAll('.theme-btn').forEach(b => b.classList.remove('active'));
+                this.classList.add('active');
+            });
+        });
+
+        document.querySelectorAll('.theme-card').forEach(card => {
+            card.addEventListener('click', function() {
+                this.parentElement.querySelectorAll('.theme-card').forEach(c => c.classList.remove('active'));
+                this.classList.add('active');
+            });
+        });
+
+        function toggleDropdown(toggle) {
+            toggle.classList.toggle('open');
+            toggle.nextElementSibling.classList.toggle('show');
+        }
+
+        document.querySelectorAll('.theme-dropdown-item').forEach(item => {
+            item.addEventListener('click', function() {
+                const dropdown = this.closest('.theme-dropdown');
+                const toggle = dropdown.querySelector('.theme-dropdown-toggle');
+                const current = toggle.querySelector('.theme-dropdown-current');
+                
+                // Update the display
+                current.innerHTML = `
+                    <div class="theme-dropdown-preview">
+                        ${this.querySelector('.theme-dropdown-item-preview').innerHTML}
+                    </div>
+                    <span>${this.querySelector('.theme-dropdown-item-name').textContent}</span>
+                `;
+                
+                // Close dropdown
+                toggle.classList.remove('open');
+                dropdown.querySelector('.theme-dropdown-menu').classList.remove('show');
+            });
+        });
+
+        // Close dropdown when clicking outside
+        document.addEventListener('click', function(e) {
+            if (!e.target.closest('.theme-dropdown')) {
+                document.querySelectorAll('.theme-dropdown-toggle').forEach(t => t.classList.remove('open'));
+                document.querySelectorAll('.theme-dropdown-menu').forEach(m => m.classList.remove('show'));
+            }
+        });
+    </script>
+</body>
+</html>
