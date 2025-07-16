@@ -71,6 +71,12 @@
   animation: float 6s ease-in-out infinite;
 }
 
+.sp-icon-circle img {
+  width: 70%;
+  height: 70%;
+  filter: var(--piece-filter-black);
+}
+
 .sp-icon-pieces {
   position: absolute;
   width: 30px;
@@ -87,18 +93,31 @@
   font-family: 'SimSun', '宋体', serif;
 }
 
+.sp-icon-pieces img {
+  width: 80%;
+  height: 80%;
+}
+
 .sp-icon-piece-1 {
   top: -5px;
   right: -5px;
-  color: #dc3545;
+  color: var(--ui-piece-red, #dc3545);
   animation: rotate 8s linear infinite;
+}
+
+.sp-icon-piece-1 img {
+  filter: var(--piece-filter-red);
 }
 
 .sp-icon-piece-2 {
   bottom: -5px;
   left: -5px;
-  color: #495057;
+  color: var(--ui-piece-black, #495057);
   animation: rotate 8s linear infinite reverse;
+}
+
+.sp-icon-piece-2 img {
+  filter: var(--piece-filter-black);
 }
 
 @keyframes rotate {

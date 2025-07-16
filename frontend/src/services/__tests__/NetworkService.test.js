@@ -1,6 +1,6 @@
 /**
  * NetworkService Tests
- * 
+ *
  * Comprehensive test suite for NetworkService including singleton pattern,
  * connection management, message handling, reconnection logic, and heartbeat system.
  */
@@ -16,16 +16,16 @@ jest.mock('../../constants', () => ({
   TIMING: {
     HEARTBEAT_INTERVAL: 1000,
     CONNECTION_TIMEOUT: 5000,
-    RECOVERY_TIMEOUT: 60000
+    RECOVERY_TIMEOUT: 60000,
   },
   GAME: {
     MAX_RECONNECT_ATTEMPTS: 3,
-    MESSAGE_QUEUE_LIMIT: 100
+    MESSAGE_QUEUE_LIMIT: 100,
   },
   NETWORK: {
     WEBSOCKET_BASE_URL: 'ws://localhost:5050/ws',
-    RECONNECT_BACKOFF: [100, 200, 400, 800, 1600]
-  }
+    RECONNECT_BACKOFF: [100, 200, 400, 800, 1600],
+  },
 }));
 
 describe('NetworkService', () => {
@@ -36,13 +36,13 @@ describe('NetworkService', () => {
     // Dynamic import to get fresh instance
     const module = await import('../NetworkService');
     NetworkService = module.NetworkService;
-    
+
     // Reset singleton
     NetworkService.instance = null;
-    
+
     // Reset WebSocket mock
     jest.clearAllMocks();
-    
+
     // Get fresh instance
     networkService = NetworkService.getInstance();
   });
@@ -61,18 +61,22 @@ describe('NetworkService', () => {
     test('getInstance returns same instance', () => {
       const instance1 = NetworkService.getInstance();
       const instance2 = NetworkService.getInstance();
-      
+
       expect(instance1).toBe(instance2);
     });
 
     test('constructor throws when called directly', () => {
-      expect(() => new NetworkService()).toThrow('NetworkService is a singleton');
+      expect(() => new NetworkService()).toThrow(
+        'NetworkService is a singleton'
+      );
     });
 
     test('multiple getInstance calls return same instance', () => {
-      const instances = Array.from({ length: 5 }, () => NetworkService.getInstance());
-      
-      instances.forEach(instance => {
+      const instances = Array.from({ length: 5 }, () =>
+        NetworkService.getInstance()
+      );
+
+      instances.forEach((instance) => {
         expect(instance).toBe(networkService);
       });
     });
@@ -82,12 +86,12 @@ describe('NetworkService', () => {
     describe('connectToRoom', () => {
       test('successfully connects to room', async () => {
         const roomId = 'test-room';
-        
+
         const connection = await networkService.connectToRoom(roomId);
-        
+
         expect(connection).toBeInstanceOf(MockWebSocket);
         expect(connection.url).toBe('ws://localhost:5050/ws/test-room');
-        
+
         const status = networkService.getConnectionStatus(roomId);
         expect(status.connected).toBe(true);
         expect(status.roomId).toBe(roomId);
@@ -97,29 +101,29 @@ describe('NetworkService', () => {
       test('emits connected event', async () => {
         const roomId = 'test-room';
         const eventListener = jest.fn();
-        
+
         networkService.addEventListener('connected', eventListener);
-        
+
         await networkService.connectToRoom(roomId);
-        
+
         expect(eventListener).toHaveBeenCalledWith(
           expect.objectContaining({
             detail: expect.objectContaining({
               roomId,
-              url: 'ws://localhost:5050/ws/test-room'
-            })
+              url: 'ws://localhost:5050/ws/test-room',
+            }),
           })
         );
       });
 
       test('sends initial ready signal', async () => {
         const roomId = 'test-room';
-        
+
         const connection = await networkService.connectToRoom(roomId);
-        
+
         const sentMessages = connection.getSentMessages();
         expect(sentMessages).toHaveLength(1);
-        
+
         const readyMessage = JSON.parse(sentMessages[0]);
         expect(readyMessage.event).toBe('client_ready');
         expect(readyMessage.data.room_id).toBe(roomId);
@@ -127,40 +131,46 @@ describe('NetworkService', () => {
 
       test('closes existing connection before new one', async () => {
         const roomId = 'test-room';
-        
+
         // First connection
         const connection1 = await networkService.connectToRoom(roomId);
         const closeSpy = jest.spyOn(connection1, 'close');
-        
+
         // Second connection to same room
         await networkService.connectToRoom(roomId);
-        
+
         expect(closeSpy).toHaveBeenCalled();
       });
 
       test('rejects with empty room ID', async () => {
-        await expect(networkService.connectToRoom('')).rejects.toThrow('Room ID is required');
-        await expect(networkService.connectToRoom(null)).rejects.toThrow('Room ID is required');
+        await expect(networkService.connectToRoom('')).rejects.toThrow(
+          'Room ID is required'
+        );
+        await expect(networkService.connectToRoom(null)).rejects.toThrow(
+          'Room ID is required'
+        );
       });
 
       test('rejects when service is destroyed', async () => {
         networkService.destroy();
-        
-        await expect(networkService.connectToRoom('room')).rejects.toThrow('NetworkService has been destroyed');
+
+        await expect(networkService.connectToRoom('room')).rejects.toThrow(
+          'NetworkService has been destroyed'
+        );
       });
     });
 
     describe('disconnectFromRoom', () => {
       test('successfully disconnects from room', async () => {
         const roomId = 'test-room';
-        
+
         const connection = await networkService.connectToRoom(roomId);
         const closeSpy = jest.spyOn(connection, 'close');
-        
+
         await networkService.disconnectFromRoom(roomId);
-        
+
         expect(closeSpy).toHaveBeenCalledWith(1000, 'Client disconnect');
-        
+
         const status = networkService.getConnectionStatus(roomId);
         expect(status.connected).toBe(false);
       });
@@ -168,18 +178,18 @@ describe('NetworkService', () => {
       test('emits disconnected event', async () => {
         const roomId = 'test-room';
         const eventListener = jest.fn();
-        
+
         networkService.addEventListener('disconnected', eventListener);
-        
+
         await networkService.connectToRoom(roomId);
         await networkService.disconnectFromRoom(roomId);
-        
+
         expect(eventListener).toHaveBeenCalledWith(
           expect.objectContaining({
             detail: expect.objectContaining({
               roomId,
-              intentional: true
-            })
+              intentional: true,
+            }),
           })
         );
       });
@@ -194,18 +204,18 @@ describe('NetworkService', () => {
       test('handles multiple simultaneous connections', async () => {
         const room1 = 'room-1';
         const room2 = 'room-2';
-        
+
         await Promise.all([
           networkService.connectToRoom(room1),
-          networkService.connectToRoom(room2)
+          networkService.connectToRoom(room2),
         ]);
-        
+
         const status1 = networkService.getConnectionStatus(room1);
         const status2 = networkService.getConnectionStatus(room2);
-        
+
         expect(status1.connected).toBe(true);
         expect(status2.connected).toBe(true);
-        
+
         const overallStatus = networkService.getStatus();
         expect(overallStatus.activeConnections).toBe(2);
       });
@@ -224,13 +234,15 @@ describe('NetworkService', () => {
 
     describe('send', () => {
       test('sends message when connected', () => {
-        const result = networkService.send(roomId, 'test_event', { data: 'test' });
-        
+        const result = networkService.send(roomId, 'test_event', {
+          data: 'test',
+        });
+
         expect(result).toBe(true);
-        
+
         const sentMessages = connection.getSentMessages();
         expect(sentMessages).toHaveLength(1);
-        
+
         const message = JSON.parse(sentMessages[0]);
         expect(message.event).toBe('test_event');
         expect(message.data).toEqual({ data: 'test' });
@@ -240,12 +252,15 @@ describe('NetworkService', () => {
 
       test('queues message when disconnected', async () => {
         await networkService.disconnectFromRoom(roomId, false);
-        
-        const result = networkService.send(roomId, 'test_event', { data: 'test' });
-        
+
+        const result = networkService.send(roomId, 'test_event', {
+          data: 'test',
+        });
+
         expect(result).toBe(false);
-        
-        const queueSize = networkService.messageQueues?.get(roomId)?.length || 0;
+
+        const queueSize =
+          networkService.messageQueues?.get(roomId)?.length || 0;
         expect(queueSize).toBe(1);
       });
 
@@ -253,17 +268,17 @@ describe('NetworkService', () => {
         networkService.send(roomId, 'event1', {});
         networkService.send(roomId, 'event2', {});
         networkService.send(roomId, 'event3', {});
-        
+
         const sentMessages = connection.getSentMessages();
         expect(sentMessages).toHaveLength(3);
-        
-        const sequences = sentMessages.map(msg => JSON.parse(msg).sequence);
+
+        const sequences = sentMessages.map((msg) => JSON.parse(msg).sequence);
         expect(sequences).toEqual([1, 2, 3]);
       });
 
       test('returns false when service is destroyed', () => {
         networkService.destroy();
-        
+
         const result = networkService.send(roomId, 'test_event', {});
         expect(result).toBe(false);
       });
@@ -273,37 +288,37 @@ describe('NetworkService', () => {
       test('processes incoming messages', async () => {
         const eventListener = jest.fn();
         networkService.addEventListener('test_response', eventListener);
-        
+
         connection.mockReceive({
           event: 'test_response',
           data: { response: 'data' },
           sequence: 1,
           timestamp: Date.now(),
-          id: 'test-id'
+          id: 'test-id',
         });
-        
+
         await waitForNextTick();
-        
+
         expect(eventListener).toHaveBeenCalledWith(
           expect.objectContaining({
             detail: expect.objectContaining({
               roomId,
-              data: { response: 'data' }
-            })
+              data: { response: 'data' },
+            }),
           })
         );
       });
 
       test('handles heartbeat pong', async () => {
         const pingTimestamp = Date.now();
-        
+
         connection.mockReceive({
           event: 'pong',
-          data: { timestamp: pingTimestamp }
+          data: { timestamp: pingTimestamp },
         });
-        
+
         await waitForNextTick();
-        
+
         const status = networkService.getConnectionStatus(roomId);
         expect(status.latency).toBeGreaterThanOrEqual(0);
       });
@@ -311,12 +326,12 @@ describe('NetworkService', () => {
       test('handles malformed messages gracefully', async () => {
         const errorListener = jest.fn();
         networkService.addEventListener('messageError', errorListener);
-        
+
         // Send invalid JSON
         connection.mockReceive('invalid json');
-        
+
         await waitForNextTick();
-        
+
         expect(errorListener).toHaveBeenCalled();
       });
     });
@@ -326,45 +341,45 @@ describe('NetworkService', () => {
     test('getConnectionStatus returns correct info', async () => {
       const roomId = 'test-room';
       const connection = await networkService.connectToRoom(roomId);
-      
+
       const status = networkService.getConnectionStatus(roomId);
-      
+
       expect(status).toMatchObject({
         roomId,
         status: 'connected',
         connected: true,
         queueSize: 0,
         reconnecting: false,
-        reconnectAttempts: 0
+        reconnectAttempts: 0,
       });
-      
+
       expect(status.connectedAt).toBeCloseTo(Date.now(), -2);
       expect(status.uptime).toBeGreaterThan(0);
     });
 
     test('getConnectionStatus for non-existent room', () => {
       const status = networkService.getConnectionStatus('non-existent');
-      
+
       expect(status).toMatchObject({
         roomId: 'non-existent',
         status: 'disconnected',
         connected: false,
-        reconnecting: false
+        reconnecting: false,
       });
     });
 
     test('getStatus returns overall service status', async () => {
       await networkService.connectToRoom('room1');
       await networkService.connectToRoom('room2');
-      
+
       const status = networkService.getStatus();
-      
+
       expect(status).toMatchObject({
         isDestroyed: false,
         activeConnections: 2,
-        totalQueuedMessages: 0
+        totalQueuedMessages: 0,
       });
-      
+
       expect(status.rooms).toHaveProperty('room1');
       expect(status.rooms).toHaveProperty('room2');
     });
@@ -374,15 +389,15 @@ describe('NetworkService', () => {
     test('destroy cleans up all resources', async () => {
       const room1 = 'room-1';
       const room2 = 'room-2';
-      
+
       const connection1 = await networkService.connectToRoom(room1);
       const connection2 = await networkService.connectToRoom(room2);
-      
+
       const closeSpy1 = jest.spyOn(connection1, 'close');
       const closeSpy2 = jest.spyOn(connection2, 'close');
-      
+
       networkService.destroy();
-      
+
       expect(closeSpy1).toHaveBeenCalled();
       expect(closeSpy2).toHaveBeenCalled();
       expect(networkService.isDestroyed).toBe(true);
@@ -391,8 +406,10 @@ describe('NetworkService', () => {
 
     test('operations fail after destroy', () => {
       networkService.destroy();
-      
-      expect(networkService.connectToRoom('room')).rejects.toThrow('NetworkService has been destroyed');
+
+      expect(networkService.connectToRoom('room')).rejects.toThrow(
+        'NetworkService has been destroyed'
+      );
       expect(networkService.send('room', 'event', {})).toBe(false);
     });
   });
@@ -400,13 +417,13 @@ describe('NetworkService', () => {
   describe('Edge Cases', () => {
     test('handles rapid connect/disconnect cycles', async () => {
       const roomId = 'test-room';
-      
+
       // Rapid connect/disconnect
       for (let i = 0; i < 5; i++) {
         await networkService.connectToRoom(roomId);
         await networkService.disconnectFromRoom(roomId);
       }
-      
+
       // Should not crash or leak resources
       const status = networkService.getStatus();
       expect(status.activeConnections).toBe(0);
@@ -415,20 +432,20 @@ describe('NetworkService', () => {
     test('handles WebSocket errors gracefully', async () => {
       const roomId = 'test-room';
       const errorListener = jest.fn();
-      
+
       networkService.addEventListener('connectionError', errorListener);
-      
+
       const connection = await networkService.connectToRoom(roomId);
       connection.mockError('Network error');
-      
+
       await waitForNextTick();
-      
+
       expect(errorListener).toHaveBeenCalledWith(
         expect.objectContaining({
           detail: expect.objectContaining({
             roomId,
-            error: 'Connection error'
-          })
+            error: 'Connection error',
+          }),
         })
       );
     });

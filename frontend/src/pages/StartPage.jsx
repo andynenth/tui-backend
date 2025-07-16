@@ -4,13 +4,18 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { useApp } from '../contexts/AppContext';
+import { useTheme } from '../contexts/ThemeContext';
 import { Layout, LoadingOverlay } from '../components';
+import SettingsButton from '../components/SettingsButton';
+import SettingsModal from '../components/SettingsModal';
 // CSS classes are imported globally
 
 const StartPage = () => {
   const navigate = useNavigate();
   const app = useApp();
+  const { currentTheme } = useTheme();
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [showSettings, setShowSettings] = useState(false);
 
   const {
     register,
@@ -68,12 +73,28 @@ const StartPage = () => {
           style={{ background: 'var(--gradient-gray)' }}
         >
           <div className="sp-game-container">
+            <SettingsButton onClick={() => setShowSettings(true)} />
             <div className="sp-content-wrapper">
-              {/* Game Icon with rotating pieces */}
+              {/* Game Icon with rotating pieces - always using SVGs */}
               <div className="sp-game-icon">
-                <div className="sp-icon-circle">將</div>
-                <div className="sp-icon-pieces sp-icon-piece-1">帥</div>
-                <div className="sp-icon-pieces sp-icon-piece-2">卒</div>
+                <div className="sp-icon-circle">
+                  <img
+                    src={currentTheme.uiElements.startIcon.main}
+                    alt="Game icon"
+                  />
+                </div>
+                <div className="sp-icon-pieces sp-icon-piece-1">
+                  <img
+                    src={currentTheme.uiElements.startIcon.piece1}
+                    alt="Red piece"
+                  />
+                </div>
+                <div className="sp-icon-pieces sp-icon-piece-2">
+                  <img
+                    src={currentTheme.uiElements.startIcon.piece2}
+                    alt="Black piece"
+                  />
+                </div>
               </div>
 
               {/* Header */}
@@ -161,6 +182,12 @@ const StartPage = () => {
         isVisible={isSubmitting}
         message="Setting up your profile..."
         subtitle="Please wait while we prepare your game session"
+      />
+
+      {/* Settings Modal */}
+      <SettingsModal
+        isOpen={showSettings}
+        onClose={() => setShowSettings(false)}
       />
     </>
   );

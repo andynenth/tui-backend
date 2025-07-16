@@ -9,6 +9,7 @@ import {
 } from 'react-router-dom';
 import { AppProvider, useApp } from './contexts/AppContext';
 import { GameProvider } from './contexts/GameContext';
+import { ThemeProvider } from './contexts/ThemeContext';
 import { ErrorBoundary } from './components';
 
 // Import scene components (to be created)
@@ -19,6 +20,9 @@ import GamePage from './pages/GamePage';
 
 // Service initialization
 import { initializeServices, cleanupServices } from './services';
+
+// Initialize theme on app load
+import { initializeTheme } from './utils/themeManager';
 
 // Protected Route component
 const ProtectedRoute = ({ children, requiredData = [] }) => {
@@ -117,6 +121,9 @@ const AppWithServices = () => {
   useEffect(() => {
     const initServices = async () => {
       try {
+        // Initialize theme first
+        initializeTheme();
+
         await initializeServices();
         setServicesInitialized(true);
         console.log('🎮 Global services initialized');
@@ -170,9 +177,11 @@ const AppWithServices = () => {
 const App = () => {
   return (
     <ErrorBoundary>
-      <AppProvider>
-        <AppWithServices />
-      </AppProvider>
+      <ThemeProvider>
+        <AppProvider>
+          <AppWithServices />
+        </AppProvider>
+      </ThemeProvider>
     </ErrorBoundary>
   );
 };

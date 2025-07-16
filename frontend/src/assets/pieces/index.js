@@ -1,31 +1,35 @@
 /**
  * SVG Piece Assets Index
- * 
- * This file provides easy imports for all xiangqi piece SVGs.
- * SVG files are named to match the constants in backend/engine/constants.py
- * 
+ *
+ * This file provides imports for xiangqi piece SVGs.
+ * It maintains backward compatibility while supporting themed pieces.
+ *
  * Usage:
  *   import { GENERAL_RED, CHARIOT_BLACK } from './assets/pieces';
  *   import * as PieceAssets from './assets/pieces';
+ *   import ClassicPieces from './assets/pieces/classic';
+ *   import ModernPieces from './assets/pieces/modern';
  */
 
-// Import all SVG files
-import GENERAL_RED from './GENERAL_RED.svg';
-import GENERAL_BLACK from './GENERAL_BLACK.svg';
-import ADVISOR_RED from './ADVISOR_RED.svg';
-import ADVISOR_BLACK from './ADVISOR_BLACK.svg';
-import ELEPHANT_RED from './ELEPHANT_RED.svg';
-import ELEPHANT_BLACK from './ELEPHANT_BLACK.svg';
-import CHARIOT_RED from './CHARIOT_RED.svg';
-import CHARIOT_BLACK from './CHARIOT_BLACK.svg';
-import HORSE_RED from './HORSE_RED.svg';
-import HORSE_BLACK from './HORSE_BLACK.svg';
-import CANNON_RED from './CANNON_RED.svg';
-import CANNON_BLACK from './CANNON_BLACK.svg';
-import SOLDIER_RED from './SOLDIER_RED.svg';
-import SOLDIER_BLACK from './SOLDIER_BLACK.svg';
+// For backward compatibility, import and re-export classic pieces
+import {
+  GENERAL_RED,
+  GENERAL_BLACK,
+  ADVISOR_RED,
+  ADVISOR_BLACK,
+  ELEPHANT_RED,
+  ELEPHANT_BLACK,
+  CHARIOT_RED,
+  CHARIOT_BLACK,
+  HORSE_RED,
+  HORSE_BLACK,
+  CANNON_RED,
+  CANNON_BLACK,
+  SOLDIER_RED,
+  SOLDIER_BLACK,
+} from './classic';
 
-// Export individual pieces
+// Export individual pieces for backward compatibility
 export {
   GENERAL_RED,
   GENERAL_BLACK,

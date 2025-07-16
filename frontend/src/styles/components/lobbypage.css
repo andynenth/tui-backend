@@ -403,9 +403,14 @@
   align-items: center;
   justify-content: center;
   font-size: 36px;
-  color: #6c757d;
+  color: var(--ui-piece-black, #6c757d);
   font-family: 'SimSun', '宋体', serif;
   opacity: 0.5;
+}
+
+.lp-iconCircle img {
+  filter: var(--piece-filter-black);
+  opacity: 0.7;
 }
 
 .lp-emptyText {

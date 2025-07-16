@@ -50,14 +50,12 @@
 /* Color variants (not applied to table variant - colors only show on front face) */
 .game-piece:not(.game-piece--table).piece-red,
 .game-piece:not(.game-piece--table).red {
-  color: #dc3545;
-  border-color: rgba(220, 53, 69, 0.4);
+  border-color: color-mix(in srgb, var(--piece-color-red, #dc3545) 40%, transparent);
 }
 
 .game-piece:not(.game-piece--table).piece-black,
 .game-piece:not(.game-piece--table).black {
-  color: #495057;
-  border-color: rgba(73, 80, 87, 0.4);
+  border-color: color-mix(in srgb, var(--piece-color-black, #495057) 40%, transparent);
 }
 
 /* Character display */
@@ -92,13 +90,13 @@
 
 /* Color-specific value badge styling */
 .game-piece.piece-red .game-piece__value {
-  color: #dc3545;
-  border-color: rgba(220, 53, 69, 0.3);
+  color: var(--piece-color-red, #dc3545);
+  border-color: color-mix(in srgb, var(--piece-color-red, #dc3545) 30%, transparent);
 }
 
 .game-piece.piece-black .game-piece__value {
-  color: #495057;
-  border-color: rgba(73, 80, 87, 0.3);
+  color: var(--piece-color-black, #495057);
+  border-color: color-mix(in srgb, var(--piece-color-black, #495057) 30%, transparent);
 }
 
 /* Flippable pieces value badge styling */
@@ -121,13 +119,13 @@
 }
 
 .game-piece__face--front.piece-red .game-piece__value {
-  color: #dc3545;
-  border-color: rgba(220, 53, 69, 0.3);
+  color: var(--piece-color-red, #dc3545);
+  border-color: color-mix(in srgb, var(--piece-color-red, #dc3545) 30%, transparent);
 }
 
 .game-piece__face--front.piece-black .game-piece__value {
-  color: #495057;
-  border-color: rgba(73, 80, 87, 0.3);
+  color: var(--piece-color-black, #495057);
+  border-color: color-mix(in srgb, var(--piece-color-black, #495057) 30%, transparent);
 }
 
 /* SVG image sizing within game pieces */
@@ -149,6 +147,17 @@
 
 .game-piece--large img {
   width: 90%;
+}
+
+/* SVG images - no filters applied */
+.game-piece.piece-red img,
+.game-piece__face--front.piece-red img {
+  filter: none;
+}
+
+.game-piece.piece-black img,
+.game-piece__face--front.piece-black img {
+  filter: none;
 }
 
 /* Selectable variant */
@@ -231,14 +240,14 @@
 
 .game-piece__face--front.piece-red,
 .game-piece__face--front.red {
-  color: #dc3545;
-  border-color: rgba(220, 53, 69, 0.4);
+  color: var(--piece-color-red, #dc3545);
+  border-color: color-mix(in srgb, var(--piece-color-red, #dc3545) 40%, transparent);
 }
 
 .game-piece__face--front.piece-black,
 .game-piece__face--front.black {
-  color: #495057;
-  border-color: rgba(73, 80, 87, 0.4);
+  color: var(--piece-color-black, #495057);
+  border-color: color-mix(in srgb, var(--piece-color-black, #495057) 40%, transparent);
 }
 
 /* Dealing variant - for vertical drop animation during deal/redeal */

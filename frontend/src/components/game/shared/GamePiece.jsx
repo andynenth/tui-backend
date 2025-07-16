@@ -1,10 +1,12 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import { useTheme } from '../../../contexts/ThemeContext';
 import {
   getPieceDisplay,
   getPieceColorClass,
   formatPieceValue,
   getPieceSVG,
+  getThemePieceSVG,
   USE_SVG_PIECES,
 } from '../../../utils/pieceMapping';
 
@@ -37,6 +39,7 @@ const GamePiece = ({
   className = '',
   animationDelay,
 }) => {
+  const { currentTheme } = useTheme();
   // Build class names
   const classes = [
     'game-piece',
@@ -73,7 +76,10 @@ const GamePiece = ({
           className={`game-piece__face game-piece__face--front ${getPieceColorClass(piece)}`}
         >
           {USE_SVG_PIECES ? (
-            <img src={getPieceSVG(piece)} alt={getPieceDisplay(piece)} />
+            <img
+              src={getThemePieceSVG(piece, currentTheme)}
+              alt={getPieceDisplay(piece)}
+            />
           ) : (
             getPieceDisplay(piece)
           )}
@@ -87,7 +93,10 @@ const GamePiece = ({
     <div className={classes} onClick={onClick} style={style}>
       <div className="game-piece__character">
         {USE_SVG_PIECES ? (
-          <img src={getPieceSVG(piece)} alt={getPieceDisplay(piece)} />
+          <img
+            src={getThemePieceSVG(piece, currentTheme)}
+            alt={getPieceDisplay(piece)}
+          />
         ) : (
           getPieceDisplay(piece)
         )}

@@ -19,14 +19,16 @@ describe('RoundStartContent with Red General', () => {
 
     // Check that player name is displayed
     expect(screen.getByText('Alice')).toBeInTheDocument();
-    
+
     // Check that text reason is NOT displayed
-    expect(screen.queryByText('has the General Red piece')).not.toBeInTheDocument();
-    
+    expect(
+      screen.queryByText('has the General Red piece')
+    ).not.toBeInTheDocument();
+
     // Check that general piece container exists
     const generalPieceContainer = container.querySelector('.rs-general-piece');
     expect(generalPieceContainer).toBeInTheDocument();
-    
+
     // Check that GamePiece component is rendered
     const gamePiece = container.querySelector('.game-piece');
     expect(gamePiece).toBeInTheDocument();
@@ -44,10 +46,10 @@ describe('RoundStartContent with Red General', () => {
 
     // Check that player name is displayed
     expect(screen.getByText('Bob')).toBeInTheDocument();
-    
+
     // Check that text reason IS displayed
     expect(screen.getByText('won the last turn')).toBeInTheDocument();
-    
+
     // Check that general piece container does NOT exist
     const generalPieceContainer = screen.queryByText('.rs-general-piece');
     expect(generalPieceContainer).not.toBeInTheDocument();

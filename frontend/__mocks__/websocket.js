@@ -1,6 +1,6 @@
 /**
  * WebSocket Mock for Testing
- * 
+ *
  * Provides a mock implementation of WebSocket for testing NetworkService
  * and GameService without requiring actual WebSocket connections.
  */
@@ -17,17 +17,17 @@ export class MockWebSocket {
     this.protocol = '';
     this.extensions = '';
     this.binaryType = 'blob';
-    
+
     // Event handlers
     this.onopen = null;
     this.onclose = null;
     this.onmessage = null;
     this.onerror = null;
-    
+
     // For testing purposes
     this.sentMessages = [];
     this.mockLatency = 0;
-    
+
     // Simulate connection after next tick
     setTimeout(() => {
       this.readyState = MockWebSocket.OPEN;
@@ -41,9 +41,9 @@ export class MockWebSocket {
     if (this.readyState !== MockWebSocket.OPEN) {
       throw new Error('WebSocket is not open');
     }
-    
+
     this.sentMessages.push(data);
-    
+
     // Echo back pong for ping messages (for heartbeat testing)
     try {
       const message = JSON.parse(data);
@@ -51,7 +51,7 @@ export class MockWebSocket {
         setTimeout(() => {
           this.mockReceive({
             event: 'pong',
-            data: { timestamp: message.data.timestamp }
+            data: { timestamp: message.data.timestamp },
           });
         }, 10);
       }
@@ -69,7 +69,7 @@ export class MockWebSocket {
           target: this,
           code,
           reason,
-          wasClean: code === 1000
+          wasClean: code === 1000,
         });
       }
     }, 10);
@@ -78,10 +78,11 @@ export class MockWebSocket {
   // Test helpers
   mockReceive(data) {
     if (this.readyState === MockWebSocket.OPEN && this.onmessage) {
-      const messageData = typeof data === 'string' ? data : JSON.stringify(data);
+      const messageData =
+        typeof data === 'string' ? data : JSON.stringify(data);
       this.onmessage({
         target: this,
-        data: messageData
+        data: messageData,
       });
     }
   }
@@ -90,7 +91,7 @@ export class MockWebSocket {
     if (this.onerror) {
       this.onerror({
         target: this,
-        error: new Error(error)
+        error: new Error(error),
       });
     }
   }
@@ -102,7 +103,7 @@ export class MockWebSocket {
         target: this,
         code,
         reason,
-        wasClean: false
+        wasClean: false,
       });
     }
   }

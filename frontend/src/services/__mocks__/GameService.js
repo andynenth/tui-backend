@@ -33,7 +33,7 @@ export class GameService {
       currentDeclarer: '',
       declarations: {},
       turnPlays: {},
-      pileCount: 0
+      pileCount: 0,
     };
     this.stateListeners = [];
     this.isDestroyed = false;
@@ -50,12 +50,12 @@ export class GameService {
   setState(newState, reason = 'MANUAL_UPDATE') {
     const oldState = { ...this.state };
     this.state = { ...this.state, ...newState };
-    
-    this.stateListeners.forEach(listener => {
+
+    this.stateListeners.forEach((listener) => {
       listener({
         type: reason,
         oldState,
-        newState: this.getState()
+        newState: this.getState(),
       });
     });
   }
@@ -67,19 +67,25 @@ export class GameService {
 
     try {
       await networkService.connectToRoom(roomId);
-      this.setState({
-        roomId,
-        playerName,
-        isConnected: true,
-        isConnecting: false,
-        error: null
-      }, 'ROOM_JOINED');
+      this.setState(
+        {
+          roomId,
+          playerName,
+          isConnected: true,
+          isConnecting: false,
+          error: null,
+        },
+        'ROOM_JOINED'
+      );
     } catch (error) {
-      this.setState({
-        error: `Failed to join room: ${error.message}`,
-        isConnected: false,
-        isConnecting: false
-      }, 'JOIN_ERROR');
+      this.setState(
+        {
+          error: `Failed to join room: ${error.message}`,
+          isConnected: false,
+          isConnecting: false,
+        },
+        'JOIN_ERROR'
+      );
       throw error;
     }
   }
@@ -87,31 +93,38 @@ export class GameService {
   async leaveRoom() {
     if (this.state.roomId) {
       await networkService.disconnectFromRoom(this.state.roomId);
-      this.setState({
-        roomId: null,
-        isConnected: false,
-        error: null,
-        phase: 'lobby'
-      }, 'ROOM_LEFT');
+      this.setState(
+        {
+          roomId: null,
+          isConnected: false,
+          error: null,
+          phase: 'lobby',
+        },
+        'ROOM_LEFT'
+      );
     }
   }
 
   // Game actions
   acceptRedeal() {
     if (this.state.phase !== 'preparation') {
-      throw new Error(`Invalid action ACCEPT_REDEAL for phase ${this.state.phase}`);
+      throw new Error(
+        `Invalid action ACCEPT_REDEAL for phase ${this.state.phase}`
+      );
     }
     networkService.send(this.state.roomId, 'accept_redeal', {
-      player_name: this.state.playerName
+      player_name: this.state.playerName,
     });
   }
 
   declineRedeal() {
     if (this.state.phase !== 'preparation') {
-      throw new Error(`Invalid action DECLINE_REDEAL for phase ${this.state.phase}`);
+      throw new Error(
+        `Invalid action DECLINE_REDEAL for phase ${this.state.phase}`
+      );
     }
     networkService.send(this.state.roomId, 'decline_redeal', {
-      player_name: this.state.playerName
+      player_name: this.state.playerName,
     });
   }
 
@@ -127,7 +140,10 @@ export class GameService {
     }
 
     // Check if last player would make total equal 8
-    const currentTotal = Object.values(this.state.declarations).reduce((sum, val) => sum + val, 0);
+    const currentTotal = Object.values(this.state.declarations).reduce(
+      (sum, val) => sum + val,
+      0
+    );
     const isLastPlayer = Object.keys(this.state.declarations).length === 3;
     if (isLastPlayer && currentTotal + value === 8) {
       throw new Error('Last player cannot make total equal 8');
@@ -135,13 +151,15 @@ export class GameService {
 
     networkService.send(this.state.roomId, 'declare', {
       value,
-      player_name: this.state.playerName
+      player_name: this.state.playerName,
     });
   }
 
   playPieces(pieceIndices) {
     if (this.state.phase !== 'turn') {
-      throw new Error(`Invalid action PLAY_PIECES for phase ${this.state.phase}`);
+      throw new Error(
+        `Invalid action PLAY_PIECES for phase ${this.state.phase}`
+      );
     }
     if (this.state.currentPlayer !== this.state.playerName) {
       throw new Error('Not your turn to play');
@@ -152,14 +170,18 @@ export class GameService {
 
     // Validate piece indices
     for (const index of pieceIndices) {
-      if (typeof index !== 'number' || index < 0 || index >= this.state.myHand.length) {
+      if (
+        typeof index !== 'number' ||
+        index < 0 ||
+        index >= this.state.myHand.length
+      ) {
         throw new Error(`Invalid piece index: ${index}`);
       }
     }
 
     networkService.send(this.state.roomId, 'play_pieces', {
       piece_indexes: pieceIndices,
-      player_name: this.state.playerName
+      player_name: this.state.playerName,
     });
   }
 
