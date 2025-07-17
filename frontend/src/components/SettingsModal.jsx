@@ -6,8 +6,8 @@ const SettingsModal = ({ isOpen, onClose }) => {
   const { currentTheme, changeTheme } = useTheme();
   const [selectedTheme, setSelectedTheme] = useState(currentTheme.id);
 
-  // Show only classic and modern themes for now
-  const availableThemes = [themes.classic, themes.modern];
+  // Show all available themes
+  const availableThemes = [themes.classic, themes.modern, themes.medieval];
 
   useEffect(() => {
     setSelectedTheme(currentTheme.id);

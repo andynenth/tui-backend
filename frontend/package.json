@@ -131,7 +131,7 @@
   },
   "scripts": {
     "dev": "node esbuild.config.cjs",
-    "build": "esbuild main.js --bundle --outdir=../backend/static --entry-names=bundle --loader:.js=jsx --loader:.jsx=jsx --loader:.ts=ts --loader:.tsx=tsx --loader:.css=css --loader:.svg=dataurl --jsx=automatic",
+    "build": "node esbuild.config.cjs --production && cp index.html ../backend/static/",
     "test": "jest",
     "test:watch": "jest --watch",
     "test:coverage": "jest --coverage",
