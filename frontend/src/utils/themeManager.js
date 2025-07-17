@@ -1,6 +1,7 @@
 // Import SVG assets for different themes
 import * as ClassicPieces from '../assets/pieces/classic';
 import * as ModernPieces from '../assets/pieces/modern';
+import * as MedievalPieces from '../assets/pieces/medieval';
 
 // Theme definitions and management
 export const themes = {
@@ -40,6 +41,25 @@ export const themes = {
         piece2: ModernPieces.SOLDIER_BLACK,
       },
       lobbyEmpty: ModernPieces.GENERAL_BLACK,
+    },
+  },
+  medieval: {
+    id: 'medieval',
+    name: 'Medieval',
+    description: 'Medieval-style pieces with classic colors',
+    pieceColors: {
+      red: '#dc3545', // Same as classic red
+      black: '#495057', // Same as classic black
+    },
+    pieceStyle: 'medieval',
+    pieceAssets: MedievalPieces, // Reference to medieval SVG set
+    uiElements: {
+      startIcon: {
+        main: MedievalPieces.GENERAL_RED,
+        piece1: MedievalPieces.HORSE_RED,
+        piece2: MedievalPieces.SOLDIER_BLACK,
+      },
+      lobbyEmpty: MedievalPieces.GENERAL_BLACK,
     },
   },
 };
