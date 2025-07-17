@@ -11,17 +11,7 @@
 
 /* Declaration requirement badge */
 .dec-requirement-badge {
-  font-size: 14px;
-  color: #ffc107;
-  background: rgba(255, 193, 7, 0.1);
-  padding: 8px 16px;
-  border-radius: 12px;
-  border: 1px solid rgba(255, 193, 7, 0.3);
-  display: inline-block;
-  margin-bottom: 16px;
-  text-align: center;
-  align-self: center;
-  font-weight: 500;
+  display: none;
 }
 
 /* Players list */
@@ -90,10 +80,10 @@
 .dec-player-row.declared {
   border-color: rgba(40, 167, 69, 0.3);
   background:
-    linear-gradient(145deg, #f0fff4 0%, #f8fff8 100%),
+    linear-gradient(145deg, #ffffff 0%, #f8f9fa 100%),
     radial-gradient(
       circle at 15% 50%,
-      rgba(40, 167, 69, 0.08) 0%,
+      rgba(255, 255, 255, 0.8) 0%,
       transparent 50%
     );
 }
@@ -191,18 +181,18 @@
   left: 0;
   right: 0;
   background:
-    linear-gradient(145deg, #fff8e1 0%, #fffbf0 100%),
+    linear-gradient(145deg, #ffffff 0%, #f8f9fa 100%),
     radial-gradient(
       circle at 30% 30%,
-      rgba(255, 193, 7, 0.1) 0%,
+      rgba(255, 255, 255, 0.8) 0%,
       transparent 60%
     );
-  border: 1px solid rgba(255, 193, 7, 0.3);
+  border: 1px solid rgba(173, 181, 189, 0.3);
   border-radius: 16px;
   margin: 0 16px;
   padding: 20px;
   box-shadow:
-    0 4px 20px rgba(255, 193, 7, 0.15),
+    0 4px 20px rgba(173, 181, 189, 0.15),
     0 0 0 1px rgba(255, 255, 255, 0.9),
     inset 0 1px 0 rgba(255, 255, 255, 1);
   z-index: 10;
@@ -224,7 +214,7 @@
   transform: translateX(-50%);
   width: 40px;
   height: 3px;
-  background: rgba(255, 193, 7, 0.3);
+  background: rgba(173, 181, 189, 0.3);
   border-radius: 2px;
 }
 

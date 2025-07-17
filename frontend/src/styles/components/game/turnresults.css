@@ -129,15 +129,15 @@
 /* Winner highlight */
 .tr-player-row.winner {
   background:
-    linear-gradient(145deg, #f8fff8 0%, #f0fbf0 100%),
+    linear-gradient(145deg, #ffffff 0%, #f8f9fa 100%),
     radial-gradient(
       circle at 15% 50%,
-      rgba(76, 175, 80, 0.1) 0%,
+      rgba(255, 255, 255, 0.8) 0%,
       transparent 50%
     );
   border: 2px solid rgba(76, 175, 80, 0.5);
   box-shadow:
-    0 4px 12px rgba(76, 175, 80, 0.15),
+    0 2px 6px rgba(0, 0, 0, 0.04),
     inset 0 1px 0 rgba(255, 255, 255, 1);
   padding: 11px 15px; /* Adjust padding to account for thicker border */
 }
