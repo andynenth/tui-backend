@@ -1,0 +1,640 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Turn UI Mockup - Liap Tui</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #0a0a0a;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        /* Main container */
+        .game-container {
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            background: 
+                radial-gradient(ellipse at top, #1a1a1a 0%, #0a0a0a 100%),
+                linear-gradient(180deg, #141414 0%, #0a0a0a 100%);
+            position: relative;
+        }
+
+        /* Ambient casino lighting effect */
+        .game-container::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            right: -50%;
+            bottom: -50%;
+            background: 
+                radial-gradient(circle at 20% 50%, rgba(255, 215, 0, 0.03) 0%, transparent 50%),
+                radial-gradient(circle at 80% 50%, rgba(255, 215, 0, 0.03) 0%, transparent 50%);
+            pointer-events: none;
+            animation: ambientGlow 10s ease-in-out infinite alternate;
+        }
+
+        @keyframes ambientGlow {
+            0% { opacity: 0.3; }
+            100% { opacity: 0.6; }
+        }
+
+        /* Turn indicator badge (top right) - Casino style */
+        .turn-indicator {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: 
+                linear-gradient(145deg, #2a2a2a 0%, #1a1a1a 100%),
+                radial-gradient(ellipse at top, rgba(255, 215, 0, 0.1) 0%, transparent 70%);
+            padding: 8px 16px;
+            border-radius: 16px;
+            border: 1px solid rgba(255, 215, 0, 0.3);
+            box-shadow: 
+                0 4px 12px rgba(0, 0, 0, 0.5),
+                inset 0 1px 0 rgba(255, 255, 255, 0.1),
+                0 0 20px rgba(255, 215, 0, 0.1);
+            font-weight: 700;
+            font-size: 14px;
+            color: #ffd700;
+            z-index: 1000;
+            text-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+        }
+
+        /* Table section */
+        .turn-table-section {
+            flex: 1;
+            padding: 8px;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .turn-table-layout {
+            position: relative;
+            flex: 1;
+            min-height: 260px;
+            padding: 8px;
+        }
+
+        /* Central table - Casino style */
+        .turn-central-table {
+            position: absolute;
+            top: 58%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 270px;
+            height: 270px;
+            background: 
+                radial-gradient(ellipse at center, #1b5e3f 0%, #134e35 100%),
+                linear-gradient(135deg, #1b5e3f 0%, #0d3625 100%);
+            border: 2px solid #0a2818;
+            border-radius: 12px;
+            box-shadow: 
+                0 8px 24px rgba(0, 0, 0, 0.3),
+                inset 0 1px 0 rgba(255, 255, 255, 0.1),
+                inset 0 -1px 0 rgba(0, 0, 0, 0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* Table felt texture */
+        .turn-central-table::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-image: 
+                repeating-linear-gradient(
+                    45deg,
+                    transparent,
+                    transparent 3px,
+                    rgba(255, 255, 255, 0.02) 3px,
+                    rgba(255, 255, 255, 0.02) 6px
+                );
+            pointer-events: none;
+        }
+
+        /* Grid pattern overlay - subtle casino table markings */
+        .turn-central-table::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: 
+                linear-gradient(rgba(255, 255, 255, 0.05) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255, 255, 255, 0.05) 1px, transparent 1px);
+            background-size: 20px 20px;
+            border-radius: 10px;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        /* Inner border accent */
+        .turn-central-table-inner {
+            position: absolute;
+            top: 8px;
+            left: 8px;
+            right: 8px;
+            bottom: 8px;
+            border: 1px solid rgba(255, 215, 0, 0.2);
+            border-radius: 8px;
+            pointer-events: none;
+        }
+
+        /* Player pieces areas */
+        .turn-player-pieces-area {
+            position: absolute;
+            display: grid;
+            gap: 3px;
+        }
+
+        .turn-player-pieces-area.top {
+            top: 15px;
+            left: 50%;
+            transform: translateX(-50%);
+            grid-template-columns: repeat(3, 1fr);
+            max-width: 170px;
+        }
+
+        .turn-player-pieces-area.left {
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            grid-template-columns: repeat(2, 1fr);
+            max-height: 170px;
+        }
+
+        .turn-player-pieces-area.right {
+            right: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            grid-template-columns: repeat(2, 1fr);
+            max-height: 170px;
+        }
+
+        /* Game pieces */
+        .game-piece {
+            width: 34px;
+            height: 34px;
+            border-radius: 50%;
+            background: linear-gradient(145deg, #ffffff 0%, #f8f9fa 100%);
+            border: 1px solid rgba(173, 181, 189, 0.3);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.06);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 20px;
+            position: relative;
+        }
+
+        .game-piece.red {
+            color: #dc3545;
+            border-color: rgba(220, 53, 69, 0.4);
+        }
+
+        .game-piece.black {
+            color: #495057;
+            border-color: rgba(73, 80, 87, 0.4);
+        }
+
+        /* Flippable pieces (face down) */
+        .game-piece.face-down {
+            background: linear-gradient(145deg, #ffffff 0%, #f8f9fa 100%);
+            border-color: rgba(173, 181, 189, 0.7);
+        }
+
+        .game-piece.face-down::after {
+            content: '?';
+            color: #6c757d;
+            font-weight: bold;
+        }
+
+        /* Player summary bars - Casino style */
+        .turn-player-summary-bar {
+            position: absolute;
+            background: 
+                linear-gradient(145deg, #2a2a2a 0%, #1a1a1a 100%),
+                radial-gradient(ellipse at center, rgba(255, 255, 255, 0.05) 0%, transparent 70%);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 8px;
+            padding: 6px 10px;
+            box-shadow: 
+                0 4px 12px rgba(0, 0, 0, 0.5),
+                inset 0 1px 0 rgba(255, 255, 255, 0.1);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 6px;
+            min-width: 140px;
+            backdrop-filter: blur(5px);
+        }
+
+        .turn-player-summary-bar.top {
+            top: 28px;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+
+        .turn-player-summary-bar.left {
+            left: -45px;
+            top: 58%;
+            transform: translateY(-50%) rotate(-90deg);
+            transform-origin: center;
+        }
+
+        .turn-player-summary-bar.right {
+            right: -45px;
+            top: 58%;
+            transform: translateY(-50%) rotate(90deg);
+            transform-origin: center;
+        }
+
+        .turn-player-summary-bar.active {
+            border-color: rgba(255, 215, 0, 0.8);
+            box-shadow: 
+                0 4px 12px rgba(0, 0, 0, 0.5),
+                inset 0 1px 0 rgba(255, 255, 255, 0.1),
+                0 0 20px rgba(255, 215, 0, 0.3);
+        }
+
+        .turn-player-summary-bar.played {
+            border-color: rgba(40, 167, 69, 0.6);
+            opacity: 0.8;
+        }
+
+        /* Player summary content */
+        .turn-player-summary-content {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .turn-player-avatar-small {
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background: linear-gradient(145deg, #ffffff 0%, #f8f9fa 100%);
+            border: 1px solid rgba(173, 181, 189, 0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 8px;
+            color: #495057;
+        }
+
+        .turn-player-name-short {
+            font-size: 10px;
+            font-weight: 600;
+            color: #e0e0e0;
+        }
+
+        .turn-player-stats-compact {
+            display: flex;
+            align-items: center;
+            gap: 3px;
+        }
+
+        .turn-stat-number {
+            font-size: 11px;
+            font-weight: 700;
+            color: #ffd700;
+        }
+
+        .turn-stat-separator {
+            font-size: 9px;
+            color: #999;
+        }
+
+        /* Status icons (pieces in hand) */
+        .turn-status-icons {
+            display: flex;
+            gap: 2px;
+            justify-content: center;
+        }
+
+        .turn-status-icon {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: linear-gradient(145deg, #ffffff 0%, #f8f9fa 100%);
+            border: 1px solid rgba(173, 181, 189, 0.7);
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.06);
+        }
+
+        /* Confirm panel (slides up when pieces selected) */
+        .turn-confirm-panel {
+            position: absolute;
+            bottom: 190px;
+            left: 0;
+            right: 0;
+            background: linear-gradient(145deg, #ffffff 0%, #f8f9fa 100%);
+            border: 1px solid rgba(40, 167, 69, 0.3);
+            border-radius: 16px;
+            margin: 0 16px;
+            padding: 16px 20px;
+            box-shadow: 0 4px 20px rgba(40, 167, 69, 0.15), inset 0 1px 0 rgba(255, 255, 255, 1);
+            transform: translateY(calc(100% + 20px));
+            transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            z-index: 10;
+        }
+
+        .turn-confirm-panel.show {
+            transform: translateY(0);
+        }
+
+        /* Panel handle */
+        .turn-confirm-panel::before {
+            content: '';
+            position: absolute;
+            top: 8px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 40px;
+            height: 3px;
+            background: rgba(40, 167, 69, 0.3);
+            border-radius: 2px;
+        }
+
+        .turn-selection-info {
+            text-align: center;
+            margin-bottom: 12px;
+        }
+
+        .turn-selection-count {
+            font-size: 14px;
+            color: #28a745;
+            font-weight: 600;
+        }
+
+        .turn-action-buttons {
+            display: flex;
+            gap: 8px;
+            justify-content: center;
+        }
+
+        .turn-action-button {
+            background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+            color: white;
+            border: 1px solid rgba(40, 167, 69, 0.4);
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            box-shadow: 0 2px 4px rgba(40, 167, 69, 0.2);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .turn-action-button.secondary {
+            background: linear-gradient(135deg, #6c757d 0%, #495057 100%);
+            border-color: rgba(108, 117, 125, 0.4);
+            box-shadow: 0 2px 4px rgba(108, 117, 125, 0.2);
+        }
+
+        /* Piece tray at bottom - Casino style */
+        .piece-tray {
+            background: 
+                linear-gradient(180deg, #1a1a1a 0%, #0f0f0f 100%),
+                radial-gradient(ellipse at bottom, rgba(255, 215, 0, 0.05) 0%, transparent 70%);
+            padding: 20px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            position: relative;
+            z-index: 20;
+            box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.5);
+        }
+
+        .piece-tray::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 40px;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, #666, transparent);
+        }
+
+        .piece-tray--active {
+            border-top: 2px solid rgba(255, 215, 0, 0.6);
+            background: 
+                linear-gradient(180deg, #1f1a0a 0%, #0f0f0f 100%),
+                radial-gradient(ellipse at bottom, rgba(255, 215, 0, 0.1) 0%, transparent 70%);
+            box-shadow: 
+                inset 0 2px 0 rgba(255, 215, 0, 0.2),
+                0 -4px 20px rgba(255, 215, 0, 0.2);
+        }
+
+        .piece-tray--active::before {
+            background: linear-gradient(90deg, transparent, #ffd700, transparent);
+            height: 3px;
+            box-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+        }
+
+        .piece-tray__grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 12px;
+            max-width: 350px;
+            margin: 0 auto;
+            min-height: 136px;
+        }
+
+        /* Hand pieces */
+        .game-piece--large {
+            width: 62px;
+            height: 62px;
+            font-size: 20px;
+            cursor: pointer;
+        }
+
+        .game-piece--selectable:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.12);
+            border-color: rgba(13, 110, 253, 0.4);
+        }
+
+        .game-piece--selectable.selected {
+            transform: translateY(-6px);
+            box-shadow: 0 8px 16px rgba(255, 193, 7, 0.3), 0 0 0 3px rgba(255, 193, 7, 0.2);
+        }
+
+        /* Piece value badge */
+        .game-piece__value {
+            position: absolute;
+            top: -2px;
+            left: -2px;
+            background: rgba(255, 255, 255, 0.95);
+            border: 1px solid rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+            padding: 2px 4px;
+            font-size: 10px;
+            font-weight: bold;
+            min-width: 16px;
+            text-align: center;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+
+        .game-piece.red .game-piece__value {
+            color: #dc3545;
+            border-color: rgba(220, 53, 69, 0.3);
+        }
+
+        .game-piece.black .game-piece__value {
+            color: #495057;
+            border-color: rgba(73, 80, 87, 0.3);
+        }
+    </style>
+</head>
+<body>
+    <div class="game-container">
+        <!-- Turn indicator badge -->
+        <div class="turn-indicator">2/3</div>
+
+        <!-- Table section -->
+        <div class="turn-table-section">
+            <div class="turn-table-layout">
+                <!-- Central table -->
+                <div class="turn-central-table">
+                    <div class="turn-central-table-inner"></div>
+                    <!-- Player pieces areas (when pieces are played) -->
+                    <div class="turn-player-pieces-area top">
+                        <div class="game-piece face-down"></div>
+                        <div class="game-piece face-down"></div>
+                    </div>
+                    
+                    <div class="turn-player-pieces-area left">
+                        <div class="game-piece red">兵</div>
+                        <div class="game-piece red">兵</div>
+                    </div>
+                    
+                    <div class="turn-player-pieces-area right">
+                        <div class="game-piece black">車</div>
+                        <div class="game-piece black">馬</div>
+                    </div>
+                </div>
+
+                <!-- Player summary bars -->
+                <div class="turn-player-summary-bar top active">
+                    <div class="turn-player-summary-content">
+                        <div class="turn-player-avatar-small">P2</div>
+                        <span class="turn-player-name-short">Player 2</span>
+                        <div class="turn-player-stats-compact">
+                            <span class="turn-stat-number">1</span>
+                            <span class="turn-stat-separator">/</span>
+                            <span class="turn-stat-number">2</span>
+                        </div>
+                    </div>
+                    <div class="turn-status-icons">
+                        <span class="turn-status-icon"></span>
+                        <span class="turn-status-icon"></span>
+                        <span class="turn-status-icon"></span>
+                        <span class="turn-status-icon"></span>
+                    </div>
+                </div>
+
+                <div class="turn-player-summary-bar left played">
+                    <div class="turn-player-summary-content">
+                        <div class="turn-player-avatar-small">P3</div>
+                        <span class="turn-player-name-short">Player 3</span>
+                        <div class="turn-player-stats-compact">
+                            <span class="turn-stat-number">2</span>
+                            <span class="turn-stat-separator">/</span>
+                            <span class="turn-stat-number">2</span>
+                        </div>
+                    </div>
+                    <div class="turn-status-icons">
+                        <span class="turn-status-icon"></span>
+                        <span class="turn-status-icon"></span>
+                        <span class="turn-status-icon"></span>
+                        <span class="turn-status-icon"></span>
+                        <span class="turn-status-icon"></span>
+                        <span class="turn-status-icon"></span>
+                    </div>
+                </div>
+
+                <div class="turn-player-summary-bar right played">
+                    <div class="turn-player-summary-content">
+                        <div class="turn-player-avatar-small">P4</div>
+                        <span class="turn-player-name-short">Player 4</span>
+                        <div class="turn-player-stats-compact">
+                            <span class="turn-stat-number">0</span>
+                            <span class="turn-stat-separator">/</span>
+                            <span class="turn-stat-number">3</span>
+                        </div>
+                    </div>
+                    <div class="turn-status-icons">
+                        <span class="turn-status-icon"></span>
+                        <span class="turn-status-icon"></span>
+                        <span class="turn-status-icon"></span>
+                        <span class="turn-status-icon"></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Confirm panel (hidden by default, shown when pieces selected) -->
+        <div class="turn-confirm-panel show">
+            <div class="turn-selection-info">
+                <div class="turn-selection-count">
+                    Must play exactly 2 pieces
+                </div>
+            </div>
+            <div class="turn-action-buttons">
+                <button class="turn-action-button">Play Pieces</button>
+                <button class="turn-action-button secondary">Clear</button>
+            </div>
+        </div>
+
+        <!-- Hand section -->
+        <div class="piece-tray piece-tray--active">
+            <div class="piece-tray__grid">
+                <div class="game-piece game-piece--large game-piece--selectable red selected">
+                    炮
+                    <div class="game-piece__value">5</div>
+                </div>
+                <div class="game-piece game-piece--large game-piece--selectable red selected">
+                    炮
+                    <div class="game-piece__value">5</div>
+                </div>
+                <div class="game-piece game-piece--large game-piece--selectable black">
+                    馬
+                    <div class="game-piece__value">3</div>
+                </div>
+                <div class="game-piece game-piece--large game-piece--selectable black">
+                    車
+                    <div class="game-piece__value">7</div>
+                </div>
+                <div class="game-piece game-piece--large game-piece--selectable red">
+                    兵
+                    <div class="game-piece__value">1</div>
+                </div>
+                <div class="game-piece game-piece--large game-piece--selectable black">
+                    象
+                    <div class="game-piece__value">2</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
