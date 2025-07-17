@@ -1,5 +1,11 @@
 /* Game Piece Component Styles */
 
+/* CSS Variables for common values */
+:root {
+  --piece-border-gray: rgba(173, 181, 189, 0.3);
+  --piece-border-gray-dark: rgba(173, 181, 189, 0.7);
+}
+
 /* Base piece styles */
 .game-piece {
   border-radius: 50%;
@@ -15,7 +21,7 @@
   align-items: center;
   justify-content: center;
   font-weight: bold;
-  border: 1px solid rgba(173, 181, 189, 0.3);
+  border: 1px solid var(--piece-border-gray);
   font-family: 'SimSun', '宋体', serif;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.06);
   transition: all 0.15s ease;
@@ -96,44 +102,8 @@
   z-index: 10;
 }
 
-/* Color-specific value badge styling */
-.game-piece.piece-red .game-piece__value {
-  color: var(--piece-color-red, #dc3545);
-  border-color: color-mix(
-    in srgb,
-    var(--piece-color-red, #dc3545) 30%,
-    transparent
-  );
-}
-
-.game-piece.piece-black .game-piece__value {
-  color: var(--piece-color-black, #495057);
-  border-color: color-mix(
-    in srgb,
-    var(--piece-color-black, #495057) 30%,
-    transparent
-  );
-}
-
-/* Flippable pieces value badge styling */
-.game-piece__face .game-piece__value {
-  position: absolute;
-  top: -2px;
-  left: -2px;
-  background: rgba(255, 255, 255, 0.95);
-  border: 1px solid rgba(0, 0, 0, 0.1);
-  border-radius: 8px;
-  padding: 2px 4px;
-  font-size: 10px;
-  font-weight: bold;
-  line-height: 1;
-  margin: 0;
-  min-width: 16px;
-  text-align: center;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-  z-index: 10;
-}
-
+/* Color-specific value badge styling - works for both regular and flippable pieces */
+.game-piece.piece-red .game-piece__value,
 .game-piece__face--front.piece-red .game-piece__value {
   color: var(--piece-color-red, #dc3545);
   border-color: color-mix(
@@ -143,6 +113,7 @@
   );
 }
 
+.game-piece.piece-black .game-piece__value,
 .game-piece__face--front.piece-black .game-piece__value {
   color: var(--piece-color-black, #495057);
   border-color: color-mix(
@@ -151,6 +122,7 @@
     transparent
   );
 }
+
 
 /* SVG image sizing within game pieces */
 .game-piece img {
@@ -248,6 +220,10 @@
 .game-piece.flippable {
   transform-style: preserve-3d;
   transition: transform 0.6s ease;
+  /* Remove container styling to prevent double borders */
+  border: none;
+  background: none;
+  box-shadow: none;
 }
 
 .game-piece.flippable.flipped {
@@ -269,7 +245,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  border: 1px solid rgba(173, 181, 189, 0.3);
+  border: 1px solid var(--piece-border-gray);
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
   backface-visibility: hidden;
 }
@@ -282,7 +258,7 @@
       rgba(255, 255, 255, 0.8) 0%,
       transparent 60%
     );
-  border: 1px solid rgba(173, 181, 189, 0.7);
+  border: 1px solid var(--piece-border-gray-dark);
 }
 
 .game-piece__face--back::after {
