@@ -6,24 +6,45 @@
   --piece-border-gray-dark: rgba(173, 181, 189, 0.7);
 }
 
-/* Base piece styles */
+/* Base piece styles - 3D ivory piece */
 .game-piece {
   border-radius: 50%;
   background:
-    linear-gradient(145deg, #ffffff 0%, #f8f9fa 100%),
+    /* Main ivory gradient */
+    linear-gradient(145deg, #fffff0 0%, #faf8f3 50%, #f0ebe4 100%),
+    /* Top highlight */
     radial-gradient(
-      circle at 30% 30%,
-      rgba(255, 255, 255, 0.8) 0%,
-      transparent 60%
+      ellipse at 30% 30%,
+      rgba(255, 255, 240, 0.9) 0%,
+      transparent 50%
     );
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   font-weight: bold;
-  border: 1px solid var(--piece-border-gray);
-  font-family: 'SimSun', '宋体', serif;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.06);
+  border: none;
+  font-family: 'SimSun', '宋体', var(--font-display), serif;
+  box-shadow: 
+    /* Multi-layer border effect */
+    0 0 0 0.5px rgba(200, 190, 180, 0.9),
+    0 0 0 1px rgba(255, 255, 245, 0.4),
+    0 0 0 1.5px rgba(220, 210, 200, 0.3),
+    /* Carved edge illusion */
+    inset 0 0 1px 1px rgba(255, 255, 255, 0.5),
+    inset 0 1px 0 1px rgba(255, 255, 255, 0.8),
+    inset 0 -1px 0 1px rgba(200, 190, 180, 0.6),
+    /* Main depth shadow */
+    0 4px 8px rgba(0, 0, 0, 0.15),
+    /* Subtle colored shadow */
+    0 2px 4px rgba(139, 111, 71, 0.1),
+    /* Top rim highlight */
+    inset 0 2px 3px rgba(255, 255, 255, 0.7),
+    /* Bottom rim shadow */
+    inset 0 -2px 3px rgba(230, 220, 210, 0.3),
+    /* Side bevels */
+    inset 2px 0 2px rgba(255, 255, 255, 0.3),
+    inset -2px 0 2px rgba(230, 220, 210, 0.3);
   transition: all 0.15s ease;
   position: relative;
 }
@@ -56,20 +77,40 @@
 /* Color variants (not applied to table variant - colors only show on front face) */
 .game-piece:not(.game-piece--table).piece-red,
 .game-piece:not(.game-piece--table).red {
-  border-color: color-mix(
-    in srgb,
-    var(--piece-color-red, #dc3545) 40%,
-    transparent
-  );
+  box-shadow: 
+    /* Red-tinted border layers */
+    0 0 0 0.5px color-mix(in srgb, var(--piece-color-red, #dc3545) 30%, #c8beb4),
+    0 0 0 1px rgba(255, 245, 245, 0.4),
+    0 0 0 1.5px color-mix(in srgb, var(--piece-color-red, #dc3545) 20%, #dcd2c8),
+    /* Keep all other shadows */
+    inset 0 0 1px 1px rgba(255, 255, 255, 0.5),
+    inset 0 1px 0 1px rgba(255, 255, 255, 0.8),
+    inset 0 -1px 0 1px rgba(200, 190, 180, 0.6),
+    0 4px 8px rgba(0, 0, 0, 0.15),
+    0 2px 4px rgba(139, 111, 71, 0.1),
+    inset 0 2px 3px rgba(255, 255, 255, 0.7),
+    inset 0 -2px 3px rgba(230, 220, 210, 0.3),
+    inset 2px 0 2px rgba(255, 255, 255, 0.3),
+    inset -2px 0 2px rgba(230, 220, 210, 0.3);
 }
 
 .game-piece:not(.game-piece--table).piece-black,
 .game-piece:not(.game-piece--table).black {
-  border-color: color-mix(
-    in srgb,
-    var(--piece-color-black, #495057) 40%,
-    transparent
-  );
+  box-shadow: 
+    /* Black-tinted border layers */
+    0 0 0 0.5px color-mix(in srgb, var(--piece-color-black, #495057) 30%, #c8beb4),
+    0 0 0 1px rgba(255, 255, 255, 0.4),
+    0 0 0 1.5px color-mix(in srgb, var(--piece-color-black, #495057) 20%, #dcd2c8),
+    /* Keep all other shadows */
+    inset 0 0 1px 1px rgba(255, 255, 255, 0.5),
+    inset 0 1px 0 1px rgba(255, 255, 255, 0.8),
+    inset 0 -1px 0 1px rgba(200, 190, 180, 0.6),
+    0 4px 8px rgba(0, 0, 0, 0.15),
+    0 2px 4px rgba(139, 111, 71, 0.1),
+    inset 0 2px 3px rgba(255, 255, 255, 0.7),
+    inset 0 -2px 3px rgba(230, 220, 210, 0.3),
+    inset 2px 0 2px rgba(255, 255, 255, 0.3),
+    inset -2px 0 2px rgba(230, 220, 210, 0.3);
 }
 
 /* Character display */
@@ -83,13 +124,14 @@
   height: 100%;
 }
 
-/* Value display - redesigned as top-left badge */
+/* Value display - 3D badge */
 .game-piece__value {
   position: absolute;
   top: -2px;
   left: -2px;
-  background: rgba(255, 255, 255, 0.95);
-  border: 1px solid rgba(0, 0, 0, 0.1);
+  background: 
+    linear-gradient(145deg, #fffff5 0%, #faf8f0 100%);
+  border: 1px solid rgba(230, 220, 210, 0.3);
   border-radius: 8px;
   padding: 2px 4px;
   font-size: 10px;
@@ -98,7 +140,10 @@
   margin: 0;
   min-width: 16px;
   text-align: center;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  box-shadow: 
+    0 2px 4px rgba(0, 0, 0, 0.1),
+    inset 0 1px 1px rgba(255, 255, 255, 0.6),
+    inset 0 -1px 1px rgba(230, 220, 210, 0.2);
   z-index: 10;
 }
 
@@ -200,15 +245,45 @@
 
 .game-piece--selectable:hover {
   transform: translateY(-2px);
-  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.12);
-  border-color: rgba(13, 110, 253, 0.4);
+  box-shadow: 
+    /* Enhanced border on hover */
+    0 0 0 0.5px rgba(13, 110, 253, 0.6),
+    0 0 0 1px rgba(255, 255, 255, 0.5),
+    0 0 0 1.5px rgba(13, 110, 253, 0.3),
+    /* Carved edge */
+    inset 0 0 1px 1px rgba(255, 255, 255, 0.6),
+    inset 0 1px 0 1px rgba(255, 255, 255, 0.9),
+    inset 0 -1px 0 1px rgba(200, 190, 180, 0.5),
+    /* Enhanced depth on hover */
+    0 6px 12px rgba(0, 0, 0, 0.18),
+    0 4px 8px rgba(139, 111, 71, 0.12),
+    /* Keep the 3D bevels */
+    inset 0 2px 3px rgba(255, 255, 255, 0.7),
+    inset 0 -2px 3px rgba(230, 220, 210, 0.3),
+    inset 2px 0 2px rgba(255, 255, 255, 0.3),
+    inset -2px 0 2px rgba(230, 220, 210, 0.3);
 }
 
 .game-piece--selectable.selected {
   transform: translateY(-6px);
   box-shadow:
+    /* Golden border for selected */
+    0 0 0 1px rgba(255, 193, 7, 0.8),
+    0 0 0 2px rgba(255, 255, 245, 0.6),
+    0 0 0 3px rgba(255, 193, 7, 0.3),
+    /* Carved edge enhanced */
+    inset 0 0 1px 1px rgba(255, 255, 255, 0.7),
+    inset 0 1px 0 1px rgba(255, 255, 255, 0.95),
+    inset 0 -1px 0 1px rgba(255, 193, 7, 0.4),
+    /* Yellow glow for selected */
     0 8px 16px rgba(255, 193, 7, 0.3),
-    0 0 0 3px rgba(255, 193, 7, 0.2);
+    /* Enhanced depth */
+    0 10px 20px rgba(0, 0, 0, 0.15),
+    /* Keep the 3D bevels */
+    inset 0 2px 3px rgba(255, 255, 255, 0.8),
+    inset 0 -2px 3px rgba(230, 220, 210, 0.25),
+    inset 2px 0 2px rgba(255, 255, 255, 0.35),
+    inset -2px 0 2px rgba(230, 220, 210, 0.25);
 }
 
 /* Table variant - no longer forces size */
@@ -236,35 +311,79 @@
   height: 100%;
   border-radius: 50%;
   background:
-    linear-gradient(145deg, #ffffff 0%, #f8f9fa 100%),
+    /* Main ivory gradient */
+    linear-gradient(145deg, #fffff0 0%, #faf8f3 50%, #f0ebe4 100%),
+    /* Top highlight */
     radial-gradient(
-      circle at 30% 30%,
-      rgba(255, 255, 255, 0.8) 0%,
-      transparent 60%
+      ellipse at 30% 30%,
+      rgba(255, 255, 240, 0.9) 0%,
+      transparent 50%
     );
   display: flex;
   align-items: center;
   justify-content: center;
-  border: 1px solid var(--piece-border-gray);
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
+  border: none;
+  box-shadow: 
+    /* Multi-layer border effect */
+    0 0 0 0.5px rgba(200, 190, 180, 0.9),
+    0 0 0 1px rgba(255, 255, 245, 0.4),
+    0 0 0 1.5px rgba(220, 210, 200, 0.3),
+    /* Carved edge illusion */
+    inset 0 0 1px 1px rgba(255, 255, 255, 0.5),
+    inset 0 1px 0 1px rgba(255, 255, 255, 0.8),
+    inset 0 -1px 0 1px rgba(200, 190, 180, 0.6),
+    /* Main depth shadow */
+    0 4px 8px rgba(0, 0, 0, 0.15),
+    /* Subtle colored shadow */
+    0 2px 4px rgba(139, 111, 71, 0.1),
+    /* Top rim highlight */
+    inset 0 2px 3px rgba(255, 255, 255, 0.7),
+    /* Bottom rim shadow */
+    inset 0 -2px 3px rgba(230, 220, 210, 0.3),
+    /* Side bevels */
+    inset 2px 0 2px rgba(255, 255, 255, 0.3),
+    inset -2px 0 2px rgba(230, 220, 210, 0.3);
   backface-visibility: hidden;
 }
 
 .game-piece__face--back {
   background:
-    linear-gradient(145deg, #ffffff 0%, #f8f9fa 100%),
+    /* Slightly darker ivory for back */
+    linear-gradient(145deg, #faf8f3 0%, #f0ebe4 50%, #e8e0d5 100%),
     radial-gradient(
-      circle at 30% 30%,
-      rgba(255, 255, 255, 0.8) 0%,
-      transparent 60%
+      ellipse at 30% 30%,
+      rgba(250, 248, 243, 0.8) 0%,
+      transparent 50%
     );
-  border: 1px solid var(--piece-border-gray-dark);
+  border: none;
+  box-shadow: 
+    /* Muted border layers for back */
+    0 0 0 0.5px rgba(190, 180, 170, 0.8),
+    0 0 0 1px rgba(250, 248, 243, 0.3),
+    0 0 0 1.5px rgba(210, 200, 190, 0.2),
+    /* Carved edge - muted */
+    inset 0 0 1px 1px rgba(255, 255, 255, 0.4),
+    inset 0 1px 0 1px rgba(255, 255, 255, 0.6),
+    inset 0 -1px 0 1px rgba(190, 180, 170, 0.5),
+    /* Same 3D effect but slightly muted */
+    0 4px 8px rgba(0, 0, 0, 0.12),
+    0 2px 4px rgba(139, 111, 71, 0.08),
+    inset 0 2px 3px rgba(255, 255, 255, 0.6),
+    inset 0 -2px 3px rgba(220, 210, 200, 0.4),
+    inset 2px 0 2px rgba(255, 255, 255, 0.25),
+    inset -2px 0 2px rgba(220, 210, 200, 0.25);
 }
 
 .game-piece__face--back::after {
   content: '?';
   color: #6c757d;
   font-weight: bold;
+  /* Add emboss effect to question mark */
+  text-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.6),
+    0 -1px 1px rgba(0, 0, 0, 0.3),
+    1px 0 0 rgba(0, 0, 0, 0.2),
+    -1px 0 0 rgba(255, 255, 255, 0.4);
 }
 
 .game-piece__face--front {
