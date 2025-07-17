@@ -1,29 +1,31 @@
 /* Turn Phase Styles */
 /* Prefix: turn- */
 
-/* Turn indicator badge */
+/* Turn indicator badge - Board game style */
 .turn-indicator {
   position: absolute;
   top: 20px;
   right: 20px;
   background:
-    linear-gradient(145deg, #ffffff 0%, #f8f9fa 100%),
+    linear-gradient(145deg, #f4e4c1 0%, #e8d4b0 100%),
     radial-gradient(
       circle at 30% 30%,
-      rgba(255, 255, 255, 0.8) 0%,
+      rgba(255, 248, 220, 0.8) 0%,
       transparent 60%
     );
   padding: 8px 16px;
   border-radius: 16px;
-  border: 1px solid rgba(173, 181, 189, 0.4);
+  border: 2px solid #8b7355;
   box-shadow:
-    0 4px 12px rgba(0, 0, 0, 0.08),
-    inset 0 1px 0 rgba(255, 255, 255, 1);
+    0 4px 12px rgba(0, 0, 0, 0.15),
+    inset 0 1px 0 rgba(255, 248, 220, 1),
+    inset 0 -1px 0 rgba(139, 115, 85, 0.3);
   font-weight: 700;
   font-size: 14px;
   z-index: 1000;
-  color: #343a40;
+  color: #5d4e37;
   letter-spacing: 0.5px;
+  font-family: 'Georgia', 'Times New Roman', serif;
 }
 
 /* Turn phase info section */
@@ -32,14 +34,19 @@
   margin-bottom: 20px;
 }
 
-/* Play type display */
+/* Play type display - Board game style */
 .turn-play-type {
-  color: #ff6b35;
+  color: #8b7355;
   font-size: 24px;
   font-weight: 700;
-  text-shadow: 0 2px 4px rgba(255, 107, 53, 0.2);
+  text-shadow: 
+    0 2px 4px rgba(0, 0, 0, 0.2),
+    0 1px 0 rgba(255, 248, 220, 0.5);
   animation: flipIn 0.6s ease-out;
   margin-bottom: 10px;
+  font-family: 'Georgia', 'Times New Roman', serif;
+  text-transform: uppercase;
+  letter-spacing: 1px;
 }
 
 /* Turn requirement header */
@@ -54,13 +61,15 @@
   50% {
     opacity: 0.8;
     transform: rotateX(-30deg);
-    text-shadow: 0 4px 12px rgba(255, 107, 53, 0.3);
+    text-shadow: 0 4px 12px rgba(139, 115, 85, 0.3);
   }
   100% {
     opacity: 1;
     transform: rotateX(0);
-    color: #ff6b35;
-    text-shadow: 0 2px 4px rgba(255, 107, 53, 0.2);
+    color: #8b7355;
+    text-shadow: 
+      0 2px 4px rgba(0, 0, 0, 0.2),
+      0 1px 0 rgba(255, 248, 220, 0.5);
   }
 }
 
@@ -109,7 +118,7 @@
   padding: 8px;
 }
 
-/* Central table */
+/* Central table - Board game style */
 .turn-central-table {
   position: absolute;
   top: 58%;
@@ -117,26 +126,51 @@
   transform: translate(-50%, -50%);
   width: 270px;
   height: 270px;
-  background:
-    linear-gradient(145deg, #ffffff 0%, #f8f9fa 100%),
-    linear-gradient(rgba(173, 181, 189, 0.2) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(173, 181, 189, 0.2) 1px, transparent 1px);
-  background-size:
-    100% 100%,
-    15px 15px,
-    15px 15px;
-  border: 1px solid rgba(173, 181, 189, 0.4);
-  border-radius: 8px;
-  box-shadow:
-    0 4px 12px rgba(0, 0, 0, 0.08),
-    inset 0 1px 0 rgba(255, 255, 255, 1);
+  background: 
+    radial-gradient(ellipse at center, #d4a574 0%, #bc9a6a 100%),
+    linear-gradient(135deg, #deb887 0%, #cdaa7d 100%);
+  border: 3px solid #8b6f47;
+  border-radius: 12px;
+  box-shadow: 
+    0 8px 24px rgba(0, 0, 0, 0.3),
+    inset 0 2px 4px rgba(255, 248, 220, 0.3),
+    inset 0 -2px 4px rgba(139, 111, 71, 0.5),
+    0 0 0 1px rgba(205, 170, 125, 0.3);
   display: flex;
   align-items: center;
   justify-content: center;
   position: relative;
+  overflow: hidden;
 }
 
-/* Grid pattern overlay */
+/* Wood grain texture */
+.turn-central-table::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-image: 
+    repeating-linear-gradient(
+      90deg,
+      transparent,
+      transparent 2px,
+      rgba(139, 111, 71, 0.1) 2px,
+      rgba(139, 111, 71, 0.1) 4px
+    ),
+    repeating-linear-gradient(
+      0deg,
+      transparent,
+      transparent 40px,
+      rgba(139, 111, 71, 0.05) 40px,
+      rgba(139, 111, 71, 0.05) 80px
+    );
+  pointer-events: none;
+  opacity: 0.7;
+}
+
+/* Board game grid pattern */
 .turn-central-table::before {
   content: '';
   position: absolute;
@@ -144,13 +178,14 @@
   left: 0;
   right: 0;
   bottom: 0;
-  background:
-    linear-gradient(rgba(173, 181, 189, 0.15) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(173, 181, 189, 0.15) 1px, transparent 1px);
-  background-size: 15px 15px;
-  background-position: 0 0;
-  border-radius: 7px;
+  background: 
+    linear-gradient(rgba(139, 111, 71, 0.2) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(139, 111, 71, 0.2) 1px, transparent 1px),
+    radial-gradient(circle at center, transparent 40%, rgba(139, 111, 71, 0.1) 100%);
+  background-size: 30px 30px, 30px 30px, 100% 100%;
+  border-radius: 10px;
   pointer-events: none;
+  z-index: 1;
 }
 
 /* Current pile display */
@@ -288,22 +323,23 @@
 
 /* Table piece styles now handled by GamePiece component */
 
-/* Player summary bars - Edge positioned, table-center aligned */
+/* Player summary bars - Board game card style */
 .turn-player-summary-bar {
   position: absolute;
   background:
-    linear-gradient(145deg, #f8f9fa 0%, #ffffff 100%),
+    linear-gradient(145deg, #faf6f0 0%, #f5ebe0 100%),
     radial-gradient(
       circle at 20% 50%,
-      rgba(173, 181, 189, 0.1) 0%,
+      rgba(222, 184, 135, 0.1) 0%,
       transparent 50%
     );
-  border: 1px solid rgba(173, 181, 189, 0.3);
+  border: 2px solid #a0826d;
   border-radius: 8px;
   padding: 6px 10px;
   box-shadow:
-    0 2px 8px rgba(0, 0, 0, 0.04),
-    inset 0 1px 0 rgba(255, 255, 255, 1);
+    0 3px 10px rgba(0, 0, 0, 0.15),
+    inset 0 1px 0 rgba(255, 248, 220, 0.8),
+    inset 0 -1px 0 rgba(160, 130, 109, 0.3);
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -335,19 +371,47 @@
 }
 
 .turn-player-summary-bar.active {
-  border-color: rgba(255, 193, 7, 0.6);
+  border-color: #d4a574;
+  background:
+    linear-gradient(145deg, #fff8e1 0%, #ffecb3 100%),
+    radial-gradient(
+      circle at 20% 50%,
+      rgba(255, 193, 7, 0.1) 0%,
+      transparent 50%
+    );
+  box-shadow:
+    0 3px 10px rgba(212, 165, 116, 0.3),
+    inset 0 1px 0 rgba(255, 248, 220, 0.8),
+    inset 0 -1px 0 rgba(212, 165, 116, 0.3),
+    0 0 0 1px rgba(255, 235, 179, 0.5);
 }
 
 .turn-player-summary-bar.played {
-  border-color: rgba(40, 167, 69, 0.6);
+  border-color: #7a9d7a;
+  opacity: 0.85;
+  background:
+    linear-gradient(145deg, #e8f3e8 0%, #dceadc 100%),
+    radial-gradient(
+      circle at 20% 50%,
+      rgba(122, 157, 122, 0.1) 0%,
+      transparent 50%
+    );
 }
 
 .turn-player-summary-bar.current-user {
-  border: 2px solid rgba(13, 110, 253, 0.3);
+  border: 2px solid #d4a574;
   box-shadow:
-    0 2px 8px rgba(0, 0, 0, 0.04),
-    0 0 0 1px rgba(13, 110, 253, 0.1),
-    inset 0 1px 0 rgba(255, 255, 255, 1);
+    0 3px 10px rgba(212, 165, 116, 0.25),
+    0 0 0 1px rgba(255, 235, 179, 0.3),
+    inset 0 1px 0 rgba(255, 248, 220, 0.8),
+    inset 0 -1px 0 rgba(212, 165, 116, 0.3);
+  background:
+    linear-gradient(145deg, #fdfaf5 0%, #f8f0e5 100%),
+    radial-gradient(
+      circle at 20% 50%,
+      rgba(212, 165, 116, 0.1) 0%,
+      transparent 50%
+    );
 }
 
 .turn-player-summary-content {
@@ -380,8 +444,11 @@
 .turn-player-name-short {
   font-size: 10px;
   font-weight: 600;
-  color: #343a40;
+  color: #5d4e37;
   white-space: nowrap;
+  font-family: 'Georgia', 'Times New Roman', serif;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
 }
 
 .turn-player-stats-compact {
@@ -394,7 +461,8 @@
 .turn-stat-number {
   font-size: 11px;
   font-weight: 700;
-  color: #343a40;
+  color: #5d4e37;
+  font-family: 'Georgia', 'Times New Roman', serif;
 }
 
 .turn-stat-separator {
@@ -414,54 +482,56 @@
   border-radius: 50%;
   display: inline-block;
   background:
-    linear-gradient(145deg, #ffffff 0%, #f8f9fa 100%),
+    linear-gradient(145deg, #f4e4c1 0%, #e8d4b0 100%),
     radial-gradient(
       circle at 30% 30%,
-      rgba(255, 255, 255, 0.8) 0%,
+      rgba(255, 248, 220, 0.8) 0%,
       transparent 60%
     );
-  border: 1px solid rgba(173, 181, 189, 0.7);
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.06);
+  border: 1px solid #a0826d;
+  box-shadow: 
+    0 1px 2px rgba(0, 0, 0, 0.1),
+    inset 0 1px 0 rgba(255, 248, 220, 0.5);
 }
 
-/* Pile status color variants */
+/* Pile status color variants - Board game style */
 .pile-status-none {
-  color: #007bff; /* Blue for 0/0 */
+  color: #5d7fa8; /* Muted blue for 0/0 */
 }
 
 .pile-status-perfect {
-  color: #28a745; /* Green for hitting target */
+  color: #7a9d7a; /* Sage green for hitting target */
 }
 
 .pile-status-over {
-  color: #dc3545; /* Red for exceeding target */
+  color: #c67b7b; /* Dusty red for exceeding target */
 }
 
 .pile-status-under {
-  color: #6c757d; /* Gray for under target */
+  color: #8b7d71; /* Warm gray for under target */
 }
 
-/* Confirm Selection Panel - Sliding Tray */
+/* Confirm Selection Panel - Board game card style */
 .turn-confirm-panel {
   position: absolute;
   bottom: 190px;
   left: 0;
   right: 0;
   background:
-    linear-gradient(145deg, #ffffff 0%, #f8f9fa 100%),
+    linear-gradient(145deg, #faf6f0 0%, #f5ebe0 100%),
     radial-gradient(
       circle at 30% 30%,
-      rgba(255, 255, 255, 0.8) 0%,
+      rgba(255, 248, 220, 0.8) 0%,
       transparent 60%
     );
-  border: 1px solid rgba(40, 167, 69, 0.3);
+  border: 2px solid #a0826d;
   border-radius: 16px;
   margin: 0 16px;
   padding: 16px 20px;
   box-shadow:
-    0 4px 20px rgba(40, 167, 69, 0.15),
-    0 0 0 1px rgba(255, 255, 255, 0.9),
-    inset 0 1px 0 rgba(255, 255, 255, 1);
+    0 6px 20px rgba(0, 0, 0, 0.2),
+    inset 0 1px 0 rgba(255, 248, 220, 0.9),
+    inset 0 -1px 0 rgba(160, 130, 109, 0.3);
   z-index: 10;
   transform: translateY(calc(100% + 20px));
   transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
@@ -479,8 +549,9 @@
   transform: translateX(-50%);
   width: 40px;
   height: 3px;
-  background: rgba(40, 167, 69, 0.3);
+  background: #a0826d;
   border-radius: 2px;
+  box-shadow: inset 0 1px 0 rgba(255, 248, 220, 0.5);
 }
 
 .turn-selection-info {
@@ -490,8 +561,10 @@
 
 .turn-selection-count {
   font-size: 14px;
-  color: #28a745;
+  color: #7a6a57;
   font-weight: 600;
+  font-family: 'Georgia', 'Times New Roman', serif;
+  text-shadow: 0 1px 0 rgba(255, 248, 220, 0.5);
 }
 
 .turn-action-buttons {
@@ -502,41 +575,58 @@
 
 .turn-action-button {
   background:
-    linear-gradient(135deg, #28a745 0%, #20c997 100%),
+    linear-gradient(135deg, #8b7355 0%, #a0826d 100%),
     radial-gradient(
       circle at 30% 30%,
-      rgba(255, 255, 255, 0.2) 0%,
+      rgba(255, 248, 220, 0.2) 0%,
       transparent 60%
     );
-  color: white;
-  border: 1px solid rgba(40, 167, 69, 0.4);
+  color: #faf6f0;
+  border: 2px solid #6b5d54;
   padding: 8px 16px;
   border-radius: 8px;
   font-size: 12px;
   font-weight: 600;
   cursor: pointer;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  box-shadow: 0 2px 4px rgba(40, 167, 69, 0.2);
+  box-shadow: 
+    0 3px 6px rgba(0, 0, 0, 0.2),
+    inset 0 1px 0 rgba(255, 248, 220, 0.3),
+    inset 0 -1px 0 rgba(107, 93, 84, 0.5);
   text-transform: uppercase;
   letter-spacing: 0.5px;
-  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-family: 'Georgia', 'Times New Roman', serif;
 }
 
 .turn-action-button:hover {
   transform: translateY(-1px);
-  box-shadow: 0 4px 8px rgba(40, 167, 69, 0.3);
+  box-shadow: 
+    0 4px 10px rgba(0, 0, 0, 0.25),
+    inset 0 1px 0 rgba(255, 248, 220, 0.4),
+    inset 0 -1px 0 rgba(107, 93, 84, 0.6);
+  background:
+    linear-gradient(135deg, #9d8369 0%, #b09279 100%),
+    radial-gradient(
+      circle at 30% 30%,
+      rgba(255, 248, 220, 0.3) 0%,
+      transparent 60%
+    );
 }
 
 .turn-action-button.secondary {
   background:
-    linear-gradient(135deg, #6c757d 0%, #495057 100%),
+    linear-gradient(135deg, #e8dcc5 0%, #dfd1b8 100%),
     radial-gradient(
       circle at 30% 30%,
-      rgba(255, 255, 255, 0.1) 0%,
+      rgba(255, 248, 220, 0.3) 0%,
       transparent 60%
     );
-  border-color: rgba(108, 117, 125, 0.4);
-  box-shadow: 0 2px 4px rgba(108, 117, 125, 0.2);
+  color: #5d4e37;
+  border-color: #a0826d;
+  box-shadow: 
+    0 2px 4px rgba(0, 0, 0, 0.15),
+    inset 0 1px 0 rgba(255, 248, 220, 0.8),
+    inset 0 -1px 0 rgba(160, 130, 109, 0.3);
 }
 
 .turn-action-button.secondary:hover {
