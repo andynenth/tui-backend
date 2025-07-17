@@ -26,9 +26,17 @@
   align-items: center;
   justify-content: center;
   font-weight: bold;
-  border: 1px solid rgba(230, 220, 210, 0.6);
+  border: none;
   font-family: 'SimSun', '宋体', serif;
   box-shadow: 
+    /* Multi-layer border effect */
+    0 0 0 0.5px rgba(200, 190, 180, 0.9),
+    0 0 0 1px rgba(255, 255, 245, 0.4),
+    0 0 0 1.5px rgba(220, 210, 200, 0.3),
+    /* Carved edge illusion */
+    inset 0 0 1px 1px rgba(255, 255, 255, 0.5),
+    inset 0 1px 0 1px rgba(255, 255, 255, 0.8),
+    inset 0 -1px 0 1px rgba(200, 190, 180, 0.6),
     /* Main depth shadow */
     0 4px 8px rgba(0, 0, 0, 0.15),
     /* Subtle colored shadow */
@@ -42,6 +50,24 @@
     inset -2px 0 2px rgba(230, 220, 210, 0.3);
   transition: all 0.15s ease;
   position: relative;
+}
+
+/* Gradient rim effect for extra realism */
+.game-piece::before {
+  content: '';
+  position: absolute;
+  inset: -1px;
+  border-radius: 50%;
+  background: conic-gradient(
+    from 45deg at 50% 50%,
+    rgba(255, 255, 245, 0.3) 0deg,
+    rgba(230, 220, 210, 0.2) 90deg,
+    rgba(200, 190, 180, 0.3) 180deg,
+    rgba(230, 220, 210, 0.2) 270deg,
+    rgba(255, 255, 245, 0.3) 360deg
+  );
+  z-index: -1;
+  opacity: 0.7;
 }
 
 /* Size variants */
@@ -72,20 +98,40 @@
 /* Color variants (not applied to table variant - colors only show on front face) */
 .game-piece:not(.game-piece--table).piece-red,
 .game-piece:not(.game-piece--table).red {
-  border-color: color-mix(
-    in srgb,
-    var(--piece-color-red, #dc3545) 40%,
-    transparent
-  );
+  box-shadow: 
+    /* Red-tinted border layers */
+    0 0 0 0.5px color-mix(in srgb, var(--piece-color-red, #dc3545) 30%, #c8beb4),
+    0 0 0 1px rgba(255, 245, 245, 0.4),
+    0 0 0 1.5px color-mix(in srgb, var(--piece-color-red, #dc3545) 20%, #dcd2c8),
+    /* Keep all other shadows */
+    inset 0 0 1px 1px rgba(255, 255, 255, 0.5),
+    inset 0 1px 0 1px rgba(255, 255, 255, 0.8),
+    inset 0 -1px 0 1px rgba(200, 190, 180, 0.6),
+    0 4px 8px rgba(0, 0, 0, 0.15),
+    0 2px 4px rgba(139, 111, 71, 0.1),
+    inset 0 2px 3px rgba(255, 255, 255, 0.7),
+    inset 0 -2px 3px rgba(230, 220, 210, 0.3),
+    inset 2px 0 2px rgba(255, 255, 255, 0.3),
+    inset -2px 0 2px rgba(230, 220, 210, 0.3);
 }
 
 .game-piece:not(.game-piece--table).piece-black,
 .game-piece:not(.game-piece--table).black {
-  border-color: color-mix(
-    in srgb,
-    var(--piece-color-black, #495057) 40%,
-    transparent
-  );
+  box-shadow: 
+    /* Black-tinted border layers */
+    0 0 0 0.5px color-mix(in srgb, var(--piece-color-black, #495057) 30%, #c8beb4),
+    0 0 0 1px rgba(255, 255, 255, 0.4),
+    0 0 0 1.5px color-mix(in srgb, var(--piece-color-black, #495057) 20%, #dcd2c8),
+    /* Keep all other shadows */
+    inset 0 0 1px 1px rgba(255, 255, 255, 0.5),
+    inset 0 1px 0 1px rgba(255, 255, 255, 0.8),
+    inset 0 -1px 0 1px rgba(200, 190, 180, 0.6),
+    0 4px 8px rgba(0, 0, 0, 0.15),
+    0 2px 4px rgba(139, 111, 71, 0.1),
+    inset 0 2px 3px rgba(255, 255, 255, 0.7),
+    inset 0 -2px 3px rgba(230, 220, 210, 0.3),
+    inset 2px 0 2px rgba(255, 255, 255, 0.3),
+    inset -2px 0 2px rgba(230, 220, 210, 0.3);
 }
 
 /* Character display */
@@ -147,6 +193,10 @@
 /* SVG image sizing within game pieces */
 .game-piece img {
   width: 90%;
+  /* Prevent blur from filters */
+  image-rendering: crisp-edges;
+  /* Ensure smooth edges despite filters */
+  -webkit-font-smoothing: antialiased;
 }
 
 .game-piece--mini img {
@@ -200,15 +250,54 @@
   width: 100%;
 }
 
-/* SVG images - no filters applied */
-.game-piece.piece-red img,
-.game-piece__face--front.piece-red img {
-  filter: none;
+/* Enhanced emboss on hover for selectable pieces */
+.game-piece--selectable:hover img {
+  filter: 
+    drop-shadow(0 1.5px 0 rgba(255, 255, 255, 0.9))   /* Enhanced top highlight */
+    drop-shadow(0 -1.5px 1.5px rgba(0, 0, 0, 0.4))    /* Enhanced bottom shadow */
+    drop-shadow(1.5px 0 0 rgba(0, 0, 0, 0.3))         /* Enhanced right shadow */
+    drop-shadow(-1.5px 0 0 rgba(255, 255, 255, 0.6))  /* Enhanced left highlight */
+    contrast(1.1)                                      /* More contrast on hover */
+    brightness(0.95);                                  /* Slightly deeper on hover */
 }
 
+/* SVG images - embossed effect */
+.game-piece img,
+.game-piece__face--front img {
+  /* Base emboss effect for all pieces */
+  filter: 
+    drop-shadow(0 1px 0 rgba(255, 255, 255, 0.7))   /* Top highlight */
+    drop-shadow(0 -1px 1px rgba(0, 0, 0, 0.3))      /* Bottom shadow */
+    drop-shadow(1px 0 0 rgba(0, 0, 0, 0.2))         /* Right shadow */
+    drop-shadow(-1px 0 0 rgba(255, 255, 255, 0.4))  /* Left highlight */
+    contrast(1.05)                                   /* Slight contrast boost */
+    brightness(0.98);                                /* Slightly darker for carved look */
+  transition: filter 0.15s ease;
+}
+
+/* Red pieces - warmer emboss with subtle red tint */
+.game-piece.piece-red img,
+.game-piece__face--front.piece-red img {
+  filter: 
+    drop-shadow(0 1px 0 rgba(255, 240, 240, 0.8))   /* Warm top highlight */
+    drop-shadow(0 -1px 1px rgba(139, 0, 0, 0.25))   /* Red-tinted bottom shadow */
+    drop-shadow(1px 0 0 rgba(139, 0, 0, 0.15))      /* Red-tinted right shadow */
+    drop-shadow(-1px 0 0 rgba(255, 240, 240, 0.5))  /* Warm left highlight */
+    contrast(1.08)                                   /* Slightly more contrast */
+    brightness(0.96)                                 /* Deeper carved look */
+    saturate(1.1);                                   /* Enhance red */
+}
+
+/* Black pieces - cooler emboss with deeper shadows */
 .game-piece.piece-black img,
 .game-piece__face--front.piece-black img {
-  filter: none;
+  filter: 
+    drop-shadow(0 1px 0 rgba(255, 255, 255, 0.6))   /* Bright top highlight */
+    drop-shadow(0 -1px 1px rgba(0, 0, 0, 0.5))      /* Deep bottom shadow */
+    drop-shadow(1px 0 0 rgba(0, 0, 0, 0.35))        /* Deep right shadow */
+    drop-shadow(-1px 0 0 rgba(255, 255, 255, 0.35)) /* Bright left highlight */
+    contrast(1.15)                                   /* Higher contrast for black */
+    brightness(0.9);                                 /* Darker for deeper carving */
 }
 
 /* Selectable variant */
@@ -221,6 +310,14 @@
 .game-piece--selectable:hover {
   transform: translateY(-2px);
   box-shadow: 
+    /* Enhanced border on hover */
+    0 0 0 0.5px rgba(13, 110, 253, 0.6),
+    0 0 0 1px rgba(255, 255, 255, 0.5),
+    0 0 0 1.5px rgba(13, 110, 253, 0.3),
+    /* Carved edge */
+    inset 0 0 1px 1px rgba(255, 255, 255, 0.6),
+    inset 0 1px 0 1px rgba(255, 255, 255, 0.9),
+    inset 0 -1px 0 1px rgba(200, 190, 180, 0.5),
     /* Enhanced depth on hover */
     0 6px 12px rgba(0, 0, 0, 0.18),
     0 4px 8px rgba(139, 111, 71, 0.12),
@@ -229,15 +326,21 @@
     inset 0 -2px 3px rgba(230, 220, 210, 0.3),
     inset 2px 0 2px rgba(255, 255, 255, 0.3),
     inset -2px 0 2px rgba(230, 220, 210, 0.3);
-  border-color: rgba(13, 110, 253, 0.4);
 }
 
 .game-piece--selectable.selected {
   transform: translateY(-6px);
   box-shadow:
+    /* Golden border for selected */
+    0 0 0 1px rgba(255, 193, 7, 0.8),
+    0 0 0 2px rgba(255, 255, 245, 0.6),
+    0 0 0 3px rgba(255, 193, 7, 0.3),
+    /* Carved edge enhanced */
+    inset 0 0 1px 1px rgba(255, 255, 255, 0.7),
+    inset 0 1px 0 1px rgba(255, 255, 255, 0.95),
+    inset 0 -1px 0 1px rgba(255, 193, 7, 0.4),
     /* Yellow glow for selected */
     0 8px 16px rgba(255, 193, 7, 0.3),
-    0 0 0 3px rgba(255, 193, 7, 0.2),
     /* Enhanced depth */
     0 10px 20px rgba(0, 0, 0, 0.15),
     /* Keep the 3D bevels */
@@ -262,6 +365,11 @@
   box-shadow: none;
 }
 
+/* Remove gradient rim from flippable container */
+.game-piece.flippable::before {
+  display: none;
+}
+
 .game-piece.flippable.flipped {
   transform: rotateY(180deg);
 }
@@ -283,8 +391,16 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  border: 1px solid rgba(230, 220, 210, 0.6);
+  border: none;
   box-shadow: 
+    /* Multi-layer border effect */
+    0 0 0 0.5px rgba(200, 190, 180, 0.9),
+    0 0 0 1px rgba(255, 255, 245, 0.4),
+    0 0 0 1.5px rgba(220, 210, 200, 0.3),
+    /* Carved edge illusion */
+    inset 0 0 1px 1px rgba(255, 255, 255, 0.5),
+    inset 0 1px 0 1px rgba(255, 255, 255, 0.8),
+    inset 0 -1px 0 1px rgba(200, 190, 180, 0.6),
     /* Main depth shadow */
     0 4px 8px rgba(0, 0, 0, 0.15),
     /* Subtle colored shadow */
@@ -308,8 +424,16 @@
       rgba(250, 248, 243, 0.8) 0%,
       transparent 50%
     );
-  border: 1px solid rgba(220, 210, 200, 0.7);
+  border: none;
   box-shadow: 
+    /* Muted border layers for back */
+    0 0 0 0.5px rgba(190, 180, 170, 0.8),
+    0 0 0 1px rgba(250, 248, 243, 0.3),
+    0 0 0 1.5px rgba(210, 200, 190, 0.2),
+    /* Carved edge - muted */
+    inset 0 0 1px 1px rgba(255, 255, 255, 0.4),
+    inset 0 1px 0 1px rgba(255, 255, 255, 0.6),
+    inset 0 -1px 0 1px rgba(190, 180, 170, 0.5),
     /* Same 3D effect but slightly muted */
     0 4px 8px rgba(0, 0, 0, 0.12),
     0 2px 4px rgba(139, 111, 71, 0.08),
@@ -323,6 +447,12 @@
   content: '?';
   color: #6c757d;
   font-weight: bold;
+  /* Add emboss effect to question mark */
+  text-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.6),
+    0 -1px 1px rgba(0, 0, 0, 0.3),
+    1px 0 0 rgba(0, 0, 0, 0.2),
+    -1px 0 0 rgba(255, 255, 255, 0.4);
 }
 
 .game-piece__face--front {
