@@ -7,8 +7,11 @@
   max-height: var(--container-max-height);
   background: var(--gradient-container);
   border-radius: var(--radius-xl);
-  border: 1px solid rgba(173, 181, 189, 0.3);
-  box-shadow: var(--shadow-xl), var(--shadow-border), var(--shadow-inset-white);
+  border: 2px solid #a0826d; /* Wood-tone border matching game container */
+  box-shadow: 
+    0 4px 12px rgba(0, 0, 0, 0.15),
+    inset 0 2px 4px rgba(255, 248, 220, 0.6),
+    inset 0 -2px 4px rgba(160, 130, 109, 0.3);
   display: flex;
   flex-direction: column;
   position: relative;
@@ -434,4 +437,11 @@
 .rp-roomStatus.rp-ready {
   color: var(--color-success);
   font-weight: 600;
+}
+
+/* Mobile optimization */
+@media (max-width: 420px) {
+  .rp-gameContainer {
+    border-width: 1px; /* Thinner border on mobile */
+  }
 }

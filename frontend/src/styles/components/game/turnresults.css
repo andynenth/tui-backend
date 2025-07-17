@@ -207,37 +207,50 @@
   margin-top: 2px;
 }
 
-/* Pile status color variants */
+/* Pile status color variants - Board game style */
 .tr-player-piles.pile-status-none {
-  color: #007bff; /* Blue for 0/0 */
+  color: #5d7fa8; /* Muted blue for 0/0 */
 }
 
 .tr-player-piles.pile-status-perfect {
-  color: #28a745; /* Green for hitting target */
+  color: #7a9d7a; /* Sage green for hitting target */
 }
 
 .tr-player-piles.pile-status-over {
-  color: #dc3545; /* Red for exceeding target */
+  color: #c67b7b; /* Dusty red for exceeding target */
 }
 
 .tr-player-piles.pile-status-under {
-  color: #6c757d; /* Gray for under target */
+  color: #8b7d71; /* Warm gray for under target */
 }
 
-/* Winner badge - displayed below player name */
+/* Winner badge - Board game style */
 .tr-winner-badge {
-  background-color: #4caf50;
-  color: white;
+  background: 
+    linear-gradient(135deg, #7a9d7a 0%, #6b8a6b 100%),
+    radial-gradient(
+      circle at 30% 30%,
+      rgba(255, 248, 220, 0.3) 0%,
+      transparent 60%
+    );
+  color: #faf6f0;
   padding: 2px 8px;
   border-radius: 10px;
+  border: 1px solid #5a7a5a;
   font-size: 10px;
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.5px;
+  font-family: var(--font-display);
   position: absolute;
   top: 1.5em;
   left: 0;
   width: fit-content;
+  box-shadow: 
+    0 2px 4px rgba(0, 0, 0, 0.15),
+    inset 0 1px 0 rgba(255, 248, 220, 0.5),
+    inset 0 -1px 0 rgba(90, 122, 90, 0.4);
+  text-shadow: 0 1px 1px rgba(0, 0, 0, 0.2);
 }
 
 /* Played pieces display - optimized for balance */

@@ -74,6 +74,7 @@ const GameLayout = ({
 
   return (
     <div className="gl-game-container">
+
       {/* Round indicator */}
       <div className="gl-round-indicator">Round {roundNumber}</div>
 
