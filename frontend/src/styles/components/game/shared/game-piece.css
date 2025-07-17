@@ -264,26 +264,22 @@
     inset -2px 0 2px rgba(230, 220, 210, 0.3);
 }
 
+/* Selection effect using ::after pseudo-element ring */
 .game-piece--selectable.selected {
-  transform: translateY(-6px);
-  box-shadow:
-    /* Golden border for selected */
-    0 0 0 1px rgba(255, 193, 7, 0.8),
-    0 0 0 2px rgba(255, 255, 245, 0.6),
-    0 0 0 3px rgba(255, 193, 7, 0.3),
-    /* Carved edge enhanced */
-    inset 0 0 1px 1px rgba(255, 255, 255, 0.7),
-    inset 0 1px 0 1px rgba(255, 255, 255, 0.95),
-    inset 0 -1px 0 1px rgba(255, 193, 7, 0.4),
-    /* Yellow glow for selected */
-    0 8px 16px rgba(255, 193, 7, 0.3),
-    /* Enhanced depth */
-    0 10px 20px rgba(0, 0, 0, 0.15),
-    /* Keep the 3D bevels */
-    inset 0 2px 3px rgba(255, 255, 255, 0.8),
-    inset 0 -2px 3px rgba(230, 220, 210, 0.25),
-    inset 2px 0 2px rgba(255, 255, 255, 0.35),
-    inset -2px 0 2px rgba(230, 220, 210, 0.25);
+  /* No transform - piece stays at same level */
+}
+
+.game-piece--selectable.selected::after {
+  content: '';
+  position: absolute;
+  inset: -4px;
+  border-radius: 50%;
+  border: 3px solid rgba(255, 193, 7, 0.8);
+  box-shadow: 
+    0 0 10px rgba(255, 193, 7, 0.4),
+    inset 0 0 10px rgba(255, 193, 7, 0.2);
+  pointer-events: none;
+  animation: selectionPulse 1.5s ease-in-out infinite;
 }
 
 /* Table variant - no longer forces size */
@@ -303,6 +299,30 @@
 
 .game-piece.flippable.flipped {
   transform: rotateY(180deg);
+}
+
+/* Selected flippable pieces - use ring effect */
+.game-piece.flippable.game-piece--selectable.selected {
+  /* No transform - piece stays at same level */
+}
+
+/* Apply ring to flippable selected pieces */
+.game-piece.flippable.game-piece--selectable.selected::after {
+  content: '';
+  position: absolute;
+  inset: -4px;
+  border-radius: 50%;
+  border: 3px solid rgba(255, 193, 7, 0.8);
+  box-shadow: 
+    0 0 10px rgba(255, 193, 7, 0.4),
+    inset 0 0 10px rgba(255, 193, 7, 0.2);
+  pointer-events: none;
+  animation: selectionPulse 1.5s ease-in-out infinite;
+}
+
+/* Selected and flipped state */
+.game-piece.flippable.game-piece--selectable.selected.flipped {
+  transform: rotateY(180deg); /* Only keep the flip rotation */
 }
 
 .game-piece__face {
@@ -390,6 +410,8 @@
   transform: rotateY(180deg);
 }
 
+/* Face elements keep their original styling - selection is shown by parent ring */
+
 .game-piece__face--front.piece-red,
 .game-piece__face--front.red {
   color: var(--piece-color-red, #dc3545);
@@ -472,4 +494,16 @@
 .game-piece.flippable.flipped {
   animation: pieceFlipReveal 0.6s ease-out forwards;
   animation-fill-mode: both;
+}
+
+/* Gentle pulse animation for selection ring */
+@keyframes selectionPulse {
+  0%, 100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.8;
+    transform: scale(1.05);
+  }
 }
