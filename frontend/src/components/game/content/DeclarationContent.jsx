@@ -140,8 +140,7 @@ const DeclarationContent = ({
     <>
       {/* Game status section */}
       <div className="dec-game-status-section">
-        {/* Declaration requirement */}
-        <div className="dec-requirement-badge">{restrictions.message}</div>
+        {/* Declaration requirement - removed */}
 
         {/* Players list */}
         <div className="dec-players-list">
