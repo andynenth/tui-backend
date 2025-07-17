@@ -25,7 +25,7 @@
   z-index: 1000;
   color: #5d4e37;
   letter-spacing: 0.5px;
-  font-family: 'Georgia', 'Times New Roman', serif;
+  font-family: var(--font-display);
 }
 
 /* Turn phase info section */
@@ -37,16 +37,16 @@
 /* Play type display - Board game style */
 .turn-play-type {
   color: #8b7355;
-  font-size: 24px;
+  font-size: 26px;
   font-weight: 700;
   text-shadow: 
     0 2px 4px rgba(0, 0, 0, 0.2),
     0 1px 0 rgba(255, 248, 220, 0.5);
   animation: flipIn 0.6s ease-out;
   margin-bottom: 10px;
-  font-family: 'Georgia', 'Times New Roman', serif;
+  font-family: var(--font-accent);
   text-transform: uppercase;
-  letter-spacing: 1px;
+  letter-spacing: 2px;
 }
 
 /* Turn requirement header */
@@ -446,7 +446,7 @@
   font-weight: 600;
   color: #5d4e37;
   white-space: nowrap;
-  font-family: 'Georgia', 'Times New Roman', serif;
+  font-family: var(--font-display);
   text-transform: uppercase;
   letter-spacing: 0.5px;
 }
@@ -459,10 +459,10 @@
 }
 
 .turn-stat-number {
-  font-size: 11px;
-  font-weight: 700;
+  font-size: 12px;
+  font-weight: 600;
   color: #5d4e37;
-  font-family: 'Georgia', 'Times New Roman', serif;
+  font-family: var(--font-accent);
 }
 
 .turn-stat-separator {
@@ -562,9 +562,10 @@
 .turn-selection-count {
   font-size: 14px;
   color: #7a6a57;
-  font-weight: 600;
-  font-family: 'Georgia', 'Times New Roman', serif;
+  font-weight: 500;
+  font-family: var(--font-primary);
   text-shadow: 0 1px 0 rgba(255, 248, 220, 0.5);
+  line-height: 1.4;
 }
 
 .turn-action-buttons {
@@ -586,7 +587,7 @@
   padding: 8px 16px;
   border-radius: 8px;
   font-size: 12px;
-  font-weight: 600;
+  font-weight: 500;
   cursor: pointer;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   box-shadow: 
@@ -594,8 +595,8 @@
     inset 0 1px 0 rgba(255, 248, 220, 0.3),
     inset 0 -1px 0 rgba(107, 93, 84, 0.5);
   text-transform: uppercase;
-  letter-spacing: 0.5px;
-  font-family: 'Georgia', 'Times New Roman', serif;
+  letter-spacing: 1px;
+  font-family: var(--font-primary);
 }
 
 .turn-action-button:hover {

@@ -17,31 +17,74 @@
       rgba(139, 111, 71, 0.05) 80px
     );
   padding: 20px;
-  border-top: 2px solid #a0826d;
+  padding-top: 24px; /* Extra padding for raised edge */
+  border-top: none; /* Remove flat border */
   position: relative;
   z-index: 20;
   transition: all 0.3s ease;
   box-shadow: 
-    0 -4px 12px rgba(0, 0, 0, 0.1),
+    /* Shadow from raised edge */
+    0 -2px 8px rgba(0, 0, 0, 0.15),
+    /* Inner shadow for depth */
+    inset 0 4px 6px -2px rgba(139, 111, 71, 0.2),
+    /* Subtle highlight below edge */
     inset 0 1px 0 rgba(255, 248, 220, 0.5);
 }
 
-/* Top decoration line - Board game style */
-.piece-tray::before {
+/* 3D raised edge effect */
+.piece-tray::after {
   content: '';
   position: absolute;
   top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: 
+    /* Wood grain edge */
+    linear-gradient(90deg, 
+      #a0826d 0%, 
+      #b8987a 20%, 
+      #c8a888 40%, 
+      #b8987a 60%, 
+      #a0826d 80%, 
+      #8b7355 100%
+    );
+  box-shadow: 
+    /* Top highlight of edge */
+    inset 0 2px 3px rgba(255, 248, 220, 0.6),
+    /* Bottom shadow of edge */
+    0 2px 4px rgba(0, 0, 0, 0.2),
+    /* Subtle side shadows */
+    inset 1px 0 1px rgba(255, 248, 220, 0.3),
+    inset -1px 0 1px rgba(139, 111, 71, 0.3);
+  z-index: 1;
+}
+
+/* Top decoration line - Raised handle on edge */
+.piece-tray::before {
+  content: '';
+  position: absolute;
+  top: 1px; /* Sits on top of raised edge */
   left: 50%;
   transform: translateX(-50%);
   width: 60px;
   height: 3px;
-  background: linear-gradient(90deg, transparent, #8b7355, transparent);
-  box-shadow: 0 1px 0 rgba(255, 248, 220, 0.5);
+  background: 
+    linear-gradient(180deg, #b8987a 0%, #a0826d 50%, #8b7355 100%);
+  border-radius: 1px;
+  box-shadow: 
+    /* Handle highlights */
+    inset 0 1px 0 rgba(255, 248, 220, 0.7),
+    /* Handle shadow */
+    0 1px 2px rgba(0, 0, 0, 0.2),
+    /* Side bevels */
+    inset 1px 0 1px rgba(255, 248, 220, 0.4),
+    inset -1px 0 1px rgba(139, 111, 71, 0.4);
+  z-index: 2;
 }
 
 /* Active variant - Board game active player tray */
 .piece-tray--active {
-  border-top: 3px solid #d4a574;
   background:
     linear-gradient(180deg, #fff8e1 0%, #f5ebe0 100%),
     radial-gradient(
@@ -57,18 +100,57 @@
       rgba(212, 165, 116, 0.05) 80px
     );
   box-shadow:
-    0 -4px 16px rgba(212, 165, 116, 0.2),
-    inset 0 2px 0 rgba(255, 235, 179, 0.3),
+    /* Enhanced shadow from raised edge */
+    0 -2px 12px rgba(212, 165, 116, 0.3),
+    /* Glow effect */
+    0 -4px 20px rgba(255, 215, 0, 0.15),
+    /* Inner shadow for depth */
+    inset 0 4px 8px -2px rgba(212, 165, 116, 0.25),
+    /* Highlight below edge */
     inset 0 1px 0 rgba(255, 248, 220, 0.8);
 }
 
-/* Active variant decoration line */
-.piece-tray--active::before {
-  background: linear-gradient(90deg, transparent, #d4a574, transparent);
-  height: 4px;
+/* Active variant raised edge - golden glow */
+.piece-tray--active::after {
+  background: 
+    /* Golden wood edge */
+    linear-gradient(90deg, 
+      #d4a574 0%, 
+      #e0b584 20%, 
+      #ecc594 40%, 
+      #e0b584 60%, 
+      #d4a574 80%, 
+      #c09560 100%
+    );
+  height: 5px; /* Slightly taller when active */
   box-shadow: 
-    0 1px 0 rgba(255, 248, 220, 0.8),
-    0 0 8px rgba(212, 165, 116, 0.4);
+    /* Enhanced top highlight */
+    inset 0 2px 4px rgba(255, 235, 179, 0.7),
+    /* Stronger bottom shadow */
+    0 3px 6px rgba(0, 0, 0, 0.25),
+    /* Golden glow */
+    0 0 8px rgba(255, 215, 0, 0.2),
+    /* Enhanced side bevels */
+    inset 1px 0 2px rgba(255, 235, 179, 0.5),
+    inset -1px 0 2px rgba(212, 165, 116, 0.5);
+}
+
+/* Active variant decoration line - Glowing handle */
+.piece-tray--active::before {
+  background: 
+    linear-gradient(180deg, #e0b584 0%, #d4a574 50%, #c09560 100%);
+  height: 4px;
+  top: 1px; /* Adjust for taller edge */
+  box-shadow: 
+    /* Enhanced highlights */
+    inset 0 1px 0 rgba(255, 235, 179, 0.8),
+    /* Stronger shadow */
+    0 2px 3px rgba(0, 0, 0, 0.3),
+    /* Golden glow */
+    0 0 6px rgba(255, 215, 0, 0.3),
+    /* Enhanced bevels */
+    inset 1px 0 1px rgba(255, 235, 179, 0.5),
+    inset -1px 0 1px rgba(212, 165, 116, 0.5);
 }
 
 /* Fixed positioning variant - pins tray to bottom */
@@ -88,6 +170,7 @@
   gap: 12px;
   max-width: 350px;
   margin: 0 auto;
+  margin-top: 4px; /* Space below raised edge */
   min-height: 136px; /* Ensures space for 2 rows: 2 * 62px (piece height) + 12px (gap) + some padding */
   align-content: start;
 }
