@@ -32,31 +32,44 @@ const cssPlugin = {
   },
 };
 
-esbuild
-  .context({
-    entryPoints: [entry],
-    bundle: true,
-    outdir: '../backend/static',
-    entryNames: 'bundle',
-    loader: {
-      '.js': 'jsx',
-      '.jsx': 'jsx',
-      '.ts': 'ts',
-      '.tsx': 'tsx',
-      '.css': 'css',
-      '.svg': 'dataurl',
-    },
-    jsx: 'automatic',
-    minify: true,
-    sourcemap: true,
-    plugins: [cssPlugin],
-  })
-  .then((ctx) => {
-    return ctx.watch();
-  })
-  .then(() => {
-    console.log(
-      `👀 Watching for changes to ${entry}, output to ../backend/static/`
-    );
-  })
-  .catch(() => process.exit(1));
+const buildOptions = {
+  entryPoints: [entry],
+  bundle: true,
+  outdir: '../backend/static',
+  entryNames: 'bundle',
+  loader: {
+    '.js': 'jsx',
+    '.jsx': 'jsx',
+    '.ts': 'ts',
+    '.tsx': 'tsx',
+    '.css': 'css',
+    '.svg': 'dataurl',
+  },
+  jsx: 'automatic',
+  minify: true,
+  sourcemap: true,
+  plugins: [cssPlugin],
+};
+
+if (process.argv.includes('--production')) {
+  // Production build - just build once
+  esbuild
+    .build(buildOptions)
+    .then(() => {
+      console.log('✅ Production build complete!');
+    })
+    .catch(() => process.exit(1));
+} else {
+  // Development - watch mode
+  esbuild
+    .context(buildOptions)
+    .then((ctx) => {
+      return ctx.watch();
+    })
+    .then(() => {
+      console.log(
+        `👀 Watching for changes to ${entry}, output to ../backend/static/`
+      );
+    })
+    .catch(() => process.exit(1));
+}
