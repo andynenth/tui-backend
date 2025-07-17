@@ -1,52 +1,74 @@
 /* Piece Tray Component Styles */
 
-/* Base container styles */
+/* Base container styles - Board game tray */
 .piece-tray {
   background:
-    linear-gradient(180deg, #f8f9fa 0%, #e9ecef 100%),
+    linear-gradient(180deg, #f5ebe0 0%, #e8dcc5 100%),
     radial-gradient(
       ellipse 100% 60% at 50% 0%,
-      rgba(173, 181, 189, 0.2) 0%,
+      rgba(160, 130, 109, 0.2) 0%,
       transparent 100%
+    ),
+    repeating-linear-gradient(
+      90deg,
+      transparent,
+      transparent 40px,
+      rgba(139, 111, 71, 0.05) 40px,
+      rgba(139, 111, 71, 0.05) 80px
     );
   padding: 20px;
-  border-top: 1px solid rgba(173, 181, 189, 0.2);
+  border-top: 2px solid #a0826d;
   position: relative;
   z-index: 20;
   transition: all 0.3s ease;
+  box-shadow: 
+    0 -4px 12px rgba(0, 0, 0, 0.1),
+    inset 0 1px 0 rgba(255, 248, 220, 0.5);
 }
 
-/* Top decoration line */
+/* Top decoration line - Board game style */
 .piece-tray::before {
   content: '';
   position: absolute;
   top: 0;
   left: 50%;
   transform: translateX(-50%);
-  width: 40px;
-  height: 2px;
-  background: linear-gradient(90deg, transparent, #6c757d, transparent);
+  width: 60px;
+  height: 3px;
+  background: linear-gradient(90deg, transparent, #8b7355, transparent);
+  box-shadow: 0 1px 0 rgba(255, 248, 220, 0.5);
 }
 
-/* Active variant - highlighted when it's player's turn */
+/* Active variant - Board game active player tray */
 .piece-tray--active {
-  border-top: 2px solid rgba(255, 193, 7, 0.4);
+  border-top: 3px solid #d4a574;
   background:
-    linear-gradient(180deg, rgba(255, 248, 225, 1) 0%, #f8f9fa 100%),
+    linear-gradient(180deg, #fff8e1 0%, #f5ebe0 100%),
     radial-gradient(
       ellipse 100% 60% at 50% 0%,
-      rgba(255, 193, 7, 0.1) 0%,
+      rgba(212, 165, 116, 0.15) 0%,
       transparent 100%
+    ),
+    repeating-linear-gradient(
+      90deg,
+      transparent,
+      transparent 40px,
+      rgba(212, 165, 116, 0.05) 40px,
+      rgba(212, 165, 116, 0.05) 80px
     );
   box-shadow:
-    inset 0 2px 0 rgba(255, 193, 7, 0.2),
-    0 -2px 12px rgba(255, 193, 7, 0.1);
+    0 -4px 16px rgba(212, 165, 116, 0.2),
+    inset 0 2px 0 rgba(255, 235, 179, 0.3),
+    inset 0 1px 0 rgba(255, 248, 220, 0.8);
 }
 
 /* Active variant decoration line */
 .piece-tray--active::before {
-  background: linear-gradient(90deg, transparent, #ffc107, transparent);
-  height: 3px;
+  background: linear-gradient(90deg, transparent, #d4a574, transparent);
+  height: 4px;
+  box-shadow: 
+    0 1px 0 rgba(255, 248, 220, 0.8),
+    0 0 8px rgba(212, 165, 116, 0.4);
 }
 
 /* Fixed positioning variant - pins tray to bottom */
@@ -57,6 +79,7 @@
   right: 0;
   z-index: 25; /* Higher than overlay to ensure it stays on top */
 }
+
 
 /* Grid layout for pieces */
 .piece-tray__grid {
