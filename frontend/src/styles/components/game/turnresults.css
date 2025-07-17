@@ -282,15 +282,6 @@
   animation-fill-mode: both;
 }
 
-.tr-played-piece.red {
-  color: #dc3545;
-  border: 1px solid rgba(220, 53, 69, 0.4);
-}
-
-.tr-played-piece.black {
-  color: #495057;
-  border: 1px solid rgba(73, 80, 87, 0.4);
-}
 
 /* Pass indicator */
 .tr-pass-indicator {
