@@ -56,41 +56,43 @@ const PieceTray = ({
 
   return (
     <div className={containerClasses}>
-      <div className="piece-tray__grid">
-        {pieces.map((piece, index) => {
-          const isSelectable = !!onPieceClick;
-          const isSelected = isPieceSelected(piece, index);
+      <div className="piece-tray__inner">
+        <div className="piece-tray__grid">
+          {pieces.map((piece, index) => {
+            const isSelectable = !!onPieceClick;
+            const isSelected = isPieceSelected(piece, index);
 
-          // Determine variant based on animation type and selectability
-          let pieceVariant = 'default';
-          if (animateAppear && animationType === 'verticalDrop') {
-            pieceVariant = 'dealing';
-          } else if (isSelectable) {
-            pieceVariant = 'selectable';
-          }
+            // Determine variant based on animation type and selectability
+            let pieceVariant = 'default';
+            if (animateAppear && animationType === 'verticalDrop') {
+              pieceVariant = 'dealing';
+            } else if (isSelectable) {
+              pieceVariant = 'selectable';
+            }
 
-          // Calculate animation delay based on animation type
-          const delay = animateAppear
-            ? animationType === 'verticalDrop'
-              ? index * 0.08
-              : index * 0.1
-            : undefined;
+            // Calculate animation delay based on animation type
+            const delay = animateAppear
+              ? animationType === 'verticalDrop'
+                ? index * 0.08
+                : index * 0.1
+              : undefined;
 
-          return (
-            <GamePiece
-              key={index}
-              piece={piece}
-              size="large"
-              variant={pieceVariant}
-              selected={isSelected}
-              showValue={showValues}
-              onClick={
-                isSelectable ? () => handlePieceClick(piece, index) : null
-              }
-              animationDelay={delay}
-            />
-          );
-        })}
+            return (
+              <GamePiece
+                key={index}
+                piece={piece}
+                size="large"
+                variant={pieceVariant}
+                selected={isSelected}
+                showValue={showValues}
+                onClick={
+                  isSelectable ? () => handlePieceClick(piece, index) : null
+                }
+                animationDelay={delay}
+              />
+            );
+          })}
+        </div>
       </div>
     </div>
   );

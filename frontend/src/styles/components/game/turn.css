@@ -345,7 +345,7 @@
 }
 
 .turn-player-summary-bar.top {
-  top: 28px;
+  top: 20px;
   left: 50%;
   transform: translateX(-50%);
   min-width: 140px;
@@ -477,7 +477,7 @@
 /* Confirm Selection Panel - Sliding Tray */
 .turn-confirm-panel {
   position: absolute;
-  bottom: 190px;
+  bottom: 202px;
   left: 0;
   right: 0;
   background:
