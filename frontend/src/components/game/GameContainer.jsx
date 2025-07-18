@@ -90,11 +90,9 @@ export function GameContainer({ roomId, onNavigateToLobby }) {
       // Map declaration order (player names) to player objects
       orderedPlayers = gameState.declarationOrder
         .map((playerName) => {
-          return (
-            gameState.players.find((p) => p.name === playerName) || {
-              name: playerName,
-            }
-          );
+          // Find the full player object with is_bot property
+          const fullPlayer = gameState.players.find((p) => p.name === playerName);
+          return fullPlayer || { name: playerName };
         })
         .filter((p) => p !== undefined);
     }

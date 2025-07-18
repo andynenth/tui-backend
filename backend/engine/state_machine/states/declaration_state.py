@@ -42,7 +42,7 @@ class DeclarationState(GameState):
         # First set basic data
         await self.update_phase_data(
             {
-                "declaration_order": declaration_order,
+                "declaration_order": [p.name for p in declaration_order],
                 "current_declarer_index": 0,
                 "declarations": {},
                 "declaration_total": 0,
@@ -149,12 +149,8 @@ class DeclarationState(GameState):
         index = self.phase_data["current_declarer_index"]
 
         if index < len(order):
-            player = order[index]
-            # Return player name as string
-            if hasattr(player, "name"):
-                return player.name
-            else:
-                return str(player)
+            # Order now contains player names as strings
+            return order[index]
         return None
 
     def _get_next_declarer(self, next_index: int) -> Optional[str]:
@@ -162,12 +158,8 @@ class DeclarationState(GameState):
         order = self.phase_data["declaration_order"]
 
         if next_index < len(order):
-            player = order[next_index]
-            # Return player name as string
-            if hasattr(player, "name"):
-                return player.name
-            else:
-                return str(player)
+            # Order now contains player names as strings
+            return order[next_index]
         return None
 
     async def _check_declaration_restrictions(
