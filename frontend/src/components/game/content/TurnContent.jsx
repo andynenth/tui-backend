@@ -156,16 +156,16 @@ const TurnContent = ({
     if (!isMyTurn) {
       return false;
     }
-    
+
     const isStarter = requiredPieceCount === 0 || requiredPieceCount === null;
-    
+
     if (isStarter) {
       // For starters, must have at least 1 piece and valid play type
       if (selectedPieces.length === 0) return false;
       if (selectedPieces.length === 1) return true; // Single piece is always valid
       return getPlayType(selectedPieces) !== null; // Multi-piece must be valid
     }
-    
+
     // For followers, must match exact count
     return selectedPieces.length === requiredPieceCount;
   };
@@ -234,7 +234,7 @@ const TurnContent = ({
           <div className="turn-central-table">
             {/* Wood grain texture layer */}
             <div className="turn-table-wood-grain"></div>
-            
+
             {/* Player pieces areas around table */}
             {players.map((player) => {
               const position = getRelativePosition(player.name);
@@ -376,8 +376,8 @@ const TurnContent = ({
         </div>
 
         <div className="turn-action-buttons">
-          <button 
-            className="turn-action-button" 
+          <button
+            className="turn-action-button"
             onClick={handlePlay}
             disabled={!canPlay()}
           >
