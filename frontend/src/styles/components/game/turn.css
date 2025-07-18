@@ -327,8 +327,16 @@
   border-radius: 8px;
   padding: 6px 10px;
   box-shadow:
-    0 2px 8px rgba(0, 0, 0, 0.04),
-    inset 0 1px 0 rgba(255, 255, 255, 1);
+    /* Outer shadow for depth */
+    0 3px 8px rgba(0, 0, 0, 0.12),
+    0 1px 3px rgba(0, 0, 0, 0.08),
+    /* Top highlight - light edge */
+    inset 0 1px 0 rgba(255, 255, 255, 0.9),
+    /* Bottom shadow - creates depth */
+    inset 0 -1px 2px rgba(0, 0, 0, 0.1),
+    /* Subtle side shadows for 3D effect */
+    inset 1px 0 1px rgba(255, 255, 255, 0.5),
+    inset -1px 0 1px rgba(0, 0, 0, 0.05);
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -361,18 +369,48 @@
 
 .turn-player-summary-bar.active {
   border: 1px solid var(--status-color-active);
+  box-shadow:
+    /* Golden outer glow */
+    0 3px 12px rgba(255, 193, 7, 0.25),
+    0 1px 4px rgba(255, 193, 7, 0.15),
+    /* Top highlight - enhanced for active state */
+    inset 0 1px 0 rgba(255, 255, 255, 0.95),
+    /* Bottom shadow */
+    inset 0 -1px 2px rgba(255, 193, 7, 0.2),
+    /* Side highlights with golden tint */
+    inset 1px 0 1px rgba(255, 248, 220, 0.6),
+    inset -1px 0 1px rgba(255, 193, 7, 0.1);
 }
 
 .turn-player-summary-bar.played {
   border: 1px solid var(--status-color-played);
+  box-shadow:
+    /* Green outer glow - subtle */
+    0 3px 10px rgba(40, 167, 69, 0.15),
+    0 1px 3px rgba(40, 167, 69, 0.1),
+    /* Top highlight */
+    inset 0 1px 0 rgba(255, 255, 255, 0.9),
+    /* Bottom shadow with green tint */
+    inset 0 -1px 2px rgba(40, 167, 69, 0.15),
+    /* Side highlights */
+    inset 1px 0 1px rgba(220, 248, 220, 0.5),
+    inset -1px 0 1px rgba(40, 167, 69, 0.05);
 }
 
 .turn-player-summary-bar.current-user {
   border: 2px solid var(--status-color-current);
   box-shadow:
-    0 2px 8px rgba(0, 0, 0, 0.04),
+    /* Blue outer glow for current user */
+    0 3px 10px rgba(13, 110, 253, 0.2),
+    0 1px 3px rgba(13, 110, 253, 0.15),
     0 0 0 1px rgba(13, 110, 253, 0.1),
-    inset 0 1px 0 rgba(255, 255, 255, 1);
+    /* Top highlight */
+    inset 0 1px 0 rgba(255, 255, 255, 0.95),
+    /* Bottom shadow with blue tint */
+    inset 0 -1px 2px rgba(13, 110, 253, 0.1),
+    /* Side highlights */
+    inset 1px 0 1px rgba(220, 237, 255, 0.5),
+    inset -1px 0 1px rgba(13, 110, 253, 0.05);
 }
 
 .turn-player-summary-content {
