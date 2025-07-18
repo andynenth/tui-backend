@@ -5,6 +5,8 @@ This document outlines all possible player disconnection scenarios in Liap Tui a
 
 **Important Note:** Liap Tui already has a complete AI system (`backend/engine/ai.py`) and bot management system (`backend/engine/bot_manager.py`). This plan leverages the existing AI infrastructure rather than creating new AI components.
 
+**Last Updated:** 2025-07-18 - Updated to reflect that backend now properly sends `is_bot` data to frontend
+
 ## Current State Analysis
 
 ### What Currently Works
@@ -15,13 +17,16 @@ This document outlines all possible player disconnection scenarios in Liap Tui a
 - **Complete AI system** with decision logic for all game phases
 - **BotManager** that handles all bot actions through state machine
 - **Player model** with `is_bot` flag for AI control
+- **Backend properly sends `is_bot` data to frontend** (as of 2025-07-18)
+- **Frontend PlayerAvatar component** displays bot-specific styling and icons
+- **Bot thinking animations** with inner border spinner effect
 
 ### What's Missing
 - In-game disconnect handling that converts players to bots
 - Connection tracking to manage reconnection windows
 - Integration between disconnect detection and bot activation
 - State preservation for reconnecting players
-- UI updates to show AI-controlled status
+- Disconnection grace period UI indicators
 
 ## Disconnection Scenarios
 
@@ -214,18 +219,21 @@ The game already has a complete AI system that handles bot players:
 **Simple Solution**: When a player disconnects, we just set `player.is_bot = True` and the existing bot system takes over automatically!
 
 ### Visual Design Approach
-To clearly distinguish between human and bot players:
+**UPDATE: Bot avatar display is already implemented!** The frontend PlayerAvatar component already handles bot vs human display based on the `isBot` prop, which is now properly sent from the backend.
 
+**Current Implementation:**
 1. **Human Players (Connected)**:
    - Letter avatar showing first letter of name
    - Full opacity, normal colors
    - No special indicators
 
 2. **Bot Players (Including Disconnected)**:
-   - Robot icon/avatar instead of letter
-   - "Thinking" animation when it's their turn
-   - Maintains original player name below avatar
+   - ✅ **IMPLEMENTED**: Robot SVG icon instead of letter
+   - ✅ **IMPLEMENTED**: "Thinking" animation (inner border spinner) when `isThinking={true}`
+   - ✅ **IMPLEMENTED**: Distinct gray color scheme
+   - Player name displayed in UI components
 
+**Still Needed:**
 3. **Disconnected Humans (Within Grace Period)**:
    - Grayed out letter avatar
    - Countdown timer overlay
@@ -328,26 +336,31 @@ interface PlayerStatus {
 ```
 
 #### 2.2 Avatar-Based Bot Indicators
+**UPDATE: Already implemented in PlayerAvatar.jsx!**
+
+The current implementation already handles bot vs human display:
 ```jsx
-// PlayerAvatar.tsx - Show robot for bots, letter for humans
-const PlayerAvatar = ({ player, isCurrentTurn }) => {
-  if (player.is_bot) {
+// Current implementation in PlayerAvatar.jsx
+export function PlayerAvatar({ name, isBot, isThinking, size = 'medium', theme = 'default' }) {
+  // Bot players show robot icon
+  if (isBot) {
     return (
-      <div className={`avatar bot-avatar ${isCurrentTurn ? 'thinking' : ''}`}>
-        <RobotIcon />
-        {isCurrentTurn && <ThinkingAnimation />}
+      <div className={`player-avatar player-avatar--bot player-avatar--${size} ${theme === 'yellow' ? 'player-avatar--yellow' : ''} ${isThinking ? 'thinking' : ''}`}>
+        {/* BotIcon SVG */}
       </div>
     );
   }
   
+  // Human players show letter avatar
   return (
-    <div className={`avatar human-avatar ${!player.connected ? 'disconnected' : ''}`}>
-      {player.name[0].toUpperCase()}
-      {!player.connected && <ReconnectTimer deadline={player.reconnectDeadline} />}
+    <div className={`player-avatar player-avatar--${size} ${theme === 'yellow' ? 'player-avatar--yellow' : ''}`}>
+      {name[0].toUpperCase()}
     </div>
   );
-};
+}
 ```
+
+**Still needed**: Add disconnection grace period indicators (countdown timer, grayed out state)
 
 #### 2.3 Disconnect Notifications
 ```jsx
@@ -393,6 +406,25 @@ interface HostMigratedEvent {
 }
 ```
 
+## Current Implementation Status (as of 2025-07-18)
+
+### ✅ Completed
+1. **Backend sends `is_bot` data**: Player objects now include `is_bot` flag in all WebSocket messages
+2. **Bot avatar display**: PlayerAvatar component shows robot icon for bots, letter for humans
+3. **Bot thinking animation**: Inner border spinner animation when bot is making decisions
+4. **Bot styling**: Distinct gray color scheme for bot players
+5. **AI system integration**: BotManager and AI decision logic fully operational
+
+### ⏳ In Progress
+1. **Disconnect detection**: Need to set `player.is_bot = True` when player disconnects
+2. **Reconnection windows**: Track 30-second grace period for reconnection
+3. **WebSocket events**: Add player_disconnected and player_reconnected events
+
+### ❌ Not Started
+1. **Grace period UI**: Countdown timers and "reconnecting" indicators
+2. **Host migration**: Transfer host role when host disconnects
+3. **Spectator mode**: Allow late reconnects to watch the game
+
 ## Implementation Roadmap
 
 ### Phase 1: Connection Tracking (Week 1)
@@ -401,14 +433,15 @@ interface HostMigratedEvent {
 3. Create reconnection handler that restores `player.is_bot = False`
 
 ### Phase 2: Integration with Existing Bot System (Week 2)
-1. Ensure BotManager properly handles newly-converted bot players
+1. ✅ **DONE**: BotManager already handles bot players
 2. Add disconnect/reconnect WebSocket events
 3. Test AI takeover in all game phases
 
 ### Phase 3: UI Updates (Week 3)
-1. Add AI status indicators to player avatars
-2. Show reconnection countdown timers
-3. Display disconnect notifications
+1. ✅ **DONE**: AI status indicators (robot avatars)
+2. ✅ **DONE**: Bot thinking animations
+3. ❌ **TODO**: Reconnection countdown timers
+4. ❌ **TODO**: Disconnect notifications
 
 ### Phase 4: Host Migration (Week 4)
 1. Implement host migration logic
