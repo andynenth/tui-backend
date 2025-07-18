@@ -224,6 +224,9 @@ const TurnContent = ({
         <div className="turn-table-layout">
           {/* Central table */}
           <div className="turn-central-table">
+            {/* Wood grain texture layer */}
+            <div className="turn-table-wood-grain"></div>
+            
             {/* Player pieces areas around table */}
             {players.map((player) => {
               const position = getRelativePosition(player.name);
