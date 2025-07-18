@@ -156,9 +156,17 @@ const TurnContent = ({
     if (!isMyTurn) {
       return false;
     }
-    if (requiredPieceCount === 0 || requiredPieceCount === null) {
-      return selectedPieces.length > 0;
+    
+    const isStarter = requiredPieceCount === 0 || requiredPieceCount === null;
+    
+    if (isStarter) {
+      // For starters, must have at least 1 piece and valid play type
+      if (selectedPieces.length === 0) return false;
+      if (selectedPieces.length === 1) return true; // Single piece is always valid
+      return getPlayType(selectedPieces) !== null; // Multi-piece must be valid
     }
+    
+    // For followers, must match exact count
     return selectedPieces.length === requiredPieceCount;
   };
 
@@ -328,7 +336,7 @@ const TurnContent = ({
                   const playType = getPlayType(selectedPieces);
                   return playType
                     ? `✓ Valid ${formatPlayType(playType)}`
-                    : 'As starter, your play must be valid';
+                    : "That's not a valid play";
                 }
 
                 return 'As starter, your play must be valid';
@@ -368,7 +376,11 @@ const TurnContent = ({
         </div>
 
         <div className="turn-action-buttons">
-          <button className="turn-action-button" onClick={handlePlay}>
+          <button 
+            className="turn-action-button" 
+            onClick={handlePlay}
+            disabled={!canPlay()}
+          >
             Play Pieces
           </button>
           <button

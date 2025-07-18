@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Turn Overlay Animation Mockup</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Oswald:wght@700&family=Russo+One&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #f0f2f5;
+            padding: 20px;
+        }
+
+        /* Mock game board background */
+        .game-container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: #fff;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            padding: 40px;
+            position: relative;
+            min-height: 600px;
+            overflow: hidden;
+        }
+
+        .mock-table {
+            width: 270px;
+            height: 270px;
+            background: 
+                radial-gradient(ellipse at center, #d4a574 0%, #bc9a6a 100%),
+                linear-gradient(135deg, #deb887 0%, #cdaa7d 100%);
+            border: 3px solid #8b6f47;
+            border-radius: 12px;
+            margin: 40px auto;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+        }
+
+        .controls {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 30px;
+            justify-content: center;
+        }
+
+        .trigger-btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            background: #0d6efd;
+            color: white;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            transition: all 0.2s;
+        }
+
+        .trigger-btn:hover {
+            background: #0b5ed7;
+            transform: translateY(-1px);
+        }
+
+        /* Option 1: Classic Fade + Scale */
+        .overlay-option1 {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+            pointer-events: none;
+        }
+
+        .overlay-option1.show {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .overlay-option1 .content {
+            text-align: center;
+            transform: scale(0.8);
+            transition: transform 0.3s ease;
+        }
+
+        .overlay-option1.show .content {
+            transform: scale(1);
+            animation: pulse 1s ease-in-out infinite;
+        }
+
+        /* Font Option 1: Bebas Neue - Bold and modern */
+        .overlay-option1 h2 {
+            color: #ffffff;
+            font-size: 72px;
+            font-weight: 400;
+            -webkit-text-stroke: 2px #000000;
+            text-stroke: 2px #000000;
+            font-family: 'Bebas Neue', sans-serif;
+            letter-spacing: 3px;
+        }
+        
+        /* Font Option 2: Oswald - Strong and geometric */
+        .overlay-option1.font-option2 h2 {
+            font-family: 'Oswald', sans-serif;
+            font-weight: 700;
+            letter-spacing: 1px;
+        }
+        
+        /* Font Option 3: Russo One - Tech/gaming style */
+        .overlay-option1.font-option3 h2 {
+            font-family: 'Russo One', sans-serif;
+            font-weight: 400;
+            letter-spacing: 2px;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        /* Option 2: Slide from Top with Bounce */
+        .overlay-option2 {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            pointer-events: none;
+            z-index: 1000;
+        }
+
+        .overlay-option2 .banner {
+            position: absolute;
+            top: -100px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+            color: white;
+            padding: 30px 60px;
+            border-radius: 0 0 20px 20px;
+            font-size: 36px;
+            font-weight: 700;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            transition: top 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+        }
+
+        .overlay-option2.show .banner {
+            top: 0;
+        }
+
+        /* Option 3: Circular Reveal */
+        .overlay-option3 {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 300px;
+            height: 300px;
+            z-index: 1000;
+            pointer-events: none;
+        }
+
+        .overlay-option3 .circle {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.95);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            transform: scale(0) rotate(0deg);
+            opacity: 0;
+            transition: all 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        }
+
+        .overlay-option3.show .circle {
+            transform: scale(1) rotate(360deg);
+            opacity: 1;
+        }
+
+        .overlay-option3 .circle::before {
+            content: '';
+            position: absolute;
+            inset: -4px;
+            border-radius: 50%;
+            background: linear-gradient(45deg, #ff6b35, #ffd700, #ff6b35);
+            z-index: -1;
+            animation: rotate 2s linear infinite;
+        }
+
+        .overlay-option3 h2 {
+            color: #ff6b35;
+            font-size: 32px;
+            font-weight: 800;
+        }
+
+        @keyframes rotate {
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Option 4: Typewriter Effect */
+        .overlay-option4 {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 1000;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .overlay-option4.show {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .overlay-option4 .typewriter {
+            background: #1a1a1a;
+            color: #00ff00;
+            padding: 30px 50px;
+            border-radius: 10px;
+            font-family: 'Courier New', monospace;
+            font-size: 36px;
+            font-weight: bold;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .overlay-option4 .text {
+            display: inline-block;
+            white-space: nowrap;
+            overflow: hidden;
+            border-right: 3px solid #00ff00;
+            animation: typing 1s steps(10) forwards, blink 0.7s infinite;
+        }
+
+        @keyframes typing {
+            from { width: 0; }
+            to { width: 100%; }
+        }
+
+        @keyframes blink {
+            50% { border-color: transparent; }
+        }
+
+        /* Option 5: Minimal Toast */
+        .overlay-option5 {
+            position: fixed;
+            top: 100px;
+            left: 50%;
+            transform: translateX(-50%) translateY(-20px);
+            z-index: 1000;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.4s ease;
+        }
+
+        .overlay-option5.show {
+            opacity: 1;
+            visibility: visible;
+            transform: translateX(-50%) translateY(0);
+        }
+
+        .overlay-option5 .toast {
+            background: white;
+            border: 2px solid #ffd700;
+            padding: 20px 40px;
+            border-radius: 50px;
+            font-size: 24px;
+            font-weight: 600;
+            color: #8b4513;
+            box-shadow: 
+                0 10px 30px rgba(0, 0, 0, 0.2),
+                0 0 0 4px rgba(255, 215, 0, 0.2);
+            position: relative;
+        }
+
+        .overlay-option5 .toast::before {
+            content: '👉';
+            position: absolute;
+            left: -40px;
+            font-size: 30px;
+            animation: point 0.5s ease-in-out infinite alternate;
+        }
+
+        @keyframes point {
+            from { transform: translateX(0); }
+            to { transform: translateX(10px); }
+        }
+
+        /* Description */
+        .description {
+            text-align: center;
+            margin-top: 20px;
+            color: #666;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <div class="game-container">
+        <h1 style="text-align: center; margin-bottom: 30px;">Turn Overlay Animation Options</h1>
+        
+        <div class="controls">
+            <button class="trigger-btn" onclick="showOverlay(1)">Font 1: Bebas Neue (Bold)</button>
+            <button class="trigger-btn" onclick="showOverlay(1, 'font-option2')">Font 2: Oswald (Strong)</button>
+            <button class="trigger-btn" onclick="showOverlay(1, 'font-option3')">Font 3: Russo One (Tech)</button>
+        </div>
+        
+        <p style="text-align: center; margin: 20px 0; color: #666;">Other animation styles:</p>
+        
+        <div class="controls">
+            <button class="trigger-btn" onclick="showOverlay(2)">Option 2: Slide Banner</button>
+            <button class="trigger-btn" onclick="showOverlay(3)">Option 3: Circular Reveal</button>
+            <button class="trigger-btn" onclick="showOverlay(4)">Option 4: Typewriter</button>
+            <button class="trigger-btn" onclick="showOverlay(5)">Option 5: Minimal Toast</button>
+        </div>
+
+        <!-- Mock game table -->
+        <div class="mock-table"></div>
+        
+        <p class="description">Click any button above to preview the turn notification animation</p>
+    </div>
+
+    <!-- Option 1: Classic Fade + Scale -->
+    <div class="overlay-option1" id="overlay1">
+        <div class="content">
+            <h2>Your Turn!</h2>
+        </div>
+    </div>
+
+    <!-- Option 2: Slide from Top -->
+    <div class="overlay-option2" id="overlay2">
+        <div class="banner">Your Turn!</div>
+    </div>
+
+    <!-- Option 3: Circular Reveal -->
+    <div class="overlay-option3" id="overlay3">
+        <div class="circle">
+            <h2>Your Turn!</h2>
+        </div>
+    </div>
+
+    <!-- Option 4: Typewriter -->
+    <div class="overlay-option4" id="overlay4">
+        <div class="typewriter">
+            <span class="text">Your Turn!</span>
+        </div>
+    </div>
+
+    <!-- Option 5: Minimal Toast -->
+    <div class="overlay-option5" id="overlay5">
+        <div class="toast">Your Turn!</div>
+    </div>
+
+    <script>
+        function showOverlay(option, fontClass) {
+            const overlay = document.getElementById(`overlay${option}`);
+            
+            // Remove any existing font classes
+            overlay.classList.remove('font-option2', 'font-option3');
+            
+            // Add font class if specified
+            if (fontClass) {
+                overlay.classList.add(fontClass);
+            }
+            
+            // Show overlay
+            overlay.classList.add('show');
+            
+            // Auto-hide after 2.5 seconds
+            setTimeout(() => {
+                overlay.classList.remove('show');
+            }, 2500);
+        }
+    </script>
+</body>
+</html>
