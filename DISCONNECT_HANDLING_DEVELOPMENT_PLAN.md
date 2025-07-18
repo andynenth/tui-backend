@@ -1,29 +1,54 @@
 # Disconnect Handling Development Plan
 
 ## Executive Summary
-This plan implements a robust disconnection handling system for Liap Tui, ensuring games continue smoothly when players disconnect. The system includes AI player substitution, reconnection grace periods, and host migration.
+
+This plan implements a robust disconnection handling system for Liap Tui, ensuring games continue smoothly when players disconnect. The system leverages the **existing AI infrastructure** (bot_manager.py and ai.py) rather than creating new AI components, significantly reducing development time and complexity.
+
+## 🚀 Major Simplification from Original Plan
+
+**Discovery: The game already has a complete AI system!**
+
+Original plan assumed we needed to:
+- Build AI player framework from scratch
+- Implement AI decision logic for each phase
+- Create bot management system
+- Develop AI strategies
+
+**Reality: All of this already exists!**
+- `backend/engine/ai.py` - Complete AI decision logic
+- `backend/engine/bot_manager.py` - Enterprise-grade bot management
+- `Player.is_bot` flag - Built-in bot support
+
+**Result: 33% time savings (4 weeks instead of 6)**
+
+## Implementation Strategy
+
+When a player disconnects, we simply:
+1. Set `player.is_bot = True`
+2. The existing BotManager automatically handles all AI decisions
+3. On reconnection, set `player.is_bot = False`
+
+No AI development needed!
 
 ## Project Timeline
-**Total Duration:** 6 weeks  
-**Team Size:** 2-3 developers (1 backend, 1 frontend, 1 QA/support)  
-**Start Date:** [To be determined]  
+
+**Total Duration:** 4 weeks (reduced from 6)  
+**Team Size:** 2 developers (1 backend, 1 frontend)  
+**Start Date:** [To be determined]
 
 ## Milestones Overview
 
-### Milestone 1: Foundation & Infrastructure (Week 1)
-Core connection tracking and AI framework
+### Milestone 1: Connection Tracking (Week 1)
+Core connection tracking and bot activation
 
-### Milestone 2: Basic Disconnect Handling (Week 2)
-Turn timeouts and simple AI integration
+### Milestone 2: Bot Integration (Week 2)
+Ensure seamless AI takeover using existing bot system
 
-### Milestone 3: Phase-Specific Logic (Week 3-4)
-Handling disconnects in each game phase
+### Milestone 3: UI & Advanced Features (Week 3)
+Frontend updates and host migration
 
-### Milestone 4: Advanced Features (Week 5)
-Host migration and reconnection logic
-
-### Milestone 5: Polish & Testing (Week 6)
-UI improvements and comprehensive testing
+### Milestone 4: Testing & Polish (Week 4)
+Comprehensive testing and edge cases
 
 ---
 
@@ -31,9 +56,25 @@ UI improvements and comprehensive testing
 
 ### Week 1: Foundation & Infrastructure
 
+#### Frontend Tasks (Priority: Critical - Start Here!)
+
+**Task 1.0: Bot Avatar Indicators**
+
+- [ ] Create robot avatar component for bot players
+- [ ] Update player avatar to check `player.is_bot` flag
+- [ ] Show robot icon for bots, letter for humans
+- [ ] Add "thinking" animation for bot's turn
+- [ ] Test with existing bot players (no disconnect needed)
+- **Estimate:** 3 hours
+- **Dependencies:** None - can test immediately!
+- **Files to modify:**
+  - `frontend/src/components/PlayerAvatar.tsx` (create/modify)
+  - `frontend/src/assets/robot-avatar.svg` (create)
+
 #### Backend Tasks (Priority: Critical)
 
 **Task 1.1: Player Connection Tracking System**
+
 - [ ] Create `PlayerConnection` class with status tracking
 - [ ] Add connection status to player model
 - [ ] Implement connection state machine (connected/disconnected/reconnecting)
@@ -41,11 +82,12 @@ UI improvements and comprehensive testing
 - [ ] Create reconnection deadline logic
 - **Estimate:** 8 hours
 - **Dependencies:** None
-- **Files to modify:** 
+- **Files to modify:**
   - `backend/engine/player.py`
   - `backend/api/websocket/connection_manager.py`
 
 **Task 1.2: Enhanced WebSocket Disconnect Detection**
+
 - [ ] Refactor `websocket_endpoint` to handle disconnects gracefully
 - [ ] Create `handle_disconnect` function with phase awareness
 - [ ] Implement connection cleanup logic
@@ -57,33 +99,36 @@ UI improvements and comprehensive testing
   - `backend/api/routes/ws.py`
   - `backend/api/websocket/handlers.py`
 
-**Task 1.3: AI Player Framework**
-- [ ] Create `AIPlayer` base class
-- [ ] Implement basic decision interfaces
-- [ ] Add difficulty level support (easy/medium/hard)
-- [ ] Create AI player factory
-- [ ] Add AI flag to player model
-- **Estimate:** 10 hours
-- **Dependencies:** None
-- **Files to create:**
-  - `backend/engine/ai/base_ai.py`
-  - `backend/engine/ai/ai_factory.py`
+**Task 1.3: Bot Activation on Disconnect**
 
-#### Frontend Tasks (Priority: High)
+- [ ] Add disconnect handler that sets `player.is_bot = True`
+- [ ] Store original bot state for reconnection
+- [ ] Create reconnection deadline tracking
+- [ ] Test bot activation in all phases
+- [ ] Verify BotManager handles converted players
+- **Estimate:** 4 hours (reduced from 10)
+- **Dependencies:** Task 1.1
+- **Files to modify:**
+  - `backend/api/routes/ws.py`
+  - `backend/engine/state_machine/states/*_state.py`
+
+#### More Frontend Tasks (Priority: High)
 
 **Task 1.4: Connection Status UI Components**
+
 - [ ] Create `PlayerStatus` TypeScript interface
 - [ ] Build `ConnectionIndicator` component
-- [ ] Add connection status to player avatars
+- [ ] Add connection status overlay to avatars
 - [ ] Create reconnection countdown timer
 - [ ] Implement connection status store
-- **Estimate:** 8 hours
-- **Dependencies:** None
+- **Estimate:** 6 hours (reduced - avatar work done in 1.0)
+- **Dependencies:** Task 1.0
 - **Files to create:**
   - `frontend/src/components/ConnectionIndicator.tsx`
   - `frontend/src/stores/connectionStore.ts`
 
 **Task 1.5: WebSocket Event Handlers**
+
 - [ ] Add handlers for new disconnect events
 - [ ] Implement reconnection event handling
 - [ ] Create event type definitions
@@ -97,330 +142,210 @@ UI improvements and comprehensive testing
 
 ---
 
-### Week 2: Basic Disconnect Handling
+### Week 2: Bot Integration & Testing
 
 #### Backend Tasks (Priority: Critical)
 
-**Task 2.1: Turn Timer System**
-- [ ] Implement configurable turn timers
-- [ ] Create timer start/stop/pause logic
-- [ ] Add timeout callbacks
-- [ ] Integrate with state machine
-- [ ] Handle timer events in WebSocket
-- **Estimate:** 8 hours
+**Task 2.1: Reconnection Handler**
+
+- [ ] Implement reconnection detection within grace period
+- [ ] Restore `player.is_bot` to original state
+- [ ] Send full game state sync to reconnected player
+- [ ] Handle late reconnections (spectator mode)
+- [ ] Test reconnection in all phases
+- **Estimate:** 6 hours
 - **Dependencies:** Week 1 backend tasks
-- **Files to create:**
-  - `backend/engine/timers/turn_timer.py`
-  - `backend/engine/timers/timer_manager.py`
-
-**Task 2.2: Basic AI Turn Logic**
-- [ ] Implement AI piece selection algorithm
-- [ ] Create basic strategy patterns
-- [ ] Add random decision fallback
-- [ ] Integrate with turn state
-- [ ] Test AI decision timing
-- **Estimate:** 12 hours
-- **Dependencies:** Task 1.3, Task 2.1
-- **Files to create:**
-  - `backend/engine/ai/turn_ai.py`
-  - `backend/engine/ai/strategies/basic_strategy.py`
-
-**Task 2.3: Disconnect During Turn Phase**
-- [ ] Detect when current player disconnects
-- [ ] Start AI takeover timer
-- [ ] Implement AI turn execution
-- [ ] Broadcast AI action events
-- [ ] Update game state properly
-- **Estimate:** 10 hours
-- **Dependencies:** Task 2.1, Task 2.2
 - **Files to modify:**
-  - `backend/engine/state_machine/states/turn_state.py`
+  - `backend/api/routes/ws.py`
+  - `backend/api/websocket/handlers.py`
+
+**Task 2.2: Phase-Specific Testing**
+
+- [ ] Test bot takeover during PREPARATION phase
+- [ ] Test bot takeover during DECLARATION phase
+- [ ] Test bot takeover during TURN phase
+- [ ] Test bot behavior during SCORING phase
+- [ ] Verify no duplicate bot actions
+- **Estimate:** 8 hours
+- **Dependencies:** Task 1.3
+- **Files to modify:**
+  - `backend/tests/test_disconnect_handling.py` (create)
+
+**Task 2.3: WebSocket Event Broadcasting**
+
+- [ ] Add `player_disconnected` event
+- [ ] Add `player_reconnected` event
+- [ ] Update phase_change events to include connection status
+- [ ] Test event delivery to all clients
+- [ ] Document event formats
+- **Estimate:** 4 hours
+- **Dependencies:** Task 2.1
+- **Files to modify:**
+  - `backend/api/websocket/events.py`
 
 #### Frontend Tasks (Priority: High)
 
-**Task 2.4: Turn Timer UI**
-- [ ] Create countdown timer component
-- [ ] Add timer to active player indicator
-- [ ] Implement timer animations
-- [ ] Add audio alerts for low time
-- [ ] Handle timer expiration UI
-- **Estimate:** 8 hours
-- **Dependencies:** Task 1.5
-- **Files to create:**
-  - `frontend/src/components/TurnTimer.tsx`
-  - `frontend/src/components/TimerBar.tsx`
+**Task 2.4: Disconnect UI Updates**
 
-**Task 2.5: AI Player Indicators**
-- [ ] Add AI badge to player avatars
-- [ ] Create "AI thinking" animation
-- [ ] Show AI decision notifications
-- [ ] Update player list with AI status
-- [ ] Add AI difficulty display
+- [ ] Show "AI Playing" badge when player.is_bot becomes true
+- [ ] Display reconnection countdown timer
+- [ ] Add disconnect notification toasts
+- [ ] Update player avatar opacity for disconnected players
+- [ ] Show "Reconnected" animation
 - **Estimate:** 6 hours
-- **Dependencies:** Task 1.4
+- **Dependencies:** Task 1.5
 - **Files to modify:**
   - `frontend/src/components/PlayerAvatar.tsx`
-  - `frontend/src/components/PlayerList.tsx`
+  - `frontend/src/components/GameNotifications.tsx`
+
+**Task 2.5: Connection State Management**
+
+- [ ] Update game state to track disconnected players
+- [ ] Handle player_disconnected WebSocket events
+- [ ] Handle player_reconnected WebSocket events
+- [ ] Sync UI with backend connection status
+- [ ] Test state updates in all phases
+- **Estimate:** 4 hours
+- **Dependencies:** Task 1.4, Task 2.3
+- **Files to modify:**
+  - `frontend/src/stores/gameStore.ts`
+  - `frontend/src/network/websocket.ts`
 
 ---
 
-### Week 3: Phase-Specific Handling (Part 1)
+### Week 3: UI Polish & Advanced Features
 
 #### Backend Tasks (Priority: High)
 
-**Task 3.1: Preparation Phase Disconnect Handling**
-- [ ] Handle disconnect during card dealing
-- [ ] Auto-vote logic for weak hand decisions
-- [ ] Implement vote timeout system
-- [ ] Continue game flow smoothly
-- [ ] Test edge cases
-- **Estimate:** 10 hours
-- **Dependencies:** Week 2 backend tasks
-- **Files to modify:**
-  - `backend/engine/state_machine/states/preparation_state.py`
+**Task 3.1: Host Migration System**
 
-**Task 3.2: AI Weak Hand Decision**
-- [ ] Analyze hand strength algorithm
-- [ ] Implement AI weak hand voting
-- [ ] Add configurable AI aggressiveness
-- [ ] Test various hand scenarios
-- [ ] Document AI decision logic
+- [ ] Detect when host disconnects
+- [ ] Select next player as host
+- [ ] Transfer host privileges
+- [ ] Broadcast host change event
+- [ ] Test host migration scenarios
 - **Estimate:** 8 hours
-- **Dependencies:** Task 1.3, Task 3.1
-- **Files to create:**
-  - `backend/engine/ai/preparation_ai.py`
-
-**Task 3.3: Declaration Phase Disconnect Handling**
-- [ ] Detect disconnect during declaration
-- [ ] Implement declaration timeout
-- [ ] Start AI declaration timer
-- [ ] Handle partial declarations
-- [ ] Maintain declaration order
-- **Estimate:** 10 hours
 - **Dependencies:** Week 2 backend tasks
-- **Files to modify:**
-  - `backend/engine/state_machine/states/declaration_state.py`
-
-#### Frontend Tasks (Priority: High)
-
-**Task 3.4: Disconnect Notifications**
-- [ ] Create disconnect banner component
-- [ ] Add player disconnect toasts
-- [ ] Show reconnection countdown
-- [ ] Implement notification queue
-- [ ] Add notification preferences
-- **Estimate:** 8 hours
-- **Dependencies:** Week 2 frontend tasks
-- **Files to create:**
-  - `frontend/src/components/DisconnectBanner.tsx`
-  - `frontend/src/components/NotificationToast.tsx`
-
----
-
-### Week 4: Phase-Specific Handling (Part 2) & Testing
-
-#### Backend Tasks (Priority: High)
-
-**Task 4.1: AI Declaration Logic**
-- [ ] Implement hand analysis for declarations
-- [ ] Create declaration strategy patterns
-- [ ] Add bluffing logic for hard AI
-- [ ] Test declaration distributions
-- [ ] Fine-tune AI parameters
-- **Estimate:** 12 hours
-- **Dependencies:** Task 3.3
-- **Files to create:**
-  - `backend/engine/ai/declaration_ai.py`
-  - `backend/engine/ai/strategies/declaration_strategy.py`
-
-**Task 4.2: Scoring Phase Continuity**
-- [ ] Ensure scoring continues with disconnected players
-- [ ] Handle score animation timing
-- [ ] Manage round transition with AI players
-- [ ] Test multi-round scenarios
-- [ ] Document scoring edge cases
-- **Estimate:** 6 hours
-- **Dependencies:** Previous backend tasks
-- **Files to modify:**
-  - `backend/engine/state_machine/states/scoring_state.py`
-
-**Task 4.3: Reconnection Handler**
-- [ ] Implement reconnection detection
-- [ ] Create state restoration logic
-- [ ] Handle mid-action reconnections
-- [ ] Sync game state to reconnected player
-- [ ] Test various reconnection timings
-- **Estimate:** 10 hours
-- **Dependencies:** All previous backend tasks
-- **Files to create:**
-  - `backend/api/websocket/reconnection_handler.py`
-
-#### QA Tasks (Priority: Critical)
-
-**Task 4.4: Integration Testing Suite**
-- [ ] Create disconnect simulation tests
-- [ ] Test each phase disconnect scenario
-- [ ] Verify AI decision consistency
-- [ ] Test reconnection in all phases
-- [ ] Create automated test runner
-- **Estimate:** 16 hours
-- **Dependencies:** All previous tasks
-- **Files to create:**
-  - `backend/tests/test_disconnect_handling.py`
-  - `backend/tests/test_ai_decisions.py`
-
----
-
-### Week 5: Advanced Features
-
-#### Backend Tasks (Priority: Medium)
-
-**Task 5.1: Host Migration System**
-- [ ] Implement host selection algorithm
-- [ ] Create host migration protocol
-- [ ] Handle host privileges transfer
-- [ ] Update room management
-- [ ] Test edge cases
-- **Estimate:** 10 hours
-- **Dependencies:** Basic disconnect handling
 - **Files to modify:**
   - `backend/api/websocket/room_manager.py`
   - `backend/models/room.py`
 
-**Task 5.2: Message Queue for Disconnected Players**
-- [ ] Create message buffer system
-- [ ] Implement message replay on reconnect
-- [ ] Handle message expiration
-- [ ] Test buffer overflow scenarios
-- [ ] Add message priority system
+**Task 3.2: Spectator Mode**
+
+- [ ] Create spectator view for late reconnections
+- [ ] Implement read-only game state
+- [ ] Add spectator WebSocket handlers
+- [ ] Test spectator functionality
+- [ ] Document spectator limitations
+- **Estimate:** 6 hours
+- **Dependencies:** Task 2.1
+- **Files to create:**
+  - `backend/api/websocket/spectator_handler.py`
+
+**Task 3.3: Connection Recovery**
+
+- [ ] Add message queue for disconnected players
+- [ ] Implement state snapshot system
+- [ ] Handle partial action recovery
+- [ ] Test recovery scenarios
+- [ ] Add recovery metrics
 - **Estimate:** 8 hours
-- **Dependencies:** Task 4.3
+- **Dependencies:** Week 2 backend tasks
 - **Files to create:**
   - `backend/api/websocket/message_queue.py`
 
-**Task 5.3: Spectator Mode**
-- [ ] Create spectator player type
-- [ ] Implement view-only permissions
-- [ ] Handle late reconnection as spectator
-- [ ] Add spectator UI elements
-- [ ] Test spectator interactions
-- **Estimate:** 8 hours
-- **Dependencies:** Task 4.3
-- **Files to modify:**
-  - `backend/engine/player.py`
-  - `backend/api/websocket/handlers.py`
+#### Frontend Tasks (Priority: High)
 
-#### Frontend Tasks (Priority: Medium)
+**Task 3.4: Enhanced UI Components**
 
-**Task 5.4: Host Migration UI**
 - [ ] Create host crown indicator
-- [ ] Add host change notifications
-- [ ] Update room controls for new host
-- [ ] Implement smooth transition effects
-- [ ] Test host UI permissions
-- **Estimate:** 6 hours
-- **Dependencies:** Task 5.1
-- **Files to modify:**
-  - `frontend/src/components/RoomControls.tsx`
-  - `frontend/src/components/PlayerList.tsx`
-
-**Task 5.5: Reconnection UI Flow**
-- [ ] Create reconnection screen
-- [ ] Show game state during reconnect
-- [ ] Implement progress indicators
-- [ ] Add reconnection error handling
-- [ ] Test various network conditions
+- [ ] Add spectator mode UI
+- [ ] Implement smooth transitions for bot/human switch
+- [ ] Add connection quality indicator
+- [ ] Create reconnection progress bar
 - **Estimate:** 8 hours
-- **Dependencies:** Task 4.3
+- **Dependencies:** Week 2 frontend tasks
 - **Files to create:**
-  - `frontend/src/components/ReconnectionScreen.tsx`
+  - `frontend/src/components/HostIndicator.tsx`
+  - `frontend/src/components/SpectatorView.tsx`
 
 ---
 
-### Week 6: Polish, Testing & Documentation
+### Week 4: Testing & Polish
 
-#### Backend Tasks (Priority: Medium)
+#### QA Tasks (Priority: Critical)
 
-**Task 6.1: Performance Optimization**
-- [ ] Profile disconnect handling code
-- [ ] Optimize AI decision algorithms
-- [ ] Reduce message broadcasting overhead
-- [ ] Implement connection pooling
-- [ ] Add performance metrics
-- **Estimate:** 8 hours
-- **Dependencies:** All features complete
-- **Files to modify:** Various
+**Task 4.1: End-to-End Testing**
 
-**Task 6.2: Configuration System**
-- [ ] Add configurable timeouts
-- [ ] Create room-specific settings
-- [ ] Implement AI difficulty per room
-- [ ] Add feature flags
-- [ ] Create admin controls
-- **Estimate:** 6 hours
-- **Dependencies:** All features complete
-- **Files to create:**
-  - `backend/config/disconnect_settings.py`
-
-#### Frontend Tasks (Priority: Medium)
-
-**Task 6.3: UI Polish**
-- [ ] Refine disconnect animations
-- [ ] Improve notification styling
-- [ ] Add accessibility features
-- [ ] Implement responsive design fixes
-- [ ] Create loading states
-- **Estimate:** 10 hours
-- **Dependencies:** All UI components complete
-- **Files to modify:** Various components
-
-**Task 6.4: Error Handling UI**
-- [ ] Create error boundary components
-- [ ] Add graceful degradation
-- [ ] Implement retry mechanisms
-- [ ] Show helpful error messages
-- [ ] Test error scenarios
-- **Estimate:** 6 hours
-- **Dependencies:** All features complete
-- **Files to create:**
-  - `frontend/src/components/ErrorBoundary.tsx`
-
-#### QA & Documentation Tasks (Priority: High)
-
-**Task 6.5: End-to-End Testing**
-- [ ] Create E2E test scenarios
-- [ ] Test on various devices
-- [ ] Simulate poor network conditions
-- [ ] Verify cross-browser compatibility
-- [ ] Create regression test suite
+- [ ] Test disconnect in each game phase
+- [ ] Verify bot takes over correctly
+- [ ] Test reconnection within grace period
+- [ ] Test late reconnection (spectator mode)
+- [ ] Verify no game freezes or hangs
 - **Estimate:** 12 hours
-- **Dependencies:** All features complete
+- **Dependencies:** All previous tasks
+- **Files to create:**
+  - `backend/tests/test_disconnect_scenarios.py`
+  - `frontend/tests/disconnect.test.ts`
 
-**Task 6.6: Documentation**
-- [ ] Update API documentation
-- [ ] Create disconnect handling guide
-- [ ] Document AI behavior
-- [ ] Add troubleshooting section
-- [ ] Create video demos
+**Task 4.2: Performance Testing**
+
+- [ ] Test with multiple simultaneous disconnects
+- [ ] Verify bot response times remain consistent
+- [ ] Check WebSocket message queue performance
+- [ ] Test reconnection under load
+- [ ] Profile memory usage with disconnected players
 - **Estimate:** 8 hours
+- **Dependencies:** Task 4.1
+- **Files to create:**
+  - `backend/tests/test_disconnect_performance.py`
+
+**Task 4.3: Edge Case Testing**
+
+- [ ] Test rapid connect/disconnect cycles
+- [ ] Test browser refresh scenarios
+- [ ] Test network timeout scenarios
+- [ ] Test mobile app background/foreground
+- [ ] Document all edge cases found
+- **Estimate:** 10 hours
+- **Dependencies:** Task 4.1
+- **Files to modify:**
+  - `backend/tests/test_edge_cases.py`
+
+#### Documentation Tasks (Priority: High)
+
+**Task 4.4: User Documentation**
+
+- [ ] Document disconnect/reconnect behavior
+- [ ] Create troubleshooting guide
+- [ ] Add UI screenshots with AI indicators
+- [ ] Document spectator mode
+- [ ] Create admin guide for monitoring
+- **Estimate:** 6 hours
 - **Dependencies:** All features complete
+- **Files to create:**
+  - `docs/disconnect_handling.md`
+  - `docs/troubleshooting.md`
 
 ---
 
 ## Dependencies Matrix
 
 ### Critical Path Dependencies
+
 1. **Connection Tracking (1.1)** → All disconnect detection features
-2. **AI Framework (1.3)** → All AI decision features
-3. **Turn Timer (2.1)** → Turn-based disconnect handling
+2. **Bot Activation (1.3)** → Bot takeover functionality
+3. **Reconnection Handler (2.1)** → Player control restoration
 4. **WebSocket Events (1.5)** → All frontend disconnect features
 
 ### Backend Dependencies
-- State machine modifications depend on AI implementation
-- Host migration depends on room manager updates
-- Message queue depends on reconnection handler
+
+- Bot activation depends on existing BotManager working correctly
+- Host migration depends on connection tracking
+- Spectator mode depends on reconnection handler
 
 ### Frontend Dependencies
+
 - All UI components depend on connection status store
 - Disconnect notifications depend on WebSocket events
 - Host migration UI depends on backend implementation
@@ -430,54 +355,57 @@ UI improvements and comprehensive testing
 ## Risk Mitigation
 
 ### Technical Risks
-1. **WebSocket Stability**
+
+1. **Existing Bot System Integration**
+   - Risk: BotManager might not handle mid-game bot conversions
+   - Mitigation: Thorough testing in Week 2
+   - Fallback: Add special handling for converted players
+
+2. **WebSocket Stability**
    - Mitigation: Implement heartbeat system
    - Fallback: HTTP polling for critical updates
 
-2. **AI Performance**
-   - Mitigation: Pre-calculate common scenarios
-   - Fallback: Simple random decisions
-
 3. **State Synchronization**
-   - Mitigation: Implement state versioning
-   - Fallback: Force full state refresh
+   - Mitigation: Full state sync on reconnection
+   - Fallback: Force refresh if sync fails
 
 ### Schedule Risks
-1. **AI Complexity**
-   - Buffer: Additional week for AI tuning
-   - Option: Ship with basic AI, enhance later
+
+1. **Unknown Bot System Behavior**
+   - Buffer: Week 2 dedicated to integration testing
+   - Option: Manual bot action triggers if needed
 
 2. **Testing Coverage**
-   - Mitigation: Automated testing from week 1
-   - Buffer: Dedicated QA week
+   - Mitigation: Start testing in Week 2
+   - Buffer: Full Week 4 for testing
 
 ---
 
 ## Success Criteria
 
 ### Week 1 Deliverables
+
+- [ ] Bot avatar indicators working (testable immediately)
 - [ ] Connection tracking operational
-- [ ] Basic AI framework ready
-- [ ] UI shows connection status
+- [ ] Bot activation on disconnect working
+- [ ] UI clearly distinguishes humans vs bots
 
 ### Week 2 Deliverables
-- [ ] Turn timeouts working
-- [ ] AI can make basic turns
-- [ ] Timer UI implemented
 
-### Week 3-4 Deliverables
-- [ ] All phases handle disconnects
-- [ ] AI makes reasonable decisions
-- [ ] Notifications working smoothly
+- [ ] Reconnection handler working
+- [ ] Bot integration verified in all phases
+- [ ] Disconnect UI updates implemented
 
-### Week 5 Deliverables
+### Week 3 Deliverables
+
 - [ ] Host migration functional
-- [ ] Reconnection working reliably
 - [ ] Spectator mode available
+- [ ] Enhanced UI components complete
 
-### Week 6 Deliverables
+### Week 4 Deliverables
+
 - [ ] All tests passing
-- [ ] Performance acceptable
+- [ ] Edge cases handled
 - [ ] Documentation complete
 
 ---
@@ -485,43 +413,100 @@ UI improvements and comprehensive testing
 ## Team Assignments
 
 ### Backend Developer
-- Weeks 1-2: Core infrastructure and AI framework
-- Weeks 3-4: Phase-specific implementations
-- Week 5: Advanced features
-- Week 6: Optimization and support
+
+- Week 1: Connection tracking and bot activation
+- Week 2: Reconnection handler and testing
+- Week 3: Host migration and spectator mode
+- Week 4: Support QA and bug fixes
 
 ### Frontend Developer
-- Week 1: Connection UI components
-- Weeks 2-3: Timer and notification UI
-- Weeks 4-5: Reconnection flows
-- Week 6: Polish and error handling
 
-### QA Engineer
-- Weeks 1-3: Test planning and unit tests
-- Week 4: Integration testing
-- Weeks 5-6: E2E testing and documentation
+- Week 1: Connection status UI components
+- Week 2: Disconnect notifications and state management
+- Week 3: Enhanced UI and host migration
+- Week 4: Polish and testing support
+
+### QA Engineer (Optional - can be shared role)
+
+- Week 2: Integration test planning
+- Week 3: Test implementation
+- Week 4: Full testing and documentation
 
 ---
 
 ## Notes for Project Management Tools
 
+### Quick Start
+**Start with Task 1.0 (Bot Avatar Indicators)!** This can be implemented and tested immediately using existing bot players, providing instant visual feedback before any disconnect handling is built.
+
 ### Jira/Trello Setup
+
 1. Create epic: "Disconnect Handling System"
 2. Create sprints for each week
 3. Add tasks with estimates and dependencies
 4. Set up automation for status updates
 5. Create dashboard for progress tracking
+6. **Flag Task 1.0 as "Quick Win" - no dependencies!**
 
 ### Labels/Tags
+
 - `backend`, `frontend`, `qa`
 - `critical`, `high`, `medium`
 - `ai`, `websocket`, `ui`
 - `blocked`, `in-progress`, `review`
 
 ### Definition of Done
+
 - [ ] Code implemented and tested
 - [ ] Unit tests passing
 - [ ] Code reviewed by peer
 - [ ] Integration tests passing
 - [ ] Documentation updated
 - [ ] Deployed to staging environment
+
+---
+
+<!--
+# AI_DIRECTIVE
+
+You are an autonomous project assistant assigned to execute the Disconnect Handling Development Plan for the "Liap Tui" project.
+
+## Your Tasks:
+
+1. **Interpret this document as an active checklist.**  
+   Each task with `[ ]` means it's not started.  
+   Each `[x]` or `✅` means it's done.  
+   Your job is to go through tasks **in order**, unless marked done.
+
+2. **For each task that is not complete:**
+   - Analyze the described functionality.
+   - Identify or request the required files.
+   - Generate or propose code implementations if not already provided.
+   - If a file or implementation is missing, pause and ask the user or flag the blocker.
+   - If instructions refer to a new file, you are allowed to create it.
+
+3. **Skip any task that is marked as done.**
+
+4. **Maintain progress tracking**:  
+   Update checklist states (`[ ]` → `✅`) as tasks are completed.  
+   You may use `<!-- AI_PROGRESS_LOG -->` block if needed to track state internally.
+
+5. **If dependencies are listed**, ensure all dependencies are completed before beginning a dependent task.
+
+6. **For testing-related tasks**, you may:
+
+   - Generate unit tests, integration test cases, or mock scenarios.
+   - Ask for test data if required.
+
+7. **If uncertainty arises**, stop and ask the user for clarification before proceeding.
+
+8. **For frontend-related tasks**, generate JSX/TSX with Tailwind styling where applicable.  
+   Use placeholder data where needed and mention where integration points are expected.
+
+9. **When tasks reference business logic (e.g., AI decisions)**, provide default logic and flag for refinement later.
+
+## Goal:
+
+Complete this plan autonomously, step-by-step, until all tasks are implemented, reviewed, and marked ✅.
+
+-->
