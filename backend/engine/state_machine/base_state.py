@@ -182,6 +182,8 @@ class GameState(ABC):
                         self.logger.debug(f"   Converted hand: {hand_strings}")
 
                         players_data[player_name] = {
+                            "name": player_name,
+                            "is_bot": getattr(player, "is_bot", False),
                             "hand": hand_strings,
                             "hand_size": len(player_hand),
                             "zero_declares_in_a_row": getattr(

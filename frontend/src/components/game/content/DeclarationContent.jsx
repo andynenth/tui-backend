@@ -71,33 +71,23 @@ const DeclarationContent = ({
 
   // Get player status
   const getPlayerStatus = (player) => {
-    // Handle both string and object player formats
-    const playerName = typeof player === 'string' ? player : player.name;
-    // Extract clean name for declaration lookup (e.g., "Bot 2 - 0 pts" -> "Bot 2")
-    const cleanName = playerName.split(' - ')[0];
+    // Players are now always objects
+    const playerName = player.name;
 
-    if (declarations[cleanName] !== undefined) {
+    if (declarations[playerName] !== undefined) {
       return {
         type: 'declared',
-        value: declarations[cleanName],
+        value: declarations[playerName],
       };
-    } else if (cleanName === currentPlayer || playerName === currentPlayer) {
+    } else if (playerName === currentPlayer) {
       return {
         type: 'current',
         text: 'Declaring',
       };
     } else {
       // Check if this player will declare after current player
-      const currentIndex = players.findIndex((p) => {
-        const pName = typeof p === 'string' ? p : p.name;
-        const pCleanName = pName.split(' - ')[0];
-        return pCleanName === currentPlayer || pName === currentPlayer;
-      });
-      const playerIndex = players.findIndex((p) => {
-        const pName = typeof p === 'string' ? p : p.name;
-        const pCleanName = pName.split(' - ')[0];
-        return pCleanName === cleanName;
-      });
+      const currentIndex = players.findIndex((p) => p.name === currentPlayer);
+      const playerIndex = players.findIndex((p) => p.name === playerName);
 
       if (
         currentIndex !== -1 &&
@@ -148,11 +138,9 @@ const DeclarationContent = ({
             // Debug logging to understand data structure
             console.log('Declaration player data:', player, 'Type:', typeof player);
             
-            // Handle both string and object player formats
-            const playerName =
-              typeof player === 'string' ? player : player.name;
-            // Extract just the name without score (e.g., "Bot 2 - 0 pts" -> "Bot 2")
-            const displayName = playerName.split(' - ')[0];
+            // Players should now always be objects with is_bot property
+            const playerName = player.name;
+            const displayName = playerName;
 
             const status = getPlayerStatus(player);
             const isCurrentTurn = playerName === currentPlayer;
@@ -165,18 +153,8 @@ const DeclarationContent = ({
               >
                 <PlayerAvatar
                   name={displayName}
-                  isBot={
-                    (typeof player === 'object' && player.is_bot) || 
-                    (typeof player === 'string' && player.includes('Bot')) ||
-                    (displayName && displayName.includes('Bot'))
-                  }
-                  isThinking={
-                    isCurrentTurn && (
-                      (typeof player === 'object' && player.is_bot) || 
-                      (typeof player === 'string' && player.includes('Bot')) ||
-                      (displayName && displayName.includes('Bot'))
-                    )
-                  }
+                  isBot={player.is_bot}
+                  isThinking={isCurrentTurn && player.is_bot}
                   size="large"
                 />
                 <div className="dec-player-info">

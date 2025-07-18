@@ -299,8 +299,8 @@ const TurnContent = ({
                 <div className="turn-player-summary-content">
                   <PlayerAvatar
                     name={player.name}
-                    isBot={player.is_bot || (player.name && player.name.includes('Bot'))}
-                    isThinking={isActive && (player.is_bot || (player.name && player.name.includes('Bot')))}
+                    isBot={player.is_bot}
+                    isThinking={isActive && player.is_bot}
                     size="mini"
                   />
                   <span className="turn-player-name-short">{player.name}</span>
