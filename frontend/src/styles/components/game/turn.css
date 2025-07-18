@@ -4,8 +4,8 @@
 /* CSS Variables for consistency across game components */
 :root {
   /* Border colors - matches piece-tray.css and game-piece.css */
-  --border-color-gray: var(--border-color-gray);
-  --border-color-gray-dark: var(--border-color-gray-dark);
+  --border-color-gray: rgba(173, 181, 189, 0.3);
+  --border-color-gray-dark: rgba(173, 181, 189, 0.7);
   
   /* Piece colors - from game-piece.css */
   --piece-color-red: #dc3545;
@@ -317,12 +317,8 @@
 .turn-player-summary-bar {
   position: absolute;
   background:
-    linear-gradient(145deg, #f8f9fa 0%, #ffffff 100%),
-    radial-gradient(
-      circle at 20% 50%,
-      rgba(173, 181, 189, 0.1) 0%,
-      transparent 50%
-    );
+    /* Very light warm beige to complement wood tones */
+    linear-gradient(145deg, #faf8f5 0%, #f5f0e8 100%);
   border: 1px solid var(--border-color-gray);
   border-radius: 8px;
   padding: 6px 10px;
@@ -368,6 +364,9 @@
 }
 
 .turn-player-summary-bar.active {
+  background:
+    /* Very light golden - harmonizes with wood and golden active state */
+    linear-gradient(145deg, #fffaf0 0%, #fff5e6 100%);
   border: 1px solid var(--status-color-active);
   box-shadow:
     /* Golden outer glow */
@@ -383,6 +382,9 @@
 }
 
 .turn-player-summary-bar.played {
+  background:
+    /* Very light sage green - complementary to warm wood tones */
+    linear-gradient(145deg, #f5f8f0 0%, #f0f5e8 100%);
   border: 1px solid var(--status-color-played);
   box-shadow:
     /* Green outer glow - subtle */
