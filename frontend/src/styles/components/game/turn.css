@@ -576,6 +576,20 @@
   box-shadow: 0 4px 8px rgba(108, 117, 125, 0.3);
 }
 
+.turn-action-button:disabled {
+  background:
+    linear-gradient(135deg, #e9ecef 0%, #dee2e6 100%);
+  color: #6c757d;
+  border-color: rgba(173, 181, 189, 0.3);
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.turn-action-button:disabled:hover {
+  transform: none;
+  box-shadow: 0 2px 4px rgba(108, 117, 125, 0.1);
+}
+
 /* Hand section styles now handled by PieceTray component */
 
 /* Responsive adjustments */
