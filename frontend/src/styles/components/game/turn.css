@@ -117,12 +117,12 @@
   transform: translate(-50%, -50%);
   width: 270px;
   height: 270px;
-  background: 
+  background:
     radial-gradient(ellipse at center, #d4a574 0%, #bc9a6a 100%),
     linear-gradient(135deg, #deb887 0%, #cdaa7d 100%);
   border: 3px solid #8b6f47;
   border-radius: 12px;
-  box-shadow: 
+  box-shadow:
     0 8px 24px rgba(0, 0, 0, 0.3),
     inset 0 2px 4px rgba(255, 248, 220, 0.3),
     inset 0 -2px 4px rgba(139, 111, 71, 0.5),
@@ -134,15 +134,14 @@
   overflow: hidden;
 }
 
-/* Wood grain texture */
-.turn-central-table::after {
-  content: '';
+/* Wood grain texture - moved to separate element for better z-index control */
+.turn-table-wood-grain {
   position: absolute;
   top: 0;
   left: 0;
   right: 0;
   bottom: 0;
-  background-image: 
+  background-image:
     repeating-linear-gradient(
       90deg,
       transparent,
@@ -159,6 +158,8 @@
     );
   pointer-events: none;
   opacity: 0.7;
+  z-index: 0;
+  border-radius: 10px;
 }
 
 /* Board game grid pattern */
@@ -169,20 +170,26 @@
   left: 0;
   right: 0;
   bottom: 0;
-  background: 
+  background:
     linear-gradient(rgba(139, 111, 71, 0.2) 1px, transparent 1px),
     linear-gradient(90deg, rgba(139, 111, 71, 0.2) 1px, transparent 1px),
-    radial-gradient(circle at center, transparent 40%, rgba(139, 111, 71, 0.1) 100%);
-  background-size: 30px 30px, 30px 30px, 100% 100%;
+    radial-gradient(
+      circle at center,
+      transparent 40%,
+      rgba(139, 111, 71, 0.1) 100%
+    );
+  background-size:
+    30px 30px,
+    30px 30px,
+    100% 100%;
   border-radius: 10px;
   pointer-events: none;
-  z-index: 1;
 }
 
 /* Current pile display */
 .turn-current-pile {
   position: relative;
-  z-index: 1;
+  z-index: 10;
 }
 
 .turn-pile-label {
