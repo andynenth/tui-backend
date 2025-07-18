@@ -197,8 +197,9 @@ const RoomPage = () => {
             {/* Game Table Visualization */}
             <div className="rp-gameTable">
               <div className="rp-tableSurface">
-                {/* Table felt is created with CSS ::before */}
-
+                {/* Wood grain texture layer */}
+                <div className="rp-table-wood-grain"></div>
+                
                 {/* Player positions around the table */}
                 {[1, 2, 3, 4].map((position) => {
                   const player = roomData?.players?.[position - 1];
