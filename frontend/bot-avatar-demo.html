@@ -1,0 +1,414 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Complete Avatar Demo - All Types and Sizes</title>
+    <style>
+        body {
+            padding: 40px;
+            background: #f0f0f0;
+            font-family: sans-serif;
+        }
+
+        /* Base avatar styles */
+        .player-avatar {
+            border-radius: 50%;
+            background:
+                linear-gradient(145deg, #ffffff 0%, #f8f9fa 100%),
+                radial-gradient(
+                    circle at 30% 30%,
+                    rgba(255, 255, 255, 0.8) 0%,
+                    transparent 60%
+                );
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            border: 2px solid rgba(173, 181, 189, 0.3);
+            box-shadow:
+                0 2px 4px rgba(0, 0, 0, 0.06),
+                inset 0 1px 0 rgba(255, 255, 255, 1);
+            color: #495057;
+            flex-shrink: 0;
+            transition: all 0.2s ease;
+        }
+
+        /* Size variants */
+        .player-avatar--small {
+            width: 24px;
+            height: 24px;
+            font-size: 11px;
+            border-width: 1.5px;
+        }
+
+        .player-avatar--medium {
+            width: 32px;
+            height: 32px;
+            font-size: 14px;
+        }
+
+        .player-avatar--large {
+            width: 36px;
+            height: 36px;
+            font-size: 16px;
+        }
+
+        /* Bot avatar styles */
+        .player-avatar--bot {
+            background:
+                linear-gradient(145deg, #f3f4f6 0%, #e5e7eb 100%),
+                radial-gradient(
+                    circle at 30% 30%,
+                    rgba(156, 163, 175, 0.2) 0%,
+                    transparent 60%
+                );
+            border-color: rgba(107, 114, 128, 0.4);
+            color: #4b5563;
+        }
+
+        /* Bot icon sizing */
+        .player-avatar--bot .bot-icon {
+            width: 65%;
+            height: 65%;
+        }
+
+        /* Bot thinking animation */
+        .player-avatar--bot.thinking {
+            animation: bot-thinking 2s ease-in-out infinite;
+        }
+
+        @keyframes bot-thinking {
+            0%, 100% {
+                box-shadow:
+                    0 2px 4px rgba(0, 0, 0, 0.06),
+                    inset 0 1px 0 rgba(255, 255, 255, 1);
+            }
+            50% {
+                box-shadow:
+                    0 2px 4px rgba(0, 0, 0, 0.06),
+                    inset 0 1px 0 rgba(255, 255, 255, 1),
+                    0 0 20px rgba(107, 114, 128, 0.3);
+            }
+        }
+
+        /* Active state */
+        .player-avatar.active {
+            border-color: rgba(40, 167, 69, 0.5);
+            background:
+                linear-gradient(145deg, #f8fff9 0%, #e8f5e9 100%),
+                radial-gradient(
+                    circle at 30% 30%,
+                    rgba(40, 167, 69, 0.1) 0%,
+                    transparent 60%
+                );
+        }
+
+        /* Winner state */
+        .player-avatar.winner {
+            border-color: rgba(255, 193, 7, 0.5);
+            background:
+                linear-gradient(145deg, #fffbf0 0%, #fff8e1 100%),
+                radial-gradient(
+                    circle at 30% 30%,
+                    rgba(255, 193, 7, 0.1) 0%,
+                    transparent 60%
+                );
+        }
+
+        .demo-section {
+            margin-bottom: 40px;
+        }
+
+        .demo-row {
+            display: flex;
+            gap: 20px;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .demo-item {
+            text-align: center;
+            min-width: 80px;
+        }
+
+        .label {
+            margin-top: 8px;
+            font-size: 12px;
+            color: #666;
+        }
+
+        h2 {
+            font-size: 20px;
+            margin-bottom: 20px;
+            color: #333;
+        }
+
+        h3 {
+            font-size: 16px;
+            margin-bottom: 15px;
+            color: #555;
+        }
+    </style>
+</head>
+<body>
+    <h1 style="margin-bottom: 30px;">Complete Avatar System Demo</h1>
+
+    <!-- Size Comparison Section -->
+    <div class="demo-section">
+        <h2>Avatar Sizes</h2>
+        
+        <h3>Human Avatars</h3>
+        <div class="demo-row">
+            <div class="demo-item">
+                <div class="player-avatar player-avatar--small">J</div>
+                <div class="label">Small (24px)</div>
+            </div>
+            <div class="demo-item">
+                <div class="player-avatar player-avatar--medium">J</div>
+                <div class="label">Medium (32px)</div>
+            </div>
+            <div class="demo-item">
+                <div class="player-avatar player-avatar--large">J</div>
+                <div class="label">Large (36px)</div>
+            </div>
+        </div>
+
+        <h3>Bot Avatars - Normal</h3>
+        <div class="demo-row">
+            <div class="demo-item">
+                <div class="player-avatar player-avatar--bot player-avatar--small">
+                    <svg viewBox="0 0 24 24" fill="currentColor" class="bot-icon">
+                        <rect x="6" y="4" width="12" height="10" rx="2" ry="2" />
+                        <line x1="12" y1="4" x2="12" y2="2" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+                        <circle cx="12" cy="1.5" r="1.5" />
+                        <circle cx="9" cy="8" r="1.5" fill="#fff" />
+                        <circle cx="15" cy="8" r="1.5" fill="#fff" />
+                        <circle cx="9" cy="8" r="0.5" fill="currentColor" />
+                        <circle cx="15" cy="8" r="0.5" fill="currentColor" />
+                        <rect x="9" y="11" width="6" height="1" rx="0.5" fill="#fff" />
+                        <rect x="7" y="14" width="10" height="8" rx="1" ry="1" />
+                        <rect x="10" y="16" width="4" height="2" rx="0.5" fill="#fff" opacity="0.5" />
+                        <rect x="9" y="19" width="2" height="2" rx="0.5" fill="#fff" opacity="0.5" />
+                        <rect x="13" y="19" width="2" height="2" rx="0.5" fill="#fff" opacity="0.5" />
+                    </svg>
+                </div>
+                <div class="label">Small (24px)</div>
+            </div>
+            <div class="demo-item">
+                <div class="player-avatar player-avatar--bot player-avatar--medium">
+                    <svg viewBox="0 0 24 24" fill="currentColor" class="bot-icon">
+                        <rect x="6" y="4" width="12" height="10" rx="2" ry="2" />
+                        <line x1="12" y1="4" x2="12" y2="2" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+                        <circle cx="12" cy="1.5" r="1.5" />
+                        <circle cx="9" cy="8" r="1.5" fill="#fff" />
+                        <circle cx="15" cy="8" r="1.5" fill="#fff" />
+                        <circle cx="9" cy="8" r="0.5" fill="currentColor" />
+                        <circle cx="15" cy="8" r="0.5" fill="currentColor" />
+                        <rect x="9" y="11" width="6" height="1" rx="0.5" fill="#fff" />
+                        <rect x="7" y="14" width="10" height="8" rx="1" ry="1" />
+                        <rect x="10" y="16" width="4" height="2" rx="0.5" fill="#fff" opacity="0.5" />
+                        <rect x="9" y="19" width="2" height="2" rx="0.5" fill="#fff" opacity="0.5" />
+                        <rect x="13" y="19" width="2" height="2" rx="0.5" fill="#fff" opacity="0.5" />
+                    </svg>
+                </div>
+                <div class="label">Medium (32px)</div>
+            </div>
+            <div class="demo-item">
+                <div class="player-avatar player-avatar--bot player-avatar--large">
+                    <svg viewBox="0 0 24 24" fill="currentColor" class="bot-icon">
+                        <rect x="6" y="4" width="12" height="10" rx="2" ry="2" />
+                        <line x1="12" y1="4" x2="12" y2="2" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+                        <circle cx="12" cy="1.5" r="1.5" />
+                        <circle cx="9" cy="8" r="1.5" fill="#fff" />
+                        <circle cx="15" cy="8" r="1.5" fill="#fff" />
+                        <circle cx="9" cy="8" r="0.5" fill="currentColor" />
+                        <circle cx="15" cy="8" r="0.5" fill="currentColor" />
+                        <rect x="9" y="11" width="6" height="1" rx="0.5" fill="#fff" />
+                        <rect x="7" y="14" width="10" height="8" rx="1" ry="1" />
+                        <rect x="10" y="16" width="4" height="2" rx="0.5" fill="#fff" opacity="0.5" />
+                        <rect x="9" y="19" width="2" height="2" rx="0.5" fill="#fff" opacity="0.5" />
+                        <rect x="13" y="19" width="2" height="2" rx="0.5" fill="#fff" opacity="0.5" />
+                    </svg>
+                </div>
+                <div class="label">Large (36px)</div>
+            </div>
+        </div>
+
+        <h3>Bot Avatars - Thinking</h3>
+        <div class="demo-row">
+            <div class="demo-item">
+                <div class="player-avatar player-avatar--bot player-avatar--small thinking">
+                    <svg viewBox="0 0 24 24" fill="currentColor" class="bot-icon">
+                        <rect x="6" y="4" width="12" height="10" rx="2" ry="2" />
+                        <line x1="12" y1="4" x2="12" y2="2" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+                        <circle cx="12" cy="1.5" r="1.5" />
+                        <circle cx="9" cy="8" r="1.5" fill="#fff" />
+                        <circle cx="15" cy="8" r="1.5" fill="#fff" />
+                        <circle cx="9" cy="8" r="0.5" fill="currentColor" />
+                        <circle cx="15" cy="8" r="0.5" fill="currentColor" />
+                        <rect x="9" y="11" width="6" height="1" rx="0.5" fill="#fff" />
+                        <rect x="7" y="14" width="10" height="8" rx="1" ry="1" />
+                        <rect x="10" y="16" width="4" height="2" rx="0.5" fill="#fff" opacity="0.5" />
+                        <rect x="9" y="19" width="2" height="2" rx="0.5" fill="#fff" opacity="0.5" />
+                        <rect x="13" y="19" width="2" height="2" rx="0.5" fill="#fff" opacity="0.5" />
+                    </svg>
+                </div>
+                <div class="label">Small Thinking</div>
+            </div>
+            <div class="demo-item">
+                <div class="player-avatar player-avatar--bot player-avatar--medium thinking">
+                    <svg viewBox="0 0 24 24" fill="currentColor" class="bot-icon">
+                        <rect x="6" y="4" width="12" height="10" rx="2" ry="2" />
+                        <line x1="12" y1="4" x2="12" y2="2" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+                        <circle cx="12" cy="1.5" r="1.5" />
+                        <circle cx="9" cy="8" r="1.5" fill="#fff" />
+                        <circle cx="15" cy="8" r="1.5" fill="#fff" />
+                        <circle cx="9" cy="8" r="0.5" fill="currentColor" />
+                        <circle cx="15" cy="8" r="0.5" fill="currentColor" />
+                        <rect x="9" y="11" width="6" height="1" rx="0.5" fill="#fff" />
+                        <rect x="7" y="14" width="10" height="8" rx="1" ry="1" />
+                        <rect x="10" y="16" width="4" height="2" rx="0.5" fill="#fff" opacity="0.5" />
+                        <rect x="9" y="19" width="2" height="2" rx="0.5" fill="#fff" opacity="0.5" />
+                        <rect x="13" y="19" width="2" height="2" rx="0.5" fill="#fff" opacity="0.5" />
+                    </svg>
+                </div>
+                <div class="label">Medium Thinking</div>
+            </div>
+            <div class="demo-item">
+                <div class="player-avatar player-avatar--bot player-avatar--large thinking">
+                    <svg viewBox="0 0 24 24" fill="currentColor" class="bot-icon">
+                        <rect x="6" y="4" width="12" height="10" rx="2" ry="2" />
+                        <line x1="12" y1="4" x2="12" y2="2" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+                        <circle cx="12" cy="1.5" r="1.5" />
+                        <circle cx="9" cy="8" r="1.5" fill="#fff" />
+                        <circle cx="15" cy="8" r="1.5" fill="#fff" />
+                        <circle cx="9" cy="8" r="0.5" fill="currentColor" />
+                        <circle cx="15" cy="8" r="0.5" fill="currentColor" />
+                        <rect x="9" y="11" width="6" height="1" rx="0.5" fill="#fff" />
+                        <rect x="7" y="14" width="10" height="8" rx="1" ry="1" />
+                        <rect x="10" y="16" width="4" height="2" rx="0.5" fill="#fff" opacity="0.5" />
+                        <rect x="9" y="19" width="2" height="2" rx="0.5" fill="#fff" opacity="0.5" />
+                        <rect x="13" y="19" width="2" height="2" rx="0.5" fill="#fff" opacity="0.5" />
+                    </svg>
+                </div>
+                <div class="label">Large Thinking</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Special States Section -->
+    <div class="demo-section">
+        <h2>Special States</h2>
+        
+        <h3>Human Avatar States</h3>
+        <div class="demo-row">
+            <div class="demo-item">
+                <div class="player-avatar player-avatar--large">J</div>
+                <div class="label">Normal</div>
+            </div>
+            <div class="demo-item">
+                <div class="player-avatar player-avatar--large active">J</div>
+                <div class="label">Active (Green)</div>
+            </div>
+            <div class="demo-item">
+                <div class="player-avatar player-avatar--large winner">J</div>
+                <div class="label">Winner (Gold)</div>
+            </div>
+        </div>
+
+        <h3>Bot Avatar States</h3>
+        <div class="demo-row">
+            <div class="demo-item">
+                <div class="player-avatar player-avatar--bot player-avatar--large">
+                    <svg viewBox="0 0 24 24" fill="currentColor" class="bot-icon">
+                        <rect x="6" y="4" width="12" height="10" rx="2" ry="2" />
+                        <line x1="12" y1="4" x2="12" y2="2" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+                        <circle cx="12" cy="1.5" r="1.5" />
+                        <circle cx="9" cy="8" r="1.5" fill="#fff" />
+                        <circle cx="15" cy="8" r="1.5" fill="#fff" />
+                        <circle cx="9" cy="8" r="0.5" fill="currentColor" />
+                        <circle cx="15" cy="8" r="0.5" fill="currentColor" />
+                        <rect x="9" y="11" width="6" height="1" rx="0.5" fill="#fff" />
+                        <rect x="7" y="14" width="10" height="8" rx="1" ry="1" />
+                        <rect x="10" y="16" width="4" height="2" rx="0.5" fill="#fff" opacity="0.5" />
+                        <rect x="9" y="19" width="2" height="2" rx="0.5" fill="#fff" opacity="0.5" />
+                        <rect x="13" y="19" width="2" height="2" rx="0.5" fill="#fff" opacity="0.5" />
+                    </svg>
+                </div>
+                <div class="label">Normal</div>
+            </div>
+            <div class="demo-item">
+                <div class="player-avatar player-avatar--bot player-avatar--large active">
+                    <svg viewBox="0 0 24 24" fill="currentColor" class="bot-icon">
+                        <rect x="6" y="4" width="12" height="10" rx="2" ry="2" />
+                        <line x1="12" y1="4" x2="12" y2="2" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+                        <circle cx="12" cy="1.5" r="1.5" />
+                        <circle cx="9" cy="8" r="1.5" fill="#fff" />
+                        <circle cx="15" cy="8" r="1.5" fill="#fff" />
+                        <circle cx="9" cy="8" r="0.5" fill="currentColor" />
+                        <circle cx="15" cy="8" r="0.5" fill="currentColor" />
+                        <rect x="9" y="11" width="6" height="1" rx="0.5" fill="#fff" />
+                        <rect x="7" y="14" width="10" height="8" rx="1" ry="1" />
+                        <rect x="10" y="16" width="4" height="2" rx="0.5" fill="#fff" opacity="0.5" />
+                        <rect x="9" y="19" width="2" height="2" rx="0.5" fill="#fff" opacity="0.5" />
+                        <rect x="13" y="19" width="2" height="2" rx="0.5" fill="#fff" opacity="0.5" />
+                    </svg>
+                </div>
+                <div class="label">Active (Green)</div>
+            </div>
+            <div class="demo-item">
+                <div class="player-avatar player-avatar--bot player-avatar--large winner">
+                    <svg viewBox="0 0 24 24" fill="currentColor" class="bot-icon">
+                        <rect x="6" y="4" width="12" height="10" rx="2" ry="2" />
+                        <line x1="12" y1="4" x2="12" y2="2" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+                        <circle cx="12" cy="1.5" r="1.5" />
+                        <circle cx="9" cy="8" r="1.5" fill="#fff" />
+                        <circle cx="15" cy="8" r="1.5" fill="#fff" />
+                        <circle cx="9" cy="8" r="0.5" fill="currentColor" />
+                        <circle cx="15" cy="8" r="0.5" fill="currentColor" />
+                        <rect x="9" y="11" width="6" height="1" rx="0.5" fill="#fff" />
+                        <rect x="7" y="14" width="10" height="8" rx="1" ry="1" />
+                        <rect x="10" y="16" width="4" height="2" rx="0.5" fill="#fff" opacity="0.5" />
+                        <rect x="9" y="19" width="2" height="2" rx="0.5" fill="#fff" opacity="0.5" />
+                        <rect x="13" y="19" width="2" height="2" rx="0.5" fill="#fff" opacity="0.5" />
+                    </svg>
+                </div>
+                <div class="label">Winner (Gold)</div>
+            </div>
+            <div class="demo-item">
+                <div class="player-avatar player-avatar--bot player-avatar--large thinking">
+                    <svg viewBox="0 0 24 24" fill="currentColor" class="bot-icon">
+                        <rect x="6" y="4" width="12" height="10" rx="2" ry="2" />
+                        <line x1="12" y1="4" x2="12" y2="2" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+                        <circle cx="12" cy="1.5" r="1.5" />
+                        <circle cx="9" cy="8" r="1.5" fill="#fff" />
+                        <circle cx="15" cy="8" r="1.5" fill="#fff" />
+                        <circle cx="9" cy="8" r="0.5" fill="currentColor" />
+                        <circle cx="15" cy="8" r="0.5" fill="currentColor" />
+                        <rect x="9" y="11" width="6" height="1" rx="0.5" fill="#fff" />
+                        <rect x="7" y="14" width="10" height="8" rx="1" ry="1" />
+                        <rect x="10" y="16" width="4" height="2" rx="0.5" fill="#fff" opacity="0.5" />
+                        <rect x="9" y="19" width="2" height="2" rx="0.5" fill="#fff" opacity="0.5" />
+                        <rect x="13" y="19" width="2" height="2" rx="0.5" fill="#fff" opacity="0.5" />
+                    </svg>
+                </div>
+                <div class="label">Thinking</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Usage Context Section -->
+    <div class="demo-section">
+        <h2>Usage Context</h2>
+        <ul style="line-height: 1.8;">
+            <li><strong>Small (24px)</strong> - Used in turn phase player summary bars</li>
+            <li><strong>Medium (32px)</strong> - Used in scoring phase player cards</li>
+            <li><strong>Large (36px)</strong> - Used in declaration phase player list</li>
+            <li><strong>Active State</strong> - Green tint shows current player's turn</li>
+            <li><strong>Winner State</strong> - Gold tint shows game winner</li>
+            <li><strong>Thinking Animation</strong> - Pulsing glow when bot is making a decision</li>
+        </ul>
+    </div>
+</body>
+</html>

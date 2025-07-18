@@ -82,6 +82,7 @@ const ScoringContent = ({
                 <div className="sc-player-info">
                   <PlayerAvatar
                     name={player.name}
+                    isBot={player.is_bot}
                     className="sc-player-avatar"
                     size="medium"
                   />
