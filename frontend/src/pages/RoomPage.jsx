@@ -5,6 +5,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useApp } from '../contexts/AppContext';
 import { Layout, Button } from '../components';
+import { PlayerAvatar } from '../components/game/shared';
 import { networkService } from '../services';
 // CSS classes are imported globally
 
@@ -214,7 +215,16 @@ const RoomPage = () => {
                       <div
                         className={`rp-playerCard ${!isEmpty ? 'rp-filled' : 'rp-empty'} ${isHost ? 'rp-host' : ''}`}
                       >
-                        <div className="rp-playerName">{playerName}</div>
+                        <div className="rp-playerInfo">
+                          {!isEmpty && (
+                            <PlayerAvatar
+                              name={playerName}
+                              isBot={isBot}
+                              size="medium"
+                            />
+                          )}
+                          <div className="rp-playerName">{playerName}</div>
+                        </div>
                         {isHost && <span className="rp-hostBadge">Host</span>}
                         {isEmpty ? (
                           <div className="rp-playerAction">

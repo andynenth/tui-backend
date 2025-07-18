@@ -5,6 +5,7 @@ import { useNavigate } from 'react-router-dom';
 import { useApp } from '../contexts/AppContext';
 import { useTheme } from '../contexts/ThemeContext';
 import { Layout } from '../components';
+import { PlayerAvatar } from '../components/game/shared';
 // Phase 1-4 Enterprise Architecture
 import { networkService } from '../services';
 import { TIMING } from '../constants';
@@ -258,11 +259,20 @@ const LobbyPage = () => {
                 key={slot}
                 className={`lp-playerSlot ${player ? (player.is_bot ? 'lp-bot' : 'lp-filled') : 'lp-empty'}`}
               >
-                {player
-                  ? player.is_bot
-                    ? `Bot ${slot + 1}`
-                    : player.name
-                  : 'Empty'}
+                {player ? (
+                  <div className="lp-playerSlotContent">
+                    <PlayerAvatar
+                      name={player.name || `Bot ${slot + 1}`}
+                      isBot={player.is_bot}
+                      size="mini"
+                    />
+                    <span className="lp-playerSlotName">
+                      {player.is_bot ? `Bot ${slot + 1}` : player.name}
+                    </span>
+                  </div>
+                ) : (
+                  'Empty'
+                )}
               </div>
             );
           })}
@@ -281,9 +291,11 @@ const LobbyPage = () => {
           <div className="lp-gameContainer">
             {/* Player Info Badge */}
             <div className="lp-playerInfoBadge">
-              <div className="lp-playerAvatarMini">
-                {app.playerName ? app.playerName[0].toUpperCase() : 'A'}
-              </div>
+              <PlayerAvatar
+                name={app.playerName || 'Anonymous'}
+                size="mini"
+                theme="yellow"
+              />
               <span>{app.playerName}</span>
             </div>
 

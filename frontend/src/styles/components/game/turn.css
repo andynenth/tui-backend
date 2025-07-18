@@ -392,25 +392,7 @@
   flex: 1;
 }
 
-.turn-player-avatar-small {
-  width: 18px;
-  height: 18px;
-  border-radius: 50%;
-  background:
-    linear-gradient(145deg, #ffffff 0%, #f8f9fa 100%),
-    radial-gradient(
-      circle at 30% 30%,
-      rgba(255, 255, 255, 0.8) 0%,
-      transparent 60%
-    );
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-weight: 700;
-  font-size: 8px;
-  border: 1px solid var(--border-color-gray);
-  color: #495057;
-}
+/* Removed .turn-player-avatar-small - now using shared PlayerAvatar component with size="mini" */
 
 .turn-player-name-short {
   font-size: 10px;

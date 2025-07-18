@@ -145,6 +145,9 @@ const DeclarationContent = ({
         {/* Players list */}
         <div className="dec-players-list">
           {players.map((player) => {
+            // Debug logging to understand data structure
+            console.log('Declaration player data:', player, 'Type:', typeof player);
+            
             // Handle both string and object player formats
             const playerName =
               typeof player === 'string' ? player : player.name;
@@ -162,7 +165,18 @@ const DeclarationContent = ({
               >
                 <PlayerAvatar
                   name={displayName}
-                  className="dec-player-avatar"
+                  isBot={
+                    (typeof player === 'object' && player.is_bot) || 
+                    (typeof player === 'string' && player.includes('Bot')) ||
+                    (displayName && displayName.includes('Bot'))
+                  }
+                  isThinking={
+                    isCurrentTurn && (
+                      (typeof player === 'object' && player.is_bot) || 
+                      (typeof player === 'string' && player.includes('Bot')) ||
+                      (displayName && displayName.includes('Bot'))
+                    )
+                  }
                   size="large"
                 />
                 <div className="dec-player-info">

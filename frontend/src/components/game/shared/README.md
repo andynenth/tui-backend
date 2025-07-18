@@ -6,32 +6,62 @@ This directory contains reusable components that are shared across different gam
 
 ### PlayerAvatar
 
-A circular avatar component that displays player initials.
+A circular avatar component that displays player initials for human players or a robot icon for bot players.
 
 **Usage:**
 
 ```jsx
 import { PlayerAvatar } from '../shared';
 
+// Human player
 <PlayerAvatar
   name="John"
   size="medium" // small | medium | large
   className="custom-class"
-/>;
+/>
+
+// Bot player
+<PlayerAvatar
+  name="Bot 1"
+  isBot={true}
+  size="medium"
+/>
+
+// Bot player thinking
+<PlayerAvatar
+  name="Bot 2"
+  isBot={true}
+  isThinking={true}
+  size="large"
+/>
+
+// Mini avatar with yellow theme (lobby)
+<PlayerAvatar
+  name="John"
+  size="mini"
+  theme="yellow"
+/>
 ```
 
 **Props:**
 
 - `name` (string, required) - Player name to extract initial from
-- `size` (string, optional) - Avatar size: 'small', 'medium', or 'large' (default: 'medium')
+- `isBot` (boolean, optional) - Whether the player is a bot (default: false)
+- `isThinking` (boolean, optional) - Whether the bot is currently thinking (default: false)
+- `size` (string, optional) - Avatar size: 'mini', 'small', 'medium', or 'large' (default: 'medium')
+- `theme` (string, optional) - Avatar theme: 'default' or 'yellow' (default: 'default')
 - `className` (string, optional) - Additional CSS classes
 
 **CSS Classes:**
 
 - `.player-avatar` - Base class
+- `.player-avatar--mini` - Mini size (20x20px)
 - `.player-avatar--small` - Small size (24x24px)
 - `.player-avatar--medium` - Medium size (32x32px)
 - `.player-avatar--large` - Large size (36x36px)
+- `.player-avatar--bot` - Bot avatar styling
+- `.player-avatar--bot.thinking` - Bot thinking animation
+- `.player-avatar--yellow` - Yellow theme variant (for lobby)
 - `.player-avatar.active` - Active player state
 - `.player-avatar.winner` - Winner state
 

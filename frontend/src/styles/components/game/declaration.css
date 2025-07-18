@@ -92,29 +92,11 @@
   background: linear-gradient(180deg, #28a745, #20c997);
 }
 
-/* Player avatar */
-.dec-player-avatar {
-  width: 36px;
-  height: 36px;
-  border-radius: 50%;
-  background:
-    linear-gradient(145deg, #ffffff 0%, #f8f9fa 100%),
-    radial-gradient(
-      circle at 30% 30%,
-      rgba(255, 255, 255, 0.8) 0%,
-      transparent 60%
-    );
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-weight: 700;
-  font-size: 14px;
+/* Removed .dec-player-avatar - now using shared PlayerAvatar component with size="large" */
+
+/* Avatar spacing in declaration phase */
+.dec-player-row .player-avatar {
   margin-right: 12px;
-  border: 2px solid rgba(173, 181, 189, 0.3);
-  box-shadow:
-    0 2px 4px rgba(0, 0, 0, 0.06),
-    inset 0 1px 0 rgba(255, 255, 255, 1);
-  color: #495057;
 }
 
 /* Player info */

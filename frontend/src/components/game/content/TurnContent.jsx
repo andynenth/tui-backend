@@ -278,6 +278,9 @@ const TurnContent = ({
 
           {/* Player summary bars */}
           {players.map((player) => {
+            // Debug logging
+            console.log('Turn player data:', player, 'is_bot:', player.is_bot);
+            
             const position = getRelativePosition(player.name);
             const isActive = player.name === currentPlayer;
             const hasPlayed = (playerPieces[player.name] || []).length > 0;
@@ -296,8 +299,9 @@ const TurnContent = ({
                 <div className="turn-player-summary-content">
                   <PlayerAvatar
                     name={player.name}
-                    className="turn-player-avatar-small"
-                    size="small"
+                    isBot={player.is_bot || (player.name && player.name.includes('Bot'))}
+                    isThinking={isActive && (player.is_bot || (player.name && player.name.includes('Bot')))}
+                    size="mini"
                   />
                   <span className="turn-player-name-short">{player.name}</span>
                   <div className="turn-player-stats-compact">
