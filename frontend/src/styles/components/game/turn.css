@@ -67,8 +67,6 @@
   margin-bottom: 10px;
 }
 
-/* Turn requirement header */
-
 /* Flip In Animation for play type */
 @keyframes flipIn {
   0% {
@@ -87,34 +85,6 @@
     color: #ff6b35;
     text-shadow: 0 2px 4px rgba(255, 107, 53, 0.2);
   }
-}
-
-.turn-requirement-header {
-  font-size: 11px;
-  color: #ffc107;
-  background: rgba(255, 193, 7, 0.1);
-  padding: 4px 12px;
-  border-radius: 8px;
-  border: 1px solid rgba(255, 193, 7, 0.3);
-  display: inline-block;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  max-width: 300px;
-  font-weight: 500;
-  margin-bottom: 8px;
-}
-
-.turn-requirement-header.waiting {
-  color: #6c757d;
-  background: rgba(108, 117, 125, 0.1);
-  border: 1px solid rgba(108, 117, 125, 0.3);
-}
-
-.turn-requirement-header.error {
-  color: #dc3545;
-  background: rgba(220, 53, 69, 0.1);
-  border: 1px solid rgba(220, 53, 69, 0.3);
 }
 
 /* Table section */
