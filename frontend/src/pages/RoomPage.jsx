@@ -174,11 +174,6 @@ const RoomPage = () => {
           {/* Room Header */}
           <div className="rp-roomHeader">
             <h1 className="rp-roomTitle">Game Room</h1>
-            <p className={`rp-roomSubtitle ${isRoomFull ? 'rp-ready' : ''}`}>
-              {isRoomFull
-                ? 'All players ready - Start the game!'
-                : 'Waiting for players to join'}
-            </p>
             <div className="rp-roomIdBadge">
               <span className="rp-roomIdLabel">Room ID:</span>
               <span className="rp-roomIdValue">{roomId}</span>
@@ -188,7 +183,6 @@ const RoomPage = () => {
           {/* Players Section with Table Visualization */}
           <div className="rp-playersSection">
             <div className="rp-sectionHeader">
-              <h2 className="rp-sectionTitle">Players</h2>
               <div className={`rp-playerCount ${isRoomFull ? 'full' : ''}`}>
                 {occupiedSlots} / 4
               </div>
@@ -217,7 +211,6 @@ const RoomPage = () => {
                       key={position}
                       className={`rp-playerSeat rp-position-${position}`}
                     >
-                      <div className="rp-seatNumber">Seat {position}</div>
                       <div
                         className={`rp-playerCard ${!isEmpty ? 'rp-filled' : 'rp-empty'} ${isHost ? 'rp-host' : ''}`}
                       >
