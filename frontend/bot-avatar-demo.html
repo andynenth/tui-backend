@@ -35,6 +35,13 @@
         }
 
         /* Size variants */
+        .player-avatar--mini {
+            width: 18px;
+            height: 18px;
+            font-size: 9px;
+            border-width: 1px;
+        }
+
         .player-avatar--small {
             width: 24px;
             height: 24px;
@@ -73,7 +80,83 @@
             height: 65%;
         }
 
-        /* Bot thinking animation */
+        /* Option 1: Circular Loading Ring Animation */
+        .player-avatar--bot.thinking-option1 {
+            position: relative;
+            overflow: visible;
+        }
+
+        .player-avatar--bot.thinking-option1::before {
+            content: '';
+            position: absolute;
+            top: -4px;
+            left: -4px;
+            right: -4px;
+            bottom: -4px;
+            border: 2px solid transparent;
+            border-top: 2px solid rgba(107, 114, 128, 0.6);
+            border-radius: 50%;
+            animation: spin 1.5s linear infinite;
+        }
+
+        /* Option 2: Pulsing Dot Ring Animation */
+        .player-avatar--bot.thinking-option2 {
+            position: relative;
+            overflow: visible;
+        }
+
+        .player-avatar--bot.thinking-option2::before {
+            content: '';
+            position: absolute;
+            top: -2px;
+            left: -2px;
+            right: -2px;
+            bottom: -2px;
+            border: 2px dotted rgba(107, 114, 128, 0.7);
+            border-radius: 50%;
+            animation: pulse-rotate 2s ease-in-out infinite;
+            z-index: -1;
+        }
+
+        /* Option 3: Inner Border Spinner */
+        .player-avatar--bot.thinking-option3 {
+            position: relative;
+            border: 2px solid transparent;
+            background: 
+                linear-gradient(145deg, #f3f4f6 0%, #e5e7eb 100%) padding-box,
+                conic-gradient(from 0deg, transparent 0deg, rgba(107, 114, 128, 0.6) 90deg, transparent 180deg) border-box;
+        }
+
+        .player-avatar--bot.thinking-option3::before {
+            content: '';
+            position: absolute;
+            top: -2px;
+            left: -2px;
+            right: -2px;
+            bottom: -2px;
+            border-radius: 50%;
+            background: conic-gradient(from 0deg, transparent 0deg, rgba(107, 114, 128, 0.6) 90deg, transparent 180deg);
+            animation: spin 1.5s linear infinite;
+            z-index: -1;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        @keyframes pulse-rotate {
+            0%, 100% { 
+                transform: rotate(0deg) scale(1);
+                opacity: 0.7;
+            }
+            50% { 
+                transform: rotate(180deg) scale(1.1);
+                opacity: 1;
+            }
+        }
+
+        /* Original thinking animation for comparison */
         .player-avatar--bot.thinking {
             animation: bot-thinking 2s ease-in-out infinite;
         }
@@ -161,6 +244,10 @@
         <h3>Human Avatars</h3>
         <div class="demo-row">
             <div class="demo-item">
+                <div class="player-avatar player-avatar--mini">J</div>
+                <div class="label">Mini (18px)</div>
+            </div>
+            <div class="demo-item">
                 <div class="player-avatar player-avatar--small">J</div>
                 <div class="label">Small (24px)</div>
             </div>
@@ -176,6 +263,25 @@
 
         <h3>Bot Avatars - Normal</h3>
         <div class="demo-row">
+            <div class="demo-item">
+                <div class="player-avatar player-avatar--bot player-avatar--mini">
+                    <svg viewBox="0 0 24 24" fill="currentColor" class="bot-icon">
+                        <rect x="6" y="4" width="12" height="10" rx="2" ry="2" />
+                        <line x1="12" y1="4" x2="12" y2="2" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+                        <circle cx="12" cy="1.5" r="1.5" />
+                        <circle cx="9" cy="8" r="1.5" fill="#fff" />
+                        <circle cx="15" cy="8" r="1.5" fill="#fff" />
+                        <circle cx="9" cy="8" r="0.5" fill="currentColor" />
+                        <circle cx="15" cy="8" r="0.5" fill="currentColor" />
+                        <rect x="9" y="11" width="6" height="1" rx="0.5" fill="#fff" />
+                        <rect x="7" y="14" width="10" height="8" rx="1" ry="1" />
+                        <rect x="10" y="16" width="4" height="2" rx="0.5" fill="#fff" opacity="0.5" />
+                        <rect x="9" y="19" width="2" height="2" rx="0.5" fill="#fff" opacity="0.5" />
+                        <rect x="13" y="19" width="2" height="2" rx="0.5" fill="#fff" opacity="0.5" />
+                    </svg>
+                </div>
+                <div class="label">Mini (18px)</div>
+            </div>
             <div class="demo-item">
                 <div class="player-avatar player-avatar--bot player-avatar--small">
                     <svg viewBox="0 0 24 24" fill="currentColor" class="bot-icon">
@@ -235,10 +341,10 @@
             </div>
         </div>
 
-        <h3>Bot Avatars - Thinking</h3>
+        <h3>Option 1: Circular Loading Ring</h3>
         <div class="demo-row">
             <div class="demo-item">
-                <div class="player-avatar player-avatar--bot player-avatar--small thinking">
+                <div class="player-avatar player-avatar--bot player-avatar--mini thinking-option1">
                     <svg viewBox="0 0 24 24" fill="currentColor" class="bot-icon">
                         <rect x="6" y="4" width="12" height="10" rx="2" ry="2" />
                         <line x1="12" y1="4" x2="12" y2="2" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
@@ -254,10 +360,10 @@
                         <rect x="13" y="19" width="2" height="2" rx="0.5" fill="#fff" opacity="0.5" />
                     </svg>
                 </div>
-                <div class="label">Small Thinking</div>
+                <div class="label">Mini - Spinner Ring</div>
             </div>
             <div class="demo-item">
-                <div class="player-avatar player-avatar--bot player-avatar--medium thinking">
+                <div class="player-avatar player-avatar--bot player-avatar--small thinking-option1">
                     <svg viewBox="0 0 24 24" fill="currentColor" class="bot-icon">
                         <rect x="6" y="4" width="12" height="10" rx="2" ry="2" />
                         <line x1="12" y1="4" x2="12" y2="2" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
@@ -273,8 +379,210 @@
                         <rect x="13" y="19" width="2" height="2" rx="0.5" fill="#fff" opacity="0.5" />
                     </svg>
                 </div>
-                <div class="label">Medium Thinking</div>
+                <div class="label">Small - Spinner Ring</div>
             </div>
+            <div class="demo-item">
+                <div class="player-avatar player-avatar--bot player-avatar--medium thinking-option1">
+                    <svg viewBox="0 0 24 24" fill="currentColor" class="bot-icon">
+                        <rect x="6" y="4" width="12" height="10" rx="2" ry="2" />
+                        <line x1="12" y1="4" x2="12" y2="2" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+                        <circle cx="12" cy="1.5" r="1.5" />
+                        <circle cx="9" cy="8" r="1.5" fill="#fff" />
+                        <circle cx="15" cy="8" r="1.5" fill="#fff" />
+                        <circle cx="9" cy="8" r="0.5" fill="currentColor" />
+                        <circle cx="15" cy="8" r="0.5" fill="currentColor" />
+                        <rect x="9" y="11" width="6" height="1" rx="0.5" fill="#fff" />
+                        <rect x="7" y="14" width="10" height="8" rx="1" ry="1" />
+                        <rect x="10" y="16" width="4" height="2" rx="0.5" fill="#fff" opacity="0.5" />
+                        <rect x="9" y="19" width="2" height="2" rx="0.5" fill="#fff" opacity="0.5" />
+                        <rect x="13" y="19" width="2" height="2" rx="0.5" fill="#fff" opacity="0.5" />
+                    </svg>
+                </div>
+                <div class="label">Medium - Spinner Ring</div>
+            </div>
+            <div class="demo-item">
+                <div class="player-avatar player-avatar--bot player-avatar--large thinking-option1">
+                    <svg viewBox="0 0 24 24" fill="currentColor" class="bot-icon">
+                        <rect x="6" y="4" width="12" height="10" rx="2" ry="2" />
+                        <line x1="12" y1="4" x2="12" y2="2" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+                        <circle cx="12" cy="1.5" r="1.5" />
+                        <circle cx="9" cy="8" r="1.5" fill="#fff" />
+                        <circle cx="15" cy="8" r="1.5" fill="#fff" />
+                        <circle cx="9" cy="8" r="0.5" fill="currentColor" />
+                        <circle cx="15" cy="8" r="0.5" fill="currentColor" />
+                        <rect x="9" y="11" width="6" height="1" rx="0.5" fill="#fff" />
+                        <rect x="7" y="14" width="10" height="8" rx="1" ry="1" />
+                        <rect x="10" y="16" width="4" height="2" rx="0.5" fill="#fff" opacity="0.5" />
+                        <rect x="9" y="19" width="2" height="2" rx="0.5" fill="#fff" opacity="0.5" />
+                        <rect x="13" y="19" width="2" height="2" rx="0.5" fill="#fff" opacity="0.5" />
+                    </svg>
+                </div>
+                <div class="label">Large - Spinner Ring</div>
+            </div>
+        </div>
+
+        <h3>Option 2: Pulsing Dotted Ring</h3>
+        <div class="demo-row">
+            <div class="demo-item">
+                <div class="player-avatar player-avatar--bot player-avatar--mini thinking-option2">
+                    <svg viewBox="0 0 24 24" fill="currentColor" class="bot-icon">
+                        <rect x="6" y="4" width="12" height="10" rx="2" ry="2" />
+                        <line x1="12" y1="4" x2="12" y2="2" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+                        <circle cx="12" cy="1.5" r="1.5" />
+                        <circle cx="9" cy="8" r="1.5" fill="#fff" />
+                        <circle cx="15" cy="8" r="1.5" fill="#fff" />
+                        <circle cx="9" cy="8" r="0.5" fill="currentColor" />
+                        <circle cx="15" cy="8" r="0.5" fill="currentColor" />
+                        <rect x="9" y="11" width="6" height="1" rx="0.5" fill="#fff" />
+                        <rect x="7" y="14" width="10" height="8" rx="1" ry="1" />
+                        <rect x="10" y="16" width="4" height="2" rx="0.5" fill="#fff" opacity="0.5" />
+                        <rect x="9" y="19" width="2" height="2" rx="0.5" fill="#fff" opacity="0.5" />
+                        <rect x="13" y="19" width="2" height="2" rx="0.5" fill="#fff" opacity="0.5" />
+                    </svg>
+                </div>
+                <div class="label">Mini - Pulse Dots</div>
+            </div>
+            <div class="demo-item">
+                <div class="player-avatar player-avatar--bot player-avatar--small thinking-option2">
+                    <svg viewBox="0 0 24 24" fill="currentColor" class="bot-icon">
+                        <rect x="6" y="4" width="12" height="10" rx="2" ry="2" />
+                        <line x1="12" y1="4" x2="12" y2="2" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+                        <circle cx="12" cy="1.5" r="1.5" />
+                        <circle cx="9" cy="8" r="1.5" fill="#fff" />
+                        <circle cx="15" cy="8" r="1.5" fill="#fff" />
+                        <circle cx="9" cy="8" r="0.5" fill="currentColor" />
+                        <circle cx="15" cy="8" r="0.5" fill="currentColor" />
+                        <rect x="9" y="11" width="6" height="1" rx="0.5" fill="#fff" />
+                        <rect x="7" y="14" width="10" height="8" rx="1" ry="1" />
+                        <rect x="10" y="16" width="4" height="2" rx="0.5" fill="#fff" opacity="0.5" />
+                        <rect x="9" y="19" width="2" height="2" rx="0.5" fill="#fff" opacity="0.5" />
+                        <rect x="13" y="19" width="2" height="2" rx="0.5" fill="#fff" opacity="0.5" />
+                    </svg>
+                </div>
+                <div class="label">Small - Pulse Dots</div>
+            </div>
+            <div class="demo-item">
+                <div class="player-avatar player-avatar--bot player-avatar--medium thinking-option2">
+                    <svg viewBox="0 0 24 24" fill="currentColor" class="bot-icon">
+                        <rect x="6" y="4" width="12" height="10" rx="2" ry="2" />
+                        <line x1="12" y1="4" x2="12" y2="2" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+                        <circle cx="12" cy="1.5" r="1.5" />
+                        <circle cx="9" cy="8" r="1.5" fill="#fff" />
+                        <circle cx="15" cy="8" r="1.5" fill="#fff" />
+                        <circle cx="9" cy="8" r="0.5" fill="currentColor" />
+                        <circle cx="15" cy="8" r="0.5" fill="currentColor" />
+                        <rect x="9" y="11" width="6" height="1" rx="0.5" fill="#fff" />
+                        <rect x="7" y="14" width="10" height="8" rx="1" ry="1" />
+                        <rect x="10" y="16" width="4" height="2" rx="0.5" fill="#fff" opacity="0.5" />
+                        <rect x="9" y="19" width="2" height="2" rx="0.5" fill="#fff" opacity="0.5" />
+                        <rect x="13" y="19" width="2" height="2" rx="0.5" fill="#fff" opacity="0.5" />
+                    </svg>
+                </div>
+                <div class="label">Medium - Pulse Dots</div>
+            </div>
+            <div class="demo-item">
+                <div class="player-avatar player-avatar--bot player-avatar--large thinking-option2">
+                    <svg viewBox="0 0 24 24" fill="currentColor" class="bot-icon">
+                        <rect x="6" y="4" width="12" height="10" rx="2" ry="2" />
+                        <line x1="12" y1="4" x2="12" y2="2" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+                        <circle cx="12" cy="1.5" r="1.5" />
+                        <circle cx="9" cy="8" r="1.5" fill="#fff" />
+                        <circle cx="15" cy="8" r="1.5" fill="#fff" />
+                        <circle cx="9" cy="8" r="0.5" fill="currentColor" />
+                        <circle cx="15" cy="8" r="0.5" fill="currentColor" />
+                        <rect x="9" y="11" width="6" height="1" rx="0.5" fill="#fff" />
+                        <rect x="7" y="14" width="10" height="8" rx="1" ry="1" />
+                        <rect x="10" y="16" width="4" height="2" rx="0.5" fill="#fff" opacity="0.5" />
+                        <rect x="9" y="19" width="2" height="2" rx="0.5" fill="#fff" opacity="0.5" />
+                        <rect x="13" y="19" width="2" height="2" rx="0.5" fill="#fff" opacity="0.5" />
+                    </svg>
+                </div>
+                <div class="label">Large - Pulse Dots</div>
+            </div>
+        </div>
+
+        <h3>Option 3: Inner Border Spinner</h3>
+        <div class="demo-row">
+            <div class="demo-item">
+                <div class="player-avatar player-avatar--bot player-avatar--mini thinking-option3">
+                    <svg viewBox="0 0 24 24" fill="currentColor" class="bot-icon">
+                        <rect x="6" y="4" width="12" height="10" rx="2" ry="2" />
+                        <line x1="12" y1="4" x2="12" y2="2" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+                        <circle cx="12" cy="1.5" r="1.5" />
+                        <circle cx="9" cy="8" r="1.5" fill="#fff" />
+                        <circle cx="15" cy="8" r="1.5" fill="#fff" />
+                        <circle cx="9" cy="8" r="0.5" fill="currentColor" />
+                        <circle cx="15" cy="8" r="0.5" fill="currentColor" />
+                        <rect x="9" y="11" width="6" height="1" rx="0.5" fill="#fff" />
+                        <rect x="7" y="14" width="10" height="8" rx="1" ry="1" />
+                        <rect x="10" y="16" width="4" height="2" rx="0.5" fill="#fff" opacity="0.5" />
+                        <rect x="9" y="19" width="2" height="2" rx="0.5" fill="#fff" opacity="0.5" />
+                        <rect x="13" y="19" width="2" height="2" rx="0.5" fill="#fff" opacity="0.5" />
+                    </svg>
+                </div>
+                <div class="label">Mini - Inner Border</div>
+            </div>
+            <div class="demo-item">
+                <div class="player-avatar player-avatar--bot player-avatar--small thinking-option3">
+                    <svg viewBox="0 0 24 24" fill="currentColor" class="bot-icon">
+                        <rect x="6" y="4" width="12" height="10" rx="2" ry="2" />
+                        <line x1="12" y1="4" x2="12" y2="2" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+                        <circle cx="12" cy="1.5" r="1.5" />
+                        <circle cx="9" cy="8" r="1.5" fill="#fff" />
+                        <circle cx="15" cy="8" r="1.5" fill="#fff" />
+                        <circle cx="9" cy="8" r="0.5" fill="currentColor" />
+                        <circle cx="15" cy="8" r="0.5" fill="currentColor" />
+                        <rect x="9" y="11" width="6" height="1" rx="0.5" fill="#fff" />
+                        <rect x="7" y="14" width="10" height="8" rx="1" ry="1" />
+                        <rect x="10" y="16" width="4" height="2" rx="0.5" fill="#fff" opacity="0.5" />
+                        <rect x="9" y="19" width="2" height="2" rx="0.5" fill="#fff" opacity="0.5" />
+                        <rect x="13" y="19" width="2" height="2" rx="0.5" fill="#fff" opacity="0.5" />
+                    </svg>
+                </div>
+                <div class="label">Small - Inner Border</div>
+            </div>
+            <div class="demo-item">
+                <div class="player-avatar player-avatar--bot player-avatar--medium thinking-option3">
+                    <svg viewBox="0 0 24 24" fill="currentColor" class="bot-icon">
+                        <rect x="6" y="4" width="12" height="10" rx="2" ry="2" />
+                        <line x1="12" y1="4" x2="12" y2="2" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+                        <circle cx="12" cy="1.5" r="1.5" />
+                        <circle cx="9" cy="8" r="1.5" fill="#fff" />
+                        <circle cx="15" cy="8" r="1.5" fill="#fff" />
+                        <circle cx="9" cy="8" r="0.5" fill="currentColor" />
+                        <circle cx="15" cy="8" r="0.5" fill="currentColor" />
+                        <rect x="9" y="11" width="6" height="1" rx="0.5" fill="#fff" />
+                        <rect x="7" y="14" width="10" height="8" rx="1" ry="1" />
+                        <rect x="10" y="16" width="4" height="2" rx="0.5" fill="#fff" opacity="0.5" />
+                        <rect x="9" y="19" width="2" height="2" rx="0.5" fill="#fff" opacity="0.5" />
+                        <rect x="13" y="19" width="2" height="2" rx="0.5" fill="#fff" opacity="0.5" />
+                    </svg>
+                </div>
+                <div class="label">Medium - Inner Border</div>
+            </div>
+            <div class="demo-item">
+                <div class="player-avatar player-avatar--bot player-avatar--large thinking-option3">
+                    <svg viewBox="0 0 24 24" fill="currentColor" class="bot-icon">
+                        <rect x="6" y="4" width="12" height="10" rx="2" ry="2" />
+                        <line x1="12" y1="4" x2="12" y2="2" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+                        <circle cx="12" cy="1.5" r="1.5" />
+                        <circle cx="9" cy="8" r="1.5" fill="#fff" />
+                        <circle cx="15" cy="8" r="1.5" fill="#fff" />
+                        <circle cx="9" cy="8" r="0.5" fill="currentColor" />
+                        <circle cx="15" cy="8" r="0.5" fill="currentColor" />
+                        <rect x="9" y="11" width="6" height="1" rx="0.5" fill="#fff" />
+                        <rect x="7" y="14" width="10" height="8" rx="1" ry="1" />
+                        <rect x="10" y="16" width="4" height="2" rx="0.5" fill="#fff" opacity="0.5" />
+                        <rect x="9" y="19" width="2" height="2" rx="0.5" fill="#fff" opacity="0.5" />
+                        <rect x="13" y="19" width="2" height="2" rx="0.5" fill="#fff" opacity="0.5" />
+                    </svg>
+                </div>
+                <div class="label">Large - Inner Border</div>
+            </div>
+        </div>
+
+        <h3>Original: Glow Animation (for comparison)</h3>
+        <div class="demo-row">
             <div class="demo-item">
                 <div class="player-avatar player-avatar--bot player-avatar--large thinking">
                     <svg viewBox="0 0 24 24" fill="currentColor" class="bot-icon">
@@ -292,7 +600,7 @@
                         <rect x="13" y="19" width="2" height="2" rx="0.5" fill="#fff" opacity="0.5" />
                     </svg>
                 </div>
-                <div class="label">Large Thinking</div>
+                <div class="label">Original Glow</div>
             </div>
         </div>
     </div>
@@ -402,6 +710,7 @@
     <div class="demo-section">
         <h2>Usage Context</h2>
         <ul style="line-height: 1.8;">
+            <li><strong>Mini (18px)</strong> - Compact UI elements</li>
             <li><strong>Small (24px)</strong> - Used in turn phase player summary bars</li>
             <li><strong>Medium (32px)</strong> - Used in scoring phase player cards</li>
             <li><strong>Large (36px)</strong> - Used in declaration phase player list</li>

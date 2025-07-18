@@ -107,9 +107,26 @@
   height: 65%;
 }
 
-/* Bot thinking animation */
+/* Bot thinking animation - Inner Border Spinner */
 .player-avatar--bot.thinking {
-  animation: bot-thinking 2s ease-in-out infinite;
+  position: relative;
+  border: 2px solid transparent;
+  background: 
+    linear-gradient(145deg, #f3f4f6 0%, #e5e7eb 100%) padding-box,
+    conic-gradient(from 0deg, transparent 0deg, rgba(107, 114, 128, 0.6) 90deg, transparent 180deg) border-box;
+}
+
+.player-avatar--bot.thinking::before {
+  content: '';
+  position: absolute;
+  top: -2px;
+  left: -2px;
+  right: -2px;
+  bottom: -2px;
+  border-radius: 50%;
+  background: conic-gradient(from 0deg, transparent 0deg, rgba(107, 114, 128, 0.6) 90deg, transparent 180deg);
+  animation: bot-thinking-spin 1.5s linear infinite;
+  z-index: -1;
 }
 
 /* Yellow theme variant (for lobby) */
@@ -125,18 +142,9 @@
   border-color: rgba(255, 193, 7, 0.25);
 }
 
-@keyframes bot-thinking {
-  0%, 100% {
-    box-shadow:
-      0 2px 4px rgba(0, 0, 0, 0.06),
-      inset 0 1px 0 rgba(255, 255, 255, 1);
-  }
-  50% {
-    box-shadow:
-      0 2px 4px rgba(0, 0, 0, 0.06),
-      inset 0 1px 0 rgba(255, 255, 255, 1),
-      0 0 20px rgba(107, 114, 128, 0.3);
-  }
+@keyframes bot-thinking-spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
 }
 
 /* Bot avatar hover effect */
