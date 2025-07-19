@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Reconnection Test Demo</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; }
+        .section { margin: 20px 0; padding: 20px; border: 1px solid #ccc; }
+        button { margin: 5px; padding: 10px; cursor: pointer; }
+        .log { background: #f5f5f5; padding: 10px; margin-top: 10px; }
+    </style>
+</head>
+<body>
+    <h1>Reconnection Test Demo</h1>
+    
+    <div class="section">
+        <h2>Session Storage Test</h2>
+        <button onclick="storeTestSession()">Store Session</button>
+        <button onclick="getTestSession()">Get Session</button>
+        <button onclick="clearTestSession()">Clear Session</button>
+        <div id="session-log" class="log"></div>
+    </div>
+    
+    <div class="section">
+        <h2>Tab Communication Test</h2>
+        <button onclick="openNewTab()">Open New Tab</button>
+        <button onclick="sendTabMessage()">Send Message</button>
+        <div id="tab-log" class="log"></div>
+    </div>
+    
+    <script>
+        // Session Storage Tests
+        function storeTestSession() {
+            const session = {
+                roomId: 'test-room-123',
+                playerName: 'TestPlayer',
+                sessionId: 'session-' + Date.now(),
+                createdAt: Date.now(),
+                lastActivity: Date.now(),
+                gamePhase: 'TURN'
+            };
+            localStorage.setItem('liap_tui_session', JSON.stringify(session));
+            log('session-log', 'Session stored: ' + JSON.stringify(session, null, 2));
+        }
+        
+        function getTestSession() {
+            const session = localStorage.getItem('liap_tui_session');
+            log('session-log', 'Session retrieved: ' + (session || 'No session found'));
+        }
+        
+        function clearTestSession() {
+            localStorage.removeItem('liap_tui_session');
+            log('session-log', 'Session cleared');
+        }
+        
+        // Tab Communication Tests
+        let channel;
+        try {
+            channel = new BroadcastChannel('liap_tui_tabs');
+            channel.onmessage = (event) => {
+                log('tab-log', 'Received: ' + JSON.stringify(event.data));
+            };
+            log('tab-log', 'BroadcastChannel initialized');
+        } catch (e) {
+            log('tab-log', 'BroadcastChannel not supported: ' + e.message);
+        }
+        
+        function openNewTab() {
+            window.open(window.location.href, '_blank');
+        }
+        
+        function sendTabMessage() {
+            if (channel) {
+                const message = {
+                    type: 'TEST_MESSAGE',
+                    tabId: 'tab-' + Date.now(),
+                    timestamp: Date.now()
+                };
+                channel.postMessage(message);
+                log('tab-log', 'Sent: ' + JSON.stringify(message));
+            }
+        }
+        
+        function log(elementId, message) {
+            const el = document.getElementById(elementId);
+            el.innerHTML = '<pre>' + message + '</pre>' + el.innerHTML;
+        }
+    </script>
+</body>
+</html>

@@ -5,6 +5,11 @@ import PropTypes from 'prop-types';
 import BotIcon from '../../../assets/avatars/bot.svg';
 import HumanIcon from '../../../assets/avatars/human.svg';
 
+// Connection status components
+import ConnectionStatusBadge from '../../ConnectionStatusBadge';
+import DisconnectOverlay from '../../DisconnectOverlay';
+import useDisconnectStatus from '../../../hooks/useDisconnectStatus';
+
 /**
  * PlayerAvatar Component
  *
@@ -18,8 +23,28 @@ import HumanIcon from '../../../assets/avatars/human.svg';
  * @param {string} className - Additional CSS class names (optional)
  * @param {string} size - Avatar size: 'mini', 'small', 'medium', 'large' (default: 'medium')
  * @param {string} theme - Avatar theme: 'default', 'yellow' (default: 'default')
+ * @param {boolean} isDisconnected - Whether the player is disconnected (optional, default: false)
+ * @param {string} connectionStatus - Connection status: 'connected', 'disconnected', 'reconnecting' (optional)
+ * @param {boolean} showConnectionStatus - Whether to show connection status indicators (optional, default: true)
+ * @param {boolean} showDisconnectOverlay - Whether to show disconnect overlay (optional, default: true)
  */
-const PlayerAvatar = ({ name, isBot = false, isThinking = false, className = '', size = 'medium', theme = 'default' }) => {
+const PlayerAvatar = ({ 
+  name, 
+  isBot = false, 
+  isThinking = false, 
+  className = '', 
+  size = 'medium', 
+  theme = 'default',
+  isDisconnected = false,
+  connectionStatus: propConnectionStatus,
+  showConnectionStatus = true,
+  showDisconnectOverlay = true
+}) => {
+  // Use hook for dynamic connection status if not provided as prop
+  const hookConnectionData = useDisconnectStatus(name);
+  const connectionStatus = propConnectionStatus || hookConnectionData.connectionStatus;
+  const isActuallyDisconnected = isDisconnected || hookConnectionData.isDisconnected;
+  const isBotPlaying = isBot || hookConnectionData.isBot;
 
   // Get size-specific class
   const getSizeClass = () => {
@@ -40,19 +65,41 @@ const PlayerAvatar = ({ name, isBot = false, isThinking = false, className = '',
     return theme === 'yellow' ? 'player-avatar--yellow' : '';
   };
 
-  // Render bot avatar
-  if (isBot) {
+  // Get avatar content
+  const getAvatarContent = () => {
+    if (isBotPlaying) {
+      return (
+        <div className={`player-avatar player-avatar--bot ${getSizeClass()} ${getThemeClass()} ${isThinking ? 'thinking' : ''} ${isActuallyDisconnected ? 'player-avatar--disconnected' : ''} ${className}`}>
+          <img src={BotIcon} alt="Bot" className="bot-icon" />
+        </div>
+      );
+    }
+
     return (
-      <div className={`player-avatar player-avatar--bot ${getSizeClass()} ${getThemeClass()} ${isThinking ? 'thinking' : ''} ${className}`}>
-        <img src={BotIcon} alt="Bot" className="bot-icon" />
+      <div className={`player-avatar ${getSizeClass()} ${getThemeClass()} ${isActuallyDisconnected ? 'player-avatar--disconnected' : ''} ${className}`}>
+        <img src={HumanIcon} alt={name} className="human-icon" />
       </div>
     );
-  }
+  };
 
-  // Render human avatar
+  // Render with connection status wrapper
   return (
-    <div className={`player-avatar ${getSizeClass()} ${getThemeClass()} ${className}`}>
-      <img src={HumanIcon} alt={name} className="human-icon" />
+    <div className="player-avatar-wrapper">
+      {getAvatarContent()}
+      {showConnectionStatus && (
+        <ConnectionStatusBadge 
+          connectionStatus={connectionStatus} 
+          isBot={isBotPlaying && isActuallyDisconnected} 
+        />
+      )}
+      {showDisconnectOverlay && isActuallyDisconnected && (
+        <DisconnectOverlay
+          isDisconnected={isActuallyDisconnected}
+          connectionStatus={connectionStatus}
+          playerName={name}
+          isBot={isBotPlaying}
+        />
+      )}
     </div>
   );
 };
@@ -64,6 +111,10 @@ PlayerAvatar.propTypes = {
   className: PropTypes.string,
   size: PropTypes.oneOf(['mini', 'small', 'medium', 'large']),
   theme: PropTypes.oneOf(['default', 'yellow']),
+  isDisconnected: PropTypes.bool,
+  connectionStatus: PropTypes.oneOf(['connected', 'disconnected', 'reconnecting']),
+  showConnectionStatus: PropTypes.bool,
+  showDisconnectOverlay: PropTypes.bool,
 };
 
 export default PlayerAvatar;
