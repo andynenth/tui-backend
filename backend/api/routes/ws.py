@@ -116,6 +116,33 @@ async def handle_disconnect(room_id: str, websocket: WebSocket):
                                     "message": f"{new_host} is now the host"
                                 }
                             )
+                        
+                        # Check if all players are now bots
+                        if not room.has_human_players():
+                            logger.info(f"🤖 [Room {room_id}] All players are bots. Terminating game.")
+                            
+                            # Stop the game state machine
+                            if room.game_state_machine:
+                                await room.game_state_machine.stop()
+                            
+                            # Unregister from bot manager
+                            from engine.bot_manager import BotManager
+                            bot_manager = BotManager()
+                            bot_manager.unregister_game(room_id)
+                            
+                            # Broadcast game termination
+                            await broadcast(
+                                room_id,
+                                "game_terminated",
+                                {
+                                    "reason": "all_players_disconnected",
+                                    "message": "Game terminated: All players have disconnected"
+                                }
+                            )
+                            
+                            # Remove the room
+                            room_manager.delete_room(room_id)
+                            logger.info(f"🗑️ [Room {room_id}] Room removed after all players disconnected")
                 else:
                     logger.warning(f"No connection found for websocket_id {websocket_id} in room {room_id}")
         else:

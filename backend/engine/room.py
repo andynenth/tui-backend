@@ -336,6 +336,17 @@ class Room:
         """
         return self.get_occupied_slots() >= self.get_total_slots()
     
+    def has_human_players(self) -> bool:
+        """
+        Check if there are any human players (non-bots) in the room.
+        Returns:
+            bool: True if at least one human player exists, False otherwise.
+        """
+        for player in self.players:
+            if player and not player.is_bot:
+                return True
+        return False
+    
     def migrate_host(self) -> Optional[str]:
         """
         Migrates host privileges to the next suitable player.
