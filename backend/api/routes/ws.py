@@ -53,6 +53,13 @@ async def handle_disconnect(room_id: str, websocket: WebSocket):
                         
                         logger.info(f"Player {connection.player_name} disconnected from game in room {room_id}. Bot activated.")
                         
+                        # Check if disconnecting player was the host
+                        new_host = None
+                        if room.is_host(connection.player_name):
+                            new_host = room.migrate_host()
+                            if new_host:
+                                logger.info(f"Host migrated to {new_host} in room {room_id}")
+                        
                         # Broadcast disconnect event
                         await broadcast(
                             room_id,
@@ -60,10 +67,22 @@ async def handle_disconnect(room_id: str, websocket: WebSocket):
                             {
                                 "player_name": connection.player_name,
                                 "ai_activated": True,
-                                "reconnect_deadline": connection.reconnect_deadline.isoformat() if connection.reconnect_deadline else None,
+                                "can_reconnect": True,
                                 "is_bot": True
                             }
                         )
+                        
+                        # Broadcast host change if migration occurred
+                        if new_host:
+                            await broadcast(
+                                room_id,
+                                "host_changed",
+                                {
+                                    "old_host": connection.player_name,
+                                    "new_host": new_host,
+                                    "message": f"{new_host} is now the host"
+                                }
+                            )
     except Exception as e:
         logger.error(f"Error handling disconnect: {e}")
     finally:

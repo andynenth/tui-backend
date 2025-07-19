@@ -335,6 +335,43 @@ class Room:
             bool: True if the room is full, False otherwise.
         """
         return self.get_occupied_slots() >= self.get_total_slots()
+    
+    def migrate_host(self) -> Optional[str]:
+        """
+        Migrates host privileges to the next suitable player.
+        Prefers human players over bots.
+        Returns:
+            Optional[str]: Name of the new host, or None if no suitable host found.
+        """
+        # First, try to find a human player who isn't the current host
+        for player in self.players:
+            if player and not player.is_bot and player.name != self.host_name:
+                old_host = self.host_name
+                self.host_name = player.name
+                print(f"🔄 [Room {self.room_id}] Host migrated from '{old_host}' to '{self.host_name}'")
+                return self.host_name
+        
+        # If no human players available, select the first bot
+        for player in self.players:
+            if player and player.is_bot:
+                old_host = self.host_name
+                self.host_name = player.name
+                print(f"🔄 [Room {self.room_id}] Host migrated from '{old_host}' to bot '{self.host_name}'")
+                return self.host_name
+        
+        # No suitable host found (room is empty?)
+        print(f"⚠️ [Room {self.room_id}] No suitable host found for migration")
+        return None
+    
+    def is_host(self, player_name: str) -> bool:
+        """
+        Check if a player is the current host.
+        Args:
+            player_name (str): The name of the player to check.
+        Returns:
+            bool: True if the player is the host, False otherwise.
+        """
+        return self.host_name == player_name
 
     def summary(self):
         """
