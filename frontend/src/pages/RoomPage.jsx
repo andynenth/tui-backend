@@ -35,7 +35,7 @@ const RoomPage = () => {
 
     const initializeRoom = async () => {
       try {
-        await networkService.connectToRoom(roomId);
+        await networkService.connectToRoom(roomId, { playerName: app.playerName });
         if (mounted) {
           setIsConnected(true);
           // Request room state

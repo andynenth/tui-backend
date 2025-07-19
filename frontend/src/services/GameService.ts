@@ -93,7 +93,7 @@ export class GameService extends EventTarget {
       );
 
       // Connect to room via NetworkService
-      await networkService.connectToRoom(roomId);
+      await networkService.connectToRoom(roomId, { playerName });
 
       // Update connection state
       this.setState(
