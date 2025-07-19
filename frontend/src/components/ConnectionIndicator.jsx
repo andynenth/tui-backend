@@ -10,6 +10,7 @@ const ConnectionIndicator = ({
   roomId = null,
   showDetails = false,
   className = '',
+  disconnectedPlayers = [],
 }) => {
   const getStatusInfo = () => {
     if (error) {
@@ -63,19 +64,30 @@ const ConnectionIndicator = ({
     ${statusInfo.color}
   `;
 
+  const hasDisconnectedPlayers = disconnectedPlayers.length > 0;
+
   return (
-    <div className={`${baseClasses} ${className}`}>
-      <span className="text-xs">{statusInfo.icon}</span>
-      <span>{statusInfo.text}</span>
+    <div className="flex flex-col gap-2">
+      <div className={`${baseClasses} ${className}`}>
+        <span className="text-xs">{statusInfo.icon}</span>
+        <span>{statusInfo.text}</span>
 
-      {showDetails && roomId && (
-        <span className="text-xs opacity-75">({roomId})</span>
-      )}
+        {showDetails && roomId && (
+          <span className="text-xs opacity-75">({roomId})</span>
+        )}
 
-      {error && showDetails && (
-        <span className="text-xs opacity-75" title={error.message || error}>
-          ⚠️
-        </span>
+        {error && showDetails && (
+          <span className="text-xs opacity-75" title={error.message || error}>
+            ⚠️
+          </span>
+        )}
+      </div>
+
+      {hasDisconnectedPlayers && (
+        <div className="text-xs text-gray-600 bg-yellow-100 px-3 py-1 rounded-full">
+          <span className="mr-1">🤖</span>
+          AI Playing for: {disconnectedPlayers.join(', ')} - Can reconnect anytime
+        </div>
       )}
     </div>
   );
