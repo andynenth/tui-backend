@@ -1,5 +1,11 @@
 /* Player Avatar Shared Component Styles */
 
+/* Avatar wrapper for positioning connection indicators */
+.player-avatar-wrapper {
+  position: relative;
+  display: inline-block;
+}
+
 /* Base player avatar styles */
 .player-avatar {
   border-radius: 50%;
@@ -154,4 +160,15 @@
     0 4px 8px rgba(0, 0, 0, 0.08),
     inset 0 1px 0 rgba(255, 255, 255, 1);
   border-color: rgba(107, 114, 128, 0.5);
+}
+
+/* Disconnected state */
+.player-avatar--disconnected {
+  opacity: 0.6;
+  filter: grayscale(50%);
+}
+
+.player-avatar--disconnected:hover {
+  transform: none;
+  cursor: default;
 }
