@@ -5,6 +5,8 @@
  * Stores session info to allow reconnection after browser refresh/close
  */
 
+import { generateReconnectionUrl } from './reconnectionUrl';
+
 const SESSION_KEY = 'liap_tui_session';
 const SESSION_EXPIRY_HOURS = 24;
 
@@ -30,11 +32,16 @@ export function storeSession(roomId, playerName, sessionId, gamePhase = null) {
     createdAt: Date.now(),
     lastActivity: Date.now(),
     gamePhase,
+    reconnectionUrl: generateReconnectionUrl(roomId, playerName),
   };
 
   try {
     localStorage.setItem(SESSION_KEY, JSON.stringify(sessionData));
-    console.log('Session stored:', { roomId, playerName });
+    console.log('Session stored:', {
+      roomId,
+      playerName,
+      reconnectionUrl: sessionData.reconnectionUrl,
+    });
   } catch (error) {
     console.error('Failed to store session:', error);
   }

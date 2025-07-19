@@ -8,6 +8,11 @@ import { useTheme } from '../contexts/ThemeContext';
 import { Layout, LoadingOverlay } from '../components';
 import SettingsButton from '../components/SettingsButton';
 import SettingsModal from '../components/SettingsModal';
+import {
+  parseReconnectionParams,
+  clearReconnectionParams,
+} from '../utils/reconnectionUrl';
+import { gameService } from '../services/GameService';
 // CSS classes are imported globally
 
 const StartPage = () => {
@@ -31,12 +36,47 @@ const StartPage = () => {
 
   const playerNameValue = watch('playerName');
 
-  // If player name already exists, suggest going to lobby
+  // Check for reconnection parameters on mount
   useEffect(() => {
-    if (app.playerName) {
+    const reconnectionParams = parseReconnectionParams();
+    if (reconnectionParams) {
+      handleReconnection(reconnectionParams);
+    } else if (app.playerName) {
       setValue('playerName', app.playerName);
     }
-  }, [app.playerName, setValue]);
+  }, []);
+
+  // Handle reconnection attempt
+  const handleReconnection = async (params) => {
+    const { roomId, playerName } = params;
+    setIsSubmitting(true);
+
+    try {
+      console.log('🔄 Attempting to reconnect:', { roomId, playerName });
+
+      // Set player name in app context
+      app.updatePlayerName(playerName);
+
+      // Try to join the room directly
+      await gameService.joinRoom(roomId, playerName);
+
+      // Clear the URL parameters
+      clearReconnectionParams();
+
+      // Navigate to the game
+      navigate(`/game/${roomId}`);
+    } catch (error) {
+      console.error('Reconnection failed:', error);
+      // If reconnection fails, stay on start page with the player name filled
+      setValue('playerName', playerName);
+      setIsSubmitting(false);
+
+      // Clear the URL parameters
+      clearReconnectionParams();
+
+      // TODO: Show error message to user
+    }
+  };
 
   const onSubmit = async (data) => {
     setIsSubmitting(true);
@@ -180,8 +220,16 @@ const StartPage = () => {
 
       <LoadingOverlay
         isVisible={isSubmitting}
-        message="Setting up your profile..."
-        subtitle="Please wait while we prepare your game session"
+        message={
+          parseReconnectionParams()
+            ? 'Reconnecting to game...'
+            : 'Setting up your profile...'
+        }
+        subtitle={
+          parseReconnectionParams()
+            ? 'Rejoining your session'
+            : 'Please wait while we prepare your game session'
+        }
       />
 
       {/* Settings Modal */}
