@@ -8,10 +8,10 @@ import useToastNotifications from '../hooks/useToastNotifications';
 import '../styles/toast-notifications.css';
 
 const ToastContainer = ({ position = 'top-right', maxToasts = 5 }) => {
-  const { notifications, removeNotification } = useToastNotifications();
+  const { toasts, removeToast } = useToastNotifications();
 
   // Get visible notifications (limit by maxToasts)
-  const visibleNotifications = notifications.slice(-maxToasts);
+  const visibleNotifications = toasts.slice(-maxToasts);
 
   // Don't render if no notifications
   if (visibleNotifications.length === 0) return null;
@@ -26,7 +26,7 @@ const ToastContainer = ({ position = 'top-right', maxToasts = 5 }) => {
             animationDelay: `${index * 50}ms`,
           }}
         >
-          <ToastNotification {...notification} onClose={removeNotification} />
+          <ToastNotification {...notification} onClose={removeToast} />
         </div>
       ))}
     </div>,
