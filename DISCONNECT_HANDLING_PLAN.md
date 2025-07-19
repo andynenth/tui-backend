@@ -65,8 +65,8 @@ This document outlines all possible player disconnection scenarios in Liap Tui a
 **Proposed Behavior:**
 - If during deal: Continue dealing, mark player as "disconnected"
 - If during weak hand vote: Bot takes over immediately
-- Give 30-second reconnection window
-- If no reconnect: Player remains bot-controlled
+- Allow unlimited reconnection while game is active
+- Player can reclaim control anytime during the game
 
 **Implementation:**
 ```python
@@ -78,7 +78,7 @@ async def handle_player_disconnect(self, player_name: str):
     self.disconnected_players[player_name] = {
         'time': datetime.now(),
         'original_is_bot': player.is_bot,  # Store original state
-        'reconnect_deadline': datetime.now() + timedelta(seconds=30)
+        'can_reconnect': True  # Always true while game is active
     }
     
     # Convert to bot - existing BotManager will handle decisions
@@ -88,7 +88,7 @@ async def handle_player_disconnect(self, player_name: str):
     await self.broadcast_custom_event("player_disconnected", {
         "player_name": player_name,
         "ai_activated": True,
-        "reconnect_deadline": self.disconnected_players[player_name]['reconnect_deadline']
+        "can_reconnect": True
     })
 ```
 
@@ -100,7 +100,7 @@ async def handle_player_disconnect(self, player_name: str):
 
 **Proposed Behavior:**
 - Bot takes over immediately using existing AI logic
-- 30-second reconnection window
+- Unlimited reconnection allowed while game is active
 - Broadcast player status to others
 
 **Implementation:**
@@ -116,7 +116,7 @@ async def handle_player_disconnect(self, player_name: str):
     self.disconnected_players[player_name] = {
         'time': datetime.now(),
         'original_is_bot': False,
-        'reconnect_deadline': datetime.now() + timedelta(seconds=30)
+        'can_reconnect': True  # Always true while game is active
     }
     
     # BotManager will receive phase_change event and handle declaration
@@ -130,7 +130,7 @@ async def handle_player_disconnect(self, player_name: str):
 **Proposed Behavior:**
 - Bot takes over immediately (no delay needed)
 - Existing BotManager handles turn logic with 0.5-1.5s realistic delays
-- 30-second reconnection window throughout
+- Unlimited reconnection allowed while game is active
 
 **Implementation:**
 ```python
@@ -145,7 +145,7 @@ async def handle_player_disconnect(self, player_name: str):
     self.disconnected_players[player_name] = {
         'time': datetime.now(),
         'original_is_bot': False,
-        'reconnect_deadline': datetime.now() + timedelta(seconds=30)
+        'can_reconnect': True  # Always true while game is active
     }
     
     # If it's their turn, BotManager will play within 0.5-1.5 seconds
@@ -161,7 +161,7 @@ async def handle_player_disconnect(self, player_name: str):
 **Proposed Behavior:**
 - Continue scoring normally
 - Mark player as disconnected
-- Allow reconnection to see results
+- Allow unlimited reconnection while game is active
 
 #### 2.5 Host Disconnects During Game
 **Current Behavior:**
@@ -196,17 +196,12 @@ async def migrate_host(self, old_host: str):
 - No game interruption
 - Message queue ensures no lost actions
 
-#### 3.2 Short Disconnection (5-30 seconds)
+#### 3.2 Any Length Disconnection
 **Proposed Behavior:**
-- Show "reconnecting" status to other players
-- Pause turn timer if applicable
+- Show "AI Playing" status to other players
+- Bot continues playing automatically
 - Full state sync on reconnection
-
-#### 3.3 Extended Disconnection (>30 seconds)
-**Proposed Behavior:**
-- Replace with AI player
-- Allow player to spectate if they reconnect later
-- Option to replace AI if player returns
+- Player can reconnect anytime while game is active
 
 ## Key Implementation Strategy
 
@@ -234,10 +229,10 @@ The game already has a complete AI system that handles bot players:
    - Player name displayed in UI components
 
 **Still Needed:**
-3. **Disconnected Humans (Within Grace Period)**:
+3. **Disconnected Humans (Can Reconnect Anytime)**:
    - Grayed out letter avatar
-   - Countdown timer overlay
-   - "Reconnecting..." tooltip
+   - "AI Playing - Can reconnect anytime" indicator
+   - "Disconnected" tooltip
 
 This provides clear visual feedback without changing player names or disrupting game flow.
 
@@ -276,9 +271,9 @@ class PlayerConnection:
         self.player_name = player_name
         self.connection_status = "connected"
         self.disconnect_time = None
-        self.reconnect_deadline = None
         self.is_ai_controlled = False
         self.websocket = None
+        # No reconnect_deadline - players can reconnect anytime
 ```
 
 #### 1.3 Existing AI System Integration
@@ -298,28 +293,23 @@ async def activate_ai_for_disconnected_player(player: Player):
     # via existing enterprise architecture events
 
 async def handle_player_reconnection(player_name: str, websocket: WebSocket):
-    """Handle player reconnection within grace period"""
+    """Handle player reconnection - allowed anytime while game is active"""
     player = game.get_player(player_name)
     
-    # Check if within reconnection window
-    if player_name in disconnected_players:
-        deadline = disconnected_players[player_name]['reconnect_deadline']
-        if datetime.now() < deadline:
-            # Restore human control
-            player.is_bot = disconnected_players[player_name]['original_is_bot']
-            del disconnected_players[player_name]
-            
-            # Send full state sync
-            await send_game_state(websocket, game)
-            
-            # Notify others
-            await broadcast_custom_event("player_reconnected", {
-                "player_name": player_name,
-                "resumed_control": True
-            })
-        else:
-            # Too late - player becomes spectator
-            await send_spectator_view(websocket, game)
+    # Check if player was disconnected and game is still active
+    if player_name in disconnected_players and not game.is_finished():
+        # Restore human control
+        player.is_bot = disconnected_players[player_name]['original_is_bot']
+        del disconnected_players[player_name]
+        
+        # Send full state sync
+        await send_game_state(websocket, game)
+        
+        # Notify others
+        await broadcast_custom_event("player_reconnected", {
+            "player_name": player_name,
+            "resumed_control": True
+        })
 ```
 
 ### 2. Frontend Changes
@@ -331,7 +321,7 @@ interface PlayerStatus {
   connected: boolean;
   isAI: boolean;
   lastSeen?: Date;
-  reconnectDeadline?: Date;
+  canReconnect: boolean; // Always true while game is active
 }
 ```
 
@@ -360,15 +350,15 @@ export function PlayerAvatar({ name, isBot, isThinking, size = 'medium', theme =
 }
 ```
 
-**Still needed**: Add disconnection grace period indicators (countdown timer, grayed out state)
+**Still needed**: Add disconnection indicators ("AI Playing - Can reconnect anytime", grayed out state)
 
 #### 2.3 Disconnect Notifications
 ```jsx
-const DisconnectNotification = ({ playerName, reconnectDeadline }) => {
+const DisconnectNotification = ({ playerName }) => {
   return (
     <Toast type="warning" duration={5000}>
       {playerName} disconnected - AI taking over
-      <CountdownBar deadline={reconnectDeadline} />
+      <span className="text-sm">Can reconnect anytime</span>
     </Toast>
   );
 };
@@ -383,8 +373,8 @@ interface PlayerDisconnectedEvent {
   event: "player_disconnected";
   data: {
     player_name: string;
-    reconnect_deadline: number; // timestamp
     ai_activated: boolean;
+    can_reconnect: boolean; // Always true while game is active
   };
 }
 
@@ -417,20 +407,19 @@ interface HostMigratedEvent {
 
 ### ⏳ In Progress
 1. **Disconnect detection**: Need to set `player.is_bot = True` when player disconnects
-2. **Reconnection windows**: Track 30-second grace period for reconnection
+2. **Reconnection handling**: Allow reconnection anytime while game is active
 3. **WebSocket events**: Add player_disconnected and player_reconnected events
 
 ### ❌ Not Started
-1. **Grace period UI**: Countdown timers and "reconnecting" indicators
+1. **Disconnect UI**: "AI Playing - Can reconnect anytime" indicators
 2. **Host migration**: Transfer host role when host disconnects
-3. **Spectator mode**: Allow late reconnects to watch the game
 
 ## Implementation Roadmap
 
 ### Phase 1: Connection Tracking (Week 1)
-1. Implement player connection tracking with reconnection windows
+1. Implement player connection tracking with unlimited reconnection
 2. Add disconnect detection that sets `player.is_bot = True`
-3. Create reconnection handler that restores `player.is_bot = False`
+3. Create reconnection handler that restores `player.is_bot = False` while game is active
 
 ### Phase 2: Integration with Existing Bot System (Week 2)
 1. ✅ **DONE**: BotManager already handles bot players
@@ -440,7 +429,7 @@ interface HostMigratedEvent {
 ### Phase 3: UI Updates (Week 3)
 1. ✅ **DONE**: AI status indicators (robot avatars)
 2. ✅ **DONE**: Bot thinking animations
-3. ❌ **TODO**: Reconnection countdown timers
+3. ❌ **TODO**: "AI Playing - Can reconnect anytime" indicators
 4. ❌ **TODO**: Disconnect notifications
 
 ### Phase 4: Host Migration (Week 4)
@@ -449,9 +438,9 @@ interface HostMigratedEvent {
 3. Test edge cases
 
 ### Phase 5: Polish & Testing (Week 5)
-1. Add spectator mode for late reconnects
-2. Comprehensive testing of all scenarios
-3. Performance optimization
+1. Comprehensive testing of all scenarios
+2. Performance optimization
+3. Edge case handling
 
 ## Testing Strategy
 
@@ -473,7 +462,7 @@ interface HostMigratedEvent {
 
 ## Success Metrics
 1. Game never gets stuck due to disconnection
-2. Reconnection success rate >95% within 30 seconds
+2. Players can reconnect anytime while game is active
 3. AI decisions are reasonable and timely
 4. Clear communication to all players about connection status
 5. Smooth host migration without game interruption
