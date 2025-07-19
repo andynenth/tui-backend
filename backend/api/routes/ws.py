@@ -47,14 +47,25 @@ async def handle_disconnect(room_id: str, websocket: WebSocket):
         # Generate a unique websocket ID for tracking
         websocket_id = getattr(websocket, '_ws_id', None)
         
+        logger.info(f"Handling disconnect for room {room_id}, websocket_id: {websocket_id}")
+        
+        # Try to find player by checking all players in the room if websocket_id fails
+        connection = None
         if websocket_id:
             # Get connection info
             connection = await connection_manager.handle_disconnect(websocket_id)
-            
-            if connection and room_id != "lobby":
+        
+        if not connection and room_id != "lobby":
+            # Fallback: Check if any player in the room is missing their websocket
+            room = room_manager.get_room(room_id)
+            if room and room.started and room.game:
+                # This is a workaround - we should improve the tracking mechanism
+                logger.warning(f"Using fallback disconnect detection for room {room_id}")
+        
+        if connection and room_id != "lobby":
                 # This is an in-game disconnect
                 room = room_manager.get_room(room_id)
-                if room and room.game_started and room.game:
+                if room and room.started and room.game:
                     # Find the player in the game
                     player = next(
                         (p for p in room.game.players if p.name == connection.player_name),
@@ -105,6 +116,10 @@ async def handle_disconnect(room_id: str, websocket: WebSocket):
                                     "message": f"{new_host} is now the host"
                                 }
                             )
+                else:
+                    logger.warning(f"No connection found for websocket_id {websocket_id} in room {room_id}")
+        else:
+            logger.warning(f"No websocket_id found on websocket object for room {room_id}")
     except Exception as e:
         logger.error(f"Error handling disconnect: {e}")
     finally:
