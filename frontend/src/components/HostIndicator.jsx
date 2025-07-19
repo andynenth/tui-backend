@@ -5,7 +5,7 @@ import PropTypes from 'prop-types';
 
 /**
  * HostIndicator Component
- * 
+ *
  * Displays a crown icon or "HOST" badge to indicate who is the current room host.
  * Can be used alongside player names or avatars.
  */
@@ -24,7 +24,7 @@ const HostIndicator = ({ isHost, size = 'medium', className = '' }) => {
   };
 
   return (
-    <span 
+    <span
       className={`inline-flex items-center ${getSizeClasses()} bg-yellow-400 text-yellow-900 font-medium rounded ${className}`}
       title="Room Host"
     >

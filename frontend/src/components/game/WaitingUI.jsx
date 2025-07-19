@@ -36,10 +36,13 @@ export function WaitingUI({
 }) {
   return (
     <div className="min-h-screen flex items-center justify-center p-4">
-      <div className="rounded-2xl p-8 max-w-md w-full text-center" style={{ 
-        background: 'var(--gradient-white)',
-        boxShadow: 'var(--shadow-lg), var(--shadow-inset-white)'
-      }}>
+      <div
+        className="rounded-2xl p-8 max-w-md w-full text-center"
+        style={{
+          background: 'var(--gradient-white)',
+          boxShadow: 'var(--shadow-lg), var(--shadow-inset-white)',
+        }}
+      >
         {/* Connection Status */}
         <div className="mb-6">
           <ConnectionIndicator
@@ -54,11 +57,16 @@ export function WaitingUI({
         <div className="mb-8">
           <div className="text-6xl mb-4">{getPhaseIcon(phase)}</div>
 
-          <h1 className="text-2xl font-bold mb-2" style={{ color: 'var(--color-gray-700)' }}>
+          <h1
+            className="text-2xl font-bold mb-2"
+            style={{ color: 'var(--color-gray-700)' }}
+          >
             {getPhaseTitle(phase)}
           </h1>
 
-          <p className="text-lg" style={{ color: 'var(--color-gray-500)' }}>{message}</p>
+          <p className="text-lg" style={{ color: 'var(--color-gray-500)' }}>
+            {message}
+          </p>
         </div>
 
         {/* Loading Animation */}
@@ -72,11 +80,17 @@ export function WaitingUI({
 
         {/* Error State */}
         {connectionError && (
-          <div className="mb-6 p-4 rounded-lg" style={{ 
-            backgroundColor: 'rgba(220, 53, 69, 0.1)', 
-            border: '1px solid rgba(220, 53, 69, 0.3)' 
-          }}>
-            <div className="text-sm mb-3" style={{ color: 'var(--color-danger)' }}>
+          <div
+            className="mb-6 p-4 rounded-lg"
+            style={{
+              backgroundColor: 'rgba(220, 53, 69, 0.1)',
+              border: '1px solid rgba(220, 53, 69, 0.3)',
+            }}
+          >
+            <div
+              className="text-sm mb-3"
+              style={{ color: 'var(--color-danger)' }}
+            >
               Connection Error: {connectionError}
             </div>
 
@@ -85,8 +99,12 @@ export function WaitingUI({
                 onClick={onRetry}
                 className="px-4 py-2 rounded-lg text-sm font-medium transition-colors text-white"
                 style={{ background: 'var(--gradient-danger)' }}
-                onMouseOver={(e) => e.target.style.background = 'var(--color-danger-dark)'}
-                onMouseOut={(e) => e.target.style.background = 'var(--gradient-danger)'}
+                onMouseOver={(e) =>
+                  (e.target.style.background = 'var(--color-danger-dark)')
+                }
+                onMouseOut={(e) =>
+                  (e.target.style.background = 'var(--gradient-danger)')
+                }
                 aria-label="Retry connection"
               >
                 Retry Connection
@@ -107,13 +125,25 @@ export function WaitingUI({
         )}
 
         {/* Phase Information */}
-        <div className="text-sm space-y-1" style={{ color: 'var(--color-gray-600)' }}>
+        <div
+          className="text-sm space-y-1"
+          style={{ color: 'var(--color-gray-600)' }}
+        >
           <div>
-            Phase: <span className="font-medium" style={{ color: 'var(--color-gray-500)' }}>{phase}</span>
+            Phase:{' '}
+            <span
+              className="font-medium"
+              style={{ color: 'var(--color-gray-500)' }}
+            >
+              {phase}
+            </span>
           </div>
           <div>
             Status:{' '}
-            <span className="font-medium" style={{ color: 'var(--color-gray-500)' }}>
+            <span
+              className="font-medium"
+              style={{ color: 'var(--color-gray-500)' }}
+            >
               {getConnectionStatus(
                 isConnected,
                 isConnecting,
@@ -131,8 +161,12 @@ export function WaitingUI({
               onClick={onCancel}
               className="text-sm underline transition-colors"
               style={{ color: 'var(--color-gray-400)' }}
-              onMouseOver={(e) => e.target.style.color = 'var(--color-gray-600)'}
-              onMouseOut={(e) => e.target.style.color = 'var(--color-gray-400)'}
+              onMouseOver={(e) =>
+                (e.target.style.color = 'var(--color-gray-600)')
+              }
+              onMouseOut={(e) =>
+                (e.target.style.color = 'var(--color-gray-400)')
+              }
               aria-label="Cancel and return"
             >
               Cancel

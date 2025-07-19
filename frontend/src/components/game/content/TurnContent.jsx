@@ -280,7 +280,7 @@ const TurnContent = ({
           {players.map((player) => {
             // Debug logging
             console.log('Turn player data:', player, 'is_bot:', player.is_bot);
-            
+
             const position = getRelativePosition(player.name);
             const isActive = player.name === currentPlayer;
             const hasPlayed = (playerPieces[player.name] || []).length > 0;

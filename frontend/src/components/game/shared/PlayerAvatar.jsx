@@ -21,17 +21,16 @@ import HumanIcon from '../../../assets/avatars/human.svg';
  * @param {boolean} isDisconnected - Whether the player is disconnected (optional, default: false)
  * @param {boolean} showAIBadge - Whether to show AI playing badge (optional, default: false)
  */
-const PlayerAvatar = ({ 
-  name, 
-  isBot = false, 
-  isThinking = false, 
-  className = '', 
-  size = 'medium', 
+const PlayerAvatar = ({
+  name,
+  isBot = false,
+  isThinking = false,
+  className = '',
+  size = 'medium',
   theme = 'default',
   isDisconnected = false,
-  showAIBadge = false
+  showAIBadge = false,
 }) => {
-
   // Get size-specific class
   const getSizeClass = () => {
     switch (size) {
@@ -55,12 +54,12 @@ const PlayerAvatar = ({
   if (isBot) {
     return (
       <div className="player-avatar-wrapper">
-        <div className={`player-avatar player-avatar--bot ${getSizeClass()} ${getThemeClass()} ${isThinking ? 'thinking' : ''} ${isDisconnected ? 'disconnected' : ''} ${className}`}>
+        <div
+          className={`player-avatar player-avatar--bot ${getSizeClass()} ${getThemeClass()} ${isThinking ? 'thinking' : ''} ${isDisconnected ? 'disconnected' : ''} ${className}`}
+        >
           <img src={BotIcon} alt="Bot" className="bot-icon" />
         </div>
-        {showAIBadge && (
-          <div className="ai-badge">AI</div>
-        )}
+        {showAIBadge && <div className="ai-badge">AI</div>}
       </div>
     );
   }
@@ -68,12 +67,12 @@ const PlayerAvatar = ({
   // Render human avatar
   return (
     <div className="player-avatar-wrapper">
-      <div className={`player-avatar ${getSizeClass()} ${getThemeClass()} ${isDisconnected ? 'disconnected' : ''} ${className}`}>
+      <div
+        className={`player-avatar ${getSizeClass()} ${getThemeClass()} ${isDisconnected ? 'disconnected' : ''} ${className}`}
+      >
         <img src={HumanIcon} alt={name} className="human-icon" />
       </div>
-      {isDisconnected && (
-        <div className="disconnect-badge">🔴</div>
-      )}
+      {isDisconnected && <div className="disconnect-badge">🔴</div>}
     </div>
   );
 };

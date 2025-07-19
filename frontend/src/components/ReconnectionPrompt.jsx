@@ -5,13 +5,13 @@ import PropTypes from 'prop-types';
 import { formatSessionInfo } from '../utils/sessionStorage';
 import '../styles/reconnection-prompt.css';
 
-const ReconnectionPrompt = ({ 
-  sessionInfo, 
-  onReconnect, 
+const ReconnectionPrompt = ({
+  sessionInfo,
+  onReconnect,
   onJoinAsNew,
   isReconnecting,
   isDuplicateTab,
-  error 
+  error,
 }) => {
   const formattedInfo = formatSessionInfo();
 
@@ -20,9 +20,7 @@ const ReconnectionPrompt = ({
   return (
     <div className="reconnection-prompt-overlay">
       <div className="reconnection-prompt">
-        <div className="reconnection-icon">
-          {isDuplicateTab ? '⚠️' : '🎮'}
-        </div>
+        <div className="reconnection-icon">{isDuplicateTab ? '⚠️' : '🎮'}</div>
 
         {isDuplicateTab ? (
           <>
@@ -44,10 +42,7 @@ const ReconnectionPrompt = ({
               Close this tab or switch to the existing game tab.
             </p>
             <div className="reconnection-actions">
-              <button 
-                className="btn-secondary"
-                onClick={onJoinAsNew}
-              >
+              <button className="btn-secondary" onClick={onJoinAsNew}>
                 Join as New Player
               </button>
             </div>
@@ -76,7 +71,9 @@ const ReconnectionPrompt = ({
               )}
               <div className="info-item">
                 <span className="info-label">Last seen:</span>
-                <span className={`info-value ${formattedInfo.isRecent ? 'recent' : ''}`}>
+                <span
+                  className={`info-value ${formattedInfo.isRecent ? 'recent' : ''}`}
+                >
                   {formattedInfo.lastSeenText}
                 </span>
               </div>
@@ -90,7 +87,7 @@ const ReconnectionPrompt = ({
             )}
 
             <div className="reconnection-actions">
-              <button 
+              <button
                 className="btn-primary"
                 onClick={onReconnect}
                 disabled={isReconnecting}
@@ -104,7 +101,7 @@ const ReconnectionPrompt = ({
                   'Rejoin Game'
                 )}
               </button>
-              <button 
+              <button
                 className="btn-secondary"
                 onClick={onJoinAsNew}
                 disabled={isReconnecting}

@@ -15,14 +15,22 @@ const PlayerAvatarTest = () => {
   return (
     <div style={{ padding: '20px', backgroundColor: '#f0f0f0' }}>
       <h2>PlayerAvatar Test - Bot Indicators</h2>
-      
+
       <div style={{ display: 'flex', gap: '20px', marginTop: '20px' }}>
         <div>
           <h3>Small Size</h3>
           {testPlayers.map((player, idx) => (
-            <div key={idx} style={{ margin: '10px 0', display: 'flex', alignItems: 'center', gap: '10px' }}>
-              <PlayerAvatar 
-                name={player.name} 
+            <div
+              key={idx}
+              style={{
+                margin: '10px 0',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '10px',
+              }}
+            >
+              <PlayerAvatar
+                name={player.name}
                 isBot={player.is_bot}
                 isThinking={player.isThinking}
                 size="small"
@@ -35,9 +43,17 @@ const PlayerAvatarTest = () => {
         <div>
           <h3>Medium Size</h3>
           {testPlayers.map((player, idx) => (
-            <div key={idx} style={{ margin: '10px 0', display: 'flex', alignItems: 'center', gap: '10px' }}>
-              <PlayerAvatar 
-                name={player.name} 
+            <div
+              key={idx}
+              style={{
+                margin: '10px 0',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '10px',
+              }}
+            >
+              <PlayerAvatar
+                name={player.name}
                 isBot={player.is_bot}
                 isThinking={player.isThinking}
                 size="medium"
@@ -50,9 +66,17 @@ const PlayerAvatarTest = () => {
         <div>
           <h3>Large Size</h3>
           {testPlayers.map((player, idx) => (
-            <div key={idx} style={{ margin: '10px 0', display: 'flex', alignItems: 'center', gap: '10px' }}>
-              <PlayerAvatar 
-                name={player.name} 
+            <div
+              key={idx}
+              style={{
+                margin: '10px 0',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '10px',
+              }}
+            >
+              <PlayerAvatar
+                name={player.name}
                 isBot={player.is_bot}
                 isThinking={player.isThinking}
                 size="large"
@@ -67,11 +91,21 @@ const PlayerAvatarTest = () => {
         <h3>States</h3>
         <div style={{ display: 'flex', gap: '20px' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-            <PlayerAvatar name="Active Bot" isBot={true} className="active" size="large" />
+            <PlayerAvatar
+              name="Active Bot"
+              isBot={true}
+              className="active"
+              size="large"
+            />
             <span>Active State</span>
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-            <PlayerAvatar name="Winner Bot" isBot={true} className="winner" size="large" />
+            <PlayerAvatar
+              name="Winner Bot"
+              isBot={true}
+              className="winner"
+              size="large"
+            />
             <span>Winner State</span>
           </div>
         </div>

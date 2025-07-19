@@ -13,27 +13,27 @@ import { useToastNotifications } from '../hooks/useToastNotifications';
  * Example integration component showing how to use disconnect handling
  * with the existing game infrastructure
  */
-export function GameWithDisconnectHandling({ 
-  roomId, 
-  playerName, 
-  gameState, 
+export function GameWithDisconnectHandling({
+  roomId,
+  playerName,
+  gameState,
   players = [],
-  children 
+  children,
 }) {
   // Connection status from existing infrastructure
   const connectionState = useConnectionStatus(roomId);
-  
+
   // Auto-reconnection with browser close recovery
   const {
     showReconnectPrompt,
     attemptReconnect,
     dismissReconnectPrompt,
-    isAttemptingReconnect
+    isAttemptingReconnect,
   } = useAutoReconnect(roomId, playerName, gameState);
-  
+
   // Track disconnected players
   const disconnectedPlayers = useDisconnectedPlayers(players);
-  
+
   // Toast notifications for disconnect events
   const { toasts, removeToast } = useToastNotifications();
 

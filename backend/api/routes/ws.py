@@ -12,6 +12,7 @@ from fastapi import APIRouter, WebSocket, WebSocketDisconnect
 from api.validation import validate_websocket_message
 from api.middleware.websocket_rate_limit import check_websocket_rate_limit, send_rate_limit_error
 from api.websocket.connection_manager import connection_manager
+from api.websocket.message_queue import message_queue_manager
 
 # Set up logging
 logger = logging.getLogger(__name__)
@@ -20,6 +21,24 @@ print(f"socket_manager id in {__name__}: {id(backend.socket_manager)}")
 
 router = APIRouter()
 room_manager = shared_room_manager
+
+
+async def broadcast_with_queue(room_id: str, event: str, data: dict):
+    """Broadcast to room and queue messages for disconnected players"""
+    # Get list of disconnected players in the room
+    room = room_manager.get_room(room_id)
+    if room and room.game:
+        disconnected_players = []
+        for player in room.game.players:
+            if player and hasattr(player, 'is_connected') and not player.is_connected:
+                disconnected_players.append(player.name)
+        
+        # Queue messages for disconnected players
+        for player_name in disconnected_players:
+            await message_queue_manager.queue_message(room_id, player_name, event, data)
+    
+    # Broadcast to connected players
+    await broadcast(room_id, event, data)
 
 
 async def handle_disconnect(room_id: str, websocket: WebSocket):
@@ -50,6 +69,9 @@ async def handle_disconnect(room_id: str, websocket: WebSocket):
                         
                         # Convert to bot
                         player.is_bot = True
+                        
+                        # Create message queue for the disconnected player
+                        await message_queue_manager.create_queue(room_id, connection.player_name)
                         
                         logger.info(f"Player {connection.player_name} disconnected from game in room {room_id}. Bot activated.")
                         
@@ -431,6 +453,23 @@ async def websocket_endpoint(websocket: WebSocket, room_id: str):
                                     player.disconnect_time = None
                                     
                                     logger.info(f"Player {player_name} reconnected to game in room {room_id}")
+                                    
+                                    # Get queued messages for the reconnecting player
+                                    queued_messages = await message_queue_manager.get_queued_messages(room_id, player_name)
+                                    
+                                    # Send queued messages to the reconnecting player
+                                    if queued_messages:
+                                        await registered_ws.send_json({
+                                            "event": "queued_messages",
+                                            "data": {
+                                                "messages": queued_messages,
+                                                "count": len(queued_messages)
+                                            }
+                                        })
+                                        logger.info(f"Sent {len(queued_messages)} queued messages to {player_name}")
+                                    
+                                    # Clear the message queue
+                                    await message_queue_manager.clear_queue(room_id, player_name)
                                     
                                     # Broadcast reconnection
                                     await broadcast(

@@ -136,8 +136,13 @@ const DeclarationContent = ({
         <div className="dec-players-list">
           {players.map((player) => {
             // Debug logging to understand data structure
-            console.log('Declaration player data:', player, 'Type:', typeof player);
-            
+            console.log(
+              'Declaration player data:',
+              player,
+              'Type:',
+              typeof player
+            );
+
             // Players should now always be objects with is_bot property
             const playerName = player.name;
             const displayName = playerName;

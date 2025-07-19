@@ -81,6 +81,9 @@ export interface Player {
   pile_count?: number;
   zero_declares_in_a_row?: number;
   hand_size?: number;
+  is_connected?: boolean;
+  disconnect_time?: string;
+  original_is_bot?: boolean;
 }
 
 export interface TurnPlay {
@@ -157,6 +160,10 @@ export interface GameState {
     start_time?: number;
     end_time?: number;
   };
+
+  // Connection/Disconnect state
+  disconnectedPlayers: string[];
+  host: string | null;
 
   // UI state
   isMyTurn: boolean;
@@ -295,7 +302,10 @@ export type GameEventType =
   | 'turn_resolved'
   | 'score_update'
   | 'round_complete'
-  | 'game_ended';
+  | 'game_ended'
+  | 'player_disconnected'
+  | 'player_reconnected'
+  | 'host_changed';
 
 export type GameAction =
   | 'acceptRedeal'

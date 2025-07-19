@@ -86,7 +86,8 @@ const ConnectionIndicator = ({
       {hasDisconnectedPlayers && (
         <div className="text-xs text-gray-600 bg-yellow-100 px-3 py-1 rounded-full">
           <span className="mr-1">🤖</span>
-          AI Playing for: {disconnectedPlayers.join(', ')} - Can reconnect anytime
+          AI Playing for: {disconnectedPlayers.join(', ')} - Can reconnect
+          anytime
         </div>
       )}
     </div>

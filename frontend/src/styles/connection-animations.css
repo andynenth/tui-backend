@@ -1,0 +1,225 @@
+/* frontend/src/styles/connection-animations.css */
+
+/* Smooth transitions for connection state changes */
+.connection-transition {
+  transition: all 0.3s ease-in-out;
+}
+
+/* Bot/Human switch animation */
+.player-state-change {
+  animation: stateChange 0.5s ease-in-out;
+}
+
+@keyframes stateChange {
+  0% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(0.95);
+    opacity: 0.7;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+/* Fade in animation for success states */
+.animate-fadeIn {
+  animation: fadeIn 0.5s ease-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Smooth fade out for overlays */
+.animate-fadeOut {
+  animation: fadeOut 0.3s ease-out forwards;
+}
+
+@keyframes fadeOut {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+
+/* Reconnection success checkmark animation */
+.success-checkmark {
+  animation: successPulse 0.6s ease-out;
+}
+
+@keyframes successPulse {
+  0% {
+    transform: scale(0);
+    opacity: 0;
+  }
+  50% {
+    transform: scale(1.2);
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+/* Connection quality indicator pulse */
+.connection-pulse {
+  animation: connectionPulse 2s ease-in-out infinite;
+}
+
+@keyframes connectionPulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.6;
+  }
+}
+
+/* Loading dots animation */
+.loading-dots::after {
+  content: '';
+  animation: loadingDots 1.5s infinite;
+}
+
+@keyframes loadingDots {
+  0% { content: ''; }
+  25% { content: '.'; }
+  50% { content: '..'; }
+  75% { content: '...'; }
+  100% { content: ''; }
+}
+
+/* Toast notification slide in */
+.toast-slide-in {
+  animation: slideIn 0.3s ease-out;
+}
+
+@keyframes slideIn {
+  from {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+/* Toast notification slide out */
+.toast-slide-out {
+  animation: slideOut 0.3s ease-out forwards;
+}
+
+@keyframes slideOut {
+  from {
+    transform: translateX(0);
+    opacity: 1;
+  }
+  to {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+}
+
+/* Stacking behavior for multiple toasts */
+.toast-stack {
+  transition: transform 0.3s ease-out;
+}
+
+.toast-stack:nth-child(1) { transform: translateY(0); }
+.toast-stack:nth-child(2) { transform: translateY(calc(100% + 8px)); }
+.toast-stack:nth-child(3) { transform: translateY(calc(200% + 16px)); }
+.toast-stack:nth-child(4) { transform: translateY(calc(300% + 24px)); }
+
+/* Player avatar state transitions */
+.player-avatar-transition {
+  transition: opacity 0.3s ease-in-out, 
+              filter 0.3s ease-in-out,
+              transform 0.3s ease-in-out;
+}
+
+.player-disconnected {
+  opacity: 0.6;
+  filter: grayscale(50%);
+}
+
+.player-bot-active {
+  animation: botActivation 0.5s ease-out;
+}
+
+@keyframes botActivation {
+  0% {
+    transform: scale(1) rotate(0deg);
+  }
+  50% {
+    transform: scale(1.1) rotate(5deg);
+  }
+  100% {
+    transform: scale(1) rotate(0deg);
+  }
+}
+
+/* Network strength bars animation */
+.signal-bar {
+  transition: background-color 0.3s ease-in-out,
+              height 0.3s ease-in-out;
+}
+
+/* Progress bar smooth fill */
+.progress-fill {
+  transition: width 0.5s ease-out;
+}
+
+/* Reconnecting spinner */
+.reconnecting-spinner {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Host crown bounce animation */
+.host-crown-appear {
+  animation: crownBounce 0.5s ease-out;
+}
+
+@keyframes crownBounce {
+  0% {
+    transform: scale(0) translateY(-10px);
+  }
+  60% {
+    transform: scale(1.2) translateY(0);
+  }
+  80% {
+    transform: scale(0.9) translateY(0);
+  }
+  100% {
+    transform: scale(1) translateY(0);
+  }
+}
+
+/* Smooth color transitions */
+.color-transition {
+  transition: color 0.3s ease-in-out,
+              background-color 0.3s ease-in-out,
+              border-color 0.3s ease-in-out;
+}

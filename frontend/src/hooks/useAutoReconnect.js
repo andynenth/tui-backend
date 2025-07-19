@@ -1,7 +1,10 @@
 // frontend/src/hooks/useAutoReconnect.js
 
 import { useEffect, useState, useCallback, useRef } from 'react';
-import { useConnectionStatus, useConnectionEvents } from './useConnectionStatus';
+import {
+  useConnectionStatus,
+  useConnectionEvents,
+} from './useConnectionStatus';
 import { networkService } from '../services/NetworkService';
 import { sessionManager } from '../utils/sessionStorage';
 import { tabManager } from '../utils/tabCommunication';
@@ -22,7 +25,7 @@ export function useAutoReconnect(roomId, playerName, gameState) {
   useEffect(() => {
     if (!hasCheckedSession.current) {
       hasCheckedSession.current = true;
-      
+
       const session = sessionManager.getSession();
       if (session && !connectionState.isConnected) {
         // Check if game is still active
@@ -43,7 +46,7 @@ export function useAutoReconnect(roomId, playerName, gameState) {
       sessionManager.saveSession({
         roomId,
         playerName,
-        gameState
+        gameState,
       });
     }
   }, [connectionState.isConnected, roomId, playerName, gameState]);
@@ -52,15 +55,15 @@ export function useAutoReconnect(roomId, playerName, gameState) {
   useEffect(() => {
     if (connectionState.isConnected && roomId) {
       const cleanup = tabManager.registerTab(roomId, playerName);
-      
+
       // Listen for duplicate tab events
       const handleDuplicateTab = () => {
         console.warn('Game already open in another tab');
         // Could show a warning to the user
       };
-      
+
       tabManager.onDuplicateTab(handleDuplicateTab);
-      
+
       return () => {
         cleanup();
         tabManager.offDuplicateTab(handleDuplicateTab);
@@ -69,29 +72,32 @@ export function useAutoReconnect(roomId, playerName, gameState) {
   }, [connectionState.isConnected, roomId, playerName]);
 
   // Handle automatic reconnection
-  const attemptReconnect = useCallback(async (session) => {
-    if (isAttemptingReconnect || connectionState.isConnected) return;
-    
-    setIsAttemptingReconnect(true);
-    setShowReconnectPrompt(false);
-    
-    try {
-      // Use existing network service to reconnect
-      await networkService.connect(session.roomId, {
-        playerName: session.playerName,
-        isReconnection: true
-      });
-      
-      // Clear session after successful reconnect
-      sessionManager.clearSession();
-      setReconnectSession(null);
-    } catch (error) {
-      console.error('Reconnection failed:', error);
-      setShowReconnectPrompt(true);
-    } finally {
-      setIsAttemptingReconnect(false);
-    }
-  }, [isAttemptingReconnect, connectionState.isConnected]);
+  const attemptReconnect = useCallback(
+    async (session) => {
+      if (isAttemptingReconnect || connectionState.isConnected) return;
+
+      setIsAttemptingReconnect(true);
+      setShowReconnectPrompt(false);
+
+      try {
+        // Use existing network service to reconnect
+        await networkService.connect(session.roomId, {
+          playerName: session.playerName,
+          isReconnection: true,
+        });
+
+        // Clear session after successful reconnect
+        sessionManager.clearSession();
+        setReconnectSession(null);
+      } catch (error) {
+        console.error('Reconnection failed:', error);
+        setShowReconnectPrompt(true);
+      } finally {
+        setIsAttemptingReconnect(false);
+      }
+    },
+    [isAttemptingReconnect, connectionState.isConnected]
+  );
 
   // Connection event handlers
   useConnectionEvents(
@@ -109,7 +115,7 @@ export function useAutoReconnect(roomId, playerName, gameState) {
         sessionManager.saveSession({
           roomId,
           playerName,
-          gameState
+          gameState,
         });
       }
     },
@@ -127,13 +133,14 @@ export function useAutoReconnect(roomId, playerName, gameState) {
     isAttemptingReconnect,
     reconnectSession,
     showReconnectPrompt,
-    attemptReconnect: () => reconnectSession && attemptReconnect(reconnectSession),
+    attemptReconnect: () =>
+      reconnectSession && attemptReconnect(reconnectSession),
     dismissReconnectPrompt: () => {
       setShowReconnectPrompt(false);
       sessionManager.clearSession();
       setReconnectSession(null);
     },
-    connectionState
+    connectionState,
   };
 }
 

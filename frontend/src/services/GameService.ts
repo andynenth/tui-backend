@@ -363,6 +363,10 @@ export class GameService extends EventTarget {
       allHandsEmpty: false,
       willContinue: false,
 
+      // Connection/Disconnect state
+      disconnectedPlayers: [],
+      host: null,
+
       // UI state
       isMyTurn: false,
       allowedActions: [],
@@ -402,6 +406,9 @@ export class GameService extends EventTarget {
       'score_update',
       'round_complete',
       'game_ended',
+      'player_disconnected',
+      'player_reconnected',
+      'host_changed',
     ];
 
     gameEvents.forEach((event) => {
@@ -525,6 +532,18 @@ export class GameService extends EventTarget {
         newState = this.handleGameEnded(newState, data);
         break;
 
+      case 'player_disconnected':
+        newState = this.handlePlayerDisconnected(newState, data);
+        break;
+
+      case 'player_reconnected':
+        newState = this.handlePlayerReconnected(newState, data);
+        break;
+
+      case 'host_changed':
+        newState = this.handleHostChanged(newState, data);
+        break;
+
       case 'play_rejected': {
         const message =
           data.details || data.message || 'Invalid play. Please try again.';
@@ -634,8 +653,24 @@ export class GameService extends EventTarget {
           return {
             ...player,
             zero_declares_in_a_row: existing?.zero_declares_in_a_row || 0,
+            // Preserve connection status if not provided by backend
+            is_connected:
+              player.is_connected !== undefined
+                ? player.is_connected
+                : existing?.is_connected,
+            disconnect_time:
+              player.disconnect_time || existing?.disconnect_time,
+            original_is_bot:
+              player.original_is_bot !== undefined
+                ? player.original_is_bot
+                : existing?.original_is_bot,
           };
         });
+
+        // Update disconnected players list based on player states
+        newState.disconnectedPlayers = newState.players
+          .filter((p) => p.is_bot && p.original_is_bot === false)
+          .map((p) => p.name);
       }
 
       // Phase-specific updates
@@ -1175,6 +1210,83 @@ export class GameService extends EventTarget {
       gameOver: true,
       winners: data.winners || [],
       totalScores: data.final_scores || state.totalScores,
+    };
+  }
+
+  /**
+   * Handle player disconnected event
+   */
+  private handlePlayerDisconnected(state: GameState, data: any): GameState {
+    const newState = { ...state };
+
+    // Add to disconnected players list
+    if (
+      data.player_name &&
+      !newState.disconnectedPlayers.includes(data.player_name)
+    ) {
+      newState.disconnectedPlayers = [
+        ...newState.disconnectedPlayers,
+        data.player_name,
+      ];
+    }
+
+    // Update player data if available
+    if (data.player_name && state.players) {
+      newState.players = state.players.map((player) => {
+        if (player.name === data.player_name) {
+          return {
+            ...player,
+            is_bot: data.is_bot !== undefined ? data.is_bot : true,
+            is_connected: false,
+            disconnect_time: data.disconnect_time || new Date().toISOString(),
+          };
+        }
+        return player;
+      });
+    }
+
+    return newState;
+  }
+
+  /**
+   * Handle player reconnected event
+   */
+  private handlePlayerReconnected(state: GameState, data: any): GameState {
+    const newState = { ...state };
+
+    // Remove from disconnected players list
+    if (data.player_name) {
+      newState.disconnectedPlayers = newState.disconnectedPlayers.filter(
+        (name) => name !== data.player_name
+      );
+    }
+
+    // Update player data
+    if (data.player_name && state.players) {
+      newState.players = state.players.map((player) => {
+        if (player.name === data.player_name) {
+          return {
+            ...player,
+            is_bot:
+              data.original_is_bot !== undefined ? data.original_is_bot : false,
+            is_connected: true,
+            disconnect_time: undefined,
+          };
+        }
+        return player;
+      });
+    }
+
+    return newState;
+  }
+
+  /**
+   * Handle host changed event
+   */
+  private handleHostChanged(state: GameState, data: any): GameState {
+    return {
+      ...state,
+      host: data.new_host || null,
     };
   }
 
