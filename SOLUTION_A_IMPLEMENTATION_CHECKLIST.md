@@ -315,12 +315,123 @@
 - [x] Phase 4: Fix reconnection hook (AR1) ✅
 - [x] Phase 5: Backend validation (BE1-BE2) ✅
 
-### Remaining Work
-- [ ] GS2: Update disconnect handler in GameService
-- [ ] AR2: Add reconnection flag to NetworkService (optional)
-- [ ] Phase 6: Testing implementation (UT1-UT2, IT1-IT2)
-- [ ] Phase 7: Documentation updates (DC1-DC2)
-- [ ] Phase 8: Deployment preparation (FF1-FF2)
+### Phase 6: Implement Session Persistence (Critical Bug Fix)
+
+#### 6.1 Store Session on Game Join
+- [ ] **SP1**: Update GameService to store session
+  - File: `/frontend/src/services/GameService.ts`
+  - Import storeSession from sessionStorage utils
+  - Call storeSession after successful joinRoom
+  - Include roomId, playerName, and current phase
+
+- [ ] **SP2**: Check session on app initialization
+  - File: `/frontend/src/App.jsx`
+  - Import hasValidSession and getSession
+  - Check for stored session in AppWithServices
+  - Navigate to game URL if valid session exists
+
+- [ ] **SP3**: Handle session recovery in GamePage
+  - File: `/frontend/src/pages/GamePage.jsx`
+  - Check for navigation from session recovery
+  - Handle reconnection flow properly
+
+#### 6.2 Fix Direct URL Navigation
+- [ ] **SP4**: Ensure proper routing for direct game URLs
+  - Update GameRoute wrapper to handle session recovery
+  - Check localStorage for session if no app state
+  - Populate AppContext with stored session data
+
+- [ ] **SP5**: Clear session on game exit
+  - File: `/frontend/src/services/GameService.ts`
+  - Call clearSession when leaving game
+  - Handle both normal exit and error cases
+
+### Phase 7: Fix Disconnect Notifications (User Feedback)
+
+#### 7.1 Create Toast Notification System
+- [ ] **TN1**: Create useToastNotifications hook
+  - File: Create `/frontend/src/hooks/useToastNotifications.js`
+  - Listen to GameService state changes
+  - Detect disconnect/reconnect events from disconnectedPlayers array
+  - Manage toast lifecycle (add, remove, auto-dismiss)
+
+- [ ] **TN2**: Integrate toast notifications into GamePage
+  - File: `/frontend/src/pages/GamePage.jsx`
+  - Import ToastContainer and useToastNotifications
+  - Add toast container to render output
+  - Monitor gameState.disconnectedPlayers changes
+
+- [ ] **TN3**: Handle disconnect events in GameService listener
+  - Detect changes to disconnectedPlayers array
+  - Trigger appropriate toast messages
+  - Include player name and bot activation status
+
+### Phase 8: Complete GameService Integration
+
+#### 8.1 GameService Updates
+- [ ] **GS2**: Update disconnect handler to include player info
+  - File: `/frontend/src/services/GameService.ts`
+  - Line: ~140 (in disconnect handler)
+  - Ensure player name is available for reconnection attempts
+  - Note: May already be handled by NetworkService reconnection logic
+
+- [ ] **AR2**: Add reconnection flag to NetworkService (optional)
+  - Consider adding `isReconnection` to the playerInfo object
+  - Update NetworkService to handle reconnection flag
+  - Note: May not be necessary if reconnection is handled internally
+
+### Phase 9: Testing Implementation
+
+#### 9.1 Unit Tests
+- [ ] **UT1**: Test NetworkService with player info
+  - File: Create `/frontend/src/services/__tests__/NetworkService.test.js`
+  - Test: `connectToRoom` with and without player info
+  - Test: `client_ready` event includes player_name when provided
+
+- [ ] **UT2**: Test GameService integration
+  - File: `/frontend/src/services/__tests__/GameService.test.js`
+  - Test: `joinRoom` passes player name to NetworkService
+
+#### 9.2 Integration Tests
+- [ ] **IT1**: Test full connection flow
+  - Connect with player name
+  - Verify backend registration succeeds
+  - Disconnect and verify bot activation
+
+- [ ] **IT2**: Test reconnection flow
+  - Disconnect with registered player
+  - Reconnect with same player name
+  - Verify connection restored
+
+### Phase 10: Documentation Updates
+
+#### 10.1 Update Code Comments
+- [ ] **DC1**: Document NetworkService changes
+  - Add JSDoc to updated `connectToRoom` method
+  - Document the optional playerInfo parameter
+
+- [ ] **DC2**: Update WebSocket protocol docs
+  - File: Create/Update `/WS_PROTOCOL.md`
+  - Document `client_ready` event now includes `player_name`
+
+### Phase 11: Deployment Preparation
+
+#### 11.1 Feature Flag Implementation
+- [ ] **FF1**: Add feature flag for new connection behavior
+  - Add flag: `ENABLE_PLAYER_CONNECTION_TRACKING`
+  - Wrap new behavior in flag check
+
+- [ ] **FF2**: Ensure backward compatibility
+  - Old clients without player_name should still connect
+  - Log warnings but don't fail
+
+### Remaining Work (Priority Order)
+1. [ ] Phase 6: Implement Session Persistence (SP1-SP5) - **CRITICAL**
+2. [ ] Phase 7: Fix Disconnect Notifications (TN1-TN3) - **HIGH**
+3. [ ] Phase 8: Complete GameService Integration (GS2, AR2) - **MEDIUM**
+4. [ ] Phase 9: Testing implementation (UT1-UT2, IT1-IT2) - **MEDIUM**
+5. [ ] Phase 10: Documentation updates (DC1-DC2) - **LOW**
+6. [ ] Phase 11: Deployment preparation (FF1-FF2) - **LOW**
 
 ### Key Implementation Points
 1. Make playerInfo optional in connectToRoom to maintain backward compatibility
@@ -328,3 +439,32 @@
 3. Fix the non-existent `connect` method in useAutoReconnect
 4. Ensure connectionData is preserved during reconnection attempts
 5. Add comprehensive logging at each step for debugging
+
+## Issues Found During Testing
+
+### Test Results
+After implementing Phases 1-5, the following issues were discovered:
+
+1. **Bot Indicator Works** ✅
+   - Player disconnection correctly triggers bot activation
+   - Visual indicator shows AI is playing for disconnected player
+   - Backend properly handles bot takeover
+
+2. **No Disconnect Notifications** ❌
+   - Backend broadcasts `player_disconnected` events correctly
+   - GameService receives and processes these events (handlePlayerDisconnected)
+   - **Root Cause**: No toast notification system integrated into GamePage
+   - **Solution**: Phase 9 addresses this with toast notifications
+
+3. **"Not Found" Error on Reconnection** ❌
+   - Direct navigation to game URL shows "Not Found"
+   - Browser refresh loses all game context
+   - **Root Cause**: No session persistence implemented
+   - **Solution**: Phase 10 implements session storage and recovery
+
+### Critical Finding
+The core disconnect handling mechanism is working correctly:
+- Players are properly registered with the backend
+- Disconnections are detected and processed
+- Bot activation happens automatically
+- The missing pieces are UI feedback and session persistence
