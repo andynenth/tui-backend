@@ -259,6 +259,10 @@ async def websocket_endpoint(websocket: WebSocket, room_id: str):
                     player_name = event_data.get("player_name")
                     if player_name and hasattr(registered_ws, '_ws_id'):
                         await connection_manager.register_player("lobby", player_name, registered_ws._ws_id)
+                        logger.info(f"Successfully registered player {player_name} for lobby")
+                    else:
+                        # This is expected for lobby connections - they don't require player tracking
+                        logger.debug(f"Lobby client_ready received without player_name (this is normal)")
 
                 elif event_name == "create_room":
                     # Create new room (using validated/sanitized data)
@@ -454,9 +458,12 @@ async def websocket_endpoint(websocket: WebSocket, room_id: str):
                         player_name = event_data.get("player_name")
                         if player_name and hasattr(registered_ws, '_ws_id'):
                             await connection_manager.register_player(room_id, player_name, registered_ws._ws_id)
+                            logger.info(f"Successfully registered player {player_name} for room {room_id}")
+                        else:
+                            logger.warning(f"client_ready received without player_name for room {room_id} or missing _ws_id")
                             
-                            # Check if reconnecting to an active game
-                            if room.game_started and room.game:
+                        # Check if reconnecting to an active game
+                        if room.started and room.game:
                                 player = next(
                                     (p for p in room.game.players if p.name == player_name),
                                     None

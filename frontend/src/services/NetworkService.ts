@@ -74,8 +74,10 @@ export class NetworkService extends EventTarget {
 
   /**
    * Connect to a room
+   * @param roomId - The room ID to connect to
+   * @param playerInfo - Optional player information for connection tracking
    */
-  async connectToRoom(roomId: string): Promise<WebSocket> {
+  async connectToRoom(roomId: string, playerInfo?: { playerName?: string }): Promise<WebSocket> {
     if (this.isDestroyed) {
       throw new Error('NetworkService has been destroyed');
     }
@@ -105,6 +107,7 @@ export class NetworkService extends EventTarget {
         messagesReceived: 0,
         lastActivity: Date.now(),
         latency: null,
+        playerName: playerInfo?.playerName,
       });
 
       this.messageQueues.set(roomId, []);
@@ -119,7 +122,11 @@ export class NetworkService extends EventTarget {
       this.startHeartbeat(roomId);
 
       // Send initial ready signal
-      this.send(roomId, 'client_ready', { room_id: roomId });
+      const connectionData = this.connections.get(roomId);
+      this.send(roomId, 'client_ready', { 
+        room_id: roomId,
+        player_name: connectionData?.playerName 
+      });
 
       // Process any queued messages
       this.processQueuedMessages(roomId);
@@ -499,8 +506,12 @@ export class NetworkService extends EventTarget {
 
       if (reconnectState.abortController!.signal.aborted) return;
 
+      // Preserve player info for reconnection
+      const connectionData = this.connections.get(roomId);
+      const playerName = connectionData?.playerName;
+
       reconnectState.attempts++;
-      await this.connectToRoom(roomId);
+      await this.connectToRoom(roomId, { playerName });
 
       // Success - reset attempts
       reconnectState.attempts = 0;

@@ -81,9 +81,8 @@ export function useAutoReconnect(roomId, playerName, gameState) {
 
       try {
         // Use existing network service to reconnect
-        await networkService.connect(session.roomId, {
+        await networkService.connectToRoom(session.roomId, {
           playerName: session.playerName,
-          isReconnection: true,
         });
 
         // Clear session after successful reconnect
