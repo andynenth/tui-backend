@@ -1,223 +1,171 @@
-RecoveryService.ts:69 🔄 RecoveryService: Initialized
-ServiceIntegration.ts:82 🔗 ServiceIntegration: Initialized
-ServiceIntegration.ts:101 
-ServiceIntegration.ts:102 🎯 =============================================
-ServiceIntegration.ts:103 🚀 PHASE 1-4 ENTERPRISE ARCHITECTURE STARTING
-ServiceIntegration.ts:104 🎯 =============================================
-ServiceIntegration.ts:105 🔧 Initializing integrated service layer...
-ServiceIntegration.ts:601 ✅ NetworkService integrated
-ServiceIntegration.ts:609 ✅ GameService integrated
-ServiceIntegration.ts:617 ✅ RecoveryService integrated
-ServiceIntegration.ts:628 🩺 Health monitoring started (30000ms interval)
-ServiceIntegration.ts:129 
-ServiceIntegration.ts:130 ✅ =============================================
-ServiceIntegration.ts:131 🎉 PHASE 1-4 ARCHITECTURE FULLY OPERATIONAL!
-ServiceIntegration.ts:132 ✅ =============================================
-ServiceIntegration.ts:133 🔗 NetworkService: Advanced WebSocket with auto-reconnection
-ServiceIntegration.ts:136 🎮 GameService: React hooks with TypeScript state management
-ServiceIntegration.ts:139 🛠️ RecoveryService: Automatic error recovery and health monitoring
-ServiceIntegration.ts:142 🏢 Enterprise Features: Event sourcing, logging, metrics
-ServiceIntegration.ts:143 ✅ Service integration layer initialized successfully
-ServiceIntegration.ts:144 
-App.jsx:129 🎮 Global services initialized
-favicon.ico:1  GET http://localhost:5050/favicon.ico 404 (Not Found)
-NetworkService.ts:355 🔗 Connection opened to room lobby
-GameService.ts:1423 🎮 State Change: NETWORK_CONNECTED
-GameService.ts:1424 Previous: {isConnected: false, roomId: null, playerName: null, phase: 'waiting', currentRound: 1, …}
-GameService.ts:1425 New: {isConnected: true, roomId: null, playerName: null, phase: 'waiting', currentRound: 1, …}
-GameService.ts:1426 Diff: {isConnected: {…}, lastEventSequence: {…}}
-NetworkService.ts:134 🌐 NetworkService: Connected to room lobby
-LobbyPage.jsx:49 Received room_list_update: {roomId: 'lobby', data: {…}, message: {…}, timestamp: 1752873792404}
-GameService.ts:1423 🎮 State Change: NETWORK_DISCONNECTED
-GameService.ts:1424 Previous: {isConnected: true, roomId: null, playerName: null, phase: 'waiting', currentRound: 1, …}
-GameService.ts:1425 New: {isConnected: false, roomId: null, playerName: null, phase: 'waiting', currentRound: 1, …}
-GameService.ts:1426 Diff: {isConnected: {…}, lastEventSequence: {…}}
-NetworkService.ts:180 🌐 NetworkService: Disconnected from room lobby
-NetworkService.ts:225 📤 Queued message for lobby: get_rooms (1 queued)
-NetworkService.ts:355 🔗 Connection opened to room lobby
-GameService.ts:1423 🎮 State Change: NETWORK_CONNECTED
-GameService.ts:1424 Previous: {isConnected: false, roomId: null, playerName: null, phase: 'waiting', currentRound: 1, …}
-GameService.ts:1425 New: {isConnected: true, roomId: null, playerName: null, phase: 'waiting', currentRound: 1, …}
-GameService.ts:1426 Diff: {isConnected: {…}, lastEventSequence: {…}}
-NetworkService.ts:134 🌐 NetworkService: Connected to room lobby
-LobbyPage.jsx:49 Received room_list_update: {roomId: 'lobby', data: {…}, message: {…}, timestamp: 1752873792422}
-GameService.ts:1423 🎮 State Change: NETWORK_DISCONNECTED
-GameService.ts:1424 Previous: {isConnected: true, roomId: null, playerName: null, phase: 'waiting', currentRound: 1, …}
-GameService.ts:1425 New: {isConnected: false, roomId: null, playerName: null, phase: 'waiting', currentRound: 1, …}
-GameService.ts:1426 Diff: {isConnected: {…}, lastEventSequence: {…}}
-NetworkService.ts:180 🌐 NetworkService: Disconnected from room lobby
-NetworkService.ts:225 📤 Queued message for lobby: get_rooms (1 queued)
-NetworkService.ts:355 🔗 Connection opened to room lobby
-GameService.ts:1423 🎮 State Change: NETWORK_CONNECTED
-GameService.ts:1424 Previous: {isConnected: false, roomId: null, playerName: null, phase: 'waiting', currentRound: 1, …}
-GameService.ts:1425 New: {isConnected: true, roomId: null, playerName: null, phase: 'waiting', currentRound: 1, …}
-GameService.ts:1426 Diff: {isConnected: {…}, lastEventSequence: {…}}
-NetworkService.ts:134 🌐 NetworkService: Connected to room lobby
-LobbyPage.jsx:49 Received room_list_update: {roomId: 'lobby', data: {…}, message: {…}, timestamp: 1752873793204}
-LobbyPage.jsx:65 Received room_created: {roomId: 'lobby', data: {…}, message: {…}, timestamp: 1752873793281}
-LobbyPage.jsx:66 🟢 Navigation: room_id = 31911A navigating to: /room/31911A
-LobbyPage.jsx:75 ✅ Navigating to new room: 31911A
-GameService.ts:1423 🎮 State Change: NETWORK_DISCONNECTED
-GameService.ts:1424 Previous: {isConnected: true, roomId: null, playerName: null, phase: 'waiting', currentRound: 1, …}
-GameService.ts:1425 New: {isConnected: false, roomId: null, playerName: null, phase: 'waiting', currentRound: 1, …}
-GameService.ts:1426 Diff: {isConnected: {…}, lastEventSequence: {…}}
-NetworkService.ts:180 🌐 NetworkService: Disconnected from room lobby
-NetworkService.ts:225 📤 Queued message for lobby: get_rooms (1 queued)
-NetworkService.ts:355 🔗 Connection opened to room lobby
-GameService.ts:1423 🎮 State Change: NETWORK_CONNECTED
-GameService.ts:1424 Previous: {isConnected: false, roomId: null, playerName: null, phase: 'waiting', currentRound: 1, …}
-GameService.ts:1425 New: {isConnected: true, roomId: null, playerName: null, phase: 'waiting', currentRound: 1, …}
-GameService.ts:1426 Diff: {isConnected: {…}, lastEventSequence: {…}}
-NetworkService.ts:134 🌐 NetworkService: Connected to room lobby
-NetworkService.ts:355 🔗 Connection opened to room 31911A
-GameService.ts:1423 🎮 State Change: NETWORK_CONNECTED
-GameService.ts:1424 Previous: {isConnected: true, roomId: null, playerName: null, phase: 'waiting', currentRound: 1, …}
-GameService.ts:1425 New: {isConnected: true, roomId: null, playerName: null, phase: 'waiting', currentRound: 1, …}
-GameService.ts:1426 Diff: {lastEventSequence: {…}}
-NetworkService.ts:134 🌐 NetworkService: Connected to room 31911A
-RoomPage.jsx:69 🏠 ROOM_UPDATE: Full data received: {players: Array(4), host_name: 'Andy', room_id: '31911A', started: false}
-RoomPage.jsx:70 🏠 ROOM_UPDATE: Players array: (4) [{…}, {…}, {…}, {…}]
-RoomPage.jsx:71 🏠 ROOM_UPDATE: Players array type: object
-RoomPage.jsx:75 🏠 ROOM_UPDATE: Players array length: 4
-RoomPage.jsx:79 🏠 ROOM_UPDATE: Players array entries: (4) [Array(2), Array(2), Array(2), Array(2)]
-RoomPage.jsx:129 🗑️ REMOVE_PLAYER: Button clicked for slot 2
-RoomPage.jsx:130 🗑️ REMOVE_PLAYER: Sending to room 31911A
-RoomPage.jsx:69 🏠 ROOM_UPDATE: Full data received: {players: Array(4), host_name: 'Andy', room_id: '31911A', started: false, timestamp: 1752873794.623013}
-RoomPage.jsx:70 🏠 ROOM_UPDATE: Players array: (4) [{…}, null, {…}, {…}]
-RoomPage.jsx:71 🏠 ROOM_UPDATE: Players array type: object
-RoomPage.jsx:75 🏠 ROOM_UPDATE: Players array length: 4
-RoomPage.jsx:79 🏠 ROOM_UPDATE: Players array entries: (4) [Array(2), Array(2), Array(2), Array(2)]
-RoomPage.jsx:69 🏠 ROOM_UPDATE: Full data received: {players: Array(4), host_name: 'Andy', operation_id: '31911A_2', room_id: '31911A', started: false, …}
-RoomPage.jsx:70 🏠 ROOM_UPDATE: Players array: (4) [{…}, {…}, {…}, {…}]
-RoomPage.jsx:71 🏠 ROOM_UPDATE: Players array type: object
-RoomPage.jsx:75 🏠 ROOM_UPDATE: Players array length: 4
-RoomPage.jsx:79 🏠 ROOM_UPDATE: Players array entries: (4) [Array(2), Array(2), Array(2), Array(2)]
-RoomPage.jsx:116 🎮 START_GAME: Button clicked
-RoomPage.jsx:117 🎮 START_GAME: Room ID: 31911A
-RoomPage.jsx:89 Game started, navigating to game page
-GameService.ts:1423 🎮 State Change: NETWORK_DISCONNECTED
-GameService.ts:1424 Previous: {isConnected: true, roomId: null, playerName: null, phase: 'waiting', currentRound: 1, …}
-GameService.ts:1425 New: {isConnected: false, roomId: null, playerName: null, phase: 'waiting', currentRound: 1, …}
-GameService.ts:1426 Diff: {isConnected: {…}, lastEventSequence: {…}}
-NetworkService.ts:180 🌐 NetworkService: Disconnected from room 31911A
-ServiceIntegration.ts:169 🔗 Connecting to room 31911A as Andy...
-RecoveryService.ts:109 🔄 RecoveryService: Initialized tracking for room 31911A
-GameService.ts:1423 🎮 State Change: JOIN_ROOM_INIT
-GameService.ts:1424 Previous: {isConnected: false, roomId: null, playerName: null, phase: 'waiting', currentRound: 1, …}
-GameService.ts:1425 New: {isConnected: false, roomId: '31911A', playerName: 'Andy', phase: 'waiting', currentRound: 1, …}
-GameService.ts:1426 Diff: {roomId: {…}, playerName: {…}, lastEventSequence: {…}}
-GameContext.jsx:36 🚀 GAME_CONTEXT: Phase 1-4 Enterprise Architecture initializing
-NetworkService.ts:355 🔗 Connection opened to room 31911A
-GameService.ts:1423 🎮 State Change: NETWORK_CONNECTED
-GameService.ts:1424 Previous: {isConnected: false, roomId: '31911A', playerName: 'Andy', phase: 'waiting', currentRound: 1, …}
-GameService.ts:1425 New: {isConnected: true, roomId: '31911A', playerName: 'Andy', phase: 'waiting', currentRound: 1, …}
-GameService.ts:1426 Diff: {isConnected: {…}, lastEventSequence: {…}}
-NetworkService.ts:134 🌐 NetworkService: Connected to room 31911A
-GameService.ts:1423 🎮 State Change: JOIN_ROOM_CONNECTED
-GameService.ts:1424 Previous: {isConnected: true, roomId: '31911A', playerName: 'Andy', phase: 'waiting', currentRound: 1, …}
-GameService.ts:1425 New: {isConnected: true, roomId: '31911A', playerName: 'Andy', phase: 'waiting', currentRound: 1, …}
-GameService.ts:1426 Diff: {lastEventSequence: {…}}
-GameService.ts:108 🎮 GameService: Joined room 31911A as Andy
-ServiceIntegration.ts:183 ✅ Successfully connected to room 31911A
-GameService.ts:1423 🎮 State Change: NETWORK_EVENT:PHASE_CHANGE
-GameService.ts:1424 Previous: {isConnected: true, roomId: '31911A', playerName: 'Andy', phase: 'waiting', currentRound: 1, …}
-GameService.ts:1425 New: {isConnected: true, roomId: '31911A', playerName: 'Andy', phase: 'preparation', currentRound: 1, …}
-GameService.ts:1426 Diff: {phase: {…}, players: {…}, myHand: {…}, lastEventSequence: {…}, simultaneousMode: {…}, …}
-GameService.ts:1393 🎮 Action sent: decline_redeal {player_name: 'Andy'}
-GameService.ts:1423 🎮 State Change: NETWORK_EVENT:PHASE_CHANGE
-GameService.ts:1424 Previous: {isConnected: true, roomId: '31911A', playerName: 'Andy', phase: 'preparation', currentRound: 1, …}
-GameService.ts:1425 New: {isConnected: true, roomId: '31911A', playerName: 'Andy', phase: 'round_start', currentRound: 1, …}
-GameService.ts:1426 Diff: {phase: {…}, players: {…}, lastEventSequence: {…}, currentStarter: {…}, starterReason: {…}}
-GameService.ts:1423 🎮 State Change: NETWORK_EVENT:PHASE_CHANGE
-GameService.ts:1424 Previous: {isConnected: true, roomId: '31911A', playerName: 'Andy', phase: 'round_start', currentRound: 1, …}
-GameService.ts:1425 New: {isConnected: true, roomId: '31911A', playerName: 'Andy', phase: 'declaration', currentRound: 1, …}
-GameService.ts:1426 Diff: {phase: {…}, declarationOrder: {…}, lastEventSequence: {…}, currentTotal: {…}, declarationProgress: {…}, …}
-DeclarationContent.jsx:149 Declaration player data: {name: 'loong - 0 pts'} Type: object
-DeclarationContent.jsx:149 Declaration player data: {name: 'Bot 3 - 0 pts'} Type: object
-DeclarationContent.jsx:149 Declaration player data: {name: 'Bot 4 - 0 pts'} Type: object
-DeclarationContent.jsx:149 Declaration player data: {name: 'Andy - 0 pts'} Type: object
-GameService.ts:1423 🎮 State Change: NETWORK_EVENT:PHASE_CHANGE
-GameService.ts:1424 Previous: {isConnected: true, roomId: '31911A', playerName: 'Andy', phase: 'declaration', currentRound: 1, …}
-GameService.ts:1425 New: {isConnected: true, roomId: '31911A', playerName: 'Andy', phase: 'declaration', currentRound: 1, …}
-GameService.ts:1426 Diff: {currentDeclarer: {…}, lastEventSequence: {…}}
-DeclarationContent.jsx:149 Declaration player data: {name: 'loong - 0 pts'} Type: object
-DeclarationContent.jsx:149 Declaration player data: {name: 'Bot 3 - 0 pts'} Type: object
-DeclarationContent.jsx:149 Declaration player data: {name: 'Bot 4 - 0 pts'} Type: object
-DeclarationContent.jsx:149 Declaration player data: {name: 'Andy - 0 pts'} Type: object
-DeclarationContent.jsx:149 Declaration player data: {name: 'loong - 0 pts'} Type: object
-DeclarationContent.jsx:149 Declaration player data: {name: 'Bot 3 - 0 pts'} Type: object
-DeclarationContent.jsx:149 Declaration player data: {name: 'Bot 4 - 0 pts'} Type: object
-DeclarationContent.jsx:149 Declaration player data: {name: 'Andy - 0 pts'} Type: object
-DeclarationContent.jsx:149 Declaration player data: {name: 'loong - 0 pts'} Type: object
-DeclarationContent.jsx:149 Declaration player data: {name: 'Bot 3 - 0 pts'} Type: object
-DeclarationContent.jsx:149 Declaration player data: {name: 'Bot 4 - 0 pts'} Type: object
-DeclarationContent.jsx:149 Declaration player data: {name: 'Andy - 0 pts'} Type: object
-GameService.ts:1423 🎮 State Change: NETWORK_EVENT:PHASE_CHANGE
-GameService.ts:1424 Previous: {isConnected: true, roomId: '31911A', playerName: 'Andy', phase: 'declaration', currentRound: 1, …}
-GameService.ts:1425 New: {isConnected: true, roomId: '31911A', playerName: 'Andy', phase: 'declaration', currentRound: 1, …}
-GameService.ts:1426 Diff: {declarations: {…}, currentDeclarer: {…}, lastEventSequence: {…}, currentTotal: {…}, declarationProgress: {…}}
-DeclarationContent.jsx:149 Declaration player data: {name: 'loong - 0 pts'} Type: object
-DeclarationContent.jsx:149 Declaration player data: {name: 'Bot 3 - 0 pts'} Type: object
-DeclarationContent.jsx:149 Declaration player data: {name: 'Bot 4 - 0 pts'} Type: object
-DeclarationContent.jsx:149 Declaration player data: {name: 'Andy - 0 pts'} Type: object
-GameService.ts:1423 🎮 State Change: NETWORK_EVENT:PHASE_CHANGE
-GameService.ts:1424 Previous: {isConnected: true, roomId: '31911A', playerName: 'Andy', phase: 'declaration', currentRound: 1, …}
-GameService.ts:1425 New: {isConnected: true, roomId: '31911A', playerName: 'Andy', phase: 'declaration', currentRound: 1, …}
-GameService.ts:1426 Diff: {players: {…}, declarations: {…}, currentDeclarer: {…}, lastEventSequence: {…}, currentTotal: {…}, …}
-DeclarationContent.jsx:149 Declaration player data: {name: 'loong - 0 pts'} Type: object
-DeclarationContent.jsx:149 Declaration player data: {name: 'Bot 3 - 0 pts'} Type: object
-DeclarationContent.jsx:149 Declaration player data: {name: 'Bot 4 - 0 pts'} Type: object
-DeclarationContent.jsx:149 Declaration player data: {name: 'Andy - 0 pts'} Type: object
-GameService.ts:1423 🎮 State Change: NETWORK_EVENT:PHASE_CHANGE
-GameService.ts:1424 Previous: {isConnected: true, roomId: '31911A', playerName: 'Andy', phase: 'declaration', currentRound: 1, …}
-GameService.ts:1425 New: {isConnected: true, roomId: '31911A', playerName: 'Andy', phase: 'declaration', currentRound: 1, …}
-GameService.ts:1426 Diff: {players: {…}, declarations: {…}, currentDeclarer: {…}, isMyTurn: {…}, allowedActions: {…}, …}
-DeclarationContent.jsx:149 Declaration player data: {name: 'loong - 0 pts'} Type: object
-DeclarationContent.jsx:149 Declaration player data: {name: 'Bot 3 - 0 pts'} Type: object
-DeclarationContent.jsx:149 Declaration player data: {name: 'Bot 4 - 0 pts'} Type: object
-DeclarationContent.jsx:149 Declaration player data: {name: 'Andy - 0 pts'} Type: object
-DeclarationContent.jsx:149 Declaration player data: {name: 'loong - 0 pts'} Type: object
-DeclarationContent.jsx:149 Declaration player data: {name: 'Bot 3 - 0 pts'} Type: object
-DeclarationContent.jsx:149 Declaration player data: {name: 'Bot 4 - 0 pts'} Type: object
-DeclarationContent.jsx:149 Declaration player data: {name: 'Andy - 0 pts'} Type: object
-DeclarationContent.jsx:149 Declaration player data: {name: 'loong - 0 pts'} Type: object
-DeclarationContent.jsx:149 Declaration player data: {name: 'Bot 3 - 0 pts'} Type: object
-DeclarationContent.jsx:149 Declaration player data: {name: 'Bot 4 - 0 pts'} Type: object
-DeclarationContent.jsx:149 Declaration player data: {name: 'Andy - 0 pts'} Type: object
-DeclarationContent.jsx:149 Declaration player data: {name: 'loong - 0 pts'} Type: object
-DeclarationContent.jsx:149 Declaration player data: {name: 'Bot 3 - 0 pts'} Type: object
-DeclarationContent.jsx:149 Declaration player data: {name: 'Bot 4 - 0 pts'} Type: object
-DeclarationContent.jsx:149 Declaration player data: {name: 'Andy - 0 pts'} Type: object
-GameService.ts:1393 🎮 Action sent: declare {value: 4, player_name: 'Andy'}
-DeclarationContent.jsx:149 Declaration player data: {name: 'loong - 0 pts'} Type: object
-DeclarationContent.jsx:149 Declaration player data: {name: 'Bot 3 - 0 pts'} Type: object
-DeclarationContent.jsx:149 Declaration player data: {name: 'Bot 4 - 0 pts'} Type: object
-DeclarationContent.jsx:149 Declaration player data: {name: 'Andy - 0 pts'} Type: object
-GameService.ts:1423 🎮 State Change: NETWORK_EVENT:PHASE_CHANGE
-GameService.ts:1424 Previous: {isConnected: true, roomId: '31911A', playerName: 'Andy', phase: 'declaration', currentRound: 1, …}
-GameService.ts:1425 New: {isConnected: true, roomId: '31911A', playerName: 'Andy', phase: 'declaration', currentRound: 1, …}
-GameService.ts:1426 Diff: {players: {…}, declarations: {…}, validOptions: {…}, lastEventSequence: {…}, currentTotal: {…}, …}
-DeclarationContent.jsx:149 Declaration player data: {name: 'loong - 0 pts'} Type: object
-DeclarationContent.jsx:149 Declaration player data: {name: 'Bot 3 - 0 pts'} Type: object
-DeclarationContent.jsx:149 Declaration player data: {name: 'Bot 4 - 0 pts'} Type: object
-DeclarationContent.jsx:149 Declaration player data: {name: 'Andy - 0 pts'} Type: object
-GameService.ts:1423 🎮 State Change: NETWORK_EVENT:PHASE_CHANGE
-GameService.ts:1424 Previous: {isConnected: true, roomId: '31911A', playerName: 'Andy', phase: 'declaration', currentRound: 1, …}
-GameService.ts:1425 New: {isConnected: true, roomId: '31911A', playerName: 'Andy', phase: 'turn', currentRound: 1, …}
-GameService.ts:1426 Diff: {phase: {…}, players: {…}, currentTurnStarter: {…}, turnOrder: {…}, currentPlayer: {…}, …}
-TurnUI.jsx:43 [TurnUI] Building playerPieces from currentTurnPlays: []
-TurnUI.jsx:88 [TurnUI] No valid plays found, returning empty play type
-TurnContent.jsx:282 Turn player data: {name: 'Andy', score: 0, is_bot: false, is_host: false, zero_declares_in_a_row: 0, …} is_bot: false
-TurnContent.jsx:282 Turn player data: {name: 'loong', score: 0, is_bot: false, is_host: false, zero_declares_in_a_row: 0, …} is_bot: false
-TurnContent.jsx:282 Turn player data: {name: 'Bot 3', score: 0, is_bot: true, is_host: false, zero_declares_in_a_row: 0, …} is_bot: true
-TurnContent.jsx:282 Turn player data: {name: 'Bot 4', score: 0, is_bot: true, is_host: false, zero_declares_in_a_row: 0, …} is_bot: true
-TurnContent.jsx:282 Turn player data: {name: 'Andy', score: 0, is_bot: false, is_host: false, zero_declares_in_a_row: 0, …} is_bot: false
-TurnContent.jsx:282 Turn player data: {name: 'loong', score: 0, is_bot: false, is_host: false, zero_declares_in_a_row: 0, …} is_bot: false
-TurnContent.jsx:282 Turn player data: {name: 'Bot 3', score: 0, is_bot: true, is_host: false, zero_declares_in_a_row: 0, …} is_bot: true
-TurnContent.jsx:282 Turn player data: {name: 'Bot 4', score: 0, is_bot: true, is_host: false, zero_declares_in_a_row: 0, …} is_bot: true
-TurnUI.jsx:43 [TurnUI] Building playerPieces from currentTurnPlays: []
-TurnUI.jsx:88 [TurnUI] No valid plays found, returning empty play type
-TurnContent.jsx:282 Turn player data: {name: 'Andy', score: 0, is_bot: false, is_host: false, zero_declares_in_a_row: 0, …} is_bot: false
-TurnContent.jsx:282 Turn player data: {name: 'loong', score: 0, is_bot: false, is_host: false, zero_declares_in_a_row: 0, …} is_bot: false
-TurnContent.jsx:282 Turn player data: {name: 'Bot 3', score: 0, is_bot: true, is_host: false, zero_declares_in_a_row: 0, …} is_bot: true
-TurnContent.jsx:282 Turn player data: {name: 'Bot 4', score: 0, is_bot: true, is_host: false, zero_declares_in_a_row: 0, …} is_bot: true
+✅ Notified lobby about new room: 57ADFC
+2025-07-19 08:52:09 - backend.api.routes.ws - INFO - Handling disconnect for room 57ADFC, websocket_id: 392c4e32-e491-4b14-9f50-01cef2be9ce7
+2025-07-19 08:52:09 - api.websocket.connection_manager - WARNING - WebSocket ID 392c4e32-e491-4b14-9f50-01cef2be9ce7 not found in mapping. Current mappings: []
+2025-07-19 08:52:09 - backend.api.routes.ws - ERROR - Error handling disconnect: 'Room' object has no attribute 'game_started'
+INFO:     connection closed
+INFO:     ('127.0.0.1', 49910) - "WebSocket /ws/lobby" [accepted]
+INFO:     connection open
+INFO:     ('127.0.0.1', 49912) - "WebSocket /ws/57ADFC" [accepted]
+INFO:     connection open
+🔒 [Room 57ADFC] Starting slot assignment: slot=2, name=None, op_id=57ADFC_1
+✅ [Room 57ADFC] Slot assignment completed: op_id=57ADFC_1
+   Old state: {'P1': {'name': 'Andy', 'is_bot': False}, 'P2': {'name': 'Bot 2', 'is_bot': True}, 'P3': {'name': 'Bot 3', 'is_bot': True}, 'P4': {'name': 'Bot 4', 'is_bot': True}}
+   New state: {'P1': {'name': 'Andy', 'is_bot': False}, 'P2': {'name': 'Bot 2', 'is_bot': True}, 'P3': {'name': None, 'is_bot': None}, 'P4': {'name': 'Bot 4', 'is_bot': True}}
+🔒 [Room 57ADFC] Starting room join: player=loong, op_id=57ADFC_2
+✅ [Room 57ADFC] Player loong joined slot 2: op_id=57ADFC_2
+✅ Notified lobby about room update: 57ADFC
+2025-07-19 08:52:12 - backend.api.routes.ws - INFO - Handling disconnect for room lobby, websocket_id: c56f3931-c51a-408b-a8b1-941a3dbb9073
+2025-07-19 08:52:12 - api.websocket.connection_manager - WARNING - WebSocket ID c56f3931-c51a-408b-a8b1-941a3dbb9073 not found in mapping. Current mappings: []
+2025-07-19 08:52:12 - backend.api.routes.ws - WARNING - No websocket_id found on websocket object for room lobby
+INFO:     connection closed
+INFO:     ('127.0.0.1', 49914) - "WebSocket /ws/lobby" [accepted]
+INFO:     connection open
+INFO:     ('127.0.0.1', 49916) - "WebSocket /ws/57ADFC" [accepted]
+INFO:     connection open
+🔒 [Room 57ADFC] Starting game: op_id=57ADFC_3
+2025-07-19 08:52:14 - engine.state_machine.game_state_machine - INFO - 🔍 ROUND_DEBUG: GameStateMachine created with game: <engine.game.Game object at 0x1057bfbd0>, round_number: 1
+2025-07-19 08:52:14 - engine.state_machine.game_state_machine - INFO - 🚀 Starting state machine in GamePhase.PREPARATION phase
+2025-07-19 08:52:14 - engine.state_machine.game_state_machine - INFO - Transitioning from None to GamePhase.PREPARATION
+2025-07-19 08:52:14 - engine.state_machine.game_state_machine - INFO - 🔄 Transitioning: None -> GamePhase.PREPARATION
+2025-07-19 08:52:14 - game.state.preparation - INFO - Entering preparation phase
+2025-07-19 08:52:14 - game.state.preparation - INFO - 🎴 Preparation phase starting - dealing cards
+2025-07-19 08:52:14 - game.state.preparation - INFO - 🎮 Phase Data Update: Starting to deal cards
+2025-07-19 08:52:14 - engine.state_machine.game_state_machine - INFO - State machine process loop started
+2025-07-19 08:52:14 - game.state.preparation - INFO - 📤 Auto-broadcast: phase_change to room 57ADFC - Starting to deal cards
+2025-07-19 08:52:14 - game.state.preparation - INFO - 🔍 Weak hand check - Found 0 weak players: set()
+2025-07-19 08:52:14 - game.state.preparation - INFO - 🔍 STARTER_DEBUG: Current round number: 1
+2025-07-19 08:52:14 - game.state.preparation - INFO - 🎯 Starter: loong (has GENERAL_RED)
+2025-07-19 08:52:14 - game.state.preparation - INFO - ✅ No weak hands - determined new starter: loong
+2025-07-19 08:52:14 - engine.state_machine.game_state_machine - INFO - Transitioning from GamePhase.PREPARATION to GamePhase.ROUND_START
+2025-07-19 08:52:14 - engine.state_machine.game_state_machine - INFO - 🔄 Transitioning: GamePhase.PREPARATION -> GamePhase.ROUND_START
+2025-07-19 08:52:14 - game.state.preparation - INFO - Exiting preparation phase
+2025-07-19 08:52:14 - game.state.preparation - INFO - 🎯 Round starter already set: loong
+2025-07-19 08:52:14 - game.state.preparation - INFO - 📋 Preparation complete - Starter: loong, Multiplier: 1x
+2025-07-19 08:52:14 - game.state.round_start - INFO - Entering round_start phase
+2025-07-19 08:52:14 - game.state.round_start - INFO - 📋 Round 1 starting - Starter: loong (has_general_red)
+2025-07-19 08:52:14 - game.state.round_start - INFO - 🎮 Phase Data Update: Round 1 starting with loong
+2025-07-19 08:52:14 - game.state.round_start - INFO - 📤 Auto-broadcast: phase_change to room 57ADFC - Round 1 starting with loong
+2025-07-19 08:52:14 - engine.state_machine.game_state_machine - INFO - Stored phase change event: GamePhase.PREPARATION -> GamePhase.ROUND_START
+2025-07-19 08:52:14 - engine.state_machine.game_state_machine - INFO - Notifying bot manager about phase round_start
+2025-07-19 08:52:16 - game.state.preparation - INFO - 🎮 Phase Data Update: Cards dealt, checking for weak hands
+2025-07-19 08:52:16 - game.state.preparation - INFO - 📤 Auto-broadcast: phase_change to room 57ADFC - Cards dealt, checking for weak hands
+2025-07-19 08:52:16 - engine.state_machine.game_state_machine - INFO - Stored phase change event: None -> GamePhase.PREPARATION
+2025-07-19 08:52:16 - engine.state_machine.game_state_machine - INFO - Notifying bot manager about phase preparation
+✅ [Room 57ADFC] Game and StateMachine started successfully: op_id=57ADFC_3
+✅ [Room 57ADFC] Bot manager registered for 2 bots
+✅ Game started in room 57ADFC
+2025-07-19 08:52:16 - backend.api.routes.ws - INFO - Handling disconnect for room 57ADFC, websocket_id: 04505b35-fa5a-4b4b-bbe2-4326cc9789b5
+2025-07-19 08:52:16 - api.websocket.connection_manager - WARNING - WebSocket ID 04505b35-fa5a-4b4b-bbe2-4326cc9789b5 not found in mapping. Current mappings: []
+2025-07-19 08:52:16 - backend.api.routes.ws - ERROR - Error handling disconnect: 'Room' object has no attribute 'game_started'
+INFO:     connection closed
+2025-07-19 08:52:16 - backend.api.routes.ws - INFO - Handling disconnect for room 57ADFC, websocket_id: 02c0f0de-e866-413d-9902-5baed6ebfd34
+2025-07-19 08:52:16 - api.websocket.connection_manager - WARNING - WebSocket ID 02c0f0de-e866-413d-9902-5baed6ebfd34 not found in mapping. Current mappings: []
+2025-07-19 08:52:16 - backend.api.routes.ws - ERROR - Error handling disconnect: 'Room' object has no attribute 'game_started'
+INFO:     connection closed
+INFO:     ('127.0.0.1', 49918) - "WebSocket /ws/57ADFC" [accepted]
+INFO:     connection open
+INFO:     ('127.0.0.1', 49920) - "WebSocket /ws/57ADFC" [accepted]
+INFO:     connection open
+2025-07-19 08:52:19 - engine.state_machine.game_state_machine - INFO - Transitioning from GamePhase.ROUND_START to GamePhase.DECLARATION
+2025-07-19 08:52:19 - engine.state_machine.game_state_machine - INFO - 🔄 Transitioning: GamePhase.ROUND_START -> GamePhase.DECLARATION
+2025-07-19 08:52:19 - game.state.round_start - INFO - Exiting round_start phase
+2025-07-19 08:52:19 - game.state.round_start - INFO - 🎯 Round start display complete - transitioning to Declaration
+2025-07-19 08:52:19 - game.state.declaration - INFO - Entering declaration phase
+2025-07-19 08:52:19 - game.state.declaration - INFO - 🎮 Phase Data Update: Declaration phase setup - basic data
+2025-07-19 08:52:19 - game.state.declaration - INFO - 📤 Auto-broadcast: phase_change to room 57ADFC - Declaration phase setup - basic data
+2025-07-19 08:52:19 - game.state.declaration - INFO - 🎮 Phase Data Update: Declaration phase setup complete - current declarer: loong
+2025-07-19 08:52:19 - game.state.declaration - INFO - 📤 Auto-broadcast: phase_change to room 57ADFC - Declaration phase setup complete - current declarer: loong
+2025-07-19 08:52:19 - engine.state_machine.game_state_machine - INFO - Stored phase change event: GamePhase.ROUND_START -> GamePhase.DECLARATION
+2025-07-19 08:52:19 - engine.state_machine.game_state_machine - INFO - Notifying bot manager about phase declaration
+👤 Round starter is human or None: None
+✅ Declaration queued: loong -> 3
+2025-07-19 08:52:29 - game.state.declaration - INFO - 🎮 Phase Data Update: Player loong declared 3
+2025-07-19 08:52:29 - game.state.declaration - INFO - 📤 Auto-broadcast: phase_change to room 57ADFC - Player loong declared 3
+✅ Bot Bot 4 declared 2
+2025-07-19 08:52:31 - game.state.declaration - INFO - Player loong declared 3
+2025-07-19 08:52:31 - game.state.declaration - INFO - 🎮 Phase Data Update: Player Bot 4 declared 2
+2025-07-19 08:52:31 - game.state.declaration - INFO - 📤 Auto-broadcast: phase_change to room 57ADFC - Player Bot 4 declared 2
+2025-07-19 08:52:31 - game.state.declaration - INFO - Player Bot 4 declared 2
+✅ Declaration queued: Andy -> 3
+2025-07-19 08:52:42 - game.state.declaration - INFO - 🎮 Phase Data Update: Player Andy declared 3
+2025-07-19 08:52:42 - game.state.declaration - INFO - 📤 Auto-broadcast: phase_change to room 57ADFC - Player Andy declared 3
+✅ Bot Bot 2 declared 1
+2025-07-19 08:52:42 - game.state.declaration - INFO - Player Andy declared 3
+2025-07-19 08:52:43 - game.state.declaration - INFO - 🎮 Phase Data Update: Player Bot 2 declared 1
+2025-07-19 08:52:43 - game.state.declaration - INFO - 📤 Auto-broadcast: phase_change to room 57ADFC - Player Bot 2 declared 1
+2025-07-19 08:52:43 - game.state.declaration - INFO - Player Bot 2 declared 1
+2025-07-19 08:52:43 - engine.state_machine.game_state_machine - INFO - Transitioning from GamePhase.DECLARATION to GamePhase.TURN
+2025-07-19 08:52:43 - engine.state_machine.game_state_machine - INFO - 🔄 Transitioning: GamePhase.DECLARATION -> GamePhase.TURN
+2025-07-19 08:52:43 - game.state.declaration - INFO - Exiting declaration phase
+2025-07-19 08:52:43 - game.state.declaration - INFO - Copied declarations to game: {'loong': 3, 'Bot 4': 2, 'Andy': 3, 'Bot 2': 1}
+2025-07-19 08:52:43 - game.state.turn - INFO - Entering turn phase
+2025-07-19 08:52:43 - game.state.turn - INFO - 🎯 Turn phase starting - loong starts first turn
+2025-07-19 08:52:43 - game.state.turn - INFO - 🎮 Phase Data Update: New turn 1 started with starter loong
+2025-07-19 08:52:43 - game.state.turn - INFO - 📤 Auto-broadcast: phase_change to room 57ADFC - New turn 1 started with starter loong
+2025-07-19 08:52:43 - game.state.turn - INFO - 🎯 New turn started - order: ['loong', 'Bot 4', 'Andy', 'Bot 2']
+2025-07-19 08:52:43 - engine.state_machine.game_state_machine - INFO - Stored phase change event: GamePhase.DECLARATION -> GamePhase.TURN
+2025-07-19 08:52:43 - engine.state_machine.game_state_machine - INFO - Notifying bot manager about phase turn
+✅ Play accepted: loong
+2025-07-19 08:52:54 - game.state.turn - INFO - 🎲 loong (starter) plays 2 pieces - setting required count
+2025-07-19 08:52:54 - game.state.turn - INFO - 🎲 loong plays: [SOLDIER_RED(2), SOLDIER_RED(2)] (value: 4)
+2025-07-19 08:52:54 - game.state.turn - INFO - Removed 2 pieces from loong's hand
+2025-07-19 08:52:54 - game.state.turn - INFO - 🎮 Phase Data Update: Player loong played 2 pieces
+2025-07-19 08:52:54 - game.state.turn - INFO - 📤 Auto-broadcast: phase_change to room 57ADFC - Player loong played 2 pieces
+🤖 BOT chooses to play PAIR (24 pts): ADVISOR, ADVISOR
+✅ Bot Bot 4 action queued - state machine will broadcast with correct next_player
+2025-07-19 08:52:56 - game.state.turn - INFO - 🎲 Bot 4 plays: [ADVISOR_RED(12), ADVISOR_RED(12)] (value: 24)
+2025-07-19 08:52:56 - game.state.turn - INFO - Removed 2 pieces from Bot 4's hand
+2025-07-19 08:52:56 - game.state.turn - INFO - 🎮 Phase Data Update: Player Bot 4 played 2 pieces
+2025-07-19 08:52:56 - game.state.turn - INFO - 📤 Auto-broadcast: phase_change to room 57ADFC - Player Bot 4 played 2 pieces
+✅ Play accepted: Andy
+2025-07-19 08:52:59 - game.state.turn - INFO - 🎲 Andy plays: [CHARIOT_RED(8), CHARIOT_RED(8)] (value: 16)
+2025-07-19 08:52:59 - game.state.turn - INFO - Removed 2 pieces from Andy's hand
+2025-07-19 08:52:59 - game.state.turn - INFO - 🎮 Phase Data Update: Player Andy played 2 pieces
+2025-07-19 08:52:59 - game.state.turn - INFO - 📤 Auto-broadcast: phase_change to room 57ADFC - Player Andy played 2 pieces
+🤖 BOT chooses to play PAIR (22 pts): ADVISOR, ADVISOR
+✅ Bot Bot 2 action queued - state machine will broadcast with correct next_player
+2025-07-19 08:53:00 - game.state.turn - INFO - 🎲 Bot 2 plays: [ADVISOR_BLACK(11), ADVISOR_BLACK(11)] (value: 22)
+2025-07-19 08:53:00 - game.state.turn - INFO - Removed 2 pieces from Bot 2's hand
+2025-07-19 08:53:00 - game.state.turn - INFO - 🎮 Phase Data Update: Player Bot 2 played 2 pieces
+2025-07-19 08:53:00 - game.state.turn - INFO - 📤 Auto-broadcast: phase_change to room 57ADFC - Player Bot 2 played 2 pieces
+2025-07-19 08:53:00 - game.state.turn - INFO - 🎯 Round 1, Turn 1 winner: Bot 4 with PAIR value 24
+2025-07-19 08:53:00 - game.state.turn - INFO - 💰 Bot 4 won 2 piles this turn, total: 2 piles
+2025-07-19 08:53:00 - game.state.turn - INFO - 🏆 Bot 4 wins turn and gets 2 piles
+2025-07-19 08:53:00 - game.state.turn - INFO - 🎮 Waiting 5s for piece flip animation to complete...
+2025-07-19 08:53:05 - game.state.turn - INFO - 🎮 Phase Data Update: Turn completed - winner: Bot 4
+2025-07-19 08:53:05 - game.state.turn - INFO - 📤 Auto-broadcast: phase_change to room 57ADFC - Turn completed - winner: Bot 4
+2025-07-19 08:53:05 - game.state.turn - INFO - 📤 Custom broadcast: turn_complete to room 57ADFC - Turn 1 completed - winner: Bot 4
+2025-07-19 08:53:05 - game.state.turn - INFO - 🚀 Enterprise broadcast turn completion - winner: Bot 4, turn piles awarded: {'Bot 4': 2, 'Andy': 0, 'Bot 2': 0, 'loong': 0}
+2025-07-19 08:53:05 - game.state.turn - INFO - 🔄 Updated turn order - new starter first: ['Bot 4', 'loong', 'Andy', 'Bot 2']
+2025-07-19 08:53:05 - game.state.turn - INFO - 🎯 Next turn starter: Bot 4
+2025-07-19 08:53:05 - game.state.turn - INFO - 🎯 Turn complete - auto-starting next turn in 7 seconds
+2025-07-19 08:53:12 - game.state.turn - INFO - 🎮 Phase Data Update: New turn 2 started with starter Bot 4
+2025-07-19 08:53:12 - game.state.turn - INFO - 📤 Auto-broadcast: phase_change to room 57ADFC - New turn 2 started with starter Bot 4
+🤖 BOT chooses to play SINGLE (13 pts): GENERAL
+✅ Bot Bot 4 action queued - state machine will broadcast with correct next_player
+2025-07-19 08:53:13 - game.state.turn - INFO - 🎯 New turn started - order: ['Bot 4', 'Andy', 'Bot 2', 'loong']
+2025-07-19 08:53:13 - game.state.turn - INFO - 🚀 Enterprise: New turn auto-started with automatic broadcasting
+2025-07-19 08:53:14 - game.state.turn - INFO - 🎲 Bot 4 (starter) plays 1 pieces - setting required count
+2025-07-19 08:53:14 - game.state.turn - INFO - 🎲 Bot 4 plays: [GENERAL_BLACK(13)] (value: 13)
+2025-07-19 08:53:14 - game.state.turn - INFO - Removed 1 pieces from Bot 4's hand
+2025-07-19 08:53:14 - game.state.turn - INFO - 🎮 Phase Data Update: Player Bot 4 played 1 pieces
+2025-07-19 08:53:14 - game.state.turn - INFO - 📤 Auto-broadcast: phase_change to room 57ADFC - Player Bot 4 played 1 pieces
+2025-07-19 08:53:21 - backend.api.routes.ws - INFO - Handling disconnect for room lobby, websocket_id: 73046a81-8091-4421-b7d3-b0113d8aa060
+2025-07-19 08:53:21 - api.websocket.connection_manager - WARNING - WebSocket ID 73046a81-8091-4421-b7d3-b0113d8aa060 not found in mapping. Current mappings: []
+2025-07-19 08:53:21 - backend.api.routes.ws - WARNING - No websocket_id found on websocket object for room lobby
+2025-07-19 08:53:21 - backend.api.routes.ws - INFO - Handling disconnect for room 57ADFC, websocket_id: db5a1d8b-b1a5-4688-8601-cbfbd1e6f916
+2025-07-19 08:53:21 - api.websocket.connection_manager - WARNING - WebSocket ID db5a1d8b-b1a5-4688-8601-cbfbd1e6f916 not found in mapping. Current mappings: []
+2025-07-19 08:53:21 - backend.api.routes.ws - ERROR - Error handling disconnect: 'Room' object has no attribute 'game_started'
+INFO:     connection closed
+INFO:     connection closed
+✅ Play accepted: Andy
+2025-07-19 08:53:34 - game.state.turn - INFO - 🎲 Andy plays: [ELEPHANT_RED(10)] (value: 10)
+2025-07-19 08:53:34 - game.state.turn - INFO - Removed 1 pieces from Andy's hand
+2025-07-19 08:53:34 - game.state.turn - INFO - 🎮 Phase Data Update: Player Andy played 1 pieces
+2025-07-19 08:53:34 - game.state.turn - INFO - 📤 Auto-broadcast: phase_change to room 57ADFC - Player Andy played 1 pieces
+🤖 BOT chooses to play SINGLE (9 pts): ELEPHANT
+✅ Bot Bot 2 action queued - state machine will broadcast with correct next_player
+2025-07-19 08:53:35 - game.state.turn - INFO - 🎲 Bot 2 plays: [ELEPHANT_BLACK(9)] (value: 9)
+2025-07-19 08:53:35 - game.state.turn - INFO - Removed 1 pieces from Bot 2's hand
+2025-07-19 08:53:35 - game.state.turn - INFO - 🎮 Phase Data Update: Player Bot 2 played 1 pieces
+2025-07-19 08:53:35 - game.state.turn - INFO - 📤 Auto-broadcast: phase_change to room 57ADFC - Player Bot 2 played 1 pieces
