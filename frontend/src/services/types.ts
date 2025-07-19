@@ -27,6 +27,7 @@ export interface ConnectionData {
   lastActivity: number;
   latency: number | null;
   playerName?: string;
+  isReconnection?: boolean;
 }
 
 export interface ReconnectState {

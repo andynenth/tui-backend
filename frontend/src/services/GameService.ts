@@ -16,6 +16,7 @@
  */
 
 import { networkService } from './NetworkService';
+import { storeSession, clearSession } from '../utils/sessionStorage';
 import type {
   GameState,
   PhaseData,
@@ -105,6 +106,10 @@ export class GameService extends EventTarget {
         'JOIN_ROOM_CONNECTED'
       );
 
+      // Store session for reconnection after browser close/refresh
+      const sessionId = `${roomId}-${playerName}-${Date.now()}`;
+      storeSession(roomId, playerName, sessionId, this.state.phase);
+
       console.log(`🎮 GameService: Joined room ${roomId} as ${playerName}`);
     } catch (error) {
       const errorMessage =
@@ -128,6 +133,9 @@ export class GameService extends EventTarget {
   async leaveRoom(): Promise<void> {
     if (this.state.roomId) {
       await networkService.disconnectFromRoom(this.state.roomId);
+
+      // Clear session storage when leaving room
+      clearSession();
 
       this.setState(
         {
@@ -303,6 +311,9 @@ export class GameService extends EventTarget {
     this.isDestroyed = true;
     this.listeners.clear();
     this.eventHistory.length = 0;
+
+    // Clear session storage when destroying service
+    clearSession();
 
     // Reset singleton
     GameService.instance = null;
@@ -958,6 +969,12 @@ export class GameService extends EventTarget {
 
     // Clear error on successful phase change
     newState.error = null;
+
+    // Update session storage with new phase
+    if (state.roomId && state.playerName) {
+      const sessionId = `${state.roomId}-${state.playerName}-${Date.now()}`;
+      storeSession(state.roomId, state.playerName, sessionId, newState.phase);
+    }
 
     return newState;
   }

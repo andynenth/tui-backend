@@ -6,17 +6,21 @@ import {
   Routes,
   Route,
   Navigate,
+  useNavigate,
+  useParams,
 } from 'react-router-dom';
 import { AppProvider, useApp } from './contexts/AppContext';
 import { GameProvider } from './contexts/GameContext';
 import { ThemeProvider } from './contexts/ThemeContext';
 import { ErrorBoundary } from './components';
+import { hasValidSession, getSession } from './utils/sessionStorage';
 
 // Import scene components (to be created)
 import StartPage from './pages/StartPage';
 import LobbyPage from './pages/LobbyPage';
 import RoomPage from './pages/RoomPage';
 import GamePage from './pages/GamePage';
+import { LoadingOverlay } from './components';
 
 // Service initialization
 import { initializeServices, cleanupServices } from './services';
@@ -56,6 +60,31 @@ const ProtectedRoute = ({ children, requiredData = [] }) => {
 // Game Route wrapper that provides GameContext
 const GameRoute = ({ children }) => {
   const app = useApp();
+  const { roomId } = useParams();
+  const [isCheckingSession, setIsCheckingSession] = useState(true);
+
+  useEffect(() => {
+    // Check if we need to recover from session
+    if (!app.playerName || !app.currentRoomId) {
+      const session = getSession();
+      if (session && session.roomId === roomId) {
+        console.log('🎮 GameRoute: Recovering session data');
+        app.setPlayerName(session.playerName);
+        app.setCurrentRoomId(session.roomId);
+      }
+    }
+    setIsCheckingSession(false);
+  }, [app, roomId]);
+
+  if (isCheckingSession) {
+    return (
+      <LoadingOverlay
+        isVisible={true}
+        message="Checking session..."
+        subtitle="Please wait while we verify your game session"
+      />
+    );
+  }
 
   if (!app.playerName || !app.currentRoomId) {
     return <Navigate to="/" replace />;
@@ -69,10 +98,33 @@ const GameRoute = ({ children }) => {
 };
 
 // App Router component
-const AppRouter = () => {
+const AppRouter = ({ sessionToRecover }) => {
   return (
     <Router>
-      <Routes>
+      <AppRouterContent sessionToRecover={sessionToRecover} />
+    </Router>
+  );
+};
+
+// Router content with session recovery
+const AppRouterContent = ({ sessionToRecover }) => {
+  const navigate = useNavigate();
+  const app = useApp();
+
+  useEffect(() => {
+    if (sessionToRecover) {
+      // Restore app context
+      app.setPlayerName(sessionToRecover.playerName);
+      app.setCurrentRoomId(sessionToRecover.roomId);
+      
+      // Navigate to game
+      console.log('🎮 Recovering session, navigating to game:', sessionToRecover.roomId);
+      navigate(`/game/${sessionToRecover.roomId}`);
+    }
+  }, [sessionToRecover, navigate, app]);
+
+  return (
+    <Routes>
         {/* Start page - no requirements */}
         <Route path="/" element={<StartPage />} />
 
@@ -109,14 +161,14 @@ const AppRouter = () => {
         {/* Catch all - redirect to start */}
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
-    </Router>
   );
 };
 
-// Service-aware App component
+// Service-aware App component with session recovery
 const AppWithServices = () => {
   const [servicesInitialized, setServicesInitialized] = useState(false);
   const [initializationError, setInitializationError] = useState(null);
+  const [sessionToRecover, setSessionToRecover] = useState(null);
 
   useEffect(() => {
     const initServices = async () => {
@@ -125,6 +177,14 @@ const AppWithServices = () => {
         initializeTheme();
 
         await initializeServices();
+        
+        // Check for stored session
+        if (hasValidSession()) {
+          const session = getSession();
+          console.log('🎮 Found stored session:', session);
+          setSessionToRecover(session);
+        }
+        
         setServicesInitialized(true);
         console.log('🎮 Global services initialized');
       } catch (error) {
@@ -170,7 +230,7 @@ const AppWithServices = () => {
     );
   }
 
-  return <AppRouter />;
+  return <AppRouter sessionToRecover={sessionToRecover} />;
 };
 
 // Main App component

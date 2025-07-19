@@ -125,11 +125,17 @@ export class NetworkService extends EventTarget {
       const connectionData = this.connections.get(roomId);
       this.send(roomId, 'client_ready', { 
         room_id: roomId,
-        player_name: connectionData?.playerName 
+        player_name: connectionData?.playerName,
+        is_reconnection: connectionData?.isReconnection || false
       });
 
       // Process any queued messages
       this.processQueuedMessages(roomId);
+
+      // Reset reconnection flag after successful connection
+      if (connectionData) {
+        connectionData.isReconnection = false;
+      }
 
       // Emit connection event
       this.dispatchEvent(
@@ -511,6 +517,10 @@ export class NetworkService extends EventTarget {
       const playerName = connectionData?.playerName;
 
       reconnectState.attempts++;
+      // Mark this as a reconnection attempt
+      if (connectionData) {
+        connectionData.isReconnection = true;
+      }
       await this.connectToRoom(roomId, { playerName });
 
       // Success - reset attempts

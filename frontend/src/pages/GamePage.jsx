@@ -17,11 +17,13 @@ import { useGameState } from '../hooks/useGameState';
 import { useGameActions } from '../hooks/useGameActions';
 import { useConnectionStatus } from '../hooks/useConnectionStatus';
 import { serviceIntegration } from '../services/ServiceIntegration';
+import { getSession } from '../utils/sessionStorage';
 
 // Import components
 import { GameContainer } from '../components/game/GameContainer';
 import { LoadingOverlay } from '../components';
 import ErrorBoundary from '../components/ErrorBoundary';
+import ToastContainer from '../components/ToastContainer';
 
 const GamePage = () => {
   const navigate = useNavigate();
@@ -49,6 +51,14 @@ const GamePage = () => {
         }
 
         if (roomId) {
+          // Check if this is a session recovery
+          const session = getSession();
+          const isRecovery = session && session.roomId === roomId && session.playerName === playerName;
+          
+          if (isRecovery) {
+            console.log('🎮 GamePage: Recovering session for', playerName, 'in room', roomId);
+          }
+          
           await serviceIntegration.connectToRoom(roomId, playerName);
           setIsInitialized(true);
         }
@@ -95,6 +105,9 @@ const GamePage = () => {
   return (
     <ErrorBoundary>
       <div className="game-page-wrapper">
+        {/* Toast notifications for disconnect/reconnect events */}
+        <ToastContainer position="top-right" maxToasts={5} />
+        
         {/* GameContainer now handles all UI including layout */}
         <GameContainer
           roomId={roomId}
