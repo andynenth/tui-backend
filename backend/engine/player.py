@@ -20,6 +20,11 @@ class Player:
         # Game statistics (cumulative across all rounds)
         self.turns_won = 0  # Total number of turns won in the game
         self.perfect_rounds = 0  # Number of rounds where declared == actual (non-zero)
+        
+        # Connection tracking (for disconnect handling)
+        self.is_connected = True  # Whether player is currently connected
+        self.disconnect_time = None  # When player disconnected
+        self.original_is_bot = is_bot  # Store original bot state for reconnection
 
     def has_red_general(self):
         """

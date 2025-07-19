@@ -4,7 +4,7 @@
 
 This plan implements a robust disconnection handling system for Liap Tui, ensuring games continue smoothly when players disconnect. The system leverages the **existing AI infrastructure** (bot_manager.py and ai.py) rather than creating new AI components, significantly reducing development time and complexity.
 
-**Last Updated:** 2025-07-18 - Updated to reflect that Task 1.0 (Bot Avatar Indicators) is now COMPLETED
+**Last Updated:** 2025-07-18 - Major update: Core Week 1 backend infrastructure now COMPLETED (Tasks 1.0, 1.1, 1.3)
 
 ## 🚀 Major Simplification from Original Plan
 
@@ -92,18 +92,24 @@ Comprehensive testing and edge cases
 
 #### Backend Tasks (Priority: Critical)
 
-**Task 1.1: Player Connection Tracking System**
+**Task 1.1: Player Connection Tracking System** ✅ COMPLETED (2025-07-18)
 
-- [ ] Create `PlayerConnection` class with status tracking
-- [ ] Add connection status to player model
-- [ ] Implement connection state machine (connected/disconnected/reconnecting)
-- [ ] Add disconnect timestamp tracking
-- [ ] Create reconnection deadline logic
-- **Estimate:** 8 hours
-- **Dependencies:** None
-- **Files to modify:**
-  - `backend/engine/player.py`
-  - `backend/api/websocket/connection_manager.py`
+- [x] Create `PlayerConnection` class with status tracking
+- [x] Add connection status to player model  
+- [x] Implement connection state machine (connected/disconnected/reconnecting)
+- [x] Add disconnect timestamp tracking
+- [x] Create reconnection deadline logic
+- **Actual Implementation:**
+  - Created comprehensive ConnectionManager class with async operations
+  - Added connection tracking fields to Player model
+  - Implemented grace period system (30 seconds default)
+  - Added automatic cleanup of expired connections
+  - Full test coverage with successful test execution
+- **Files modified:**
+  - `backend/engine/player.py` - Added connection tracking properties
+  - `backend/api/websocket/connection_manager.py` - Complete ConnectionManager implementation
+  - `backend/api/routes/ws.py` - Integrated disconnect handling with bot activation
+- **Test Results:** All tests passing - see TASK_1_1_TEST_REPORT.md
 
 **Task 1.2: Enhanced WebSocket Disconnect Detection**
 
@@ -118,18 +124,22 @@ Comprehensive testing and edge cases
   - `backend/api/routes/ws.py`
   - `backend/api/websocket/handlers.py`
 
-**Task 1.3: Bot Activation on Disconnect**
+**Task 1.3: Bot Activation on Disconnect** ✅ COMPLETED (2025-07-18)
 
-- [ ] Add disconnect handler that sets `player.is_bot = True`
-- [ ] Store original bot state for reconnection
-- [ ] Create reconnection deadline tracking
-- [ ] Test bot activation in all phases
-- [ ] Verify BotManager handles converted players
-- **Estimate:** 4 hours (reduced from 10)
-- **Dependencies:** Task 1.1
-- **Files to modify:**
-  - `backend/api/routes/ws.py`
-  - `backend/engine/state_machine/states/*_state.py`
+- [x] Add disconnect handler that sets `player.is_bot = True`
+- [x] Store original bot state for reconnection
+- [x] Create reconnection deadline tracking
+- [x] Test bot activation in all phases
+- [x] Verify BotManager handles converted players
+- **Actual Implementation:**
+  - Integrated with ConnectionManager for seamless bot activation
+  - Player original_is_bot state preserved for reconnection
+  - Bot activation occurs automatically on disconnect
+  - Broadcasting of disconnect events with AI activation status
+  - Comprehensive testing of bot activation scenarios
+- **Files modified:**
+  - `backend/api/routes/ws.py` - Complete disconnect handling with bot activation
+- **Test Results:** Bot activation working correctly - see TASK_1_1_TEST_REPORT.md
 
 #### More Frontend Tasks (Priority: High)
 
@@ -405,8 +415,8 @@ Comprehensive testing and edge cases
 ### Week 1 Deliverables
 
 - [x] Bot avatar indicators working (testable immediately) ✅ COMPLETED
-- [ ] Connection tracking operational
-- [ ] Bot activation on disconnect working
+- [x] Connection tracking operational ✅ COMPLETED
+- [x] Bot activation on disconnect working ✅ COMPLETED
 - [x] UI clearly distinguishes humans vs bots ✅ COMPLETED
 
 ### Week 2 Deliverables
@@ -456,7 +466,12 @@ Comprehensive testing and edge cases
 ## Notes for Project Management Tools
 
 ### Quick Start
-**Task 1.0 (Bot Avatar Indicators) is now COMPLETED!** The UI now properly shows robot icons for bot players and includes thinking animations. Next priority is backend Task 1.1 (Connection Tracking).
+**Major Progress Update (2025-07-18):**
+- ✅ Task 1.0 (Bot Avatar Indicators) - COMPLETED 
+- ✅ Task 1.1 (Player Connection Tracking System) - COMPLETED
+- ✅ Task 1.3 (Bot Activation on Disconnect) - COMPLETED
+
+**Week 1 Core Backend Infrastructure is COMPLETE!** The system now has full connection tracking, automatic bot activation on disconnect, and seamless reconnection handling. Next priority is Task 1.2 (Enhanced WebSocket Disconnect Detection) and frontend tasks 1.4-1.5.
 
 ### Jira/Trello Setup
 
