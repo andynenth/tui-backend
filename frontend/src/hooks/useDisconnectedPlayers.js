@@ -13,15 +13,15 @@ export function useDisconnectedPlayers(players = []) {
   useEffect(() => {
     // Initialize disconnected players based on is_bot flag
     const initialDisconnected = players
-      .filter(player => player.is_bot && player.original_is_bot === false)
-      .map(player => player.name);
+      .filter((player) => player.is_bot && player.original_is_bot === false)
+      .map((player) => player.name);
     setDisconnectedPlayers(initialDisconnected);
 
     // Handle player disconnected event
     const handlePlayerDisconnected = (event) => {
       const { playerName, ai_activated } = event.detail;
       if (ai_activated) {
-        setDisconnectedPlayers(prev => {
+        setDisconnectedPlayers((prev) => {
           if (!prev.includes(playerName)) {
             return [...prev, playerName];
           }
@@ -33,7 +33,9 @@ export function useDisconnectedPlayers(players = []) {
     // Handle player reconnected event
     const handlePlayerReconnected = (event) => {
       const { playerName } = event.detail;
-      setDisconnectedPlayers(prev => prev.filter(name => name !== playerName));
+      setDisconnectedPlayers((prev) =>
+        prev.filter((name) => name !== playerName)
+      );
     };
 
     // Listen to window events (bridged from NetworkService)
@@ -41,14 +43,29 @@ export function useDisconnectedPlayers(players = []) {
     window.addEventListener('player_reconnected', handlePlayerReconnected);
 
     // Also listen directly to NetworkService for immediate updates
-    networkService.addEventListener('player_disconnected', handlePlayerDisconnected);
-    networkService.addEventListener('player_reconnected', handlePlayerReconnected);
+    networkService.addEventListener(
+      'player_disconnected',
+      handlePlayerDisconnected
+    );
+    networkService.addEventListener(
+      'player_reconnected',
+      handlePlayerReconnected
+    );
 
     return () => {
-      window.removeEventListener('player_disconnected', handlePlayerDisconnected);
+      window.removeEventListener(
+        'player_disconnected',
+        handlePlayerDisconnected
+      );
       window.removeEventListener('player_reconnected', handlePlayerReconnected);
-      networkService.removeEventListener('player_disconnected', handlePlayerDisconnected);
-      networkService.removeEventListener('player_reconnected', handlePlayerReconnected);
+      networkService.removeEventListener(
+        'player_disconnected',
+        handlePlayerDisconnected
+      );
+      networkService.removeEventListener(
+        'player_reconnected',
+        handlePlayerReconnected
+      );
     };
   }, [players]);
 

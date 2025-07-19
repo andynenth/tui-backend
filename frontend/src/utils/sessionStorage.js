@@ -64,11 +64,11 @@ export function getSession() {
     if (!sessionStr) return null;
 
     const session = JSON.parse(sessionStr);
-    
+
     // Check if session is expired
     const expiryTime = SESSION_EXPIRY_HOURS * 60 * 60 * 1000;
     const isExpired = Date.now() - session.lastActivity > expiryTime;
-    
+
     if (isExpired) {
       clearSession();
       return null;
@@ -107,7 +107,7 @@ export function hasValidSession() {
 export function getSessionAge() {
   const session = getSession();
   if (!session) return null;
-  
+
   return Date.now() - session.createdAt;
 }
 
@@ -117,7 +117,7 @@ export function getSessionAge() {
 export function getTimeSinceLastActivity() {
   const session = getSession();
   if (!session) return null;
-  
+
   return Date.now() - session.lastActivity;
 }
 
@@ -130,12 +130,15 @@ export function formatSessionInfo() {
 
   const timeSinceActivity = getTimeSinceLastActivity();
   const minutesAgo = Math.floor(timeSinceActivity / 60000);
-  
+
   return {
     roomId: session.roomId,
     playerName: session.playerName,
     gamePhase: session.gamePhase,
-    lastSeenText: minutesAgo < 1 ? 'Just now' : `${minutesAgo} minute${minutesAgo > 1 ? 's' : ''} ago`,
+    lastSeenText:
+      minutesAgo < 1
+        ? 'Just now'
+        : `${minutesAgo} minute${minutesAgo > 1 ? 's' : ''} ago`,
     isRecent: minutesAgo < 5,
   };
 }
@@ -149,10 +152,10 @@ export function storeMultiSession(roomId, playerName, sessionId) {
   try {
     const sessionsStr = localStorage.getItem(SESSIONS_KEY) || '[]';
     const sessions = JSON.parse(sessionsStr);
-    
+
     // Remove existing session for same room
-    const filtered = sessions.filter(s => s.roomId !== roomId);
-    
+    const filtered = sessions.filter((s) => s.roomId !== roomId);
+
     // Add new session
     filtered.push({
       roomId,
@@ -161,10 +164,10 @@ export function storeMultiSession(roomId, playerName, sessionId) {
       createdAt: Date.now(),
       lastActivity: Date.now(),
     });
-    
+
     // Keep only last 5 sessions
     const recent = filtered.slice(-5);
-    
+
     localStorage.setItem(SESSIONS_KEY, JSON.stringify(recent));
   } catch (error) {
     console.error('Failed to store multi-session:', error);
@@ -175,13 +178,13 @@ export function getMultiSessions() {
   try {
     const sessionsStr = localStorage.getItem(SESSIONS_KEY) || '[]';
     const sessions = JSON.parse(sessionsStr);
-    
+
     // Filter out expired sessions
     const expiryTime = SESSION_EXPIRY_HOURS * 60 * 60 * 1000;
-    const valid = sessions.filter(s => 
-      Date.now() - s.lastActivity < expiryTime
+    const valid = sessions.filter(
+      (s) => Date.now() - s.lastActivity < expiryTime
     );
-    
+
     return valid;
   } catch (error) {
     console.error('Failed to get multi-sessions:', error);

@@ -91,7 +91,9 @@ export function GameContainer({ roomId, onNavigateToLobby }) {
       orderedPlayers = gameState.declarationOrder
         .map((playerName) => {
           // Find the full player object with is_bot property
-          const fullPlayer = gameState.players.find((p) => p.name === playerName);
+          const fullPlayer = gameState.players.find(
+            (p) => p.name === playerName
+          );
           return fullPlayer || { name: playerName };
         })
         .filter((p) => p !== undefined);

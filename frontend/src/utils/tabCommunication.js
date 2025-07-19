@@ -65,11 +65,11 @@ class TabCommunicationManager {
       case 'TAB_OPENED':
         if (tabId !== TAB_ID) {
           this.activeTabs.set(tabId, { roomId, playerName, timestamp });
-          
+
           // Check for duplicate session
           if (roomId === this.roomId && playerName === this.playerName) {
             console.warn('Duplicate game session detected in another tab!');
-            
+
             // Notify the other tab
             this.sendMessage({
               type: 'DUPLICATE_DETECTED',
@@ -111,11 +111,11 @@ class TabCommunicationManager {
 
       case 'DUPLICATE_DETECTED':
         if (event.data.targetTabId === TAB_ID && this.onDuplicateCallback) {
-          this.onDuplicateCallback({ 
-            isTarget: true, 
+          this.onDuplicateCallback({
+            isTarget: true,
             otherTabId: tabId,
-            roomId, 
-            playerName 
+            roomId,
+            playerName,
           });
         }
         break;
@@ -152,10 +152,10 @@ class TabCommunicationManager {
   async checkForDuplicates(roomId, playerName) {
     return new Promise((resolve) => {
       const duplicates = [];
-      
+
       // Clear existing tabs first
       this.activeTabs.clear();
-      
+
       // Request active tabs
       this.sendMessage({
         type: 'REQUEST_ACTIVE_TABS',
@@ -199,7 +199,7 @@ class TabCommunicationManager {
         roomId: this.roomId,
         playerName: this.playerName,
       });
-      
+
       this.channel.close();
       this.isActive = false;
     }

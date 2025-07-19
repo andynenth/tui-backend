@@ -26,10 +26,7 @@ const ToastContainer = ({ position = 'top-right', maxToasts = 5 }) => {
             animationDelay: `${index * 50}ms`,
           }}
         >
-          <ToastNotification
-            {...notification}
-            onClose={removeNotification}
-          />
+          <ToastNotification {...notification} onClose={removeNotification} />
         </div>
       ))}
     </div>,
@@ -38,7 +35,12 @@ const ToastContainer = ({ position = 'top-right', maxToasts = 5 }) => {
 };
 
 ToastContainer.propTypes = {
-  position: PropTypes.oneOf(['top-left', 'top-right', 'bottom-left', 'bottom-right']),
+  position: PropTypes.oneOf([
+    'top-left',
+    'top-right',
+    'bottom-left',
+    'bottom-right',
+  ]),
   maxToasts: PropTypes.number,
 };
 
