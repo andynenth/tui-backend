@@ -56,7 +56,7 @@ export function useToastNotifications() {
   useEffect(() => {
     const handleStateChange = (state) => {
       const currentDisconnectedPlayers = state.disconnectedPlayers || [];
-      
+
       // Check for newly disconnected players
       const newlyDisconnected = currentDisconnectedPlayers.filter(
         (player) => !previousDisconnectedPlayers.current.includes(player)
@@ -86,7 +86,10 @@ export function useToastNotifications() {
       });
 
       // Check for host changes
-      if (state.host !== previousHost.current && previousHost.current !== null) {
+      if (
+        state.host !== previousHost.current &&
+        previousHost.current !== null
+      ) {
         addToast({
           message: `${state.host} is now the host`,
           type: 'info',
@@ -105,7 +108,9 @@ export function useToastNotifications() {
     // Get initial state
     const initialState = gameService.getState();
     if (initialState.disconnectedPlayers) {
-      previousDisconnectedPlayers.current = [...initialState.disconnectedPlayers];
+      previousDisconnectedPlayers.current = [
+        ...initialState.disconnectedPlayers,
+      ];
     }
     if (initialState.host) {
       previousHost.current = initialState.host;
@@ -145,7 +150,10 @@ export function useToastNotifications() {
     window.addEventListener('player_reconnected', handlePlayerReconnected);
 
     return () => {
-      window.removeEventListener('player_disconnected', handlePlayerDisconnected);
+      window.removeEventListener(
+        'player_disconnected',
+        handlePlayerDisconnected
+      );
       window.removeEventListener('player_reconnected', handlePlayerReconnected);
     };
   }, [addToast]);
