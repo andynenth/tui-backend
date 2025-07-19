@@ -18,8 +18,19 @@ import HumanIcon from '../../../assets/avatars/human.svg';
  * @param {string} className - Additional CSS class names (optional)
  * @param {string} size - Avatar size: 'mini', 'small', 'medium', 'large' (default: 'medium')
  * @param {string} theme - Avatar theme: 'default', 'yellow' (default: 'default')
+ * @param {boolean} isDisconnected - Whether the player is disconnected (optional, default: false)
+ * @param {boolean} showAIBadge - Whether to show AI playing badge (optional, default: false)
  */
-const PlayerAvatar = ({ name, isBot = false, isThinking = false, className = '', size = 'medium', theme = 'default' }) => {
+const PlayerAvatar = ({ 
+  name, 
+  isBot = false, 
+  isThinking = false, 
+  className = '', 
+  size = 'medium', 
+  theme = 'default',
+  isDisconnected = false,
+  showAIBadge = false
+}) => {
 
   // Get size-specific class
   const getSizeClass = () => {
@@ -43,16 +54,26 @@ const PlayerAvatar = ({ name, isBot = false, isThinking = false, className = '',
   // Render bot avatar
   if (isBot) {
     return (
-      <div className={`player-avatar player-avatar--bot ${getSizeClass()} ${getThemeClass()} ${isThinking ? 'thinking' : ''} ${className}`}>
-        <img src={BotIcon} alt="Bot" className="bot-icon" />
+      <div className="player-avatar-wrapper">
+        <div className={`player-avatar player-avatar--bot ${getSizeClass()} ${getThemeClass()} ${isThinking ? 'thinking' : ''} ${isDisconnected ? 'disconnected' : ''} ${className}`}>
+          <img src={BotIcon} alt="Bot" className="bot-icon" />
+        </div>
+        {showAIBadge && (
+          <div className="ai-badge">AI</div>
+        )}
       </div>
     );
   }
 
   // Render human avatar
   return (
-    <div className={`player-avatar ${getSizeClass()} ${getThemeClass()} ${className}`}>
-      <img src={HumanIcon} alt={name} className="human-icon" />
+    <div className="player-avatar-wrapper">
+      <div className={`player-avatar ${getSizeClass()} ${getThemeClass()} ${isDisconnected ? 'disconnected' : ''} ${className}`}>
+        <img src={HumanIcon} alt={name} className="human-icon" />
+      </div>
+      {isDisconnected && (
+        <div className="disconnect-badge">🔴</div>
+      )}
     </div>
   );
 };
@@ -64,6 +85,8 @@ PlayerAvatar.propTypes = {
   className: PropTypes.string,
   size: PropTypes.oneOf(['mini', 'small', 'medium', 'large']),
   theme: PropTypes.oneOf(['default', 'yellow']),
+  isDisconnected: PropTypes.bool,
+  showAIBadge: PropTypes.bool,
 };
 
 export default PlayerAvatar;
