@@ -2,6 +2,7 @@
 
 import asyncio
 import logging
+import uuid
 
 import backend.socket_manager
 from backend.shared_instances import shared_room_manager
@@ -10,6 +11,7 @@ from fastapi import APIRouter, WebSocket, WebSocketDisconnect
 
 from api.validation import validate_websocket_message
 from api.middleware.websocket_rate_limit import check_websocket_rate_limit, send_rate_limit_error
+from api.websocket.connection_manager import connection_manager
 
 # Set up logging
 logger = logging.getLogger(__name__)
@@ -20,12 +22,64 @@ router = APIRouter()
 room_manager = shared_room_manager
 
 
+async def handle_disconnect(room_id: str, websocket: WebSocket):
+    """Handle player disconnection with bot activation"""
+    try:
+        # Generate a unique websocket ID for tracking
+        websocket_id = getattr(websocket, '_ws_id', None)
+        
+        if websocket_id:
+            # Get connection info
+            connection = await connection_manager.handle_disconnect(websocket_id)
+            
+            if connection and room_id != "lobby":
+                # This is an in-game disconnect
+                room = room_manager.get_room(room_id)
+                if room and room.game_started and room.game:
+                    # Find the player in the game
+                    player = next(
+                        (p for p in room.game.players if p.name == connection.player_name),
+                        None
+                    )
+                    
+                    if player and not player.is_bot:
+                        # Store original bot state
+                        player.original_is_bot = player.is_bot
+                        player.is_connected = False
+                        player.disconnect_time = connection.disconnect_time
+                        
+                        # Convert to bot
+                        player.is_bot = True
+                        
+                        logger.info(f"Player {connection.player_name} disconnected from game in room {room_id}. Bot activated.")
+                        
+                        # Broadcast disconnect event
+                        await broadcast(
+                            room_id,
+                            "player_disconnected",
+                            {
+                                "player_name": connection.player_name,
+                                "ai_activated": True,
+                                "reconnect_deadline": connection.reconnect_deadline.isoformat() if connection.reconnect_deadline else None,
+                                "is_bot": True
+                            }
+                        )
+    except Exception as e:
+        logger.error(f"Error handling disconnect: {e}")
+    finally:
+        # Always unregister the websocket
+        unregister(room_id, websocket)
+
+
 @router.websocket("/ws/{room_id}")
 async def websocket_endpoint(websocket: WebSocket, room_id: str):
     """
     WebSocket endpoint for real-time communication within a specific room.
     Also handles special 'lobby' room for lobby updates.
     """
+    # Generate unique ID for this websocket
+    websocket._ws_id = str(uuid.uuid4())
+    
     registered_ws = await register(room_id, websocket)
 
     try:
@@ -144,6 +198,11 @@ async def websocket_endpoint(websocket: WebSocket, room_id: str):
                             },
                         }
                     )
+                    
+                    # Track player connection if player_name provided
+                    player_name = event_data.get("player_name")
+                    if player_name and hasattr(registered_ws, '_ws_id'):
+                        await connection_manager.register_player("lobby", player_name, registered_ws._ws_id)
 
                 elif event_name == "create_room":
                     # Create new room (using validated/sanitized data)
@@ -334,6 +393,36 @@ async def websocket_endpoint(websocket: WebSocket, room_id: str):
                                 },
                             }
                         )
+                        
+                        # Track player connection if player_name provided
+                        player_name = event_data.get("player_name")
+                        if player_name and hasattr(registered_ws, '_ws_id'):
+                            await connection_manager.register_player(room_id, player_name, registered_ws._ws_id)
+                            
+                            # Check if reconnecting to an active game
+                            if room.game_started and room.game:
+                                player = next(
+                                    (p for p in room.game.players if p.name == player_name),
+                                    None
+                                )
+                                if player and player.is_bot and not player.original_is_bot:
+                                    # This is a human player reconnecting
+                                    player.is_bot = False
+                                    player.is_connected = True
+                                    player.disconnect_time = None
+                                    
+                                    logger.info(f"Player {player_name} reconnected to game in room {room_id}")
+                                    
+                                    # Broadcast reconnection
+                                    await broadcast(
+                                        room_id,
+                                        "player_reconnected",
+                                        {
+                                            "player_name": player_name,
+                                            "resumed_control": True,
+                                            "is_bot": False
+                                        }
+                                    )
 
                         # Send current game phase if game is running
                         if room.started and room.game_state_machine:
@@ -1271,10 +1360,7 @@ async def websocket_endpoint(websocket: WebSocket, room_id: str):
                         )
 
     except WebSocketDisconnect:
-        unregister(room_id, websocket)
-        if room_id == "lobby":
-            pass
-        else:
-            pass
+        await handle_disconnect(room_id, websocket)
     except Exception as e:
-        unregister(room_id, websocket)
+        logger.error(f"WebSocket error in room {room_id}: {e}")
+        await handle_disconnect(room_id, websocket)
