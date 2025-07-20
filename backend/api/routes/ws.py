@@ -2,6 +2,8 @@
 
 import asyncio
 import logging
+import uuid
+from typing import Optional
 
 import backend.socket_manager
 from backend.shared_instances import shared_room_manager
@@ -10,6 +12,9 @@ from fastapi import APIRouter, WebSocket, WebSocketDisconnect
 
 from api.validation import validate_websocket_message
 from api.middleware.websocket_rate_limit import check_websocket_rate_limit, send_rate_limit_error
+from backend.api.websocket.connection_manager import connection_manager
+from backend.api.websocket.message_queue import message_queue_manager
+from backend.engine.player import Player
 
 # Set up logging
 logger = logging.getLogger(__name__)
@@ -20,6 +25,111 @@ router = APIRouter()
 room_manager = shared_room_manager
 
 
+async def broadcast_with_queue(room_id: str, event: str, data: dict):
+    """
+    Broadcast to connected players and queue for disconnected ones.
+    
+    Args:
+        room_id: The room ID
+        event: The event name
+        data: The event data
+    """
+    # Get room to check all players
+    room = room_manager.get_room(room_id)
+    if not room:
+        return
+    
+    # Check each player's connection status
+    for player in room.players:
+        if not player:
+            continue
+            
+        # Check if player is connected
+        is_connected = await connection_manager.is_player_connected(room_id, player.name)
+        
+        if not is_connected:
+            # Queue message for disconnected player
+            await message_queue_manager.queue_message(room_id, player.name, event, data)
+            logger.info(f"Queued {event} for disconnected player {player.name}")
+    
+    # Broadcast to all connected clients normally
+    await broadcast(room_id, event, data)
+
+
+async def handle_disconnect(room_id: str, websocket: WebSocket):
+    """
+    Handle player disconnect with bot activation.
+    
+    Args:
+        room_id: The room ID
+        websocket: The WebSocket that disconnected
+    """
+    # Get WebSocket ID
+    ws_id = getattr(websocket, '_ws_id', None)
+    if not ws_id:
+        logger.warning(f"WebSocket disconnected without ID in room {room_id}")
+        return
+    
+    # Handle the disconnection in connection manager
+    player_connection = await connection_manager.handle_disconnect(ws_id)
+    if not player_connection:
+        logger.warning(f"No connection found for WebSocket {ws_id}")
+        return
+    
+    player_name = player_connection.player_name
+    logger.info(f"Player {player_name} disconnected from room {room_id}")
+    
+    # Get the room and player
+    room = room_manager.get_room(room_id)
+    if not room:
+        return
+    
+    # Find the player object
+    player = None
+    for p in room.players:
+        if p and p.name == player_name:
+            player = p
+            break
+    
+    if not player:
+        logger.warning(f"Player {player_name} not found in room {room_id}")
+        return
+    
+    # Update player state for bot takeover
+    original_is_bot = player.is_bot
+    player.is_bot = True
+    player.is_connected = False
+    player.disconnect_time = player_connection.disconnect_time
+    
+    logger.info(f"🤖 AVATAR CHANGE: {player_name} - is_bot changed from {original_is_bot} to True")
+    logger.info(f"   Player state: is_connected={player.is_connected}, original_is_bot={player.original_is_bot}")
+    
+    # Broadcast disconnect event
+    await broadcast_with_queue(room_id, "player_disconnected", {
+        "player_name": player_name,
+        "timestamp": asyncio.get_event_loop().time()
+    })
+    logger.info(f"📤 Broadcasted player_disconnected event for {player_name}")
+    
+    # Check if we need host migration
+    if room.is_host(player_name):
+        new_host = room.migrate_host()
+        if new_host:
+            logger.info(f"Host migrated from {player_name} to {new_host}")
+            await broadcast_with_queue(room_id, "host_changed", {
+                "old_host": player_name,
+                "new_host": new_host,
+                "timestamp": asyncio.get_event_loop().time()
+            })
+    
+    # Notify bot manager if game is active
+    if room.game and room.game_state_machine:
+        await broadcast(room_id, "player_bot_activated", {
+            "player_name": player_name,
+            "timestamp": asyncio.get_event_loop().time()
+        })
+
+
 @router.websocket("/ws/{room_id}")
 async def websocket_endpoint(websocket: WebSocket, room_id: str):
     """
@@ -27,6 +137,10 @@ async def websocket_endpoint(websocket: WebSocket, room_id: str):
     Also handles special 'lobby' room for lobby updates.
     """
     registered_ws = await register(room_id, websocket)
+    
+    # Add UUID tracking for bot replacement
+    websocket._ws_id = str(uuid.uuid4())
+    logger.info(f"WebSocket connected: room={room_id}, ws_id={websocket._ws_id}")
 
     try:
         while True:
@@ -248,6 +362,12 @@ async def websocket_endpoint(websocket: WebSocket, room_id: str):
                         result = await room.join_room_safe(player_name)
 
                         if result["success"]:
+                            # Register player for bot replacement
+                            ws_id = getattr(websocket, '_ws_id', None)
+                            if ws_id:
+                                await connection_manager.register_player(room_id_to_join, player_name, ws_id)
+                                logger.info(f"Registered player {player_name} in room {room_id_to_join}")
+                            
                             # Send success response to the client
                             await registered_ws.send_json(
                                 {
@@ -324,6 +444,50 @@ async def websocket_endpoint(websocket: WebSocket, room_id: str):
                 elif event_name == "client_ready":
                     room = room_manager.get_room(room_id)
                     if room:
+                        # Check for player name in event data for reconnection
+                        player_name = event_data.get("player_name")
+                        if player_name:
+                            # Check if this is a reconnection
+                            is_reconnection = await connection_manager.check_reconnection(room_id, player_name)
+                            
+                            if is_reconnection:
+                                # Handle reconnection
+                                ws_id = getattr(websocket, '_ws_id', None)
+                                if ws_id:
+                                    await connection_manager.register_player(room_id, player_name, ws_id)
+                                    
+                                    # Find and update player object
+                                    for p in room.players:
+                                        if p and p.name == player_name:
+                                            current_is_bot = p.is_bot
+                                            p.is_bot = p.original_is_bot
+                                            p.is_connected = True
+                                            p.disconnect_time = None
+                                            logger.info(f"🤖 AVATAR RESTORE: {player_name} - is_bot changed from {current_is_bot} to {p.original_is_bot}")
+                                            logger.info(f"   Player state: is_connected={p.is_connected}, original_is_bot={p.original_is_bot}")
+                                            break
+                                    
+                                    # Get queued messages
+                                    queued_messages = await message_queue_manager.get_queued_messages(room_id, player_name)
+                                    
+                                    # Broadcast reconnection
+                                    await broadcast_with_queue(room_id, "player_reconnected", {
+                                        "player_name": player_name,
+                                        "timestamp": asyncio.get_event_loop().time()
+                                    })
+                                    
+                                    # Send queued messages to the reconnected player
+                                    if queued_messages:
+                                        await registered_ws.send_json({
+                                            "event": "queued_messages",
+                                            "data": {
+                                                "messages": queued_messages,
+                                                "count": len(queued_messages)
+                                            }
+                                        })
+                                    
+                                    logger.info(f"Player {player_name} reconnected to room {room_id}, delivered {len(queued_messages)} queued messages")
+                        
                         updated_summary = room.summary()
                         await registered_ws.send_json(
                             {
@@ -1275,6 +1439,7 @@ async def websocket_endpoint(websocket: WebSocket, room_id: str):
         if room_id == "lobby":
             pass
         else:
-            pass
+            # Handle player disconnect for bot replacement
+            await handle_disconnect(room_id, websocket)  # Use original websocket, not registered_ws
     except Exception as e:
         unregister(room_id, websocket)

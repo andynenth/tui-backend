@@ -118,8 +118,13 @@ export class NetworkService extends EventTarget {
       // Start heartbeat monitoring
       this.startHeartbeat(roomId);
 
-      // Send initial ready signal
-      this.send(roomId, 'client_ready', { room_id: roomId });
+      // Send initial ready signal with player name if available
+      const gameService = (await import('./GameService')).gameService;
+      const playerName = gameService.getState().playerName;
+      this.send(roomId, 'client_ready', {
+        room_id: roomId,
+        player_name: playerName,
+      });
 
       // Process any queued messages
       this.processQueuedMessages(roomId);

@@ -4,7 +4,7 @@ import asyncio
 import hashlib
 import random
 import time
-from typing import Dict, List, Optional, Set
+from typing import Any, Dict, List, Optional, Set
 
 import engine.ai as ai
 from engine.player import Player
@@ -242,6 +242,8 @@ class GameBotHandler:
                 await self._handle_action_accepted(data)
             elif event == "action_failed":
                 await self._handle_action_failed(data)
+            elif event == "player_bot_activated":
+                await self._handle_bot_activation(data)
 
     async def _handle_enterprise_phase_change(self, data: dict):
         """
@@ -993,3 +995,63 @@ class GameBotHandler:
         if is_bot:
             # For failed bot actions, similar to rejection - prevent downstream processing
             pass
+
+    async def _handle_bot_activation(self, data: dict):
+        """
+        Handle when a player disconnects and bot takes over.
+        Check if it's the bot's turn and trigger immediate action.
+        
+        Args:
+            data: Contains player_name of the disconnected player
+        """
+        player_name = data.get("player_name")
+        if not player_name:
+            return
+            
+        print(f"🤖 Bot activation for disconnected player: {player_name}")
+        
+        # Get current game state
+        game_state = self._get_game_state()
+        if not game_state:
+            return
+            
+        # Check if game is in progress
+        if not hasattr(game_state, "phase") or not game_state.phase:
+            return
+            
+        # Get phase data from state machine
+        if not self.state_machine:
+            return
+            
+        phase_data = self.state_machine.get_phase_data()
+        current_phase = self.state_machine.get_current_phase()
+        
+        # Check if it's this player's turn in any phase
+        if current_phase and current_phase.value == "declaration":
+            current_declarer = phase_data.get("current_declarer")
+            if current_declarer == player_name:
+                print(f"🎯 Bot {player_name} needs to declare immediately")
+                await self._handle_declaration_phase(player_name)
+                
+        elif current_phase and current_phase.value == "turn":
+            current_player = phase_data.get("current_player")
+            if current_player == player_name:
+                print(f"🎯 Bot {player_name} needs to play immediately")
+                await self._handle_play_phase(player_name)
+                
+        elif current_phase and current_phase.value == "preparation":
+            # Check if bot needs to make redeal decision
+            current_weak_player = phase_data.get("current_weak_player")
+            weak_players_awaiting = phase_data.get("weak_players_awaiting", [])
+            
+            if current_weak_player == player_name or player_name in weak_players_awaiting:
+                print(f"🎯 Bot {player_name} needs to make redeal decision")
+                # Find the bot player
+                bot = None
+                for player in game_state.players:
+                    if player.name == player_name:
+                        bot = player
+                        break
+                        
+                if bot:
+                    await self._bot_redeal_decision(bot)
