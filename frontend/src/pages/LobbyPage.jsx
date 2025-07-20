@@ -158,7 +158,6 @@ const LobbyPage = () => {
   const joinRoomById = () => {
     if (!joinRoomId.trim()) return;
 
-    setIsJoiningRoom(true);
     networkService.send('lobby', 'join_room', {
       room_id: joinRoomId.trim(),
       player_name: app.playerName,
@@ -385,9 +384,7 @@ const LobbyPage = () => {
             </div>
 
             {/* Join Modal (Custom styled) */}
-            <div
-              className={`lp-modalOverlay ${showJoinModal ? 'lp-show' : ''}`}
-            >
+            <div className={`lp-modalOverlay ${showJoinModal ? 'show' : ''}`}>
               <div className="lp-modalContent">
                 <h3 className="lp-modalTitle">Join Room by ID</h3>
                 <input
@@ -426,7 +423,7 @@ const LobbyPage = () => {
 
             {/* Loading Overlay */}
             <div
-              className={`lp-loadingOverlay ${isCreatingRoom || isJoiningRoom ? 'lp-show' : ''}`}
+              className={`lp-loadingOverlay ${isCreatingRoom || isJoiningRoom ? 'show' : ''}`}
             >
               <div className="lp-loadingSpinner"></div>
             </div>
