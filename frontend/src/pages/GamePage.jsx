@@ -51,6 +51,9 @@ const GamePage = () => {
         }
 
         if (roomId) {
+          // Dispatch game started event to prevent false disconnect notifications
+          window.dispatchEvent(new Event('game_started'));
+          
           // Check if this is a session recovery
           const session = getSession();
           const isRecovery = session && session.roomId === roomId && session.playerName === playerName;
