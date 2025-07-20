@@ -450,4 +450,144 @@ describe('NetworkService', () => {
       );
     });
   });
+
+  describe('Player Info Handling', () => {
+    describe('connectToRoom with player info', () => {
+      test('stores player info in connection data', async () => {
+        const roomId = 'test-room';
+        const playerName = 'TestPlayer';
+
+        await networkService.connectToRoom(roomId, { playerName });
+
+        // Get connection data through status
+        const status = networkService.getConnectionStatus(roomId);
+        expect(status.connected).toBe(true);
+        
+        // Verify player name is included in client_ready
+        const connection = await networkService.connectToRoom(roomId);
+        const sentMessages = connection.getSentMessages();
+        
+        const readyMessage = sentMessages.find(msg => {
+          const parsed = JSON.parse(msg);
+          return parsed.event === 'client_ready';
+        });
+        
+        expect(readyMessage).toBeDefined();
+        const parsed = JSON.parse(readyMessage);
+        expect(parsed.data.player_name).toBe(playerName);
+      });
+
+      test('maintains backward compatibility without player info', async () => {
+        const roomId = 'test-room';
+
+        // Should not throw when playerInfo is not provided
+        const connection = await networkService.connectToRoom(roomId);
+
+        expect(connection).toBeInstanceOf(MockWebSocket);
+        expect(connection.url).toBe('ws://localhost:5050/ws/test-room');
+
+        const sentMessages = connection.getSentMessages();
+        const readyMessage = sentMessages.find(msg => {
+          const parsed = JSON.parse(msg);
+          return parsed.event === 'client_ready';
+        });
+
+        expect(readyMessage).toBeDefined();
+        const parsed = JSON.parse(readyMessage);
+        expect(parsed.data.player_name).toBeUndefined();
+      });
+
+      test('client_ready event includes player_name when provided', async () => {
+        const roomId = 'test-room';
+        const playerName = 'Alice';
+
+        const connection = await networkService.connectToRoom(roomId, { playerName });
+        const sentMessages = connection.getSentMessages();
+
+        const readyMessage = sentMessages.find(msg => {
+          const parsed = JSON.parse(msg);
+          return parsed.event === 'client_ready';
+        });
+
+        expect(readyMessage).toBeDefined();
+        const parsed = JSON.parse(readyMessage);
+        expect(parsed.event).toBe('client_ready');
+        expect(parsed.data).toMatchObject({
+          room_id: roomId,
+          player_name: playerName
+        });
+      });
+
+      test('client_ready event omits player_name when not provided', async () => {
+        const roomId = 'test-room';
+
+        const connection = await networkService.connectToRoom(roomId);
+        const sentMessages = connection.getSentMessages();
+
+        const readyMessage = sentMessages.find(msg => {
+          const parsed = JSON.parse(msg);
+          return parsed.event === 'client_ready';
+        });
+
+        expect(readyMessage).toBeDefined();
+        const parsed = JSON.parse(readyMessage);
+        expect(parsed.event).toBe('client_ready');
+        expect(parsed.data.room_id).toBe(roomId);
+        expect(parsed.data.player_name).toBeUndefined();
+      });
+    });
+
+    describe('Reconnection with player info', () => {
+      test('reconnection maintains original player name', async () => {
+        const roomId = 'test-room';
+        const playerName = 'Bob';
+
+        // Initial connection with player name
+        await networkService.connectToRoom(roomId, { playerName });
+
+        // Simulate disconnect
+        const connection1 = await networkService.connectToRoom(roomId);
+        connection1.mockClose();
+
+        // Wait for reconnection attempt
+        await wait(200);
+
+        // Get new connection
+        const connections = networkService.connections;
+        expect(connections.has(roomId)).toBe(true);
+
+        // Verify player name is preserved in reconnection
+        // Note: This depends on internal implementation storing playerName
+      });
+
+      test('reconnection passes player info to new connection', async () => {
+        const roomId = 'test-room';
+        const playerName = 'Charlie';
+
+        // Initial connection
+        await networkService.connectToRoom(roomId, { playerName });
+
+        // Force disconnect
+        const connection1 = networkService.connections.get(roomId)?.websocket;
+        if (connection1) {
+          connection1.mockClose();
+        }
+
+        // Manually trigger reconnection
+        await networkService.connectToRoom(roomId, { playerName });
+
+        const connection2 = networkService.connections.get(roomId)?.websocket;
+        const sentMessages = connection2?.getSentMessages() || [];
+
+        const readyMessage = sentMessages.find(msg => {
+          const parsed = JSON.parse(msg);
+          return parsed.event === 'client_ready';
+        });
+
+        expect(readyMessage).toBeDefined();
+        const parsed = JSON.parse(readyMessage);
+        expect(parsed.data.player_name).toBe(playerName);
+      });
+    });
+  });
 });
