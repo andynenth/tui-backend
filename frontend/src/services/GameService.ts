@@ -402,6 +402,7 @@ export class GameService extends EventTarget {
       'score_update',
       'round_complete',
       'game_ended',
+      'player_status_update',
     ];
 
     gameEvents.forEach((event) => {
@@ -523,6 +524,10 @@ export class GameService extends EventTarget {
 
       case 'game_ended':
         newState = this.handleGameEnded(newState, data);
+        break;
+
+      case 'player_status_update':
+        newState = this.handlePlayerStatusUpdate(newState, data);
         break;
 
       case 'play_rejected': {
@@ -1175,6 +1180,32 @@ export class GameService extends EventTarget {
       gameOver: true,
       winners: data.winners || [],
       totalScores: data.final_scores || state.totalScores,
+    };
+  }
+
+  /**
+   * Handle player status update event (disconnect/reconnect)
+   */
+  private handlePlayerStatusUpdate(state: GameState, data: any): GameState {
+    const { player_name, is_connected, is_bot_controlled } = data;
+    
+    console.log(`Player ${player_name} status: connected=${is_connected}, bot=${is_bot_controlled}`);
+    
+    // Update player information if available
+    const updatedPlayers = state.players.map((player) => {
+      if (player.name === player_name) {
+        return {
+          ...player,
+          isConnected: is_connected,
+          isBotControlled: is_bot_controlled,
+        };
+      }
+      return player;
+    });
+    
+    return {
+      ...state,
+      players: updatedPlayers,
     };
   }
 

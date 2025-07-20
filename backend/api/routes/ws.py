@@ -19,6 +19,9 @@ print(f"socket_manager id in {__name__}: {id(backend.socket_manager)}")
 router = APIRouter()
 room_manager = shared_room_manager
 
+# WebSocket to player mapping for disconnect handling
+websocket_players = {}  # {websocket_id: (room_id, player_name)}
+
 
 @router.websocket("/ws/{room_id}")
 async def websocket_endpoint(websocket: WebSocket, room_id: str):
@@ -324,6 +327,8 @@ async def websocket_endpoint(websocket: WebSocket, room_id: str):
                 elif event_name == "client_ready":
                     room = room_manager.get_room(room_id)
                     if room:
+                        # Get player name from event data
+                        player_name = event_data.get("player_name")
                         updated_summary = room.summary()
                         await registered_ws.send_json(
                             {
@@ -389,6 +394,39 @@ async def websocket_endpoint(websocket: WebSocket, room_id: str):
                                         },
                                     }
                                 )
+                                
+                                # Check if this is a reconnection to an active game
+                                if player_name and room.started and room.game:
+                                    player = next(
+                                        (p for p in room.game.players if p.name == player_name),
+                                        None
+                                    )
+                                    
+                                    if player:
+                                        # Track the websocket connection
+                                        websocket_id = id(registered_ws)
+                                        websocket_players[websocket_id] = (room_id, player_name)
+                                        
+                                        # Check if this is a reconnection
+                                        if player.is_bot and not player.original_is_bot:
+                                            # This is a human player reconnecting
+                                            player.is_bot = False
+                                            player.is_connected = True
+                                            player.disconnect_time = None
+                                            
+                                            logger.info(f"Player {player_name} reconnected to game in room {room_id}")
+                                            
+                                            # Broadcast reconnection to other players
+                                            await broadcast(
+                                                room_id,
+                                                "player_status_update",
+                                                {
+                                                    "player_name": player_name,
+                                                    "is_connected": True,
+                                                    "is_bot_controlled": False,
+                                                    "timestamp": asyncio.get_event_loop().time()
+                                                }
+                                            )
 
                         await asyncio.sleep(0)
                     else:
@@ -1272,9 +1310,89 @@ async def websocket_endpoint(websocket: WebSocket, room_id: str):
 
     except WebSocketDisconnect:
         unregister(room_id, websocket)
-        if room_id == "lobby":
-            pass
-        else:
-            pass
+        
+        # Check if this websocket had an associated player in a game
+        websocket_id = id(registered_ws)
+        if websocket_id in websocket_players:
+            tracked_room_id, player_name = websocket_players[websocket_id]
+            del websocket_players[websocket_id]
+            
+            # Get the room and check if game is active
+            room = room_manager.get_room(tracked_room_id)
+            if room and room.started and room.game:
+                # Find the player in the game
+                player = next(
+                    (p for p in room.game.players if p.name == player_name),
+                    None
+                )
+                
+                if player and not player.is_bot:
+                    # Store disconnect info
+                    player.original_is_bot = player.is_bot
+                    player.is_connected = False
+                    from datetime import datetime
+                    player.disconnect_time = datetime.now()
+                    
+                    # Convert to bot
+                    player.is_bot = True
+                    
+                    logger.info(f"🔌 DISCONNECT: Player {player_name} disconnected from active game in room {tracked_room_id}")
+                    logger.info(f"🤖 BOT_ACTIVATION: Setting is_bot=True for {player_name} (was is_bot={player.original_is_bot})")
+                    
+                    # Debug: Check current game state
+                    if room.game_state_machine:
+                        current_phase = room.game_state_machine.get_current_phase()
+                        phase_data = room.game_state_machine.get_phase_data()
+                        logger.info(f"📊 GAME_STATE: Current phase={current_phase.value if current_phase else 'None'}")
+                        logger.info(f"📊 GAME_STATE: Phase data keys={list(phase_data.keys()) if phase_data else []}")
+                    
+                    # Broadcast player status update
+                    await broadcast(
+                        tracked_room_id,
+                        "player_status_update",
+                        {
+                            "player_name": player_name,
+                            "is_connected": False,
+                            "is_bot_controlled": True,
+                            "timestamp": asyncio.get_event_loop().time()
+                        }
+                    )
+                    
+                    # Notify bot manager about the new bot player
+                    try:
+                        from backend.engine.bot_manager import BotManager
+                        bot_manager = BotManager()
+                        
+                        # Check if it's this player's turn
+                        if room.game_state_machine:
+                            current_phase = room.game_state_machine.get_current_phase()
+                            phase_data = room.game_state_machine.get_phase_data()
+                            
+                            # Determine if it's the player's turn
+                            is_player_turn = False
+                            if current_phase:
+                                if current_phase.value == "turn":
+                                    is_player_turn = phase_data.get("current_player") == player_name
+                                elif current_phase.value == "declaration":
+                                    is_player_turn = phase_data.get("current_declarer") == player_name
+                                elif current_phase.value == "preparation":
+                                    weak_players = phase_data.get("weak_players_awaiting", set())
+                                    is_player_turn = player_name in weak_players
+                            
+                            logger.info(f"🔔 BOT_NOTIFY: Notifying bot manager - phase={current_phase.value if current_phase else None}, is_player_turn={is_player_turn}")
+                            
+                            # Trigger bot action if needed
+                            await bot_manager.handle_game_event(
+                                tracked_room_id,
+                                "player_bot_activated",
+                                {
+                                    "player_name": player_name,
+                                    "phase": current_phase.value if current_phase else None,
+                                    "phase_data": phase_data,
+                                    "is_player_turn": is_player_turn
+                                }
+                            )
+                    except Exception as e:
+                        logger.error(f"❌ Failed to notify bot manager: {e}", exc_info=True)
     except Exception as e:
         unregister(room_id, websocket)

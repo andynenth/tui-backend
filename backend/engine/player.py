@@ -16,6 +16,11 @@ class Player:
         self.zero_declares_in_a_row = (
             0  # Counter for how many rounds this player has declared 0 in a row
         )
+        
+        # Connection tracking for disconnect handling
+        self.is_connected = True  # Whether player is currently connected
+        self.disconnect_time = None  # When player disconnected
+        self.original_is_bot = is_bot  # Store original bot state for reconnection
 
         # Game statistics (cumulative across all rounds)
         self.turns_won = 0  # Total number of turns won in the game

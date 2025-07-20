@@ -2,13 +2,16 @@
 
 import asyncio
 import hashlib
+import logging
 import random
 import time
-from typing import Dict, List, Optional, Set
+from typing import Any, Dict, List, Optional, Set
 
 import engine.ai as ai
 from engine.player import Player
 from engine.state_machine.core import ActionType, GameAction
+
+logger = logging.getLogger(__name__)
 
 
 class BotManager:
@@ -242,6 +245,8 @@ class GameBotHandler:
                 await self._handle_action_accepted(data)
             elif event == "action_failed":
                 await self._handle_action_failed(data)
+            elif event == "player_bot_activated":
+                await self._handle_bot_activation(data)
 
     async def _handle_enterprise_phase_change(self, data: dict):
         """
@@ -274,7 +279,10 @@ class GameBotHandler:
                 if hasattr(game_state, "players"):
                     for player in game_state.players:
                         if getattr(player, "name", str(player)) == current_declarer:
-                            if getattr(player, "is_bot", False):
+                            is_bot = getattr(player, "is_bot", False)
+                            logger.info(f"🔍 BOT_CHECK: Checking {current_declarer} - is_bot={is_bot}")
+                            if is_bot:
+                                logger.info(f"✅ BOT_TRIGGER: {current_declarer} is a bot, triggering declaration")
                                 # 🔧 PHASE_TRACKING_FIX: Mark this phase as having triggered actions
                                 self._phase_action_triggered[phase] = True
                                 # Get last declarer to continue sequence
@@ -307,6 +315,7 @@ class GameBotHandler:
             current_player = data.get("current_player") or phase_data.get(
                 "current_player"
             )
+            logger.info(f"🎮 TURN_PHASE: current_player={current_player}, turn_plays={list(turn_plays.keys())}")
 
             # If there are turn plays, find the last player who played
             if turn_plays:
@@ -993,3 +1002,44 @@ class GameBotHandler:
         if is_bot:
             # For failed bot actions, similar to rejection - prevent downstream processing
             pass
+
+    async def _handle_bot_activation(self, data: dict):
+        """Handle when a human player is converted to bot mid-game"""
+        player_name = data.get("player_name")
+        phase = data.get("phase")
+        phase_data = data.get("phase_data", {})
+        is_player_turn = data.get("is_player_turn", False)
+        
+        logger.info(f"🤖 BOT_ACTIVATION: Bot activated for disconnected player: {player_name} in phase {phase}")
+        logger.info(f"🤖 BOT_ACTIVATION: is_player_turn={is_player_turn}")
+        
+        # Check if it's this bot's turn to act
+        if not is_player_turn:
+            logger.info(f"⏭️ BOT_ACTIVATION: Not {player_name}'s turn, no action needed")
+            return
+            
+        if phase == "turn":
+            current_player = phase_data.get("current_player")
+            if current_player == player_name:
+                logger.info(f"🎯 BOT_ACTIVATION: It's {player_name}'s turn - triggering bot turn action")
+                # Trigger turn play through existing handler
+                last_player = ""
+                turn_plays = phase_data.get("turn_plays", {})
+                if turn_plays:
+                    last_player = list(turn_plays.keys())[-1]
+                await self._handle_turn_play_phase(last_player)
+        elif phase == "declaration":
+            current_declarer = phase_data.get("current_declarer")
+            if current_declarer == player_name:
+                logger.info(f"📢 BOT_ACTIVATION: It's {player_name}'s turn to declare - triggering bot declaration")
+                # Trigger declaration through existing handler
+                declarations = phase_data.get("declarations", {})
+                last_declarer = ""
+                if declarations:
+                    last_declarer = list(declarations.keys())[-1]
+                await self._handle_declaration_phase(last_declarer)
+        elif phase == "preparation":
+            weak_players_awaiting = phase_data.get("weak_players_awaiting", set())
+            if player_name in weak_players_awaiting:
+                logger.info(f"🎲 BOT_ACTIVATION: {player_name} needs to decide on redeal - triggering bot decision")
+                await self._handle_redeal_decision_phase(phase_data)

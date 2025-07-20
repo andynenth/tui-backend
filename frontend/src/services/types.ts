@@ -81,6 +81,8 @@ export interface Player {
   pile_count?: number;
   zero_declares_in_a_row?: number;
   hand_size?: number;
+  isConnected?: boolean;
+  isBotControlled?: boolean;
 }
 
 export interface TurnPlay {
@@ -295,7 +297,8 @@ export type GameEventType =
   | 'turn_resolved'
   | 'score_update'
   | 'round_complete'
-  | 'game_ended';
+  | 'game_ended'
+  | 'player_status_update';
 
 export type GameAction =
   | 'acceptRedeal'
