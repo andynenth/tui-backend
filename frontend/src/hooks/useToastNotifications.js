@@ -12,6 +12,10 @@ export function useToastNotifications() {
   const previousDisconnectedPlayers = useRef([]);
   const previousHost = useRef(null);
   const toastIdCounter = useRef(0);
+  
+  // Grace period tracking for game start
+  const gameStartTime = useRef(null);
+  const GRACE_PERIOD_MS = 500; // Half second grace period
 
   // Generate unique toast ID
   const generateToastId = () => {
@@ -51,6 +55,25 @@ export function useToastNotifications() {
   const clearToasts = useCallback(() => {
     setToasts([]);
   }, []);
+  
+  // Signal that game has just started (to prevent false disconnect notifications)
+  const setGameStarted = useCallback(() => {
+    gameStartTime.current = Date.now();
+  }, []);
+  
+  // Listen for game start event
+  useEffect(() => {
+    const handleGameStart = () => {
+      gameStartTime.current = Date.now();
+    };
+    
+    // Listen to custom event dispatched by GamePage
+    window.addEventListener('game_started', handleGameStart);
+    
+    return () => {
+      window.removeEventListener('game_started', handleGameStart);
+    };
+  }, []);
 
   // Listen to GameService state changes
   useEffect(() => {
@@ -69,11 +92,19 @@ export function useToastNotifications() {
 
       // Show toast for each newly disconnected player
       newlyDisconnected.forEach((playerName) => {
-        addToast({
-          message: `${playerName} disconnected - AI is now playing for them`,
-          type: 'warning',
-          duration: 7000,
-        });
+        // Check if we're within the grace period after game start
+        const now = Date.now();
+        const isWithinGracePeriod = gameStartTime.current && 
+          (now - gameStartTime.current) < GRACE_PERIOD_MS;
+        
+        // Only show disconnect notification if we're not in the grace period
+        if (!isWithinGracePeriod) {
+          addToast({
+            message: `${playerName} disconnected - AI is now playing for them`,
+            type: 'warning',
+            duration: 7000,
+          });
+        }
       });
 
       // Show toast for each reconnected player
