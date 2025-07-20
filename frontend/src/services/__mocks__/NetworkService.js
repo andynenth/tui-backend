@@ -157,6 +157,10 @@ export class NetworkService {
     };
 
     connection.websocket.send(JSON.stringify(message));
+    if (connection.messagesSent !== undefined) {
+      connection.messagesSent++;
+    }
+    connection.lastActivity = Date.now();
     return true;
   }
 
@@ -173,14 +177,17 @@ export class NetworkService {
 
     return {
       roomId,
-      status: 'connected',
-      connected: true,
+      status: connection.status || 'connected',
+      connected: connection.websocket?.readyState === MockWebSocket.OPEN,
+      connectedAt: connection.connectedAt,
+      uptime: Date.now() - connection.connectedAt,
+      messagesSent: connection.messagesSent || 0,
+      messagesReceived: connection.messagesReceived || 0,
+      lastActivity: connection.lastActivity || Date.now(),
+      latency: connection.latency || 0,
       queueSize: this.messageQueues.get(roomId)?.length || 0,
       reconnecting: false,
       reconnectAttempts: 0,
-      connectedAt: connection.connectedAt,
-      uptime: Date.now() - connection.connectedAt,
-      latency: connection.latency || 50,
     };
   }
 
