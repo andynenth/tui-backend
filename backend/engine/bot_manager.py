@@ -202,7 +202,11 @@ class GameBotHandler:
 
     async def handle_event(self, event: str, data: dict):
         """Process game events and trigger bot actions"""
-
+        
+        # Log all events for debugging
+        if event == "player_bot_activated":
+            print(f"🔔 BOT MANAGER received {event}: {data}")
+        
         # 🔧 PHASE_TRACKING_FIX: Detect actual phase transitions and reset tracking
         if event == "phase_change":
             new_phase = data.get("phase")
@@ -1006,46 +1010,63 @@ class GameBotHandler:
         """
         player_name = data.get("player_name")
         if not player_name:
+            print(f"❌ Bot activation received without player_name: {data}")
             return
             
-        print(f"🤖 Bot activation for disconnected player: {player_name}")
+        print(f"🤖 BOT ACTIVATION TRIGGERED for disconnected player: {player_name}")
+        print(f"   Timestamp: {data.get('timestamp', 'unknown')}")
         
         # Get current game state
         game_state = self._get_game_state()
         if not game_state:
+            print(f"❌ Bot activation failed: No game state found for {player_name}")
             return
             
         # Check if game is in progress
         if not hasattr(game_state, "phase") or not game_state.phase:
+            print(f"⚠️ Bot activation: Game not in active phase for {player_name}")
             return
             
         # Get phase data from state machine
         if not self.state_machine:
+            print(f"❌ Bot activation failed: No state machine for {player_name}")
             return
             
         phase_data = self.state_machine.get_phase_data()
         current_phase = self.state_machine.get_current_phase()
         
+        print(f"📊 Bot activation check for {player_name}:")
+        print(f"   Current phase: {current_phase.value if current_phase else 'None'}")
+        print(f"   Phase data keys: {list(phase_data.keys())}")
+        
         # Check if it's this player's turn in any phase
         if current_phase and current_phase.value == "declaration":
             current_declarer = phase_data.get("current_declarer")
+            print(f"   Current declarer: {current_declarer}")
             if current_declarer == player_name:
-                print(f"🎯 Bot {player_name} needs to declare immediately")
+                print(f"🎯 Bot {player_name} needs to DECLARE immediately!")
                 await self._handle_declaration_phase(player_name)
+            else:
+                print(f"   Bot {player_name} is not current declarer")
                 
         elif current_phase and current_phase.value == "turn":
             current_player = phase_data.get("current_player")
+            print(f"   Current player: {current_player}")
             if current_player == player_name:
-                print(f"🎯 Bot {player_name} needs to play immediately")
-                await self._handle_play_phase(player_name)
+                print(f"🎯 Bot {player_name} needs to PLAY immediately!")
+                await self._handle_turn_play_phase(player_name)
+            else:
+                print(f"   Bot {player_name} is not current player")
                 
         elif current_phase and current_phase.value == "preparation":
             # Check if bot needs to make redeal decision
             current_weak_player = phase_data.get("current_weak_player")
             weak_players_awaiting = phase_data.get("weak_players_awaiting", [])
+            print(f"   Current weak player: {current_weak_player}")
+            print(f"   Weak players awaiting: {weak_players_awaiting}")
             
             if current_weak_player == player_name or player_name in weak_players_awaiting:
-                print(f"🎯 Bot {player_name} needs to make redeal decision")
+                print(f"🎯 Bot {player_name} needs to make REDEAL decision!")
                 # Find the bot player
                 bot = None
                 for player in game_state.players:
@@ -1055,3 +1076,9 @@ class GameBotHandler:
                         
                 if bot:
                     await self._bot_redeal_decision(bot)
+                else:
+                    print(f"❌ Could not find player object for {player_name}")
+            else:
+                print(f"   Bot {player_name} not in weak players list")
+        else:
+            print(f"   No action needed for bot {player_name} in phase {current_phase.value if current_phase else 'None'}")

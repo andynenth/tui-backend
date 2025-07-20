@@ -103,6 +103,7 @@ async def handle_disconnect(room_id: str, websocket: WebSocket):
     
     logger.info(f"🤖 AVATAR CHANGE: {player_name} - is_bot changed from {original_is_bot} to True")
     logger.info(f"   Player state: is_connected={player.is_connected}, original_is_bot={player.original_is_bot}")
+    logger.info(f"   Disconnection time: {player.disconnect_time}")
     
     # Broadcast disconnect event
     await broadcast_with_queue(room_id, "player_disconnected", {
@@ -110,6 +111,17 @@ async def handle_disconnect(room_id: str, websocket: WebSocket):
         "timestamp": asyncio.get_event_loop().time()
     })
     logger.info(f"📤 Broadcasted player_disconnected event for {player_name}")
+    
+    # CRITICAL: Broadcast room update so frontend updates player avatars
+    room_summary = room.summary()
+    await broadcast(room_id, "room_update", {
+        "players": room_summary["players"],
+        "host_name": room_summary["host_name"],
+        "room_id": room_id,
+        "started": room_summary.get("started", False),
+        "reason": "player_bot_takeover"
+    })
+    logger.info(f"📤 Broadcasted room_update for bot takeover of {player_name}")
     
     # Check if we need host migration
     if room.is_host(player_name):
@@ -124,7 +136,17 @@ async def handle_disconnect(room_id: str, websocket: WebSocket):
     
     # Notify bot manager if game is active
     if room.game and room.game_state_machine:
+        # Broadcast to clients
         await broadcast(room_id, "player_bot_activated", {
+            "player_name": player_name,
+            "timestamp": asyncio.get_event_loop().time()
+        })
+        
+        # Notify bot manager directly
+        from engine.bot_manager import BotManager
+        bot_manager = BotManager()
+        logger.info(f"🤖 Notifying bot manager about bot activation for {player_name}")
+        await bot_manager.handle_game_event(room_id, "player_bot_activated", {
             "player_name": player_name,
             "timestamp": asyncio.get_event_loop().time()
         })
@@ -1435,11 +1457,33 @@ async def websocket_endpoint(websocket: WebSocket, room_id: str):
                         )
 
     except WebSocketDisconnect:
+        ws_id = getattr(websocket, '_ws_id', 'unknown')
+        logger.info(f"🔌 WebSocket DISCONNECTED: room={room_id}, ws_id={ws_id}")
+        
+        # Try to find the player name for better logging
+        player_info = "unknown"
+        if hasattr(websocket, '_ws_id') and room_id != "lobby":
+            # Try to get player info from connection manager
+            try:
+                from api.websocket.connection_manager import connection_manager
+                connections = connection_manager._connections
+                for conn_id, conn in connections.items():
+                    if conn.ws_id == ws_id:
+                        player_info = f"player={conn.player_name}"
+                        break
+            except:
+                pass
+        
+        logger.info(f"📤 WebSocket disconnect details: room={room_id}, ws_id={ws_id}, {player_info}")
+        
         unregister(room_id, websocket)
         if room_id == "lobby":
-            pass
+            logger.info(f"🏢 Lobby connection closed: ws_id={ws_id}")
         else:
+            logger.info(f"🎮 Game room connection closed: room={room_id}, ws_id={ws_id}, initiating bot replacement...")
             # Handle player disconnect for bot replacement
             await handle_disconnect(room_id, websocket)  # Use original websocket, not registered_ws
     except Exception as e:
+        ws_id = getattr(websocket, '_ws_id', 'unknown')
+        logger.error(f"❌ WebSocket error: room={room_id}, ws_id={ws_id}, error={e}")
         unregister(room_id, websocket)
