@@ -15,6 +15,8 @@ import {
   mockConsole,
 } from './testUtils';
 
+import MockWebSocket from '../../../__mocks__/websocket.js';
+
 // Setup console mocking
 mockConsole();
 
@@ -473,6 +475,104 @@ describe('GameService', () => {
       expect(() => gameService.getState()).toThrow(
         'GameService has been destroyed'
       );
+    });
+  });
+
+  describe('Player Name Integration', () => {
+    test('joinRoom calls NetworkService.connectToRoom with playerName', async () => {
+      const roomId = 'test-room';
+      const playerName = 'TestPlayer';
+
+      // Mock successful connection
+      mockNetworkService.connectToRoom.mockResolvedValue(new MockWebSocket());
+
+      await gameService.joinRoom(roomId, playerName);
+
+      // Verify NetworkService was called with playerName
+      expect(mockNetworkService.connectToRoom).toHaveBeenCalledWith(
+        roomId,
+        { playerName }
+      );
+    });
+
+    test('joinRoom handles connection errors gracefully', async () => {
+      const roomId = 'test-room';
+      const playerName = 'TestPlayer';
+      const errorMessage = 'Connection failed';
+
+      // Mock connection failure
+      mockNetworkService.connectToRoom.mockRejectedValue(
+        new Error(errorMessage)
+      );
+
+      await expectToThrow(
+        () => gameService.joinRoom(roomId, playerName),
+        errorMessage
+      );
+
+      // Verify state was updated with error
+      const state = gameService.getState();
+      expect(state.error).toContain(errorMessage);
+      expect(state.isConnected).toBe(false);
+    });
+
+    test('player name is stored in GameService state', async () => {
+      const roomId = 'test-room';
+      const playerName = 'Alice';
+
+      // Mock successful connection
+      mockNetworkService.connectToRoom.mockResolvedValue(new MockWebSocket());
+
+      await gameService.joinRoom(roomId, playerName);
+
+      // Verify player name is stored in state
+      const state = gameService.getState();
+      expect(state.playerName).toBe(playerName);
+      expect(state.roomId).toBe(roomId);
+      expect(state.isConnected).toBe(true);
+    });
+
+    test('player name persists across state updates', async () => {
+      const roomId = 'test-room';
+      const playerName = 'Bob';
+
+      // Join room
+      mockNetworkService.connectToRoom.mockResolvedValue(new MockWebSocket());
+      await gameService.joinRoom(roomId, playerName);
+
+      // Simulate phase change event
+      const phaseData = createTestPhaseData({
+        phase: 'preparation',
+        players: [
+          { name: playerName, score: 0, is_bot: false },
+          { name: 'Charlie', score: 0, is_bot: false }
+        ]
+      });
+
+      gameService.handleNetworkEvent(
+        createMockEventDetail('phase_change', roomId, phaseData)
+      );
+
+      // Verify player name is still in state
+      const state = gameService.getState();
+      expect(state.playerName).toBe(playerName);
+      expect(state.phase).toBe('preparation');
+    });
+
+    test('leaveRoom preserves player name', async () => {
+      const roomId = 'test-room';
+      const playerName = 'Charlie';
+
+      // Join and then leave room
+      mockNetworkService.connectToRoom.mockResolvedValue(new MockWebSocket());
+      await gameService.joinRoom(roomId, playerName);
+      await gameService.leaveRoom();
+
+      // Verify player name is preserved after leaving
+      const state = gameService.getState();
+      expect(state.playerName).toBe(playerName); // Should be preserved
+      expect(state.roomId).toBeNull(); // Should be cleared
+      expect(state.isConnected).toBe(false);
     });
   });
 });
