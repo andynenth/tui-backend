@@ -13,8 +13,7 @@ export function useToastNotifications() {
   const previousHost = useRef(null);
   const toastIdCounter = useRef(0);
   
-  // Grace period tracking for game start
-  const gameStartTime = useRef(null);
+  // Grace period configuration
   const GRACE_PERIOD_MS = 500; // Half second grace period
 
   // Generate unique toast ID
@@ -55,25 +54,6 @@ export function useToastNotifications() {
   const clearToasts = useCallback(() => {
     setToasts([]);
   }, []);
-  
-  // Signal that game has just started (to prevent false disconnect notifications)
-  const setGameStarted = useCallback(() => {
-    gameStartTime.current = Date.now();
-  }, []);
-  
-  // Listen for game start event
-  useEffect(() => {
-    const handleGameStart = () => {
-      gameStartTime.current = Date.now();
-    };
-    
-    // Listen to custom event dispatched by GamePage
-    window.addEventListener('game_started', handleGameStart);
-    
-    return () => {
-      window.removeEventListener('game_started', handleGameStart);
-    };
-  }, []);
 
   // Listen to GameService state changes
   useEffect(() => {
@@ -92,18 +72,33 @@ export function useToastNotifications() {
 
       // Show toast for each newly disconnected player
       newlyDisconnected.forEach((playerName) => {
-        // Check if we're within the grace period after game start
+        // Get game start time from GameService state
+        const gameStartTime = state.gameStartTime;
         const now = Date.now();
-        const isWithinGracePeriod = gameStartTime.current && 
-          (now - gameStartTime.current) < GRACE_PERIOD_MS;
+        const timeSinceGameStart = gameStartTime ? (now - gameStartTime) : null;
+        const isWithinGracePeriod = gameStartTime && 
+          timeSinceGameStart < GRACE_PERIOD_MS;
+        
+        console.log('🔔 Disconnect notification check:', {
+          playerName,
+          gameStartTime: gameStartTime ? new Date(gameStartTime).toISOString() : 'null',
+          now: new Date(now).toISOString(),
+          timeSinceGameStart,
+          GRACE_PERIOD_MS,
+          isWithinGracePeriod,
+          willShowToast: !isWithinGracePeriod
+        });
         
         // Only show disconnect notification if we're not in the grace period
         if (!isWithinGracePeriod) {
+          console.log('🔔 Showing disconnect toast for', playerName);
           addToast({
             message: `${playerName} disconnected - AI is now playing for them`,
             type: 'warning',
             duration: 7000,
           });
+        } else {
+          console.log('🔔 Suppressing disconnect toast for', playerName, '(within grace period)');
         }
       });
 
