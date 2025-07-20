@@ -102,6 +102,7 @@ export class GameService extends EventTarget {
           ...this.state,
           isConnected: true,
           error: null,
+          gameStartTime: Date.now(),
         },
         'JOIN_ROOM_CONNECTED'
       );
@@ -387,6 +388,7 @@ export class GameService extends EventTarget {
       lastEventSequence: 0,
       error: null,
       gameOver: false,
+      gameStartTime: null,
     };
   }
 

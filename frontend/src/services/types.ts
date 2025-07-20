@@ -216,6 +216,7 @@ export interface GameState {
   lastEventSequence: number;
   error: string | null;
   gameOver: boolean;
+  gameStartTime: number | null; // Timestamp when game was joined (for grace period)
 }
 
 export interface PhaseData {

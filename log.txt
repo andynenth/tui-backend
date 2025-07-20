@@ -22,142 +22,150 @@ ServiceIntegration.ts:144
 App.jsx:189 🎮 Global services initialized
 favicon.ico:1  GET http://localhost:5050/favicon.ico 404 (Not Found)
 NetworkService.ts:368 🔗 Connection opened to room lobby
-GameService.ts:1552 🎮 State Change: NETWORK_CONNECTED
-GameService.ts:1553 Previous: {isConnected: false, roomId: null, playerName: null, phase: 'waiting', currentRound: 1, …}
-GameService.ts:1554 New: {isConnected: true, roomId: null, playerName: null, phase: 'waiting', currentRound: 1, …}
-GameService.ts:1555 Diff: {isConnected: {…}, lastEventSequence: {…}}
+GameService.ts:1554 🎮 State Change: NETWORK_CONNECTED
+GameService.ts:1555 Previous: {isConnected: false, roomId: null, playerName: null, phase: 'waiting', currentRound: 1, …}
+GameService.ts:1556 New: {isConnected: true, roomId: null, playerName: null, phase: 'waiting', currentRound: 1, …}
+GameService.ts:1557 Diff: {isConnected: {…}, lastEventSequence: {…}}
 NetworkService.ts:147 🌐 NetworkService: Connected to room lobby
-GameService.ts:1552 🎮 State Change: NETWORK_DISCONNECTED
-GameService.ts:1553 Previous: {isConnected: true, roomId: null, playerName: null, phase: 'waiting', currentRound: 1, …}
-GameService.ts:1554 New: {isConnected: false, roomId: null, playerName: null, phase: 'waiting', currentRound: 1, …}
-GameService.ts:1555 Diff: {isConnected: {…}, lastEventSequence: {…}}
+GameService.ts:1554 🎮 State Change: NETWORK_DISCONNECTED
+GameService.ts:1555 Previous: {isConnected: true, roomId: null, playerName: null, phase: 'waiting', currentRound: 1, …}
+GameService.ts:1556 New: {isConnected: false, roomId: null, playerName: null, phase: 'waiting', currentRound: 1, …}
+GameService.ts:1557 Diff: {isConnected: {…}, lastEventSequence: {…}}
 NetworkService.ts:193 🌐 NetworkService: Disconnected from room lobby
 NetworkService.ts:238 📤 Queued message for lobby: get_rooms (1 queued)
 NetworkService.ts:368 🔗 Connection opened to room lobby
-GameService.ts:1552 🎮 State Change: NETWORK_CONNECTED
-GameService.ts:1553 Previous: {isConnected: false, roomId: null, playerName: null, phase: 'waiting', currentRound: 1, …}
-GameService.ts:1554 New: {isConnected: true, roomId: null, playerName: null, phase: 'waiting', currentRound: 1, …}
-GameService.ts:1555 Diff: {isConnected: {…}, lastEventSequence: {…}}
+GameService.ts:1554 🎮 State Change: NETWORK_CONNECTED
+GameService.ts:1555 Previous: {isConnected: false, roomId: null, playerName: null, phase: 'waiting', currentRound: 1, …}
+GameService.ts:1556 New: {isConnected: true, roomId: null, playerName: null, phase: 'waiting', currentRound: 1, …}
+GameService.ts:1557 Diff: {isConnected: {…}, lastEventSequence: {…}}
 NetworkService.ts:147 🌐 NetworkService: Connected to room lobby
-LobbyPage.jsx:49 Received room_list_update: {roomId: 'lobby', data: {…}, message: {…}, timestamp: 1753053648903}
-GameService.ts:1552 🎮 State Change: NETWORK_DISCONNECTED
-GameService.ts:1553 Previous: {isConnected: true, roomId: null, playerName: null, phase: 'waiting', currentRound: 1, …}
-GameService.ts:1554 New: {isConnected: false, roomId: null, playerName: null, phase: 'waiting', currentRound: 1, …}
-GameService.ts:1555 Diff: {isConnected: {…}, lastEventSequence: {…}}
+LobbyPage.jsx:49 Received room_list_update: {roomId: 'lobby', data: {…}, message: {…}, timestamp: 1753055183219}
+GameService.ts:1554 🎮 State Change: NETWORK_DISCONNECTED
+GameService.ts:1555 Previous: {isConnected: true, roomId: null, playerName: null, phase: 'waiting', currentRound: 1, …}
+GameService.ts:1556 New: {isConnected: false, roomId: null, playerName: null, phase: 'waiting', currentRound: 1, …}
+GameService.ts:1557 Diff: {isConnected: {…}, lastEventSequence: {…}}
 NetworkService.ts:193 🌐 NetworkService: Disconnected from room lobby
 NetworkService.ts:238 📤 Queued message for lobby: get_rooms (1 queued)
 NetworkService.ts:368 🔗 Connection opened to room lobby
-GameService.ts:1552 🎮 State Change: NETWORK_CONNECTED
-GameService.ts:1553 Previous: {isConnected: false, roomId: null, playerName: null, phase: 'waiting', currentRound: 1, …}
-GameService.ts:1554 New: {isConnected: true, roomId: null, playerName: null, phase: 'waiting', currentRound: 1, …}
-GameService.ts:1555 Diff: {isConnected: {…}, lastEventSequence: {…}}
+GameService.ts:1554 🎮 State Change: NETWORK_CONNECTED
+GameService.ts:1555 Previous: {isConnected: false, roomId: null, playerName: null, phase: 'waiting', currentRound: 1, …}
+GameService.ts:1556 New: {isConnected: true, roomId: null, playerName: null, phase: 'waiting', currentRound: 1, …}
+GameService.ts:1557 Diff: {isConnected: {…}, lastEventSequence: {…}}
 NetworkService.ts:147 🌐 NetworkService: Connected to room lobby
-LobbyPage.jsx:49 Received room_list_update: {roomId: 'lobby', data: {…}, message: {…}, timestamp: 1753053651983}
-LobbyPage.jsx:65 Received room_created: {roomId: 'lobby', data: {…}, message: {…}, timestamp: 1753053652064}
-LobbyPage.jsx:66 🟢 Navigation: room_id = F8D24C navigating to: /room/F8D24C
-LobbyPage.jsx:75 ✅ Navigating to new room: F8D24C
-GameService.ts:1552 🎮 State Change: NETWORK_DISCONNECTED
-GameService.ts:1553 Previous: {isConnected: true, roomId: null, playerName: null, phase: 'waiting', currentRound: 1, …}
-GameService.ts:1554 New: {isConnected: false, roomId: null, playerName: null, phase: 'waiting', currentRound: 1, …}
-GameService.ts:1555 Diff: {isConnected: {…}, lastEventSequence: {…}}
+LobbyPage.jsx:49 Received room_list_update: {roomId: 'lobby', data: {…}, message: {…}, timestamp: 1753055184206}
+LobbyPage.jsx:65 Received room_created: {roomId: 'lobby', data: {…}, message: {…}, timestamp: 1753055184289}
+LobbyPage.jsx:66 🟢 Navigation: room_id = 1C6D3C navigating to: /room/1C6D3C
+LobbyPage.jsx:75 ✅ Navigating to new room: 1C6D3C
+GameService.ts:1554 🎮 State Change: NETWORK_DISCONNECTED
+GameService.ts:1555 Previous: {isConnected: true, roomId: null, playerName: null, phase: 'waiting', currentRound: 1, …}
+GameService.ts:1556 New: {isConnected: false, roomId: null, playerName: null, phase: 'waiting', currentRound: 1, …}
+GameService.ts:1557 Diff: {isConnected: {…}, lastEventSequence: {…}}
 NetworkService.ts:193 🌐 NetworkService: Disconnected from room lobby
 NetworkService.ts:238 📤 Queued message for lobby: get_rooms (1 queued)
 NetworkService.ts:368 🔗 Connection opened to room lobby
-GameService.ts:1552 🎮 State Change: NETWORK_CONNECTED
-GameService.ts:1553 Previous: {isConnected: false, roomId: null, playerName: null, phase: 'waiting', currentRound: 1, …}
-GameService.ts:1554 New: {isConnected: true, roomId: null, playerName: null, phase: 'waiting', currentRound: 1, …}
-GameService.ts:1555 Diff: {isConnected: {…}, lastEventSequence: {…}}
+GameService.ts:1554 🎮 State Change: NETWORK_CONNECTED
+GameService.ts:1555 Previous: {isConnected: false, roomId: null, playerName: null, phase: 'waiting', currentRound: 1, …}
+GameService.ts:1556 New: {isConnected: true, roomId: null, playerName: null, phase: 'waiting', currentRound: 1, …}
+GameService.ts:1557 Diff: {isConnected: {…}, lastEventSequence: {…}}
 NetworkService.ts:147 🌐 NetworkService: Connected to room lobby
-NetworkService.ts:368 🔗 Connection opened to room F8D24C
-GameService.ts:1552 🎮 State Change: NETWORK_CONNECTED
-GameService.ts:1553 Previous: {isConnected: true, roomId: null, playerName: null, phase: 'waiting', currentRound: 1, …}
-GameService.ts:1554 New: {isConnected: true, roomId: null, playerName: null, phase: 'waiting', currentRound: 1, …}
-GameService.ts:1555 Diff: {lastEventSequence: {…}}
-NetworkService.ts:147 🌐 NetworkService: Connected to room F8D24C
-RoomPage.jsx:69 🏠 ROOM_UPDATE: Full data received: {players: Array(4), host_name: 'Andy', room_id: 'F8D24C', started: false}
+NetworkService.ts:368 🔗 Connection opened to room 1C6D3C
+GameService.ts:1554 🎮 State Change: NETWORK_CONNECTED
+GameService.ts:1555 Previous: {isConnected: true, roomId: null, playerName: null, phase: 'waiting', currentRound: 1, …}
+GameService.ts:1556 New: {isConnected: true, roomId: null, playerName: null, phase: 'waiting', currentRound: 1, …}
+GameService.ts:1557 Diff: {lastEventSequence: {…}}
+NetworkService.ts:147 🌐 NetworkService: Connected to room 1C6D3C
+RoomPage.jsx:69 🏠 ROOM_UPDATE: Full data received: {players: Array(4), host_name: 'Andy', room_id: '1C6D3C', started: false}
 RoomPage.jsx:70 🏠 ROOM_UPDATE: Players array: (4) [{…}, {…}, {…}, {…}]
 RoomPage.jsx:71 🏠 ROOM_UPDATE: Players array type: object
 RoomPage.jsx:75 🏠 ROOM_UPDATE: Players array length: 4
 RoomPage.jsx:79 🏠 ROOM_UPDATE: Players array entries: (4) [Array(2), Array(2), Array(2), Array(2)]
 RoomPage.jsx:129 🗑️ REMOVE_PLAYER: Button clicked for slot 2
-RoomPage.jsx:130 🗑️ REMOVE_PLAYER: Sending to room F8D24C
-RoomPage.jsx:69 🏠 ROOM_UPDATE: Full data received: {players: Array(4), host_name: 'Andy', room_id: 'F8D24C', started: false, timestamp: 1753053653.433812}
+RoomPage.jsx:130 🗑️ REMOVE_PLAYER: Sending to room 1C6D3C
+RoomPage.jsx:69 🏠 ROOM_UPDATE: Full data received: {players: Array(4), host_name: 'Andy', room_id: '1C6D3C', started: false, timestamp: 1753055185.170826}
 RoomPage.jsx:70 🏠 ROOM_UPDATE: Players array: (4) [{…}, null, {…}, {…}]
 RoomPage.jsx:71 🏠 ROOM_UPDATE: Players array type: object
 RoomPage.jsx:75 🏠 ROOM_UPDATE: Players array length: 4
 RoomPage.jsx:79 🏠 ROOM_UPDATE: Players array entries: (4) [Array(2), Array(2), Array(2), Array(2)]
-RoomPage.jsx:69 🏠 ROOM_UPDATE: Full data received: {players: Array(4), host_name: 'Andy', operation_id: 'F8D24C_2', room_id: 'F8D24C', started: false, …}
+RoomPage.jsx:69 🏠 ROOM_UPDATE: Full data received: {players: Array(4), host_name: 'Andy', operation_id: '1C6D3C_2', room_id: '1C6D3C', started: false, …}
 RoomPage.jsx:70 🏠 ROOM_UPDATE: Players array: (4) [{…}, {…}, {…}, {…}]
 RoomPage.jsx:71 🏠 ROOM_UPDATE: Players array type: object
 RoomPage.jsx:75 🏠 ROOM_UPDATE: Players array length: 4
 RoomPage.jsx:79 🏠 ROOM_UPDATE: Players array entries: (4) [Array(2), Array(2), Array(2), Array(2)]
 RoomPage.jsx:116 🎮 START_GAME: Button clicked
-RoomPage.jsx:117 🎮 START_GAME: Room ID: F8D24C
+RoomPage.jsx:117 🎮 START_GAME: Room ID: 1C6D3C
 RoomPage.jsx:89 Game started, navigating to game page
-GameService.ts:1552 🎮 State Change: NETWORK_DISCONNECTED
-GameService.ts:1553 Previous: {isConnected: true, roomId: null, playerName: null, phase: 'waiting', currentRound: 1, …}
-GameService.ts:1554 New: {isConnected: false, roomId: null, playerName: null, phase: 'waiting', currentRound: 1, …}
-GameService.ts:1555 Diff: {isConnected: {…}, lastEventSequence: {…}}
-NetworkService.ts:193 🌐 NetworkService: Disconnected from room F8D24C
-ServiceIntegration.ts:169 🔗 Connecting to room F8D24C as Andy...
-RecoveryService.ts:109 🔄 RecoveryService: Initialized tracking for room F8D24C
-GameService.ts:1552 🎮 State Change: JOIN_ROOM_INIT
-GameService.ts:1553 Previous: {isConnected: false, roomId: null, playerName: null, phase: 'waiting', currentRound: 1, …}
-GameService.ts:1554 New: {isConnected: false, roomId: 'F8D24C', playerName: 'Andy', phase: 'waiting', currentRound: 1, …}
-GameService.ts:1555 Diff: {roomId: {…}, playerName: {…}, lastEventSequence: {…}}
+GameService.ts:1554 🎮 State Change: NETWORK_DISCONNECTED
+GameService.ts:1555 Previous: {isConnected: true, roomId: null, playerName: null, phase: 'waiting', currentRound: 1, …}
+GameService.ts:1556 New: {isConnected: false, roomId: null, playerName: null, phase: 'waiting', currentRound: 1, …}
+GameService.ts:1557 Diff: {isConnected: {…}, lastEventSequence: {…}}
+NetworkService.ts:193 🌐 NetworkService: Disconnected from room 1C6D3C
+ServiceIntegration.ts:169 🔗 Connecting to room 1C6D3C as Andy...
+RecoveryService.ts:109 🔄 RecoveryService: Initialized tracking for room 1C6D3C
+GameService.ts:1554 🎮 State Change: JOIN_ROOM_INIT
+GameService.ts:1555 Previous: {isConnected: false, roomId: null, playerName: null, phase: 'waiting', currentRound: 1, …}
+GameService.ts:1556 New: {isConnected: false, roomId: '1C6D3C', playerName: 'Andy', phase: 'waiting', currentRound: 1, …}
+GameService.ts:1557 Diff: {roomId: {…}, playerName: {…}, lastEventSequence: {…}}
 GameContext.jsx:36 🚀 GAME_CONTEXT: Phase 1-4 Enterprise Architecture initializing
-NetworkService.ts:368 🔗 Connection opened to room F8D24C
-GameService.ts:1552 🎮 State Change: NETWORK_CONNECTED
-GameService.ts:1553 Previous: {isConnected: false, roomId: 'F8D24C', playerName: 'Andy', phase: 'waiting', currentRound: 1, …}
-GameService.ts:1554 New: {isConnected: true, roomId: 'F8D24C', playerName: 'Andy', phase: 'waiting', currentRound: 1, …}
-GameService.ts:1555 Diff: {isConnected: {…}, lastEventSequence: {…}}
-NetworkService.ts:147 🌐 NetworkService: Connected to room F8D24C
-GameService.ts:1552 🎮 State Change: JOIN_ROOM_CONNECTED
-GameService.ts:1553 Previous: {isConnected: true, roomId: 'F8D24C', playerName: 'Andy', phase: 'waiting', currentRound: 1, …}
-GameService.ts:1554 New: {isConnected: true, roomId: 'F8D24C', playerName: 'Andy', phase: 'waiting', currentRound: 1, …}
-GameService.ts:1555 Diff: {lastEventSequence: {…}}
-sessionStorage.js:37 Session stored: {roomId: 'F8D24C', playerName: 'Andy'}
-GameService.ts:113 🎮 GameService: Joined room F8D24C as Andy
-ServiceIntegration.ts:183 ✅ Successfully connected to room F8D24C
-sessionStorage.js:37 Session stored: {roomId: 'F8D24C', playerName: 'Andy'}
-GameService.ts:1552 🎮 State Change: NETWORK_EVENT:PHASE_CHANGE
-GameService.ts:1553 Previous: {isConnected: true, roomId: 'F8D24C', playerName: 'Andy', phase: 'waiting', currentRound: 1, …}
-GameService.ts:1554 New: {isConnected: true, roomId: 'F8D24C', playerName: 'Andy', phase: 'round_start', currentRound: 1, …}
-GameService.ts:1555 Diff: {phase: {…}, players: {…}, myHand: {…}, lastEventSequence: {…}, currentStarter: {…}, …}
-GameService.ts:1552 🎮 State Change: NETWORK_EVENT:PLAYER_DISCONNECTED
-GameService.ts:1553 Previous: {isConnected: true, roomId: 'F8D24C', playerName: 'Andy', phase: 'round_start', currentRound: 1, …}
-GameService.ts:1554 New: {isConnected: true, roomId: 'F8D24C', playerName: 'Andy', phase: 'round_start', currentRound: 1, …}
-GameService.ts:1555 Diff: {players: {…}, disconnectedPlayers: {…}, lastEventSequence: {…}}
-GameService.ts:1552 🎮 State Change: NETWORK_EVENT:PLAYER_DISCONNECTED
-GameService.ts:1553 Previous: {isConnected: true, roomId: 'F8D24C', playerName: 'Andy', phase: 'round_start', currentRound: 1, …}
-GameService.ts:1554 New: {isConnected: true, roomId: 'F8D24C', playerName: 'Andy', phase: 'round_start', currentRound: 1, …}
-GameService.ts:1555 Diff: {players: {…}, disconnectedPlayers: {…}, lastEventSequence: {…}}
-GameService.ts:1552 🎮 State Change: NETWORK_EVENT:PLAYER_RECONNECTED
-GameService.ts:1553 Previous: {isConnected: true, roomId: 'F8D24C', playerName: 'Andy', phase: 'round_start', currentRound: 1, …}
-GameService.ts:1554 New: {isConnected: true, roomId: 'F8D24C', playerName: 'Andy', phase: 'round_start', currentRound: 1, …}
-GameService.ts:1555 Diff: {players: {…}, disconnectedPlayers: {…}, lastEventSequence: {…}}
-GameService.ts:1552 🎮 State Change: NETWORK_EVENT:HOST_CHANGED
-GameService.ts:1553 Previous: {isConnected: true, roomId: 'F8D24C', playerName: 'Andy', phase: 'round_start', currentRound: 1, …}
-GameService.ts:1554 New: {isConnected: true, roomId: 'F8D24C', playerName: 'Andy', phase: 'round_start', currentRound: 1, …}
-GameService.ts:1555 Diff: {host: {…}, lastEventSequence: {…}}
-GameService.ts:1552 🎮 State Change: NETWORK_EVENT:PLAYER_RECONNECTED
-GameService.ts:1553 Previous: {isConnected: true, roomId: 'F8D24C', playerName: 'Andy', phase: 'round_start', currentRound: 1, …}
-GameService.ts:1554 New: {isConnected: true, roomId: 'F8D24C', playerName: 'Andy', phase: 'round_start', currentRound: 1, …}
-GameService.ts:1555 Diff: {players: {…}, disconnectedPlayers: {…}, lastEventSequence: {…}}
-sessionStorage.js:37 Session stored: {roomId: 'F8D24C', playerName: 'Andy'}
-GameService.ts:1552 🎮 State Change: NETWORK_EVENT:PHASE_CHANGE
-GameService.ts:1553 Previous: {isConnected: true, roomId: 'F8D24C', playerName: 'Andy', phase: 'round_start', currentRound: 1, …}
-GameService.ts:1554 New: {isConnected: true, roomId: 'F8D24C', playerName: 'Andy', phase: 'declaration', currentRound: 1, …}
-GameService.ts:1555 Diff: {phase: {…}, players: {…}, declarationOrder: {…}, lastEventSequence: {…}, currentTotal: {…}, …}
+NetworkService.ts:368 🔗 Connection opened to room 1C6D3C
+GameService.ts:1554 🎮 State Change: NETWORK_CONNECTED
+GameService.ts:1555 Previous: {isConnected: false, roomId: '1C6D3C', playerName: 'Andy', phase: 'waiting', currentRound: 1, …}
+GameService.ts:1556 New: {isConnected: true, roomId: '1C6D3C', playerName: 'Andy', phase: 'waiting', currentRound: 1, …}
+GameService.ts:1557 Diff: {isConnected: {…}, lastEventSequence: {…}}
+NetworkService.ts:147 🌐 NetworkService: Connected to room 1C6D3C
+GameService.ts:1554 🎮 State Change: JOIN_ROOM_CONNECTED
+GameService.ts:1555 Previous: {isConnected: true, roomId: '1C6D3C', playerName: 'Andy', phase: 'waiting', currentRound: 1, …}
+GameService.ts:1556 New: {isConnected: true, roomId: '1C6D3C', playerName: 'Andy', phase: 'waiting', currentRound: 1, …}
+GameService.ts:1557 Diff: {lastEventSequence: {…}, gameStartTime: {…}}
+sessionStorage.js:37 Session stored: {roomId: '1C6D3C', playerName: 'Andy'}
+GameService.ts:114 🎮 GameService: Joined room 1C6D3C as Andy
+ServiceIntegration.ts:183 ✅ Successfully connected to room 1C6D3C
+GameService.ts:1554 🎮 State Change: NETWORK_EVENT:PLAYER_DISCONNECTED
+GameService.ts:1555 Previous: {isConnected: true, roomId: '1C6D3C', playerName: 'Andy', phase: 'waiting', currentRound: 1, …}
+GameService.ts:1556 New: {isConnected: true, roomId: '1C6D3C', playerName: 'Andy', phase: 'waiting', currentRound: 1, …}
+GameService.ts:1557 Diff: {disconnectedPlayers: {…}, lastEventSequence: {…}}
+useToastNotifications.js:82 🔔 Disconnect notification check: {playerName: 'Andy', gameStartTime: '2025-07-20T23:46:31.394Z', now: '2025-07-20T23:46:31.443Z', timeSinceGameStart: 49, GRACE_PERIOD_MS: 500, …}
+useToastNotifications.js:101 🔔 Suppressing disconnect toast for Andy (within grace period)
+GameService.ts:1554 🎮 State Change: NETWORK_EVENT:PLAYER_DISCONNECTED
+GameService.ts:1555 Previous: {isConnected: true, roomId: '1C6D3C', playerName: 'Andy', phase: 'waiting', currentRound: 1, …}
+GameService.ts:1556 New: {isConnected: true, roomId: '1C6D3C', playerName: 'Andy', phase: 'waiting', currentRound: 1, …}
+GameService.ts:1557 Diff: {disconnectedPlayers: {…}, lastEventSequence: {…}}
+useToastNotifications.js:82 🔔 Disconnect notification check: {playerName: 'P2', gameStartTime: '2025-07-20T23:46:31.394Z', now: '2025-07-20T23:46:31.454Z', timeSinceGameStart: 60, GRACE_PERIOD_MS: 500, …}
+useToastNotifications.js:101 🔔 Suppressing disconnect toast for P2 (within grace period)
+GameService.ts:1554 🎮 State Change: NETWORK_EVENT:HOST_CHANGED
+GameService.ts:1555 Previous: {isConnected: true, roomId: '1C6D3C', playerName: 'Andy', phase: 'waiting', currentRound: 1, …}
+GameService.ts:1556 New: {isConnected: true, roomId: '1C6D3C', playerName: 'Andy', phase: 'waiting', currentRound: 1, …}
+GameService.ts:1557 Diff: {host: {…}, lastEventSequence: {…}}
+GameService.ts:1554 🎮 State Change: NETWORK_EVENT:HOST_CHANGED
+GameService.ts:1555 Previous: {isConnected: true, roomId: '1C6D3C', playerName: 'Andy', phase: 'waiting', currentRound: 1, …}
+GameService.ts:1556 New: {isConnected: true, roomId: '1C6D3C', playerName: 'Andy', phase: 'waiting', currentRound: 1, …}
+GameService.ts:1557 Diff: {host: {…}, lastEventSequence: {…}}
+sessionStorage.js:37 Session stored: {roomId: '1C6D3C', playerName: 'Andy'}
+GameService.ts:1554 🎮 State Change: NETWORK_EVENT:PHASE_CHANGE
+GameService.ts:1555 Previous: {isConnected: true, roomId: '1C6D3C', playerName: 'Andy', phase: 'waiting', currentRound: 1, …}
+GameService.ts:1556 New: {isConnected: true, roomId: '1C6D3C', playerName: 'Andy', phase: 'round_start', currentRound: 1, …}
+GameService.ts:1557 Diff: {phase: {…}, players: {…}, myHand: {…}, lastEventSequence: {…}, currentStarter: {…}, …}
+GameService.ts:1554 🎮 State Change: NETWORK_EVENT:PLAYER_RECONNECTED
+GameService.ts:1555 Previous: {isConnected: true, roomId: '1C6D3C', playerName: 'Andy', phase: 'round_start', currentRound: 1, …}
+GameService.ts:1556 New: {isConnected: true, roomId: '1C6D3C', playerName: 'Andy', phase: 'round_start', currentRound: 1, …}
+GameService.ts:1557 Diff: {players: {…}, disconnectedPlayers: {…}, lastEventSequence: {…}}
+GameService.ts:1554 🎮 State Change: NETWORK_EVENT:PLAYER_RECONNECTED
+GameService.ts:1555 Previous: {isConnected: true, roomId: '1C6D3C', playerName: 'Andy', phase: 'round_start', currentRound: 1, …}
+GameService.ts:1556 New: {isConnected: true, roomId: '1C6D3C', playerName: 'Andy', phase: 'round_start', currentRound: 1, …}
+GameService.ts:1557 Diff: {players: {…}, disconnectedPlayers: {…}, lastEventSequence: {…}}
+sessionStorage.js:37 Session stored: {roomId: '1C6D3C', playerName: 'Andy'}
+GameService.ts:1554 🎮 State Change: NETWORK_EVENT:PHASE_CHANGE
+GameService.ts:1555 Previous: {isConnected: true, roomId: '1C6D3C', playerName: 'Andy', phase: 'round_start', currentRound: 1, …}
+GameService.ts:1556 New: {isConnected: true, roomId: '1C6D3C', playerName: 'Andy', phase: 'declaration', currentRound: 1, …}
+GameService.ts:1557 Diff: {phase: {…}, players: {…}, declarationOrder: {…}, lastEventSequence: {…}, currentTotal: {…}, …}
 DeclarationContent.jsx:139 Declaration player data: {name: 'P2', score: 0, is_bot: false, is_host: false, zero_declares_in_a_row: 0, …} Type: object
 DeclarationContent.jsx:139 Declaration player data: {name: 'Bot 3', score: 0, is_bot: true, is_host: false, zero_declares_in_a_row: 0, …} Type: object
 DeclarationContent.jsx:139 Declaration player data: {name: 'Bot 4', score: 0, is_bot: true, is_host: false, zero_declares_in_a_row: 0, …} Type: object
 DeclarationContent.jsx:139 Declaration player data: {name: 'Andy', score: 0, is_bot: false, is_host: false, zero_declares_in_a_row: 0, …} Type: object
-sessionStorage.js:37 Session stored: {roomId: 'F8D24C', playerName: 'Andy'}
-GameService.ts:1552 🎮 State Change: NETWORK_EVENT:PHASE_CHANGE
-GameService.ts:1553 Previous: {isConnected: true, roomId: 'F8D24C', playerName: 'Andy', phase: 'declaration', currentRound: 1, …}
-GameService.ts:1554 New: {isConnected: true, roomId: 'F8D24C', playerName: 'Andy', phase: 'declaration', currentRound: 1, …}
-GameService.ts:1555 Diff: {currentDeclarer: {…}, lastEventSequence: {…}}
+sessionStorage.js:37 Session stored: {roomId: '1C6D3C', playerName: 'Andy'}
+GameService.ts:1554 🎮 State Change: NETWORK_EVENT:PHASE_CHANGE
+GameService.ts:1555 Previous: {isConnected: true, roomId: '1C6D3C', playerName: 'Andy', phase: 'declaration', currentRound: 1, …}
+GameService.ts:1556 New: {isConnected: true, roomId: '1C6D3C', playerName: 'Andy', phase: 'declaration', currentRound: 1, …}
+GameService.ts:1557 Diff: {currentDeclarer: {…}, lastEventSequence: {…}}
 DeclarationContent.jsx:139 Declaration player data: {name: 'P2', score: 0, is_bot: false, is_host: false, zero_declares_in_a_row: 0, …} Type: object
 DeclarationContent.jsx:139 Declaration player data: {name: 'Bot 3', score: 0, is_bot: true, is_host: false, zero_declares_in_a_row: 0, …} Type: object
 DeclarationContent.jsx:139 Declaration player data: {name: 'Bot 4', score: 0, is_bot: true, is_host: false, zero_declares_in_a_row: 0, …} Type: object
