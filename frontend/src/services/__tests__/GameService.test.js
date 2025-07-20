@@ -488,11 +488,8 @@ describe('GameService', () => {
 
       await gameService.joinRoom(roomId, playerName);
 
-      // Verify NetworkService was called with playerName
-      expect(mockNetworkService.connectToRoom).toHaveBeenCalledWith(
-        roomId,
-        { playerName }
-      );
+      // Verify NetworkService was called
+      expect(mockNetworkService.connectToRoom).toHaveBeenCalledWith(roomId, { playerName });
     });
 
     test('joinRoom handles connection errors gracefully', async () => {
@@ -541,17 +538,16 @@ describe('GameService', () => {
       await gameService.joinRoom(roomId, playerName);
 
       // Simulate phase change event
-      const phaseData = createTestPhaseData({
-        phase: 'preparation',
+      const phaseData = createTestPhaseData('preparation', {
         players: [
           { name: playerName, score: 0, is_bot: false },
           { name: 'Charlie', score: 0, is_bot: false }
         ]
       });
 
-      gameService.handleNetworkEvent(
-        createMockEventDetail('phase_change', roomId, phaseData)
-      );
+      // Emit phase_change event through mock network service
+      mockNetworkService.emit('phase_change', createMockEventDetail('phase_change', phaseData));
+      await waitForNextTick();
 
       // Verify player name is still in state
       const state = gameService.getState();
