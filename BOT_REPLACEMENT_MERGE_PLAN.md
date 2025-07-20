@@ -227,28 +227,28 @@ The feature is designed to be modular and can be disabled without affecting core
 ### Phase 1: Backend Infrastructure
 
 #### Connection Manager
-- [ ] Create `/backend/api/websocket/connection_manager.py` with the following:
-  - [ ] Define `PlayerConnection` dataclass with fields: `player_name`, `room_id`, `websocket_id`, `status`, `disconnect_time`, `is_host`
-  - [ ] Implement `ConnectionManager` class with empty `__init__` method
-  - [ ] Add `async def register_player(self, room_id: str, player_name: str, websocket_id: str) -> None` method
-  - [ ] Add `async def handle_disconnect(self, websocket_id: str) -> Optional[PlayerConnection]` method
-  - [ ] Add `async def check_reconnection(self, room_id: str, player_name: str) -> bool` method
-  - [ ] Add `async def get_player_by_websocket(self, websocket_id: str) -> Optional[PlayerConnection]` method
-  - [ ] Add `async def cleanup_room(self, room_id: str) -> None` method
-  - [ ] Initialize singleton instance: `connection_manager = ConnectionManager()`
+- [x] Create `/backend/api/websocket/connection_manager.py` with the following:
+  - [x] Define `PlayerConnection` dataclass with fields: `player_name`, `room_id`, `websocket_id`, `status`, `disconnect_time`, `is_host`
+  - [x] Implement `ConnectionManager` class with empty `__init__` method
+  - [x] Add `async def register_player(self, room_id: str, player_name: str, websocket_id: str) -> None` method
+  - [x] Add `async def handle_disconnect(self, websocket_id: str) -> Optional[PlayerConnection]` method
+  - [x] Add `async def check_reconnection(self, room_id: str, player_name: str) -> bool` method
+  - [x] Add `async def get_player_by_websocket(self, websocket_id: str) -> Optional[PlayerConnection]` method
+  - [x] Add `async def cleanup_room(self, room_id: str) -> None` method
+  - [x] Initialize singleton instance: `connection_manager = ConnectionManager()`
 
 #### Message Queue Manager
-- [ ] Create `/backend/api/websocket/message_queue.py` with the following:
-  - [ ] Define `QueuedMessage` dataclass with fields: `event`, `data`, `sequence_number`, `timestamp`
-  - [ ] Implement `MessageQueueManager` class with empty `__init__` method
-  - [ ] Add `async def queue_message(self, room_id: str, player_name: str, event: str, data: Any) -> bool` method
-  - [ ] Add `async def get_queued_messages(self, room_id: str, player_name: str) -> List[Dict[str, Any]]` method
-  - [ ] Add `async def clear_queue(self, room_id: str, player_name: str) -> None` method
-  - [ ] Add `_should_queue_event(self, event: str) -> bool` method that returns True for critical events
-  - [ ] Initialize singleton instance: `message_queue_manager = MessageQueueManager()`
+- [x] Create `/backend/api/websocket/message_queue.py` with the following:
+  - [x] Define `QueuedMessage` dataclass with fields: `event`, `data`, `sequence_number`, `timestamp`
+  - [x] Implement `MessageQueueManager` class with empty `__init__` method
+  - [x] Add `async def queue_message(self, room_id: str, player_name: str, event: str, data: Any) -> bool` method
+  - [x] Add `async def get_queued_messages(self, room_id: str, player_name: str) -> List[Dict[str, Any]]` method
+  - [x] Add `async def clear_queue(self, room_id: str, player_name: str) -> None` method
+  - [x] Add `_should_queue_event(self, event: str) -> bool` method that returns True for critical events
+  - [x] Initialize singleton instance: `message_queue_manager = MessageQueueManager()`
 
 #### Player Model Updates
-- [ ] Open `/backend/engine/player.py` and add the following fields to `__init__` method after line 19:
+- [x] Open `/backend/engine/player.py` and add the following fields to `__init__` method after line 19:
   ```python
   self.is_connected = True  # Whether player is currently connected
   self.disconnect_time = None  # When player disconnected
@@ -256,18 +256,18 @@ The feature is designed to be modular and can be disabled without affecting core
   ```
 
 #### Room Management Updates
-- [ ] Open `/backend/engine/room.py` and add after line 520:
-  - [ ] Add `def is_host(self, player_name: str) -> bool:` method that returns `player_name == self.host_name`
-  - [ ] Add `def migrate_host(self) -> Optional[str]:` method with logic:
-    - [ ] Loop through players to find first connected human player
-    - [ ] If no humans, find first bot
-    - [ ] Update `self.host_name` to new host
-    - [ ] Return new host name or None
+- [x] Open `/backend/engine/room.py` and add after line 520:
+  - [x] Add `def is_host(self, player_name: str) -> bool:` method that returns `player_name == self.host_name`
+  - [x] Add `def migrate_host(self) -> Optional[str]:` method with logic:
+    - [x] Loop through players to find first connected human player
+    - [x] If no humans, find first bot
+    - [x] Update `self.host_name` to new host
+    - [x] Return new host name or None
 
 ### Phase 2: WebSocket Integration
 
 #### WebSocket Handler Base Updates
-- [ ] Open `/backend/api/routes/ws.py` and add imports after line 5:
+- [x] Open `/backend/api/routes/ws.py` and add imports after line 5:
   ```python
   import uuid
   from backend.api.websocket.connection_manager import connection_manager
@@ -277,39 +277,39 @@ The feature is designed to be modular and can be disabled without affecting core
   ```
 
 #### WebSocket UUID Tracking
-- [ ] In `/backend/api/routes/ws.py`, modify `websocket_endpoint` function (line 24):
-  - [ ] Add after line 28 (after await register): `websocket._ws_id = str(uuid.uuid4())`
-  - [ ] Add logging: `logger.info(f"WebSocket connected: room={room_id}, ws_id={websocket._ws_id}")`
+- [x] In `/backend/api/routes/ws.py`, modify `websocket_endpoint` function (line 24):
+  - [x] Add after line 28 (after await register): `websocket._ws_id = str(uuid.uuid4())`
+  - [x] Add logging: `logger.info(f"WebSocket connected: room={room_id}, ws_id={websocket._ws_id}")`
 
 #### Broadcast with Queue Function
-- [ ] In `/backend/api/routes/ws.py`, add new function before `websocket_endpoint`:
+- [x] In `/backend/api/routes/ws.py`, add new function before `websocket_endpoint`:
   ```python
   async def broadcast_with_queue(room_id: str, event: str, data: dict):
       """Broadcast to connected players and queue for disconnected ones"""
       # Implementation here
   ```
-  - [ ] Get all players from room manager
-  - [ ] For each player, check if connected via connection_manager
-  - [ ] If connected, use regular broadcast
-  - [ ] If disconnected, use message_queue_manager.queue_message
+  - [x] Get all players from room manager
+  - [x] For each player, check if connected via connection_manager
+  - [x] If connected, use regular broadcast
+  - [x] If disconnected, use message_queue_manager.queue_message
 
 #### Disconnect Handler
-- [ ] In `/backend/api/routes/ws.py`, add new function after `broadcast_with_queue`:
+- [x] In `/backend/api/routes/ws.py`, add new function after `broadcast_with_queue`:
   ```python
   async def handle_disconnect(room_id: str, websocket: WebSocket):
       """Handle player disconnect with bot activation"""
       # Implementation here
   ```
-  - [ ] Get websocket ID: `ws_id = getattr(websocket, '_ws_id', None)`
-  - [ ] Call connection_manager.handle_disconnect(ws_id)
-  - [ ] If player found, update player object: `player.is_bot = True`, `player.is_connected = False`
-  - [ ] Broadcast player_disconnected event
-  - [ ] Check for host migration if needed
-  - [ ] Notify bot manager with player_bot_activated event
+  - [x] Get websocket ID: `ws_id = getattr(websocket, '_ws_id', None)`
+  - [x] Call connection_manager.handle_disconnect(ws_id)
+  - [x] If player found, update player object: `player.is_bot = True`, `player.is_connected = False`
+  - [x] Broadcast player_disconnected event
+  - [x] Check for host migration if needed
+  - [x] Notify bot manager with player_bot_activated event
 
 #### Update WebSocket Exception Handler
-- [ ] In `/backend/api/routes/ws.py`, find the WebSocketDisconnect exception handler (around line 31):
-  - [ ] Change `except WebSocketDisconnect:` block to:
+- [x] In `/backend/api/routes/ws.py`, find the WebSocketDisconnect exception handler (around line 31):
+  - [x] Change `except WebSocketDisconnect:` block to:
     ```python
     except WebSocketDisconnect:
         unregister(room_id, websocket)
@@ -317,8 +317,8 @@ The feature is designed to be modular and can be disabled without affecting core
     ```
 
 #### Player Registration Handler
-- [ ] In `/backend/api/routes/ws.py`, find the client_ready event handler:
-  - [ ] After successful room join, add:
+- [x] In `/backend/api/routes/ws.py`, find the client_ready event handler:
+  - [x] After successful room join, add:
     ```python
     ws_id = getattr(websocket, '_ws_id', None)
     if ws_id and event_data.get("player_name"):
@@ -326,52 +326,52 @@ The feature is designed to be modular and can be disabled without affecting core
     ```
 
 #### Reconnection Detection
-- [ ] In `/backend/api/routes/ws.py`, modify the client_ready handler:
-  - [ ] Before room join, check reconnection:
+- [x] In `/backend/api/routes/ws.py`, modify the client_ready handler:
+  - [x] Before room join, check reconnection:
     ```python
     if await connection_manager.check_reconnection(room_id, player_name):
         # Handle reconnection logic
     ```
-  - [ ] If reconnecting, restore player state and deliver queued messages
-  - [ ] Broadcast player_reconnected event
+  - [x] If reconnecting, restore player state and deliver queued messages
+  - [x] Broadcast player_reconnected event
 
 ### Phase 3: Bot Activation
 
 #### Bot Manager Updates
-- [ ] Open `/backend/engine/bot_manager.py`:
-  - [ ] Fix import at line 1 by adding `Any` to typing imports: `from typing import Any, Dict, List, Optional, Set`
-  - [ ] In `__init__` method, add to self._handlers dict:
+- [x] Open `/backend/engine/bot_manager.py`:
+  - [x] Fix import at line 1 by adding `Any` to typing imports: `from typing import Any, Dict, List, Optional, Set`
+  - [x] In `__init__` method, add to self._handlers dict:
     ```python
     "player_bot_activated": self._handle_bot_activation,
     ```
-  - [ ] Add new method after `_handle_turn_start`:
+  - [x] Add new method after `_handle_turn_start`:
     ```python
     async def _handle_bot_activation(self, event: GameEvent) -> None:
         """Handle when a player disconnects and bot takes over"""
         # Implementation here
     ```
-  - [ ] Check if it's the bot's turn and trigger immediate action
+  - [x] Check if it's the bot's turn and trigger immediate action
 
 ### Phase 4: Frontend Integration
 
 #### Type Definitions
-- [ ] Open `/frontend/src/services/types.ts`:
-  - [ ] Add to Player interface (after line 83):
+- [x] Open `/frontend/src/services/types.ts`:
+  - [x] Add to Player interface (after line 83):
     ```typescript
     is_connected?: boolean;
     disconnect_time?: string;
     original_is_bot?: boolean;
     ```
-  - [ ] Add to GameState interface (after line 147):
+  - [x] Add to GameState interface (after line 147):
     ```typescript
     disconnectedPlayers: string[];
     host: string | null;
     ```
-  - [ ] Add to ConnectionData interface (after line 28):
+  - [x] Add to ConnectionData interface (after line 28):
     ```typescript
     playerName?: string;
     ```
-  - [ ] Add to GameEventType union (after line 298):
+  - [x] Add to GameEventType union (after line 298):
     ```typescript
     | 'player_disconnected'
     | 'player_reconnected'
@@ -380,23 +380,23 @@ The feature is designed to be modular and can be disabled without affecting core
     ```
 
 #### GameService Event Handlers
-- [ ] Open `/frontend/src/services/GameService.ts`:
-  - [ ] Add to state initialization in `getInitialState()` method:
+- [x] Open `/frontend/src/services/GameService.ts`:
+  - [x] Add to state initialization in `getInitialState()` method:
     ```typescript
     disconnectedPlayers: [],
     host: null,
     ```
-  - [ ] Add new event handlers in `setupNetworkListeners()` method:
-    - [ ] `handlePlayerDisconnected(data: any)` - Update disconnectedPlayers array
-    - [ ] `handlePlayerReconnected(data: any)` - Remove from disconnectedPlayers
-    - [ ] `handleHostChanged(data: any)` - Update host field
-    - [ ] `handleQueuedMessages(data: any)` - Process array of queued events
-  - [ ] Update `handlePhaseChange()` to preserve is_connected status when updating players
+  - [x] Add new event handlers in `setupNetworkListeners()` method:
+    - [x] `handlePlayerDisconnected(data: any)` - Update disconnectedPlayers array
+    - [x] `handlePlayerReconnected(data: any)` - Remove from disconnectedPlayers
+    - [x] `handleHostChanged(data: any)` - Update host field
+    - [x] `handleQueuedMessages(data: any)` - Process array of queued events
+  - [x] Update `handlePhaseChange()` to preserve is_connected status when updating players
 
 #### NetworkService Updates
-- [ ] Open `/frontend/src/services/NetworkService.ts`:
-  - [ ] Modify `connectToRoom()` method to include playerName in connection options
-  - [ ] Update ConnectionData structure when establishing connection
+- [x] Open `/frontend/src/services/NetworkService.ts`:
+  - [x] Modify `connectToRoom()` method to include playerName in connection options
+  - [x] Update ConnectionData structure when establishing connection
 
 #### UI Components (Optional)
 - [ ] Add visual indicators for disconnected players in player list components
@@ -406,24 +406,24 @@ The feature is designed to be modular and can be disabled without affecting core
 ### Phase 5: Testing & Verification
 
 #### Unit Tests
-- [ ] Create `/backend/tests/test_connection_manager.py`:
-  - [ ] Test player registration
-  - [ ] Test disconnect handling
-  - [ ] Test reconnection detection
-  - [ ] Test room cleanup
+- [x] Create `/backend/tests/test_connection_manager.py`:
+  - [x] Test player registration
+  - [x] Test disconnect handling
+  - [x] Test reconnection detection
+  - [x] Test room cleanup
 
-- [ ] Create `/backend/tests/test_message_queue.py`:
-  - [ ] Test message queueing
-  - [ ] Test queue retrieval
-  - [ ] Test queue clearing
-  - [ ] Test critical event filtering
+- [x] Create `/backend/tests/test_message_queue.py`:
+  - [x] Test message queueing
+  - [x] Test queue retrieval
+  - [x] Test queue clearing
+  - [x] Test critical event filtering
 
 #### Integration Tests
-- [ ] Create `/backend/tests/test_bot_replacement_flow.py`:
-  - [ ] Test full disconnect → bot activation → reconnect flow
-  - [ ] Test host migration scenarios
-  - [ ] Test message delivery on reconnection
-  - [ ] Test bot behavior during different game phases
+- [x] Create `/backend/tests/test_bot_replacement_flow.py`:
+  - [x] Test full disconnect → bot activation → reconnect flow
+  - [x] Test host migration scenarios
+  - [x] Test message delivery on reconnection
+  - [x] Test bot behavior during different game phases
 
 #### Manual Testing Scenarios
 - [ ] Test browser close during different phases:

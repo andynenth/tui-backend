@@ -19,205 +19,830 @@ ServiceIntegration.ts:139 🛠️ RecoveryService: Automatic error recovery and 
 ServiceIntegration.ts:142 🏢 Enterprise Features: Event sourcing, logging, metrics
 ServiceIntegration.ts:143 ✅ Service integration layer initialized successfully
 ServiceIntegration.ts:144 
-App.jsx:129 🎮 Global services initialized
-favicon.ico:1  GET http://localhost:5050/favicon.ico 404 (Not Found)
-NetworkService.ts:355 🔗 Connection opened to room lobby
-GameService.ts:1423 🎮 State Change: NETWORK_CONNECTED
-GameService.ts:1424 Previous: {isConnected: false, roomId: null, playerName: null, phase: 'waiting', currentRound: 1, …}
-GameService.ts:1425 New: {isConnected: true, roomId: null, playerName: null, phase: 'waiting', currentRound: 1, …}
-GameService.ts:1426 Diff: {isConnected: {…}, lastEventSequence: {…}}
-NetworkService.ts:134 🌐 NetworkService: Connected to room lobby
-LobbyPage.jsx:49 Received room_list_update: {roomId: 'lobby', data: {…}, message: {…}, timestamp: 1752873792404}
-GameService.ts:1423 🎮 State Change: NETWORK_DISCONNECTED
-GameService.ts:1424 Previous: {isConnected: true, roomId: null, playerName: null, phase: 'waiting', currentRound: 1, …}
-GameService.ts:1425 New: {isConnected: false, roomId: null, playerName: null, phase: 'waiting', currentRound: 1, …}
-GameService.ts:1426 Diff: {isConnected: {…}, lastEventSequence: {…}}
-NetworkService.ts:180 🌐 NetworkService: Disconnected from room lobby
-NetworkService.ts:225 📤 Queued message for lobby: get_rooms (1 queued)
-NetworkService.ts:355 🔗 Connection opened to room lobby
-GameService.ts:1423 🎮 State Change: NETWORK_CONNECTED
-GameService.ts:1424 Previous: {isConnected: false, roomId: null, playerName: null, phase: 'waiting', currentRound: 1, …}
-GameService.ts:1425 New: {isConnected: true, roomId: null, playerName: null, phase: 'waiting', currentRound: 1, …}
-GameService.ts:1426 Diff: {isConnected: {…}, lastEventSequence: {…}}
-NetworkService.ts:134 🌐 NetworkService: Connected to room lobby
-LobbyPage.jsx:49 Received room_list_update: {roomId: 'lobby', data: {…}, message: {…}, timestamp: 1752873792422}
-GameService.ts:1423 🎮 State Change: NETWORK_DISCONNECTED
-GameService.ts:1424 Previous: {isConnected: true, roomId: null, playerName: null, phase: 'waiting', currentRound: 1, …}
-GameService.ts:1425 New: {isConnected: false, roomId: null, playerName: null, phase: 'waiting', currentRound: 1, …}
-GameService.ts:1426 Diff: {isConnected: {…}, lastEventSequence: {…}}
-NetworkService.ts:180 🌐 NetworkService: Disconnected from room lobby
-NetworkService.ts:225 📤 Queued message for lobby: get_rooms (1 queued)
-NetworkService.ts:355 🔗 Connection opened to room lobby
-GameService.ts:1423 🎮 State Change: NETWORK_CONNECTED
-GameService.ts:1424 Previous: {isConnected: false, roomId: null, playerName: null, phase: 'waiting', currentRound: 1, …}
-GameService.ts:1425 New: {isConnected: true, roomId: null, playerName: null, phase: 'waiting', currentRound: 1, …}
-GameService.ts:1426 Diff: {isConnected: {…}, lastEventSequence: {…}}
-NetworkService.ts:134 🌐 NetworkService: Connected to room lobby
-LobbyPage.jsx:49 Received room_list_update: {roomId: 'lobby', data: {…}, message: {…}, timestamp: 1752873793204}
-LobbyPage.jsx:65 Received room_created: {roomId: 'lobby', data: {…}, message: {…}, timestamp: 1752873793281}
-LobbyPage.jsx:66 🟢 Navigation: room_id = 31911A navigating to: /room/31911A
-LobbyPage.jsx:75 ✅ Navigating to new room: 31911A
-GameService.ts:1423 🎮 State Change: NETWORK_DISCONNECTED
-GameService.ts:1424 Previous: {isConnected: true, roomId: null, playerName: null, phase: 'waiting', currentRound: 1, …}
-GameService.ts:1425 New: {isConnected: false, roomId: null, playerName: null, phase: 'waiting', currentRound: 1, …}
-GameService.ts:1426 Diff: {isConnected: {…}, lastEventSequence: {…}}
-NetworkService.ts:180 🌐 NetworkService: Disconnected from room lobby
-NetworkService.ts:225 📤 Queued message for lobby: get_rooms (1 queued)
-NetworkService.ts:355 🔗 Connection opened to room lobby
-GameService.ts:1423 🎮 State Change: NETWORK_CONNECTED
-GameService.ts:1424 Previous: {isConnected: false, roomId: null, playerName: null, phase: 'waiting', currentRound: 1, …}
-GameService.ts:1425 New: {isConnected: true, roomId: null, playerName: null, phase: 'waiting', currentRound: 1, …}
-GameService.ts:1426 Diff: {isConnected: {…}, lastEventSequence: {…}}
-NetworkService.ts:134 🌐 NetworkService: Connected to room lobby
-NetworkService.ts:355 🔗 Connection opened to room 31911A
-GameService.ts:1423 🎮 State Change: NETWORK_CONNECTED
-GameService.ts:1424 Previous: {isConnected: true, roomId: null, playerName: null, phase: 'waiting', currentRound: 1, …}
-GameService.ts:1425 New: {isConnected: true, roomId: null, playerName: null, phase: 'waiting', currentRound: 1, …}
-GameService.ts:1426 Diff: {lastEventSequence: {…}}
-NetworkService.ts:134 🌐 NetworkService: Connected to room 31911A
-RoomPage.jsx:69 🏠 ROOM_UPDATE: Full data received: {players: Array(4), host_name: 'Andy', room_id: '31911A', started: false}
-RoomPage.jsx:70 🏠 ROOM_UPDATE: Players array: (4) [{…}, {…}, {…}, {…}]
-RoomPage.jsx:71 🏠 ROOM_UPDATE: Players array type: object
-RoomPage.jsx:75 🏠 ROOM_UPDATE: Players array length: 4
-RoomPage.jsx:79 🏠 ROOM_UPDATE: Players array entries: (4) [Array(2), Array(2), Array(2), Array(2)]
-RoomPage.jsx:129 🗑️ REMOVE_PLAYER: Button clicked for slot 2
-RoomPage.jsx:130 🗑️ REMOVE_PLAYER: Sending to room 31911A
-RoomPage.jsx:69 🏠 ROOM_UPDATE: Full data received: {players: Array(4), host_name: 'Andy', room_id: '31911A', started: false, timestamp: 1752873794.623013}
-RoomPage.jsx:70 🏠 ROOM_UPDATE: Players array: (4) [{…}, null, {…}, {…}]
-RoomPage.jsx:71 🏠 ROOM_UPDATE: Players array type: object
-RoomPage.jsx:75 🏠 ROOM_UPDATE: Players array length: 4
-RoomPage.jsx:79 🏠 ROOM_UPDATE: Players array entries: (4) [Array(2), Array(2), Array(2), Array(2)]
-RoomPage.jsx:69 🏠 ROOM_UPDATE: Full data received: {players: Array(4), host_name: 'Andy', operation_id: '31911A_2', room_id: '31911A', started: false, …}
-RoomPage.jsx:70 🏠 ROOM_UPDATE: Players array: (4) [{…}, {…}, {…}, {…}]
-RoomPage.jsx:71 🏠 ROOM_UPDATE: Players array type: object
-RoomPage.jsx:75 🏠 ROOM_UPDATE: Players array length: 4
-RoomPage.jsx:79 🏠 ROOM_UPDATE: Players array entries: (4) [Array(2), Array(2), Array(2), Array(2)]
-RoomPage.jsx:116 🎮 START_GAME: Button clicked
-RoomPage.jsx:117 🎮 START_GAME: Room ID: 31911A
-RoomPage.jsx:89 Game started, navigating to game page
-GameService.ts:1423 🎮 State Change: NETWORK_DISCONNECTED
-GameService.ts:1424 Previous: {isConnected: true, roomId: null, playerName: null, phase: 'waiting', currentRound: 1, …}
-GameService.ts:1425 New: {isConnected: false, roomId: null, playerName: null, phase: 'waiting', currentRound: 1, …}
-GameService.ts:1426 Diff: {isConnected: {…}, lastEventSequence: {…}}
-NetworkService.ts:180 🌐 NetworkService: Disconnected from room 31911A
-ServiceIntegration.ts:169 🔗 Connecting to room 31911A as Andy...
-RecoveryService.ts:109 🔄 RecoveryService: Initialized tracking for room 31911A
-GameService.ts:1423 🎮 State Change: JOIN_ROOM_INIT
-GameService.ts:1424 Previous: {isConnected: false, roomId: null, playerName: null, phase: 'waiting', currentRound: 1, …}
-GameService.ts:1425 New: {isConnected: false, roomId: '31911A', playerName: 'Andy', phase: 'waiting', currentRound: 1, …}
-GameService.ts:1426 Diff: {roomId: {…}, playerName: {…}, lastEventSequence: {…}}
+App.jsx:119 🎮 Global services initialized
+NetworkService.ts:277 🔗 Connection opened to room lobby
+GameService.ts:1469 🎮 State Change: NETWORK_CONNECTED
+GameService.ts:1472 Previous: {isConnected: false, roomId: null, playerName: null, phase: 'waiting', currentRound: 1, …}
+GameService.ts:1481 New: {isConnected: true, roomId: null, playerName: null, phase: 'waiting', currentRound: 1, …}
+GameService.ts:1482 Diff: {isConnected: {…}, lastEventSequence: {…}}
+NetworkService.ts:68 🌐 NetworkService: Connected to room lobby
+LobbyPage.jsx:36 Received room_list_update: {roomId: 'lobby', data: {…}, message: {…}, timestamp: 1753034122617}
+GameService.ts:1469 🎮 State Change: NETWORK_DISCONNECTED
+GameService.ts:1472 Previous: {isConnected: true, roomId: null, playerName: null, phase: 'waiting', currentRound: 1, …}
+GameService.ts:1481 New: {isConnected: false, roomId: null, playerName: null, phase: 'waiting', currentRound: 1, …}
+GameService.ts:1482 Diff: {isConnected: {…}, lastEventSequence: {…}}
+NetworkService.ts:113 🌐 NetworkService: Disconnected from room lobby
+NetworkService.ts:157 📤 Queued message for lobby: get_rooms (1 queued)
+NetworkService.ts:277 🔗 Connection opened to room lobby
+GameService.ts:1469 🎮 State Change: NETWORK_CONNECTED
+GameService.ts:1472 Previous: {isConnected: false, roomId: null, playerName: null, phase: 'waiting', currentRound: 1, …}
+GameService.ts:1481 New: {isConnected: true, roomId: null, playerName: null, phase: 'waiting', currentRound: 1, …}
+GameService.ts:1482 Diff: {isConnected: {…}, lastEventSequence: {…}}
+NetworkService.ts:68 🌐 NetworkService: Connected to room lobby
+LobbyPage.jsx:36 Received room_list_update: {roomId: 'lobby', data: {…}, message: {…}, timestamp: 1753034122630}
+GameService.ts:1469 🎮 State Change: NETWORK_DISCONNECTED
+GameService.ts:1472 Previous: {isConnected: true, roomId: null, playerName: null, phase: 'waiting', currentRound: 1, …}
+GameService.ts:1481 New: {isConnected: false, roomId: null, playerName: null, phase: 'waiting', currentRound: 1, …}
+GameService.ts:1482 Diff: {isConnected: {…}, lastEventSequence: {…}}
+NetworkService.ts:113 🌐 NetworkService: Disconnected from room lobby
+NetworkService.ts:157 📤 Queued message for lobby: get_rooms (1 queued)
+NetworkService.ts:277 🔗 Connection opened to room lobby
+GameService.ts:1469 🎮 State Change: NETWORK_CONNECTED
+GameService.ts:1472 Previous: {isConnected: false, roomId: null, playerName: null, phase: 'waiting', currentRound: 1, …}
+GameService.ts:1481 New: {isConnected: true, roomId: null, playerName: null, phase: 'waiting', currentRound: 1, …}
+GameService.ts:1482 Diff: {isConnected: {…}, lastEventSequence: {…}}
+NetworkService.ts:68 🌐 NetworkService: Connected to room lobby
+LobbyPage.jsx:36 Received room_list_update: {roomId: 'lobby', data: {…}, message: {…}, timestamp: 1753034123683}
+LobbyPage.jsx:55 Received room_created: {roomId: 'lobby', data: {…}, message: {…}, timestamp: 1753034123773}
+LobbyPage.jsx:62 🟢 Navigation: room_id = E53318 navigating to: /room/E53318
+LobbyPage.jsx:69 ✅ Navigating to new room: E53318
+GameService.ts:1469 🎮 State Change: NETWORK_DISCONNECTED
+GameService.ts:1472 Previous: {isConnected: true, roomId: null, playerName: null, phase: 'waiting', currentRound: 1, …}
+GameService.ts:1481 New: {isConnected: false, roomId: null, playerName: null, phase: 'waiting', currentRound: 1, …}
+GameService.ts:1482 Diff: {isConnected: {…}, lastEventSequence: {…}}
+NetworkService.ts:113 🌐 NetworkService: Disconnected from room lobby
+NetworkService.ts:157 📤 Queued message for lobby: get_rooms (1 queued)
+NetworkService.ts:277 🔗 Connection opened to room lobby
+GameService.ts:1469 🎮 State Change: NETWORK_CONNECTED
+GameService.ts:1472 Previous: {isConnected: false, roomId: null, playerName: null, phase: 'waiting', currentRound: 1, …}
+GameService.ts:1481 New: {isConnected: true, roomId: null, playerName: null, phase: 'waiting', currentRound: 1, …}
+GameService.ts:1482 Diff: {isConnected: {…}, lastEventSequence: {…}}
+NetworkService.ts:68 🌐 NetworkService: Connected to room lobby
+NetworkService.ts:277 🔗 Connection opened to room E53318
+GameService.ts:1469 🎮 State Change: NETWORK_CONNECTED
+GameService.ts:1472 Previous: {isConnected: true, roomId: null, playerName: null, phase: 'waiting', currentRound: 1, …}
+GameService.ts:1481 New: {isConnected: true, roomId: null, playerName: null, phase: 'waiting', currentRound: 1, …}
+GameService.ts:1482 Diff: {lastEventSequence: {…}}
+NetworkService.ts:68 🌐 NetworkService: Connected to room E53318
+RoomPage.jsx:60 🏠 ROOM_UPDATE: Full data received: {players: Array(4), host_name: 'Andy', room_id: 'E53318', started: false}
+RoomPage.jsx:67 🏠 ROOM_UPDATE: Players array: (4) [{…}, {…}, {…}, {…}]
+RoomPage.jsx:69 🏠 ROOM_UPDATE: Players array type: object
+RoomPage.jsx:71 🏠 ROOM_UPDATE: Players array length: 4
+RoomPage.jsx:76 🏠 ROOM_UPDATE: Players array entries: (4) [Array(2), Array(2), Array(2), Array(2)]
+RoomPage.jsx:124 🗑️ REMOVE_PLAYER: Button clicked for slot 3
+RoomPage.jsx:129 🗑️ REMOVE_PLAYER: Sending to room E53318
+RoomPage.jsx:60 🏠 ROOM_UPDATE: Full data received: {players: Array(4), host_name: 'Andy', room_id: 'E53318', started: false, timestamp: 1753034125.506291}
+RoomPage.jsx:67 🏠 ROOM_UPDATE: Players array: (4) [{…}, {…}, null, {…}]
+RoomPage.jsx:69 🏠 ROOM_UPDATE: Players array type: object
+RoomPage.jsx:71 🏠 ROOM_UPDATE: Players array length: 4
+RoomPage.jsx:76 🏠 ROOM_UPDATE: Players array entries: (4) [Array(2), Array(2), Array(2), Array(2)]
+RoomPage.jsx:60 🏠 ROOM_UPDATE: Full data received: {players: Array(4), host_name: 'Andy', operation_id: 'E53318_2', room_id: 'E53318', started: false, …}
+RoomPage.jsx:67 🏠 ROOM_UPDATE: Players array: (4) [{…}, {…}, {…}, {…}]
+RoomPage.jsx:69 🏠 ROOM_UPDATE: Players array type: object
+RoomPage.jsx:71 🏠 ROOM_UPDATE: Players array length: 4
+RoomPage.jsx:76 🏠 ROOM_UPDATE: Players array entries: (4) [Array(2), Array(2), Array(2), Array(2)]
+RoomPage.jsx:110 🎮 START_GAME: Button clicked
+RoomPage.jsx:113 🎮 START_GAME: Room ID: E53318
+RoomPage.jsx:80 Game started, navigating to game page
+GameService.ts:1469 🎮 State Change: NETWORK_DISCONNECTED
+GameService.ts:1472 Previous: {isConnected: true, roomId: null, playerName: null, phase: 'waiting', currentRound: 1, …}
+GameService.ts:1481 New: {isConnected: false, roomId: null, playerName: null, phase: 'waiting', currentRound: 1, …}
+GameService.ts:1482 Diff: {isConnected: {…}, lastEventSequence: {…}}
+NetworkService.ts:113 🌐 NetworkService: Disconnected from room E53318
+ServiceIntegration.ts:169 🔗 Connecting to room E53318 as Andy...
+RecoveryService.ts:109 🔄 RecoveryService: Initialized tracking for room E53318
+GameService.ts:1469 🎮 State Change: JOIN_ROOM_INIT
+GameService.ts:1472 Previous: {isConnected: false, roomId: null, playerName: null, phase: 'waiting', currentRound: 1, …}
+GameService.ts:1481 New: {isConnected: false, roomId: 'E53318', playerName: 'Andy', phase: 'waiting', currentRound: 1, …}
+GameService.ts:1482 Diff: {roomId: {…}, playerName: {…}, lastEventSequence: {…}}
 GameContext.jsx:36 🚀 GAME_CONTEXT: Phase 1-4 Enterprise Architecture initializing
-NetworkService.ts:355 🔗 Connection opened to room 31911A
-GameService.ts:1423 🎮 State Change: NETWORK_CONNECTED
-GameService.ts:1424 Previous: {isConnected: false, roomId: '31911A', playerName: 'Andy', phase: 'waiting', currentRound: 1, …}
-GameService.ts:1425 New: {isConnected: true, roomId: '31911A', playerName: 'Andy', phase: 'waiting', currentRound: 1, …}
-GameService.ts:1426 Diff: {isConnected: {…}, lastEventSequence: {…}}
-NetworkService.ts:134 🌐 NetworkService: Connected to room 31911A
-GameService.ts:1423 🎮 State Change: JOIN_ROOM_CONNECTED
-GameService.ts:1424 Previous: {isConnected: true, roomId: '31911A', playerName: 'Andy', phase: 'waiting', currentRound: 1, …}
-GameService.ts:1425 New: {isConnected: true, roomId: '31911A', playerName: 'Andy', phase: 'waiting', currentRound: 1, …}
-GameService.ts:1426 Diff: {lastEventSequence: {…}}
-GameService.ts:108 🎮 GameService: Joined room 31911A as Andy
-ServiceIntegration.ts:183 ✅ Successfully connected to room 31911A
-GameService.ts:1423 🎮 State Change: NETWORK_EVENT:PHASE_CHANGE
-GameService.ts:1424 Previous: {isConnected: true, roomId: '31911A', playerName: 'Andy', phase: 'waiting', currentRound: 1, …}
-GameService.ts:1425 New: {isConnected: true, roomId: '31911A', playerName: 'Andy', phase: 'preparation', currentRound: 1, …}
-GameService.ts:1426 Diff: {phase: {…}, players: {…}, myHand: {…}, lastEventSequence: {…}, simultaneousMode: {…}, …}
-GameService.ts:1393 🎮 Action sent: decline_redeal {player_name: 'Andy'}
-GameService.ts:1423 🎮 State Change: NETWORK_EVENT:PHASE_CHANGE
-GameService.ts:1424 Previous: {isConnected: true, roomId: '31911A', playerName: 'Andy', phase: 'preparation', currentRound: 1, …}
-GameService.ts:1425 New: {isConnected: true, roomId: '31911A', playerName: 'Andy', phase: 'round_start', currentRound: 1, …}
-GameService.ts:1426 Diff: {phase: {…}, players: {…}, lastEventSequence: {…}, currentStarter: {…}, starterReason: {…}}
-GameService.ts:1423 🎮 State Change: NETWORK_EVENT:PHASE_CHANGE
-GameService.ts:1424 Previous: {isConnected: true, roomId: '31911A', playerName: 'Andy', phase: 'round_start', currentRound: 1, …}
-GameService.ts:1425 New: {isConnected: true, roomId: '31911A', playerName: 'Andy', phase: 'declaration', currentRound: 1, …}
-GameService.ts:1426 Diff: {phase: {…}, declarationOrder: {…}, lastEventSequence: {…}, currentTotal: {…}, declarationProgress: {…}, …}
-DeclarationContent.jsx:149 Declaration player data: {name: 'loong - 0 pts'} Type: object
-DeclarationContent.jsx:149 Declaration player data: {name: 'Bot 3 - 0 pts'} Type: object
-DeclarationContent.jsx:149 Declaration player data: {name: 'Bot 4 - 0 pts'} Type: object
-DeclarationContent.jsx:149 Declaration player data: {name: 'Andy - 0 pts'} Type: object
-GameService.ts:1423 🎮 State Change: NETWORK_EVENT:PHASE_CHANGE
-GameService.ts:1424 Previous: {isConnected: true, roomId: '31911A', playerName: 'Andy', phase: 'declaration', currentRound: 1, …}
-GameService.ts:1425 New: {isConnected: true, roomId: '31911A', playerName: 'Andy', phase: 'declaration', currentRound: 1, …}
-GameService.ts:1426 Diff: {currentDeclarer: {…}, lastEventSequence: {…}}
-DeclarationContent.jsx:149 Declaration player data: {name: 'loong - 0 pts'} Type: object
-DeclarationContent.jsx:149 Declaration player data: {name: 'Bot 3 - 0 pts'} Type: object
-DeclarationContent.jsx:149 Declaration player data: {name: 'Bot 4 - 0 pts'} Type: object
-DeclarationContent.jsx:149 Declaration player data: {name: 'Andy - 0 pts'} Type: object
-DeclarationContent.jsx:149 Declaration player data: {name: 'loong - 0 pts'} Type: object
-DeclarationContent.jsx:149 Declaration player data: {name: 'Bot 3 - 0 pts'} Type: object
-DeclarationContent.jsx:149 Declaration player data: {name: 'Bot 4 - 0 pts'} Type: object
-DeclarationContent.jsx:149 Declaration player data: {name: 'Andy - 0 pts'} Type: object
-DeclarationContent.jsx:149 Declaration player data: {name: 'loong - 0 pts'} Type: object
-DeclarationContent.jsx:149 Declaration player data: {name: 'Bot 3 - 0 pts'} Type: object
-DeclarationContent.jsx:149 Declaration player data: {name: 'Bot 4 - 0 pts'} Type: object
-DeclarationContent.jsx:149 Declaration player data: {name: 'Andy - 0 pts'} Type: object
-GameService.ts:1423 🎮 State Change: NETWORK_EVENT:PHASE_CHANGE
-GameService.ts:1424 Previous: {isConnected: true, roomId: '31911A', playerName: 'Andy', phase: 'declaration', currentRound: 1, …}
-GameService.ts:1425 New: {isConnected: true, roomId: '31911A', playerName: 'Andy', phase: 'declaration', currentRound: 1, …}
-GameService.ts:1426 Diff: {declarations: {…}, currentDeclarer: {…}, lastEventSequence: {…}, currentTotal: {…}, declarationProgress: {…}}
-DeclarationContent.jsx:149 Declaration player data: {name: 'loong - 0 pts'} Type: object
-DeclarationContent.jsx:149 Declaration player data: {name: 'Bot 3 - 0 pts'} Type: object
-DeclarationContent.jsx:149 Declaration player data: {name: 'Bot 4 - 0 pts'} Type: object
-DeclarationContent.jsx:149 Declaration player data: {name: 'Andy - 0 pts'} Type: object
-GameService.ts:1423 🎮 State Change: NETWORK_EVENT:PHASE_CHANGE
-GameService.ts:1424 Previous: {isConnected: true, roomId: '31911A', playerName: 'Andy', phase: 'declaration', currentRound: 1, …}
-GameService.ts:1425 New: {isConnected: true, roomId: '31911A', playerName: 'Andy', phase: 'declaration', currentRound: 1, …}
-GameService.ts:1426 Diff: {players: {…}, declarations: {…}, currentDeclarer: {…}, lastEventSequence: {…}, currentTotal: {…}, …}
-DeclarationContent.jsx:149 Declaration player data: {name: 'loong - 0 pts'} Type: object
-DeclarationContent.jsx:149 Declaration player data: {name: 'Bot 3 - 0 pts'} Type: object
-DeclarationContent.jsx:149 Declaration player data: {name: 'Bot 4 - 0 pts'} Type: object
-DeclarationContent.jsx:149 Declaration player data: {name: 'Andy - 0 pts'} Type: object
-GameService.ts:1423 🎮 State Change: NETWORK_EVENT:PHASE_CHANGE
-GameService.ts:1424 Previous: {isConnected: true, roomId: '31911A', playerName: 'Andy', phase: 'declaration', currentRound: 1, …}
-GameService.ts:1425 New: {isConnected: true, roomId: '31911A', playerName: 'Andy', phase: 'declaration', currentRound: 1, …}
-GameService.ts:1426 Diff: {players: {…}, declarations: {…}, currentDeclarer: {…}, isMyTurn: {…}, allowedActions: {…}, …}
-DeclarationContent.jsx:149 Declaration player data: {name: 'loong - 0 pts'} Type: object
-DeclarationContent.jsx:149 Declaration player data: {name: 'Bot 3 - 0 pts'} Type: object
-DeclarationContent.jsx:149 Declaration player data: {name: 'Bot 4 - 0 pts'} Type: object
-DeclarationContent.jsx:149 Declaration player data: {name: 'Andy - 0 pts'} Type: object
-DeclarationContent.jsx:149 Declaration player data: {name: 'loong - 0 pts'} Type: object
-DeclarationContent.jsx:149 Declaration player data: {name: 'Bot 3 - 0 pts'} Type: object
-DeclarationContent.jsx:149 Declaration player data: {name: 'Bot 4 - 0 pts'} Type: object
-DeclarationContent.jsx:149 Declaration player data: {name: 'Andy - 0 pts'} Type: object
-DeclarationContent.jsx:149 Declaration player data: {name: 'loong - 0 pts'} Type: object
-DeclarationContent.jsx:149 Declaration player data: {name: 'Bot 3 - 0 pts'} Type: object
-DeclarationContent.jsx:149 Declaration player data: {name: 'Bot 4 - 0 pts'} Type: object
-DeclarationContent.jsx:149 Declaration player data: {name: 'Andy - 0 pts'} Type: object
-DeclarationContent.jsx:149 Declaration player data: {name: 'loong - 0 pts'} Type: object
-DeclarationContent.jsx:149 Declaration player data: {name: 'Bot 3 - 0 pts'} Type: object
-DeclarationContent.jsx:149 Declaration player data: {name: 'Bot 4 - 0 pts'} Type: object
-DeclarationContent.jsx:149 Declaration player data: {name: 'Andy - 0 pts'} Type: object
-GameService.ts:1393 🎮 Action sent: declare {value: 4, player_name: 'Andy'}
-DeclarationContent.jsx:149 Declaration player data: {name: 'loong - 0 pts'} Type: object
-DeclarationContent.jsx:149 Declaration player data: {name: 'Bot 3 - 0 pts'} Type: object
-DeclarationContent.jsx:149 Declaration player data: {name: 'Bot 4 - 0 pts'} Type: object
-DeclarationContent.jsx:149 Declaration player data: {name: 'Andy - 0 pts'} Type: object
-GameService.ts:1423 🎮 State Change: NETWORK_EVENT:PHASE_CHANGE
-GameService.ts:1424 Previous: {isConnected: true, roomId: '31911A', playerName: 'Andy', phase: 'declaration', currentRound: 1, …}
-GameService.ts:1425 New: {isConnected: true, roomId: '31911A', playerName: 'Andy', phase: 'declaration', currentRound: 1, …}
-GameService.ts:1426 Diff: {players: {…}, declarations: {…}, validOptions: {…}, lastEventSequence: {…}, currentTotal: {…}, …}
-DeclarationContent.jsx:149 Declaration player data: {name: 'loong - 0 pts'} Type: object
-DeclarationContent.jsx:149 Declaration player data: {name: 'Bot 3 - 0 pts'} Type: object
-DeclarationContent.jsx:149 Declaration player data: {name: 'Bot 4 - 0 pts'} Type: object
-DeclarationContent.jsx:149 Declaration player data: {name: 'Andy - 0 pts'} Type: object
-GameService.ts:1423 🎮 State Change: NETWORK_EVENT:PHASE_CHANGE
-GameService.ts:1424 Previous: {isConnected: true, roomId: '31911A', playerName: 'Andy', phase: 'declaration', currentRound: 1, …}
-GameService.ts:1425 New: {isConnected: true, roomId: '31911A', playerName: 'Andy', phase: 'turn', currentRound: 1, …}
-GameService.ts:1426 Diff: {phase: {…}, players: {…}, currentTurnStarter: {…}, turnOrder: {…}, currentPlayer: {…}, …}
-TurnUI.jsx:43 [TurnUI] Building playerPieces from currentTurnPlays: []
-TurnUI.jsx:88 [TurnUI] No valid plays found, returning empty play type
-TurnContent.jsx:282 Turn player data: {name: 'Andy', score: 0, is_bot: false, is_host: false, zero_declares_in_a_row: 0, …} is_bot: false
-TurnContent.jsx:282 Turn player data: {name: 'loong', score: 0, is_bot: false, is_host: false, zero_declares_in_a_row: 0, …} is_bot: false
-TurnContent.jsx:282 Turn player data: {name: 'Bot 3', score: 0, is_bot: true, is_host: false, zero_declares_in_a_row: 0, …} is_bot: true
-TurnContent.jsx:282 Turn player data: {name: 'Bot 4', score: 0, is_bot: true, is_host: false, zero_declares_in_a_row: 0, …} is_bot: true
-TurnContent.jsx:282 Turn player data: {name: 'Andy', score: 0, is_bot: false, is_host: false, zero_declares_in_a_row: 0, …} is_bot: false
-TurnContent.jsx:282 Turn player data: {name: 'loong', score: 0, is_bot: false, is_host: false, zero_declares_in_a_row: 0, …} is_bot: false
-TurnContent.jsx:282 Turn player data: {name: 'Bot 3', score: 0, is_bot: true, is_host: false, zero_declares_in_a_row: 0, …} is_bot: true
-TurnContent.jsx:282 Turn player data: {name: 'Bot 4', score: 0, is_bot: true, is_host: false, zero_declares_in_a_row: 0, …} is_bot: true
-TurnUI.jsx:43 [TurnUI] Building playerPieces from currentTurnPlays: []
-TurnUI.jsx:88 [TurnUI] No valid plays found, returning empty play type
-TurnContent.jsx:282 Turn player data: {name: 'Andy', score: 0, is_bot: false, is_host: false, zero_declares_in_a_row: 0, …} is_bot: false
-TurnContent.jsx:282 Turn player data: {name: 'loong', score: 0, is_bot: false, is_host: false, zero_declares_in_a_row: 0, …} is_bot: false
-TurnContent.jsx:282 Turn player data: {name: 'Bot 3', score: 0, is_bot: true, is_host: false, zero_declares_in_a_row: 0, …} is_bot: true
-TurnContent.jsx:282 Turn player data: {name: 'Bot 4', score: 0, is_bot: true, is_host: false, zero_declares_in_a_row: 0, …} is_bot: true
+NetworkService.ts:277 🔗 Connection opened to room E53318
+GameService.ts:1469 🎮 State Change: NETWORK_CONNECTED
+GameService.ts:1472 Previous: {isConnected: false, roomId: 'E53318', playerName: 'Andy', phase: 'waiting', currentRound: 1, …}
+GameService.ts:1481 New: {isConnected: true, roomId: 'E53318', playerName: 'Andy', phase: 'waiting', currentRound: 1, …}
+GameService.ts:1482 Diff: {isConnected: {…}, lastEventSequence: {…}}
+NetworkService.ts:68 🌐 NetworkService: Connected to room E53318
+GameService.ts:1469 🎮 State Change: JOIN_ROOM_CONNECTED
+GameService.ts:1472 Previous: {isConnected: true, roomId: 'E53318', playerName: 'Andy', phase: 'waiting', currentRound: 1, …}
+GameService.ts:1481 New: {isConnected: true, roomId: 'E53318', playerName: 'Andy', phase: 'waiting', currentRound: 1, …}
+GameService.ts:1482 Diff: {lastEventSequence: {…}}
+GameService.ts:108 🎮 GameService: Joined room E53318 as Andy
+ServiceIntegration.ts:183 ✅ Successfully connected to room E53318
+GameService.ts:1469 🎮 State Change: NETWORK_EVENT:PHASE_CHANGE
+GameService.ts:1472 Previous: {isConnected: true, roomId: 'E53318', playerName: 'Andy', phase: 'waiting', currentRound: 1, …}
+GameService.ts:1481 New: {isConnected: true, roomId: 'E53318', playerName: 'Andy', phase: 'round_start', currentRound: 1, …}
+GameService.ts:1482 Diff: {phase: {…}, players: {…}, myHand: {…}, lastEventSequence: {…}, currentStarter: {…}, …}
+GameService.ts:1469 🎮 State Change: NETWORK_EVENT:PHASE_CHANGE
+GameService.ts:1472 Previous: {isConnected: true, roomId: 'E53318', playerName: 'Andy', phase: 'round_start', currentRound: 1, …}
+GameService.ts:1481 New: {isConnected: true, roomId: 'E53318', playerName: 'Andy', phase: 'declaration', currentRound: 1, …}
+GameService.ts:1482 Diff: {phase: {…}, players: {…}, declarationOrder: {…}, lastEventSequence: {…}, currentTotal: {…}, …}
+DeclarationContent.jsx:136 Declaration player data: {name: 'Bot 2', score: 0, is_bot: true, is_host: false, zero_declares_in_a_row: 0, …} Type: object
+DeclarationContent.jsx:136 Declaration player data: {name: 'P2', score: 0, is_bot: false, is_host: false, zero_declares_in_a_row: 0, …} Type: object
+DeclarationContent.jsx:136 Declaration player data: {name: 'Bot 4', score: 0, is_bot: true, is_host: false, zero_declares_in_a_row: 0, …} Type: object
+DeclarationContent.jsx:136 Declaration player data: {name: 'Andy', score: 0, is_bot: false, is_host: false, zero_declares_in_a_row: 0, …} Type: object
+GameService.ts:1469 🎮 State Change: NETWORK_EVENT:PHASE_CHANGE
+GameService.ts:1472 Previous: {isConnected: true, roomId: 'E53318', playerName: 'Andy', phase: 'declaration', currentRound: 1, …}
+GameService.ts:1481 New: {isConnected: true, roomId: 'E53318', playerName: 'Andy', phase: 'declaration', currentRound: 1, …}
+GameService.ts:1482 Diff: {currentDeclarer: {…}, lastEventSequence: {…}}
+DeclarationContent.jsx:136 Declaration player data: {name: 'Bot 2', score: 0, is_bot: true, is_host: false, zero_declares_in_a_row: 0, …} Type: object
+DeclarationContent.jsx:136 Declaration player data: {name: 'P2', score: 0, is_bot: false, is_host: false, zero_declares_in_a_row: 0, …} Type: object
+DeclarationContent.jsx:136 Declaration player data: {name: 'Bot 4', score: 0, is_bot: true, is_host: false, zero_declares_in_a_row: 0, …} Type: object
+DeclarationContent.jsx:136 Declaration player data: {name: 'Andy', score: 0, is_bot: false, is_host: false, zero_declares_in_a_row: 0, …} Type: object
+GameService.ts:1469 🎮 State Change: NETWORK_EVENT:PHASE_CHANGE
+GameService.ts:1472 Previous: {isConnected: true, roomId: 'E53318', playerName: 'Andy', phase: 'declaration', currentRound: 1, …}
+GameService.ts:1481 New: {isConnected: true, roomId: 'E53318', playerName: 'Andy', phase: 'declaration', currentRound: 1, …}
+GameService.ts:1482 Diff: {declarations: {…}, currentDeclarer: {…}, lastEventSequence: {…}, currentTotal: {…}, declarationProgress: {…}}
+DeclarationContent.jsx:136 Declaration player data: {name: 'Bot 2', score: 0, is_bot: true, is_host: false, zero_declares_in_a_row: 0, …} Type: object
+DeclarationContent.jsx:136 Declaration player data: {name: 'P2', score: 0, is_bot: false, is_host: false, zero_declares_in_a_row: 0, …} Type: object
+DeclarationContent.jsx:136 Declaration player data: {name: 'Bot 4', score: 0, is_bot: true, is_host: false, zero_declares_in_a_row: 0, …} Type: object
+DeclarationContent.jsx:136 Declaration player data: {name: 'Andy', score: 0, is_bot: false, is_host: false, zero_declares_in_a_row: 0, …} Type: object
+GameService.ts:1469 🎮 State Change: NETWORK_EVENT:PHASE_CHANGE
+GameService.ts:1472 Previous: {isConnected: true, roomId: 'E53318', playerName: 'Andy', phase: 'declaration', currentRound: 1, …}
+GameService.ts:1481 New: {isConnected: true, roomId: 'E53318', playerName: 'Andy', phase: 'declaration', currentRound: 1, …}
+GameService.ts:1482 Diff: {players: {…}, declarations: {…}, currentDeclarer: {…}, lastEventSequence: {…}, currentTotal: {…}, …}
+DeclarationContent.jsx:136 Declaration player data: {name: 'Bot 2', score: 0, is_bot: true, is_host: false, zero_declares_in_a_row: 0, …} Type: object
+DeclarationContent.jsx:136 Declaration player data: {name: 'P2', score: 0, is_bot: false, is_host: false, zero_declares_in_a_row: 0, …} Type: object
+DeclarationContent.jsx:136 Declaration player data: {name: 'Bot 4', score: 0, is_bot: true, is_host: false, zero_declares_in_a_row: 0, …} Type: object
+DeclarationContent.jsx:136 Declaration player data: {name: 'Andy', score: 0, is_bot: false, is_host: false, zero_declares_in_a_row: 0, …} Type: object
+GameService.ts:1469 🎮 State Change: NETWORK_EVENT:PHASE_CHANGE
+GameService.ts:1472 Previous: {isConnected: true, roomId: 'E53318', playerName: 'Andy', phase: 'declaration', currentRound: 1, …}
+GameService.ts:1481 New: {isConnected: true, roomId: 'E53318', playerName: 'Andy', phase: 'declaration', currentRound: 1, …}
+GameService.ts:1482 Diff: {players: {…}, declarations: {…}, currentDeclarer: {…}, isMyTurn: {…}, allowedActions: {…}, …}
+DeclarationContent.jsx:136 Declaration player data: {name: 'Bot 2', score: 0, is_bot: true, is_host: false, zero_declares_in_a_row: 0, …} Type: object
+DeclarationContent.jsx:136 Declaration player data: {name: 'P2', score: 0, is_bot: false, is_host: false, zero_declares_in_a_row: 0, …} Type: object
+DeclarationContent.jsx:136 Declaration player data: {name: 'Bot 4', score: 0, is_bot: true, is_host: false, zero_declares_in_a_row: 0, …} Type: object
+DeclarationContent.jsx:136 Declaration player data: {name: 'Andy', score: 0, is_bot: false, is_host: false, zero_declares_in_a_row: 0, …} Type: object
+DeclarationContent.jsx:136 Declaration player data: {name: 'Bot 2', score: 0, is_bot: true, is_host: false, zero_declares_in_a_row: 0, …} Type: object
+DeclarationContent.jsx:136 Declaration player data: {name: 'P2', score: 0, is_bot: false, is_host: false, zero_declares_in_a_row: 0, …} Type: object
+DeclarationContent.jsx:136 Declaration player data: {name: 'Bot 4', score: 0, is_bot: true, is_host: false, zero_declares_in_a_row: 0, …} Type: object
+DeclarationContent.jsx:136 Declaration player data: {name: 'Andy', score: 0, is_bot: false, is_host: false, zero_declares_in_a_row: 0, …} Type: object
+DeclarationContent.jsx:136 Declaration player data: {name: 'Bot 2', score: 0, is_bot: true, is_host: false, zero_declares_in_a_row: 0, …} Type: object
+DeclarationContent.jsx:136 Declaration player data: {name: 'P2', score: 0, is_bot: false, is_host: false, zero_declares_in_a_row: 0, …} Type: object
+DeclarationContent.jsx:136 Declaration player data: {name: 'Bot 4', score: 0, is_bot: true, is_host: false, zero_declares_in_a_row: 0, …} Type: object
+DeclarationContent.jsx:136 Declaration player data: {name: 'Andy', score: 0, is_bot: false, is_host: false, zero_declares_in_a_row: 0, …} Type: object
+GameService.ts:1435 🎮 Action sent: declare {value: 4, player_name: 'Andy'}
+DeclarationContent.jsx:136 Declaration player data: {name: 'Bot 2', score: 0, is_bot: true, is_host: false, zero_declares_in_a_row: 0, …} Type: object
+DeclarationContent.jsx:136 Declaration player data: {name: 'P2', score: 0, is_bot: false, is_host: false, zero_declares_in_a_row: 0, …} Type: object
+DeclarationContent.jsx:136 Declaration player data: {name: 'Bot 4', score: 0, is_bot: true, is_host: false, zero_declares_in_a_row: 0, …} Type: object
+DeclarationContent.jsx:136 Declaration player data: {name: 'Andy', score: 0, is_bot: false, is_host: false, zero_declares_in_a_row: 0, …} Type: object
+GameService.ts:1469 🎮 State Change: NETWORK_EVENT:PHASE_CHANGE
+GameService.ts:1472 Previous: {isConnected: true, roomId: 'E53318', playerName: 'Andy', phase: 'declaration', currentRound: 1, …}
+GameService.ts:1481 New: {isConnected: true, roomId: 'E53318', playerName: 'Andy', phase: 'declaration', currentRound: 1, …}
+GameService.ts:1482 Diff: {players: {…}, declarations: {…}, validOptions: {…}, lastEventSequence: {…}, currentTotal: {…}, …}
+DeclarationContent.jsx:136 Declaration player data: {name: 'Bot 2', score: 0, is_bot: true, is_host: false, zero_declares_in_a_row: 0, …} Type: object
+DeclarationContent.jsx:136 Declaration player data: {name: 'P2', score: 0, is_bot: false, is_host: false, zero_declares_in_a_row: 0, …} Type: object
+DeclarationContent.jsx:136 Declaration player data: {name: 'Bot 4', score: 0, is_bot: true, is_host: false, zero_declares_in_a_row: 0, …} Type: object
+DeclarationContent.jsx:136 Declaration player data: {name: 'Andy', score: 0, is_bot: false, is_host: false, zero_declares_in_a_row: 0, …} Type: object
+GameService.ts:1469 🎮 State Change: NETWORK_EVENT:PHASE_CHANGE
+GameService.ts:1472 Previous: {isConnected: true, roomId: 'E53318', playerName: 'Andy', phase: 'declaration', currentRound: 1, …}
+GameService.ts:1481 New: {isConnected: true, roomId: 'E53318', playerName: 'Andy', phase: 'turn', currentRound: 1, …}
+GameService.ts:1482 Diff: {phase: {…}, players: {…}, currentTurnStarter: {…}, turnOrder: {…}, currentPlayer: {…}, …}
+TurnUI.jsx:34 [TurnUI] Building playerPieces from currentTurnPlays: []
+TurnUI.jsx:81 [TurnUI] No valid plays found, returning empty play type
+TurnContent.jsx:266 Turn player data: {name: 'Andy', score: 0, is_bot: false, is_host: false, zero_declares_in_a_row: 0, …} is_bot: false
+TurnContent.jsx:266 Turn player data: {name: 'Bot 2', score: 0, is_bot: true, is_host: false, zero_declares_in_a_row: 0, …} is_bot: true
+TurnContent.jsx:266 Turn player data: {name: 'P2', score: 0, is_bot: false, is_host: false, zero_declares_in_a_row: 0, …} is_bot: false
+TurnContent.jsx:266 Turn player data: {name: 'Bot 4', score: 0, is_bot: true, is_host: false, zero_declares_in_a_row: 0, …} is_bot: true
+TurnContent.jsx:266 Turn player data: {name: 'Andy', score: 0, is_bot: false, is_host: false, zero_declares_in_a_row: 0, …} is_bot: false
+TurnContent.jsx:266 Turn player data: {name: 'Bot 2', score: 0, is_bot: true, is_host: false, zero_declares_in_a_row: 0, …} is_bot: true
+TurnContent.jsx:266 Turn player data: {name: 'P2', score: 0, is_bot: false, is_host: false, zero_declares_in_a_row: 0, …} is_bot: false
+TurnContent.jsx:266 Turn player data: {name: 'Bot 4', score: 0, is_bot: true, is_host: false, zero_declares_in_a_row: 0, …} is_bot: true
+GameService.ts:1469 🎮 State Change: NETWORK_EVENT:PHASE_CHANGE
+GameService.ts:1472 Previous: {isConnected: true, roomId: 'E53318', playerName: 'Andy', phase: 'turn', currentRound: 1, …}
+GameService.ts:1481 New: {isConnected: true, roomId: 'E53318', playerName: 'Andy', phase: 'turn', currentRound: 1, …}
+GameService.ts:1482 Diff: {players: {…}, currentPlayer: {…}, currentTurnPlays: {…}, requiredPieceCount: {…}, lastEventSequence: {…}, …}
+TurnUI.jsx:34 [TurnUI] Building playerPieces from currentTurnPlays: [{…}]
+TurnUI.jsx:44 [TurnUI] Turn play 1: {player: 'Bot 2', hasPieces: true, hasCards: false, playType: 'STRAIGHT', isValid: true, …}
+TurnContent.jsx:266 Turn player data: {name: 'Andy', score: 0, is_bot: false, is_host: false, zero_declares_in_a_row: 0, …} is_bot: false
+TurnContent.jsx:266 Turn player data: {name: 'Bot 2', score: 0, is_bot: true, is_host: false, zero_declares_in_a_row: 0, …} is_bot: true
+TurnContent.jsx:266 Turn player data: {name: 'P2', score: 0, is_bot: false, is_host: false, zero_declares_in_a_row: 0, …} is_bot: false
+TurnContent.jsx:266 Turn player data: {name: 'Bot 4', score: 0, is_bot: true, is_host: false, zero_declares_in_a_row: 0, …} is_bot: true
+TurnUI.jsx:34 [TurnUI] Building playerPieces from currentTurnPlays: [{…}]
+TurnUI.jsx:44 [TurnUI] Turn play 1: {player: 'Bot 2', hasPieces: true, hasCards: false, playType: 'STRAIGHT', isValid: true, …}
+TurnContent.jsx:266 Turn player data: {name: 'Andy', score: 0, is_bot: false, is_host: false, zero_declares_in_a_row: 0, …} is_bot: false
+TurnContent.jsx:266 Turn player data: {name: 'Bot 2', score: 0, is_bot: true, is_host: false, zero_declares_in_a_row: 0, …} is_bot: true
+TurnContent.jsx:266 Turn player data: {name: 'P2', score: 0, is_bot: false, is_host: false, zero_declares_in_a_row: 0, …} is_bot: false
+TurnContent.jsx:266 Turn player data: {name: 'Bot 4', score: 0, is_bot: true, is_host: false, zero_declares_in_a_row: 0, …} is_bot: true
+GameService.ts:1469 🎮 State Change: NETWORK_EVENT:PHASE_CHANGE
+GameService.ts:1472 Previous: {isConnected: true, roomId: 'E53318', playerName: 'Andy', phase: 'turn', currentRound: 1, …}
+GameService.ts:1481 New: {isConnected: true, roomId: 'E53318', playerName: 'Andy', phase: 'turn', currentRound: 1, …}
+GameService.ts:1482 Diff: {players: {…}, currentPlayer: {…}, currentTurnPlays: {…}, lastEventSequence: {…}}
+TurnUI.jsx:34 [TurnUI] Building playerPieces from currentTurnPlays: (2) [{…}, {…}]
+TurnUI.jsx:44 [TurnUI] Turn play 1: {player: 'Bot 2', hasPieces: true, hasCards: false, playType: 'STRAIGHT', isValid: true, …}
+TurnUI.jsx:44 [TurnUI] Turn play 2: {player: 'P2', hasPieces: true, hasCards: false, playType: 'INVALID', isValid: false, …}
+TurnContent.jsx:266 Turn player data: {name: 'Andy', score: 0, is_bot: false, is_host: false, zero_declares_in_a_row: 0, …} is_bot: false
+TurnContent.jsx:266 Turn player data: {name: 'Bot 2', score: 0, is_bot: true, is_host: false, zero_declares_in_a_row: 0, …} is_bot: true
+TurnContent.jsx:266 Turn player data: {name: 'P2', score: 0, is_bot: false, is_host: false, zero_declares_in_a_row: 0, …} is_bot: false
+TurnContent.jsx:266 Turn player data: {name: 'Bot 4', score: 0, is_bot: true, is_host: false, zero_declares_in_a_row: 0, …} is_bot: true
+GameService.ts:1469 🎮 State Change: NETWORK_EVENT:PHASE_CHANGE
+GameService.ts:1472 Previous: {isConnected: true, roomId: 'E53318', playerName: 'Andy', phase: 'turn', currentRound: 1, …}
+GameService.ts:1481 New: {isConnected: true, roomId: 'E53318', playerName: 'Andy', phase: 'turn', currentRound: 1, …}
+GameService.ts:1482 Diff: {players: {…}, currentPlayer: {…}, currentTurnPlays: {…}, isMyTurn: {…}, allowedActions: {…}, …}
+TurnUI.jsx:34 [TurnUI] Building playerPieces from currentTurnPlays: (3) [{…}, {…}, {…}]
+TurnUI.jsx:44 [TurnUI] Turn play 1: {player: 'Bot 2', hasPieces: true, hasCards: false, playType: 'STRAIGHT', isValid: true, …}
+TurnUI.jsx:44 [TurnUI] Turn play 2: {player: 'P2', hasPieces: true, hasCards: false, playType: 'INVALID', isValid: false, …}
+TurnUI.jsx:44 [TurnUI] Turn play 3: {player: 'Bot 4', hasPieces: true, hasCards: false, playType: 'THREE_OF_A_KIND', isValid: true, …}
+TurnContent.jsx:266 Turn player data: {name: 'Andy', score: 0, is_bot: false, is_host: false, zero_declares_in_a_row: 0, …} is_bot: false
+TurnContent.jsx:266 Turn player data: {name: 'Bot 2', score: 0, is_bot: true, is_host: false, zero_declares_in_a_row: 0, …} is_bot: true
+TurnContent.jsx:266 Turn player data: {name: 'P2', score: 0, is_bot: false, is_host: false, zero_declares_in_a_row: 0, …} is_bot: false
+TurnContent.jsx:266 Turn player data: {name: 'Bot 4', score: 0, is_bot: true, is_host: false, zero_declares_in_a_row: 0, …} is_bot: true
+TurnUI.jsx:34 [TurnUI] Building playerPieces from currentTurnPlays: (3) [{…}, {…}, {…}]
+TurnUI.jsx:44 [TurnUI] Turn play 1: {player: 'Bot 2', hasPieces: true, hasCards: false, playType: 'STRAIGHT', isValid: true, …}
+TurnUI.jsx:44 [TurnUI] Turn play 2: {player: 'P2', hasPieces: true, hasCards: false, playType: 'INVALID', isValid: false, …}
+TurnUI.jsx:44 [TurnUI] Turn play 3: {player: 'Bot 4', hasPieces: true, hasCards: false, playType: 'THREE_OF_A_KIND', isValid: true, …}
+TurnContent.jsx:266 Turn player data: {name: 'Andy', score: 0, is_bot: false, is_host: false, zero_declares_in_a_row: 0, …} is_bot: false
+TurnContent.jsx:266 Turn player data: {name: 'Bot 2', score: 0, is_bot: true, is_host: false, zero_declares_in_a_row: 0, …} is_bot: true
+TurnContent.jsx:266 Turn player data: {name: 'P2', score: 0, is_bot: false, is_host: false, zero_declares_in_a_row: 0, …} is_bot: false
+TurnContent.jsx:266 Turn player data: {name: 'Bot 4', score: 0, is_bot: true, is_host: false, zero_declares_in_a_row: 0, …} is_bot: true
+TurnContent.jsx:266 Turn player data: {name: 'Andy', score: 0, is_bot: false, is_host: false, zero_declares_in_a_row: 0, …} is_bot: false
+TurnContent.jsx:266 Turn player data: {name: 'Bot 2', score: 0, is_bot: true, is_host: false, zero_declares_in_a_row: 0, …} is_bot: true
+TurnContent.jsx:266 Turn player data: {name: 'P2', score: 0, is_bot: false, is_host: false, zero_declares_in_a_row: 0, …} is_bot: false
+TurnContent.jsx:266 Turn player data: {name: 'Bot 4', score: 0, is_bot: true, is_host: false, zero_declares_in_a_row: 0, …} is_bot: true
+TurnContent.jsx:266 Turn player data: {name: 'Andy', score: 0, is_bot: false, is_host: false, zero_declares_in_a_row: 0, …} is_bot: false
+TurnContent.jsx:266 Turn player data: {name: 'Bot 2', score: 0, is_bot: true, is_host: false, zero_declares_in_a_row: 0, …} is_bot: true
+TurnContent.jsx:266 Turn player data: {name: 'P2', score: 0, is_bot: false, is_host: false, zero_declares_in_a_row: 0, …} is_bot: false
+TurnContent.jsx:266 Turn player data: {name: 'Bot 4', score: 0, is_bot: true, is_host: false, zero_declares_in_a_row: 0, …} is_bot: true
+TurnContent.jsx:266 Turn player data: {name: 'Andy', score: 0, is_bot: false, is_host: false, zero_declares_in_a_row: 0, …} is_bot: false
+TurnContent.jsx:266 Turn player data: {name: 'Bot 2', score: 0, is_bot: true, is_host: false, zero_declares_in_a_row: 0, …} is_bot: true
+TurnContent.jsx:266 Turn player data: {name: 'P2', score: 0, is_bot: false, is_host: false, zero_declares_in_a_row: 0, …} is_bot: false
+TurnContent.jsx:266 Turn player data: {name: 'Bot 4', score: 0, is_bot: true, is_host: false, zero_declares_in_a_row: 0, …} is_bot: true
+TurnContent.jsx:266 Turn player data: {name: 'Andy', score: 0, is_bot: false, is_host: false, zero_declares_in_a_row: 0, …} is_bot: false
+TurnContent.jsx:266 Turn player data: {name: 'Bot 2', score: 0, is_bot: true, is_host: false, zero_declares_in_a_row: 0, …} is_bot: true
+TurnContent.jsx:266 Turn player data: {name: 'P2', score: 0, is_bot: false, is_host: false, zero_declares_in_a_row: 0, …} is_bot: false
+TurnContent.jsx:266 Turn player data: {name: 'Bot 4', score: 0, is_bot: true, is_host: false, zero_declares_in_a_row: 0, …} is_bot: true
+TurnContent.jsx:266 Turn player data: {name: 'Andy', score: 0, is_bot: false, is_host: false, zero_declares_in_a_row: 0, …} is_bot: false
+TurnContent.jsx:266 Turn player data: {name: 'Bot 2', score: 0, is_bot: true, is_host: false, zero_declares_in_a_row: 0, …} is_bot: true
+TurnContent.jsx:266 Turn player data: {name: 'P2', score: 0, is_bot: false, is_host: false, zero_declares_in_a_row: 0, …} is_bot: false
+TurnContent.jsx:266 Turn player data: {name: 'Bot 4', score: 0, is_bot: true, is_host: false, zero_declares_in_a_row: 0, …} is_bot: true
+gameValidation.js:149 [getPlayType] Analyzing pieces: {count: 3, pieces: '[{"kind":"HORSE","color":"red","value":6},{"kind":…ue":8},{"kind":"CANNON","color":"red","value":4}]'}
+TurnContent.jsx:266 Turn player data: {name: 'Andy', score: 0, is_bot: false, is_host: false, zero_declares_in_a_row: 0, …} is_bot: false
+TurnContent.jsx:266 Turn player data: {name: 'Bot 2', score: 0, is_bot: true, is_host: false, zero_declares_in_a_row: 0, …} is_bot: true
+TurnContent.jsx:266 Turn player data: {name: 'P2', score: 0, is_bot: false, is_host: false, zero_declares_in_a_row: 0, …} is_bot: false
+TurnContent.jsx:266 Turn player data: {name: 'Bot 4', score: 0, is_bot: true, is_host: false, zero_declares_in_a_row: 0, …} is_bot: true
+gameValidation.js:149 [getPlayType] Analyzing pieces: {count: 3, pieces: '[{"kind":"HORSE","color":"red","value":6},{"kind":…ue":8},{"kind":"CANNON","color":"red","value":4}]'}
+GameService.ts:1435 🎮 Action sent: play {piece_indices: Array(3), player_name: 'Andy', play_value: 18}
+TurnUI.jsx:34 [TurnUI] Building playerPieces from currentTurnPlays: (3) [{…}, {…}, {…}]
+TurnUI.jsx:44 [TurnUI] Turn play 1: {player: 'Bot 2', hasPieces: true, hasCards: false, playType: 'STRAIGHT', isValid: true, …}
+TurnUI.jsx:44 [TurnUI] Turn play 2: {player: 'P2', hasPieces: true, hasCards: false, playType: 'INVALID', isValid: false, …}
+TurnUI.jsx:44 [TurnUI] Turn play 3: {player: 'Bot 4', hasPieces: true, hasCards: false, playType: 'THREE_OF_A_KIND', isValid: true, …}
+TurnContent.jsx:266 Turn player data: {name: 'Andy', score: 0, is_bot: false, is_host: false, zero_declares_in_a_row: 0, …} is_bot: false
+TurnContent.jsx:266 Turn player data: {name: 'Bot 2', score: 0, is_bot: true, is_host: false, zero_declares_in_a_row: 0, …} is_bot: true
+TurnContent.jsx:266 Turn player data: {name: 'P2', score: 0, is_bot: false, is_host: false, zero_declares_in_a_row: 0, …} is_bot: false
+TurnContent.jsx:266 Turn player data: {name: 'Bot 4', score: 0, is_bot: true, is_host: false, zero_declares_in_a_row: 0, …} is_bot: true
+TurnContent.jsx:266 Turn player data: {name: 'Andy', score: 0, is_bot: false, is_host: false, zero_declares_in_a_row: 0, …} is_bot: false
+TurnContent.jsx:266 Turn player data: {name: 'Bot 2', score: 0, is_bot: true, is_host: false, zero_declares_in_a_row: 0, …} is_bot: true
+TurnContent.jsx:266 Turn player data: {name: 'P2', score: 0, is_bot: false, is_host: false, zero_declares_in_a_row: 0, …} is_bot: false
+TurnContent.jsx:266 Turn player data: {name: 'Bot 4', score: 0, is_bot: true, is_host: false, zero_declares_in_a_row: 0, …} is_bot: true
+GameService.ts:1469 🎮 State Change: NETWORK_EVENT:PHASE_CHANGE
+GameService.ts:1472 Previous: {isConnected: true, roomId: 'E53318', playerName: 'Andy', phase: 'turn', currentRound: 1, …}
+GameService.ts:1481 New: {isConnected: true, roomId: 'E53318', playerName: 'Andy', phase: 'turn', currentRound: 1, …}
+GameService.ts:1482 Diff: {players: {…}, myHand: {…}, currentTurnPlays: {…}, validOptions: {…}, lastEventSequence: {…}}
+TurnUI.jsx:34 [TurnUI] Building playerPieces from currentTurnPlays: (4) [{…}, {…}, {…}, {…}]
+TurnUI.jsx:44 [TurnUI] Turn play 1: {player: 'Bot 2', hasPieces: true, hasCards: false, playType: 'STRAIGHT', isValid: true, …}
+TurnUI.jsx:44 [TurnUI] Turn play 2: {player: 'P2', hasPieces: true, hasCards: false, playType: 'INVALID', isValid: false, …}
+TurnUI.jsx:44 [TurnUI] Turn play 3: {player: 'Bot 4', hasPieces: true, hasCards: false, playType: 'THREE_OF_A_KIND', isValid: true, …}
+TurnUI.jsx:44 [TurnUI] Turn play 4: {player: 'Andy', hasPieces: true, hasCards: false, playType: 'STRAIGHT', isValid: true, …}
+TurnContent.jsx:266 Turn player data: {name: 'Andy', score: 0, is_bot: false, is_host: false, zero_declares_in_a_row: 0, …} is_bot: false
+TurnContent.jsx:266 Turn player data: {name: 'Bot 2', score: 0, is_bot: true, is_host: false, zero_declares_in_a_row: 0, …} is_bot: true
+TurnContent.jsx:266 Turn player data: {name: 'P2', score: 0, is_bot: false, is_host: false, zero_declares_in_a_row: 0, …} is_bot: false
+TurnContent.jsx:266 Turn player data: {name: 'Bot 4', score: 0, is_bot: true, is_host: false, zero_declares_in_a_row: 0, …} is_bot: true
+TurnContent.jsx:71 [TurnContent] Determining pieces to reveal: {playType: 'STRAIGHT', lastWinner: 'Bot 2', playerPieces: {…}}
+playTypeMatching.js:70 [determinePiecesToReveal] Input: {playerPieces: {…}, starterPlayType: 'STRAIGHT', starterName: 'Bot 2'}
+playTypeMatching.js:113 [determinePiecesToReveal] Checking player: Bot 2 {pieces: Array(3), pieceCount: 3}
+playTypeMatching.js:142 [determinePiecesToReveal] Bot 2 is the starter, revealing all pieces
+playTypeMatching.js:113 [determinePiecesToReveal] Checking player: P2 {pieces: Array(3), pieceCount: 3}
+gameValidation.js:203 [doesPlayMatchStarterType] Input: {starterPlayType: 'STRAIGHT', pieceCount: 3, pieceDetails: '[{"kind":"ADVISOR","color":"black","value":11},{"k…:9},{"kind":"SOLDIER","color":"black","value":1}]'}
+gameValidation.js:149 [getPlayType] Analyzing pieces: {count: 3, pieces: '[{"kind":"ADVISOR","color":"black","value":11},{"k…:9},{"kind":"SOLDIER","color":"black","value":1}]'}
+playTypeMatching.js:38 [doesPlayMatchStarterType] Player play type: null
+playTypeMatching.js:45 [doesPlayMatchStarterType] Invalid/unknown play type, returning false
+playTypeMatching.js:150 [determinePiecesToReveal] P2 matches starter type: false
+playTypeMatching.js:113 [determinePiecesToReveal] Checking player: Bot 4 {pieces: Array(3), pieceCount: 3}
+gameValidation.js:203 [doesPlayMatchStarterType] Input: {starterPlayType: 'STRAIGHT', pieceCount: 3, pieceDetails: '[{"kind":"SOLDIER","color":"black","value":1},{"ki…:1},{"kind":"SOLDIER","color":"black","value":1}]'}
+gameValidation.js:149 [getPlayType] Analyzing pieces: {count: 3, pieces: '[{"kind":"SOLDIER","color":"black","value":1},{"ki…:1},{"kind":"SOLDIER","color":"black","value":1}]'}
+playTypeMatching.js:38 [doesPlayMatchStarterType] Player play type: THREE_OF_A_KIND
+playTypeMatching.js:62 [doesPlayMatchStarterType] Comparison result: {playerPlayType: 'THREE_OF_A_KIND', starterPlayType: 'STRAIGHT', matches: false}
+playTypeMatching.js:150 [determinePiecesToReveal] Bot 4 matches starter type: false
+playTypeMatching.js:113 [determinePiecesToReveal] Checking player: Andy {pieces: Array(3), pieceCount: 3}
+gameValidation.js:203 [doesPlayMatchStarterType] Input: {starterPlayType: 'STRAIGHT', pieceCount: 3, pieceDetails: '[{"kind":"HORSE","color":"red","value":6},{"kind":…ue":8},{"kind":"CANNON","color":"red","value":4}]'}
+gameValidation.js:149 [getPlayType] Analyzing pieces: {count: 3, pieces: '[{"kind":"HORSE","color":"red","value":6},{"kind":…ue":8},{"kind":"CANNON","color":"red","value":4}]'}
+playTypeMatching.js:38 [doesPlayMatchStarterType] Player play type: STRAIGHT
+playTypeMatching.js:62 [doesPlayMatchStarterType] Comparison result: {playerPlayType: 'STRAIGHT', starterPlayType: 'STRAIGHT', matches: true}
+playTypeMatching.js:150 [determinePiecesToReveal] Andy matches starter type: true
+playTypeMatching.js:161 [determinePiecesToReveal] Final pieces to reveal: (6) ['Bot 2-0', 'Bot 2-1', 'Bot 2-2', 'Andy-0', 'Andy-1', 'Andy-2']
+TurnContent.jsx:82 [TurnContent] Pieces to reveal: Set(6) {'Bot 2-0', 'Bot 2-1', 'Bot 2-2', 'Andy-0', 'Andy-1', …}
+TurnContent.jsx:266 Turn player data: {name: 'Andy', score: 0, is_bot: false, is_host: false, zero_declares_in_a_row: 0, …} is_bot: false
+TurnContent.jsx:266 Turn player data: {name: 'Bot 2', score: 0, is_bot: true, is_host: false, zero_declares_in_a_row: 0, …} is_bot: true
+TurnContent.jsx:266 Turn player data: {name: 'P2', score: 0, is_bot: false, is_host: false, zero_declares_in_a_row: 0, …} is_bot: false
+TurnContent.jsx:266 Turn player data: {name: 'Bot 4', score: 0, is_bot: true, is_host: false, zero_declares_in_a_row: 0, …} is_bot: true
+GameService.ts:1469 🎮 State Change: NETWORK_EVENT:PHASE_CHANGE
+GameService.ts:1472 Previous: {isConnected: true, roomId: 'E53318', playerName: 'Andy', phase: 'turn', currentRound: 1, …}
+GameService.ts:1481 New: {isConnected: true, roomId: 'E53318', playerName: 'Andy', phase: 'turn', currentRound: 1, …}
+GameService.ts:1482 Diff: {players: {…}, lastEventSequence: {…}, pileCounts: {…}}
+TurnUI.jsx:34 [TurnUI] Building playerPieces from currentTurnPlays: (4) [{…}, {…}, {…}, {…}]
+TurnUI.jsx:44 [TurnUI] Turn play 1: {player: 'Bot 2', hasPieces: true, hasCards: false, playType: 'STRAIGHT', isValid: true, …}
+TurnUI.jsx:44 [TurnUI] Turn play 2: {player: 'P2', hasPieces: true, hasCards: false, playType: 'INVALID', isValid: false, …}
+TurnUI.jsx:44 [TurnUI] Turn play 3: {player: 'Bot 4', hasPieces: true, hasCards: false, playType: 'THREE_OF_A_KIND', isValid: true, …}
+TurnUI.jsx:44 [TurnUI] Turn play 4: {player: 'Andy', hasPieces: true, hasCards: false, playType: 'STRAIGHT', isValid: true, …}
+TurnContent.jsx:266 Turn player data: {name: 'Andy', score: 0, is_bot: false, is_host: false, zero_declares_in_a_row: 0, …} is_bot: false
+TurnContent.jsx:266 Turn player data: {name: 'Bot 2', score: 0, is_bot: true, is_host: false, zero_declares_in_a_row: 0, …} is_bot: true
+TurnContent.jsx:266 Turn player data: {name: 'P2', score: 0, is_bot: false, is_host: false, zero_declares_in_a_row: 0, …} is_bot: false
+TurnContent.jsx:266 Turn player data: {name: 'Bot 4', score: 0, is_bot: true, is_host: false, zero_declares_in_a_row: 0, …} is_bot: true
+GameService.ts:1469 🎮 State Change: NETWORK_EVENT:TURN_COMPLETE
+GameService.ts:1472 Previous: {isConnected: true, roomId: 'E53318', playerName: 'Andy', phase: 'turn', currentRound: 1, …}
+GameService.ts:1481 New: {isConnected: true, roomId: 'E53318', playerName: 'Andy', phase: 'turn_results', currentRound: 1, …}
+GameService.ts:1482 Diff: {phase: {…}, players: {…}, turnWinner: {…}, winningPlay: {…}, playerPiles: {…}, …}
+TurnResultsUI.jsx:27 [TurnResultsUI] Building playerPlays from currentTurnPlays: (4) [{…}, {…}, {…}, {…}]
+TurnResultsUI.jsx:39 [TurnResultsUI] Turn play 1: {player: 'Bot 2', hasPieces: true, hasCards: false, playType: 'STRAIGHT', isValid: true, …}
+TurnResultsUI.jsx:39 [TurnResultsUI] Turn play 2: {player: 'P2', hasPieces: true, hasCards: false, playType: 'INVALID', isValid: false, …}
+TurnResultsUI.jsx:39 [TurnResultsUI] Turn play 3: {player: 'Bot 4', hasPieces: true, hasCards: false, playType: 'THREE_OF_A_KIND', isValid: true, …}
+TurnResultsUI.jsx:39 [TurnResultsUI] Turn play 4: {player: 'Andy', hasPieces: true, hasCards: false, playType: 'STRAIGHT', isValid: true, …}
+TurnResultsUI.jsx:71 [TurnResultsUI] Extracting starter info: {currentTurnPlays: Array(4), starterPlay: undefined, starterName: 'Bot 2', starterPlayType: 'STRAIGHT', winningPlay: {…}}
+TurnResultsContent.jsx:57 [TurnResultsContent] Determining pieces to reveal: {effectiveStarterPlayType: 'STRAIGHT', starterName: 'Bot 2', winner: 'Bot 2', playerPiecesMap: {…}}
+playTypeMatching.js:70 [determinePiecesToReveal] Input: {playerPieces: {…}, starterPlayType: 'STRAIGHT', starterName: 'Bot 2'}
+playTypeMatching.js:113 [determinePiecesToReveal] Checking player: Andy {pieces: Array(3), pieceCount: 3}
+gameValidation.js:203 [doesPlayMatchStarterType] Input: {starterPlayType: 'STRAIGHT', pieceCount: 3, pieceDetails: '[{"kind":"HORSE","color":"red","value":6},{"kind":…ue":8},{"kind":"CANNON","color":"red","value":4}]'}
+gameValidation.js:149 [getPlayType] Analyzing pieces: {count: 3, pieces: '[{"kind":"HORSE","color":"red","value":6},{"kind":…ue":8},{"kind":"CANNON","color":"red","value":4}]'}
+playTypeMatching.js:38 [doesPlayMatchStarterType] Player play type: STRAIGHT
+playTypeMatching.js:62 [doesPlayMatchStarterType] Comparison result: {playerPlayType: 'STRAIGHT', starterPlayType: 'STRAIGHT', matches: true}
+playTypeMatching.js:150 [determinePiecesToReveal] Andy matches starter type: true
+playTypeMatching.js:113 [determinePiecesToReveal] Checking player: Bot 2 {pieces: Array(3), pieceCount: 3}
+playTypeMatching.js:142 [determinePiecesToReveal] Bot 2 is the starter, revealing all pieces
+playTypeMatching.js:113 [determinePiecesToReveal] Checking player: P2 {pieces: Array(3), pieceCount: 3}
+gameValidation.js:203 [doesPlayMatchStarterType] Input: {starterPlayType: 'STRAIGHT', pieceCount: 3, pieceDetails: '[{"kind":"ADVISOR","color":"black","value":11},{"k…:9},{"kind":"SOLDIER","color":"black","value":1}]'}
+gameValidation.js:149 [getPlayType] Analyzing pieces: {count: 3, pieces: '[{"kind":"ADVISOR","color":"black","value":11},{"k…:9},{"kind":"SOLDIER","color":"black","value":1}]'}
+playTypeMatching.js:38 [doesPlayMatchStarterType] Player play type: null
+playTypeMatching.js:45 [doesPlayMatchStarterType] Invalid/unknown play type, returning false
+playTypeMatching.js:150 [determinePiecesToReveal] P2 matches starter type: false
+playTypeMatching.js:113 [determinePiecesToReveal] Checking player: Bot 4 {pieces: Array(3), pieceCount: 3}
+gameValidation.js:203 [doesPlayMatchStarterType] Input: {starterPlayType: 'STRAIGHT', pieceCount: 3, pieceDetails: '[{"kind":"SOLDIER","color":"black","value":1},{"ki…:1},{"kind":"SOLDIER","color":"black","value":1}]'}
+gameValidation.js:149 [getPlayType] Analyzing pieces: {count: 3, pieces: '[{"kind":"SOLDIER","color":"black","value":1},{"ki…:1},{"kind":"SOLDIER","color":"black","value":1}]'}
+playTypeMatching.js:38 [doesPlayMatchStarterType] Player play type: THREE_OF_A_KIND
+playTypeMatching.js:62 [doesPlayMatchStarterType] Comparison result: {playerPlayType: 'THREE_OF_A_KIND', starterPlayType: 'STRAIGHT', matches: false}
+playTypeMatching.js:150 [determinePiecesToReveal] Bot 4 matches starter type: false
+playTypeMatching.js:161 [determinePiecesToReveal] Final pieces to reveal: (6) ['Andy-0', 'Andy-1', 'Andy-2', 'Bot 2-0', 'Bot 2-1', 'Bot 2-2']
+TurnResultsContent.jsx:66 [TurnResultsContent] Pieces to reveal: Set(6) {'Andy-0', 'Andy-1', 'Andy-2', 'Bot 2-0', 'Bot 2-1', …}
+GameContainer.jsx:221 Turn results continue requested
+GameService.ts:1469 🎮 State Change: NETWORK_EVENT:PHASE_CHANGE
+GameService.ts:1472 Previous: {isConnected: true, roomId: 'E53318', playerName: 'Andy', phase: 'turn_results', currentRound: 1, …}
+GameService.ts:1481 New: {isConnected: true, roomId: 'E53318', playerName: 'Andy', phase: 'turn', currentRound: 1, …}
+GameService.ts:1482 Diff: {phase: {…}, players: {…}, currentPlayer: {…}, currentTurnPlays: {…}, requiredPieceCount: {…}, …}
+TurnUI.jsx:34 [TurnUI] Building playerPieces from currentTurnPlays: []
+TurnUI.jsx:81 [TurnUI] No valid plays found, returning empty play type
+TurnContent.jsx:266 Turn player data: {name: 'Andy', score: 0, is_bot: false, is_host: false, zero_declares_in_a_row: 0, …} is_bot: false
+TurnContent.jsx:266 Turn player data: {name: 'Bot 2', score: 0, is_bot: true, is_host: false, zero_declares_in_a_row: 0, …} is_bot: true
+TurnContent.jsx:266 Turn player data: {name: 'P2', score: 0, is_bot: false, is_host: false, zero_declares_in_a_row: 0, …} is_bot: false
+TurnContent.jsx:266 Turn player data: {name: 'Bot 4', score: 0, is_bot: true, is_host: false, zero_declares_in_a_row: 0, …} is_bot: true
+TurnContent.jsx:266 Turn player data: {name: 'Andy', score: 0, is_bot: false, is_host: false, zero_declares_in_a_row: 0, …} is_bot: false
+TurnContent.jsx:266 Turn player data: {name: 'Bot 2', score: 0, is_bot: true, is_host: false, zero_declares_in_a_row: 0, …} is_bot: true
+TurnContent.jsx:266 Turn player data: {name: 'P2', score: 0, is_bot: false, is_host: false, zero_declares_in_a_row: 0, …} is_bot: false
+TurnContent.jsx:266 Turn player data: {name: 'Bot 4', score: 0, is_bot: true, is_host: false, zero_declares_in_a_row: 0, …} is_bot: true
+TurnUI.jsx:34 [TurnUI] Building playerPieces from currentTurnPlays: []
+TurnUI.jsx:81 [TurnUI] No valid plays found, returning empty play type
+TurnContent.jsx:266 Turn player data: {name: 'Andy', score: 0, is_bot: false, is_host: false, zero_declares_in_a_row: 0, …} is_bot: false
+TurnContent.jsx:266 Turn player data: {name: 'Bot 2', score: 0, is_bot: true, is_host: false, zero_declares_in_a_row: 0, …} is_bot: true
+TurnContent.jsx:266 Turn player data: {name: 'P2', score: 0, is_bot: false, is_host: false, zero_declares_in_a_row: 0, …} is_bot: false
+TurnContent.jsx:266 Turn player data: {name: 'Bot 4', score: 0, is_bot: true, is_host: false, zero_declares_in_a_row: 0, …} is_bot: true
+GameService.ts:1469 🎮 State Change: NETWORK_EVENT:PHASE_CHANGE
+GameService.ts:1472 Previous: {isConnected: true, roomId: 'E53318', playerName: 'Andy', phase: 'turn', currentRound: 1, …}
+GameService.ts:1481 New: {isConnected: true, roomId: 'E53318', playerName: 'Andy', phase: 'turn', currentRound: 1, …}
+GameService.ts:1482 Diff: {players: {…}, currentPlayer: {…}, currentTurnPlays: {…}, requiredPieceCount: {…}, lastEventSequence: {…}}
+TurnUI.jsx:34 [TurnUI] Building playerPieces from currentTurnPlays: [{…}]
+TurnUI.jsx:44 [TurnUI] Turn play 1: {player: 'Bot 2', hasPieces: true, hasCards: false, playType: 'EXTENDED_STRAIGHT', isValid: true, …}
+TurnContent.jsx:266 Turn player data: {name: 'Andy', score: 0, is_bot: false, is_host: false, zero_declares_in_a_row: 0, …} is_bot: false
+TurnContent.jsx:266 Turn player data: {name: 'Bot 2', score: 0, is_bot: true, is_host: false, zero_declares_in_a_row: 0, …} is_bot: true
+TurnContent.jsx:266 Turn player data: {name: 'P2', score: 0, is_bot: false, is_host: false, zero_declares_in_a_row: 0, …} is_bot: false
+TurnContent.jsx:266 Turn player data: {name: 'Bot 4', score: 0, is_bot: true, is_host: false, zero_declares_in_a_row: 0, …} is_bot: true
+bundle.js:1 [Violation] 'message' handler took 268ms
+TurnUI.jsx:34 [TurnUI] Building playerPieces from currentTurnPlays: [{…}]
+TurnUI.jsx:44 [TurnUI] Turn play 1: {player: 'Bot 2', hasPieces: true, hasCards: false, playType: 'EXTENDED_STRAIGHT', isValid: true, …}
+TurnContent.jsx:266 Turn player data: {name: 'Andy', score: 0, is_bot: false, is_host: false, zero_declares_in_a_row: 0, …} is_bot: false
+TurnContent.jsx:266 Turn player data: {name: 'Bot 2', score: 0, is_bot: true, is_host: false, zero_declares_in_a_row: 0, …} is_bot: true
+TurnContent.jsx:266 Turn player data: {name: 'P2', score: 0, is_bot: false, is_host: false, zero_declares_in_a_row: 0, …} is_bot: false
+TurnContent.jsx:266 Turn player data: {name: 'Bot 4', score: 0, is_bot: true, is_host: false, zero_declares_in_a_row: 0, …} is_bot: true
+GameService.ts:1469 🎮 State Change: NETWORK_EVENT:PHASE_CHANGE
+GameService.ts:1472 Previous: {isConnected: true, roomId: 'E53318', playerName: 'Andy', phase: 'turn', currentRound: 1, …}
+GameService.ts:1481 New: {isConnected: true, roomId: 'E53318', playerName: 'Andy', phase: 'turn', currentRound: 1, …}
+GameService.ts:1482 Diff: {players: {…}, currentPlayer: {…}, currentTurnPlays: {…}, lastEventSequence: {…}}
+TurnUI.jsx:34 [TurnUI] Building playerPieces from currentTurnPlays: (2) [{…}, {…}]
+TurnUI.jsx:44 [TurnUI] Turn play 1: {player: 'Bot 2', hasPieces: true, hasCards: false, playType: 'EXTENDED_STRAIGHT', isValid: true, …}
+TurnUI.jsx:44 [TurnUI] Turn play 2: {player: 'P2', hasPieces: true, hasCards: false, playType: 'INVALID', isValid: false, …}
+TurnContent.jsx:266 Turn player data: {name: 'Andy', score: 0, is_bot: false, is_host: false, zero_declares_in_a_row: 0, …} is_bot: false
+TurnContent.jsx:266 Turn player data: {name: 'Bot 2', score: 0, is_bot: true, is_host: false, zero_declares_in_a_row: 0, …} is_bot: true
+TurnContent.jsx:266 Turn player data: {name: 'P2', score: 0, is_bot: false, is_host: false, zero_declares_in_a_row: 0, …} is_bot: false
+TurnContent.jsx:266 Turn player data: {name: 'Bot 4', score: 0, is_bot: true, is_host: false, zero_declares_in_a_row: 0, …} is_bot: true
+GameService.ts:1469 🎮 State Change: NETWORK_EVENT:PHASE_CHANGE
+GameService.ts:1472 Previous: {isConnected: true, roomId: 'E53318', playerName: 'Andy', phase: 'turn', currentRound: 1, …}
+GameService.ts:1481 New: {isConnected: true, roomId: 'E53318', playerName: 'Andy', phase: 'turn', currentRound: 1, …}
+GameService.ts:1482 Diff: {players: {…}, currentPlayer: {…}, currentTurnPlays: {…}, isMyTurn: {…}, allowedActions: {…}, …}
+TurnUI.jsx:34 [TurnUI] Building playerPieces from currentTurnPlays: (3) [{…}, {…}, {…}]
+TurnUI.jsx:44 [TurnUI] Turn play 1: {player: 'Bot 2', hasPieces: true, hasCards: false, playType: 'EXTENDED_STRAIGHT', isValid: true, …}
+TurnUI.jsx:44 [TurnUI] Turn play 2: {player: 'P2', hasPieces: true, hasCards: false, playType: 'INVALID', isValid: false, …}
+TurnUI.jsx:44 [TurnUI] Turn play 3: {player: 'Bot 4', hasPieces: true, hasCards: false, playType: 'INVALID', isValid: false, …}
+TurnContent.jsx:266 Turn player data: {name: 'Andy', score: 0, is_bot: false, is_host: false, zero_declares_in_a_row: 0, …} is_bot: false
+TurnContent.jsx:266 Turn player data: {name: 'Bot 2', score: 0, is_bot: true, is_host: false, zero_declares_in_a_row: 0, …} is_bot: true
+TurnContent.jsx:266 Turn player data: {name: 'P2', score: 0, is_bot: false, is_host: false, zero_declares_in_a_row: 0, …} is_bot: false
+TurnContent.jsx:266 Turn player data: {name: 'Bot 4', score: 0, is_bot: true, is_host: false, zero_declares_in_a_row: 0, …} is_bot: true
+TurnUI.jsx:34 [TurnUI] Building playerPieces from currentTurnPlays: (3) [{…}, {…}, {…}]
+TurnUI.jsx:44 [TurnUI] Turn play 1: {player: 'Bot 2', hasPieces: true, hasCards: false, playType: 'EXTENDED_STRAIGHT', isValid: true, …}
+TurnUI.jsx:44 [TurnUI] Turn play 2: {player: 'P2', hasPieces: true, hasCards: false, playType: 'INVALID', isValid: false, …}
+TurnUI.jsx:44 [TurnUI] Turn play 3: {player: 'Bot 4', hasPieces: true, hasCards: false, playType: 'INVALID', isValid: false, …}
+TurnContent.jsx:266 Turn player data: {name: 'Andy', score: 0, is_bot: false, is_host: false, zero_declares_in_a_row: 0, …} is_bot: false
+TurnContent.jsx:266 Turn player data: {name: 'Bot 2', score: 0, is_bot: true, is_host: false, zero_declares_in_a_row: 0, …} is_bot: true
+TurnContent.jsx:266 Turn player data: {name: 'P2', score: 0, is_bot: false, is_host: false, zero_declares_in_a_row: 0, …} is_bot: false
+TurnContent.jsx:266 Turn player data: {name: 'Bot 4', score: 0, is_bot: true, is_host: false, zero_declares_in_a_row: 0, …} is_bot: true
+TurnUI.jsx:34 [TurnUI] Building playerPieces from currentTurnPlays: (3) [{…}, {…}, {…}]
+TurnUI.jsx:44 [TurnUI] Turn play 1: {player: 'Bot 2', hasPieces: true, hasCards: false, playType: 'EXTENDED_STRAIGHT', isValid: true, …}
+TurnUI.jsx:44 [TurnUI] Turn play 2: {player: 'P2', hasPieces: true, hasCards: false, playType: 'INVALID', isValid: false, …}
+TurnUI.jsx:44 [TurnUI] Turn play 3: {player: 'Bot 4', hasPieces: true, hasCards: false, playType: 'INVALID', isValid: false, …}
+TurnContent.jsx:266 Turn player data: {name: 'Andy', score: 0, is_bot: false, is_host: false, zero_declares_in_a_row: 0, …} is_bot: false
+TurnContent.jsx:266 Turn player data: {name: 'Bot 2', score: 0, is_bot: true, is_host: false, zero_declares_in_a_row: 0, …} is_bot: true
+TurnContent.jsx:266 Turn player data: {name: 'P2', score: 0, is_bot: false, is_host: false, zero_declares_in_a_row: 0, …} is_bot: false
+TurnContent.jsx:266 Turn player data: {name: 'Bot 4', score: 0, is_bot: true, is_host: false, zero_declares_in_a_row: 0, …} is_bot: true
+TurnContent.jsx:266 Turn player data: {name: 'Andy', score: 0, is_bot: false, is_host: false, zero_declares_in_a_row: 0, …} is_bot: false
+TurnContent.jsx:266 Turn player data: {name: 'Bot 2', score: 0, is_bot: true, is_host: false, zero_declares_in_a_row: 0, …} is_bot: true
+TurnContent.jsx:266 Turn player data: {name: 'P2', score: 0, is_bot: false, is_host: false, zero_declares_in_a_row: 0, …} is_bot: false
+TurnContent.jsx:266 Turn player data: {name: 'Bot 4', score: 0, is_bot: true, is_host: false, zero_declares_in_a_row: 0, …} is_bot: true
+TurnContent.jsx:266 Turn player data: {name: 'Andy', score: 0, is_bot: false, is_host: false, zero_declares_in_a_row: 0, …} is_bot: false
+TurnContent.jsx:266 Turn player data: {name: 'Bot 2', score: 0, is_bot: true, is_host: false, zero_declares_in_a_row: 0, …} is_bot: true
+TurnContent.jsx:266 Turn player data: {name: 'P2', score: 0, is_bot: false, is_host: false, zero_declares_in_a_row: 0, …} is_bot: false
+TurnContent.jsx:266 Turn player data: {name: 'Bot 4', score: 0, is_bot: true, is_host: false, zero_declares_in_a_row: 0, …} is_bot: true
+TurnContent.jsx:266 Turn player data: {name: 'Andy', score: 0, is_bot: false, is_host: false, zero_declares_in_a_row: 0, …} is_bot: false
+TurnContent.jsx:266 Turn player data: {name: 'Bot 2', score: 0, is_bot: true, is_host: false, zero_declares_in_a_row: 0, …} is_bot: true
+TurnContent.jsx:266 Turn player data: {name: 'P2', score: 0, is_bot: false, is_host: false, zero_declares_in_a_row: 0, …} is_bot: false
+TurnContent.jsx:266 Turn player data: {name: 'Bot 4', score: 0, is_bot: true, is_host: false, zero_declares_in_a_row: 0, …} is_bot: true
+TurnContent.jsx:266 Turn player data: {name: 'Andy', score: 0, is_bot: false, is_host: false, zero_declares_in_a_row: 0, …} is_bot: false
+TurnContent.jsx:266 Turn player data: {name: 'Bot 2', score: 0, is_bot: true, is_host: false, zero_declares_in_a_row: 0, …} is_bot: true
+TurnContent.jsx:266 Turn player data: {name: 'P2', score: 0, is_bot: false, is_host: false, zero_declares_in_a_row: 0, …} is_bot: false
+TurnContent.jsx:266 Turn player data: {name: 'Bot 4', score: 0, is_bot: true, is_host: false, zero_declares_in_a_row: 0, …} is_bot: true
+TurnContent.jsx:266 Turn player data: {name: 'Andy', score: 0, is_bot: false, is_host: false, zero_declares_in_a_row: 0, …} is_bot: false
+TurnContent.jsx:266 Turn player data: {name: 'Bot 2', score: 0, is_bot: true, is_host: false, zero_declares_in_a_row: 0, …} is_bot: true
+TurnContent.jsx:266 Turn player data: {name: 'P2', score: 0, is_bot: false, is_host: false, zero_declares_in_a_row: 0, …} is_bot: false
+TurnContent.jsx:266 Turn player data: {name: 'Bot 4', score: 0, is_bot: true, is_host: false, zero_declares_in_a_row: 0, …} is_bot: true
+TurnContent.jsx:266 Turn player data: {name: 'Andy', score: 0, is_bot: false, is_host: false, zero_declares_in_a_row: 0, …} is_bot: false
+TurnContent.jsx:266 Turn player data: {name: 'Bot 2', score: 0, is_bot: true, is_host: false, zero_declares_in_a_row: 0, …} is_bot: true
+TurnContent.jsx:266 Turn player data: {name: 'P2', score: 0, is_bot: false, is_host: false, zero_declares_in_a_row: 0, …} is_bot: false
+TurnContent.jsx:266 Turn player data: {name: 'Bot 4', score: 0, is_bot: true, is_host: false, zero_declares_in_a_row: 0, …} is_bot: true
+TurnContent.jsx:266 Turn player data: {name: 'Andy', score: 0, is_bot: false, is_host: false, zero_declares_in_a_row: 0, …} is_bot: false
+TurnContent.jsx:266 Turn player data: {name: 'Bot 2', score: 0, is_bot: true, is_host: false, zero_declares_in_a_row: 0, …} is_bot: true
+TurnContent.jsx:266 Turn player data: {name: 'P2', score: 0, is_bot: false, is_host: false, zero_declares_in_a_row: 0, …} is_bot: false
+TurnContent.jsx:266 Turn player data: {name: 'Bot 4', score: 0, is_bot: true, is_host: false, zero_declares_in_a_row: 0, …} is_bot: true
+gameValidation.js:149 [getPlayType] Analyzing pieces: {count: 4, pieces: '[{"kind":"ELEPHANT","color":"red","value":10},{"ki…ue":6},{"kind":"CANNON","color":"red","value":4}]'}
+gameValidation.js:83 [isFourOfAKind] Check: {firstPieceValue: 10, allPieceValues: Array(4), result: false}
+TurnContent.jsx:266 Turn player data: {name: 'Andy', score: 0, is_bot: false, is_host: false, zero_declares_in_a_row: 0, …} is_bot: false
+TurnContent.jsx:266 Turn player data: {name: 'Bot 2', score: 0, is_bot: true, is_host: false, zero_declares_in_a_row: 0, …} is_bot: true
+TurnContent.jsx:266 Turn player data: {name: 'P2', score: 0, is_bot: false, is_host: false, zero_declares_in_a_row: 0, …} is_bot: false
+TurnContent.jsx:266 Turn player data: {name: 'Bot 4', score: 0, is_bot: true, is_host: false, zero_declares_in_a_row: 0, …} is_bot: true
+gameValidation.js:149 [getPlayType] Analyzing pieces: {count: 4, pieces: '[{"kind":"ELEPHANT","color":"red","value":10},{"ki…ue":6},{"kind":"CANNON","color":"red","value":4}]'}
+gameValidation.js:83 [isFourOfAKind] Check: {firstPieceValue: 10, allPieceValues: Array(4), result: false}
+index.js:2083 [Violation] 'requestAnimationFrame' handler took 62ms
+GameService.ts:1435 🎮 Action sent: play {piece_indices: Array(4), player_name: 'Andy', play_value: 28}
+TurnUI.jsx:34 [TurnUI] Building playerPieces from currentTurnPlays: (3) [{…}, {…}, {…}]
+TurnUI.jsx:44 [TurnUI] Turn play 1: {player: 'Bot 2', hasPieces: true, hasCards: false, playType: 'EXTENDED_STRAIGHT', isValid: true, …}
+TurnUI.jsx:44 [TurnUI] Turn play 2: {player: 'P2', hasPieces: true, hasCards: false, playType: 'INVALID', isValid: false, …}
+TurnUI.jsx:44 [TurnUI] Turn play 3: {player: 'Bot 4', hasPieces: true, hasCards: false, playType: 'INVALID', isValid: false, …}
+TurnContent.jsx:266 Turn player data: {name: 'Andy', score: 0, is_bot: false, is_host: false, zero_declares_in_a_row: 0, …} is_bot: false
+TurnContent.jsx:266 Turn player data: {name: 'Bot 2', score: 0, is_bot: true, is_host: false, zero_declares_in_a_row: 0, …} is_bot: true
+TurnContent.jsx:266 Turn player data: {name: 'P2', score: 0, is_bot: false, is_host: false, zero_declares_in_a_row: 0, …} is_bot: false
+TurnContent.jsx:266 Turn player data: {name: 'Bot 4', score: 0, is_bot: true, is_host: false, zero_declares_in_a_row: 0, …} is_bot: true
+TurnContent.jsx:266 Turn player data: {name: 'Andy', score: 0, is_bot: false, is_host: false, zero_declares_in_a_row: 0, …} is_bot: false
+TurnContent.jsx:266 Turn player data: {name: 'Bot 2', score: 0, is_bot: true, is_host: false, zero_declares_in_a_row: 0, …} is_bot: true
+TurnContent.jsx:266 Turn player data: {name: 'P2', score: 0, is_bot: false, is_host: false, zero_declares_in_a_row: 0, …} is_bot: false
+TurnContent.jsx:266 Turn player data: {name: 'Bot 4', score: 0, is_bot: true, is_host: false, zero_declares_in_a_row: 0, …} is_bot: true
+GameService.ts:1469 🎮 State Change: NETWORK_EVENT:PHASE_CHANGE
+GameService.ts:1472 Previous: {isConnected: true, roomId: 'E53318', playerName: 'Andy', phase: 'turn', currentRound: 1, …}
+GameService.ts:1481 New: {isConnected: true, roomId: 'E53318', playerName: 'Andy', phase: 'turn', currentRound: 1, …}
+GameService.ts:1482 Diff: {players: {…}, myHand: {…}, currentTurnPlays: {…}, validOptions: {…}, lastEventSequence: {…}}
+TurnUI.jsx:34 [TurnUI] Building playerPieces from currentTurnPlays: (4) [{…}, {…}, {…}, {…}]
+TurnUI.jsx:44 [TurnUI] Turn play 1: {player: 'Bot 2', hasPieces: true, hasCards: false, playType: 'EXTENDED_STRAIGHT', isValid: true, …}
+TurnUI.jsx:44 [TurnUI] Turn play 2: {player: 'P2', hasPieces: true, hasCards: false, playType: 'INVALID', isValid: false, …}
+TurnUI.jsx:44 [TurnUI] Turn play 3: {player: 'Bot 4', hasPieces: true, hasCards: false, playType: 'INVALID', isValid: false, …}
+TurnUI.jsx:44 [TurnUI] Turn play 4: {player: 'Andy', hasPieces: true, hasCards: false, playType: 'INVALID', isValid: false, …}
+TurnContent.jsx:266 Turn player data: {name: 'Andy', score: 0, is_bot: false, is_host: false, zero_declares_in_a_row: 0, …} is_bot: false
+TurnContent.jsx:266 Turn player data: {name: 'Bot 2', score: 0, is_bot: true, is_host: false, zero_declares_in_a_row: 0, …} is_bot: true
+TurnContent.jsx:266 Turn player data: {name: 'P2', score: 0, is_bot: false, is_host: false, zero_declares_in_a_row: 0, …} is_bot: false
+TurnContent.jsx:266 Turn player data: {name: 'Bot 4', score: 0, is_bot: true, is_host: false, zero_declares_in_a_row: 0, …} is_bot: true
+TurnContent.jsx:71 [TurnContent] Determining pieces to reveal: {playType: 'EXTENDED_STRAIGHT', lastWinner: 'Bot 2', playerPieces: {…}}
+playTypeMatching.js:70 [determinePiecesToReveal] Input: {playerPieces: {…}, starterPlayType: 'EXTENDED_STRAIGHT', starterName: 'Bot 2'}
+playTypeMatching.js:113 [determinePiecesToReveal] Checking player: Bot 2 {pieces: Array(4), pieceCount: 4}
+playTypeMatching.js:142 [determinePiecesToReveal] Bot 2 is the starter, revealing all pieces
+playTypeMatching.js:113 [determinePiecesToReveal] Checking player: P2 {pieces: Array(4), pieceCount: 4}
+gameValidation.js:203 [doesPlayMatchStarterType] Input: {starterPlayType: 'EXTENDED_STRAIGHT', pieceCount: 4, pieceDetails: '[{"kind":"ADVISOR","color":"red","value":12},{"kin…e":2},{"kind":"SOLDIER","color":"red","value":2}]'}
+gameValidation.js:149 [getPlayType] Analyzing pieces: {count: 4, pieces: '[{"kind":"ADVISOR","color":"red","value":12},{"kin…e":2},{"kind":"SOLDIER","color":"red","value":2}]'}
+gameValidation.js:83 [isFourOfAKind] Check: {firstPieceValue: 12, allPieceValues: Array(4), result: false}
+playTypeMatching.js:38 [doesPlayMatchStarterType] Player play type: null
+playTypeMatching.js:45 [doesPlayMatchStarterType] Invalid/unknown play type, returning false
+playTypeMatching.js:150 [determinePiecesToReveal] P2 matches starter type: false
+playTypeMatching.js:113 [determinePiecesToReveal] Checking player: Bot 4 {pieces: Array(4), pieceCount: 4}
+gameValidation.js:203 [doesPlayMatchStarterType] Input: {starterPlayType: 'EXTENDED_STRAIGHT', pieceCount: 4, pieceDetails: '[{"kind":"SOLDIER","color":"red","value":2},{"kind…7},{"kind":"ELEPHANT","color":"black","value":9}]'}
+gameValidation.js:149 [getPlayType] Analyzing pieces: {count: 4, pieces: '[{"kind":"SOLDIER","color":"red","value":2},{"kind…7},{"kind":"ELEPHANT","color":"black","value":9}]'}
+gameValidation.js:83 [isFourOfAKind] Check: {firstPieceValue: 2, allPieceValues: Array(4), result: false}
+playTypeMatching.js:38 [doesPlayMatchStarterType] Player play type: null
+playTypeMatching.js:45 [doesPlayMatchStarterType] Invalid/unknown play type, returning false
+playTypeMatching.js:150 [determinePiecesToReveal] Bot 4 matches starter type: false
+playTypeMatching.js:113 [determinePiecesToReveal] Checking player: Andy {pieces: Array(4), pieceCount: 4}
+gameValidation.js:203 [doesPlayMatchStarterType] Input: {starterPlayType: 'EXTENDED_STRAIGHT', pieceCount: 4, pieceDetails: '[{"kind":"ELEPHANT","color":"red","value":10},{"ki…ue":6},{"kind":"CANNON","color":"red","value":4}]'}
+gameValidation.js:149 [getPlayType] Analyzing pieces: {count: 4, pieces: '[{"kind":"ELEPHANT","color":"red","value":10},{"ki…ue":6},{"kind":"CANNON","color":"red","value":4}]'}
+gameValidation.js:83 [isFourOfAKind] Check: {firstPieceValue: 10, allPieceValues: Array(4), result: false}
+playTypeMatching.js:38 [doesPlayMatchStarterType] Player play type: null
+playTypeMatching.js:45 [doesPlayMatchStarterType] Invalid/unknown play type, returning false
+playTypeMatching.js:150 [determinePiecesToReveal] Andy matches starter type: false
+playTypeMatching.js:161 [determinePiecesToReveal] Final pieces to reveal: (4) ['Bot 2-0', 'Bot 2-1', 'Bot 2-2', 'Bot 2-3']
+TurnContent.jsx:82 [TurnContent] Pieces to reveal: Set(4) {'Bot 2-0', 'Bot 2-1', 'Bot 2-2', 'Bot 2-3'}
+TurnContent.jsx:266 Turn player data: {name: 'Andy', score: 0, is_bot: false, is_host: false, zero_declares_in_a_row: 0, …} is_bot: false
+TurnContent.jsx:266 Turn player data: {name: 'Bot 2', score: 0, is_bot: true, is_host: false, zero_declares_in_a_row: 0, …} is_bot: true
+TurnContent.jsx:266 Turn player data: {name: 'P2', score: 0, is_bot: false, is_host: false, zero_declares_in_a_row: 0, …} is_bot: false
+TurnContent.jsx:266 Turn player data: {name: 'Bot 4', score: 0, is_bot: true, is_host: false, zero_declares_in_a_row: 0, …} is_bot: true
+GameService.ts:1469 🎮 State Change: NETWORK_EVENT:PHASE_CHANGE
+GameService.ts:1472 Previous: {isConnected: true, roomId: 'E53318', playerName: 'Andy', phase: 'turn', currentRound: 1, …}
+GameService.ts:1481 New: {isConnected: true, roomId: 'E53318', playerName: 'Andy', phase: 'turn', currentRound: 1, …}
+GameService.ts:1482 Diff: {players: {…}, lastEventSequence: {…}, pileCounts: {…}}
+TurnUI.jsx:34 [TurnUI] Building playerPieces from currentTurnPlays: (4) [{…}, {…}, {…}, {…}]
+TurnUI.jsx:44 [TurnUI] Turn play 1: {player: 'Bot 2', hasPieces: true, hasCards: false, playType: 'EXTENDED_STRAIGHT', isValid: true, …}
+TurnUI.jsx:44 [TurnUI] Turn play 2: {player: 'P2', hasPieces: true, hasCards: false, playType: 'INVALID', isValid: false, …}
+TurnUI.jsx:44 [TurnUI] Turn play 3: {player: 'Bot 4', hasPieces: true, hasCards: false, playType: 'INVALID', isValid: false, …}
+TurnUI.jsx:44 [TurnUI] Turn play 4: {player: 'Andy', hasPieces: true, hasCards: false, playType: 'INVALID', isValid: false, …}
+TurnContent.jsx:266 Turn player data: {name: 'Andy', score: 0, is_bot: false, is_host: false, zero_declares_in_a_row: 0, …} is_bot: false
+TurnContent.jsx:266 Turn player data: {name: 'Bot 2', score: 0, is_bot: true, is_host: false, zero_declares_in_a_row: 0, …} is_bot: true
+TurnContent.jsx:266 Turn player data: {name: 'P2', score: 0, is_bot: false, is_host: false, zero_declares_in_a_row: 0, …} is_bot: false
+TurnContent.jsx:266 Turn player data: {name: 'Bot 4', score: 0, is_bot: true, is_host: false, zero_declares_in_a_row: 0, …} is_bot: true
+GameService.ts:1469 🎮 State Change: NETWORK_EVENT:TURN_COMPLETE
+GameService.ts:1472 Previous: {isConnected: true, roomId: 'E53318', playerName: 'Andy', phase: 'turn', currentRound: 1, …}
+GameService.ts:1481 New: {isConnected: true, roomId: 'E53318', playerName: 'Andy', phase: 'turn_results', currentRound: 1, …}
+GameService.ts:1482 Diff: {phase: {…}, players: {…}, winningPlay: {…}, playerPiles: {…}, turnNumber: {…}, …}
+TurnResultsUI.jsx:27 [TurnResultsUI] Building playerPlays from currentTurnPlays: (4) [{…}, {…}, {…}, {…}]
+TurnResultsUI.jsx:39 [TurnResultsUI] Turn play 1: {player: 'Bot 2', hasPieces: true, hasCards: false, playType: 'EXTENDED_STRAIGHT', isValid: true, …}
+TurnResultsUI.jsx:39 [TurnResultsUI] Turn play 2: {player: 'P2', hasPieces: true, hasCards: false, playType: 'INVALID', isValid: false, …}
+TurnResultsUI.jsx:39 [TurnResultsUI] Turn play 3: {player: 'Bot 4', hasPieces: true, hasCards: false, playType: 'INVALID', isValid: false, …}
+TurnResultsUI.jsx:39 [TurnResultsUI] Turn play 4: {player: 'Andy', hasPieces: true, hasCards: false, playType: 'INVALID', isValid: false, …}
+TurnResultsUI.jsx:71 [TurnResultsUI] Extracting starter info: {currentTurnPlays: Array(4), starterPlay: undefined, starterName: 'Bot 2', starterPlayType: 'EXTENDED_STRAIGHT', winningPlay: {…}}
+TurnResultsContent.jsx:57 [TurnResultsContent] Determining pieces to reveal: {effectiveStarterPlayType: 'EXTENDED_STRAIGHT', starterName: 'Bot 2', winner: 'Bot 2', playerPiecesMap: {…}}
+playTypeMatching.js:70 [determinePiecesToReveal] Input: {playerPieces: {…}, starterPlayType: 'EXTENDED_STRAIGHT', starterName: 'Bot 2'}
+playTypeMatching.js:113 [determinePiecesToReveal] Checking player: Andy {pieces: Array(4), pieceCount: 4}
+gameValidation.js:203 [doesPlayMatchStarterType] Input: {starterPlayType: 'EXTENDED_STRAIGHT', pieceCount: 4, pieceDetails: '[{"kind":"ELEPHANT","color":"red","value":10},{"ki…ue":6},{"kind":"CANNON","color":"red","value":4}]'}
+gameValidation.js:149 [getPlayType] Analyzing pieces: {count: 4, pieces: '[{"kind":"ELEPHANT","color":"red","value":10},{"ki…ue":6},{"kind":"CANNON","color":"red","value":4}]'}
+gameValidation.js:83 [isFourOfAKind] Check: {firstPieceValue: 10, allPieceValues: Array(4), result: false}
+playTypeMatching.js:38 [doesPlayMatchStarterType] Player play type: null
+playTypeMatching.js:45 [doesPlayMatchStarterType] Invalid/unknown play type, returning false
+playTypeMatching.js:150 [determinePiecesToReveal] Andy matches starter type: false
+playTypeMatching.js:113 [determinePiecesToReveal] Checking player: Bot 2 {pieces: Array(4), pieceCount: 4}
+playTypeMatching.js:142 [determinePiecesToReveal] Bot 2 is the starter, revealing all pieces
+playTypeMatching.js:113 [determinePiecesToReveal] Checking player: P2 {pieces: Array(4), pieceCount: 4}
+gameValidation.js:203 [doesPlayMatchStarterType] Input: {starterPlayType: 'EXTENDED_STRAIGHT', pieceCount: 4, pieceDetails: '[{"kind":"ADVISOR","color":"red","value":12},{"kin…e":2},{"kind":"SOLDIER","color":"red","value":2}]'}
+gameValidation.js:149 [getPlayType] Analyzing pieces: {count: 4, pieces: '[{"kind":"ADVISOR","color":"red","value":12},{"kin…e":2},{"kind":"SOLDIER","color":"red","value":2}]'}
+gameValidation.js:83 [isFourOfAKind] Check: {firstPieceValue: 12, allPieceValues: Array(4), result: false}
+playTypeMatching.js:38 [doesPlayMatchStarterType] Player play type: null
+playTypeMatching.js:45 [doesPlayMatchStarterType] Invalid/unknown play type, returning false
+playTypeMatching.js:150 [determinePiecesToReveal] P2 matches starter type: false
+playTypeMatching.js:113 [determinePiecesToReveal] Checking player: Bot 4 {pieces: Array(4), pieceCount: 4}
+gameValidation.js:203 [doesPlayMatchStarterType] Input: {starterPlayType: 'EXTENDED_STRAIGHT', pieceCount: 4, pieceDetails: '[{"kind":"SOLDIER","color":"red","value":2},{"kind…7},{"kind":"ELEPHANT","color":"black","value":9}]'}
+gameValidation.js:149 [getPlayType] Analyzing pieces: {count: 4, pieces: '[{"kind":"SOLDIER","color":"red","value":2},{"kind…7},{"kind":"ELEPHANT","color":"black","value":9}]'}
+gameValidation.js:83 [isFourOfAKind] Check: {firstPieceValue: 2, allPieceValues: Array(4), result: false}
+playTypeMatching.js:38 [doesPlayMatchStarterType] Player play type: null
+playTypeMatching.js:45 [doesPlayMatchStarterType] Invalid/unknown play type, returning false
+playTypeMatching.js:150 [determinePiecesToReveal] Bot 4 matches starter type: false
+playTypeMatching.js:161 [determinePiecesToReveal] Final pieces to reveal: (4) ['Bot 2-0', 'Bot 2-1', 'Bot 2-2', 'Bot 2-3']
+TurnResultsContent.jsx:66 [TurnResultsContent] Pieces to reveal: Set(4) {'Bot 2-0', 'Bot 2-1', 'Bot 2-2', 'Bot 2-3'}
+GameContainer.jsx:221 Turn results continue requested
+TurnResultsUI.jsx:27 [TurnResultsUI] Building playerPlays from currentTurnPlays: (4) [{…}, {…}, {…}, {…}]
+TurnResultsUI.jsx:39 [TurnResultsUI] Turn play 1: {player: 'Bot 2', hasPieces: true, hasCards: false, playType: 'EXTENDED_STRAIGHT', isValid: true, …}
+TurnResultsUI.jsx:39 [TurnResultsUI] Turn play 2: {player: 'P2', hasPieces: true, hasCards: false, playType: 'INVALID', isValid: false, …}
+TurnResultsUI.jsx:39 [TurnResultsUI] Turn play 3: {player: 'Bot 4', hasPieces: true, hasCards: false, playType: 'INVALID', isValid: false, …}
+TurnResultsUI.jsx:39 [TurnResultsUI] Turn play 4: {player: 'Andy', hasPieces: true, hasCards: false, playType: 'INVALID', isValid: false, …}
+TurnResultsUI.jsx:71 [TurnResultsUI] Extracting starter info: {currentTurnPlays: Array(4), starterPlay: undefined, starterName: 'Bot 2', starterPlayType: 'EXTENDED_STRAIGHT', winningPlay: {…}}
+TurnResultsContent.jsx:57 [TurnResultsContent] Determining pieces to reveal: {effectiveStarterPlayType: 'EXTENDED_STRAIGHT', starterName: 'Bot 2', winner: 'Bot 2', playerPiecesMap: {…}}
+playTypeMatching.js:70 [determinePiecesToReveal] Input: {playerPieces: {…}, starterPlayType: 'EXTENDED_STRAIGHT', starterName: 'Bot 2'}
+playTypeMatching.js:113 [determinePiecesToReveal] Checking player: Andy {pieces: Array(4), pieceCount: 4}
+gameValidation.js:203 [doesPlayMatchStarterType] Input: {starterPlayType: 'EXTENDED_STRAIGHT', pieceCount: 4, pieceDetails: '[{"kind":"ELEPHANT","color":"red","value":10},{"ki…ue":6},{"kind":"CANNON","color":"red","value":4}]'}
+gameValidation.js:149 [getPlayType] Analyzing pieces: {count: 4, pieces: '[{"kind":"ELEPHANT","color":"red","value":10},{"ki…ue":6},{"kind":"CANNON","color":"red","value":4}]'}
+gameValidation.js:83 [isFourOfAKind] Check: {firstPieceValue: 10, allPieceValues: Array(4), result: false}
+playTypeMatching.js:38 [doesPlayMatchStarterType] Player play type: null
+playTypeMatching.js:45 [doesPlayMatchStarterType] Invalid/unknown play type, returning false
+playTypeMatching.js:150 [determinePiecesToReveal] Andy matches starter type: false
+playTypeMatching.js:113 [determinePiecesToReveal] Checking player: Bot 2 {pieces: Array(4), pieceCount: 4}
+playTypeMatching.js:142 [determinePiecesToReveal] Bot 2 is the starter, revealing all pieces
+playTypeMatching.js:113 [determinePiecesToReveal] Checking player: P2 {pieces: Array(4), pieceCount: 4}
+gameValidation.js:203 [doesPlayMatchStarterType] Input: {starterPlayType: 'EXTENDED_STRAIGHT', pieceCount: 4, pieceDetails: '[{"kind":"ADVISOR","color":"red","value":12},{"kin…e":2},{"kind":"SOLDIER","color":"red","value":2}]'}
+gameValidation.js:149 [getPlayType] Analyzing pieces: {count: 4, pieces: '[{"kind":"ADVISOR","color":"red","value":12},{"kin…e":2},{"kind":"SOLDIER","color":"red","value":2}]'}
+gameValidation.js:83 [isFourOfAKind] Check: {firstPieceValue: 12, allPieceValues: Array(4), result: false}
+playTypeMatching.js:38 [doesPlayMatchStarterType] Player play type: null
+playTypeMatching.js:45 [doesPlayMatchStarterType] Invalid/unknown play type, returning false
+playTypeMatching.js:150 [determinePiecesToReveal] P2 matches starter type: false
+playTypeMatching.js:113 [determinePiecesToReveal] Checking player: Bot 4 {pieces: Array(4), pieceCount: 4}
+gameValidation.js:203 [doesPlayMatchStarterType] Input: {starterPlayType: 'EXTENDED_STRAIGHT', pieceCount: 4, pieceDetails: '[{"kind":"SOLDIER","color":"red","value":2},{"kind…7},{"kind":"ELEPHANT","color":"black","value":9}]'}
+gameValidation.js:149 [getPlayType] Analyzing pieces: {count: 4, pieces: '[{"kind":"SOLDIER","color":"red","value":2},{"kind…7},{"kind":"ELEPHANT","color":"black","value":9}]'}
+gameValidation.js:83 [isFourOfAKind] Check: {firstPieceValue: 2, allPieceValues: Array(4), result: false}
+playTypeMatching.js:38 [doesPlayMatchStarterType] Player play type: null
+playTypeMatching.js:45 [doesPlayMatchStarterType] Invalid/unknown play type, returning false
+playTypeMatching.js:150 [determinePiecesToReveal] Bot 4 matches starter type: false
+playTypeMatching.js:161 [determinePiecesToReveal] Final pieces to reveal: (4) ['Bot 2-0', 'Bot 2-1', 'Bot 2-2', 'Bot 2-3']
+TurnResultsContent.jsx:66 [TurnResultsContent] Pieces to reveal: Set(4) {'Bot 2-0', 'Bot 2-1', 'Bot 2-2', 'Bot 2-3'}
+GameService.ts:1469 🎮 State Change: NETWORK_EVENT:PHASE_CHANGE
+GameService.ts:1472 Previous: {isConnected: true, roomId: 'E53318', playerName: 'Andy', phase: 'turn_results', currentRound: 1, …}
+GameService.ts:1481 New: {isConnected: true, roomId: 'E53318', playerName: 'Andy', phase: 'turn', currentRound: 1, …}
+GameService.ts:1482 Diff: {phase: {…}, players: {…}, currentPlayer: {…}, currentTurnPlays: {…}, requiredPieceCount: {…}, …}
+TurnUI.jsx:34 [TurnUI] Building playerPieces from currentTurnPlays: []
+TurnUI.jsx:81 [TurnUI] No valid plays found, returning empty play type
+TurnContent.jsx:266 Turn player data: {name: 'Andy', score: 0, is_bot: false, is_host: false, zero_declares_in_a_row: 0, …} is_bot: false
+TurnContent.jsx:266 Turn player data: {name: 'Bot 2', score: 0, is_bot: true, is_host: false, zero_declares_in_a_row: 0, …} is_bot: true
+TurnContent.jsx:266 Turn player data: {name: 'P2', score: 0, is_bot: false, is_host: false, zero_declares_in_a_row: 0, …} is_bot: false
+TurnContent.jsx:266 Turn player data: {name: 'Bot 4', score: 0, is_bot: true, is_host: false, zero_declares_in_a_row: 0, …} is_bot: true
+TurnContent.jsx:266 Turn player data: {name: 'Andy', score: 0, is_bot: false, is_host: false, zero_declares_in_a_row: 0, …} is_bot: false
+TurnContent.jsx:266 Turn player data: {name: 'Bot 2', score: 0, is_bot: true, is_host: false, zero_declares_in_a_row: 0, …} is_bot: true
+TurnContent.jsx:266 Turn player data: {name: 'P2', score: 0, is_bot: false, is_host: false, zero_declares_in_a_row: 0, …} is_bot: false
+TurnContent.jsx:266 Turn player data: {name: 'Bot 4', score: 0, is_bot: true, is_host: false, zero_declares_in_a_row: 0, …} is_bot: true
+GameService.ts:1469 🎮 State Change: NETWORK_EVENT:PHASE_CHANGE
+GameService.ts:1472 Previous: {isConnected: true, roomId: 'E53318', playerName: 'Andy', phase: 'turn', currentRound: 1, …}
+GameService.ts:1481 New: {isConnected: true, roomId: 'E53318', playerName: 'Andy', phase: 'turn', currentRound: 1, …}
+GameService.ts:1482 Diff: {players: {…}, currentPlayer: {…}, currentTurnPlays: {…}, requiredPieceCount: {…}, lastEventSequence: {…}}
+TurnUI.jsx:34 [TurnUI] Building playerPieces from currentTurnPlays: [{…}]
+TurnUI.jsx:44 [TurnUI] Turn play 1: {player: 'Bot 2', hasPieces: true, hasCards: false, playType: 'SINGLE', isValid: true, …}
+TurnContent.jsx:266 Turn player data: {name: 'Andy', score: 0, is_bot: false, is_host: false, zero_declares_in_a_row: 0, …} is_bot: false
+TurnContent.jsx:266 Turn player data: {name: 'Bot 2', score: 0, is_bot: true, is_host: false, zero_declares_in_a_row: 0, …} is_bot: true
+TurnContent.jsx:266 Turn player data: {name: 'P2', score: 0, is_bot: false, is_host: false, zero_declares_in_a_row: 0, …} is_bot: false
+TurnContent.jsx:266 Turn player data: {name: 'Bot 4', score: 0, is_bot: true, is_host: false, zero_declares_in_a_row: 0, …} is_bot: true
+TurnUI.jsx:34 [TurnUI] Building playerPieces from currentTurnPlays: [{…}]
+TurnUI.jsx:44 [TurnUI] Turn play 1: {player: 'Bot 2', hasPieces: true, hasCards: false, playType: 'SINGLE', isValid: true, …}
+TurnContent.jsx:266 Turn player data: {name: 'Andy', score: 0, is_bot: false, is_host: false, zero_declares_in_a_row: 0, …} is_bot: false
+TurnContent.jsx:266 Turn player data: {name: 'Bot 2', score: 0, is_bot: true, is_host: false, zero_declares_in_a_row: 0, …} is_bot: true
+TurnContent.jsx:266 Turn player data: {name: 'P2', score: 0, is_bot: false, is_host: false, zero_declares_in_a_row: 0, …} is_bot: false
+TurnContent.jsx:266 Turn player data: {name: 'Bot 4', score: 0, is_bot: true, is_host: false, zero_declares_in_a_row: 0, …} is_bot: true
+
+---
+
+🔒 [Room E53318] Starting slot assignment: slot=2, name=None, op_id=E53318_1
+✅ [Room E53318] Slot assignment completed: op_id=E53318_1
+   Old state: {'P1': {'name': 'Andy', 'is_bot': False}, 'P2': {'name': 'Bot 2', 'is_bot': True}, 'P3': {'name': 'Bot 3', 'is_bot': True}, 'P4': {'name': 'Bot 4', 'is_bot': True}}
+   New state: {'P1': {'name': 'Andy', 'is_bot': False}, 'P2': {'name': 'Bot 2', 'is_bot': True}, 'P3': {'name': None, 'is_bot': None}, 'P4': {'name': 'Bot 4', 'is_bot': True}}
+🔒 [Room E53318] Starting room join: player=P2, op_id=E53318_2
+✅ [Room E53318] Player P2 joined slot 2: op_id=E53318_2
+2025-07-20 10:55:27 - backend.api.websocket.connection_manager - INFO - Player P2 registered in room E53318 with ws_id 43952ecb-999d-4927-8e83-100af969d217
+2025-07-20 10:55:27 - backend.api.routes.ws - INFO - Registered player P2 in room E53318
+✅ Notified lobby about room update: E53318
+INFO:     ('127.0.0.1', 56232) - "WebSocket /ws/lobby" [accepted]
+2025-07-20 10:55:27 - backend.api.routes.ws - INFO - WebSocket connected: room=lobby, ws_id=285b6e14-0382-4884-955b-0bede1d137aa
+INFO:     connection open
+INFO:     connection closed
+INFO:     ('127.0.0.1', 56234) - "WebSocket /ws/E53318" [accepted]
+2025-07-20 10:55:27 - backend.api.routes.ws - INFO - WebSocket connected: room=E53318, ws_id=514dc947-e659-4f3c-8e64-aeec7d389156
+INFO:     connection open
+🔒 [Room E53318] Starting game: op_id=E53318_3
+2025-07-20 10:55:30 - engine.state_machine.game_state_machine - INFO - 🔍 ROUND_DEBUG: GameStateMachine created with game: <engine.game.Game object at 0x108536010>, round_number: 1
+2025-07-20 10:55:30 - engine.state_machine.game_state_machine - INFO - 🚀 Starting state machine in GamePhase.PREPARATION phase
+2025-07-20 10:55:30 - engine.state_machine.game_state_machine - INFO - Transitioning from None to GamePhase.PREPARATION
+2025-07-20 10:55:30 - engine.state_machine.game_state_machine - INFO - 🔄 Transitioning: None -> GamePhase.PREPARATION
+2025-07-20 10:55:30 - game.state.preparation - INFO - Entering preparation phase
+2025-07-20 10:55:30 - game.state.preparation - INFO - 🎴 Preparation phase starting - dealing cards
+2025-07-20 10:55:30 - game.state.preparation - INFO - 🎮 Phase Data Update: Starting to deal cards
+2025-07-20 10:55:30 - engine.state_machine.game_state_machine - INFO - State machine process loop started
+2025-07-20 10:55:30 - game.state.preparation - INFO - 📤 Auto-broadcast: phase_change to room E53318 - Starting to deal cards
+2025-07-20 10:55:30 - game.state.preparation - INFO - 🔍 Weak hand check - Found 0 weak players: set()
+2025-07-20 10:55:30 - game.state.preparation - INFO - 🔍 STARTER_DEBUG: Current round number: 1
+2025-07-20 10:55:30 - game.state.preparation - INFO - 🎯 Starter: Bot 2 (has GENERAL_RED)
+2025-07-20 10:55:30 - game.state.preparation - INFO - ✅ No weak hands - determined new starter: Bot 2
+2025-07-20 10:55:30 - engine.state_machine.game_state_machine - INFO - Transitioning from GamePhase.PREPARATION to GamePhase.ROUND_START
+2025-07-20 10:55:30 - engine.state_machine.game_state_machine - INFO - 🔄 Transitioning: GamePhase.PREPARATION -> GamePhase.ROUND_START
+2025-07-20 10:55:30 - game.state.preparation - INFO - Exiting preparation phase
+2025-07-20 10:55:30 - game.state.preparation - INFO - 🎯 Round starter already set: Bot 2
+2025-07-20 10:55:30 - game.state.preparation - INFO - 📋 Preparation complete - Starter: Bot 2, Multiplier: 1x
+2025-07-20 10:55:30 - game.state.round_start - INFO - Entering round_start phase
+2025-07-20 10:55:30 - game.state.round_start - INFO - 📋 Round 1 starting - Starter: Bot 2 (has_general_red)
+2025-07-20 10:55:30 - game.state.round_start - INFO - 🎮 Phase Data Update: Round 1 starting with Bot 2
+2025-07-20 10:55:30 - game.state.round_start - INFO - 📤 Auto-broadcast: phase_change to room E53318 - Round 1 starting with Bot 2
+2025-07-20 10:55:30 - engine.state_machine.game_state_machine - INFO - Stored phase change event: GamePhase.PREPARATION -> GamePhase.ROUND_START
+2025-07-20 10:55:30 - engine.state_machine.game_state_machine - INFO - Notifying bot manager about phase round_start
+2025-07-20 10:55:32 - game.state.preparation - INFO - 🎮 Phase Data Update: Cards dealt, checking for weak hands
+2025-07-20 10:55:32 - game.state.preparation - INFO - 📤 Auto-broadcast: phase_change to room E53318 - Cards dealt, checking for weak hands
+2025-07-20 10:55:32 - engine.state_machine.game_state_machine - INFO - Stored phase change event: None -> GamePhase.PREPARATION
+2025-07-20 10:55:32 - engine.state_machine.game_state_machine - INFO - Notifying bot manager about phase preparation
+✅ [Room E53318] Game and StateMachine started successfully: op_id=E53318_3
+✅ [Room E53318] Bot manager registered for 2 bots
+✅ Game started in room E53318
+2025-07-20 10:55:32 - backend.api.websocket.connection_manager - WARNING - No connection found for WebSocket ID 514dc947-e659-4f3c-8e64-aeec7d389156
+2025-07-20 10:55:32 - backend.api.routes.ws - WARNING - No connection found for WebSocket 514dc947-e659-4f3c-8e64-aeec7d389156
+INFO:     connection closed
+2025-07-20 10:55:32 - backend.api.websocket.connection_manager - WARNING - No connection found for WebSocket ID 7ce06140-253b-43ab-9fc6-e1413886df7d
+2025-07-20 10:55:32 - backend.api.routes.ws - WARNING - No connection found for WebSocket 7ce06140-253b-43ab-9fc6-e1413886df7d
+INFO:     connection closed
+INFO:     ('127.0.0.1', 56252) - "WebSocket /ws/E53318" [accepted]
+2025-07-20 10:55:32 - backend.api.routes.ws - INFO - WebSocket connected: room=E53318, ws_id=ad89e6a2-c9cc-4242-8db1-dbceb8b6cd80
+INFO:     connection open
+INFO:     ('127.0.0.1', 56254) - "WebSocket /ws/E53318" [accepted]
+2025-07-20 10:55:32 - backend.api.routes.ws - INFO - WebSocket connected: room=E53318, ws_id=8fef0650-6e85-40ee-aa2c-eabc201c3a2d
+INFO:     connection open
+2025-07-20 10:55:35 - engine.state_machine.game_state_machine - INFO - Transitioning from GamePhase.ROUND_START to GamePhase.DECLARATION
+2025-07-20 10:55:35 - engine.state_machine.game_state_machine - INFO - 🔄 Transitioning: GamePhase.ROUND_START -> GamePhase.DECLARATION
+2025-07-20 10:55:35 - game.state.round_start - INFO - Exiting round_start phase
+2025-07-20 10:55:35 - game.state.round_start - INFO - 🎯 Round start display complete - transitioning to Declaration
+2025-07-20 10:55:35 - game.state.declaration - INFO - Entering declaration phase
+2025-07-20 10:55:35 - game.state.declaration - INFO - 🎮 Phase Data Update: Declaration phase setup - basic data
+2025-07-20 10:55:35 - game.state.declaration - INFO - 📤 Auto-broadcast: phase_change to room E53318 - Declaration phase setup - basic data
+2025-07-20 10:55:35 - game.state.declaration - INFO - 🎮 Phase Data Update: Declaration phase setup complete - current declarer: Bot 2
+2025-07-20 10:55:35 - game.state.declaration - INFO - 📤 Auto-broadcast: phase_change to room E53318 - Declaration phase setup complete - current declarer: Bot 2
+✅ Bot Bot 2 declared 4
+2025-07-20 10:55:36 - engine.state_machine.game_state_machine - INFO - Stored phase change event: GamePhase.ROUND_START -> GamePhase.DECLARATION
+2025-07-20 10:55:36 - engine.state_machine.game_state_machine - INFO - Notifying bot manager about phase declaration
+2025-07-20 10:55:37 - game.state.declaration - INFO - 🎮 Phase Data Update: Player Bot 2 declared 4
+2025-07-20 10:55:37 - game.state.declaration - INFO - 📤 Auto-broadcast: phase_change to room E53318 - Player Bot 2 declared 4
+2025-07-20 10:55:37 - game.state.declaration - INFO - Player Bot 2 declared 4
+✅ Declaration queued: P2 -> 3
+2025-07-20 10:55:41 - game.state.declaration - INFO - 🎮 Phase Data Update: Player P2 declared 3
+2025-07-20 10:55:41 - game.state.declaration - INFO - 📤 Auto-broadcast: phase_change to room E53318 - Player P2 declared 3
+✅ Bot Bot 4 declared 1
+2025-07-20 10:55:41 - game.state.declaration - INFO - Player P2 declared 3
+2025-07-20 10:55:42 - game.state.declaration - INFO - 🎮 Phase Data Update: Player Bot 4 declared 1
+2025-07-20 10:55:42 - game.state.declaration - INFO - 📤 Auto-broadcast: phase_change to room E53318 - Player Bot 4 declared 1
+2025-07-20 10:55:42 - game.state.declaration - INFO - Player Bot 4 declared 1
+✅ Declaration queued: Andy -> 4
+2025-07-20 10:55:45 - game.state.declaration - INFO - 🎮 Phase Data Update: Player Andy declared 4
+2025-07-20 10:55:45 - game.state.declaration - INFO - 📤 Auto-broadcast: phase_change to room E53318 - Player Andy declared 4
+2025-07-20 10:55:45 - game.state.declaration - INFO - Player Andy declared 4
+2025-07-20 10:55:45 - engine.state_machine.game_state_machine - INFO - Transitioning from GamePhase.DECLARATION to GamePhase.TURN
+2025-07-20 10:55:45 - engine.state_machine.game_state_machine - INFO - 🔄 Transitioning: GamePhase.DECLARATION -> GamePhase.TURN
+2025-07-20 10:55:45 - game.state.declaration - INFO - Exiting declaration phase
+2025-07-20 10:55:45 - game.state.declaration - INFO - Copied declarations to game: {'Bot 2': 4, 'P2': 3, 'Bot 4': 1, 'Andy': 4}
+2025-07-20 10:55:45 - game.state.turn - INFO - Entering turn phase
+2025-07-20 10:55:45 - game.state.turn - INFO - 🎯 Turn phase starting - Bot 2 starts first turn
+2025-07-20 10:55:45 - game.state.turn - INFO - 🎮 Phase Data Update: New turn 1 started with starter Bot 2
+2025-07-20 10:55:45 - game.state.turn - INFO - 📤 Auto-broadcast: phase_change to room E53318 - New turn 1 started with starter Bot 2
+🤖 BOT chooses to play STRAIGHT (36 pts): GENERAL, ELEPHANT, ADVISOR
+✅ Bot Bot 2 action queued - state machine will broadcast with correct next_player
+2025-07-20 10:55:47 - game.state.turn - INFO - 🎯 New turn started - order: ['Bot 2', 'P2', 'Bot 4', 'Andy']
+2025-07-20 10:55:47 - engine.state_machine.game_state_machine - INFO - Stored phase change event: GamePhase.DECLARATION -> GamePhase.TURN
+2025-07-20 10:55:47 - engine.state_machine.game_state_machine - INFO - Notifying bot manager about phase turn
+2025-07-20 10:55:47 - game.state.turn - INFO - 🎲 Bot 2 (starter) plays 3 pieces - setting required count
+2025-07-20 10:55:47 - game.state.turn - INFO - 🎲 Bot 2 plays: [GENERAL_RED(14), ELEPHANT_RED(10), ADVISOR_RED(12)] (value: 36)
+2025-07-20 10:55:47 - game.state.turn - INFO - Removed 3 pieces from Bot 2's hand
+2025-07-20 10:55:47 - game.state.turn - INFO - 🎮 Phase Data Update: Player Bot 2 played 3 pieces
+2025-07-20 10:55:47 - game.state.turn - INFO - 📤 Auto-broadcast: phase_change to room E53318 - Player Bot 2 played 3 pieces
+✅ Play accepted: P2
+2025-07-20 10:55:59 - game.state.turn - INFO - 🎲 P2 plays: [ADVISOR_BLACK(11), ELEPHANT_BLACK(9), SOLDIER_BLACK(1)] (value: 21)
+2025-07-20 10:55:59 - game.state.turn - INFO - Removed 3 pieces from P2's hand
+2025-07-20 10:55:59 - game.state.turn - INFO - 🎮 Phase Data Update: Player P2 played 3 pieces
+2025-07-20 10:55:59 - game.state.turn - INFO - 📤 Auto-broadcast: phase_change to room E53318 - Player P2 played 3 pieces
+🤖 BOT chooses to play THREE_OF_A_KIND (3 pts): SOLDIER, SOLDIER, SOLDIER
+✅ Bot Bot 4 action queued - state machine will broadcast with correct next_player
+2025-07-20 10:56:01 - game.state.turn - INFO - 🎲 Bot 4 plays: [SOLDIER_BLACK(1), SOLDIER_BLACK(1), SOLDIER_BLACK(1)] (value: 3)
+2025-07-20 10:56:01 - game.state.turn - INFO - Removed 3 pieces from Bot 4's hand
+2025-07-20 10:56:01 - game.state.turn - INFO - 🎮 Phase Data Update: Player Bot 4 played 3 pieces
+2025-07-20 10:56:01 - game.state.turn - INFO - 📤 Auto-broadcast: phase_change to room E53318 - Player Bot 4 played 3 pieces
+✅ Play accepted: Andy
+2025-07-20 10:56:06 - game.state.turn - INFO - 🎲 Andy plays: [HORSE_RED(6), CHARIOT_RED(8), CANNON_RED(4)] (value: 18)
+2025-07-20 10:56:06 - game.state.turn - INFO - Removed 3 pieces from Andy's hand
+2025-07-20 10:56:06 - game.state.turn - INFO - 🎮 Phase Data Update: Player Andy played 3 pieces
+2025-07-20 10:56:06 - game.state.turn - INFO - 📤 Auto-broadcast: phase_change to room E53318 - Player Andy played 3 pieces
+2025-07-20 10:56:06 - game.state.turn - INFO - 🎯 Round 1, Turn 1 winner: Bot 2 with STRAIGHT value 36
+2025-07-20 10:56:06 - game.state.turn - INFO - 💰 Bot 2 won 3 piles this turn, total: 3 piles
+2025-07-20 10:56:06 - game.state.turn - INFO - 🏆 Bot 2 wins turn and gets 3 piles
+2025-07-20 10:56:06 - game.state.turn - INFO - 🎮 Waiting 5s for piece flip animation to complete...
+2025-07-20 10:56:11 - game.state.turn - INFO - 🎮 Phase Data Update: Turn completed - winner: Bot 2
+2025-07-20 10:56:11 - game.state.turn - INFO - 📤 Auto-broadcast: phase_change to room E53318 - Turn completed - winner: Bot 2
+2025-07-20 10:56:11 - game.state.turn - INFO - 📤 Custom broadcast: turn_complete to room E53318 - Turn 1 completed - winner: Bot 2
+2025-07-20 10:56:11 - game.state.turn - INFO - 🚀 Enterprise broadcast turn completion - winner: Bot 2, turn piles awarded: {'Bot 2': 3, 'Andy': 0, 'P2': 0, 'Bot 4': 0}
+2025-07-20 10:56:11 - game.state.turn - INFO - 🔄 Updated turn order - new starter first: ['Bot 2', 'P2', 'Bot 4', 'Andy']
+2025-07-20 10:56:11 - game.state.turn - INFO - 🎯 Next turn starter: Bot 2
+2025-07-20 10:56:11 - game.state.turn - INFO - 🎯 Turn complete - auto-starting next turn in 7 seconds
+2025-07-20 10:56:18 - game.state.turn - INFO - 🎮 Phase Data Update: New turn 2 started with starter Bot 2
+2025-07-20 10:56:18 - game.state.turn - INFO - 📤 Auto-broadcast: phase_change to room E53318 - New turn 2 started with starter Bot 2
+🤖 BOT chooses to play EXTENDED_STRAIGHT (16 pts): CANNON, CANNON, HORSE, HORSE
+✅ Bot Bot 2 action queued - state machine will broadcast with correct next_player
+2025-07-20 10:56:28 - game.state.turn - INFO - 🎯 New turn started - order: ['Bot 2', 'P2', 'Bot 4', 'Andy']
+2025-07-20 10:56:28 - game.state.turn - INFO - 🚀 Enterprise: New turn auto-started with automatic broadcasting
+2025-07-20 10:56:30 - game.state.turn - INFO - 🎲 Bot 2 (starter) plays 4 pieces - setting required count
+2025-07-20 10:56:30 - game.state.turn - INFO - 🎲 Bot 2 plays: [CANNON_BLACK(3), CANNON_BLACK(3), HORSE_BLACK(5), HORSE_BLACK(5)] (value: 16)
+2025-07-20 10:56:30 - game.state.turn - INFO - Removed 4 pieces from Bot 2's hand
+2025-07-20 10:56:30 - game.state.turn - INFO - 🎮 Phase Data Update: Player Bot 2 played 4 pieces
+2025-07-20 10:56:30 - game.state.turn - INFO - 📤 Auto-broadcast: phase_change to room E53318 - Player Bot 2 played 4 pieces
+✅ Play accepted: P2
+2025-07-20 10:56:51 - game.state.turn - INFO - 🎲 P2 plays: [ADVISOR_RED(12), SOLDIER_RED(2), SOLDIER_RED(2), SOLDIER_RED(2)] (value: 18)
+2025-07-20 10:56:51 - game.state.turn - INFO - Removed 4 pieces from P2's hand
+2025-07-20 10:56:51 - game.state.turn - INFO - 🎮 Phase Data Update: Player P2 played 4 pieces
+2025-07-20 10:56:51 - game.state.turn - INFO - 📤 Auto-broadcast: phase_change to room E53318 - Player P2 played 4 pieces
+🤖 BOT has no valid play. Discards lowest pieces: SOLDIER, SOLDIER, CHARIOT, ELEPHANT
+    🔍 Final play: ['SOLDIER', 'SOLDIER', 'CHARIOT', 'ELEPHANT']
+    🧠 Hand left: ['ADVISOR', 'SOLDIER', 'CHARIOT', 'ELEPHANT', 'SOLDIER']
+✅ Bot Bot 4 action queued - state machine will broadcast with correct next_player
+2025-07-20 10:56:53 - game.state.turn - INFO - 🎲 Bot 4 plays: [SOLDIER_RED(2), SOLDIER_RED(2), CHARIOT_BLACK(7), ELEPHANT_BLACK(9)] (value: 20)
+2025-07-20 10:56:53 - game.state.turn - INFO - Removed 4 pieces from Bot 4's hand
+2025-07-20 10:56:53 - game.state.turn - INFO - 🎮 Phase Data Update: Player Bot 4 played 4 pieces
+2025-07-20 10:56:53 - game.state.turn - INFO - 📤 Auto-broadcast: phase_change to room E53318 - Player Bot 4 played 4 pieces
+2025-07-20 10:57:01 - backend.api.websocket.connection_manager - WARNING - No connection found for WebSocket ID ad89e6a2-c9cc-4242-8db1-dbceb8b6cd80
+2025-07-20 10:57:01 - backend.api.routes.ws - WARNING - No connection found for WebSocket ad89e6a2-c9cc-4242-8db1-dbceb8b6cd80
+INFO:     connection closed
+INFO:     connection closed
+✅ Play accepted: Andy
+2025-07-20 10:57:12 - game.state.turn - INFO - 🎲 Andy plays: [ELEPHANT_RED(10), CHARIOT_RED(8), HORSE_RED(6), CANNON_RED(4)] (value: 28)
+2025-07-20 10:57:12 - game.state.turn - INFO - Removed 4 pieces from Andy's hand
+2025-07-20 10:57:12 - game.state.turn - INFO - 🎮 Phase Data Update: Player Andy played 4 pieces
+2025-07-20 10:57:12 - game.state.turn - INFO - 📤 Auto-broadcast: phase_change to room E53318 - Player Andy played 4 pieces
+2025-07-20 10:57:12 - game.state.turn - INFO - 🎯 Round 1, Turn 2 winner: Bot 2 with EXTENDED_STRAIGHT value 16
+2025-07-20 10:57:12 - game.state.turn - INFO - 💰 Bot 2 won 4 piles this turn, total: 7 piles
+2025-07-20 10:57:12 - game.state.turn - INFO - 🏆 Bot 2 wins turn and gets 4 piles
+2025-07-20 10:57:12 - game.state.turn - INFO - 🎮 Waiting 5s for piece flip animation to complete...
+2025-07-20 10:57:17 - game.state.turn - INFO - 🎮 Phase Data Update: Turn completed - winner: Bot 2
+2025-07-20 10:57:17 - game.state.turn - INFO - 📤 Auto-broadcast: phase_change to room E53318 - Turn completed - winner: Bot 2
+2025-07-20 10:57:17 - game.state.turn - INFO - 📤 Custom broadcast: turn_complete to room E53318 - Turn 2 completed - winner: Bot 2
+2025-07-20 10:57:17 - game.state.turn - INFO - 🚀 Enterprise broadcast turn completion - winner: Bot 2, turn piles awarded: {'Bot 2': 4, 'Andy': 0, 'P2': 0, 'Bot 4': 0}
+2025-07-20 10:57:17 - game.state.turn - INFO - 🔄 Updated turn order - new starter first: ['Bot 2', 'P2', 'Bot 4', 'Andy']
+2025-07-20 10:57:17 - game.state.turn - INFO - 🎯 Next turn starter: Bot 2
+2025-07-20 10:57:17 - game.state.turn - INFO - 🎯 Turn complete - auto-starting next turn in 7 seconds
+2025-07-20 10:57:24 - game.state.turn - INFO - 🎮 Phase Data Update: New turn 3 started with starter Bot 2
+2025-07-20 10:57:24 - game.state.turn - INFO - 📤 Auto-broadcast: phase_change to room E53318 - New turn 3 started with starter Bot 2
+🤖 BOT chooses to play SINGLE (1 pts): SOLDIER
+✅ Bot Bot 2 action queued - state machine will broadcast with correct next_player
+2025-07-20 10:57:24 - game.state.turn - INFO - 🎯 New turn started - order: ['Bot 2', 'P2', 'Bot 4', 'Andy']
+2025-07-20 10:57:24 - game.state.turn - INFO - 🚀 Enterprise: New turn auto-started with automatic broadcasting
+2025-07-20 10:57:25 - game.state.turn - INFO - 🎲 Bot 2 (starter) plays 1 pieces - setting required count
+2025-07-20 10:57:25 - game.state.turn - INFO - 🎲 Bot 2 plays: [SOLDIER_BLACK(1)] (value: 1)
+2025-07-20 10:57:25 - game.state.turn - INFO - Removed 1 pieces from Bot 2's hand
+2025-07-20 10:57:25 - game.state.turn - INFO - 🎮 Phase Data Update: Player Bot 2 played 1 pieces
+2025-07-20 10:57:25 - game.state.turn - INFO - 📤 Auto-broadcast: phase_change to room E53318 - Player Bot 2 played 1 pieces

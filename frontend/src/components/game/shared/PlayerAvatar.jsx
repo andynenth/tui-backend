@@ -20,6 +20,8 @@ import HumanIcon from '../../../assets/avatars/human.svg';
  * @param {string} theme - Avatar theme: 'default', 'yellow' (default: 'default')
  */
 const PlayerAvatar = ({ name, isBot = false, isThinking = false, className = '', size = 'medium', theme = 'default' }) => {
+  // Debug log for avatar changes
+  console.log(`🎭 PlayerAvatar: ${name} - isBot=${isBot}, isThinking=${isThinking}`);
 
   // Get size-specific class
   const getSizeClass = () => {

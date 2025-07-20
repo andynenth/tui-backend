@@ -517,3 +517,44 @@ class Room:
             return current.name
 
         return None  # No player is kicked in other scenarios.
+
+    def is_host(self, player_name: str) -> bool:
+        """
+        Check if a player is the room host.
+        
+        Args:
+            player_name: The player's name to check
+            
+        Returns:
+            True if the player is the host, False otherwise
+        """
+        return player_name == self.host_name
+
+    def migrate_host(self) -> Optional[str]:
+        """
+        Migrate host to another player when current host disconnects.
+        Priority: First available human player, then first available bot.
+        
+        Returns:
+            The new host name, or None if no suitable host found
+        """
+        # First, try to find a connected human player
+        for player in self.players:
+            if player and not player.is_bot and player.is_connected:
+                self.host_name = player.name
+                return player.name
+        
+        # If no connected humans, try to find any human player
+        for player in self.players:
+            if player and not player.is_bot:
+                self.host_name = player.name
+                return player.name
+        
+        # If no humans at all, use first bot
+        for player in self.players:
+            if player:
+                self.host_name = player.name
+                return player.name
+        
+        # No players at all (shouldn't happen)
+        return None

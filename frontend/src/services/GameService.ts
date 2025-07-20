@@ -372,6 +372,10 @@ export class GameService extends EventTarget {
       lastEventSequence: 0,
       error: null,
       gameOver: false,
+      
+      // Bot replacement state
+      disconnectedPlayers: [],
+      host: null,
     };
   }
 
@@ -402,6 +406,10 @@ export class GameService extends EventTarget {
       'score_update',
       'round_complete',
       'game_ended',
+      'player_disconnected',
+      'player_reconnected',
+      'host_changed',
+      'queued_messages',
     ];
 
     gameEvents.forEach((event) => {
@@ -525,6 +533,22 @@ export class GameService extends EventTarget {
         newState = this.handleGameEnded(newState, data);
         break;
 
+      case 'player_disconnected':
+        newState = this.handlePlayerDisconnected(newState, data);
+        break;
+
+      case 'player_reconnected':
+        newState = this.handlePlayerReconnected(newState, data);
+        break;
+
+      case 'host_changed':
+        newState = this.handleHostChanged(newState, data);
+        break;
+
+      case 'queued_messages':
+        newState = this.handleQueuedMessages(newState, data);
+        break;
+
       case 'play_rejected': {
         const message =
           data.details || data.message || 'Invalid play. Please try again.';
@@ -625,16 +649,31 @@ export class GameService extends EventTarget {
 
       // Update players list (prefer backend phase_data over data.players for player metadata)
       if (phaseData.players) {
+        console.log('📥 Phase change updating players:', phaseData.players.map((p: any) => ({
+          name: p.name,
+          is_bot: p.is_bot
+        })));
+        
         // Merge phase_data players with existing player data to preserve zero_declares_in_a_row
         const existingPlayersMap = new Map(
           newState.players.map((p) => [p.name, p])
         );
         newState.players = phaseData.players.map((player: any) => {
           const existing = existingPlayersMap.get(player.name);
-          return {
+          const updated = {
             ...player,
             zero_declares_in_a_row: existing?.zero_declares_in_a_row || 0,
+            // Preserve connection tracking fields
+            is_connected: existing?.is_connected !== undefined ? existing.is_connected : true,
+            disconnect_time: existing?.disconnect_time,
+            original_is_bot: existing?.original_is_bot !== undefined ? existing.original_is_bot : player.is_bot,
           };
+          
+          if (existing && existing.is_bot !== player.is_bot) {
+            console.log(`🤖 PHASE UPDATE: ${player.name} - is_bot changed from ${existing.is_bot} to ${player.is_bot}`);
+          }
+          
+          return updated;
         });
       }
 
@@ -1176,6 +1215,110 @@ export class GameService extends EventTarget {
       winners: data.winners || [],
       totalScores: data.final_scores || state.totalScores,
     };
+  }
+
+  /**
+   * Handle player disconnected event
+   */
+  private handlePlayerDisconnected(state: GameState, data: any): GameState {
+    const playerName = data.player_name;
+    if (!playerName) return state;
+
+    console.log(`🔌 DISCONNECT: Player ${playerName} disconnected`);
+
+    // Add to disconnected players list
+    const disconnectedPlayers = state.disconnectedPlayers.includes(playerName)
+      ? state.disconnectedPlayers
+      : [...state.disconnectedPlayers, playerName];
+
+    // Update player's connection status
+    const updatedPlayers = state.players.map(player => {
+      if (player.name === playerName) {
+        const originalIsBot = player.is_bot;
+        console.log(`🤖 AVATAR CHANGE: ${playerName} - is_bot changing from ${originalIsBot} to true`);
+        console.log(`   Original bot status: ${player.original_is_bot || originalIsBot}`);
+        return { ...player, is_connected: false, is_bot: true };
+      }
+      return player;
+    });
+
+    console.log('📊 Updated players after disconnect:', updatedPlayers.map(p => ({
+      name: p.name,
+      is_bot: p.is_bot,
+      is_connected: p.is_connected,
+      original_is_bot: p.original_is_bot
+    })));
+
+    return {
+      ...state,
+      players: updatedPlayers,
+      disconnectedPlayers
+    };
+  }
+
+  /**
+   * Handle player reconnected event
+   */
+  private handlePlayerReconnected(state: GameState, data: any): GameState {
+    const playerName = data.player_name;
+    if (!playerName) return state;
+
+    console.log(`🔌 RECONNECT: Player ${playerName} reconnected`);
+
+    // Remove from disconnected players list
+    const disconnectedPlayers = state.disconnectedPlayers.filter(
+      name => name !== playerName
+    );
+
+    // Update player's connection status
+    const updatedPlayers = state.players.map(player => {
+      if (player.name === playerName) {
+        const currentIsBot = player.is_bot;
+        const originalIsBot = player.original_is_bot || false;
+        console.log(`🤖 AVATAR RESTORE: ${playerName} - is_bot changing from ${currentIsBot} to ${originalIsBot}`);
+        console.log(`   Original bot status was: ${originalIsBot}`);
+        return { ...player, is_connected: true, is_bot: originalIsBot };
+      }
+      return player;
+    });
+
+    console.log('📊 Updated players after reconnect:', updatedPlayers.map(p => ({
+      name: p.name,
+      is_bot: p.is_bot,
+      is_connected: p.is_connected,
+      original_is_bot: p.original_is_bot
+    })));
+
+    return {
+      ...state,
+      players: updatedPlayers,
+      disconnectedPlayers
+    };
+  }
+
+  /**
+   * Handle host changed event
+   */
+  private handleHostChanged(state: GameState, data: any): GameState {
+    return {
+      ...state,
+      host: data.new_host || state.host
+    };
+  }
+
+  /**
+   * Handle queued messages event
+   */
+  private handleQueuedMessages(state: GameState, data: any): GameState {
+    const messages = data.messages || [];
+    
+    // Process each queued message in order
+    let newState = state;
+    for (const message of messages) {
+      newState = this.processGameEvent(newState, message.event, message.data);
+    }
+    
+    return newState;
   }
 
   /**
