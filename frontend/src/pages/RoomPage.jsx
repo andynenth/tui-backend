@@ -228,7 +228,7 @@ const RoomPage = () => {
                           <div className="rp-playerName">{playerName}</div>
                         </div>
                         {isHost && <span className="rp-hostBadge">Host</span>}
-                        {isEmpty ? (
+                        {isEmpty && isCurrentPlayerHost ? (
                           <div className="rp-playerAction">
                             <button
                               className="rp-actionBtn rp-addBotBtn"
@@ -239,7 +239,7 @@ const RoomPage = () => {
                             </button>
                           </div>
                         ) : (
-                          !isHost && (
+                          !isHost && isCurrentPlayerHost && (
                             <div className="rp-playerAction">
                               <button
                                 className="rp-actionBtn rp-removeBtn"
