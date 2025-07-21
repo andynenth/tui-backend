@@ -19,6 +19,9 @@ class Room:
     The Room class manages the state of a single game room, including players,
     game status, and provides methods for managing room participants.
     """
+    
+    # Cleanup timeout configuration (0 for testing, 30+ for production)
+    CLEANUP_TIMEOUT_SECONDS = 0
 
     def __init__(self, room_id: str, host_name: str):
         """
@@ -47,6 +50,10 @@ class Room:
 
         self._pending_operations = set()  # Track ongoing operations
         self._last_operation_id = 0  # For operation sequencing
+        
+        # Cleanup tracking
+        self.last_human_disconnect_time = None  # When last human left
+        self.cleanup_scheduled = False  # Flag to prevent duplicate scheduling
 
         # Assign the host to the first slot (P1).
         self.players[0] = Player(host_name, is_bot=False)
@@ -555,21 +562,6 @@ class Room:
 
         return None  # No player is kicked in other scenarios.
 
-    def get_connected_human_count(self) -> int:
-        """
-        Count the number of connected human players in the room.
-        Returns:
-            int: Number of connected human players
-        """
-        if not self.game:
-            return 0
-        
-        count = 0
-        for player in self.game.players:
-            if player and not player.is_bot and player.is_connected:
-                count += 1
-        return count
-
     def has_any_human_players(self) -> bool:
         """
         Check if there are ANY human players in the room (connected or disconnected).
@@ -595,3 +587,31 @@ class Room:
         
         print(f"🔍 [Room {self.room_id}] No human players found - all are bots!")
         return False
+    
+    def mark_for_cleanup(self):
+        """Mark room for cleanup after all humans disconnect"""
+        if not self.has_any_human_players():
+            self.last_human_disconnect_time = time.time()
+            self.cleanup_scheduled = True
+            print(f"🗑️ [Room {self.room_id}] Marked for cleanup in {self.CLEANUP_TIMEOUT_SECONDS}s")
+    
+    def cancel_cleanup(self):
+        """Cancel pending cleanup when human reconnects"""
+        self.last_human_disconnect_time = None
+        self.cleanup_scheduled = False
+        print(f"✅ [Room {self.room_id}] Cleanup cancelled - human player reconnected")
+    
+    def should_cleanup(self) -> bool:
+        """Check if room should be cleaned up based on timeout"""
+        if not self.cleanup_scheduled:
+            print(f"🧹 [Room {self.room_id}] should_cleanup: cleanup_scheduled=False, returning False")
+            return False
+        
+        if self.last_human_disconnect_time is None:
+            print(f"🧹 [Room {self.room_id}] should_cleanup: last_human_disconnect_time=None, returning False")
+            return False
+        
+        elapsed = time.time() - self.last_human_disconnect_time
+        should_cleanup = elapsed >= self.CLEANUP_TIMEOUT_SECONDS
+        print(f"🧹 [Room {self.room_id}] should_cleanup: elapsed={elapsed:.2f}s, timeout={self.CLEANUP_TIMEOUT_SECONDS}s, should_cleanup={should_cleanup}")
+        return should_cleanup
