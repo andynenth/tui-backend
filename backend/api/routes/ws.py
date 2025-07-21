@@ -125,31 +125,10 @@ async def handle_disconnect(room_id: str, websocket: WebSocket):
                                 }
                             )
                         
-                        # Check if all remaining players are bots
-                        # Commenting out to debug the issue
-                        # if not room.has_any_human_players():
-                        #     logger.info(f"All players in room {room_id} are now bots. Cleaning up room.")
-                        #     
-                        #     # Unregister from bot manager
-                        #     from engine.bot_manager import BotManager
-                        #     bot_manager = BotManager()
-                        #     bot_manager.unregister_game(room_id)
-                        #     
-                        #     # Broadcast room closure to any remaining connections
-                        #     await broadcast(
-                        #         room_id,
-                        #         "room_closed",
-                        #         {
-                        #             "reason": "all_players_disconnected",
-                        #             "message": "Game ended - all human players have left"
-                        #         }
-                        #     )
-                        #     
-                        #     # Remove the room from room manager
-                        #     room_manager.delete_room(room_id)
-                        #     
-                        #     logger.info(f"Room {room_id} cleaned up successfully")
-                        #     return
+                        # Check if all remaining players are bots and mark for cleanup
+                        if not room.has_any_human_players():
+                            room.mark_for_cleanup()
+                            logger.info(f"All players in room {room_id} are now bots. Cleanup scheduled in {room.CLEANUP_TIMEOUT_SECONDS}s")
                 else:
                     logger.warning(f"No connection found for websocket_id {websocket_id} in room {room_id}")
         else:
@@ -167,6 +146,10 @@ async def websocket_endpoint(websocket: WebSocket, room_id: str):
     WebSocket endpoint for real-time communication within a specific room.
     Also handles special 'lobby' room for lobby updates.
     """
+    # Ensure cleanup task is running (fallback if startup event missed)
+    logger.info(f"🧹 WebSocket connection to room {room_id} - checking cleanup task")
+    start_cleanup_task()
+    
     # Generate unique ID for this websocket
     websocket._ws_id = str(uuid.uuid4())
     
@@ -512,6 +495,9 @@ async def websocket_endpoint(websocket: WebSocket, room_id: str):
                                     player.is_bot = False
                                     player.is_connected = True
                                     player.disconnect_time = None
+                                    
+                                    # Cancel any pending cleanup
+                                    room.cancel_cleanup()
                                     
                                     logger.info(f"Player {player_name} reconnected to game in room {room_id}")
                                     
@@ -1483,3 +1469,77 @@ async def websocket_endpoint(websocket: WebSocket, room_id: str):
     except Exception as e:
         logger.error(f"WebSocket error in room {room_id}: {e}")
         await handle_disconnect(room_id, websocket)
+
+
+async def room_cleanup_task():
+    """Background task to clean up abandoned rooms"""
+    logger.info("🧹 Room cleanup task started and running")
+    iteration_count = 0
+    
+    while True:
+        try:
+            iteration_count += 1
+            rooms_to_cleanup = []
+            
+            # Check all rooms (including started ones)
+            # Note: list_rooms() only returns non-started rooms, so we need to check all rooms directly
+            all_room_ids = list(room_manager.rooms.keys())
+            logger.info(f"🧹 Cleanup iteration {iteration_count}: Checking {len(all_room_ids)} rooms (including started games)")
+            if all_room_ids:
+                logger.info(f"🧹 Room IDs: {all_room_ids}")
+            
+            for room_id in all_room_ids:
+                room = room_manager.get_room(room_id)
+                if room:
+                    should_cleanup = room.should_cleanup()
+                    if room.cleanup_scheduled:
+                        logger.info(f"🧹 Room {room_id}: cleanup_scheduled={room.cleanup_scheduled}, should_cleanup={should_cleanup}")
+                    if should_cleanup:
+                        rooms_to_cleanup.append(room_id)
+                        logger.info(f"🧹 Room {room_id} added to cleanup list")
+            
+            if rooms_to_cleanup:
+                logger.info(f"🧹 Found {len(rooms_to_cleanup)} rooms to clean up: {rooms_to_cleanup}")
+            
+            # Clean up rooms
+            for room_id in rooms_to_cleanup:
+                room = room_manager.get_room(room_id)
+                if room and room.should_cleanup():  # Double-check
+                    logger.info(f"🧹 Cleaning up abandoned room {room_id}")
+                    
+                    # Unregister from bot manager
+                    from engine.bot_manager import BotManager
+                    bot_manager = BotManager()
+                    bot_manager.unregister_game(room_id)
+                    
+                    # Broadcast room closed
+                    await broadcast(room_id, "room_closed", {
+                        "reason": "All players disconnected",
+                        "timeout_seconds": room.CLEANUP_TIMEOUT_SECONDS
+                    })
+                    
+                    # Delete room
+                    room_manager.delete_room(room_id)
+                    
+                    logger.info(f"Room {room_id} cleaned up successfully")
+            
+        except Exception as e:
+            logger.error(f"Error in room cleanup task: {e}")
+        
+        # Run every 5 seconds
+        await asyncio.sleep(5)
+
+
+# Start the cleanup task when the module is imported
+# This will run in the background
+cleanup_task_started = False
+def start_cleanup_task():
+    global cleanup_task_started
+    logger.info(f"🧹 start_cleanup_task called, cleanup_task_started={cleanup_task_started}")
+    if not cleanup_task_started:
+        cleanup_task_started = True
+        logger.info("🧹 Creating room cleanup background task")
+        asyncio.create_task(room_cleanup_task())
+        logger.info("🧹 Room cleanup task created successfully")
+    else:
+        logger.info("🧹 Cleanup task already started, skipping")

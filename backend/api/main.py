@@ -152,3 +152,16 @@ def read_index():
         FileResponse: The index.html file from the static directory
     """
     return FileResponse(os.path.join(STATIC_DIR, INDEX_FILE))
+
+
+@app.on_event("startup")
+async def startup_event():
+    """
+    Run startup tasks when the application starts.
+    """
+    print("🚀 FastAPI startup event triggered")
+    # Start the room cleanup background task
+    from backend.api.routes.ws import start_cleanup_task
+    print("🚀 Calling start_cleanup_task...")
+    start_cleanup_task()
+    print("🚀 Startup event completed")
