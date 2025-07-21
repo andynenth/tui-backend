@@ -475,15 +475,20 @@ class Room:
         Returns:
             bool: True if the exiting player was the host, False otherwise.
         """
+        logger.info(f"🚪 [ROOM_DEBUG] exit_room called for player '{player_name}' in room '{self.room_id}'")
+        
         if player_name == self.host_name:
+            logger.info(f"👑 [ROOM_DEBUG] Host '{player_name}' is exiting room '{self.room_id}' - room will be deleted")
             return True  # If the host exits, signal to remove the entire room.
 
         # Find and remove the specific human player.
         for i, player in enumerate(self.players):
             if player and not player.is_bot and player.name == player_name:
                 self.players[i] = None  # Set the player's slot to None (empty).
+                logger.info(f"👥 [ROOM_DEBUG] Regular player '{player_name}' removed from slot {i} in room '{self.room_id}'")
                 return False  # Player exited, but not the host.
 
+        logger.info(f"⚠️ [ROOM_DEBUG] Player '{player_name}' not found or was a bot in room '{self.room_id}'")
         return False  # Player not found or was a bot.
 
     def start_game(self):
@@ -541,24 +546,35 @@ class Room:
             bool: True if at least one human player exists, False if all are bots
         """
         if not self.game:
+            logger.info(f"🎮 [ROOM_DEBUG] has_any_human_players: No game object for room '{self.room_id}'")
             return False
 
+        human_count = 0
+        bot_count = 0
         for player in self.game.players:
-            if player and not player.is_bot:
-                return True
-
-        return False
+            if player:
+                if player.is_bot:
+                    bot_count += 1
+                else:
+                    human_count += 1
+                    
+        logger.info(f"👥 [ROOM_DEBUG] Room '{self.room_id}' player count: {human_count} humans, {bot_count} bots")
+        return human_count > 0
 
     def mark_for_cleanup(self):
         """Mark room for cleanup after all humans disconnect"""
         if not self.has_any_human_players():
             self.last_human_disconnect_time = time.time()
             self.cleanup_scheduled = True
+            logger.info(f"🗑️ [ROOM_DEBUG] Room '{self.room_id}' marked for cleanup at {self.last_human_disconnect_time}, timeout={self.CLEANUP_TIMEOUT_SECONDS}s")
+        else:
+            logger.info(f"❌ [ROOM_DEBUG] Room '{self.room_id}' NOT marked for cleanup - still has human players")
 
     def cancel_cleanup(self):
         """Cancel pending cleanup when human reconnects"""
         self.last_human_disconnect_time = None
         self.cleanup_scheduled = False
+        logger.info(f"✅ [ROOM_DEBUG] Cleanup cancelled for room '{self.room_id}' - human player reconnected")
 
     def should_cleanup(self) -> bool:
         """Check if room should be cleaned up based on timeout"""
@@ -570,4 +586,8 @@ class Room:
 
         elapsed = time.time() - self.last_human_disconnect_time
         should_cleanup = elapsed >= self.CLEANUP_TIMEOUT_SECONDS
+        
+        if should_cleanup:
+            logger.info(f"📢 [ROOM_DEBUG] Room '{self.room_id}' should be cleaned up: elapsed={elapsed:.2f}s >= timeout={self.CLEANUP_TIMEOUT_SECONDS}s")
+        
         return should_cleanup

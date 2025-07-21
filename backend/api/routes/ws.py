@@ -52,6 +52,8 @@ async def handle_disconnect(room_id: str, websocket: WebSocket):
         import time
 
         disconnect_time = time.time()
+        
+        logger.info(f"🔌 [ROOM_DEBUG] Handling disconnect for room '{room_id}', websocket_id: {websocket_id} at {disconnect_time}")
 
         # Try to find player by checking all players in the room if websocket_id fails
         connection = None
@@ -71,6 +73,7 @@ async def handle_disconnect(room_id: str, websocket: WebSocket):
         if connection and room_id != "lobby":
             # This is an in-game disconnect
             room = room_manager.get_room(room_id)
+            logger.info(f"🎮 [ROOM_DEBUG] In-game disconnect detected for player '{connection.player_name}' in room '{room_id}'")
             if room and room.started and room.game:
                 # Find the player in the game
                 player = next(
@@ -136,6 +139,7 @@ async def handle_disconnect(room_id: str, websocket: WebSocket):
                         logger.info(
                             f"All players in room {room_id} are now bots. Cleanup scheduled in {room.CLEANUP_TIMEOUT_SECONDS}s"
                         )
+                        logger.info(f"🤖 [ROOM_DEBUG] Room '{room_id}' has no human players, marked for cleanup")
             else:
                 logger.warning(
                     f"No connection found for websocket_id {websocket_id} in room {room_id}"
@@ -144,11 +148,13 @@ async def handle_disconnect(room_id: str, websocket: WebSocket):
             logger.warning(
                 f"No websocket_id found on websocket object for room {room_id}"
             )
+            logger.info(f"⚠️ [ROOM_DEBUG] WebSocket disconnect without ID for room '{room_id}'")
     except Exception as e:
         logger.error(f"Error handling disconnect: {e}")
     finally:
         # Always unregister the websocket
         unregister(room_id, websocket)
+        logger.info(f"🔌 [ROOM_DEBUG] WebSocket unregistered from room '{room_id}'")
 
 
 @router.websocket("/ws/{room_id}")
@@ -166,6 +172,8 @@ async def websocket_endpoint(websocket: WebSocket, room_id: str):
     import time
 
     connect_time = time.time()
+    
+    logger.info(f"🔌 [ROOM_DEBUG] New WebSocket connection to room '{room_id}', ws_id: {websocket._ws_id} at {connect_time}")
 
     registered_ws = await register(room_id, websocket)
 
@@ -794,8 +802,12 @@ async def websocket_endpoint(websocket: WebSocket, room_id: str):
                         )
 
                 elif event_name == "leave_room":
+                    logger.info(f"📤 [ROOM_DEBUG] Received 'leave_room' event for room '{room_id}'")
                     room = room_manager.get_room(room_id)
                     if room:
+                        # Log room state before handling leave
+                        room_summary = room.summary()
+                        logger.info(f"📊 [ROOM_DEBUG] Room state before leave: players={room_summary['players']}, host={room_summary['host_name']}, started={room_summary['started']}")
                         try:
                             # Find which player is leaving by checking the websocket
                             # For now, we'll need the player name from the event data
@@ -814,6 +826,7 @@ async def websocket_endpoint(websocket: WebSocket, room_id: str):
 
                             # Check if this player is the host
                             is_host_leaving = player_name == room.host_name
+                            logger.info(f"👤 [ROOM_DEBUG] Player '{player_name}' leaving room '{room_id}', is_host={is_host_leaving}")
 
                             if is_host_leaving:
                                 # Host is leaving - close the entire room
@@ -829,6 +842,7 @@ async def websocket_endpoint(websocket: WebSocket, room_id: str):
 
                                 # Remove the room from the manager
                                 room_manager.delete_room(room_id)
+                                logger.info(f"🗑️ [ROOM_DEBUG] Room '{room_id}' deleted because host '{player_name}' left")
 
                                 # Send confirmation to the leaving host
                                 await registered_ws.send_json(
@@ -856,9 +870,11 @@ async def websocket_endpoint(websocket: WebSocket, room_id: str):
                             else:
                                 # Regular player leaving - just remove them from the room
                                 room.exit_room(player_name)
+                                logger.info(f"👥 [ROOM_DEBUG] Regular player '{player_name}' removed from room '{room_id}'")
 
                                 # Broadcast room update to remaining clients
                                 updated_summary = room.summary()
+                                logger.info(f"📊 [ROOM_DEBUG] Room state after leave: players={updated_summary['players']}, host={updated_summary['host_name']}")
                                 await broadcast(
                                     room_id,
                                     "room_update",
@@ -1385,6 +1401,7 @@ async def websocket_endpoint(websocket: WebSocket, room_id: str):
 
                 elif event_name == "leave_game":
                     # Handle leaving game (different from leave_room)
+                    logger.info(f"🎮 [ROOM_DEBUG] Received 'leave_game' event for room '{room_id}'")
                     player_name = event_data.get("player_name")
 
                     if not player_name:
@@ -1401,7 +1418,12 @@ async def websocket_endpoint(websocket: WebSocket, room_id: str):
                         # Future: might need separate logic for mid-game leaving
                         room = room_manager.get_room(room_id)
                         if room:
+                            # Log room state before handling leave
+                            room_summary = room.summary()
+                            logger.info(f"📊 [ROOM_DEBUG] Game room state before leave: players={room_summary['players']}, host={room_summary['host_name']}, started={room_summary['started']}")
+                            
                             is_host_leaving = player_name == room.host_name
+                            logger.info(f"🎮 [ROOM_DEBUG] Player '{player_name}' leaving game in room '{room_id}', is_host={is_host_leaving}")
 
                             if is_host_leaving:
                                 # Host leaving - close entire room/game
@@ -1417,6 +1439,7 @@ async def websocket_endpoint(websocket: WebSocket, room_id: str):
                                 logger.info(
                                     f"Game ended: host {player_name} left room {room_id}"
                                 )
+                                logger.info(f"🗑️ [ROOM_DEBUG] Game room '{room_id}' deleted because host '{player_name}' left during game")
                             else:
                                 # Regular player leaving game
                                 room.exit_room(player_name)
@@ -1508,6 +1531,7 @@ async def websocket_endpoint(websocket: WebSocket, room_id: str):
 async def room_cleanup_task():
     """Background task to clean up abandoned rooms"""
     iteration_count = 0
+    logger.info("🧹 [ROOM_DEBUG] Room cleanup task started")
 
     while True:
         try:
@@ -1517,6 +1541,9 @@ async def room_cleanup_task():
             # Check all rooms (including started ones)
             # Note: list_rooms() only returns non-started rooms, so we need to check all rooms directly
             all_room_ids = list(room_manager.rooms.keys())
+            
+            if all_room_ids:
+                logger.info(f"🧹 [ROOM_DEBUG] Cleanup iteration {iteration_count}: Checking {len(all_room_ids)} rooms: {all_room_ids}")
 
             for room_id in all_room_ids:
                 room = room_manager.get_room(room_id)
@@ -1524,12 +1551,16 @@ async def room_cleanup_task():
                     should_cleanup = room.should_cleanup()
                     if should_cleanup:
                         rooms_to_cleanup.append(room_id)
+                        logger.info(f"🧹 [ROOM_DEBUG] Room '{room_id}' marked for cleanup")
 
             # Clean up rooms
+            if rooms_to_cleanup:
+                logger.info(f"🧹 [ROOM_DEBUG] Cleaning up {len(rooms_to_cleanup)} rooms: {rooms_to_cleanup}")
+            
             for room_id in rooms_to_cleanup:
                 room = room_manager.get_room(room_id)
                 if room and room.should_cleanup():  # Double-check
-                    logger.info(f"Cleaning up abandoned room {room_id}")
+                    logger.info(f"🗑️ [ROOM_DEBUG] Cleaning up abandoned room {room_id}")
 
                     # Unregister from bot manager
                     from engine.bot_manager import BotManager
@@ -1568,4 +1599,7 @@ def start_cleanup_task():
     global cleanup_task_started
     if not cleanup_task_started:
         cleanup_task_started = True
+        logger.info("🧹 [ROOM_DEBUG] Starting room cleanup background task")
         asyncio.create_task(room_cleanup_task())
+    else:
+        logger.info("🧹 [ROOM_DEBUG] Room cleanup task already running")
