@@ -789,4 +789,3 @@ class Game:
         chariot_count = sum(1 for p in piece_names if f"CHARIOT_{color}" in p)
         horse_count = sum(1 for p in piece_names if f"HORSE_{color}" in p)
         cannon_count = sum(1 for p in piece_names if f"CANNON_{color}" in p)
-

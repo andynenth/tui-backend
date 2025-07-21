@@ -20,7 +20,7 @@ class Player:
         # Game statistics (cumulative across all rounds)
         self.turns_won = 0  # Total number of turns won in the game
         self.perfect_rounds = 0  # Number of rounds where declared == actual (non-zero)
-        
+
         # Connection tracking (for disconnect handling)
         self.is_connected = True  # Whether player is currently connected
         self.disconnect_time = None  # When player disconnected
@@ -52,7 +52,7 @@ class Player:
     def reset_for_next_round(self):
         """
         Reset player state for the next round.
-        
+
         Clears the player's hand and resets round-specific counters
         (declared value and captured piles) while preserving game-level
         state like score and zero declaration tracking.

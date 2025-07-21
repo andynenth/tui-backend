@@ -77,7 +77,10 @@ export class NetworkService extends EventTarget {
    * @param roomId - The room ID to connect to
    * @param playerInfo - Optional player information for connection tracking
    */
-  async connectToRoom(roomId: string, playerInfo?: { playerName?: string }): Promise<WebSocket> {
+  async connectToRoom(
+    roomId: string,
+    playerInfo?: { playerName?: string }
+  ): Promise<WebSocket> {
     if (this.isDestroyed) {
       throw new Error('NetworkService has been destroyed');
     }
@@ -123,10 +126,10 @@ export class NetworkService extends EventTarget {
 
       // Send initial ready signal
       const connectionData = this.connections.get(roomId);
-      this.send(roomId, 'client_ready', { 
+      this.send(roomId, 'client_ready', {
         room_id: roomId,
         player_name: connectionData?.playerName,
-        is_reconnection: connectionData?.isReconnection || false
+        is_reconnection: connectionData?.isReconnection || false,
       });
 
       // Process any queued messages

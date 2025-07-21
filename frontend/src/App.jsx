@@ -116,51 +116,54 @@ const AppRouterContent = ({ sessionToRecover }) => {
       // Restore app context
       app.setPlayerName(sessionToRecover.playerName);
       app.setCurrentRoomId(sessionToRecover.roomId);
-      
+
       // Navigate to game
-      console.log('🎮 Recovering session, navigating to game:', sessionToRecover.roomId);
+      console.log(
+        '🎮 Recovering session, navigating to game:',
+        sessionToRecover.roomId
+      );
       navigate(`/game/${sessionToRecover.roomId}`);
     }
   }, [sessionToRecover, navigate, app]);
 
   return (
     <Routes>
-        {/* Start page - no requirements */}
-        <Route path="/" element={<StartPage />} />
+      {/* Start page - no requirements */}
+      <Route path="/" element={<StartPage />} />
 
-        {/* Lobby - requires player name */}
-        <Route
-          path="/lobby"
-          element={
-            <ProtectedRoute requiredData={['playerName']}>
-              <LobbyPage />
-            </ProtectedRoute>
-          }
-        />
+      {/* Lobby - requires player name */}
+      <Route
+        path="/lobby"
+        element={
+          <ProtectedRoute requiredData={['playerName']}>
+            <LobbyPage />
+          </ProtectedRoute>
+        }
+      />
 
-        {/* Room - requires player name and room ID */}
-        <Route
-          path="/room/:roomId"
-          element={
-            <ProtectedRoute requiredData={['playerName', 'roomId']}>
-              <RoomPage />
-            </ProtectedRoute>
-          }
-        />
+      {/* Room - requires player name and room ID */}
+      <Route
+        path="/room/:roomId"
+        element={
+          <ProtectedRoute requiredData={['playerName', 'roomId']}>
+            <RoomPage />
+          </ProtectedRoute>
+        }
+      />
 
-        {/* Game - requires player name and room ID, provides GameContext */}
-        <Route
-          path="/game/:roomId"
-          element={
-            <GameRoute>
-              <GamePage />
-            </GameRoute>
-          }
-        />
+      {/* Game - requires player name and room ID, provides GameContext */}
+      <Route
+        path="/game/:roomId"
+        element={
+          <GameRoute>
+            <GamePage />
+          </GameRoute>
+        }
+      />
 
-        {/* Catch all - redirect to start */}
-        <Route path="*" element={<Navigate to="/" replace />} />
-      </Routes>
+      {/* Catch all - redirect to start */}
+      <Route path="*" element={<Navigate to="/" replace />} />
+    </Routes>
   );
 };
 
@@ -177,14 +180,14 @@ const AppWithServices = () => {
         initializeTheme();
 
         await initializeServices();
-        
+
         // Check for stored session
         if (hasValidSession()) {
           const session = getSession();
           console.log('🎮 Found stored session:', session);
           setSessionToRecover(session);
         }
-        
+
         setServicesInitialized(true);
         console.log('🎮 Global services initialized');
       } catch (error) {
