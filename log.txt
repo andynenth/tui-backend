@@ -1,188 +1,220 @@
-RecoveryService.ts:69 🔄 RecoveryService: Initialized
-ServiceIntegration.ts:82 🔗 ServiceIntegration: Initialized
-ServiceIntegration.ts:101 
-ServiceIntegration.ts:102 🎯 =============================================
-ServiceIntegration.ts:103 🚀 PHASE 1-4 ENTERPRISE ARCHITECTURE STARTING
-ServiceIntegration.ts:104 🎯 =============================================
-ServiceIntegration.ts:105 🔧 Initializing integrated service layer...
-ServiceIntegration.ts:601 ✅ NetworkService integrated
-ServiceIntegration.ts:609 ✅ GameService integrated
-ServiceIntegration.ts:617 ✅ RecoveryService integrated
-ServiceIntegration.ts:628 🩺 Health monitoring started (30000ms interval)
-ServiceIntegration.ts:129 
-ServiceIntegration.ts:130 ✅ =============================================
-ServiceIntegration.ts:131 🎉 PHASE 1-4 ARCHITECTURE FULLY OPERATIONAL!
-ServiceIntegration.ts:132 ✅ =============================================
-ServiceIntegration.ts:133 🔗 NetworkService: Advanced WebSocket with auto-reconnection
-ServiceIntegration.ts:136 🎮 GameService: React hooks with TypeScript state management
-ServiceIntegration.ts:139 🛠️ RecoveryService: Automatic error recovery and health monitoring
-ServiceIntegration.ts:142 🏢 Enterprise Features: Event sourcing, logging, metrics
-ServiceIntegration.ts:143 ✅ Service integration layer initialized successfully
-ServiceIntegration.ts:144 
-App.jsx:192 🎮 Global services initialized
-favicon.ico:1  GET http://localhost:5050/favicon.ico 404 (Not Found)
-NetworkService.ts:371 🔗 Connection opened to room lobby
-GameService.ts:1554 🎮 State Change: NETWORK_CONNECTED
-GameService.ts:1555 Previous: {isConnected: false, roomId: null, playerName: null, phase: 'waiting', currentRound: 1, …}
-GameService.ts:1556 New: {isConnected: true, roomId: null, playerName: null, phase: 'waiting', currentRound: 1, …}
-GameService.ts:1557 Diff: {isConnected: {…}, lastEventSequence: {…}}
-NetworkService.ts:150 🌐 NetworkService: Connected to room lobby
-GameService.ts:1554 🎮 State Change: NETWORK_DISCONNECTED
-GameService.ts:1555 Previous: {isConnected: true, roomId: null, playerName: null, phase: 'waiting', currentRound: 1, …}
-GameService.ts:1556 New: {isConnected: false, roomId: null, playerName: null, phase: 'waiting', currentRound: 1, …}
-GameService.ts:1557 Diff: {isConnected: {…}, lastEventSequence: {…}}
-NetworkService.ts:196 🌐 NetworkService: Disconnected from room lobby
-NetworkService.ts:241 📤 Queued message for lobby: get_rooms (1 queued)
-NetworkService.ts:371 🔗 Connection opened to room lobby
-GameService.ts:1554 🎮 State Change: NETWORK_CONNECTED
-GameService.ts:1555 Previous: {isConnected: false, roomId: null, playerName: null, phase: 'waiting', currentRound: 1, …}
-GameService.ts:1556 New: {isConnected: true, roomId: null, playerName: null, phase: 'waiting', currentRound: 1, …}
-GameService.ts:1557 Diff: {isConnected: {…}, lastEventSequence: {…}}
-NetworkService.ts:150 🌐 NetworkService: Connected to room lobby
-LobbyPage.jsx:49 Received room_list_update: {roomId: 'lobby', data: {…}, message: {…}, timestamp: 1753118849859}
-LobbyPage.jsx:65 Received room_created: {roomId: 'lobby', data: {…}, message: {…}, timestamp: 1753118851666}
-LobbyPage.jsx:66 🟢 Navigation: room_id = lobby navigating to: /room/lobby
-LobbyPage.jsx:82 ⏭️ Ignoring room_created event: {roomId: 'lobby', isCreatingRoom: false, reason: 'lobby event'}
-LobbyPage.jsx:49 Received room_list_update: {roomId: 'lobby', data: {…}, message: {…}, timestamp: 1753118851667}
-LobbyPage.jsx:49 Received room_list_update: {roomId: 'lobby', data: {…}, message: {…}, timestamp: 1753118854788}
-GameService.ts:1554 🎮 State Change: NETWORK_DISCONNECTED
-GameService.ts:1555 Previous: {isConnected: true, roomId: null, playerName: null, phase: 'waiting', currentRound: 1, …}
-GameService.ts:1556 New: {isConnected: false, roomId: null, playerName: null, phase: 'waiting', currentRound: 1, …}
-GameService.ts:1557 Diff: {isConnected: {…}, lastEventSequence: {…}}
-NetworkService.ts:196 🌐 NetworkService: Disconnected from room lobby
-NetworkService.ts:241 📤 Queued message for lobby: get_rooms (1 queued)
-NetworkService.ts:371 🔗 Connection opened to room lobby
-GameService.ts:1554 🎮 State Change: NETWORK_CONNECTED
-GameService.ts:1555 Previous: {isConnected: false, roomId: null, playerName: null, phase: 'waiting', currentRound: 1, …}
-GameService.ts:1556 New: {isConnected: true, roomId: null, playerName: null, phase: 'waiting', currentRound: 1, …}
-GameService.ts:1557 Diff: {isConnected: {…}, lastEventSequence: {…}}
-NetworkService.ts:150 🌐 NetworkService: Connected to room lobby
-NetworkService.ts:371 🔗 Connection opened to room 48F619
-GameService.ts:1554 🎮 State Change: NETWORK_CONNECTED
-GameService.ts:1555 Previous: {isConnected: true, roomId: null, playerName: null, phase: 'waiting', currentRound: 1, …}
-GameService.ts:1556 New: {isConnected: true, roomId: null, playerName: null, phase: 'waiting', currentRound: 1, …}
-GameService.ts:1557 Diff: {lastEventSequence: {…}}
-NetworkService.ts:150 🌐 NetworkService: Connected to room 48F619
-RoomPage.jsx:71 🏠 ROOM_UPDATE: Full data received: {players: Array(4), host_name: 'Andy', room_id: '48F619', started: false}
-RoomPage.jsx:72 🏠 ROOM_UPDATE: Players array: (4) [{…}, {…}, {…}, {…}]
-RoomPage.jsx:73 🏠 ROOM_UPDATE: Players array type: object
-RoomPage.jsx:77 🏠 ROOM_UPDATE: Players array length: 4
-RoomPage.jsx:81 🏠 ROOM_UPDATE: Players array entries: (4) [Array(2), Array(2), Array(2), Array(2)]
+[0.33ms] [@tailwindcss/postcss] src/styles/toast-notifications.css
+[0.31ms]   ↳ Quick bail check
 
 
----
-
-[0.09ms] [@tailwindcss/postcss] src/styles/toast-notifications.css
-[0.08ms]   ↳ Quick bail check
+[0.13ms] [@tailwindcss/postcss] src/styles/components/game/gameover.css
+[0.12ms]   ↳ Quick bail check
 
 
-[241.84ms] [@tailwindcss/postcss] src/styles/globals.css
-[  0.09ms]   ↳ Quick bail check
-[ 85.11ms]   ↳ Setup compiler
-[  0.47ms]     ↳ PostCSS AST -> Tailwind CSS AST
-[ 84.61ms]     ↳ Create compiler
-[  0.46ms]   ↳ Register full rebuild paths
-[  9.21ms]   ↳ Setup scanner
-[ 40.77ms]   ↳ Scan for candidates
-[ 20.44ms]   ↳ Register dependency messages
-[ 71.88ms]   ↳ Build utilities
-[  8.85ms]   ↳ Transform Tailwind CSS AST into PostCSS AST
-[  4.62ms]   ↳ Update PostCSS AST
+[202.87ms] [@tailwindcss/postcss] src/styles/globals.css
+[  0.10ms]   ↳ Quick bail check
+[ 76.85ms]   ↳ Setup compiler
+[  0.49ms]     ↳ PostCSS AST -> Tailwind CSS AST
+[ 76.33ms]     ↳ Create compiler
+[  0.32ms]   ↳ Register full rebuild paths
+[  1.85ms]   ↳ Setup scanner
+[ 31.16ms]   ↳ Scan for candidates
+[ 16.90ms]   ↳ Register dependency messages
+[ 57.63ms]   ↳ Build utilities
+[ 12.14ms]   ↳ Transform Tailwind CSS AST into PostCSS AST
+[  5.46ms]   ↳ Update PostCSS AST
 
-INFO:     127.0.0.1:50742 - "GET / HTTP/1.1" 200 OK
-INFO:     127.0.0.1:50742 - "GET /.well-known/appspecific/com.chrome.devtools.json HTTP/1.1" 404 Not Found
-INFO:     127.0.0.1:50744 - "GET /bundle.css HTTP/1.1" 200 OK
-INFO:     127.0.0.1:50746 - "GET /bundle.js HTTP/1.1" 200 OK
-INFO:     127.0.0.1:50746 - "GET /bundle.css.map HTTP/1.1" 200 OK
-INFO:     127.0.0.1:50746 - "GET /bundle.js.map HTTP/1.1" 200 OK
-INFO:     127.0.0.1:50746 - "GET /favicon.ico HTTP/1.1" 404 Not Found
-2025-07-21 10:27:26 - backend.api.routes.ws - INFO - 🧹 [ROOM_DEBUG] Room cleanup task already running
-2025-07-21 10:27:26 - backend.api.routes.ws - INFO - 🔌 [ROOM_DEBUG] New WebSocket connection to room 'lobby', ws_id: 94c73508-1668-4ef9-88fc-30919abaa528 at 1753118846.156252
-INFO:     ('127.0.0.1', 50756) - "WebSocket /ws/lobby" [accepted]
+INFO:     127.0.0.1:63214 - "GET / HTTP/1.1" 200 OK
+INFO:     127.0.0.1:63216 - "GET /bundle.css HTTP/1.1" 200 OK
+INFO:     127.0.0.1:63214 - "GET /.well-known/appspecific/com.chrome.devtools.json HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:63218 - "GET /bundle.js HTTP/1.1" 200 OK
+INFO:     127.0.0.1:63218 - "GET /bundle.css.map HTTP/1.1" 200 OK
+INFO:     127.0.0.1:63216 - "GET /bundle.js.map HTTP/1.1" 200 OK
+INFO:     127.0.0.1:63232 - "GET / HTTP/1.1" 200 OK
+INFO:     127.0.0.1:63232 - "GET /bundle.css HTTP/1.1" 200 OK
+INFO:     127.0.0.1:63234 - "GET /bundle.js HTTP/1.1" 200 OK
+INFO:     127.0.0.1:63234 - "GET /.well-known/appspecific/com.chrome.devtools.json HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:63234 - "GET /bundle.js.map HTTP/1.1" 200 OK
+INFO:     127.0.0.1:63232 - "GET /bundle.css.map HTTP/1.1" 200 OK
+2025-07-21 11:16:04 - backend.api.routes.ws - INFO - 🔌 [ROOM_DEBUG] New WebSocket connection to room 'lobby', ws_id: b19305cc-ba0c-4f1e-a7d3-ccc9cf5a90ae at 1753121764.8112252
+2025-07-21 11:16:04 - backend.api.routes.ws - INFO - 🧹 [ROOM_DEBUG] Room cleanup task already running
+INFO:     ('127.0.0.1', 63260) - "WebSocket /ws/lobby" [accepted]
 INFO:     connection open
-2025-07-21 10:27:26 - backend.api.routes.ws - INFO - 🧹 [ROOM_DEBUG] Room cleanup task already running
-2025-07-21 10:27:26 - backend.api.routes.ws - INFO - 🔌 [ROOM_DEBUG] New WebSocket connection to room 'lobby', ws_id: b66bcaac-5324-4889-9e96-fdf19fe1772f at 1753118846.176832
-INFO:     ('127.0.0.1', 50758) - "WebSocket /ws/lobby" [accepted]
-INFO:     connection open
-2025-07-21 10:27:26 - backend.api.routes.ws - INFO - 🔌 [ROOM_DEBUG] Handling disconnect for room 'lobby', websocket_id: 94c73508-1668-4ef9-88fc-30919abaa528 at 1753118846.181176
-2025-07-21 10:27:26 - api.websocket.connection_manager - WARNING - WebSocket ID 94c73508-1668-4ef9-88fc-30919abaa528 not found in mapping. Current mappings: []
-2025-07-21 10:27:26 - backend.api.routes.ws - WARNING - No websocket_id found on websocket object for room lobby
-2025-07-21 10:27:26 - backend.api.routes.ws - INFO - ⚠️ [ROOM_DEBUG] WebSocket disconnect without ID for room 'lobby'
-2025-07-21 10:27:26 - backend.api.routes.ws - INFO - 🔌 [ROOM_DEBUG] WebSocket unregistered from room 'lobby'
+2025-07-21 11:16:04 - backend.api.routes.ws - INFO - 🔌 [ROOM_DEBUG] Handling disconnect for room 'lobby', websocket_id: b19305cc-ba0c-4f1e-a7d3-ccc9cf5a90ae at 1753121764.8357499
+2025-07-21 11:16:04 - api.websocket.connection_manager - WARNING - WebSocket ID b19305cc-ba0c-4f1e-a7d3-ccc9cf5a90ae not found in mapping. Current mappings: []
+2025-07-21 11:16:04 - backend.api.routes.ws - WARNING - No websocket_id found on websocket object for room lobby
+2025-07-21 11:16:04 - backend.api.routes.ws - INFO - ⚠️ [ROOM_DEBUG] WebSocket disconnect without ID for room 'lobby'
+2025-07-21 11:16:04 - backend.api.routes.ws - INFO - 🔌 [ROOM_DEBUG] WebSocket unregistered from room 'lobby'
 INFO:     connection closed
-2025-07-21 10:27:29 - backend.api.routes.ws - INFO - 🧹 [ROOM_DEBUG] Room cleanup task already running
-2025-07-21 10:27:29 - backend.api.routes.ws - INFO - 🔌 [ROOM_DEBUG] New WebSocket connection to room 'lobby', ws_id: 64abeb26-e958-4949-8b4e-9851e73b65c0 at 1753118849.839326
-INFO:     ('127.0.0.1', 50776) - "WebSocket /ws/lobby" [accepted]
+2025-07-21 11:16:04 - backend.api.routes.ws - INFO - 🔌 [ROOM_DEBUG] New WebSocket connection to room 'lobby', ws_id: 277a0b26-4898-491c-a0ae-b84544996d7e at 1753121764.838146
+2025-07-21 11:16:04 - backend.api.routes.ws - INFO - 🧹 [ROOM_DEBUG] Room cleanup task already running
+INFO:     ('127.0.0.1', 63262) - "WebSocket /ws/lobby" [accepted]
 INFO:     connection open
-2025-07-21 10:27:29 - backend.api.routes.ws - INFO - 🔌 [ROOM_DEBUG] Handling disconnect for room 'lobby', websocket_id: 64abeb26-e958-4949-8b4e-9851e73b65c0 at 1753118849.8515148
-2025-07-21 10:27:29 - api.websocket.connection_manager - WARNING - WebSocket ID 64abeb26-e958-4949-8b4e-9851e73b65c0 not found in mapping. Current mappings: []
-2025-07-21 10:27:29 - backend.api.routes.ws - WARNING - No websocket_id found on websocket object for room lobby
-2025-07-21 10:27:29 - backend.api.routes.ws - INFO - ⚠️ [ROOM_DEBUG] WebSocket disconnect without ID for room 'lobby'
-2025-07-21 10:27:29 - backend.api.routes.ws - INFO - 🔌 [ROOM_DEBUG] WebSocket unregistered from room 'lobby'
+2025-07-21 11:16:06 - backend.api.routes.ws - INFO - 🔌 [ROOM_DEBUG] Handling disconnect for room 'lobby', websocket_id: 277a0b26-4898-491c-a0ae-b84544996d7e at 1753121766.9633632
+2025-07-21 11:16:06 - api.websocket.connection_manager - WARNING - WebSocket ID 277a0b26-4898-491c-a0ae-b84544996d7e not found in mapping. Current mappings: []
+2025-07-21 11:16:06 - backend.api.routes.ws - WARNING - No websocket_id found on websocket object for room lobby
+2025-07-21 11:16:06 - backend.api.routes.ws - INFO - ⚠️ [ROOM_DEBUG] WebSocket disconnect without ID for room 'lobby'
+2025-07-21 11:16:06 - backend.api.routes.ws - INFO - 🔌 [ROOM_DEBUG] WebSocket unregistered from room 'lobby'
 INFO:     connection closed
-2025-07-21 10:27:29 - backend.api.routes.ws - INFO - 🧹 [ROOM_DEBUG] Room cleanup task already running
-2025-07-21 10:27:29 - backend.api.routes.ws - INFO - 🔌 [ROOM_DEBUG] New WebSocket connection to room 'lobby', ws_id: a12c03e9-e0e5-4cc9-85eb-07e6a439e0c1 at 1753118849.855098
-INFO:     ('127.0.0.1', 50778) - "WebSocket /ws/lobby" [accepted]
+2025-07-21 11:16:06 - backend.api.routes.ws - INFO - 🔌 [ROOM_DEBUG] New WebSocket connection to room 'lobby', ws_id: 957baf1e-cf84-40cc-a99a-11ddaf8b5aa2 at 1753121766.964884
+2025-07-21 11:16:06 - backend.api.routes.ws - INFO - 🧹 [ROOM_DEBUG] Room cleanup task already running
+INFO:     ('127.0.0.1', 63272) - "WebSocket /ws/lobby" [accepted]
 INFO:     connection open
-2025-07-21 10:27:31 - backend.api.routes.ws - INFO - 🧹 [ROOM_DEBUG] Room cleanup task already running
-2025-07-21 10:27:31 - backend.api.routes.ws - INFO - 🔌 [ROOM_DEBUG] New WebSocket connection to room 'lobby', ws_id: eac27ab9-60b9-4195-9673-55fb82638b12 at 1753118851.5719879
-INFO:     ('127.0.0.1', 50788) - "WebSocket /ws/lobby" [accepted]
-INFO:     connection open
-2025-07-21 10:27:31 - backend.api.routes.ws - INFO - 🔌 [ROOM_DEBUG] Handling disconnect for room 'lobby', websocket_id: b66bcaac-5324-4889-9e96-fdf19fe1772f at 1753118851.573368
-2025-07-21 10:27:31 - api.websocket.connection_manager - WARNING - WebSocket ID b66bcaac-5324-4889-9e96-fdf19fe1772f not found in mapping. Current mappings: []
-2025-07-21 10:27:31 - backend.api.routes.ws - WARNING - No websocket_id found on websocket object for room lobby
-2025-07-21 10:27:31 - backend.api.routes.ws - INFO - ⚠️ [ROOM_DEBUG] WebSocket disconnect without ID for room 'lobby'
-2025-07-21 10:27:31 - backend.api.routes.ws - INFO - 🔌 [ROOM_DEBUG] WebSocket unregistered from room 'lobby'
+✅ Notified lobby about new room: C09400
+2025-07-21 11:16:07 - backend.api.routes.ws - INFO - 🔌 [ROOM_DEBUG] Handling disconnect for room 'C09400', websocket_id: 957baf1e-cf84-40cc-a99a-11ddaf8b5aa2 at 1753121767.057329
+2025-07-21 11:16:07 - api.websocket.connection_manager - WARNING - WebSocket ID 957baf1e-cf84-40cc-a99a-11ddaf8b5aa2 not found in mapping. Current mappings: []
+2025-07-21 11:16:07 - backend.api.routes.ws - WARNING - No websocket_id found on websocket object for room C09400
+2025-07-21 11:16:07 - backend.api.routes.ws - INFO - ⚠️ [ROOM_DEBUG] WebSocket disconnect without ID for room 'C09400'
+2025-07-21 11:16:07 - backend.api.routes.ws - INFO - 🔌 [ROOM_DEBUG] WebSocket unregistered from room 'C09400'
 INFO:     connection closed
-✅ Notified lobby about new room: 48F619
-2025-07-21 10:27:31 - backend.api.routes.ws - INFO - 🔌 [ROOM_DEBUG] Handling disconnect for room '48F619', websocket_id: eac27ab9-60b9-4195-9673-55fb82638b12 at 1753118851.666713
-2025-07-21 10:27:31 - api.websocket.connection_manager - WARNING - WebSocket ID eac27ab9-60b9-4195-9673-55fb82638b12 not found in mapping. Current mappings: []
-2025-07-21 10:27:31 - backend.api.routes.ws - WARNING - No websocket_id found on websocket object for room 48F619
-2025-07-21 10:27:31 - backend.api.routes.ws - INFO - ⚠️ [ROOM_DEBUG] WebSocket disconnect without ID for room '48F619'
-2025-07-21 10:27:31 - backend.api.routes.ws - INFO - 🔌 [ROOM_DEBUG] WebSocket unregistered from room '48F619'
-INFO:     connection closed
-2025-07-21 10:27:31 - backend.api.routes.ws - INFO - 🧹 [ROOM_DEBUG] Room cleanup task already running
-2025-07-21 10:27:31 - backend.api.routes.ws - INFO - 🔌 [ROOM_DEBUG] New WebSocket connection to room 'lobby', ws_id: 72f48031-944b-49e5-bf09-884fa0832ee0 at 1753118851.709513
-INFO:     ('127.0.0.1', 50790) - "WebSocket /ws/lobby" [accepted]
+2025-07-21 11:16:07 - backend.api.routes.ws - INFO - 🔌 [ROOM_DEBUG] New WebSocket connection to room 'lobby', ws_id: 4c658143-19bd-4d79-b8ad-acac600f8d8b at 1753121767.075437
+2025-07-21 11:16:07 - backend.api.routes.ws - INFO - 🧹 [ROOM_DEBUG] Room cleanup task already running
+INFO:     ('127.0.0.1', 63274) - "WebSocket /ws/lobby" [accepted]
 INFO:     connection open
-2025-07-21 10:27:31 - backend.api.routes.ws - INFO - 🧹 [ROOM_DEBUG] Room cleanup task already running
-2025-07-21 10:27:31 - backend.api.routes.ws - INFO - 🔌 [ROOM_DEBUG] New WebSocket connection to room '48F619', ws_id: 2535ccd1-ac50-49d4-a453-98d0c1e28e04 at 1753118851.725437
-INFO:     ('127.0.0.1', 50792) - "WebSocket /ws/48F619" [accepted]
+2025-07-21 11:16:07 - backend.api.routes.ws - INFO - 🔌 [ROOM_DEBUG] New WebSocket connection to room 'C09400', ws_id: 829a0aa9-31f9-4e69-bf5b-45bbca0b9d7c at 1753121767.093683
+2025-07-21 11:16:07 - backend.api.routes.ws - INFO - 🧹 [ROOM_DEBUG] Room cleanup task already running
+INFO:     ('127.0.0.1', 63276) - "WebSocket /ws/C09400" [accepted]
 INFO:     connection open
-2025-07-21 10:27:31 - api.websocket.connection_manager - INFO - Player Andy connected to room 48F619
-2025-07-21 10:27:31 - backend.api.routes.ws - INFO - Successfully registered player Andy for room 48F619
-2025-07-21 10:27:32 - backend.api.routes.ws - INFO - 🧹 [ROOM_DEBUG] Cleanup iteration 5: Checking 1 rooms: ['48F619']
-✅ Notified lobby about room update: 48F619
-2025-07-21 10:27:36 - backend.api.routes.ws - INFO - 🔌 [ROOM_DEBUG] Handling disconnect for room 'lobby', websocket_id: a12c03e9-e0e5-4cc9-85eb-07e6a439e0c1 at 1753118856.734268
-2025-07-21 10:27:36 - api.websocket.connection_manager - WARNING - WebSocket ID a12c03e9-e0e5-4cc9-85eb-07e6a439e0c1 not found in mapping. Current mappings: ['2535ccd1-ac50-49d4-a453-98d0c1e28e04']
-2025-07-21 10:27:36 - backend.api.routes.ws - WARNING - No websocket_id found on websocket object for room lobby
-2025-07-21 10:27:36 - backend.api.routes.ws - INFO - ⚠️ [ROOM_DEBUG] WebSocket disconnect without ID for room 'lobby'
-2025-07-21 10:27:36 - backend.api.routes.ws - INFO - 🔌 [ROOM_DEBUG] WebSocket unregistered from room 'lobby'
-INFO:     connection closed
-2025-07-21 10:27:36 - backend.api.routes.ws - INFO - 🧹 [ROOM_DEBUG] Room cleanup task already running
-2025-07-21 10:27:36 - backend.api.routes.ws - INFO - 🔌 [ROOM_DEBUG] New WebSocket connection to room 'lobby', ws_id: d63629f9-d00c-457f-ae36-b88161149a8c at 1753118856.8490188
-INFO:     ('127.0.0.1', 50814) - "WebSocket /ws/lobby" [accepted]
+2025-07-21 11:16:07 - api.websocket.connection_manager - INFO - Player Andy connected to room C09400
+2025-07-21 11:16:07 - backend.api.routes.ws - INFO - Successfully registered player Andy for room C09400
+2025-07-21 11:16:09 - backend.api.routes.ws - INFO - 🧹 [ROOM_DEBUG] Cleanup iteration 7: Checking 1 rooms: ['C09400']
+2025-07-21 11:16:10 - backend.api.routes.ws - INFO - 🔌 [ROOM_DEBUG] New WebSocket connection to room 'lobby', ws_id: 1fd286e0-8e12-4598-818a-bc9bc18e7d1a at 1753121770.1778529
+2025-07-21 11:16:10 - backend.api.routes.ws - INFO - 🧹 [ROOM_DEBUG] Room cleanup task already running
+INFO:     ('127.0.0.1', 63290) - "WebSocket /ws/lobby" [accepted]
 INFO:     connection open
-2025-07-21 10:27:36 - backend.api.routes.ws - INFO - 🧹 [ROOM_DEBUG] Room cleanup task already running
-2025-07-21 10:27:36 - backend.api.routes.ws - INFO - 🔌 [ROOM_DEBUG] New WebSocket connection to room '48F619', ws_id: 58a3cdea-fcdf-4639-8c20-3d3d919e85b0 at 1753118856.8702998
-INFO:     ('127.0.0.1', 50816) - "WebSocket /ws/48F619" [accepted]
+2025-07-21 11:16:10 - backend.api.routes.ws - INFO - 🔌 [ROOM_DEBUG] Handling disconnect for room 'lobby', websocket_id: 1fd286e0-8e12-4598-818a-bc9bc18e7d1a at 1753121770.186562
+2025-07-21 11:16:10 - api.websocket.connection_manager - WARNING - WebSocket ID 1fd286e0-8e12-4598-818a-bc9bc18e7d1a not found in mapping. Current mappings: ['829a0aa9-31f9-4e69-bf5b-45bbca0b9d7c']
+2025-07-21 11:16:10 - backend.api.routes.ws - WARNING - No websocket_id found on websocket object for room lobby
+2025-07-21 11:16:10 - backend.api.routes.ws - INFO - ⚠️ [ROOM_DEBUG] WebSocket disconnect without ID for room 'lobby'
+2025-07-21 11:16:10 - backend.api.routes.ws - INFO - 🔌 [ROOM_DEBUG] WebSocket unregistered from room 'lobby'
+INFO:     connection closed
+2025-07-21 11:16:10 - backend.api.routes.ws - INFO - 🔌 [ROOM_DEBUG] New WebSocket connection to room 'lobby', ws_id: 4f18bf00-6dea-46be-8e49-a2fc3f53d656 at 1753121770.19042
+2025-07-21 11:16:10 - backend.api.routes.ws - INFO - 🧹 [ROOM_DEBUG] Room cleanup task already running
+INFO:     ('127.0.0.1', 63292) - "WebSocket /ws/lobby" [accepted]
 INFO:     connection open
-2025-07-21 10:27:36 - api.websocket.connection_manager - INFO - Player P2 connected to room 48F619
-2025-07-21 10:27:36 - backend.api.routes.ws - INFO - Successfully registered player P2 for room 48F619
-2025-07-21 10:27:37 - backend.api.routes.ws - INFO - 🧹 [ROOM_DEBUG] Cleanup iteration 6: Checking 1 rooms: ['48F619']
-INFO:     127.0.0.1:50842 - "GET /room/48F619 HTTP/1.1" 404 Not Found
-2025-07-21 10:27:42 - backend.api.routes.ws - INFO - 🔌 [ROOM_DEBUG] Handling disconnect for room 'lobby', websocket_id: 72f48031-944b-49e5-bf09-884fa0832ee0 at 1753118862.388086
-2025-07-21 10:27:42 - api.websocket.connection_manager - WARNING - WebSocket ID 72f48031-944b-49e5-bf09-884fa0832ee0 not found in mapping. Current mappings: ['2535ccd1-ac50-49d4-a453-98d0c1e28e04', '58a3cdea-fcdf-4639-8c20-3d3d919e85b0']
-2025-07-21 10:27:42 - backend.api.routes.ws - WARNING - No websocket_id found on websocket object for room lobby
-2025-07-21 10:27:42 - backend.api.routes.ws - INFO - ⚠️ [ROOM_DEBUG] WebSocket disconnect without ID for room 'lobby'
-2025-07-21 10:27:42 - backend.api.routes.ws - INFO - 🔌 [ROOM_DEBUG] WebSocket unregistered from room 'lobby'
-2025-07-21 10:27:42 - backend.api.routes.ws - INFO - 🔌 [ROOM_DEBUG] Handling disconnect for room '48F619', websocket_id: 2535ccd1-ac50-49d4-a453-98d0c1e28e04 at 1753118862.3892322
-2025-07-21 10:27:42 - api.websocket.connection_manager - INFO - Player Andy disconnected from room 48F619. Can reconnect anytime while game is active.
-2025-07-21 10:27:42 - backend.api.routes.ws - INFO - 🎮 [ROOM_DEBUG] In-game disconnect detected for player 'Andy' in room '48F619'
-2025-07-21 10:27:42 - backend.api.routes.ws - WARNING - No connection found for websocket_id 2535ccd1-ac50-49d4-a453-98d0c1e28e04 in room 48F619
-2025-07-21 10:27:42 - backend.api.routes.ws - INFO - 🔌 [ROOM_DEBUG] WebSocket unregistered from room '48F619'
+2025-07-21 11:16:14 - backend.api.routes.ws - INFO - 🧹 [ROOM_DEBUG] Cleanup iteration 8: Checking 1 rooms: ['C09400']
+✅ Notified lobby about room update: C09400
+2025-07-21 11:16:15 - backend.api.routes.ws - INFO - 🔌 [ROOM_DEBUG] Handling disconnect for room 'lobby', websocket_id: 4f18bf00-6dea-46be-8e49-a2fc3f53d656 at 1753121775.090216
+2025-07-21 11:16:15 - api.websocket.connection_manager - WARNING - WebSocket ID 4f18bf00-6dea-46be-8e49-a2fc3f53d656 not found in mapping. Current mappings: ['829a0aa9-31f9-4e69-bf5b-45bbca0b9d7c']
+2025-07-21 11:16:15 - backend.api.routes.ws - WARNING - No websocket_id found on websocket object for room lobby
+2025-07-21 11:16:15 - backend.api.routes.ws - INFO - ⚠️ [ROOM_DEBUG] WebSocket disconnect without ID for room 'lobby'
+2025-07-21 11:16:15 - backend.api.routes.ws - INFO - 🔌 [ROOM_DEBUG] WebSocket unregistered from room 'lobby'
 INFO:     connection closed
+2025-07-21 11:16:15 - backend.api.routes.ws - INFO - 🔌 [ROOM_DEBUG] New WebSocket connection to room 'lobby', ws_id: 89582b40-fd9a-4d22-9268-34ffe3d00009 at 1753121775.124452
+2025-07-21 11:16:15 - backend.api.routes.ws - INFO - 🧹 [ROOM_DEBUG] Room cleanup task already running
+INFO:     ('127.0.0.1', 63314) - "WebSocket /ws/lobby" [accepted]
+INFO:     connection open
+2025-07-21 11:16:15 - backend.api.routes.ws - INFO - 🔌 [ROOM_DEBUG] New WebSocket connection to room 'C09400', ws_id: 2afc8a76-ea7d-4377-9a0b-405482f42fd6 at 1753121775.139703
+2025-07-21 11:16:15 - backend.api.routes.ws - INFO - 🧹 [ROOM_DEBUG] Room cleanup task already running
+INFO:     ('127.0.0.1', 63316) - "WebSocket /ws/C09400" [accepted]
+INFO:     connection open
+2025-07-21 11:16:15 - api.websocket.connection_manager - INFO - Player P2 connected to room C09400
+2025-07-21 11:16:15 - backend.api.routes.ws - INFO - Successfully registered player P2 for room C09400
+INFO:     127.0.0.1:63330 - "GET /room/C09400 HTTP/1.1" 404 Not Found
+2025-07-21 11:16:18 - backend.api.routes.ws - INFO - 🔌 [ROOM_DEBUG] Handling disconnect for room 'lobby', websocket_id: 89582b40-fd9a-4d22-9268-34ffe3d00009 at 1753121778.193032
+2025-07-21 11:16:18 - api.websocket.connection_manager - WARNING - WebSocket ID 89582b40-fd9a-4d22-9268-34ffe3d00009 not found in mapping. Current mappings: ['829a0aa9-31f9-4e69-bf5b-45bbca0b9d7c', '2afc8a76-ea7d-4377-9a0b-405482f42fd6']
+2025-07-21 11:16:18 - backend.api.routes.ws - WARNING - No websocket_id found on websocket object for room lobby
+2025-07-21 11:16:18 - backend.api.routes.ws - INFO - ⚠️ [ROOM_DEBUG] WebSocket disconnect without ID for room 'lobby'
+2025-07-21 11:16:18 - backend.api.routes.ws - INFO - 🔌 [ROOM_DEBUG] WebSocket unregistered from room 'lobby'
+2025-07-21 11:16:18 - backend.api.routes.ws - INFO - 🔌 [ROOM_DEBUG] Handling disconnect for room 'C09400', websocket_id: 2afc8a76-ea7d-4377-9a0b-405482f42fd6 at 1753121778.194668
+2025-07-21 11:16:18 - api.websocket.connection_manager - INFO - Player P2 disconnected from room C09400. Can reconnect anytime while game is active.
+2025-07-21 11:16:18 - backend.api.routes.ws - INFO - 🚪 [ROOM_DEBUG] Pre-game disconnect detected for player 'P2' in room 'C09400'
+2025-07-21 11:16:18 - backend.api.routes.ws - INFO - 👤 [ROOM_DEBUG] process_leave_room: Player 'P2' leaving room 'C09400', is_host=False
+2025-07-21 11:16:18 - backend.api.routes.ws - INFO - 👤 [ROOM_DEBUG] Player 'P2' leaving room 'C09400'
+2025-07-21 11:16:18 - engine.room - INFO - 🚪 [ROOM_DEBUG] exit_room called for player 'P2' in room 'C09400'
+2025-07-21 11:16:18 - engine.room - INFO - 👥 [ROOM_DEBUG] Regular player 'P2' removed from slot 1 in room 'C09400'
+2025-07-21 11:16:18 - backend.api.routes.ws - INFO - 📊 [ROOM_DEBUG] Room state after player left: players=[{'name': 'Andy', 'is_bot': False, 'is_host': True}, None, {'name': 'Bot 3', 'is_bot': True, 'is_host': False}, {'name': 'Bot 4', 'is_bot': True, 'is_host': False}], host=Andy
 INFO:     connection closed
-INFO:     127.0.0.1:50842 - "GET /.well-known/appspecific/com.chrome.devtools.json HTTP/1.1" 404 Not Found
-2025-07-21 10:27:42 - backend.api.routes.ws - INFO - 🧹 [ROOM_DEBUG] Cleanup iteration 7: Checking 1 rooms: ['48F619']
-2025-07-21 10:27:47 - backend.api.routes.ws - INFO - 🧹 [ROOM_DEBUG] Cleanup iteration 8: Checking 1 rooms: ['48F619']
+2025-07-21 11:16:18 - backend.api.routes.ws - INFO - 🔌 [ROOM_DEBUG] WebSocket unregistered from room 'C09400'
+INFO:     connection closed
+INFO:     127.0.0.1:63330 - "GET /.well-known/appspecific/com.chrome.devtools.json HTTP/1.1" 404 Not Found
+2025-07-21 11:16:19 - backend.api.routes.ws - INFO - 🧹 [ROOM_DEBUG] Cleanup iteration 9: Checking 1 rooms: ['C09400']
+2025-07-21 11:16:24 - backend.api.routes.ws - INFO - 🧹 [ROOM_DEBUG] Cleanup iteration 10: Checking 1 rooms: ['C09400']
+INFO:     127.0.0.1:63332 - "GET / HTTP/1.1" 304 Not Modified
+INFO:     127.0.0.1:63332 - "GET /.well-known/appspecific/com.chrome.devtools.json HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:63366 - "GET /bundle.css HTTP/1.1" 304 Not Modified
+INFO:     127.0.0.1:63368 - "GET /bundle.js HTTP/1.1" 304 Not Modified
+INFO:     127.0.0.1:63368 - "GET /bundle.css.map HTTP/1.1" 304 Not Modified
+INFO:     127.0.0.1:63368 - "GET /bundle.js.map HTTP/1.1" 304 Not Modified
+2025-07-21 11:16:28 - backend.api.routes.ws - INFO - 🔌 [ROOM_DEBUG] New WebSocket connection to room 'lobby', ws_id: fea8ba46-d059-4c9e-8ecc-9107e1d84e26 at 1753121788.720078
+2025-07-21 11:16:28 - backend.api.routes.ws - INFO - 🧹 [ROOM_DEBUG] Room cleanup task already running
+INFO:     ('127.0.0.1', 63382) - "WebSocket /ws/lobby" [accepted]
+INFO:     connection open
+2025-07-21 11:16:28 - backend.api.routes.ws - INFO - 🔌 [ROOM_DEBUG] New WebSocket connection to room 'lobby', ws_id: 7efec78e-93b1-48dd-9e0f-d1f289681ad5 at 1753121788.738208
+2025-07-21 11:16:28 - backend.api.routes.ws - INFO - 🧹 [ROOM_DEBUG] Room cleanup task already running
+INFO:     ('127.0.0.1', 63384) - "WebSocket /ws/lobby" [accepted]
+INFO:     connection open
+2025-07-21 11:16:28 - backend.api.routes.ws - INFO - 🔌 [ROOM_DEBUG] Handling disconnect for room 'lobby', websocket_id: fea8ba46-d059-4c9e-8ecc-9107e1d84e26 at 1753121788.739908
+2025-07-21 11:16:28 - api.websocket.connection_manager - WARNING - WebSocket ID fea8ba46-d059-4c9e-8ecc-9107e1d84e26 not found in mapping. Current mappings: ['829a0aa9-31f9-4e69-bf5b-45bbca0b9d7c']
+2025-07-21 11:16:28 - backend.api.routes.ws - WARNING - No websocket_id found on websocket object for room lobby
+2025-07-21 11:16:28 - backend.api.routes.ws - INFO - ⚠️ [ROOM_DEBUG] WebSocket disconnect without ID for room 'lobby'
+2025-07-21 11:16:28 - backend.api.routes.ws - INFO - 🔌 [ROOM_DEBUG] WebSocket unregistered from room 'lobby'
+INFO:     connection closed
+2025-07-21 11:16:29 - backend.api.routes.ws - INFO - 🧹 [ROOM_DEBUG] Cleanup iteration 11: Checking 1 rooms: ['C09400']
+✅ Notified lobby about room update: C09400
+2025-07-21 11:16:32 - backend.api.routes.ws - INFO - 🔌 [ROOM_DEBUG] Handling disconnect for room 'lobby', websocket_id: 7efec78e-93b1-48dd-9e0f-d1f289681ad5 at 1753121792.787627
+2025-07-21 11:16:32 - api.websocket.connection_manager - WARNING - WebSocket ID 7efec78e-93b1-48dd-9e0f-d1f289681ad5 not found in mapping. Current mappings: ['829a0aa9-31f9-4e69-bf5b-45bbca0b9d7c']
+2025-07-21 11:16:32 - backend.api.routes.ws - WARNING - No websocket_id found on websocket object for room lobby
+2025-07-21 11:16:32 - backend.api.routes.ws - INFO - ⚠️ [ROOM_DEBUG] WebSocket disconnect without ID for room 'lobby'
+2025-07-21 11:16:32 - backend.api.routes.ws - INFO - 🔌 [ROOM_DEBUG] WebSocket unregistered from room 'lobby'
+INFO:     connection closed
+2025-07-21 11:16:32 - backend.api.routes.ws - INFO - 🔌 [ROOM_DEBUG] New WebSocket connection to room 'lobby', ws_id: 422a3adb-b601-483d-b6a0-dbad5c2159af at 1753121792.8461802
+2025-07-21 11:16:32 - backend.api.routes.ws - INFO - 🧹 [ROOM_DEBUG] Room cleanup task already running
+INFO:     ('127.0.0.1', 63403) - "WebSocket /ws/lobby" [accepted]
+INFO:     connection open
+2025-07-21 11:16:32 - backend.api.routes.ws - INFO - 🔌 [ROOM_DEBUG] New WebSocket connection to room 'C09400', ws_id: 869eb53f-35b8-4cbd-b84a-75a22eb9adde at 1753121792.865026
+2025-07-21 11:16:32 - backend.api.routes.ws - INFO - 🧹 [ROOM_DEBUG] Room cleanup task already running
+INFO:     ('127.0.0.1', 63405) - "WebSocket /ws/C09400" [accepted]
+INFO:     connection open
+2025-07-21 11:16:32 - api.websocket.connection_manager - INFO - Player P2 reconnected to room C09400
+2025-07-21 11:16:32 - backend.api.routes.ws - INFO - Successfully registered player P2 for room C09400
+2025-07-21 11:16:34 - backend.api.routes.ws - INFO - 🧹 [ROOM_DEBUG] Cleanup iteration 12: Checking 1 rooms: ['C09400']
+INFO:     127.0.0.1:63423 - "GET /room/C09400 HTTP/1.1" 404 Not Found
+2025-07-21 11:16:37 - backend.api.routes.ws - INFO - 🔌 [ROOM_DEBUG] Handling disconnect for room 'lobby', websocket_id: 4c658143-19bd-4d79-b8ad-acac600f8d8b at 1753121797.008157
+2025-07-21 11:16:37 - api.websocket.connection_manager - WARNING - WebSocket ID 4c658143-19bd-4d79-b8ad-acac600f8d8b not found in mapping. Current mappings: ['829a0aa9-31f9-4e69-bf5b-45bbca0b9d7c', '869eb53f-35b8-4cbd-b84a-75a22eb9adde']
+2025-07-21 11:16:37 - backend.api.routes.ws - WARNING - No websocket_id found on websocket object for room lobby
+2025-07-21 11:16:37 - backend.api.routes.ws - INFO - ⚠️ [ROOM_DEBUG] WebSocket disconnect without ID for room 'lobby'
+2025-07-21 11:16:37 - backend.api.routes.ws - INFO - 🔌 [ROOM_DEBUG] WebSocket unregistered from room 'lobby'
+INFO:     connection closed
+2025-07-21 11:16:37 - backend.api.routes.ws - INFO - 🔌 [ROOM_DEBUG] Handling disconnect for room 'C09400', websocket_id: 829a0aa9-31f9-4e69-bf5b-45bbca0b9d7c at 1753121797.014536
+2025-07-21 11:16:37 - api.websocket.connection_manager - INFO - Player Andy disconnected from room C09400. Can reconnect anytime while game is active.
+2025-07-21 11:16:37 - backend.api.routes.ws - INFO - 🚪 [ROOM_DEBUG] Pre-game disconnect detected for player 'Andy' in room 'C09400'
+2025-07-21 11:16:37 - backend.api.routes.ws - INFO - 👤 [ROOM_DEBUG] process_leave_room: Player 'Andy' leaving room 'C09400', is_host=True
+2025-07-21 11:16:37 - backend.api.routes.ws - INFO - 👑 [ROOM_DEBUG] Host 'Andy' leaving room 'C09400' - deleting room
+INFO:     connection closed
+2025-07-21 11:16:37 - backend.api.routes.ws - INFO - 🗑️ [ROOM_DEBUG] Room 'C09400' deleted because host left
+2025-07-21 11:16:37 - backend.api.routes.ws - INFO - 🔌 [ROOM_DEBUG] WebSocket unregistered from room 'C09400'
+2025-07-21 11:16:37 - backend.api.routes.ws - INFO - 🔌 [ROOM_DEBUG] New WebSocket connection to room 'lobby', ws_id: 36d015ba-74c2-491e-b452-aa34be0f736b at 1753121797.0940459
+2025-07-21 11:16:37 - backend.api.routes.ws - INFO - 🧹 [ROOM_DEBUG] Room cleanup task already running
+INFO:     ('127.0.0.1', 63427) - "WebSocket /ws/lobby" [accepted]
+INFO:     connection open
+2025-07-21 11:16:37 - backend.api.routes.ws - INFO - 🔌 [ROOM_DEBUG] Handling disconnect for room 'C09400', websocket_id: 869eb53f-35b8-4cbd-b84a-75a22eb9adde at 1753121797.097383
+2025-07-21 11:16:37 - api.websocket.connection_manager - INFO - Player P2 disconnected from room C09400. Can reconnect anytime while game is active.
+2025-07-21 11:16:37 - backend.api.routes.ws - INFO - 🚪 [ROOM_DEBUG] Pre-game disconnect detected for player 'P2' in room 'C09400'
+2025-07-21 11:16:37 - backend.api.routes.ws - WARNING - [ROOM_DEBUG] Room C09400 not found in process_leave_room
+2025-07-21 11:16:37 - backend.api.routes.ws - INFO - 🔌 [ROOM_DEBUG] WebSocket unregistered from room 'C09400'
+INFO:     connection closed
+2025-07-21 11:16:37 - backend.api.routes.ws - INFO - 🔌 [ROOM_DEBUG] Handling disconnect for room 'lobby', websocket_id: 422a3adb-b601-483d-b6a0-dbad5c2159af at 1753121797.108586
+2025-07-21 11:16:37 - api.websocket.connection_manager - WARNING - WebSocket ID 422a3adb-b601-483d-b6a0-dbad5c2159af not found in mapping. Current mappings: []
+2025-07-21 11:16:37 - backend.api.routes.ws - WARNING - No websocket_id found on websocket object for room lobby
+2025-07-21 11:16:37 - backend.api.routes.ws - INFO - ⚠️ [ROOM_DEBUG] WebSocket disconnect without ID for room 'lobby'
+2025-07-21 11:16:37 - backend.api.routes.ws - INFO - 🔌 [ROOM_DEBUG] WebSocket unregistered from room 'lobby'
+INFO:     connection closed
+INFO:     127.0.0.1:63423 - "GET /.well-known/appspecific/com.chrome.devtools.json HTTP/1.1" 404 Not Found
+2025-07-21 11:16:37 - backend.api.routes.ws - INFO - 🔌 [ROOM_DEBUG] Handling disconnect for room 'lobby', websocket_id: 36d015ba-74c2-491e-b452-aa34be0f736b at 1753121797.147114
+2025-07-21 11:16:37 - api.websocket.connection_manager - WARNING - WebSocket ID 36d015ba-74c2-491e-b452-aa34be0f736b not found in mapping. Current mappings: []
+2025-07-21 11:16:37 - backend.api.routes.ws - WARNING - No websocket_id found on websocket object for room lobby
+2025-07-21 11:16:37 - backend.api.routes.ws - INFO - ⚠️ [ROOM_DEBUG] WebSocket disconnect without ID for room 'lobby'
+2025-07-21 11:16:37 - backend.api.routes.ws - INFO - 🔌 [ROOM_DEBUG] WebSocket unregistered from room 'lobby'
+INFO:     connection closed
+2025-07-21 11:16:37 - backend.api.routes.ws - INFO - 🔌 [ROOM_DEBUG] New WebSocket connection to room 'lobby', ws_id: 203c6ff1-407b-4c31-b796-f4ef938029cf at 1753121797.243284
+2025-07-21 11:16:37 - backend.api.routes.ws - INFO - 🧹 [ROOM_DEBUG] Room cleanup task already running
+INFO:     ('127.0.0.1', 63429) - "WebSocket /ws/lobby" [accepted]
+INFO:     connection open
+INFO:     127.0.0.1:63425 - "GET / HTTP/1.1" 200 OK
+INFO:     127.0.0.1:63425 - "GET /bundle.css HTTP/1.1" 200 OK
+INFO:     127.0.0.1:63459 - "GET /bundle.js HTTP/1.1" 200 OK
+INFO:     127.0.0.1:63461 - "GET /.well-known/appspecific/com.chrome.devtools.json HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:63459 - "GET /bundle.js.map HTTP/1.1" 200 OK
+INFO:     127.0.0.1:63425 - "GET /bundle.css.map HTTP/1.1" 200 OK
+2025-07-21 11:16:57 - backend.api.routes.ws - INFO - 🔌 [ROOM_DEBUG] Handling disconnect for room 'lobby', websocket_id: 203c6ff1-407b-4c31-b796-f4ef938029cf at 1753121817.038684
+2025-07-21 11:16:57 - api.websocket.connection_manager - WARNING - WebSocket ID 203c6ff1-407b-4c31-b796-f4ef938029cf not found in mapping. Current mappings: []
+2025-07-21 11:16:57 - backend.api.routes.ws - WARNING - No websocket_id found on websocket object for room lobby
+2025-07-21 11:16:57 - backend.api.routes.ws - INFO - ⚠️ [ROOM_DEBUG] WebSocket disconnect without ID for room 'lobby'
+2025-07-21 11:16:57 - backend.api.routes.ws - INFO - 🔌 [ROOM_DEBUG] WebSocket unregistered from room 'lobby'
+INFO:     connection closed
