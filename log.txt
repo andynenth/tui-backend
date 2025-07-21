@@ -1,405 +1,300 @@
-[208.27ms] [@tailwindcss/postcss] src/styles/globals.css
-[  0.08ms]   ↳ Quick bail check
-[ 75.83ms]   ↳ Setup compiler
-[  0.52ms]     ↳ PostCSS AST -> Tailwind CSS AST
-[ 75.29ms]     ↳ Create compiler
-[  0.32ms]   ↳ Register full rebuild paths
-[  9.62ms]   ↳ Setup scanner
-[ 37.74ms]   ↳ Scan for candidates
-[ 17.51ms]   ↳ Register dependency messages
-[ 54.14ms]   ↳ Build utilities
-[  8.04ms]   ↳ Transform Tailwind CSS AST into PostCSS AST
-[  4.51ms]   ↳ Update PostCSS AST
+[0.42ms] [@tailwindcss/postcss] src/styles/toast-notifications.css
+[0.40ms]   ↳ Quick bail check
 
-INFO:     127.0.0.1:62448 - "GET / HTTP/1.1" 200 OK
-INFO:     127.0.0.1:62448 - "GET /.well-known/appspecific/com.chrome.devtools.json HTTP/1.1" 404 Not Found
-INFO:     127.0.0.1:62448 - "GET /bundle.css HTTP/1.1" 200 OK
-INFO:     127.0.0.1:62449 - "GET /bundle.js HTTP/1.1" 200 OK
-INFO:     127.0.0.1:62449 - "GET /bundle.css.map HTTP/1.1" 200 OK
-INFO:     127.0.0.1:62449 - "GET /bundle.js.map HTTP/1.1" 200 OK
-INFO:     127.0.0.1:62449 - "GET / HTTP/1.1" 304 Not Modified
-INFO:     127.0.0.1:62448 - "GET /bundle.css HTTP/1.1" 304 Not Modified
-INFO:     127.0.0.1:62449 - "GET /.well-known/appspecific/com.chrome.devtools.json HTTP/1.1" 404 Not Found
-INFO:     127.0.0.1:62455 - "GET /bundle.js HTTP/1.1" 304 Not Modified
-INFO:     127.0.0.1:62455 - "GET /bundle.css.map HTTP/1.1" 304 Not Modified
-INFO:     127.0.0.1:62455 - "GET /bundle.js.map HTTP/1.1" 304 Not Modified
-2025-07-20 21:48:13 - backend.api.routes.ws - INFO - 🧹 Cleanup iteration 2: Checking 0 rooms (including started games)
-INFO:     127.0.0.1:62466 - "GET / HTTP/1.1" 200 OK
-INFO:     127.0.0.1:62467 - "GET /bundle.css HTTP/1.1" 200 OK
-INFO:     127.0.0.1:62469 - "GET /bundle.js HTTP/1.1" 200 OK
-INFO:     127.0.0.1:62466 - "GET /.well-known/appspecific/com.chrome.devtools.json HTTP/1.1" 404 Not Found
-INFO:     127.0.0.1:62469 - "GET /bundle.js.map HTTP/1.1" 200 OK
-INFO:     127.0.0.1:62467 - "GET /bundle.css.map HTTP/1.1" 200 OK
-INFO:     127.0.0.1:62469 - "GET / HTTP/1.1" 200 OK
-INFO:     127.0.0.1:62469 - "GET /bundle.css HTTP/1.1" 200 OK
-INFO:     127.0.0.1:62466 - "GET /bundle.js HTTP/1.1" 200 OK
-INFO:     127.0.0.1:62467 - "GET /.well-known/appspecific/com.chrome.devtools.json HTTP/1.1" 404 Not Found
-INFO:     127.0.0.1:62466 - "GET /bundle.js.map HTTP/1.1" 200 OK
-INFO:     127.0.0.1:62469 - "GET /bundle.css.map HTTP/1.1" 200 OK
-INFO:     127.0.0.1:62466 - "GET / HTTP/1.1" 200 OK
-INFO:     127.0.0.1:62469 - "GET /bundle.css HTTP/1.1" 200 OK
-INFO:     127.0.0.1:62467 - "GET /bundle.js HTTP/1.1" 200 OK
-INFO:     127.0.0.1:62466 - "GET /.well-known/appspecific/com.chrome.devtools.json HTTP/1.1" 404 Not Found
-INFO:     127.0.0.1:62467 - "GET /bundle.js.map HTTP/1.1" 200 OK
-INFO:     127.0.0.1:62469 - "GET /bundle.css.map HTTP/1.1" 200 OK
-INFO:     127.0.0.1:62469 - "GET /favicon.ico HTTP/1.1" 404 Not Found
-INFO:     127.0.0.1:62487 - "GET / HTTP/1.1" 200 OK
-2025-07-20 21:48:18 - backend.api.routes.ws - INFO - 🧹 Cleanup iteration 3: Checking 0 rooms (including started games)
-INFO:     127.0.0.1:62489 - "GET /bundle.css HTTP/1.1" 200 OK
-INFO:     127.0.0.1:62487 - "GET /.well-known/appspecific/com.chrome.devtools.json HTTP/1.1" 404 Not Found
-INFO:     127.0.0.1:62491 - "GET /bundle.js HTTP/1.1" 200 OK
-INFO:     127.0.0.1:62491 - "GET /bundle.js.map HTTP/1.1" 304 Not Modified
-INFO:     127.0.0.1:62491 - "GET /bundle.css.map HTTP/1.1" 304 Not Modified
-INFO:     127.0.0.1:62491 - "GET /favicon.ico HTTP/1.1" 404 Not Found
-2025-07-20 21:48:19 - backend.api.routes.ws - INFO - 🧹 WebSocket connection to room lobby - checking cleanup task
-2025-07-20 21:48:19 - backend.api.routes.ws - INFO - 🧹 start_cleanup_task called, cleanup_task_started=True
-2025-07-20 21:48:19 - backend.api.routes.ws - INFO - 🧹 Cleanup task already started, skipping
-2025-07-20 21:48:19 - backend.api.routes.ws - INFO - 🔗 New WebSocket connection to room lobby, ws_id: 24e8b868-2666-438d-bdf9-5b85a0705ccb at 1753073299.772568
-INFO:     ('127.0.0.1', 62501) - "WebSocket /ws/lobby" [accepted]
+
+[0.12ms] [@tailwindcss/postcss] src/styles/components/game/gameover.css
+[0.12ms]   ↳ Quick bail check
+
+
+[232.89ms] [@tailwindcss/postcss] src/styles/globals.css
+[  0.16ms]   ↳ Quick bail check
+[ 79.29ms]   ↳ Setup compiler
+[  0.66ms]     ↳ PostCSS AST -> Tailwind CSS AST
+[ 78.61ms]     ↳ Create compiler
+[  0.31ms]   ↳ Register full rebuild paths
+[ 19.66ms]   ↳ Setup scanner
+[ 48.96ms]   ↳ Scan for candidates
+[ 18.06ms]   ↳ Register dependency messages
+[ 52.96ms]   ↳ Build utilities
+[  8.65ms]   ↳ Transform Tailwind CSS AST into PostCSS AST
+[  4.22ms]   ↳ Update PostCSS AST
+
+INFO:     127.0.0.1:55145 - "GET / HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55145 - "GET /.well-known/appspecific/com.chrome.devtools.json HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:55147 - "GET /bundle.css HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55149 - "GET /bundle.js HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55149 - "GET /bundle.js.map HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55149 - "GET /bundle.css.map HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55149 - "GET / HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55147 - "GET /bundle.css HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55145 - "GET /bundle.js HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55149 - "GET /.well-known/appspecific/com.chrome.devtools.json HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:55145 - "GET /bundle.js.map HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55147 - "GET /bundle.css.map HTTP/1.1" 200 OK
+INFO:     ('127.0.0.1', 55167) - "WebSocket /ws/lobby" [accepted]
 INFO:     connection open
-2025-07-20 21:48:19 - backend.api.routes.ws - INFO - 🧹 WebSocket connection to room lobby - checking cleanup task
-2025-07-20 21:48:19 - backend.api.routes.ws - INFO - 🧹 start_cleanup_task called, cleanup_task_started=True
-2025-07-20 21:48:19 - backend.api.routes.ws - INFO - 🧹 Cleanup task already started, skipping
-2025-07-20 21:48:19 - backend.api.routes.ws - INFO - 🔗 New WebSocket connection to room lobby, ws_id: 618a0b64-06fe-409d-81b9-605ef1b6803d at 1753073299.794174
-INFO:     ('127.0.0.1', 62503) - "WebSocket /ws/lobby" [accepted]
+INFO:     ('127.0.0.1', 55169) - "WebSocket /ws/lobby" [accepted]
 INFO:     connection open
-2025-07-20 21:48:19 - backend.api.routes.ws - INFO - 🔌 Handling disconnect for room lobby, websocket_id: 24e8b868-2666-438d-bdf9-5b85a0705ccb at 1753073299.794902
-2025-07-20 21:48:19 - api.websocket.connection_manager - WARNING - WebSocket ID 24e8b868-2666-438d-bdf9-5b85a0705ccb not found in mapping. Current mappings: []
-2025-07-20 21:48:19 - backend.api.routes.ws - WARNING - No websocket_id found on websocket object for room lobby
+2025-07-21 06:17:57 - api.websocket.connection_manager - WARNING - WebSocket ID 0cd52db8-e6bb-466e-9e32-589a90e8d23f not found in mapping. Current mappings: []
+2025-07-21 06:17:57 - backend.api.routes.ws - WARNING - No websocket_id found on websocket object for room lobby
 INFO:     connection closed
-2025-07-20 21:48:20 - backend.api.routes.ws - INFO - 🧹 WebSocket connection to room lobby - checking cleanup task
-2025-07-20 21:48:20 - backend.api.routes.ws - INFO - 🧹 start_cleanup_task called, cleanup_task_started=True
-2025-07-20 21:48:20 - backend.api.routes.ws - INFO - 🧹 Cleanup task already started, skipping
-2025-07-20 21:48:20 - backend.api.routes.ws - INFO - 🔗 New WebSocket connection to room lobby, ws_id: 60a67303-b24e-41a9-b341-1c96111e288f at 1753073300.872308
-INFO:     ('127.0.0.1', 62509) - "WebSocket /ws/lobby" [accepted]
-INFO:     connection open
-2025-07-20 21:48:20 - backend.api.routes.ws - INFO - 🔌 Handling disconnect for room lobby, websocket_id: 60a67303-b24e-41a9-b341-1c96111e288f at 1753073300.878925
-2025-07-20 21:48:20 - api.websocket.connection_manager - WARNING - WebSocket ID 60a67303-b24e-41a9-b341-1c96111e288f not found in mapping. Current mappings: []
-2025-07-20 21:48:20 - backend.api.routes.ws - WARNING - No websocket_id found on websocket object for room lobby
+2025-07-21 06:17:58 - api.websocket.connection_manager - WARNING - WebSocket ID 45e9cb2c-700b-4cd1-9e03-ca88789090e5 not found in mapping. Current mappings: []
+2025-07-21 06:17:58 - backend.api.routes.ws - WARNING - No websocket_id found on websocket object for room lobby
 INFO:     connection closed
-2025-07-20 21:48:20 - backend.api.routes.ws - INFO - 🧹 WebSocket connection to room lobby - checking cleanup task
-2025-07-20 21:48:20 - backend.api.routes.ws - INFO - 🧹 start_cleanup_task called, cleanup_task_started=True
-2025-07-20 21:48:20 - backend.api.routes.ws - INFO - 🧹 Cleanup task already started, skipping
-2025-07-20 21:48:20 - backend.api.routes.ws - INFO - 🔗 New WebSocket connection to room lobby, ws_id: b0140bc9-ab34-4225-a8c7-6868329cad10 at 1753073300.885355
-INFO:     ('127.0.0.1', 62511) - "WebSocket /ws/lobby" [accepted]
+INFO:     ('127.0.0.1', 55175) - "WebSocket /ws/lobby" [accepted]
 INFO:     connection open
-2025-07-20 21:48:22 - backend.api.routes.ws - INFO - 🧹 WebSocket connection to room lobby - checking cleanup task
-2025-07-20 21:48:22 - backend.api.routes.ws - INFO - 🧹 start_cleanup_task called, cleanup_task_started=True
-2025-07-20 21:48:22 - backend.api.routes.ws - INFO - 🧹 Cleanup task already started, skipping
-2025-07-20 21:48:22 - backend.api.routes.ws - INFO - 🔗 New WebSocket connection to room lobby, ws_id: 5c970d2a-8b98-47a1-a1a4-00f764f066b2 at 1753073302.0226712
-INFO:     ('127.0.0.1', 62517) - "WebSocket /ws/lobby" [accepted]
-INFO:     connection open
-2025-07-20 21:48:22 - backend.api.routes.ws - INFO - 🔌 Handling disconnect for room lobby, websocket_id: b0140bc9-ab34-4225-a8c7-6868329cad10 at 1753073302.023814
-2025-07-20 21:48:22 - api.websocket.connection_manager - WARNING - WebSocket ID b0140bc9-ab34-4225-a8c7-6868329cad10 not found in mapping. Current mappings: []
-2025-07-20 21:48:22 - backend.api.routes.ws - WARNING - No websocket_id found on websocket object for room lobby
+✅ Notified lobby about new room: 6777A0
+2025-07-21 06:17:58 - api.websocket.connection_manager - WARNING - WebSocket ID 1e128fb0-b842-4a9c-a3e9-e41b88b7dec1 not found in mapping. Current mappings: []
+2025-07-21 06:17:58 - backend.api.routes.ws - WARNING - No websocket_id found on websocket object for room 6777A0
 INFO:     connection closed
-✅ Notified lobby about new room: 50D652
-2025-07-20 21:48:22 - backend.api.routes.ws - INFO - 🧹 WebSocket connection to room lobby - checking cleanup task
-2025-07-20 21:48:22 - backend.api.routes.ws - INFO - 🧹 start_cleanup_task called, cleanup_task_started=True
-2025-07-20 21:48:22 - backend.api.routes.ws - INFO - 🧹 Cleanup task already started, skipping
-2025-07-20 21:48:22 - backend.api.routes.ws - INFO - 🔗 New WebSocket connection to room lobby, ws_id: a4e74ff0-7969-4d1a-aca6-b6f3f125d75a at 1753073302.152967
-INFO:     ('127.0.0.1', 62519) - "WebSocket /ws/lobby" [accepted]
+INFO:     ('127.0.0.1', 55177) - "WebSocket /ws/lobby" [accepted]
 INFO:     connection open
-2025-07-20 21:48:22 - backend.api.routes.ws - INFO - 🔌 Handling disconnect for room 50D652, websocket_id: 5c970d2a-8b98-47a1-a1a4-00f764f066b2 at 1753073302.154411
-2025-07-20 21:48:22 - api.websocket.connection_manager - WARNING - WebSocket ID 5c970d2a-8b98-47a1-a1a4-00f764f066b2 not found in mapping. Current mappings: []
-2025-07-20 21:48:22 - backend.api.routes.ws - WARNING - No websocket_id found on websocket object for room 50D652
+INFO:     ('127.0.0.1', 55179) - "WebSocket /ws/6777A0" [accepted]
+INFO:     connection open
+2025-07-21 06:17:58 - api.websocket.connection_manager - INFO - Player Andy connected to room 6777A0
+2025-07-21 06:17:58 - backend.api.routes.ws - INFO - Successfully registered player Andy for room 6777A0
+INFO:     127.0.0.1:55193 - "GET / HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55195 - "GET /bundle.css HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55193 - "GET /.well-known/appspecific/com.chrome.devtools.json HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:55197 - "GET /bundle.js HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55197 - "GET /bundle.css.map HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55197 - "GET /bundle.js.map HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55197 - "GET / HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55197 - "GET /bundle.css HTTP/1.1" 304 Not Modified
+INFO:     127.0.0.1:55195 - "GET /bundle.js HTTP/1.1" 304 Not Modified
+INFO:     127.0.0.1:55197 - "GET /.well-known/appspecific/com.chrome.devtools.json HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:55197 - "GET /bundle.js.map HTTP/1.1" 304 Not Modified
+INFO:     127.0.0.1:55197 - "GET /bundle.css.map HTTP/1.1" 304 Not Modified
+INFO:     ('127.0.0.1', 55207) - "WebSocket /ws/lobby" [accepted]
+INFO:     connection open
+2025-07-21 06:18:03 - api.websocket.connection_manager - WARNING - WebSocket ID a510fb8c-2a28-4532-8209-66ebd17e7761 not found in mapping. Current mappings: ['8f87cd0b-5d2e-492f-9f37-fd015c6f48f1']
+2025-07-21 06:18:03 - backend.api.routes.ws - WARNING - No websocket_id found on websocket object for room lobby
 INFO:     connection closed
-2025-07-20 21:48:22 - backend.api.routes.ws - INFO - 🧹 WebSocket connection to room 50D652 - checking cleanup task
-2025-07-20 21:48:22 - backend.api.routes.ws - INFO - 🧹 start_cleanup_task called, cleanup_task_started=True
-2025-07-20 21:48:22 - backend.api.routes.ws - INFO - 🧹 Cleanup task already started, skipping
-2025-07-20 21:48:22 - backend.api.routes.ws - INFO - 🔗 New WebSocket connection to room 50D652, ws_id: e0c8a32f-1704-4ba1-8c04-b88a6bb2407e at 1753073302.1664598
-INFO:     ('127.0.0.1', 62521) - "WebSocket /ws/50D652" [accepted]
+INFO:     ('127.0.0.1', 55209) - "WebSocket /ws/lobby" [accepted]
 INFO:     connection open
-2025-07-20 21:48:22 - backend.api.routes.ws - INFO - 🔗 Registering player Andy for room 50D652, ws_id: e0c8a32f-1704-4ba1-8c04-b88a6bb2407e
-2025-07-20 21:48:22 - api.websocket.connection_manager - INFO - Player Andy connected to room 50D652
-2025-07-20 21:48:22 - backend.api.routes.ws - INFO - ✅ Successfully registered player Andy for room 50D652
-2025-07-20 21:48:23 - backend.api.routes.ws - INFO - 🧹 Cleanup iteration 4: Checking 1 rooms (including started games)
-2025-07-20 21:48:23 - backend.api.routes.ws - INFO - 🧹 Room IDs: ['50D652']
-🧹 [Room 50D652] should_cleanup: cleanup_scheduled=False, returning False
-🔒 [Room 50D652] Starting slot assignment: slot=1, name=None, op_id=50D652_1
-✅ [Room 50D652] Slot assignment completed: op_id=50D652_1
-   Old state: {'P1': {'name': 'Andy', 'is_bot': False}, 'P2': {'name': 'Bot 2', 'is_bot': True}, 'P3': {'name': 'Bot 3', 'is_bot': True}, 'P4': {'name': 'Bot 4', 'is_bot': True}}
-   New state: {'P1': {'name': 'Andy', 'is_bot': False}, 'P2': {'name': None, 'is_bot': None}, 'P3': {'name': 'Bot 3', 'is_bot': True}, 'P4': {'name': 'Bot 4', 'is_bot': True}}
-🔒 [Room 50D652] Starting room join: player=P2, op_id=50D652_2
-✅ [Room 50D652] Player P2 joined slot 1: op_id=50D652_2
-✅ Notified lobby about room update: 50D652
-2025-07-20 21:48:25 - backend.api.routes.ws - INFO - 🧹 WebSocket connection to room lobby - checking cleanup task
-2025-07-20 21:48:25 - backend.api.routes.ws - INFO - 🧹 start_cleanup_task called, cleanup_task_started=True
-2025-07-20 21:48:25 - backend.api.routes.ws - INFO - 🧹 Cleanup task already started, skipping
-2025-07-20 21:48:25 - backend.api.routes.ws - INFO - 🔗 New WebSocket connection to room lobby, ws_id: 51191a7f-7787-4d46-9fa9-e4f2b976885f at 1753073305.144159
-INFO:     ('127.0.0.1', 62535) - "WebSocket /ws/lobby" [accepted]
+✅ Notified lobby about room update: 6777A0
+INFO:     ('127.0.0.1', 55223) - "WebSocket /ws/lobby" [accepted]
 INFO:     connection open
-2025-07-20 21:48:25 - backend.api.routes.ws - INFO - 🔌 Handling disconnect for room lobby, websocket_id: 618a0b64-06fe-409d-81b9-605ef1b6803d at 1753073305.145658
-2025-07-20 21:48:25 - api.websocket.connection_manager - WARNING - WebSocket ID 618a0b64-06fe-409d-81b9-605ef1b6803d not found in mapping. Current mappings: ['e0c8a32f-1704-4ba1-8c04-b88a6bb2407e']
-2025-07-20 21:48:25 - backend.api.routes.ws - WARNING - No websocket_id found on websocket object for room lobby
+2025-07-21 06:18:06 - api.websocket.connection_manager - WARNING - WebSocket ID 5038fa55-af42-41dc-a62a-aaac6c433a9d not found in mapping. Current mappings: ['8f87cd0b-5d2e-492f-9f37-fd015c6f48f1']
+2025-07-21 06:18:06 - backend.api.routes.ws - WARNING - No websocket_id found on websocket object for room lobby
 INFO:     connection closed
-2025-07-20 21:48:25 - backend.api.routes.ws - INFO - 🧹 WebSocket connection to room 50D652 - checking cleanup task
-2025-07-20 21:48:25 - backend.api.routes.ws - INFO - 🧹 start_cleanup_task called, cleanup_task_started=True
-2025-07-20 21:48:25 - backend.api.routes.ws - INFO - 🧹 Cleanup task already started, skipping
-2025-07-20 21:48:25 - backend.api.routes.ws - INFO - 🔗 New WebSocket connection to room 50D652, ws_id: 2ba235b5-7c85-4d35-9b20-c94c02805635 at 1753073305.1602921
-INFO:     ('127.0.0.1', 62537) - "WebSocket /ws/50D652" [accepted]
+INFO:     ('127.0.0.1', 55225) - "WebSocket /ws/6777A0" [accepted]
 INFO:     connection open
-2025-07-20 21:48:25 - backend.api.routes.ws - INFO - 🔗 Registering player P2 for room 50D652, ws_id: 2ba235b5-7c85-4d35-9b20-c94c02805635
-2025-07-20 21:48:25 - api.websocket.connection_manager - INFO - Player P2 connected to room 50D652
-2025-07-20 21:48:25 - backend.api.routes.ws - INFO - ✅ Successfully registered player P2 for room 50D652
-🔒 [Room 50D652] Starting game: op_id=50D652_3
-2025-07-20 21:48:27 - engine.state_machine.game_state_machine - INFO - 🔍 ROUND_DEBUG: GameStateMachine created with game: <engine.game.Game object at 0x10f8e4c10>, round_number: 1
-2025-07-20 21:48:27 - engine.state_machine.game_state_machine - INFO - 🚀 Starting state machine in GamePhase.PREPARATION phase
-2025-07-20 21:48:27 - engine.state_machine.game_state_machine - INFO - Transitioning from None to GamePhase.PREPARATION
-2025-07-20 21:48:27 - engine.state_machine.game_state_machine - INFO - 🔄 Transitioning: None -> GamePhase.PREPARATION
-2025-07-20 21:48:27 - game.state.preparation - INFO - Entering preparation phase
-2025-07-20 21:48:27 - game.state.preparation - INFO - 🎴 Preparation phase starting - dealing cards
-2025-07-20 21:48:27 - game.state.preparation - INFO - 🎮 Phase Data Update: Starting to deal cards
-2025-07-20 21:48:27 - engine.state_machine.game_state_machine - INFO - State machine process loop started
-2025-07-20 21:48:27 - game.state.preparation - INFO - 📤 Auto-broadcast: phase_change to room 50D652 - Starting to deal cards
-2025-07-20 21:48:27 - game.state.preparation - INFO - 🔍 Weak hand check - Found 1 weak players: {'Andy'}
-2025-07-20 21:48:27 - game.state.preparation - INFO - 🎮 Phase Data Update: Weak hands detected: ['Andy'] - awaiting simultaneous decisions
-2025-07-20 21:48:27 - game.state.preparation - INFO - 📤 Auto-broadcast: phase_change to room 50D652 - Weak hands detected: ['Andy'] - awaiting simultaneous decisions
-2025-07-20 21:48:27 - game.state.preparation - INFO - 🎮 Phase Data Update: Cards dealt, checking for weak hands
-2025-07-20 21:48:27 - game.state.preparation - INFO - 📤 Auto-broadcast: phase_change to room 50D652 - Cards dealt, checking for weak hands
-2025-07-20 21:48:27 - engine.state_machine.game_state_machine - INFO - Stored phase change event: None -> GamePhase.PREPARATION
-2025-07-20 21:48:27 - engine.state_machine.game_state_machine - INFO - Notifying bot manager about phase preparation
-✅ [Room 50D652] Game and StateMachine started successfully: op_id=50D652_3
-✅ [Room 50D652] Bot manager registered for 2 bots
-✅ Game started in room 50D652
-2025-07-20 21:48:27 - backend.api.routes.ws - INFO - 🧹 WebSocket connection to room 50D652 - checking cleanup task
-2025-07-20 21:48:27 - backend.api.routes.ws - INFO - 🧹 start_cleanup_task called, cleanup_task_started=True
-2025-07-20 21:48:27 - backend.api.routes.ws - INFO - 🧹 Cleanup task already started, skipping
-2025-07-20 21:48:27 - backend.api.routes.ws - INFO - 🔗 New WebSocket connection to room 50D652, ws_id: 3178ae2e-1542-42d3-ace3-136c7b080ddf at 1753073307.318905
-INFO:     ('127.0.0.1', 62547) - "WebSocket /ws/50D652" [accepted]
+2025-07-21 06:18:06 - api.websocket.connection_manager - INFO - Player P2 connected to room 6777A0
+2025-07-21 06:18:06 - backend.api.routes.ws - INFO - Successfully registered player P2 for room 6777A0
+2025-07-21 06:18:10 - engine.state_machine.game_state_machine - INFO - 🔍 ROUND_DEBUG: GameStateMachine created with game: <engine.game.Game object at 0x10899a990>, round_number: 1
+2025-07-21 06:18:10 - engine.state_machine.game_state_machine - INFO - 🚀 Starting state machine in GamePhase.PREPARATION phase
+2025-07-21 06:18:10 - engine.state_machine.game_state_machine - INFO - Transitioning from None to GamePhase.PREPARATION
+2025-07-21 06:18:10 - engine.state_machine.game_state_machine - INFO - 🔄 Transitioning: None -> GamePhase.PREPARATION
+2025-07-21 06:18:10 - game.state.preparation - INFO - Entering preparation phase
+2025-07-21 06:18:10 - game.state.preparation - INFO - 🎴 Preparation phase starting - dealing cards
+2025-07-21 06:18:10 - game.state.preparation - INFO - 🎮 Phase Data Update: Starting to deal cards
+2025-07-21 06:18:10 - engine.state_machine.game_state_machine - INFO - State machine process loop started
+2025-07-21 06:18:10 - game.state.preparation - INFO - 📤 Auto-broadcast: phase_change to room 6777A0 - Starting to deal cards
+2025-07-21 06:18:10 - game.state.preparation - INFO - 🔍 Weak hand check - Found 1 weak players: {'Andy'}
+2025-07-21 06:18:10 - game.state.preparation - INFO - 🎮 Phase Data Update: Weak hands detected: ['Andy'] - awaiting simultaneous decisions
+2025-07-21 06:18:10 - game.state.preparation - INFO - 📤 Auto-broadcast: phase_change to room 6777A0 - Weak hands detected: ['Andy'] - awaiting simultaneous decisions
+2025-07-21 06:18:10 - game.state.preparation - INFO - 🎮 Phase Data Update: Cards dealt, checking for weak hands
+2025-07-21 06:18:10 - game.state.preparation - INFO - 📤 Auto-broadcast: phase_change to room 6777A0 - Cards dealt, checking for weak hands
+2025-07-21 06:18:10 - engine.state_machine.game_state_machine - INFO - Stored phase change event: None -> GamePhase.PREPARATION
+2025-07-21 06:18:10 - engine.state_machine.game_state_machine - INFO - Notifying bot manager about phase preparation
+2025-07-21 06:18:10 - backend.api.routes.ws - INFO - Game started in room 6777A0
+INFO:     ('127.0.0.1', 55243) - "WebSocket /ws/6777A0" [accepted]
 INFO:     connection open
-2025-07-20 21:48:27 - backend.api.routes.ws - INFO - 🧹 WebSocket connection to room 50D652 - checking cleanup task
-2025-07-20 21:48:27 - backend.api.routes.ws - INFO - 🧹 start_cleanup_task called, cleanup_task_started=True
-2025-07-20 21:48:27 - backend.api.routes.ws - INFO - 🧹 Cleanup task already started, skipping
-2025-07-20 21:48:27 - backend.api.routes.ws - INFO - 🔗 New WebSocket connection to room 50D652, ws_id: 33f3247a-decc-4513-97a3-dbad39d01cd1 at 1753073307.322154
-INFO:     ('127.0.0.1', 62549) - "WebSocket /ws/50D652" [accepted]
+INFO:     ('127.0.0.1', 55245) - "WebSocket /ws/6777A0" [accepted]
 INFO:     connection open
-2025-07-20 21:48:27 - backend.api.routes.ws - INFO - 🔌 Handling disconnect for room 50D652, websocket_id: 2ba235b5-7c85-4d35-9b20-c94c02805635 at 1753073307.35803
-2025-07-20 21:48:27 - api.websocket.connection_manager - INFO - Player P2 disconnected from room 50D652. Can reconnect anytime while game is active.
-2025-07-20 21:48:27 - backend.api.routes.ws - INFO - 🔍 Converting P2 to bot - Before: is_bot=False, is_connected=True
-2025-07-20 21:48:27 - backend.api.routes.ws - INFO - 🔍 Converted P2 to bot - After: is_bot=True, is_connected=False
-2025-07-20 21:48:27 - api.websocket.message_queue - INFO - Created message queue for P2 in room 50D652
-2025-07-20 21:48:27 - backend.api.routes.ws - INFO - Player P2 disconnected from game in room 50D652. Bot activated.
+2025-07-21 06:18:10 - api.websocket.connection_manager - INFO - Player P2 disconnected from room 6777A0. Can reconnect anytime while game is active.
+2025-07-21 06:18:10 - api.websocket.message_queue - INFO - Created message queue for P2 in room 6777A0
+2025-07-21 06:18:10 - backend.api.routes.ws - INFO - Player P2 disconnected from game in room 6777A0. Bot activated.
 INFO:     connection closed
-2025-07-20 21:48:27 - backend.api.routes.ws - INFO - 🔌 Handling disconnect for room 50D652, websocket_id: e0c8a32f-1704-4ba1-8c04-b88a6bb2407e at 1753073307.359324
-2025-07-20 21:48:27 - api.websocket.connection_manager - INFO - Player Andy disconnected from room 50D652. Can reconnect anytime while game is active.
-2025-07-20 21:48:27 - backend.api.routes.ws - INFO - 🔍 Converting Andy to bot - Before: is_bot=False, is_connected=True
-2025-07-20 21:48:27 - backend.api.routes.ws - INFO - 🔍 Converted Andy to bot - After: is_bot=True, is_connected=False
-2025-07-20 21:48:27 - api.websocket.message_queue - INFO - Created message queue for Andy in room 50D652
-2025-07-20 21:48:27 - backend.api.routes.ws - INFO - Player Andy disconnected from game in room 50D652. Bot activated.
-🔄 [Room 50D652] Host migrated from 'Andy' to bot 'Andy'
-2025-07-20 21:48:27 - backend.api.routes.ws - INFO - Host migrated to Andy in room 50D652
+2025-07-21 06:18:10 - api.websocket.connection_manager - INFO - Player Andy disconnected from room 6777A0. Can reconnect anytime while game is active.
+2025-07-21 06:18:10 - api.websocket.message_queue - INFO - Created message queue for Andy in room 6777A0
+2025-07-21 06:18:10 - backend.api.routes.ws - INFO - Player Andy disconnected from game in room 6777A0. Bot activated.
+2025-07-21 06:18:10 - engine.room - INFO - [Room 6777A0] Host migrated from 'Andy' to bot 'Andy'
+2025-07-21 06:18:10 - backend.api.routes.ws - INFO - Host migrated to Andy in room 6777A0
 INFO:     connection closed
-2025-07-20 21:48:27 - backend.api.routes.ws - INFO - 🔗 Registering player P2 for room 50D652, ws_id: 3178ae2e-1542-42d3-ace3-136c7b080ddf
-2025-07-20 21:48:27 - api.websocket.connection_manager - INFO - Player P2 reconnected to room 50D652
-2025-07-20 21:48:27 - backend.api.routes.ws - INFO - ✅ Successfully registered player P2 for room 50D652
-✅ [Room 50D652] Cleanup cancelled - human player reconnected
-2025-07-20 21:48:27 - backend.api.routes.ws - INFO - Player P2 reconnected to game in room 50D652
-2025-07-20 21:48:27 - api.websocket.message_queue - INFO - Retrieved 0 queued messages for P2
-2025-07-20 21:48:27 - api.websocket.message_queue - INFO - Cleared message queue for P2 in room 50D652
-🔍 [Room 50D652] Checking for human players:
-  - Slot 0: Andy, is_bot=True, is_connected=False
-  - Slot 1: P2, is_bot=False, is_connected=True
-  - Slot 2: Bot 3, is_bot=True, is_connected=True
-  - Slot 3: Bot 4, is_bot=True, is_connected=True
-🔍 [Room 50D652] Found human player: P2
-🔍 [Room 50D652] Checking for human players:
-  - Slot 0: Andy, is_bot=True, is_connected=False
-  - Slot 1: P2, is_bot=False, is_connected=True
-  - Slot 2: Bot 3, is_bot=True, is_connected=True
-  - Slot 3: Bot 4, is_bot=True, is_connected=True
-🔍 [Room 50D652] Found human player: P2
-2025-07-20 21:48:27 - backend.api.routes.ws - INFO - 🔗 Registering player Andy for room 50D652, ws_id: 33f3247a-decc-4513-97a3-dbad39d01cd1
-2025-07-20 21:48:27 - api.websocket.connection_manager - INFO - Player Andy reconnected to room 50D652
-2025-07-20 21:48:27 - backend.api.routes.ws - INFO - ✅ Successfully registered player Andy for room 50D652
-✅ [Room 50D652] Cleanup cancelled - human player reconnected
-2025-07-20 21:48:27 - backend.api.routes.ws - INFO - Player Andy reconnected to game in room 50D652
-2025-07-20 21:48:27 - api.websocket.message_queue - INFO - Retrieved 0 queued messages for Andy
-2025-07-20 21:48:27 - api.websocket.message_queue - INFO - Cleared message queue for Andy in room 50D652
-2025-07-20 21:48:28 - backend.api.routes.ws - INFO - 🧹 Cleanup iteration 5: Checking 1 rooms (including started games)
-2025-07-20 21:48:28 - backend.api.routes.ws - INFO - 🧹 Room IDs: ['50D652']
-🧹 [Room 50D652] should_cleanup: cleanup_scheduled=False, returning False
-✅ Redeal decline queued: Andy
-2025-07-20 21:48:32 - game.state.preparation - INFO - 🚫 Andy DECLINES redeal
-2025-07-20 21:48:32 - game.state.preparation - INFO - ✅ All weak players declined - proceeding with current hands
-2025-07-20 21:48:32 - game.state.preparation - INFO - 🔍 STARTER_DEBUG: Current round number: 1
-2025-07-20 21:48:32 - game.state.preparation - INFO - 🎯 Starter: Bot 3 (has GENERAL_RED)
-2025-07-20 21:48:32 - engine.state_machine.game_state_machine - INFO - Transitioning from GamePhase.PREPARATION to GamePhase.ROUND_START
-2025-07-20 21:48:32 - engine.state_machine.game_state_machine - INFO - 🔄 Transitioning: GamePhase.PREPARATION -> GamePhase.ROUND_START
-2025-07-20 21:48:32 - game.state.preparation - INFO - Exiting preparation phase
-2025-07-20 21:48:32 - game.state.preparation - INFO - 🎯 Round starter already set: Bot 3
-2025-07-20 21:48:32 - game.state.preparation - INFO - 📋 Preparation complete - Starter: Bot 3, Multiplier: 1x
-2025-07-20 21:48:32 - game.state.round_start - INFO - Entering round_start phase
-2025-07-20 21:48:32 - game.state.round_start - INFO - 📋 Round 1 starting - Starter: Bot 3 (has_general_red)
-2025-07-20 21:48:32 - game.state.round_start - INFO - 🎮 Phase Data Update: Round 1 starting with Bot 3
-2025-07-20 21:48:32 - game.state.round_start - INFO - 📤 Auto-broadcast: phase_change to room 50D652 - Round 1 starting with Bot 3
-2025-07-20 21:48:32 - engine.state_machine.game_state_machine - INFO - Stored phase change event: GamePhase.PREPARATION -> GamePhase.ROUND_START
-2025-07-20 21:48:32 - engine.state_machine.game_state_machine - INFO - Notifying bot manager about phase round_start
-2025-07-20 21:48:33 - backend.api.routes.ws - INFO - 🧹 Cleanup iteration 6: Checking 1 rooms (including started games)
-2025-07-20 21:48:33 - backend.api.routes.ws - INFO - 🧹 Room IDs: ['50D652']
-🧹 [Room 50D652] should_cleanup: cleanup_scheduled=False, returning False
-2025-07-20 21:48:37 - engine.state_machine.game_state_machine - INFO - Transitioning from GamePhase.ROUND_START to GamePhase.DECLARATION
-2025-07-20 21:48:37 - engine.state_machine.game_state_machine - INFO - 🔄 Transitioning: GamePhase.ROUND_START -> GamePhase.DECLARATION
-2025-07-20 21:48:37 - game.state.round_start - INFO - Exiting round_start phase
-2025-07-20 21:48:37 - game.state.round_start - INFO - 🎯 Round start display complete - transitioning to Declaration
-2025-07-20 21:48:37 - game.state.declaration - INFO - Entering declaration phase
-2025-07-20 21:48:37 - game.state.declaration - INFO - 🎮 Phase Data Update: Declaration phase setup - basic data
-2025-07-20 21:48:37 - game.state.declaration - INFO - 📤 Auto-broadcast: phase_change to room 50D652 - Declaration phase setup - basic data
-2025-07-20 21:48:37 - game.state.declaration - INFO - 🎮 Phase Data Update: Declaration phase setup complete - current declarer: Bot 3
-2025-07-20 21:48:37 - game.state.declaration - INFO - 📤 Auto-broadcast: phase_change to room 50D652 - Declaration phase setup complete - current declarer: Bot 3
-2025-07-20 21:48:38 - backend.api.routes.ws - INFO - 🧹 Cleanup iteration 7: Checking 1 rooms (including started games)
-2025-07-20 21:48:38 - backend.api.routes.ws - INFO - 🧹 Room IDs: ['50D652']
-🧹 [Room 50D652] should_cleanup: cleanup_scheduled=False, returning False
+2025-07-21 06:18:10 - backend.api.routes.ws - INFO - All players in room 6777A0 are now bots. Cleanup scheduled in 0s
+2025-07-21 06:18:10 - backend.api.routes.ws - INFO - All players in room 6777A0 are now bots. Cleanup scheduled in 0s
+2025-07-21 06:18:10 - api.websocket.connection_manager - INFO - Player P2 reconnected to room 6777A0
+2025-07-21 06:18:10 - backend.api.routes.ws - INFO - Successfully registered player P2 for room 6777A0
+2025-07-21 06:18:10 - backend.api.routes.ws - INFO - Player P2 reconnected to game in room 6777A0
+2025-07-21 06:18:10 - api.websocket.message_queue - INFO - Retrieved 0 queued messages for P2
+2025-07-21 06:18:10 - api.websocket.message_queue - INFO - Cleared message queue for P2 in room 6777A0
+2025-07-21 06:18:10 - api.websocket.connection_manager - INFO - Player Andy reconnected to room 6777A0
+2025-07-21 06:18:10 - backend.api.routes.ws - INFO - Successfully registered player Andy for room 6777A0
+2025-07-21 06:18:10 - backend.api.routes.ws - INFO - Player Andy reconnected to game in room 6777A0
+2025-07-21 06:18:10 - api.websocket.message_queue - INFO - Retrieved 0 queued messages for Andy
+2025-07-21 06:18:10 - api.websocket.message_queue - INFO - Cleared message queue for Andy in room 6777A0
+2025-07-21 06:18:23 - game.state.preparation - INFO - 🚫 Andy DECLINES redeal
+2025-07-21 06:18:23 - game.state.preparation - INFO - ✅ All weak players declined - proceeding with current hands
+2025-07-21 06:18:23 - game.state.preparation - INFO - 🔍 STARTER_DEBUG: Current round number: 1
+2025-07-21 06:18:23 - game.state.preparation - INFO - 🎯 Starter: Bot 4 (has GENERAL_RED)
+2025-07-21 06:18:23 - engine.state_machine.game_state_machine - INFO - Transitioning from GamePhase.PREPARATION to GamePhase.ROUND_START
+2025-07-21 06:18:23 - engine.state_machine.game_state_machine - INFO - 🔄 Transitioning: GamePhase.PREPARATION -> GamePhase.ROUND_START
+2025-07-21 06:18:23 - game.state.preparation - INFO - Exiting preparation phase
+2025-07-21 06:18:23 - game.state.preparation - INFO - 🎯 Round starter already set: Bot 4
+2025-07-21 06:18:23 - game.state.preparation - INFO - 📋 Preparation complete - Starter: Bot 4, Multiplier: 1x
+2025-07-21 06:18:23 - game.state.round_start - INFO - Entering round_start phase
+2025-07-21 06:18:23 - game.state.round_start - INFO - 📋 Round 1 starting - Starter: Bot 4 (has_general_red)
+2025-07-21 06:18:23 - game.state.round_start - INFO - 🎮 Phase Data Update: Round 1 starting with Bot 4
+2025-07-21 06:18:23 - game.state.round_start - INFO - 📤 Auto-broadcast: phase_change to room 6777A0 - Round 1 starting with Bot 4
+2025-07-21 06:18:23 - engine.state_machine.game_state_machine - INFO - Stored phase change event: GamePhase.PREPARATION -> GamePhase.ROUND_START
+2025-07-21 06:18:23 - engine.state_machine.game_state_machine - INFO - Notifying bot manager about phase round_start
+2025-07-21 06:18:28 - engine.state_machine.game_state_machine - INFO - Transitioning from GamePhase.ROUND_START to GamePhase.DECLARATION
+2025-07-21 06:18:28 - engine.state_machine.game_state_machine - INFO - 🔄 Transitioning: GamePhase.ROUND_START -> GamePhase.DECLARATION
+2025-07-21 06:18:28 - game.state.round_start - INFO - Exiting round_start phase
+2025-07-21 06:18:28 - game.state.round_start - INFO - 🎯 Round start display complete - transitioning to Declaration
+2025-07-21 06:18:28 - game.state.declaration - INFO - Entering declaration phase
+2025-07-21 06:18:28 - game.state.declaration - INFO - 🎮 Phase Data Update: Declaration phase setup - basic data
+2025-07-21 06:18:28 - game.state.declaration - INFO - 📤 Auto-broadcast: phase_change to room 6777A0 - Declaration phase setup - basic data
+2025-07-21 06:18:28 - game.state.declaration - INFO - 🎮 Phase Data Update: Declaration phase setup complete - current declarer: Bot 4
+2025-07-21 06:18:28 - game.state.declaration - INFO - 📤 Auto-broadcast: phase_change to room 6777A0 - Declaration phase setup complete - current declarer: Bot 4
+✅ Bot Bot 4 declared 6
+2025-07-21 06:18:30 - engine.state_machine.game_state_machine - INFO - Stored phase change event: GamePhase.ROUND_START -> GamePhase.DECLARATION
+2025-07-21 06:18:30 - engine.state_machine.game_state_machine - INFO - Notifying bot manager about phase declaration
+2025-07-21 06:18:30 - game.state.declaration - INFO - 🎮 Phase Data Update: Player Bot 4 declared 6
+2025-07-21 06:18:30 - game.state.declaration - INFO - 📤 Auto-broadcast: phase_change to room 6777A0 - Player Bot 4 declared 6
+2025-07-21 06:18:30 - game.state.declaration - INFO - Player Bot 4 declared 6
+2025-07-21 06:18:33 - game.state.declaration - INFO - 🎮 Phase Data Update: Player Andy declared 3
+2025-07-21 06:18:33 - game.state.declaration - INFO - 📤 Auto-broadcast: phase_change to room 6777A0 - Player Andy declared 3
+2025-07-21 06:18:33 - game.state.declaration - INFO - Player Andy declared 3
+2025-07-21 06:18:36 - game.state.declaration - INFO - 🎮 Phase Data Update: Player P2 declared 3
+2025-07-21 06:18:36 - game.state.declaration - INFO - 📤 Auto-broadcast: phase_change to room 6777A0 - Player P2 declared 3
 ✅ Bot Bot 3 declared 2
-✅ Bot Bot 4 declared 1
-2025-07-20 21:48:40 - engine.state_machine.game_state_machine - INFO - Stored phase change event: GamePhase.ROUND_START -> GamePhase.DECLARATION
-2025-07-20 21:48:40 - engine.state_machine.game_state_machine - INFO - Notifying bot manager about phase declaration
-2025-07-20 21:48:41 - game.state.declaration - INFO - 🎮 Phase Data Update: Player Bot 3 declared 2
-2025-07-20 21:48:41 - game.state.declaration - INFO - 📤 Auto-broadcast: phase_change to room 50D652 - Player Bot 3 declared 2
-✅ Bot Bot 4 declared 1
-2025-07-20 21:48:42 - game.state.declaration - INFO - Player Bot 3 declared 2
-2025-07-20 21:48:42 - game.state.declaration - INFO - 🎮 Phase Data Update: Player Bot 4 declared 1
-2025-07-20 21:48:42 - game.state.declaration - INFO - 📤 Auto-broadcast: phase_change to room 50D652 - Player Bot 4 declared 1
-2025-07-20 21:48:42 - game.state.declaration - INFO - Player Bot 4 declared 1
-2025-07-20 21:48:42 - game.state.declaration - WARNING - Wrong player turn: Bot 4, expected: Andy
-2025-07-20 21:48:42 - game.state.declaration - WARNING - Invalid action: GameAction(player_name='Bot 4', action_type=<ActionType.DECLARE: 'declare'>, payload={'value': 1}, timestamp=datetime.datetime(2025, 7, 20, 21, 48, 42, 151358), sequence_id=3, is_bot=True)
-2025-07-20 21:48:43 - backend.api.routes.ws - INFO - 🧹 Cleanup iteration 8: Checking 1 rooms (including started games)
-2025-07-20 21:48:43 - backend.api.routes.ws - INFO - 🧹 Room IDs: ['50D652']
-🧹 [Room 50D652] should_cleanup: cleanup_scheduled=False, returning False
-INFO:     127.0.0.1:62635 - "GET /game/50D652 HTTP/1.1" 404 Not Found
-2025-07-20 21:48:47 - backend.api.routes.ws - INFO - 🔌 Handling disconnect for room lobby, websocket_id: 51191a7f-7787-4d46-9fa9-e4f2b976885f at 1753073327.693283
-2025-07-20 21:48:47 - api.websocket.connection_manager - WARNING - WebSocket ID 51191a7f-7787-4d46-9fa9-e4f2b976885f not found in mapping. Current mappings: ['3178ae2e-1542-42d3-ace3-136c7b080ddf', '33f3247a-decc-4513-97a3-dbad39d01cd1']
-2025-07-20 21:48:47 - backend.api.routes.ws - WARNING - No websocket_id found on websocket object for room lobby
-2025-07-20 21:48:47 - backend.api.routes.ws - INFO - 🔌 Handling disconnect for room 50D652, websocket_id: 3178ae2e-1542-42d3-ace3-136c7b080ddf at 1753073327.6958961
-2025-07-20 21:48:47 - api.websocket.connection_manager - INFO - Player P2 disconnected from room 50D652. Can reconnect anytime while game is active.
-2025-07-20 21:48:47 - backend.api.routes.ws - INFO - 🔍 Converting P2 to bot - Before: is_bot=False, is_connected=True
-2025-07-20 21:48:47 - backend.api.routes.ws - INFO - 🔍 Converted P2 to bot - After: is_bot=True, is_connected=False
-2025-07-20 21:48:47 - api.websocket.message_queue - INFO - Created message queue for P2 in room 50D652
-2025-07-20 21:48:47 - backend.api.routes.ws - INFO - Player P2 disconnected from game in room 50D652. Bot activated.
-🔍 [Room 50D652] Checking for human players:
-  - Slot 0: Andy, is_bot=False, is_connected=True
-  - Slot 1: P2, is_bot=True, is_connected=False
-  - Slot 2: Bot 3, is_bot=True, is_connected=True
-  - Slot 3: Bot 4, is_bot=True, is_connected=True
-🔍 [Room 50D652] Found human player: Andy
-INFO:     connection closed
-INFO:     connection closed
-INFO:     127.0.0.1:62635 - "GET /.well-known/appspecific/com.chrome.devtools.json HTTP/1.1" 404 Not Found
-2025-07-20 21:48:48 - backend.api.routes.ws - INFO - 🧹 Cleanup iteration 9: Checking 1 rooms (including started games)
-2025-07-20 21:48:48 - backend.api.routes.ws - INFO - 🧹 Room IDs: ['50D652']
-🧹 [Room 50D652] should_cleanup: cleanup_scheduled=False, returning False
-✅ Declaration queued: Andy -> 3
-2025-07-20 21:48:50 - game.state.declaration - INFO - 🎮 Phase Data Update: Player Andy declared 3
-2025-07-20 21:48:50 - game.state.declaration - INFO - 📤 Auto-broadcast: phase_change to room 50D652 - Player Andy declared 3
-✅ Bot P2 declared 1
-2025-07-20 21:48:51 - game.state.declaration - INFO - Player Andy declared 3
-2025-07-20 21:48:52 - game.state.declaration - INFO - 🎮 Phase Data Update: Player P2 declared 1
-2025-07-20 21:48:52 - game.state.declaration - INFO - 📤 Auto-broadcast: phase_change to room 50D652 - Player P2 declared 1
-2025-07-20 21:48:52 - game.state.declaration - INFO - Player P2 declared 1
-2025-07-20 21:48:52 - engine.state_machine.game_state_machine - INFO - Transitioning from GamePhase.DECLARATION to GamePhase.TURN
-2025-07-20 21:48:52 - engine.state_machine.game_state_machine - INFO - 🔄 Transitioning: GamePhase.DECLARATION -> GamePhase.TURN
-2025-07-20 21:48:52 - game.state.declaration - INFO - Exiting declaration phase
-2025-07-20 21:48:52 - game.state.declaration - INFO - Copied declarations to game: {'Bot 3': 2, 'Bot 4': 1, 'Andy': 3, 'P2': 1}
-2025-07-20 21:48:52 - game.state.turn - INFO - Entering turn phase
-2025-07-20 21:48:52 - game.state.turn - INFO - 🎯 Turn phase starting - Bot 3 starts first turn
-2025-07-20 21:48:52 - game.state.turn - INFO - 🎮 Phase Data Update: New turn 1 started with starter Bot 3
-2025-07-20 21:48:52 - game.state.turn - INFO - 📤 Auto-broadcast: phase_change to room 50D652 - New turn 1 started with starter Bot 3
-2025-07-20 21:48:53 - backend.api.routes.ws - INFO - 🧹 Cleanup iteration 10: Checking 1 rooms (including started games)
-2025-07-20 21:48:53 - backend.api.routes.ws - INFO - 🧹 Room IDs: ['50D652']
-🧹 [Room 50D652] should_cleanup: cleanup_scheduled=False, returning False
-🤖 BOT chooses to play PAIR (20 pts): ELEPHANT, ELEPHANT
+2025-07-21 06:18:37 - game.state.declaration - INFO - Player P2 declared 3
+2025-07-21 06:18:38 - game.state.declaration - INFO - 🎮 Phase Data Update: Player Bot 3 declared 2
+2025-07-21 06:18:38 - game.state.declaration - INFO - 📤 Auto-broadcast: phase_change to room 6777A0 - Player Bot 3 declared 2
+2025-07-21 06:18:38 - game.state.declaration - INFO - Player Bot 3 declared 2
+2025-07-21 06:18:38 - engine.state_machine.game_state_machine - INFO - Transitioning from GamePhase.DECLARATION to GamePhase.TURN
+2025-07-21 06:18:38 - engine.state_machine.game_state_machine - INFO - 🔄 Transitioning: GamePhase.DECLARATION -> GamePhase.TURN
+2025-07-21 06:18:38 - game.state.declaration - INFO - Exiting declaration phase
+2025-07-21 06:18:38 - game.state.declaration - INFO - Copied declarations to game: {'Bot 4': 6, 'Andy': 3, 'P2': 3, 'Bot 3': 2}
+2025-07-21 06:18:38 - game.state.turn - INFO - Entering turn phase
+2025-07-21 06:18:38 - game.state.turn - INFO - 🎯 Turn phase starting - Bot 4 starts first turn
+2025-07-21 06:18:38 - game.state.turn - INFO - 🎮 Phase Data Update: New turn 1 started with starter Bot 4
+2025-07-21 06:18:38 - game.state.turn - INFO - 📤 Auto-broadcast: phase_change to room 6777A0 - New turn 1 started with starter Bot 4
+🤖 BOT chooses to play EXTENDED_STRAIGHT (48 pts): ELEPHANT, ADVISOR, ADVISOR, GENERAL
+✅ Bot Bot 4 action queued - state machine will broadcast with correct next_player
+2025-07-21 06:18:39 - game.state.turn - INFO - 🎯 New turn started - order: ['Bot 4', 'Andy', 'P2', 'Bot 3']
+2025-07-21 06:18:39 - engine.state_machine.game_state_machine - INFO - Stored phase change event: GamePhase.DECLARATION -> GamePhase.TURN
+2025-07-21 06:18:39 - engine.state_machine.game_state_machine - INFO - Notifying bot manager about phase turn
+2025-07-21 06:18:40 - game.state.turn - INFO - 🎲 Bot 4 (starter) plays 4 pieces - setting required count
+2025-07-21 06:18:40 - game.state.turn - INFO - 🎲 Bot 4 plays: [ELEPHANT_RED(10), ADVISOR_RED(12), ADVISOR_RED(12), GENERAL_RED(14)] (value: 48)
+2025-07-21 06:18:40 - game.state.turn - INFO - Removed 4 pieces from Bot 4's hand
+2025-07-21 06:18:40 - game.state.turn - INFO - 🎮 Phase Data Update: Player Bot 4 played 4 pieces
+2025-07-21 06:18:40 - game.state.turn - INFO - 📤 Auto-broadcast: phase_change to room 6777A0 - Player Bot 4 played 4 pieces
+2025-07-21 06:18:50 - game.state.turn - INFO - 🎲 Andy plays: [CHARIOT_RED(8), CHARIOT_RED(8), HORSE_RED(6), CANNON_RED(4)] (value: 26)
+2025-07-21 06:18:50 - game.state.turn - INFO - Removed 4 pieces from Andy's hand
+2025-07-21 06:18:50 - game.state.turn - INFO - 🎮 Phase Data Update: Player Andy played 4 pieces
+2025-07-21 06:18:50 - game.state.turn - INFO - 📤 Auto-broadcast: phase_change to room 6777A0 - Player Andy played 4 pieces
+2025-07-21 06:19:05 - game.state.turn - INFO - 🎲 P2 plays: [CANNON_BLACK(3), CANNON_BLACK(3), HORSE_BLACK(5), ELEPHANT_RED(10)] (value: 21)
+2025-07-21 06:19:05 - game.state.turn - INFO - Removed 4 pieces from P2's hand
+2025-07-21 06:19:05 - game.state.turn - INFO - 🎮 Phase Data Update: Player P2 played 4 pieces
+2025-07-21 06:19:05 - game.state.turn - INFO - 📤 Auto-broadcast: phase_change to room 6777A0 - Player P2 played 4 pieces
+🤖 BOT has no valid play. Discards lowest pieces: SOLDIER, SOLDIER, SOLDIER, SOLDIER
+    🔍 Final play: ['SOLDIER', 'SOLDIER', 'SOLDIER', 'SOLDIER']
+    🧠 Hand left: ['HORSE', 'GENERAL', 'SOLDIER', 'SOLDIER', 'SOLDIER', 'SOLDIER', 'SOLDIER', 'CHARIOT']
 ✅ Bot Bot 3 action queued - state machine will broadcast with correct next_player
-🤖 BOT chooses to play SINGLE (12 pts): ADVISOR
+2025-07-21 06:19:07 - game.state.turn - INFO - 🎲 Bot 3 plays: [SOLDIER_BLACK(1), SOLDIER_BLACK(1), SOLDIER_RED(2), SOLDIER_RED(2)] (value: 6)
+2025-07-21 06:19:07 - game.state.turn - INFO - Removed 4 pieces from Bot 3's hand
+2025-07-21 06:19:07 - game.state.turn - INFO - 🎮 Phase Data Update: Player Bot 3 played 4 pieces
+2025-07-21 06:19:07 - game.state.turn - INFO - 📤 Auto-broadcast: phase_change to room 6777A0 - Player Bot 3 played 4 pieces
+2025-07-21 06:19:07 - game.state.turn - INFO - 🎯 Round 1, Turn 1 winner: Bot 4 with EXTENDED_STRAIGHT value 48
+2025-07-21 06:19:07 - game.state.turn - INFO - 💰 Bot 4 won 4 piles this turn, total: 4 piles
+2025-07-21 06:19:07 - game.state.turn - INFO - 🏆 Bot 4 wins turn and gets 4 piles
+2025-07-21 06:19:07 - game.state.turn - INFO - 🎮 Waiting 5s for piece flip animation to complete...
+2025-07-21 06:19:12 - game.state.turn - INFO - 🎮 Phase Data Update: Turn completed - winner: Bot 4
+2025-07-21 06:19:12 - game.state.turn - INFO - 📤 Auto-broadcast: phase_change to room 6777A0 - Turn completed - winner: Bot 4
+2025-07-21 06:19:13 - game.state.turn - INFO - 📤 Custom broadcast: turn_complete to room 6777A0 - Turn 1 completed - winner: Bot 4
+2025-07-21 06:19:13 - game.state.turn - INFO - 🚀 Enterprise broadcast turn completion - winner: Bot 4, turn piles awarded: {'Bot 4': 4, 'Andy': 0, 'P2': 0, 'Bot 3': 0}
+2025-07-21 06:19:13 - game.state.turn - INFO - 🔄 Updated turn order - new starter first: ['Bot 4', 'Andy', 'P2', 'Bot 3']
+2025-07-21 06:19:13 - game.state.turn - INFO - 🎯 Next turn starter: Bot 4
+2025-07-21 06:19:13 - game.state.turn - INFO - 🎯 Turn complete - auto-starting next turn in 7 seconds
+2025-07-21 06:19:20 - game.state.turn - INFO - 🎮 Phase Data Update: New turn 2 started with starter Bot 4
+2025-07-21 06:19:20 - game.state.turn - INFO - 📤 Auto-broadcast: phase_change to room 6777A0 - New turn 2 started with starter Bot 4
+🤖 BOT chooses to play SINGLE (7 pts): CHARIOT
 ✅ Bot Bot 4 action queued - state machine will broadcast with correct next_player
-2025-07-20 21:48:55 - game.state.turn - INFO - 🎯 New turn started - order: ['Bot 3', 'Bot 4', 'Andy', 'P2']
-2025-07-20 21:48:55 - engine.state_machine.game_state_machine - INFO - Stored phase change event: GamePhase.DECLARATION -> GamePhase.TURN
-2025-07-20 21:48:55 - engine.state_machine.game_state_machine - INFO - Notifying bot manager about phase turn
-2025-07-20 21:48:55 - game.state.turn - INFO - 🎲 Bot 3 (starter) plays 2 pieces - setting required count
-2025-07-20 21:48:55 - game.state.turn - INFO - 🎲 Bot 3 plays: [ELEPHANT_RED(10), ELEPHANT_RED(10)] (value: 20)
-2025-07-20 21:48:55 - game.state.turn - INFO - Removed 2 pieces from Bot 3's hand
-2025-07-20 21:48:55 - game.state.turn - INFO - 🎮 Phase Data Update: Player Bot 3 played 2 pieces
-2025-07-20 21:48:55 - game.state.turn - INFO - 📤 Auto-broadcast: phase_change to room 50D652 - Player Bot 3 played 2 pieces
-INFO:     127.0.0.1:62671 - "GET /game/50D652 HTTP/1.1" 404 Not Found
-2025-07-20 21:48:56 - backend.api.routes.ws - INFO - 🔌 Handling disconnect for room lobby, websocket_id: a4e74ff0-7969-4d1a-aca6-b6f3f125d75a at 1753073336.275522
-2025-07-20 21:48:56 - api.websocket.connection_manager - WARNING - WebSocket ID a4e74ff0-7969-4d1a-aca6-b6f3f125d75a not found in mapping. Current mappings: ['33f3247a-decc-4513-97a3-dbad39d01cd1']
-2025-07-20 21:48:56 - backend.api.routes.ws - WARNING - No websocket_id found on websocket object for room lobby
-2025-07-20 21:48:56 - backend.api.routes.ws - INFO - 🔌 Handling disconnect for room 50D652, websocket_id: 33f3247a-decc-4513-97a3-dbad39d01cd1 at 1753073336.2801018
-2025-07-20 21:48:56 - api.websocket.connection_manager - INFO - Player Andy disconnected from room 50D652. Can reconnect anytime while game is active.
-2025-07-20 21:48:56 - backend.api.routes.ws - INFO - 🔍 Converting Andy to bot - Before: is_bot=False, is_connected=True
-2025-07-20 21:48:56 - backend.api.routes.ws - INFO - 🔍 Converted Andy to bot - After: is_bot=True, is_connected=False
-2025-07-20 21:48:56 - api.websocket.message_queue - INFO - Created message queue for Andy in room 50D652
-2025-07-20 21:48:56 - backend.api.routes.ws - INFO - Player Andy disconnected from game in room 50D652. Bot activated.
-🔄 [Room 50D652] Host migrated from 'Andy' to bot 'Andy'
-2025-07-20 21:48:56 - backend.api.routes.ws - INFO - Host migrated to Andy in room 50D652
-🔍 [Room 50D652] Checking for human players:
-  - Slot 0: Andy, is_bot=True, is_connected=False
-  - Slot 1: P2, is_bot=True, is_connected=False
-  - Slot 2: Bot 3, is_bot=True, is_connected=True
-  - Slot 3: Bot 4, is_bot=True, is_connected=True
-🔍 [Room 50D652] No human players found - all are bots!
-🔍 [Room 50D652] Checking for human players:
-  - Slot 0: Andy, is_bot=True, is_connected=False
-  - Slot 1: P2, is_bot=True, is_connected=False
-  - Slot 2: Bot 3, is_bot=True, is_connected=True
-  - Slot 3: Bot 4, is_bot=True, is_connected=True
-🔍 [Room 50D652] No human players found - all are bots!
-🗑️ [Room 50D652] Marked for cleanup in 0s
-2025-07-20 21:48:56 - backend.api.routes.ws - INFO - All players in room 50D652 are now bots. Cleanup scheduled in 0s
+2025-07-21 06:19:21 - game.state.turn - INFO - 🎯 New turn started - order: ['Bot 4', 'Andy', 'P2', 'Bot 3']
+2025-07-21 06:19:21 - game.state.turn - INFO - 🚀 Enterprise: New turn auto-started with automatic broadcasting
+2025-07-21 06:19:21 - game.state.turn - INFO - 🎲 Bot 4 (starter) plays 1 pieces - setting required count
+2025-07-21 06:19:21 - game.state.turn - INFO - 🎲 Bot 4 plays: [CHARIOT_BLACK(7)] (value: 7)
+2025-07-21 06:19:21 - game.state.turn - INFO - Removed 1 pieces from Bot 4's hand
+2025-07-21 06:19:21 - game.state.turn - INFO - 🎮 Phase Data Update: Player Bot 4 played 1 pieces
+2025-07-21 06:19:21 - game.state.turn - INFO - 📤 Auto-broadcast: phase_change to room 6777A0 - Player Bot 4 played 1 pieces
+INFO:     127.0.0.1:55532 - "GET /game/6777A0 HTTP/1.1" 404 Not Found
+2025-07-21 06:19:25 - api.websocket.connection_manager - WARNING - WebSocket ID 43b0458b-8f85-4df8-87ba-89e402d87b70 not found in mapping. Current mappings: ['5554ba58-82d8-46a4-b658-4c0635ca07f2', 'cb6bdda2-20db-43f1-84f6-b868cae62cd2']
+2025-07-21 06:19:25 - backend.api.routes.ws - WARNING - No websocket_id found on websocket object for room lobby
+2025-07-21 06:19:25 - api.websocket.connection_manager - INFO - Player P2 disconnected from room 6777A0. Can reconnect anytime while game is active.
+2025-07-21 06:19:25 - api.websocket.message_queue - INFO - Created message queue for P2 in room 6777A0
+2025-07-21 06:19:25 - backend.api.routes.ws - INFO - Player P2 disconnected from game in room 6777A0. Bot activated.
 INFO:     connection closed
 INFO:     connection closed
-INFO:     127.0.0.1:62671 - "GET /.well-known/appspecific/com.chrome.devtools.json HTTP/1.1" 404 Not Found
-🤖 BOT chooses to play PAIR (4 pts): SOLDIER, SOLDIER
-✅ Bot Bot 4 action queued - state machine will broadcast with correct next_player
-2025-07-20 21:48:58 - backend.api.routes.ws - INFO - 🧹 Cleanup iteration 11: Checking 1 rooms (including started games)
-2025-07-20 21:48:58 - backend.api.routes.ws - INFO - 🧹 Room IDs: ['50D652']
-🧹 [Room 50D652] should_cleanup: elapsed=1.75s, timeout=0s, should_cleanup=True
-2025-07-20 21:48:58 - backend.api.routes.ws - INFO - 🧹 Room 50D652: cleanup_scheduled=True, should_cleanup=True
-2025-07-20 21:48:58 - backend.api.routes.ws - INFO - 🧹 Room 50D652 added to cleanup list
-2025-07-20 21:48:58 - backend.api.routes.ws - INFO - 🧹 Found 1 rooms to clean up: ['50D652']
-🧹 [Room 50D652] should_cleanup: elapsed=1.75s, timeout=0s, should_cleanup=True
-2025-07-20 21:48:58 - backend.api.routes.ws - INFO - 🧹 Cleaning up abandoned room 50D652
-2025-07-20 21:48:58 - backend.api.routes.ws - INFO - Room 50D652 cleaned up successfully
-🤖 BOT chooses to play PAIR (16 pts): CHARIOT, CHARIOT
-✅ Bot Andy action queued - state machine will broadcast with correct next_player
-🤖 BOT chooses to play PAIR (2 pts): SOLDIER, SOLDIER
+INFO:     127.0.0.1:55532 - "GET /.well-known/appspecific/com.chrome.devtools.json HTTP/1.1" 404 Not Found
+2025-07-21 06:19:30 - game.state.turn - INFO - 🎲 Andy plays: [HORSE_RED(6)] (value: 6)
+2025-07-21 06:19:30 - game.state.turn - INFO - Removed 1 pieces from Andy's hand
+2025-07-21 06:19:30 - game.state.turn - INFO - 🎮 Phase Data Update: Player Andy played 1 pieces
+2025-07-21 06:19:30 - game.state.turn - INFO - 📤 Auto-broadcast: phase_change to room 6777A0 - Player Andy played 1 pieces
+🤖 BOT chooses to play SINGLE (11 pts): ADVISOR
 ✅ Bot P2 action queued - state machine will broadcast with correct next_player
-2025-07-20 21:48:59 - game.state.turn - WARNING - Must play 2 pieces, got 1
-2025-07-20 21:48:59 - game.state.turn - WARNING - Invalid action: GameAction(player_name='Bot 4', action_type=<ActionType.PLAY_PIECES: 'play_pieces'>, payload={'pieces': [ADVISOR_RED(12)]}, timestamp=datetime.datetime(2025, 7, 20, 21, 48, 54, 867455), sequence_id=7, is_bot=True)
-2025-07-20 21:48:59 - game.state.turn - INFO - 🎲 Bot 4 plays: [SOLDIER_RED(2), SOLDIER_RED(2)] (value: 4)
-2025-07-20 21:48:59 - game.state.turn - INFO - Removed 2 pieces from Bot 4's hand
-2025-07-20 21:48:59 - game.state.turn - INFO - 🎮 Phase Data Update: Player Bot 4 played 2 pieces
-2025-07-20 21:48:59 - game.state.turn - INFO - 📤 Auto-broadcast: phase_change to room 50D652 - Player Bot 4 played 2 pieces
-2025-07-20 21:48:59 - game.state.turn - INFO - 🎲 Andy plays: [CHARIOT_RED(8), CHARIOT_RED(8)] (value: 16)
-2025-07-20 21:48:59 - game.state.turn - INFO - Removed 2 pieces from Andy's hand
-2025-07-20 21:48:59 - game.state.turn - INFO - 🎮 Phase Data Update: Player Andy played 2 pieces
-2025-07-20 21:48:59 - game.state.turn - INFO - 📤 Auto-broadcast: phase_change to room 50D652 - Player Andy played 2 pieces
-2025-07-20 21:48:59 - game.state.turn - INFO - 🎲 P2 plays: [SOLDIER_BLACK(1), SOLDIER_BLACK(1)] (value: 2)
-2025-07-20 21:48:59 - game.state.turn - INFO - Removed 2 pieces from P2's hand
-2025-07-20 21:48:59 - game.state.turn - INFO - 🎮 Phase Data Update: Player P2 played 2 pieces
-2025-07-20 21:48:59 - game.state.turn - INFO - 📤 Auto-broadcast: phase_change to room 50D652 - Player P2 played 2 pieces
-2025-07-20 21:48:59 - game.state.turn - INFO - 🎯 Round 1, Turn 1 winner: Bot 3 with PAIR value 20
-2025-07-20 21:48:59 - game.state.turn - INFO - 💰 Bot 3 won 2 piles this turn, total: 2 piles
-2025-07-20 21:48:59 - game.state.turn - INFO - 🏆 Bot 3 wins turn and gets 2 piles
-2025-07-20 21:48:59 - game.state.turn - INFO - 🎮 Waiting 5s for piece flip animation to complete...
-2025-07-20 21:49:03 - backend.api.routes.ws - INFO - 🧹 Cleanup iteration 12: Checking 0 rooms (including started games)
-2025-07-20 21:49:07 - game.state.turn - INFO - 🎮 Phase Data Update: Turn completed - winner: Bot 3
-2025-07-20 21:49:07 - game.state.turn - INFO - 📤 Auto-broadcast: phase_change to room 50D652 - Turn completed - winner: Bot 3
-2025-07-20 21:49:07 - game.state.turn - INFO - 📤 Custom broadcast: turn_complete to room 50D652 - Turn 1 completed - winner: Bot 3
-2025-07-20 21:49:07 - game.state.turn - INFO - 🚀 Enterprise broadcast turn completion - winner: Bot 3, turn piles awarded: {'Bot 3': 2, 'Andy': 0, 'P2': 0, 'Bot 4': 0}
-2025-07-20 21:49:10 - game.state.turn - INFO - 🔄 Updated turn order - new starter first: ['Bot 3', 'Bot 4', 'Andy', 'P2']
-2025-07-20 21:49:10 - game.state.turn - INFO - 🎯 Next turn starter: Bot 3
-2025-07-20 21:49:10 - game.state.turn - INFO - 🎯 Turn complete - auto-starting next turn in 7 seconds
-2025-07-20 21:49:10 - backend.api.routes.ws - INFO - 🧹 Cleanup iteration 13: Checking 0 rooms (including started games)
-2025-07-20 21:49:15 - backend.api.routes.ws - INFO - 🧹 Cleanup iteration 14: Checking 0 rooms (including started games)
-2025-07-20 21:49:17 - game.state.turn - INFO - 🎮 Phase Data Update: New turn 2 started with starter Bot 3
-2025-07-20 21:49:17 - game.state.turn - INFO - 📤 Auto-broadcast: phase_change to room 50D652 - New turn 2 started with starter Bot 3
-2025-07-20 21:49:17 - game.state.turn - INFO - 🎯 New turn started - order: ['Bot 3', 'Bot 4', 'Andy', 'P2']
-2025-07-20 21:49:17 - game.state.turn - INFO - 🚀 Enterprise: New turn auto-started with automatic broadcasting
-2025-07-20 21:49:20 - backend.api.routes.ws - INFO - 🧹 Cleanup iteration 15: Checking 0 rooms (including started games)
-2025-07-20 21:49:25 - backend.api.routes.ws - INFO - 🧹 Cleanup iteration 16: Checking 0 rooms (including started games)
-2025-07-20 21:49:30 - backend.api.routes.ws - INFO - 🧹 Cleanup iteration 17: Checking 0 rooms (including started games)
-2025-07-20 21:49:35 - backend.api.routes.ws - INFO - 🧹 Cleanup iteration 18: Checking 0 rooms (including started games)
-2025-07-20 21:49:40 - backend.api.routes.ws - INFO - 🧹 Cleanup iteration 19: Checking 0 rooms (including started games)
-2025-07-20 21:49:45 - backend.api.routes.ws - INFO - 🧹 Cleanup iteration 20: Checking 0 rooms (including started games)
-2025-07-20 21:49:50 - backend.api.routes.ws - INFO - 🧹 Cleanup iteration 21: Checking 0 rooms (including started games)
-2025-07-20 21:49:55 - backend.api.routes.ws - INFO - 🧹 Cleanup iteration 22: Checking 0 rooms (including started games)
+🤖 BOT chooses to play SINGLE (13 pts): GENERAL
+✅ Bot Bot 3 action queued - state machine will broadcast with correct next_player
+2025-07-21 06:19:33 - game.state.turn - INFO - 🎲 P2 plays: [ADVISOR_BLACK(11)] (value: 11)
+2025-07-21 06:19:33 - game.state.turn - INFO - Removed 1 pieces from P2's hand
+2025-07-21 06:19:33 - game.state.turn - INFO - 🎮 Phase Data Update: Player P2 played 1 pieces
+2025-07-21 06:19:33 - game.state.turn - INFO - 📤 Auto-broadcast: phase_change to room 6777A0 - Player P2 played 1 pieces
+🤖 BOT chooses to play SINGLE (13 pts): GENERAL
+✅ Bot Bot 3 action queued - state machine will broadcast with correct next_player
+2025-07-21 06:19:35 - game.state.turn - INFO - 🎲 Bot 3 plays: [GENERAL_BLACK(13)] (value: 13)
+2025-07-21 06:19:35 - game.state.turn - INFO - Removed 1 pieces from Bot 3's hand
+2025-07-21 06:19:35 - game.state.turn - INFO - 🎮 Phase Data Update: Player Bot 3 played 1 pieces
+2025-07-21 06:19:35 - game.state.turn - INFO - 📤 Auto-broadcast: phase_change to room 6777A0 - Player Bot 3 played 1 pieces
+2025-07-21 06:19:35 - game.state.turn - INFO - 🎯 Round 1, Turn 2 winner: Bot 3 with SINGLE value 13
+2025-07-21 06:19:35 - game.state.turn - INFO - 💰 Bot 3 won 1 piles this turn, total: 1 piles
+2025-07-21 06:19:35 - game.state.turn - INFO - 🏆 Bot 3 wins turn and gets 1 piles
+2025-07-21 06:19:35 - game.state.turn - INFO - 🎮 Waiting 5s for piece flip animation to complete...
+2025-07-21 06:19:40 - game.state.turn - INFO - 🎮 Phase Data Update: Turn completed - winner: Bot 3
+2025-07-21 06:19:40 - game.state.turn - INFO - 📤 Auto-broadcast: phase_change to room 6777A0 - Turn completed - winner: Bot 3
+2025-07-21 06:19:40 - game.state.turn - INFO - 📤 Custom broadcast: turn_complete to room 6777A0 - Turn 2 completed - winner: Bot 3
+2025-07-21 06:19:40 - game.state.turn - INFO - 🚀 Enterprise broadcast turn completion - winner: Bot 3, turn piles awarded: {'Bot 3': 1, 'Andy': 0, 'P2': 0, 'Bot 4': 0}
+2025-07-21 06:19:40 - game.state.turn - INFO - 🔄 Updated turn order - new starter first: ['Bot 3', 'Bot 4', 'Andy', 'P2']
+2025-07-21 06:19:40 - game.state.turn - INFO - 🎯 Next turn starter: Bot 3
+2025-07-21 06:19:40 - game.state.turn - INFO - 🎯 Turn complete - auto-starting next turn in 7 seconds
+2025-07-21 06:19:47 - game.state.turn - INFO - 🎮 Phase Data Update: New turn 3 started with starter Bot 3
+2025-07-21 06:19:47 - game.state.turn - INFO - 📤 Auto-broadcast: phase_change to room 6777A0 - New turn 3 started with starter Bot 3
+🤖 BOT chooses to play SINGLE (7 pts): CHARIOT
+✅ Bot Bot 3 action queued - state machine will broadcast with correct next_player
+INFO:     127.0.0.1:55629 - "GET /game/6777A0 HTTP/1.1" 404 Not Found
+2025-07-21 06:19:48 - api.websocket.connection_manager - WARNING - WebSocket ID 102a97a1-4b18-4fc8-9e33-ef43f6fad4a6 not found in mapping. Current mappings: ['cb6bdda2-20db-43f1-84f6-b868cae62cd2']
+2025-07-21 06:19:48 - backend.api.routes.ws - WARNING - No websocket_id found on websocket object for room lobby
+2025-07-21 06:19:48 - api.websocket.connection_manager - INFO - Player Andy disconnected from room 6777A0. Can reconnect anytime while game is active.
+2025-07-21 06:19:48 - api.websocket.message_queue - INFO - Created message queue for Andy in room 6777A0
+2025-07-21 06:19:48 - backend.api.routes.ws - INFO - Player Andy disconnected from game in room 6777A0. Bot activated.
+2025-07-21 06:19:48 - engine.room - INFO - [Room 6777A0] Host migrated from 'Andy' to bot 'Andy'
+2025-07-21 06:19:48 - backend.api.routes.ws - INFO - Host migrated to Andy in room 6777A0
+INFO:     connection closed
+2025-07-21 06:19:48 - backend.api.routes.ws - INFO - All players in room 6777A0 are now bots. Cleanup scheduled in 0s
+INFO:     connection closed
+INFO:     127.0.0.1:55629 - "GET /.well-known/appspecific/com.chrome.devtools.json HTTP/1.1" 404 Not Found
+🤖 BOT chooses to play THREE_OF_A_KIND (3 pts): SOLDIER, SOLDIER, SOLDIER
+✅ Bot Bot 4 action queued - state machine will broadcast with correct next_player
+🤖 BOT chooses to play PAIR (18 pts): ELEPHANT, ELEPHANT
+✅ Bot Andy action queued - state machine will broadcast with correct next_player
+2025-07-21 06:19:52 - backend.api.routes.ws - INFO - Cleaning up abandoned room 6777A0
+2025-07-21 06:19:52 - backend.api.routes.ws - INFO - Room 6777A0 cleaned up successfully
+🤖 BOT chooses to play SINGLE (11 pts): ADVISOR
+✅ Bot P2 action queued - state machine will broadcast with correct next_player
+2025-07-21 06:19:52 - game.state.turn - INFO - 🎯 New turn started - order: ['Bot 3', 'Bot 4', 'Andy', 'P2']
+2025-07-21 06:19:52 - game.state.turn - INFO - 🚀 Enterprise: New turn auto-started with automatic broadcasting
+2025-07-21 06:19:52 - game.state.turn - WARNING - Player Bot 3 doesn't have piece: GENERAL_BLACK(13)
+2025-07-21 06:19:52 - game.state.turn - WARNING - Invalid action: GameAction(player_name='Bot 3', action_type=<ActionType.PLAY_PIECES: 'play_pieces'>, payload={'pieces': [GENERAL_BLACK(13)]}, timestamp=datetime.datetime(2025, 7, 21, 6, 19, 35, 136608), sequence_id=13, is_bot=True)
+2025-07-21 06:19:52 - game.state.turn - INFO - 🎲 Bot 3 (starter) plays 1 pieces - setting required count
+2025-07-21 06:19:52 - game.state.turn - INFO - 🎲 Bot 3 plays: [CHARIOT_BLACK(7)] (value: 7)
+2025-07-21 06:19:52 - game.state.turn - INFO - Removed 1 pieces from Bot 3's hand
+2025-07-21 06:19:52 - game.state.turn - INFO - 🎮 Phase Data Update: Player Bot 3 played 1 pieces
+2025-07-21 06:19:52 - game.state.turn - INFO - 📤 Auto-broadcast: phase_change to room 6777A0 - Player Bot 3 played 1 pieces
+2025-07-21 06:19:52 - game.state.turn - WARNING - Must play 1 pieces, got 3
+2025-07-21 06:19:52 - game.state.turn - WARNING - Invalid action: GameAction(player_name='Bot 4', action_type=<ActionType.PLAY_PIECES: 'play_pieces'>, payload={'pieces': [SOLDIER_BLACK(1), SOLDIER_BLACK(1), SOLDIER_BLACK(1)]}, timestamp=datetime.datetime(2025, 7, 21, 6, 19, 49, 162007), sequence_id=15, is_bot=True)
+2025-07-21 06:19:52 - game.state.turn - WARNING - Not Andy's turn - expected Bot 4
+2025-07-21 06:19:52 - game.state.turn - WARNING - Invalid action: GameAction(player_name='Andy', action_type=<ActionType.PLAY_PIECES: 'play_pieces'>, payload={'pieces': [ELEPHANT_BLACK(9), ELEPHANT_BLACK(9)]}, timestamp=datetime.datetime(2025, 7, 21, 6, 19, 50, 713821), sequence_id=16, is_bot=True)
+2025-07-21 06:19:52 - game.state.turn - WARNING - Not P2's turn - expected Bot 4
+2025-07-21 06:19:52 - game.state.turn - WARNING - Invalid action: GameAction(player_name='P2', action_type=<ActionType.PLAY_PIECES: 'play_pieces'>, payload={'pieces': [ADVISOR_BLACK(11)]}, timestamp=datetime.datetime(2025, 7, 21, 6, 19, 52, 235277), sequence_id=17, is_bot=True)

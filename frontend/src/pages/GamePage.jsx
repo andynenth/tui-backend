@@ -53,12 +53,20 @@ const GamePage = () => {
         if (roomId) {
           // Check if this is a session recovery
           const session = getSession();
-          const isRecovery = session && session.roomId === roomId && session.playerName === playerName;
-          
+          const isRecovery =
+            session &&
+            session.roomId === roomId &&
+            session.playerName === playerName;
+
           if (isRecovery) {
-            console.log('🎮 GamePage: Recovering session for', playerName, 'in room', roomId);
+            console.log(
+              '🎮 GamePage: Recovering session for',
+              playerName,
+              'in room',
+              roomId
+            );
           }
-          
+
           await serviceIntegration.connectToRoom(roomId, playerName);
           setIsInitialized(true);
         }
@@ -107,7 +115,7 @@ const GamePage = () => {
       <div className="game-page-wrapper">
         {/* Toast notifications for disconnect/reconnect events */}
         <ToastContainer position="top-right" maxToasts={5} />
-        
+
         {/* GameContainer now handles all UI including layout */}
         <GameContainer
           roomId={roomId}

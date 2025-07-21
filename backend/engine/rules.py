@@ -37,13 +37,13 @@ PLAY_TYPE_PRIORITY = [
 def get_play_type(pieces):
     """
     Determine the type of play from a list of pieces.
-    
+
     Analyzes the combination of pieces to identify valid play types
     according to game rules.
-    
+
     Args:
         pieces: List of Piece objects to analyze
-        
+
     Returns:
         str: One of: 'SINGLE', 'PAIR', 'THREE_OF_A_KIND', 'STRAIGHT',
              'FOUR_OF_A_KIND', 'EXTENDED_STRAIGHT', 'FIVE_OF_A_KIND',
@@ -80,13 +80,13 @@ def get_play_type(pieces):
 def is_valid_play(pieces):
     """
     Check if a combination of pieces forms a valid play.
-    
+
     A play is valid if it matches one of the recognized play types
     in the game rules.
-    
+
     Args:
         pieces: List of Piece objects to validate
-        
+
     Returns:
         bool: True if the play is valid, False otherwise
     """
@@ -101,10 +101,10 @@ def is_valid_play(pieces):
 def is_pair(pieces):
     """
     Check if two pieces form a valid pair (same name and color).
-    
+
     Args:
         pieces: List of exactly 2 Piece objects
-        
+
     Returns:
         bool: True if pieces form a pair, False otherwise
     """
@@ -114,10 +114,10 @@ def is_pair(pieces):
 def is_three_of_a_kind(pieces):
     """
     Check if three pieces form a valid three-of-a-kind (all soldiers of same color).
-    
+
     Args:
         pieces: List of exactly 3 Piece objects
-        
+
     Returns:
         bool: True if pieces form three-of-a-kind, False otherwise
     """
@@ -127,14 +127,14 @@ def is_three_of_a_kind(pieces):
 def is_straight(pieces):
     """
     Check if three pieces form a valid straight.
-    
+
     Valid straights are:
     - GENERAL, ADVISOR, ELEPHANT (same color)
     - CHARIOT, HORSE, CANNON (same color)
-    
+
     Args:
         pieces: List of exactly 3 Piece objects
-        
+
     Returns:
         bool: True if pieces form a straight, False otherwise
     """
@@ -148,10 +148,10 @@ def is_straight(pieces):
 def is_four_of_a_kind(pieces):
     """
     Check if four pieces form a valid four-of-a-kind (all soldiers of same color).
-    
+
     Args:
         pieces: List of exactly 4 Piece objects
-        
+
     Returns:
         bool: True if pieces form four-of-a-kind, False otherwise
     """
@@ -161,15 +161,15 @@ def is_four_of_a_kind(pieces):
 def is_extended_straight(pieces):
     """
     Check if four pieces form a valid extended straight.
-    
+
     An extended straight requires:
     - 4 pieces from the same group (GENERAL-ADVISOR-ELEPHANT or CHARIOT-HORSE-CANNON)
     - All pieces must be the same color
     - Exactly one piece type must be duplicated (e.g., 2 HORSEs, 1 CHARIOT, 1 CANNON)
-    
+
     Args:
         pieces: List of exactly 4 Piece objects
-        
+
     Returns:
         bool: True if pieces form an extended straight, False otherwise
     """
@@ -187,16 +187,16 @@ def is_extended_straight(pieces):
 def is_extended_straight_5(pieces):
     """
     Check if five pieces form a valid 5-piece extended straight.
-    
+
     A 5-piece extended straight requires:
     - 5 pieces from a valid group (GENERAL-ADVISOR-ELEPHANT or CHARIOT-HORSE-CANNON)
     - All pieces must be the same color
     - Exactly two piece types must be duplicated
     - Distribution must be 2-2-1 (e.g., 2 HORSEs, 2 CANNONs, 1 CHARIOT)
-    
+
     Args:
         pieces: List of exactly 5 Piece objects
-        
+
     Returns:
         bool: True if pieces form a 5-piece extended straight, False otherwise
     """
@@ -220,12 +220,12 @@ def is_extended_straight_5(pieces):
 def is_five_of_a_kind(pieces):
     """
     Check if five pieces form a valid five-of-a-kind.
-    
+
     All five pieces must be SOLDIERs of the same color.
-    
+
     Args:
         pieces: List of exactly 5 Piece objects
-        
+
     Returns:
         bool: True if pieces form five-of-a-kind, False otherwise
     """
@@ -235,15 +235,15 @@ def is_five_of_a_kind(pieces):
 def is_double_straight(pieces):
     """
     Check if six pieces form a valid double straight.
-    
+
     A double straight is the strongest play type and requires:
     - Exactly 6 pieces
     - 2 CHARIOTs, 2 HORSEs, 2 CANNONs
     - All pieces must be the same color
-    
+
     Args:
         pieces: List of Piece objects (should be exactly 6)
-        
+
     Returns:
         bool: True if pieces form a double straight, False otherwise
     """
@@ -268,18 +268,18 @@ def is_double_straight(pieces):
 def compare_plays(p1, p2):
     """
     Compare two plays to determine which is stronger.
-    
+
     Compares plays based on type priority and piece values.
     Different play types have different comparison rules.
-    
+
     For EXTENDED_STRAIGHT and EXTENDED_STRAIGHT_5, compares only
     the top 3 highest-value unique piece types. For other types,
     compares total point values.
-    
+
     Args:
         p1: First list of Piece objects
         p2: Second list of Piece objects
-        
+
     Returns:
         int: 1 if p1 wins, 2 if p2 wins, 0 if tie, -1 if invalid comparison
     """
@@ -326,17 +326,17 @@ def compare_plays(p1, p2):
 def get_valid_declares(player, declared_total, is_last):
     """
     Determine valid declaration values for a player.
-    
+
     Enforces game rules for pile declarations:
     - Players can declare 0-8 piles they plan to win
     - Total sum of all declarations must NOT equal exactly 8
     - If a player declared 0 for 2 consecutive rounds, they must declare ≥1
-    
+
     Args:
         player: Player object (or hand for simplified version)
         declared_total: Sum of declarations made by other players
         is_last: Whether this is the last player to declare
-        
+
     Returns:
         list: Valid declaration values the player can choose
     """

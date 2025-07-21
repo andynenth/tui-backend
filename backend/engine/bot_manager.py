@@ -36,9 +36,9 @@ class BotManager:
     def register_game(self, room_id: str, game, state_machine=None):
         """
         Register a game for bot management.
-        
+
         Creates a GameBotHandler instance to manage bot actions for the game.
-        
+
         Args:
             room_id: Unique identifier for the game room
             game: Game instance to manage
@@ -49,9 +49,9 @@ class BotManager:
     def unregister_game(self, room_id: str):
         """
         Remove a game from bot management.
-        
+
         Cleans up the GameBotHandler instance when a game ends.
-        
+
         Args:
             room_id: Unique identifier for the game room to remove
         """
@@ -61,9 +61,9 @@ class BotManager:
     async def handle_game_event(self, room_id: str, event: str, data: dict):
         """
         Handle game events that might trigger bot actions.
-        
+
         Delegates event handling to the appropriate GameBotHandler.
-        
+
         Args:
             room_id: Unique identifier for the game room
             event: Name of the game event (e.g., 'phase_change', 'player_action')

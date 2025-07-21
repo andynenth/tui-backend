@@ -12,7 +12,7 @@ export function useToastNotifications() {
   const previousDisconnectedPlayers = useRef([]);
   const previousHost = useRef(null);
   const toastIdCounter = useRef(0);
-  
+
   // Grace period configuration
   const GRACE_PERIOD_MS = 500; // Half second grace period
 
@@ -59,7 +59,7 @@ export function useToastNotifications() {
   useEffect(() => {
     const handleStateChange = (state) => {
       const currentDisconnectedPlayers = state.disconnectedPlayers || [];
-      
+
       // Check for newly disconnected players
       const newlyDisconnected = currentDisconnectedPlayers.filter(
         (player) => !previousDisconnectedPlayers.current.includes(player)
@@ -75,20 +75,22 @@ export function useToastNotifications() {
         // Get game start time from GameService state
         const gameStartTime = state.gameStartTime;
         const now = Date.now();
-        const timeSinceGameStart = gameStartTime ? (now - gameStartTime) : null;
-        const isWithinGracePeriod = gameStartTime && 
-          timeSinceGameStart < GRACE_PERIOD_MS;
-        
+        const timeSinceGameStart = gameStartTime ? now - gameStartTime : null;
+        const isWithinGracePeriod =
+          gameStartTime && timeSinceGameStart < GRACE_PERIOD_MS;
+
         console.log('🔔 Disconnect notification check:', {
           playerName,
-          gameStartTime: gameStartTime ? new Date(gameStartTime).toISOString() : 'null',
+          gameStartTime: gameStartTime
+            ? new Date(gameStartTime).toISOString()
+            : 'null',
           now: new Date(now).toISOString(),
           timeSinceGameStart,
           GRACE_PERIOD_MS,
           isWithinGracePeriod,
-          willShowToast: !isWithinGracePeriod
+          willShowToast: !isWithinGracePeriod,
         });
-        
+
         // Only show disconnect notification if we're not in the grace period
         if (!isWithinGracePeriod) {
           console.log('🔔 Showing disconnect toast for', playerName);
@@ -98,7 +100,11 @@ export function useToastNotifications() {
             duration: 7000,
           });
         } else {
-          console.log('🔔 Suppressing disconnect toast for', playerName, '(within grace period)');
+          console.log(
+            '🔔 Suppressing disconnect toast for',
+            playerName,
+            '(within grace period)'
+          );
         }
       });
 
@@ -112,7 +118,10 @@ export function useToastNotifications() {
       });
 
       // Check for host changes
-      if (state.host !== previousHost.current && previousHost.current !== null) {
+      if (
+        state.host !== previousHost.current &&
+        previousHost.current !== null
+      ) {
         addToast({
           message: `${state.host} is now the host`,
           type: 'info',
@@ -131,7 +140,9 @@ export function useToastNotifications() {
     // Get initial state
     const initialState = gameService.getState();
     if (initialState.disconnectedPlayers) {
-      previousDisconnectedPlayers.current = [...initialState.disconnectedPlayers];
+      previousDisconnectedPlayers.current = [
+        ...initialState.disconnectedPlayers,
+      ];
     }
     if (initialState.host) {
       previousHost.current = initialState.host;
@@ -171,7 +182,10 @@ export function useToastNotifications() {
     window.addEventListener('player_reconnected', handlePlayerReconnected);
 
     return () => {
-      window.removeEventListener('player_disconnected', handlePlayerDisconnected);
+      window.removeEventListener(
+        'player_disconnected',
+        handlePlayerDisconnected
+      );
       window.removeEventListener('player_reconnected', handlePlayerReconnected);
     };
   }, [addToast]);

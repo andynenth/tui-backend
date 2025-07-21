@@ -10,14 +10,16 @@ from backend.socket_manager import broadcast, register, unregister
 from fastapi import APIRouter, WebSocket, WebSocketDisconnect
 
 from api.validation import validate_websocket_message
-from api.middleware.websocket_rate_limit import check_websocket_rate_limit, send_rate_limit_error
+from api.middleware.websocket_rate_limit import (
+    check_websocket_rate_limit,
+    send_rate_limit_error,
+)
 from api.websocket.connection_manager import connection_manager
 from api.websocket.message_queue import message_queue_manager
 
 # Set up logging
 logger = logging.getLogger(__name__)
 
-print(f"socket_manager id in {__name__}: {id(backend.socket_manager)}")
 
 router = APIRouter()
 room_manager = shared_room_manager
@@ -30,13 +32,13 @@ async def broadcast_with_queue(room_id: str, event: str, data: dict):
     if room and room.game:
         disconnected_players = []
         for player in room.game.players:
-            if player and hasattr(player, 'is_connected') and not player.is_connected:
+            if player and hasattr(player, "is_connected") and not player.is_connected:
                 disconnected_players.append(player.name)
-        
+
         # Queue messages for disconnected players
         for player_name in disconnected_players:
             await message_queue_manager.queue_message(room_id, player_name, event, data)
-    
+
     # Broadcast to connected players
     await broadcast(room_id, event, data)
 
@@ -45,94 +47,103 @@ async def handle_disconnect(room_id: str, websocket: WebSocket):
     """Handle player disconnection with bot activation"""
     try:
         # Generate a unique websocket ID for tracking
-        websocket_id = getattr(websocket, '_ws_id', None)
-        
+        websocket_id = getattr(websocket, "_ws_id", None)
+
         import time
+
         disconnect_time = time.time()
-        
-        logger.info(f"🔌 Handling disconnect for room {room_id}, websocket_id: {websocket_id} at {disconnect_time}")
-        
+
         # Try to find player by checking all players in the room if websocket_id fails
         connection = None
         if websocket_id:
             # Get connection info
             connection = await connection_manager.handle_disconnect(websocket_id)
-        
+
         if not connection and room_id != "lobby":
             # Fallback: Check if any player in the room is missing their websocket
             room = room_manager.get_room(room_id)
             if room and room.started and room.game:
                 # This is a workaround - we should improve the tracking mechanism
-                logger.warning(f"Using fallback disconnect detection for room {room_id}")
-        
+                logger.warning(
+                    f"Using fallback disconnect detection for room {room_id}"
+                )
+
         if connection and room_id != "lobby":
-                # This is an in-game disconnect
-                room = room_manager.get_room(room_id)
-                if room and room.started and room.game:
-                    # Find the player in the game
-                    player = next(
-                        (p for p in room.game.players if p.name == connection.player_name),
-                        None
+            # This is an in-game disconnect
+            room = room_manager.get_room(room_id)
+            if room and room.started and room.game:
+                # Find the player in the game
+                player = next(
+                    (p for p in room.game.players if p.name == connection.player_name),
+                    None,
+                )
+
+                if player and not player.is_bot:
+
+                    # Store original bot state
+                    player.original_is_bot = player.is_bot
+                    player.is_connected = False
+                    player.disconnect_time = connection.disconnect_time
+
+                    # Convert to bot
+                    player.is_bot = True
+
+                    # Create message queue for the disconnected player
+                    await message_queue_manager.create_queue(
+                        room_id, connection.player_name
                     )
-                    
-                    if player and not player.is_bot:
-                        # Debug logging before conversion
-                        logger.info(f"🔍 Converting {connection.player_name} to bot - Before: is_bot={player.is_bot}, is_connected={player.is_connected}")
-                        
-                        # Store original bot state
-                        player.original_is_bot = player.is_bot
-                        player.is_connected = False
-                        player.disconnect_time = connection.disconnect_time
-                        
-                        # Convert to bot
-                        player.is_bot = True
-                        
-                        logger.info(f"🔍 Converted {connection.player_name} to bot - After: is_bot={player.is_bot}, is_connected={player.is_connected}")
-                        
-                        # Create message queue for the disconnected player
-                        await message_queue_manager.create_queue(room_id, connection.player_name)
-                        
-                        logger.info(f"Player {connection.player_name} disconnected from game in room {room_id}. Bot activated.")
-                        
-                        # Check if disconnecting player was the host
-                        new_host = None
-                        if room.is_host(connection.player_name):
-                            new_host = room.migrate_host()
-                            if new_host:
-                                logger.info(f"Host migrated to {new_host} in room {room_id}")
-                        
-                        # Broadcast disconnect event
+
+                    logger.info(
+                        f"Player {connection.player_name} disconnected from game in room {room_id}. Bot activated."
+                    )
+
+                    # Check if disconnecting player was the host
+                    new_host = None
+                    if room.is_host(connection.player_name):
+                        new_host = room.migrate_host()
+                        if new_host:
+                            logger.info(
+                                f"Host migrated to {new_host} in room {room_id}"
+                            )
+
+                    # Broadcast disconnect event
+                    await broadcast(
+                        room_id,
+                        "player_disconnected",
+                        {
+                            "player_name": connection.player_name,
+                            "ai_activated": True,
+                            "can_reconnect": True,
+                            "is_bot": True,
+                        },
+                    )
+
+                    # Broadcast host change if migration occurred
+                    if new_host:
                         await broadcast(
                             room_id,
-                            "player_disconnected",
+                            "host_changed",
                             {
-                                "player_name": connection.player_name,
-                                "ai_activated": True,
-                                "can_reconnect": True,
-                                "is_bot": True
-                            }
+                                "old_host": connection.player_name,
+                                "new_host": new_host,
+                                "message": f"{new_host} is now the host",
+                            },
                         )
-                        
-                        # Broadcast host change if migration occurred
-                        if new_host:
-                            await broadcast(
-                                room_id,
-                                "host_changed",
-                                {
-                                    "old_host": connection.player_name,
-                                    "new_host": new_host,
-                                    "message": f"{new_host} is now the host"
-                                }
-                            )
-                        
-                        # Check if all remaining players are bots and mark for cleanup
-                        if not room.has_any_human_players():
-                            room.mark_for_cleanup()
-                            logger.info(f"All players in room {room_id} are now bots. Cleanup scheduled in {room.CLEANUP_TIMEOUT_SECONDS}s")
-                else:
-                    logger.warning(f"No connection found for websocket_id {websocket_id} in room {room_id}")
+
+                    # Check if all remaining players are bots and mark for cleanup
+                    if not room.has_any_human_players():
+                        room.mark_for_cleanup()
+                        logger.info(
+                            f"All players in room {room_id} are now bots. Cleanup scheduled in {room.CLEANUP_TIMEOUT_SECONDS}s"
+                        )
+            else:
+                logger.warning(
+                    f"No connection found for websocket_id {websocket_id} in room {room_id}"
+                )
         else:
-            logger.warning(f"No websocket_id found on websocket object for room {room_id}")
+            logger.warning(
+                f"No websocket_id found on websocket object for room {room_id}"
+            )
     except Exception as e:
         logger.error(f"Error handling disconnect: {e}")
     finally:
@@ -147,44 +158,45 @@ async def websocket_endpoint(websocket: WebSocket, room_id: str):
     Also handles special 'lobby' room for lobby updates.
     """
     # Ensure cleanup task is running (fallback if startup event missed)
-    logger.info(f"🧹 WebSocket connection to room {room_id} - checking cleanup task")
     start_cleanup_task()
-    
+
     # Generate unique ID for this websocket
     websocket._ws_id = str(uuid.uuid4())
-    
+
     import time
+
     connect_time = time.time()
-    logger.info(f"🔗 New WebSocket connection to room {room_id}, ws_id: {websocket._ws_id} at {connect_time}")
-    
+
     registered_ws = await register(room_id, websocket)
 
     try:
         while True:
             message = await websocket.receive_json()
-            
+
             # Validate the message structure and content
             is_valid, error_msg, sanitized_data = validate_websocket_message(message)
             if not is_valid:
-                await registered_ws.send_json({
-                    "event": "error",
-                    "data": {
-                        "message": f"Invalid message: {error_msg}",
-                        "type": "validation_error"
+                await registered_ws.send_json(
+                    {
+                        "event": "error",
+                        "data": {
+                            "message": f"Invalid message: {error_msg}",
+                            "type": "validation_error",
+                        },
                     }
-                })
+                )
                 continue
-            
+
             event_name = message.get("event")
             # Use sanitized data instead of raw event data
             event_data = sanitized_data or message.get("data", {})
-            
+
             # Check rate limit for this event with proper error handling
             try:
                 rate_limit_allowed, rate_limit_info = await check_websocket_rate_limit(
                     websocket, room_id, event_name
                 )
-                
+
                 if not rate_limit_allowed:
                     # Send rate limit error and continue
                     try:
@@ -195,15 +207,19 @@ async def websocket_endpoint(websocket: WebSocket, room_id: str):
                 elif rate_limit_info and "warning" in rate_limit_info:
                     # Send rate limit warning but allow the event to proceed
                     try:
-                        await registered_ws.send_json({
-                            "event": "rate_limit_warning",
-                            "data": rate_limit_info["warning"]
-                        })
+                        await registered_ws.send_json(
+                            {
+                                "event": "rate_limit_warning",
+                                "data": rate_limit_info["warning"],
+                            }
+                        )
                     except Exception as e:
                         logger.debug(f"Could not send rate limit warning: {e}")
             except Exception as e:
                 # Log the error but don't close the connection
-                logger.error(f"Rate limit check error for {event_name}: {e}", exc_info=True)
+                logger.error(
+                    f"Rate limit check error for {event_name}: {e}", exc_info=True
+                )
                 # Allow the event to proceed to prevent connection disruption
                 rate_limit_allowed = True
 
@@ -255,7 +271,9 @@ async def websocket_endpoint(websocket: WebSocket, room_id: str):
                         {
                             "event": "pong",
                             "data": {
-                                "timestamp": event_data.get("timestamp", asyncio.get_event_loop().time()),
+                                "timestamp": event_data.get(
+                                    "timestamp", asyncio.get_event_loop().time()
+                                ),
                                 "server_time": asyncio.get_event_loop().time(),
                             },
                         }
@@ -275,15 +293,21 @@ async def websocket_endpoint(websocket: WebSocket, room_id: str):
                             },
                         }
                     )
-                    
+
                     # Track player connection if player_name provided
                     player_name = event_data.get("player_name")
-                    if player_name and hasattr(registered_ws, '_ws_id'):
-                        await connection_manager.register_player("lobby", player_name, registered_ws._ws_id)
-                        logger.info(f"Successfully registered player {player_name} for lobby")
+                    if player_name and hasattr(registered_ws, "_ws_id"):
+                        await connection_manager.register_player(
+                            "lobby", player_name, registered_ws._ws_id
+                        )
+                        logger.info(
+                            f"Successfully registered player {player_name} for lobby"
+                        )
                     else:
                         # This is expected for lobby connections - they don't require player tracking
-                        logger.debug(f"Lobby client_ready received without player_name (this is normal)")
+                        logger.debug(
+                            f"Lobby client_ready received without player_name (this is normal)"
+                        )
 
                 elif event_name == "create_room":
                     # Create new room (using validated/sanitized data)
@@ -454,7 +478,9 @@ async def websocket_endpoint(websocket: WebSocket, room_id: str):
                         {
                             "event": "pong",
                             "data": {
-                                "timestamp": event_data.get("timestamp", asyncio.get_event_loop().time()),
+                                "timestamp": event_data.get(
+                                    "timestamp", asyncio.get_event_loop().time()
+                                ),
                                 "server_time": asyncio.get_event_loop().time(),
                                 "room_id": room_id,
                             },
@@ -474,60 +500,77 @@ async def websocket_endpoint(websocket: WebSocket, room_id: str):
                                 },
                             }
                         )
-                        
+
                         # Track player connection if player_name provided
                         player_name = event_data.get("player_name")
-                        if player_name and hasattr(registered_ws, '_ws_id'):
-                            logger.info(f"🔗 Registering player {player_name} for room {room_id}, ws_id: {registered_ws._ws_id}")
-                            await connection_manager.register_player(room_id, player_name, registered_ws._ws_id)
-                            logger.info(f"✅ Successfully registered player {player_name} for room {room_id}")
+                        if player_name and hasattr(registered_ws, "_ws_id"):
+                            await connection_manager.register_player(
+                                room_id, player_name, registered_ws._ws_id
+                            )
+                            logger.info(
+                                f"Successfully registered player {player_name} for room {room_id}"
+                            )
                         else:
-                            logger.warning(f"client_ready received without player_name for room {room_id} or missing _ws_id")
-                            
+                            logger.warning(
+                                f"client_ready received without player_name for room {room_id} or missing _ws_id"
+                            )
+
                         # Check if reconnecting to an active game
                         if room.started and room.game:
-                                player = next(
-                                    (p for p in room.game.players if p.name == player_name),
-                                    None
+                            player = next(
+                                (p for p in room.game.players if p.name == player_name),
+                                None,
+                            )
+                            if player and player.is_bot and not player.original_is_bot:
+                                # This is a human player reconnecting
+                                player.is_bot = False
+                                player.is_connected = True
+                                player.disconnect_time = None
+
+                                # Cancel any pending cleanup
+                                room.cancel_cleanup()
+
+                                logger.info(
+                                    f"Player {player_name} reconnected to game in room {room_id}"
                                 )
-                                if player and player.is_bot and not player.original_is_bot:
-                                    # This is a human player reconnecting
-                                    player.is_bot = False
-                                    player.is_connected = True
-                                    player.disconnect_time = None
-                                    
-                                    # Cancel any pending cleanup
-                                    room.cancel_cleanup()
-                                    
-                                    logger.info(f"Player {player_name} reconnected to game in room {room_id}")
-                                    
-                                    # Get queued messages for the reconnecting player
-                                    queued_messages = await message_queue_manager.get_queued_messages(room_id, player_name)
-                                    
-                                    # Send queued messages to the reconnecting player
-                                    if queued_messages:
-                                        await registered_ws.send_json({
+
+                                # Get queued messages for the reconnecting player
+                                queued_messages = (
+                                    await message_queue_manager.get_queued_messages(
+                                        room_id, player_name
+                                    )
+                                )
+
+                                # Send queued messages to the reconnecting player
+                                if queued_messages:
+                                    await registered_ws.send_json(
+                                        {
                                             "event": "queued_messages",
                                             "data": {
                                                 "messages": queued_messages,
-                                                "count": len(queued_messages)
-                                            }
-                                        })
-                                        logger.info(f"Sent {len(queued_messages)} queued messages to {player_name}")
-                                    
-                                    # Clear the message queue
-                                    await message_queue_manager.clear_queue(room_id, player_name)
-                                    
-                                    # Broadcast reconnection
-                                    await broadcast(
-                                        room_id,
-                                        "player_reconnected",
-                                        {
-                                            "player_name": player_name,
-                                            "resumed_control": True,
-                                            "is_bot": False
+                                                "count": len(queued_messages),
+                                            },
                                         }
                                     )
+                                    logger.info(
+                                        f"Sent {len(queued_messages)} queued messages to {player_name}"
+                                    )
+
+                                # Clear the message queue
+                                await message_queue_manager.clear_queue(
+                                    room_id, player_name
+                                )
+
+                                # Broadcast reconnection
+                                await broadcast(
+                                    room_id,
+                                    "player_reconnected",
+                                    {
+                                        "player_name": player_name,
+                                        "resumed_control": True,
+                                        "is_bot": False,
+                                    },
+                                )
 
                         # Send current game phase if game is running
                         if room.started and room.game_state_machine:
@@ -869,12 +912,9 @@ async def websocket_endpoint(websocket: WebSocket, room_id: str):
 
                         # Handle the player's redeal decision
                         await controller.handle_player_decision(player_name, choice)
-                        print(
-                            f"✅ Processed redeal decision: {player_name} -> {choice}"
-                        )
 
                     except Exception as e:
-                        print(f"❌ Error processing redeal decision: {e}")
+                        logger.error(f"Error processing redeal decision: {e}")
                         await registered_ws.send_json(
                             {
                                 "event": "error",
@@ -914,7 +954,7 @@ async def websocket_endpoint(websocket: WebSocket, room_id: str):
 
                         if result.get("success"):
                             # Don't send declare_success - let state machine broadcast 'declare' event like bots
-                            print(f"✅ Declaration queued: {player_name} -> {value}")
+                            pass
                         else:
                             await registered_ws.send_json(
                                 {
@@ -928,7 +968,7 @@ async def websocket_endpoint(websocket: WebSocket, room_id: str):
                             )
 
                     except Exception as e:
-                        print(f"❌ Declaration error: {e}")
+                        logger.error(f"Declaration error: {e}")
                         await registered_ws.send_json(
                             {
                                 "event": "error",
@@ -1004,10 +1044,9 @@ async def websocket_endpoint(websocket: WebSocket, room_id: str):
                                 }
                             )
                         else:
-                            print(f"✅ Play accepted: {player_name}")
-
+                            pass
                     except Exception as e:
-                        print(f"❌ Play error: {e}")
+                        logger.error(f"Play error: {e}")
                         import traceback
 
                         traceback.print_exc()
@@ -1074,7 +1113,6 @@ async def websocket_endpoint(websocket: WebSocket, room_id: str):
                                     },
                                 }
                             )
-                            print(f"✅ Play queued: {player_name} -> {indices}")
                         else:
                             await registered_ws.send_json(
                                 {
@@ -1086,7 +1124,7 @@ async def websocket_endpoint(websocket: WebSocket, room_id: str):
                             )
 
                     except Exception as e:
-                        print(f"❌ Play pieces error: {e}")
+                        logger.error(f"Play pieces error: {e}")
                         await registered_ws.send_json(
                             {
                                 "event": "error",
@@ -1127,7 +1165,6 @@ async def websocket_endpoint(websocket: WebSocket, room_id: str):
                                     "data": {"player_name": player_name},
                                 }
                             )
-                            print(f"✅ Redeal request queued: {player_name}")
                         else:
                             await registered_ws.send_json(
                                 {
@@ -1141,7 +1178,7 @@ async def websocket_endpoint(websocket: WebSocket, room_id: str):
                             )
 
                     except Exception as e:
-                        print(f"❌ Redeal request error: {e}")
+                        logger.error(f"Redeal request error: {e}")
                         await registered_ws.send_json(
                             {
                                 "event": "error",
@@ -1194,7 +1231,6 @@ async def websocket_endpoint(websocket: WebSocket, room_id: str):
                                     },
                                 }
                             )
-                            print(f"✅ Redeal accept queued: {player_name}")
                         else:
                             await registered_ws.send_json(
                                 {
@@ -1208,7 +1244,7 @@ async def websocket_endpoint(websocket: WebSocket, room_id: str):
                             )
 
                     except Exception as e:
-                        print(f"❌ Accept redeal error: {e}")
+                        logger.error(f"Accept redeal error: {e}")
                         await registered_ws.send_json(
                             {
                                 "event": "error",
@@ -1263,7 +1299,6 @@ async def websocket_endpoint(websocket: WebSocket, room_id: str):
                                     },
                                 }
                             )
-                            print(f"✅ Redeal decline queued: {player_name}")
                         else:
                             await registered_ws.send_json(
                                 {
@@ -1277,7 +1312,7 @@ async def websocket_endpoint(websocket: WebSocket, room_id: str):
                             )
 
                     except Exception as e:
-                        print(f"❌ Decline redeal error: {e}")
+                        logger.error(f"Decline redeal error: {e}")
                         await registered_ws.send_json(
                             {
                                 "event": "error",
@@ -1327,7 +1362,6 @@ async def websocket_endpoint(websocket: WebSocket, room_id: str):
                                     "data": {"player_name": player_name},
                                 }
                             )
-                            print(f"✅ Player ready queued: {player_name}")
                         else:
                             await registered_ws.send_json(
                                 {
@@ -1341,7 +1375,7 @@ async def websocket_endpoint(websocket: WebSocket, room_id: str):
                             )
 
                     except Exception as e:
-                        print(f"❌ Player ready error: {e}")
+                        logger.error(f"Player ready error: {e}")
                         await registered_ws.send_json(
                             {
                                 "event": "error",
@@ -1380,8 +1414,8 @@ async def websocket_endpoint(websocket: WebSocket, room_id: str):
                                     },
                                 )
                                 room_manager.delete_room(room_id)
-                                print(
-                                    f"✅ Game ended: host {player_name} left room {room_id}"
+                                logger.info(
+                                    f"Game ended: host {player_name} left room {room_id}"
                                 )
                             else:
                                 # Regular player leaving game
@@ -1399,8 +1433,8 @@ async def websocket_endpoint(websocket: WebSocket, room_id: str):
                                         ),
                                     },
                                 )
-                                print(
-                                    f"✅ Player {player_name} left game in room {room_id}"
+                                logger.info(
+                                    f"Player {player_name} left game in room {room_id}"
                                 )
 
                         await registered_ws.send_json(
@@ -1411,7 +1445,7 @@ async def websocket_endpoint(websocket: WebSocket, room_id: str):
                         )
 
                     except Exception as e:
-                        print(f"❌ Leave game error: {e}")
+                        logger.error(f"Leave game error: {e}")
                         await registered_ws.send_json(
                             {
                                 "event": "error",
@@ -1446,7 +1480,7 @@ async def websocket_endpoint(websocket: WebSocket, room_id: str):
                                 "game_started",
                                 {"room_id": room_id, "success": True},
                             )
-                            print(f"✅ Game started in room {room_id}")
+                            logger.info(f"Game started in room {room_id}")
                         else:
                             await registered_ws.send_json(
                                 {
@@ -1456,7 +1490,7 @@ async def websocket_endpoint(websocket: WebSocket, room_id: str):
                             )
 
                     except Exception as e:
-                        print(f"❌ Start game error: {e}")
+                        logger.error(f"Start game error: {e}")
                         await registered_ws.send_json(
                             {
                                 "event": "error",
@@ -1473,59 +1507,54 @@ async def websocket_endpoint(websocket: WebSocket, room_id: str):
 
 async def room_cleanup_task():
     """Background task to clean up abandoned rooms"""
-    logger.info("🧹 Room cleanup task started and running")
     iteration_count = 0
-    
+
     while True:
         try:
             iteration_count += 1
             rooms_to_cleanup = []
-            
+
             # Check all rooms (including started ones)
             # Note: list_rooms() only returns non-started rooms, so we need to check all rooms directly
             all_room_ids = list(room_manager.rooms.keys())
-            logger.info(f"🧹 Cleanup iteration {iteration_count}: Checking {len(all_room_ids)} rooms (including started games)")
-            if all_room_ids:
-                logger.info(f"🧹 Room IDs: {all_room_ids}")
-            
+
             for room_id in all_room_ids:
                 room = room_manager.get_room(room_id)
                 if room:
                     should_cleanup = room.should_cleanup()
-                    if room.cleanup_scheduled:
-                        logger.info(f"🧹 Room {room_id}: cleanup_scheduled={room.cleanup_scheduled}, should_cleanup={should_cleanup}")
                     if should_cleanup:
                         rooms_to_cleanup.append(room_id)
-                        logger.info(f"🧹 Room {room_id} added to cleanup list")
-            
-            if rooms_to_cleanup:
-                logger.info(f"🧹 Found {len(rooms_to_cleanup)} rooms to clean up: {rooms_to_cleanup}")
-            
+
             # Clean up rooms
             for room_id in rooms_to_cleanup:
                 room = room_manager.get_room(room_id)
                 if room and room.should_cleanup():  # Double-check
-                    logger.info(f"🧹 Cleaning up abandoned room {room_id}")
-                    
+                    logger.info(f"Cleaning up abandoned room {room_id}")
+
                     # Unregister from bot manager
                     from engine.bot_manager import BotManager
+
                     bot_manager = BotManager()
                     bot_manager.unregister_game(room_id)
-                    
+
                     # Broadcast room closed
-                    await broadcast(room_id, "room_closed", {
-                        "reason": "All players disconnected",
-                        "timeout_seconds": room.CLEANUP_TIMEOUT_SECONDS
-                    })
-                    
+                    await broadcast(
+                        room_id,
+                        "room_closed",
+                        {
+                            "reason": "All players disconnected",
+                            "timeout_seconds": room.CLEANUP_TIMEOUT_SECONDS,
+                        },
+                    )
+
                     # Delete room
                     room_manager.delete_room(room_id)
-                    
+
                     logger.info(f"Room {room_id} cleaned up successfully")
-            
+
         except Exception as e:
             logger.error(f"Error in room cleanup task: {e}")
-        
+
         # Run every 5 seconds
         await asyncio.sleep(5)
 
@@ -1533,13 +1562,10 @@ async def room_cleanup_task():
 # Start the cleanup task when the module is imported
 # This will run in the background
 cleanup_task_started = False
+
+
 def start_cleanup_task():
     global cleanup_task_started
-    logger.info(f"🧹 start_cleanup_task called, cleanup_task_started={cleanup_task_started}")
     if not cleanup_task_started:
         cleanup_task_started = True
-        logger.info("🧹 Creating room cleanup background task")
         asyncio.create_task(room_cleanup_task())
-        logger.info("🧹 Room cleanup task created successfully")
-    else:
-        logger.info("🧹 Cleanup task already started, skipping")

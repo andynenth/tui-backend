@@ -6,7 +6,7 @@ import sys
 import os
 
 # Add the shared directory to the path for importing error codes
-sys.path.append(os.path.join(os.path.dirname(__file__), '../../../shared'))
+sys.path.append(os.path.join(os.path.dirname(__file__), "../../../shared"))
 from error_codes import ErrorCode, create_standard_error
 
 
@@ -63,10 +63,10 @@ class WebSocketMessageValidator:
     def validate_base_message(message: Dict[str, Any]) -> Tuple[bool, Optional[str]]:
         """
         Validate basic WebSocket message structure.
-        
+
         Args:
             message: The WebSocket message to validate
-            
+
         Returns:
             Tuple of (is_valid, error_message)
             - is_valid: True if message is valid, False otherwise
@@ -76,14 +76,14 @@ class WebSocketMessageValidator:
             error = create_standard_error(
                 ErrorCode.VALIDATION_INVALID_TYPE,
                 "Message must be a dictionary",
-                context={"received_type": type(message).__name__}
+                context={"received_type": type(message).__name__},
             )
             return False, error.message
 
         if "event" not in message:
             error = create_standard_error(
                 ErrorCode.VALIDATION_REQUIRED_FIELD,
-                "Message must contain 'event' field"
+                "Message must contain 'event' field",
             )
             return False, error.message
 
@@ -92,7 +92,7 @@ class WebSocketMessageValidator:
             error = create_standard_error(
                 ErrorCode.VALIDATION_INVALID_TYPE,
                 "Event name must be a string",
-                context={"field": "event", "received_type": type(event_name).__name__}
+                context={"field": "event", "received_type": type(event_name).__name__},
             )
             return False, error.message
 
@@ -100,7 +100,11 @@ class WebSocketMessageValidator:
             error = create_standard_error(
                 ErrorCode.VALIDATION_OUT_OF_RANGE,
                 "Event name too long",
-                context={"field": "event", "max_length": 100, "actual_length": len(event_name)}
+                context={
+                    "field": "event",
+                    "max_length": 100,
+                    "actual_length": len(event_name),
+                },
             )
             return False, error.message
 
@@ -108,7 +112,10 @@ class WebSocketMessageValidator:
             error = create_standard_error(
                 ErrorCode.NETWORK_INVALID_MESSAGE,
                 f"Unknown event type: {event_name}",
-                context={"event": event_name, "allowed_events": list(WebSocketMessageValidator.ALLOWED_EVENTS)}
+                context={
+                    "event": event_name,
+                    "allowed_events": list(WebSocketMessageValidator.ALLOWED_EVENTS),
+                },
             )
             return False, error.message
 
@@ -118,7 +125,10 @@ class WebSocketMessageValidator:
                 error = create_standard_error(
                     ErrorCode.VALIDATION_INVALID_TYPE,
                     "Event data must be a dictionary",
-                    context={"field": "data", "received_type": type(message["data"]).__name__}
+                    context={
+                        "field": "data",
+                        "received_type": type(message["data"]).__name__,
+                    },
                 )
                 return False, error.message
 
@@ -130,17 +140,17 @@ class WebSocketMessageValidator:
     ) -> Tuple[bool, Optional[str]]:
         """
         Validate and sanitize player name.
-        
+
         Checks for:
         - Proper type (string)
         - Non-empty value
         - Maximum length limit
         - Dangerous characters (XSS prevention)
-        
+
         Args:
             player_name: The player name to validate
             required: Whether the field is required (default: True)
-            
+
         Returns:
             Tuple of (is_valid, error_message)
         """
@@ -149,7 +159,7 @@ class WebSocketMessageValidator:
                 error = create_standard_error(
                     ErrorCode.VALIDATION_REQUIRED_FIELD,
                     "Player name is required",
-                    context={"field": "player_name"}
+                    context={"field": "player_name"},
                 )
                 return False, error.message
             return True, None
@@ -158,7 +168,10 @@ class WebSocketMessageValidator:
             error = create_standard_error(
                 ErrorCode.VALIDATION_INVALID_TYPE,
                 "Player name must be a string",
-                context={"field": "player_name", "received_type": type(player_name).__name__}
+                context={
+                    "field": "player_name",
+                    "received_type": type(player_name).__name__,
+                },
             )
             return False, error.message
 
@@ -166,7 +179,7 @@ class WebSocketMessageValidator:
             error = create_standard_error(
                 ErrorCode.VALIDATION_REQUIRED_FIELD,
                 "Player name cannot be empty",
-                context={"field": "player_name"}
+                context={"field": "player_name"},
             )
             return False, error.message
 
@@ -175,10 +188,10 @@ class WebSocketMessageValidator:
                 ErrorCode.VALIDATION_OUT_OF_RANGE,
                 "Player name too long",
                 context={
-                    "field": "player_name", 
+                    "field": "player_name",
                     "max_length": WebSocketMessageValidator.MAX_PLAYER_NAME_LENGTH,
-                    "actual_length": len(player_name)
-                }
+                    "actual_length": len(player_name),
+                },
             )
             return False, error.message
 
@@ -192,28 +205,30 @@ class WebSocketMessageValidator:
                 context={
                     "field": "player_name",
                     "invalid_characters": found_chars,
-                    "reason": "XSS prevention"
-                }
+                    "reason": "XSS prevention",
+                },
             )
             return False, error.message
 
         return True, None
 
     @staticmethod
-    def validate_room_id(room_id: Any, required: bool = True) -> Tuple[bool, Optional[str]]:
+    def validate_room_id(
+        room_id: Any, required: bool = True
+    ) -> Tuple[bool, Optional[str]]:
         """
         Validate and sanitize room ID.
-        
+
         Checks for:
         - Proper type (string)
         - Non-empty value
         - Maximum length limit
         - Dangerous characters
-        
+
         Args:
             room_id: The room ID to validate
             required: Whether the field is required (default: True)
-            
+
         Returns:
             Tuple of (is_valid, error_message)
         """
@@ -241,14 +256,14 @@ class WebSocketMessageValidator:
     def validate_declaration_value(value: Any) -> Tuple[bool, Optional[str]]:
         """
         Validate player's pile declaration value.
-        
+
         Ensures the value is:
         - An integer
         - Within valid range (0-8)
-        
+
         Args:
             value: The declaration value to validate
-            
+
         Returns:
             Tuple of (is_valid, error_message)
         """
@@ -274,17 +289,17 @@ class WebSocketMessageValidator:
     def validate_piece_indices(indices: Any) -> Tuple[bool, Optional[str]]:
         """
         Validate array of piece indices for playing cards.
-        
+
         Checks for:
         - Proper type (list)
         - Non-empty array
         - Maximum pieces per play (6)
         - Valid index range (0-31)
         - No duplicate indices
-        
+
         Args:
             indices: List of piece indices to validate
-            
+
         Returns:
             Tuple of (is_valid, error_message)
         """
@@ -320,14 +335,14 @@ class WebSocketMessageValidator:
     def validate_slot_id(slot_id: Any) -> Tuple[bool, Optional[str]]:
         """
         Validate player slot ID.
-        
+
         Ensures the slot ID is:
         - Numeric (handles both string and int)
         - Within valid range (1-4)
-        
+
         Args:
             slot_id: The slot ID to validate
-            
+
         Returns:
             Tuple of (is_valid, error_message)
         """
@@ -356,13 +371,13 @@ class WebSocketMessageValidator:
     def validate_redeal_choice(choice: Any) -> Tuple[bool, Optional[str]]:
         """
         Validate player's response to weak hand redeal offer.
-        
+
         Ensures choice is a string and one of the allowed values
         ('accept' or 'decline').
-        
+
         Args:
             choice: The redeal choice to validate
-            
+
         Returns:
             Tuple of (is_valid, error_message)
         """
@@ -370,7 +385,10 @@ class WebSocketMessageValidator:
             return False, "Redeal choice must be a string"
 
         if choice not in WebSocketMessageValidator.ALLOWED_REDEAL_CHOICES:
-            return False, f"Invalid redeal choice. Must be one of: {WebSocketMessageValidator.ALLOWED_REDEAL_CHOICES}"
+            return (
+                False,
+                f"Invalid redeal choice. Must be one of: {WebSocketMessageValidator.ALLOWED_REDEAL_CHOICES}",
+            )
 
         return True, None
 
@@ -378,13 +396,13 @@ class WebSocketMessageValidator:
     def validate_sequence_number(sequence: Any) -> Tuple[bool, Optional[str]]:
         """
         Validate sequence number for message acknowledgments.
-        
+
         Used for reliable messaging to track which messages have been
         received. Must be a non-negative integer.
-        
+
         Args:
             sequence: The sequence number to validate
-            
+
         Returns:
             Tuple of (is_valid, error_message)
         """
@@ -403,13 +421,13 @@ class WebSocketMessageValidator:
     def validate_client_id(client_id: Any) -> Tuple[bool, Optional[str]]:
         """
         Validate client session identifier.
-        
+
         Ensures client ID is a non-empty string within length limits.
         Used for tracking client connections and sessions.
-        
+
         Args:
             client_id: The client identifier to validate
-            
+
         Returns:
             Tuple of (is_valid, error_message)
         """
@@ -425,17 +443,19 @@ class WebSocketMessageValidator:
         return True, None
 
     @classmethod
-    def validate_message(cls, message: Dict[str, Any]) -> Tuple[bool, Optional[str], Optional[Dict[str, Any]]]:
+    def validate_message(
+        cls, message: Dict[str, Any]
+    ) -> Tuple[bool, Optional[str], Optional[Dict[str, Any]]]:
         """
         Validate a complete WebSocket message.
-        
+
         Performs comprehensive validation based on event type,
         checking both message structure and event-specific data.
         Returns sanitized data for safe processing.
-        
+
         Args:
             message: The complete WebSocket message dictionary
-            
+
         Returns:
             Tuple of (is_valid, error_message, sanitized_data)
             - is_valid: Whether the message passed all validation
@@ -493,7 +513,12 @@ class WebSocketMessageValidator:
             sanitized_data["player_name"] = event_data["player_name"].strip()
             sanitized_data["indices"] = indices
 
-        elif event_name in ["request_redeal", "accept_redeal", "decline_redeal", "player_ready"]:
+        elif event_name in [
+            "request_redeal",
+            "accept_redeal",
+            "decline_redeal",
+            "player_ready",
+        ]:
             is_valid, error = cls.validate_player_name(event_data.get("player_name"))
             if not is_valid:
                 return False, error, None
@@ -528,19 +553,30 @@ class WebSocketMessageValidator:
             is_valid, error = cls.validate_sequence_number(event_data.get("sequence"))
             if not is_valid:
                 return False, error, None
-            is_valid, error = cls.validate_client_id(event_data.get("client_id", "unknown"))
+            is_valid, error = cls.validate_client_id(
+                event_data.get("client_id", "unknown")
+            )
             if not is_valid:
                 return False, error, None
             sanitized_data["sequence"] = event_data["sequence"]
             sanitized_data["client_id"] = event_data.get("client_id", "unknown")
 
         elif event_name == "sync_request":
-            is_valid, error = cls.validate_client_id(event_data.get("client_id", "unknown"))
+            is_valid, error = cls.validate_client_id(
+                event_data.get("client_id", "unknown")
+            )
             if not is_valid:
                 return False, error, None
             sanitized_data["client_id"] = event_data.get("client_id", "unknown")
 
-        elif event_name in ["request_room_list", "get_rooms", "client_ready", "get_room_state", "start_game", "leave_game"]:
+        elif event_name in [
+            "request_room_list",
+            "get_rooms",
+            "client_ready",
+            "get_room_state",
+            "start_game",
+            "leave_game",
+        ]:
             # These events may have optional data but don't require specific validation
             if event_name == "leave_game" and "player_name" in event_data:
                 is_valid, error = cls.validate_player_name(event_data["player_name"])
@@ -552,7 +588,7 @@ class WebSocketMessageValidator:
 
 
 def validate_websocket_message(
-    message: Dict[str, Any]
+    message: Dict[str, Any],
 ) -> Tuple[bool, Optional[str], Optional[Dict[str, Any]]]:
     """
     Convenience function to validate WebSocket messages

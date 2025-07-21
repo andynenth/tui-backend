@@ -8,7 +8,9 @@ from backend.api.routes.routes import (
 from backend.api.routes.ws import (
     router as ws_router,  # Import the WebSocket router for real-time communication.
 )
-from backend.api.middleware import RateLimitMiddleware  # Import rate limiting middleware
+from backend.api.middleware import (
+    RateLimitMiddleware,
+)  # Import rate limiting middleware
 from dotenv import (  # Library to load environment variables from a .env file.
     load_dotenv,
 )
@@ -26,6 +28,7 @@ load_dotenv()
 # ✅ Set up logging configuration
 try:
     from config.logging_config import setup_logging
+
     setup_logging()
 except ImportError:
     print("Warning: Logging configuration not available, using defaults")
@@ -144,10 +147,10 @@ app.mount("/", StaticFiles(directory=STATIC_DIR, html=True), name="static")
 def read_index():
     """
     Serve the main index.html file.
-    
+
     This is a fallback endpoint in case the static file mount
     doesn't catch the root path for some reason.
-    
+
     Returns:
         FileResponse: The index.html file from the static directory
     """
@@ -159,9 +162,7 @@ async def startup_event():
     """
     Run startup tasks when the application starts.
     """
-    print("🚀 FastAPI startup event triggered")
     # Start the room cleanup background task
     from backend.api.routes.ws import start_cleanup_task
-    print("🚀 Calling start_cleanup_task...")
+
     start_cleanup_task()
-    print("🚀 Startup event completed")

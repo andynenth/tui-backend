@@ -73,14 +73,18 @@ class TestWebSocketMessageValidator:
     def test_validate_declaration_value_valid(self):
         """Test valid declaration values"""
         for value in range(0, 9):
-            is_valid, error = WebSocketMessageValidator.validate_declaration_value(value)
+            is_valid, error = WebSocketMessageValidator.validate_declaration_value(
+                value
+            )
             assert is_valid is True
             assert error is None
 
     def test_validate_declaration_value_out_of_range(self):
         """Test declaration value out of range"""
         for value in [-1, 9, 100]:
-            is_valid, error = WebSocketMessageValidator.validate_declaration_value(value)
+            is_valid, error = WebSocketMessageValidator.validate_declaration_value(
+                value
+            )
             assert is_valid is False
             assert "must be between" in error
 

@@ -1,6 +1,7 @@
 # backend/engine/room.py
 
 import asyncio
+import logging
 import time
 from typing import (  # Import Optional for type hinting variables that can be None.
     Optional,
@@ -13,13 +14,15 @@ from engine.player import (  # Import the Player class, representing a player in
 from engine.state_machine.core import GamePhase
 from engine.state_machine.game_state_machine import GameStateMachine
 
+logger = logging.getLogger(__name__)
+
 
 class Room:
     """
     The Room class manages the state of a single game room, including players,
     game status, and provides methods for managing room participants.
     """
-    
+
     # Cleanup timeout configuration (0 for testing, 30+ for production)
     CLEANUP_TIMEOUT_SECONDS = 0
 
@@ -50,7 +53,7 @@ class Room:
 
         self._pending_operations = set()  # Track ongoing operations
         self._last_operation_id = 0  # For operation sequencing
-        
+
         # Cleanup tracking
         self.last_human_disconnect_time = None  # When last human left
         self.cleanup_scheduled = False  # Flag to prevent duplicate scheduling
@@ -81,9 +84,6 @@ class Room:
             self._pending_operations.add(operation_id)
 
             async with self._assign_lock:
-                print(
-                    f"🔒 [Room {self.room_id}] Starting slot assignment: slot={slot}, name={name_or_none}, op_id={operation_id}"
-                )
 
                 # Validate slot number first
                 if slot < 0 or slot > 3:
@@ -99,12 +99,6 @@ class Room:
                 # Get new state
                 new_state = self._get_slot_state_snapshot()
 
-                print(
-                    f"✅ [Room {self.room_id}] Slot assignment completed: op_id={operation_id}"
-                )
-                print(f"   Old state: {old_state}")
-                print(f"   New state: {new_state}")
-
                 return {
                     "success": True,
                     "operation_id": operation_id,
@@ -115,9 +109,6 @@ class Room:
                 }
 
         except Exception as e:
-            print(
-                f"❌ [Room {self.room_id}] Slot assignment failed: op_id={operation_id}, error={str(e)}"
-            )
             raise
         finally:
             # Always remove from pending operations
@@ -133,9 +124,6 @@ class Room:
             self._pending_operations.add(operation_id)
 
             async with self._join_lock:
-                print(
-                    f"🔒 [Room {self.room_id}] Starting room join: player={player_name}, op_id={operation_id}"
-                )
 
                 # Check if player already exists (more thorough check)
                 existing_slots = []
@@ -144,9 +132,6 @@ class Room:
                         existing_slots.append(i)
 
                 if existing_slots:
-                    print(
-                        f"⚠️ [Room {self.room_id}] Player {player_name} already in slots: {existing_slots}"
-                    )
                     return {
                         "success": False,
                         "reason": f"Player '{player_name}' already in room at slots: {existing_slots}",
@@ -165,10 +150,6 @@ class Room:
                 # Find and assign slot
                 assigned_slot = self.join_room(player_name)
 
-                print(
-                    f"✅ [Room {self.room_id}] Player {player_name} joined slot {assigned_slot}: op_id={operation_id}"
-                )
-
                 return {
                     "success": True,
                     "assigned_slot": assigned_slot,
@@ -178,9 +159,6 @@ class Room:
                 }
 
         except Exception as e:
-            print(
-                f"❌ [Room {self.room_id}] Room join failed: player={player_name}, op_id={operation_id}, error={str(e)}"
-            )
             return {"success": False, "reason": str(e), "operation_id": operation_id}
         finally:
             self._pending_operations.discard(operation_id)
@@ -195,7 +173,6 @@ class Room:
             self._pending_operations.add(operation_id)
 
             async with self._state_lock:
-                print(f"🔒 [Room {self.room_id}] Starting game: op_id={operation_id}")
 
                 if self.started:
                     raise ValueError("Game already started")
@@ -231,13 +208,6 @@ class Room:
 
                 self.started = True
 
-                print(
-                    f"✅ [Room {self.room_id}] Game and StateMachine started successfully: op_id={operation_id}"
-                )
-                print(
-                    f"✅ [Room {self.room_id}] Bot manager registered for {len([p for p in self.players if p.is_bot])} bots"
-                )
-
                 return {
                     "success": True,
                     "operation_id": operation_id,
@@ -247,9 +217,6 @@ class Room:
                 }
 
         except Exception as e:
-            print(
-                f"❌ [Room {self.room_id}] Game start failed: op_id={operation_id}, error={str(e)}"
-            )
             raise
         finally:
             self._pending_operations.discard(operation_id)
@@ -342,7 +309,7 @@ class Room:
             bool: True if the room is full, False otherwise.
         """
         return self.get_occupied_slots() >= self.get_total_slots()
-    
+
     def migrate_host(self) -> Optional[str]:
         """
         Migrates host privileges to the next suitable player.
@@ -355,21 +322,25 @@ class Room:
             if player and not player.is_bot and player.name != self.host_name:
                 old_host = self.host_name
                 self.host_name = player.name
-                print(f"🔄 [Room {self.room_id}] Host migrated from '{old_host}' to '{self.host_name}'")
+                logger.info(
+                    f"[Room {self.room_id}] Host migrated from '{old_host}' to '{self.host_name}'"
+                )
                 return self.host_name
-        
+
         # If no human players available, select the first bot
         for player in self.players:
             if player and player.is_bot:
                 old_host = self.host_name
                 self.host_name = player.name
-                print(f"🔄 [Room {self.room_id}] Host migrated from '{old_host}' to bot '{self.host_name}'")
+                logger.info(
+                    f"[Room {self.room_id}] Host migrated from '{old_host}' to bot '{self.host_name}'"
+                )
                 return self.host_name
-        
+
         # No suitable host found (room is empty?)
-        print(f"⚠️ [Room {self.room_id}] No suitable host found for migration")
+        logger.warning(f"[Room {self.room_id}] No suitable host found for migration")
         return None
-    
+
     def is_host(self, player_name: str) -> bool:
         """
         Check if a player is the current host.
@@ -570,48 +541,33 @@ class Room:
             bool: True if at least one human player exists, False if all are bots
         """
         if not self.game:
-            print(f"🔍 [Room {self.room_id}] has_any_human_players: No game object")
             return False
-        
-        print(f"🔍 [Room {self.room_id}] Checking for human players:")
-        for i, player in enumerate(self.game.players):
-            if player:
-                print(f"  - Slot {i}: {player.name}, is_bot={player.is_bot}, is_connected={player.is_connected}")
-            else:
-                print(f"  - Slot {i}: Empty")
-        
+
         for player in self.game.players:
             if player and not player.is_bot:
-                print(f"🔍 [Room {self.room_id}] Found human player: {player.name}")
                 return True
-        
-        print(f"🔍 [Room {self.room_id}] No human players found - all are bots!")
+
         return False
-    
+
     def mark_for_cleanup(self):
         """Mark room for cleanup after all humans disconnect"""
         if not self.has_any_human_players():
             self.last_human_disconnect_time = time.time()
             self.cleanup_scheduled = True
-            print(f"🗑️ [Room {self.room_id}] Marked for cleanup in {self.CLEANUP_TIMEOUT_SECONDS}s")
-    
+
     def cancel_cleanup(self):
         """Cancel pending cleanup when human reconnects"""
         self.last_human_disconnect_time = None
         self.cleanup_scheduled = False
-        print(f"✅ [Room {self.room_id}] Cleanup cancelled - human player reconnected")
-    
+
     def should_cleanup(self) -> bool:
         """Check if room should be cleaned up based on timeout"""
         if not self.cleanup_scheduled:
-            print(f"🧹 [Room {self.room_id}] should_cleanup: cleanup_scheduled=False, returning False")
             return False
-        
+
         if self.last_human_disconnect_time is None:
-            print(f"🧹 [Room {self.room_id}] should_cleanup: last_human_disconnect_time=None, returning False")
             return False
-        
+
         elapsed = time.time() - self.last_human_disconnect_time
         should_cleanup = elapsed >= self.CLEANUP_TIMEOUT_SECONDS
-        print(f"🧹 [Room {self.room_id}] should_cleanup: elapsed={elapsed:.2f}s, timeout={self.CLEANUP_TIMEOUT_SECONDS}s, should_cleanup={should_cleanup}")
         return should_cleanup

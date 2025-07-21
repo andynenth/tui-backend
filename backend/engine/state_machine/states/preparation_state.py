@@ -398,7 +398,6 @@ class PreparationState(GameState):
                 # Start timeout monitoring
                 asyncio.create_task(self._monitor_decision_timeout())
 
-
                 return {
                     "success": True,
                     "redeal": True,
@@ -636,7 +635,6 @@ class PreparationState(GameState):
             "simultaneous_mode": True,
             "decision_timeout": self.decision_timeout,
         }
-
 
         # Use enterprise broadcasting
         await self.update_phase_data(

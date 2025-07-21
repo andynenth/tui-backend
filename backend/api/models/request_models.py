@@ -27,87 +27,96 @@ from pydantic import BaseModel, Field
 
 class DeclareRequest(BaseModel):
     """Request to make a pile count declaration."""
+
     room_id: str = Field(..., min_length=1, max_length=50, description="Room ID")
-    player_name: str = Field(..., min_length=1, max_length=50, description="Player making the declaration")
+    player_name: str = Field(
+        ..., min_length=1, max_length=50, description="Player making the declaration"
+    )
     value: int = Field(..., ge=0, le=8, description="Declared pile count (0-8)")
-    
+
     class Config:
         schema_extra = {
-            "example": {
-                "room_id": "room_abc123",
-                "player_name": "Alice",
-                "value": 2
-            }
+            "example": {"room_id": "room_abc123", "player_name": "Alice", "value": 2}
         }
 
 
 class PlayTurnRequest(BaseModel):
     """Request to play pieces during a turn."""
+
     room_id: str = Field(..., min_length=1, max_length=50, description="Room ID")
-    player_name: str = Field(..., min_length=1, max_length=50, description="Player playing the turn")
-    piece_indices: List[int] = Field(..., min_items=1, max_items=6, description="Indices of pieces to play (1-6 pieces)")
-    
+    player_name: str = Field(
+        ..., min_length=1, max_length=50, description="Player playing the turn"
+    )
+    piece_indices: List[int] = Field(
+        ...,
+        min_items=1,
+        max_items=6,
+        description="Indices of pieces to play (1-6 pieces)",
+    )
+
     class Config:
         schema_extra = {
             "example": {
                 "room_id": "room_abc123",
                 "player_name": "Alice",
-                "piece_indices": [0, 1, 2]
+                "piece_indices": [0, 1, 2],
             }
         }
 
 
 class RedealRequest(BaseModel):
     """Request to initiate a redeal for weak hands."""
+
     room_id: str = Field(..., min_length=1, max_length=50, description="Room ID")
-    player_name: str = Field(..., min_length=1, max_length=50, description="Player requesting redeal")
-    
+    player_name: str = Field(
+        ..., min_length=1, max_length=50, description="Player requesting redeal"
+    )
+
     class Config:
-        schema_extra = {
-            "example": {
-                "room_id": "room_abc123",
-                "player_name": "Alice"
-            }
-        }
+        schema_extra = {"example": {"room_id": "room_abc123", "player_name": "Alice"}}
 
 
 class RedealDecisionRequest(BaseModel):
     """Request to respond to a redeal offer."""
+
     room_id: str = Field(..., min_length=1, max_length=50, description="Room ID")
-    player_name: str = Field(..., min_length=1, max_length=50, description="Player making the decision")
-    choice: str = Field(..., pattern="^(accept|decline)$", description="Redeal decision: 'accept' or 'decline'")
-    
+    player_name: str = Field(
+        ..., min_length=1, max_length=50, description="Player making the decision"
+    )
+    choice: str = Field(
+        ...,
+        pattern="^(accept|decline)$",
+        description="Redeal decision: 'accept' or 'decline'",
+    )
+
     class Config:
         schema_extra = {
             "example": {
                 "room_id": "room_abc123",
                 "player_name": "Bob",
-                "choice": "accept"
+                "choice": "accept",
             }
         }
 
 
 class ScoreRoundRequest(BaseModel):
     """Request to score the current round."""
+
     room_id: str = Field(..., min_length=1, max_length=50, description="Room ID")
-    
+
     class Config:
-        schema_extra = {
-            "example": {
-                "room_id": "room_abc123"
-            }
-        }
+        schema_extra = {"example": {"room_id": "room_abc123"}}
 
 
 class TriggerRecoveryRequest(BaseModel):
     """Request to trigger a recovery procedure."""
-    room_id: Optional[str] = Field(None, description="Room ID (if recovery is room-specific)")
-    force: bool = Field(False, description="Force recovery even if system appears healthy")
-    
+
+    room_id: Optional[str] = Field(
+        None, description="Room ID (if recovery is room-specific)"
+    )
+    force: bool = Field(
+        False, description="Force recovery even if system appears healthy"
+    )
+
     class Config:
-        schema_extra = {
-            "example": {
-                "room_id": "room_abc123",
-                "force": False
-            }
-        }
+        schema_extra = {"example": {"room_id": "room_abc123", "force": False}}

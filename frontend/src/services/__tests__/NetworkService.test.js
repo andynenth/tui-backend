@@ -72,7 +72,7 @@ describe('NetworkService', () => {
       // First ensure instance exists
       const instance = NetworkService.getInstance();
       expect(instance).toBeDefined();
-      
+
       // Now try to create another instance directly
       expect(() => new NetworkService()).toThrow(
         'NetworkService is a singleton'
@@ -117,7 +117,7 @@ describe('NetworkService', () => {
         networkService.addEventListener('connected', eventListener);
 
         await networkService.connectToRoom(roomId);
-        
+
         // Wait for async event
         await wait(20);
 
@@ -133,13 +133,13 @@ describe('NetworkService', () => {
         const roomId = 'test-room';
 
         const connection = await networkService.connectToRoom(roomId);
-        
+
         // Wait for async ready signal
         await wait(20);
 
         // Check sent messages for client_ready
         const sentMessages = connection.getSentMessages();
-        const readyMessage = sentMessages.find(msg => {
+        const readyMessage = sentMessages.find((msg) => {
           const parsed = JSON.parse(msg);
           return parsed.event === 'client_ready';
         });
@@ -230,7 +230,7 @@ describe('NetworkService', () => {
           networkService.connectToRoom(room1),
           networkService.connectToRoom(room2),
         ]);
-        
+
         // Wait for connections to stabilize
         await wait(20);
 
@@ -489,16 +489,16 @@ describe('NetworkService', () => {
         // Get connection data through status
         const status = networkService.getConnectionStatus(roomId);
         expect(status.connected).toBe(true);
-        
+
         // Verify player name is included in client_ready
         const connection = await networkService.connectToRoom(roomId);
         const sentMessages = connection.getSentMessages();
-        
-        const readyMessage = sentMessages.find(msg => {
+
+        const readyMessage = sentMessages.find((msg) => {
           const parsed = JSON.parse(msg);
           return parsed.event === 'client_ready';
         });
-        
+
         expect(readyMessage).toBeDefined();
         const parsed = JSON.parse(readyMessage);
         expect(parsed.data.player_name).toBe(playerName);
@@ -509,7 +509,7 @@ describe('NetworkService', () => {
 
         // Should not throw when playerInfo is not provided
         const connection = await networkService.connectToRoom(roomId);
-        
+
         // Wait for ready message
         await wait(20);
 
@@ -517,7 +517,7 @@ describe('NetworkService', () => {
         expect(connection.url).toBe('ws://localhost:5050/ws/test-room');
 
         const sentMessages = connection.getSentMessages();
-        const readyMessage = sentMessages.find(msg => {
+        const readyMessage = sentMessages.find((msg) => {
           const parsed = JSON.parse(msg);
           return parsed.event === 'client_ready';
         });
@@ -531,14 +531,16 @@ describe('NetworkService', () => {
         const roomId = 'test-room';
         const playerName = 'Alice';
 
-        const connection = await networkService.connectToRoom(roomId, { playerName });
-        
+        const connection = await networkService.connectToRoom(roomId, {
+          playerName,
+        });
+
         // Wait for ready message
         await wait(20);
-        
+
         const sentMessages = connection.getSentMessages();
 
-        const readyMessage = sentMessages.find(msg => {
+        const readyMessage = sentMessages.find((msg) => {
           const parsed = JSON.parse(msg);
           return parsed.event === 'client_ready';
         });
@@ -548,7 +550,7 @@ describe('NetworkService', () => {
         expect(parsed.event).toBe('client_ready');
         expect(parsed.data).toMatchObject({
           room_id: roomId,
-          player_name: playerName
+          player_name: playerName,
         });
       });
 
@@ -556,13 +558,13 @@ describe('NetworkService', () => {
         const roomId = 'test-room';
 
         const connection = await networkService.connectToRoom(roomId);
-        
+
         // Wait for ready message
         await wait(20);
-        
+
         const sentMessages = connection.getSentMessages();
 
-        const readyMessage = sentMessages.find(msg => {
+        const readyMessage = sentMessages.find((msg) => {
           const parsed = JSON.parse(msg);
           return parsed.event === 'client_ready';
         });
@@ -581,7 +583,9 @@ describe('NetworkService', () => {
         const playerName = 'Bob';
 
         // Initial connection with player name
-        const connection1 = await networkService.connectToRoom(roomId, { playerName });
+        const connection1 = await networkService.connectToRoom(roomId, {
+          playerName,
+        });
 
         // Simulate disconnect by closing the WebSocket
         connection1.close();
@@ -600,9 +604,11 @@ describe('NetworkService', () => {
         const playerName = 'Charlie';
 
         // Initial connection
-        const connection1 = await networkService.connectToRoom(roomId, { playerName });
+        const connection1 = await networkService.connectToRoom(roomId, {
+          playerName,
+        });
         await wait(20);
-        
+
         // Clear initial messages
         connection1.clearSentMessages();
 
@@ -610,12 +616,14 @@ describe('NetworkService', () => {
         await networkService.disconnectFromRoom(roomId, false);
 
         // Manually trigger reconnection
-        const connection2 = await networkService.connectToRoom(roomId, { playerName });
+        const connection2 = await networkService.connectToRoom(roomId, {
+          playerName,
+        });
         await wait(20);
 
         const sentMessages = connection2.getSentMessages();
 
-        const readyMessage = sentMessages.find(msg => {
+        const readyMessage = sentMessages.find((msg) => {
           const parsed = JSON.parse(msg);
           return parsed.event === 'client_ready';
         });

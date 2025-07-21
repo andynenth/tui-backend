@@ -85,7 +85,9 @@ class ConnectionManager:
         async with self.lock:
             # Find player from websocket ID
             if websocket_id not in self.websocket_to_player:
-                logger.warning(f"WebSocket ID {websocket_id} not found in mapping. Current mappings: {list(self.websocket_to_player.keys())}")
+                logger.warning(
+                    f"WebSocket ID {websocket_id} not found in mapping. Current mappings: {list(self.websocket_to_player.keys())}"
+                )
                 return None
 
             room_id, player_name = self.websocket_to_player[websocket_id]

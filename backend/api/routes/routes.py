@@ -470,29 +470,42 @@ async def detailed_health_check():
         # Import health monitor and get system stats
         from api.services.health_monitor import health_monitor
         import psutil
-        
+
         health_status = await health_monitor.get_health_status()
-        
+
         # Convert component status to HealthStatus enum
         components = {
-            "event_store": HealthStatus.HEALTHY if EVENT_STORE_AVAILABLE else HealthStatus.UNHEALTHY,
+            "event_store": (
+                HealthStatus.HEALTHY
+                if EVENT_STORE_AVAILABLE
+                else HealthStatus.UNHEALTHY
+            ),
             "health_monitor": HealthStatus.HEALTHY,
             "recovery_manager": HealthStatus.HEALTHY,
             "websocket_manager": HealthStatus.HEALTHY,
             "room_manager": HealthStatus.HEALTHY,
             "rate_limiter": HealthStatus.HEALTHY,  # Will be updated based on actual status
         }
-        
+
         # Check rate limiting status
         try:
             from api.middleware.rate_limit import get_rate_limiter
+
             rate_limiter = get_rate_limiter()
             rate_stats = rate_limiter.get_stats()
-            
+
             # Calculate overall block rate
-            total_requests = sum(stats.get("total_requests", 0) for stats in rate_stats.values() if isinstance(stats, dict))
-            total_blocked = sum(stats.get("blocked_requests", 0) for stats in rate_stats.values() if isinstance(stats, dict))
-            
+            total_requests = sum(
+                stats.get("total_requests", 0)
+                for stats in rate_stats.values()
+                if isinstance(stats, dict)
+            )
+            total_blocked = sum(
+                stats.get("blocked_requests", 0)
+                for stats in rate_stats.values()
+                if isinstance(stats, dict)
+            )
+
             if total_requests > 0:
                 block_rate = (total_blocked / total_requests) * 100
                 if block_rate > 50:  # More than 50% blocked is unhealthy
@@ -501,21 +514,28 @@ async def detailed_health_check():
                     components["rate_limiter"] = HealthStatus.DEGRADED
         except Exception:
             components["rate_limiter"] = HealthStatus.UNKNOWN
-        
+
         # Get memory usage
         process = psutil.Process()
         memory_usage_mb = process.memory_info().rss / 1024 / 1024
-        
+
         # Get active rooms and connections
         active_rooms = len(room_manager.rooms)
         active_connections = sum(
-            len(conns) for conns in backend.socket_manager._socket_manager.room_connections.values()
+            len(conns)
+            for conns in backend.socket_manager._socket_manager.room_connections.values()
         )
-        
+
         # Return in the expected DetailedHealthCheck format
         return {
-            "status": HealthStatus.HEALTHY if health_status.status.value == "healthy" else (
-                HealthStatus.DEGRADED if health_status.status.value == "warning" else HealthStatus.UNHEALTHY
+            "status": (
+                HealthStatus.HEALTHY
+                if health_status.status.value == "healthy"
+                else (
+                    HealthStatus.DEGRADED
+                    if health_status.status.value == "warning"
+                    else HealthStatus.UNHEALTHY
+                )
             ),
             "timestamp": datetime.now().isoformat(),
             "version": "1.0.0",
@@ -686,30 +706,30 @@ async def trigger_recovery(procedure_name: str, context: dict = None):
 async def rate_limit_stats():
     """
     Get rate limiting statistics
-    
+
     Returns:
         Dict: Rate limiting statistics including blocked requests and unique clients
     """
     try:
         from api.middleware.rate_limit import get_rate_limiter
         from api.middleware.websocket_rate_limit import get_websocket_rate_limiter
-        
+
         # Get HTTP rate limiter stats
         http_limiter = get_rate_limiter()
         http_stats = http_limiter.get_stats()
-        
+
         # Get WebSocket rate limiter stats
         ws_limiter = get_websocket_rate_limiter()
         ws_stats = ws_limiter.get_connection_stats()
-        
+
         return {
             "success": True,
             "timestamp": time.time(),
             "http_rate_limits": http_stats,
             "websocket_rate_limits": ws_stats,
-            "rate_limiting_enabled": True
+            "rate_limiting_enabled": True,
         }
-        
+
     except Exception as e:
         raise HTTPException(
             status_code=500, detail=f"Failed to get rate limit stats: {str(e)}"
@@ -793,7 +813,7 @@ async def system_stats():
                             "enabled": True,
                             "configuration": {
                                 "global_rpm": 100,
-                                "burst_multiplier": 1.5
+                                "burst_multiplier": 1.5,
                             },
                             "rest_api": {
                                 "total_requests": 12345,
@@ -803,33 +823,30 @@ async def system_stats():
                                     "/api/health": {
                                         "total": 5000,
                                         "blocked": 50,
-                                        "block_rate": 1.0
+                                        "block_rate": 1.0,
                                     }
-                                }
+                                },
                             },
                             "websocket": {
                                 "total_connections": 234,
                                 "total_messages": 45678,
                                 "rate_limited_events": 567,
                                 "by_event": {
-                                    "declare": {
-                                        "total": 1000,
-                                        "blocked": 100
-                                    }
-                                }
-                            }
-                        }
+                                    "declare": {"total": 1000, "blocked": 100}
+                                },
+                            },
+                        },
                     }
                 }
-            }
+            },
         },
-        500: {"model": ErrorResponse}
-    }
+        500: {"model": ErrorResponse},
+    },
 )
 async def get_rate_limit_metrics():
     """
     Get comprehensive rate limit metrics.
-    
+
     Returns detailed statistics about rate limiting including:
     - Current configuration
     - REST API rate limit statistics
@@ -841,58 +858,63 @@ async def get_rate_limit_metrics():
         # Import rate limiting components
         from api.middleware.rate_limit import get_rate_limiter
         from api.middleware.websocket_rate_limit import get_websocket_rate_limiter
-        
+
         # Import configuration if available
         try:
             from config.rate_limits import get_rate_limit_config
+
             config = get_rate_limit_config()
             config_data = config.to_dict()
         except ImportError:
             config_data = {"error": "Configuration module not available"}
-        
+
         # Get rate limiter instances
         rate_limiter = get_rate_limiter()
         ws_rate_limiter = get_websocket_rate_limiter()
-        
+
         # Get REST API stats
         rest_stats = rate_limiter.get_stats()
-        
+
         # Get WebSocket stats
         ws_stats = ws_rate_limiter.get_connection_stats()
-        
+
         # Get current limit configuration
-        current_limits = {
-            "rest_api": {},
-            "websocket": {}
-        }
-        
+        current_limits = {"rest_api": {}, "websocket": {}}
+
         # Add REST API limits from config
         if "error" not in config_data:
             current_limits["rest_api"] = config_data.get("rest_api_limits", {})
             current_limits["websocket"] = config_data.get("websocket_limits", {})
-        
+
         return {
             "success": True,
             "timestamp": time.time(),
             "rate_limiting": {
-                "enabled": config_data.get("enabled", True) if "error" not in config_data else "unknown",
+                "enabled": (
+                    config_data.get("enabled", True)
+                    if "error" not in config_data
+                    else "unknown"
+                ),
                 "configuration": config_data,
                 "current_limits": current_limits,
                 "rest_api": rest_stats,
                 "websocket": ws_stats,
                 "summary": {
                     "total_blocked": sum(
-                        stats.get("blocked_requests", 0) 
-                        for stats in rest_stats.values() 
+                        stats.get("blocked_requests", 0)
+                        for stats in rest_stats.values()
                         if isinstance(stats, dict)
                     ),
-                    "active_blocks": len(rate_limiter.blocked_until) if hasattr(rate_limiter, 'blocked_until') else 0
-                }
-            }
+                    "active_blocks": (
+                        len(rate_limiter.blocked_until)
+                        if hasattr(rate_limiter, "blocked_until")
+                        else 0
+                    ),
+                },
+            },
         }
-        
+
     except Exception as e:
         raise HTTPException(
-            status_code=500, 
-            detail=f"Failed to get rate limit metrics: {str(e)}"
+            status_code=500, detail=f"Failed to get rate limit metrics: {str(e)}"
         )

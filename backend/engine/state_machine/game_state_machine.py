@@ -69,10 +69,10 @@ class GameStateMachine:
     async def start(self, initial_phase: GamePhase = GamePhase.WAITING):
         """
         Start the state machine with initial phase.
-        
+
         Initializes the processing loop and transitions to the specified
         initial phase. Does nothing if already running.
-        
+
         Args:
             initial_phase: The phase to start in (default: WAITING)
         """
@@ -92,7 +92,7 @@ class GameStateMachine:
     async def stop(self):
         """
         Stop the state machine gracefully.
-        
+
         Cancels the processing task, exits current state, and
         cleans up resources. Safe to call even if not running.
         """
@@ -114,13 +114,13 @@ class GameStateMachine:
     async def handle_action(self, action: GameAction) -> Dict:
         """
         Add action to queue for processing.
-        
+
         Actions are processed asynchronously by the processing loop.
         This method returns immediately with an acknowledgment.
-        
+
         Args:
             action: GameAction to be processed
-            
+
         Returns:
             Dict with 'success' and either 'queued' or 'error' keys
         """
@@ -133,7 +133,7 @@ class GameStateMachine:
     async def _process_loop(self):
         """
         Main processing loop for queued actions and polling-based transitions.
-        
+
         Continuously processes pending actions and checks for phase transitions
         while the state machine is running. Uses 0.5s polling interval.
         """
@@ -162,7 +162,7 @@ class GameStateMachine:
     async def process_pending_actions(self):
         """
         Process all pending actions in the queue.
-        
+
         Dequeues and processes actions one by one, delegating to the
         current state's handle_action method. Includes error handling
         and logging for each action processed.
@@ -191,10 +191,10 @@ class GameStateMachine:
     async def _transition_to(self, new_phase: GamePhase):
         """
         Transition to a new game phase.
-        
+
         Validates the transition, exits current state, enters new state,
         and stores the phase change event. Invalid transitions are blocked.
-        
+
         Args:
             new_phase: The GamePhase to transition to
         """
@@ -240,7 +240,7 @@ class GameStateMachine:
     def get_current_phase(self) -> Optional[GamePhase]:
         """
         Get the current game phase.
-        
+
         Returns:
             GamePhase enum value representing the current phase,
             or None if state machine is not initialized.
@@ -250,9 +250,9 @@ class GameStateMachine:
     def get_allowed_actions(self) -> Set[ActionType]:
         """
         Get the set of currently allowed action types.
-        
+
         The allowed actions depend on the current game phase and state.
-        
+
         Returns:
             Set of ActionType enum values that are valid in the current state,
             or empty set if no state is active.
@@ -264,10 +264,10 @@ class GameStateMachine:
     def get_phase_data(self) -> Dict:
         """
         Get current phase-specific data in JSON-serializable format.
-        
+
         Converts complex objects (like Player instances) to strings or
         simple data types that can be serialized for WebSocket transmission.
-        
+
         Returns:
             Dictionary containing phase-specific data, safe for JSON serialization.
         """
@@ -296,10 +296,10 @@ class GameStateMachine:
     async def _broadcast_phase_change_with_hands(self, phase: GamePhase):
         """
         Broadcast phase change with all player hand data.
-        
+
         Sends phase change event including current phase data,
         allowed actions, and each player's hand information.
-        
+
         Args:
             phase: The new GamePhase that was entered
         """
@@ -333,10 +333,10 @@ class GameStateMachine:
     async def broadcast_event(self, event_type: str, event_data: Dict):
         """
         Broadcast WebSocket event if callback is available.
-        
+
         Used for sending game events to all connected clients via
         the WebSocket broadcast callback.
-        
+
         Args:
             event_type: Type of event (e.g., 'phase_change', 'turn_result')
             event_data: Dictionary of event data to broadcast
@@ -349,10 +349,10 @@ class GameStateMachine:
     async def _notify_bot_manager(self, new_phase: GamePhase):
         """
         Notify bot manager about phase changes to trigger bot actions.
-        
+
         Sends appropriate events to bot manager based on the new phase,
         allowing bots to take actions at the right time.
-        
+
         Args:
             new_phase: The GamePhase that was just entered
         """
@@ -565,9 +565,9 @@ class GameStateMachine:
     async def _notify_bot_manager_action_rejected(self, action: GameAction):
         """
         Notify bot manager that an action was rejected by state machine.
-        
+
         Helps bots learn from invalid actions and adjust their behavior.
-        
+
         Args:
             action: The GameAction that was rejected
         """
@@ -604,9 +604,9 @@ class GameStateMachine:
     ):
         """
         Notify bot manager that an action was accepted and processed.
-        
+
         Provides feedback to bots about successful actions.
-        
+
         Args:
             action: The GameAction that was accepted
             result: The result dictionary from processing the action
@@ -644,9 +644,9 @@ class GameStateMachine:
     ):
         """
         Notify bot manager that an action failed during processing.
-        
+
         Helps bots handle errors and retry if appropriate.
-        
+
         Args:
             action: The GameAction that failed
             error_message: Description of the failure
@@ -682,10 +682,10 @@ class GameStateMachine:
     async def force_end_game(self, reason: str) -> None:
         """
         Force end the game due to critical error.
-        
+
         Immediately stops the state machine and notifies the room manager
         about the critical error. Used for unrecoverable situations.
-        
+
         Args:
             reason: Description of why the game is being force-ended
         """
