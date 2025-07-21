@@ -114,8 +114,8 @@ const AppRouterContent = ({ sessionToRecover }) => {
   useEffect(() => {
     if (sessionToRecover) {
       // Restore app context
-      app.setPlayerName(sessionToRecover.playerName);
-      app.setCurrentRoomId(sessionToRecover.roomId);
+      app.updatePlayerName(sessionToRecover.playerName);
+      // Note: currentRoomId will be set automatically by navigation
 
       // Navigate to game
       console.log(
