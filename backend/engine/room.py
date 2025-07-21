@@ -554,3 +554,44 @@ class Room:
             return current.name
 
         return None  # No player is kicked in other scenarios.
+
+    def get_connected_human_count(self) -> int:
+        """
+        Count the number of connected human players in the room.
+        Returns:
+            int: Number of connected human players
+        """
+        if not self.game:
+            return 0
+        
+        count = 0
+        for player in self.game.players:
+            if player and not player.is_bot and player.is_connected:
+                count += 1
+        return count
+
+    def has_any_human_players(self) -> bool:
+        """
+        Check if there are ANY human players in the room (connected or disconnected).
+        This is used to determine if the room should continue existing.
+        Returns:
+            bool: True if at least one human player exists, False if all are bots
+        """
+        if not self.game:
+            print(f"🔍 [Room {self.room_id}] has_any_human_players: No game object")
+            return False
+        
+        print(f"🔍 [Room {self.room_id}] Checking for human players:")
+        for i, player in enumerate(self.game.players):
+            if player:
+                print(f"  - Slot {i}: {player.name}, is_bot={player.is_bot}, is_connected={player.is_connected}")
+            else:
+                print(f"  - Slot {i}: Empty")
+        
+        for player in self.game.players:
+            if player and not player.is_bot:
+                print(f"🔍 [Room {self.room_id}] Found human player: {player.name}")
+                return True
+        
+        print(f"🔍 [Room {self.room_id}] No human players found - all are bots!")
+        return False
