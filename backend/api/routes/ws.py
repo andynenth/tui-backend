@@ -3,6 +3,7 @@
 import asyncio
 import logging
 import uuid
+from typing import Optional
 
 import backend.socket_manager
 from backend.shared_instances import shared_room_manager
@@ -23,6 +24,14 @@ logger = logging.getLogger(__name__)
 
 router = APIRouter()
 room_manager = shared_room_manager
+
+
+async def get_current_player_name(websocket_id: str) -> Optional[str]:
+    """Get the player name associated with a WebSocket ID"""
+    if websocket_id in connection_manager.websocket_to_player:
+        _, player_name = connection_manager.websocket_to_player[websocket_id]
+        return player_name
+    return None
 
 
 async def broadcast_with_queue(room_id: str, event: str, data: dict):
@@ -761,8 +770,29 @@ async def websocket_endpoint(websocket: WebSocket, room_id: str):
                     # Already validated - slot_id is guaranteed to be present and valid
                     slot_id = event_data.get("slot_id")
 
+                    # Get current player from WebSocket
+                    websocket_id = getattr(registered_ws, "_ws_id", None)
+                    current_player = (
+                        await get_current_player_name(websocket_id)
+                        if websocket_id
+                        else None
+                    )
+
                     room = room_manager.get_room(room_id)
                     if room:
+                        # Check if current player is the host
+                        if current_player != room.host_name:
+                            await registered_ws.send_json(
+                                {
+                                    "event": "error",
+                                    "data": {
+                                        "message": "Only the host can remove players",
+                                        "type": "permission_denied",
+                                    },
+                                }
+                            )
+                            continue
+
                         try:
                             # Convert to 0-indexed (frontend sends 1-4, backend uses 0-3)
                             slot_index = int(slot_id) - 1
@@ -826,8 +856,29 @@ async def websocket_endpoint(websocket: WebSocket, room_id: str):
                     # Already validated - slot_id is guaranteed to be present and valid
                     slot_id = event_data.get("slot_id")
 
+                    # Get current player from WebSocket
+                    websocket_id = getattr(registered_ws, "_ws_id", None)
+                    current_player = (
+                        await get_current_player_name(websocket_id)
+                        if websocket_id
+                        else None
+                    )
+
                     room = room_manager.get_room(room_id)
                     if room:
+                        # Check if current player is the host
+                        if current_player != room.host_name:
+                            await registered_ws.send_json(
+                                {
+                                    "event": "error",
+                                    "data": {
+                                        "message": "Only the host can add bots",
+                                        "type": "permission_denied",
+                                    },
+                                }
+                            )
+                            continue
+
                         try:
                             # Convert to 0-indexed (frontend sends 1-4, backend uses 0-3)
                             slot_index = int(slot_id) - 1
