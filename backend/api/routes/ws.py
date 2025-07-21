@@ -47,7 +47,10 @@ async def handle_disconnect(room_id: str, websocket: WebSocket):
         # Generate a unique websocket ID for tracking
         websocket_id = getattr(websocket, '_ws_id', None)
         
-        logger.info(f"Handling disconnect for room {room_id}, websocket_id: {websocket_id}")
+        import time
+        disconnect_time = time.time()
+        
+        logger.info(f"🔌 Handling disconnect for room {room_id}, websocket_id: {websocket_id} at {disconnect_time}")
         
         # Try to find player by checking all players in the room if websocket_id fails
         connection = None
@@ -73,6 +76,9 @@ async def handle_disconnect(room_id: str, websocket: WebSocket):
                     )
                     
                     if player and not player.is_bot:
+                        # Debug logging before conversion
+                        logger.info(f"🔍 Converting {connection.player_name} to bot - Before: is_bot={player.is_bot}, is_connected={player.is_connected}")
+                        
                         # Store original bot state
                         player.original_is_bot = player.is_bot
                         player.is_connected = False
@@ -80,6 +86,8 @@ async def handle_disconnect(room_id: str, websocket: WebSocket):
                         
                         # Convert to bot
                         player.is_bot = True
+                        
+                        logger.info(f"🔍 Converted {connection.player_name} to bot - After: is_bot={player.is_bot}, is_connected={player.is_connected}")
                         
                         # Create message queue for the disconnected player
                         await message_queue_manager.create_queue(room_id, connection.player_name)
@@ -116,6 +124,32 @@ async def handle_disconnect(room_id: str, websocket: WebSocket):
                                     "message": f"{new_host} is now the host"
                                 }
                             )
+                        
+                        # Check if all remaining players are bots
+                        # Commenting out to debug the issue
+                        # if not room.has_any_human_players():
+                        #     logger.info(f"All players in room {room_id} are now bots. Cleaning up room.")
+                        #     
+                        #     # Unregister from bot manager
+                        #     from engine.bot_manager import BotManager
+                        #     bot_manager = BotManager()
+                        #     bot_manager.unregister_game(room_id)
+                        #     
+                        #     # Broadcast room closure to any remaining connections
+                        #     await broadcast(
+                        #         room_id,
+                        #         "room_closed",
+                        #         {
+                        #             "reason": "all_players_disconnected",
+                        #             "message": "Game ended - all human players have left"
+                        #         }
+                        #     )
+                        #     
+                        #     # Remove the room from room manager
+                        #     room_manager.delete_room(room_id)
+                        #     
+                        #     logger.info(f"Room {room_id} cleaned up successfully")
+                        #     return
                 else:
                     logger.warning(f"No connection found for websocket_id {websocket_id} in room {room_id}")
         else:
@@ -135,6 +169,10 @@ async def websocket_endpoint(websocket: WebSocket, room_id: str):
     """
     # Generate unique ID for this websocket
     websocket._ws_id = str(uuid.uuid4())
+    
+    import time
+    connect_time = time.time()
+    logger.info(f"🔗 New WebSocket connection to room {room_id}, ws_id: {websocket._ws_id} at {connect_time}")
     
     registered_ws = await register(room_id, websocket)
 
@@ -457,8 +495,9 @@ async def websocket_endpoint(websocket: WebSocket, room_id: str):
                         # Track player connection if player_name provided
                         player_name = event_data.get("player_name")
                         if player_name and hasattr(registered_ws, '_ws_id'):
+                            logger.info(f"🔗 Registering player {player_name} for room {room_id}, ws_id: {registered_ws._ws_id}")
                             await connection_manager.register_player(room_id, player_name, registered_ws._ws_id)
-                            logger.info(f"Successfully registered player {player_name} for room {room_id}")
+                            logger.info(f"✅ Successfully registered player {player_name} for room {room_id}")
                         else:
                             logger.warning(f"client_ready received without player_name for room {room_id} or missing _ws_id")
                             
