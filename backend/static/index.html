@@ -1,12 +1,35 @@
 <!-- frontend/index.html -->
-<!DOCTYPE html>
+<!doctype html>
 <html>
   <head>
     <meta charset="UTF-8" />
     <meta
       name="viewport"
-      content="width=device-width, initial-scale=0.90, maximum-scale=1, user-scalable=no"
+      content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no"
     />
+    <script>
+      // Dynamically adjust viewport scale based on screen width
+      (function() {
+        const viewportMeta = document.querySelector('meta[name="viewport"]');
+        const screenWidth = window.screen.width;
+        
+        // Default scale is 1 (no zoom)
+        let scale = 1;
+        
+        // Only scale down for screens smaller than 400px
+        if (screenWidth < 360) {
+          scale = 0.80;  // Very small screens
+        } else if (screenWidth < 380) {
+          scale = 0.85;  // Small screens like older iPhones
+        } else if (screenWidth < 400) {
+          scale = 0.90;  // iPhone 12 Pro (390px), iPhone SE (375px)
+        }
+        // screenWidth >= 400: scale remains 1 (default)
+        
+        // Update viewport meta tag
+        viewportMeta.content = `width=device-width, initial-scale=${scale}, maximum-scale=1, user-scalable=no`;
+      })();
+    </script>
     <title>Liap Tui Game</title>
     <link rel="stylesheet" href="bundle.css" />
   </head>
