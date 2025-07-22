@@ -17,7 +17,7 @@ import { useGameState } from '../hooks/useGameState';
 import { useGameActions } from '../hooks/useGameActions';
 import { useConnectionStatus } from '../hooks/useConnectionStatus';
 import { serviceIntegration } from '../services/ServiceIntegration';
-import { getSession } from '../utils/sessionStorage';
+import { getSession, clearSession } from '../utils/sessionStorage';
 
 // Import components
 import { GameContainer } from '../components/game/GameContainer';

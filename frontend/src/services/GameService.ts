@@ -424,6 +424,12 @@ export class GameService extends EventTarget {
       'host_changed',
     ];
 
+    // Special error events
+    networkService.addEventListener(
+      'room_not_found',
+      this.handleRoomNotFound.bind(this)
+    );
+
     gameEvents.forEach((event) => {
       networkService.addEventListener(
         event,
@@ -463,6 +469,52 @@ export class GameService extends EventTarget {
       },
       'NETWORK_DISCONNECTED'
     );
+  }
+
+  /**
+   * Handle room not found event
+   */
+  private handleRoomNotFound(event: Event): void {
+    const customEvent = event as CustomEvent<NetworkEventDetail>;
+    const { data } = customEvent.detail;
+    
+    console.log('🚫 Room not found:', data);
+    
+    // Clear the invalid session
+    import('../utils/sessionStorage').then(({ clearSession }) => {
+      clearSession();
+    });
+    
+    // Show error message to user
+    const message = data?.message || 'This game room no longer exists';
+    const suggestion = data?.suggestion || 'Please return to the start page';
+    
+    // Update state with error
+    this.setState(
+      {
+        ...this.state,
+        error: `${message}. ${suggestion}`,
+        phase: 'waiting' as const,
+      },
+      'ROOM_NOT_FOUND'
+    );
+    
+    // Show toast if available
+    if (typeof window !== 'undefined' && (window as any).showToast) {
+      (window as any).showToast({
+        type: 'error',
+        title: 'Room Not Found',
+        message: `${message}. ${suggestion}`,
+        duration: 8000
+      });
+    }
+    
+    // Navigate to start page after delay
+    setTimeout(() => {
+      if (typeof window !== 'undefined') {
+        window.location.href = '/';
+      }
+    }, 3000);
   }
 
   /**
