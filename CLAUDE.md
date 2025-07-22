@@ -27,7 +27,12 @@ Liap Tui is a real-time multiplayer board game inspired by traditional Chinese-T
   - `rules.py`: Play validation and game rules
   - `scoring.py`: Score calculation
   - `player.py`, `piece.py`: Core game entities
-- **API Layer** (`backend/api/`) provides REST and WebSocket endpoints
+- **API Layer** (`backend/api/`) - WebSocket for ALL game operations, REST only for monitoring/debugging
+- **WebSocket-Only Game Operations**:
+  - ALL game actions use WebSocket: room creation, joining, game moves, everything
+  - No REST endpoints for game operations - this is by design to avoid duplication
+  - WebSocket endpoint: `/ws/{room_id}` (also `/ws/lobby` for lobby operations)
+  - Game events: `create_room`, `join_room`, `start_game`, `declare`, `play`, `accept_redeal`, `decline_redeal`, `leave_room`
 
 ### Frontend Structure
 - **React 19.1.0** with React Router DOM for modern UI architecture
@@ -166,7 +171,7 @@ Key classes **ALL ENTERPRISE**:
 
 - The project uses both `requirements.txt` and `pyproject.toml` (Poetry) for Python dependencies
 - Frontend uses ESBuild for fast compilation and bundling  
-- WebSocket communication follows a specific protocol defined in the API layer **[INTEGRATION TARGET]**
+- ALL game operations use WebSocket exclusively - there are NO REST endpoints for game actions
 - The `start.sh` script sets up the full development environment automatically
 
 ## File Locations
@@ -177,7 +182,23 @@ Key classes **ALL ENTERPRISE**:
 - Frontend entry: `frontend/main.js`
 - Game rules documentation: `RULES.md`
 
+## Important Architecture Clarifications
+
+### WebSocket vs REST Usage
+- **WebSocket**: Used for ALL game operations without exception
+  - Room management: create, join, leave rooms
+  - Game actions: start game, declare, play pieces, handle redeals
+  - Real-time updates: game state changes, player actions
+  
+- **REST Endpoints** (all require `/api` prefix): Used ONLY for:
+  - Health monitoring: `/api/health`, `/api/health/detailed`, `/api/health/metrics`
+  - Debugging: `/api/debug/room-stats`
+  - Admin tools: `/api/event-store/*`, `/api/recovery/*`, `/api/system/stats`
+  - NO game operations whatsoever
+
 ## Claude Memories
 
 - When I tell you to read log, read it from `/log.txt`
 - As you complete each task listed in CODE_QUALITY_CHECKLIST.md, follow the documentation procedures outlined in CODE_QUALITY_TRACKING_GUIDE.md
+- CRITICAL: This project uses WebSocket for ALL game operations. Do not look for or suggest REST endpoints for game actions - they don't exist by design.
+- When implementing game features, always use WebSocket events through the NetworkService (frontend) or ws.py handlers (backend)
