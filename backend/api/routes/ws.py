@@ -275,6 +275,25 @@ async def websocket_endpoint(websocket: WebSocket, room_id: str):
 
     registered_ws = await register(room_id, websocket)
 
+    # Check if room exists (excluding lobby)
+    if room_id != "lobby":
+        room = room_manager.get_room(room_id)
+        if not room:
+            # Send room_not_found event
+            await registered_ws.send_json(
+                {
+                    "event": "room_not_found",
+                    "data": {
+                        "room_id": room_id,
+                        "message": "This game room no longer exists",
+                        "suggestion": "The server may have restarted. Please create or join a new game.",
+                        "timestamp": asyncio.get_event_loop().time(),
+                    },
+                }
+            )
+            logger.info(f"Sent room_not_found for non-existent room: {room_id}")
+            # Continue running to allow frontend to handle gracefully
+
     try:
         while True:
             message = await websocket.receive_json()
