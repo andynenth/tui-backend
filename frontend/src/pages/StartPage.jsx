@@ -145,8 +145,9 @@ const StartPage = () => {
                 <div className="sp-button-group">
                   <button
                     type="submit"
-                    className="btn btn-primary btn-full"
+                    className="btn btn-secondary btn-full"
                     disabled={!playerNameValue || isSubmitting}
+                    style={{ background: '#495057', color: 'white' }}
                   >
                     {isSubmitting && <span className="sp-loading-spinner" />}
                     {isSubmitting ? 'Setting up...' : 'Enter Lobby'}
@@ -162,19 +163,25 @@ const StartPage = () => {
                       Continue as {app.playerName}
                     </button>
                   )}
+
+                  {/* Separator */}
+                  <div style={{ 
+                    height: '1px', 
+                    background: 'rgba(173, 181, 189, 0.2)',
+                    margin: '4px 0'
+                  }}></div>
+
+                  {/* How to play button */}
+                  <button
+                    type="button"
+                    className="btn btn-danger btn-full"
+                    onClick={() => navigate('/tutorial')}
+                    style={{ background: '#dc3545', color: 'white' }}
+                  >
+                    How to Play
+                  </button>
                 </div>
               </form>
-
-              {/* How to play button */}
-              <div className="sp-game-info">
-                <button
-                  type="button"
-                  className="btn btn-secondary btn-full"
-                  onClick={() => navigate('/tutorial')}
-                >
-                  How to Play
-                </button>
-              </div>
             </div>
           </div>
         </div>
