@@ -5,8 +5,17 @@
   /* Fixed aspect ratio container */
   width: 100%;
   max-width: var(--game-max-width);
-  aspect-ratio: 9 / 16;
+  
+  /* Fallback for browsers without aspect-ratio support */
+  height: calc(100vw * 1.7778);
   max-height: var(--game-max-height);
+  
+  /* Modern approach - overrides height when supported */
+  aspect-ratio: 9 / 16;
+  
+  /* Account for iOS safe areas */
+  max-height: calc(var(--game-max-height) - env(safe-area-inset-bottom, 0px));
+  
   margin: 0 auto;
 
   /* Visual styling - matching mockup */
@@ -159,18 +168,3 @@
   overflow: hidden;
 }
 
-/* Responsive adjustments */
-@media (max-height: 700px) {
-  .gl-phase-header {
-    padding: var(--game-spacing-lg) var(--game-spacing-lg)
-      var(--game-spacing-md);
-  }
-
-  .gl-phase-title {
-    font-size: 28px;
-  }
-
-  .gl-phase-subtitle {
-    font-size: 13px;
-  }
-}
