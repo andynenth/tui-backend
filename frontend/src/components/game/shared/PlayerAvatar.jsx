@@ -33,6 +33,8 @@ const PlayerAvatar = ({
   showAIBadge = false,
   avatarColor = null,
 }) => {
+  // Debug logging
+  console.log('🎨 PlayerAvatar received:', { name, isBot, avatarColor });
   // Get size-specific class
   const getSizeClass = () => {
     switch (size) {
@@ -55,7 +57,9 @@ const PlayerAvatar = ({
   // Get color class
   const getColorClass = () => {
     if (!isBot && avatarColor) {
-      return `player-avatar--color-${avatarColor}`;
+      const colorClass = `player-avatar--color-${avatarColor}`;
+      console.log(`🎨 PlayerAvatar ${name} color class:`, colorClass);
+      return colorClass;
     }
     return '';
   };

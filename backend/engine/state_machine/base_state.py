@@ -181,9 +181,13 @@ class GameState(ABC):
                         hand_strings = [str(piece) for piece in player_hand]
                         self.logger.debug(f"   Converted hand: {hand_strings}")
 
+                        avatar_color = getattr(player, "avatar_color", None)
+                        self.logger.debug(f"   🎨 Player {player_name} avatar_color: {avatar_color}")
+                        
                         players_data[player_name] = {
                             "name": player_name,
                             "is_bot": getattr(player, "is_bot", False),
+                            "avatar_color": avatar_color,
                             "hand": hand_strings,
                             "hand_size": len(player_hand),
                             "zero_declares_in_a_row": getattr(

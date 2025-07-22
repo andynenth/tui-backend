@@ -75,6 +75,18 @@ const ScoringContent = ({
             name: score.playerName,
           };
 
+          // Debug logging
+          console.log(
+            '🎨 Scoring player data:',
+            player.name,
+            'avatar_color:',
+            player.avatar_color,
+            'is_bot:',
+            player.is_bot,
+            'full player:',
+            player
+          );
+
           return (
             <div key={player.name} className="sc-score-card">
               {/* Top row - player and total */}
@@ -83,6 +95,7 @@ const ScoringContent = ({
                   <PlayerAvatar
                     name={player.name}
                     isBot={player.is_bot}
+                    avatarColor={player.avatar_color}
                     className="sc-player-avatar"
                     size="medium"
                   />
