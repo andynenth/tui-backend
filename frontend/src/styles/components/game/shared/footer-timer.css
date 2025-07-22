@@ -77,8 +77,8 @@
 }
 
 /* Responsive adjustments */
-@media (max-height: 700px) {
+/* @media (max-height: 700px) {
   .footer-timer--footer {
     padding: 12px;
   }
-}
+} */

@@ -318,7 +318,7 @@
 }
 
 /* Responsive adjustments */
-@media (max-height: 700px) {
+/* @media (max-height: 700px) {
   .go-trophy {
     font-size: 48px;
   }
@@ -335,4 +335,4 @@
     margin-top: 16px;
     padding: 12px;
   }
-}
+} */

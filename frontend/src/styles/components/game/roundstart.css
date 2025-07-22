@@ -146,7 +146,7 @@
 }
 
 /* Responsive adjustments */
-@media (max-height: 700px) {
+/* @media (max-height: 700px) {
   .rs-round-number {
     font-size: 56px;
   }
@@ -166,4 +166,4 @@
   .rs-starter-section {
     margin-bottom: 30px;
   }
-}
+} */

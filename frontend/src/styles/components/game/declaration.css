@@ -343,10 +343,10 @@
 }
 
 /* Responsive adjustments */
-@media (max-height: 700px) {
+/* @media (max-height: 700px) {
   .dec-option {
     padding: 10px 4px;
     font-size: 14px;
   }
-}
+} */
 

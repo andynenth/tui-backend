@@ -314,7 +314,7 @@
 }
 
 /* Responsive adjustments */
-@media (max-height: 700px) {
+/* @media (max-height: 700px) {
   .sc-score-card {
     padding: 8px;
     margin-bottom: 4px;
@@ -323,4 +323,4 @@
   .sc-total-value {
     font-size: 18px;
   }
-}
+} */
