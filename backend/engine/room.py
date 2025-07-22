@@ -61,7 +61,7 @@ class Room:
         self.cleanup_scheduled = False  # Flag to prevent duplicate scheduling
 
         # Assign the host to the first slot (P1).
-        self.players[0] = Player(host_name, is_bot=False)
+        self.players[0] = Player(host_name, is_bot=False, available_colors=self.get_available_colors())
 
         # Assign bots to the remaining slots (P2-P4) by default.
         for i in range(1, 4):
@@ -84,6 +84,19 @@ class Room:
         """Generate unique operation ID for tracking"""
         self._last_operation_id += 1
         return f"{self.room_id}_{self._last_operation_id}"
+
+    def get_available_colors(self) -> list[str]:
+        """Get list of avatar colors not currently in use by human players"""
+        all_colors = ["blue", "purple", "orange", "red", "green", "teal", "pink", "yellow"]
+        used_colors = []
+        
+        for player in self.players:
+            if player and not player.is_bot and player.avatar_color:
+                used_colors.append(player.avatar_color)
+        
+        available = [color for color in all_colors if color not in used_colors]
+        logger.debug(f"[Room {self.room_id}] Available colors: {available}, Used: {used_colors}")
+        return available
 
     async def assign_slot_safe(self, slot: int, name_or_none: Optional[str]) -> dict:
         """
@@ -449,7 +462,7 @@ class Room:
             self.players[slot] = Player(name_or_none, is_bot=True)  # Assign a bot.
         else:
             self.players[slot] = Player(
-                name_or_none, is_bot=False
+                name_or_none, is_bot=False, available_colors=self.get_available_colors()
             )  # Assign a human player.
 
     def join_room(self, player_name: str) -> int:
@@ -472,13 +485,13 @@ class Room:
         # 2. Find the first truly empty slot (None).
         for i, player in enumerate(self.players):
             if player is None:
-                self.players[i] = Player(player_name, is_bot=False)
+                self.players[i] = Player(player_name, is_bot=False, available_colors=self.get_available_colors())
                 return i
 
         # 3. If no empty slots, find the first bot slot to replace.
         for i, player in enumerate(self.players):
             if player and player.is_bot:
-                self.players[i] = Player(player_name, is_bot=False)
+                self.players[i] = Player(player_name, is_bot=False, available_colors=self.get_available_colors())
                 return i
 
         # If no suitable slot was found (all slots are filled by other human players).
