@@ -6,8 +6,8 @@ const SettingsModal = ({ isOpen, onClose }) => {
   const { currentTheme, changeTheme } = useTheme();
   const [selectedTheme, setSelectedTheme] = useState(currentTheme.id);
 
-  // Show all available themes
-  const availableThemes = [themes.classic, themes.modern, themes.medieval];
+  // Show available themes (excluding modern)
+  const availableThemes = [themes.classic, themes.medieval];
 
   useEffect(() => {
     setSelectedTheme(currentTheme.id);
@@ -83,18 +83,16 @@ const SettingsModal = ({ isOpen, onClose }) => {
                   onClick={() => handleThemeSelect(theme.id)}
                 >
                   <div className="theme-option-preview">
-                    <span
-                      className="piece-char"
-                      style={{ color: theme.pieceColors.red }}
-                    >
-                      帥
-                    </span>
-                    <span
-                      className="piece-char"
-                      style={{ color: theme.pieceColors.black }}
-                    >
-                      將
-                    </span>
+                    <img
+                      src={theme.pieceAssets.GENERAL_RED}
+                      alt="Red General"
+                      className="piece-preview"
+                    />
+                    <img
+                      src={theme.pieceAssets.GENERAL_BLACK}
+                      alt="Black General"
+                      className="piece-preview"
+                    />
                   </div>
                   <div className="theme-option-info">
                     <div className="theme-option-name">{theme.name}</div>
@@ -135,7 +133,7 @@ const SettingsModal = ({ isOpen, onClose }) => {
             Cancel
           </button>
           <button className="btn-modal btn-apply" onClick={handleApply}>
-            Apply Changes
+            Apply
           </button>
         </div>
       </div>

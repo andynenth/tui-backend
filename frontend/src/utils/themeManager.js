@@ -8,7 +8,7 @@ export const themes = {
   classic: {
     id: 'classic',
     name: 'Classic',
-    description: 'Traditional red and black pieces with SVG graphics',
+    description: 'Traditional Chinese chess pieces with authentic calligraphy',
     pieceColors: {
       red: '#dc3545',
       black: '#495057',
@@ -46,7 +46,7 @@ export const themes = {
   medieval: {
     id: 'medieval',
     name: 'Medieval',
-    description: 'Medieval-style pieces with classic colors',
+    description: 'European medieval-style pieces with heraldic designs',
     pieceColors: {
       red: '#dc3545', // Same as classic red
       black: '#495057', // Same as classic black
@@ -67,7 +67,7 @@ export const themes = {
 // Get current theme from localStorage
 export const getTheme = () => {
   const saved = localStorage.getItem('liap-tui-theme');
-  return saved && themes[saved] ? themes[saved] : themes.classic;
+  return saved && themes[saved] ? themes[saved] : themes.medieval;
 };
 
 // Save theme
