@@ -4,7 +4,7 @@ import random
 
 
 class Player:
-    def __init__(self, name, is_bot=False):
+    def __init__(self, name, is_bot=False, available_colors=None):
         self.name = name  # Player's name (e.g., "P1", "P2", etc.)
         self.hand = (
             []
@@ -20,7 +20,7 @@ class Player:
         )
 
         # Add avatar color assignment
-        self.avatar_color = self._assign_avatar_color()
+        self.avatar_color = self._assign_avatar_color(available_colors)
 
         # Game statistics (cumulative across all rounds)
         self.turns_won = 0  # Total number of turns won in the game
@@ -31,14 +31,26 @@ class Player:
         self.disconnect_time = None  # When player disconnected
         self.original_is_bot = is_bot  # Store original bot state for reconnection
 
-    def _assign_avatar_color(self):
+    def _assign_avatar_color(self, available_colors=None):
         """Assign a random avatar color to human players"""
         if self.is_bot:
             return None  # Bots don't get colors
 
-        colors = ["blue", "purple", "orange", "red", "green", "teal", "pink", "yellow"]
-        color = random.choice(colors)
-        print(f"🎨 DEBUG: Assigned avatar color '{color}' to player '{self.name}'")
+        # Default colors
+        all_colors = ["blue", "purple", "orange", "red", "green", "teal", "pink", "yellow"]
+        
+        # Use available colors if provided, otherwise use all colors
+        colors_to_choose_from = available_colors if available_colors else all_colors
+        
+        if not colors_to_choose_from:
+            # Fallback: if no colors available, cycle through colors based on player name hash
+            color_index = hash(self.name) % len(all_colors)
+            color = all_colors[color_index]
+            print(f"🎨 DEBUG: Assigned fallback avatar color '{color}' to player '{self.name}' (all colors taken)")
+        else:
+            color = random.choice(colors_to_choose_from)
+            print(f"🎨 DEBUG: Assigned avatar color '{color}' to player '{self.name}' from {len(colors_to_choose_from)} available colors")
+        
         return color
 
     def has_red_general(self):
