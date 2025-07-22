@@ -720,22 +720,3 @@
   line-height: 1.2;
 }
 
-/* Responsive */
-@media (max-width: 480px) {
-  .tp-gameContainer {
-    max-width: calc(100vw - 20px);
-    max-height: calc(100vh - 20px);
-  }
-  
-  .tp-slide {
-    padding: 16px;
-  }
-  
-  .piece-row {
-    flex-wrap: wrap;
-  }
-  
-  .play-type-grid {
-    grid-template-columns: 1fr;
-  }
-}

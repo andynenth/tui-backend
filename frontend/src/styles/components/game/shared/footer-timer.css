@@ -77,13 +77,6 @@
 }
 
 /* Responsive adjustments */
-@media (max-width: 480px) {
-  .footer-timer--footer {
-    padding: 16px;
-    font-size: 13px;
-  }
-}
-
 @media (max-height: 700px) {
   .footer-timer--footer {
     padding: 12px;

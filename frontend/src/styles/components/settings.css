@@ -288,22 +288,3 @@
   border-color: rgba(173, 181, 189, 0.4);
 }
 
-/* Responsive adjustments */
-@media (max-width: 480px) {
-  .settings-modal {
-    width: 95%;
-    margin: 10px;
-  }
-  
-  .settings-modal-body {
-    padding: 20px;
-  }
-  
-  .theme-option {
-    padding: 12px;
-  }
-  
-  .theme-option-preview {
-    font-size: 24px;
-  }
-}

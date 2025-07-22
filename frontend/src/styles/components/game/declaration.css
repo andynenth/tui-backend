@@ -350,19 +350,3 @@
   }
 }
 
-/* Responsive adjustments for small screens like iPhone SE */
-@media (max-width: 380px) {
-  .dec-options {
-    gap: 2px;
-  }
-  
-  .dec-option {
-    padding: 8px 2px;
-    font-size: 13px;
-  }
-  
-  .dec-panel {
-    padding: 16px;
-    margin: 0 12px;
-  }
-}
