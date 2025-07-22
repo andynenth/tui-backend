@@ -137,10 +137,14 @@ const DeclarationContent = ({
           {players.map((player) => {
             // Debug logging to understand data structure
             console.log(
-              'Declaration player data:',
-              player,
-              'Type:',
-              typeof player
+              '🎨 Declaration player data:',
+              player.name,
+              'avatar_color:',
+              player.avatar_color,
+              'is_bot:',
+              player.is_bot,
+              'full player:',
+              player
             );
 
             // Players should now always be objects with is_bot property
@@ -160,6 +164,7 @@ const DeclarationContent = ({
                   name={displayName}
                   isBot={player.is_bot}
                   isThinking={isCurrentTurn && player.is_bot}
+                  avatarColor={player.avatar_color}
                   size="large"
                 />
                 <div className="dec-player-info">

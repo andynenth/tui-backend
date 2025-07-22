@@ -37,7 +37,9 @@ class Player:
             return None  # Bots don't get colors
 
         colors = ["blue", "purple", "orange", "red", "green", "teal", "pink", "yellow"]
-        return random.choice(colors)
+        color = random.choice(colors)
+        print(f"🎨 DEBUG: Assigned avatar color '{color}' to player '{self.name}'")
+        return color
 
     def has_red_general(self):
         """
