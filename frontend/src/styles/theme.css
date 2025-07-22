@@ -96,11 +96,8 @@
     sans-serif;
   --font-serif: 'Crimson Pro', serif;
 
-  /* Container Dimensions */
-  --container-width: min(100vw, 56.25vh);
-  --container-height: min(100vh, 177.78vw);
-  --container-max-width: 400px;
-  --container-max-height: 711px;
+  /* App viewport height - more reliable than 100vh on mobile */
+  --app-height: 100vh;
 
   /* Border Radius */
   --radius-sm: 6px;
