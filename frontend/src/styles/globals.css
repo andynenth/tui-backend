@@ -11,6 +11,7 @@
 @import './components/game/_variables.css';
 @import './components/game/_animations.css';
 @import './components/game/shared/player-avatar.css';
+@import './components/game/shared/player-colors.css';
 @import './components/game/shared/game-piece.css';
 @import './components/game/shared/piece-tray.css';
 @import './components/game/shared/footer-timer.css';

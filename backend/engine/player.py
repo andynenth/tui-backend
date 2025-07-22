@@ -1,5 +1,7 @@
 # backend/engine/player.py
 
+import random
+
 
 class Player:
     def __init__(self, name, is_bot=False):
@@ -17,6 +19,9 @@ class Player:
             0  # Counter for how many rounds this player has declared 0 in a row
         )
 
+        # Add avatar color assignment
+        self.avatar_color = self._assign_avatar_color()
+
         # Game statistics (cumulative across all rounds)
         self.turns_won = 0  # Total number of turns won in the game
         self.perfect_rounds = 0  # Number of rounds where declared == actual (non-zero)
@@ -25,6 +30,14 @@ class Player:
         self.is_connected = True  # Whether player is currently connected
         self.disconnect_time = None  # When player disconnected
         self.original_is_bot = is_bot  # Store original bot state for reconnection
+
+    def _assign_avatar_color(self):
+        """Assign a random avatar color to human players"""
+        if self.is_bot:
+            return None  # Bots don't get colors
+
+        colors = ["blue", "purple", "orange", "red", "green", "teal", "pink", "yellow"]
+        return random.choice(colors)
 
     def has_red_general(self):
         """

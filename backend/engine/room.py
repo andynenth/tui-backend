@@ -390,6 +390,9 @@ class Room:
                 "name": player.name,  # Always use player.name, regardless of whether it's a bot or human.
                 "is_bot": player.is_bot,
                 "is_host": slot_index == 0,  # Host is always in slot 0 (P1)
+                "avatar_color": getattr(
+                    player, "avatar_color", None
+                ),  # Add avatar color
             }
 
         return {
@@ -461,10 +464,10 @@ class Room:
         Raises:
             ValueError: If the player is already in the room or no available slots.
         """
-        # 1. Check if the player with this name is already in the room.
-        for i, player in enumerate(self.players):
-            if player and player.name == player_name and not player.is_bot:
-                raise ValueError(f"Player '{player_name}' is already in this room.")
+        # Allow duplicate names - players distinguished by color
+        # for i, player in enumerate(self.players):
+        #     if player and player.name == player_name and not player.is_bot:
+        #         raise ValueError(f"Player '{player_name}' is already in this room.")
 
         # 2. Find the first truly empty slot (None).
         for i, player in enumerate(self.players):

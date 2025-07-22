@@ -1,0 +1,48 @@
+/* Player avatar color variants */
+.player-avatar--color-blue {
+  background: linear-gradient(145deg, #EBF5FF 0%, #DBEAFE 100%);
+  border-color: #3B82F6;
+  color: #1E40AF;
+}
+
+.player-avatar--color-purple {
+  background: linear-gradient(145deg, #F3E8FF 0%, #E9D5FF 100%);
+  border-color: #8B5CF6;
+  color: #5B21B6;
+}
+
+.player-avatar--color-orange {
+  background: linear-gradient(145deg, #FFF7ED 0%, #FED7AA 100%);
+  border-color: #F97316;
+  color: #C2410C;
+}
+
+.player-avatar--color-red {
+  background: linear-gradient(145deg, #FEF2F2 0%, #FECACA 100%);
+  border-color: #EF4444;
+  color: #B91C1C;
+}
+
+.player-avatar--color-green {
+  background: linear-gradient(145deg, #F0FDF4 0%, #D1FAE5 100%);
+  border-color: #10B981;
+  color: #047857;
+}
+
+.player-avatar--color-teal {
+  background: linear-gradient(145deg, #F0FDFA 0%, #CCFBF1 100%);
+  border-color: #14B8A6;
+  color: #0F766E;
+}
+
+.player-avatar--color-pink {
+  background: linear-gradient(145deg, #FDF2F8 0%, #FCE7F3 100%);
+  border-color: #EC4899;
+  color: #BE185D;
+}
+
+.player-avatar--color-yellow {
+  background: linear-gradient(145deg, #FFFBEB 0%, #FEF3C7 100%);
+  border-color: #F59E0B;
+  color: #B45309;
+}
