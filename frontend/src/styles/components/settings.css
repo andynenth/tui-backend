@@ -175,9 +175,20 @@
 
 .theme-option-preview {
   display: flex;
-  gap: 8px;
-  font-size: 32px;
+  gap: 12px;
   margin-right: 16px;
+  align-items: center;
+}
+
+.piece-preview {
+  width: 45px;
+  height: 45px;
+  object-fit: contain;
+  transition: transform 0.2s ease;
+}
+
+.theme-option:hover .piece-preview {
+  transform: scale(1.1);
 }
 
 .piece-char {
