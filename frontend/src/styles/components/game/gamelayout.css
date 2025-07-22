@@ -132,7 +132,6 @@
     inset -1px 0 1px rgba(0, 0, 0, 0.02);
 }
 
-
 /* Phase title */
 .gl-phase-title {
   font-family: var(--font-serif);
@@ -161,7 +160,7 @@
 }
 
 /* Responsive adjustments */
-@media (max-height: 800px) {
+@media (max-height: 700px) {
   .gl-phase-header {
     padding: var(--game-spacing-lg) var(--game-spacing-lg)
       var(--game-spacing-md);
@@ -173,12 +172,5 @@
 
   .gl-phase-subtitle {
     font-size: 13px;
-  }
-}
-
-@media (max-width: 420px) {
-  .gl-game-container {
-    max-width: calc(100vw - 20px);
-    margin: 10px auto;
   }
 }

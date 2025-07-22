@@ -73,7 +73,7 @@
   --game-container-ratio: 0.5625; /* 9:16 ratio */
   --game-max-width: 400px;
   --game-max-height: 711px;
-  
+
   /* Piece Tray */
   --piece-tray-height: 200px; /* Default height for piece tray */
 
@@ -103,8 +103,8 @@
   }
 }
 
-@media (max-height: 600px) {
+/* @media (max-height: 600px) {
   :root {
     --piece-tray-height: 160px;
   }
-}
+} */

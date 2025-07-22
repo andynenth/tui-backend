@@ -67,24 +67,5 @@
   align-content: start;
 }
 
-/* Responsive adjustments */
-@media (max-width: 480px) {
-  .piece-tray {
-    padding: 16px;
-  }
-
-  .piece-tray__grid {
-    gap: 8px;
-    max-width: 300px;
-  }
-}
-
 @media (max-height: 700px) {
-  .piece-tray {
-    padding: 12px;
-  }
-
-  .piece-tray__grid {
-    min-height: 140px;
-  }
 }

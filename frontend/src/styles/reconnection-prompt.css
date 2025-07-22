@@ -209,26 +209,3 @@
   }
 }
 
-/* Mobile responsive */
-@media (max-width: 640px) {
-  .reconnection-prompt {
-    padding: 24px;
-  }
-
-  .reconnection-title {
-    font-size: 20px;
-  }
-
-  .reconnection-message {
-    font-size: 14px;
-  }
-
-  .reconnection-actions {
-    flex-direction: column;
-  }
-
-  .btn-primary,
-  .btn-secondary {
-    width: 100%;
-  }
-}
