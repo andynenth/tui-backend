@@ -107,7 +107,8 @@ function isExtendedStraight(pieces) {
     validGroups.some(
       (group) =>
         names.every((n) => group.includes(n)) &&
-        Object.values(counter).some((v) => v === 2)
+        Object.keys(counter).length === 3 &&
+        Object.values(counter).sort().join() === '1,1,2'
     )
   );
 }

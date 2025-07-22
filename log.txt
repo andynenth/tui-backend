@@ -1,106 +1,406 @@
-RecoveryService.ts:69 🔄 RecoveryService: Initialized
-ServiceIntegration.ts:82 🔗 ServiceIntegration: Initialized
-ServiceIntegration.ts:101 
-ServiceIntegration.ts:102 🎯 =============================================
-ServiceIntegration.ts:103 🚀 PHASE 1-4 ENTERPRISE ARCHITECTURE STARTING
-ServiceIntegration.ts:104 🎯 =============================================
-ServiceIntegration.ts:105 🔧 Initializing integrated service layer...
-ServiceIntegration.ts:601 ✅ NetworkService integrated
-ServiceIntegration.ts:609 ✅ GameService integrated
-ServiceIntegration.ts:617 ✅ RecoveryService integrated
-ServiceIntegration.ts:628 🩺 Health monitoring started (30000ms interval)
-ServiceIntegration.ts:129 
-ServiceIntegration.ts:130 ✅ =============================================
-ServiceIntegration.ts:131 🎉 PHASE 1-4 ARCHITECTURE FULLY OPERATIONAL!
-ServiceIntegration.ts:132 ✅ =============================================
-ServiceIntegration.ts:133 🔗 NetworkService: Advanced WebSocket with auto-reconnection
-ServiceIntegration.ts:136 🎮 GameService: React hooks with TypeScript state management
-ServiceIntegration.ts:139 🛠️ RecoveryService: Automatic error recovery and health monitoring
-ServiceIntegration.ts:142 🏢 Enterprise Features: Event sourcing, logging, metrics
-ServiceIntegration.ts:143 ✅ Service integration layer initialized successfully
-ServiceIntegration.ts:144 
-App.jsx:187 🎮 Found stored session: {roomId: '00B4AB', playerName: 'P2', sessionId: '00B4AB-P2-1753144447108', createdAt: 1753144447108, lastActivity: 1753144447108, …}
-App.jsx:192 🎮 Global services initialized
-App.jsx:121 🎮 Recovering session, navigating to game: 00B4AB
-App.jsx:121 🎮 Recovering session, navigating to game: 00B4AB
-GamePage.jsx:62 🎮 GamePage: Recovering session for P2 in room 00B4AB
-ServiceIntegration.ts:169 🔗 Connecting to room 00B4AB as P2...
-RecoveryService.ts:109 🔄 RecoveryService: Initialized tracking for room 00B4AB
-GameService.ts:1554 🎮 State Change: JOIN_ROOM_INIT
-GameService.ts:1555 Previous: {isConnected: false, roomId: null, playerName: null, phase: 'waiting', currentRound: 1, …}
-GameService.ts:1556 New: {isConnected: false, roomId: '00B4AB', playerName: 'P2', phase: 'waiting', currentRound: 1, …}
-GameService.ts:1557 Diff: {roomId: {…}, playerName: {…}, lastEventSequence: {…}}
-GameContext.jsx:36 🚀 GAME_CONTEXT: Phase 1-4 Enterprise Architecture initializing
-NetworkService.ts:371 🔗 Connection opened to room 00B4AB
-GameService.ts:1554 🎮 State Change: NETWORK_CONNECTED
-GameService.ts:1555 Previous: {isConnected: false, roomId: '00B4AB', playerName: 'P2', phase: 'waiting', currentRound: 1, …}
-GameService.ts:1556 New: {isConnected: true, roomId: '00B4AB', playerName: 'P2', phase: 'waiting', currentRound: 1, …}
-GameService.ts:1557 Diff: {isConnected: {…}, lastEventSequence: {…}}
-NetworkService.ts:150 🌐 NetworkService: Connected to room 00B4AB
-GameService.ts:1554 🎮 State Change: JOIN_ROOM_CONNECTED
-GameService.ts:1555 Previous: {isConnected: true, roomId: '00B4AB', playerName: 'P2', phase: 'waiting', currentRound: 1, …}
-GameService.ts:1556 New: {isConnected: true, roomId: '00B4AB', playerName: 'P2', phase: 'waiting', currentRound: 1, …}
-GameService.ts:1557 Diff: {lastEventSequence: {…}, gameStartTime: {…}}
-sessionStorage.js:37 Session stored: {roomId: '00B4AB', playerName: 'P2'}
-GameService.ts:114 🎮 GameService: Joined room 00B4AB as P2
-ServiceIntegration.ts:183 ✅ Successfully connected to room 00B4AB
-
-
----
-
-[0.38ms] [@tailwindcss/postcss] src/styles/components/game/gameover.css
-[0.37ms]   ↳ Quick bail check
-
-
-[0.07ms] [@tailwindcss/postcss] src/styles/toast-notifications.css
-[0.06ms]   ↳ Quick bail check
-
-
-[215.15ms] [@tailwindcss/postcss] src/styles/globals.css
-[  0.09ms]   ↳ Quick bail check
-[ 73.68ms]   ↳ Setup compiler
-[  0.59ms]     ↳ PostCSS AST -> Tailwind CSS AST
-[ 73.06ms]     ↳ Create compiler
-[  0.33ms]   ↳ Register full rebuild paths
-[  9.80ms]   ↳ Setup scanner
-[ 43.72ms]   ↳ Scan for candidates
-[ 20.14ms]   ↳ Register dependency messages
-[ 54.46ms]   ↳ Build utilities
-[  8.25ms]   ↳ Transform Tailwind CSS AST into PostCSS AST
-[  4.24ms]   ↳ Update PostCSS AST
-
-INFO:     127.0.0.1:59976 - "GET / HTTP/1.1" 200 OK
-INFO:     127.0.0.1:59976 - "GET /.well-known/appspecific/com.chrome.devtools.json HTTP/1.1" 404 Not Found
-INFO:     127.0.0.1:59977 - "GET /bundle.css HTTP/1.1" 200 OK
-INFO:     127.0.0.1:59976 - "GET /bundle.js HTTP/1.1" 200 OK
-INFO:     127.0.0.1:59976 - "GET /bundle.css.map HTTP/1.1" 200 OK
-INFO:     127.0.0.1:59976 - "GET /bundle.js.map HTTP/1.1" 200 OK
-2025-07-21 17:36:14 - backend.api.routes.ws - INFO - 🔌 [ROOM_DEBUG] New WebSocket connection to room '00B4AB', ws_id: aca0e63c-a69b-436c-a0db-f3e4249169d8 at 1753144574.259376
-2025-07-21 17:36:14 - backend.api.routes.ws - INFO - 🧹 [ROOM_DEBUG] Room cleanup task already running
-INFO:     ('127.0.0.1', 59983) - "WebSocket /ws/00B4AB" [accepted]
-INFO:     connection open
-INFO:     127.0.0.1:60005 - "GET /lobby HTTP/1.1" 404 Not Found
-INFO:     127.0.0.1:60005 - "GET /.well-known/appspecific/com.chrome.devtools.json HTTP/1.1" 404 Not Found
-2025-07-21 17:36:19 - backend.api.routes.ws - INFO - 🔌 [ROOM_DEBUG] Handling disconnect for room '00B4AB', websocket_id: aca0e63c-a69b-436c-a0db-f3e4249169d8 at 1753144579.9949172
-2025-07-21 17:36:19 - api.websocket.connection_manager - WARNING - WebSocket ID aca0e63c-a69b-436c-a0db-f3e4249169d8 not found in mapping. Current mappings: []
-2025-07-21 17:36:19 - backend.api.routes.ws - WARNING - No websocket_id found on websocket object for room 00B4AB
-2025-07-21 17:36:19 - backend.api.routes.ws - INFO - ⚠️ [ROOM_DEBUG] WebSocket disconnect without ID for room '00B4AB'
-2025-07-21 17:36:19 - backend.api.routes.ws - INFO - 🔌 [ROOM_DEBUG] WebSocket unregistered from room '00B4AB'
-INFO:     connection closed
-INFO:     127.0.0.1:60007 - "GET / HTTP/1.1" 304 Not Modified
-INFO:     127.0.0.1:60033 - "GET /bundle.css HTTP/1.1" 304 Not Modified
-INFO:     127.0.0.1:60007 - "GET /.well-known/appspecific/com.chrome.devtools.json HTTP/1.1" 404 Not Found
-INFO:     127.0.0.1:60035 - "GET /bundle.js HTTP/1.1" 304 Not Modified
-INFO:     127.0.0.1:60035 - "GET /bundle.css.map HTTP/1.1" 304 Not Modified
-INFO:     127.0.0.1:60035 - "GET /bundle.js.map HTTP/1.1" 304 Not Modified
-2025-07-21 17:36:26 - backend.api.routes.ws - INFO - 🔌 [ROOM_DEBUG] New WebSocket connection to room '00B4AB', ws_id: 4f700b68-fca1-48b1-bb58-ba626e0e442c at 1753144586.119825
-2025-07-21 17:36:26 - backend.api.routes.ws - INFO - 🧹 [ROOM_DEBUG] Room cleanup task already running
-INFO:     ('127.0.0.1', 60041) - "WebSocket /ws/00B4AB" [accepted]
-INFO:     connection open
-INFO:     127.0.0.1:60102 - "GET / HTTP/1.1" 200 OK
-INFO:     127.0.0.1:60102 - "GET /bundle.css HTTP/1.1" 200 OK
-INFO:     127.0.0.1:60103 - "GET /bundle.js HTTP/1.1" 200 OK
-2025-07-21 17:36:40 - backend.api.routes.ws - INFO - 🔌 [ROOM_DEBUG] New WebSocket connection to room '00B4AB', ws_id: afce3668-4d57-4d11-a920-587395da1d5c at 1753144600.598849
-2025-07-21 17:36:40 - backend.api.routes.ws - INFO - 🧹 [ROOM_DEBUG] Room cleanup task already running
-INFO:     ('127.0.0.1', 60105) - "WebSocket /ws/00B4AB" [accepted]
-INFO:     connection open
+2025-07-21 18:43:31 - game.state.round_start - INFO - Entering round_start phase
+2025-07-21 18:43:31 - game.state.round_start - INFO - 📋 Round 4 starting - Starter: Andy (accepted_redeal)
+2025-07-21 18:43:31 - game.state.round_start - INFO - 🎮 Phase Data Update: Round 4 starting with Andy
+2025-07-21 18:43:31 - game.state.round_start - INFO - 📤 Auto-broadcast: phase_change to room D104AB - Round 4 starting with Andy
+2025-07-21 18:43:31 - engine.state_machine.game_state_machine - INFO - Stored phase change event: GamePhase.PREPARATION -> GamePhase.ROUND_START
+2025-07-21 18:43:31 - engine.state_machine.game_state_machine - INFO - Notifying bot manager about phase round_start
+2025-07-21 18:43:34 - backend.api.routes.ws - INFO - 🧹 [ROOM_DEBUG] Cleanup iteration 112: Checking 1 rooms: ['D104AB']
+2025-07-21 18:43:36 - engine.state_machine.game_state_machine - INFO - Transitioning from GamePhase.ROUND_START to GamePhase.DECLARATION
+2025-07-21 18:43:36 - engine.state_machine.game_state_machine - INFO - 🔄 Transitioning: GamePhase.ROUND_START -> GamePhase.DECLARATION
+2025-07-21 18:43:36 - game.state.round_start - INFO - Exiting round_start phase
+2025-07-21 18:43:36 - game.state.round_start - INFO - 🎯 Round start display complete - transitioning to Declaration
+2025-07-21 18:43:36 - game.state.declaration - INFO - Entering declaration phase
+2025-07-21 18:43:36 - game.state.declaration - INFO - 🎮 Phase Data Update: Declaration phase setup - basic data
+2025-07-21 18:43:36 - game.state.declaration - INFO - 📤 Auto-broadcast: phase_change to room D104AB - Declaration phase setup - basic data
+2025-07-21 18:43:36 - game.state.declaration - INFO - 🎮 Phase Data Update: Declaration phase setup complete - current declarer: Andy
+2025-07-21 18:43:36 - game.state.declaration - INFO - 📤 Auto-broadcast: phase_change to room D104AB - Declaration phase setup complete - current declarer: Andy
+2025-07-21 18:43:36 - engine.state_machine.game_state_machine - INFO - Stored phase change event: GamePhase.ROUND_START -> GamePhase.DECLARATION
+2025-07-21 18:43:36 - engine.state_machine.game_state_machine - INFO - Notifying bot manager about phase declaration
+👤 Round starter is human or None: None
+2025-07-21 18:43:39 - backend.api.routes.ws - INFO - 🧹 [ROOM_DEBUG] Cleanup iteration 113: Checking 1 rooms: ['D104AB']
+2025-07-21 18:43:42 - game.state.declaration - INFO - 🎮 Phase Data Update: Player Andy declared 6
+2025-07-21 18:43:42 - game.state.declaration - INFO - 📤 Auto-broadcast: phase_change to room D104AB - Player Andy declared 6
+2025-07-21 18:43:42 - game.state.declaration - INFO - Player Andy declared 6
+2025-07-21 18:43:44 - backend.api.routes.ws - INFO - 🧹 [ROOM_DEBUG] Cleanup iteration 114: Checking 1 rooms: ['D104AB']
+2025-07-21 18:43:45 - game.state.declaration - INFO - 🎮 Phase Data Update: Player P2 declared 0
+2025-07-21 18:43:45 - game.state.declaration - INFO - 📤 Auto-broadcast: phase_change to room D104AB - Player P2 declared 0
+✅ Bot Bot 3 declared 1
+✅ Bot Bot 4 declared 1
+2025-07-21 18:43:47 - game.state.declaration - INFO - Player P2 declared 0
+2025-07-21 18:43:47 - game.state.declaration - INFO - 🎮 Phase Data Update: Player Bot 3 declared 1
+2025-07-21 18:43:47 - game.state.declaration - INFO - 📤 Auto-broadcast: phase_change to room D104AB - Player Bot 3 declared 1
+✅ Bot Bot 4 declared 1
+2025-07-21 18:43:48 - game.state.declaration - INFO - Player Bot 3 declared 1
+2025-07-21 18:43:48 - game.state.declaration - INFO - 🎮 Phase Data Update: Player Bot 4 declared 1
+2025-07-21 18:43:48 - game.state.declaration - INFO - 📤 Auto-broadcast: phase_change to room D104AB - Player Bot 4 declared 1
+2025-07-21 18:43:48 - game.state.declaration - INFO - Player Bot 4 declared 1
+2025-07-21 18:43:48 - engine.state_machine.game_state_machine - INFO - Transitioning from GamePhase.DECLARATION to GamePhase.TURN
+2025-07-21 18:43:48 - engine.state_machine.game_state_machine - INFO - 🔄 Transitioning: GamePhase.DECLARATION -> GamePhase.TURN
+2025-07-21 18:43:48 - game.state.declaration - INFO - Exiting declaration phase
+2025-07-21 18:43:48 - game.state.declaration - INFO - Copied declarations to game: {'Andy': 6, 'P2': 0, 'Bot 3': 1, 'Bot 4': 1}
+2025-07-21 18:43:48 - game.state.turn - INFO - Entering turn phase
+2025-07-21 18:43:48 - game.state.turn - INFO - 🎯 Turn phase starting - Andy starts first turn
+2025-07-21 18:43:48 - game.state.turn - INFO - 🎮 Phase Data Update: New turn 1 started with starter Andy
+2025-07-21 18:43:48 - game.state.turn - INFO - 📤 Auto-broadcast: phase_change to room D104AB - New turn 1 started with starter Andy
+2025-07-21 18:43:48 - game.state.turn - INFO - 🎯 New turn started - order: ['Andy', 'P2', 'Bot 3', 'Bot 4']
+2025-07-21 18:43:48 - engine.state_machine.game_state_machine - INFO - Stored phase change event: GamePhase.DECLARATION -> GamePhase.TURN
+2025-07-21 18:43:48 - engine.state_machine.game_state_machine - INFO - Notifying bot manager about phase turn
+2025-07-21 18:43:49 - game.state.turn - WARNING - Action declare not allowed in turn
+2025-07-21 18:43:49 - engine.state_machine.game_state_machine - INFO - Action rejected: declare from Bot 4
+2025-07-21 18:43:49 - backend.api.routes.ws - INFO - 🧹 [ROOM_DEBUG] Cleanup iteration 115: Checking 1 rooms: ['D104AB']
+2025-07-21 18:43:54 - backend.api.routes.ws - INFO - 🧹 [ROOM_DEBUG] Cleanup iteration 116: Checking 1 rooms: ['D104AB']
+2025-07-21 18:43:55 - game.state.turn - INFO - 🎲 Andy (starter) plays 6 pieces - setting required count
+2025-07-21 18:43:55 - game.state.turn - INFO - 🎲 Andy plays: [CHARIOT_RED(8), CHARIOT_RED(8), HORSE_RED(6), HORSE_RED(6), CANNON_RED(4), CANNON_RED(4)] (value: 36)
+2025-07-21 18:43:55 - game.state.turn - INFO - Removed 6 pieces from Andy's hand
+2025-07-21 18:43:55 - game.state.turn - INFO - 🎮 Phase Data Update: Player Andy played 6 pieces
+2025-07-21 18:43:55 - game.state.turn - INFO - 📤 Auto-broadcast: phase_change to room D104AB - Player Andy played 6 pieces
+2025-07-21 18:43:59 - backend.api.routes.ws - INFO - 🧹 [ROOM_DEBUG] Cleanup iteration 117: Checking 1 rooms: ['D104AB']
+2025-07-21 18:44:02 - game.state.turn - INFO - 🎲 P2 plays: [CANNON_BLACK(3), HORSE_BLACK(5), CHARIOT_BLACK(7), SOLDIER_RED(2), SOLDIER_RED(2), SOLDIER_RED(2)] (value: 21)
+2025-07-21 18:44:02 - game.state.turn - INFO - Removed 6 pieces from P2's hand
+2025-07-21 18:44:02 - game.state.turn - INFO - 🎮 Phase Data Update: Player P2 played 6 pieces
+2025-07-21 18:44:02 - game.state.turn - INFO - 📤 Auto-broadcast: phase_change to room D104AB - Player P2 played 6 pieces
+🤖 BOT has no valid play. Discards lowest pieces: SOLDIER, SOLDIER, SOLDIER, CANNON, ELEPHANT, ADVISOR
+    🔍 Final play: ['SOLDIER', 'SOLDIER', 'SOLDIER', 'CANNON', 'ELEPHANT', 'ADVISOR']
+    🧠 Hand left: ['SOLDIER', 'GENERAL', 'SOLDIER', 'CANNON', 'SOLDIER', 'ADVISOR', 'ELEPHANT', 'GENERAL']
+✅ Bot Bot 3 action queued - state machine will broadcast with correct next_player
+2025-07-21 18:44:04 - backend.api.routes.ws - INFO - 🧹 [ROOM_DEBUG] Cleanup iteration 118: Checking 1 rooms: ['D104AB']
+🤖 BOT has no valid play. Discards lowest pieces: SOLDIER, HORSE, CHARIOT, ELEPHANT, ELEPHANT, ELEPHANT
+    🔍 Final play: ['SOLDIER', 'HORSE', 'CHARIOT', 'ELEPHANT', 'ELEPHANT', 'ELEPHANT']
+    🧠 Hand left: ['ADVISOR', 'ELEPHANT', 'CHARIOT', 'SOLDIER', 'ELEPHANT', 'HORSE', 'ADVISOR', 'ELEPHANT']
+✅ Bot Bot 4 action queued - state machine will broadcast with correct next_player
+2025-07-21 18:44:05 - game.state.turn - INFO - 🎲 Bot 3 plays: [SOLDIER_BLACK(1), SOLDIER_BLACK(1), SOLDIER_RED(2), CANNON_BLACK(3), ELEPHANT_RED(10), ADVISOR_BLACK(11)] (value: 28)
+2025-07-21 18:44:05 - game.state.turn - INFO - Removed 6 pieces from Bot 3's hand
+2025-07-21 18:44:05 - game.state.turn - INFO - 🎮 Phase Data Update: Player Bot 3 played 6 pieces
+2025-07-21 18:44:05 - game.state.turn - INFO - 📤 Auto-broadcast: phase_change to room D104AB - Player Bot 3 played 6 pieces
+🤖 BOT has no valid play. Discards lowest pieces: SOLDIER, HORSE, CHARIOT, ELEPHANT, ELEPHANT, ELEPHANT
+    🔍 Final play: ['SOLDIER', 'HORSE', 'CHARIOT', 'ELEPHANT', 'ELEPHANT', 'ELEPHANT']
+    🧠 Hand left: ['ADVISOR', 'ELEPHANT', 'CHARIOT', 'SOLDIER', 'ELEPHANT', 'HORSE', 'ADVISOR', 'ELEPHANT']
+✅ Bot Bot 4 action queued - state machine will broadcast with correct next_player
+2025-07-21 18:44:07 - game.state.turn - INFO - 🎲 Bot 4 plays: [SOLDIER_RED(2), HORSE_BLACK(5), CHARIOT_BLACK(7), ELEPHANT_BLACK(9), ELEPHANT_BLACK(9), ELEPHANT_RED(10)] (value: 42)
+2025-07-21 18:44:07 - game.state.turn - INFO - Removed 6 pieces from Bot 4's hand
+2025-07-21 18:44:07 - game.state.turn - INFO - 🎮 Phase Data Update: Player Bot 4 played 6 pieces
+2025-07-21 18:44:07 - game.state.turn - INFO - 📤 Auto-broadcast: phase_change to room D104AB - Player Bot 4 played 6 pieces
+2025-07-21 18:44:07 - game.state.turn - INFO - 🎯 Round 4, Turn 1 winner: Andy with DOUBLE_STRAIGHT value 36
+2025-07-21 18:44:07 - game.state.turn - INFO - 💰 Andy won 6 piles this turn, total: 6 piles
+2025-07-21 18:44:07 - game.state.turn - INFO - 🏆 Andy wins turn and gets 6 piles
+2025-07-21 18:44:07 - game.state.turn - INFO - 🎮 Waiting 5s for piece flip animation to complete...
+2025-07-21 18:44:09 - backend.api.routes.ws - INFO - 🧹 [ROOM_DEBUG] Cleanup iteration 119: Checking 1 rooms: ['D104AB']
+2025-07-21 18:44:12 - game.state.turn - INFO - 🎮 Phase Data Update: Turn completed - winner: Andy
+2025-07-21 18:44:12 - game.state.turn - INFO - 📤 Auto-broadcast: phase_change to room D104AB - Turn completed - winner: Andy
+2025-07-21 18:44:12 - game.state.turn - INFO - 📤 Custom broadcast: turn_complete to room D104AB - Turn 1 completed - winner: Andy
+2025-07-21 18:44:12 - game.state.turn - INFO - 🚀 Enterprise broadcast turn completion - winner: Andy, turn piles awarded: {'Andy': 6, 'P2': 0, 'Bot 3': 0, 'Bot 4': 0}
+2025-07-21 18:44:12 - game.state.turn - INFO - 🔄 Updated turn order - new starter first: ['Andy', 'P2', 'Bot 3', 'Bot 4']
+2025-07-21 18:44:12 - game.state.turn - INFO - 🎯 Next turn starter: Andy
+2025-07-21 18:44:12 - game.state.turn - INFO - 🎯 Turn complete - auto-starting next turn in 7 seconds
+2025-07-21 18:44:14 - backend.api.routes.ws - INFO - 🧹 [ROOM_DEBUG] Cleanup iteration 120: Checking 1 rooms: ['D104AB']
+2025-07-21 18:44:19 - game.state.turn - INFO - 🎮 Phase Data Update: New turn 2 started with starter Andy
+2025-07-21 18:44:19 - game.state.turn - INFO - 📤 Auto-broadcast: phase_change to room D104AB - New turn 2 started with starter Andy
+2025-07-21 18:44:19 - game.state.turn - INFO - 🎯 New turn started - order: ['Andy', 'P2', 'Bot 3', 'Bot 4']
+2025-07-21 18:44:19 - game.state.turn - INFO - 🚀 Enterprise: New turn auto-started with automatic broadcasting
+2025-07-21 18:44:19 - game.state.turn - WARNING - Not Bot 4's turn - expected Andy
+2025-07-21 18:44:19 - game.state.turn - WARNING - Invalid action: GameAction(player_name='Bot 4', action_type=<ActionType.PLAY_PIECES: 'play_pieces'>, payload={'pieces': [SOLDIER_RED(2), HORSE_BLACK(5), CHARIOT_BLACK(7), ELEPHANT_BLACK(9), ELEPHANT_BLACK(9), ELEPHANT_RED(10)]}, timestamp=datetime.datetime(2025, 7, 21, 18, 44, 7, 9035), sequence_id=88, is_bot=True)
+2025-07-21 18:44:19 - backend.api.routes.ws - INFO - 🧹 [ROOM_DEBUG] Cleanup iteration 121: Checking 1 rooms: ['D104AB']
+2025-07-21 18:44:24 - backend.api.routes.ws - INFO - 🧹 [ROOM_DEBUG] Cleanup iteration 122: Checking 1 rooms: ['D104AB']
+2025-07-21 18:44:29 - backend.api.routes.ws - INFO - 🧹 [ROOM_DEBUG] Cleanup iteration 123: Checking 1 rooms: ['D104AB']
+2025-07-21 18:44:31 - game.state.turn - INFO - 🎲 Andy (starter) plays 1 pieces - setting required count
+2025-07-21 18:44:31 - game.state.turn - INFO - 🎲 Andy plays: [ADVISOR_BLACK(11)] (value: 11)
+2025-07-21 18:44:31 - game.state.turn - INFO - Removed 1 pieces from Andy's hand
+2025-07-21 18:44:31 - game.state.turn - INFO - 🎮 Phase Data Update: Player Andy played 1 pieces
+2025-07-21 18:44:31 - game.state.turn - INFO - 📤 Auto-broadcast: phase_change to room D104AB - Player Andy played 1 pieces
+2025-07-21 18:44:34 - backend.api.routes.ws - INFO - 🧹 [ROOM_DEBUG] Cleanup iteration 124: Checking 1 rooms: ['D104AB']
+2025-07-21 18:44:35 - game.state.turn - INFO - 🎲 P2 plays: [SOLDIER_BLACK(1)] (value: 1)
+2025-07-21 18:44:35 - game.state.turn - INFO - Removed 1 pieces from P2's hand
+2025-07-21 18:44:35 - game.state.turn - INFO - 🎮 Phase Data Update: Player P2 played 1 pieces
+2025-07-21 18:44:35 - game.state.turn - INFO - 📤 Auto-broadcast: phase_change to room D104AB - Player P2 played 1 pieces
+🤖 BOT chooses to play SINGLE (14 pts): GENERAL
+✅ Bot Bot 3 action queued - state machine will broadcast with correct next_player
+🤖 BOT chooses to play SINGLE (12 pts): ADVISOR
+✅ Bot Bot 4 action queued - state machine will broadcast with correct next_player
+2025-07-21 18:44:39 - game.state.turn - INFO - 🎲 Bot 3 plays: [GENERAL_RED(14)] (value: 14)
+2025-07-21 18:44:39 - game.state.turn - INFO - Removed 1 pieces from Bot 3's hand
+2025-07-21 18:44:39 - game.state.turn - INFO - 🎮 Phase Data Update: Player Bot 3 played 1 pieces
+2025-07-21 18:44:39 - game.state.turn - INFO - 📤 Auto-broadcast: phase_change to room D104AB - Player Bot 3 played 1 pieces
+2025-07-21 18:44:39 - backend.api.routes.ws - INFO - 🧹 [ROOM_DEBUG] Cleanup iteration 125: Checking 1 rooms: ['D104AB']
+🤖 BOT chooses to play SINGLE (12 pts): ADVISOR
+✅ Bot Bot 4 action queued - state machine will broadcast with correct next_player
+2025-07-21 18:44:40 - game.state.turn - INFO - 🎲 Bot 4 plays: [ADVISOR_RED(12)] (value: 12)
+2025-07-21 18:44:40 - game.state.turn - INFO - Removed 1 pieces from Bot 4's hand
+2025-07-21 18:44:40 - game.state.turn - INFO - 🎮 Phase Data Update: Player Bot 4 played 1 pieces
+2025-07-21 18:44:40 - game.state.turn - INFO - 📤 Auto-broadcast: phase_change to room D104AB - Player Bot 4 played 1 pieces
+2025-07-21 18:44:40 - game.state.turn - INFO - 🎯 Round 4, Turn 2 winner: Bot 3 with SINGLE value 14
+2025-07-21 18:44:40 - game.state.turn - INFO - 💰 Bot 3 won 1 piles this turn, total: 1 piles
+2025-07-21 18:44:40 - game.state.turn - INFO - 🏆 Bot 3 wins turn and gets 1 piles
+2025-07-21 18:44:40 - game.state.turn - INFO - 🎮 Waiting 5s for piece flip animation to complete...
+2025-07-21 18:44:44 - backend.api.routes.ws - INFO - 🧹 [ROOM_DEBUG] Cleanup iteration 126: Checking 1 rooms: ['D104AB']
+2025-07-21 18:44:45 - game.state.turn - INFO - 🎮 Phase Data Update: Turn completed - winner: Bot 3
+2025-07-21 18:44:45 - game.state.turn - INFO - 📤 Auto-broadcast: phase_change to room D104AB - Turn completed - winner: Bot 3
+2025-07-21 18:44:45 - game.state.turn - INFO - 📤 Custom broadcast: turn_complete to room D104AB - Turn 2 completed - winner: Bot 3
+2025-07-21 18:44:45 - game.state.turn - INFO - 🚀 Enterprise broadcast turn completion - winner: Bot 3, turn piles awarded: {'Bot 3': 1, 'Andy': 0, 'P2': 0, 'Bot 4': 0}
+2025-07-21 18:44:45 - game.state.turn - INFO - 🔄 Updated turn order - new starter first: ['Bot 3', 'Andy', 'P2', 'Bot 4']
+2025-07-21 18:44:45 - game.state.turn - INFO - 🎯 Next turn starter: Bot 3
+2025-07-21 18:44:45 - game.state.turn - INFO - 🎯 Turn complete - auto-starting next turn in 7 seconds
+2025-07-21 18:44:49 - backend.api.routes.ws - INFO - 🧹 [ROOM_DEBUG] Cleanup iteration 127: Checking 1 rooms: ['D104AB']
+2025-07-21 18:44:52 - game.state.turn - INFO - 🎮 Phase Data Update: New turn 3 started with starter Bot 3
+2025-07-21 18:44:52 - game.state.turn - INFO - 📤 Auto-broadcast: phase_change to room D104AB - New turn 3 started with starter Bot 3
+🤖 BOT chooses to play SINGLE (13 pts): GENERAL
+✅ Bot Bot 3 action queued - state machine will broadcast with correct next_player
+🤖 BOT chooses to play SINGLE (12 pts): ADVISOR
+✅ Bot Bot 4 action queued - state machine will broadcast with correct next_player
+2025-07-21 18:44:54 - game.state.turn - INFO - 🎯 New turn started - order: ['Bot 3', 'Bot 4', 'Andy', 'P2']
+2025-07-21 18:44:54 - game.state.turn - INFO - 🚀 Enterprise: New turn auto-started with automatic broadcasting
+2025-07-21 18:44:54 - game.state.turn - WARNING - Not Bot 4's turn - expected Bot 3
+2025-07-21 18:44:54 - game.state.turn - WARNING - Invalid action: GameAction(player_name='Bot 4', action_type=<ActionType.PLAY_PIECES: 'play_pieces'>, payload={'pieces': [ADVISOR_RED(12)]}, timestamp=datetime.datetime(2025, 7, 21, 18, 44, 40, 62017), sequence_id=93, is_bot=True)
+2025-07-21 18:44:54 - game.state.turn - INFO - 🎲 Bot 3 (starter) plays 1 pieces - setting required count
+2025-07-21 18:44:54 - game.state.turn - INFO - 🎲 Bot 3 plays: [GENERAL_BLACK(13)] (value: 13)
+2025-07-21 18:44:54 - game.state.turn - INFO - Removed 1 pieces from Bot 3's hand
+2025-07-21 18:44:54 - game.state.turn - INFO - 🎮 Phase Data Update: Player Bot 3 played 1 pieces
+2025-07-21 18:44:54 - game.state.turn - INFO - 📤 Auto-broadcast: phase_change to room D104AB - Player Bot 3 played 1 pieces
+2025-07-21 18:44:54 - backend.api.routes.ws - INFO - 🧹 [ROOM_DEBUG] Cleanup iteration 128: Checking 1 rooms: ['D104AB']
+🤖 BOT chooses to play SINGLE (12 pts): ADVISOR
+✅ Bot Bot 4 action queued - state machine will broadcast with correct next_player
+2025-07-21 18:44:56 - game.state.turn - INFO - 🎲 Bot 4 plays: [ADVISOR_RED(12)] (value: 12)
+2025-07-21 18:44:56 - game.state.turn - INFO - Removed 1 pieces from Bot 4's hand
+2025-07-21 18:44:56 - game.state.turn - INFO - 🎮 Phase Data Update: Player Bot 4 played 1 pieces
+2025-07-21 18:44:56 - game.state.turn - INFO - 📤 Auto-broadcast: phase_change to room D104AB - Player Bot 4 played 1 pieces
+2025-07-21 18:44:56 - game.state.turn - WARNING - Not Bot 4's turn - expected Andy
+2025-07-21 18:44:56 - game.state.turn - WARNING - Invalid action: GameAction(player_name='Bot 4', action_type=<ActionType.PLAY_PIECES: 'play_pieces'>, payload={'pieces': [ADVISOR_RED(12)]}, timestamp=datetime.datetime(2025, 7, 21, 18, 44, 55, 997158), sequence_id=96, is_bot=True)
+2025-07-21 18:44:59 - game.state.turn - INFO - 🎲 Andy plays: [SOLDIER_BLACK(1)] (value: 1)
+2025-07-21 18:44:59 - game.state.turn - INFO - Removed 1 pieces from Andy's hand
+2025-07-21 18:44:59 - game.state.turn - INFO - 🎮 Phase Data Update: Player Andy played 1 pieces
+2025-07-21 18:44:59 - game.state.turn - INFO - 📤 Auto-broadcast: phase_change to room D104AB - Player Andy played 1 pieces
+2025-07-21 18:44:59 - backend.api.routes.ws - INFO - 🧹 [ROOM_DEBUG] Cleanup iteration 129: Checking 1 rooms: ['D104AB']
+2025-07-21 18:45:02 - game.state.turn - INFO - 🎲 P2 plays: [SOLDIER_BLACK(1)] (value: 1)
+2025-07-21 18:45:02 - game.state.turn - INFO - Removed 1 pieces from P2's hand
+2025-07-21 18:45:02 - game.state.turn - INFO - 🎮 Phase Data Update: Player P2 played 1 pieces
+2025-07-21 18:45:02 - game.state.turn - INFO - 📤 Auto-broadcast: phase_change to room D104AB - Player P2 played 1 pieces
+2025-07-21 18:45:02 - game.state.turn - INFO - 🎯 Round 4, Turn 3 winner: Bot 3 with SINGLE value 13
+2025-07-21 18:45:02 - game.state.turn - INFO - 💰 Bot 3 won 1 piles this turn, total: 2 piles
+2025-07-21 18:45:02 - game.state.turn - INFO - 🏆 Bot 3 wins turn and gets 1 piles
+2025-07-21 18:45:02 - game.state.turn - INFO - 🎮 Waiting 5s for piece flip animation to complete...
+2025-07-21 18:45:04 - backend.api.routes.ws - INFO - 🧹 [ROOM_DEBUG] Cleanup iteration 130: Checking 1 rooms: ['D104AB']
+2025-07-21 18:45:07 - game.state.turn - INFO - 🎮 Phase Data Update: Turn completed - winner: Bot 3
+2025-07-21 18:45:07 - game.state.turn - INFO - 📤 Auto-broadcast: phase_change to room D104AB - Turn completed - winner: Bot 3
+2025-07-21 18:45:07 - game.state.turn - INFO - 📤 Custom broadcast: turn_complete to room D104AB - Turn 3 completed - winner: Bot 3
+2025-07-21 18:45:07 - game.state.turn - INFO - 🚀 Enterprise broadcast turn completion - winner: Bot 3, turn piles awarded: {'Bot 3': 1, 'Andy': 0, 'P2': 0, 'Bot 4': 0}
+2025-07-21 18:45:07 - game.state.turn - INFO - 🏁 All hands are now empty - round complete. Last turn winner: Bot 3
+2025-07-21 18:45:07 - game.state.turn - INFO - 🏁 Turn complete - transitioning to turn_results
+2025-07-21 18:45:07 - engine.state_machine.game_state_machine - INFO - Transitioning from GamePhase.TURN to GamePhase.TURN_RESULTS
+2025-07-21 18:45:07 - engine.state_machine.game_state_machine - INFO - 🔄 Transitioning: GamePhase.TURN -> GamePhase.TURN_RESULTS
+2025-07-21 18:45:07 - game.state.turn - INFO - Exiting turn phase
+2025-07-21 18:45:07 - game.state.turn - INFO - 🏁 Turn phase complete - all hands empty
+2025-07-21 18:45:07 - game.state.turn_results - INFO - Entering turn_results phase
+2025-07-21 18:45:07 - game.state.turn_results - INFO - 🏆 Turn results phase starting - displaying turn outcome
+2025-07-21 18:45:07 - game.state.turn_results - INFO - ℹ️ TURNS_WON_DEBUG: No turn winner to update
+2025-07-21 18:45:07 - game.state.turn_results - INFO - 🎮 Phase Data Update: Displaying turn results - winner: None
+2025-07-21 18:45:07 - game.state.turn_results - INFO - 📤 Auto-broadcast: phase_change to room D104AB - Displaying turn results - winner: None
+2025-07-21 18:45:07 - engine.state_machine.game_state_machine - INFO - Stored phase change event: GamePhase.TURN -> GamePhase.TURN_RESULTS
+2025-07-21 18:45:07 - engine.state_machine.game_state_machine - INFO - Notifying bot manager about phase turn_results
+2025-07-21 18:45:09 - backend.api.routes.ws - INFO - 🧹 [ROOM_DEBUG] Cleanup iteration 131: Checking 1 rooms: ['D104AB']
+2025-07-21 18:45:14 - game.state.turn_results - INFO - 🎮 Phase Data Update: Auto-transition triggered after 7.0s display
+2025-07-21 18:45:14 - game.state.turn_results - INFO - 📤 Auto-broadcast: phase_change to room D104AB - Auto-transition triggered after 7.0s display
+2025-07-21 18:45:14 - backend.api.routes.ws - INFO - 🧹 [ROOM_DEBUG] Cleanup iteration 132: Checking 1 rooms: ['D104AB']
+2025-07-21 18:45:14 - game.state.turn_results - INFO - 🏆 Turn results complete - transitioning to GamePhase.SCORING
+2025-07-21 18:45:14 - engine.state_machine.game_state_machine - INFO - Transitioning from GamePhase.TURN_RESULTS to GamePhase.SCORING
+2025-07-21 18:45:14 - engine.state_machine.game_state_machine - INFO - 🔄 Transitioning: GamePhase.TURN_RESULTS -> GamePhase.SCORING
+2025-07-21 18:45:14 - game.state.turn_results - INFO - Exiting turn_results phase
+2025-07-21 18:45:14 - game.state.turn_results - INFO - 🏆 Cleaning up turn results phase
+2025-07-21 18:45:14 - game.state.scoring - INFO - Entering scoring phase
+🔄 SCORING_SETUP_DEBUG: Reset display_delay_complete = False
+2025-07-21 18:45:14 - game.state.scoring - INFO - Setting up Scoring Phase
+🗳️ DECLARATION_DEBUG: game.player_declarations = {'Andy': 6, 'P2': 0, 'Bot 3': 1, 'Bot 4': 1}
+📋 SCORING_FIX_DEBUG: Andy - declared: 6, actual: 6
+2025-07-21 18:45:14 - game.state.scoring - INFO - 🎯 PERFECT_ROUNDS_DEBUG: Andy had perfect round! perfect_rounds: 2 -> 3
+🏆 SCORING_DEBUG: Andy scoring data:
+   📋 Declared: 6, Actual: 6
+   📊 Base Score: 11, Multiplier: 2x, Final: 22
+   💯 Total Score: 41
+2025-07-21 18:45:14 - game.state.scoring - INFO - Player Andy: declared 6, actual 6, base 11, final 22 (×2), total 41
+📋 SCORING_FIX_DEBUG: P2 - declared: 0, actual: 0
+🏆 SCORING_DEBUG: P2 scoring data:
+   📋 Declared: 0, Actual: 0
+   📊 Base Score: 3, Multiplier: 2x, Final: 6
+   💯 Total Score: 12
+2025-07-21 18:45:14 - game.state.scoring - INFO - Player P2: declared 0, actual 0, base 3, final 6 (×2), total 12
+📋 SCORING_FIX_DEBUG: Bot 3 - declared: 1, actual: 2
+🏆 SCORING_DEBUG: Bot 3 scoring data:
+   📋 Declared: 1, Actual: 2
+   📊 Base Score: -1, Multiplier: 2x, Final: -2
+   💯 Total Score: 4
+2025-07-21 18:45:14 - game.state.scoring - INFO - Player Bot 3: declared 1, actual 2, base -1, final -2 (×2), total 4
+📋 SCORING_FIX_DEBUG: Bot 4 - declared: 1, actual: 0
+🏆 SCORING_DEBUG: Bot 4 scoring data:
+   📋 Declared: 1, Actual: 0
+   📊 Base Score: -1, Multiplier: 2x, Final: -2
+   💯 Total Score: -11
+2025-07-21 18:45:14 - game.state.scoring - INFO - Player Bot 4: declared 1, actual 0, base -1, final -2 (×2), total -11
+🚀 SCORING_BROADCAST_DEBUG: Broadcasting scoring data:
+   📊 Round scores: {'Andy': {'declared': 6, 'actual': 6, 'base_score': 11, 'bonus': 5, 'hit_value': 6, 'multiplier': 2, 'final_score': 22, 'total_score': 41}, 'P2': {'declared': 0, 'actual': 0, 'base_score': 3, 'bonus': 3, 'hit_value': 0, 'multiplier': 2, 'final_score': 6, 'total_score': 12}, 'Bot 3': {'declared': 1, 'actual': 2, 'base_score': -1, 'bonus': 0, 'hit_value': -1, 'multiplier': 2, 'final_score': -2, 'total_score': 4}, 'Bot 4': {'declared': 1, 'actual': 0, 'base_score': -1, 'bonus': 0, 'hit_value': -1, 'multiplier': 2, 'final_score': -2, 'total_score': -11}}
+   🏁 Game complete: False
+   🏆 Winners: []
+🚀 SCORING_BROADCAST_DEBUG: Also sending:
+   💯 Total scores: {'Andy': 41, 'P2': 12, 'Bot 3': 4, 'Bot 4': -11}
+   👥 Scoring players data: [{'name': 'Andy', 'is_bot': False, 'pile_count': 6, 'captured_piles': 6}, {'name': 'P2', 'is_bot': False, 'pile_count': 0, 'captured_piles': 0}, {'name': 'Bot 3', 'is_bot': True, 'pile_count': 1, 'captured_piles': 2}, {'name': 'Bot 4', 'is_bot': True, 'pile_count': 1, 'captured_piles': 0}]
+2025-07-21 18:45:14 - game.state.scoring - INFO - 🎮 Phase Data Update: Scoring calculated for round 4
+2025-07-21 18:45:14 - game.state.scoring - INFO - 📤 Auto-broadcast: phase_change to room D104AB - Scoring calculated for round 4
+2025-07-21 18:45:14 - game.state.scoring - INFO - Scoring complete. Game over: False
+2025-07-21 18:45:14 - engine.state_machine.game_state_machine - INFO - Stored phase change event: GamePhase.TURN_RESULTS -> GamePhase.SCORING
+2025-07-21 18:45:14 - engine.state_machine.game_state_machine - INFO - Notifying bot manager about phase scoring
+⏰ SCORING_DELAY_DEBUG: Starting 7-second display delay...
+2025-07-21 18:45:19 - backend.api.routes.ws - INFO - 🧹 [ROOM_DEBUG] Cleanup iteration 133: Checking 1 rooms: ['D104AB']
+⏰ SCORING_DELAY_DEBUG: 7-second delay complete - setting display_delay_complete = True
+2025-07-21 18:45:21 - game.state.scoring - INFO - Scoring display delay complete - ready to transition
+2025-07-21 18:45:21 - engine.state_machine.game_state_machine - INFO - Transitioning from GamePhase.SCORING to GamePhase.PREPARATION
+2025-07-21 18:45:21 - engine.state_machine.game_state_machine - INFO - 🔄 Transitioning: GamePhase.SCORING -> GamePhase.PREPARATION
+2025-07-21 18:45:21 - game.state.scoring - INFO - Exiting scoring phase
+2025-07-21 18:45:21 - game.state.scoring - INFO - 🎯 Next round starter set to last turn winner: Bot 3
+2025-07-21 18:45:21 - game.state.scoring - INFO - Prepared for round 5
+2025-07-21 18:45:21 - game.state.scoring - INFO - Prepared for next round
+2025-07-21 18:45:21 - game.state.preparation - INFO - Entering preparation phase
+2025-07-21 18:45:21 - game.state.preparation - INFO - 🎴 Preparation phase starting - dealing cards
+2025-07-21 18:45:21 - game.state.preparation - INFO - 🎮 Phase Data Update: Starting to deal cards
+2025-07-21 18:45:21 - game.state.preparation - INFO - 📤 Auto-broadcast: phase_change to room D104AB - Starting to deal cards
+2025-07-21 18:45:21 - game.state.preparation - INFO - 🔍 Weak hand check - Found 0 weak players: set()
+2025-07-21 18:45:21 - game.state.preparation - INFO - ✅ No weak hands - keeping existing starter: Bot 3 (reason: won_last_turn)
+2025-07-21 18:45:23 - game.state.preparation - INFO - 🎮 Phase Data Update: Cards dealt, checking for weak hands
+2025-07-21 18:45:23 - game.state.preparation - INFO - 📤 Auto-broadcast: phase_change to room D104AB - Cards dealt, checking for weak hands
+2025-07-21 18:45:23 - engine.state_machine.game_state_machine - INFO - Stored phase change event: GamePhase.SCORING -> GamePhase.PREPARATION
+2025-07-21 18:45:23 - engine.state_machine.game_state_machine - INFO - Notifying bot manager about phase preparation
+2025-07-21 18:45:24 - engine.state_machine.game_state_machine - INFO - Transitioning from GamePhase.PREPARATION to GamePhase.ROUND_START
+2025-07-21 18:45:24 - engine.state_machine.game_state_machine - INFO - 🔄 Transitioning: GamePhase.PREPARATION -> GamePhase.ROUND_START
+2025-07-21 18:45:24 - game.state.preparation - INFO - Exiting preparation phase
+2025-07-21 18:45:24 - game.state.preparation - INFO - 🎯 Round starter already set: Bot 3
+2025-07-21 18:45:24 - game.state.preparation - INFO - 📋 Preparation complete - Starter: Bot 3, Multiplier: 1x
+2025-07-21 18:45:24 - game.state.round_start - INFO - Entering round_start phase
+2025-07-21 18:45:24 - game.state.round_start - INFO - 📋 Round 5 starting - Starter: Bot 3 (won_last_turn)
+2025-07-21 18:45:24 - game.state.round_start - INFO - 🎮 Phase Data Update: Round 5 starting with Bot 3
+2025-07-21 18:45:24 - game.state.round_start - INFO - 📤 Auto-broadcast: phase_change to room D104AB - Round 5 starting with Bot 3
+2025-07-21 18:45:24 - engine.state_machine.game_state_machine - INFO - Stored phase change event: GamePhase.PREPARATION -> GamePhase.ROUND_START
+2025-07-21 18:45:24 - engine.state_machine.game_state_machine - INFO - Notifying bot manager about phase round_start
+2025-07-21 18:45:24 - backend.api.routes.ws - INFO - 🧹 [ROOM_DEBUG] Cleanup iteration 134: Checking 1 rooms: ['D104AB']
+2025-07-21 18:45:29 - engine.state_machine.game_state_machine - INFO - Transitioning from GamePhase.ROUND_START to GamePhase.DECLARATION
+2025-07-21 18:45:29 - engine.state_machine.game_state_machine - INFO - 🔄 Transitioning: GamePhase.ROUND_START -> GamePhase.DECLARATION
+2025-07-21 18:45:29 - game.state.round_start - INFO - Exiting round_start phase
+2025-07-21 18:45:29 - game.state.round_start - INFO - 🎯 Round start display complete - transitioning to Declaration
+2025-07-21 18:45:29 - game.state.declaration - INFO - Entering declaration phase
+2025-07-21 18:45:29 - game.state.declaration - INFO - 🎮 Phase Data Update: Declaration phase setup - basic data
+2025-07-21 18:45:29 - game.state.declaration - INFO - 📤 Auto-broadcast: phase_change to room D104AB - Declaration phase setup - basic data
+2025-07-21 18:45:29 - game.state.declaration - INFO - 🎮 Phase Data Update: Declaration phase setup complete - current declarer: Bot 3
+2025-07-21 18:45:29 - game.state.declaration - INFO - 📤 Auto-broadcast: phase_change to room D104AB - Declaration phase setup complete - current declarer: Bot 3
+2025-07-21 18:45:29 - backend.api.routes.ws - INFO - 🧹 [ROOM_DEBUG] Cleanup iteration 135: Checking 1 rooms: ['D104AB']
+✅ Bot Bot 3 declared 3
+✅ Bot Bot 4 declared 1
+2025-07-21 18:45:31 - engine.state_machine.game_state_machine - INFO - Stored phase change event: GamePhase.ROUND_START -> GamePhase.DECLARATION
+2025-07-21 18:45:31 - engine.state_machine.game_state_machine - INFO - Notifying bot manager about phase declaration
+2025-07-21 18:45:32 - game.state.declaration - INFO - 🎮 Phase Data Update: Player Bot 3 declared 3
+2025-07-21 18:45:32 - game.state.declaration - INFO - 📤 Auto-broadcast: phase_change to room D104AB - Player Bot 3 declared 3
+✅ Bot Bot 4 declared 1
+2025-07-21 18:45:33 - game.state.declaration - INFO - Player Bot 3 declared 3
+2025-07-21 18:45:33 - game.state.declaration - INFO - 🎮 Phase Data Update: Player Bot 4 declared 1
+2025-07-21 18:45:33 - game.state.declaration - INFO - 📤 Auto-broadcast: phase_change to room D104AB - Player Bot 4 declared 1
+2025-07-21 18:45:33 - game.state.declaration - INFO - Player Bot 4 declared 1
+2025-07-21 18:45:33 - game.state.declaration - WARNING - Wrong player turn: Bot 4, expected: Andy
+2025-07-21 18:45:33 - game.state.declaration - WARNING - Invalid action: GameAction(player_name='Bot 4', action_type=<ActionType.DECLARE: 'declare'>, payload={'value': 1}, timestamp=datetime.datetime(2025, 7, 21, 18, 45, 33, 199865), sequence_id=101, is_bot=True)
+2025-07-21 18:45:34 - backend.api.routes.ws - INFO - 🧹 [ROOM_DEBUG] Cleanup iteration 136: Checking 1 rooms: ['D104AB']
+2025-07-21 18:45:39 - backend.api.routes.ws - INFO - 🧹 [ROOM_DEBUG] Cleanup iteration 137: Checking 1 rooms: ['D104AB']
+2025-07-21 18:45:44 - backend.api.routes.ws - INFO - 🧹 [ROOM_DEBUG] Cleanup iteration 138: Checking 1 rooms: ['D104AB']
+2025-07-21 18:45:49 - backend.api.routes.ws - INFO - 🧹 [ROOM_DEBUG] Cleanup iteration 139: Checking 1 rooms: ['D104AB']
+2025-07-21 18:45:54 - backend.api.routes.ws - INFO - 🧹 [ROOM_DEBUG] Cleanup iteration 140: Checking 1 rooms: ['D104AB']
+2025-07-21 18:45:57 - game.state.declaration - INFO - 🎮 Phase Data Update: Player Andy declared 4
+2025-07-21 18:45:57 - game.state.declaration - INFO - 📤 Auto-broadcast: phase_change to room D104AB - Player Andy declared 4
+2025-07-21 18:45:57 - game.state.declaration - INFO - Player Andy declared 4
+2025-07-21 18:45:59 - backend.api.routes.ws - INFO - 🧹 [ROOM_DEBUG] Cleanup iteration 141: Checking 1 rooms: ['D104AB']
+2025-07-21 18:46:04 - backend.api.routes.ws - INFO - 🧹 [ROOM_DEBUG] Cleanup iteration 142: Checking 1 rooms: ['D104AB']
+2025-07-21 18:46:09 - backend.api.routes.ws - INFO - 🧹 [ROOM_DEBUG] Cleanup iteration 143: Checking 1 rooms: ['D104AB']
+2025-07-21 18:46:14 - backend.api.routes.ws - INFO - 🧹 [ROOM_DEBUG] Cleanup iteration 144: Checking 1 rooms: ['D104AB']
+2025-07-21 18:46:19 - backend.api.routes.ws - INFO - 🧹 [ROOM_DEBUG] Cleanup iteration 145: Checking 1 rooms: ['D104AB']
+2025-07-21 18:46:24 - backend.api.routes.ws - INFO - 🧹 [ROOM_DEBUG] Cleanup iteration 146: Checking 1 rooms: ['D104AB']
+2025-07-21 18:46:28 - game.state.declaration - INFO - 🎮 Phase Data Update: Player P2 declared 2
+2025-07-21 18:46:28 - game.state.declaration - INFO - 📤 Auto-broadcast: phase_change to room D104AB - Player P2 declared 2
+2025-07-21 18:46:28 - game.state.declaration - INFO - Player P2 declared 2
+2025-07-21 18:46:28 - engine.state_machine.game_state_machine - INFO - Transitioning from GamePhase.DECLARATION to GamePhase.TURN
+2025-07-21 18:46:28 - engine.state_machine.game_state_machine - INFO - 🔄 Transitioning: GamePhase.DECLARATION -> GamePhase.TURN
+2025-07-21 18:46:28 - game.state.declaration - INFO - Exiting declaration phase
+2025-07-21 18:46:28 - game.state.declaration - INFO - Copied declarations to game: {'Bot 3': 3, 'Bot 4': 1, 'Andy': 4, 'P2': 2}
+2025-07-21 18:46:28 - game.state.turn - INFO - Entering turn phase
+2025-07-21 18:46:28 - game.state.turn - INFO - 🎯 Turn phase starting - Bot 3 starts first turn
+2025-07-21 18:46:28 - game.state.turn - INFO - 🎮 Phase Data Update: New turn 1 started with starter Bot 3
+2025-07-21 18:46:28 - game.state.turn - INFO - 📤 Auto-broadcast: phase_change to room D104AB - New turn 1 started with starter Bot 3
+🤖 BOT chooses to play EXTENDED_STRAIGHT (40 pts): ADVISOR, ELEPHANT, ADVISOR, ELEPHANT
+✅ Bot Bot 3 action queued - state machine will broadcast with correct next_player
+2025-07-21 18:46:29 - backend.api.routes.ws - INFO - 🧹 [ROOM_DEBUG] Cleanup iteration 147: Checking 1 rooms: ['D104AB']
+🤖 BOT chooses to play SINGLE (12 pts): ADVISOR
+✅ Bot Bot 4 action queued - state machine will broadcast with correct next_player
+2025-07-21 18:46:30 - game.state.turn - INFO - 🎯 New turn started - order: ['Bot 3', 'Bot 4', 'Andy', 'P2']
+2025-07-21 18:46:30 - engine.state_machine.game_state_machine - INFO - Stored phase change event: GamePhase.DECLARATION -> GamePhase.TURN
+2025-07-21 18:46:30 - engine.state_machine.game_state_machine - INFO - Notifying bot manager about phase turn
+2025-07-21 18:46:30 - game.state.turn - INFO - 🎲 Bot 3 (starter) plays 4 pieces - setting required count
+2025-07-21 18:46:30 - game.state.turn - INFO - 🎲 Bot 3 plays: [ADVISOR_BLACK(11), ELEPHANT_BLACK(9), ADVISOR_BLACK(11), ELEPHANT_BLACK(9)] (value: 40)
+2025-07-21 18:46:30 - game.state.turn - INFO - Removed 4 pieces from Bot 3's hand
+2025-07-21 18:46:30 - game.state.turn - INFO - 🎮 Phase Data Update: Player Bot 3 played 4 pieces
+2025-07-21 18:46:30 - game.state.turn - INFO - 📤 Auto-broadcast: phase_change to room D104AB - Player Bot 3 played 4 pieces
+🤖 BOT has no valid play. Discards lowest pieces: SOLDIER, SOLDIER, SOLDIER, SOLDIER
+    🔍 Final play: ['SOLDIER', 'SOLDIER', 'SOLDIER', 'SOLDIER']
+    🧠 Hand left: ['SOLDIER', 'SOLDIER', 'CHARIOT', 'CANNON', 'SOLDIER', 'ELEPHANT', 'ADVISOR', 'SOLDIER']
+✅ Bot Bot 4 action queued - state machine will broadcast with correct next_player
+2025-07-21 18:46:32 - game.state.turn - WARNING - Must play 4 pieces, got 1
+2025-07-21 18:46:32 - game.state.turn - WARNING - Invalid action: GameAction(player_name='Bot 4', action_type=<ActionType.PLAY_PIECES: 'play_pieces'>, payload={'pieces': [ADVISOR_RED(12)]}, timestamp=datetime.datetime(2025, 7, 21, 18, 46, 30, 174938), sequence_id=105, is_bot=True)
+2025-07-21 18:46:32 - game.state.turn - INFO - 🎲 Bot 4 plays: [SOLDIER_BLACK(1), SOLDIER_BLACK(1), SOLDIER_BLACK(1), SOLDIER_RED(2)] (value: 5)
+2025-07-21 18:46:32 - game.state.turn - INFO - Removed 4 pieces from Bot 4's hand
+2025-07-21 18:46:32 - game.state.turn - INFO - 🎮 Phase Data Update: Player Bot 4 played 4 pieces
+2025-07-21 18:46:32 - game.state.turn - INFO - 📤 Auto-broadcast: phase_change to room D104AB - Player Bot 4 played 4 pieces
+2025-07-21 18:46:34 - backend.api.routes.ws - INFO - 🧹 [ROOM_DEBUG] Cleanup iteration 148: Checking 1 rooms: ['D104AB']
+2025-07-21 18:46:39 - backend.api.routes.ws - INFO - 🧹 [ROOM_DEBUG] Cleanup iteration 149: Checking 1 rooms: ['D104AB']
+2025-07-21 18:46:44 - backend.api.routes.ws - INFO - 🧹 [ROOM_DEBUG] Cleanup iteration 150: Checking 1 rooms: ['D104AB']
+2025-07-21 18:46:49 - backend.api.routes.ws - INFO - 🧹 [ROOM_DEBUG] Cleanup iteration 151: Checking 1 rooms: ['D104AB']
+2025-07-21 18:46:54 - backend.api.routes.ws - INFO - 🧹 [ROOM_DEBUG] Cleanup iteration 152: Checking 1 rooms: ['D104AB']
+2025-07-21 18:46:59 - game.state.turn - INFO - 🎲 Andy plays: [HORSE_RED(6), ELEPHANT_RED(10), HORSE_RED(6), CHARIOT_BLACK(7)] (value: 29)
+2025-07-21 18:46:59 - game.state.turn - INFO - Removed 4 pieces from Andy's hand
+2025-07-21 18:46:59 - game.state.turn - INFO - 🎮 Phase Data Update: Player Andy played 4 pieces
+2025-07-21 18:46:59 - game.state.turn - INFO - 📤 Auto-broadcast: phase_change to room D104AB - Player Andy played 4 pieces
+2025-07-21 18:46:59 - backend.api.routes.ws - INFO - 🧹 [ROOM_DEBUG] Cleanup iteration 153: Checking 1 rooms: ['D104AB']
+2025-07-21 18:47:04 - backend.api.routes.ws - INFO - 🧹 [ROOM_DEBUG] Cleanup iteration 154: Checking 1 rooms: ['D104AB']
+2025-07-21 18:47:09 - backend.api.routes.ws - INFO - 🧹 [ROOM_DEBUG] Cleanup iteration 155: Checking 1 rooms: ['D104AB']
+2025-07-21 18:47:13 - game.state.turn - INFO - 🎲 P2 plays: [HORSE_BLACK(5), CANNON_BLACK(3), SOLDIER_RED(2), SOLDIER_RED(2)] (value: 12)
+2025-07-21 18:47:13 - game.state.turn - INFO - Removed 4 pieces from P2's hand
+2025-07-21 18:47:13 - game.state.turn - INFO - 🎮 Phase Data Update: Player P2 played 4 pieces
+2025-07-21 18:47:13 - game.state.turn - INFO - 📤 Auto-broadcast: phase_change to room D104AB - Player P2 played 4 pieces
+2025-07-21 18:47:13 - game.state.turn - INFO - 🎯 Round 5, Turn 1 winner: Bot 3 with EXTENDED_STRAIGHT value 40
+2025-07-21 18:47:13 - game.state.turn - INFO - 💰 Bot 3 won 4 piles this turn, total: 4 piles
+2025-07-21 18:47:13 - game.state.turn - INFO - 🏆 Bot 3 wins turn and gets 4 piles
+2025-07-21 18:47:13 - game.state.turn - INFO - 🎮 Waiting 5s for piece flip animation to complete...
+2025-07-21 18:47:14 - backend.api.routes.ws - INFO - 🧹 [ROOM_DEBUG] Cleanup iteration 156: Checking 1 rooms: ['D104AB']
+2025-07-21 18:47:18 - game.state.turn - INFO - 🎮 Phase Data Update: Turn completed - winner: Bot 3
+2025-07-21 18:47:18 - game.state.turn - INFO - 📤 Auto-broadcast: phase_change to room D104AB - Turn completed - winner: Bot 3
+2025-07-21 18:47:18 - game.state.turn - INFO - 📤 Custom broadcast: turn_complete to room D104AB - Turn 1 completed - winner: Bot 3
+2025-07-21 18:47:18 - game.state.turn - INFO - 🚀 Enterprise broadcast turn completion - winner: Bot 3, turn piles awarded: {'Bot 3': 4, 'Andy': 0, 'P2': 0, 'Bot 4': 0}
+2025-07-21 18:47:18 - game.state.turn - INFO - 🔄 Updated turn order - new starter first: ['Bot 3', 'Bot 4', 'Andy', 'P2']
+2025-07-21 18:47:18 - game.state.turn - INFO - 🎯 Next turn starter: Bot 3
+2025-07-21 18:47:18 - game.state.turn - INFO - 🎯 Turn complete - auto-starting next turn in 7 seconds
+2025-07-21 18:47:19 - backend.api.routes.ws - INFO - 🧹 [ROOM_DEBUG] Cleanup iteration 157: Checking 1 rooms: ['D104AB']
+2025-07-21 18:47:24 - backend.api.routes.ws - INFO - 🧹 [ROOM_DEBUG] Cleanup iteration 158: Checking 1 rooms: ['D104AB']
+2025-07-21 18:47:25 - game.state.turn - INFO - 🎮 Phase Data Update: New turn 2 started with starter Bot 3
+2025-07-21 18:47:25 - game.state.turn - INFO - 📤 Auto-broadcast: phase_change to room D104AB - New turn 2 started with starter Bot 3
+🤖 BOT chooses to play SINGLE (12 pts): ADVISOR
+✅ Bot Bot 3 action queued - state machine will broadcast with correct next_player
+🤖 BOT chooses to play SINGLE (12 pts): ADVISOR
+✅ Bot Bot 4 action queued - state machine will broadcast with correct next_player
+2025-07-21 18:47:28 - game.state.turn - INFO - 🎯 New turn started - order: ['Bot 3', 'Bot 4', 'Andy', 'P2']
+2025-07-21 18:47:28 - game.state.turn - INFO - 🚀 Enterprise: New turn auto-started with automatic broadcasting
+2025-07-21 18:47:28 - game.state.turn - INFO - 🎲 Bot 3 (starter) plays 1 pieces - setting required count
+2025-07-21 18:47:28 - game.state.turn - INFO - 🎲 Bot 3 plays: [ADVISOR_RED(12)] (value: 12)
+2025-07-21 18:47:28 - game.state.turn - INFO - Removed 1 pieces from Bot 3's hand
+2025-07-21 18:47:28 - game.state.turn - INFO - 🎮 Phase Data Update: Player Bot 3 played 1 pieces
+2025-07-21 18:47:28 - game.state.turn - INFO - 📤 Auto-broadcast: phase_change to room D104AB - Player Bot 3 played 1 pieces
+2025-07-21 18:47:29 - backend.api.routes.ws - INFO - 🧹 [ROOM_DEBUG] Cleanup iteration 159: Checking 1 rooms: ['D104AB']
+🤖 BOT chooses to play SINGLE (12 pts): ADVISOR
+✅ Bot Bot 4 action queued - state machine will broadcast with correct next_player
+2025-07-21 18:47:30 - game.state.turn - INFO - 🎲 Bot 4 plays: [ADVISOR_RED(12)] (value: 12)
+2025-07-21 18:47:30 - game.state.turn - INFO - Removed 1 pieces from Bot 4's hand
+2025-07-21 18:47:30 - game.state.turn - INFO - 🎮 Phase Data Update: Player Bot 4 played 1 pieces
+2025-07-21 18:47:30 - game.state.turn - INFO - 📤 Auto-broadcast: phase_change to room D104AB - Player Bot 4 played 1 pieces
+2025-07-21 18:47:30 - game.state.turn - WARNING - Not Bot 4's turn - expected Andy
+2025-07-21 18:47:30 - game.state.turn - WARNING - Invalid action: GameAction(player_name='Bot 4', action_type=<ActionType.PLAY_PIECES: 'play_pieces'>, payload={'pieces': [ADVISOR_RED(12)]}, timestamp=datetime.datetime(2025, 7, 21, 18, 47, 30, 156118), sequence_id=111, is_bot=True)
+2025-07-21 18:47:34 - backend.api.routes.ws - INFO - 🧹 [ROOM_DEBUG] Cleanup iteration 160: Checking 1 rooms: ['D104AB']
+2025-07-21 18:47:39 - backend.api.routes.ws - INFO - 🧹 [ROOM_DEBUG] Cleanup iteration 161: Checking 1 rooms: ['D104AB']
+2025-07-21 18:47:44 - backend.api.routes.ws - INFO - 🧹 [ROOM_DEBUG] Cleanup iteration 162: Checking 1 rooms: ['D104AB']
+2025-07-21 18:47:49 - backend.api.routes.ws - INFO - 🧹 [ROOM_DEBUG] Cleanup iteration 163: Checking 1 rooms: ['D104AB']

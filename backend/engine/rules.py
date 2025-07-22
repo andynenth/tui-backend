@@ -179,7 +179,7 @@ def is_extended_straight(pieces):
 
     for group in [{"GENERAL", "ADVISOR", "ELEPHANT"}, {"CHARIOT", "HORSE", "CANNON"}]:
         if all(n in group for n in names) and all(p.color == color for p in pieces):
-            if any(v == 2 for v in counter.values()):  # Must have a duplicate
+            if len(counter) == 3 and sorted(counter.values()) == [1, 1, 2]:
                 return True
     return False
 
