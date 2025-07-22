@@ -1,0 +1,598 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tutorial Mockup 2 - Accordion Style</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .tutorial-container {
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        
+        .tutorial-header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding: 30px 20px;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        }
+        
+        .tutorial-header h1 {
+            font-size: 32px;
+            color: #212529;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+        }
+        
+        .logo-piece {
+            width: 50px;
+            height: 50px;
+            background: #dc3545;
+            border-radius: 50%;
+            display: inline-block;
+        }
+        
+        .tutorial-header p {
+            color: #6c757d;
+            font-size: 16px;
+        }
+        
+        .accordion {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        
+        .accordion-item {
+            background: white;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+            transition: all 0.3s ease;
+        }
+        
+        .accordion-item.active {
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+        }
+        
+        .accordion-header {
+            padding: 20px 25px;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: all 0.3s ease;
+        }
+        
+        .accordion-header:hover {
+            background: #f8f9fa;
+        }
+        
+        .accordion-item.active .accordion-header {
+            background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);
+            color: white;
+        }
+        
+        .accordion-title {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            font-size: 18px;
+            font-weight: 600;
+        }
+        
+        .section-icon {
+            width: 40px;
+            height: 40px;
+            background: #f8f9fa;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+        }
+        
+        .accordion-item.active .section-icon {
+            background: rgba(255, 255, 255, 0.2);
+        }
+        
+        .accordion-arrow {
+            width: 24px;
+            height: 24px;
+            transition: transform 0.3s ease;
+        }
+        
+        .accordion-item.active .accordion-arrow {
+            transform: rotate(180deg);
+        }
+        
+        .accordion-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease;
+        }
+        
+        .accordion-item.active .accordion-content {
+            max-height: 800px;
+        }
+        
+        .content-wrapper {
+            padding: 25px;
+            border-top: 1px solid #e9ecef;
+        }
+        
+        .piece-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+        
+        .piece-card {
+            background: #f8f9fa;
+            border-radius: 12px;
+            padding: 15px;
+            text-align: center;
+            transition: transform 0.2s ease;
+        }
+        
+        .piece-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        .piece-icon {
+            width: 60px;
+            height: 60px;
+            margin: 0 auto 10px;
+            border-radius: 50%;
+        }
+        
+        .piece-name {
+            font-weight: 600;
+            color: #212529;
+            margin-bottom: 5px;
+        }
+        
+        .piece-value {
+            color: #6c757d;
+            font-size: 14px;
+        }
+        
+        .game-phase {
+            background: #f8f9fa;
+            border-left: 4px solid #dc3545;
+            padding: 15px 20px;
+            margin: 10px 0;
+            border-radius: 0 8px 8px 0;
+        }
+        
+        .phase-title {
+            font-weight: 600;
+            color: #dc3545;
+            margin-bottom: 5px;
+        }
+        
+        .phase-desc {
+            color: #495057;
+            font-size: 14px;
+            line-height: 1.5;
+        }
+        
+        .scoring-demo {
+            background: linear-gradient(145deg, #fff 0%, #f8f9fa 100%);
+            border: 2px solid #e9ecef;
+            border-radius: 15px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+        
+        .score-calc {
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            margin: 20px 0;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+        
+        .score-item {
+            text-align: center;
+        }
+        
+        .score-label {
+            font-size: 12px;
+            color: #6c757d;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .score-value {
+            font-size: 36px;
+            font-weight: 700;
+            margin: 5px 0;
+        }
+        
+        .score-result {
+            background: #d4edda;
+            color: #155724;
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+            font-weight: 600;
+            font-size: 18px;
+        }
+        
+        .tip-box {
+            background: linear-gradient(145deg, #fff3cd 0%, #ffeaa7 100%);
+            border: 1px solid #ffc107;
+            border-radius: 12px;
+            padding: 15px 20px;
+            margin: 15px 0;
+            display: flex;
+            gap: 15px;
+            align-items: start;
+        }
+        
+        .tip-icon {
+            font-size: 24px;
+            flex-shrink: 0;
+        }
+        
+        .tip-content {
+            flex: 1;
+        }
+        
+        .tip-content strong {
+            display: block;
+            margin-bottom: 5px;
+            color: #856404;
+        }
+        
+        .tip-content p {
+            color: #856404;
+            font-size: 14px;
+            line-height: 1.5;
+        }
+        
+        .start-button {
+            display: block;
+            width: 100%;
+            max-width: 300px;
+            margin: 30px auto;
+            padding: 18px 30px;
+            background: linear-gradient(135deg, #28a745 0%, #218838 100%);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 18px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(40, 167, 69, 0.3);
+        }
+        
+        .start-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(40, 167, 69, 0.4);
+        }
+        
+        /* Piece colors for medieval theme */
+        .piece-general { background: #dc3545; }
+        .piece-advisor { background: #fd7e14; }
+        .piece-elephant { background: #ffc107; }
+        .piece-horse { background: #28a745; }
+        .piece-chariot { background: #17a2b8; }
+        .piece-cannon { background: #6610f2; }
+        .piece-soldier { background: #6c757d; }
+        
+        @media (max-width: 480px) {
+            .tutorial-container {
+                padding: 0;
+            }
+            
+            .piece-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .score-calc {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="tutorial-container">
+        <div class="tutorial-header">
+            <h1>
+                <span class="logo-piece piece-general"></span>
+                Learn Liap
+            </h1>
+            <p>Master the game with our interactive guide</p>
+        </div>
+        
+        <div class="accordion">
+            <!-- Section 1: Game Basics -->
+            <div class="accordion-item active">
+                <div class="accordion-header">
+                    <div class="accordion-title">
+                        <div class="section-icon">🎮</div>
+                        <span>Game Basics</span>
+                    </div>
+                    <svg class="accordion-arrow" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M7 10l5 5 5-5H7z"/>
+                    </svg>
+                </div>
+                <div class="accordion-content">
+                    <div class="content-wrapper">
+                        <p style="margin-bottom: 20px; line-height: 1.6;">
+                            Liap is a strategic card game where 4 players compete to capture pieces 
+                            and score points by accurately predicting their wins.
+                        </p>
+                        
+                        <div class="tip-box">
+                            <span class="tip-icon">🎯</span>
+                            <div class="tip-content">
+                                <strong>Goal</strong>
+                                <p>Be the first to reach 50 points or have the most points after 20 rounds!</p>
+                            </div>
+                        </div>
+                        
+                        <h3 style="margin: 25px 0 15px; font-size: 20px;">Game Flow</h3>
+                        
+                        <div class="game-phase">
+                            <div class="phase-title">1. Deal Phase</div>
+                            <div class="phase-desc">Each player receives 8 random pieces</div>
+                        </div>
+                        
+                        <div class="game-phase">
+                            <div class="phase-title">2. Declaration Phase</div>
+                            <div class="phase-desc">Predict how many piles you'll win (0-3)</div>
+                        </div>
+                        
+                        <div class="game-phase">
+                            <div class="phase-title">3. Play Phase</div>
+                            <div class="phase-desc">Take turns playing 1-6 pieces. Highest total wins the pile!</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Section 2: Pieces & Values -->
+            <div class="accordion-item">
+                <div class="accordion-header">
+                    <div class="accordion-title">
+                        <div class="section-icon">♟️</div>
+                        <span>Pieces & Values</span>
+                    </div>
+                    <svg class="accordion-arrow" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M7 10l5 5 5-5H7z"/>
+                    </svg>
+                </div>
+                <div class="accordion-content">
+                    <div class="content-wrapper">
+                        <p style="margin-bottom: 20px;">
+                            Each piece has a unique value. Higher values beat lower ones!
+                        </p>
+                        
+                        <div class="piece-grid">
+                            <div class="piece-card">
+                                <div class="piece-icon piece-general"></div>
+                                <div class="piece-name">General</div>
+                                <div class="piece-value">11 points</div>
+                            </div>
+                            <div class="piece-card">
+                                <div class="piece-icon piece-advisor"></div>
+                                <div class="piece-name">Advisor</div>
+                                <div class="piece-value">10 points</div>
+                            </div>
+                            <div class="piece-card">
+                                <div class="piece-icon piece-elephant"></div>
+                                <div class="piece-name">Elephant</div>
+                                <div class="piece-value">9 points</div>
+                            </div>
+                            <div class="piece-card">
+                                <div class="piece-icon piece-horse"></div>
+                                <div class="piece-name">Horse</div>
+                                <div class="piece-value">8 points</div>
+                            </div>
+                            <div class="piece-card">
+                                <div class="piece-icon piece-chariot"></div>
+                                <div class="piece-name">Chariot</div>
+                                <div class="piece-value">7 points</div>
+                            </div>
+                            <div class="piece-card">
+                                <div class="piece-icon piece-cannon"></div>
+                                <div class="piece-name">Cannon</div>
+                                <div class="piece-value">6 points</div>
+                            </div>
+                        </div>
+                        
+                        <div class="tip-box">
+                            <span class="tip-icon">⚔️</span>
+                            <div class="tip-content">
+                                <strong>Soldiers (1-5 points)</strong>
+                                <p>5 different soldier values. Red soldiers have odd numbers (1,3,5), 
+                                Black soldiers have even numbers (2,4).</p>
+                            </div>
+                        </div>
+                        
+                        <div class="tip-box" style="background: linear-gradient(145deg, #d1ecf1 0%, #bee5eb 100%); border-color: #17a2b8;">
+                            <span class="tip-icon">🤝</span>
+                            <div class="tip-content" style="color: #0c5460;">
+                                <strong>Tie Breaker</strong>
+                                <p>If players play the same total value, the first player wins!</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Section 3: Scoring System -->
+            <div class="accordion-item">
+                <div class="accordion-header">
+                    <div class="accordion-title">
+                        <div class="section-icon">🏆</div>
+                        <span>Scoring System</span>
+                    </div>
+                    <svg class="accordion-arrow" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M7 10l5 5 5-5H7z"/>
+                    </svg>
+                </div>
+                <div class="accordion-content">
+                    <div class="content-wrapper">
+                        <h3 style="margin-bottom: 15px;">How Points are Calculated</h3>
+                        
+                        <div class="scoring-demo">
+                            <h4 style="text-align: center; margin-bottom: 20px; color: #495057;">
+                                Example: You declared 2 piles
+                            </h4>
+                            
+                            <div class="score-calc">
+                                <div class="score-item">
+                                    <div class="score-label">Declared</div>
+                                    <div class="score-value" style="color: #6c757d;">2</div>
+                                </div>
+                                
+                                <div style="font-size: 24px; color: #dee2e6;">vs</div>
+                                
+                                <div class="score-item">
+                                    <div class="score-label">Won</div>
+                                    <div class="score-value" style="color: #28a745;">2</div>
+                                </div>
+                            </div>
+                            
+                            <div class="score-result">
+                                ✓ Perfect! +2 base + 2 bonus = +4 points
+                            </div>
+                        </div>
+                        
+                        <h4 style="margin: 25px 0 15px;">Scoring Rules</h4>
+                        
+                        <div class="game-phase" style="border-left-color: #28a745;">
+                            <div class="phase-title" style="color: #28a745;">Hit Target</div>
+                            <div class="phase-desc">
+                                Base points = piles won<br>
+                                Bonus = piles won × 1 point<br>
+                                <strong>Total = Base + Bonus</strong>
+                            </div>
+                        </div>
+                        
+                        <div class="game-phase" style="border-left-color: #dc3545;">
+                            <div class="phase-title" style="color: #dc3545;">Miss Target</div>
+                            <div class="phase-desc">
+                                Penalty = difference × 2<br>
+                                <strong>Example:</strong> Declared 3, won 1 = -4 points
+                            </div>
+                        </div>
+                        
+                        <div class="tip-box" style="background: linear-gradient(145deg, #d4edda 0%, #c3e6cb 100%); border-color: #28a745;">
+                            <span class="tip-icon">💎</span>
+                            <div class="tip-content" style="color: #155724;">
+                                <strong>Special: The 0/0 Strategy</strong>
+                                <p>Declaring 0 and winning 0 piles gives you 6 points! It's risky but rewarding.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Section 4: Pro Tips -->
+            <div class="accordion-item">
+                <div class="accordion-header">
+                    <div class="accordion-title">
+                        <div class="section-icon">💡</div>
+                        <span>Pro Tips & Strategies</span>
+                    </div>
+                    <svg class="accordion-arrow" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M7 10l5 5 5-5H7z"/>
+                    </svg>
+                </div>
+                <div class="accordion-content">
+                    <div class="content-wrapper">
+                        <div class="tip-box">
+                            <span class="tip-icon">🎯</span>
+                            <div class="tip-content">
+                                <strong>Start Conservative</strong>
+                                <p>When learning, declare 1 pile. It's easier to hit and helps you understand the flow.</p>
+                            </div>
+                        </div>
+                        
+                        <div class="tip-box" style="background: linear-gradient(145deg, #f8d7da 0%, #f5c6cb 100%); border-color: #dc3545;">
+                            <span class="tip-icon">👀</span>
+                            <div class="tip-content" style="color: #721c24;">
+                                <strong>Watch the Count</strong>
+                                <p>Track how many pieces others have played. If someone plays 6 pieces early, they might be going for 0!</p>
+                            </div>
+                        </div>
+                        
+                        <div class="tip-box" style="background: linear-gradient(145deg, #d1ecf1 0%, #bee5eb 100%); border-color: #17a2b8;">
+                            <span class="tip-icon">🃏</span>
+                            <div class="tip-content" style="color: #0c5460;">
+                                <strong>Weak Hand Rule</strong>
+                                <p>No piece above 9 points? You can request a redeal! But beware - this doubles the round multiplier.</p>
+                            </div>
+                        </div>
+                        
+                        <div class="tip-box" style="background: linear-gradient(145deg, #e2e3e5 0%, #d6d8db 100%); border-color: #6c757d;">
+                            <span class="tip-icon">🧮</span>
+                            <div class="tip-content" style="color: #383d41;">
+                                <strong>The Math</strong>
+                                <p>Total declarations can't equal 8. If 3 players declared 2, 2, and 3, the last player can't declare 1!</p>
+                            </div>
+                        </div>
+                        
+                        <div class="tip-box" style="background: linear-gradient(145deg, #d4edda 0%, #c3e6cb 100%); border-color: #28a745;">
+                            <span class="tip-icon">⭐</span>
+                            <div class="tip-content" style="color: #155724;">
+                                <strong>Red General Bonus</strong>
+                                <p>The player with the Red General starts first - use this advantage wisely!</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <button class="start-button">Start Playing!</button>
+    </div>
+    
+    <script>
+        // Simple accordion functionality
+        document.querySelectorAll('.accordion-header').forEach(header => {
+            header.addEventListener('click', () => {
+                const item = header.parentElement;
+                const wasActive = item.classList.contains('active');
+                
+                // Close all items
+                document.querySelectorAll('.accordion-item').forEach(i => {
+                    i.classList.remove('active');
+                });
+                
+                // Open clicked item if it wasn't active
+                if (!wasActive) {
+                    item.classList.add('active');
+                }
+            });
+        });
+    </script>
+</body>
+</html>

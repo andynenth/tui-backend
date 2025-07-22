@@ -1,0 +1,1351 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Liap Tutorial - Learn to Play</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #333;
+            line-height: 1.6;
+        }
+
+        .tutorial-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .tutorial-header {
+            background: linear-gradient(135deg, #4a5568, #2d3748);
+            color: white;
+            padding: 2rem;
+            text-align: center;
+        }
+
+        .tutorial-header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .tutorial-header p {
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+
+        .tutorial-nav {
+            background: #f8f9fa;
+            border-bottom: 1px solid #dee2e6;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .nav-buttons {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .nav-btn {
+            padding: 0.5rem 1.5rem;
+            border: none;
+            border-radius: 25px;
+            background: #007bff;
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 1rem;
+        }
+
+        .nav-btn:hover {
+            background: #0056b3;
+            transform: translateY(-2px);
+        }
+
+        .nav-btn:disabled {
+            background: #6c757d;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .page-indicator {
+            color: #6c757d;
+            font-weight: 500;
+        }
+
+        .tutorial-content {
+            padding: 2rem;
+            min-height: 600px;
+        }
+
+        .tutorial-page {
+            display: none;
+            animation: fadeIn 0.5s ease-in-out;
+        }
+
+        .tutorial-page.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .page-title {
+            font-size: 2rem;
+            color: #2d3748;
+            margin-bottom: 1.5rem;
+            text-align: center;
+            position: relative;
+        }
+
+        .page-title::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80px;
+            height: 3px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            border-radius: 2px;
+        }
+
+        .content-section {
+            margin-bottom: 2rem;
+        }
+
+        .highlight-box {
+            background: linear-gradient(135deg, #e3f2fd, #f3e5f5);
+            border-left: 4px solid #667eea;
+            padding: 1.5rem;
+            border-radius: 8px;
+            margin: 1.5rem 0;
+        }
+
+        .highlight-box h3 {
+            color: #2d3748;
+            margin-bottom: 0.5rem;
+        }
+
+        .components-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin: 1.5rem 0;
+        }
+
+        .component-card {
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 12px;
+            padding: 1rem;
+            text-align: center;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .component-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+        }
+
+        .piece-display {
+            width: 60px;
+            height: 60px;
+            margin: 0 auto 0.5rem;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: white;
+            border: 2px solid #dee2e6;
+        }
+
+        .piece-svg {
+            width: 48px;
+            height: 48px;
+        }
+
+        .piece-hierarchy {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            margin: 2rem 0;
+        }
+
+        .hierarchy-row {
+            display: flex;
+            align-items: center;
+            padding: 1rem;
+            background: #f8f9fa;
+            border-radius: 12px;
+            border-left: 4px solid #007bff;
+        }
+
+        .hierarchy-rank {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #007bff;
+            min-width: 40px;
+        }
+
+        .hierarchy-piece {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            flex: 1;
+        }
+
+        .hierarchy-value {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: #28a745;
+            min-width: 100px;
+            text-align: right;
+        }
+
+        .flow-diagram {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin: 2rem 0;
+            padding: 2rem;
+            background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+            border-radius: 12px;
+        }
+
+        .flow-step {
+            text-align: center;
+            flex: 1;
+            position: relative;
+        }
+
+        .flow-step::after {
+            content: '→';
+            position: absolute;
+            right: -20px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 2rem;
+            color: #007bff;
+        }
+
+        .flow-step:last-child::after {
+            display: none;
+        }
+
+        .flow-icon {
+            width: 60px;
+            height: 60px;
+            background: #007bff;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.5rem;
+            margin: 0 auto 1rem;
+        }
+
+        .scoring-examples {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin: 2rem 0;
+        }
+
+        .scoring-card {
+            background: #f8f9fa;
+            border-radius: 12px;
+            padding: 1.5rem;
+            border: 1px solid #dee2e6;
+        }
+
+        .scoring-card.perfect {
+            border-left: 4px solid #28a745;
+            background: linear-gradient(135deg, #d4edda, #f8f9fa);
+        }
+
+        .scoring-card.penalty {
+            border-left: 4px solid #dc3545;
+            background: linear-gradient(135deg, #f8d7da, #f8f9fa);
+        }
+
+        .scoring-card.special {
+            border-left: 4px solid #ffc107;
+            background: linear-gradient(135deg, #fff3cd, #f8f9fa);
+        }
+
+        .strategy-tips {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1rem;
+            margin: 2rem 0;
+        }
+
+        .tip-card {
+            background: linear-gradient(135deg, #e3f2fd, #f3e5f5);
+            border-radius: 12px;
+            padding: 1.5rem;
+            border: 1px solid #90caf9;
+        }
+
+        .tip-card h4 {
+            color: #1976d2;
+            margin-bottom: 0.5rem;
+        }
+
+        .rules-list {
+            list-style: none;
+            padding: 0;
+        }
+
+        .rules-list li {
+            background: #f8f9fa;
+            margin: 0.5rem 0;
+            padding: 1rem;
+            border-radius: 8px;
+            border-left: 3px solid #007bff;
+            position: relative;
+            padding-left: 2.5rem;
+        }
+
+        .rules-list li::before {
+            content: '✓';
+            position: absolute;
+            left: 1rem;
+            color: #28a745;
+            font-weight: bold;
+        }
+
+        .quick-ref {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin: 2rem 0;
+        }
+
+        .ref-section {
+            background: #f8f9fa;
+            border-radius: 12px;
+            padding: 1.5rem;
+            border: 1px solid #dee2e6;
+        }
+
+        .ref-section h4 {
+            color: #2d3748;
+            margin-bottom: 1rem;
+            border-bottom: 2px solid #007bff;
+            padding-bottom: 0.5rem;
+        }
+
+        .avatar-demo {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin: 2rem 0;
+        }
+
+        .avatar {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            position: relative;
+        }
+
+        .avatar.blue { background: #007bff; }
+        .avatar.red { background: #dc3545; }
+        .avatar.green { background: #28a745; }
+        .avatar.purple { background: #6f42c1; }
+
+        .avatar::after {
+            content: attr(data-name);
+            position: absolute;
+            bottom: -25px;
+            font-size: 0.8rem;
+            color: #6c757d;
+            white-space: nowrap;
+        }
+
+        .interactive-demo {
+            background: #f8f9fa;
+            border-radius: 12px;
+            padding: 2rem;
+            text-align: center;
+            margin: 2rem 0;
+        }
+
+        .demo-pieces {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin: 1rem 0;
+            flex-wrap: wrap;
+        }
+
+        .demo-piece {
+            width: 50px;
+            height: 50px;
+            border-radius: 8px;
+            background: white;
+            border: 2px solid #dee2e6;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .demo-piece:hover {
+            transform: scale(1.1);
+            border-color: #007bff;
+            box-shadow: 0 5px 15px rgba(0,123,255,0.3);
+        }
+
+        .piece-info {
+            background: white;
+            border-radius: 8px;
+            padding: 1rem;
+            margin-top: 1rem;
+            border: 1px solid #dee2e6;
+            min-height: 100px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #6c757d;
+        }
+
+        .progress-bar {
+            background: #e9ecef;
+            height: 4px;
+            border-radius: 2px;
+            margin-top: 2rem;
+        }
+
+        .progress-fill {
+            background: linear-gradient(135deg, #007bff, #6610f2);
+            height: 100%;
+            border-radius: 2px;
+            transition: width 0.3s ease;
+        }
+
+        @media (max-width: 768px) {
+            .tutorial-nav {
+                flex-direction: column;
+                gap: 1rem;
+            }
+
+            .flow-diagram {
+                flex-direction: column;
+                gap: 1rem;
+            }
+
+            .flow-step::after {
+                content: '↓';
+                right: auto;
+                top: auto;
+                bottom: -15px;
+                left: 50%;
+                transform: translateX(-50%);
+            }
+
+            .components-grid {
+                grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="tutorial-container">
+        <div class="tutorial-header">
+            <h1>🎯 Welcome to Liap!</h1>
+            <p>Master the art of strategic prediction in this tactical trick-taking game</p>
+        </div>
+
+        <div class="tutorial-nav">
+            <div class="nav-buttons">
+                <button class="nav-btn" id="prevBtn" onclick="changeSlide(-1)">← Previous</button>
+                <button class="nav-btn" id="nextBtn" onclick="changeSlide(1)">Next →</button>
+            </div>
+            <div class="page-indicator" id="pageIndicator">Page 1 of 7</div>
+        </div>
+
+        <div class="tutorial-content">
+            <!-- Page 1: Game Overview & Components -->
+            <div class="tutorial-page active" id="page1">
+                <h2 class="page-title">Game Overview & Components</h2>
+                
+                <div class="content-section">
+                    <div class="highlight-box">
+                        <h3>🎯 What is Liap?</h3>
+                        <p><strong>Liap is a strategic trick-taking game where prediction meets skill.</strong></p>
+                        <ul style="margin-top: 1rem; padding-left: 2rem;">
+                            <li><strong>Players:</strong> 4 players (human or AI)</li>
+                            <li><strong>Game Length:</strong> 20 rounds or first to 50 points</li>
+                            <li><strong>Objective:</strong> Score the most points by accurately predicting how many tricks (piles) you'll win</li>
+                        </ul>
+                    </div>
+
+                    <div class="avatar-demo">
+                        <div class="avatar blue" data-name="Player 1">P1</div>
+                        <div class="avatar red" data-name="Player 2">P2</div>
+                        <div class="avatar green" data-name="Player 3">P3</div>
+                        <div class="avatar purple" data-name="Player 4">P4</div>
+                    </div>
+                </div>
+
+                <div class="content-section">
+                    <h3>📦 Game Components</h3>
+                    <p style="margin-bottom: 1rem;"><strong>32 Game Pieces Total:</strong></p>
+                    
+                    <div class="components-grid">
+                        <div class="component-card">
+                            <div class="piece-display">
+                                <svg class="piece-svg" xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512">
+                                    <path d="M 250.145 120.016 C 242.546 123.235, 238 129.776, 238 137.492 C 238 149.983, 248.772 158.342, 260.750 155.148 C 280.268 149.944, 277.400 120.819, 257.225 119.360 C 254.626 119.172, 251.440 119.467, 250.145 120.016 M 250 161.597 C 250 162.385, 247.798 169.709, 245.107 177.872 C 232.371 216.507, 214.034 240.971, 188.793 253.005 C 175.686 259.253, 169.728 260.480, 153 260.374 C 133.163 260.248, 117.768 256.541, 96.989 246.886 L 88.247 242.825 83.643 246.339 C 81.112 248.271, 78.153 250.134, 77.068 250.478 C 75.176 251.079, 75.249 251.534, 78.894 261.802 C 80.982 267.686, 87.741 287.598, 93.914 306.051 C 100.086 324.504, 105.490 340.175, 105.923 340.875 C 106.534 341.864, 108.022 341.599, 112.605 339.682 C 131.926 331.600, 165.693 324.400, 200 321.047 C 270.485 314.158, 352.370 321.537, 395.333 338.649 C 400.191 340.584, 404.388 341.945, 404.659 341.674 C 405.336 340.997, 434.941 253.780, 434.974 252.365 C 434.988 251.741, 433.762 250.445, 432.250 249.486 C 430.738 248.526, 428.281 246.608, 426.792 245.223 L 424.084 242.706 413.792 247.290 C 391.704 257.129, 377.409 260.467, 357.500 260.434 C 341.355 260.408, 335.090 259.073, 322.310 252.935 C 297.136 240.843, 278.362 215.038, 265.523 174.881 L 260.850 160.262 255.425 160.213 C 251.360 160.176, 250 160.523, 250 161.597 M 136.236 164.570 C 131.922 166.719, 130.643 168.031, 128.412 172.591 C 126.315 176.877, 125.853 179.003, 126.252 182.539 C 128.144 199.333, 150.417 204.904, 159.684 190.902 C 161.996 187.408, 162.500 185.559, 162.500 180.573 C 162.500 173.019, 159.617 168.219, 152.865 164.531 C 146.991 161.323, 142.731 161.333, 136.236 164.570 M 359 164.561 C 341.085 174.565, 349.555 201.389, 369.755 198.620 C 378.263 197.454, 384.244 191.580, 385.608 183.052 C 386.808 175.544, 382.042 167.287, 374.541 163.880 C 369.024 161.374, 364.341 161.579, 359 164.561 M 153.500 201.597 C 151.850 202.319, 149.077 202.930, 147.338 202.955 C 143.769 203.006, 143.692 203.248, 142.449 218.407 C 142.092 222.755, 140.521 232.644, 138.957 240.381 C 137.394 248.118, 136.261 254.595, 136.440 254.773 C 136.619 254.952, 140.756 255.514, 145.633 256.022 C 156.086 257.111, 168.824 255.930, 178.134 253.010 C 183.836 251.221, 199 243.586, 199 242.503 C 199 242.267, 196.267 240.218, 192.926 237.950 C 184.246 232.055, 174.017 222.097, 164.756 210.524 C 160.344 205.011, 156.681 200.451, 156.617 200.392 C 156.553 200.332, 155.150 200.875, 153.500 201.597 M 350.035 207.139 C 341.515 218.311, 331.312 228.655, 321.826 235.739 C 316.950 239.381, 313.306 242.695, 313.730 243.104 C 316.341 245.625, 330.907 252.321, 337.588 254.072 C 345.978 256.270, 363.463 257.029, 371.833 255.558 C 375.904 254.842, 376.125 254.636, 375.500 252.148 C 373.299 243.393, 370.915 230.170, 369.974 221.500 C 367.792 201.379, 368.237 203, 364.907 203 C 363.273 203, 360.444 202.377, 358.620 201.615 L 355.305 200.229 350.035 207.139 M 61.502 212.575 C 54.179 216.394, 50.564 222.733, 51.218 230.610 C 51.774 237.324, 55.115 242.354, 60.889 245.171 C 69.530 249.388, 79.045 246.973, 84.465 239.188 C 89.621 231.780, 88.474 222.619, 81.484 215.380 C 77.350 211.098, 67.095 209.659, 61.502 212.575 M 434.533 212.630 C 424.495 218.251, 421.328 230.271, 427.535 239.188 C 432.955 246.973, 442.470 249.388, 451.111 245.171 C 463.125 239.309, 464.351 222.709, 453.389 214.348 C 448.807 210.853, 439.259 209.983, 434.533 212.630 M 243.651 237.940 C 237.793 245.608, 233 252.639, 233 253.566 C 233 256.547, 254.986 297.944, 256.291 297.419 C 257.760 296.827, 279 255.781, 279 253.534 C 279 251.054, 257.920 224, 255.988 224 C 254.998 224, 249.909 229.750, 243.651 237.940 M 246.622 241.479 C 241.880 247.793, 238 253.415, 238 253.972 C 238 255.322, 255.325 290, 256 290 C 256.675 290, 274 255.322, 274 253.972 C 274 252.654, 256.990 230, 256 230 C 255.585 230, 251.365 235.166, 246.622 241.479 M 220.500 323.592 C 218.300 323.801, 210.875 324.449, 204 325.032 C 170.341 327.885, 138.431 334.447, 115.681 343.193 C 109.423 345.598, 107.989 346.528, 108.496 347.849 C 108.845 348.757, 110.096 352.268, 111.277 355.652 L 113.425 361.804 117.462 359.085 C 129.173 351.199, 151.861 346.129, 192.500 342.316 C 219.547 339.778, 292.324 339.771, 319.500 342.304 C 360.519 346.127, 387.148 352.406, 395.746 360.283 C 396.981 361.415, 398.137 362.152, 398.315 361.921 C 398.932 361.115, 404 346.666, 403.751 346.421 C 402.884 345.566, 387.034 339.834, 379.500 337.650 C 359.933 331.978, 341.514 328.548, 314 325.453 C 300.359 323.918, 231.490 322.548, 220.500 323.592 M 226.500 344.586 C 177.875 346.653, 138.535 352.611, 123.709 360.154 C 109.881 367.189, 114.785 374.890, 137.237 381.396 C 155.715 386.750, 185.512 390.278, 228.250 392.171 C 280.788 394.498, 346.134 389.692, 374.763 381.396 C 418.495 368.723, 392.188 352.827, 317 346.493 C 300.213 345.079, 243.178 343.877, 226.500 344.586" stroke="none" fill="#dc3545" fill-rule="evenodd"/>
+                                </svg>
+                            </div>
+                            <h4>General</h4>
+                            <p>2 pieces (1 red, 1 black)<br><strong>11 points each</strong></p>
+                        </div>
+
+                        <div class="component-card">
+                            <div class="piece-display">
+                                <svg class="piece-svg" xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512">
+                                    <path d="M 245.500 90.190 C 242.546 123.235, 238 129.776, 238 137.492 C 238 149.983, 248.772 158.342, 260.750 155.148 C 280.268 149.944, 277.400 120.819, 257.225 119.360 C 254.626 119.172, 251.440 119.467, 250.145 120.016 M 250 161.597 C 250 162.385, 247.798 169.709, 245.107 177.872 C 232.371 216.507, 214.034 240.971, 188.793 253.005 C 175.686 259.253, 169.728 260.480, 153 260.374 C 133.163 260.248, 117.768 256.541, 96.989 246.886 L 88.247 242.825 83.643 246.339 C 81.112 248.271, 78.153 250.134, 77.068 250.478 C 75.176 251.079, 75.249 251.534, 78.894 261.802" stroke="none" fill="#dc3545" fill-rule="evenodd"/>
+                                </svg>
+                            </div>
+                            <h4>Advisor</h4>
+                            <p>4 pieces (2 red, 2 black)<br><strong>10 points each</strong></p>
+                        </div>
+
+                        <div class="component-card">
+                            <div class="piece-display">
+                                <svg class="piece-svg" xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512">
+                                    <path d="M 234.500 51.973 C 230.650 52.436, 223.966 53.559, 219.646 54.469 C 215.326 55.379, 208.006 57.412, 203.379 58.985 C 198.752 60.559, 192.094 63.453, 188.584 65.416 C 185.074 67.379, 179.727 71.001, 176.702 73.465 C 173.677 75.929, 169.396 80.650, 167.188 83.956 C 164.980 87.263, 162.122 93.012, 160.837 96.734 C 158.873 102.420, 158.519 105.336, 158.622 115 C 158.715 123.858, 159.332 128.734, 161.308 136.226" stroke="none" fill="#495057" fill-rule="evenodd"/>
+                                </svg>
+                            </div>
+                            <h4>Elephant</h4>
+                            <p>4 pieces (2 red, 2 black)<br><strong>9 points each</strong></p>
+                        </div>
+
+                        <div class="component-card">
+                            <div class="piece-display">
+                                <svg class="piece-svg" xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512">
+                                    <path d="M 133.526 85.669 C 133.967 86.676, 135.428 90.650, 136.772 94.500 C 138.426 99.237, 139.389 104.640, 139.751 111.212 C 140.063 116.860, 139.774 124.100, 139.062 128.515 C 138.389 132.689, 136.545 139.929, 134.966 144.602 C 132.941 150.591, 132.449 153.190, 133.297 153.408" stroke="none" fill="#dc3545" fill-rule="evenodd"/>
+                                </svg>
+                            </div>
+                            <h4>Horse</h4>
+                            <p>4 pieces (2 red, 2 black)<br><strong>8 points each</strong></p>
+                        </div>
+
+                        <div class="component-card">
+                            <div class="piece-display">
+                                <svg class="piece-svg" xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512">
+                                    <path d="M 247.126 56.102 C 242.387 59.018, 235.079 64.909, 230.067 69.852 C 225.245 74.608, 219.375 81.372, 217.024 84.881 C 214.672 88.391, 211.013 94.964, 208.893 99.488 C 206.773 104.012, 204.133 111.490, 203.026 116.107 C 201.919 120.723, 201.011 125.287, 201.007 126.250" stroke="none" fill="#495057" fill-rule="evenodd"/>
+                                </svg>
+                            </div>
+                            <h4>Chariot</h4>
+                            <p>4 pieces (2 red, 2 black)<br><strong>7 points each</strong></p>
+                        </div>
+
+                        <div class="component-card">
+                            <div class="piece-display">
+                                <svg class="piece-svg" xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512">
+                                    <path d="M 250.145 120.016 C 242.546 123.235, 238 129.776, 238 137.492" stroke="none" fill="#dc3545" fill-rule="evenodd"/>
+                                </svg>
+                            </div>
+                            <h4>Cannon</h4>
+                            <p>4 pieces (2 red, 2 black)<br><strong>6 points each</strong></p>
+                        </div>
+
+                        <div class="component-card">
+                            <div class="piece-display">
+                                <svg class="piece-svg" xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512">
+                                    <path d="M 247.126 56.102 C 242.387 59.018, 235.079 64.909, 230.067 69.852" stroke="none" fill="#495057" fill-rule="evenodd"/>
+                                </svg>
+                            </div>
+                            <h4>Soldiers</h4>
+                            <p>10 pieces (5 red: 1,3,5; 5 black: 2,4)<br><strong>1-5 points each</strong></p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="highlight-box">
+                    <h3>💡 Key Concept</h3>
+                    <p><em>"Think of Liap as a game of calculated risks - you must predict your success before seeing others' moves!"</em></p>
+                </div>
+            </div>
+
+            <!-- Page 2: Piece Values & Hierarchy -->
+            <div class="tutorial-page" id="page2">
+                <h2 class="page-title">Know Your Army</h2>
+                
+                <div class="content-section">
+                    <div class="piece-hierarchy">
+                        <div class="hierarchy-row">
+                            <div class="hierarchy-rank">1</div>
+                            <div class="hierarchy-piece">
+                                <div class="piece-display">
+                                    <svg class="piece-svg" xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512">
+                                        <path d="M 250.145 120.016 C 242.546 123.235, 238 129.776, 238 137.492 C 238 149.983, 248.772 158.342, 260.750 155.148" stroke="none" fill="#dc3545" fill-rule="evenodd"/>
+                                    </svg>
+                                </div>
+                                <span><strong>General</strong> - The supreme commander</span>
+                            </div>
+                            <div class="hierarchy-value">11 points</div>
+                        </div>
+
+                        <div class="hierarchy-row">
+                            <div class="hierarchy-rank">2</div>
+                            <div class="hierarchy-piece">
+                                <div class="piece-display">
+                                    <svg class="piece-svg" xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512">
+                                        <path d="M 245.500 90.190 C 242.546 123.235, 238 129.776, 238 137.492" stroke="none" fill="#dc3545" fill-rule="evenodd"/>
+                                    </svg>
+                                </div>
+                                <span><strong>Advisor</strong> - Strategic counselor</span>
+                            </div>
+                            <div class="hierarchy-value">10 points</div>
+                        </div>
+
+                        <div class="hierarchy-row">
+                            <div class="hierarchy-rank">3</div>
+                            <div class="hierarchy-piece">
+                                <div class="piece-display">
+                                    <svg class="piece-svg" xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512">
+                                        <path d="M 234.500 51.973 C 230.650 52.436, 223.966 53.559, 219.646 54.469" stroke="none" fill="#495057" fill-rule="evenodd"/>
+                                    </svg>
+                                </div>
+                                <span><strong>Elephant</strong> - Heavy war machine</span>
+                            </div>
+                            <div class="hierarchy-value">9 points</div>
+                        </div>
+
+                        <div class="hierarchy-row">
+                            <div class="hierarchy-rank">4</div>
+                            <div class="hierarchy-piece">
+                                <div class="piece-display">
+                                    <svg class="piece-svg" xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512">
+                                        <path d="M 133.526 85.669 C 133.967 86.676, 135.428 90.650, 136.772 94.500" stroke="none" fill="#dc3545" fill-rule="evenodd"/>
+                                    </svg>
+                                </div>
+                                <span><strong>Horse</strong> - Swift cavalry</span>
+                            </div>
+                            <div class="hierarchy-value">8 points</div>
+                        </div>
+
+                        <div class="hierarchy-row">
+                            <div class="hierarchy-rank">5</div>
+                            <div class="hierarchy-piece">
+                                <div class="piece-display">
+                                    <svg class="piece-svg" xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512">
+                                        <path d="M 247.126 56.102 C 242.387 59.018, 235.079 64.909, 230.067 69.852" stroke="none" fill="#495057" fill-rule="evenodd"/>
+                                    </svg>
+                                </div>
+                                <span><strong>Chariot</strong> - Battle wagon</span>
+                            </div>
+                            <div class="hierarchy-value">7 points</div>
+                        </div>
+
+                        <div class="hierarchy-row">
+                            <div class="hierarchy-rank">6</div>
+                            <div class="hierarchy-piece">
+                                <div class="piece-display">
+                                    <svg class="piece-svg" xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512">
+                                        <path d="M 250.145 120.016 C 242.546 123.235, 238 129.776" stroke="none" fill="#dc3545" fill-rule="evenodd"/>
+                                    </svg>
+                                </div>
+                                <span><strong>Cannon</strong> - Siege weapon</span>
+                            </div>
+                            <div class="hierarchy-value">6 points</div>
+                        </div>
+
+                        <div class="hierarchy-row">
+                            <div class="hierarchy-rank">7</div>
+                            <div class="hierarchy-piece">
+                                <div class="piece-display">
+                                    <svg class="piece-svg" xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512">
+                                        <path d="M 247.126 56.102 C 242.387 59.018" stroke="none" fill="#495057" fill-rule="evenodd"/>
+                                    </svg>
+                                </div>
+                                <span><strong>Soldiers</strong> - Infantry troops</span>
+                            </div>
+                            <div class="hierarchy-value">1-5 points</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="highlight-box">
+                    <h3>⚔️ Battle Rules</h3>
+                    <ul>
+                        <li><strong>Higher value always wins</strong></li>
+                        <li><strong>Same value?</strong> First played wins!</li>
+                        <li><strong>Color doesn't affect strength</strong></li>
+                    </ul>
+                </div>
+
+                <div class="interactive-demo">
+                    <h3>🎯 Interactive Piece Explorer</h3>
+                    <p>Click on any piece to see its details!</p>
+                    <div class="demo-pieces">
+                        <div class="demo-piece" onclick="showPieceInfo('General', '11 points', 'The highest ranking piece - commands the battlefield!')">
+                            <svg class="piece-svg" width="40" height="40" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+                                <path d="M 250.145 120.016 C 242.546 123.235, 238 129.776, 238 137.492" stroke="none" fill="#dc3545" fill-rule="evenodd"/>
+                            </svg>
+                        </div>
+                        <div class="demo-piece" onclick="showPieceInfo('Advisor', '10 points', 'Strategic counselor - second most powerful piece')">
+                            <svg class="piece-svg" width="40" height="40" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+                                <path d="M 245.500 90.190 C 242.546 123.235, 238 129.776" stroke="none" fill="#dc3545" fill-rule="evenodd"/>
+                            </svg>
+                        </div>
+                        <div class="demo-piece" onclick="showPieceInfo('Elephant', '9 points', 'Heavy war machine - tramples through enemy lines')">
+                            <svg class="piece-svg" width="40" height="40" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+                                <path d="M 234.500 51.973 C 230.650 52.436, 223.966 53.559" stroke="none" fill="#495057" fill-rule="evenodd"/>
+                            </svg>
+                        </div>
+                        <div class="demo-piece" onclick="showPieceInfo('Soldier', '1-5 points', 'Infantry troops - variable strength based on rank')">
+                            <svg class="piece-svg" width="40" height="40" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+                                <path d="M 247.126 56.102 C 242.387 59.018" stroke="none" fill="#495057" fill-rule="evenodd"/>
+                            </svg>
+                        </div>
+                    </div>
+                    <div class="piece-info" id="pieceInfo">
+                        Click a piece above to learn more about it!
+                    </div>
+                </div>
+
+                <div class="highlight-box">
+                    <h3>🎲 Special Note</h3>
+                    <p><em>"The Red General determines who goes first each round - a small but strategic advantage!"</em></p>
+                </div>
+            </div>
+
+            <!-- Page 3: Game Setup & Flow -->
+            <div class="tutorial-page" id="page3">
+                <h2 class="page-title">How to Play</h2>
+                
+                <div class="content-section">
+                    <div class="flow-diagram">
+                        <div class="flow-step">
+                            <div class="flow-icon">🃏</div>
+                            <h3>Preparation</h3>
+                            <p>Deal 8 pieces to each player</p>
+                        </div>
+                        <div class="flow-step">
+                            <div class="flow-icon">🎯</div>
+                            <h3>Declaration</h3>
+                            <p>Predict 0-8 piles you'll win</p>
+                        </div>
+                        <div class="flow-step">
+                            <div class="flow-icon">⚔️</div>
+                            <h3>Playing</h3>
+                            <p>Play pieces in turn-based battles</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="content-section">
+                    <h3>📋 Each Round Consists of 3 Phases:</h3>
+                    
+                    <div class="highlight-box">
+                        <h3>1. 🃏 Preparation Phase</h3>
+                        <ul style="margin-top: 1rem; padding-left: 2rem;">
+                            <li>Each player receives 8 random pieces</li>
+                            <li>Check for weak hands (no piece > 9 points)</li>
+                            <li>Weak hand option: Request redeal (costs multiplier)</li>
+                        </ul>
+                    </div>
+
+                    <div class="highlight-box">
+                        <h3>2. 🎯 Declaration Phase</h3>
+                        <ul style="margin-top: 1rem; padding-left: 2rem;">
+                            <li>Starting with Red General holder</li>
+                            <li>Each player declares 0-8 piles they'll win</li>
+                            <li><strong>Important:</strong> Total declarations ≠ 8 (forces competition)</li>
+                        </ul>
+                    </div>
+
+                    <div class="highlight-box">
+                        <h3>3. ⚔️ Playing Phase</h3>
+                        <div style="margin-top: 1rem;">
+                            <h4><strong>Turn Structure:</strong></h4>
+                            <ul style="padding-left: 2rem; margin: 0.5rem 0;">
+                                <li>Starter plays 1-6 pieces (MUST be valid combination)</li>
+                                <li>Others must play EXACT same number of pieces</li>
+                                <li>Non-starters can play invalid combinations (forfeit play)</li>
+                            </ul>
+                            
+                            <h4><strong>Battle Resolution:</strong></h4>
+                            <ul style="padding-left: 2rem; margin: 0.5rem 0;">
+                                <li><strong>Winner Takes All:</strong> Highest value/type wins all played pieces</li>
+                                <li><strong>Next Turn:</strong> Winner becomes the starter for next turn</li>
+                                <li>Continue until all hands empty</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="highlight-box">
+                    <h3>🎲 Turn Order Rule</h3>
+                    <p><em>"The player with the Red General always starts the declaration and playing phases!"</em></p>
+                </div>
+
+                <div class="content-section">
+                    <h3>🎴 Valid Play Types (For Starters):</h3>
+                    <ul class="rules-list">
+                        <li><strong>1 piece:</strong> Single</li>
+                        <li><strong>2 pieces:</strong> Pair (same name & color)</li>
+                        <li><strong>3 pieces:</strong> Three-of-a-kind (3 soldiers, same color) OR Straight</li>
+                        <li><strong>4 pieces:</strong> Four-of-a-kind OR Extended Straight</li>
+                        <li><strong>5 pieces:</strong> Five-of-a-kind OR Extended Straight</li>
+                        <li><strong>6 pieces:</strong> Double Straight (2 each: Chariot, Horse, Cannon)</li>
+                    </ul>
+                </div>
+
+                <div class="highlight-box">
+                    <h3>💡 Forfeit Strategy</h3>
+                    <p><strong>Non-starters can play invalid combinations strategically:</strong></p>
+                    <ul style="margin-top: 0.5rem; padding-left: 2rem;">
+                        <li>Invalid combinations automatically lose the turn</li>
+                        <li>Use to dump unwanted pieces when you can't win</li>
+                        <li>Helps achieve your declared target by strategic piece management</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Page 4: Scoring System -->
+            <div class="tutorial-page" id="page4">
+                <h2 class="page-title">Scoring Mastery</h2>
+                
+                <div class="content-section">
+                    <div class="highlight-box">
+                        <h3>📊 Basic Scoring Formula</h3>
+                        <div style="text-align: center; font-size: 1.2rem; margin: 1rem 0;">
+                            <strong>Hit Target:</strong> Declared + 5 points<br>
+                            <strong>Miss Target:</strong> -|Declared - Actual|
+                        </div>
+                    </div>
+
+                    <div class="scoring-examples">
+                        <div class="scoring-card perfect">
+                            <h3>✅ Perfect Hit</h3>
+                            <div style="margin: 1rem 0;">
+                                <strong>Declared:</strong> 2 piles<br>
+                                <strong>Won:</strong> 2 piles<br>
+                                <strong>Score:</strong> 2 + 5 = <span style="color: #28a745; font-size: 1.5rem;">+7 points</span>
+                            </div>
+                        </div>
+
+                        <div class="scoring-card penalty">
+                            <h3>❌ Over Achievement</h3>
+                            <div style="margin: 1rem 0;">
+                                <strong>Declared:</strong> 1 pile<br>
+                                <strong>Won:</strong> 3 piles<br>
+                                <strong>Score:</strong> -(3-1) = <span style="color: #dc3545; font-size: 1.5rem;">-2 points</span>
+                            </div>
+                        </div>
+
+                        <div class="scoring-card penalty">
+                            <h3>❌ Under Achievement</h3>
+                            <div style="margin: 1rem 0;">
+                                <strong>Declared:</strong> 3 piles<br>
+                                <strong>Won:</strong> 1 pile<br>
+                                <strong>Score:</strong> -(3-1) = <span style="color: #dc3545; font-size: 1.5rem;">-2 points</span>
+                            </div>
+                        </div>
+
+                        <div class="scoring-card special">
+                            <h3>⭐ The 0/0 Achievement</h3>
+                            <div style="margin: 1rem 0;">
+                                <strong>Declared:</strong> 0 piles<br>
+                                <strong>Won:</strong> 0 piles<br>
+                                <strong>Score:</strong> <span style="color: #ffc107; font-size: 1.5rem;">+3 points</span>
+                            </div>
+                        </div>
+
+                        <div class="scoring-card penalty">
+                            <h3>❌ Failed 0 Strategy</h3>
+                            <div style="margin: 1rem 0;">
+                                <strong>Declared:</strong> 0 piles<br>
+                                <strong>Won:</strong> 2 piles<br>
+                                <strong>Score:</strong> -2 = <span style="color: #dc3545; font-size: 1.5rem;">-2 points</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="highlight-box">
+                    <h3>🎯 Scoring Tips</h3>
+                    <ul>
+                        <li><strong>Perfect hits are rewarded:</strong> You get your declared piles + 5 bonus points</li>
+                        <li><strong>Any miss is penalized:</strong> Whether you win too many or too few</li>
+                        <li><strong>The 0 strategy:</strong> High risk, high reward - declare 0 for +3 if successful</li>
+                        <li><strong>Penalty is linear:</strong> Miss by 1 = -1 point, miss by 3 = -3 points</li>
+                    </ul>
+                </div>
+
+                <div class="interactive-demo">
+                    <h3>🧮 Scoring Calculator</h3>
+                    <p>Practice scoring scenarios:</p>
+                    <div style="display: flex; gap: 2rem; align-items: center; justify-content: center; margin: 2rem 0;">
+                        <div>
+                            <label>Declared:</label>
+                            <select id="declared" onchange="calculateScore()" style="margin-left: 0.5rem; padding: 0.5rem;">
+                                <option value="0">0</option>
+                                <option value="1">1</option>
+                                <option value="2" selected>2</option>
+                                <option value="3">3</option>
+                                <option value="4">4</option>
+                                <option value="5">5</option>
+                                <option value="6">6</option>
+                                <option value="7">7</option>
+                                <option value="8">8</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label>Won:</label>
+                            <select id="won" onchange="calculateScore()" style="margin-left: 0.5rem; padding: 0.5rem;">
+                                <option value="0">0</option>
+                                <option value="1">1</option>
+                                <option value="2" selected>2</option>
+                                <option value="3">3</option>
+                                <option value="4">4</option>
+                                <option value="5">5</option>
+                                <option value="6">6</option>
+                                <option value="7">7</option>
+                                <option value="8">8</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="piece-info" id="scoreResult">
+                        <strong>Score: +7 points</strong><br>Perfect hit! Declared 2, won 2 = 2 + 5 = +7 points
+                    </div>
+                </div>
+            </div>
+
+            <!-- Page 5: Basic Strategy -->
+            <div class="tutorial-page" id="page5">
+                <h2 class="page-title">Your First Games</h2>
+                
+                <div class="content-section">
+                    <div class="strategy-tips">
+                        <div class="tip-card">
+                            <h4>🎯 Start Conservative</h4>
+                            <p>Declare 1-2 piles when learning. Easier to achieve than higher numbers, and smaller penalty if you miss (-1 or -2).</p>
+                        </div>
+
+                        <div class="tip-card">
+                            <h4>💪 Count Power Pieces</h4>
+                            <p>Generals, Advisors, Elephants are "sure wins". Multiple high pieces = declare more. All low pieces = consider 0.</p>
+                        </div>
+
+                        <div class="tip-card">
+                            <h4>📊 Watch Declaration Total</h4>
+                            <p>If total is 7, one player will get an extra pile. If it's 9, competition will be fierce. Adjust accordingly.</p>
+                        </div>
+
+                        <div class="tip-card">
+                            <h4>🎲 The 0 Strategy</h4>
+                            <p>Play all pieces early to force others to win remaining piles. Success = +3 points, failure = negative penalty.</p>
+                        </div>
+
+                        <div class="tip-card">
+                            <h4>🛡️ Forfeit Strategy</h4>
+                            <p>When not the starter, you can play ANY pieces. Use to dump low-value pieces strategically when you'll lose anyway.</p>
+                        </div>
+
+                        <div class="tip-card">
+                            <h4>🔍 Track Opponents</h4>
+                            <p>If someone dumps 6 pieces early, they're probably going for 0! With 8 pieces total, playing 6 at once is a strong signal.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="highlight-box">
+                    <h3>💡 Hand Evaluation Guide</h3>
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1rem; margin-top: 1rem;">
+                        <div style="background: #d4edda; padding: 1rem; border-radius: 8px;">
+                            <h4 style="color: #155724;">🌟 Strong Hand</h4>
+                            <p>2+ pieces valued 9+<br><strong>Declare:</strong> 3-5 piles</p>
+                        </div>
+                        <div style="background: #fff3cd; padding: 1rem; border-radius: 8px;">
+                            <h4 style="color: #856404;">⚖️ Medium Hand</h4>
+                            <p>1-2 high pieces, mix of mid-range<br><strong>Declare:</strong> 1-3 piles</p>
+                        </div>
+                        <div style="background: #f8d7da; padding: 1rem; border-radius: 8px;">
+                            <h4 style="color: #721c24;">😓 Weak Hand</h4>
+                            <p>All pieces 8 or lower<br><strong>Declare:</strong> 0-1 piles</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="interactive-demo">
+                    <h3>🎮 Strategy Simulator</h3>
+                    <p>You have these pieces - what should you declare?</p>
+                    <div class="demo-pieces">
+                        <div class="demo-piece" title="General Red - 11 points">
+                            <svg class="piece-svg" width="40" height="40" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+                                <path d="M 250.145 120.016 C 242.546 123.235, 238 129.776, 238 137.492" stroke="none" fill="#dc3545" fill-rule="evenodd"/>
+                            </svg>
+                        </div>
+                        <div class="demo-piece" title="Soldier Black - 4 points">
+                            <svg class="piece-svg" width="40" height="40" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+                                <path d="M 247.126 56.102 C 242.387 59.018" stroke="none" fill="#495057" fill-rule="evenodd"/>
+                            </svg>
+                        </div>
+                        <div class="demo-piece" title="Horse Red - 8 points">
+                            <svg class="piece-svg" width="40" height="40" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+                                <path d="M 133.526 85.669 C 133.967 86.676" stroke="none" fill="#dc3545" fill-rule="evenodd"/>
+                            </svg>
+                        </div>
+                        <div class="demo-piece" title="Cannon Black - 6 points">
+                            <svg class="piece-svg" width="40" height="40" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+                                <path d="M 250.145 120.016 C 242.546 123.235" stroke="none" fill="#495057" fill-rule="evenodd"/>
+                            </svg>
+                        </div>
+                        <div class="demo-piece" title="Soldier Red - 3 points">
+                            <svg class="piece-svg" width="40" height="40" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+                                <path d="M 247.126 56.102 C 242.387 59.018" stroke="none" fill="#dc3545" fill-rule="evenodd"/>
+                            </svg>
+                        </div>
+                        <div class="demo-piece" title="Soldier Black - 2 points">
+                            <svg class="piece-svg" width="40" height="40" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+                                <path d="M 247.126 56.102 C 242.387 59.018" stroke="none" fill="#495057" fill-rule="evenodd"/>
+                            </svg>
+                        </div>
+                        <div class="demo-piece" title="Soldier Red - 1 point">
+                            <svg class="piece-svg" width="40" height="40" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+                                <path d="M 247.126 56.102 C 242.387 59.018" stroke="none" fill="#dc3545" fill-rule="evenodd"/>
+                            </svg>
+                        </div>
+                        <div class="demo-piece" title="Soldier Black - 4 points">
+                            <svg class="piece-svg" width="40" height="40" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+                                <path d="M 247.126 56.102 C 242.387 59.018" stroke="none" fill="#495057" fill-rule="evenodd"/>
+                            </svg>
+                        </div>
+                    </div>
+                    <div class="piece-info">
+                        <strong>Analysis:</strong> You have 1 guaranteed win (General) and 1 likely win (Horse). With mostly low soldiers, consider declaring 2-3 piles. The General guarantees at least one pile!
+                    </div>
+                </div>
+            </div>
+
+            <!-- Page 6: Special Rules -->
+            <div class="tutorial-page" id="page6">
+                <h2 class="page-title">Advanced Rules</h2>
+                
+                <div class="content-section">
+                    <div class="highlight-box">
+                        <h3>💎 Weak Hand Rule</h3>
+                        <ul style="margin-top: 1rem; padding-left: 2rem;">
+                            <li><strong>Definition:</strong> No piece valued above 9 points</li>
+                            <li><strong>Option:</strong> Request redeal</li>
+                            <li><strong>Cost:</strong> Round multiplier increases (×2, ×3, etc.)</li>
+                            <li><strong>Strategy:</strong> Use sparingly - multipliers affect everyone!</li>
+                        </ul>
+                    </div>
+
+                    <div class="highlight-box">
+                        <h3>🚫 Declaration Restriction</h3>
+                        <ul style="margin-top: 1rem; padding-left: 2rem;">
+                            <li><strong>Rule:</strong> Sum of all declarations ≠ 8</li>
+                            <li><strong>Purpose:</strong> Prevents passive play</li>
+                            <li><strong>Example:</strong> If 3 players declared 2, 2, 3 (total=7), the last CANNOT declare 1</li>
+                            <li><strong>Range:</strong> Each player can declare 0-8 piles</li>
+                        </ul>
+                    </div>
+
+                    <div class="content-section">
+                        <h3>⚖️ Important Game Rules</h3>
+                        <ul class="rules-list">
+                            <li><strong>Tiebreaker:</strong> Same total value? First played wins</li>
+                            <li><strong>Game End Tie:</strong> Player with most rounds won</li>
+                            <li><strong>Still Tied:</strong> Shared victory</li>
+                            <li><strong>Disconnected Players:</strong> Bot takes over automatically</li>
+                            <li><strong>Bot Strategy:</strong> Conservative but competent</li>
+                            <li><strong>Rejoin Option:</strong> Player can return anytime</li>
+                        </ul>
+                    </div>
+
+                    <div class="interactive-demo">
+                        <h3>🎯 Weak Hand Example</h3>
+                        <p>This would be considered a weak hand (all pieces ≤ 9 points):</p>
+                        <div class="demo-pieces">
+                            <div class="demo-piece" title="Horse - 8 points">
+                                <svg class="piece-svg" width="40" height="40" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+                                    <path d="M 133.526 85.669 C 133.967 86.676" stroke="none" fill="#dc3545" fill-rule="evenodd"/>
+                                </svg>
+                            </div>
+                            <div class="demo-piece" title="Chariot - 7 points">
+                                <svg class="piece-svg" width="40" height="40" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+                                    <path d="M 247.126 56.102 C 242.387 59.018" stroke="none" fill="#495057" fill-rule="evenodd"/>
+                                </svg>
+                            </div>
+                            <div class="demo-piece" title="Cannon - 6 points">
+                                <svg class="piece-svg" width="40" height="40" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+                                    <path d="M 250.145 120.016 C 242.546 123.235" stroke="none" fill="#495057" fill-rule="evenodd"/>
+                                </svg>
+                            </div>
+                            <div class="demo-piece" title="Soldier - 5 points">
+                                <svg class="piece-svg" width="40" height="40" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+                                    <path d="M 247.126 56.102 C 242.387 59.018" stroke="none" fill="#dc3545" fill-rule="evenodd"/>
+                                </svg>
+                            </div>
+                            <div class="demo-piece" title="Soldier - 4 points">
+                                <svg class="piece-svg" width="40" height="40" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+                                    <path d="M 247.126 56.102 C 242.387 59.018" stroke="none" fill="#495057" fill-rule="evenodd"/>
+                                </svg>
+                            </div>
+                            <div class="demo-piece" title="Soldier - 3 points">
+                                <svg class="piece-svg" width="40" height="40" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+                                    <path d="M 247.126 56.102 C 242.387 59.018" stroke="none" fill="#dc3545" fill-rule="evenodd"/>
+                                </svg>
+                            </div>
+                            <div class="demo-piece" title="Soldier - 2 points">
+                                <svg class="piece-svg" width="40" height="40" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+                                    <path d="M 247.126 56.102 C 242.387 59.018" stroke="none" fill="#495057" fill-rule="evenodd"/>
+                                </svg>
+                            </div>
+                            <div class="demo-piece" title="Soldier - 1 point">
+                                <svg class="piece-svg" width="40" height="40" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+                                    <path d="M 247.126 56.102 C 242.387 59.018" stroke="none" fill="#dc3545" fill-rule="evenodd"/>
+                                </svg>
+                            </div>
+                        </div>
+                        <div class="piece-info">
+                            <strong>Weak Hand!</strong> No General (11), Advisor (10), or Elephant (9). You could request a redeal, but it would double everyone's scores this round!
+                        </div>
+                    </div>
+
+                    <div class="highlight-box">
+                        <h3>⚠️ Declaration Restriction Example</h3>
+                        <div style="margin-top: 1rem;">
+                            <p><strong>Scenario:</strong> Three players have declared:</p>
+                            <ul style="padding-left: 2rem; margin: 0.5rem 0;">
+                                <li>Player 1: 2 piles</li>
+                                <li>Player 2: 2 piles</li>
+                                <li>Player 3: 3 piles</li>
+                                <li><strong>Total so far:</strong> 2 + 2 + 3 = 7</li>
+                            </ul>
+                            <p style="color: #dc3545; font-weight: bold;">Player 4 CANNOT declare 1 pile (would make total = 8)</p>
+                            <p style="color: #28a745;">Player 4 can declare: 0, 2, 3, 4, 5, 6, 7, or 8 piles</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Page 7: Quick Reference -->
+            <div class="tutorial-page" id="page7">
+                <h2 class="page-title">Quick Reference</h2>
+                
+                <div class="content-section">
+                    <div class="quick-ref">
+                        <div class="ref-section">
+                            <h4>🔄 Turn Sequence</h4>
+                            <ol style="padding-left: 1.5rem;">
+                                <li>Receive 8 pieces</li>
+                                <li>Declare 0-8 piles (total ≠ 8)</li>
+                                <li>Play pieces in turns</li>
+                                <li>Score round</li>
+                                <li>Repeat for 20 rounds</li>
+                            </ol>
+                        </div>
+
+                        <div class="ref-section">
+                            <h4>📊 Scoring at a Glance</h4>
+                            <ul style="padding-left: 1.5rem;">
+                                <li><strong>Hit target:</strong> Declared + 5 points</li>
+                                <li><strong>Miss target:</strong> -|difference|</li>
+                                <li><strong>Special 0/0:</strong> +3 points</li>
+                                <li><strong>Declare 0, win any:</strong> -piles won</li>
+                            </ul>
+                        </div>
+
+                        <div class="ref-section">
+                            <h4>⚔️ Piece Values</h4>
+                            <ul style="padding-left: 1.5rem;">
+                                <li><strong>General:</strong> 11</li>
+                                <li><strong>Advisor:</strong> 10</li>
+                                <li><strong>Elephant:</strong> 9</li>
+                                <li><strong>Horse:</strong> 8</li>
+                                <li><strong>Chariot:</strong> 7</li>
+                                <li><strong>Cannon:</strong> 6</li>
+                                <li><strong>Soldiers:</strong> 1-5</li>
+                            </ul>
+                        </div>
+
+                        <div class="ref-section">
+                            <h4>🎯 Play Rules</h4>
+                            <ul style="padding-left: 1.5rem;">
+                                <li><strong>Starter:</strong> Must play valid 1-6 pieces</li>
+                                <li><strong>Others:</strong> Must match count exactly</li>
+                                <li><strong>Invalid plays:</strong> Auto-lose (forfeit)</li>
+                                <li><strong>Winner:</strong> Takes all pieces as a pile</li>
+                            </ul>
+                        </div>
+
+                        <div class="ref-section">
+                            <h4>🏆 Victory</h4>
+                            <ul style="padding-left: 1.5rem;">
+                                <li><strong>First to 50 points</strong> OR</li>
+                                <li><strong>Most points after 20 rounds</strong></li>
+                            </ul>
+                        </div>
+
+                        <div class="ref-section">
+                            <h4>🎴 Valid Combinations</h4>
+                            <ul style="padding-left: 1.5rem;">
+                                <li><strong>Single:</strong> 1 piece</li>
+                                <li><strong>Pair:</strong> 2 same name & color</li>
+                                <li><strong>Three-of-a-kind:</strong> 3 soldiers, same color</li>
+                                <li><strong>Straight:</strong> 3+ consecutive ranks</li>
+                                <li><strong>Extended variations</strong> for 4-6 pieces</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="highlight-box">
+                    <h3>🎯 Final Message</h3>
+                    <p style="text-align: center; font-size: 1.2rem; font-style: italic;">
+                        <strong>"Ready to play? Remember: Liap rewards both careful planning and bold predictions. Good luck!"</strong>
+                    </p>
+                </div>
+
+                <div class="interactive-demo">
+                    <h3>🎊 Congratulations!</h3>
+                    <p>You've completed the Liap tutorial! You now know:</p>
+                    <ul style="text-align: left; max-width: 600px; margin: 1rem auto;">
+                        <li>✅ All 32 game pieces and their values</li>
+                        <li>✅ The three phases of each round</li>
+                        <li>✅ How scoring works and strategy tips</li>
+                        <li>✅ Valid play combinations</li>
+                        <li>✅ Special rules and edge cases</li>
+                        <li>✅ Quick reference for gameplay</li>
+                    </ul>
+                    <div style="margin-top: 2rem;">
+                        <button class="nav-btn" onclick="restartTutorial()" style="font-size: 1.2rem; padding: 1rem 2rem;">
+                            🔄 Restart Tutorial
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="progress-bar">
+            <div class="progress-fill" id="progressBar" style="width: 14.28%"></div>
+        </div>
+    </div>
+
+    <script>
+        let currentSlide = 1;
+        const totalSlides = 7;
+
+        function updateSlide() {
+            // Hide all pages
+            for (let i = 1; i <= totalSlides; i++) {
+                document.getElementById(`page${i}`).classList.remove('active');
+            }
+            
+            // Show current page
+            document.getElementById(`page${currentSlide}`).classList.add('active');
+            
+            // Update navigation
+            document.getElementById('pageIndicator').textContent = `Page ${currentSlide} of ${totalSlides}`;
+            document.getElementById('prevBtn').disabled = currentSlide === 1;
+            document.getElementById('nextBtn').disabled = currentSlide === totalSlides;
+            
+            // Update progress bar
+            const progress = (currentSlide / totalSlides) * 100;
+            document.getElementById('progressBar').style.width = `${progress}%`;
+        }
+
+        function changeSlide(direction) {
+            const newSlide = currentSlide + direction;
+            if (newSlide >= 1 && newSlide <= totalSlides) {
+                currentSlide = newSlide;
+                updateSlide();
+            }
+        }
+
+        function showPieceInfo(name, value, description) {
+            const infoDiv = document.getElementById('pieceInfo');
+            infoDiv.innerHTML = `
+                <strong>${name}</strong><br>
+                <span style="color: #28a745; font-size: 1.2rem;">${value}</span><br>
+                <em>${description}</em>
+            `;
+        }
+
+        function calculateScore() {
+            const declared = parseInt(document.getElementById('declared').value);
+            const won = parseInt(document.getElementById('won').value);
+            const resultDiv = document.getElementById('scoreResult');
+            
+            let score, explanation;
+            
+            if (declared === won) {
+                if (declared === 0) {
+                    score = 3;
+                    explanation = `Perfect 0/0 achievement! Special bonus = +${score} points`;
+                } else {
+                    score = declared + 5;
+                    explanation = `Perfect hit! Declared ${declared}, won ${won} = ${declared} + 5 = +${score} points`;
+                }
+            } else {
+                if (declared === 0) {
+                    score = -won;
+                    explanation = `Failed 0 strategy. Declared 0 but won ${won} = -${won} points`;
+                } else {
+                    score = -(Math.abs(declared - won));
+                    explanation = `Missed target. |${declared} - ${won}| = ${Math.abs(declared - won)} = ${score} points`;
+                }
+            }
+            
+            const color = score > 0 ? '#28a745' : '#dc3545';
+            resultDiv.innerHTML = `
+                <strong style="color: ${color};">Score: ${score > 0 ? '+' : ''}${score} points</strong><br>
+                ${explanation}
+            `;
+        }
+
+        function restartTutorial() {
+            currentSlide = 1;
+            updateSlide();
+        }
+
+        // Initialize
+        updateSlide();
+        calculateScore();
+
+        // Keyboard navigation
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'ArrowLeft') {
+                changeSlide(-1);
+            } else if (e.key === 'ArrowRight') {
+                changeSlide(1);
+            }
+        });
+    </script>
+</body>
+</html>
