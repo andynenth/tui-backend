@@ -227,7 +227,10 @@ const RoomPage = () => {
                               avatarColor={player?.avatar_color}
                             />
                           )}
-                          <TruncatedName name={playerName} className="rp-playerName" />
+                          <TruncatedName
+                            name={playerName}
+                            className="rp-playerName"
+                          />
                         </div>
                         {isHost && <span className="rp-hostBadge">Host</span>}
                         {isEmpty && isCurrentPlayerHost ? (
@@ -241,7 +244,8 @@ const RoomPage = () => {
                             </button>
                           </div>
                         ) : (
-                          !isHost && isCurrentPlayerHost && (
+                          !isHost &&
+                          isCurrentPlayerHost && (
                             <div className="rp-playerAction">
                               <button
                                 className="rp-actionBtn rp-removeBtn"

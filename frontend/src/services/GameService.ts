@@ -477,18 +477,18 @@ export class GameService extends EventTarget {
   private handleRoomNotFound(event: Event): void {
     const customEvent = event as CustomEvent<NetworkEventDetail>;
     const { data } = customEvent.detail;
-    
+
     console.log('🚫 Room not found:', data);
-    
+
     // Clear the invalid session
     import('../utils/sessionStorage').then(({ clearSession }) => {
       clearSession();
     });
-    
+
     // Show error message to user
     const message = data?.message || 'This game room no longer exists';
     const suggestion = data?.suggestion || 'Please return to the start page';
-    
+
     // Update state with error
     this.setState(
       {
@@ -498,17 +498,17 @@ export class GameService extends EventTarget {
       },
       'ROOM_NOT_FOUND'
     );
-    
+
     // Show toast if available
     if (typeof window !== 'undefined' && (window as any).showToast) {
       (window as any).showToast({
         type: 'error',
         title: 'Room Not Found',
         message: `${message}. ${suggestion}`,
-        duration: 8000
+        duration: 8000,
       });
     }
-    
+
     // Navigate to start page after delay
     setTimeout(() => {
       if (typeof window !== 'undefined') {
@@ -692,9 +692,10 @@ export class GameService extends EventTarget {
       newState.players = Object.entries(data.players).map(
         ([playerName, playerData]: [string, any]) => ({
           name: playerName, // Use the key as the name
-          score: 0, // Default score, will be updated in scoring phase
+          score: playerData.score || 0,
           is_bot: playerData.is_bot || false,
           is_host: playerData.is_host || false,
+          avatar_color: playerData.avatar_color || null, // Include avatar_color!
           zero_declares_in_a_row: playerData.zero_declares_in_a_row || 0,
           hand_size: playerData.hand_size || 0, // Include hand_size from backend
           captured_piles: playerData.captured_piles || 0,
@@ -717,6 +718,7 @@ export class GameService extends EventTarget {
           const existing = existingPlayersMap.get(player.name);
           return {
             ...player,
+            avatar_color: player.avatar_color,
             zero_declares_in_a_row: existing?.zero_declares_in_a_row || 0,
             // Preserve connection status if not provided by backend
             is_connected:

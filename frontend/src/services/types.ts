@@ -80,12 +80,16 @@ export interface Player {
   name: string;
   score: number;
   is_bot: boolean;
+  avatar_color?: string | null;
   pile_count?: number;
   zero_declares_in_a_row?: number;
   hand_size?: number;
   is_connected?: boolean;
   disconnect_time?: string;
   original_is_bot?: boolean;
+  is_host?: boolean;
+  captured_piles?: number;
+  declared?: number;
 }
 
 export interface TurnPlay {

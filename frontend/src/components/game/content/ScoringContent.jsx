@@ -96,7 +96,6 @@ const ScoringContent = ({
                     name={player.name}
                     isBot={player.is_bot}
                     avatarColor={player.avatar_color}
-                    className="sc-player-avatar"
                     size="medium"
                   />
                   <div className="sc-player-name">
