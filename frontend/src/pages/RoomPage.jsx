@@ -6,6 +6,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { useApp } from '../contexts/AppContext';
 import { Layout, Button } from '../components';
 import { PlayerAvatar } from '../components/game/shared';
+import TruncatedName from '../components/shared/TruncatedName';
 import { networkService } from '../services';
 // CSS classes are imported globally
 
@@ -223,9 +224,10 @@ const RoomPage = () => {
                               name={playerName}
                               isBot={isBot}
                               size="medium"
+                              avatarColor={player?.avatar_color}
                             />
                           )}
-                          <div className="rp-playerName">{playerName}</div>
+                          <TruncatedName name={playerName} className="rp-playerName" />
                         </div>
                         {isHost && <span className="rp-hostBadge">Host</span>}
                         {isEmpty && isCurrentPlayerHost ? (

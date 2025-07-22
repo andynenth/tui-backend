@@ -19,45 +19,28 @@ ServiceIntegration.ts:139 🛠️ RecoveryService: Automatic error recovery and 
 ServiceIntegration.ts:142 🏢 Enterprise Features: Event sourcing, logging, metrics
 ServiceIntegration.ts:143 ✅ Service integration layer initialized successfully
 ServiceIntegration.ts:144 
-App.jsx:187 🎮 Found stored session: {roomId: '759555', playerName: 'P2', sessionId: '759555-P2-1753122876911', createdAt: 1753122876911, lastActivity: 1753122876911, …}
+App.jsx:187 🎮 Found stored session: {roomId: '00B4AB', playerName: 'P2', sessionId: '00B4AB-P2-1753144447108', createdAt: 1753144447108, lastActivity: 1753144447108, …}
 App.jsx:192 🎮 Global services initialized
-react-dom-client.production.js:5788 TypeError: a.setPlayerName is not a function
-    at App.jsx:117:11
-    at Q5 (react-dom-client.production.js:8292:24)
-    at Jl (react-dom-client.production.js:9771:23)
-    at Te (react-dom-client.production.js:9746:7)
-    at Jl (react-dom-client.production.js:9878:7)
-    at Te (react-dom-client.production.js:9746:7)
-    at Jl (react-dom-client.production.js:9878:7)
-    at Te (react-dom-client.production.js:9746:7)
-    at Jl (react-dom-client.production.js:9765:7)
-    at Te (react-dom-client.production.js:9746:7)
-Ll @ react-dom-client.production.js:5788
-bo @ react-dom-client.production.js:5806
-Dl.i.componentDidCatch.e.callback @ react-dom-client.production.js:5845
-Fi @ react-dom-client.production.js:3435
-Ii @ react-dom-client.production.js:3445
-Vl @ react-dom-client.production.js:8345
-Fl @ react-dom-client.production.js:8743
-N3 @ react-dom-client.production.js:9559
-Fl @ react-dom-client.production.js:8711
-N3 @ react-dom-client.production.js:9559
-Fl @ react-dom-client.production.js:8747
-fs @ react-dom-client.production.js:11210
-ko @ react-dom-client.production.js:11070
-Lo @ react-dom-client.production.js:10490
-os @ react-dom-client.production.js:10419
-Oo @ react-dom-client.production.js:11634
-Z5 @ react-dom-client.production.js:11505
-Cs @ react-dom-client.production.js:11276
-ko @ react-dom-client.production.js:11071
-Lo @ react-dom-client.production.js:10490
-os @ react-dom-client.production.js:10419
-ys @ react-dom-client.production.js:11626
-W4 @ scheduler.production.js:151
-RecoveryService.ts:345 🔄 RecoveryService: Destroyed
-sessionStorage.js:90 Session cleared
-GameService.ts:322 🎮 GameService: Destroyed
-NetworkService.ts:324 🌐 NetworkService: Destroyed
-ServiceIntegration.ts:423 🔗 ServiceIntegration: Destroyed
-App.jsx:204 🎮 Global services cleaned up
+App.jsx:121 🎮 Recovering session, navigating to game: 00B4AB
+App.jsx:121 🎮 Recovering session, navigating to game: 00B4AB
+GamePage.jsx:62 🎮 GamePage: Recovering session for P2 in room 00B4AB
+ServiceIntegration.ts:169 🔗 Connecting to room 00B4AB as P2...
+RecoveryService.ts:109 🔄 RecoveryService: Initialized tracking for room 00B4AB
+GameService.ts:1554 🎮 State Change: JOIN_ROOM_INIT
+GameService.ts:1555 Previous: {isConnected: false, roomId: null, playerName: null, phase: 'waiting', currentRound: 1, …}
+GameService.ts:1556 New: {isConnected: false, roomId: '00B4AB', playerName: 'P2', phase: 'waiting', currentRound: 1, …}
+GameService.ts:1557 Diff: {roomId: {…}, playerName: {…}, lastEventSequence: {…}}
+GameContext.jsx:36 🚀 GAME_CONTEXT: Phase 1-4 Enterprise Architecture initializing
+NetworkService.ts:371 🔗 Connection opened to room 00B4AB
+GameService.ts:1554 🎮 State Change: NETWORK_CONNECTED
+GameService.ts:1555 Previous: {isConnected: false, roomId: '00B4AB', playerName: 'P2', phase: 'waiting', currentRound: 1, …}
+GameService.ts:1556 New: {isConnected: true, roomId: '00B4AB', playerName: 'P2', phase: 'waiting', currentRound: 1, …}
+GameService.ts:1557 Diff: {isConnected: {…}, lastEventSequence: {…}}
+NetworkService.ts:150 🌐 NetworkService: Connected to room 00B4AB
+GameService.ts:1554 🎮 State Change: JOIN_ROOM_CONNECTED
+GameService.ts:1555 Previous: {isConnected: true, roomId: '00B4AB', playerName: 'P2', phase: 'waiting', currentRound: 1, …}
+GameService.ts:1556 New: {isConnected: true, roomId: '00B4AB', playerName: 'P2', phase: 'waiting', currentRound: 1, …}
+GameService.ts:1557 Diff: {lastEventSequence: {…}, gameStartTime: {…}}
+sessionStorage.js:37 Session stored: {roomId: '00B4AB', playerName: 'P2'}
+GameService.ts:114 🎮 GameService: Joined room 00B4AB as P2
+ServiceIntegration.ts:183 ✅ Successfully connected to room 00B4AB

@@ -20,6 +20,7 @@ import HumanIcon from '../../../assets/avatars/human.svg';
  * @param {string} theme - Avatar theme: 'default', 'yellow' (default: 'default')
  * @param {boolean} isDisconnected - Whether the player is disconnected (optional, default: false)
  * @param {boolean} showAIBadge - Whether to show AI playing badge (optional, default: false)
+ * @param {string} avatarColor - Avatar color for human players (optional, default: null)
  */
 const PlayerAvatar = ({
   name,
@@ -30,6 +31,7 @@ const PlayerAvatar = ({
   theme = 'default',
   isDisconnected = false,
   showAIBadge = false,
+  avatarColor = null,
 }) => {
   // Get size-specific class
   const getSizeClass = () => {
@@ -50,12 +52,20 @@ const PlayerAvatar = ({
     return theme === 'yellow' ? 'player-avatar--yellow' : '';
   };
 
+  // Get color class
+  const getColorClass = () => {
+    if (!isBot && avatarColor) {
+      return `player-avatar--color-${avatarColor}`;
+    }
+    return '';
+  };
+
   // Render bot avatar
   if (isBot) {
     return (
       <div className="player-avatar-wrapper">
         <div
-          className={`player-avatar player-avatar--bot ${getSizeClass()} ${getThemeClass()} ${isThinking ? 'thinking' : ''} ${isDisconnected ? 'disconnected' : ''} ${className}`}
+          className={`player-avatar player-avatar--bot ${getSizeClass()} ${getThemeClass()} ${getColorClass()} ${isThinking ? 'thinking' : ''} ${isDisconnected ? 'disconnected' : ''} ${className}`}
         >
           <img src={BotIcon} alt="Bot" className="bot-icon" />
         </div>
@@ -68,7 +78,7 @@ const PlayerAvatar = ({
   return (
     <div className="player-avatar-wrapper">
       <div
-        className={`player-avatar ${getSizeClass()} ${getThemeClass()} ${isDisconnected ? 'disconnected' : ''} ${className}`}
+        className={`player-avatar ${getSizeClass()} ${getThemeClass()} ${getColorClass()} ${isDisconnected ? 'disconnected' : ''} ${className}`}
       >
         <img src={HumanIcon} alt={name} className="human-icon" />
       </div>
@@ -86,6 +96,7 @@ PlayerAvatar.propTypes = {
   theme: PropTypes.oneOf(['default', 'yellow']),
   isDisconnected: PropTypes.bool,
   showAIBadge: PropTypes.bool,
+  avatarColor: PropTypes.string,
 };
 
 export default PlayerAvatar;
