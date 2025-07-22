@@ -73,6 +73,9 @@
   --game-container-ratio: 0.5625; /* 9:16 ratio */
   --game-max-width: 400px;
   --game-max-height: 711px;
+  
+  /* Piece Tray */
+  --piece-tray-height: 200px; /* Default height for piece tray */
 
   /* Piece Colors */
   --color-piece-red: #dc2626;
@@ -91,4 +94,17 @@
     0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
   --shadow-game-piece:
     0 4px 6px -1px rgba(0, 0, 0, 0.2), 0 2px 4px -1px rgba(0, 0, 0, 0.1);
+}
+
+/* Responsive height adjustments */
+@media (max-height: 700px) {
+  :root {
+    --piece-tray-height: 180px;
+  }
+}
+
+@media (max-height: 600px) {
+  :root {
+    --piece-tray-height: 160px;
+  }
 }
