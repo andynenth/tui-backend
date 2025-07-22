@@ -299,8 +299,8 @@
 
 /* Game info section */
 .sp-game-info {
-  margin-top: 32px;
-  padding-top: 24px;
+  margin-top: 24px;
+  padding-top: 20px;
   border-top: 1px solid rgba(173, 181, 189, 0.2);
   text-align: center;
 }

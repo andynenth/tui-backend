@@ -5,6 +5,7 @@
 @import './components/lobbypage.css';
 @import './components/app.css';
 @import './components/gamepage.css';
+@import './pages/tutorial.css';
 @import './components/modal.css';
 @import './components/waitingui.css';
 @import './components/settings.css';
