@@ -4,10 +4,10 @@
 .gl-game-container {
   /* Fixed aspect ratio container */
   width: 100%;
-  max-width: var(--game-max-width);
+  max-width: min(var(--game-max-width), calc(100vw - 20px));
   
   /* Fallback for browsers without aspect-ratio support */
-  height: calc(100vw * 1.7778);
+  height: calc(min(var(--game-max-width), calc(100vw - 20px)) * 1.7778);
   max-height: var(--game-max-height);
   
   /* Modern approach - overrides height when supported */

@@ -97,11 +97,11 @@
 }
 
 /* Responsive height adjustments */
-@media (max-height: 700px) {
+/* @media (max-height: 700px) {
   :root {
     --piece-tray-height: 180px;
   }
-}
+} */
 
 /* @media (max-height: 600px) {
   :root {

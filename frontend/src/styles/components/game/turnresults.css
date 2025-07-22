@@ -369,7 +369,7 @@
 }
 
 /* Responsive adjustments */
-@media (max-height: 700px) {
+/* @media (max-height: 700px) {
   .tr-winner-announcement {
     padding: 12px;
   }
@@ -381,4 +381,4 @@
   .tr-winner-name {
     font-size: 20px;
   }
-}
+} */

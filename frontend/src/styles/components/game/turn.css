@@ -629,10 +629,10 @@
 }
 
 /* Responsive adjustments */
-@media (max-height: 700px) {
+/* @media (max-height: 700px) {
   .turn-central-table {
     width: 270px;
     height: 270px;
   }
 
-}
+} */
