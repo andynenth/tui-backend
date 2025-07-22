@@ -165,13 +165,15 @@ const StartPage = () => {
                 </div>
               </form>
 
-              {/* Game info */}
+              {/* How to play button */}
               <div className="sp-game-info">
-                <p className="sp-game-info-text">
-                  A strategic board game for 4 players.
-                  <br />
-                  Create or join a room to start playing!
-                </p>
+                <button
+                  type="button"
+                  className="btn btn-secondary btn-full"
+                  onClick={() => navigate('/tutorial')}
+                >
+                  How to Play
+                </button>
               </div>
             </div>
           </div>

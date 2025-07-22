@@ -20,6 +20,7 @@ import StartPage from './pages/StartPage';
 import LobbyPage from './pages/LobbyPage';
 import RoomPage from './pages/RoomPage';
 import GamePage from './pages/GamePage';
+import TutorialPage from './pages/TutorialPage';
 import { LoadingOverlay } from './components';
 
 // Service initialization
@@ -130,6 +131,9 @@ const AppRouterContent = ({ sessionToRecover }) => {
     <Routes>
       {/* Start page - no requirements */}
       <Route path="/" element={<StartPage />} />
+      
+      {/* Tutorial page - no requirements */}
+      <Route path="/tutorial" element={<TutorialPage />} />
 
       {/* Lobby - requires player name */}
       <Route
