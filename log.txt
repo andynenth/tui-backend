@@ -44,3 +44,63 @@ GameService.ts:1557 Diff: {lastEventSequence: {…}, gameStartTime: {…}}
 sessionStorage.js:37 Session stored: {roomId: '00B4AB', playerName: 'P2'}
 GameService.ts:114 🎮 GameService: Joined room 00B4AB as P2
 ServiceIntegration.ts:183 ✅ Successfully connected to room 00B4AB
+
+
+---
+
+[0.38ms] [@tailwindcss/postcss] src/styles/components/game/gameover.css
+[0.37ms]   ↳ Quick bail check
+
+
+[0.07ms] [@tailwindcss/postcss] src/styles/toast-notifications.css
+[0.06ms]   ↳ Quick bail check
+
+
+[215.15ms] [@tailwindcss/postcss] src/styles/globals.css
+[  0.09ms]   ↳ Quick bail check
+[ 73.68ms]   ↳ Setup compiler
+[  0.59ms]     ↳ PostCSS AST -> Tailwind CSS AST
+[ 73.06ms]     ↳ Create compiler
+[  0.33ms]   ↳ Register full rebuild paths
+[  9.80ms]   ↳ Setup scanner
+[ 43.72ms]   ↳ Scan for candidates
+[ 20.14ms]   ↳ Register dependency messages
+[ 54.46ms]   ↳ Build utilities
+[  8.25ms]   ↳ Transform Tailwind CSS AST into PostCSS AST
+[  4.24ms]   ↳ Update PostCSS AST
+
+INFO:     127.0.0.1:59976 - "GET / HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59976 - "GET /.well-known/appspecific/com.chrome.devtools.json HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:59977 - "GET /bundle.css HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59976 - "GET /bundle.js HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59976 - "GET /bundle.css.map HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59976 - "GET /bundle.js.map HTTP/1.1" 200 OK
+2025-07-21 17:36:14 - backend.api.routes.ws - INFO - 🔌 [ROOM_DEBUG] New WebSocket connection to room '00B4AB', ws_id: aca0e63c-a69b-436c-a0db-f3e4249169d8 at 1753144574.259376
+2025-07-21 17:36:14 - backend.api.routes.ws - INFO - 🧹 [ROOM_DEBUG] Room cleanup task already running
+INFO:     ('127.0.0.1', 59983) - "WebSocket /ws/00B4AB" [accepted]
+INFO:     connection open
+INFO:     127.0.0.1:60005 - "GET /lobby HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:60005 - "GET /.well-known/appspecific/com.chrome.devtools.json HTTP/1.1" 404 Not Found
+2025-07-21 17:36:19 - backend.api.routes.ws - INFO - 🔌 [ROOM_DEBUG] Handling disconnect for room '00B4AB', websocket_id: aca0e63c-a69b-436c-a0db-f3e4249169d8 at 1753144579.9949172
+2025-07-21 17:36:19 - api.websocket.connection_manager - WARNING - WebSocket ID aca0e63c-a69b-436c-a0db-f3e4249169d8 not found in mapping. Current mappings: []
+2025-07-21 17:36:19 - backend.api.routes.ws - WARNING - No websocket_id found on websocket object for room 00B4AB
+2025-07-21 17:36:19 - backend.api.routes.ws - INFO - ⚠️ [ROOM_DEBUG] WebSocket disconnect without ID for room '00B4AB'
+2025-07-21 17:36:19 - backend.api.routes.ws - INFO - 🔌 [ROOM_DEBUG] WebSocket unregistered from room '00B4AB'
+INFO:     connection closed
+INFO:     127.0.0.1:60007 - "GET / HTTP/1.1" 304 Not Modified
+INFO:     127.0.0.1:60033 - "GET /bundle.css HTTP/1.1" 304 Not Modified
+INFO:     127.0.0.1:60007 - "GET /.well-known/appspecific/com.chrome.devtools.json HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:60035 - "GET /bundle.js HTTP/1.1" 304 Not Modified
+INFO:     127.0.0.1:60035 - "GET /bundle.css.map HTTP/1.1" 304 Not Modified
+INFO:     127.0.0.1:60035 - "GET /bundle.js.map HTTP/1.1" 304 Not Modified
+2025-07-21 17:36:26 - backend.api.routes.ws - INFO - 🔌 [ROOM_DEBUG] New WebSocket connection to room '00B4AB', ws_id: 4f700b68-fca1-48b1-bb58-ba626e0e442c at 1753144586.119825
+2025-07-21 17:36:26 - backend.api.routes.ws - INFO - 🧹 [ROOM_DEBUG] Room cleanup task already running
+INFO:     ('127.0.0.1', 60041) - "WebSocket /ws/00B4AB" [accepted]
+INFO:     connection open
+INFO:     127.0.0.1:60102 - "GET / HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60102 - "GET /bundle.css HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60103 - "GET /bundle.js HTTP/1.1" 200 OK
+2025-07-21 17:36:40 - backend.api.routes.ws - INFO - 🔌 [ROOM_DEBUG] New WebSocket connection to room '00B4AB', ws_id: afce3668-4d57-4d11-a920-587395da1d5c at 1753144600.598849
+2025-07-21 17:36:40 - backend.api.routes.ws - INFO - 🧹 [ROOM_DEBUG] Room cleanup task already running
+INFO:     ('127.0.0.1', 60105) - "WebSocket /ws/00B4AB" [accepted]
+INFO:     connection open
