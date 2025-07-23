@@ -4,11 +4,18 @@ import asyncio
 import hashlib
 import random
 import time
-from typing import Dict, List, Optional, Set
+from typing import Dict, List, Optional, Set, Any
 
 import engine.ai as ai
 from engine.player import Player
 from engine.state_machine.core import ActionType, GameAction
+
+# Try to import async bot strategy for improved performance
+try:
+    from engine.async_bot_strategy import async_bot_strategy
+    ASYNC_BOT_STRATEGY_AVAILABLE = True
+except ImportError:
+    ASYNC_BOT_STRATEGY_AVAILABLE = False
 
 
 class BotManager:
@@ -115,6 +122,9 @@ class GameBotHandler:
     def _get_game_state(self):
         """Get current game state from state machine or fallback to direct game access"""
         if self.state_machine:
+            # Use game adapter if available for async compatibility
+            if hasattr(self.state_machine, 'game_adapter'):
+                return self.state_machine.game_adapter
             return self.state_machine.game  # Access game through state machine
         return self.game  # Fallback to direct access
 
@@ -407,16 +417,28 @@ class GameBotHandler:
 
             # Calculate declaration
             try:
-                value = ai.choose_declare(
-                    hand=bot.hand,
-                    is_first_player=(position == 0),
-                    position_in_order=position,
-                    previous_declarations=previous_declarations,
-                    must_declare_nonzero=(bot.zero_declares_in_a_row >= 2),
-                    verbose=False,
-                )
+                if ASYNC_BOT_STRATEGY_AVAILABLE:
+                    # Use async strategy for better performance
+                    value = await async_bot_strategy.choose_declaration(
+                        hand=bot.hand,
+                        is_first_player=(position == 0),
+                        position_in_order=position,
+                        previous_declarations=previous_declarations,
+                        must_declare_nonzero=(bot.zero_declares_in_a_row >= 2),
+                        verbose=False,
+                    )
+                else:
+                    # Fallback to sync strategy
+                    value = ai.choose_declare(
+                        hand=bot.hand,
+                        is_first_player=(position == 0),
+                        position_in_order=position,
+                        previous_declarations=previous_declarations,
+                        must_declare_nonzero=(bot.zero_declares_in_a_row >= 2),
+                        verbose=False,
+                    )
             except Exception as e:
-                print(f"❌ BOT_AI_ERROR: ai.choose_declare failed for {bot.name}: {e}")
+                print(f"❌ BOT_AI_ERROR: Declaration choice failed for {bot.name}: {e}")
                 raise
 
             # Apply last player rule
@@ -579,9 +601,14 @@ class GameBotHandler:
                 game_state = self._get_game_state()
                 required_piece_count = getattr(game_state, "required_piece_count", None)
 
-            selected = ai.choose_best_play(
-                bot.hand, required_count=required_piece_count, verbose=True
-            )
+            if ASYNC_BOT_STRATEGY_AVAILABLE:
+                selected = await async_bot_strategy.choose_best_play(
+                    bot.hand, required_count=required_piece_count, verbose=True
+                )
+            else:
+                selected = ai.choose_best_play(
+                    bot.hand, required_count=required_piece_count, verbose=True
+                )
 
             # Validate that bot respects required piece count
             if (
@@ -797,7 +824,12 @@ class GameBotHandler:
             # Note: State machine manages turn state internally
 
             # Choose play
-            selected = ai.choose_best_play(bot.hand, required_count=None, verbose=True)
+            if ASYNC_BOT_STRATEGY_AVAILABLE:
+                selected = await async_bot_strategy.choose_best_play(
+                    bot.hand, required_count=None, verbose=True
+                )
+            else:
+                selected = ai.choose_best_play(bot.hand, required_count=None, verbose=True)
             indices = self._get_piece_indices(bot.hand, selected)
 
             # Get the play type for the selected pieces
@@ -901,9 +933,26 @@ class GameBotHandler:
 
     async def _bot_redeal_decision(self, bot: Player):
         """Make bot redeal decision - uses standard pattern like declarations/turns"""
-        # Bots always accept redeals for testing purposes
-        # TODO: Add AI logic to make intelligent redeal decisions based on hand strength
-        should_decline = False
+        # Use async strategy if available
+        if ASYNC_BOT_STRATEGY_AVAILABLE:
+            game_state = self._get_game_state()
+            
+            # Get opponent scores
+            opponent_scores = {}
+            for player in game_state.players:
+                if player.name != bot.name:
+                    opponent_scores[player.name] = player.score
+            
+            should_decline = not await async_bot_strategy.should_accept_redeal(
+                hand=bot.hand,
+                round_number=getattr(game_state, 'round_number', 1),
+                current_score=bot.score,
+                opponent_scores=opponent_scores
+            )
+        else:
+            # Fallback: Bots always accept redeals for testing purposes
+            # TODO: Add AI logic to make intelligent redeal decisions based on hand strength
+            should_decline = False
 
         bot_name = bot.name
         print(

@@ -3,7 +3,7 @@
 import asyncio
 import logging
 from datetime import datetime
-from typing import Dict, List, Optional, Set
+from typing import Dict, List, Optional, Set, Union
 
 from .action_queue import ActionQueue
 from .base_state import GameState
@@ -13,6 +13,7 @@ from .states.game_over_state import GameOverState
 from .states.round_start_state import RoundStartState
 from .states.turn_results_state import TurnResultsState
 from .states.waiting_state import WaitingState
+from .async_game_adapter import AsyncGameAdapter, wrap_game_for_async
 
 logger = logging.getLogger(__name__)
 
@@ -24,9 +25,19 @@ class GameStateMachine:
     """
 
     def __init__(self, game, broadcast_callback=None):
-        self.game = game
+        # Wrap game with AsyncGameAdapter for unified async interface
+        from engine.async_game import AsyncGame
+        from engine.game import Game
+        
+        if isinstance(game, (Game, AsyncGame)):
+            self.game_adapter = wrap_game_for_async(game)
+            self.game = game  # Keep original reference for compatibility
+        else:
+            raise TypeError(f"Expected Game or AsyncGame, got {type(game)}")
+            
         logger.info(
-            f"🔍 ROUND_DEBUG: GameStateMachine created with game: {game}, round_number: {getattr(game, 'round_number', 'NO_ATTR') if game else 'NO_GAME'}"
+            f"🔍 ROUND_DEBUG: GameStateMachine created with {'async' if isinstance(game, AsyncGame) else 'sync'} game: {game}, "
+            f"round_number: {getattr(game, 'round_number', 'NO_ATTR') if game else 'NO_GAME'}"
         )
         # Initialize room_id as None - will be set by Room class before starting
         self._room_id = None
