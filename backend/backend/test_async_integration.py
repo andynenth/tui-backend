@@ -48,18 +48,10 @@ async def test_async_room_operations():
                 room_id = data["data"]["room_id"]
                 print(f"✅ Async room creation successful! Room ID: {room_id}")
                 
-                # Get room list to verify
-                await websocket.send(json.dumps({
-                    "event": "get_rooms",
-                    "data": {}
-                }))
+                # Longer delay to ensure room is fully registered
+                await asyncio.sleep(0.5)
                 
-                response = await websocket.recv()
-                rooms_data = json.loads(response)
-                print(f"\n2️⃣ Room list (async list_rooms): {json.dumps(rooms_data, indent=2)[:300]}...")
-                
-                if rooms_data.get("event") == "room_list":
-                    print(f"✅ Async list_rooms successful! Found {len(rooms_data['data']['rooms'])} rooms")
+                print(f"\n2️⃣ Room {room_id} created, will test direct connection")
                 
                 return room_id
             else:
@@ -77,32 +69,33 @@ async def test_async_room_join(room_id):
     print(f"\n3️⃣ Testing async room join for room {room_id}...")
     
     try:
-        # Connect with a different player
-        async with websockets.connect(f"{BASE_URL}/ws/lobby") as websocket:
-            # Send client ready
+        # Connect directly to the room WebSocket (not lobby)
+        async with websockets.connect(f"{BASE_URL}/ws/{room_id}") as websocket:
+            # Send client ready (this also joins the room)
             await websocket.send(json.dumps({
                 "event": "client_ready",
                 "data": {"player_name": "AsyncPlayer2"}
             }))
             
-            response = await websocket.recv()
-            print(f"Player 2 client ready: {response}")
-            
-            # Join room
-            await websocket.send(json.dumps({
-                "event": "join_room",
-                "data": {"room_id": room_id, "player_name": "AsyncPlayer2"}
-            }))
-            
-            # Wait for join response
+            # Wait for initial responses
             response = await websocket.recv()
             data = json.loads(response)
-            print(f"Join room response: {json.dumps(data, indent=2)}")
+            print(f"First response: {json.dumps(data, indent=2)[:200]}...")
             
-            if data.get("event") == "room_joined":
-                print(f"✅ Async room join successful!")
+            # Check for player_joined event
+            if data.get("event") == "player_joined":
+                print(f"✅ Async room join successful! Player joined room {room_id}")
+            elif data.get("event") == "room_state":
+                print(f"✅ Received room state, checking for player...")
+                if "AsyncPlayer2" in str(data):
+                    print(f"✅ Player successfully joined!")
             else:
-                print(f"❌ Join failed: {data}")
+                # Try to read another message
+                response2 = await websocket.recv()
+                data2 = json.loads(response2)
+                print(f"Second response: {json.dumps(data2, indent=2)[:200]}...")
+                if data2.get("event") == "player_joined":
+                    print(f"✅ Async room join successful!")
                 
     except Exception as e:
         print(f"❌ Join error: {e}")

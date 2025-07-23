@@ -6,7 +6,7 @@ from datetime import datetime
 from typing import Any, Dict, List, Optional
 
 import backend.socket_manager
-from backend.shared_instances import shared_bot_manager, shared_room_manager
+from shared_instances import shared_bot_manager, shared_room_manager
 from backend.socket_manager import broadcast
 from fastapi import APIRouter, HTTPException, Query
 from fastapi.responses import JSONResponse
@@ -65,11 +65,11 @@ async def get_room_stats(room_id: Optional[str] = Query(None)):
 
     if room_id:
         # Include room validation if specific room requested
-        room = room_manager.get_room(room_id)
+        room = await room_manager.get_room(room_id)
         if room:
             validation = room.validate_state()
             stats["room_validation"] = validation
-            stats["room_summary"] = room.summary()
+            stats["room_summary"] = await room.summary()
 
     return {"timestamp": time.time(), "stats": stats}
 
@@ -97,7 +97,7 @@ async def notify_lobby_room_created(room_data):
         )
 
         # Also send updated room list
-        available_rooms = room_manager.list_rooms()
+        available_rooms = await room_manager.list_rooms()
         await broadcast(
             "lobby",
             "room_list_update",
@@ -131,7 +131,7 @@ async def notify_lobby_room_updated(room_data):
         )
 
         # Send fresh room list
-        available_rooms = room_manager.list_rooms()
+        available_rooms = await room_manager.list_rooms()
         await broadcast(
             "lobby",
             "room_list_update",
@@ -160,7 +160,7 @@ async def notify_lobby_room_closed(room_id, reason="Room closed"):
         )
 
         # Send updated room list (without the closed room)
-        available_rooms = room_manager.list_rooms()
+        available_rooms = await room_manager.list_rooms()
         await broadcast(
             "lobby",
             "room_list_update",
@@ -234,7 +234,7 @@ async def get_room_reconstructed_state(room_id: str):
 
     try:
         # First try to get live room state
-        room = room_manager.get_room(room_id)
+        room = await room_manager.get_room(room_id)
         if room and room.game:
             # Return live state if available
             return {

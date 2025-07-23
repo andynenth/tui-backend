@@ -69,6 +69,7 @@ class AsyncRoomManager:
                 self._stats["total_operations"] += 1
             
             logger.info(f"Created async room {room_id} with host {host_name}")
+            logger.info(f"Current rooms in manager: {list(self.rooms.keys())}")
             
             # Future: await self._persist_room_creation(room_id, host_name)
             
@@ -91,8 +92,10 @@ class AsyncRoomManager:
         
         if room:
             self._stats["total_operations"] += 1
+            logger.debug(f"Found room {room_id} in AsyncRoomManager")
             return room
         
+        logger.warning(f"Room {room_id} not found in AsyncRoomManager. Current rooms: {list(self.rooms.keys())}")
         # Future: Check database if not in memory
         # room = await self._fetch_room_from_db(room_id)
         

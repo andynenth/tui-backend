@@ -266,9 +266,9 @@ class SocketManager:
             # Clean up empty rooms - BUT PROTECT ACTIVE GAMES
             if not self.room_connections[room_id]:
                 # Check if room has an active game before cleanup
-                from backend.shared_instances import shared_room_manager
+                from shared_instances import shared_room_manager
 
-                room = shared_room_manager.get_room(room_id)
+                room = await shared_room_manager.get_room(room_id)
 
                 if room and room.game and not room.game._is_game_over():
                     # Keep the room in connections dict but empty, so queue stays alive

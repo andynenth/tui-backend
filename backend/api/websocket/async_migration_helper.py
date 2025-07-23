@@ -289,12 +289,14 @@ async def handle_start_game_async(
 
 def example_websocket_handler_before():
     """Example: Current WebSocket handler (sync)"""
-    from backend.shared_instances import shared_room_manager
+    # Note: This example shows legacy sync code that needs migration
+    # shared_room_manager is now AsyncRoomManager, so these calls would fail
     
-    # Sync calls
-    room = shared_room_manager.get_room(room_id)
-    if room:
-        slot = room.join_room(player_name)  # Sync call in async context
+    # OLD SYNC CODE (DO NOT USE):
+    # room = shared_room_manager.get_room(room_id)  # Would fail - needs await
+    # if room:
+    #     slot = room.join_room(player_name)  # Would fail - needs await
+    pass
 
 
 async def example_websocket_handler_after():
