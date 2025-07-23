@@ -37,7 +37,7 @@ async def get_current_player_name(websocket_id: str) -> Optional[str]:
 async def broadcast_with_queue(room_id: str, event: str, data: dict):
     """Broadcast to room and queue messages for disconnected players"""
     # Get list of disconnected players in the room
-    room = room_manager.get_room(room_id)
+    room = await room_manager.get_room(room_id)
     if room and room.game:
         disconnected_players = []
         for player in room.game.players:
@@ -74,7 +74,7 @@ async def handle_disconnect(room_id: str, websocket: WebSocket):
 
         if not connection and room_id != "lobby":
             # Fallback: Check if any player in the room is missing their websocket
-            room = room_manager.get_room(room_id)
+            room = await room_manager.get_room(room_id)
             if room and room.started and room.game:
                 # This is a workaround - we should improve the tracking mechanism
                 logger.warning(
@@ -82,7 +82,7 @@ async def handle_disconnect(room_id: str, websocket: WebSocket):
                 )
 
         if connection and room_id != "lobby":
-            room = room_manager.get_room(room_id)
+            room = await room_manager.get_room(room_id)
             if room and room.started:  # Only treat as in-game if game started!
                 # This is an in-game disconnect
                 logger.info(
@@ -187,7 +187,7 @@ async def handle_disconnect(room_id: str, websocket: WebSocket):
 async def process_leave_room(room_id: str, player_name: str):
     """Shared logic for handling player leaving room (pre-game)
     This is extracted from the existing leave_room event handler"""
-    room = room_manager.get_room(room_id)
+    room = await room_manager.get_room(room_id)
     if not room:
         logger.warning(f"[ROOM_DEBUG] Room {room_id} not found in process_leave_room")
         return
@@ -211,7 +211,7 @@ async def process_leave_room(room_id: str, player_name: str):
                 "reason": "host_left",  # Keep existing reason for compatibility
             },
         )
-        room_manager.delete_room(room_id)
+        await room_manager.delete_room(room_id)
         logger.info(f"🗑️ [ROOM_DEBUG] Room '{room_id}' deleted because host left")
 
         # Update lobby with room list
@@ -277,7 +277,7 @@ async def websocket_endpoint(websocket: WebSocket, room_id: str):
 
     # Check if room exists (excluding lobby)
     if room_id != "lobby":
-        room = room_manager.get_room(room_id)
+        room = await room_manager.get_room(room_id)
         if not room:
             # Send room_not_found event
             await registered_ws.send_json(
@@ -375,7 +375,7 @@ async def websocket_endpoint(websocket: WebSocket, room_id: str):
             if room_id == "lobby":
                 if event_name == "request_room_list" or event_name == "get_rooms":
                     # Get available rooms and send to client
-                    available_rooms = room_manager.list_rooms()
+                    available_rooms = await room_manager.list_rooms()
 
                     await registered_ws.send_json(
                         {
@@ -406,7 +406,7 @@ async def websocket_endpoint(websocket: WebSocket, room_id: str):
 
                 elif event_name == "client_ready":
                     # Send initial room list when client connects to lobby
-                    available_rooms = room_manager.list_rooms()
+                    available_rooms = await room_manager.list_rooms()
 
                     await registered_ws.send_json(
                         {
@@ -440,7 +440,7 @@ async def websocket_endpoint(websocket: WebSocket, room_id: str):
 
                     try:
                         # Create the room
-                        room_id = room_manager.create_room(player_name)
+                        room_id = await room_manager.create_room(player_name)
 
                         # Send success response to the client
                         await registered_ws.send_json(
@@ -475,7 +475,7 @@ async def websocket_endpoint(websocket: WebSocket, room_id: str):
 
                 elif event_name == "get_rooms":
                     # Send current room list
-                    available_rooms = room_manager.list_rooms()
+                    available_rooms = await room_manager.list_rooms()
 
                     await registered_ws.send_json(
                         {
@@ -613,7 +613,7 @@ async def websocket_endpoint(websocket: WebSocket, room_id: str):
                     )
 
                 elif event_name == "client_ready":
-                    room = room_manager.get_room(room_id)
+                    room = await room_manager.get_room(room_id)
                     if room:
                         updated_summary = room.summary()
                         await registered_ws.send_json(
@@ -763,7 +763,7 @@ async def websocket_endpoint(websocket: WebSocket, room_id: str):
                         await asyncio.sleep(0)
 
                 elif event_name == "get_room_state":
-                    room = room_manager.get_room(room_id)
+                    room = await room_manager.get_room(room_id)
                     if room:
                         updated_summary = room.summary()
                         await registered_ws.send_json(
@@ -797,7 +797,7 @@ async def websocket_endpoint(websocket: WebSocket, room_id: str):
                         else None
                     )
 
-                    room = room_manager.get_room(room_id)
+                    room = await room_manager.get_room(room_id)
                     if room:
                         # Check if current player is the host
                         if current_player != room.host_name:
@@ -836,7 +836,7 @@ async def websocket_endpoint(websocket: WebSocket, room_id: str):
                                 )
 
                                 # Update lobby with room list (room may now be available)
-                                available_rooms = room_manager.list_rooms()
+                                available_rooms = await room_manager.list_rooms()
                                 await broadcast(
                                     "lobby",
                                     "room_list_update",
@@ -883,7 +883,7 @@ async def websocket_endpoint(websocket: WebSocket, room_id: str):
                         else None
                     )
 
-                    room = room_manager.get_room(room_id)
+                    room = await room_manager.get_room(room_id)
                     if room:
                         # Check if current player is the host
                         if current_player != room.host_name:
@@ -925,7 +925,7 @@ async def websocket_endpoint(websocket: WebSocket, room_id: str):
                                 )
 
                                 # Update lobby with room list (room may now be full)
-                                available_rooms = room_manager.list_rooms()
+                                available_rooms = await room_manager.list_rooms()
                                 await broadcast(
                                     "lobby",
                                     "room_list_update",
@@ -964,7 +964,7 @@ async def websocket_endpoint(websocket: WebSocket, room_id: str):
                     logger.info(
                         f"📤 [ROOM_DEBUG] Received 'leave_room' event for room '{room_id}'"
                     )
-                    room = room_manager.get_room(room_id)
+                    room = await room_manager.get_room(room_id)
                     if room:
                         # Log room state before handling leave
                         room_summary = room.summary()
@@ -1054,7 +1054,7 @@ async def websocket_endpoint(websocket: WebSocket, room_id: str):
                     value = event_data.get("value")
 
                     try:
-                        room = room_manager.get_room(room_id)
+                        room = await room_manager.get_room(room_id)
                         if not room or not room.game_state_machine:
                             await registered_ws.send_json(
                                 {
@@ -1105,7 +1105,7 @@ async def websocket_endpoint(websocket: WebSocket, room_id: str):
                     indices = event_data.get("indices", [])
 
                     try:
-                        room = room_manager.get_room(room_id)
+                        room = await room_manager.get_room(room_id)
                         if not room or not room.game_state_machine:
                             await registered_ws.send_json(
                                 {
@@ -1186,7 +1186,7 @@ async def websocket_endpoint(websocket: WebSocket, room_id: str):
                     indices = event_data.get("indices", [])
 
                     try:
-                        room = room_manager.get_room(room_id)
+                        room = await room_manager.get_room(room_id)
                         if not room or not room.game_state_machine:
                             await registered_ws.send_json(
                                 {
@@ -1260,7 +1260,7 @@ async def websocket_endpoint(websocket: WebSocket, room_id: str):
                     player_name = event_data.get("player_name")
 
                     try:
-                        room = room_manager.get_room(room_id)
+                        room = await room_manager.get_room(room_id)
                         if not room or not room.game_state_machine:
                             await registered_ws.send_json(
                                 {
@@ -1323,7 +1323,7 @@ async def websocket_endpoint(websocket: WebSocket, room_id: str):
                         continue
 
                     try:
-                        room = room_manager.get_room(room_id)
+                        room = await room_manager.get_room(room_id)
                         if not room or not room.game_state_machine:
                             await registered_ws.send_json(
                                 {
@@ -1391,7 +1391,7 @@ async def websocket_endpoint(websocket: WebSocket, room_id: str):
                         continue
 
                     try:
-                        room = room_manager.get_room(room_id)
+                        room = await room_manager.get_room(room_id)
                         if not room or not room.game_state_machine:
                             await registered_ws.send_json(
                                 {
@@ -1457,7 +1457,7 @@ async def websocket_endpoint(websocket: WebSocket, room_id: str):
                         continue
 
                     try:
-                        room = room_manager.get_room(room_id)
+                        room = await room_manager.get_room(room_id)
                         if not room or not room.game_state_machine:
                             await registered_ws.send_json(
                                 {
@@ -1525,7 +1525,7 @@ async def websocket_endpoint(websocket: WebSocket, room_id: str):
                     try:
                         # For now, treat leave_game same as leave_room
                         # Future: might need separate logic for mid-game leaving
-                        room = room_manager.get_room(room_id)
+                        room = await room_manager.get_room(room_id)
                         if room:
                             # Log room state before handling leave
                             room_summary = room.summary()
@@ -1548,7 +1548,7 @@ async def websocket_endpoint(websocket: WebSocket, room_id: str):
                                         "message": f"Game ended - host {player_name} left",
                                     },
                                 )
-                                room_manager.delete_room(room_id)
+                                await room_manager.delete_room(room_id)
                                 logger.info(
                                     f"Game ended: host {player_name} left room {room_id}"
                                 )
@@ -1594,7 +1594,7 @@ async def websocket_endpoint(websocket: WebSocket, room_id: str):
                 elif event_name == "start_game":
                     # Handle start game request
                     try:
-                        room = room_manager.get_room(room_id)
+                        room = await room_manager.get_room(room_id)
                         if not room:
                             await registered_ws.send_json(
                                 {
@@ -1663,7 +1663,7 @@ async def room_cleanup_task():
                 )
 
             for room_id in all_room_ids:
-                room = room_manager.get_room(room_id)
+                room = await room_manager.get_room(room_id)
                 if room:
                     should_cleanup = room.should_cleanup()
                     if should_cleanup:
@@ -1679,7 +1679,7 @@ async def room_cleanup_task():
                 )
 
             for room_id in rooms_to_cleanup:
-                room = room_manager.get_room(room_id)
+                room = await room_manager.get_room(room_id)
                 if room and room.should_cleanup():  # Double-check
                     logger.info(
                         f"🧹 [ROOM_DEBUG] Cleaning up abandoned room {room_id} (no human players)"
@@ -1702,7 +1702,7 @@ async def room_cleanup_task():
                     )
 
                     # Delete room
-                    room_manager.delete_room(room_id)
+                    await room_manager.delete_room(room_id)
 
                     logger.info(
                         f"✅ [ROOM_DEBUG] Room {room_id} cleaned up successfully"

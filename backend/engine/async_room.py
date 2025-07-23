@@ -11,7 +11,7 @@ from typing import Optional, List, Dict, Any, Callable
 from datetime import datetime
 
 from .player import Player
-from .game import Game
+from .async_game import AsyncGame
 from .state_machine.core import GamePhase
 from .state_machine.game_state_machine import GameStateMachine
 
@@ -36,7 +36,7 @@ class AsyncRoom:
         self.host_name = host_name
         self.players: List[Optional[Player]] = [None, None, None, None]
         self.started = False
-        self.game: Optional[Game] = None
+        self.game: Optional[AsyncGame] = None
         self.game_state_machine: Optional[GameStateMachine] = None
         
         # Async locks for thread safety
@@ -253,7 +253,7 @@ class AsyncRoom:
                     )
                 
                 # Create game instance
-                self.game = Game(self.players)
+                self.game = AsyncGame(self.players)
                 self.game.start_time = time.time()
                 
                 # Initialize state machine
