@@ -8,6 +8,9 @@ from backend.api.routes.routes import (
 from backend.api.routes.ws import (
     router as ws_router,  # Import the WebSocket router for real-time communication.
 )
+from backend.api.routes.debug import (
+    router as debug_router,  # Import the debug router for event store access.
+)
 from backend.api.middleware import (
     RateLimitMiddleware,
 )  # Import rate limiting middleware
@@ -103,6 +106,10 @@ app = FastAPI(
             "name": "recovery",
             "description": "System recovery and maintenance operations",
         },
+        {
+            "name": "debug",
+            "description": "Debug endpoints for event store access and game replay",
+        },
     ],
 )
 
@@ -133,6 +140,9 @@ app.include_router(
 app.include_router(
     ws_router
 )  # Mounts the WebSocket router at the root (or its defined paths).
+app.include_router(
+    debug_router
+)  # Mounts the debug router for event store access.
 
 # ✅ Serve static files.
 # This mounts the specified directory to the root path "/", meaning files like index.html, bundle.js, etc.,

@@ -7,17 +7,17 @@ from typing import AsyncGenerator, List, Optional
 from .core import GameAction
 
 # Import EventStore for action persistence
-try:
-    from api.services.event_store import event_store
-
-    EVENT_STORE_AVAILABLE = True
-except ImportError:
-    EVENT_STORE_AVAILABLE = False
-    event_store = None
+from backend.api.services.event_store import event_store
 
 
 class ActionQueue:
-    def __init__(self, room_id: Optional[str] = None):
+    def __init__(self, room_id: str):
+        """
+        Initialize ActionQueue with required room_id for event persistence
+        
+        Args:
+            room_id: Required room identifier for event storage
+        """
         self.queue: asyncio.Queue = asyncio.Queue()
         self.processing = False
         self.processing_lock = asyncio.Lock()
@@ -69,9 +69,6 @@ class ActionQueue:
         Args:
             action: The action to store
         """
-        if not EVENT_STORE_AVAILABLE or not event_store or not self.room_id:
-            return
-
         try:
             # Convert action to event payload
             payload = {
@@ -108,9 +105,6 @@ class ActionQueue:
             payload: Event data
             player_id: Optional player identifier
         """
-        if not EVENT_STORE_AVAILABLE or not event_store or not self.room_id:
-            return
-
         try:
             await event_store.store_event(
                 room_id=self.room_id,
