@@ -1,6 +1,6 @@
 # Task 3: Abstraction & Coupling - Detailed Execution Plan
 
-> **STATUS: Phase 1 Complete ✅** - Domain Layer has been successfully implemented. This document tracks both the original plan and actual implementation progress.
+> **STATUS: Phase 4 Complete ✅** - Clean API Layer has been successfully implemented. This document tracks both the original plan and actual implementation progress.
 
 ## Overview of Current Coupling Issues
 
@@ -290,70 +290,74 @@ class PlayTurnUseCase:
   - [x] Create `EventPublisher` interface with `EventSubscriber` and `EventStore`
   - [x] Create `BotStrategy` interface with `BotDecision` value object
 
-### Phase 2: Create Application Layer (Week 2)
-- [ ] Create `backend/application/` directory structure
-- [ ] Create use cases in `application/use_cases/`
-  - [ ] `CreateRoomUseCase` - orchestrates room creation
-  - [ ] `JoinRoomUseCase` - handles player joining
-  - [ ] `StartGameUseCase` - initiates game
-  - [ ] `PlayTurnUseCase` - processes turn
-  - [ ] `DeclarePilesUseCase` - handles declarations
-- [ ] Create application services in `application/services/`
-  - [ ] `GameService` - orchestrates game operations
-  - [ ] `RoomService` - manages rooms
-  - [ ] `BotService` - coordinates bot actions
-- [ ] Define application interfaces
-  - [ ] `NotificationService` - abstraction for notifications
-  - [ ] `AuthenticationService` - player authentication
-- [ ] Implement command pattern
-  - [ ] Create base `Command` class
-  - [ ] Create specific commands for each game action
-  - [ ] Create `CommandHandler` for each command
+### Phase 2: Create Application Layer (Week 2) ✅ COMPLETE
+- [x] Create `backend/application/` directory structure
+- [x] Create use cases in `application/use_cases/`
+  - [x] `CreateRoomUseCase` - orchestrates room creation
+  - [x] `JoinRoomUseCase` - handles player joining
+  - [x] `StartGameUseCase` - initiates game
+  - [x] `PlayTurnUseCase` - processes turn
+  - [x] `DeclarePilesUseCase` - handles declarations
+- [x] Create application services in `application/services/`
+  - [x] `GameService` - orchestrates game operations
+  - [x] `RoomService` - manages rooms
+  - [x] `BotService` - coordinates bot actions
+- [x] Define application interfaces
+  - [x] `NotificationService` - abstraction for notifications
+  - [x] `AuthenticationService` - player authentication
+- [x] Implement command pattern
+  - [x] Create base `Command` class with metadata and timestamps
+  - [x] Create specific commands for each game action (12+ commands)
+  - [x] Create `CommandHandler` base and `CommandBus` for routing
 
-### Phase 3: Refactor Infrastructure Layer (Week 3)
-- [ ] Create `backend/infrastructure/` directory structure
-- [ ] Move WebSocket code to `infrastructure/websocket/`
-  - [ ] Extract broadcasting to `BroadcastService`
-  - [ ] Create `WebSocketNotificationAdapter`
-  - [ ] Separate connection management
-- [ ] Create persistence implementations
-  - [ ] Implement `GameRepository` interface
-  - [ ] Implement `EventStore` with proper abstraction
-- [ ] Refactor state machine
-  - [ ] Move to `infrastructure/state_machine/`
-  - [ ] Create `StateAdapter` to bridge with domain
-  - [ ] Remove direct game manipulation
-- [ ] Refactor bot management
-  - [ ] Implement `BotStrategy` interface
-  - [ ] Create `BotManagerAdapter`
-  - [ ] Remove direct game dependencies
+### Phase 3: Refactor Infrastructure Layer (Week 3) ✅ COMPLETE
+- [x] Create `backend/infrastructure/` directory structure
+- [x] Move WebSocket code to `infrastructure/websocket/`
+  - [x] Extract broadcasting to `BroadcastService` with message sequencing
+  - [x] Create `WebSocketNotificationAdapter` implementing NotificationService
+  - [x] Separate connection management with health monitoring
+- [x] Create persistence implementations
+  - [x] Implement `GameRepository` interface (InMemory + FileBased)
+  - [x] Implement `EventStore` with proper abstraction
+  - [x] Create `RoomRepository` with join code management
+- [x] Refactor state machine
+  - [x] Move to `infrastructure/state_machine/`
+  - [x] Create `StateAdapter` to bridge with domain
+  - [x] Override broadcast to use NotificationService
+- [x] Refactor bot management
+  - [x] Implement `BotStrategy` interface with Easy/Medium strategies
+  - [x] Create `SimpleBotStrategyFactory` for strategy creation
+  - [x] Remove direct game dependencies
 
-### Phase 4: Create Clean API Layer (Week 4)
-- [ ] Refactor WebSocket handlers
-  - [ ] Use only application services
-  - [ ] Remove direct domain access
-  - [ ] Implement proper error handling
-- [ ] Create handler for each use case
-  - [ ] `RoomHandler` - room operations
-  - [ ] `GameHandler` - game operations
-  - [ ] `PlayerHandler` - player operations
-- [ ] Implement dependency injection
-  - [ ] Create service container
-  - [ ] Wire up dependencies
-  - [ ] Remove global singletons
+### Phase 4: Create Clean API Layer (Week 4) ✅ COMPLETE
+- [x] Refactor WebSocket handlers
+  - [x] Use only application services and commands
+  - [x] Remove direct domain access
+  - [x] Implement proper error handling with CommandResult
+- [x] Create handler for each use case
+  - [x] `RoomHandler` - room operations (settings, kick, transfer, close)
+  - [x] `GameHandler` - game operations (create, join, play, declare)
+  - [x] `UnifiedHandler` - routes to appropriate handlers
+- [x] Implement dependency injection
+  - [x] Create DependencyContainer with all services
+  - [x] Wire up all dependencies in single location
+  - [x] Remove global singletons
 
-### Phase 5: Event System Implementation (Week 5)
-- [ ] Create event bus infrastructure
-  - [ ] Implement `EventBus` class
-  - [ ] Create event handlers
-  - [ ] Set up subscriptions
-- [ ] Replace direct broadcasts with events
-  - [ ] Domain publishes domain events
-  - [ ] Infrastructure subscribes and broadcasts
-- [ ] Implement event sourcing integration
-  - [ ] Store domain events
-  - [ ] Enable event replay
-- [ ] Create event documentation
+### Phase 5: Event System Implementation (Week 5) ✅ COMPLETE
+- [x] Create event bus infrastructure
+  - [x] Implement `EventBus` class with priority and filtering
+  - [x] Create event handlers (Notification, State, Bot, Audit)
+  - [x] Set up subscriptions in DependencyContainer
+- [x] Replace direct broadcasts with events
+  - [x] Domain publishes domain events via EventPublisher
+  - [x] Infrastructure subscribes and broadcasts via handlers
+- [x] Implement event sourcing integration
+  - [x] Store domain events with EventStore
+  - [x] Enable event replay with EventReplayer
+  - [x] Create event projections for read models
+- [x] Create event documentation
+  - [x] Migration guide (EVENT_SYSTEM_MIGRATION.md)
+  - [x] Complete documentation (EVENT_SYSTEM_DOCUMENTATION.md)
 
 ### Phase 6: Testing and Migration (Week 6)
 - [ ] Create unit tests for domain layer
@@ -382,7 +386,7 @@ class PlayTurnUseCase:
 5. **Service Pattern**: Domain services are stateless with class methods
 6. **No Infrastructure**: Confirmed game.py had no infrastructure dependencies
 
-**Files Created:**
+**Phase 1 Files Created:**
 ```
 backend/domain/
 ├── __init__.py (domain facade)
@@ -408,11 +412,99 @@ backend/domain/
     └── bot_strategy.py
 ```
 
-**Challenges Resolved:**
-- Player entity didn't need avatar color (UI concern)
-- Connection tracking moved out (infrastructure concern)
-- Game entity required significant refactoring for encapsulation
-- Created more value objects than initially planned for better modeling
+### Phase 2 Implementation Details (COMPLETE)
+
+**Key Decisions Made:**
+1. **Command Pattern**: Full command/handler architecture with bus
+2. **Use Case Classes**: Dedicated class per major operation
+3. **Result Objects**: Type-safe results from all use cases
+4. **Service Layer**: Rich application services for orchestration
+5. **Interface Design**: Small, focused interfaces (ISP)
+6. **Async Throughout**: All operations async for scalability
+
+**Phase 2 Files Created:**
+```
+backend/application/
+├── __init__.py (application facade)
+├── commands/
+│   ├── base.py (250+ lines, command infrastructure)
+│   ├── room_commands.py (7 command types)
+│   └── game_commands.py (12 command types)
+├── use_cases/
+│   ├── create_room.py (150+ lines)
+│   ├── join_room.py (150+ lines)
+│   ├── start_game.py (150+ lines)
+│   ├── play_turn.py (200+ lines)
+│   └── declare_piles.py (150+ lines)
+├── services/
+│   ├── game_service.py (300+ lines)
+│   ├── room_service.py (250+ lines)
+│   └── bot_service.py (350+ lines)
+└── interfaces/
+    ├── notification_service.py (100+ lines)
+    └── authentication_service.py (100+ lines)
+```
+
+### Phase 3 Implementation Details (COMPLETE)
+
+**Key Decisions Made:**
+1. **Adapter Pattern**: All infrastructure adapts to domain/app interfaces
+2. **Multiple Implementations**: In-memory and file-based options
+3. **State Machine Bridge**: Adapter wraps existing state machine
+4. **Bot Strategies**: Pluggable AI with factory pattern
+5. **Connection Management**: Centralized WebSocket handling
+6. **Event Infrastructure**: Full pub/sub with history
+
+**Phase 3 Files Created:**
+```
+backend/infrastructure/
+├── __init__.py (infrastructure facade)
+├── websocket/
+│   ├── connection_manager.py (200+ lines)
+│   ├── broadcast_service.py (250+ lines)
+│   └── notification_adapter.py (150+ lines)
+├── persistence/
+│   ├── game_repository_impl.py (300+ lines)
+│   ├── room_repository_impl.py (250+ lines)
+│   └── event_publisher_impl.py (200+ lines)
+├── state_machine/
+│   └── state_adapter.py (250+ lines)
+├── bot/
+│   └── ai_strategy.py (400+ lines)
+└── auth/
+    └── simple_auth_adapter.py (200+ lines)
+```
+
+**Phase 3 Challenges Resolved:**
+- Bridged existing state machine without full rewrite
+- Overrode broadcast function to use NotificationService
+- Created multiple repository implementations for flexibility
+- Implemented bot strategies following domain interface
+- Maintained backward compatibility during migration
+
+### Phase 4 Implementation Details (COMPLETE)
+
+**Key Decisions Made:**
+1. **Unified Handler**: Single entry point routing to specific handlers
+2. **Command-Only API**: All operations go through command bus
+3. **DI Container**: Centralized dependency configuration
+4. **Additional Use Cases**: Created missing room/bot management cases
+5. **Clean Separation**: API knows only about application layer
+6. **Error Consistency**: All responses follow same format
+
+**Phase 4 Files Created:**
+```
+backend/api/
+├── websocket/
+│   ├── game_handler.py (250+ lines)
+│   ├── room_handler.py (150+ lines)
+│   └── endpoints.py (150+ lines)
+├── dependencies.py (300+ lines)
+├── app.py (60+ lines)
+└── application/use_cases/
+    ├── room_management.py (200+ lines)
+    └── bot_management.py (150+ lines)
+```
 
 ## Success Criteria
 
@@ -442,4 +534,33 @@ This plan transforms the tightly coupled architecture into a clean, maintainable
 - Comprehensive domain events
 - Well-defined interfaces for infrastructure
 
-**Next Step**: Phase 2 - Application Layer implementation to create use cases and orchestrate domain operations.
+✅ **Phase 2 COMPLETE** - Application Layer fully implemented with:
+- Command pattern for all user actions
+- Use cases for major operations
+- Application services for orchestration
+- Clean interfaces for infrastructure
+- Consistent error handling and results
+
+✅ **Phase 3 COMPLETE** - Infrastructure Layer fully implemented with:
+- WebSocket adapters with connection management and broadcasting
+- Multiple repository implementations (in-memory and file-based)
+- Event publisher and store for event sourcing
+- State machine adapter bridging old and new architecture
+- Bot AI strategies with factory pattern
+- Simple authentication with token management
+
+✅ **Phase 4 COMPLETE** - Clean API Layer fully implemented with:
+- WebSocket handlers using only application commands
+- Dependency injection container managing all dependencies
+- Additional use cases for room and bot management
+- Unified routing for all WebSocket events
+- Clean separation from domain and infrastructure
+
+✅ **Phase 5 COMPLETE** - Event System fully implemented with:
+- Event bus infrastructure with priority-based handler execution
+- Game event handlers for notifications, state updates, bot actions, and audit
+- Event sourcing support with replay and projections
+- Complete migration from direct broadcasts to event publishing
+- Comprehensive documentation for migration and usage
+
+**Next Step**: Phase 6 - Testing and Migration for comprehensive test coverage and migration strategy.
