@@ -3,7 +3,7 @@
 Room-related commands for the application layer.
 """
 
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from typing import Optional, Dict, Any
 
 from .base import Command
@@ -13,12 +13,10 @@ from .base import Command
 class CreateRoomCommand(Command):
     """Command to create a new game room."""
     host_name: str
-    room_settings: Optional[Dict[str, Any]] = None
+    room_settings: Dict[str, Any] = field(default_factory=dict)
     
     def __post_init__(self):
         super().__init__()
-        if self.room_settings is None:
-            self.room_settings = {}
 
 
 @dataclass
@@ -27,6 +25,9 @@ class JoinRoomCommand(Command):
     room_id: str
     player_name: str
     player_token: Optional[str] = None
+    
+    def __post_init__(self):
+        super().__init__()
 
 
 @dataclass
@@ -34,6 +35,9 @@ class LeaveRoomCommand(Command):
     """Command to leave a room."""
     room_id: str
     player_name: str
+    
+    def __post_init__(self):
+        super().__init__()
 
 
 @dataclass
@@ -42,6 +46,9 @@ class UpdateRoomSettingsCommand(Command):
     room_id: str
     player_name: str  # Must be the host
     settings: Dict[str, Any]
+    
+    def __post_init__(self):
+        super().__init__()
 
 
 @dataclass
@@ -50,6 +57,9 @@ class KickPlayerCommand(Command):
     room_id: str
     requesting_player: str  # Must be the host
     player_to_kick: str
+    
+    def __post_init__(self):
+        super().__init__()
 
 
 @dataclass
@@ -58,6 +68,9 @@ class TransferHostCommand(Command):
     room_id: str
     current_host: str
     new_host: str
+    
+    def __post_init__(self):
+        super().__init__()
 
 
 @dataclass
@@ -65,3 +78,6 @@ class CloseRoomCommand(Command):
     """Command to close a room."""
     room_id: str
     requesting_player: str  # Must be the host
+    
+    def __post_init__(self):
+        super().__init__()

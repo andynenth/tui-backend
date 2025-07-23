@@ -20,7 +20,7 @@ cp "frontend/$INDEX_FILE" "$STATIC_DIR/$INDEX_FILE"
 
 # Start FastAPI backend with hot reload
 echo "▶️ Starting backend on http://${API_HOST}:${API_PORT} ..."
-PYTHONPATH=backend python -m uvicorn backend.api.main:app \
+PYTHONPATH=backend python -m uvicorn backend.api.app:app \
   --host "$API_HOST" \
   --port "$API_PORT" \
   --reload &
