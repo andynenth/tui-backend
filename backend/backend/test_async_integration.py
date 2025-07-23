@@ -8,7 +8,7 @@ import websockets
 import json
 from datetime import datetime
 
-BASE_URL = "ws://localhost:5050"
+BASE_URL = "ws://127.0.0.1:5050"
 
 
 async def test_async_room_operations():
@@ -23,20 +23,20 @@ async def test_async_room_operations():
     try:
         # Connect to lobby WebSocket
         async with websockets.connect(f"{BASE_URL}/ws/lobby") as websocket:
-            # Register player
+            # First send client_ready to establish connection
             await websocket.send(json.dumps({
-                "event": "register",
+                "event": "client_ready",
                 "data": {"player_name": "AsyncTestPlayer"}
             }))
             
-            # Wait for registration response
+            # Wait for response
             response = await websocket.recv()
-            print(f"Registration response: {response}")
+            print(f"Client ready response: {response}")
             
-            # Create room
+            # Create room with player name
             await websocket.send(json.dumps({
                 "event": "create_room",
-                "data": {}
+                "data": {"player_name": "AsyncTestPlayer"}
             }))
             
             # Wait for room creation response
@@ -79,19 +79,19 @@ async def test_async_room_join(room_id):
     try:
         # Connect with a different player
         async with websockets.connect(f"{BASE_URL}/ws/lobby") as websocket:
-            # Register player
+            # Send client ready
             await websocket.send(json.dumps({
-                "event": "register",
+                "event": "client_ready",
                 "data": {"player_name": "AsyncPlayer2"}
             }))
             
             response = await websocket.recv()
-            print(f"Player 2 registration: {response}")
+            print(f"Player 2 client ready: {response}")
             
             # Join room
             await websocket.send(json.dumps({
                 "event": "join_room",
-                "data": {"room_id": room_id}
+                "data": {"room_id": room_id, "player_name": "AsyncPlayer2"}
             }))
             
             # Wait for join response
