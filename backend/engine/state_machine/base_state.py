@@ -240,6 +240,26 @@ class GameState(ABC):
                 f"📤 Auto-broadcast: phase_change to room {room_id} - {reason}"
             )
 
+            # Store state change in EventStore for replay capability
+            try:
+                from api.services.event_store import event_store
+                await event_store.store_event(
+                    room_id=room_id,
+                    event_type="phase_change",
+                    payload={
+                        "phase": self.phase_name.value,
+                        "phase_data": json_safe_phase_data,
+                        "players": players_data,
+                        "reason": reason,
+                        "sequence": self._sequence_number,
+                        "timestamp": time.time()
+                    }
+                )
+                self.logger.debug(f"Stored phase_change event in EventStore for room {room_id}")
+            except Exception as e:
+                # Don't let event storage failures break the game
+                self.logger.error(f"Failed to store phase_change in EventStore: {e}")
+
             # 🚀 ENTERPRISE: Notify bot manager about phase data changes for automatic bot triggering
             if hasattr(self.state_machine, "_notify_bot_manager_data_change"):
                 await self.state_machine._notify_bot_manager_data_change(

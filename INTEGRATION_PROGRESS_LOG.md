@@ -43,21 +43,44 @@ This document tracks the step-by-step integration of EventStore (State Sync/Repl
 
 ## Part 2: Async Architecture Activation
 
-### Step 1: Switch to AsyncRoomManager ⏳ Pending
+### Step 1: Switch to AsyncRoomManager ❌ Failed
 - **File**: `backend/shared_instances.py`
-- **Status**: Not started
-- **Test Result**: Pending
+- **Status**: Attempted but reverted
+- **Issue**: Import path conflicts between `engine.` and `backend.engine.`
+- **Test Result**: Server failed to start due to module import errors
+- **Notes**: AsyncRoomManager exists but needs proper integration setup
 
-### Step 2: Update WebSocket Handlers ⏳ Pending
+### Step 2: Update WebSocket Handlers ❌ Failed  
 - **File**: `backend/api/routes/ws.py`
-- **Status**: Not started
-- **Test Result**: Pending
+- **Status**: Attempted but reverted
+- **Changes Made**: Added `await` to room_manager method calls
+- **Issue**: Dependent on AsyncRoomManager working first
+- **Test Result**: Changes were reverted with Step 1
 
-### Step 3: Test Full Async Flow ⏳ Pending
-- **Status**: Not started
-- **Test Result**: Pending
+### Step 3: Test Full Async Flow ⏳ Not Started
+- **Status**: Blocked by Step 1 and 2
+- **Test Result**: N/A
 
 ---
+
+## Summary
+
+### EventStore Integration: ✅ SUCCESS
+- Successfully added event storage to phase changes in `base_state.py`
+- Mounted debug routes successfully
+- Verified events are being stored (251 total events in test)
+- Replay functionality confirmed working
+- All debug endpoints accessible: `/api/debug/events/{room_id}`, `/api/debug/replay/{room_id}`
+
+### Async Architecture Integration: ❌ BLOCKED
+- AsyncRoomManager implementation exists but has import path issues
+- The async classes (AsyncRoom, AsyncGame) are implemented
+- WebSocket handlers need to be updated to use await
+- **Root Cause**: Module import paths need to be fixed for async classes
+- **Next Steps**: 
+  1. Fix import paths in async modules
+  2. Update shared_instances.py to use AsyncRoomManager
+  3. Add await to all room_manager calls in ws.py
 
 ## Testing Notes
 - Each step will be tested individually before proceeding

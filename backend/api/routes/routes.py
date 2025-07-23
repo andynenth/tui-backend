@@ -22,6 +22,9 @@ from api.models.game_models import (
 from api.validation import RestApiValidator
 from engine.state_machine.core import ActionType, GameAction
 
+# Import debug routes
+from . import debug
+
 # Import EventStore for recovery endpoints
 try:
     from api.services.event_store import event_store
@@ -37,6 +40,9 @@ print(f"socket_manager id in {__name__}: {id(backend.socket_manager)}")
 router = APIRouter()
 room_manager = shared_room_manager
 bot_manager = shared_bot_manager
+
+# Mount debug router
+router.include_router(debug.router)
 
 # REMOVED: All redeal controller endpoints - state machine handles redeal logic
 
