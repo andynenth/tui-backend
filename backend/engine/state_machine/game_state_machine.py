@@ -29,10 +29,9 @@ class GameStateMachine:
             f"🔍 ROUND_DEBUG: GameStateMachine created with game: {game}, round_number: {getattr(game, 'round_number', 'NO_ATTR') if game else 'NO_GAME'}"
         )
         # Initialize room_id as None - will be set by Room class before starting
-        self.room_id = None
-        # Pass room_id to ActionQueue for event storage
-        room_id = getattr(game, "room_id", None) if game else None
-        self.action_queue = ActionQueue(room_id=room_id)
+        self._room_id = None
+        # ActionQueue will be initialized when room_id is set
+        self.action_queue = None
         self.current_state: Optional[GameState] = None
         self.current_phase: Optional[GamePhase] = None
         self.is_running = False
@@ -65,6 +64,19 @@ class GameStateMachine:
             },  # Next round or game over
             GamePhase.GAME_OVER: set(),  # Terminal state - no transitions
         }
+
+    @property
+    def room_id(self):
+        """Get room_id"""
+        return self._room_id
+    
+    @room_id.setter
+    def room_id(self, value: str):
+        """Set room_id and initialize ActionQueue"""
+        self._room_id = value
+        if value and not self.action_queue:
+            self.action_queue = ActionQueue(room_id=value)
+            logger.info(f"Initialized ActionQueue with room_id: {value}")
 
     async def start(self, initial_phase: GamePhase = GamePhase.WAITING):
         """
@@ -534,9 +546,12 @@ class GameStateMachine:
                 }
 
             # Store via action queue which has access to event store
-            await self.action_queue.store_state_event(
-                event_type="phase_change", payload=payload
-            )
+            if self.action_queue:
+                await self.action_queue.store_state_event(
+                    event_type="phase_change", payload=payload
+                )
+            else:
+                logger.warning("ActionQueue not initialized - skipping phase change event storage")
 
             logger.info(f"Stored phase change event: {old_phase} -> {new_phase}")
 
@@ -556,7 +571,10 @@ class GameStateMachine:
             player_id: Optional player identifier
         """
         try:
-            await self.action_queue.store_state_event(event_type, payload, player_id)
+            if self.action_queue:
+                await self.action_queue.store_state_event(event_type, payload, player_id)
+            else:
+                logger.warning(f"ActionQueue not initialized - skipping {event_type} event storage")
         except Exception as e:
             logger.error(f"Failed to store game event {event_type}: {e}")
 

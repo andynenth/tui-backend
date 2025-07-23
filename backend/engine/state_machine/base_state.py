@@ -126,6 +126,9 @@ class GameState(ABC):
         self.logger.info(f"🎮 Phase Data Update: {reason}")
         self.logger.debug(f"   Updates: {updates}")
 
+        # Store state transition event for replay capability
+        await self._store_state_transition_event(updates, reason)
+        
         # Automatic broadcasting (enterprise guarantee)
         if broadcast and self._auto_broadcast_enabled:
             await self._auto_broadcast_phase_change(reason)
@@ -322,3 +325,28 @@ class GameState(ABC):
 
         except Exception as e:
             self.logger.error(f"❌ Custom broadcast failed: {e}", exc_info=True)
+    
+    async def _store_state_transition_event(self, updates: Dict[str, Any], reason: str) -> None:
+        """
+        Store state transition in event store for replay capability
+        
+        Args:
+            updates: The phase data updates being applied
+            reason: Human-readable reason for the change
+        """
+        try:
+            if hasattr(self.state_machine, 'action_queue') and self.state_machine.action_queue:
+                await self.state_machine.action_queue.store_state_event(
+                    event_type='phase_data_update',
+                    payload={
+                        'phase': self.phase_name.value,
+                        'updates': self._make_json_safe(updates),
+                        'reason': reason,
+                        'sequence': self._sequence_number,
+                        'timestamp': time.time()
+                    }
+                )
+                self.logger.debug(f"Stored state transition event for {self.phase_name.value}")
+        except Exception as e:
+            # Don't let event storage failures break the game
+            self.logger.error(f"Failed to store state transition event: {e}")
