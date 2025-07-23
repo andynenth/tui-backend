@@ -24,10 +24,6 @@ class DomainEvent(ABC):
     - Integration between bounded contexts
     """
     
-    # Event metadata
-    event_id: str = field(default_factory=lambda: str(uuid.uuid4()))
-    occurred_at: datetime = field(default_factory=datetime.utcnow)
-    
     @property
     def event_type(self) -> str:
         """Get the event type name."""
@@ -58,7 +54,16 @@ class DomainEvent(ABC):
         return data
 
 
-@dataclass(frozen=True)
+@dataclass(frozen=True, kw_only=True)
+class SimpleDomainEvent(DomainEvent):
+    """
+    Base class for simple domain events that don't belong to an aggregate.
+    """
+    event_id: str = field(default_factory=lambda: str(uuid.uuid4()))
+    occurred_at: datetime = field(default_factory=datetime.utcnow)
+
+
+@dataclass(frozen=True, kw_only=True)
 class AggregateEvent(DomainEvent):
     """
     Base class for events that belong to an aggregate.
@@ -66,9 +71,10 @@ class AggregateEvent(DomainEvent):
     Aggregate events always have an aggregate_id that identifies
     which aggregate instance the event belongs to.
     """
-    
     aggregate_id: str
     aggregate_type: str
+    event_id: str = field(default_factory=lambda: str(uuid.uuid4()))
+    occurred_at: datetime = field(default_factory=datetime.utcnow)
     
     def _get_event_data(self) -> Dict[str, Any]:
         """Include aggregate information in event data."""

@@ -13,7 +13,6 @@ from uuid import uuid4
 T = TypeVar('T')
 
 
-@dataclass
 class Command(ABC):
     """
     Base class for all commands.
@@ -21,9 +20,10 @@ class Command(ABC):
     Commands represent user intentions and contain all data
     needed to perform an action.
     """
-    command_id: str = field(default_factory=lambda: str(uuid4()))
-    timestamp: datetime = field(default_factory=datetime.utcnow)
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    def __init__(self):
+        self.command_id: str = str(uuid4())
+        self.timestamp: datetime = datetime.utcnow()
+        self.metadata: Dict[str, Any] = {}
     
     def with_metadata(self, key: str, value: Any) -> 'Command':
         """Add metadata to the command."""

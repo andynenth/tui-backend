@@ -8,7 +8,7 @@ import logging
 from typing import Dict, Any, Optional
 from fastapi import WebSocket, WebSocketDisconnect
 
-from application.commands import (
+from backend.application.commands import (
     CreateRoomCommand,
     JoinRoomCommand,
     LeaveRoomCommand,

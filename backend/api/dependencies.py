@@ -7,40 +7,40 @@ from typing import Optional
 import logging
 
 # Domain
-from domain.interfaces.event_publisher import EventPublisher
-from domain.interfaces.bot_strategy import BotStrategyFactory
+from backend.domain.interfaces.event_publisher import EventPublisher
+from backend.domain.interfaces.bot_strategy import BotStrategyFactory
 
 # Application
-from application.commands.base import CommandBus, ValidatingCommandBus
-from application.use_cases import (
+from backend.application.commands.base import CommandBus, ValidatingCommandBus
+from backend.application.use_cases import (
     CreateRoomUseCase,
     JoinRoomUseCase,
     StartGameUseCase,
     PlayTurnUseCase,
     DeclarePilesUseCase
 )
-from application.use_cases.room_management import (
+from backend.application.use_cases.room_management import (
     UpdateRoomSettingsUseCase,
     KickPlayerUseCase,
     TransferHostUseCase,
     CloseRoomUseCase,
     LeaveRoomUseCase
 )
-from application.use_cases.bot_management import (
+from backend.application.use_cases.bot_management import (
     AddBotUseCase,
     RemoveBotUseCase,
     ConfigureBotUseCase
 )
-from application.services import (
+from backend.application.services import (
     GameService,
     RoomService,
     BotService
 )
-from application.interfaces.notification_service import NotificationService
-from application.interfaces.authentication_service import AuthenticationService
+from backend.application.interfaces.notification_service import NotificationService
+from backend.application.interfaces.authentication_service import AuthenticationService
 
 # Infrastructure
-from infrastructure import (
+from backend.infrastructure import (
     ConnectionManager,
     BroadcastService,
     WebSocketNotificationAdapter,
@@ -54,8 +54,8 @@ from infrastructure import (
 )
 
 # Application Events
-from application.events import InMemoryEventBus
-from application.events.game_event_handlers import (
+from backend.application.events import InMemoryEventBus
+from backend.application.events.game_event_handlers import (
     GameNotificationHandler,
     GameStateUpdateHandler,
     BotActionHandler,
@@ -63,7 +63,7 @@ from application.events.game_event_handlers import (
 )
 
 # Infrastructure Events
-from infrastructure.events import (
+from backend.infrastructure.events import (
     EventBusAdapter,
     EventStoreAdapter,
     DomainEventPublisher
@@ -239,7 +239,7 @@ class DependencyContainer:
     
     def _register_command_handlers(self):
         """Register all command handlers with the command bus."""
-        from application.commands import (
+        from backend.application.commands import (
             CreateRoomCommand,
             JoinRoomCommand,
             LeaveRoomCommand,
@@ -315,7 +315,7 @@ class DependencyContainer:
     
     def _register_event_handlers(self):
         """Register event handlers with the event bus."""
-        from domain.events.game_events import (
+        from backend.domain.events.game_events import (
             GameStartedEvent,
             RoundStartedEvent,
             TurnPlayedEvent,
@@ -324,7 +324,7 @@ class DependencyContainer:
             RoundEndedEvent,
             GameEndedEvent
         )
-        from domain.events.player_events import (
+        from backend.domain.events.player_events import (
             PlayerJoinedEvent,
             PlayerLeftEvent
         )

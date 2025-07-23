@@ -7,7 +7,7 @@ import logging
 from typing import Dict, Any, Optional
 from fastapi import WebSocket
 
-from application.commands import (
+from backend.application.commands import (
     UpdateRoomSettingsCommand,
     KickPlayerCommand,
     TransferHostCommand,

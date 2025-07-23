@@ -3,25 +3,27 @@
 Domain events related to game lifecycle and gameplay.
 """
 
-from dataclasses import dataclass
+from dataclasses import dataclass, field
+from datetime import datetime
 from typing import List, Dict, Optional
+import uuid
 from .base import AggregateEvent
 
 
-@dataclass(frozen=True)
+@dataclass(frozen=True, kw_only=True)
 class GameCreatedEvent(AggregateEvent):
     """Event raised when a new game is created."""
+    # Event-specific fields
     player_names: List[str]
     max_score: int
     max_rounds: int
     win_condition_type: str
     
     def __post_init__(self):
-        # Set aggregate type for all game events
         object.__setattr__(self, 'aggregate_type', 'Game')
 
 
-@dataclass(frozen=True)
+@dataclass(frozen=True, kw_only=True)
 class GameStartedEvent(AggregateEvent):
     """Event raised when a game begins."""
     round_number: int
@@ -32,7 +34,7 @@ class GameStartedEvent(AggregateEvent):
         object.__setattr__(self, 'aggregate_type', 'Game')
 
 
-@dataclass(frozen=True)
+@dataclass(frozen=True, kw_only=True)
 class RoundStartedEvent(AggregateEvent):
     """Event raised when a new round begins."""
     round_number: int
@@ -43,7 +45,7 @@ class RoundStartedEvent(AggregateEvent):
         object.__setattr__(self, 'aggregate_type', 'Game')
 
 
-@dataclass(frozen=True)
+@dataclass(frozen=True, kw_only=True)
 class CardsDealtEvent(AggregateEvent):
     """Event raised when cards are dealt to players."""
     round_number: int
@@ -54,7 +56,7 @@ class CardsDealtEvent(AggregateEvent):
         object.__setattr__(self, 'aggregate_type', 'Game')
 
 
-@dataclass(frozen=True)
+@dataclass(frozen=True, kw_only=True)
 class RedealRequestedEvent(AggregateEvent):
     """Event raised when a player requests a redeal."""
     round_number: int
@@ -66,7 +68,7 @@ class RedealRequestedEvent(AggregateEvent):
         object.__setattr__(self, 'aggregate_type', 'Game')
 
 
-@dataclass(frozen=True)
+@dataclass(frozen=True, kw_only=True)
 class PhaseChangedEvent(AggregateEvent):
     """Event raised when game phase changes."""
     old_phase: str
@@ -78,7 +80,7 @@ class PhaseChangedEvent(AggregateEvent):
         object.__setattr__(self, 'aggregate_type', 'Game')
 
 
-@dataclass(frozen=True)
+@dataclass(frozen=True, kw_only=True)
 class DeclarationMadeEvent(AggregateEvent):
     """Event raised when a player makes a pile declaration."""
     round_number: int
@@ -90,7 +92,7 @@ class DeclarationMadeEvent(AggregateEvent):
         object.__setattr__(self, 'aggregate_type', 'Game')
 
 
-@dataclass(frozen=True)
+@dataclass(frozen=True, kw_only=True)
 class TurnPlayedEvent(AggregateEvent):
     """Event raised when a player plays their turn."""
     round_number: int
@@ -103,7 +105,7 @@ class TurnPlayedEvent(AggregateEvent):
         object.__setattr__(self, 'aggregate_type', 'Game')
 
 
-@dataclass(frozen=True)
+@dataclass(frozen=True, kw_only=True)
 class TurnResolvedEvent(AggregateEvent):
     """Event raised when a turn is resolved."""
     round_number: int
@@ -116,7 +118,7 @@ class TurnResolvedEvent(AggregateEvent):
         object.__setattr__(self, 'aggregate_type', 'Game')
 
 
-@dataclass(frozen=True)
+@dataclass(frozen=True, kw_only=True)
 class RoundScoredEvent(AggregateEvent):
     """Event raised when round scoring is complete."""
     round_number: int
@@ -128,7 +130,19 @@ class RoundScoredEvent(AggregateEvent):
         object.__setattr__(self, 'aggregate_type', 'Game')
 
 
-@dataclass(frozen=True)
+@dataclass(frozen=True, kw_only=True)
+class RoundEndedEvent(AggregateEvent):
+    """Event raised when a round ends."""
+    round_number: int
+    round_winner: Optional[str]
+    next_round_starter: Optional[str]
+    is_final_round: bool
+    
+    def __post_init__(self):
+        object.__setattr__(self, 'aggregate_type', 'Game')
+
+
+@dataclass(frozen=True, kw_only=True)
 class GameEndedEvent(AggregateEvent):
     """Event raised when the game ends."""
     final_round: int
@@ -143,7 +157,7 @@ class GameEndedEvent(AggregateEvent):
 
 # Specialized events for error conditions
 
-@dataclass(frozen=True)
+@dataclass(frozen=True, kw_only=True)
 class InvalidPlayAttemptedEvent(AggregateEvent):
     """Event raised when a player attempts an invalid play."""
     round_number: int
@@ -155,12 +169,36 @@ class InvalidPlayAttemptedEvent(AggregateEvent):
         object.__setattr__(self, 'aggregate_type', 'Game')
 
 
-@dataclass(frozen=True)
+@dataclass(frozen=True, kw_only=True)
 class RuleViolationEvent(AggregateEvent):
     """Event raised when a game rule is violated."""
     rule_type: str
     player_name: Optional[str]
     description: str
+    
+    def __post_init__(self):
+        object.__setattr__(self, 'aggregate_type', 'Game')
+
+
+# Bot-specific events
+
+@dataclass(frozen=True, kw_only=True)
+class BotThinkingEvent(AggregateEvent):
+    """Event raised when a bot starts thinking."""
+    bot_name: str
+    action_type: str  # "declaration", "play"
+    thinking_duration_ms: int
+    
+    def __post_init__(self):
+        object.__setattr__(self, 'aggregate_type', 'Game')
+
+
+@dataclass(frozen=True, kw_only=True)
+class BotActionEvent(AggregateEvent):
+    """Event raised when a bot performs an action."""
+    bot_name: str
+    action_type: str  # "declaration", "play"
+    action_details: Dict[str, Any]
     
     def __post_init__(self):
         object.__setattr__(self, 'aggregate_type', 'Game')

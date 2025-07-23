@@ -14,6 +14,9 @@ class StartGameCommand(Command):
     """Command to start a game in a room."""
     room_id: str
     requesting_player: str  # Must be the host
+    
+    def __post_init__(self):
+        super().__init__()
 
 
 @dataclass
@@ -22,6 +25,9 @@ class DeclareCommand(Command):
     room_id: str
     player_name: str
     declaration: int  # 0-8
+    
+    def __post_init__(self):
+        super().__init__()
 
 
 @dataclass
@@ -30,6 +36,9 @@ class PlayTurnCommand(Command):
     room_id: str
     player_name: str
     piece_indices: List[int]  # Indices of pieces to play
+    
+    def __post_init__(self):
+        super().__init__()
 
 
 @dataclass
@@ -37,6 +46,9 @@ class AcceptRedealCommand(Command):
     """Command to accept a redeal request."""
     room_id: str
     player_name: str
+    
+    def __post_init__(self):
+        super().__init__()
 
 
 @dataclass
@@ -44,6 +56,9 @@ class DeclineRedealCommand(Command):
     """Command to decline a redeal request."""
     room_id: str
     player_name: str
+    
+    def __post_init__(self):
+        super().__init__()
 
 
 @dataclass
@@ -52,6 +67,9 @@ class RequestRedealCommand(Command):
     room_id: str
     player_name: str
     reason: Optional[str] = "weak_hand"
+    
+    def __post_init__(self):
+        super().__init__()
 
 
 @dataclass
@@ -60,6 +78,9 @@ class EndGameCommand(Command):
     room_id: str
     requesting_player: str  # Must be the host
     reason: Optional[str] = None
+    
+    def __post_init__(self):
+        super().__init__()
 
 
 @dataclass
@@ -67,6 +88,9 @@ class PauseGameCommand(Command):
     """Command to pause the game."""
     room_id: str
     requesting_player: str
+    
+    def __post_init__(self):
+        super().__init__()
 
 
 @dataclass
@@ -74,6 +98,9 @@ class ResumeGameCommand(Command):
     """Command to resume a paused game."""
     room_id: str
     requesting_player: str
+    
+    def __post_init__(self):
+        super().__init__()
 
 
 @dataclass
@@ -83,6 +110,9 @@ class AddBotCommand(Command):
     requesting_player: str  # Must be the host
     bot_name: str
     difficulty: str = "medium"  # easy, medium, hard, expert
+    
+    def __post_init__(self):
+        super().__init__()
 
 
 @dataclass
@@ -91,6 +121,9 @@ class RemoveBotCommand(Command):
     room_id: str
     requesting_player: str  # Must be the host
     bot_name: str
+    
+    def __post_init__(self):
+        super().__init__()
 
 
 @dataclass
@@ -100,4 +133,7 @@ class ConfigureBotCommand(Command):
     requesting_player: str  # Must be the host
     bot_name: str
     difficulty: Optional[str] = None
+    
+    def __post_init__(self):
+        super().__init__()
     play_speed: Optional[int] = None  # milliseconds
