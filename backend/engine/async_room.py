@@ -6,6 +6,7 @@ This will eventually replace the sync Room class.
 
 import asyncio
 import logging
+import os
 import time
 from typing import Optional, List, Dict, Any, Callable
 from datetime import datetime
@@ -23,6 +24,10 @@ class AsyncRoom:
     Async version of Room class.
     Manages the state of a single game room with async operations.
     """
+    
+    # Timeout configuration for different disconnect scenarios
+    IN_GAME_CLEANUP_TIMEOUT_SECONDS = int(os.getenv("IN_GAME_CLEANUP_TIMEOUT", "30"))
+    PRE_GAME_CLEANUP_TIMEOUT_SECONDS = 0  # Always immediate for pre-game
     
     def __init__(self, room_id: str, host_name: str):
         """
@@ -54,6 +59,10 @@ class AsyncRoom:
         self._last_activity = datetime.now()
         self._total_joins = 0
         self._total_exits = 0
+        
+        # Cleanup tracking
+        self.last_human_disconnect_time = None  # When last human left
+        self.cleanup_scheduled = False  # Flag to prevent duplicate scheduling
         
         # Initialize with host
         self.players[0] = Player(
@@ -263,7 +272,7 @@ class AsyncRoom:
                 self.game_state_machine.room_id = self.room_id
                 
                 # Register with bot manager
-                from backend.engine.bot_manager import BotManager
+                from .bot_manager import BotManager
                 bot_manager = BotManager()
                 bot_manager.register_game(
                     self.room_id, self.game, self.game_state_machine
@@ -445,3 +454,136 @@ class AsyncRoom:
             return loop.run_until_complete(self.start_game(broadcast_callback))
         finally:
             loop.close()
+    
+    @property
+    def CLEANUP_TIMEOUT_SECONDS(self):
+        """Dynamic timeout based on room state"""
+        timeout = (
+            self.IN_GAME_CLEANUP_TIMEOUT_SECONDS
+            if self.started
+            else self.PRE_GAME_CLEANUP_TIMEOUT_SECONDS
+        )
+        logger.info(
+            f"⏱️ [ROOM_DEBUG] Room '{self.room_id}' using cleanup timeout: {timeout}s (started={self.started})"
+        )
+        return timeout
+    
+    def has_any_human_players(self) -> bool:
+        """
+        Check if there are ANY human players in the room (connected or disconnected).
+        This is used to determine if the room should continue existing.
+        Returns:
+            bool: True if at least one human player exists, False if all are bots
+        """
+        if not self.game:
+            logger.info(
+                f"🎮 [ROOM_DEBUG] has_any_human_players: No game object for room '{self.room_id}'"
+            )
+            return False
+
+        human_count = 0
+        bot_count = 0
+        for player in self.game.players:
+            if player:
+                if player.is_bot:
+                    bot_count += 1
+                else:
+                    human_count += 1
+
+        logger.info(
+            f"👥 [ROOM_DEBUG] Room '{self.room_id}' player count: {human_count} humans, {bot_count} bots"
+        )
+        return human_count > 0
+    
+    def mark_for_cleanup(self):
+        """Mark room for cleanup after all humans disconnect"""
+        if not self.has_any_human_players():
+            self.last_human_disconnect_time = time.time()
+            self.cleanup_scheduled = True
+            logger.info(
+                f"🗑️ [ROOM_DEBUG] Room '{self.room_id}' marked for cleanup at {self.last_human_disconnect_time}, timeout={self.CLEANUP_TIMEOUT_SECONDS}s"
+            )
+        else:
+            logger.info(
+                f"❌ [ROOM_DEBUG] Room '{self.room_id}' NOT marked for cleanup - still has human players"
+            )
+    
+    def cancel_cleanup(self):
+        """Cancel pending cleanup when human reconnects"""
+        self.last_human_disconnect_time = None
+        self.cleanup_scheduled = False
+        logger.info(
+            f"✅ [ROOM_DEBUG] Cleanup cancelled for room '{self.room_id}' - human player reconnected"
+        )
+    
+    def should_cleanup(self) -> bool:
+        """Check if room should be cleaned up based on timeout"""
+        if not self.cleanup_scheduled:
+            return False
+
+        if self.last_human_disconnect_time is None:
+            return False
+
+        elapsed = time.time() - self.last_human_disconnect_time
+        should_cleanup = elapsed >= self.CLEANUP_TIMEOUT_SECONDS
+
+        if should_cleanup:
+            logger.info(
+                f"📢 [ROOM_DEBUG] Room '{self.room_id}' should be cleaned up: elapsed={elapsed:.2f}s >= timeout={self.CLEANUP_TIMEOUT_SECONDS}s"
+            )
+
+        return should_cleanup
+    
+    # Compatibility methods for sync Room API
+    @property
+    def slots(self) -> List[Optional[Player]]:
+        """Compatibility property - AsyncRoom uses 'players' instead of 'slots'"""
+        return self.players
+    
+    def validate_state(self) -> Dict[str, Any]:
+        """
+        Validate the current state of the room.
+        Used by health check endpoints.
+        
+        Returns:
+            Dict with validation results
+        """
+        try:
+            validation = {
+                "valid": True,
+                "errors": [],
+                "warnings": [],
+                "room_id": self.room_id,
+                "has_host": bool(self.host_name),
+                "player_count": sum(1 for p in self.players if p is not None),
+                "game_started": self.started
+            }
+            
+            # Check host exists in players
+            if self.host_name:
+                host_found = any(p and p.name == self.host_name for p in self.players)
+                if not host_found:
+                    validation["errors"].append(f"Host '{self.host_name}' not found in players")
+                    validation["valid"] = False
+            
+            # Check game state consistency
+            if self.started and not self.game:
+                validation["errors"].append("Room marked as started but no game instance")
+                validation["valid"] = False
+            
+            if self.game and not self.started:
+                validation["warnings"].append("Game instance exists but room not marked as started")
+            
+            # Check player slots
+            if self.started and validation["player_count"] < 4:
+                validation["warnings"].append(f"Game started with only {validation['player_count']} players")
+            
+            return validation
+            
+        except Exception as e:
+            return {
+                "valid": False,
+                "errors": [f"Validation error: {str(e)}"],
+                "warnings": [],
+                "room_id": self.room_id
+            }

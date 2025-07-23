@@ -381,8 +381,10 @@ class GameStateMachine:
         """
         try:
             from ..bot_manager import BotManager
+            print(f"🔍 STATE_MACHINE: BotManager imported successfully")
 
             bot_manager = BotManager()
+            print(f"🔍 STATE_MACHINE: BotManager instance created")
             room_id = getattr(self, "room_id", None)
             if not room_id:
                 logger.warning(
@@ -391,6 +393,7 @@ class GameStateMachine:
                 return
 
             logger.info(f"Notifying bot manager about phase {new_phase.value}")
+            print(f"🔍 STATE_MACHINE: Notifying bot manager about phase {new_phase.value} for room {room_id}")
 
             if new_phase == GamePhase.ROUND_START:
                 # Just notify about round start, don't trigger bot actions yet

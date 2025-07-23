@@ -6,7 +6,7 @@ import uuid
 from typing import Optional
 
 import backend.socket_manager
-from backend.shared_instances import shared_room_manager
+from shared_instances import shared_room_manager
 from backend.socket_manager import broadcast, register, unregister
 from fastapi import APIRouter, WebSocket, WebSocketDisconnect
 
@@ -121,7 +121,7 @@ async def handle_disconnect(room_id: str, websocket: WebSocket):
                     # Check if disconnecting player was the host
                     new_host = None
                     if room.is_host(connection.player_name):
-                        new_host = room.migrate_host()
+                        new_host = await room.migrate_host()
                         if new_host:
                             logger.info(
                                 f"Host migrated to {new_host} in room {room_id}"
@@ -215,7 +215,7 @@ async def process_leave_room(room_id: str, player_name: str):
         logger.info(f"🗑️ [ROOM_DEBUG] Room '{room_id}' deleted because host left")
 
         # Update lobby with room list
-        available_rooms = room_manager.list_rooms()
+        available_rooms = await room_manager.list_rooms()
         await broadcast(
             "lobby",
             "room_list_update",
@@ -227,8 +227,8 @@ async def process_leave_room(room_id: str, player_name: str):
     else:
         # EXISTING player leave logic from leave_room handler
         logger.info(f"👤 [ROOM_DEBUG] Player '{player_name}' leaving room '{room_id}'")
-        room.exit_room(player_name)
-        updated_summary = room.summary()
+        await room.exit_room(player_name)
+        updated_summary = await room.summary()
         logger.info(
             f"📊 [ROOM_DEBUG] Room state after player left: players={updated_summary['players']}, host={updated_summary['host_name']}"
         )
@@ -244,7 +244,7 @@ async def process_leave_room(room_id: str, player_name: str):
         )
 
         # Update lobby with updated room info
-        available_rooms = room_manager.list_rooms()
+        available_rooms = await room_manager.list_rooms()
         await broadcast(
             "lobby",
             "room_list_update",
@@ -494,7 +494,7 @@ async def websocket_endpoint(websocket: WebSocket, room_id: str):
 
                     try:
                         # Get the room
-                        room = room_manager.get_room(room_id_to_join)
+                        room = await room_manager.get_room(room_id_to_join)
                         if not room:
                             await registered_ws.send_json(
                                 {
@@ -533,10 +533,33 @@ async def websocket_endpoint(websocket: WebSocket, room_id: str):
                             )
                             continue
 
-                        # Try to join the room
-                        result = await room.join_room_safe(player_name)
+                        # Try to join the room (AsyncRoom.join_room returns slot index)
+                        try:
+                            assigned_slot = await room.join_room(player_name)
+                            
+                            # Create result dict to match expected format
+                            room_summary = await room.summary()
+                            result = {
+                                "success": True,
+                                "assigned_slot": assigned_slot,
+                                "room_state": room_summary,
+                                "operation_id": str(uuid.uuid4())
+                            }
+                            
+                        except ValueError as e:
+                            # Room is full or other error
+                            await registered_ws.send_json(
+                                {
+                                    "event": "error",
+                                    "data": {
+                                        "message": str(e),
+                                        "type": "join_room_error",
+                                    },
+                                }
+                            )
+                            continue
 
-                        if result["success"]:
+                        if True:  # Always succeeds if no exception
                             # Send success response to the client
                             await registered_ws.send_json(
                                 {
@@ -615,7 +638,7 @@ async def websocket_endpoint(websocket: WebSocket, room_id: str):
                 elif event_name == "client_ready":
                     room = await room_manager.get_room(room_id)
                     if room:
-                        updated_summary = room.summary()
+                        updated_summary = await room.summary()
                         await registered_ws.send_json(
                             {
                                 "event": "room_state_update",
@@ -765,7 +788,7 @@ async def websocket_endpoint(websocket: WebSocket, room_id: str):
                 elif event_name == "get_room_state":
                     room = await room_manager.get_room(room_id)
                     if room:
-                        updated_summary = room.summary()
+                        updated_summary = await room.summary()
                         await registered_ws.send_json(
                             {
                                 "event": "room_update",
@@ -815,13 +838,19 @@ async def websocket_endpoint(websocket: WebSocket, room_id: str):
                         try:
                             # Convert to 0-indexed (frontend sends 1-4, backend uses 0-3)
                             slot_index = int(slot_id) - 1
+                            
+                            # Get the player being removed before clearing the slot
+                            removed_player = None
+                            if 0 <= slot_index < len(room.players) and room.players[slot_index]:
+                                removed_player = room.players[slot_index].name
 
-                            # Use assign_slot_safe to clear the slot
-                            result = await room.assign_slot_safe(slot_index, None)
-
-                            if result["success"]:
+                            # Use assign_slot to clear the slot (AsyncRoom has built-in locks)
+                            await room.assign_slot(slot_index, None)
+                            
+                            # AsyncRoom.assign_slot doesn't return a result, so we assume success
+                            if True:
                                 # Broadcast room update to all clients in the room
-                                updated_summary = room.summary()
+                                updated_summary = await room.summary()
                                 await broadcast(
                                     room_id,
                                     "room_update",
@@ -845,6 +874,32 @@ async def websocket_endpoint(websocket: WebSocket, room_id: str):
                                         "timestamp": asyncio.get_event_loop().time(),
                                     },
                                 )
+                                
+                                # If we removed a human player, send them to lobby
+                                if removed_player and not removed_player.startswith("Bot"):
+                                    # Find the removed player's WebSocket connection
+                                    from backend.socket_manager import _socket_manager
+                                    
+                                    # Get all connections in the room
+                                    room_connections = _socket_manager.room_connections.get(room_id, set())
+                                    
+                                    # Send room_closed event specifically to the kicked player
+                                    for ws in room_connections:
+                                        # Check if this WebSocket belongs to the removed player
+                                        ws_id = getattr(ws, "_ws_id", None)
+                                        if ws_id:
+                                            player_name = await get_current_player_name(ws_id)
+                                            if player_name == removed_player:
+                                                try:
+                                                    await ws.send_json({
+                                                        "event": "room_closed",
+                                                        "data": {
+                                                            "reason": "player_removed",
+                                                            "message": "You have been removed from the room by the host"
+                                                        }
+                                                    })
+                                                except Exception as e:
+                                                    logger.warning(f"Failed to notify kicked player {removed_player}: {e}")
 
                             else:
                                 await registered_ws.send_json(
@@ -905,12 +960,13 @@ async def websocket_endpoint(websocket: WebSocket, room_id: str):
                             # Generate bot name
                             bot_name = f"Bot {slot_id}"
 
-                            # Use assign_slot_safe to add the bot
-                            result = await room.assign_slot_safe(slot_index, bot_name)
-
-                            if result["success"]:
+                            # Use assign_slot to add the bot (AsyncRoom has built-in locks)
+                            await room.assign_slot(slot_index, bot_name)
+                            
+                            # AsyncRoom.assign_slot doesn't return a result, so we assume success
+                            if True:
                                 # Broadcast room update to all clients in the room
-                                updated_summary = room.summary()
+                                updated_summary = await room.summary()
                                 await broadcast(
                                     room_id,
                                     "room_update",
@@ -967,7 +1023,7 @@ async def websocket_endpoint(websocket: WebSocket, room_id: str):
                     room = await room_manager.get_room(room_id)
                     if room:
                         # Log room state before handling leave
-                        room_summary = room.summary()
+                        room_summary = await room.summary()
                         logger.info(
                             f"📊 [ROOM_DEBUG] Room state before leave: players={room_summary['players']}, host={room_summary['host_name']}, started={room_summary['started']}"
                         )
@@ -993,7 +1049,7 @@ async def websocket_endpoint(websocket: WebSocket, room_id: str):
                             # Send confirmation to the leaving player
                             # Check if room still exists (it won't if host left)
                             room_still_exists = (
-                                room_manager.get_room(room_id) is not None
+                                await room_manager.get_room(room_id) is not None
                             )
                             await registered_ws.send_json(
                                 {
@@ -1528,7 +1584,7 @@ async def websocket_endpoint(websocket: WebSocket, room_id: str):
                         room = await room_manager.get_room(room_id)
                         if room:
                             # Log room state before handling leave
-                            room_summary = room.summary()
+                            room_summary = await room.summary()
                             logger.info(
                                 f"📊 [ROOM_DEBUG] Game room state before leave: players={room_summary['players']}, host={room_summary['host_name']}, started={room_summary['started']}"
                             )
@@ -1558,7 +1614,7 @@ async def websocket_endpoint(websocket: WebSocket, room_id: str):
                             else:
                                 # Regular player leaving game
                                 room.exit_room(player_name)
-                                updated_summary = room.summary()
+                                updated_summary = await room.summary()
                                 await broadcast(
                                     room_id,
                                     "room_update",
@@ -1608,8 +1664,8 @@ async def websocket_endpoint(websocket: WebSocket, room_id: str):
                         async def room_broadcast(event_type: str, event_data: dict):
                             await broadcast(room_id, event_type, event_data)
 
-                        # Start the game (same logic as REST endpoint)
-                        result = await room.start_game_safe(room_broadcast)
+                        # Start the game (AsyncRoom.start_game returns dict with success key)
+                        result = await room.start_game(room_broadcast)
 
                         if result.get("success"):
                             # Broadcast to all players in the room so they all navigate to game
