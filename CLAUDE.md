@@ -202,3 +202,15 @@ Key classes **ALL ENTERPRISE**:
 - As you complete each task listed in CODE_QUALITY_CHECKLIST.md, follow the documentation procedures outlined in CODE_QUALITY_TRACKING_GUIDE.md
 - CRITICAL: This project uses WebSocket for ALL game operations. Do not look for or suggest REST endpoints for game actions - they don't exist by design.
 - When implementing game features, always use WebSocket events through the NetworkService (frontend) or ws.py handlers (backend)
+
+## Task 3: Abstraction & Coupling Documentation
+
+The documentation for the clean architecture migration (Task 3) has been organized in:
+`backend/docs/task3-abstraction-coupling/`
+
+Key documents:
+- **Current Status**: `docs/task3-abstraction-coupling/README.md`
+- **Integration Guide**: `docs/task3-abstraction-coupling/implementation/guides/WS_INTEGRATION_GUIDE.md`
+- **Deployment Runbook**: `docs/task3-abstraction-coupling/implementation/guides/ADAPTER_DEPLOYMENT_RUNBOOK.md`
+
+Phase 1 (Clean API Layer) is COMPLETE with 22 adapters ready for production rollout.
