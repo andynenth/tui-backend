@@ -1,0 +1,42 @@
+{
+  "test_id": "4e94a03a",
+  "message_name": "leave_room",
+  "input_message": {
+    "action": "leave_room",
+    "data": {
+      "player_name": "Alice"
+    }
+  },
+  "response": {
+    "event": "error",
+    "data": {
+      "message": "Unknown action: leave_room",
+      "type": "unknown_action"
+    }
+  },
+  "broadcasts": [],
+  "state_changes": {
+    "room_state_after": {
+      "room_id": "ABC123",
+      "players": [
+        {
+          "name": "Alice",
+          "slot": 0,
+          "is_host": true
+        },
+        {
+          "name": "Bob",
+          "slot": 1
+        }
+      ],
+      "started": false
+    }
+  },
+  "timing": {
+    "start": 1753368141.592111,
+    "end": 1753368141.5921128,
+    "duration_ms": 0.0016689300537109375
+  },
+  "timestamp": "2025-07-24T07:42:21.592115",
+  "system_version": "1.0.0"
+}

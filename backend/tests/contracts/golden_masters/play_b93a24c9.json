@@ -1,0 +1,50 @@
+{
+  "test_id": "b93a24c9",
+  "message_name": "play",
+  "input_message": {
+    "action": "play",
+    "data": {
+      "player_name": "Alice",
+      "indices": [
+        0,
+        1,
+        2
+      ]
+    }
+  },
+  "response": {
+    "event": "error",
+    "data": {
+      "message": "Unknown action: play",
+      "type": "unknown_action"
+    }
+  },
+  "broadcasts": [],
+  "state_changes": {
+    "room_state_after": {
+      "room_id": "GAME01",
+      "phase": "TURN",
+      "current_player": "Alice",
+      "required_piece_count": 3,
+      "players": [
+        {
+          "name": "Alice",
+          "hand": [
+            "R10",
+            "R9",
+            "R8",
+            "B7",
+            "B6"
+          ]
+        }
+      ]
+    }
+  },
+  "timing": {
+    "start": 1753368141.58923,
+    "end": 1753368141.589233,
+    "duration_ms": 0.00286102294921875
+  },
+  "timestamp": "2025-07-24T07:42:21.589235",
+  "system_version": "1.0.0"
+}

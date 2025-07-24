@@ -1,0 +1,62 @@
+{
+  "test_id": "d420bc53",
+  "message_name": "join_room",
+  "input_message": {
+    "action": "join_room",
+    "data": {
+      "room_id": "ABC123",
+      "player_name": "Bob"
+    }
+  },
+  "response": {
+    "event": "room_joined",
+    "data": {
+      "room_id": "ABC123",
+      "player_name": "Bob",
+      "assigned_slot": 1,
+      "success": true
+    }
+  },
+  "broadcasts": [
+    {
+      "room_id": "ABC123",
+      "event": "room_update",
+      "data": {
+        "players": [
+          {
+            "name": "Alice",
+            "slot": 0,
+            "is_host": true
+          },
+          {
+            "name": "Bob",
+            "slot": 1
+          }
+        ],
+        "host_name": "Alice",
+        "room_id": "ABC123",
+        "started": false
+      }
+    }
+  ],
+  "state_changes": {
+    "room_state_after": {
+      "room_id": "ABC123",
+      "players": [
+        {
+          "name": "Alice",
+          "slot": 0,
+          "is_host": true
+        }
+      ],
+      "started": false
+    }
+  },
+  "timing": {
+    "start": 1753368141.584691,
+    "end": 1753368141.5846982,
+    "duration_ms": 0.007152557373046875
+  },
+  "timestamp": "2025-07-24T07:42:21.584700",
+  "system_version": "1.0.0"
+}

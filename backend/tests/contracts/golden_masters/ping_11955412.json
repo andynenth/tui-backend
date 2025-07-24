@@ -1,0 +1,27 @@
+{
+  "test_id": "11955412",
+  "message_name": "ping",
+  "input_message": {
+    "action": "ping",
+    "data": {}
+  },
+  "response": {
+    "event": "pong",
+    "data": {
+      "timestamp": null,
+      "server_time": 1234567890.123,
+      "room_id": null
+    }
+  },
+  "broadcasts": [],
+  "state_changes": {
+    "room_state_after": {}
+  },
+  "timing": {
+    "start": 1753368141.581484,
+    "end": 1753368141.5814881,
+    "duration_ms": 0.0040531158447265625
+  },
+  "timestamp": "2025-07-24T07:42:21.581491",
+  "system_version": "1.0.0"
+}
