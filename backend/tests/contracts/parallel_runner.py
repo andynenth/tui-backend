@@ -11,8 +11,8 @@ from datetime import datetime
 import json
 from pathlib import Path
 
-from .golden_master import GoldenMasterRecord, GoldenMasterComparator
-from .websocket_contracts import WebSocketContract, get_contract
+from tests.contracts.golden_master import GoldenMasterRecord, GoldenMasterComparator
+from tests.contracts.websocket_contracts import WebSocketContract, get_contract
 
 
 @dataclass
