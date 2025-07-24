@@ -1,0 +1,40 @@
+{
+  "test_id": "714ce21a",
+  "message_name": "start_game",
+  "input_message": {
+    "action": "start_game",
+    "data": {}
+  },
+  "response": {
+    "event": "error",
+    "data": {
+      "message": "Unknown action: start_game",
+      "type": "unknown_action"
+    }
+  },
+  "broadcasts": [],
+  "state_changes": {
+    "room_state_after": {
+      "room_id": "GAME02",
+      "players": [
+        {
+          "name": "Alice",
+          "slot": 0,
+          "is_host": true
+        },
+        {
+          "name": "Bob",
+          "slot": 1
+        }
+      ],
+      "started": false
+    }
+  },
+  "timing": {
+    "start": 1753368141.587188,
+    "end": 1753368141.587191,
+    "duration_ms": 0.0030994415283203125
+  },
+  "timestamp": "2025-07-24T07:42:21.587194",
+  "system_version": "1.0.0"
+}

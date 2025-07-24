@@ -1,0 +1,39 @@
+{
+  "test_id": "a84d8feb",
+  "message_name": "create_room",
+  "input_message": {
+    "action": "create_room",
+    "data": {
+      "player_name": "Alice"
+    }
+  },
+  "response": {
+    "event": "room_created",
+    "data": {
+      "room_id": "ABC123",
+      "host_name": "Alice",
+      "success": true
+    }
+  },
+  "broadcasts": [
+    {
+      "room_id": "lobby",
+      "event": "room_list_update",
+      "data": {
+        "rooms": [],
+        "timestamp": 1234567890.123,
+        "reason": "new_room_created"
+      }
+    }
+  ],
+  "state_changes": {
+    "room_state_after": {}
+  },
+  "timing": {
+    "start": 1753368141.582977,
+    "end": 1753368141.5829818,
+    "duration_ms": 0.00476837158203125
+  },
+  "timestamp": "2025-07-24T07:42:21.582984",
+  "system_version": "1.0.0"
+}
