@@ -1,5 +1,68 @@
 # Task 3: Abstraction & Coupling - Detailed Execution Plan
 
+## ⚠️ IMPORTANT: Lessons Learned from Previous Integration Failure
+
+### What Went Wrong in Commit 4d54b43
+1. **Big Bang Integration**: Attempted to switch entire system at once by changing `start.sh` entry point
+2. **Missing Event Classes**: Application layer expected events that weren't implemented, causing runtime errors
+3. **Disconnected Implementation**: Components were "100% complete but 0% integrated" - they existed but weren't connected
+4. **No Incremental Testing**: Couldn't verify individual components before full cutover
+5. **No Rollback Path**: Once switched, the system was broken with no way back
+
+### Key Insight
+> "All these files have been modified. Based on the error messages and what I've seen, it seems the clean architecture implementation is incomplete - there are many missing event classes that the application layer expects."
+
+## New Phased Approach to Prevent Integration Failures
+
+### Core Principles
+1. **Adapter Pattern First**: Create adapters that work alongside existing code, not replacements
+2. **Event-First Development**: Implement ALL events before any component uses them
+3. **Incremental Integration**: Each phase must be integrated and tested in production
+4. **Feature Flags**: Gradual rollout with ability to instantly rollback
+5. **No Big Bang**: Old system keeps running while new system is built alongside
+
+### Phase Overview
+
+| Phase | Focus | Key Deliverable | Integration Strategy | Checklist File |
+|-------|-------|-----------------|---------------------|----------------|
+| **Phase 0** | Feature Inventory | Complete feature catalog & behavioral tests | Shadow mode validation | [PHASE_0_FEATURE_INVENTORY.md](./PHASE_0_FEATURE_INVENTORY.md) |
+| **Phase 1** | Clean API Layer | API Adapters wrapping existing handlers | Side-by-side operation | [PHASE_1_CLEAN_API_LAYER.md](./PHASE_1_CLEAN_API_LAYER.md) |
+| **Phase 2** | Event System | Complete event implementation | Parallel event publishing | [PHASE_2_EVENT_SYSTEM.md](./PHASE_2_EVENT_SYSTEM.md) |
+| **Phase 3** | Domain Layer | Pure business logic | Behind interfaces only | [PHASE_3_DOMAIN_LAYER.md](./PHASE_3_DOMAIN_LAYER.md) |
+| **Phase 4** | Application Layer | Use cases with adapters | Feature-flagged operations | [PHASE_4_APPLICATION_LAYER.md](./PHASE_4_APPLICATION_LAYER.md) |
+| **Phase 5** | Infrastructure | Repositories and services | Gradual data migration | [PHASE_5_INFRASTRUCTURE.md](./PHASE_5_INFRASTRUCTURE.md) |
+| **Phase 6** | Gradual Cutover | Progressive feature enablement | Monitored rollout | [PHASE_6_GRADUAL_CUTOVER.md](./PHASE_6_GRADUAL_CUTOVER.md) |
+
+### Why Phase 0 is Critical
+
+The previous attempt failed partly because features were missed or behaved differently in the new implementation. Phase 0 prevents this by:
+- **Cataloging every feature** before any code changes
+- **Creating behavioral tests** that document exact current behavior
+- **Setting up shadow mode** to detect any discrepancies
+- **Establishing clear acceptance criteria** for migration success
+
+Without Phase 0, you risk building a "clean" architecture that doesn't actually do everything the current system does.
+
+### Why This Approach Works
+
+#### ❌ Previous Approach (Failed)
+```
+1. Build all components separately
+2. Switch entry point
+3. Hope everything works
+4. System crashes with missing dependencies
+```
+
+#### ✅ New Approach (Incremental)
+```
+0. Document every feature and behavior first
+1. Build adapter for one endpoint
+2. Route 1% of traffic through it
+3. Monitor and verify it works
+4. Gradually increase traffic
+5. Only then build next component
+```
+
 ## Overview of Current Coupling Issues
 
 ### 1. **Layer Violations**
@@ -256,113 +319,33 @@ class PlayTurnUseCase:
         return result
 ```
 
-## Step-by-Step Execution Checklist
+## New Phased Implementation Approach
 
-### Phase 1: Create Domain Layer (Week 1)
-- [ ] Create `backend/domain/` directory structure
-- [ ] Move `game.py` to `domain/entities/game.py`
-  - [ ] Remove all imports from infrastructure/api layers
-  - [ ] Make all attributes private with proper accessors
-  - [ ] Remove direct broadcast calls
-- [ ] Move `player.py` to `domain/entities/player.py`
-  - [ ] Ensure no infrastructure dependencies
-- [ ] Move `piece.py` to `domain/entities/piece.py`
-- [ ] Create `domain/value_objects/` for immutable values
-  - [ ] Create `PlayResult` value object
-  - [ ] Create `GameState` value object
-  - [ ] Create `Declaration` value object
-- [ ] Move pure business logic to `domain/services/`
-  - [ ] Move `rules.py` → `domain/services/game_rules.py`
-  - [ ] Move `scoring.py` → `domain/services/scoring.py`
-  - [ ] Move `turn_resolution.py` → `domain/services/turn_resolution.py`
-- [ ] Create domain events in `domain/events/`
-  - [ ] Create base `DomainEvent` class
-  - [ ] Create `GameStartedEvent`, `TurnPlayedEvent`, `PhaseChangedEvent`
-  - [ ] Create `PlayerJoinedEvent`, `PlayerLeftEvent`
-- [ ] Define domain interfaces in `domain/interfaces/`
-  - [ ] Create `GameRepository` interface
-  - [ ] Create `EventPublisher` interface
-  - [ ] Create `BotStrategy` interface
+The old "big bang" approach of implementing everything separately and then switching over has been replaced with an incremental, integrated approach. Each phase now includes:
 
-### Phase 2: Create Application Layer (Week 2)
-- [ ] Create `backend/application/` directory structure
-- [ ] Create use cases in `application/use_cases/`
-  - [ ] `CreateRoomUseCase` - orchestrates room creation
-  - [ ] `JoinRoomUseCase` - handles player joining
-  - [ ] `StartGameUseCase` - initiates game
-  - [ ] `PlayTurnUseCase` - processes turn
-  - [ ] `DeclarePilesUseCase` - handles declarations
-- [ ] Create application services in `application/services/`
-  - [ ] `GameService` - orchestrates game operations
-  - [ ] `RoomService` - manages rooms
-  - [ ] `BotService` - coordinates bot actions
-- [ ] Define application interfaces
-  - [ ] `NotificationService` - abstraction for notifications
-  - [ ] `AuthenticationService` - player authentication
-- [ ] Implement command pattern
-  - [ ] Create base `Command` class
-  - [ ] Create specific commands for each game action
-  - [ ] Create `CommandHandler` for each command
+1. **Implementation** - Build the components
+2. **Integration** - Connect to the live system using adapters
+3. **Testing** - Verify in production environment
+4. **Stabilization** - Monitor and fix issues before proceeding
 
-### Phase 3: Refactor Infrastructure Layer (Week 3)
-- [ ] Create `backend/infrastructure/` directory structure
-- [ ] Move WebSocket code to `infrastructure/websocket/`
-  - [ ] Extract broadcasting to `BroadcastService`
-  - [ ] Create `WebSocketNotificationAdapter`
-  - [ ] Separate connection management
-- [ ] Create persistence implementations
-  - [ ] Implement `GameRepository` interface
-  - [ ] Implement `EventStore` with proper abstraction
-- [ ] Refactor state machine
-  - [ ] Move to `infrastructure/state_machine/`
-  - [ ] Create `StateAdapter` to bridge with domain
-  - [ ] Remove direct game manipulation
-- [ ] Refactor bot management
-  - [ ] Implement `BotStrategy` interface
-  - [ ] Create `BotManagerAdapter`
-  - [ ] Remove direct game dependencies
+### Implementation Phases
 
-### Phase 4: Create Clean API Layer (Week 4)
-- [ ] Refactor WebSocket handlers
-  - [ ] Use only application services
-  - [ ] Remove direct domain access
-  - [ ] Implement proper error handling
-- [ ] Create handler for each use case
-  - [ ] `RoomHandler` - room operations
-  - [ ] `GameHandler` - game operations
-  - [ ] `PlayerHandler` - player operations
-- [ ] Implement dependency injection
-  - [ ] Create service container
-  - [ ] Wire up dependencies
-  - [ ] Remove global singletons
+Please refer to the individual phase checklists for detailed implementation steps:
 
-### Phase 5: Event System Implementation (Week 5)
-- [ ] Create event bus infrastructure
-  - [ ] Implement `EventBus` class
-  - [ ] Create event handlers
-  - [ ] Set up subscriptions
-- [ ] Replace direct broadcasts with events
-  - [ ] Domain publishes domain events
-  - [ ] Infrastructure subscribes and broadcasts
-- [ ] Implement event sourcing integration
-  - [ ] Store domain events
-  - [ ] Enable event replay
-- [ ] Create event documentation
+1. **[PHASE_1_CLEAN_API_LAYER.md](./PHASE_1_CLEAN_API_LAYER.md)** - Create API adapters alongside existing handlers
+2. **[PHASE_2_EVENT_SYSTEM.md](./PHASE_2_EVENT_SYSTEM.md)** - Implement complete event system first
+3. **[PHASE_3_DOMAIN_LAYER.md](./PHASE_3_DOMAIN_LAYER.md)** - Build pure domain logic
+4. **[PHASE_4_APPLICATION_LAYER.md](./PHASE_4_APPLICATION_LAYER.md)** - Create use cases with adapters
+5. **[PHASE_5_INFRASTRUCTURE.md](./PHASE_5_INFRASTRUCTURE.md)** - Implement repositories and services
+6. **[PHASE_6_GRADUAL_CUTOVER.md](./PHASE_6_GRADUAL_CUTOVER.md)** - Progressive feature enablement
 
-### Phase 6: Testing and Migration (Week 6)
-- [ ] Create unit tests for domain layer
-  - [ ] No infrastructure dependencies
-  - [ ] Pure business logic tests
-- [ ] Create integration tests for application layer
-  - [ ] Mock infrastructure interfaces
-  - [ ] Test use case flows
-- [ ] Create adapter tests
-  - [ ] Test infrastructure implementations
-  - [ ] Verify interface contracts
-- [ ] Migration strategy
-  - [ ] Create compatibility layer
-  - [ ] Gradual migration path
-  - [ ] Update documentation
+### Critical Success Factors
+
+1. **No Phase Skipping** - Each phase must be completed and verified before proceeding
+2. **Integration First** - Every component must be integrated and tested, not just implemented
+3. **Feature Flags** - All new features behind flags for instant rollback
+4. **Monitoring** - Comprehensive logging and metrics for each phase
+5. **Documentation** - Update as you go, not at the end
 
 ## Success Criteria
 
@@ -381,4 +364,65 @@ class PlayTurnUseCase:
 4. **Comprehensive Testing**: Ensure behavior preservation
 5. **Documentation**: Clear migration guides for team
 
-This plan transforms the tightly coupled architecture into a clean, maintainable system with proper abstractions and clear boundaries between concerns.
+## What Makes This Approach Different
+
+### Previous Failed Approach (Commit 4d54b43)
+- **Built in Isolation**: Created all clean architecture components without connecting them
+- **Big Bang Switch**: Changed entry point hoping everything would work
+- **Missing Dependencies**: Application layer expected events that didn't exist
+- **No Testing Path**: Couldn't verify components before full switch
+- **Result**: "100% complete but 0% integrated" - system crashed on startup
+
+### New Incremental Approach
+- **Built with Integration**: Each component is connected to live system immediately
+- **Adapter Pattern**: New code wraps old code, doesn't replace it
+- **Event-First**: Implement all events before anything uses them
+- **Continuous Testing**: Each component tested in production before next phase
+- **Result**: Gradual, stable migration with rollback capability at each step
+
+### Example: Phase 1 API Adapter
+Instead of replacing the WebSocket handler:
+```python
+# Old approach: Replace everything
+# ❌ Delete ws.py, create new handler, hope it works
+
+# New approach: Wrap and forward
+# ✅ Create adapter that calls existing ws.py
+class WebSocketAdapter:
+    def __init__(self, legacy_handler, command_bus):
+        self.legacy = legacy_handler
+        self.commands = command_bus
+    
+    async def handle_message(self, message):
+        if feature_flag('use_clean_architecture'):
+            return await self.commands.execute(message)
+        else:
+            return await self.legacy.handle(message)
+```
+
+This ensures the system keeps working while we build the new architecture alongside it.
+
+## Frontend Compatibility Throughout Migration
+
+### Current Frontend Interface
+The frontend exclusively uses WebSocket for ALL game operations:
+- **NO REST endpoints used for game logic** (only WebSocket)
+- **All game actions via WebSocket messages**
+- **All game state updates via WebSocket broadcasts**
+
+### Compatibility Strategy
+1. **Message Contract Preservation**: All WebSocket messages maintain exact same structure
+2. **Adapter Pattern**: New architecture wraps old, doesn't replace
+3. **Feature Flags**: Gradual rollout with instant rollback
+4. **Shadow Mode Validation**: Compare every response for differences
+5. **Zero Frontend Changes**: Backend migration is completely transparent
+
+### What This Means
+- ✅ Frontend continues working without ANY modifications
+- ✅ No coordinated deployments needed
+- ✅ Players experience zero disruption
+- ✅ Can rollback instantly if issues detected
+
+## Start with Phase 1
+
+Begin implementation with [PHASE_1_CLEAN_API_LAYER.md](./PHASE_1_CLEAN_API_LAYER.md)
