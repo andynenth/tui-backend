@@ -1,0 +1,31 @@
+{
+  "name": "play",
+  "request": {
+    "player_name": "Player1",
+    "pieces": [
+      5,
+      5,
+      5
+    ]
+  },
+  "room_state": {
+    "room_id": "room_123",
+    "game_active": true
+  },
+  "response": {
+    "event": "play_made",
+    "data": {
+      "player_name": "Player1",
+      "pieces_played": [
+        5,
+        5,
+        5
+      ],
+      "pieces_count": 3,
+      "success": true,
+      "next_player": "NextPlayer",
+      "winner": null
+    }
+  },
+  "captured_at": "2025-07-24T11:04:45.800252"
+}

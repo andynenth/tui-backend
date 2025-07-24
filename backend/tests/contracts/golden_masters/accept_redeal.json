@@ -1,0 +1,19 @@
+{
+  "name": "accept_redeal",
+  "request": {
+    "player_name": "Player2"
+  },
+  "room_state": {
+    "room_id": "room_123",
+    "game_active": true
+  },
+  "response": {
+    "event": "redeal_vote_cast",
+    "data": {
+      "player_name": "Player2",
+      "vote": "accept",
+      "votes_remaining": 2
+    }
+  },
+  "captured_at": "2025-07-24T11:04:45.800870"
+}

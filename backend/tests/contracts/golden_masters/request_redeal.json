@@ -1,0 +1,23 @@
+{
+  "name": "request_redeal",
+  "request": {
+    "player_name": "Player1"
+  },
+  "room_state": {
+    "room_id": "room_123",
+    "game_active": true
+  },
+  "response": {
+    "event": "redeal_requested",
+    "data": {
+      "requesting_player": "Player1",
+      "reason": "weak_hand",
+      "waiting_for_players": [
+        "Player2",
+        "Player3",
+        "Player4"
+      ]
+    }
+  },
+  "captured_at": "2025-07-24T11:04:45.800564"
+}

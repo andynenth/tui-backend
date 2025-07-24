@@ -1,0 +1,13 @@
+{
+  "name": "request_room_list",
+  "request": {},
+  "room_state": null,
+  "response": {
+    "event": "room_list_requested",
+    "data": {
+      "success": true,
+      "message": "Room list update triggered"
+    }
+  },
+  "captured_at": "2025-07-24T11:04:45.798919"
+}

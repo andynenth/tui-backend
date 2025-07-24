@@ -1,0 +1,23 @@
+{
+  "name": "remove_player",
+  "request": {
+    "player_name": "Dave",
+    "requester": "Alice"
+  },
+  "room_state": {
+    "room_id": "room_123",
+    "players": [
+      "Dave"
+    ],
+    "host_name": "Alice"
+  },
+  "response": {
+    "event": "player_removed",
+    "data": {
+      "player_name": "Dave",
+      "removed_by": "Alice",
+      "success": true
+    }
+  },
+  "captured_at": "2025-07-24T11:04:45.798279"
+}
