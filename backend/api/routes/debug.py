@@ -203,6 +203,94 @@ async def get_event_statistics():
         raise HTTPException(status_code=500, detail=str(e))
 
 
+@router.get("/turns/{room_id}")
+async def get_turn_plays(
+    room_id: str,
+    turn_number: Optional[int] = Query(None, description="Specific turn number to retrieve"),
+    player_name: Optional[str] = Query(None, description="Filter by player name")
+):
+    """
+    Get turn play history for a room in a user-friendly format
+    
+    Args:
+        room_id: The room identifier
+        turn_number: Optional specific turn number (if not provided, returns all turns)
+        player_name: Optional player name filter
+        
+    Returns:
+        Structured turn play data
+    """
+    try:
+        # Get all turn_play events for the room
+        events = await event_store.get_events_by_type(room_id, "turn_play")
+        
+        # Group plays by turn
+        turns = {}
+        for event in events:
+            payload = event.payload
+            turn_num = payload.get("turn_number", 0)
+            
+            if turn_num not in turns:
+                turns[turn_num] = {
+                    "turn_number": turn_num,
+                    "plays": [],
+                    "winner": None,
+                    "total_pieces": 0
+                }
+            
+            # Extract play data
+            play_data = {
+                "player": event.player_id,
+                "pieces_count": payload.get("pieces_count", 0),
+                "play_type": payload.get("play_type", "UNKNOWN"),
+                "play_value": payload.get("play_value", 0),
+                "pieces": payload.get("pieces", []),
+                "valid": payload.get("valid", False),
+                "timestamp": event.timestamp
+            }
+            
+            # Apply player filter if specified
+            if player_name and play_data["player"] != player_name:
+                continue
+                
+            turns[turn_num]["plays"].append(play_data)
+            turns[turn_num]["total_pieces"] += play_data["pieces_count"]
+            
+            # Track winner if this play won
+            if payload.get("won_turn"):
+                turns[turn_num]["winner"] = event.player_id
+        
+        # Get turn results to identify winners
+        result_events = await event_store.get_events_by_type(room_id, "turn_result")
+        for event in result_events:
+            payload = event.payload
+            turn_num = payload.get("turn_number", 0)
+            if turn_num in turns:
+                turns[turn_num]["winner"] = payload.get("winner")
+                turns[turn_num]["piles_won"] = payload.get("piles_won", 0)
+        
+        # Convert to list and sort by turn number
+        turn_list = sorted(turns.values(), key=lambda x: x["turn_number"])
+        
+        # Filter by turn number if specified
+        if turn_number is not None:
+            turn_list = [t for t in turn_list if t["turn_number"] == turn_number]
+        
+        return {
+            "room_id": room_id,
+            "total_turns": len(turn_list),
+            "filter": {
+                "turn_number": turn_number,
+                "player_name": player_name
+            },
+            "turns": turn_list
+        }
+        
+    except Exception as e:
+        logger.error(f"Error retrieving turn plays for room {room_id}: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
 @router.post("/cleanup")
 async def cleanup_old_events(
     older_than_hours: int = Query(24, description="Remove events older than this many hours")

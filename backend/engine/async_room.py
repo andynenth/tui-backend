@@ -43,6 +43,7 @@ class AsyncRoom:
         self.started = False
         self.game: Optional[AsyncGame] = None
         self.game_state_machine: Optional[GameStateMachine] = None
+        self.game_ended = False  # Track if game has reached GAME_OVER phase
         
         # Async locks for thread safety
         self._join_lock = asyncio.Lock()
@@ -394,6 +395,14 @@ class AsyncRoom:
         # Future: Persist final room state
         # await self._persist_room_cleanup()
     
+    async def mark_game_ended(self) -> None:
+        """Mark the game as ended when it reaches GAME_OVER phase"""
+        self.game_ended = True
+        logger.info(f"🎮 GAME_ENDED: Setting game_ended flag for room {self.room_id}")
+        
+        # Mark for immediate cleanup
+        self.mark_for_cleanup()
+    
     # Helper methods (sync, don't need async)
     def get_occupied_slots(self) -> int:
         """Count occupied slots."""
@@ -458,13 +467,16 @@ class AsyncRoom:
     @property
     def CLEANUP_TIMEOUT_SECONDS(self):
         """Dynamic timeout based on room state"""
-        timeout = (
-            self.IN_GAME_CLEANUP_TIMEOUT_SECONDS
-            if self.started
-            else self.PRE_GAME_CLEANUP_TIMEOUT_SECONDS
-        )
+        if self.game_ended:
+            # Use shorter timeout for ended games
+            timeout = 5
+        elif self.started:
+            timeout = self.IN_GAME_CLEANUP_TIMEOUT_SECONDS
+        else:
+            timeout = self.PRE_GAME_CLEANUP_TIMEOUT_SECONDS
+            
         logger.info(
-            f"⏱️ [ROOM_DEBUG] Room '{self.room_id}' using cleanup timeout: {timeout}s (started={self.started})"
+            f"⏱️ [ROOM_DEBUG] Room '{self.room_id}' using cleanup timeout: {timeout}s (started={self.started}, game_ended={self.game_ended})"
         )
         return timeout
     
