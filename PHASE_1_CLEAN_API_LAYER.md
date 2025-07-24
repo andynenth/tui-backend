@@ -239,6 +239,16 @@ Before proceeding to Phase 2, ensure:
 - [ ] No outstanding issues with adapters
 - [ ] Team consensus on approach
 - [ ] Phase 2 plan reviewed and approved
+- [ ] **All contract tests pass with 100% compatibility**
+- [ ] **Golden master comparisons show identical behavior**
+- [ ] **No regression in WebSocket message formats or timing**
+
+### Contract Testing Checklist
+- [ ] Golden masters captured for all 21 WebSocket message types
+- [ ] Contract tests integrated into CI/CD pipeline
+- [ ] All adapters pass parallel comparison tests
+- [ ] Performance benchmarks within acceptable range (< 20% overhead)
+- [ ] Error handling matches exactly (same messages, same formats)
 
 ---
 

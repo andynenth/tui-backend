@@ -376,20 +376,351 @@ PHASE_CHANGE_CONTRACT = WebSocketContract(
     }
 )
 
+# Additional Contract Definitions
+
+ACK_CONTRACT = WebSocketContract(
+    name="ack",
+    direction=MessageDirection.CLIENT_TO_SERVER,
+    description="Message acknowledgment for reliability",
+    request_schema={
+        "action": "ack",
+        "data": {
+            "sequence": "number",
+            "client_id": "string (optional)"
+        }
+    }
+)
+
+SYNC_REQUEST_CONTRACT = WebSocketContract(
+    name="sync_request",
+    direction=MessageDirection.CLIENT_TO_SERVER,
+    description="Request synchronization after disconnect",
+    request_schema={
+        "action": "sync_request",
+        "data": {
+            "client_id": "string (optional)"
+        }
+    }
+)
+
+REQUEST_ROOM_LIST_CONTRACT = WebSocketContract(
+    name="request_room_list",
+    direction=MessageDirection.CLIENT_TO_SERVER,
+    description="Request list of available rooms",
+    request_schema={
+        "action": "request_room_list",
+        "data": {
+            "player_name": "string (optional)"
+        }
+    },
+    response_schema={
+        "event": "room_list_update",
+        "data": {
+            "rooms": "array of room objects",
+            "timestamp": "number",
+            "requested_by": "string"
+        }
+    }
+)
+
+GET_ROOMS_CONTRACT = WebSocketContract(
+    name="get_rooms",
+    direction=MessageDirection.CLIENT_TO_SERVER,
+    description="Get available rooms (alternative to request_room_list)",
+    request_schema={
+        "action": "get_rooms",
+        "data": {}
+    },
+    response_schema={
+        "event": "room_list",
+        "data": {
+            "rooms": "array of room objects",
+            "timestamp": "number"
+        }
+    }
+)
+
+GET_ROOM_STATE_CONTRACT = WebSocketContract(
+    name="get_room_state",
+    direction=MessageDirection.CLIENT_TO_SERVER,
+    description="Request current room state",
+    request_schema={
+        "action": "get_room_state",
+        "data": {}
+    },
+    response_schema={
+        "event": "room_update",
+        "data": {
+            "players": "array of player objects",
+            "host_name": "string",
+            "room_id": "string",
+            "started": "boolean"
+        }
+    },
+    error_cases=[{
+        "condition": "Room not found",
+        "response": {
+            "event": "room_closed",
+            "data": {"message": "Room not found."}
+        }
+    }]
+)
+
+ADD_BOT_CONTRACT = WebSocketContract(
+    name="add_bot",
+    direction=MessageDirection.CLIENT_TO_SERVER,
+    description="Add bot to empty slot (host only)",
+    request_schema={
+        "action": "add_bot",
+        "data": {
+            "slot_id": "string (1-4)"
+        }
+    },
+    broadcast_schemas=[{
+        "event": "room_update",
+        "data": {
+            "players": "array with bot added",
+            "host_name": "string",
+            "room_id": "string",
+            "started": False
+        }
+    }],
+    error_cases=[{
+        "condition": "Not host",
+        "response": {
+            "event": "error",
+            "data": {
+                "message": "Only the host can add bots",
+                "type": "permission_denied"
+            }
+        }
+    }],
+    state_preconditions={
+        "is_host": True,
+        "slot_empty": True
+    }
+)
+
+REMOVE_PLAYER_CONTRACT = WebSocketContract(
+    name="remove_player",
+    direction=MessageDirection.CLIENT_TO_SERVER,
+    description="Remove player from slot (host only)",
+    request_schema={
+        "action": "remove_player",
+        "data": {
+            "slot_id": "string (1-4)"
+        }
+    },
+    broadcast_schemas=[{
+        "event": "room_update",
+        "data": {
+            "players": "array with player removed",
+            "host_name": "string",
+            "room_id": "string",
+            "started": False
+        }
+    }],
+    error_cases=[{
+        "condition": "Not host",
+        "response": {
+            "event": "error",
+            "data": {
+                "message": "Only the host can remove players",
+                "type": "permission_denied"
+            }
+        }
+    }]
+)
+
+LEAVE_ROOM_CONTRACT = WebSocketContract(
+    name="leave_room",
+    direction=MessageDirection.CLIENT_TO_SERVER,
+    description="Leave current room",
+    request_schema={
+        "action": "leave_room",
+        "data": {
+            "player_name": "string"
+        }
+    },
+    response_schema={
+        "event": "player_left",
+        "data": {
+            "player_name": "string",
+            "success": True,
+            "room_closed": "boolean"
+        }
+    },
+    broadcast_schemas=[{
+        "event": "room_update",
+        "data": {
+            "players": "array",
+            "host_name": "string",
+            "room_id": "string",
+            "started": "boolean"
+        }
+    }]
+)
+
+LEAVE_GAME_CONTRACT = WebSocketContract(
+    name="leave_game",
+    direction=MessageDirection.CLIENT_TO_SERVER,
+    description="Leave active game",
+    request_schema={
+        "action": "leave_game",
+        "data": {
+            "player_name": "string"
+        }
+    },
+    response_schema={
+        "event": "leave_game_success",
+        "data": {
+            "player_name": "string"
+        }
+    }
+)
+
+REQUEST_REDEAL_CONTRACT = WebSocketContract(
+    name="request_redeal",
+    direction=MessageDirection.CLIENT_TO_SERVER,
+    description="Request redeal (weak hand)",
+    request_schema={
+        "action": "request_redeal",
+        "data": {
+            "player_name": "string"
+        }
+    },
+    response_schema={
+        "event": "redeal_success",
+        "data": {
+            "player_name": "string"
+        }
+    },
+    state_preconditions={
+        "phase": "PREPARATION",
+        "has_weak_hand": True
+    }
+)
+
+ACCEPT_REDEAL_CONTRACT = WebSocketContract(
+    name="accept_redeal",
+    direction=MessageDirection.CLIENT_TO_SERVER,
+    description="Accept redeal offer",
+    request_schema={
+        "action": "accept_redeal",
+        "data": {
+            "player_name": "string"
+        }
+    },
+    response_schema={
+        "event": "redeal_response_success",
+        "data": {
+            "player_name": "string",
+            "choice": "accept"
+        }
+    }
+)
+
+DECLINE_REDEAL_CONTRACT = WebSocketContract(
+    name="decline_redeal",
+    direction=MessageDirection.CLIENT_TO_SERVER,
+    description="Decline redeal offer",
+    request_schema={
+        "action": "decline_redeal",
+        "data": {
+            "player_name": "string"
+        }
+    },
+    response_schema={
+        "event": "redeal_response_success",
+        "data": {
+            "player_name": "string",
+            "choice": "decline"
+        }
+    }
+)
+
+PLAY_PIECES_CONTRACT = WebSocketContract(
+    name="play_pieces",
+    direction=MessageDirection.CLIENT_TO_SERVER,
+    description="Play pieces (legacy handler)",
+    request_schema={
+        "action": "play_pieces",
+        "data": {
+            "player_name": "string",
+            "indices": "array of numbers"
+        }
+    },
+    response_schema={
+        "event": "play_success",
+        "data": {
+            "player_name": "string",
+            "indices": "array"
+        }
+    }
+)
+
+PLAYER_READY_CONTRACT = WebSocketContract(
+    name="player_ready",
+    direction=MessageDirection.CLIENT_TO_SERVER,
+    description="Signal ready for next phase",
+    request_schema={
+        "action": "player_ready",
+        "data": {
+            "player_name": "string"
+        }
+    },
+    response_schema={
+        "event": "ready_success",
+        "data": {
+            "player_name": "string"
+        }
+    }
+)
+
+REDEAL_DECISION_CONTRACT = WebSocketContract(
+    name="redeal_decision",
+    direction=MessageDirection.CLIENT_TO_SERVER,
+    description="Response to redeal offer",
+    request_schema={
+        "action": "redeal_decision",
+        "data": {
+            "player_name": "string",
+            "choice": "string (accept|decline)"
+        }
+    }
+)
+
 # Contract Registry
 WEBSOCKET_CONTRACTS = {
     # Connection Management
     "ping": PING_CONTRACT,
     "client_ready": CLIENT_READY_CONTRACT,
+    "ack": ACK_CONTRACT,
+    "sync_request": SYNC_REQUEST_CONTRACT,
     
-    # Room Management
+    # Lobby Operations
+    "request_room_list": REQUEST_ROOM_LIST_CONTRACT,
+    "get_rooms": GET_ROOMS_CONTRACT,
     "create_room": CREATE_ROOM_CONTRACT,
     "join_room": JOIN_ROOM_CONTRACT,
+    
+    # Room Management
+    "get_room_state": GET_ROOM_STATE_CONTRACT,
+    "add_bot": ADD_BOT_CONTRACT,
+    "remove_player": REMOVE_PLAYER_CONTRACT,
+    "leave_room": LEAVE_ROOM_CONTRACT,
+    "leave_game": LEAVE_GAME_CONTRACT,
     "start_game": START_GAME_CONTRACT,
     
     # Game Actions
+    "redeal_decision": REDEAL_DECISION_CONTRACT,
+    "request_redeal": REQUEST_REDEAL_CONTRACT,
+    "accept_redeal": ACCEPT_REDEAL_CONTRACT,
+    "decline_redeal": DECLINE_REDEAL_CONTRACT,
     "declare": DECLARE_CONTRACT,
     "play": PLAY_CONTRACT,
+    "play_pieces": PLAY_PIECES_CONTRACT,
+    "player_ready": PLAYER_READY_CONTRACT,
     
     # Server Events
     "phase_change": PHASE_CHANGE_CONTRACT,
