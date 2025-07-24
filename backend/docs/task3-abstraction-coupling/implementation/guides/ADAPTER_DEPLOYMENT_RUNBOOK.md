@@ -1,5 +1,9 @@
 # Adapter System Deployment Runbook
 
+**Purpose**: Step-by-step procedures for safely deploying adapters to production. Use this document when ready to enable adapters in any environment.
+
+**See Also**: [Integration Guide](./WS_INTEGRATION_GUIDE.md) for technical integration details
+
 ## Pre-Deployment Checklist
 
 - [ ] All contract tests passing locally

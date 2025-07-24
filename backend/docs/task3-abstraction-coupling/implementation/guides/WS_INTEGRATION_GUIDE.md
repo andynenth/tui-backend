@@ -1,12 +1,14 @@
 # WebSocket Adapter Integration Guide
 
-This guide shows exactly how to integrate the adapter system into `ws.py` with minimal changes.
+**Purpose**: Technical instructions for integrating the adapter system into ws.py. Contains the exact code changes needed.
+
+**See Also**: [Deployment Runbook](./ADAPTER_DEPLOYMENT_RUNBOOK.md) for deployment procedures after integration
 
 ## Overview
 
-The integration requires only 3 small changes to `ws.py`:
-1. Add one import
-2. Add ~10 lines of code to try adapters first
+The integration requires only minimal changes to `ws.py`:
+1. Add 12 lines of code (8-9 actual code lines + comments) to try adapters first
+2. (Optional) Add import if using the wrapper approach
 3. (Optional) Add a status endpoint
 
 ## Step-by-Step Instructions
