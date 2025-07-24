@@ -28,13 +28,13 @@ class GameStateMachine:
         # Wrap game with AsyncGameAdapter for unified async interface
         from engine.async_game import AsyncGame
         from engine.game import Game
-        
+
         if isinstance(game, (Game, AsyncGame)):
             self.game_adapter = wrap_game_for_async(game)
             self.game = game  # Keep original reference for compatibility
         else:
             raise TypeError(f"Expected Game or AsyncGame, got {type(game)}")
-            
+
         logger.info(
             f"🔍 ROUND_DEBUG: GameStateMachine created with {'async' if isinstance(game, AsyncGame) else 'sync'} game: {game}, "
             f"round_number: {getattr(game, 'round_number', 'NO_ATTR') if game else 'NO_GAME'}"
@@ -80,7 +80,7 @@ class GameStateMachine:
     def room_id(self):
         """Get room_id"""
         return self._room_id
-    
+
     @room_id.setter
     def room_id(self, value: str):
         """Set room_id and initialize ActionQueue"""
@@ -381,6 +381,7 @@ class GameStateMachine:
         """
         try:
             from ..bot_manager import BotManager
+
             print(f"🔍 STATE_MACHINE: BotManager imported successfully")
 
             bot_manager = BotManager()
@@ -393,7 +394,9 @@ class GameStateMachine:
                 return
 
             logger.info(f"Notifying bot manager about phase {new_phase.value}")
-            print(f"🔍 STATE_MACHINE: Notifying bot manager about phase {new_phase.value} for room {room_id}")
+            print(
+                f"🔍 STATE_MACHINE: Notifying bot manager about phase {new_phase.value} for room {room_id}"
+            )
 
             if new_phase == GamePhase.ROUND_START:
                 # Just notify about round start, don't trigger bot actions yet
@@ -450,8 +453,49 @@ class GameStateMachine:
                     room_id, "game_over", game_over_data
                 )
 
+                # Unregister from bot manager
+                logger.info(
+                    f"🤖 GAME_OVER: Unregistering bot manager for room {room_id}"
+                )
+                bot_manager.unregister_game(room_id)
+
+                # Mark the room's game as ended
+                try:
+                    from shared_instances import shared_room_manager
+
+                    room = await shared_room_manager.get_room(room_id)
+                    if room:
+                        await room.mark_game_ended()
+                        logger.info(
+                            f"✅ GAME_OVER: Successfully marked room {room_id} as game_ended"
+                        )
+                except Exception as room_error:
+                    logger.error(
+                        f"Failed to mark room as game_ended: {room_error}",
+                        exc_info=True,
+                    )
+                    # Continue with state machine shutdown even if room marking fails
+
+                # Stop the state machine after game over
+                logger.info(f"🛑 GAME_OVER: Stopping state machine for room {room_id}")
+                await self.stop()
+                logger.info(
+                    f"🛑 GAME_OVER: State machine stopped, is_running = {self.is_running}"
+                )
+
         except Exception as e:
             logger.error(f"Failed to notify bot manager: {e}", exc_info=True)
+            # Ensure state machine stops even if bot manager notification fails
+            if new_phase == GamePhase.GAME_OVER and self.is_running:
+                try:
+                    logger.info(
+                        f"🛑 GAME_OVER: Ensuring state machine stops after error"
+                    )
+                    await self.stop()
+                except Exception as stop_error:
+                    logger.error(
+                        f"Failed to stop state machine: {stop_error}", exc_info=True
+                    )
 
     async def _notify_bot_manager_data_change(self, phase_data: dict, reason: str):
         """
@@ -565,7 +609,9 @@ class GameStateMachine:
                     event_type="phase_change", payload=payload
                 )
             else:
-                logger.warning("ActionQueue not initialized - skipping phase change event storage")
+                logger.warning(
+                    "ActionQueue not initialized - skipping phase change event storage"
+                )
 
             logger.info(f"Stored phase change event: {old_phase} -> {new_phase}")
 
@@ -586,9 +632,13 @@ class GameStateMachine:
         """
         try:
             if self.action_queue:
-                await self.action_queue.store_state_event(event_type, payload, player_id)
+                await self.action_queue.store_state_event(
+                    event_type, payload, player_id
+                )
             else:
-                logger.warning(f"ActionQueue not initialized - skipping {event_type} event storage")
+                logger.warning(
+                    f"ActionQueue not initialized - skipping {event_type} event storage"
+                )
         except Exception as e:
             logger.error(f"Failed to store game event {event_type}: {e}")
 
@@ -729,8 +779,13 @@ class GameStateMachine:
 
         # Notify room manager if available
         if hasattr(self, "room_id") and self.room_id:
-            from ...room_manager import room_manager
+            try:
+                from shared_instances import shared_room_manager
 
-            room = room_manager.get_room(self.room_id)
-            if room:
-                await room.handle_critical_error(reason)
+                room = await shared_room_manager.get_room(self.room_id)
+                if room:
+                    await room.handle_critical_error(reason)
+            except Exception as e:
+                logger.error(
+                    f"Failed to notify room about critical error: {e}", exc_info=True
+                )

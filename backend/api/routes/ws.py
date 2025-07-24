@@ -664,6 +664,27 @@ async def websocket_endpoint(websocket: WebSocket, room_id: str):
                             )
 
                         # Check if reconnecting to an active game
+                        logger.info(
+                            f"🔌 RECONNECT_CHECK: Room {room_id} - started={room.started}, game_ended={getattr(room, 'game_ended', False)}"
+                        )
+                        
+                        # Prevent reconnections if game has ended
+                        if getattr(room, 'game_ended', False):
+                            logger.info(
+                                f"🚫 GAME_ENDED: Rejecting reconnection for {player_name} - game has ended"
+                            )
+                            await registered_ws.send_json(
+                                {
+                                    "event": "room_closed",
+                                    "data": {
+                                        "message": "Game has ended",
+                                        "reason": "game_over"
+                                    }
+                                }
+                            )
+                            await registered_ws.close()
+                            return
+                        
                         if room.started and room.game:
                             player = next(
                                 (p for p in room.game.players if p.name == player_name),
@@ -1722,6 +1743,10 @@ async def room_cleanup_task():
                 room = await room_manager.get_room(room_id)
                 if room:
                     should_cleanup = room.should_cleanup()
+                    game_ended = getattr(room, 'game_ended', False)
+                    logger.info(
+                        f"🧹 CLEANUP_CHECK: Room {room_id} - game_ended={game_ended}, should_cleanup={should_cleanup}"
+                    )
                     if should_cleanup:
                         rooms_to_cleanup.append(room_id)
                         logger.info(
