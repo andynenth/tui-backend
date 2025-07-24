@@ -36,6 +36,20 @@ class Piece:
         """
         return self.kind.split("_")[1]
 
+    def to_dict(self):
+        """
+        Convert piece to JSON-serializable dictionary.
+
+        Returns:
+            dict: Dictionary representation of the piece
+        """
+        return {
+            "kind": self.kind,
+            "point": self.point,
+            "name": self.name,
+            "color": self.color,
+        }
+
     @staticmethod
     def build_deck():
         """

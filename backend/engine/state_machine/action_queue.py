@@ -14,7 +14,7 @@ class ActionQueue:
     def __init__(self, room_id: str):
         """
         Initialize ActionQueue with required room_id for event persistence
-        
+
         Args:
             room_id: Required room identifier for event storage
         """
@@ -70,12 +70,25 @@ class ActionQueue:
             action: The action to store
         """
         try:
+            # Deep copy payload to avoid modifying original
+            serializable_payload = {}
+            if hasattr(action, "payload") and action.payload:
+                for key, value in action.payload.items():
+                    if key == "pieces" and isinstance(value, list):
+                        # Convert Piece objects to dictionaries
+                        serializable_payload[key] = [
+                            piece.to_dict() if hasattr(piece, "to_dict") else str(piece)
+                            for piece in value
+                        ]
+                    else:
+                        serializable_payload[key] = value
+
             # Convert action to event payload
             payload = {
                 "action_type": action.action_type.value,
                 "player_name": action.player_name,
                 "sequence_id": action.sequence_id,
-                "payload": action.payload if hasattr(action, "payload") else {},
+                "payload": serializable_payload,
             }
 
             # Store event
