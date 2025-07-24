@@ -17,6 +17,7 @@ from api.middleware.websocket_rate_limit import (
 )
 from api.websocket.connection_manager import connection_manager
 from api.websocket.message_queue import message_queue_manager
+from api.routes.ws_adapter_wrapper import adapter_wrapper
 
 # Set up logging
 logger = logging.getLogger(__name__)
@@ -311,6 +312,19 @@ async def websocket_endpoint(websocket: WebSocket, room_id: str):
                     }
                 )
                 continue
+
+            # ===== ADAPTER INTEGRATION START =====
+            # Try adapter system first (if enabled)
+            adapter_response = await adapter_wrapper.try_handle_with_adapter(
+                registered_ws, message, room_id
+            )
+            
+            if adapter_response is not None:
+                # Adapter handled it, send response if not empty
+                if adapter_response:  # Some responses like 'ack' return empty
+                    await registered_ws.send_json(adapter_response)
+                continue  # Skip legacy handling
+            # ===== ADAPTER INTEGRATION END =====
 
             event_name = message.get("event")
             # Use sanitized data instead of raw event data
@@ -1718,6 +1732,12 @@ async def websocket_endpoint(websocket: WebSocket, room_id: str):
     except Exception as e:
         logger.error(f"WebSocket error in room {room_id}: {e}")
         await handle_disconnect(room_id, websocket)
+
+
+@router.get("/ws/adapter-status")
+async def get_adapter_status():
+    """Get current adapter integration status"""
+    return adapter_wrapper.get_status()
 
 
 async def room_cleanup_task():
