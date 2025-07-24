@@ -60,6 +60,17 @@ class PreparationState(GameState):
     async def _setup_phase(self) -> None:
         """Initialize preparation phase by dealing cards"""
         self.logger.info("🎴 Preparation phase starting - dealing cards")
+        
+        # Reset phase-specific state for new round
+        self.logger.info(f"🔄 Resetting preparation state - previous redeal_requester: {self.redeal_requester}")
+        self.weak_players.clear()
+        self.redeal_decisions.clear()
+        self.weak_players_awaiting.clear()
+        self.redeal_requester = None
+        self.initial_deal_complete = False
+        self.decision_start_time = None
+        self.warning_sent = False
+        
         await self._deal_cards()
 
     async def _cleanup_phase(self) -> None:
@@ -509,9 +520,9 @@ class PreparationState(GameState):
         """Determine round starter based on game rules"""
         game = self.state_machine.game
 
-        # Priority 1: Redeal requester (overrides all)
+        # Priority 1: Redeal accepter (overrides all)
         if self.redeal_requester:
-            self.logger.info(f"🎯 Starter: {self.redeal_requester} (requested redeal)")
+            self.logger.info(f"🎯 Starter: {self.redeal_requester} (accepted redeal)")
             game.starter_reason = "accepted_redeal"
             return self.redeal_requester
 
