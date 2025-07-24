@@ -14,6 +14,7 @@ from .states.round_start_state import RoundStartState
 from .states.turn_results_state import TurnResultsState
 from .states.waiting_state import WaitingState
 from .async_game_adapter import AsyncGameAdapter, wrap_game_for_async
+from ..bot_manager import BotManager
 
 logger = logging.getLogger(__name__)
 
@@ -380,8 +381,6 @@ class GameStateMachine:
             new_phase: The GamePhase that was just entered
         """
         try:
-            from ..bot_manager import BotManager
-
             print(f"🔍 STATE_MACHINE: BotManager imported successfully")
 
             bot_manager = BotManager()
@@ -462,7 +461,6 @@ class GameStateMachine:
                 # Mark the room's game as ended
                 try:
                     from shared_instances import shared_room_manager
-
                     room = await shared_room_manager.get_room(room_id)
                     if room:
                         await room.mark_game_ended()
@@ -505,8 +503,6 @@ class GameStateMachine:
         not just phase transitions. Called from base_state enterprise broadcasting.
         """
         try:
-            from ..bot_manager import BotManager
-
             bot_manager = BotManager()
             room_id = getattr(self, "room_id", None)
             if not room_id:
@@ -654,8 +650,6 @@ class GameStateMachine:
             action: The GameAction that was rejected
         """
         try:
-            from ..bot_manager import BotManager
-
             bot_manager = BotManager()
             room_id = getattr(self, "room_id", None)
             if not room_id:
@@ -694,8 +688,6 @@ class GameStateMachine:
             result: The result dictionary from processing the action
         """
         try:
-            from ..bot_manager import BotManager
-
             bot_manager = BotManager()
             room_id = getattr(self, "room_id", None)
             if not room_id:
@@ -734,8 +726,6 @@ class GameStateMachine:
             error_message: Description of the failure
         """
         try:
-            from ..bot_manager import BotManager
-
             bot_manager = BotManager()
             room_id = getattr(self, "room_id", None)
             if not room_id:
@@ -781,7 +771,6 @@ class GameStateMachine:
         if hasattr(self, "room_id") and self.room_id:
             try:
                 from shared_instances import shared_room_manager
-
                 room = await shared_room_manager.get_room(self.room_id)
                 if room:
                     await room.handle_critical_error(reason)

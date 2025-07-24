@@ -1,167 +1,173 @@
-2025-07-23 18:33:35 - game.state.round_start - INFO - 📤 Auto-broadcast: phase_change to room D9D854 - Round 2 starting with Andy
+📋 SCORING_FIX_DEBUG: Andy - declared: 1, actual: 0
+🏆 SCORING_DEBUG: Andy scoring data:
+   📋 Declared: 1, Actual: 0
+   📊 Base Score: -1, Multiplier: 1x, Final: -1
+   💯 Total Score: 22
+2025-07-23 19:11:01 - game.state.scoring - INFO - Player Andy: declared 1, actual 0, base -1, final -1 (×1), total 22
+📋 SCORING_FIX_DEBUG: Bot 2 - declared: 1, actual: 5
+🏆 SCORING_DEBUG: Bot 2 scoring data:
+   📋 Declared: 1, Actual: 5
+   📊 Base Score: -4, Multiplier: 1x, Final: -4
+   💯 Total Score: -10
+2025-07-23 19:11:01 - game.state.scoring - INFO - Player Bot 2: declared 1, actual 5, base -4, final -4 (×1), total -10
+📋 SCORING_FIX_DEBUG: Bot 3 - declared: 1, actual: 0
+🏆 SCORING_DEBUG: Bot 3 scoring data:
+   📋 Declared: 1, Actual: 0
+   📊 Base Score: -1, Multiplier: 1x, Final: -1
+   💯 Total Score: -6
+2025-07-23 19:11:01 - game.state.scoring - INFO - Player Bot 3: declared 1, actual 0, base -1, final -1 (×1), total -6
+📋 SCORING_FIX_DEBUG: P2 - declared: 4, actual: 3
+🏆 SCORING_DEBUG: P2 scoring data:
+   📋 Declared: 4, Actual: 3
+   📊 Base Score: -1, Multiplier: 1x, Final: -1
+   💯 Total Score: 9
+2025-07-23 19:11:01 - game.state.scoring - INFO - Player P2: declared 4, actual 3, base -1, final -1 (×1), total 9
+🚀 SCORING_BROADCAST_DEBUG: Broadcasting scoring data:
+   📊 Round scores: {'Andy': {'declared': 1, 'actual': 0, 'base_score': -1, 'bonus': 0, 'hit_value': -1, 'multiplier': 1, 'final_score': -1, 'total_score': 22}, 'Bot 2': {'declared': 1, 'actual': 5, 'base_score': -4, 'bonus': 0, 'hit_value': -4, 'multiplier': 1, 'final_score': -4, 'total_score': -10}, 'Bot 3': {'declared': 1, 'actual': 0, 'base_score': -1, 'bonus': 0, 'hit_value': -1, 'multiplier': 1, 'final_score': -1, 'total_score': -6}, 'P2': {'declared': 4, 'actual': 3, 'base_score': -1, 'bonus': 0, 'hit_value': -1, 'multiplier': 1, 'final_score': -1, 'total_score': 9}}
+   🏁 Game complete: False
+   🏆 Winners: []
+🚀 SCORING_BROADCAST_DEBUG: Also sending:
+   💯 Total scores: {'Andy': 22, 'Bot 2': -10, 'Bot 3': -6, 'P2': 9}
+   👥 Scoring players data: [{'name': 'Andy', 'is_bot': False, 'pile_count': 1, 'captured_piles': 0}, {'name': 'Bot 2', 'is_bot': True, 'pile_count': 1, 'captured_piles': 5}, {'name': 'Bot 3', 'is_bot': True, 'pile_count': 1, 'captured_piles': 0}, {'name': 'P2', 'is_bot': False, 'pile_count': 4, 'captured_piles': 3}]
+2025-07-23 19:11:01 - game.state.scoring - INFO - 🎮 Phase Data Update: Scoring calculated for round 3
+2025-07-23 19:11:01 - game.state.scoring - INFO - 📤 Auto-broadcast: phase_change to room 43EF01 - Scoring calculated for round 3
 🔍 BOT_MANAGER: Returning existing singleton instance with 1 active games
-2025-07-23 18:33:35 - engine.state_machine.game_state_machine - INFO - Stored phase change event: GamePhase.PREPARATION -> GamePhase.ROUND_START
+2025-07-23 19:11:01 - game.state.scoring - INFO - Scoring complete. Game over: False
+2025-07-23 19:11:01 - engine.state_machine.game_state_machine - INFO - Stored phase change event: GamePhase.TURN_RESULTS -> GamePhase.SCORING
 🔍 STATE_MACHINE: BotManager imported successfully
 🔍 BOT_MANAGER: Returning existing singleton instance with 1 active games
 🔍 STATE_MACHINE: BotManager instance created
-2025-07-23 18:33:35 - engine.state_machine.game_state_machine - INFO - Notifying bot manager about phase round_start
-🔍 STATE_MACHINE: Notifying bot manager about phase round_start for room D9D854
-🔍 BOT_MANAGER: Received event 'phase_change' for room D9D854
-🔍 BOT_MANAGER: Current active games: ['D9D854']
-🔍 BOT_HANDLER: Processing event 'phase_change' for room D9D854
-🔍 BOT_HANDLER: Phase change detected - new phase: round_start, last phase: turn
+2025-07-23 19:11:01 - engine.state_machine.game_state_machine - INFO - Notifying bot manager about phase scoring
+🔍 STATE_MACHINE: Notifying bot manager about phase scoring for room 43EF01
+⏰ SCORING_DELAY_DEBUG: Starting 7-second display delay...
+2025-07-23 19:11:05 - backend.api.routes.ws - INFO - 🧹 [ROOM_DEBUG] Cleanup iteration 117: Checking 1 rooms: ['43EF01']
+2025-07-23 19:11:05 - backend.api.routes.ws - INFO - 🧹 CLEANUP_CHECK: Room 43EF01 - game_ended=False, should_cleanup=False
+⏰ SCORING_DELAY_DEBUG: 7-second delay complete - setting display_delay_complete = True
+2025-07-23 19:11:08 - game.state.scoring - INFO - Scoring display delay complete - ready to transition
+2025-07-23 19:11:08 - engine.state_machine.game_state_machine - INFO - Transitioning from GamePhase.SCORING to GamePhase.PREPARATION
+2025-07-23 19:11:08 - engine.state_machine.game_state_machine - INFO - 🔄 Transitioning: GamePhase.SCORING -> GamePhase.PREPARATION
+2025-07-23 19:11:08 - game.state.scoring - INFO - Exiting scoring phase
+2025-07-23 19:11:08 - game.state.scoring - INFO - 🎯 Next round starter set to last turn winner: Bot 2
+2025-07-23 19:11:08 - game.state.scoring - INFO - Prepared for round 4
+2025-07-23 19:11:08 - game.state.scoring - INFO - Prepared for next round
+2025-07-23 19:11:08 - game.state.preparation - INFO - Entering preparation phase
+2025-07-23 19:11:08 - game.state.preparation - INFO - 🎴 Preparation phase starting - dealing cards
+2025-07-23 19:11:08 - game.state.preparation - INFO - 🎮 Phase Data Update: Starting to deal cards
+2025-07-23 19:11:08 - game.state.preparation - INFO - 📤 Auto-broadcast: phase_change to room 43EF01 - Starting to deal cards
+🔍 BOT_MANAGER: Returning existing singleton instance with 1 active games
+2025-07-23 19:11:08 - game.state.preparation - INFO - 🔍 Weak hand check - Found 1 weak players: {'Andy'}
+2025-07-23 19:11:08 - game.state.preparation - INFO - 🎮 Phase Data Update: Weak hands detected: ['Andy'] - awaiting simultaneous decisions
+2025-07-23 19:11:08 - game.state.preparation - INFO - 📤 Auto-broadcast: phase_change to room 43EF01 - Weak hands detected: ['Andy'] - awaiting simultaneous decisions
+🔍 BOT_MANAGER: Returning existing singleton instance with 1 active games
+🔍 BOT_MANAGER: Received event 'phase_change' for room 43EF01
+🔍 BOT_MANAGER: Current active games: ['43EF01']
+🔍 BOT_HANDLER: Processing event 'phase_change' for room 43EF01
+🔍 BOT_HANDLER: Phase change detected - new phase: preparation, last phase: turn
+🔍 BOT_HANDLER: Handling phase_change event
+🔍 BOT_HANDLER: _handle_enterprise_phase_change - phase: preparation, phase_data keys: ['dealing_cards', 'redeal_multiplier', 'weak_players', 'weak_players_awaiting', 'decisions_received', 'decisions_needed', 'simultaneous_mode', 'decision_timeout']
+🔍 BOT_HANDLER: Processing preparation phase
+🔍 BOT_HANDLER: Weak players awaiting: ['Andy']
+🔍 BOT_HANDLER: _handle_redeal_decision_phase called
+🔍 BOT_HANDLER: Weak players awaiting: ['Andy'], decisions: {}
+2025-07-23 19:11:08 - game.state.preparation - INFO - 🎮 Phase Data Update: Cards dealt, checking for weak hands
+2025-07-23 19:11:08 - game.state.preparation - INFO - 📤 Auto-broadcast: phase_change to room 43EF01 - Cards dealt, checking for weak hands
+🔍 BOT_MANAGER: Returning existing singleton instance with 1 active games
+🔍 BOT_MANAGER: Received event 'phase_change' for room 43EF01
+🔍 BOT_MANAGER: Current active games: ['43EF01']
+🔍 BOT_HANDLER: Processing event 'phase_change' for room 43EF01
+🔍 BOT_HANDLER: Phase change detected - new phase: preparation, last phase: preparation
+🔍 BOT_HANDLER: Handling phase_change event
+🔍 BOT_HANDLER: _handle_enterprise_phase_change - phase: preparation, phase_data keys: ['dealing_cards', 'redeal_multiplier', 'weak_players', 'weak_players_awaiting', 'decisions_received', 'decisions_needed', 'simultaneous_mode', 'decision_timeout']
+🔍 BOT_HANDLER: Processing preparation phase
+🔍 BOT_HANDLER: Weak players awaiting: ['Andy']
+🔍 BOT_HANDLER: _handle_redeal_decision_phase called
+🔍 BOT_HANDLER: Weak players awaiting: ['Andy'], decisions: {}
+2025-07-23 19:11:08 - engine.state_machine.game_state_machine - INFO - Stored phase change event: GamePhase.SCORING -> GamePhase.PREPARATION
+🔍 STATE_MACHINE: BotManager imported successfully
+🔍 BOT_MANAGER: Returning existing singleton instance with 1 active games
+🔍 STATE_MACHINE: BotManager instance created
+2025-07-23 19:11:08 - engine.state_machine.game_state_machine - INFO - Notifying bot manager about phase preparation
+🔍 STATE_MACHINE: Notifying bot manager about phase preparation for room 43EF01
+2025-07-23 19:11:10 - backend.api.routes.ws - INFO - 🧹 [ROOM_DEBUG] Cleanup iteration 118: Checking 1 rooms: ['43EF01']
+2025-07-23 19:11:10 - backend.api.routes.ws - INFO - 🧹 CLEANUP_CHECK: Room 43EF01 - game_ended=False, should_cleanup=False
+2025-07-23 19:11:15 - game.state.preparation - INFO - 🚫 Andy DECLINES redeal
+2025-07-23 19:11:15 - game.state.preparation - INFO - ✅ All weak players declined - proceeding with current hands
+2025-07-23 19:11:15 - game.state.preparation - INFO - 🎯 Starter: Andy (requested redeal)
+2025-07-23 19:11:15 - engine.state_machine.game_state_machine - INFO - Transitioning from GamePhase.PREPARATION to GamePhase.ROUND_START
+2025-07-23 19:11:15 - engine.state_machine.game_state_machine - INFO - 🔄 Transitioning: GamePhase.PREPARATION -> GamePhase.ROUND_START
+2025-07-23 19:11:15 - game.state.preparation - INFO - Exiting preparation phase
+2025-07-23 19:11:15 - game.state.preparation - INFO - 🎯 Round starter already set: Andy
+2025-07-23 19:11:15 - game.state.preparation - INFO - 📋 Preparation complete - Starter: Andy, Multiplier: 1x
+2025-07-23 19:11:15 - game.state.round_start - INFO - Entering round_start phase
+2025-07-23 19:11:15 - game.state.round_start - INFO - 📋 Round 4 starting - Starter: Andy (accepted_redeal)
+2025-07-23 19:11:15 - game.state.round_start - INFO - 🎮 Phase Data Update: Round 4 starting with Andy
+2025-07-23 19:11:15 - game.state.round_start - INFO - 📤 Auto-broadcast: phase_change to room 43EF01 - Round 4 starting with Andy
+🔍 BOT_MANAGER: Returning existing singleton instance with 1 active games
+2025-07-23 19:11:15 - engine.state_machine.game_state_machine - INFO - Stored phase change event: GamePhase.PREPARATION -> GamePhase.ROUND_START
+🔍 STATE_MACHINE: BotManager imported successfully
+🔍 BOT_MANAGER: Returning existing singleton instance with 1 active games
+🔍 STATE_MACHINE: BotManager instance created
+2025-07-23 19:11:15 - engine.state_machine.game_state_machine - INFO - Notifying bot manager about phase round_start
+🔍 STATE_MACHINE: Notifying bot manager about phase round_start for room 43EF01
+🔍 BOT_MANAGER: Received event 'phase_change' for room 43EF01
+🔍 BOT_MANAGER: Current active games: ['43EF01']
+🔍 BOT_HANDLER: Processing event 'phase_change' for room 43EF01
+🔍 BOT_HANDLER: Phase change detected - new phase: round_start, last phase: preparation
 🔍 BOT_HANDLER: Handling phase_change event
 🔍 BOT_HANDLER: _handle_enterprise_phase_change - phase: round_start, phase_data keys: ['round_number', 'current_starter', 'starter_reason', 'display_duration']
-2025-07-23 18:33:39 - backend.api.routes.ws - INFO - 🧹 [ROOM_DEBUG] Cleanup iteration 40: Checking 1 rooms: ['D9D854']
-2025-07-23 18:33:39 - backend.api.routes.ws - INFO - 🧹 CLEANUP_CHECK: Room D9D854 - game_ended=False, should_cleanup=False
-2025-07-23 18:33:40 - engine.state_machine.game_state_machine - INFO - Transitioning from GamePhase.ROUND_START to GamePhase.DECLARATION
-2025-07-23 18:33:40 - engine.state_machine.game_state_machine - INFO - 🔄 Transitioning: GamePhase.ROUND_START -> GamePhase.DECLARATION
-2025-07-23 18:33:40 - game.state.round_start - INFO - Exiting round_start phase
-2025-07-23 18:33:40 - game.state.round_start - INFO - 🎯 Round start display complete - transitioning to Declaration
-2025-07-23 18:33:40 - game.state.declaration - INFO - Entering declaration phase
-2025-07-23 18:33:40 - game.state.declaration - INFO - 🎮 Phase Data Update: Declaration phase setup - basic data
-2025-07-23 18:33:40 - game.state.declaration - INFO - 📤 Auto-broadcast: phase_change to room D9D854 - Declaration phase setup - basic data
 🔍 BOT_MANAGER: Returning existing singleton instance with 1 active games
-2025-07-23 18:33:40 - game.state.declaration - INFO - 🎮 Phase Data Update: Declaration phase setup complete - current declarer: Andy
-2025-07-23 18:33:40 - game.state.declaration - INFO - 📤 Auto-broadcast: phase_change to room D9D854 - Declaration phase setup complete - current declarer: Andy
+🔍 BOT_MANAGER: Received event 'action_accepted' for room 43EF01
+🔍 BOT_MANAGER: Current active games: ['43EF01']
+🔍 BOT_HANDLER: Processing event 'action_accepted' for room 43EF01
+2025-07-23 19:11:15 - backend.api.routes.ws - INFO - 🧹 [ROOM_DEBUG] Cleanup iteration 119: Checking 1 rooms: ['43EF01']
+2025-07-23 19:11:15 - backend.api.routes.ws - INFO - 🧹 CLEANUP_CHECK: Room 43EF01 - game_ended=False, should_cleanup=False
+2025-07-23 19:11:20 - engine.state_machine.game_state_machine - INFO - Transitioning from GamePhase.ROUND_START to GamePhase.DECLARATION
+2025-07-23 19:11:20 - engine.state_machine.game_state_machine - INFO - 🔄 Transitioning: GamePhase.ROUND_START -> GamePhase.DECLARATION
+2025-07-23 19:11:20 - game.state.round_start - INFO - Exiting round_start phase
+2025-07-23 19:11:20 - game.state.round_start - INFO - 🎯 Round start display complete - transitioning to Declaration
+2025-07-23 19:11:20 - game.state.declaration - INFO - Entering declaration phase
+2025-07-23 19:11:20 - game.state.declaration - INFO - 🎮 Phase Data Update: Declaration phase setup - basic data
+2025-07-23 19:11:20 - game.state.declaration - INFO - 📤 Auto-broadcast: phase_change to room 43EF01 - Declaration phase setup - basic data
 🔍 BOT_MANAGER: Returning existing singleton instance with 1 active games
-🔍 BOT_MANAGER: Received event 'phase_change' for room D9D854
-🔍 BOT_MANAGER: Current active games: ['D9D854']
-🔍 BOT_HANDLER: Processing event 'phase_change' for room D9D854
+2025-07-23 19:11:20 - game.state.declaration - INFO - 🎮 Phase Data Update: Declaration phase setup complete - current declarer: Andy
+2025-07-23 19:11:20 - game.state.declaration - INFO - 📤 Auto-broadcast: phase_change to room 43EF01 - Declaration phase setup complete - current declarer: Andy
+🔍 BOT_MANAGER: Returning existing singleton instance with 1 active games
+🔍 BOT_MANAGER: Received event 'phase_change' for room 43EF01
+🔍 BOT_MANAGER: Current active games: ['43EF01']
+🔍 BOT_HANDLER: Processing event 'phase_change' for room 43EF01
 🔍 BOT_HANDLER: Phase change detected - new phase: declaration, last phase: round_start
 🔍 BOT_HANDLER: Handling phase_change event
 🔍 BOT_HANDLER: _handle_enterprise_phase_change - phase: declaration, phase_data keys: ['declaration_order', 'current_declarer_index', 'declarations', 'declaration_total', 'current_declarer']
 🔍 BOT_HANDLER: Processing declaration phase
 🔍 BOT_HANDLER: Current declarer: Andy
-2025-07-23 18:33:40 - engine.state_machine.game_state_machine - INFO - Stored phase change event: GamePhase.ROUND_START -> GamePhase.DECLARATION
+2025-07-23 19:11:20 - engine.state_machine.game_state_machine - INFO - Stored phase change event: GamePhase.ROUND_START -> GamePhase.DECLARATION
 🔍 STATE_MACHINE: BotManager imported successfully
 🔍 BOT_MANAGER: Returning existing singleton instance with 1 active games
 🔍 STATE_MACHINE: BotManager instance created
-2025-07-23 18:33:40 - engine.state_machine.game_state_machine - INFO - Notifying bot manager about phase declaration
-🔍 STATE_MACHINE: Notifying bot manager about phase declaration for room D9D854
-🔍 BOT_MANAGER: Received event 'round_started' for room D9D854
-🔍 BOT_MANAGER: Current active games: ['D9D854']
-🔍 BOT_HANDLER: Processing event 'round_started' for room D9D854
+2025-07-23 19:11:20 - engine.state_machine.game_state_machine - INFO - Notifying bot manager about phase declaration
+🔍 STATE_MACHINE: Notifying bot manager about phase declaration for room 43EF01
+🔍 BOT_MANAGER: Received event 'round_started' for room 43EF01
+🔍 BOT_MANAGER: Current active games: ['43EF01']
+🔍 BOT_HANDLER: Processing event 'round_started' for room 43EF01
 🔍 BOT_HANDLER: Handling round_started event, data: {'phase': 'declaration', 'starter': 'Andy'}
 🔍 BOT_HANDLER: Calling _handle_round_start
 🔍 BOT_HANDLER: _handle_round_start called
 🔍 BOT_HANDLER: Game state type: <class 'engine.state_machine.async_game_adapter.AsyncGameAdapter'>
 🔍 BOT_HANDLER: round_starter attribute: Andy
-🔍 BOT_HANDLER: Starter object found: Andy - -2 pts, is_bot: False
+🔍 BOT_HANDLER: Starter object found: Andy - 22 pts, is_bot: False
 👤 Round starter is human or None: Andy
+2025-07-23 19:11:20 - backend.api.routes.ws - INFO - 🧹 [ROOM_DEBUG] Cleanup iteration 120: Checking 1 rooms: ['43EF01']
+2025-07-23 19:11:20 - backend.api.routes.ws - INFO - 🧹 CLEANUP_CHECK: Room 43EF01 - game_ended=False, should_cleanup=False
 🔍 BOT_HANDLER: _handle_declaration_phase called with last_declarer: ''
-🔍 BOT_HANDLER: Declaration order: ['Andy', 'Bot 2', 'P2', 'Bot 4']
+🔍 BOT_HANDLER: Declaration order: ['Andy', 'Bot 2', 'Bot 3', 'P2']
 🔍 BOT_HANDLER: Last declarer index: -1
-2025-07-23 18:33:44 - backend.api.routes.ws - INFO - 🧹 [ROOM_DEBUG] Cleanup iteration 41: Checking 1 rooms: ['D9D854']
-2025-07-23 18:33:44 - backend.api.routes.ws - INFO - 🧹 CLEANUP_CHECK: Room D9D854 - game_ended=False, should_cleanup=False
-2025-07-23 18:33:49 - backend.api.routes.ws - INFO - 🧹 [ROOM_DEBUG] Cleanup iteration 42: Checking 1 rooms: ['D9D854']
-2025-07-23 18:33:49 - backend.api.routes.ws - INFO - 🧹 CLEANUP_CHECK: Room D9D854 - game_ended=False, should_cleanup=False
-INFO:     127.0.0.1:60801 - "GET /game/D9D854 HTTP/1.1" 404 Not Found
-2025-07-23 18:33:52 - backend.api.routes.ws - INFO - 🔌 [ROOM_DEBUG] Handling disconnect for room 'lobby', websocket_id: b77c3426-49ea-4874-9ffd-24834fd4c84f at 1753320832.368116
-2025-07-23 18:33:52 - api.websocket.connection_manager - WARNING - WebSocket ID b77c3426-49ea-4874-9ffd-24834fd4c84f not found in mapping. Current mappings: ['f516bf63-b616-4618-8508-815b9b1a6a7a', '235ebb3d-6502-4185-8fbd-b077283e2f13']
-2025-07-23 18:33:52 - backend.api.routes.ws - WARNING - No websocket_id found on websocket object for room lobby
-2025-07-23 18:33:52 - backend.api.routes.ws - INFO - ⚠️ [ROOM_DEBUG] WebSocket disconnect without ID for room 'lobby'
-2025-07-23 18:33:52 - backend.api.routes.ws - INFO - 🔌 [ROOM_DEBUG] WebSocket unregistered from room 'lobby'
-2025-07-23 18:33:52 - backend.api.routes.ws - INFO - 🔌 [ROOM_DEBUG] Handling disconnect for room 'D9D854', websocket_id: f516bf63-b616-4618-8508-815b9b1a6a7a at 1753320832.36945
-2025-07-23 18:33:52 - api.websocket.connection_manager - INFO - Player Andy disconnected from room D9D854. Can reconnect anytime while game is active.
-2025-07-23 18:33:52 - backend.api.routes.ws - INFO - 🎮 [ROOM_DEBUG] In-game disconnect detected for player 'Andy' in room 'D9D854'
-2025-07-23 18:33:52 - api.websocket.message_queue - INFO - Created message queue for Andy in room D9D854
-2025-07-23 18:33:52 - backend.api.routes.ws - INFO - Player Andy disconnected from game in room D9D854. Bot activated.
-2025-07-23 18:33:52 - engine.async_room - INFO - Host migrated from Andy to P2 in room D9D854
-2025-07-23 18:33:52 - backend.api.routes.ws - INFO - Host migrated to P2 in room D9D854
-INFO:     connection closed
-2025-07-23 18:33:52 - engine.async_room - INFO - 👥 [ROOM_DEBUG] Room 'D9D854' player count: 1 humans, 3 bots
-2025-07-23 18:33:52 - backend.api.routes.ws - INFO - 🔌 [ROOM_DEBUG] WebSocket unregistered from room 'D9D854'
-INFO:     connection closed
-INFO:     127.0.0.1:60801 - "GET /.well-known/appspecific/com.chrome.devtools.json HTTP/1.1" 404 Not Found
-2025-07-23 18:33:54 - backend.api.routes.ws - INFO - 🧹 [ROOM_DEBUG] Cleanup iteration 43: Checking 1 rooms: ['D9D854']
-2025-07-23 18:33:54 - backend.api.routes.ws - INFO - 🧹 CLEANUP_CHECK: Room D9D854 - game_ended=False, should_cleanup=False
-INFO:     127.0.0.1:60821 - "GET /game/D9D854 HTTP/1.1" 404 Not Found
-2025-07-23 18:33:55 - backend.api.routes.ws - INFO - 🔌 [ROOM_DEBUG] Handling disconnect for room 'D9D854', websocket_id: 235ebb3d-6502-4185-8fbd-b077283e2f13 at 1753320835.9442718
-2025-07-23 18:33:55 - api.websocket.connection_manager - INFO - Player P2 disconnected from room D9D854. Can reconnect anytime while game is active.
-2025-07-23 18:33:55 - backend.api.routes.ws - INFO - 🎮 [ROOM_DEBUG] In-game disconnect detected for player 'P2' in room 'D9D854'
-2025-07-23 18:33:55 - api.websocket.message_queue - INFO - Created message queue for P2 in room D9D854
-2025-07-23 18:33:55 - backend.api.routes.ws - INFO - Player P2 disconnected from game in room D9D854. Bot activated.
-2025-07-23 18:33:55 - engine.async_room - INFO - Host migrated from P2 to bot Andy in room D9D854
-2025-07-23 18:33:55 - backend.api.routes.ws - INFO - Host migrated to Andy in room D9D854
-2025-07-23 18:33:55 - backend.api.routes.ws - INFO - 🔌 [ROOM_DEBUG] Handling disconnect for room 'lobby', websocket_id: 868055b8-f6d0-4c01-bf2b-7c22b63afb61 at 1753320835.945761
-2025-07-23 18:33:55 - api.websocket.connection_manager - WARNING - WebSocket ID 868055b8-f6d0-4c01-bf2b-7c22b63afb61 not found in mapping. Current mappings: []
-2025-07-23 18:33:55 - backend.api.routes.ws - WARNING - No websocket_id found on websocket object for room lobby
-2025-07-23 18:33:55 - backend.api.routes.ws - INFO - ⚠️ [ROOM_DEBUG] WebSocket disconnect without ID for room 'lobby'
-2025-07-23 18:33:55 - backend.api.routes.ws - INFO - 🔌 [ROOM_DEBUG] WebSocket unregistered from room 'lobby'
-INFO:     connection closed
-2025-07-23 18:33:55 - engine.async_room_manager - WARNING - Room lobby not found in AsyncRoomManager. Current rooms: ['D9D854']
-2025-07-23 18:33:55 - engine.async_room - INFO - 👥 [ROOM_DEBUG] Room 'D9D854' player count: 0 humans, 4 bots
-2025-07-23 18:33:55 - engine.async_room - INFO - 👥 [ROOM_DEBUG] Room 'D9D854' player count: 0 humans, 4 bots
-2025-07-23 18:33:55 - engine.async_room - INFO - ⏱️ [ROOM_DEBUG] Room 'D9D854' using cleanup timeout: 30s (started=True, game_ended=False)
-2025-07-23 18:33:55 - engine.async_room - INFO - 🗑️ [ROOM_DEBUG] Room 'D9D854' marked for cleanup at 1753320835.947583, timeout=30s
-2025-07-23 18:33:55 - engine.async_room - INFO - ⏱️ [ROOM_DEBUG] Room 'D9D854' using cleanup timeout: 30s (started=True, game_ended=False)
-2025-07-23 18:33:55 - backend.api.routes.ws - INFO - All players in room D9D854 are now bots. Cleanup scheduled in 30s
-2025-07-23 18:33:55 - backend.api.routes.ws - INFO - 🤖 [ROOM_DEBUG] Room 'D9D854' has no human players, marked for cleanup
-2025-07-23 18:33:55 - backend.api.routes.ws - INFO - 🔌 [ROOM_DEBUG] WebSocket unregistered from room 'D9D854'
-INFO:     connection closed
-INFO:     127.0.0.1:60821 - "GET /.well-known/appspecific/com.chrome.devtools.json HTTP/1.1" 404 Not Found
-2025-07-23 18:33:59 - backend.api.routes.ws - INFO - 🧹 [ROOM_DEBUG] Cleanup iteration 44: Checking 1 rooms: ['D9D854']
-2025-07-23 18:33:59 - engine.async_room - INFO - ⏱️ [ROOM_DEBUG] Room 'D9D854' using cleanup timeout: 30s (started=True, game_ended=False)
-2025-07-23 18:33:59 - backend.api.routes.ws - INFO - 🧹 CLEANUP_CHECK: Room D9D854 - game_ended=False, should_cleanup=False
-2025-07-23 18:34:04 - backend.api.routes.ws - INFO - 🧹 [ROOM_DEBUG] Cleanup iteration 45: Checking 1 rooms: ['D9D854']
-2025-07-23 18:34:04 - engine.async_room - INFO - ⏱️ [ROOM_DEBUG] Room 'D9D854' using cleanup timeout: 30s (started=True, game_ended=False)
-2025-07-23 18:34:04 - backend.api.routes.ws - INFO - 🧹 CLEANUP_CHECK: Room D9D854 - game_ended=False, should_cleanup=False
-2025-07-23 18:34:09 - backend.api.routes.ws - INFO - 🧹 [ROOM_DEBUG] Cleanup iteration 46: Checking 1 rooms: ['D9D854']
-2025-07-23 18:34:09 - engine.async_room - INFO - ⏱️ [ROOM_DEBUG] Room 'D9D854' using cleanup timeout: 30s (started=True, game_ended=False)
-2025-07-23 18:34:09 - backend.api.routes.ws - INFO - 🧹 CLEANUP_CHECK: Room D9D854 - game_ended=False, should_cleanup=False
-2025-07-23 18:34:14 - backend.api.routes.ws - INFO - 🧹 [ROOM_DEBUG] Cleanup iteration 47: Checking 1 rooms: ['D9D854']
-2025-07-23 18:34:14 - engine.async_room - INFO - ⏱️ [ROOM_DEBUG] Room 'D9D854' using cleanup timeout: 30s (started=True, game_ended=False)
-2025-07-23 18:34:14 - backend.api.routes.ws - INFO - 🧹 CLEANUP_CHECK: Room D9D854 - game_ended=False, should_cleanup=False
-INFO:     127.0.0.1:60823 - "GET / HTTP/1.1" 304 Not Modified
-2025-07-23 18:34:19 - backend.api.routes.ws - INFO - 🧹 [ROOM_DEBUG] Cleanup iteration 48: Checking 1 rooms: ['D9D854']
-2025-07-23 18:34:19 - engine.async_room - INFO - ⏱️ [ROOM_DEBUG] Room 'D9D854' using cleanup timeout: 30s (started=True, game_ended=False)
-2025-07-23 18:34:19 - backend.api.routes.ws - INFO - 🧹 CLEANUP_CHECK: Room D9D854 - game_ended=False, should_cleanup=False
-INFO:     127.0.0.1:60823 - "GET /bundle.css HTTP/1.1" 304 Not Modified
-INFO:     127.0.0.1:60919 - "GET /bundle.js HTTP/1.1" 304 Not Modified
-INFO:     127.0.0.1:60917 - "GET /.well-known/appspecific/com.chrome.devtools.json HTTP/1.1" 404 Not Found
-INFO:     127.0.0.1:60917 - "GET /bundle.js.map HTTP/1.1" 304 Not Modified
-INFO:     127.0.0.1:60917 - "GET /bundle.css.map HTTP/1.1" 304 Not Modified
-2025-07-23 18:34:19 - backend.api.routes.ws - INFO - 🔌 [ROOM_DEBUG] New WebSocket connection to room 'D9D854', ws_id: 1514567f-8260-43ba-8ab0-687a58c5287d at 1753320859.736178
-2025-07-23 18:34:19 - backend.api.routes.ws - INFO - 🧹 [ROOM_DEBUG] Room cleanup task already running
-INFO:     ('127.0.0.1', 60921) - "WebSocket /ws/D9D854" [accepted]
-INFO:     connection open
-2025-07-23 18:34:19 - api.websocket.connection_manager - INFO - Player P2 reconnected to room D9D854
-2025-07-23 18:34:19 - backend.api.routes.ws - INFO - Successfully registered player P2 for room D9D854
-2025-07-23 18:34:19 - backend.api.routes.ws - INFO - 🔌 RECONNECT_CHECK: Room D9D854 - started=True, game_ended=False
-2025-07-23 18:34:19 - engine.async_room - INFO - ✅ [ROOM_DEBUG] Cleanup cancelled for room 'D9D854' - human player reconnected
-2025-07-23 18:34:19 - backend.api.routes.ws - INFO - Player P2 reconnected to game in room D9D854
-2025-07-23 18:34:19 - api.websocket.message_queue - INFO - Retrieved 0 queued messages for P2
-2025-07-23 18:34:19 - api.websocket.message_queue - INFO - Cleared message queue for P2 in room D9D854
-2025-07-23 18:34:24 - backend.api.routes.ws - INFO - 🧹 [ROOM_DEBUG] Cleanup iteration 49: Checking 1 rooms: ['D9D854']
-2025-07-23 18:34:24 - backend.api.routes.ws - INFO - 🧹 CLEANUP_CHECK: Room D9D854 - game_ended=False, should_cleanup=False
-2025-07-23 18:34:29 - backend.api.routes.ws - INFO - 🧹 [ROOM_DEBUG] Cleanup iteration 50: Checking 1 rooms: ['D9D854']
-2025-07-23 18:34:29 - backend.api.routes.ws - INFO - 🧹 CLEANUP_CHECK: Room D9D854 - game_ended=False, should_cleanup=False
-2025-07-23 18:34:34 - backend.api.routes.ws - INFO - 🧹 [ROOM_DEBUG] Cleanup iteration 51: Checking 1 rooms: ['D9D854']
-2025-07-23 18:34:34 - backend.api.routes.ws - INFO - 🧹 CLEANUP_CHECK: Room D9D854 - game_ended=False, should_cleanup=False
-2025-07-23 18:34:39 - backend.api.routes.ws - INFO - 🧹 [ROOM_DEBUG] Cleanup iteration 52: Checking 1 rooms: ['D9D854']
-2025-07-23 18:34:39 - backend.api.routes.ws - INFO - 🧹 CLEANUP_CHECK: Room D9D854 - game_ended=False, should_cleanup=False
-2025-07-23 18:34:44 - backend.api.routes.ws - INFO - 🧹 [ROOM_DEBUG] Cleanup iteration 53: Checking 1 rooms: ['D9D854']
-2025-07-23 18:34:44 - backend.api.routes.ws - INFO - 🧹 CLEANUP_CHECK: Room D9D854 - game_ended=False, should_cleanup=False
-INFO:     127.0.0.1:61023 - "GET /game/D9D854 HTTP/1.1" 404 Not Found
-2025-07-23 18:34:44 - backend.api.routes.ws - INFO - 🔌 [ROOM_DEBUG] Handling disconnect for room 'D9D854', websocket_id: 1514567f-8260-43ba-8ab0-687a58c5287d at 1753320884.492641
-2025-07-23 18:34:44 - api.websocket.connection_manager - INFO - Player P2 disconnected from room D9D854. Can reconnect anytime while game is active.
-2025-07-23 18:34:44 - backend.api.routes.ws - INFO - 🎮 [ROOM_DEBUG] In-game disconnect detected for player 'P2' in room 'D9D854'
-2025-07-23 18:34:44 - api.websocket.message_queue - INFO - Created message queue for P2 in room D9D854
-2025-07-23 18:34:44 - backend.api.routes.ws - INFO - Player P2 disconnected from game in room D9D854. Bot activated.
-2025-07-23 18:34:44 - engine.async_room - INFO - 👥 [ROOM_DEBUG] Room 'D9D854' player count: 0 humans, 4 bots
-2025-07-23 18:34:44 - engine.async_room - INFO - 👥 [ROOM_DEBUG] Room 'D9D854' player count: 0 humans, 4 bots
-2025-07-23 18:34:44 - engine.async_room - INFO - ⏱️ [ROOM_DEBUG] Room 'D9D854' using cleanup timeout: 30s (started=True, game_ended=False)
-2025-07-23 18:34:44 - engine.async_room - INFO - 🗑️ [ROOM_DEBUG] Room 'D9D854' marked for cleanup at 1753320884.509391, timeout=30s
-2025-07-23 18:34:44 - engine.async_room - INFO - ⏱️ [ROOM_DEBUG] Room 'D9D854' using cleanup timeout: 30s (started=True, game_ended=False)
-2025-07-23 18:34:44 - backend.api.routes.ws - INFO - All players in room D9D854 are now bots. Cleanup scheduled in 30s
-2025-07-23 18:34:44 - backend.api.routes.ws - INFO - 🤖 [ROOM_DEBUG] Room 'D9D854' has no human players, marked for cleanup
-2025-07-23 18:34:44 - backend.api.routes.ws - INFO - 🔌 [ROOM_DEBUG] WebSocket unregistered from room 'D9D854'
-INFO:     connection closed
-INFO:     127.0.0.1:61023 - "GET /.well-known/appspecific/com.chrome.devtools.json HTTP/1.1" 404 Not Found
-2025-07-23 18:34:49 - backend.api.routes.ws - INFO - 🧹 [ROOM_DEBUG] Cleanup iteration 54: Checking 1 rooms: ['D9D854']
-2025-07-23 18:34:49 - engine.async_room - INFO - ⏱️ [ROOM_DEBUG] Room 'D9D854' using cleanup timeout: 30s (started=True, game_ended=False)
-2025-07-23 18:34:49 - backend.api.routes.ws - INFO - 🧹 CLEANUP_CHECK: Room D9D854 - game_ended=False, should_cleanup=False
-2025-07-23 18:34:54 - backend.api.routes.ws - INFO - 🧹 [ROOM_DEBUG] Cleanup iteration 55: Checking 1 rooms: ['D9D854']
-2025-07-23 18:34:54 - engine.async_room - INFO - ⏱️ [ROOM_DEBUG] Room 'D9D854' using cleanup timeout: 30s (started=True, game_ended=False)
-2025-07-23 18:34:54 - backend.api.routes.ws - INFO - 🧹 CLEANUP_CHECK: Room D9D854 - game_ended=False, should_cleanup=False
+2025-07-23 19:11:25 - backend.api.routes.ws - INFO - 🧹 [ROOM_DEBUG] Cleanup iteration 121: Checking 1 rooms: ['43EF01']
+2025-07-23 19:11:25 - backend.api.routes.ws - INFO - 🧹 CLEANUP_CHECK: Room 43EF01 - game_ended=False, should_cleanup=False
+2025-07-23 19:11:30 - backend.api.routes.ws - INFO - 🧹 [ROOM_DEBUG] Cleanup iteration 122: Checking 1 rooms: ['43EF01']
+2025-07-23 19:11:30 - backend.api.routes.ws - INFO - 🧹 CLEANUP_CHECK: Room 43EF01 - game_ended=False, should_cleanup=False
+2025-07-23 19:11:35 - backend.api.routes.ws - INFO - 🧹 [ROOM_DEBUG] Cleanup iteration 123: Checking 1 rooms: ['43EF01']
+2025-07-23 19:11:35 - backend.api.routes.ws - INFO - 🧹 CLEANUP_CHECK: Room 43EF01 - game_ended=False, should_cleanup=False
+2025-07-23 19:11:40 - backend.api.routes.ws - INFO - 🧹 [ROOM_DEBUG] Cleanup iteration 124: Checking 1 rooms: ['43EF01']
+2025-07-23 19:11:40 - backend.api.routes.ws - INFO - 🧹 CLEANUP_CHECK: Room 43EF01 - game_ended=False, should_cleanup=False
+2025-07-23 19:11:45 - backend.api.routes.ws - INFO - 🧹 [ROOM_DEBUG] Cleanup iteration 125: Checking 1 rooms: ['43EF01']
+2025-07-23 19:11:45 - backend.api.routes.ws - INFO - 🧹 CLEANUP_CHECK: Room 43EF01 - game_ended=False, should_cleanup=False
