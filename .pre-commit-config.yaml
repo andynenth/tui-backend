@@ -1,0 +1,52 @@
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.5.0
+    hooks:
+      - id: trailing-whitespace
+      - id: end-of-file-fixer
+      - id: check-yaml
+      - id: check-added-large-files
+      - id: check-json
+      - id: check-merge-conflict
+
+  - repo: https://github.com/psf/black
+    rev: 23.12.1
+    hooks:
+      - id: black
+        language_version: python3.11
+        files: ^backend/.*\.py$
+
+  - repo: https://github.com/PyCQA/pylint
+    rev: v3.0.3
+    hooks:
+      - id: pylint
+        files: ^backend/.*\.py$
+        args: [--disable=C0114,C0115,C0116]  # Disable docstring requirements for now
+
+  - repo: local
+    hooks:
+      - id: contract-tests
+        name: WebSocket Contract Tests
+        entry: bash -c 'cd backend && python -m pytest tests/contracts/test_websocket_contracts.py -v --tb=short -k "not golden_master"'
+        language: system
+        types: [python]
+        files: ^backend/(api|tests/contracts)/.*\.py$
+        pass_filenames: false
+
+      - id: frontend-compatibility-check
+        name: Frontend Compatibility Check
+        entry: bash -c 'cd backend && python -c "
+from tests.contracts.websocket_contracts import get_all_contracts
+contracts = get_all_contracts()
+print(f\"Checking {len(contracts)} WebSocket contracts...\")
+missing = [name for name, contract in contracts.items() if not contract.request_schema and not contract.response_schema]
+if missing:
+    print(f\"❌ Missing schemas for: {missing}\")
+    exit(1)
+else:
+    print(\"✅ All contracts have schemas defined\")
+"'
+        language: system
+        types: [python]
+        files: ^backend/tests/contracts/websocket_contracts\.py$
+        pass_filenames: false
