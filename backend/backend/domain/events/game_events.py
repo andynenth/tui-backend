@@ -289,13 +289,13 @@ class PlayerReadyForNext(GameEvent):
 @dataclass(frozen=True)
 class CustomGameEvent(GameEvent):
     """Event for custom game-specific events that don't fit other categories."""
-    event_type: str
+    custom_event_type: str
     data: Dict[str, Any]
     
     def _get_event_data(self) -> Dict[str, Any]:
         base_data = super()._get_event_data()
         base_data.update({
-            'event_type': self.event_type,
+            'custom_event_type': self.custom_event_type,
             'data': self.data
         })
         return base_data

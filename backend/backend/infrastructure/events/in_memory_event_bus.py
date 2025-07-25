@@ -12,8 +12,8 @@ from dataclasses import dataclass
 from typing import Dict, List, Type, Set, Optional
 from datetime import datetime
 
-from domain.interfaces.event_publisher import EventBus, EventHandler
-from domain.events.base import DomainEvent
+from backend.domain.interfaces.event_publisher import EventBus, EventHandler
+from backend.domain.events.base import DomainEvent
 
 
 logger = logging.getLogger(__name__)
@@ -74,9 +74,8 @@ class InMemoryEventBus(EventBus):
     
     async def _publish_event(self, event: DomainEvent) -> None:
         """Internal method to publish a single event."""
-        # Add sequence number to event metadata
+        # Track sequence for debugging
         self._sequence_number += 1
-        event.metadata.sequence_number = self._sequence_number
         
         # Track metrics
         self._metrics['events_published'] += 1
@@ -215,6 +214,10 @@ class InMemoryEventBus(EventBus):
         """Reset metrics counters."""
         for key in self._metrics:
             self._metrics[key] = 0
+    
+    def clear_all_handlers(self) -> None:
+        """Clear all registered event handlers."""
+        self._handlers.clear()
 
 
 # Global event bus instance

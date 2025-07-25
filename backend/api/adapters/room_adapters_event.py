@@ -16,7 +16,7 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(
 
 from backend.domain.events.all_events import (
     RoomCreated, PlayerJoinedRoom, PlayerLeftRoom,
-    BotAdded, PlayerRemovedFromRoom, InvalidActionAttempted,
+    BotAdded, PlayerRemoved, InvalidActionAttempted,
     EventMetadata
 )
 from backend.infrastructure.events.in_memory_event_bus import get_event_bus
@@ -48,8 +48,10 @@ class CreateRoomAdapterEvent:
             )
             
             error_event = InvalidActionAttempted(
+                room_id="",  # No room yet
                 player_id=getattr(websocket, 'player_id', str(id(websocket))),
-                action="create_room",
+                player_name="unknown",
+                action_type="create_room",
                 reason="Player name is required",
                 metadata=metadata
             )
@@ -76,6 +78,7 @@ class CreateRoomAdapterEvent:
         # Publish the event
         event = RoomCreated(
             room_id=room_id,
+            host_id=getattr(websocket, 'player_id', str(id(websocket))),
             host_name=player_name,
             metadata=metadata
         )
@@ -116,8 +119,10 @@ class JoinRoomAdapterEvent:
             )
             
             error_event = InvalidActionAttempted(
+                room_id=room_id or "",
                 player_id=getattr(websocket, 'player_id', str(id(websocket))),
-                action="join_room",
+                player_name="unknown",
+                action_type="join_room",
                 reason="Room ID and player name are required",
                 metadata=metadata
             )
@@ -143,8 +148,9 @@ class JoinRoomAdapterEvent:
         # Publish the event
         event = PlayerJoinedRoom(
             room_id=room_id,
+            player_id=getattr(websocket, 'player_id', str(id(websocket))),
             player_name=player_name,
-            slot=slot,
+            player_slot=f"P{slot}",
             metadata=metadata
         )
         
@@ -307,9 +313,11 @@ class AddBotAdapterEvent:
         # Publish the event
         event = BotAdded(
             room_id=room_id,
+            bot_id=f"bot_{uuid.uuid4().hex[:8]}",
             bot_name=bot_name,
-            difficulty=difficulty,
-            slot=slot,
+            player_slot=f"P{slot}",
+            added_by_id=getattr(websocket, 'player_id', str(id(websocket))),
+            added_by_name="unknown",  # Would get from room state
             metadata=metadata
         )
         
@@ -337,7 +345,7 @@ class RemovePlayerAdapterEvent:
     
     async def handle(self, websocket, message: Dict[str, Any], room_state: Optional[Dict[str, Any]] = None) -> Dict[str, Any]:
         """
-        Handle remove_player by publishing PlayerRemovedFromRoom event.
+        Handle remove_player by publishing PlayerRemoved event.
         """
         data = message.get("data", {})
         player_name = data.get("player_name")
@@ -380,10 +388,13 @@ class RemovePlayerAdapterEvent:
             )
             
             # Publish the event
-            event = PlayerRemovedFromRoom(
+            event = PlayerRemoved(
                 room_id=room_id,
-                player_name=player_name,
-                removed_by=requester or "host",
+                removed_player_id=player_name,  # Using name as ID for now
+                removed_player_name=player_name,
+                removed_player_slot="unknown",  # Need to get from room state
+                removed_by_id=requester or "host",
+                removed_by_name=requester or "host",
                 metadata=metadata
             )
             

@@ -166,6 +166,7 @@ class SyncRequestAdapterEvent:
             "event": "sync_response",
             "data": {
                 "room_state": room_state or {},
+                "client_id": data.get("client_id"),
                 "timestamp": datetime.utcnow().timestamp()
             }
         }

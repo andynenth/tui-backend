@@ -15,7 +15,7 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(
 
 from backend.domain.events.all_events import (
     GameStarted, DeclarationMade, PiecesPlayed, RedealRequested,
-    RedealAccepted, RedealDeclined, PlayerReady, PlayerLeftGame,
+    RedealDecisionMade, PlayerReadyForNext, PlayerLeftRoom,
     InvalidActionAttempted, EventMetadata
 )
 from backend.infrastructure.events.in_memory_event_bus import get_event_bus
@@ -539,7 +539,7 @@ class PlayerReadyAdapterEvent:
     
     async def handle(self, websocket, message: Dict[str, Any], room_state: Optional[Dict[str, Any]] = None) -> Dict[str, Any]:
         """
-        Handle player_ready by publishing PlayerReady event.
+        Handle player_ready by publishing PlayerReadyForNext event.
         """
         data = message.get("data", {})
         player_name = data.get("player_name")
@@ -582,10 +582,11 @@ class PlayerReadyAdapterEvent:
             )
             
             # Publish the event
-            event = PlayerReady(
+            event = PlayerReadyForNext(
                 room_id=room_id,
+                player_id=getattr(websocket, 'player_id', str(id(websocket))),
                 player_name=player_name,
-                ready=ready,
+                current_phase=room_state.get("game_state", {}).get("phase", "UNKNOWN") if room_state else "UNKNOWN",
                 metadata=metadata
             )
             

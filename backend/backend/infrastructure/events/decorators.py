@@ -6,7 +6,7 @@ These decorators make it easy to register event handlers.
 
 import functools
 from typing import Type, Callable, Optional
-from domain.events.base import DomainEvent
+from backend.domain.events.base import DomainEvent
 from .in_memory_event_bus import get_event_bus
 
 

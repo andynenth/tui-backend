@@ -56,6 +56,7 @@ class TestShadowMode:
         config.events_enabled = True
         return config
     
+    @pytest.mark.asyncio
     async def test_shadow_mode_runs_both_adapters(self, handler, websocket, config):
         """Test that shadow mode runs both direct and event adapters."""
         # Configure ping adapter for shadow mode
@@ -100,6 +101,7 @@ class TestShadowMode:
         # Result should be from legacy (direct)
         assert result["data"]["server_time"] == 1234567890
     
+    @pytest.mark.asyncio
     async def test_shadow_mode_comparison_tracking(self, handler, websocket, config):
         """Test that shadow mode tracks comparison results."""
         config.adapter_modes["ping"] = AdapterMode.SHADOW
@@ -126,6 +128,7 @@ class TestShadowMode:
         assert "legacy_time" in result
         assert "event_time" in result
     
+    @pytest.mark.asyncio
     async def test_shadow_mode_matching_results(self, handler, websocket, config):
         """Test shadow mode when results match."""
         config.adapter_modes["create_room"] = AdapterMode.SHADOW
@@ -160,6 +163,7 @@ class TestShadowMode:
         shadow_result = handler.shadow_results[0]
         assert shadow_result["results_match"] is True
     
+    @pytest.mark.asyncio
     async def test_shadow_mode_error_handling(self, handler, websocket, config):
         """Test shadow mode handles errors in either adapter."""
         config.adapter_modes["join_room"] = AdapterMode.SHADOW
@@ -195,6 +199,7 @@ class TestShadowMode:
         assert result["legacy_error"] == "Legacy error"
         assert result["event_error"] is None
     
+    @pytest.mark.asyncio
     async def test_shadow_mode_performance_tracking(self, handler, websocket, config):
         """Test shadow mode tracks performance metrics."""
         config.adapter_modes["play"] = AdapterMode.SHADOW
@@ -226,6 +231,7 @@ class TestShadowMode:
         assert result["event_time"] < 0.05   # Should be ~10ms
         assert result["event_time"] < result["legacy_time"]
     
+    @pytest.mark.asyncio
     async def test_shadow_mode_statistics(self, handler, websocket, config):
         """Test shadow mode statistics calculation."""
         # Run multiple shadow comparisons
@@ -264,6 +270,7 @@ class TestShadowMode:
         assert "avg_event_time_ms" in stats
         assert "performance_gain" in stats
     
+    @pytest.mark.asyncio
     async def test_shadow_mode_list_configuration(self, handler, websocket, config):
         """Test shadow mode configuration via shadow list."""
         # Configure via shadow list
@@ -287,6 +294,7 @@ class TestShadowModeIntegration:
         reset_event_bus()
         reset_unified_handler()
     
+    @pytest.mark.asyncio
     async def test_real_adapter_shadow_comparison(self):
         """Test shadow mode with real adapter implementations."""
         websocket = MockWebSocket()
