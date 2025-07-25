@@ -84,6 +84,25 @@ class RoundCompleted(GameEvent):
 
 
 @dataclass(frozen=True)
+class RoundEnded(GameEvent):
+    """A round has ended. Alias for RoundCompleted for backward compatibility."""
+    round_number: int
+    round_scores: Dict[str, int]
+    total_scores: Dict[str, int]
+    next_round_starting: bool = False
+    
+    def _get_event_data(self) -> Dict[str, Any]:
+        data = super()._get_event_data()
+        data.update({
+            'round_number': self.round_number,
+            'round_scores': self.round_scores,
+            'total_scores': self.total_scores,
+            'next_round_starting': self.next_round_starting
+        })
+        return data
+
+
+@dataclass(frozen=True)
 class PhaseChanged(GameEvent):
     """The game phase has changed."""
     old_phase: str

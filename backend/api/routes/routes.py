@@ -5,9 +5,9 @@ import time
 from datetime import datetime
 from typing import Any, Dict, List, Optional
 
-import backend.socket_manager
+import socket_manager
 from shared_instances import shared_bot_manager, shared_room_manager
-from backend.socket_manager import broadcast
+from socket_manager import broadcast
 from fastapi import APIRouter, HTTPException, Query
 from fastapi.responses import JSONResponse
 

@@ -20,6 +20,10 @@ class BroadcastMapping:
     requires_state: bool = False  # Whether room/game state is needed
 
 
+# Alias for backward compatibility
+BroadcastInfo = BroadcastMapping
+
+
 class EventBroadcastMapper:
     """
     Central registry for event-to-broadcast mappings.
