@@ -129,6 +129,16 @@ class GameState(ABC):
         # Store state transition event for replay capability
         await self._store_state_transition_event(updates, reason)
         
+        # 🚀 ENTERPRISE + EVENT SYSTEM INTEGRATION
+        # Publish domain events for state changes
+        try:
+            from .event_integration import publish_state_change_events
+            await publish_state_change_events(
+                self.state_machine, self.phase_name, updates, old_data, reason
+            )
+        except Exception as e:
+            self.logger.debug(f"Event publishing not available: {e}")
+        
         # Automatic broadcasting (enterprise guarantee)
         if broadcast and self._auto_broadcast_enabled:
             await self._auto_broadcast_phase_change(reason)
@@ -336,6 +346,28 @@ class GameState(ABC):
                 "timestamp": time.time(),
                 "reason": reason,
             }
+
+            # 🚀 ENTERPRISE + EVENT SYSTEM INTEGRATION
+            # Also publish as domain event for custom events
+            try:
+                from .event_integration import get_state_event_publisher
+                from backend.domain.events.all_events import CustomGameEvent, EventMetadata
+                
+                publisher = get_state_event_publisher()
+                if publisher._enabled and room_id != "unknown":
+                    metadata = EventMetadata(
+                        user_id="system",
+                        correlation_id=f"custom_{self._sequence_number}"
+                    )
+                    event = CustomGameEvent(
+                        room_id=room_id,
+                        event_type=event_type,
+                        data=enhanced_data,
+                        metadata=metadata
+                    )
+                    await publisher.event_bus.publish(event)
+            except Exception as e:
+                self.logger.debug(f"Event publishing for custom event not available: {e}")
 
             await broadcast(room_id, event_type, enhanced_data)
 
