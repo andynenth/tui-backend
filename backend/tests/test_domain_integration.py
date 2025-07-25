@@ -15,6 +15,7 @@ from domain.entities.player import Player
 from domain.value_objects.piece import Piece
 from domain.events.game_events import GameStarted
 from domain.events.player_events import PlayerDeclaredPiles
+from domain.events.base import EventMetadata
 
 # Infrastructure imports
 from infrastructure.repositories import InMemoryRoomRepository
@@ -35,7 +36,7 @@ class TestInMemoryRoomRepository:
         
         # Create a room
         room = Room(room_id="test-room", host_name="alice")
-        room.add_player("alice", is_human=True)
+        room.add_player("alice", is_bot=False)
         
         # Save it
         await repo.save(room)
@@ -53,12 +54,12 @@ class TestInMemoryRoomRepository:
         
         # Create rooms
         room1 = Room(room_id="room1", host_name="alice")
-        room1.add_player("alice", is_human=True)
-        room1.add_player("bob", is_human=True)
+        room1.add_player("alice", is_bot=False)
+        room1.add_player("bob", is_bot=False)
         
         room2 = Room(room_id="room2", host_name="charlie")
-        room2.add_player("charlie", is_human=True)
-        room2.add_player("david", is_human=True)
+        room2.add_player("charlie", is_bot=False)
+        room2.add_player("david", is_bot=False)
         
         await repo.save(room1)
         await repo.save(room2)
@@ -119,7 +120,8 @@ class TestInMemoryEventBus:
             player_names=["alice", "bob"],
             win_condition="score",
             max_score=50,
-            max_rounds=20
+            max_rounds=20,
+            metadata=EventMetadata()
         )
         
         await bus.publish(event)
@@ -148,7 +150,8 @@ class TestInMemoryEventBus:
             player_names=["alice"],
             win_condition="score",
             max_score=50,
-            max_rounds=20
+            max_rounds=20,
+            metadata=EventMetadata()
         )
         
         event2 = PlayerDeclaredPiles(
@@ -156,7 +159,8 @@ class TestInMemoryEventBus:
             player_id="p1",
             player_name="alice",
             declared_count=3,
-            zero_streak=0
+            zero_streak=0,
+            metadata=EventMetadata()
         )
         
         await bus.publish(event1)
@@ -180,7 +184,8 @@ class TestWebSocketBroadcastHandler:
             player_names=["alice"],
             win_condition="score",
             max_score=50,
-            max_rounds=20
+            max_rounds=20,
+            metadata=EventMetadata()
         )
         
         assert handler.can_handle(event) is True
