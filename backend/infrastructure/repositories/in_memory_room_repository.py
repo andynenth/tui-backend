@@ -58,7 +58,7 @@ class InMemoryRoomRepository(RoomRepository):
             Room containing the player, None if not found
         """
         for room in self._rooms.values():
-            if any(p.name == player_name for p in room.players):
+            if any(p and p.name == player_name for p in room.slots):
                 return room
         return None
     

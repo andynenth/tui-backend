@@ -8,7 +8,6 @@ to WebSocket broadcasts for real-time client updates.
 from typing import List
 from domain.interfaces.events import EventHandler
 from domain.events.base import DomainEvent
-from socket_manager import broadcast
 import logging
 
 logger = logging.getLogger(__name__)
@@ -62,7 +61,8 @@ class WebSocketBroadcastHandler(EventHandler):
             True if this handler can process the event
         """
         # This handler can process any event that has a room_id
-        event_data = event.to_dict()
+        event_dict = event.to_dict()
+        event_data = event_dict.get('data', {})
         return "room_id" in event_data
     
     async def handle(self, event: DomainEvent) -> None:
@@ -74,7 +74,8 @@ class WebSocketBroadcastHandler(EventHandler):
         """
         try:
             event_type = event.__class__.__name__
-            event_data = event.to_dict()
+            event_dict = event.to_dict()
+            event_data = event_dict.get('data', {})
             
             # Get room_id
             room_id = event_data.get("room_id")
@@ -92,6 +93,7 @@ class WebSocketBroadcastHandler(EventHandler):
             broadcast_data = self._prepare_broadcast_data(event_data)
             
             # Broadcast to room
+            from socket_manager import broadcast
             await broadcast(room_id, ws_event_name, broadcast_data)
             
             logger.debug(f"Broadcasted {event_type} as {ws_event_name} to room {room_id}")

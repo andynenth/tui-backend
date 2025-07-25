@@ -6,7 +6,7 @@ and how infrastructure handles them.
 """
 
 from abc import ABC, abstractmethod
-from typing import List, Callable, Optional, Any
+from typing import List, Callable, Optional, Any, Dict
 
 from domain.events.base import DomainEvent
 
