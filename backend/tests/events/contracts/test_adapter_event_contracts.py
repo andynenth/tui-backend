@@ -57,6 +57,7 @@ class TestConnectionAdapterContracts:
         """Create a mock websocket."""
         return MockWebSocket()
     
+    @pytest.mark.asyncio
     async def test_ping_adapter_contract(self, websocket):
         """Test PingAdapter produces same output as PingAdapterEvent."""
         # Test data
@@ -84,6 +85,7 @@ class TestConnectionAdapterContracts:
         assert "server_time" in direct_response["data"]
         assert "server_time" in event_response["data"]
     
+    @pytest.mark.asyncio
     async def test_client_ready_adapter_contract(self, websocket):
         """Test ClientReadyAdapter produces same output as ClientReadyAdapterEvent."""
         # Test with room state
@@ -117,6 +119,7 @@ class TestConnectionAdapterContracts:
         
         assert direct_response2 == event_response2
     
+    @pytest.mark.asyncio
     async def test_ack_adapter_contract(self, websocket):
         """Test AckAdapter produces same output as AckAdapterEvent."""
         message = {
@@ -137,6 +140,7 @@ class TestConnectionAdapterContracts:
         assert direct_response is None
         assert event_response is None
     
+    @pytest.mark.asyncio
     async def test_sync_request_adapter_contract(self, websocket):
         """Test SyncRequestAdapter produces same output as SyncRequestAdapterEvent."""
         message = {
@@ -180,6 +184,7 @@ class TestRoomAdapterContracts:
         """Create a mock websocket."""
         return MockWebSocket()
     
+    @pytest.mark.asyncio
     async def test_create_room_adapter_contract(self, websocket):
         """Test create_room produces same output structure."""
         message = {
@@ -204,6 +209,7 @@ class TestRoomAdapterContracts:
         assert "room_id" in direct_response["data"]
         assert "room_id" in event_response["data"]
     
+    @pytest.mark.asyncio
     async def test_create_room_error_contract(self, websocket):
         """Test create_room error handling matches."""
         message = {
@@ -220,6 +226,7 @@ class TestRoomAdapterContracts:
         assert direct_response == event_response
         assert direct_response["event"] == "error"
     
+    @pytest.mark.asyncio
     async def test_join_room_adapter_contract(self, websocket):
         """Test join_room produces same output."""
         message = {
@@ -242,6 +249,7 @@ class TestRoomAdapterContracts:
         assert direct_response["data"]["success"] == event_response["data"]["success"]
         assert direct_response["data"]["slot"] == event_response["data"]["slot"]
     
+    @pytest.mark.asyncio
     async def test_add_bot_adapter_contract(self, websocket):
         """Test add_bot produces same output."""
         websocket.room_id = "room123"
@@ -325,6 +333,7 @@ class TestEventPublishingVerification:
         bus = get_event_bus()
         bus.subscribe(DomainEvent, track_event)
     
+    @pytest.mark.asyncio
     async def test_create_room_publishes_event(self):
         """Verify CreateRoomAdapterEvent publishes RoomCreated event."""
         websocket = MockWebSocket()
@@ -345,6 +354,7 @@ class TestEventPublishingVerification:
         assert event.host_name == "Alice"
         assert event.room_id.startswith("room_")
     
+    @pytest.mark.asyncio
     async def test_error_publishes_invalid_action_event(self):
         """Verify error cases publish InvalidActionAttempted events."""
         websocket = MockWebSocket()
@@ -362,7 +372,7 @@ class TestEventPublishingVerification:
         
         from backend.domain.events.all_events import InvalidActionAttempted
         assert isinstance(event, InvalidActionAttempted)
-        assert event.action == "create_room"
+        assert event.action_type == "create_room"
         assert "required" in event.reason.lower()
 
 

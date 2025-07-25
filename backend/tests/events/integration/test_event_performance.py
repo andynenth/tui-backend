@@ -44,6 +44,7 @@ class TestEventSystemPerformance:
         """Reset event bus before each test."""
         reset_event_bus()
     
+    @pytest.mark.asyncio
     async def test_event_bus_publish_performance(self):
         """Benchmark event bus publishing performance."""
         bus = InMemoryEventBus()
@@ -101,6 +102,7 @@ class TestEventSystemPerformance:
         assert avg_time_ms < 1.0  # Should be under 1ms per event
         assert events_per_second > 1000  # Should handle >1000 events/sec
     
+    @pytest.mark.asyncio
     async def test_adapter_comparison_performance(self):
         """Compare performance of direct vs event-based adapters."""
         websocket = MockWebSocket()
@@ -160,6 +162,7 @@ class TestEventSystemPerformance:
         # Assert reasonable overhead
         assert overhead_percent < 50  # Should be less than 50% overhead
     
+    @pytest.mark.asyncio
     async def test_event_handling_scalability(self):
         """Test how event system scales with many handlers."""
         bus = InMemoryEventBus()
@@ -221,6 +224,7 @@ class TestEventSystemPerformance:
             scaling_factor = last_per_handler / first_per_handler
             assert scaling_factor < 2.0  # Should not double per-handler time
     
+    @pytest.mark.asyncio
     async def test_event_bus_memory_usage(self):
         """Test memory efficiency of event storage and handling."""
         bus = InMemoryEventBus()
@@ -263,6 +267,7 @@ class TestEventSystemPerformance:
         assert avg_time_ms < 1.0
         assert len(stored_events) == event_count
     
+    @pytest.mark.asyncio
     async def test_concurrent_event_publishing(self):
         """Test performance with concurrent event publishing."""
         bus = InMemoryEventBus()
@@ -311,6 +316,7 @@ class TestEventSystemPerformance:
 class TestPerformanceRegression:
     """Regression tests to ensure performance doesn't degrade."""
     
+    @pytest.mark.asyncio
     async def test_baseline_adapter_performance(self):
         """Establish baseline performance metrics."""
         websocket = MockWebSocket()

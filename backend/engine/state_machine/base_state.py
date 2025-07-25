@@ -361,7 +361,7 @@ class GameState(ABC):
                     )
                     event = CustomGameEvent(
                         room_id=room_id,
-                        event_type=event_type,
+                        custom_event_type=event_type,
                         data=enhanced_data,
                         metadata=metadata
                     )

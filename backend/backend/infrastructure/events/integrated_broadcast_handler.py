@@ -9,11 +9,11 @@ import logging
 from typing import Optional, Dict, Any, TYPE_CHECKING
 from datetime import datetime
 
-from domain.events.base import DomainEvent, GameEvent
-from domain.events.all_events import *
-from infrastructure.events.decorators import event_handler
-from infrastructure.events.event_broadcast_mapper import event_broadcast_mapper
-from infrastructure.events.in_memory_event_bus import get_event_bus
+from backend.domain.events.base import DomainEvent, GameEvent
+from backend.domain.events.all_events import *
+from backend.infrastructure.events.decorators import event_handler
+from backend.infrastructure.events.event_broadcast_mapper import event_broadcast_mapper
+from backend.infrastructure.events.in_memory_event_bus import get_event_bus
 
 if TYPE_CHECKING:
     from room_manager import RoomManager

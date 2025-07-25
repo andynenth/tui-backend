@@ -27,7 +27,7 @@ class TestEventBus:
     """Test the InMemoryEventBus implementation."""
     
     @pytest.fixture
-    async def event_bus(self):
+    def event_bus(self):
         """Create a fresh event bus for each test."""
         bus = InMemoryEventBus()
         yield bus
@@ -41,23 +41,28 @@ class TestEventBus:
         return {
             'room_created': RoomCreated(
                 room_id="room123",
+                host_id="host123",
                 host_name="Alice",
                 metadata=metadata
             ),
             'player_joined': PlayerJoinedRoom(
                 room_id="room123",
+                player_id="player456",
                 player_name="Bob",
-                slot=2,
+                player_slot="P2",
                 metadata=metadata
             ),
             'game_started': GameStarted(
                 room_id="room123",
                 round_number=1,
-                starter_player="Alice",
+                player_names=["Alice", "Bob", "Carol", "Dave"],
+                started_by_id="host123",
+                started_by_name="Alice",
                 metadata=metadata
             )
         }
     
+    @pytest.mark.asyncio
     async def test_subscribe_and_publish_single_event(self, event_bus, sample_events):
         """Test basic subscribe and publish functionality."""
         handler_called = False
@@ -78,6 +83,7 @@ class TestEventBus:
         assert handler_called is True
         assert received_event == sample_events['room_created']
     
+    @pytest.mark.asyncio
     async def test_multiple_handlers_for_same_event(self, event_bus, sample_events):
         """Test multiple handlers can subscribe to the same event."""
         call_order = []
@@ -105,6 +111,7 @@ class TestEventBus:
         assert 'handler2' in call_order
         assert 'handler3' in call_order
     
+    @pytest.mark.asyncio
     async def test_handler_priority_ordering(self, event_bus, sample_events):
         """Test handlers are called in priority order."""
         call_order = []
@@ -129,6 +136,7 @@ class TestEventBus:
         # Should be called in priority order (high to low)
         assert call_order == ['high', 'medium', 'low']
     
+    @pytest.mark.asyncio
     async def test_type_based_subscription(self, event_bus, sample_events):
         """Test handlers only receive events of subscribed type."""
         room_created_called = False
@@ -159,6 +167,7 @@ class TestEventBus:
         assert room_created_called is False
         assert player_joined_called is True
     
+    @pytest.mark.asyncio
     async def test_error_isolation(self, event_bus, sample_events):
         """Test that handler errors don't affect other handlers."""
         handler1_called = False
@@ -187,6 +196,7 @@ class TestEventBus:
         assert handler1_called is True
         assert handler3_called is True
     
+    @pytest.mark.asyncio
     async def test_publish_multiple_events(self, event_bus, sample_events):
         """Test publishing multiple events at once."""
         events_received = []
@@ -198,7 +208,7 @@ class TestEventBus:
         event_bus.subscribe(DomainEvent, handler)
         
         # Publish multiple events
-        await event_bus.publish_many([
+        await event_bus.publish_batch([
             sample_events['room_created'],
             sample_events['player_joined'],
             sample_events['game_started']
@@ -210,6 +220,7 @@ class TestEventBus:
         assert sample_events['player_joined'] in events_received
         assert sample_events['game_started'] in events_received
     
+    @pytest.mark.asyncio
     async def test_unsubscribe(self, event_bus, sample_events):
         """Test unsubscribing handlers."""
         handler_called = False
@@ -230,6 +241,7 @@ class TestEventBus:
         # Handler should not be called
         assert handler_called is False
     
+    @pytest.mark.asyncio
     async def test_clear_all_handlers(self, event_bus, sample_events):
         """Test clearing all handlers."""
         handler_called = False
@@ -254,6 +266,7 @@ class TestEventBus:
         # No handlers should be called
         assert handler_called is False
     
+    @pytest.mark.asyncio
     async def test_inheritance_based_subscription(self, event_bus):
         """Test that handlers for base types receive derived events."""
         game_events_received = []
@@ -274,8 +287,12 @@ class TestEventBus:
         metadata = EventMetadata(user_id="test")
         pieces_played = PiecesPlayed(
             room_id="room123",
+            player_id="player123",
             player_name="Alice",
             pieces=["piece1", "piece2"],
+            piece_indices=[0, 1],
+            turn_number=1,
+            round_number=1,
             metadata=metadata
         )
         
@@ -291,6 +308,7 @@ class TestEventBus:
 class TestEventBusGlobalInstance:
     """Test the global event bus instance functionality."""
     
+    @pytest.mark.asyncio
     async def test_get_event_bus_singleton(self):
         """Test that get_event_bus returns the same instance."""
         bus1 = get_event_bus()
@@ -298,6 +316,7 @@ class TestEventBusGlobalInstance:
         
         assert bus1 is bus2
     
+    @pytest.mark.asyncio
     async def test_reset_event_bus(self):
         """Test resetting the global event bus."""
         # Get initial bus
@@ -323,7 +342,7 @@ class TestEventBusGlobalInstance:
         
         # Old handlers should not exist
         metadata = EventMetadata(user_id="test")
-        event = RoomCreated(room_id="room123", host_name="Alice", metadata=metadata)
+        event = RoomCreated(room_id="room123", host_id="host123", host_name="Alice", metadata=metadata)
         await bus2.publish(event)
         
         assert handler_called is False

@@ -32,7 +32,7 @@ class DomainEvent(ABC):
     Events are immutable and represent facts about things that have happened.
     They should be named in past tense (e.g., OrderPlaced, GameStarted).
     """
-    metadata: EventMetadata = field(default_factory=EventMetadata)
+    metadata: EventMetadata
     
     @property
     def event_type(self) -> str:
