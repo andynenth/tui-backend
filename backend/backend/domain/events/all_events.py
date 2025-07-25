@@ -42,6 +42,7 @@ from .game_events import (
     GameEnded,
     RoundStarted,
     RoundCompleted,
+    RoundEnded,
     PhaseChanged,
     # Game actions
     PiecesDealt,
@@ -55,6 +56,13 @@ from .game_events import (
     TurnWinnerDetermined,
     PlayerReadyForNext,
     CustomGameEvent
+)
+
+# Turn events
+from .turn_events import (
+    TurnStarted,
+    TurnCompleted as TurnCompletedEvent,
+    TurnWinnerDetermined as TurnWinnerDeterminedEvent
 )
 
 # Scoring events
@@ -104,7 +112,11 @@ __all__ = [
     'GameEnded',
     'RoundStarted',
     'RoundCompleted',
+    'RoundEnded',
     'PhaseChanged',
+    
+    # Turn events
+    'TurnStarted',
     
     # Game action events
     'PiecesDealt',
