@@ -6,6 +6,7 @@ This is a pure domain entity with no infrastructure dependencies.
 
 from typing import List, Optional
 from dataclasses import dataclass, field
+from datetime import datetime
 from domain.value_objects.piece import Piece
 from domain.events.base import DomainEvent, EventMetadata
 from domain.events.player_events import (
@@ -14,6 +15,12 @@ from domain.events.player_events import (
     PlayerScoreUpdated,
     PlayerHandUpdated,
     PlayerStatUpdated
+)
+from domain.events.connection_events import (
+    PlayerDisconnected,
+    PlayerReconnected,
+    BotActivated,
+    BotDeactivated
 )
 
 
@@ -41,12 +48,17 @@ class Player:
     captured_piles: int = 0
     stats: PlayerStats = field(default_factory=PlayerStats)
     
+    # Connection tracking
+    is_connected: bool = True
+    disconnect_time: Optional[datetime] = None
+    original_is_bot: bool = field(init=False)
+    
     # Events that occurred during the player's lifecycle
     _events: List[DomainEvent] = field(default_factory=list, init=False)
     
     def __post_init__(self):
         """Initialize player."""
-        self._original_is_bot = self.is_bot
+        self.original_is_bot = self.is_bot
     
     @property
     def id(self) -> str:
@@ -278,6 +290,73 @@ class Player:
         self.captured_piles = 0
         self.hand.clear()
     
+    def disconnect(self, room_id: str, activate_bot: bool = True) -> None:
+        """
+        Mark player as disconnected.
+        
+        Args:
+            room_id: The room this player is in
+            activate_bot: Whether to activate bot control
+        """
+        self.is_connected = False
+        self.disconnect_time = datetime.utcnow()
+        bot_activated = False
+        
+        # Activate bot if requested and player is human
+        if activate_bot and not self.original_is_bot:
+            self.is_bot = True
+            bot_activated = True
+            
+            self._emit_event(BotActivated(
+                room_id=room_id,
+                player_name=self.name,
+                activation_time=self.disconnect_time,
+                metadata=EventMetadata()
+            ))
+        
+        self._emit_event(PlayerDisconnected(
+            room_id=room_id,
+            player_name=self.name,
+            disconnect_time=self.disconnect_time,
+            was_bot_activated=bot_activated,
+            game_in_progress=True,  # Caller should set this appropriately
+            metadata=EventMetadata()
+        ))
+    
+    def reconnect(self, room_id: str, messages_queued: int = 0) -> None:
+        """
+        Mark player as reconnected.
+        
+        Args:
+            room_id: The room this player is in
+            messages_queued: Number of messages that were queued
+        """
+        self.is_connected = True
+        reconnect_time = datetime.utcnow()
+        self.disconnect_time = None
+        bot_deactivated = False
+        
+        # Deactivate bot if it was activated for a human player
+        if self.is_bot and not self.original_is_bot:
+            self.is_bot = False
+            bot_deactivated = True
+            
+            self._emit_event(BotDeactivated(
+                room_id=room_id,
+                player_name=self.name,
+                deactivation_time=reconnect_time,
+                metadata=EventMetadata()
+            ))
+        
+        self._emit_event(PlayerReconnected(
+            room_id=room_id,
+            player_name=self.name,
+            reconnect_time=reconnect_time,
+            messages_queued=messages_queued,
+            bot_was_deactivated=bot_deactivated,
+            metadata=EventMetadata()
+        ))
+    
     def to_dict(self) -> dict:
         """
         Convert player to dictionary for serialization.
@@ -296,7 +375,10 @@ class Player:
                 "turns_won": self.stats.turns_won,
                 "perfect_rounds": self.stats.perfect_rounds,
                 "zero_declares_in_a_row": self.stats.zero_declares_in_a_row
-            }
+            },
+            "is_connected": self.is_connected,
+            "disconnect_time": self.disconnect_time.isoformat() if self.disconnect_time else None,
+            "original_is_bot": self.original_is_bot
         }
     
     @classmethod
@@ -313,12 +395,23 @@ class Player:
         stats = PlayerStats(**data.get("stats", {}))
         hand = [Piece.from_dict(p) for p in data.get("hand", [])]
         
-        return cls(
+        player = cls(
             name=data["name"],
             is_bot=data.get("is_bot", False),
             hand=hand,
             score=data.get("score", 0),
             declared_piles=data.get("declared_piles", 0),
             captured_piles=data.get("captured_piles", 0),
-            stats=stats
+            stats=stats,
+            is_connected=data.get("is_connected", True)
         )
+        
+        # Handle disconnect time
+        if data.get("disconnect_time"):
+            player.disconnect_time = datetime.fromisoformat(data["disconnect_time"])
+        
+        # Set original_is_bot if provided
+        if "original_is_bot" in data:
+            player.original_is_bot = data["original_is_bot"]
+            
+        return player

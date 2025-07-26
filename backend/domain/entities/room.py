@@ -392,6 +392,40 @@ class Room:
         """Check if player is host."""
         return self.host_name == name
     
+    def is_game_started(self) -> bool:
+        """Check if a game is currently in progress."""
+        return self.status == RoomStatus.IN_GAME and self.game is not None
+    
+    def migrate_host(self) -> Optional[Player]:
+        """Migrate host to another player and return the new host."""
+        old_host = self.host_name
+        
+        # Prefer human players
+        for player in self.slots:
+            if player and not player.is_bot and player.name != old_host:
+                self.host_name = player.name
+                self._emit_event(HostMigrated(
+                    room_id=self.room_id,
+                    old_host=old_host,
+                    new_host=self.host_name,
+                    metadata=EventMetadata()
+                ))
+                return player
+        
+        # Fall back to first bot
+        for player in self.slots:
+            if player and player.name != old_host:
+                self.host_name = player.name
+                self._emit_event(HostMigrated(
+                    room_id=self.room_id,
+                    old_host=old_host,
+                    new_host=self.host_name,
+                    metadata=EventMetadata()
+                ))
+                return player
+        
+        return None
+    
     def get_human_count(self) -> int:
         """Count human players in room."""
         return sum(1 for p in self.slots if p and not p.is_bot)

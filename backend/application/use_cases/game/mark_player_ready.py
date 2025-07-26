@@ -18,8 +18,8 @@ from application.exceptions import (
 )
 from domain.entities.game import GamePhase
 from domain.events.player_events import PlayerReady
-from backend.domain.events.game_events import AllPlayersReady, PhaseChanged
-from backend.domain.events.base import EventMetadata
+from domain.events.game_events import PhaseChanged
+from domain.events.base import EventMetadata
 
 logger = logging.getLogger(__name__)
 
@@ -157,15 +157,15 @@ class MarkPlayerReadyUseCase(UseCase[MarkPlayerReadyRequest, MarkPlayerReadyResp
             
             # If all ready, emit additional events
             if all_ready:
-                # Emit AllPlayersReady
-                all_ready_event = AllPlayersReady(
-                    metadata=EventMetadata(user_id=request.user_id),
-                    room_id=room.id,
-                    game_id=game.id,
-                    phase=game.phase.value,
-                    next_phase=next_phase
-                )
-                await self._event_publisher.publish(all_ready_event)
+                # TODO: Emit AllPlayersReady when event is created
+                # all_ready_event = AllPlayersReady(
+                #     metadata=EventMetadata(user_id=request.user_id),
+                #     room_id=room.id,
+                #     game_id=game.id,
+                #     phase=game.phase.value,
+                #     next_phase=next_phase
+                # )
+                # await self._event_publisher.publish(all_ready_event)
                 
                 # Emit PhaseChanged if phase changed
                 if next_phase and next_phase != game.phase.value:

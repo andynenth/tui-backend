@@ -18,8 +18,8 @@ from application.exceptions import (
 )
 from domain.entities.game import GamePhase
 from domain.events.player_events import PlayerDeclaredPiles
-from backend.domain.events.game_events import PhaseChanged, AllPlayersReady
-from backend.domain.events.base import EventMetadata
+from domain.events.game_events import PhaseChanged
+from domain.events.base import EventMetadata
 
 logger = logging.getLogger(__name__)
 
@@ -174,15 +174,15 @@ class DeclareUseCase(UseCase[DeclareRequest, DeclareResponse]):
                 )
                 await self._event_publisher.publish(phase_event)
                 
-                # Also emit AllPlayersReady for phase transition
-                ready_event = AllPlayersReady(
-                    metadata=EventMetadata(user_id=request.user_id),
-                    room_id=room.id,
-                    game_id=game.id,
-                    phase=GamePhase.DECLARATION.value,
-                    next_phase=GamePhase.TURN.value
-                )
-                await self._event_publisher.publish(ready_event)
+                # TODO: emit AllPlayersReady event when it's created
+                # ready_event = AllPlayersReady(
+                #     metadata=EventMetadata(user_id=request.user_id),
+                #     room_id=room.id,
+                #     game_id=game.id,
+                #     phase=GamePhase.DECLARATION.value,
+                #     next_phase=GamePhase.TURN.value
+                # )
+                # await self._event_publisher.publish(ready_event)
             
             # Record metrics
             if self._metrics:

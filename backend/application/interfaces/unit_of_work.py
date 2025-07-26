@@ -7,7 +7,13 @@ are atomic - they either all succeed or all fail together.
 
 from abc import ABC, abstractmethod
 from typing import Optional
-from .repositories import RoomRepository, GameRepository, PlayerStatsRepository
+from .repositories import (
+    RoomRepository, 
+    GameRepository, 
+    PlayerStatsRepository,
+    ConnectionRepository,
+    MessageQueueRepository
+)
 
 
 class UnitOfWork(ABC):
@@ -23,6 +29,8 @@ class UnitOfWork(ABC):
     rooms: RoomRepository
     games: GameRepository
     player_stats: PlayerStatsRepository
+    connections: ConnectionRepository
+    message_queues: MessageQueueRepository
     
     @abstractmethod
     async def __aenter__(self):

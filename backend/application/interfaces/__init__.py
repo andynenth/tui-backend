@@ -6,7 +6,13 @@ expects from infrastructure and other layers. They enable the
 application layer to remain decoupled from specific implementations.
 """
 
-from .repositories import RoomRepository, GameRepository, PlayerStatsRepository
+from .repositories import (
+    RoomRepository, 
+    GameRepository, 
+    PlayerStatsRepository,
+    ConnectionRepository,
+    MessageQueueRepository
+)
 from .services import (
     EventPublisher,
     NotificationService,
@@ -22,6 +28,8 @@ __all__ = [
     "RoomRepository",
     "GameRepository", 
     "PlayerStatsRepository",
+    "ConnectionRepository",
+    "MessageQueueRepository",
     
     # Services
     "EventPublisher",
