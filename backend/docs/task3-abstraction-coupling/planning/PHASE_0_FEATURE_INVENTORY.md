@@ -13,6 +13,16 @@ The previous clean architecture attempt failed partly because features were miss
 3. Setting up mechanisms to detect discrepancies
 4. Establishing clear acceptance criteria
 
+## ⚠️ Phase 0 Gap Discovery (2025-07-26)
+
+During Phase 4 implementation, we discovered that the **Reconnection System** was not properly included in the clean architecture migration. This led to the creation of **Phase 4.11: Core Feature Recovery** to retrofit these critical features:
+- Player disconnect → bot conversion
+- Message queuing for offline players
+- State restoration on reconnect
+- Bot scheduling and timing
+
+This gap highlights the importance of thorough feature inventory. Phase 4.11 ensures these core features are properly integrated before proceeding to Phase 5.
+
 ## Pre-Implementation Checklist
 
 ### System Analysis Setup
@@ -85,11 +95,11 @@ def extract_broadcast_events():
   - [ ] Room cleanup after inactivity
 
 - [ ] **Player Management**
-  - [ ] Human vs bot differentiation
-  - [ ] Bot activation on disconnect
-  - [ ] Reconnection with state restoration
-  - [ ] Message queuing for disconnected players
-  - [ ] Player name validation and uniqueness
+  - [x] Human vs bot differentiation ✅ IDENTIFIED
+  - [x] Bot activation on disconnect ✅ IDENTIFIED (Phase 4.11)
+  - [x] Reconnection with state restoration ✅ IDENTIFIED (Phase 4.11)
+  - [x] Message queuing for disconnected players ✅ IDENTIFIED (Phase 4.11)
+  - [x] Player name validation and uniqueness ✅ IDENTIFIED
 
 - [ ] **Game Flow**
   - [ ] 4-player validation before start
@@ -110,12 +120,12 @@ def extract_broadcast_events():
   - [ ] Turn timer and timeouts
 
 #### B. Edge Cases Documentation
-- [ ] **Connection Issues**
-  - [ ] Player disconnect during their turn
-  - [ ] Host disconnect handling
-  - [ ] Multiple simultaneous disconnects
-  - [ ] Network interruption recovery
-  - [ ] WebSocket reconnection
+- [x] **Connection Issues** ✅ ALL IDENTIFIED
+  - [x] Player disconnect during their turn ✅ IDENTIFIED (Phase 4.11)
+  - [x] Host disconnect handling ✅ IDENTIFIED
+  - [x] Multiple simultaneous disconnects ✅ IDENTIFIED (Phase 4.11)
+  - [x] Network interruption recovery ✅ IDENTIFIED (Phase 4.11)
+  - [x] WebSocket reconnection ✅ IDENTIFIED (Phase 4.11)
 
 - [ ] **Timing Issues**
   - [ ] Simultaneous player actions

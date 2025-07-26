@@ -41,6 +41,13 @@ The clean architecture implementation follows the hexagonal/onion architecture p
 3. **Use Case Focus**: Each use case represents a single user action.
 4. **Interface Segregation**: Layers communicate through well-defined interfaces.
 
+### Core Systems
+
+1. **Connection Management**: Player disconnect/reconnect with bot substitution
+2. **Message Queuing**: Offline message storage and delivery
+3. **Game State Management**: Turn-based gameplay with state machine
+4. **Event Broadcasting**: Real-time updates via domain events
+
 ## Layer Responsibilities
 
 ### Domain Layer (`/domain`)
@@ -169,6 +176,32 @@ async def start_game(room_id: str, player_id: str):
             return response.to_dict()
         else:
             raise GameException(response.error)
+```
+
+### Handling Player Reconnection
+
+```python
+# Clean architecture approach for reconnection
+async def handle_player_reconnect(room_id: str, player_name: str, websocket_id: str):
+    # Use case handles all reconnection logic
+    use_case = HandlePlayerReconnectUseCase(unit_of_work, event_publisher)
+    response = await use_case.execute(
+        HandlePlayerReconnectRequest(
+            room_id=room_id,
+            player_name=player_name,
+            websocket_id=websocket_id
+        )
+    )
+    
+    if response.success:
+        # Bot was deactivated if needed
+        # Queued messages are in response.queued_messages
+        # Events automatically published
+        return {
+            'reconnected': True,
+            'queued_messages': response.queued_messages,
+            'bot_deactivated': response.bot_deactivated
+        }
 ```
 
 ### Testing
