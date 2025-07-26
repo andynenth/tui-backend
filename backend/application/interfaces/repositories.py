@@ -9,6 +9,9 @@ from abc import ABC, abstractmethod
 from typing import Optional, List, Dict, Any
 from domain.entities.room import Room
 from domain.entities.game import Game
+from domain.entities.connection import PlayerConnection
+from domain.entities.message_queue import PlayerQueue
+from domain.value_objects import PlayerId, RoomId
 
 
 class RoomRepository(ABC):
@@ -164,5 +167,117 @@ class PlayerStatsRepository(ABC):
             
         Returns:
             List of player statistics
+        """
+        pass
+
+
+class ConnectionRepository(ABC):
+    """Repository for player connections."""
+    
+    @abstractmethod
+    async def get(self, room_id: str, player_name: str) -> Optional[PlayerConnection]:
+        """
+        Get connection info for a player.
+        
+        Args:
+            room_id: The room ID
+            player_name: The player name
+            
+        Returns:
+            PlayerConnection if found, None otherwise
+        """
+        pass
+    
+    @abstractmethod
+    async def save(self, connection: PlayerConnection) -> None:
+        """
+        Save connection info.
+        
+        Args:
+            connection: The connection to save
+        """
+        pass
+    
+    @abstractmethod
+    async def delete(self, room_id: str, player_name: str) -> None:
+        """
+        Delete connection info.
+        
+        Args:
+            room_id: The room ID
+            player_name: The player name
+        """
+        pass
+    
+    @abstractmethod
+    async def list_by_room(self, room_id: str) -> List[PlayerConnection]:
+        """
+        List all connections for a room.
+        
+        Args:
+            room_id: The room ID
+            
+        Returns:
+            List of connections
+        """
+        pass
+
+
+class MessageQueueRepository(ABC):
+    """Repository for message queues."""
+    
+    @abstractmethod
+    async def create_queue(self, room_id: str, player_name: str) -> None:
+        """
+        Create a message queue for a player.
+        
+        Args:
+            room_id: The room ID
+            player_name: The player name
+        """
+        pass
+    
+    @abstractmethod
+    async def get_queue(self, room_id: str, player_name: str) -> Optional[PlayerQueue]:
+        """
+        Get message queue for a player.
+        
+        Args:
+            room_id: The room ID
+            player_name: The player name
+            
+        Returns:
+            PlayerQueue if found, None otherwise
+        """
+        pass
+    
+    @abstractmethod
+    async def save_queue(self, queue: PlayerQueue) -> None:
+        """
+        Save a message queue.
+        
+        Args:
+            queue: The queue to save
+        """
+        pass
+    
+    @abstractmethod
+    async def clear_queue(self, room_id: str, player_name: str) -> None:
+        """
+        Clear and delete a message queue.
+        
+        Args:
+            room_id: The room ID
+            player_name: The player name
+        """
+        pass
+    
+    @abstractmethod
+    async def clear_room_queues(self, room_id: str) -> None:
+        """
+        Clear all queues for a room.
+        
+        Args:
+            room_id: The room ID
         """
         pass

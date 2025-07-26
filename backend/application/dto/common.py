@@ -5,10 +5,25 @@ These DTOs represent common data structures that are shared
 between different parts of the application.
 """
 
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from datetime import datetime
 from typing import Optional, List, Dict, Any
 from enum import Enum
+
+
+@dataclass
+class BaseRequest:
+    """Base class for all use case requests."""
+    pass
+
+
+@dataclass
+class BaseResponse:
+    """Base class for all use case responses."""
+    success: bool = True
+    error: Optional[str] = None
+    error_code: Optional[str] = None
+    timestamp: datetime = field(default_factory=datetime.utcnow)
 
 
 class PlayerStatus(str, Enum):

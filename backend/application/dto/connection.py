@@ -7,9 +7,10 @@ connection-related operations.
 
 from dataclasses import dataclass, field
 from datetime import datetime
-from typing import Optional, Dict, Any
+from typing import Optional, Dict, Any, List
 import uuid
 from .base import Request, Response
+from .common import BaseRequest, BaseResponse
 
 
 # HandlePing Use Case DTOs
@@ -234,3 +235,63 @@ class SyncClientStateResponse:
             "current_sequence": self.current_sequence,
             "events_missed": self.events_missed
         }
+
+
+# Disconnect/Reconnect DTOs
+
+@dataclass
+class HandlePlayerDisconnectRequest(BaseRequest):
+    """Request to handle player disconnection."""
+    room_id: str
+    player_name: str
+    activate_bot: bool = True
+
+
+@dataclass
+class HandlePlayerDisconnectResponse(BaseResponse):
+    """Response from handling player disconnection."""
+    bot_activated: bool = False
+    queue_created: bool = False
+    host_migrated: bool = False
+    new_host_name: Optional[str] = None
+
+
+@dataclass
+class HandlePlayerReconnectRequest(BaseRequest):
+    """Request to handle player reconnection."""
+    room_id: str
+    player_name: str
+    websocket_id: str
+    user_id: Optional[str] = None
+
+
+@dataclass
+class HandlePlayerReconnectResponse(BaseResponse):
+    """Response from handling player reconnection."""
+    bot_deactivated: bool = False
+    messages_restored: int = 0
+    queued_messages: List[Dict[str, Any]] = None
+    current_state: Optional[Dict[str, Any]] = None
+    room_cleanup_cancelled: bool = False
+    
+    def __post_init__(self):
+        if self.queued_messages is None:
+            self.queued_messages = []
+
+
+@dataclass
+class QueueMessageRequest(BaseRequest):
+    """Request to queue a message for a player."""
+    room_id: str
+    player_name: str
+    event_type: str
+    event_data: Dict[str, Any]
+    is_critical: bool = False
+
+
+@dataclass
+class QueueMessageResponse(BaseResponse):
+    """Response from queuing a message."""
+    queued: bool = False
+    queue_size: int = 0
+    message_dropped: bool = False

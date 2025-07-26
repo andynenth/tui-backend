@@ -5,7 +5,7 @@ This provides a simple in-memory storage for player statistics during
 development and testing.
 """
 
-from typing import Optional, List, Dict
+from typing import Optional, List, Dict, Any
 import logging
 from datetime import datetime
 from copy import deepcopy
@@ -108,7 +108,7 @@ class InMemoryPlayerStatsRepository(PlayerStatsRepository):
         await self.save(player_id, stats)
         logger.info(f"Updated win stats for player {player_id}")
     
-    async def get_leaderboard(self, limit: int = 10) -> List[tuple[str, PlayerStats]]:
+    async def get_leaderboard(self, limit: int = 10) -> List[Dict[str, Any]]:
         """
         Get the top players by wins.
         
@@ -128,7 +128,16 @@ class InMemoryPlayerStatsRepository(PlayerStatsRepository):
             reverse=True
         )
         
-        result = [(pid, deepcopy(stats)) for pid, stats in sorted_players[:limit]]
+        result = []
+        for pid, stats in sorted_players[:limit]:
+            result.append({
+                'player_id': pid,
+                'games_played': stats.games_played,
+                'games_won': stats.games_won,
+                'total_score': stats.total_score,
+                'highest_score': stats.highest_score,
+                'win_rate': stats.games_won / max(stats.games_played, 1)
+            })
         logger.debug(f"Retrieved leaderboard with {len(result)} players")
         return result
     
@@ -149,6 +158,44 @@ class InMemoryPlayerStatsRepository(PlayerStatsRepository):
                 return rank
         
         return None
+    
+    async def get_stats(self, player_id: str) -> Dict[str, Any]:
+        """Get statistics for a player."""
+        stats = await self.get_by_player_id(player_id)
+        if stats:
+            return {
+                'games_played': stats.games_played,
+                'games_won': stats.games_won,
+                'total_score': stats.total_score,
+                'highest_score': stats.highest_score,
+                'win_rate': stats.games_won / max(stats.games_played, 1)
+            }
+        return {}
+    
+    async def update_stats(self, player_id: str, stats: Dict[str, Any]) -> None:
+        """Update statistics for a player."""
+        current = await self.get_by_player_id(player_id)
+        if not current:
+            current = PlayerStats(
+                games_played=0,
+                games_won=0,
+                total_score=0,
+                highest_score=0,
+                perfect_rounds=0,
+                total_piles_captured=0
+            )
+        
+        # Update fields that are provided
+        if 'games_played' in stats:
+            current.games_played = stats['games_played']
+        if 'games_won' in stats:
+            current.games_won = stats['games_won']
+        if 'total_score' in stats:
+            current.total_score = stats['total_score']
+        if 'highest_score' in stats:
+            current.highest_score = stats['highest_score']
+            
+        await self.save(player_id, current)
     
     def snapshot(self) -> Dict[str, any]:
         """Create a snapshot of current state for rollback."""

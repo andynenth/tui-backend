@@ -11,10 +11,12 @@ from contextlib import asynccontextmanager
 
 from application.interfaces import UnitOfWork as IUnitOfWork
 from infrastructure.repositories import (
-    InMemoryRoomRepository,
-    InMemoryGameRepository,
-    InMemoryPlayerStatsRepository
+    InMemoryPlayerStatsRepository,
+    InMemoryConnectionRepository,
+    InMemoryMessageQueueRepository
 )
+from infrastructure.repositories.application_room_repository import ApplicationRoomRepository
+from infrastructure.repositories.application_game_repository import ApplicationGameRepository
 
 logger = logging.getLogger(__name__)
 
@@ -30,9 +32,11 @@ class InMemoryUnitOfWork(IUnitOfWork):
     
     def __init__(self):
         """Initialize the unit of work with repositories."""
-        self._rooms = InMemoryRoomRepository()
-        self._games = InMemoryGameRepository()
+        self._rooms = ApplicationRoomRepository()
+        self._games = ApplicationGameRepository()
         self._player_stats = InMemoryPlayerStatsRepository()
+        self._connections = InMemoryConnectionRepository()
+        self._message_queues = InMemoryMessageQueueRepository()
         self._in_transaction = False
         self._rollback_data = None
         
@@ -51,6 +55,16 @@ class InMemoryUnitOfWork(IUnitOfWork):
         """Get the player stats repository."""
         return self._player_stats
     
+    @property
+    def connections(self):
+        """Get the connection repository."""
+        return self._connections
+    
+    @property
+    def message_queues(self):
+        """Get the message queue repository."""
+        return self._message_queues
+    
     async def __aenter__(self):
         """Begin a unit of work context."""
         self._in_transaction = True
@@ -58,7 +72,9 @@ class InMemoryUnitOfWork(IUnitOfWork):
         self._rollback_data = {
             'rooms': self._rooms.snapshot(),
             'games': self._games.snapshot(),
-            'player_stats': self._player_stats.snapshot()
+            'player_stats': self._player_stats.snapshot(),
+            'connections': self._connections.snapshot(),
+            'message_queues': self._message_queues.snapshot()
         }
         logger.debug("Unit of work transaction started")
         return self
@@ -84,7 +100,19 @@ class InMemoryUnitOfWork(IUnitOfWork):
             self._rooms.restore(self._rollback_data['rooms'])
             self._games.restore(self._rollback_data['games'])
             self._player_stats.restore(self._rollback_data['player_stats'])
+            self._connections.restore(self._rollback_data['connections'])
+            self._message_queues.restore(self._rollback_data['message_queues'])
             logger.debug("Unit of work rolled back")
+    
+    async def savepoint(self, name: str) -> None:
+        """Create a savepoint within the transaction."""
+        # In-memory implementation doesn't support savepoints
+        logger.debug(f"Savepoint '{name}' created (no-op in memory)")
+    
+    async def rollback_to_savepoint(self, name: str) -> None:
+        """Rollback to a specific savepoint."""
+        # In-memory implementation doesn't support savepoints
+        logger.debug(f"Rollback to savepoint '{name}' (no-op in memory)")
 
 
 class DatabaseUnitOfWork(IUnitOfWork):
@@ -107,6 +135,8 @@ class DatabaseUnitOfWork(IUnitOfWork):
         self._rooms = None
         self._games = None
         self._player_stats = None
+        self._connections = None
+        self._message_queues = None
         
     @property
     def rooms(self):
@@ -128,6 +158,20 @@ class DatabaseUnitOfWork(IUnitOfWork):
         if not self._player_stats:
             raise RuntimeError("Unit of work not started")
         return self._player_stats
+    
+    @property
+    def connections(self):
+        """Get the connection repository."""
+        if not self._connections:
+            raise RuntimeError("Unit of work not started")
+        return self._connections
+    
+    @property
+    def message_queues(self):
+        """Get the message queue repository."""
+        if not self._message_queues:
+            raise RuntimeError("Unit of work not started")
+        return self._message_queues
     
     async def __aenter__(self):
         """Begin a database transaction."""
