@@ -22,7 +22,7 @@ from application.dto.connection import (
 )
 from infrastructure.unit_of_work import InMemoryUnitOfWork
 from infrastructure.services import WebSocketNotificationService
-from infrastructure.feature_flags import FeatureFlagService
+from infrastructure.feature_flags import get_feature_flags
 
 
 logger = logging.getLogger(__name__)
@@ -36,14 +36,14 @@ class ReconnectionAdapter:
     handlers and the clean architecture reconnection system.
     """
     
-    def __init__(self, feature_flags: Optional[FeatureFlagService] = None):
+    def __init__(self, feature_flags: Optional['FeatureFlags'] = None):
         """
         Initialize the adapter.
         
         Args:
             feature_flags: Feature flag service for gradual rollout
         """
-        self._feature_flags = feature_flags or FeatureFlagService()
+        self._feature_flags = feature_flags or get_feature_flags()
         self._uow = InMemoryUnitOfWork()
         
         # Initialize services
