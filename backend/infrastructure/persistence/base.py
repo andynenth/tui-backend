@@ -6,7 +6,7 @@ backends while maintaining a consistent interface for the application layer.
 """
 
 from abc import ABC, abstractmethod
-from typing import Generic, TypeVar, Optional, List, Dict, Any
+from typing import Generic, TypeVar, Optional, List, Dict, Any, Tuple
 from datetime import datetime
 from enum import Enum
 from dataclasses import dataclass

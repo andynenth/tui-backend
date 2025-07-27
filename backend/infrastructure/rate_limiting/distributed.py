@@ -12,6 +12,7 @@ import json
 import hashlib
 
 from .base import (
+    IRateLimiter,
     IDistributedRateLimiter,
     RateLimitConfig,
     RateLimitResult,
