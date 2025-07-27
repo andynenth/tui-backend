@@ -1,0 +1,113 @@
+{
+  "timestamp": 1753602205.174217,
+  "test_results": {
+    "decision_test": {
+      "bots_tested": 3,
+      "decisions_made": 24,
+      "timing_accuracy_tests": 15,
+      "timing_violations": 0,
+      "decision_quality_tests": 24,
+      "poor_decisions": 0,
+      "decision_times_ms": [
+        898.307935000048,
+        667.6078550008242,
+        623.4700770000927,
+        605.0011039988021,
+        587.9123040031118,
+        630.4970780001895,
+        896.3181090002763,
+        589.0079850032635,
+        1074.9826510000275,
+        1084.4250330010254,
+        1091.1858330000541,
+        1069.7600260027684,
+        962.3849870004051,
+        844.7930900001666,
+        969.5314580021659,
+        927.974329002609,
+        1168.5379640002793,
+        1306.7410240000754,
+        1375.136056998599,
+        1075.775897999847,
+        1115.672216998064,
+        1151.20721600033,
+        1106.5107260001241,
+        1181.43549999877
+      ],
+      "timing_accurate": true,
+      "decision_quality_good": true
+    },
+    "timing_test": {
+      "timing_tests_per_difficulty": {
+        "EASY": 10,
+        "MEDIUM": 10,
+        "HARD": 10
+      },
+      "average_timing_error_ms": {
+        "EASY": 147.33077320008303,
+        "MEDIUM": 96.9402415004879,
+        "HARD": 88.73886710003714
+      },
+      "timing_consistency": {
+        "EASY": 0.7931064522268289,
+        "MEDIUM": 0.8851734230065171,
+        "HARD": 0.9178718324384554
+      },
+      "overall_timing_accurate": false
+    },
+    "replacement_test": {
+      "replacement_tests": 10,
+      "successful_replacements": 10,
+      "replacement_times_ms": [
+        0.34931000118376687,
+        0.2440960015519522,
+        0.20639799913624302,
+        0.148363000334939,
+        0.1486690016463399,
+        0.20381799913593568,
+        0.14309200196294114,
+        0.1675729981798213,
+        0.14696799917146564,
+        0.14186800035531633
+      ],
+      "average_replacement_time_ms": 0.1900155002658721,
+      "replacement_speed_acceptable": true,
+      "bots_created": 10,
+      "bots_removed": 10
+    },
+    "concurrent_test": {
+      "concurrent_bots": 15,
+      "successful_operations": 15,
+      "failed_operations": 0,
+      "operation_conflicts": 0,
+      "service_stability": true,
+      "operation_times_ms": [
+        804.1907549995813,
+        1125.3635930006567,
+        1385.524269000598,
+        530.8844889987085,
+        925.4393190021801,
+        1179.5404740005324,
+        771.969989000354,
+        883.4223770027165,
+        1312.1889190006186,
+        606.699423999089,
+        826.909406001505,
+        1229.8849929975404,
+        788.5880990033911,
+        951.7467660007242,
+        1326.6361450005206
+      ]
+    },
+    "requirements_validation": {
+      "bot_behavior_matches_legacy_exactly": true,
+      "timing_accuracy_within_100ms": false,
+      "decision_quality_maintained": true,
+      "replacement_functionality_working": true
+    }
+  },
+  "summary": {
+    "all_requirements_met": false,
+    "bot_management_grade": "B"
+  }
+}
