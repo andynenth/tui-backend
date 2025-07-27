@@ -4,7 +4,7 @@ Game-related domain events.
 These events are emitted when game state changes.
 """
 
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from typing import List, Dict, Any, Optional
 from .base import GameEvent
 
@@ -206,5 +206,135 @@ class RedealExecuted(GameEvent):
             'decliners': self.decliners,
             'new_starter_name': self.new_starter_name,
             'new_multiplier': self.new_multiplier
+        })
+        return data
+
+
+@dataclass(frozen=True)
+class RoundEnded(GameEvent):
+    """A round has ended."""
+    round_number: int
+    final_scores: Dict[str, int]
+    
+    def _get_event_data(self) -> Dict[str, Any]:
+        data = super()._get_event_data()
+        data.update({
+            'round_number': self.round_number,
+            'final_scores': self.final_scores
+        })
+        return data
+
+
+@dataclass(frozen=True)
+class PiecesDealt(GameEvent):
+    """Pieces have been dealt to players."""
+    round_number: int
+    piece_count: int
+    
+    def _get_event_data(self) -> Dict[str, Any]:
+        data = super()._get_event_data()
+        data.update({
+            'round_number': self.round_number,
+            'piece_count': self.piece_count
+        })
+        return data
+
+
+@dataclass(frozen=True)
+class RedealRequested(GameEvent):
+    """A player has requested a redeal."""
+    player_name: str
+    round_number: int
+    reason: str
+    
+    def _get_event_data(self) -> Dict[str, Any]:
+        data = super()._get_event_data()
+        data.update({
+            'player_name': self.player_name,
+            'round_number': self.round_number,
+            'reason': self.reason
+        })
+        return data
+
+
+@dataclass(frozen=True)
+class RedealDecisionMade(GameEvent):
+    """Players have decided on a redeal request."""
+    round_number: int
+    accepted: bool
+    acceptors: List[str]
+    decliners: List[str]
+    
+    def _get_event_data(self) -> Dict[str, Any]:
+        data = super()._get_event_data()
+        data.update({
+            'round_number': self.round_number,
+            'accepted': self.accepted,
+            'acceptors': self.acceptors,
+            'decliners': self.decliners
+        })
+        return data
+
+
+@dataclass(frozen=True)
+class DeclarationMade(GameEvent):
+    """A player has made their declaration."""
+    player_name: str
+    declared_piles: int
+    round_number: int
+    
+    def _get_event_data(self) -> Dict[str, Any]:
+        data = super()._get_event_data()
+        data.update({
+            'player_name': self.player_name,
+            'declared_piles': self.declared_piles,
+            'round_number': self.round_number
+        })
+        return data
+
+
+@dataclass(frozen=True)
+class PiecesPlayed(GameEvent):
+    """Pieces have been played in a turn."""
+    player_name: str
+    pieces: List[Dict[str, Any]]
+    turn_number: int
+    
+    def _get_event_data(self) -> Dict[str, Any]:
+        data = super()._get_event_data()
+        data.update({
+            'player_name': self.player_name,
+            'pieces': self.pieces,
+            'turn_number': self.turn_number
+        })
+        return data
+
+
+@dataclass(frozen=True)
+class PlayerReadyForNext(GameEvent):
+    """A player is ready for the next round."""
+    player_name: str
+    round_number: int
+    
+    def _get_event_data(self) -> Dict[str, Any]:
+        data = super()._get_event_data()
+        data.update({
+            'player_name': self.player_name,
+            'round_number': self.round_number
+        })
+        return data
+
+
+@dataclass(frozen=True)
+class CustomGameEvent(GameEvent):
+    """A custom game event for extensibility."""
+    event_type: str
+    event_data: Dict[str, Any] = field(default_factory=dict)
+    
+    def _get_event_data(self) -> Dict[str, Any]:
+        data = super()._get_event_data()
+        data.update({
+            'event_type': self.event_type,
+            'event_data': self.event_data
         })
         return data

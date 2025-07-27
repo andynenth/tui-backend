@@ -86,3 +86,55 @@ class BotDeactivated(GameEvent):
             'game_phase': self.game_phase
         })
         return data
+
+
+@dataclass(frozen=True)
+class PlayerConnected(GameEvent):
+    """Emitted when a player connects to the game."""
+    
+    player_name: str
+    connect_time: datetime
+    is_reconnection: bool = False
+    
+    def _get_event_data(self) -> Dict[str, Any]:
+        data = super()._get_event_data()
+        data.update({
+            'player_name': self.player_name,
+            'connect_time': self.connect_time.isoformat(),
+            'is_reconnection': self.is_reconnection
+        })
+        return data
+
+
+@dataclass(frozen=True)
+class ConnectionHeartbeat(GameEvent):
+    """Emitted periodically to maintain connection state."""
+    
+    player_name: str
+    timestamp: datetime
+    
+    def _get_event_data(self) -> Dict[str, Any]:
+        data = super()._get_event_data()
+        data.update({
+            'player_name': self.player_name,
+            'timestamp': self.timestamp.isoformat()
+        })
+        return data
+
+
+@dataclass(frozen=True)
+class ClientReady(GameEvent):
+    """Emitted when a client is ready to receive game state."""
+    
+    player_name: str
+    ready_time: datetime
+    client_version: Optional[str] = None
+    
+    def _get_event_data(self) -> Dict[str, Any]:
+        data = super()._get_event_data()
+        data.update({
+            'player_name': self.player_name,
+            'ready_time': self.ready_time.isoformat(),
+            'client_version': self.client_version
+        })
+        return data
