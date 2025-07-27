@@ -42,7 +42,7 @@ const RoomPage = () => {
         if (mounted) {
           setIsConnected(true);
           // Request room state
-          networkService.send(roomId, 'get_room_state', {});
+          networkService.send(roomId, 'get_room_state', { room_id: roomId });
         }
       } catch (error) {
         console.error('Failed to connect to room:', error);

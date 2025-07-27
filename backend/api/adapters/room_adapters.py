@@ -156,10 +156,11 @@ async def _handle_create_room(
                     "players": [
                         {
                             "player_id": p.player_id,
-                            "player_name": p.player_name,
+                            "name": p.player_name,  # Frontend expects "name" not "player_name"
                             "is_bot": p.is_bot,
                             "is_host": p.is_host,
-                            "seat_position": p.seat_position
+                            "seat_position": p.seat_position,
+                            "avatar_color": getattr(p, 'avatar_color', None)  # Include avatar color if available
                         }
                         for p in response_dto.room_info.players
                     ],
@@ -272,10 +273,11 @@ async def _handle_join_room(
                     "players": [
                         {
                             "player_id": p.player_id,
-                            "player_name": p.player_name,
+                            "name": p.player_name,  # Frontend expects "name" not "player_name"
                             "is_bot": p.is_bot,
                             "is_host": p.is_host,
-                            "seat_position": p.seat_position
+                            "seat_position": p.seat_position,
+                            "avatar_color": getattr(p, 'avatar_color', None)  # Include avatar color if available
                         }
                         for p in response_dto.room_info.players
                     ],
@@ -419,6 +421,11 @@ async def _handle_get_room_state(
         logger.debug(f"[ROOM_STATE_DEBUG] Executing GetRoomStateUseCase for room: {room_id}")
         response_dto = await use_case.execute(request)
         
+        # Log the players found
+        logger.info(f"[ROOM_STATE_DEBUG] Found {len(response_dto.room_info.players)} players in room {room_id}:")
+        for p in response_dto.room_info.players:
+            logger.info(f"[ROOM_STATE_DEBUG]   - {p.player_name} (bot={p.is_bot}, seat={p.seat_position})")
+        
         # Map the response DTO to WebSocket response format
         response = {
             "event": "room_state",
@@ -430,10 +437,11 @@ async def _handle_get_room_state(
                 "players": [
                     {
                         "player_id": p.player_id,
-                        "player_name": p.player_name,
+                        "name": p.player_name,  # Frontend expects "name" not "player_name"
                         "is_bot": p.is_bot,
                         "is_host": p.is_host,
-                        "seat_position": p.seat_position
+                        "seat_position": p.seat_position,
+                        "avatar_color": getattr(p, 'avatar_color', None)  # Include avatar color if available
                     }
                     for p in response_dto.room_info.players
                 ],
@@ -510,10 +518,11 @@ async def _handle_add_bot(
                     "players": [
                         {
                             "player_id": p.player_id,
-                            "player_name": p.player_name,
+                            "name": p.player_name,  # Frontend expects "name" not "player_name"
                             "is_bot": p.is_bot,
                             "is_host": p.is_host,
-                            "seat_position": p.seat_position
+                            "seat_position": p.seat_position,
+                            "avatar_color": getattr(p, 'avatar_color', None)  # Include avatar color if available
                         }
                         for p in response_dto.room_info.players
                     ]
@@ -607,10 +616,11 @@ async def _handle_remove_player(
                     "players": [
                         {
                             "player_id": p.player_id,
-                            "player_name": p.player_name,
+                            "name": p.player_name,  # Frontend expects "name" not "player_name"
                             "is_bot": p.is_bot,
                             "is_host": p.is_host,
-                            "seat_position": p.seat_position
+                            "seat_position": p.seat_position,
+                            "avatar_color": getattr(p, 'avatar_color', None)  # Include avatar color if available
                         }
                         for p in response_dto.room_info.players
                     ]

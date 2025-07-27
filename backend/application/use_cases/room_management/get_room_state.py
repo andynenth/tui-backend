@@ -7,6 +7,7 @@ player information and game state if active.
 
 import logging
 from typing import Optional, Dict, Any
+from datetime import datetime
 
 from application.base import UseCase
 from application.dto.room_management import GetRoomStateRequest, GetRoomStateResponse
@@ -82,18 +83,17 @@ class GetRoomStateUseCase(UseCase[GetRoomStateRequest, GetRoomStateResponse]):
             
             # Get game state if requested and available
             game_state = None
-            if request.include_game_state and room.current_game:
-                game = await self._uow.games.get_by_id(room.current_game.id)
-                if game:
-                    game_state = self._serialize_game_state(game, room)
+            if request.include_game_state and room.game:
+                # The game is already loaded in the room entity
+                game_state = self._serialize_game_state(room.game, room)
             
             # Record metrics
             if self._metrics:
                 self._metrics.increment(
                     "room.state_retrieved",
                     tags={
-                        "has_game": str(room.current_game is not None).lower(),
-                        "is_private": str(room.settings.is_private).lower()
+                        "has_game": str(room.game is not None).lower(),
+                        "is_private": "false"  # Room entity doesn't have settings
                     }
                 )
             
@@ -124,28 +124,28 @@ class GetRoomStateUseCase(UseCase[GetRoomStateRequest, GetRoomStateResponse]):
         for i, slot in enumerate(room.slots):
             if slot:
                 players.append(PlayerInfo(
-                    player_id=slot.id,
+                    player_id=f"{room.room_id}_p{i}",  # Generate player ID
                     player_name=slot.name,
                     is_bot=slot.is_bot,
-                    is_host=slot.id == room.host_id,
+                    is_host=slot.name == room.host_name,  # Compare names, not IDs
                     status=PlayerStatus.CONNECTED if getattr(slot, 'is_connected', True) else PlayerStatus.DISCONNECTED,
                     seat_position=i,
                     score=slot.score,
-                    games_played=slot.games_played,
-                    games_won=slot.games_won
+                    games_played=getattr(slot, 'games_played', 0),  # Player entity might not have this
+                    games_won=getattr(slot, 'games_won', 0)  # Player entity might not have this
                 ))
         
         return RoomInfo(
-            room_id=room.id,
-            room_code=room.code,
-            room_name=room.name,
-            host_id=room.host_id,
-            status=RoomStatus.IN_GAME if room.current_game else RoomStatus.WAITING,
+            room_id=room.room_id,
+            room_code=room.room_id,  # Using room_id as code
+            room_name=f"{room.host_name}'s Room",  # Generate room name from host
+            host_id=f"{room.room_id}_p0",  # Host is always first player
+            status=RoomStatus.IN_GAME if room.game else RoomStatus.WAITING,
             players=players,
-            max_players=room.settings.max_players,
-            created_at=room.created_at,
-            game_in_progress=room.current_game is not None,
-            current_game_id=room.current_game.id if room.current_game else None
+            max_players=room.max_slots,
+            created_at=datetime.utcnow(),  # Room entity doesn't track creation time
+            game_in_progress=room.game is not None,
+            current_game_id=room.game.game_id if room.game else None
         )
     
     def _serialize_game_state(self, game, room) -> Dict[str, Any]:
@@ -159,12 +159,13 @@ class GetRoomStateUseCase(UseCase[GetRoomStateRequest, GetRoomStateResponse]):
         
         # Get player game states
         player_states = {}
-        for player in game.players:
-            player_states[player.id] = {
+        for i, player in enumerate(game.players):
+            player_id = f"{room.room_id}_p{i}"  # Generate consistent player ID
+            player_states[player_id] = {
                 "pieces_in_hand": len(player.hand),
-                "piles_captured": getattr(player, 'piles_captured', 0),
-                "declaration": getattr(player, 'declaration', None),
-                "current_round_score": getattr(player, 'current_round_score', 0)
+                "piles_captured": getattr(player, 'captured_piles', 0),  # Use captured_piles
+                "declaration": getattr(player, 'declared_piles', None),  # Use declared_piles
+                "current_round_score": getattr(player, 'score', 0)  # Use score
             }
         
         # Get current turn info
@@ -187,15 +188,15 @@ class GetRoomStateUseCase(UseCase[GetRoomStateRequest, GetRoomStateResponse]):
             }
         
         return {
-            "game_id": game.id,
+            "game_id": game.game_id if hasattr(game, 'game_id') else f"{room.room_id}_game",
             "phase": phase_info,
             "player_states": player_states,
             "current_turn": current_turn,
             "last_play": last_play,
-            "scores": {p.id: p.score for p in game.players},
+            "scores": {f"{room.room_id}_p{i}": p.score for i, p in enumerate(game.players)},
             "settings": {
-                "win_condition_type": room.settings.win_condition_type,
-                "win_condition_value": room.settings.win_condition_value,
+                "win_condition_type": "score",  # Default win condition
+                "win_condition_value": 50,  # Default win value
                 "rounds_played": game.round_number - 1,
                 "winner": getattr(game, 'winner_id', None)
             }
@@ -203,9 +204,13 @@ class GetRoomStateUseCase(UseCase[GetRoomStateRequest, GetRoomStateResponse]):
     
     def _get_player_name(self, room, player_id: str) -> Optional[str]:
         """Get player name from room."""
-        for slot in room.slots:
-            if slot and slot.id == player_id:
-                return slot.name
+        # Extract player index from ID format: room_id_p0, room_id_p1, etc.
+        try:
+            player_index = int(player_id.split('_p')[1])
+            slot = room.slots[player_index]
+            return slot.name if slot else None
+        except (IndexError, ValueError):
+            return None
         return None
     
     def _get_required_action(self, game) -> str:
