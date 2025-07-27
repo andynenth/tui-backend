@@ -10,6 +10,7 @@ This module provides:
 - Cache warming capabilities
 """
 
+from datetime import timedelta
 from .base import (
     ICache,
     IBatchCache,
