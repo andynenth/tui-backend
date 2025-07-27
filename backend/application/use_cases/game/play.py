@@ -18,7 +18,7 @@ from application.exceptions import (
     ConflictException
 )
 from domain.entities.game import GamePhase
-from domain.entities.piece import Piece
+from domain.value_objects.piece import Piece
 from domain.services.game_rules import GameRules
 from domain.services.turn_resolution import TurnResolutionService
 from backend.domain.events.game_events import (

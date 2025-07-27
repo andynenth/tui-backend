@@ -33,6 +33,18 @@ class LogLevel(Enum):
     
     def __ge__(self, other):
         return self.value >= other.value
+    
+    def __gt__(self, other):
+        return self.value > other.value
+    
+    def __le__(self, other):
+        return self.value <= other.value
+    
+    def __lt__(self, other):
+        return self.value < other.value
+    
+    def __eq__(self, other):
+        return self.value == other.value
 
 
 class LogFormat(Enum):
@@ -46,8 +58,8 @@ class LogFormat(Enum):
 @dataclass
 class LogConfig:
     """Configuration for logging system."""
-    level: LogLevel = LogLevel.INFO
-    format: LogFormat = LogFormat.JSON
+    level: LogLevel = field(default_factory=lambda: LogLevel.INFO)
+    format: LogFormat = field(default_factory=lambda: LogFormat.JSON)
     app_name: Optional[str] = None
     output: Optional[str] = None  # stdout, stderr, or file path
     buffer_size: int = 1000

@@ -14,8 +14,14 @@ import time
 import logging
 from abc import ABC, abstractmethod
 import psutil
-import aiohttp
 import socket
+
+# Optional imports
+try:
+    import aiohttp
+    AIOHTTP_AVAILABLE = True
+except ImportError:
+    AIOHTTP_AVAILABLE = False
 
 
 logger = logging.getLogger(__name__)
@@ -257,6 +263,14 @@ class HTTPHealthCheck(HealthCheck):
     
     async def check_health(self) -> HealthCheckResult:
         """Check HTTP endpoint health."""
+        if not AIOHTTP_AVAILABLE:
+            return HealthCheckResult(
+                component_name=self.name,
+                component_type=self.component_type,
+                status=HealthStatus.UNKNOWN,
+                message="aiohttp not available"
+            )
+        
         try:
             async with aiohttp.ClientSession() as session:
                 async with session.get(
