@@ -1,0 +1,99 @@
+{
+  "timestamp": 1753602919.612829,
+  "test_results": {
+    "e2e_test": {
+      "e2e_tests": 5,
+      "successful_flows": 5,
+      "component_integration_tests": 30,
+      "component_failures": 0,
+      "flow_times_ms": [
+        694.4616600012523,
+        943.4070370007248,
+        797.9480100002547,
+        887.5474380001833,
+        886.4420889985922
+      ],
+      "component_performance": {
+        "connection_creation": [
+          11.379286002920708,
+          11.278179998043925,
+          11.113083000964252,
+          11.173982002219418,
+          10.586792999674799
+        ],
+        "room_management": [
+          13.215481998486212,
+          13.15450000038254,
+          13.034762003371725,
+          12.688075999903958,
+          13.052124999376247
+        ],
+        "game_initialization": [
+          10.781289998703869,
+          10.562337996816495,
+          11.292224000499118,
+          10.455559997353703,
+          11.290424998151138
+        ],
+        "state_machine_integration": [
+          5.95857499865815,
+          5.812392002553679,
+          5.845952000527177,
+          5.877489998965757,
+          6.042676999641117
+        ],
+        "bot_integration": [
+          651.25493099913,
+          901.2340570006927,
+          755.4127370021888,
+          846.0134830020252,
+          844.1221210014191
+        ],
+        "scoring_integration": [
+          1.3284480010042898,
+          1.3078689989924897,
+          1.199867001560051,
+          1.3080280004942324,
+          1.2977980004507117
+        ]
+      },
+      "integration_success": true
+    },
+    "concurrent_test": {
+      "concurrent_sessions": 10,
+      "successful_sessions": 10,
+      "session_conflicts": 0,
+      "resource_contention": 0,
+      "system_stability": true,
+      "session_times_ms": [
+        582.0104959966557,
+        945.1232320025156,
+        798.2883479999145,
+        936.4571339974646,
+        837.8597990013077,
+        602.3690729998634,
+        900.6529129983392,
+        1048.059437001939,
+        890.3288159999647,
+        788.4350970016385
+      ]
+    },
+    "error_test": {
+      "error_scenarios": 5,
+      "graceful_degradation": 5,
+      "error_recovery": 0,
+      "system_crashes": 0,
+      "error_handling_robust": true
+    },
+    "requirements_validation": {
+      "complete_games_run_successfully": true,
+      "concurrent_games_handled_correctly": true,
+      "system_performance_meets_targets": true,
+      "error_recovery_working": true
+    }
+  },
+  "summary": {
+    "all_requirements_met": true,
+    "integration_grade": "A"
+  }
+}
