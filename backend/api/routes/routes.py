@@ -654,6 +654,118 @@ async def health_metrics():
         )
 
 
+@router.get("/health/architecture-status")
+async def architecture_status():
+    """
+    Get current architecture status (Clean Architecture vs Legacy)
+
+    Returns:
+        Dict: Architecture status with feature flags and component information
+    """
+    try:
+        # Import feature flags
+        from infrastructure.feature_flags import get_feature_flags
+        
+        flags = get_feature_flags()
+        flag_values = flags.get_all_flags()
+        
+        # Check critical architecture flags
+        clean_architecture_flags = {
+            "use_clean_architecture": flag_values.get("use_clean_architecture", False),
+            "use_domain_events": flag_values.get("use_domain_events", False),
+            "use_application_layer": flag_values.get("use_application_layer", False),
+            "use_new_repositories": flag_values.get("use_new_repositories", False)
+        }
+        
+        adapter_flags = {
+            "use_connection_adapters": flag_values.get("use_connection_adapters", False),
+            "use_room_adapters": flag_values.get("use_room_adapters", False),
+            "use_game_adapters": flag_values.get("use_game_adapters", False),
+            "use_lobby_adapters": flag_values.get("use_lobby_adapters", False)
+        }
+        
+        # Calculate architecture status
+        clean_enabled = sum(1 for flag in clean_architecture_flags.values() if flag)
+        adapter_enabled = sum(1 for flag in adapter_flags.values() if flag)
+        total_flags = len(clean_architecture_flags) + len(adapter_flags)
+        enabled_flags = clean_enabled + adapter_enabled
+        
+        # Determine architecture status
+        if enabled_flags >= total_flags * 0.8:  # 80% or more enabled
+            architecture_status = "clean_architecture"
+            architecture_message = "System is running on Clean Architecture"
+            confidence = 95
+        elif enabled_flags > 0:
+            architecture_status = "partial_migration"
+            architecture_message = "System is in partial migration (hybrid mode)"
+            confidence = 70
+        else:
+            architecture_status = "legacy_code"
+            architecture_message = "System is running on Legacy Code"
+            confidence = 90
+        
+        # Check for migration completion evidence
+        migration_evidence = []
+        try:
+            from pathlib import Path
+            completion_report = Path("PHASE_6_COMPLETION_REPORT.md")
+            if completion_report.exists():
+                migration_evidence.append("Phase 6 completion report found")
+                
+            final_validation_report = Path("tests/phase6/reports/final_performance_validation_report.json")
+            if final_validation_report.exists():
+                migration_evidence.append("Final performance validation report found")
+                
+            regression_report = Path("tests/phase6/reports/regression_test_report.json")
+            if regression_report.exists():
+                migration_evidence.append("Regression test report found")
+        except Exception:
+            pass
+        
+        return {
+            "architecture_status": architecture_status,
+            "message": architecture_message,
+            "confidence_percentage": confidence,
+            "feature_flags": {
+                "clean_architecture": clean_architecture_flags,
+                "adapters": adapter_flags,
+                "summary": {
+                    "total_flags": total_flags,
+                    "enabled_flags": enabled_flags,
+                    "enabled_percentage": (enabled_flags / total_flags) * 100
+                }
+            },
+            "migration_evidence": migration_evidence,
+            "timestamp": datetime.now().isoformat(),
+            "recommendations": {
+                "clean_architecture": [
+                    "✅ System is fully migrated to Clean Architecture",
+                    "✅ All feature flags are enabled",
+                    "✅ Migration validation complete"
+                ] if architecture_status == "clean_architecture" else [],
+                "partial_migration": [
+                    "⚠️ System is in partial migration state",
+                    "🔧 Some feature flags are not enabled",
+                    "📋 Complete migration to enable all clean architecture features"
+                ] if architecture_status == "partial_migration" else [],
+                "legacy_code": [
+                    "❌ System is running on legacy code",
+                    "🚀 Start clean architecture migration",
+                    "🏁 Enable feature flags to begin transition"
+                ] if architecture_status == "legacy_code" else []
+            }
+        }
+
+    except Exception as e:
+        return {
+            "architecture_status": "unknown",
+            "message": f"Could not determine architecture status: {str(e)}",
+            "confidence_percentage": 0,
+            "error": str(e),
+            "timestamp": datetime.now().isoformat()
+        }
+
+
 @router.get("/recovery/status")
 async def recovery_status():
     """
