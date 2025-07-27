@@ -314,7 +314,11 @@ async def websocket_endpoint(websocket: WebSocket, room_id: str):
                 continue
 
             # ===== ADAPTER INTEGRATION START =====
-            # Try adapter system first (if enabled)
+            # IMPORTANT: This is where clean architecture handles ALL requests
+            # When ADAPTER_ENABLED=true and ADAPTER_ROLLOUT_PERCENTAGE=100:
+            # - ALL messages are handled by clean architecture adapters
+            # - The legacy code below (line 328+) is NEVER executed
+            # - This is NOT legacy code - it's the integration point
             adapter_response = await adapter_wrapper.try_handle_with_adapter(
                 registered_ws, message, room_id
             )
@@ -323,9 +327,14 @@ async def websocket_endpoint(websocket: WebSocket, room_id: str):
                 # Adapter handled it, send response if not empty
                 if adapter_response:  # Some responses like 'ack' return empty
                     await registered_ws.send_json(adapter_response)
-                continue  # Skip legacy handling
+                continue  # Skip legacy handling - THIS LINE PREVENTS LEGACY EXECUTION
             # ===== ADAPTER INTEGRATION END =====
 
+            # ===== LEGACY HANDLERS START (NOT EXECUTED IN ADAPTER-ONLY MODE) =====
+            # The code below is LEGACY and only runs if adapters are disabled
+            # With ADAPTER_ENABLED=true and ADAPTER_ROLLOUT_PERCENTAGE=100,
+            # execution NEVER reaches here because adapters handle everything
+            
             event_name = message.get("event")
             # Use sanitized data instead of raw event data
             event_data = sanitized_data or message.get("data", {})

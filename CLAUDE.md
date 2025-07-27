@@ -9,6 +9,12 @@ Liap Tui is a real-time multiplayer board game inspired by traditional Chinese-T
 
 ## Key Architecture
 
+### 🚨 CURRENT ARCHITECTURE STATUS (Phase 6 Complete, Phase 7 Pending)
+- **Clean Architecture is ACTIVE** via adapter-only mode (100% traffic routed)
+- **Legacy components still initialize** but are NOT used for business logic
+- **Warnings about "Room not found" are EXPECTED** and harmless
+- **See `backend/CURRENT_ARCHITECTURE_STATE.md`** for detailed explanation
+
 ### Backend Structure
 - **FastAPI** with WebSocket support for real-time gameplay
 - **🚀 ENTERPRISE ARCHITECTURE** (`backend/engine/state_machine/`) **FULLY IMPLEMENTED** - production-ready enterprise patterns:

@@ -20,6 +20,7 @@
 ### For Deployment
 - [**Integration Guide**](./implementation/guides/WS_INTEGRATION_GUIDE.md) - How to integrate adapters
 - [**Deployment Runbook**](./implementation/guides/ADAPTER_DEPLOYMENT_RUNBOOK.md) - Rollout procedures
+- [**Legacy vs Clean Identification Guide**](./implementation/guides/LEGACY_VS_CLEAN_IDENTIFICATION_GUIDE.md) - How to identify architecture types
 
 ### For Development  
 - [**Architecture Plan**](./planning/TASK_3_ABSTRACTION_COUPLING_PLAN.md) - Overall strategy
