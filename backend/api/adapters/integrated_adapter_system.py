@@ -78,6 +78,7 @@ async def handle_websocket_message_integrated(
         return await handle_game_messages(websocket, message, legacy_handler, room_state, broadcast_func)
     
     # Fallback to legacy (shouldn't reach here)
+    logger.warning(f"Unhandled action in adapters: {action}, falling back to legacy")
     return await legacy_handler(websocket, message)
 
 
@@ -91,6 +92,8 @@ class IntegratedAdapterSystem:
         self.legacy_handler = legacy_handler
         self.enabled_adapters = set(ADAPTER_ACTIONS)
         self._global_enabled = True
+        self._adapter_only_mode = False  # When True, no legacy fallback
+        logger.info(f"IntegratedAdapterSystem initialized with {len(self.enabled_adapters)} adapters")
     
     async def handle_message(
         self,
@@ -100,13 +103,26 @@ class IntegratedAdapterSystem:
         broadcast_func: Optional[Callable] = None
     ) -> Optional[Dict[str, Any]]:
         """Main entry point for all WebSocket messages"""
+        action = message.get("action")
+        
         # Global kill switch
         if not self._global_enabled:
+            logger.debug(f"Adapter system disabled, routing {action} to legacy")
             return await self.legacy_handler(websocket, message)
         
         # Check if specific action is enabled
-        action = message.get("action")
         if action not in self.enabled_adapters:
+            if self._adapter_only_mode:
+                logger.warning(f"ADAPTER-ONLY MODE: Action {action} not in enabled adapters")
+                # Return error instead of falling back
+                return {
+                    "event": "error",
+                    "data": {
+                        "message": f"Action {action} not supported in clean architecture",
+                        "type": "unsupported_action"
+                    }
+                }
+            logger.debug(f"Action {action} not enabled, routing to legacy")
             return await self.legacy_handler(websocket, message)
         
         # Use integrated handler
@@ -130,6 +146,13 @@ class IntegratedAdapterSystem:
         self._global_enabled = True
         self.enabled_adapters = set(ADAPTER_ACTIONS)
         logger.info("All adapters enabled")
+    
+    def enable_adapter_only_mode(self):
+        """Enable adapter-only mode (no legacy fallback)"""
+        self._adapter_only_mode = True
+        self._global_enabled = True
+        self.enabled_adapters = set(ADAPTER_ACTIONS)
+        logger.warning("ADAPTER-ONLY MODE ENABLED: No legacy fallback!")
     
     def disable_all(self):
         """Disable all adapters (emergency rollback)"""
@@ -162,6 +185,7 @@ class IntegratedAdapterSystem:
         
         return {
             "global_enabled": self._global_enabled,
+            "adapter_only_mode": self._adapter_only_mode,
             "total_adapters": total,
             "enabled_count": enabled,
             "enabled_adapters": sorted(list(self.enabled_adapters)),

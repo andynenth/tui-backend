@@ -1,173 +1,128 @@
-📋 SCORING_FIX_DEBUG: Andy - declared: 1, actual: 0
-🏆 SCORING_DEBUG: Andy scoring data:
-   📋 Declared: 1, Actual: 0
-   📊 Base Score: -1, Multiplier: 1x, Final: -1
-   💯 Total Score: 22
-2025-07-23 19:11:01 - game.state.scoring - INFO - Player Andy: declared 1, actual 0, base -1, final -1 (×1), total 22
-📋 SCORING_FIX_DEBUG: Bot 2 - declared: 1, actual: 5
-🏆 SCORING_DEBUG: Bot 2 scoring data:
-   📋 Declared: 1, Actual: 5
-   📊 Base Score: -4, Multiplier: 1x, Final: -4
-   💯 Total Score: -10
-2025-07-23 19:11:01 - game.state.scoring - INFO - Player Bot 2: declared 1, actual 5, base -4, final -4 (×1), total -10
-📋 SCORING_FIX_DEBUG: Bot 3 - declared: 1, actual: 0
-🏆 SCORING_DEBUG: Bot 3 scoring data:
-   📋 Declared: 1, Actual: 0
-   📊 Base Score: -1, Multiplier: 1x, Final: -1
-   💯 Total Score: -6
-2025-07-23 19:11:01 - game.state.scoring - INFO - Player Bot 3: declared 1, actual 0, base -1, final -1 (×1), total -6
-📋 SCORING_FIX_DEBUG: P2 - declared: 4, actual: 3
-🏆 SCORING_DEBUG: P2 scoring data:
-   📋 Declared: 4, Actual: 3
-   📊 Base Score: -1, Multiplier: 1x, Final: -1
-   💯 Total Score: 9
-2025-07-23 19:11:01 - game.state.scoring - INFO - Player P2: declared 4, actual 3, base -1, final -1 (×1), total 9
-🚀 SCORING_BROADCAST_DEBUG: Broadcasting scoring data:
-   📊 Round scores: {'Andy': {'declared': 1, 'actual': 0, 'base_score': -1, 'bonus': 0, 'hit_value': -1, 'multiplier': 1, 'final_score': -1, 'total_score': 22}, 'Bot 2': {'declared': 1, 'actual': 5, 'base_score': -4, 'bonus': 0, 'hit_value': -4, 'multiplier': 1, 'final_score': -4, 'total_score': -10}, 'Bot 3': {'declared': 1, 'actual': 0, 'base_score': -1, 'bonus': 0, 'hit_value': -1, 'multiplier': 1, 'final_score': -1, 'total_score': -6}, 'P2': {'declared': 4, 'actual': 3, 'base_score': -1, 'bonus': 0, 'hit_value': -1, 'multiplier': 1, 'final_score': -1, 'total_score': 9}}
-   🏁 Game complete: False
-   🏆 Winners: []
-🚀 SCORING_BROADCAST_DEBUG: Also sending:
-   💯 Total scores: {'Andy': 22, 'Bot 2': -10, 'Bot 3': -6, 'P2': 9}
-   👥 Scoring players data: [{'name': 'Andy', 'is_bot': False, 'pile_count': 1, 'captured_piles': 0}, {'name': 'Bot 2', 'is_bot': True, 'pile_count': 1, 'captured_piles': 5}, {'name': 'Bot 3', 'is_bot': True, 'pile_count': 1, 'captured_piles': 0}, {'name': 'P2', 'is_bot': False, 'pile_count': 4, 'captured_piles': 3}]
-2025-07-23 19:11:01 - game.state.scoring - INFO - 🎮 Phase Data Update: Scoring calculated for round 3
-2025-07-23 19:11:01 - game.state.scoring - INFO - 📤 Auto-broadcast: phase_change to room 43EF01 - Scoring calculated for round 3
-🔍 BOT_MANAGER: Returning existing singleton instance with 1 active games
-2025-07-23 19:11:01 - game.state.scoring - INFO - Scoring complete. Game over: False
-2025-07-23 19:11:01 - engine.state_machine.game_state_machine - INFO - Stored phase change event: GamePhase.TURN_RESULTS -> GamePhase.SCORING
-🔍 STATE_MACHINE: BotManager imported successfully
-🔍 BOT_MANAGER: Returning existing singleton instance with 1 active games
-🔍 STATE_MACHINE: BotManager instance created
-2025-07-23 19:11:01 - engine.state_machine.game_state_machine - INFO - Notifying bot manager about phase scoring
-🔍 STATE_MACHINE: Notifying bot manager about phase scoring for room 43EF01
-⏰ SCORING_DELAY_DEBUG: Starting 7-second display delay...
-2025-07-23 19:11:05 - backend.api.routes.ws - INFO - 🧹 [ROOM_DEBUG] Cleanup iteration 117: Checking 1 rooms: ['43EF01']
-2025-07-23 19:11:05 - backend.api.routes.ws - INFO - 🧹 CLEANUP_CHECK: Room 43EF01 - game_ended=False, should_cleanup=False
-⏰ SCORING_DELAY_DEBUG: 7-second delay complete - setting display_delay_complete = True
-2025-07-23 19:11:08 - game.state.scoring - INFO - Scoring display delay complete - ready to transition
-2025-07-23 19:11:08 - engine.state_machine.game_state_machine - INFO - Transitioning from GamePhase.SCORING to GamePhase.PREPARATION
-2025-07-23 19:11:08 - engine.state_machine.game_state_machine - INFO - 🔄 Transitioning: GamePhase.SCORING -> GamePhase.PREPARATION
-2025-07-23 19:11:08 - game.state.scoring - INFO - Exiting scoring phase
-2025-07-23 19:11:08 - game.state.scoring - INFO - 🎯 Next round starter set to last turn winner: Bot 2
-2025-07-23 19:11:08 - game.state.scoring - INFO - Prepared for round 4
-2025-07-23 19:11:08 - game.state.scoring - INFO - Prepared for next round
-2025-07-23 19:11:08 - game.state.preparation - INFO - Entering preparation phase
-2025-07-23 19:11:08 - game.state.preparation - INFO - 🎴 Preparation phase starting - dealing cards
-2025-07-23 19:11:08 - game.state.preparation - INFO - 🎮 Phase Data Update: Starting to deal cards
-2025-07-23 19:11:08 - game.state.preparation - INFO - 📤 Auto-broadcast: phase_change to room 43EF01 - Starting to deal cards
-🔍 BOT_MANAGER: Returning existing singleton instance with 1 active games
-2025-07-23 19:11:08 - game.state.preparation - INFO - 🔍 Weak hand check - Found 1 weak players: {'Andy'}
-2025-07-23 19:11:08 - game.state.preparation - INFO - 🎮 Phase Data Update: Weak hands detected: ['Andy'] - awaiting simultaneous decisions
-2025-07-23 19:11:08 - game.state.preparation - INFO - 📤 Auto-broadcast: phase_change to room 43EF01 - Weak hands detected: ['Andy'] - awaiting simultaneous decisions
-🔍 BOT_MANAGER: Returning existing singleton instance with 1 active games
-🔍 BOT_MANAGER: Received event 'phase_change' for room 43EF01
-🔍 BOT_MANAGER: Current active games: ['43EF01']
-🔍 BOT_HANDLER: Processing event 'phase_change' for room 43EF01
-🔍 BOT_HANDLER: Phase change detected - new phase: preparation, last phase: turn
-🔍 BOT_HANDLER: Handling phase_change event
-🔍 BOT_HANDLER: _handle_enterprise_phase_change - phase: preparation, phase_data keys: ['dealing_cards', 'redeal_multiplier', 'weak_players', 'weak_players_awaiting', 'decisions_received', 'decisions_needed', 'simultaneous_mode', 'decision_timeout']
-🔍 BOT_HANDLER: Processing preparation phase
-🔍 BOT_HANDLER: Weak players awaiting: ['Andy']
-🔍 BOT_HANDLER: _handle_redeal_decision_phase called
-🔍 BOT_HANDLER: Weak players awaiting: ['Andy'], decisions: {}
-2025-07-23 19:11:08 - game.state.preparation - INFO - 🎮 Phase Data Update: Cards dealt, checking for weak hands
-2025-07-23 19:11:08 - game.state.preparation - INFO - 📤 Auto-broadcast: phase_change to room 43EF01 - Cards dealt, checking for weak hands
-🔍 BOT_MANAGER: Returning existing singleton instance with 1 active games
-🔍 BOT_MANAGER: Received event 'phase_change' for room 43EF01
-🔍 BOT_MANAGER: Current active games: ['43EF01']
-🔍 BOT_HANDLER: Processing event 'phase_change' for room 43EF01
-🔍 BOT_HANDLER: Phase change detected - new phase: preparation, last phase: preparation
-🔍 BOT_HANDLER: Handling phase_change event
-🔍 BOT_HANDLER: _handle_enterprise_phase_change - phase: preparation, phase_data keys: ['dealing_cards', 'redeal_multiplier', 'weak_players', 'weak_players_awaiting', 'decisions_received', 'decisions_needed', 'simultaneous_mode', 'decision_timeout']
-🔍 BOT_HANDLER: Processing preparation phase
-🔍 BOT_HANDLER: Weak players awaiting: ['Andy']
-🔍 BOT_HANDLER: _handle_redeal_decision_phase called
-🔍 BOT_HANDLER: Weak players awaiting: ['Andy'], decisions: {}
-2025-07-23 19:11:08 - engine.state_machine.game_state_machine - INFO - Stored phase change event: GamePhase.SCORING -> GamePhase.PREPARATION
-🔍 STATE_MACHINE: BotManager imported successfully
-🔍 BOT_MANAGER: Returning existing singleton instance with 1 active games
-🔍 STATE_MACHINE: BotManager instance created
-2025-07-23 19:11:08 - engine.state_machine.game_state_machine - INFO - Notifying bot manager about phase preparation
-🔍 STATE_MACHINE: Notifying bot manager about phase preparation for room 43EF01
-2025-07-23 19:11:10 - backend.api.routes.ws - INFO - 🧹 [ROOM_DEBUG] Cleanup iteration 118: Checking 1 rooms: ['43EF01']
-2025-07-23 19:11:10 - backend.api.routes.ws - INFO - 🧹 CLEANUP_CHECK: Room 43EF01 - game_ended=False, should_cleanup=False
-2025-07-23 19:11:15 - game.state.preparation - INFO - 🚫 Andy DECLINES redeal
-2025-07-23 19:11:15 - game.state.preparation - INFO - ✅ All weak players declined - proceeding with current hands
-2025-07-23 19:11:15 - game.state.preparation - INFO - 🎯 Starter: Andy (requested redeal)
-2025-07-23 19:11:15 - engine.state_machine.game_state_machine - INFO - Transitioning from GamePhase.PREPARATION to GamePhase.ROUND_START
-2025-07-23 19:11:15 - engine.state_machine.game_state_machine - INFO - 🔄 Transitioning: GamePhase.PREPARATION -> GamePhase.ROUND_START
-2025-07-23 19:11:15 - game.state.preparation - INFO - Exiting preparation phase
-2025-07-23 19:11:15 - game.state.preparation - INFO - 🎯 Round starter already set: Andy
-2025-07-23 19:11:15 - game.state.preparation - INFO - 📋 Preparation complete - Starter: Andy, Multiplier: 1x
-2025-07-23 19:11:15 - game.state.round_start - INFO - Entering round_start phase
-2025-07-23 19:11:15 - game.state.round_start - INFO - 📋 Round 4 starting - Starter: Andy (accepted_redeal)
-2025-07-23 19:11:15 - game.state.round_start - INFO - 🎮 Phase Data Update: Round 4 starting with Andy
-2025-07-23 19:11:15 - game.state.round_start - INFO - 📤 Auto-broadcast: phase_change to room 43EF01 - Round 4 starting with Andy
-🔍 BOT_MANAGER: Returning existing singleton instance with 1 active games
-2025-07-23 19:11:15 - engine.state_machine.game_state_machine - INFO - Stored phase change event: GamePhase.PREPARATION -> GamePhase.ROUND_START
-🔍 STATE_MACHINE: BotManager imported successfully
-🔍 BOT_MANAGER: Returning existing singleton instance with 1 active games
-🔍 STATE_MACHINE: BotManager instance created
-2025-07-23 19:11:15 - engine.state_machine.game_state_machine - INFO - Notifying bot manager about phase round_start
-🔍 STATE_MACHINE: Notifying bot manager about phase round_start for room 43EF01
-🔍 BOT_MANAGER: Received event 'phase_change' for room 43EF01
-🔍 BOT_MANAGER: Current active games: ['43EF01']
-🔍 BOT_HANDLER: Processing event 'phase_change' for room 43EF01
-🔍 BOT_HANDLER: Phase change detected - new phase: round_start, last phase: preparation
-🔍 BOT_HANDLER: Handling phase_change event
-🔍 BOT_HANDLER: _handle_enterprise_phase_change - phase: round_start, phase_data keys: ['round_number', 'current_starter', 'starter_reason', 'display_duration']
-🔍 BOT_MANAGER: Returning existing singleton instance with 1 active games
-🔍 BOT_MANAGER: Received event 'action_accepted' for room 43EF01
-🔍 BOT_MANAGER: Current active games: ['43EF01']
-🔍 BOT_HANDLER: Processing event 'action_accepted' for room 43EF01
-2025-07-23 19:11:15 - backend.api.routes.ws - INFO - 🧹 [ROOM_DEBUG] Cleanup iteration 119: Checking 1 rooms: ['43EF01']
-2025-07-23 19:11:15 - backend.api.routes.ws - INFO - 🧹 CLEANUP_CHECK: Room 43EF01 - game_ended=False, should_cleanup=False
-2025-07-23 19:11:20 - engine.state_machine.game_state_machine - INFO - Transitioning from GamePhase.ROUND_START to GamePhase.DECLARATION
-2025-07-23 19:11:20 - engine.state_machine.game_state_machine - INFO - 🔄 Transitioning: GamePhase.ROUND_START -> GamePhase.DECLARATION
-2025-07-23 19:11:20 - game.state.round_start - INFO - Exiting round_start phase
-2025-07-23 19:11:20 - game.state.round_start - INFO - 🎯 Round start display complete - transitioning to Declaration
-2025-07-23 19:11:20 - game.state.declaration - INFO - Entering declaration phase
-2025-07-23 19:11:20 - game.state.declaration - INFO - 🎮 Phase Data Update: Declaration phase setup - basic data
-2025-07-23 19:11:20 - game.state.declaration - INFO - 📤 Auto-broadcast: phase_change to room 43EF01 - Declaration phase setup - basic data
-🔍 BOT_MANAGER: Returning existing singleton instance with 1 active games
-2025-07-23 19:11:20 - game.state.declaration - INFO - 🎮 Phase Data Update: Declaration phase setup complete - current declarer: Andy
-2025-07-23 19:11:20 - game.state.declaration - INFO - 📤 Auto-broadcast: phase_change to room 43EF01 - Declaration phase setup complete - current declarer: Andy
-🔍 BOT_MANAGER: Returning existing singleton instance with 1 active games
-🔍 BOT_MANAGER: Received event 'phase_change' for room 43EF01
-🔍 BOT_MANAGER: Current active games: ['43EF01']
-🔍 BOT_HANDLER: Processing event 'phase_change' for room 43EF01
-🔍 BOT_HANDLER: Phase change detected - new phase: declaration, last phase: round_start
-🔍 BOT_HANDLER: Handling phase_change event
-🔍 BOT_HANDLER: _handle_enterprise_phase_change - phase: declaration, phase_data keys: ['declaration_order', 'current_declarer_index', 'declarations', 'declaration_total', 'current_declarer']
-🔍 BOT_HANDLER: Processing declaration phase
-🔍 BOT_HANDLER: Current declarer: Andy
-2025-07-23 19:11:20 - engine.state_machine.game_state_machine - INFO - Stored phase change event: GamePhase.ROUND_START -> GamePhase.DECLARATION
-🔍 STATE_MACHINE: BotManager imported successfully
-🔍 BOT_MANAGER: Returning existing singleton instance with 1 active games
-🔍 STATE_MACHINE: BotManager instance created
-2025-07-23 19:11:20 - engine.state_machine.game_state_machine - INFO - Notifying bot manager about phase declaration
-🔍 STATE_MACHINE: Notifying bot manager about phase declaration for room 43EF01
-🔍 BOT_MANAGER: Received event 'round_started' for room 43EF01
-🔍 BOT_MANAGER: Current active games: ['43EF01']
-🔍 BOT_HANDLER: Processing event 'round_started' for room 43EF01
-🔍 BOT_HANDLER: Handling round_started event, data: {'phase': 'declaration', 'starter': 'Andy'}
-🔍 BOT_HANDLER: Calling _handle_round_start
-🔍 BOT_HANDLER: _handle_round_start called
-🔍 BOT_HANDLER: Game state type: <class 'engine.state_machine.async_game_adapter.AsyncGameAdapter'>
-🔍 BOT_HANDLER: round_starter attribute: Andy
-🔍 BOT_HANDLER: Starter object found: Andy - 22 pts, is_bot: False
-👤 Round starter is human or None: Andy
-2025-07-23 19:11:20 - backend.api.routes.ws - INFO - 🧹 [ROOM_DEBUG] Cleanup iteration 120: Checking 1 rooms: ['43EF01']
-2025-07-23 19:11:20 - backend.api.routes.ws - INFO - 🧹 CLEANUP_CHECK: Room 43EF01 - game_ended=False, should_cleanup=False
-🔍 BOT_HANDLER: _handle_declaration_phase called with last_declarer: ''
-🔍 BOT_HANDLER: Declaration order: ['Andy', 'Bot 2', 'Bot 3', 'P2']
-🔍 BOT_HANDLER: Last declarer index: -1
-2025-07-23 19:11:25 - backend.api.routes.ws - INFO - 🧹 [ROOM_DEBUG] Cleanup iteration 121: Checking 1 rooms: ['43EF01']
-2025-07-23 19:11:25 - backend.api.routes.ws - INFO - 🧹 CLEANUP_CHECK: Room 43EF01 - game_ended=False, should_cleanup=False
-2025-07-23 19:11:30 - backend.api.routes.ws - INFO - 🧹 [ROOM_DEBUG] Cleanup iteration 122: Checking 1 rooms: ['43EF01']
-2025-07-23 19:11:30 - backend.api.routes.ws - INFO - 🧹 CLEANUP_CHECK: Room 43EF01 - game_ended=False, should_cleanup=False
-2025-07-23 19:11:35 - backend.api.routes.ws - INFO - 🧹 [ROOM_DEBUG] Cleanup iteration 123: Checking 1 rooms: ['43EF01']
-2025-07-23 19:11:35 - backend.api.routes.ws - INFO - 🧹 CLEANUP_CHECK: Room 43EF01 - game_ended=False, should_cleanup=False
-2025-07-23 19:11:40 - backend.api.routes.ws - INFO - 🧹 [ROOM_DEBUG] Cleanup iteration 124: Checking 1 rooms: ['43EF01']
-2025-07-23 19:11:40 - backend.api.routes.ws - INFO - 🧹 CLEANUP_CHECK: Room 43EF01 - game_ended=False, should_cleanup=False
-2025-07-23 19:11:45 - backend.api.routes.ws - INFO - 🧹 [ROOM_DEBUG] Cleanup iteration 125: Checking 1 rooms: ['43EF01']
-2025-07-23 19:11:45 - backend.api.routes.ws - INFO - 🧹 CLEANUP_CHECK: Room 43EF01 - game_ended=False, should_cleanup=False
+(venv) Narongwits-MacBook-Pro:liap-tui nrw$ ./start.sh
+✅ Clean Architecture activated (8/8 feature flags enabled)
+🚦 Adapter routing enabled (100% traffic to clean architecture)
+▶️ Starting backend on http://0.0.0.0:5050 ...
+INFO:     Will watch for changes in these directories: ['/Users/nrw/python/tui-project/liap-tui']
+INFO:     Uvicorn running on http://0.0.0.0:5050 (Press CTRL+C to quit)
+INFO:     Started reloader process [11756] using WatchFiles
+🌐 Starting esbuild in watch mode...
+🔍 BOT_MANAGER: Created new singleton instance
+/Users/nrw/python/tui-project/liap-tui/venv/lib/python3.11/site-packages/pydantic/_internal/_config.py:373: UserWarning: Valid config keys have changed in V2:
+* 'schema_extra' has been renamed to 'json_schema_extra'
+  warnings.warn(message, UserWarning)
+2025-07-27 02:55:50 - config.logging_config - INFO - Logging configured
+Rate limiting is enabled
+INFO:     Started server process [11759]
+INFO:     Waiting for application startup.
+🔄 RELIABLE_MSG: Message retry worker started
+🔄 RELIABLE_MSG: Message retry worker started
+2025-07-27 02:55:50 - backend.api.routes.ws - INFO - 🧹 [ROOM_DEBUG] Starting room cleanup background task
+2025-07-27 02:55:50 - backend.api.routes.ws - INFO - 🧹 [ROOM_DEBUG] Room cleanup task started
+INFO:     Application startup complete.
+
+> frontend@1.0.0 dev
+> node esbuild.config.cjs
+
+👀 Watching for changes to ./main.js, output to ../backend/static/
+
+[0.35ms] [@tailwindcss/postcss] src/styles/components/game/gameover.css
+[0.33ms]   ↳ Quick bail check
+
+
+[0.07ms] [@tailwindcss/postcss] src/styles/toast-notifications.css
+[0.07ms]   ↳ Quick bail check
+
+
+[201.51ms] [@tailwindcss/postcss] src/styles/globals.css
+[  0.11ms]   ↳ Quick bail check
+[ 87.32ms]   ↳ Setup compiler
+[  0.98ms]     ↳ PostCSS AST -> Tailwind CSS AST
+[ 86.28ms]     ↳ Create compiler
+[  0.37ms]   ↳ Register full rebuild paths
+[  1.69ms]   ↳ Setup scanner
+[ 27.86ms]   ↳ Scan for candidates
+[ 16.21ms]   ↳ Register dependency messages
+[ 53.95ms]   ↳ Build utilities
+[  8.68ms]   ↳ Transform Tailwind CSS AST into PostCSS AST
+[  4.83ms]   ↳ Update PostCSS AST
+
+INFO:     127.0.0.1:53925 - "GET / HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53925 - "GET /bundle.css HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53926 - "GET /bundle.js HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53928 - "GET /.well-known/appspecific/com.chrome.devtools.json HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:53926 - "GET /bundle.js.map HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53925 - "GET /bundle.css.map HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53925 - "GET /favicon.ico HTTP/1.1" 404 Not Found
+2025-07-27 02:56:42 - backend.api.routes.ws - INFO - 🔌 [ROOM_DEBUG] New WebSocket connection to room 'lobby', ws_id: f0a4d859-c837-4358-8433-30b12964255f at 1753610202.001577
+2025-07-27 02:56:42 - backend.api.routes.ws - INFO - 🧹 [ROOM_DEBUG] Room cleanup task already running
+INFO:     ('127.0.0.1', 53971) - "WebSocket /ws/lobby" [accepted]
+INFO:     connection open
+2025-07-27 02:56:42 - api.routes.ws_adapter_wrapper - INFO - WSAdapterWrapper configuration loaded:
+2025-07-27 02:56:42 - api.routes.ws_adapter_wrapper - INFO -   Enabled: True (env: true)
+2025-07-27 02:56:42 - api.routes.ws_adapter_wrapper - INFO -   Rollout: 100.0% (env: 100)
+2025-07-27 02:56:42 - api.routes.ws_adapter_wrapper - INFO -   Shadow: False at 1.0%
+2025-07-27 02:56:42 - api.routes.ws_adapter_wrapper - INFO -   🚦 Will activate ADAPTER-ONLY MODE when initialized
+2025-07-27 02:56:42 - api.adapters.integrated_adapter_system - INFO - IntegratedAdapterSystem initialized with 22 adapters
+2025-07-27 02:56:42 - api.adapters.integrated_adapter_system - WARNING - ADAPTER-ONLY MODE ENABLED: No legacy fallback!
+2025-07-27 02:56:42 - api.routes.ws_adapter_wrapper - INFO - Adapter system initialized in ADAPTER-ONLY MODE (no legacy fallback)
+2025-07-27 02:56:42 - backend.api.routes.ws - INFO - 🔌 [ROOM_DEBUG] New WebSocket connection to room 'lobby', ws_id: cdc3db4c-2df9-469e-bd18-ad3350a42c88 at 1753610202.019219
+2025-07-27 02:56:42 - backend.api.routes.ws - INFO - 🧹 [ROOM_DEBUG] Room cleanup task already running
+INFO:     ('127.0.0.1', 53973) - "WebSocket /ws/lobby" [accepted]
+INFO:     connection open
+2025-07-27 02:56:42 - backend.api.routes.ws - INFO - 🔌 [ROOM_DEBUG] Handling disconnect for room 'lobby', websocket_id: f0a4d859-c837-4358-8433-30b12964255f at 1753610202.021394
+2025-07-27 02:56:42 - api.websocket.connection_manager - WARNING - WebSocket ID f0a4d859-c837-4358-8433-30b12964255f not found in mapping. Current mappings: []
+2025-07-27 02:56:42 - backend.api.routes.ws - WARNING - No websocket_id found on websocket object for room lobby
+2025-07-27 02:56:42 - backend.api.routes.ws - INFO - ⚠️ [ROOM_DEBUG] WebSocket disconnect without ID for room 'lobby'
+2025-07-27 02:56:42 - backend.api.routes.ws - INFO - 🔌 [ROOM_DEBUG] WebSocket unregistered from room 'lobby'
+INFO:     connection closed
+2025-07-27 02:57:02 - backend.api.routes.ws - INFO - 🔌 [ROOM_DEBUG] New WebSocket connection to room 'lobby', ws_id: 734b672b-6a99-4ce4-be50-83da30a7148e at 1753610222.0718348
+2025-07-27 02:57:02 - backend.api.routes.ws - INFO - 🧹 [ROOM_DEBUG] Room cleanup task already running
+INFO:     ('127.0.0.1', 54055) - "WebSocket /ws/lobby" [accepted]
+INFO:     connection open
+2025-07-27 02:57:02 - backend.api.routes.ws - INFO - 🔌 [ROOM_DEBUG] Handling disconnect for room 'lobby', websocket_id: cdc3db4c-2df9-469e-bd18-ad3350a42c88 at 1753610222.0744598
+2025-07-27 02:57:02 - api.websocket.connection_manager - WARNING - WebSocket ID cdc3db4c-2df9-469e-bd18-ad3350a42c88 not found in mapping. Current mappings: []
+2025-07-27 02:57:02 - backend.api.routes.ws - WARNING - No websocket_id found on websocket object for room lobby
+2025-07-27 02:57:02 - backend.api.routes.ws - INFO - ⚠️ [ROOM_DEBUG] WebSocket disconnect without ID for room 'lobby'
+2025-07-27 02:57:02 - backend.api.routes.ws - INFO - 🔌 [ROOM_DEBUG] WebSocket unregistered from room 'lobby'
+INFO:     connection closed
+2025-07-27 02:57:02 - api.adapters.room_adapters - INFO - Room created: room_972b7ed4 by Andy
+2025-07-27 02:57:02 - backend.api.routes.ws - INFO - 🔌 [ROOM_DEBUG] Handling disconnect for room 'lobby', websocket_id: 734b672b-6a99-4ce4-be50-83da30a7148e at 1753610222.165086
+2025-07-27 02:57:02 - api.websocket.connection_manager - WARNING - WebSocket ID 734b672b-6a99-4ce4-be50-83da30a7148e not found in mapping. Current mappings: []
+2025-07-27 02:57:02 - backend.api.routes.ws - WARNING - No websocket_id found on websocket object for room lobby
+2025-07-27 02:57:02 - backend.api.routes.ws - INFO - ⚠️ [ROOM_DEBUG] WebSocket disconnect without ID for room 'lobby'
+2025-07-27 02:57:02 - backend.api.routes.ws - INFO - 🔌 [ROOM_DEBUG] WebSocket unregistered from room 'lobby'
+INFO:     connection closed
+2025-07-27 02:57:02 - engine.async_room_manager - WARNING - Room lobby not found in AsyncRoomManager. Current rooms: []
+2025-07-27 02:57:02 - backend.api.routes.ws - INFO - 🔌 [ROOM_DEBUG] New WebSocket connection to room 'lobby', ws_id: 23829767-0caa-4f17-8d76-a71807c330b5 at 1753610222.1857789
+2025-07-27 02:57:02 - backend.api.routes.ws - INFO - 🧹 [ROOM_DEBUG] Room cleanup task already running
+INFO:     ('127.0.0.1', 54057) - "WebSocket /ws/lobby" [accepted]
+INFO:     connection open
+2025-07-27 02:57:02 - backend.api.routes.ws - INFO - 🔌 [ROOM_DEBUG] New WebSocket connection to room 'room_972b7ed4', ws_id: e4781553-abcd-46f3-82e6-a69476db972a at 1753610222.206382
+2025-07-27 02:57:02 - backend.api.routes.ws - INFO - 🧹 [ROOM_DEBUG] Room cleanup task already running
+INFO:     ('127.0.0.1', 54059) - "WebSocket /ws/room_972b7ed4" [accepted]
+2025-07-27 02:57:02 - engine.async_room_manager - WARNING - Room room_972b7ed4 not found in AsyncRoomManager. Current rooms: []
+INFO:     connection open
+2025-07-27 02:57:02 - backend.api.routes.ws - INFO - Sent room_not_found for non-existent room: room_972b7ed4
+2025-07-27 02:57:02 - engine.async_room_manager - WARNING - Room room_972b7ed4 not found in AsyncRoomManager. Current rooms: []
+2025-07-27 02:57:02 - engine.async_room_manager - WARNING - Room room_972b7ed4 not found in AsyncRoomManager. Current rooms: []
+INFO:     127.0.0.1:54073 - "GET / HTTP/1.1" 200 OK
+2025-07-27 02:57:05 - backend.api.routes.ws - INFO - 🔌 [ROOM_DEBUG] Handling disconnect for room 'lobby', websocket_id: 23829767-0caa-4f17-8d76-a71807c330b5 at 1753610225.2937112
+2025-07-27 02:57:05 - api.websocket.connection_manager - WARNING - WebSocket ID 23829767-0caa-4f17-8d76-a71807c330b5 not found in mapping. Current mappings: []
+2025-07-27 02:57:05 - backend.api.routes.ws - WARNING - No websocket_id found on websocket object for room lobby
+2025-07-27 02:57:05 - backend.api.routes.ws - INFO - ⚠️ [ROOM_DEBUG] WebSocket disconnect without ID for room 'lobby'
+2025-07-27 02:57:05 - backend.api.routes.ws - INFO - 🔌 [ROOM_DEBUG] WebSocket unregistered from room 'lobby'
+2025-07-27 02:57:05 - engine.async_room_manager - WARNING - Room lobby not found in AsyncRoomManager. Current rooms: []
+2025-07-27 02:57:05 - backend.api.routes.ws - INFO - 🔌 [ROOM_DEBUG] Handling disconnect for room 'room_972b7ed4', websocket_id: e4781553-abcd-46f3-82e6-a69476db972a at 1753610225.295632
+2025-07-27 02:57:05 - api.websocket.connection_manager - WARNING - WebSocket ID e4781553-abcd-46f3-82e6-a69476db972a not found in mapping. Current mappings: []
+2025-07-27 02:57:05 - engine.async_room_manager - WARNING - Room room_972b7ed4 not found in AsyncRoomManager. Current rooms: []
+2025-07-27 02:57:05 - backend.api.routes.ws - WARNING - No websocket_id found on websocket object for room room_972b7ed4
+2025-07-27 02:57:05 - backend.api.routes.ws - INFO - ⚠️ [ROOM_DEBUG] WebSocket disconnect without ID for room 'room_972b7ed4'
+2025-07-27 02:57:05 - backend.api.routes.ws - INFO - 🔌 [ROOM_DEBUG] WebSocket unregistered from room 'room_972b7ed4'
+2025-07-27 02:57:05 - engine.async_room_manager - WARNING - Room room_972b7ed4 not found in AsyncRoomManager. Current rooms: []
+INFO:     connection closed
+INFO:     connection closed
+INFO:     127.0.0.1:54073 - "GET /bundle.css HTTP/1.1" 200 OK
+INFO:     127.0.0.1:54077 - "GET /bundle.js HTTP/1.1" 200 OK
+INFO:     127.0.0.1:54075 - "GET /.well-known/appspecific/com.chrome.devtools.json HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:54077 - "GET /bundle.css.map HTTP/1.1" 200 OK
+INFO:     127.0.0.1:54077 - "GET /bundle.js.map HTTP/1.1" 200 OK

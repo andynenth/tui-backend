@@ -12,6 +12,24 @@ set -a
 source .env
 set +a
 
+# 🏗️ Clean Architecture Feature Flags (Default: Enabled)
+# Phase 6 migration is complete - clean architecture is now the default
+export FF_USE_CLEAN_ARCHITECTURE=true
+export FF_USE_DOMAIN_EVENTS=true
+export FF_USE_APPLICATION_LAYER=true
+export FF_USE_NEW_REPOSITORIES=true
+export FF_USE_CONNECTION_ADAPTERS=true
+export FF_USE_ROOM_ADAPTERS=true
+export FF_USE_GAME_ADAPTERS=true
+export FF_USE_LOBBY_ADAPTERS=true
+
+# 🚦 Adapter Traffic Routing (Enable clean architecture traffic routing)
+export ADAPTER_ENABLED=true
+export ADAPTER_ROLLOUT_PERCENTAGE=100
+
+echo "✅ Clean Architecture activated (8/8 feature flags enabled)"
+echo "🚦 Adapter routing enabled (100% traffic to clean architecture)"
+
 # Ensure static directory exists
 mkdir -p "$STATIC_DIR"
 

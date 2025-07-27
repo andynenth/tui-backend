@@ -4,7 +4,7 @@
 
 **Timeline**: Post Phase 6.5 completion  
 **Risk Level**: Low (after full migration validation)  
-**Execution Window**: 2-3 weeks  
+**Execution Window**: 3-4 weeks (updated based on 202 legacy files)  
 
 ## Executive Summary
 
@@ -21,6 +21,7 @@ Phase 7 focuses on the complete and safe removal of legacy code components after
 - [Phase 6 Gradual Cutover](./PHASE_6_GRADUAL_CUTOVER.md) - Prerequisites
 - [Main Architecture Plan](./TASK_3_ABSTRACTION_COUPLING_PLAN.md) - Overall strategy
 - [Implementation Status](./PHASE_5_IMPLEMENTATION_STATUS.md) - Component readiness
+- [Legacy vs Clean Identification Guide](../implementation/guides/LEGACY_VS_CLEAN_IDENTIFICATION_GUIDE.md) - How to identify component types
 
 ## Prerequisites
 
@@ -37,45 +38,77 @@ Phase 7 focuses on the complete and safe removal of legacy code components after
 - [ ] Performance baselines maintained or improved
 - [ ] Error rates within acceptable thresholds (<0.1%)
 - [ ] User experience impact assessment completed
+- [ ] All 6 cross-dependencies from clean to legacy resolved
+- [ ] All 8 hybrid files reviewed and refactored as needed
+
+## Current Architecture Analysis Results
+
+Based on the automated analysis using `tools/identify_architecture_type.py` (2025-07-27):
+
+### Distribution Summary
+- **Clean Architecture**: 311 files (57.7%) - Ready for production
+- **Legacy**: 202 files (37.5%) - Scheduled for removal
+- **Enterprise**: 17 files (3.2%) - Modern state machine (keep)
+- **Hybrid**: 8 files (1.5%) - Need partial cleanup
+- **Bridge**: 1 file (0.2%) - Adapter wrapper (keep)
+
+### Key Findings
+- ✅ Clean architecture is handling 100% of traffic via adapters
+- ⚠️ 6 clean files have legacy dependencies that need resolution
+- ⚠️ 8 hybrid files need review for partial legacy code removal
+- ✅ Enterprise state machine is modern and should be preserved
 
 ## Legacy Code Inventory
 
 ### Primary Legacy Components Identified
 
+Based on the automated analysis, we have identified **202 legacy files (37.5%)** that need removal:
+
 #### 1. Core Legacy Files
 ```
 backend/
-├── socket_manager.py              # Legacy WebSocket management (1000+ lines)
-├── engine/
+├── socket_manager.py              # Legacy WebSocket management
+├── engine/                        # Legacy engine (except state_machine/)
 │   ├── room_manager.py           # Legacy room management
-│   ├── room.py                   # Legacy room implementation  
+│   ├── async_room_manager.py     # Legacy async room management
+│   ├── room.py                   # Legacy room implementation
+│   ├── async_room.py             # Legacy async room wrapper
 │   ├── game.py                   # Legacy game logic
+│   ├── async_game.py             # Legacy async game wrapper
 │   ├── bot_manager.py            # Legacy bot management
 │   ├── player.py                 # Legacy player management
-│   └── scoring.py                # Legacy scoring implementation
+│   ├── scoring.py                # Legacy scoring implementation
+│   ├── rules.py                  # Legacy game rules
+│   ├── ai.py                     # Legacy AI implementation
+│   └── win_conditions.py         # Legacy win condition logic
 └── shared_instances.py           # Legacy shared state management
 ```
 
-#### 2. Legacy API Components
+**Note**: The `engine/state_machine/` directory contains **17 enterprise architecture files** and should NOT be removed.
+
+#### 2. Hybrid Components (Need Partial Cleanup)
+Based on analysis, **8 hybrid files (1.5%)** need review:
 ```
 backend/api/routes/
-├── ws_legacy_handlers.py         # Already marked as legacy
-└── legacy_ws_integration.py     # Legacy WebSocket integration
+├── ws.py                         # Hybrid - Infrastructure with legacy handlers (after line 327)
+├── ws_legacy_handlers.py         # Legacy handlers to be removed
+└── ws_integration_patch.py       # May contain legacy integration code
 ```
 
 #### 3. Legacy Test Files
+Many test files contain legacy patterns or test legacy components:
 ```
 backend/tests/
-├── test_legacy_*.py             # Legacy-specific tests
-├── test_socket_manager.py       # Legacy socket manager tests
-└── legacy_integration_tests/    # Legacy integration test suite
+├── test_async_*.py              # Tests for legacy async wrappers
+├── test_bot_manager_*.py        # Tests for legacy bot manager
+├── test_engine_*.py             # Tests for legacy engine components
+└── test_socket_manager.py       # Legacy socket manager tests
 ```
 
-#### 4. Legacy Dependencies
-- Legacy imports in remaining files
-- Unused utility functions
-- Deprecated configuration files
-- Legacy documentation files
+#### 4. Cross-Dependencies Warning
+The automated analysis found **6 clean architecture files with legacy dependencies** that need attention:
+- Clean files importing from `engine.*` or `socket_manager`
+- These dependencies must be resolved before Phase 7 execution
 
 ### Replacement Mapping
 
@@ -158,9 +191,11 @@ def legacy_function_name() -> Any:
     }
   ],
   "removal_stats": {
-    "total_legacy_files": 12,
-    "total_lines_to_remove": 5000,
-    "estimated_cleanup_time": "2-3 weeks"
+    "total_legacy_files": 202,
+    "total_lines_to_remove": 15000,
+    "hybrid_files_to_review": 8,
+    "clean_files_with_legacy_deps": 6,
+    "estimated_cleanup_time": "3-4 weeks"
   }
 }
 ```
@@ -183,6 +218,18 @@ def legacy_function_name() -> Any:
 # backend/tools/legacy_scanner.py
 python tools/legacy_scanner.py --scan-all --output legacy_inventory.json
 # Scans entire codebase for legacy patterns and dependencies
+```
+
+**Available Tools**:
+```bash
+# backend/tools/identify_architecture_type.py - Already implemented!
+python tools/identify_architecture_type.py --directory backend --output architecture_analysis.json
+# Analyzes and classifies all files as legacy, clean, hybrid, or bridge
+
+# Check a specific file
+python tools/identify_architecture_type.py --file path/to/file.py --verbose
+
+# Current statistics: 202 legacy files (37.5%), 311 clean files (57.7%), 8 hybrid files (1.5%)
 ```
 
 **Validation**:
@@ -447,8 +494,8 @@ After any rollback:
 - ✅ Error rates remain <0.1%
 
 ### Cleanup Success Metrics
-- ✅ Codebase size reduced by estimated 5,000+ lines
-- ✅ Maintainability improved (reduced complexity)
+- ✅ Codebase size reduced by estimated 15,000+ lines (202 legacy files)
+- ✅ Maintainability improved (37.5% reduction in codebase complexity)
 - ✅ Build time improved or maintained
 - ✅ Memory usage optimized
 - ✅ Documentation updated and accurate
@@ -579,5 +626,12 @@ Phase 7 provides a comprehensive, safe approach to removing legacy code after su
 
 ---
 **Last Updated**: 2025-07-27  
-**Document Version**: 1.0  
+**Document Version**: 1.1  
+**Changes in v1.1**: 
+- Updated legacy file count from 12 to 202 based on automated analysis
+- Added current architecture distribution statistics
+- Identified 6 cross-dependencies and 8 hybrid files needing attention
+- Updated timeline from 2-3 weeks to 3-4 weeks
+- Added reference to `tools/identify_architecture_type.py` tool
+
 **Execution Trigger**: Phase 6.5 successful completion + 2 weeks stable operation

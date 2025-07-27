@@ -21,6 +21,22 @@ class WSAdapterWrapper:
     """
     
     def __init__(self):
+        # Components
+        self.adapter_system = None
+        self._initialized = False
+        self._config_loaded = False
+        
+        # Defer loading config until first use
+        self.enabled = None
+        self.rollout_percentage = None
+        self.shadow_enabled = None
+        self.shadow_percentage = None
+    
+    def _load_config(self):
+        """Load configuration from environment variables (lazy loading)"""
+        if self._config_loaded:
+            return
+            
         # Feature flags
         self.enabled = os.getenv("ADAPTER_ENABLED", "false").lower() == "true"
         self.rollout_percentage = float(os.getenv("ADAPTER_ROLLOUT_PERCENTAGE", "0"))
@@ -29,17 +45,23 @@ class WSAdapterWrapper:
         self.shadow_enabled = os.getenv("SHADOW_MODE_ENABLED", "false").lower() == "true"
         self.shadow_percentage = float(os.getenv("SHADOW_MODE_PERCENTAGE", "1"))
         
-        # Components
-        self.adapter_system = None
-        self._initialized = False
+        self._config_loaded = True
         
-        logger.info(f"WSAdapterWrapper initialized:")
-        logger.info(f"  Enabled: {self.enabled}")
-        logger.info(f"  Rollout: {self.rollout_percentage}%")
+        # Log configuration
+        logger.info(f"WSAdapterWrapper configuration loaded:")
+        logger.info(f"  Enabled: {self.enabled} (env: {os.getenv('ADAPTER_ENABLED', 'not set')})")
+        logger.info(f"  Rollout: {self.rollout_percentage}% (env: {os.getenv('ADAPTER_ROLLOUT_PERCENTAGE', 'not set')})")
         logger.info(f"  Shadow: {self.shadow_enabled} at {self.shadow_percentage}%")
+        
+        # Log if adapter-only mode will be activated
+        if self.enabled and self.rollout_percentage >= 100:
+            logger.info("  🚦 Will activate ADAPTER-ONLY MODE when initialized")
     
     def initialize(self):
         """Initialize the adapter system"""
+        # Load config if not already loaded
+        self._load_config()
+        
         if self._initialized:
             return
             
@@ -49,8 +71,15 @@ class WSAdapterWrapper:
             return None
         
         self.adapter_system = IntegratedAdapterSystem(legacy_handler)
+        
+        # Enable adapter-only mode if at 100% rollout
+        if self.enabled and self.rollout_percentage >= 100:
+            self.adapter_system.enable_adapter_only_mode()
+            logger.info("Adapter system initialized in ADAPTER-ONLY MODE (no legacy fallback)")
+        else:
+            logger.info(f"Adapter system initialized (enabled={self.enabled}, rollout={self.rollout_percentage}%)")
+        
         self._initialized = True
-        logger.info("Adapter system initialized")
     
     def should_use_adapter(self, event_name: str) -> bool:
         """
@@ -62,6 +91,10 @@ class WSAdapterWrapper:
         Returns:
             True if adapter should handle, False for legacy
         """
+        # Load config if not already loaded
+        if not self._config_loaded:
+            self._load_config()
+            
         if not self.enabled or not self._initialized:
             return False
         
@@ -97,6 +130,14 @@ class WSAdapterWrapper:
         Returns:
             Response dict if handled by adapter, None if legacy should handle
         """
+        # Load config and initialize if needed
+        if not self._config_loaded:
+            self._load_config()
+            
+        # ADAPTER-ONLY MODE: Log when adapter is disabled
+        if not self.enabled:
+            logger.debug(f"Adapter disabled, falling back to legacy for: {message.get('event')}")
+            return None
         if not self._initialized:
             self.initialize()
         
@@ -104,7 +145,11 @@ class WSAdapterWrapper:
         
         # Check if we should use adapter
         if not self.should_use_adapter(event_name):
+            logger.debug(f"Event {event_name} not using adapter (rollout check)")
             return None
+        
+        # ADAPTER-ONLY MODE: We're committed to handling this
+        logger.debug(f"Adapter handling event: {event_name}")
         
         # Convert message format (event -> action for adapters)
         adapter_message = {
@@ -138,7 +183,22 @@ class WSAdapterWrapper:
             
         except Exception as e:
             logger.error(f"Adapter error for {event_name}: {e}", exc_info=True)
-            # Return None to fall back to legacy
+            
+            # ADAPTER-ONLY MODE: When enabled at 100%, don't fall back to legacy
+            if self.enabled and self.rollout_percentage >= 100:
+                logger.error(f"ADAPTER-ONLY MODE: No legacy fallback for {event_name}")
+                # Return error response instead of None
+                return {
+                    "event": "error",
+                    "data": {
+                        "message": f"Failed to process {event_name} in clean architecture",
+                        "type": "adapter_error",
+                        "details": str(e)
+                    }
+                }
+            
+            # Otherwise fall back to legacy
+            logger.warning(f"Falling back to legacy for {event_name}")
             return None
     
     def get_status(self) -> Dict[str, Any]:

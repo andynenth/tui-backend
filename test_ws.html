@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>WebSocket Test</title>
+</head>
+<body>
+    <h1>WebSocket Adapter Test</h1>
+    <button onclick="connectWS()">Connect to WebSocket</button>
+    <button onclick="sendPing()">Send Ping</button>
+    <div id="log"></div>
+
+    <script>
+        let ws = null;
+        const log = document.getElementById('log');
+
+        function addLog(message) {
+            const p = document.createElement('p');
+            p.textContent = new Date().toISOString() + ': ' + message;
+            log.appendChild(p);
+        }
+
+        function connectWS() {
+            ws = new WebSocket('ws://localhost:5050/ws/lobby');
+            
+            ws.onopen = function() {
+                addLog('Connected to WebSocket');
+            };
+            
+            ws.onmessage = function(event) {
+                addLog('Received: ' + event.data);
+            };
+            
+            ws.onerror = function(error) {
+                addLog('Error: ' + error);
+            };
+            
+            ws.onclose = function() {
+                addLog('Connection closed');
+            };
+        }
+
+        function sendPing() {
+            if (ws && ws.readyState === WebSocket.OPEN) {
+                const message = JSON.stringify({
+                    event: 'ping',
+                    data: {}
+                });
+                ws.send(message);
+                addLog('Sent: ' + message);
+            } else {
+                addLog('WebSocket not connected');
+            }
+        }
+
+        // Auto-connect on load
+        window.onload = function() {
+            connectWS();
+        };
+    </script>
+</body>
+</html>
