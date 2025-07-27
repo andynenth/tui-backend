@@ -1,0 +1,186 @@
+{
+  "timestamp": 1753599654.1327062,
+  "baseline_memory": {
+    "rss_mb": 19.62109375,
+    "vms_mb": 33358.55859375,
+    "percent": 0.23956298828125,
+    "timestamp": 1753599650.931284
+  },
+  "requirements_validation": {
+    "memory_growth_under_100mb": true,
+    "no_significant_memory_leaks": false,
+    "efficient_memory_usage": true,
+    "peak_memory_reasonable": true
+  },
+  "samples": [
+    {
+      "operation": "baseline",
+      "data_count": 0,
+      "memory": {
+        "rss_mb": 19.6328125,
+        "vms_mb": 33358.55859375,
+        "percent": 0.23965835571289062,
+        "timestamp": 1753599650.931403
+      },
+      "memory_delta_mb": 0.01171875
+    },
+    {
+      "operation": "repository_initialized",
+      "data_count": 0,
+      "memory": {
+        "rss_mb": 19.63671875,
+        "vms_mb": 33358.55859375,
+        "percent": 0.23970603942871094,
+        "timestamp": 1753599650.931432
+      },
+      "memory_delta_mb": 0.015625
+    },
+    {
+      "operation": "batch_0_loaded",
+      "data_count": 100,
+      "memory": {
+        "rss_mb": 20.15625,
+        "vms_mb": 33359.55859375,
+        "percent": 0.2460479736328125,
+        "timestamp": 1753599650.941728
+      },
+      "memory_delta_mb": 0.53515625
+    },
+    {
+      "operation": "batch_1_loaded",
+      "data_count": 200,
+      "memory": {
+        "rss_mb": 20.65625,
+        "vms_mb": 33359.55859375,
+        "percent": 0.2521991729736328,
+        "timestamp": 1753599651.053393
+      },
+      "memory_delta_mb": 1.03515625
+    },
+    {
+      "operation": "batch_2_loaded",
+      "data_count": 300,
+      "memory": {
+        "rss_mb": 21.15625,
+        "vms_mb": 33360.55859375,
+        "percent": 0.2582550048828125,
+        "timestamp": 1753599651.173526
+      },
+      "memory_delta_mb": 1.53515625
+    },
+    {
+      "operation": "batch_3_loaded",
+      "data_count": 400,
+      "memory": {
+        "rss_mb": 21.75,
+        "vms_mb": 33360.55859375,
+        "percent": 0.2655029296875,
+        "timestamp": 1753599651.282867
+      },
+      "memory_delta_mb": 2.12890625
+    },
+    {
+      "operation": "batch_4_loaded",
+      "data_count": 500,
+      "memory": {
+        "rss_mb": 22.24609375,
+        "vms_mb": 33361.55859375,
+        "percent": 0.2715587615966797,
+        "timestamp": 1753599651.394211
+      },
+      "memory_delta_mb": 2.625
+    },
+    {
+      "operation": "batch_5_loaded",
+      "data_count": 600,
+      "memory": {
+        "rss_mb": 22.7421875,
+        "vms_mb": 33361.55859375,
+        "percent": 0.2776145935058594,
+        "timestamp": 1753599651.5033312
+      },
+      "memory_delta_mb": 3.12109375
+    },
+    {
+      "operation": "batch_6_loaded",
+      "data_count": 700,
+      "memory": {
+        "rss_mb": 23.33203125,
+        "vms_mb": 33362.55859375,
+        "percent": 0.28481483459472656,
+        "timestamp": 1753599651.61588
+      },
+      "memory_delta_mb": 3.7109375
+    },
+    {
+      "operation": "batch_7_loaded",
+      "data_count": 800,
+      "memory": {
+        "rss_mb": 23.82421875,
+        "vms_mb": 33362.55859375,
+        "percent": 0.29082298278808594,
+        "timestamp": 1753599651.726759
+      },
+      "memory_delta_mb": 4.203125
+    },
+    {
+      "operation": "batch_8_loaded",
+      "data_count": 900,
+      "memory": {
+        "rss_mb": 24.32421875,
+        "vms_mb": 33363.55859375,
+        "percent": 0.29692649841308594,
+        "timestamp": 1753599651.8428411
+      },
+      "memory_delta_mb": 4.703125
+    },
+    {
+      "operation": "batch_9_loaded",
+      "data_count": 1000,
+      "memory": {
+        "rss_mb": 24.8203125,
+        "vms_mb": 33363.55859375,
+        "percent": 0.3029823303222656,
+        "timestamp": 1753599651.960404
+      },
+      "memory_delta_mb": 5.19921875
+    },
+    {
+      "operation": "stress_test_complete",
+      "data_count": 1500,
+      "memory": {
+        "rss_mb": 27.421875,
+        "vms_mb": 33366.66015625,
+        "percent": 0.33473968505859375,
+        "timestamp": 1753599652.118016
+      },
+      "memory_delta_mb": 7.80078125
+    },
+    {
+      "operation": "repository_released",
+      "data_count": 0,
+      "memory": {
+        "rss_mb": 26.44140625,
+        "vms_mb": 33365.66015625,
+        "percent": 0.3227710723876953,
+        "timestamp": 1753599653.121213
+      },
+      "memory_delta_mb": 6.8203125
+    },
+    {
+      "operation": "after_gc",
+      "data_count": 0,
+      "memory": {
+        "rss_mb": 26.44140625,
+        "vms_mb": 33365.66015625,
+        "percent": 0.3227710723876953,
+        "timestamp": 1753599654.13252
+      },
+      "memory_delta_mb": 6.8203125
+    }
+  ],
+  "summary": {
+    "all_requirements_met": false,
+    "memory_grade": "B"
+  }
+}
