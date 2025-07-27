@@ -17,7 +17,7 @@ from contextlib import asynccontextmanager
 from fastapi import WebSocket
 from starlette.websockets import WebSocketState
 
-from backend.infrastructure.observability import (
+from infrastructure.observability import (
     get_logger,
     get_metrics_collector,
     get_tracer,
@@ -26,7 +26,7 @@ from backend.infrastructure.observability import (
     Timer,
     SpanKind
 )
-from backend.infrastructure.rate_limiting import (
+from infrastructure.rate_limiting import (
     GameWebSocketRateLimiter,
     create_game_rate_limiter
 )

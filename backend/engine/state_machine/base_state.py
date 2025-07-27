@@ -351,7 +351,7 @@ class GameState(ABC):
             # Also publish as domain event for custom events
             try:
                 from .event_integration import get_state_event_publisher
-                from backend.domain.events.all_events import CustomGameEvent, EventMetadata
+                from domain.events.all_events import CustomGameEvent, EventMetadata
                 
                 publisher = get_state_event_publisher()
                 if publisher._enabled and room_id != "unknown":

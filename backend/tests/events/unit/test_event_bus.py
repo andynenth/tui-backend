@@ -13,12 +13,12 @@ import sys
 import os
 sys.path.append(os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))))
 
-from backend.domain.events.base import DomainEvent, EventMetadata
-from backend.domain.events.all_events import (
+from domain.events.base import DomainEvent, EventMetadata
+from domain.events.all_events import (
     RoomCreated, PlayerJoinedRoom, GameStarted,
     PiecesPlayed, InvalidActionAttempted
 )
-from backend.infrastructure.events.in_memory_event_bus import (
+from infrastructure.events.in_memory_event_bus import (
     InMemoryEventBus, EventHandler, get_event_bus, reset_event_bus
 )
 

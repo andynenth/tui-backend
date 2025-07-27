@@ -8,7 +8,7 @@ and their corresponding WebSocket broadcast formats, ensuring
 
 from typing import Dict, Any, Callable, Optional, Type
 from dataclasses import dataclass
-from backend.domain.events.base import DomainEvent
+from domain.events.base import DomainEvent
 
 
 @dataclass
@@ -203,7 +203,7 @@ def map_room_list(event: 'RoomListUpdated', context: Optional[Dict[str, Any]]) -
 # Register all mappings
 def register_all_mappings():
     """Register all event-to-broadcast mappings."""
-    from backend.domain.events.all_events import (
+    from domain.events.all_events import (
         # Room events
         RoomCreated, PlayerJoinedRoom, PlayerLeftRoom, HostChanged,
         BotAdded, PlayerRemoved,

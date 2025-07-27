@@ -7,7 +7,7 @@ import asyncio
 from datetime import datetime, timedelta
 from typing import List, Any
 
-from backend.infrastructure.messaging import (
+from infrastructure.messaging import (
     # Base types
     Message,
     MessagePriority,

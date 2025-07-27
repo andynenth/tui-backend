@@ -22,13 +22,13 @@ from engine.state_machine.event_integration import (
 )
 from engine.state_machine.event_config import StateEventConfig
 
-from backend.domain.events.base import DomainEvent
-from backend.domain.events.all_events import (
+from domain.events.base import DomainEvent
+from domain.events.all_events import (
     PhaseChanged, TurnStarted, TurnWinnerDetermined,
     RoundStarted, RoundEnded, ScoresCalculated, GameEnded,
     CustomGameEvent
 )
-from backend.infrastructure.events.in_memory_event_bus import (
+from infrastructure.events.in_memory_event_bus import (
     get_event_bus, reset_event_bus
 )
 

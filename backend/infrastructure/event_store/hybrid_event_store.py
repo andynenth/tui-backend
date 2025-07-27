@@ -13,11 +13,11 @@ from dataclasses import dataclass, asdict
 import json
 from enum import Enum
 
-from backend.infrastructure.persistence.base import IPersistenceAdapter
-from backend.infrastructure.persistence.hybrid_repository import HybridRepository
-from backend.infrastructure.persistence.memory_adapter import MemoryAdapter
-from backend.infrastructure.persistence.filesystem_adapter import FilesystemAdapter
-from backend.infrastructure.persistence.repository_factory import (
+from infrastructure.persistence.base import IPersistenceAdapter
+from infrastructure.persistence.hybrid_repository import HybridRepository
+from infrastructure.persistence.memory_adapter import MemoryAdapter
+from infrastructure.persistence.filesystem_adapter import FilesystemAdapter
+from infrastructure.persistence.repository_factory import (
     PersistenceConfig,
     PersistenceBackend,
     CompletionBasedArchivalPolicy

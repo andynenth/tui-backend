@@ -11,7 +11,7 @@ from typing import Dict, Any, List
 from fastapi import WebSocket
 from starlette.websockets import WebSocketState
 
-from backend.infrastructure.websocket import (
+from infrastructure.websocket import (
     # Connection Management
     ConnectionManager,
     ConnectionInfo,
@@ -51,8 +51,8 @@ from backend.infrastructure.websocket import (
     RecoveryConfig
 )
 
-from backend.domain.entities import Room, Game, Player
-from backend.domain.value_objects import RoomState
+from domain.entities import Room, Game, Player
+from domain.value_objects import RoomState
 
 
 # Test Fixtures

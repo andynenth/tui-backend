@@ -12,13 +12,13 @@ import sys
 import os
 sys.path.append(os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))))
 
-from backend.domain.events.base import EventMetadata
-from backend.domain.events.all_events import (
+from domain.events.base import EventMetadata
+from domain.events.all_events import (
     RoomCreated, PlayerJoinedRoom, GameStarted, PhaseChanged,
     PiecesPlayed, TurnWinnerDetermined, ScoresCalculated,
     ConnectionHeartbeat, InvalidActionAttempted, RoomListUpdated
 )
-from backend.infrastructure.events.event_broadcast_mapper import (
+from infrastructure.events.event_broadcast_mapper import (
     EventBroadcastMapper, BroadcastInfo
 )
 

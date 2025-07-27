@@ -15,35 +15,35 @@ def fix_imports_in_file(filepath):
     # Fix room event imports
     content = re.sub(
         r'from domain\.events\.room_events import (.+)',
-        r'from backend.domain.events.room_events import \1',
+        r'from domain.events.room_events import \1',
         content
     )
     
     # Fix game event imports
     content = re.sub(
         r'from domain\.events\.game_events import (.+)',
-        r'from backend.domain.events.game_events import \1',
+        r'from domain.events.game_events import \1',
         content
     )
     
     # Fix base event imports
     content = re.sub(
         r'from domain\.events\.base import (.+)',
-        r'from backend.domain.events.base import \1',
+        r'from domain.events.base import \1',
         content
     )
     
     # Fix connection event imports
     content = re.sub(
         r'from domain\.events\.connection_events import (.+)',
-        r'from backend.domain.events.connection_events import \1',
+        r'from domain.events.connection_events import \1',
         content
     )
     
     # Fix all_events imports
     content = re.sub(
         r'from domain\.events\.all_events import (.+)',
-        r'from backend.domain.events.all_events import \1',
+        r'from domain.events.all_events import \1',
         content
     )
     

@@ -12,8 +12,8 @@ from application.base import UseCase
 from application.dto.room_management import LeaveRoomRequest, LeaveRoomResponse
 from application.interfaces import UnitOfWork, EventPublisher, MetricsCollector
 from application.exceptions import ResourceNotFoundException, ValidationException
-from backend.domain.events.room_events import PlayerLeftRoom, HostChanged, RoomClosed
-from backend.domain.events.base import EventMetadata
+from domain.events.room_events import PlayerLeftRoom, HostChanged, RoomClosed
+from domain.events.base import EventMetadata
 
 logger = logging.getLogger(__name__)
 

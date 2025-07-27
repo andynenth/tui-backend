@@ -8,7 +8,7 @@ from datetime import datetime, timedelta
 from typing import List, Dict, Any
 import uuid
 
-from backend.infrastructure.event_store import (
+from infrastructure.event_store import (
     Event,
     EventType,
     EventStream,

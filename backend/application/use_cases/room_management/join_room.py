@@ -18,8 +18,8 @@ from application.exceptions import (
     ConflictException
 )
 from domain.entities.player import Player
-from backend.domain.events.room_events import PlayerJoinedRoom, HostChanged
-from backend.domain.events.base import EventMetadata
+from domain.events.room_events import PlayerJoinedRoom, HostChanged
+from domain.events.base import EventMetadata
 
 logger = logging.getLogger(__name__)
 

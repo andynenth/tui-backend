@@ -9,7 +9,7 @@ from typing import Dict, Any, List
 import gc
 import json
 
-from backend.infrastructure.monitoring import (
+from infrastructure.monitoring import (
     # Game metrics
     GameMetricsCollector,
     GameMetricType,
@@ -171,7 +171,7 @@ class TestGameMetrics:
         assert analytics['total_games'] == 0
         
         # Add completed game
-        from backend.infrastructure.monitoring.game_metrics import GameStats
+        from infrastructure.monitoring.game_metrics import GameStats
         game = GameStats(
             game_id="game1",
             room_id="room1",
@@ -333,7 +333,7 @@ class TestCorrelation:
     
     def test_correlation_metadata(self):
         """Test correlation metadata."""
-        from backend.infrastructure.monitoring.correlation import add_correlation_metadata
+        from infrastructure.monitoring.correlation import add_correlation_metadata
         
         # Set correlation with metadata
         set_correlation_id(metadata={"user": "test"})

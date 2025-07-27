@@ -14,10 +14,10 @@ import sys
 import os
 sys.path.append(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
 
-from backend.domain.events.all_events import (
+from domain.events.all_events import (
     ConnectionHeartbeat, ClientReady, EventMetadata
 )
-from backend.infrastructure.events.in_memory_event_bus import get_event_bus
+from infrastructure.events.in_memory_event_bus import get_event_bus
 
 
 class PingAdapterEvent:

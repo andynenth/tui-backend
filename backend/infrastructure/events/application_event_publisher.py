@@ -10,8 +10,8 @@ from typing import Optional, Dict, Any
 import asyncio
 
 from application.interfaces import EventPublisher
-from backend.domain.events.base import DomainEvent
-from backend.infrastructure.events.event_broadcast_mapper import event_broadcast_mapper
+from domain.events.base import DomainEvent
+from infrastructure.events.event_broadcast_mapper import event_broadcast_mapper
 from infrastructure.feature_flags import get_feature_flags
 from socket_manager import broadcast
 

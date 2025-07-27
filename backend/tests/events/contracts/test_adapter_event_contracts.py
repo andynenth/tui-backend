@@ -33,7 +33,7 @@ from api.adapters.room_adapters_event import (
     GetRoomStateAdapterEvent, AddBotAdapterEvent, RemovePlayerAdapterEvent
 )
 
-from backend.infrastructure.events.in_memory_event_bus import reset_event_bus
+from infrastructure.events.in_memory_event_bus import reset_event_bus
 
 
 class MockWebSocket:
@@ -324,8 +324,8 @@ class TestEventPublishingVerification:
         self.published_events = []
         
         # Subscribe to all events
-        from backend.infrastructure.events.in_memory_event_bus import get_event_bus
-        from backend.domain.events.base import DomainEvent
+        from infrastructure.events.in_memory_event_bus import get_event_bus
+        from domain.events.base import DomainEvent
         
         async def track_event(event: DomainEvent):
             self.published_events.append(event)
@@ -349,7 +349,7 @@ class TestEventPublishingVerification:
         assert len(self.published_events) == 1
         event = self.published_events[0]
         
-        from backend.domain.events.all_events import RoomCreated
+        from domain.events.all_events import RoomCreated
         assert isinstance(event, RoomCreated)
         assert event.host_name == "Alice"
         assert event.room_id.startswith("room_")
@@ -370,7 +370,7 @@ class TestEventPublishingVerification:
         assert len(self.published_events) == 1
         event = self.published_events[0]
         
-        from backend.domain.events.all_events import InvalidActionAttempted
+        from domain.events.all_events import InvalidActionAttempted
         assert isinstance(event, InvalidActionAttempted)
         assert event.action_type == "create_room"
         assert "required" in event.reason.lower()
