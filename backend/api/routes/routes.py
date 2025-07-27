@@ -34,7 +34,6 @@ except ImportError:
     EVENT_STORE_AVAILABLE = False
     event_store = None
 
-print(f"socket_manager id in {__name__}: {id(backend.socket_manager)}")
 
 # Global instances - REMOVED: RedealController (using state machine instead)
 router = APIRouter()
