@@ -17,8 +17,8 @@ from application.exceptions import (
     ConflictException
 )
 from domain.entities.game import GamePhase
-from domain.events.player_events import PlayerReady
-from domain.events.game_events import PhaseChanged
+# from domain.events.player_events import PlayerReady  # TODO: This event doesn't exist
+from domain.events.game_events import PhaseChanged, PlayerReadyForNext
 from domain.events.base import EventMetadata
 
 logger = logging.getLogger(__name__)
@@ -141,8 +141,8 @@ class MarkPlayerReadyUseCase(UseCase[MarkPlayerReadyRequest, MarkPlayerReadyResp
             # Save game state
             await self._uow.games.save(game)
             
-            # Emit PlayerReady event
-            ready_event = PlayerReady(
+            # Emit PlayerReadyForNext event
+            ready_event = PlayerReadyForNext(
                 metadata=EventMetadata(user_id=request.user_id),
                 room_id=room.id,
                 game_id=game.id,

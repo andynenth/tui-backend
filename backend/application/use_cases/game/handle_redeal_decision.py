@@ -18,11 +18,12 @@ from application.exceptions import (
 )
 from domain.entities.game import GamePhase
 from domain.events.game_events import (
-    RedealTimedOut,
-    RedealApproved,
-    RedealCancelled,
+    # RedealTimedOut,  # TODO: Create this event
+    # RedealApproved,  # TODO: Create this event
+    # RedealCancelled,  # TODO: Create this event
     RedealExecuted,
-    PiecesDealt
+    PiecesDealt,
+    RedealDecisionMade  # Using existing event
 )
 from domain.events.base import EventMetadata
 
@@ -121,17 +122,17 @@ class HandleRedealDecisionUseCase(UseCase[HandleRedealDecisionRequest, HandleRed
             
             # Handle timeout first
             if missing_votes:
-                # Emit RedealTimedOut event
-                timeout_event = RedealTimedOut(
-                    metadata=EventMetadata(user_id=request.user_id),
-                    room_id=room.id,
-                    game_id=game.id,
-                    redeal_id=request.redeal_id,
-                    missing_voters=missing_votes,
-                    accept_votes=accept_votes,
-                    total_players=len(game.players)
-                )
-                await self._event_publisher.publish(timeout_event)
+                # TODO: Emit RedealTimedOut event when it's created
+                # timeout_event = RedealTimedOut(
+                #     metadata=EventMetadata(user_id=request.user_id),
+                #     room_id=room.id,
+                #     game_id=game.id,
+                #     redeal_id=request.redeal_id,
+                #     missing_voters=missing_votes,
+                #     accept_votes=accept_votes,
+                #     total_players=len(game.players)
+                # )
+                # await self._event_publisher.publish(timeout_event)
                 decision = "timeout"
             
             # Process decision
@@ -145,16 +146,16 @@ class HandleRedealDecisionUseCase(UseCase[HandleRedealDecisionRequest, HandleRed
                 # Move to declaration phase
                 game.phase = GamePhase.DECLARATION
                 
-                # Emit RedealApproved
-                approved_event = RedealApproved(
-                    metadata=EventMetadata(user_id=request.user_id),
-                    room_id=room.id,
-                    game_id=game.id,
-                    redeal_id=request.redeal_id,
-                    total_votes=len(game.players),
-                    accept_votes=accept_votes
-                )
-                await self._event_publisher.publish(approved_event)
+                # TODO: Emit RedealApproved when event is created
+                # approved_event = RedealApproved(
+                #     metadata=EventMetadata(user_id=request.user_id),
+                #     room_id=room.id,
+                #     game_id=game.id,
+                #     redeal_id=request.redeal_id,
+                #     total_votes=len(game.players),
+                #     accept_votes=accept_votes
+                # )
+                # await self._event_publisher.publish(approved_event)
                 
                 # Emit RedealExecuted
                 executed_event = RedealExecuted(
@@ -193,16 +194,16 @@ class HandleRedealDecisionUseCase(UseCase[HandleRedealDecisionRequest, HandleRed
                 # Move to declaration phase
                 game.phase = GamePhase.DECLARATION
                 
-                # Emit RedealCancelled
-                cancelled_event = RedealCancelled(
-                    metadata=EventMetadata(user_id=request.user_id),
-                    room_id=room.id,
-                    game_id=game.id,
-                    redeal_id=request.redeal_id,
-                    cancelled_by="timeout" if missing_votes else "vote",
-                    reason=f"Redeal {decision}: {accept_votes}/{len(game.players)} accepted"
-                )
-                await self._event_publisher.publish(cancelled_event)
+                # TODO: Emit RedealCancelled when event is created
+                # cancelled_event = RedealCancelled(
+                #     metadata=EventMetadata(user_id=request.user_id),
+                #     room_id=room.id,
+                #     game_id=game.id,
+                #     redeal_id=request.redeal_id,
+                #     cancelled_by="timeout" if missing_votes else "vote",
+                #     reason=f"Redeal {decision}: {accept_votes}/{len(game.players)} accepted"
+                # )
+                # await self._event_publisher.publish(cancelled_event)
             
             # Clear redeal state
             game.active_redeal_id = None

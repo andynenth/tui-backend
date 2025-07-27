@@ -19,7 +19,7 @@ from application.exceptions import (
 )
 from domain.entities.game import GamePhase
 from domain.services.game_rules import GameRules
-from domain.events.game_events import RedealRequested, RedealVoteStarted
+from domain.events.game_events import RedealRequested
 from domain.events.base import EventMetadata
 
 logger = logging.getLogger(__name__)
@@ -153,21 +153,22 @@ class RequestRedealUseCase(UseCase[RequestRedealRequest, RequestRedealResponse])
             )
             await self._event_publisher.publish(redeal_requested)
             
-            # Emit RedealVoteStarted event
-            vote_started = RedealVoteStarted(
-                metadata=EventMetadata(user_id=request.user_id),
-                room_id=room.id,
-                game_id=game.id,
-                redeal_id=redeal_id,
-                timeout_seconds=self._vote_timeout,
-                votes_required=votes_required,
-                auto_accepted_players=auto_accept_players + [request.player_id],
-                players_to_vote=[
-                    p.id for p in game.players 
-                    if p.id not in game.redeal_votes
-                ]
-            )
-            await self._event_publisher.publish(vote_started)
+            # TODO: Emit RedealVoteStarted event when it's implemented
+            # For now, the RedealRequested event is sufficient
+            # vote_started = RedealVoteStarted(
+            #     metadata=EventMetadata(user_id=request.user_id),
+            #     room_id=room.id,
+            #     game_id=game.id,
+            #     redeal_id=redeal_id,
+            #     timeout_seconds=self._vote_timeout,
+            #     votes_required=votes_required,
+            #     auto_accepted_players=auto_accept_players + [request.player_id],
+            #     players_to_vote=[
+            #         p.id for p in game.players 
+            #         if p.id not in game.redeal_votes
+            #     ]
+            # )
+            # await self._event_publisher.publish(vote_started)
             
             # Record metrics
             if self._metrics:

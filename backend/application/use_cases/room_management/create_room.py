@@ -100,6 +100,13 @@ class CreateRoomUseCase(UseCase[CreateRoomRequest, CreateRoomResponse]):
             # Save the room
             await self._uow.rooms.save(room)
             
+            logger.info(f"[USE_CASE_DEBUG] Room {room.room_id} saved with slots:")
+            for i, player in enumerate(room.slots):
+                if player:
+                    logger.info(f"[USE_CASE_DEBUG]   Slot {i}: {player.name} (bot={player.is_bot})")
+                else:
+                    logger.info(f"[USE_CASE_DEBUG]   Slot {i}: empty")
+            
             # Create room info for response
             room_info = self._create_room_info(room, host_player)
             

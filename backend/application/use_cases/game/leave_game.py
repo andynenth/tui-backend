@@ -15,7 +15,7 @@ from application.exceptions import (
     ResourceNotFoundException,
     ValidationException
 )
-from domain.events.player_events import PlayerLeftGame, PlayerConvertedToBot
+# from domain.events.player_events import PlayerLeftGame, PlayerConvertedToBot  # TODO: Create these events
 from domain.events.base import EventMetadata
 
 logger = logging.getLogger(__name__)
@@ -152,31 +152,31 @@ class LeaveGameUseCase(UseCase[LeaveGameRequest, LeaveGameResponse]):
             except Exception as e:
                 logger.warning(f"Failed to update player stats: {e}")
             
-            # Emit PlayerLeftGame event
-            left_event = PlayerLeftGame(
-                metadata=EventMetadata(user_id=request.user_id),
-                room_id=room.id,
-                game_id=game.id,
-                player_id=request.player_id,
-                player_name=game_player.original_name,
-                reason=request.reason or "Player left game",
-                round_number=game.round_number,
-                game_phase=game.phase.value
-            )
-            await self._event_publisher.publish(left_event)
+            # TODO: Emit PlayerLeftGame event when it's created
+            # left_event = PlayerLeftGame(
+            #     metadata=EventMetadata(user_id=request.user_id),
+            #     room_id=room.id,
+            #     game_id=game.id,
+            #     player_id=request.player_id,
+            #     player_name=game_player.original_name,
+            #     reason=request.reason or "Player left game",
+            #     round_number=game.round_number,
+            #     game_phase=game.phase.value
+            # )
+            # await self._event_publisher.publish(left_event)
             
-            # Emit PlayerConvertedToBot event
-            bot_event = PlayerConvertedToBot(
-                metadata=EventMetadata(user_id=request.user_id),
-                room_id=room.id,
-                game_id=game.id,
-                original_player_id=request.player_id,
-                original_player_name=game_player.original_name,
-                bot_id=bot_id,
-                bot_name=bot_name,
-                bot_difficulty="medium"
-            )
-            await self._event_publisher.publish(bot_event)
+            # TODO: Emit PlayerConvertedToBot event when it's created
+            # bot_event = PlayerConvertedToBot(
+            #     metadata=EventMetadata(user_id=request.user_id),
+            #     room_id=room.id,
+            #     game_id=game.id,
+            #     original_player_id=request.player_id,
+            #     original_player_name=game_player.original_name,
+            #     bot_id=bot_id,
+            #     bot_name=bot_name,
+            #     bot_difficulty="medium"
+            # )
+            # await self._event_publisher.publish(bot_event)
             
             # Record metrics
             if self._metrics:

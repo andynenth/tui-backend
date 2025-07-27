@@ -18,8 +18,8 @@ from application.exceptions import (
 )
 from domain.entities.game import GamePhase
 from domain.events.game_events import (
-    RedealAccepted,
-    RedealApproved,
+    # RedealAccepted,  # TODO: Create this event
+    # RedealApproved,  # TODO: Create this event
     RedealExecuted,
     PiecesDealt
 )
@@ -146,31 +146,31 @@ class AcceptRedealUseCase(UseCase[AcceptRedealRequest, AcceptRedealResponse]):
             # Save game state
             await self._uow.games.save(game)
             
-            # Emit RedealAccepted event
-            accept_event = RedealAccepted(
-                metadata=EventMetadata(user_id=request.user_id),
-                room_id=room.id,
-                game_id=game.id,
-                redeal_id=request.redeal_id,
-                player_id=request.player_id,
-                player_name=player.name,
-                votes_collected=votes_collected,
-                votes_required=votes_required
-            )
-            await self._event_publisher.publish(accept_event)
+            # TODO: Emit RedealAccepted event when it's created
+            # accept_event = RedealAccepted(
+            #     metadata=EventMetadata(user_id=request.user_id),
+            #     room_id=room.id,
+            #     game_id=game.id,
+            #     redeal_id=request.redeal_id,
+            #     player_id=request.player_id,
+            #     player_name=player.name,
+            #     votes_collected=votes_collected,
+            #     votes_required=votes_required
+            # )
+            # await self._event_publisher.publish(accept_event)
             
             # If redeal approved, emit additional events
             if redeal_approved:
-                # Emit RedealApproved
-                approved_event = RedealApproved(
-                    metadata=EventMetadata(user_id=request.user_id),
-                    room_id=room.id,
-                    game_id=game.id,
-                    redeal_id=request.redeal_id,
-                    total_votes=votes_required,
-                    accept_votes=votes_collected
-                )
-                await self._event_publisher.publish(approved_event)
+                # TODO: Emit RedealApproved when event is created
+                # approved_event = RedealApproved(
+                #     metadata=EventMetadata(user_id=request.user_id),
+                #     room_id=room.id,
+                #     game_id=game.id,
+                #     redeal_id=request.redeal_id,
+                #     total_votes=votes_required,
+                #     accept_votes=votes_collected
+                # )
+                # await self._event_publisher.publish(approved_event)
                 
                 # Emit RedealExecuted
                 executed_event = RedealExecuted(

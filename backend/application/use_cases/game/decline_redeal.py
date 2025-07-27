@@ -19,9 +19,10 @@ from application.exceptions import (
 )
 from domain.entities.game import GamePhase
 from domain.events.game_events import (
-    RedealDeclined,
-    RedealCancelled,
-    StartingPlayerChanged
+    # RedealDeclined,  # TODO: Create this event
+    # RedealCancelled,  # TODO: Create this event  
+    # StartingPlayerChanged  # TODO: Create this event
+    RedealDecisionMade  # Using existing event
 )
 from domain.events.base import EventMetadata
 
@@ -135,40 +136,40 @@ class DeclineRedealUseCase(UseCase[DeclineRedealRequest, DeclineRedealResponse])
             # Save game state
             await self._uow.games.save(game)
             
-            # Emit RedealDeclined event
-            decline_event = RedealDeclined(
-                metadata=EventMetadata(user_id=request.user_id),
-                room_id=room.id,
-                game_id=game.id,
-                redeal_id=request.redeal_id,
-                player_id=request.player_id,
-                player_name=player.name,
-                becomes_starter=True
-            )
-            await self._event_publisher.publish(decline_event)
+            # TODO: Emit RedealDeclined event when it's created
+            # decline_event = RedealDeclined(
+            #     metadata=EventMetadata(user_id=request.user_id),
+            #     room_id=room.id,
+            #     game_id=game.id,
+            #     redeal_id=request.redeal_id,
+            #     player_id=request.player_id,
+            #     player_name=player.name,
+            #     becomes_starter=True
+            # )
+            # await self._event_publisher.publish(decline_event)
             
-            # Emit RedealCancelled event
-            cancelled_event = RedealCancelled(
-                metadata=EventMetadata(user_id=request.user_id),
-                room_id=room.id,
-                game_id=game.id,
-                redeal_id=cancelled_redeal_id,
-                cancelled_by=request.player_id,
-                reason="Player declined redeal"
-            )
-            await self._event_publisher.publish(cancelled_event)
+            # TODO: Emit RedealCancelled event when it's created
+            # cancelled_event = RedealCancelled(
+            #     metadata=EventMetadata(user_id=request.user_id),
+            #     room_id=room.id,
+            #     game_id=game.id,
+            #     redeal_id=cancelled_redeal_id,
+            #     cancelled_by=request.player_id,
+            #     reason="Player declined redeal"
+            # )
+            # await self._event_publisher.publish(cancelled_event)
             
-            # Emit StartingPlayerChanged event
-            starter_event = StartingPlayerChanged(
-                metadata=EventMetadata(user_id=request.user_id),
-                room_id=room.id,
-                game_id=game.id,
-                old_starter_id=previous_starter,
-                new_starter_id=request.player_id,
-                new_starter_name=player.name,
-                reason="Declined redeal"
-            )
-            await self._event_publisher.publish(starter_event)
+            # TODO: Emit StartingPlayerChanged event when it's created
+            # starter_event = StartingPlayerChanged(
+            #     metadata=EventMetadata(user_id=request.user_id),
+            #     room_id=room.id,
+            #     game_id=game.id,
+            #     old_starter_id=previous_starter,
+            #     new_starter_id=request.player_id,
+            #     new_starter_name=player.name,
+            #     reason="Declined redeal"
+            # )
+            # await self._event_publisher.publish(starter_event)
             
             # Record metrics
             if self._metrics:

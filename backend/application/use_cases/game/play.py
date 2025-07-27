@@ -27,7 +27,7 @@ from domain.events.game_events import (
     GameEnded,
     PhaseChanged
 )
-from domain.events.player_events import PlayerPlayedPieces
+from domain.events.game_events import PiecesPlayed
 from domain.events.base import EventMetadata
 
 logger = logging.getLogger(__name__)
@@ -203,8 +203,8 @@ class PlayUseCase(UseCase[PlayRequest, PlayResponse]):
             # Save the game
             await self._uow.games.save(game)
             
-            # Emit PlayerPlayedPieces event
-            play_event = PlayerPlayedPieces(
+            # Emit PiecesPlayed event
+            play_event = PiecesPlayed(
                 metadata=EventMetadata(user_id=request.user_id),
                 room_id=room.id,
                 game_id=game.id,

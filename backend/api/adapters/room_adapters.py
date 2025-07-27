@@ -31,15 +31,21 @@ from application.dto.room_management import (
     RemovePlayerRequest
 )
 
-# Import legacy bridge for transition period
-try:
-    from infrastructure.adapters.legacy_repository_bridge import ensure_room_visible_to_legacy
-except ImportError:
-    # Bridge not available, define no-op function
-    async def ensure_room_visible_to_legacy(room_id: str) -> None:
-        pass
-
 logger = logging.getLogger(__name__)
+
+# Define a function that imports and calls the bridge
+async def ensure_room_visible_to_legacy(room_id: str) -> None:
+    """Import and call the legacy bridge sync function."""
+    try:
+        # Import inside function to avoid circular imports
+        from infrastructure.adapters.legacy_repository_bridge import ensure_room_visible_to_legacy as sync_func
+        logger.info(f"[ROOM_CREATE_DEBUG] Legacy bridge imported successfully for room {room_id}")
+        await sync_func(room_id)
+    except ImportError as e:
+        logger.error(f"[ROOM_CREATE_DEBUG] Failed to import legacy bridge: {e}", exc_info=True)
+        logger.warning(f"[ROOM_CREATE_DEBUG] Using no-op sync for room {room_id} - import failed")
+    except Exception as e:
+        logger.error(f"[ROOM_CREATE_DEBUG] Error during import/sync: {e}", exc_info=True)
 
 # Actions that need room adapter handling
 ROOM_ADAPTER_ACTIONS = {
@@ -168,12 +174,17 @@ async def _handle_create_room(
         logger.debug(f"[ROOM_CREATE_DEBUG] Room successfully stored in repository")
         
         # Sync to legacy manager to prevent "Room not found" warnings
+        logger.info(f"[ROOM_CREATE_DEBUG] About to sync room {response_dto.room_info.room_id} to legacy")
+        logger.info(f"[ROOM_CREATE_DEBUG] Room has {len(response_dto.room_info.players)} players")
+        for p in response_dto.room_info.players:
+            logger.info(f"[ROOM_CREATE_DEBUG]   - {p.player_name} (bot={p.is_bot}, seat={p.seat_position})")
+        
         try:
             await ensure_room_visible_to_legacy(response_dto.room_info.room_id)
-            logger.debug(f"[ROOM_CREATE_DEBUG] Room synced to legacy manager")
+            logger.info(f"[ROOM_CREATE_DEBUG] Room sync completed successfully")
         except Exception as sync_error:
             # Don't fail the request if sync fails
-            logger.warning(f"Failed to sync room to legacy: {sync_error}")
+            logger.error(f"Failed to sync room to legacy: {sync_error}", exc_info=True)
         
         logger.debug(f"[ROOM_CREATE_DEBUG] Response being sent: {response}")
         

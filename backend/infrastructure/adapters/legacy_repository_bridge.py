@@ -13,9 +13,8 @@ import logging
 from typing import Optional, Dict, Any
 from contextlib import asynccontextmanager
 
-from infrastructure.dependencies import get_unit_of_work
 from shared_instances import shared_room_manager
-from domain.entities.room import Room as CleanRoom
+from domain.entities.room import Room as CleanRoom, RoomStatus
 from engine.game import Game as LegacyGame
 
 logger = logging.getLogger(__name__)
@@ -41,30 +40,40 @@ class LegacyRepositoryBridge:
         Args:
             room_id: The room ID to sync
         """
+        logger.info(f"[SYNC_DEBUG] sync_room_to_legacy started for room {room_id}")
+        
         if not self._sync_enabled:
+            logger.warning(f"[SYNC_DEBUG] Sync disabled, skipping room {room_id}")
             return
             
         try:
             # Get room from clean architecture
+            logger.info(f"[SYNC_DEBUG] Getting room {room_id} from clean architecture")
+            # Import here to avoid circular imports
+            from infrastructure.dependencies import get_unit_of_work
             uow = get_unit_of_work()
             async with uow:
                 clean_room = await uow.rooms.get_by_id(room_id)
                 
                 if not clean_room:
-                    logger.debug(f"Room {room_id} not found in clean architecture")
+                    logger.error(f"[SYNC_DEBUG] Room {room_id} not found in clean architecture!")
                     return
                 
+                logger.info(f"[SYNC_DEBUG] Found room {room_id} with {len(clean_room.slots)} slots")
+                
                 # Convert to legacy format and add to legacy manager
+                logger.info(f"[SYNC_DEBUG] Converting room {room_id} to legacy format")
                 legacy_room = self._convert_to_legacy_room(clean_room)
                 
                 # Add to legacy manager if not exists
                 if room_id not in shared_room_manager.rooms:
                     shared_room_manager.rooms[room_id] = legacy_room
-                    logger.info(f"Synced room {room_id} to legacy manager")
+                    logger.info(f"[SYNC_DEBUG] Added room {room_id} to legacy manager")
+                    logger.info(f"[SYNC_DEBUG] Legacy manager now has rooms: {list(shared_room_manager.rooms.keys())}")
                 else:
                     # Update existing room
                     shared_room_manager.rooms[room_id] = legacy_room
-                    logger.debug(f"Updated room {room_id} in legacy manager")
+                    logger.info(f"[SYNC_DEBUG] Updated existing room {room_id} in legacy manager")
                     
         except Exception as e:
             logger.error(f"Error syncing room {room_id} to legacy: {e}")
@@ -91,6 +100,7 @@ class LegacyRepositoryBridge:
             clean_room = self._convert_from_legacy_room(legacy_room)
             
             # Save to clean architecture
+            from infrastructure.dependencies import get_unit_of_work
             uow = get_unit_of_work()
             async with uow:
                 await uow.rooms.save(clean_room)
@@ -115,31 +125,33 @@ class LegacyRepositoryBridge:
         from engine.player import Player as LegacyPlayer
         
         # Create legacy room
-        legacy_room = AsyncRoom(clean_room.room_id, clean_room.host_player_name)
+        legacy_room = AsyncRoom(clean_room.room_id, clean_room.host_name)
         
         # Clear default players and add actual players
         legacy_room.players = [None, None, None, None]
         
         # Add players in their seat positions
-        for player in clean_room.players:
-            seat_pos = player.seat_position
-            if seat_pos is not None and 0 <= seat_pos < 4:
+        logger.info(f"[SYNC_DEBUG] Converting {len(clean_room.slots)} slots to legacy players")
+        for i, player in enumerate(clean_room.slots):
+            if player is not None:
+                logger.info(f"[SYNC_DEBUG]   Slot {i}: {player.name} (bot={player.is_bot})")
                 legacy_player = LegacyPlayer(
                     name=player.name,
-                    is_bot=player.is_bot,
-                    position=seat_pos
+                    is_bot=player.is_bot
                 )
                 # Set connected status
                 if hasattr(legacy_player, 'is_connected'):
                     legacy_player.is_connected = not player.is_bot
                     
-                legacy_room.players[seat_pos] = legacy_player
+                legacy_room.players[i] = legacy_player
+            else:
+                logger.info(f"[SYNC_DEBUG]   Slot {i}: empty")
         
         # Set room state
-        legacy_room.started = clean_room.game_started
+        legacy_room.started = clean_room.status == RoomStatus.IN_GAME
         
         # If game exists, create minimal game object
-        if clean_room.current_game_id and clean_room.game_started:
+        if clean_room.game and clean_room.status == RoomStatus.IN_GAME:
             legacy_room.game = self._create_minimal_legacy_game(clean_room)
         
         return legacy_room
@@ -176,12 +188,11 @@ class LegacyRepositoryBridge:
             
             # Convert players
             legacy_players = []
-            for player in clean_room.players:
-                if player.seat_position is not None:
+            for i, player in enumerate(clean_room.slots):
+                if player is not None:
                     legacy_player = LegacyPlayer(
                         name=player.name,
-                        is_bot=player.is_bot,
-                        position=player.seat_position
+                        is_bot=player.is_bot
                     )
                     legacy_players.append(legacy_player)
             
@@ -254,6 +265,7 @@ async def ensure_room_visible_to_legacy(room_id: str) -> None:
     This should be called after creating a room in clean architecture
     to prevent "Room not found" warnings.
     """
+    logger.info(f"[SYNC_DEBUG] ensure_room_visible_to_legacy called for room {room_id}")
     await legacy_bridge.sync_room_to_legacy(room_id)
 
 
@@ -264,6 +276,7 @@ async def sync_all_rooms() -> None:
     This could be called at startup or periodically.
     """
     # Get all rooms from clean architecture
+    from infrastructure.dependencies import get_unit_of_work
     uow = get_unit_of_work()
     async with uow:
         clean_rooms = await uow.rooms.list_active()

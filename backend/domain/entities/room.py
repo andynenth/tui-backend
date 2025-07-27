@@ -138,6 +138,11 @@ class Room:
     
     def __post_init__(self):
         """Initialize room with host and bots."""
+        import logging
+        logger = logging.getLogger(__name__)
+        
+        logger.info(f"[ROOM_DEBUG] Creating room {self.room_id} with {self.max_slots} slots")
+        
         if len(self.slots) != self.max_slots:
             self.slots = [None] * self.max_slots
         
@@ -150,11 +155,16 @@ class Room:
         ))
         
         # Add host to first slot
+        logger.info(f"[ROOM_DEBUG] Adding host {self.host_name} to slot 0")
         self.add_player(self.host_name, is_bot=False, slot=0)
         
         # Fill remaining slots with bots
         for i in range(1, self.max_slots):
-            self.add_player(f"Bot {i+1}", is_bot=True, slot=i)
+            bot_name = f"Bot {i+1}"
+            logger.info(f"[ROOM_DEBUG] Adding {bot_name} to slot {i}")
+            self.add_player(bot_name, is_bot=True, slot=i)
+        
+        logger.info(f"[ROOM_DEBUG] Room initialization complete. Slots: {[p.name if p else 'empty' for p in self.slots]}")
     
     @property
     def events(self) -> List[DomainEvent]:
@@ -191,7 +201,12 @@ class Room:
             if self.slots[slot] is not None and not self.slots[slot].is_bot:
                 raise ValueError(f"Slot {slot} occupied by human player")
             
+            import logging
+            logger = logging.getLogger(__name__)
+            
             self.slots[slot] = Player(name=name, is_bot=is_bot)
+            logger.info(f"[ROOM_DEBUG] Added player {name} (bot={is_bot}) to slot {slot} in room {self.room_id}")
+            
             self._emit_event(PlayerJoinedRoom(
                 room_id=self.room_id,
                 player_name=name,

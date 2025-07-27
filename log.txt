@@ -1,113 +1,101 @@
-(venv) Narongwits-MacBook-Pro:liap-tui nrw$ ./start.sh
-✅ Clean Architecture activated (8/8 feature flags enabled)
-🚦 Adapter routing enabled (100% traffic to clean architecture)
-▶️ Starting backend on http://0.0.0.0:5050 ...
-INFO:     Will watch for changes in these directories: ['/Users/nrw/python/tui-project/liap-tui']
-INFO:     Uvicorn running on http://0.0.0.0:5050 (Press CTRL+C to quit)
-INFO:     Started reloader process [17606] using WatchFiles
-🌐 Starting esbuild in watch mode...
-🔍 BOT_MANAGER: Created new singleton instance
-/Users/nrw/python/tui-project/liap-tui/venv/lib/python3.11/site-packages/pydantic/_internal/_config.py:373: UserWarning: Valid config keys have changed in V2:
-* 'schema_extra' has been renamed to 'json_schema_extra'
-  warnings.warn(message, UserWarning)
-
-> frontend@1.0.0 dev
-> node esbuild.config.cjs
-
-2025-07-27 09:53:18 - config.logging_config - INFO - Logging configured
-Rate limiting is enabled
-INFO:     Started server process [17609]
-INFO:     Waiting for application startup.
-🔄 RELIABLE_MSG: Message retry worker started
-🔄 RELIABLE_MSG: Message retry worker started
-2025-07-27 09:53:18 - backend.api.routes.ws - INFO - 🧹 [ROOM_DEBUG] Starting room cleanup background task
-2025-07-27 09:53:18 - backend.api.routes.ws - INFO - 🧹 [ROOM_DEBUG] Room cleanup task started
-INFO:     Application startup complete.
-👀 Watching for changes to ./main.js, output to ../backend/static/
-
-[0.44ms] [@tailwindcss/postcss] src/styles/components/game/gameover.css
-[0.42ms]   ↳ Quick bail check
-
-
-[0.08ms] [@tailwindcss/postcss] src/styles/toast-notifications.css
-[0.07ms]   ↳ Quick bail check
-
-
-[216.21ms] [@tailwindcss/postcss] src/styles/globals.css
-[  0.09ms]   ↳ Quick bail check
-[ 85.91ms]   ↳ Setup compiler
-[  0.51ms]     ↳ PostCSS AST -> Tailwind CSS AST
-[ 85.38ms]     ↳ Create compiler
-[  0.37ms]   ↳ Register full rebuild paths
-[  5.02ms]   ↳ Setup scanner
-[ 33.12ms]   ↳ Scan for candidates
-[ 19.15ms]   ↳ Register dependency messages
-[ 57.24ms]   ↳ Build utilities
-[  9.92ms]   ↳ Transform Tailwind CSS AST into PostCSS AST
-[  4.96ms]   ↳ Update PostCSS AST
-
-INFO:     127.0.0.1:60434 - "GET / HTTP/1.1" 200 OK
-INFO:     127.0.0.1:60434 - "GET /.well-known/appspecific/com.chrome.devtools.json HTTP/1.1" 404 Not Found
-INFO:     127.0.0.1:60436 - "GET /bundle.css HTTP/1.1" 200 OK
-INFO:     127.0.0.1:60438 - "GET /bundle.js HTTP/1.1" 200 OK
-INFO:     127.0.0.1:60438 - "GET /bundle.css.map HTTP/1.1" 200 OK
-INFO:     127.0.0.1:60438 - "GET /bundle.js.map HTTP/1.1" 200 OK
-INFO:     127.0.0.1:60438 - "GET /favicon.ico HTTP/1.1" 404 Not Found
-2025-07-27 09:53:24 - backend.api.routes.ws - INFO - 🔌 [ROOM_DEBUG] New WebSocket connection to room 'lobby', ws_id: cf613f15-1198-41d0-a609-1cf64d5c610e at 1753635204.5197508
-2025-07-27 09:53:24 - backend.api.routes.ws - INFO - 🧹 [ROOM_DEBUG] Room cleanup task already running
-INFO:     ('127.0.0.1', 60452) - "WebSocket /ws/lobby" [accepted]
+INFO:     127.0.0.1:63116 - "GET / HTTP/1.1" 200 OK
+INFO:     127.0.0.1:63116 - "GET /bundle.css HTTP/1.1" 200 OK
+INFO:     127.0.0.1:63117 - "GET /bundle.js HTTP/1.1" 200 OK
+INFO:     127.0.0.1:63119 - "GET /.well-known/appspecific/com.chrome.devtools.json HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:63117 - "GET /bundle.js.map HTTP/1.1" 200 OK
+INFO:     127.0.0.1:63116 - "GET /bundle.css.map HTTP/1.1" 200 OK
+INFO:     127.0.0.1:63117 - "GET /favicon.ico HTTP/1.1" 404 Not Found
+2025-07-27 12:09:22 - backend.api.routes.ws - INFO - 🔌 [ROOM_DEBUG] New WebSocket connection to room 'lobby', ws_id: 636d854e-8318-48ce-acef-a592fc745ef9 at 1753643362.2696278
+2025-07-27 12:09:22 - backend.api.routes.ws - INFO - 🧹 [ROOM_DEBUG] Room cleanup task already running
+INFO:     ('127.0.0.1', 63125) - "WebSocket /ws/lobby" [accepted]
 INFO:     connection open
-2025-07-27 09:53:24 - api.routes.ws_adapter_wrapper - INFO - WSAdapterWrapper configuration loaded:
-2025-07-27 09:53:24 - api.routes.ws_adapter_wrapper - INFO -   Enabled: True (env: true)
-2025-07-27 09:53:24 - api.routes.ws_adapter_wrapper - INFO -   Rollout: 100.0% (env: 100)
-2025-07-27 09:53:24 - api.routes.ws_adapter_wrapper - INFO -   Shadow: False at 1.0%
-2025-07-27 09:53:24 - api.routes.ws_adapter_wrapper - INFO -   🚦 Will activate ADAPTER-ONLY MODE when initialized
-2025-07-27 09:53:24 - api.adapters.integrated_adapter_system - INFO - IntegratedAdapterSystem initialized with 22 adapters
-2025-07-27 09:53:24 - api.adapters.integrated_adapter_system - WARNING - ADAPTER-ONLY MODE ENABLED: No legacy fallback!
-2025-07-27 09:53:24 - api.routes.ws_adapter_wrapper - INFO - Adapter system initialized in ADAPTER-ONLY MODE (no legacy fallback)
-2025-07-27 09:53:24 - backend.api.routes.ws - INFO - 🔌 [ROOM_DEBUG] Handling disconnect for room 'lobby', websocket_id: cf613f15-1198-41d0-a609-1cf64d5c610e at 1753635204.538603
-2025-07-27 09:53:24 - api.websocket.connection_manager - WARNING - WebSocket ID cf613f15-1198-41d0-a609-1cf64d5c610e not found in mapping. Current mappings: []
-2025-07-27 09:53:24 - backend.api.routes.ws - WARNING - No websocket_id found on websocket object for room lobby
-2025-07-27 09:53:24 - backend.api.routes.ws - INFO - ⚠️ [ROOM_DEBUG] WebSocket disconnect without ID for room 'lobby'
-2025-07-27 09:53:24 - backend.api.routes.ws - INFO - 🔌 [ROOM_DEBUG] WebSocket unregistered from room 'lobby'
+2025-07-27 12:09:22 - api.routes.ws_adapter_wrapper - INFO - WSAdapterWrapper configuration loaded:
+2025-07-27 12:09:22 - api.routes.ws_adapter_wrapper - INFO -   Enabled: True (env: true)
+2025-07-27 12:09:22 - api.routes.ws_adapter_wrapper - INFO -   Rollout: 100.0% (env: 100)
+2025-07-27 12:09:22 - api.routes.ws_adapter_wrapper - INFO -   Shadow: False at 1.0%
+2025-07-27 12:09:22 - api.routes.ws_adapter_wrapper - INFO -   🚦 Will activate ADAPTER-ONLY MODE when initialized
+2025-07-27 12:09:22 - api.adapters.integrated_adapter_system - INFO - IntegratedAdapterSystem initialized with 22 adapters
+2025-07-27 12:09:22 - api.adapters.integrated_adapter_system - WARNING - ADAPTER-ONLY MODE ENABLED: No legacy fallback!
+2025-07-27 12:09:22 - api.routes.ws_adapter_wrapper - INFO - Adapter system initialized in ADAPTER-ONLY MODE (no legacy fallback)
+2025-07-27 12:09:22 - backend.api.routes.ws - INFO - 🔌 [ROOM_DEBUG] New WebSocket connection to room 'lobby', ws_id: dbb7e5c2-ef33-4444-9d88-a8e69e6998bb at 1753643362.289014
+2025-07-27 12:09:22 - backend.api.routes.ws - INFO - 🧹 [ROOM_DEBUG] Room cleanup task already running
+INFO:     ('127.0.0.1', 63127) - "WebSocket /ws/lobby" [accepted]
+INFO:     connection open
+2025-07-27 12:09:22 - backend.api.routes.ws - INFO - 🔌 [ROOM_DEBUG] Handling disconnect for room 'lobby', websocket_id: 636d854e-8318-48ce-acef-a592fc745ef9 at 1753643362.290112
+2025-07-27 12:09:22 - api.websocket.connection_manager - WARNING - WebSocket ID 636d854e-8318-48ce-acef-a592fc745ef9 not found in mapping. Current mappings: []
+2025-07-27 12:09:22 - backend.api.routes.ws - WARNING - No websocket_id found on websocket object for room lobby
+2025-07-27 12:09:22 - backend.api.routes.ws - INFO - ⚠️ [ROOM_DEBUG] WebSocket disconnect without ID for room 'lobby'
+2025-07-27 12:09:22 - backend.api.routes.ws - INFO - 🔌 [ROOM_DEBUG] WebSocket unregistered from room 'lobby'
 INFO:     connection closed
-2025-07-27 09:53:24 - engine.async_room_manager - WARNING - Room lobby not found in AsyncRoomManager. Current rooms: []
-2025-07-27 09:53:24 - backend.api.routes.ws - INFO - 🔌 [ROOM_DEBUG] New WebSocket connection to room 'lobby', ws_id: 891414e1-ff9e-4460-84e4-2177d38ebd5f at 1753635204.542248
-2025-07-27 09:53:24 - backend.api.routes.ws - INFO - 🧹 [ROOM_DEBUG] Room cleanup task already running
-INFO:     ('127.0.0.1', 60454) - "WebSocket /ws/lobby" [accepted]
-INFO:     connection open
-2025-07-27 09:53:25 - backend.api.routes.ws - INFO - 🔌 [ROOM_DEBUG] New WebSocket connection to room 'lobby', ws_id: 0f253a92-ad3a-4183-a85a-ccbbfd6c9a28 at 1753635205.6344771
-2025-07-27 09:53:25 - backend.api.routes.ws - INFO - 🧹 [ROOM_DEBUG] Room cleanup task already running
-INFO:     ('127.0.0.1', 60460) - "WebSocket /ws/lobby" [accepted]
-INFO:     connection open
-2025-07-27 09:53:25 - backend.api.routes.ws - INFO - 🔌 [ROOM_DEBUG] Handling disconnect for room 'lobby', websocket_id: 891414e1-ff9e-4460-84e4-2177d38ebd5f at 1753635205.6364002
-2025-07-27 09:53:25 - api.websocket.connection_manager - WARNING - WebSocket ID 891414e1-ff9e-4460-84e4-2177d38ebd5f not found in mapping. Current mappings: []
-2025-07-27 09:53:25 - backend.api.routes.ws - WARNING - No websocket_id found on websocket object for room lobby
-2025-07-27 09:53:25 - backend.api.routes.ws - INFO - ⚠️ [ROOM_DEBUG] WebSocket disconnect without ID for room 'lobby'
-2025-07-27 09:53:25 - backend.api.routes.ws - INFO - 🔌 [ROOM_DEBUG] WebSocket unregistered from room 'lobby'
+2025-07-27 12:09:23 - backend.api.routes.ws - INFO - 🔌 [ROOM_DEBUG] Handling disconnect for room 'lobby', websocket_id: dbb7e5c2-ef33-4444-9d88-a8e69e6998bb at 1753643363.254261
+2025-07-27 12:09:23 - api.websocket.connection_manager - WARNING - WebSocket ID dbb7e5c2-ef33-4444-9d88-a8e69e6998bb not found in mapping. Current mappings: []
+2025-07-27 12:09:23 - backend.api.routes.ws - WARNING - No websocket_id found on websocket object for room lobby
+2025-07-27 12:09:23 - backend.api.routes.ws - INFO - ⚠️ [ROOM_DEBUG] WebSocket disconnect without ID for room 'lobby'
+2025-07-27 12:09:23 - backend.api.routes.ws - INFO - 🔌 [ROOM_DEBUG] WebSocket unregistered from room 'lobby'
 INFO:     connection closed
-2025-07-27 09:53:25 - api.adapters.room_adapters - ERROR - [ROOM_CREATE_DEBUG] Error creating room: Can't instantiate abstract class WebSocketEventPublisher with abstract method publish_batch
-Traceback (most recent call last):
-  File "/Users/nrw/python/tui-project/liap-tui/backend/api/adapters/room_adapters.py", line 129, in _handle_create_room
-    event_publisher = get_event_publisher()
-                      ^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/nrw/python/tui-project/liap-tui/backend/infrastructure/dependencies.py", line 200, in get_event_publisher
-    return get_container().get(EventPublisher)
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/nrw/python/tui-project/liap-tui/backend/infrastructure/dependencies.py", line 156, in get
-    instance = self._factories[interface]()
-               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/nrw/python/tui-project/liap-tui/backend/infrastructure/dependencies.py", line 96, in _create_event_publisher
-    publishers.append(WebSocketEventPublisher())
-                      ^^^^^^^^^^^^^^^^^^^^^^^^^
-TypeError: Can't instantiate abstract class WebSocketEventPublisher with abstract method publish_batch
-2025-07-27 09:53:32 - backend.api.routes.ws - INFO - 🔌 [ROOM_DEBUG] New WebSocket connection to room 'lobby', ws_id: dde8a51c-72f3-4b28-84d0-8f70b2559f7e at 1753635212.4902558
-2025-07-27 09:53:32 - backend.api.routes.ws - INFO - 🧹 [ROOM_DEBUG] Room cleanup task already running
-INFO:     ('127.0.0.1', 60490) - "WebSocket /ws/lobby" [accepted]
+2025-07-27 12:09:23 - engine.async_room_manager - WARNING - Room lobby not found in AsyncRoomManager. Current rooms: []
+2025-07-27 12:09:23 - backend.api.routes.ws - INFO - 🔌 [ROOM_DEBUG] New WebSocket connection to room 'lobby', ws_id: 479d1809-c030-465b-aa0c-9fe164ab902e at 1753643363.2561312
+2025-07-27 12:09:23 - backend.api.routes.ws - INFO - 🧹 [ROOM_DEBUG] Room cleanup task already running
+INFO:     ('127.0.0.1', 63133) - "WebSocket /ws/lobby" [accepted]
 INFO:     connection open
-2025-07-27 09:53:32 - backend.api.routes.ws - INFO - 🔌 [ROOM_DEBUG] Handling disconnect for room 'lobby', websocket_id: 0f253a92-ad3a-4183-a85a-ccbbfd6c9a28 at 1753635212.502034
-2025-07-27 09:53:32 - api.websocket.connection_manager - WARNING - WebSocket ID 0f253a92-ad3a-4183-a85a-ccbbfd6c9a28 not found in mapping. Current mappings: []
-2025-07-27 09:53:32 - backend.api.routes.ws - WARNING - No websocket_id found on websocket object for room lobby
-2025-07-27 09:53:32 - backend.api.routes.ws - INFO - ⚠️ [ROOM_DEBUG] WebSocket disconnect without ID for room 'lobby'
-2025-07-27 09:53:32 - backend.api.routes.ws - INFO - 🔌 [ROOM_DEBUG] WebSocket unregistered from room 'lobby'
+2025-07-27 12:09:23 - domain.entities.room - INFO - [ROOM_DEBUG] Creating room 1XCNN0 with 4 slots
+2025-07-27 12:09:23 - domain.entities.room - INFO - [ROOM_DEBUG] Adding host Andy to slot 0
+2025-07-27 12:09:23 - domain.entities.room - INFO - [ROOM_DEBUG] Added player Andy (bot=False) to slot 0 in room 1XCNN0
+2025-07-27 12:09:23 - domain.entities.room - INFO - [ROOM_DEBUG] Adding Bot 2 to slot 1
+2025-07-27 12:09:23 - domain.entities.room - INFO - [ROOM_DEBUG] Added player Bot 2 (bot=True) to slot 1 in room 1XCNN0
+2025-07-27 12:09:23 - domain.entities.room - INFO - [ROOM_DEBUG] Adding Bot 3 to slot 2
+2025-07-27 12:09:23 - domain.entities.room - INFO - [ROOM_DEBUG] Added player Bot 3 (bot=True) to slot 2 in room 1XCNN0
+2025-07-27 12:09:23 - domain.entities.room - INFO - [ROOM_DEBUG] Adding Bot 4 to slot 3
+2025-07-27 12:09:23 - domain.entities.room - INFO - [ROOM_DEBUG] Added player Bot 4 (bot=True) to slot 3 in room 1XCNN0
+2025-07-27 12:09:23 - domain.entities.room - INFO - [ROOM_DEBUG] Room initialization complete. Slots: ['Andy', 'Bot 2', 'Bot 3', 'Bot 4']
+2025-07-27 12:09:23 - application.use_cases.room_management.create_room - INFO - [USE_CASE_DEBUG] Room 1XCNN0 saved with slots:
+2025-07-27 12:09:23 - application.use_cases.room_management.create_room - INFO - [USE_CASE_DEBUG]   Slot 0: Andy (bot=False)
+2025-07-27 12:09:23 - application.use_cases.room_management.create_room - INFO - [USE_CASE_DEBUG]   Slot 1: Bot 2 (bot=True)
+2025-07-27 12:09:23 - application.use_cases.room_management.create_room - INFO - [USE_CASE_DEBUG]   Slot 2: Bot 3 (bot=True)
+2025-07-27 12:09:23 - application.use_cases.room_management.create_room - INFO - [USE_CASE_DEBUG]   Slot 3: Bot 4 (bot=True)
+2025-07-27 12:09:23 - application.use_cases.room_management.create_room - INFO - Room 1XCNN0 created by Andy
+2025-07-27 12:09:23 - api.adapters.room_adapters - INFO - Room created: 1XCNN0 by Andy
+2025-07-27 12:09:23 - api.adapters.room_adapters - INFO - [ROOM_CREATE_DEBUG] About to sync room 1XCNN0 to legacy
+2025-07-27 12:09:23 - api.adapters.room_adapters - INFO - [ROOM_CREATE_DEBUG] Room has 4 players
+2025-07-27 12:09:23 - api.adapters.room_adapters - INFO - [ROOM_CREATE_DEBUG]   - Andy (bot=False, seat=0)
+2025-07-27 12:09:23 - api.adapters.room_adapters - INFO - [ROOM_CREATE_DEBUG]   - Bot 2 (bot=True, seat=1)
+2025-07-27 12:09:23 - api.adapters.room_adapters - INFO - [ROOM_CREATE_DEBUG]   - Bot 3 (bot=True, seat=2)
+2025-07-27 12:09:23 - api.adapters.room_adapters - INFO - [ROOM_CREATE_DEBUG]   - Bot 4 (bot=True, seat=3)
+2025-07-27 12:09:23 - api.adapters.room_adapters - INFO - [ROOM_CREATE_DEBUG] Legacy bridge imported successfully for room 1XCNN0
+2025-07-27 12:09:23 - infrastructure.adapters.legacy_repository_bridge - INFO - [SYNC_DEBUG] ensure_room_visible_to_legacy called for room 1XCNN0
+2025-07-27 12:09:23 - infrastructure.adapters.legacy_repository_bridge - INFO - [SYNC_DEBUG] sync_room_to_legacy started for room 1XCNN0
+2025-07-27 12:09:23 - infrastructure.adapters.legacy_repository_bridge - INFO - [SYNC_DEBUG] Getting room 1XCNN0 from clean architecture
+2025-07-27 12:09:23 - infrastructure.adapters.legacy_repository_bridge - INFO - [SYNC_DEBUG] Found room 1XCNN0 with 4 slots
+2025-07-27 12:09:23 - infrastructure.adapters.legacy_repository_bridge - INFO - [SYNC_DEBUG] Converting room 1XCNN0 to legacy format
+🎨 DEBUG: Assigned avatar color 'red' to player 'Andy' from 8 available colors
+2025-07-27 12:09:23 - engine.async_room - INFO - AsyncRoom 1XCNN0 created with host Andy
+2025-07-27 12:09:23 - infrastructure.adapters.legacy_repository_bridge - INFO - [SYNC_DEBUG] Converting 4 slots to legacy players
+2025-07-27 12:09:23 - infrastructure.adapters.legacy_repository_bridge - INFO - [SYNC_DEBUG]   Slot 0: Andy (bot=False)
+🎨 DEBUG: Assigned avatar color 'orange' to player 'Andy' from 8 available colors
+2025-07-27 12:09:23 - infrastructure.adapters.legacy_repository_bridge - INFO - [SYNC_DEBUG]   Slot 1: Bot 2 (bot=True)
+2025-07-27 12:09:23 - infrastructure.adapters.legacy_repository_bridge - INFO - [SYNC_DEBUG]   Slot 2: Bot 3 (bot=True)
+2025-07-27 12:09:23 - infrastructure.adapters.legacy_repository_bridge - INFO - [SYNC_DEBUG]   Slot 3: Bot 4 (bot=True)
+2025-07-27 12:09:23 - infrastructure.adapters.legacy_repository_bridge - INFO - [SYNC_DEBUG] Added room 1XCNN0 to legacy manager
+2025-07-27 12:09:23 - infrastructure.adapters.legacy_repository_bridge - INFO - [SYNC_DEBUG] Legacy manager now has rooms: ['1XCNN0']
+2025-07-27 12:09:23 - api.adapters.room_adapters - INFO - [ROOM_CREATE_DEBUG] Room sync completed successfully
+2025-07-27 12:09:23 - backend.api.routes.ws - INFO - 🔌 [ROOM_DEBUG] Handling disconnect for room 'lobby', websocket_id: 479d1809-c030-465b-aa0c-9fe164ab902e at 1753643363.424507
+2025-07-27 12:09:23 - api.websocket.connection_manager - WARNING - WebSocket ID 479d1809-c030-465b-aa0c-9fe164ab902e not found in mapping. Current mappings: []
+2025-07-27 12:09:23 - backend.api.routes.ws - WARNING - No websocket_id found on websocket object for room lobby
+2025-07-27 12:09:23 - backend.api.routes.ws - INFO - ⚠️ [ROOM_DEBUG] WebSocket disconnect without ID for room 'lobby'
+2025-07-27 12:09:23 - backend.api.routes.ws - INFO - 🔌 [ROOM_DEBUG] WebSocket unregistered from room 'lobby'
 INFO:     connection closed
+2025-07-27 12:09:23 - engine.async_room_manager - WARNING - Room lobby not found in AsyncRoomManager. Current rooms: ['1XCNN0']
+2025-07-27 12:09:23 - backend.api.routes.ws - INFO - 🔌 [ROOM_DEBUG] New WebSocket connection to room 'lobby', ws_id: 073c00ae-eebf-416a-be69-16bb18b639ff at 1753643363.44573
+2025-07-27 12:09:23 - backend.api.routes.ws - INFO - 🧹 [ROOM_DEBUG] Room cleanup task already running
+INFO:     ('127.0.0.1', 63139) - "WebSocket /ws/lobby" [accepted]
+INFO:     connection open
+2025-07-27 12:09:23 - backend.api.routes.ws - INFO - 🔌 [ROOM_DEBUG] New WebSocket connection to room '1XCNN0', ws_id: 56f5de96-b7cc-4c82-8ab1-e4799c93151e at 1753643363.4593549
+2025-07-27 12:09:23 - backend.api.routes.ws - INFO - 🧹 [ROOM_DEBUG] Room cleanup task already running
+INFO:     ('127.0.0.1', 63141) - "WebSocket /ws/1XCNN0" [accepted]
+INFO:     connection open
+2025-07-27 12:09:23 - backend.api.routes.ws - INFO - 🧹 [ROOM_DEBUG] Cleanup iteration 2: Checking 1 rooms: ['1XCNN0']
+2025-07-27 12:09:23 - backend.api.routes.ws - INFO - 🧹 CLEANUP_CHECK: Room 1XCNN0 - game_ended=False, should_cleanup=False
+2025-07-27 12:09:28 - backend.api.routes.ws - INFO - 🧹 [ROOM_DEBUG] Cleanup iteration 3: Checking 1 rooms: ['1XCNN0']
+2025-07-27 12:09:28 - backend.api.routes.ws - INFO - 🧹 CLEANUP_CHECK: Room 1XCNN0 - game_ended=False, should_cleanup=False
+2025-07-27 12:09:33 - backend.api.routes.ws - INFO - 🧹 [ROOM_DEBUG] Cleanup iteration 4: Checking 1 rooms: ['1XCNN0']
+2025-07-27 12:09:33 - backend.api.routes.ws - INFO - 🧹 CLEANUP_CHECK: Room 1XCNN0 - game_ended=False, should_cleanup=False

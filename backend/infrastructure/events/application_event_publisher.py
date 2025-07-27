@@ -6,7 +6,7 @@ interface that integrates with the existing WebSocket infrastructure.
 """
 
 import logging
-from typing import Optional, Dict, Any
+from typing import Optional, Dict, Any, List
 import asyncio
 
 from application.interfaces import EventPublisher
@@ -112,6 +112,16 @@ class WebSocketEventPublisher(EventPublisher):
             f"{event_name} to {player_id}"
         )
     
+    async def publish_batch(self, events: List[DomainEvent]) -> None:
+        """
+        Publish multiple domain events.
+        
+        Args:
+            events: List of events to publish
+        """
+        for event in events:
+            await self.publish(event)
+    
     def get_stats(self) -> Dict[str, Any]:
         """Get publisher statistics."""
         return {
@@ -161,6 +171,29 @@ class CompositeEventPublisher(EventPublisher):
                 logger.error(
                     f"Publisher {i} failed for event {event.event_type}: {result}"
                 )
+    
+    async def publish_batch(self, events: List[DomainEvent]) -> None:
+        """
+        Publish multiple events to all configured publishers.
+        
+        Args:
+            events: List of domain events to publish
+        """
+        # Publish batch to all publishers concurrently
+        tasks = [
+            publisher.publish_batch(events)
+            for publisher in self._publishers
+        ]
+        
+        # Wait for all to complete, but don't fail if some error
+        results = await asyncio.gather(*tasks, return_exceptions=True)
+        
+        # Log any errors
+        for i, result in enumerate(results):
+            if isinstance(result, Exception):
+                logger.error(
+                    f"Publisher {i} failed for batch of {len(events)} events: {result}"
+                )
 
 
 class EventStorePublisher(EventPublisher):
@@ -203,3 +236,19 @@ class EventStorePublisher(EventPublisher):
         except Exception as e:
             logger.error(f"Failed to store event {event.event_type}: {e}")
             # Don't raise - event storage should not break business logic
+    
+    async def publish_batch(self, events: List[DomainEvent]) -> None:
+        """
+        Store multiple events in the event store.
+        
+        Args:
+            events: List of domain events to store
+        """
+        if not self._feature_flags.is_enabled(
+            self._feature_flags.USE_EVENT_SOURCING
+        ):
+            return
+        
+        # Store events in batch for efficiency
+        for event in events:
+            await self.publish(event)
