@@ -241,6 +241,11 @@ class ITaggedCache(ICache[T]):
         pass
 
 
+class IFullCache(IBatchCache[T], ITaggedCache[T]):
+    """Combined interface for full-featured cache implementations."""
+    pass
+
+
 class IDistributedCache(ICache[T]):
     """Extension for distributed cache operations."""
     

@@ -6,7 +6,7 @@ imported into Grafana for comprehensive system monitoring.
 """
 
 import json
-from typing import Dict, Any, List
+from typing import Dict, Any, List, Optional
 
 
 def create_panel(

@@ -14,9 +14,7 @@ import random
 from dataclasses import dataclass, field
 
 from .base import (
-    ICache,
-    IBatchCache,
-    ITaggedCache,
+    IFullCache,
     CacheConfig,
     CacheEntry,
     CacheBackend,
@@ -24,7 +22,7 @@ from .base import (
 )
 
 
-class MemoryCache(ICache, IBatchCache, ITaggedCache):
+class MemoryCache(IFullCache):
     """
     In-memory cache with configurable eviction policies and TTL support.
     

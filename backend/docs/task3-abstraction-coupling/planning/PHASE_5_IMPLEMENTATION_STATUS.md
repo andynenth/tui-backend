@@ -8,6 +8,7 @@
 - [Progress Log](./PHASE_5_PROGRESS_LOG.md)
 - [Progress Tracking Guide](./INFRASTRUCTURE_PROGRESS_TRACKING.md)
 - [Main Planning Document](./PHASE_5_INFRASTRUCTURE_LAYER.md)
+- [Test Coverage Report](../status/PHASE_5_TEST_COVERAGE_REPORT.md) - Infrastructure testing analysis
 
 ## Overall Progress
 
