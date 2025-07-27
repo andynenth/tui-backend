@@ -73,7 +73,8 @@ class OptimizedRoomRepository(RoomRepository):
     
     async def save(self, room: Room) -> None:
         """Save room with automatic memory management."""
-        async with self._get_lock(room.room_id):
+        lock = await self._get_lock(room.room_id)
+        async with lock:
             # Check memory pressure
             if len(self._rooms) >= self._max_rooms:
                 await self._evict_completed_rooms()
@@ -97,7 +98,8 @@ class OptimizedRoomRepository(RoomRepository):
     
     async def delete(self, room_id: str) -> None:
         """Delete room and clean up indexes."""
-        async with self._get_lock(room_id):
+        lock = await self._get_lock(room_id)
+        async with lock:
             if room_id in self._rooms:
                 room = self._rooms[room_id]
                 
@@ -110,9 +112,9 @@ class OptimizedRoomRepository(RoomRepository):
                     self._code_index.pop(room.join_code, None)
                 
                 # Clean up player index
-                for player in room.players:
-                    if player and player.id.value in self._player_index:
-                        self._player_index[player.id.value].discard(room_id)
+                for player in room.slots:
+                    if player and player.name in self._player_index:
+                        self._player_index[player.name].discard(room_id)
                 
                 # Remove from storage
                 del self._rooms[room_id]
@@ -134,7 +136,10 @@ class OptimizedRoomRepository(RoomRepository):
         return active_rooms
     
     async def find_by_player(self, player_id: str) -> Optional[Room]:
-        """Find room by player with O(1) index lookup."""
+        """Find room by player with O(1) index lookup.
+        
+        Note: player_id is actually the player name in this domain implementation.
+        """
         room_ids = self._player_index.get(player_id, set())
         
         # Return the most recently accessed room
@@ -180,12 +185,12 @@ class OptimizedRoomRepository(RoomRepository):
     
     async def _update_player_index(self, room: Room) -> None:
         """Update the player index for fast lookups."""
-        for player in room.players:
+        for player in room.slots:
             if player:
-                player_id = player.id.value
-                if player_id not in self._player_index:
-                    self._player_index[player_id] = set()
-                self._player_index[player_id].add(room.room_id)
+                player_name = player.name  # Use player name as the identifier
+                if player_name not in self._player_index:
+                    self._player_index[player_name] = set()
+                self._player_index[player_name].add(room.room_id)
     
     # Archive access methods
     

@@ -85,13 +85,14 @@ class OptimizedGameRepository(GameRepository):
         """Save game with automatic state management."""
         game_id = self._get_game_id(game)
         
-        async with self._get_lock(game_id):
+        lock = await self._get_lock(game_id)
+        async with lock:
             # Track game start time
             if game_id not in self._game_start_times:
                 self._game_start_times[game_id] = time.time()
             
             # Check if game is completed
-            if game.is_over:
+            if game.is_game_over():
                 await self._handle_completed_game(game_id, game)
             else:
                 # Save as active game

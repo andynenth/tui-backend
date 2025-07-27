@@ -17,6 +17,7 @@ from .base import (
     ICache,
     IBatchCache,
     ITaggedCache,
+    IFullCache,
     IDistributedCache,
     CacheConfig,
     CacheEntry,
@@ -221,7 +222,7 @@ class MockRedisClient(IRedisClient):
             self._expiry.clear()
 
 
-class DistributedCache(ICache, IBatchCache, ITaggedCache, IDistributedCache):
+class DistributedCache(IFullCache, IDistributedCache):
     """
     Distributed cache implementation using Redis or similar backends.
     
