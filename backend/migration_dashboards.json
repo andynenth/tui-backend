@@ -1,0 +1,820 @@
+{
+  "game_overview": {
+    "uid": "liap-tui-game-overview",
+    "title": "Liap Tui - Game Overview",
+    "tags": [
+      "liap-tui",
+      "games",
+      "overview"
+    ],
+    "timezone": "browser",
+    "refresh": "10s",
+    "panels": [
+      {
+        "title": "Active Games",
+        "type": "stat",
+        "gridPos": {
+          "h": 8,
+          "w": 6,
+          "x": 0,
+          "y": 0
+        },
+        "datasource": "Prometheus",
+        "targets": [
+          {
+            "expr": "liap_tui_games_active",
+            "refId": "A"
+          }
+        ],
+        "options": {
+          "reduceOptions": {
+            "values": false,
+            "calcs": [
+              "lastNotNull"
+            ]
+          },
+          "orientation": "auto",
+          "textMode": "auto",
+          "colorMode": "value",
+          "graphMode": "area",
+          "justifyMode": "auto"
+        },
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "palette-classic"
+            },
+            "mappings": [],
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {
+                  "color": "green",
+                  "value": null
+                },
+                {
+                  "color": "red",
+                  "value": 80
+                }
+              ]
+            }
+          },
+          "overrides": []
+        }
+      },
+      {
+        "title": "Games Per Hour",
+        "type": "gauge",
+        "gridPos": {
+          "h": 8,
+          "w": 6,
+          "x": 6,
+          "y": 0
+        },
+        "datasource": "Prometheus",
+        "targets": [
+          {
+            "expr": "liap_tui_games_per_hour",
+            "refId": "A"
+          }
+        ],
+        "options": {
+          "showThresholdLabels": false,
+          "showThresholdMarkers": true
+        },
+        "fieldConfig": {
+          "defaults": {
+            "max": 100,
+            "min": 0,
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {
+                  "color": "red",
+                  "value": null
+                },
+                {
+                  "color": "yellow",
+                  "value": 20
+                },
+                {
+                  "color": "green",
+                  "value": 50
+                }
+              ]
+            },
+            "unit": "games/hr"
+          }
+        }
+      },
+      {
+        "title": "Average Game Duration",
+        "type": "stat",
+        "gridPos": {
+          "h": 8,
+          "w": 6,
+          "x": 12,
+          "y": 0
+        },
+        "datasource": "Prometheus",
+        "targets": [
+          {
+            "expr": "liap_tui_game_duration_minutes",
+            "refId": "A"
+          }
+        ],
+        "options": {
+          "reduceOptions": {
+            "values": false,
+            "calcs": [
+              "lastNotNull"
+            ]
+          },
+          "textMode": "auto",
+          "colorMode": "value",
+          "graphMode": "none"
+        },
+        "fieldConfig": {
+          "defaults": {
+            "unit": "m"
+          }
+        }
+      },
+      {
+        "title": "WebSocket Connections",
+        "type": "stat",
+        "gridPos": {
+          "h": 8,
+          "w": 6,
+          "x": 18,
+          "y": 0
+        },
+        "datasource": "Prometheus",
+        "targets": [
+          {
+            "expr": "liap_tui_websocket_connections_active",
+            "refId": "A"
+          }
+        ],
+        "options": {
+          "reduceOptions": {
+            "values": false,
+            "calcs": [
+              "lastNotNull"
+            ]
+          },
+          "textMode": "auto",
+          "colorMode": "background",
+          "graphMode": "area"
+        },
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "palette-classic"
+            },
+            "mappings": [],
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {
+                  "color": "green",
+                  "value": null
+                },
+                {
+                  "color": "red",
+                  "value": 80
+                }
+              ]
+            }
+          },
+          "overrides": []
+        }
+      },
+      {
+        "title": "Games Timeline",
+        "type": "timeseries",
+        "gridPos": {
+          "h": 10,
+          "w": 12,
+          "x": 0,
+          "y": 8
+        },
+        "datasource": "Prometheus",
+        "targets": [
+          {
+            "expr": "rate(liap_tui_games_started[5m]) * 300",
+            "legendFormat": "Started",
+            "refId": "A"
+          },
+          {
+            "expr": "rate(liap_tui_games_completed_total[5m]) * 300",
+            "legendFormat": "Completed",
+            "refId": "B"
+          },
+          {
+            "expr": "rate(liap_tui_games_abandoned[5m]) * 300",
+            "legendFormat": "Abandoned",
+            "refId": "C"
+          }
+        ],
+        "options": {
+          "legend": {
+            "calcs": [],
+            "displayMode": "list",
+            "placement": "bottom"
+          },
+          "tooltip": {
+            "mode": "single"
+          }
+        },
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "palette-classic"
+            },
+            "mappings": [],
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {
+                  "color": "green",
+                  "value": null
+                },
+                {
+                  "color": "red",
+                  "value": 80
+                }
+              ]
+            }
+          },
+          "overrides": []
+        }
+      },
+      {
+        "title": "Win Rate by Player Type",
+        "type": "bargauge",
+        "gridPos": {
+          "h": 10,
+          "w": 12,
+          "x": 12,
+          "y": 8
+        },
+        "datasource": "Prometheus",
+        "targets": [
+          {
+            "expr": "liap_tui_player_win_rate",
+            "legendFormat": "{{type}}",
+            "refId": "A"
+          }
+        ],
+        "options": {
+          "orientation": "horizontal",
+          "displayMode": "basic",
+          "showUnfilled": true
+        },
+        "fieldConfig": {
+          "defaults": {
+            "max": 1,
+            "min": 0,
+            "unit": "percentunit"
+          }
+        }
+      },
+      {
+        "title": "Games by State",
+        "type": "piechart",
+        "gridPos": {
+          "h": 10,
+          "w": 12,
+          "x": 0,
+          "y": 18
+        },
+        "datasource": "Prometheus",
+        "targets": [
+          {
+            "expr": "liap_tui_state_active_games",
+            "legendFormat": "{{state}}",
+            "refId": "A"
+          }
+        ],
+        "options": {
+          "pieType": "donut",
+          "displayLabels": [
+            "name",
+            "percent"
+          ],
+          "legendDisplayMode": "list",
+          "legendPlacement": "right"
+        },
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "palette-classic"
+            },
+            "mappings": [],
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {
+                  "color": "green",
+                  "value": null
+                },
+                {
+                  "color": "red",
+                  "value": 80
+                }
+              ]
+            }
+          },
+          "overrides": []
+        }
+      },
+      {
+        "title": "Room Health Status",
+        "type": "bargauge",
+        "gridPos": {
+          "h": 10,
+          "w": 12,
+          "x": 12,
+          "y": 18
+        },
+        "datasource": "Prometheus",
+        "targets": [
+          {
+            "expr": "liap_tui_room_health",
+            "legendFormat": "{{status}}",
+            "refId": "A"
+          }
+        ],
+        "options": {
+          "orientation": "horizontal",
+          "displayMode": "gradient",
+          "showUnfilled": false
+        },
+        "fieldConfig": {
+          "defaults": {
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {
+                  "color": "green",
+                  "value": null
+                },
+                {
+                  "color": "yellow",
+                  "value": 5
+                },
+                {
+                  "color": "red",
+                  "value": 10
+                }
+              ]
+            }
+          }
+        }
+      }
+    ]
+  },
+  "performance": {
+    "uid": "liap-tui-performance",
+    "title": "Liap Tui - Performance Monitoring",
+    "tags": [
+      "liap-tui",
+      "performance",
+      "monitoring"
+    ],
+    "timezone": "browser",
+    "refresh": "5s",
+    "panels": [
+      {
+        "title": "Memory Usage",
+        "type": "timeseries",
+        "gridPos": {
+          "h": 10,
+          "w": 12,
+          "x": 0,
+          "y": 0
+        },
+        "datasource": "Prometheus",
+        "targets": [
+          {
+            "expr": "liap_tui_memory_usage_mb{type=\"rss\"}",
+            "legendFormat": "RSS",
+            "refId": "A"
+          },
+          {
+            "expr": "liap_tui_memory_usage_mb{type=\"vms\"}",
+            "legendFormat": "VMS",
+            "refId": "B"
+          }
+        ],
+        "options": {},
+        "fieldConfig": {
+          "defaults": {
+            "unit": "decmbytes"
+          }
+        }
+      },
+      {
+        "title": "CPU Usage",
+        "type": "timeseries",
+        "gridPos": {
+          "h": 10,
+          "w": 12,
+          "x": 12,
+          "y": 0
+        },
+        "datasource": "Prometheus",
+        "targets": [
+          {
+            "expr": "liap_tui_cpu_usage_percent",
+            "refId": "A"
+          }
+        ],
+        "options": {},
+        "fieldConfig": {
+          "defaults": {
+            "unit": "percent",
+            "max": 100,
+            "min": 0
+          }
+        }
+      },
+      {
+        "title": "Garbage Collection Rate",
+        "type": "timeseries",
+        "gridPos": {
+          "h": 10,
+          "w": 12,
+          "x": 0,
+          "y": 10
+        },
+        "datasource": "Prometheus",
+        "targets": [
+          {
+            "expr": "rate(liap_tui_gc_collections_total[5m])",
+            "legendFormat": "Gen {{generation}}",
+            "refId": "A"
+          }
+        ],
+        "options": {
+          "legend": {
+            "calcs": [
+              "mean",
+              "max"
+            ],
+            "displayMode": "table",
+            "placement": "bottom"
+          }
+        },
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "palette-classic"
+            },
+            "mappings": [],
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {
+                  "color": "green",
+                  "value": null
+                },
+                {
+                  "color": "red",
+                  "value": 80
+                }
+              ]
+            }
+          },
+          "overrides": []
+        }
+      },
+      {
+        "title": "Active Threads",
+        "type": "stat",
+        "gridPos": {
+          "h": 10,
+          "w": 6,
+          "x": 12,
+          "y": 10
+        },
+        "datasource": "Prometheus",
+        "targets": [
+          {
+            "expr": "liap_tui_threads_active",
+            "refId": "A"
+          }
+        ],
+        "options": {
+          "graphMode": "area",
+          "textMode": "auto"
+        },
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "palette-classic"
+            },
+            "mappings": [],
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {
+                  "color": "green",
+                  "value": null
+                },
+                {
+                  "color": "red",
+                  "value": 80
+                }
+              ]
+            }
+          },
+          "overrides": []
+        }
+      },
+      {
+        "title": "Memory Growth Rate",
+        "type": "gauge",
+        "gridPos": {
+          "h": 10,
+          "w": 6,
+          "x": 18,
+          "y": 10
+        },
+        "datasource": "Prometheus",
+        "targets": [
+          {
+            "expr": "liap_tui_memory_growth_rate",
+            "refId": "A"
+          }
+        ],
+        "options": {},
+        "fieldConfig": {
+          "defaults": {
+            "unit": "MB/hr",
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {
+                  "color": "green",
+                  "value": null
+                },
+                {
+                  "color": "yellow",
+                  "value": 10
+                },
+                {
+                  "color": "red",
+                  "value": 50
+                }
+              ]
+            }
+          }
+        }
+      },
+      {
+        "title": "Action Processing Time",
+        "type": "heatmap",
+        "gridPos": {
+          "h": 10,
+          "w": 12,
+          "x": 0,
+          "y": 20
+        },
+        "datasource": "Prometheus",
+        "targets": [
+          {
+            "expr": "histogram_quantile(0.95, liap_tui_action_processing_time_bucket)",
+            "format": "heatmap",
+            "refId": "A"
+          }
+        ],
+        "options": {
+          "calculate": false,
+          "yAxis": {
+            "unit": "ms"
+          }
+        },
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "palette-classic"
+            },
+            "mappings": [],
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {
+                  "color": "green",
+                  "value": null
+                },
+                {
+                  "color": "red",
+                  "value": 80
+                }
+              ]
+            }
+          },
+          "overrides": []
+        }
+      },
+      {
+        "title": "State Transition Latency (P95)",
+        "type": "timeseries",
+        "gridPos": {
+          "h": 10,
+          "w": 12,
+          "x": 12,
+          "y": 20
+        },
+        "datasource": "Prometheus",
+        "targets": [
+          {
+            "expr": "histogram_quantile(0.95, rate(liap_tui_state_transition_time_bucket[5m]))",
+            "legendFormat": "{{transition}}",
+            "refId": "A"
+          }
+        ],
+        "options": {},
+        "fieldConfig": {
+          "defaults": {
+            "unit": "ms"
+          }
+        }
+      }
+    ]
+  },
+  "state_machine": {
+    "uid": "liap-tui-state-machine",
+    "title": "Liap Tui - State Machine Monitor",
+    "tags": [
+      "liap-tui",
+      "state-machine",
+      "monitoring"
+    ],
+    "timezone": "browser",
+    "refresh": "5s",
+    "panels": [
+      {
+        "title": "State Transitions per Minute",
+        "type": "graph",
+        "gridPos": {
+          "h": 12,
+          "w": 24,
+          "x": 0,
+          "y": 0
+        },
+        "datasource": "Prometheus",
+        "targets": [
+          {
+            "expr": "rate(liap_tui_state_transitions_total[1m]) * 60",
+            "legendFormat": "{{from}} \u2192 {{to}}",
+            "refId": "A"
+          }
+        ],
+        "options": {
+          "legend": {
+            "show": true,
+            "values": true,
+            "current": true,
+            "avg": true
+          }
+        },
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "palette-classic"
+            },
+            "mappings": [],
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {
+                  "color": "green",
+                  "value": null
+                },
+                {
+                  "color": "red",
+                  "value": 80
+                }
+              ]
+            }
+          },
+          "overrides": []
+        }
+      },
+      {
+        "title": "Phase Duration Distribution",
+        "type": "boxplot",
+        "gridPos": {
+          "h": 10,
+          "w": 12,
+          "x": 0,
+          "y": 12
+        },
+        "datasource": "Prometheus",
+        "targets": [
+          {
+            "expr": "liap_tui_phase_duration_seconds",
+            "format": "time_series",
+            "refId": "A"
+          }
+        ],
+        "options": {},
+        "fieldConfig": {
+          "defaults": {
+            "unit": "s"
+          }
+        }
+      },
+      {
+        "title": "Error Rate by State",
+        "type": "bargauge",
+        "gridPos": {
+          "h": 10,
+          "w": 12,
+          "x": 12,
+          "y": 12
+        },
+        "datasource": "Prometheus",
+        "targets": [
+          {
+            "expr": "rate(liap_tui_state_errors[5m])",
+            "legendFormat": "{{state}}",
+            "refId": "A"
+          }
+        ],
+        "options": {
+          "orientation": "horizontal",
+          "displayMode": "gradient"
+        },
+        "fieldConfig": {
+          "defaults": {
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {
+                  "color": "green",
+                  "value": null
+                },
+                {
+                  "color": "yellow",
+                  "value": 0.01
+                },
+                {
+                  "color": "red",
+                  "value": 0.05
+                }
+              ]
+            }
+          }
+        }
+      },
+      {
+        "title": "Current State Distribution",
+        "type": "table",
+        "gridPos": {
+          "h": 10,
+          "w": 24,
+          "x": 0,
+          "y": 22
+        },
+        "datasource": "Prometheus",
+        "targets": [
+          {
+            "expr": "topk(10, liap_tui_state_active_games)",
+            "format": "table",
+            "instant": true,
+            "refId": "A"
+          }
+        ],
+        "options": {
+          "showHeader": true
+        },
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "palette-classic"
+            },
+            "mappings": [],
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {
+                  "color": "green",
+                  "value": null
+                },
+                {
+                  "color": "red",
+                  "value": 80
+                }
+              ]
+            }
+          },
+          "overrides": []
+        }
+      }
+    ]
+  }
+}
