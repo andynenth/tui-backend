@@ -52,8 +52,6 @@ from .game_events import (
     RedealExecuted,
     DeclarationMade,
     PiecesPlayed,
-    TurnCompleted,
-    TurnWinnerDetermined,
     PlayerReadyForNext,
     CustomGameEvent
 )
@@ -61,8 +59,8 @@ from .game_events import (
 # Turn events
 from .turn_events import (
     TurnStarted,
-    TurnCompleted as TurnCompletedEvent,
-    TurnWinnerDetermined as TurnWinnerDeterminedEvent
+    TurnCompleted,
+    TurnWinnerDetermined
 )
 
 # Scoring events
