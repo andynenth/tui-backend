@@ -11,9 +11,9 @@ import logging
 from collections import OrderedDict
 
 
-from backend.domain.entities import Game
-from backend.application.interfaces import IGameRepository
-from backend.infrastructure.persistence.archive import (
+from domain.entities import Game
+from application.interfaces import IGameRepository
+from infrastructure.persistence.archive import (
     ArchiveManager, ArchivalTrigger, ArchivalPriority,
     FileSystemArchiveBackend, GameArchivalStrategy,
     DEFAULT_GAME_POLICY

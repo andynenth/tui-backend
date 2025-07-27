@@ -16,7 +16,7 @@ from application.exceptions import (
     ValidationException
 )
 from domain.events.player_events import PlayerLeftGame, PlayerConvertedToBot
-from backend.domain.events.base import EventMetadata
+from domain.events.base import EventMetadata
 
 logger = logging.getLogger(__name__)
 

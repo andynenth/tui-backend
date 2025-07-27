@@ -9,8 +9,8 @@ import logging
 from typing import Dict, Any, Optional, List
 from datetime import datetime
 
-from backend.domain.events.all_events import *
-from backend.infrastructure.events.decorators import event_handler
+from domain.events.all_events import *
+from infrastructure.events.decorators import event_handler
 from socket_manager import broadcast, send_to_socket
 
 logger = logging.getLogger(__name__)

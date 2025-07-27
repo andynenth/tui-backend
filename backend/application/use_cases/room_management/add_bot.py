@@ -20,8 +20,8 @@ from application.exceptions import (
     ValidationException
 )
 from domain.entities.player import Player
-from backend.domain.events.room_events import BotAdded
-from backend.domain.events.base import EventMetadata
+from domain.events.room_events import BotAdded
+from domain.events.base import EventMetadata
 
 logger = logging.getLogger(__name__)
 

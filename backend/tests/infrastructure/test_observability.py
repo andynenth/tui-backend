@@ -10,7 +10,7 @@ from datetime import datetime, timedelta
 from unittest.mock import Mock, AsyncMock, patch
 import logging
 
-from backend.infrastructure.observability import (
+from infrastructure.observability import (
     # Logging
     LogLevel,
     LogFormat,
@@ -529,7 +529,7 @@ class TestCorrelation:
     @pytest.mark.asyncio
     async def test_correlation_decorator(self):
         """Test correlation decorator."""
-        from backend.infrastructure.observability.correlation import with_correlation_id
+        from infrastructure.observability.correlation import with_correlation_id
         
         @with_correlation_id()
         async def process_request():

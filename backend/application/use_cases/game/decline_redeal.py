@@ -18,12 +18,12 @@ from application.exceptions import (
     ConflictException
 )
 from domain.entities.game import GamePhase
-from backend.domain.events.game_events import (
+from domain.events.game_events import (
     RedealDeclined,
     RedealCancelled,
     StartingPlayerChanged
 )
-from backend.domain.events.base import EventMetadata
+from domain.events.base import EventMetadata
 
 logger = logging.getLogger(__name__)
 

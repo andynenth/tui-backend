@@ -7,7 +7,7 @@ import asyncio
 from datetime import datetime, timedelta
 from unittest.mock import Mock, AsyncMock
 
-from backend.infrastructure.rate_limiting import (
+from infrastructure.rate_limiting import (
     # Base
     RateLimitAlgorithm,
     RateLimitConfig,

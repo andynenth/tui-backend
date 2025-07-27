@@ -19,7 +19,7 @@ from api.adapters.unified_adapter_handler import (
     UnifiedAdapterHandler, get_unified_handler, reset_unified_handler
 )
 from api.adapters.adapter_event_config import AdapterEventConfig, AdapterMode
-from backend.infrastructure.events.in_memory_event_bus import reset_event_bus
+from infrastructure.events.in_memory_event_bus import reset_event_bus
 
 
 class MockWebSocket:

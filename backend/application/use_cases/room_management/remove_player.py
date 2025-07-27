@@ -18,8 +18,8 @@ from application.exceptions import (
     ConflictException,
     ValidationException
 )
-from backend.domain.events.room_events import PlayerRemoved
-from backend.domain.events.base import EventMetadata
+from domain.events.room_events import PlayerRemoved
+from domain.events.base import EventMetadata
 
 logger = logging.getLogger(__name__)
 

@@ -12,8 +12,8 @@ from application.base import UseCase
 from application.dto.connection import MarkClientReadyRequest, MarkClientReadyResponse
 from application.interfaces import UnitOfWork, EventPublisher, MetricsCollector
 from application.exceptions import ResourceNotFoundException, ConflictException
-from backend.domain.events.connection_events import ClientReady
-from backend.domain.events.base import EventMetadata
+from domain.events.connection_events import ClientReady
+from domain.events.base import EventMetadata
 
 logger = logging.getLogger(__name__)
 

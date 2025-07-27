@@ -278,8 +278,17 @@ async def websocket_endpoint(websocket: WebSocket, room_id: str):
 
     # Check if room exists (excluding lobby)
     if room_id != "lobby":
+        logger.debug(f"[ROOM_LOOKUP_DEBUG] Checking if room exists: {room_id}")
+        logger.debug(f"[ROOM_LOOKUP_DEBUG] Using room_manager type: {type(room_manager).__name__}")
+        logger.debug(f"[ROOM_LOOKUP_DEBUG] Room manager rooms: {list(room_manager.rooms.keys()) if hasattr(room_manager, 'rooms') else 'No rooms attribute'}")
+        
         room = await room_manager.get_room(room_id)
+        logger.debug(f"[ROOM_LOOKUP_DEBUG] Room lookup result: {room is not None}")
+        
         if not room:
+            logger.warning(f"[ROOM_LOOKUP_DEBUG] Room {room_id} not found in legacy AsyncRoomManager!")
+            logger.warning(f"[ROOM_LOOKUP_DEBUG] This is because rooms are created in clean architecture but checked in legacy!")
+            
             # Send room_not_found event
             await registered_ws.send_json(
                 {
@@ -374,6 +383,21 @@ async def room_cleanup_task():
             # Check all rooms (including started ones)
             # Note: list_rooms() only returns non-started rooms, so we need to check all rooms directly
             all_room_ids = list(room_manager.rooms.keys())
+            
+            # Also check clean architecture rooms
+            try:
+                from infrastructure.dependencies import get_unit_of_work
+                uow = get_unit_of_work()
+                async with uow:
+                    clean_rooms = await uow.rooms.list()
+                    clean_room_ids = [room.room_id for room in clean_rooms]
+                    # Add any clean rooms not in legacy
+                    for room_id in clean_room_ids:
+                        if room_id not in all_room_ids:
+                            all_room_ids.append(room_id)
+                            logger.debug(f"🧹 [ROOM_DEBUG] Found clean architecture room not in legacy: {room_id}")
+            except Exception as e:
+                logger.debug(f"🧹 [ROOM_DEBUG] Could not check clean architecture rooms: {e}")
 
             if all_room_ids:
                 logger.info(

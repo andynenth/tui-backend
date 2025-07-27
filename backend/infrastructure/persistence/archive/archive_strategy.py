@@ -330,7 +330,7 @@ class GameArchivalStrategy(ArchivalStrategy):
     async def restore_from_archive(self, data: bytes) -> Any:
         """Restore game from archived data."""
         import json
-        from backend.domain.entities import Game, Player, Round
+        from domain.entities import Game, Player, Round
         
         # Parse JSON data
         archive_data = json.loads(data.decode('utf-8'))

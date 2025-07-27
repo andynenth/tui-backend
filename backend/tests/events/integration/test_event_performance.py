@@ -19,11 +19,11 @@ from api.adapters.connection_adapters import PingAdapter
 from api.adapters.connection_adapters_event import PingAdapterEvent
 from api.adapters.unified_adapter_handler import UnifiedAdapterHandler
 
-from backend.domain.events.base import DomainEvent, EventMetadata
-from backend.domain.events.all_events import (
+from domain.events.base import DomainEvent, EventMetadata
+from domain.events.all_events import (
     RoomCreated, PlayerJoinedRoom, PiecesPlayed
 )
-from backend.infrastructure.events.in_memory_event_bus import (
+from infrastructure.events.in_memory_event_bus import (
     InMemoryEventBus, get_event_bus, reset_event_bus
 )
 

@@ -7,6 +7,38 @@ from typing import Dict, Any, Optional, Callable
 import uuid
 import logging
 
+# Import clean architecture dependencies
+from infrastructure.dependencies import (
+    get_unit_of_work,
+    get_event_publisher,
+    get_metrics_collector,
+    get_bot_service
+)
+from application.use_cases.room_management import (
+    CreateRoomUseCase,
+    JoinRoomUseCase,
+    LeaveRoomUseCase,
+    GetRoomStateUseCase,
+    AddBotUseCase,
+    RemovePlayerUseCase
+)
+from application.dto.room_management import (
+    CreateRoomRequest,
+    JoinRoomRequest,
+    LeaveRoomRequest,
+    GetRoomStateRequest,
+    AddBotRequest,
+    RemovePlayerRequest
+)
+
+# Import legacy bridge for transition period
+try:
+    from infrastructure.adapters.legacy_repository_bridge import ensure_room_visible_to_legacy
+except ImportError:
+    # Bridge not available, define no-op function
+    async def ensure_room_visible_to_legacy(room_id: str) -> None:
+        pass
+
 logger = logging.getLogger(__name__)
 
 # Actions that need room adapter handling
@@ -64,6 +96,9 @@ async def _handle_create_room(
     data = message.get("data", {})
     player_name = data.get("player_name")
     
+    logger.debug(f"[ROOM_CREATE_DEBUG] Starting room creation for player: {player_name}")
+    logger.debug(f"[ROOM_CREATE_DEBUG] Full message data: {data}")
+    
     if not player_name:
         return {
             "event": "error",
@@ -73,23 +108,86 @@ async def _handle_create_room(
             }
         }
     
-    # In full implementation, this would call a use case
-    # For now, return expected response format
-    room_id = f"room_{uuid.uuid4().hex[:8]}"
-    
-    response = {
-        "event": "room_created",
-        "data": {
-            "room_id": room_id,
-            "host_name": player_name,
-            "success": True
+    try:
+        # Generate a player ID if not provided
+        player_id = data.get("player_id", f"player_{uuid.uuid4().hex[:8]}")
+        
+        # Create the request DTO
+        request = CreateRoomRequest(
+            host_player_id=player_id,
+            host_player_name=player_name,
+            room_name=data.get("room_name"),
+            max_players=data.get("max_players", 4),
+            win_condition_type=data.get("win_condition_type", "score"),
+            win_condition_value=data.get("win_condition_value", 50),
+            allow_bots=data.get("allow_bots", True),
+            is_private=data.get("is_private", False)
+        )
+        
+        # Get dependencies and create use case
+        uow = get_unit_of_work()
+        event_publisher = get_event_publisher()
+        metrics = get_metrics_collector()
+        use_case = CreateRoomUseCase(uow, event_publisher, metrics)
+        
+        # Execute the use case
+        logger.debug(f"[ROOM_CREATE_DEBUG] Executing CreateRoomUseCase for player: {player_name}")
+        response_dto = await use_case.execute(request)
+        
+        # Map the response DTO to WebSocket response format
+        response = {
+            "event": "room_created",
+            "data": {
+                "room_id": response_dto.room_info.room_id,
+                "room_code": response_dto.join_code,
+                "host_name": player_name,
+                "success": response_dto.success,
+                "room_info": {
+                    "room_id": response_dto.room_info.room_id,
+                    "room_code": response_dto.room_info.room_code,
+                    "room_name": response_dto.room_info.room_name,
+                    "host_id": response_dto.room_info.host_id,
+                    "players": [
+                        {
+                            "player_id": p.player_id,
+                            "player_name": p.player_name,
+                            "is_bot": p.is_bot,
+                            "is_host": p.is_host,
+                            "seat_position": p.seat_position
+                        }
+                        for p in response_dto.room_info.players
+                    ],
+                    "max_players": response_dto.room_info.max_players,
+                    "game_in_progress": response_dto.room_info.game_in_progress
+                }
+            }
         }
-    }
-    
-    # Log for monitoring
-    logger.info(f"Room created: {room_id} by {player_name}")
-    
-    return response
+        
+        # Log for monitoring
+        logger.info(f"Room created: {response_dto.room_info.room_id} by {player_name}")
+        logger.debug(f"[ROOM_CREATE_DEBUG] Room successfully stored in repository")
+        
+        # Sync to legacy manager to prevent "Room not found" warnings
+        try:
+            await ensure_room_visible_to_legacy(response_dto.room_info.room_id)
+            logger.debug(f"[ROOM_CREATE_DEBUG] Room synced to legacy manager")
+        except Exception as sync_error:
+            # Don't fail the request if sync fails
+            logger.warning(f"Failed to sync room to legacy: {sync_error}")
+        
+        logger.debug(f"[ROOM_CREATE_DEBUG] Response being sent: {response}")
+        
+        return response
+        
+    except Exception as e:
+        logger.error(f"[ROOM_CREATE_DEBUG] Error creating room: {e}", exc_info=True)
+        return {
+            "event": "error",
+            "data": {
+                "message": f"Failed to create room: {str(e)}",
+                "type": "room_creation_error"
+            }
+        }
 
 
 async def _handle_join_room(
@@ -101,27 +199,101 @@ async def _handle_join_room(
     """Handle join_room request"""
     data = message.get("data", {})
     room_id = data.get("room_id")
+    room_code = data.get("room_code")
     player_name = data.get("player_name")
     
-    if not room_id or not player_name:
+    if not player_name:
         return {
             "event": "error",
             "data": {
-                "message": "Room ID and player name are required",
+                "message": "Player name is required",
                 "type": "validation_error"
             }
         }
     
-    # In full implementation, would check room exists, not full, etc.
-    return {
-        "event": "joined_room",
-        "data": {
-            "room_id": room_id,
-            "player_name": player_name,
-            "success": True,
-            "slot": 1  # Would be determined by room state
+    if not room_id and not room_code:
+        return {
+            "event": "error",
+            "data": {
+                "message": "Room ID or room code is required",
+                "type": "validation_error"
+            }
         }
-    }
+    
+    try:
+        # Generate a player ID if not provided
+        player_id = data.get("player_id", f"player_{uuid.uuid4().hex[:8]}")
+        
+        # Create the request DTO
+        request = JoinRoomRequest(
+            player_id=player_id,
+            player_name=player_name,
+            room_id=room_id,
+            room_code=room_code,
+            seat_preference=data.get("seat_preference")
+        )
+        
+        # Get dependencies and create use case
+        uow = get_unit_of_work()
+        event_publisher = get_event_publisher()
+        metrics = get_metrics_collector()
+        use_case = JoinRoomUseCase(uow, event_publisher, metrics)
+        
+        # Execute the use case
+        logger.debug(f"[ROOM_JOIN_DEBUG] Executing JoinRoomUseCase for player: {player_name}")
+        response_dto = await use_case.execute(request)
+        
+        # Map the response DTO to WebSocket response format
+        response = {
+            "event": "joined_room",
+            "data": {
+                "room_id": response_dto.room_info.room_id,
+                "room_code": response_dto.room_info.room_code,
+                "player_name": player_name,
+                "success": response_dto.success,
+                "seat_position": response_dto.seat_position,
+                "is_host": response_dto.is_host,
+                "room_info": {
+                    "room_id": response_dto.room_info.room_id,
+                    "room_code": response_dto.room_info.room_code,
+                    "room_name": response_dto.room_info.room_name,
+                    "host_id": response_dto.room_info.host_id,
+                    "players": [
+                        {
+                            "player_id": p.player_id,
+                            "player_name": p.player_name,
+                            "is_bot": p.is_bot,
+                            "is_host": p.is_host,
+                            "seat_position": p.seat_position
+                        }
+                        for p in response_dto.room_info.players
+                    ],
+                    "max_players": response_dto.room_info.max_players,
+                    "game_in_progress": response_dto.room_info.game_in_progress
+                }
+            }
+        }
+        
+        # Log for monitoring
+        logger.info(f"Player {player_name} joined room: {response_dto.room_info.room_id}")
+        
+        # Sync to legacy manager
+        try:
+            await ensure_room_visible_to_legacy(response_dto.room_info.room_id)
+        except Exception as sync_error:
+            logger.warning(f"Failed to sync room to legacy after join: {sync_error}")
+        
+        return response
+        
+    except Exception as e:
+        logger.error(f"[ROOM_JOIN_DEBUG] Error joining room: {e}", exc_info=True)
+        return {
+            "event": "error",
+            "data": {
+                "message": f"Failed to join room: {str(e)}",
+                "type": "room_join_error"
+            }
+        }
 
 
 async def _handle_leave_room(
@@ -133,6 +305,7 @@ async def _handle_leave_room(
     """Handle leave_room request"""
     data = message.get("data", {})
     player_name = data.get("player_name")
+    room_id = data.get("room_id")
     
     if not player_name:
         return {
@@ -143,13 +316,61 @@ async def _handle_leave_room(
             }
         }
     
-    return {
-        "event": "left_room",
-        "data": {
-            "player_name": player_name,
-            "success": True
+    if not room_id:
+        return {
+            "event": "error",
+            "data": {
+                "message": "Room ID is required",
+                "type": "validation_error"
+            }
         }
-    }
+    
+    try:
+        # Generate a player ID if not provided
+        player_id = data.get("player_id", f"player_{uuid.uuid4().hex[:8]}")
+        
+        # Create the request DTO
+        request = LeaveRoomRequest(
+            player_id=player_id,
+            room_id=room_id,
+            reason=data.get("reason", "Player left")
+        )
+        
+        # Get dependencies and create use case
+        uow = get_unit_of_work()
+        event_publisher = get_event_publisher()
+        metrics = get_metrics_collector()
+        use_case = LeaveRoomUseCase(uow, event_publisher, metrics)
+        
+        # Execute the use case
+        logger.debug(f"[ROOM_LEAVE_DEBUG] Executing LeaveRoomUseCase for player: {player_name}")
+        response_dto = await use_case.execute(request)
+        
+        # Map the response DTO to WebSocket response format
+        response = {
+            "event": "left_room",
+            "data": {
+                "player_name": player_name,
+                "room_id": room_id,
+                "success": response_dto.success,
+                "removed_player_id": response_dto.removed_player_id
+            }
+        }
+        
+        # Log for monitoring
+        logger.info(f"Player {player_name} left room: {room_id}")
+        
+        return response
+        
+    except Exception as e:
+        logger.error(f"[ROOM_LEAVE_DEBUG] Error leaving room: {e}", exc_info=True)
+        return {
+            "event": "error",
+            "data": {
+                "message": f"Failed to leave room: {str(e)}",
+                "type": "room_leave_error"
+            }
+        }
 
 
 async def _handle_get_room_state(
@@ -159,21 +380,69 @@ async def _handle_get_room_state(
     broadcast_func: Optional[Callable]
 ) -> Dict[str, Any]:
     """Handle get_room_state request"""
-    # Return current room state or empty state
-    if room_state:
+    data = message.get("data", {})
+    room_id = data.get("room_id")
+    
+    if not room_id:
         return {
-            "event": "room_state",
-            "data": room_state
+            "event": "error",
+            "data": {
+                "message": "Room ID is required",
+                "type": "validation_error"
+            }
         }
     
-    return {
-        "event": "room_state",
-        "data": {
-            "slots": [],
-            "host_name": None,
-            "game_active": False
+    try:
+        # Create the request DTO
+        request = GetRoomStateRequest(
+            room_id=room_id,
+            requesting_player_id=data.get("player_id")
+        )
+        
+        # Get dependencies and create use case
+        uow = get_unit_of_work()
+        metrics = get_metrics_collector()
+        use_case = GetRoomStateUseCase(uow, metrics)
+        
+        # Execute the use case
+        logger.debug(f"[ROOM_STATE_DEBUG] Executing GetRoomStateUseCase for room: {room_id}")
+        response_dto = await use_case.execute(request)
+        
+        # Map the response DTO to WebSocket response format
+        response = {
+            "event": "room_state",
+            "data": {
+                "room_id": response_dto.room_info.room_id,
+                "room_code": response_dto.room_info.room_code,
+                "room_name": response_dto.room_info.room_name,
+                "host_id": response_dto.room_info.host_id,
+                "players": [
+                    {
+                        "player_id": p.player_id,
+                        "player_name": p.player_name,
+                        "is_bot": p.is_bot,
+                        "is_host": p.is_host,
+                        "seat_position": p.seat_position
+                    }
+                    for p in response_dto.room_info.players
+                ],
+                "max_players": response_dto.room_info.max_players,
+                "game_in_progress": response_dto.room_info.game_in_progress,
+                "current_game_id": response_dto.room_info.current_game_id
+            }
         }
-    }
+        
+        return response
+        
+    except Exception as e:
+        logger.error(f"[ROOM_STATE_DEBUG] Error getting room state: {e}", exc_info=True)
+        return {
+            "event": "error",
+            "data": {
+                "message": f"Failed to get room state: {str(e)}",
+                "type": "room_state_error"
+            }
+        }
 
 
 async def _handle_add_bot(
@@ -184,20 +453,77 @@ async def _handle_add_bot(
 ) -> Dict[str, Any]:
     """Handle add_bot request"""
     data = message.get("data", {})
+    room_id = data.get("room_id")
     difficulty = data.get("difficulty", "medium")
     
-    # Would add bot to room in full implementation
-    bot_name = f"Bot_{difficulty[:3].upper()}"
-    
-    return {
-        "event": "bot_added",
-        "data": {
-            "bot_name": bot_name,
-            "difficulty": difficulty,
-            "slot": 2,  # Would be determined by room state
-            "success": True
+    if not room_id:
+        return {
+            "event": "error",
+            "data": {
+                "message": "Room ID is required",
+                "type": "validation_error"
+            }
         }
-    }
+    
+    try:
+        # Create the request DTO
+        request = AddBotRequest(
+            room_id=room_id,
+            requesting_player_id=data.get("player_id", "host"),
+            bot_difficulty=difficulty,
+            bot_name=data.get("bot_name")  # Optional custom name
+        )
+        
+        # Get dependencies and create use case
+        uow = get_unit_of_work()
+        event_publisher = get_event_publisher()
+        bot_service = get_bot_service()
+        metrics = get_metrics_collector()
+        use_case = AddBotUseCase(uow, event_publisher, bot_service, metrics)
+        
+        # Execute the use case
+        logger.debug(f"[BOT_ADD_DEBUG] Executing AddBotUseCase for room: {room_id}")
+        response_dto = await use_case.execute(request)
+        
+        # Map the response DTO to WebSocket response format
+        response = {
+            "event": "bot_added",
+            "data": {
+                "bot_id": response_dto.bot_info.player_id,
+                "bot_name": response_dto.bot_info.player_name,
+                "difficulty": difficulty,
+                "seat_position": response_dto.bot_info.seat_position,
+                "success": response_dto.success,
+                "room_info": {
+                    "room_id": response_dto.room_info.room_id,
+                    "players": [
+                        {
+                            "player_id": p.player_id,
+                            "player_name": p.player_name,
+                            "is_bot": p.is_bot,
+                            "is_host": p.is_host,
+                            "seat_position": p.seat_position
+                        }
+                        for p in response_dto.room_info.players
+                    ]
+                }
+            }
+        }
+        
+        # Log for monitoring
+        logger.info(f"Bot added to room {room_id}: {response_dto.bot_info.player_name}")
+        
+        return response
+        
+    except Exception as e:
+        logger.error(f"[BOT_ADD_DEBUG] Error adding bot: {e}", exc_info=True)
+        return {
+            "event": "error",
+            "data": {
+                "message": f"Failed to add bot: {str(e)}",
+                "type": "bot_add_error"
+            }
+        }
 
 
 async def _handle_remove_player(
@@ -208,27 +534,93 @@ async def _handle_remove_player(
 ) -> Dict[str, Any]:
     """Handle remove_player request (host removing a player)"""
     data = message.get("data", {})
-    player_name = data.get("player_name")
-    requester = data.get("requester")  # Who is making the request
+    room_id = data.get("room_id")
+    target_player_id = data.get("target_player_id")
+    requesting_player_id = data.get("requesting_player_id")
     
-    if not player_name:
+    if not room_id:
         return {
             "event": "error",
             "data": {
-                "message": "Player name is required",
+                "message": "Room ID is required",
                 "type": "validation_error"
             }
         }
     
-    # Would verify requester is host in full implementation
-    return {
-        "event": "player_removed",
-        "data": {
-            "player_name": player_name,
-            "removed_by": requester,
-            "success": True
+    if not target_player_id:
+        return {
+            "event": "error",
+            "data": {
+                "message": "Target player ID is required",
+                "type": "validation_error"
+            }
         }
-    }
+    
+    if not requesting_player_id:
+        return {
+            "event": "error",
+            "data": {
+                "message": "Requesting player ID is required",
+                "type": "validation_error"
+            }
+        }
+    
+    try:
+        # Create the request DTO
+        request = RemovePlayerRequest(
+            room_id=room_id,
+            requesting_player_id=requesting_player_id,
+            target_player_id=target_player_id,
+            reason=data.get("reason", "Removed by host")
+        )
+        
+        # Get dependencies and create use case
+        uow = get_unit_of_work()
+        event_publisher = get_event_publisher()
+        metrics = get_metrics_collector()
+        use_case = RemovePlayerUseCase(uow, event_publisher, metrics)
+        
+        # Execute the use case
+        logger.debug(f"[PLAYER_REMOVE_DEBUG] Executing RemovePlayerUseCase for player: {target_player_id}")
+        response_dto = await use_case.execute(request)
+        
+        # Map the response DTO to WebSocket response format
+        response = {
+            "event": "player_removed",
+            "data": {
+                "removed_player_id": response_dto.removed_player_id,
+                "removed_by": requesting_player_id,
+                "success": response_dto.success,
+                "room_info": {
+                    "room_id": response_dto.room_info.room_id,
+                    "players": [
+                        {
+                            "player_id": p.player_id,
+                            "player_name": p.player_name,
+                            "is_bot": p.is_bot,
+                            "is_host": p.is_host,
+                            "seat_position": p.seat_position
+                        }
+                        for p in response_dto.room_info.players
+                    ]
+                }
+            }
+        }
+        
+        # Log for monitoring
+        logger.info(f"Player {target_player_id} removed from room {room_id} by {requesting_player_id}")
+        
+        return response
+        
+    except Exception as e:
+        logger.error(f"[PLAYER_REMOVE_DEBUG] Error removing player: {e}", exc_info=True)
+        return {
+            "event": "error",
+            "data": {
+                "message": f"Failed to remove player: {str(e)}",
+                "type": "player_remove_error"
+            }
+        }
 
 
 class RoomAdapterIntegration:

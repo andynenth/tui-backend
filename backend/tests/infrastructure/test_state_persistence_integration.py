@@ -15,7 +15,7 @@ from backend.engine.game import Game
 from backend.engine.room import Room
 from backend.engine.player import Player
 
-from backend.infrastructure.state_persistence import (
+from infrastructure.state_persistence import (
     StatePersistenceManager,
     PersistenceConfig,
     PersistenceStrategy,

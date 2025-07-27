@@ -80,7 +80,7 @@ def initialize_state_event_system():
         
         # Initialize the broadcast handler
         try:
-            from backend.infrastructure.events.integrated_broadcast_handler import (
+            from infrastructure.events.integrated_broadcast_handler import (
                 get_broadcast_handler
             )
             # This will initialize the broadcast handler and subscribe to events

@@ -18,7 +18,7 @@ from application.interfaces import UnitOfWork, EventPublisher, MetricsCollector
 from application.exceptions import ValidationException, ConflictException
 from domain.entities.room import Room, RoomCreated
 from domain.entities.player import Player
-from backend.domain.events.base import EventMetadata
+from domain.events.base import EventMetadata
 
 logger = logging.getLogger(__name__)
 

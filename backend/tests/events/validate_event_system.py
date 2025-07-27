@@ -14,18 +14,18 @@ from datetime import datetime
 
 sys.path.append(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
 
-from backend.domain.events.base import DomainEvent, EventMetadata
-from backend.domain.events.all_events import (
+from domain.events.base import DomainEvent, EventMetadata
+from domain.events.all_events import (
     RoomCreated, PlayerJoinedRoom, GameStarted,
     PiecesPlayed, PhaseChanged, CustomGameEvent
 )
-from backend.infrastructure.events.in_memory_event_bus import (
+from infrastructure.events.in_memory_event_bus import (
     get_event_bus, reset_event_bus
 )
-from backend.infrastructure.events.event_broadcast_mapper import (
+from infrastructure.events.event_broadcast_mapper import (
     event_broadcast_mapper
 )
-from backend.infrastructure.events.integrated_broadcast_handler import (
+from infrastructure.events.integrated_broadcast_handler import (
     get_broadcast_handler, reset_broadcast_handler
 )
 

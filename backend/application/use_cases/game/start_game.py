@@ -21,13 +21,13 @@ from application.exceptions import (
 from domain.entities.game import Game, GamePhase
 from domain.entities.player import Player
 from domain.services.game_rules import GameRules
-from backend.domain.events.game_events import (
+from domain.events.game_events import (
     GameStarted,
     RoundStarted,
     PiecesDealt,
     WeakHandDetected
 )
-from backend.domain.events.base import EventMetadata
+from domain.events.base import EventMetadata
 
 logger = logging.getLogger(__name__)
 

@@ -12,13 +12,13 @@ import shutil
 from pathlib import Path
 
 
-from backend.infrastructure.persistence.archive import (
+from infrastructure.persistence.archive import (
     ArchivalPolicy, ArchivalRequest, ArchivalTrigger, ArchivalPriority,
     GameArchivalStrategy, FileSystemArchiveBackend,
     ArchivalWorker, ArchiveManager, ArchiveQuery
 )
-from backend.infrastructure.persistence.hybrid_game_repository import HybridGameRepository
-from backend.domain.entities import Game, Player, Round
+from infrastructure.persistence.hybrid_game_repository import HybridGameRepository
+from domain.entities import Game, Player, Round
 
 
 class TestArchivalStrategy:

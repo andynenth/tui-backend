@@ -21,14 +21,14 @@ from domain.entities.game import GamePhase
 from domain.value_objects.piece import Piece
 from domain.services.game_rules import GameRules
 from domain.services.turn_resolution import TurnResolutionService
-from backend.domain.events.game_events import (
+from domain.events.game_events import (
     TurnCompleted,
     RoundCompleted,
     GameEnded,
     PhaseChanged
 )
 from domain.events.player_events import PlayerPlayedPieces
-from backend.domain.events.base import EventMetadata
+from domain.events.base import EventMetadata
 
 logger = logging.getLogger(__name__)
 

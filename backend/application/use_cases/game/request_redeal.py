@@ -19,8 +19,8 @@ from application.exceptions import (
 )
 from domain.entities.game import GamePhase
 from domain.services.game_rules import GameRules
-from backend.domain.events.game_events import RedealRequested, RedealVoteStarted
-from backend.domain.events.base import EventMetadata
+from domain.events.game_events import RedealRequested, RedealVoteStarted
+from domain.events.base import EventMetadata
 
 logger = logging.getLogger(__name__)
 

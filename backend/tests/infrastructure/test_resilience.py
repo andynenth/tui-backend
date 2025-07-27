@@ -11,22 +11,22 @@ import random
 from datetime import timedelta
 from unittest.mock import Mock, AsyncMock
 
-from backend.infrastructure.resilience.circuit_breaker import (
+from infrastructure.resilience.circuit_breaker import (
     CircuitBreaker, CircuitBreakerConfig, CircuitState
 )
-from backend.infrastructure.resilience.retry import (
+from infrastructure.resilience.retry import (
     Retry, RetryConfig, RetryStrategy, RetryExhaustedError
 )
-from backend.infrastructure.resilience.bulkhead import (
+from infrastructure.resilience.bulkhead import (
     SemaphoreBulkhead, BulkheadConfig, BulkheadFullError
 )
-from backend.infrastructure.resilience.timeout import (
+from infrastructure.resilience.timeout import (
     TimeoutHandler, TimeoutConfig, TimeoutError
 )
-from backend.infrastructure.resilience.connection_pool import (
+from infrastructure.resilience.connection_pool import (
     ConnectionPool, ConnectionFactory, ConnectionPoolConfig
 )
-from backend.infrastructure.resilience.load_shedding import (
+from infrastructure.resilience.load_shedding import (
     AdaptiveLoadShedder, SheddingConfig, RequestContext, LoadMetrics
 )
 
@@ -566,7 +566,7 @@ class TestChaosScenarios:
     async def test_resource_exhaustion_protection(self):
         """Test protection against resource exhaustion."""
         # Memory manager mock
-        from backend.infrastructure.optimization.memory_manager import MemoryManager
+        from infrastructure.optimization.memory_manager import MemoryManager
         
         memory_manager = MemoryManager(
             soft_limit_mb=100,

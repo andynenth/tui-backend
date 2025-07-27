@@ -9,7 +9,7 @@ from pathlib import Path
 import tempfile
 import shutil
 
-from backend.infrastructure.state_persistence import (
+from infrastructure.state_persistence import (
     # Abstractions
     StateVersion,
     StateTransition,

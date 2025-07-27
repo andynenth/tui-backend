@@ -10,18 +10,18 @@ from datetime import datetime, timedelta
 from typing import Dict, Any, Optional
 from dataclasses import dataclass
 
-from backend.infrastructure.persistence.base import (
+from infrastructure.persistence.base import (
     IPersistenceAdapter,
     PersistenceConfig,
     PersistenceBackend
 )
-from backend.infrastructure.persistence.memory_adapter import MemoryAdapter
-from backend.infrastructure.persistence.hybrid_repository import (
+from infrastructure.persistence.memory_adapter import MemoryAdapter
+from infrastructure.persistence.hybrid_repository import (
     HybridRepository,
     TimeBasedArchivalPolicy,
     CompletionBasedArchivalPolicy
 )
-from backend.infrastructure.persistence.repository_factory import (
+from infrastructure.persistence.repository_factory import (
     RepositoryFactory,
     RepositoryConfig,
     RepositoryStrategy,

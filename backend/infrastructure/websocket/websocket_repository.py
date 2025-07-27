@@ -13,13 +13,13 @@ from datetime import datetime
 import weakref
 from enum import Enum
 
-from backend.domain.repositories import (
+from domain.repositories import (
     RoomRepository,
     GameRepository,
     PlayerStatsRepository
 )
-from backend.domain.entities import Room, Game, PlayerStats
-from backend.infrastructure.repositories import (
+from domain.entities import Room, Game, PlayerStats
+from infrastructure.repositories import (
     OptimizedRoomRepository,
     OptimizedGameRepository,
     OptimizedPlayerStatsRepository,
