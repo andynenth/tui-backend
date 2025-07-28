@@ -1,345 +1,321 @@
 # backend/api/middleware/websocket_rate_limit.py
 
-import asyncio
+"""
+WebSocket-specific rate limiting middleware.
+
+This module provides rate limiting functionality tailored for WebSocket connections,
+which have different patterns than REST endpoints.
+"""
+
 import time
 import logging
-from typing import Dict, Optional, Tuple, Any
-from dataclasses import dataclass
 import hashlib
+from typing import Dict, Any
+from collections import defaultdict
+from datetime import datetime, timedelta
 
 from fastapi import WebSocket
 
-from .rate_limit import RateLimiter, RateLimitRule, get_rate_limiter
 from .event_priority import get_priority_manager, EventPriority
 
 # Set up logging
 logger = logging.getLogger(__name__)
 
-# Import error codes if available
-try:
-    import sys
-    import os
+# Error codes - simplified version
+ERROR_CODES_AVAILABLE = False
 
-    sys.path.append(os.path.join(os.path.dirname(__file__), "../../../shared"))
-    from error_codes import ErrorCode, create_standard_error
+# Simple rate limit tracking
+class SimpleRateLimitRule:
+    """Simple rate limit rule for WebSocket events."""
+    def __init__(self, requests: int, window_seconds: int, block_duration_seconds: int = 0, burst_multiplier: float = 1.0):
+        self.requests = requests
+        self.window_seconds = window_seconds
+        self.block_duration_seconds = block_duration_seconds
+        self.burst_multiplier = burst_multiplier
 
-    ERROR_CODES_AVAILABLE = True
-except ImportError:
-    ERROR_CODES_AVAILABLE = False
-
-
-# Import configuration
-try:
-    import sys
-    import os
-
-    sys.path.append(os.path.join(os.path.dirname(__file__), "../.."))
-    from config.rate_limits import get_rate_limit_config
-
-    CONFIG_AVAILABLE = True
-except ImportError:
-    CONFIG_AVAILABLE = False
-
-# Get WebSocket rate limit rules from configuration
-if CONFIG_AVAILABLE:
-    WEBSOCKET_RATE_LIMITS = get_rate_limit_config().get_websocket_rules()
-else:
-    # Fallback to hardcoded values if config not available
-    WEBSOCKET_RATE_LIMITS = {
-        # System events
-        "ping": RateLimitRule(requests=120, window_seconds=60),  # 2 per second
-        "ack": RateLimitRule(
-            requests=200, window_seconds=60
-        ),  # High limit for acknowledgments
-        "sync_request": RateLimitRule(
-            requests=10, window_seconds=60
-        ),  # Prevent sync spam
-        # Lobby events
-        "request_room_list": RateLimitRule(requests=30, window_seconds=60),
-        "get_rooms": RateLimitRule(requests=30, window_seconds=60),
-        "create_room": RateLimitRule(
-            requests=5, window_seconds=60, block_duration_seconds=300
-        ),  # 5 min block
-        "join_room": RateLimitRule(requests=10, window_seconds=60),
-        # Room management
-        "get_room_state": RateLimitRule(requests=60, window_seconds=60),
-        "remove_player": RateLimitRule(requests=10, window_seconds=60),
-        "add_bot": RateLimitRule(requests=10, window_seconds=60),
-        "leave_room": RateLimitRule(requests=5, window_seconds=60),
-        "start_game": RateLimitRule(
-            requests=3, window_seconds=60, block_duration_seconds=600
-        ),  # 10 min block
-        # Game events - more restrictive
-        "declare": RateLimitRule(
-            requests=5, window_seconds=60, burst_multiplier=1.2
-        ),  # Max 5 declarations/min
-        "play": RateLimitRule(requests=20, window_seconds=60),  # 20 plays/min
-        "play_pieces": RateLimitRule(requests=20, window_seconds=60),
-        "request_redeal": RateLimitRule(
-            requests=3, window_seconds=60, block_duration_seconds=300
-        ),
-        "accept_redeal": RateLimitRule(requests=5, window_seconds=60),
-        "decline_redeal": RateLimitRule(requests=5, window_seconds=60),
-        "redeal_decision": RateLimitRule(requests=5, window_seconds=60),
-        "player_ready": RateLimitRule(requests=10, window_seconds=60),
-        "leave_game": RateLimitRule(requests=3, window_seconds=60),
-        # Default for unknown events
-        "default": RateLimitRule(requests=60, window_seconds=60, burst_multiplier=1.5),
-    }
+# WebSocket rate limit rules
+WEBSOCKET_RATE_LIMITS = {
+    # System events
+    "ping": SimpleRateLimitRule(requests=120, window_seconds=60),  # 2 per second
+    "ack": SimpleRateLimitRule(requests=200, window_seconds=60),  # High limit for acknowledgments
+    "sync_request": SimpleRateLimitRule(requests=10, window_seconds=60),  # Prevent sync spam
+    
+    # Lobby events
+    "request_room_list": SimpleRateLimitRule(requests=30, window_seconds=60),
+    "get_rooms": SimpleRateLimitRule(requests=30, window_seconds=60),
+    "create_room": SimpleRateLimitRule(requests=5, window_seconds=60, block_duration_seconds=300),  # 5 min block
+    "join_room": SimpleRateLimitRule(requests=10, window_seconds=60),
+    
+    # Room management
+    "get_room_state": SimpleRateLimitRule(requests=60, window_seconds=60),
+    "remove_player": SimpleRateLimitRule(requests=10, window_seconds=60),
+    "add_bot": SimpleRateLimitRule(requests=10, window_seconds=60),
+    "leave_room": SimpleRateLimitRule(requests=5, window_seconds=60),
+    "start_game": SimpleRateLimitRule(requests=3, window_seconds=60, block_duration_seconds=600),  # 10 min block
+    
+    # Game events - more restrictive
+    "declare": SimpleRateLimitRule(requests=5, window_seconds=60, burst_multiplier=1.2),  # Max 5 declarations/min
+    "play": SimpleRateLimitRule(requests=20, window_seconds=60),  # 20 plays/min
+    "play_pieces": SimpleRateLimitRule(requests=20, window_seconds=60),
+    "request_redeal": SimpleRateLimitRule(requests=3, window_seconds=60),
+    "accept_redeal": SimpleRateLimitRule(requests=5, window_seconds=60),
+    "decline_redeal": SimpleRateLimitRule(requests=5, window_seconds=60),
+    
+    # Default for unknown events
+    "_default": SimpleRateLimitRule(requests=60, window_seconds=60),  # 1 per second default
+}
 
 
 class WebSocketRateLimiter:
     """
     Rate limiter specifically designed for WebSocket connections.
-
+    
     Features:
-    - Per-connection rate limiting
-    - Per-event-type rate limiting
-    - Room-based rate limiting to prevent flooding
-    - Client identification and tracking
+    - Per-connection + per-event rate limiting
+    - Automatic cleanup of old tracking data
+    - Priority-based event handling
+    - Burst allowance for certain events
     """
 
-    def __init__(self):
-        self.rate_limiter = get_rate_limiter()
-        self.connection_stats: Dict[str, Dict[str, int]] = (
-            {}
-        )  # Track per-connection stats
-        self.room_message_counts: Dict[str, Dict[str, int]] = (
-            {}
-        )  # Track messages per room
-
-    def _get_client_id(self, websocket: WebSocket, room_id: str) -> str:
-        """Generate a unique client identifier for a WebSocket connection"""
-        # Try to get client IP
-        client_host = "unknown"
-        if hasattr(websocket, "client") and websocket.client:
-            client_host = websocket.client.host
-
-        # Create a hash of connection details for privacy
-        connection_string = f"{client_host}:{room_id}:{id(websocket)}"
-        client_hash = hashlib.md5(connection_string.encode()).hexdigest()[:16]
-
-        return client_hash
-
-    async def check_websocket_message_rate_limit(
-        self, websocket: WebSocket, room_id: str, event_name: str
-    ) -> Tuple[bool, Optional[Dict[str, Any]]]:
+    def __init__(self, rules: Dict[str, SimpleRateLimitRule] = None):
         """
-        Check if a WebSocket message should be rate limited.
+        Initialize the WebSocket rate limiter.
+
+        Args:
+            rules: Dictionary of event_type -> RateLimitRule mappings
+        """
+        self.rules = rules or WEBSOCKET_RATE_LIMITS
+        self.connections: Dict[str, Dict[str, Any]] = defaultdict(lambda: {
+            "requests": defaultdict(list),
+            "blocked_until": {},
+            "warnings": 0,
+            "last_cleanup": time.time()
+        })
+        self.priority_manager = get_priority_manager()
+        self._last_global_cleanup = time.time()
+
+    def _get_connection_key(self, websocket: WebSocket) -> str:
+        """Generate a unique key for the connection."""
+        # Use client host and port for identification
+        client_host = websocket.client.host if websocket.client else "unknown"
+        client_port = websocket.client.port if websocket.client else 0
+        return f"{client_host}:{client_port}"
+
+    def _cleanup_old_requests(self, connection_data: Dict[str, Any], current_time: float):
+        """Remove old request timestamps outside the tracking window."""
+        for event_type, timestamps in list(connection_data["requests"].items()):
+            # Keep only requests within the largest window (60 seconds)
+            connection_data["requests"][event_type] = [
+                ts for ts in timestamps if current_time - ts < 60
+            ]
+            if not connection_data["requests"][event_type]:
+                del connection_data["requests"][event_type]
+
+    def _is_blocked(self, connection_data: Dict[str, Any], event_type: str, current_time: float) -> bool:
+        """Check if the connection is blocked for this event type."""
+        if event_type in connection_data["blocked_until"]:
+            if current_time < connection_data["blocked_until"][event_type]:
+                return True
+            else:
+                # Block has expired
+                del connection_data["blocked_until"][event_type]
+        return False
+
+    async def check_rate_limit(self, websocket: WebSocket, event_type: str) -> tuple[bool, str]:
+        """
+        Check if a WebSocket event is allowed under rate limiting rules.
 
         Args:
             websocket: The WebSocket connection
-            room_id: The room ID (can be "lobby")
-            event_name: The event type being sent
+            event_type: Type of event being sent
 
         Returns:
-            Tuple of (allowed, rate_limit_info)
+            Tuple of (allowed: bool, reason: str)
         """
-        # Get priority manager
-        priority_manager = get_priority_manager()
+        current_time = time.time()
+        connection_key = self._get_connection_key(websocket)
+        connection_data = self.connections[connection_key]
 
-        # Check if this event should bypass rate limiting
-        if priority_manager.should_bypass_rate_limit(event_name):
-            return True, {"bypassed": True, "reason": "critical_event"}
+        # Periodic cleanup (every 60 seconds per connection)
+        if current_time - connection_data["last_cleanup"] > 60:
+            self._cleanup_old_requests(connection_data, current_time)
+            connection_data["last_cleanup"] = current_time
 
-        # Get the appropriate rule
-        rule = WEBSOCKET_RATE_LIMITS.get(event_name, WEBSOCKET_RATE_LIMITS["default"])
+        # Check if blocked
+        if self._is_blocked(connection_data, event_type, current_time):
+            remaining_block = connection_data["blocked_until"][event_type] - current_time
+            return False, f"Rate limit exceeded. Blocked for {int(remaining_block)} more seconds."
 
-        # Get client identifier
-        client_id = self._get_client_id(websocket, room_id)
+        # Get the rule for this event type
+        rule = self.rules.get(event_type, self.rules.get("_default"))
+        if not rule:
+            # No rate limiting if no rule defined
+            return True, "No rate limit applied"
 
-        # Track connection statistics
-        if client_id not in self.connection_stats:
-            self.connection_stats[client_id] = {}
-        if event_name not in self.connection_stats[client_id]:
-            self.connection_stats[client_id][event_name] = 0
-        current_count = self.connection_stats[client_id][event_name]
-
-        # Adjust rate limit based on priority
-        adjusted_limit, should_warn = priority_manager.adjust_rate_limit_for_priority(
-            event_name, rule.requests, current_count
-        )
-
-        # Apply grace period if applicable
-        final_limit = priority_manager.apply_grace_period_multiplier(
-            client_id, event_name, adjusted_limit
-        )
-
-        # Create adjusted rule
-        adjusted_rule = RateLimitRule(
-            requests=final_limit,
-            window_seconds=rule.window_seconds,
-            burst_multiplier=rule.burst_multiplier,
-            block_duration_seconds=rule.block_duration_seconds,
-        )
-
-        # Check rate limit
-        allowed, rate_info = await self.rate_limiter.check_websocket_rate_limit(
-            room_id, client_id, event_name, adjusted_rule
-        )
-
-        # Update statistics
-        self.connection_stats[client_id][event_name] += 1
-
-        # Track room message counts
-        if room_id not in self.room_message_counts:
-            self.room_message_counts[room_id] = {}
-        if event_name not in self.room_message_counts[room_id]:
-            self.room_message_counts[room_id][event_name] = 0
-        self.room_message_counts[room_id][event_name] += 1
-
-        # Handle warnings and grace periods
-        if allowed and should_warn:
-            if priority_manager.should_send_warning(client_id, event_name):
-                priority_manager.grant_grace_period(client_id, event_name)
-                in_grace = priority_manager.check_grace_period(client_id, event_name)
-
-                rate_info["warning"] = priority_manager.get_rate_limit_response(
-                    event_name, True, final_limit - current_count, final_limit, in_grace
+        # Get request history for this event type
+        request_history = connection_data["requests"][event_type]
+        
+        # Count requests in the time window
+        window_start = current_time - rule.window_seconds
+        recent_requests = [ts for ts in request_history if ts >= window_start]
+        
+        # Apply burst multiplier for calculation
+        effective_limit = int(rule.requests * rule.burst_multiplier)
+        
+        if len(recent_requests) >= effective_limit:
+            # Rate limit exceeded
+            connection_data["warnings"] += 1
+            
+            # Block if specified
+            if rule.block_duration_seconds > 0:
+                connection_data["blocked_until"][event_type] = current_time + rule.block_duration_seconds
+                logger.warning(
+                    f"WebSocket {connection_key} blocked for {event_type} "
+                    f"for {rule.block_duration_seconds} seconds"
                 )
+            
+            return False, f"Rate limit exceeded: {len(recent_requests)}/{rule.requests} requests in {rule.window_seconds}s"
+        
+        # Request allowed - track it
+        request_history.append(current_time)
+        return True, "Request allowed"
 
-        # Add priority info to response
-        if not allowed:
-            rate_info["priority"] = priority_manager.get_event_priority(event_name).name
-            rate_info["grace_eligible"] = (
-                event_name in priority_manager.GRACE_ELIGIBLE_EVENTS
-            )
-
-            # Log WebSocket rate limit violation
-            logger.info(
-                f"WebSocket rate limit exceeded for {event_name}",
-                extra={
-                    "rate_limit_data": {
-                        "client_id": client_id,
-                        "room_id": room_id,
-                        "event_type": event_name,
-                        "priority": rate_info["priority"],
-                        "current_count": current_count,
-                        "limit": final_limit,
-                        "event": "ws_rate_limit_exceeded",
-                    }
-                },
-            )
-        elif allowed and "warning" in rate_info:
-            # Log warning
-            logger.debug(
-                f"WebSocket rate limit warning for {event_name}",
-                extra={
-                    "rate_limit_data": {
-                        "client_id": client_id,
-                        "room_id": room_id,
-                        "event_type": event_name,
-                        "remaining": final_limit - current_count,
-                        "limit": final_limit,
-                        "in_grace": in_grace if "in_grace" in locals() else False,
-                        "event": "ws_rate_limit_warning",
-                    }
-                },
-            )
-
-        return allowed, rate_info
-
-    async def check_room_flood(self, room_id: str, threshold: int = 1000) -> bool:
+    async def should_process_event(self, websocket: WebSocket, event_type: str, 
+                                  priority: EventPriority = None) -> bool:
         """
-        Check if a room is being flooded with messages.
+        Determine if an event should be processed based on rate limits and priority.
 
         Args:
-            room_id: The room to check
-            threshold: Max messages per minute for the entire room
+            websocket: The WebSocket connection
+            event_type: Type of event
+            priority: Event priority (optional)
 
         Returns:
-            True if room appears to be flooded
+            True if event should be processed
         """
-        if room_id not in self.room_message_counts:
-            return False
+        # High priority events bypass rate limiting
+        if priority and priority == EventPriority.CRITICAL:
+            return True
 
-        # Count total messages in the last minute
-        total_messages = sum(self.room_message_counts[room_id].values())
+        allowed, reason = await self.check_rate_limit(websocket, event_type)
+        
+        if not allowed:
+            logger.debug(f"Rate limit hit for {event_type}: {reason}")
+            
+        return allowed
 
-        return total_messages > threshold
+    def get_connection_stats(self, websocket: WebSocket) -> Dict[str, Any]:
+        """Get rate limiting statistics for a connection."""
+        connection_key = self._get_connection_key(websocket)
+        connection_data = self.connections.get(connection_key)
+        
+        if not connection_data:
+            return {"status": "no_data"}
+        
+        current_time = time.time()
+        stats = {
+            "warnings": connection_data["warnings"],
+            "active_blocks": {},
+            "recent_requests": {}
+        }
+        
+        # Check active blocks
+        for event_type, blocked_until in connection_data["blocked_until"].items():
+            if current_time < blocked_until:
+                stats["active_blocks"][event_type] = int(blocked_until - current_time)
+        
+        # Count recent requests per event type
+        for event_type, timestamps in connection_data["requests"].items():
+            recent = [ts for ts in timestamps if current_time - ts < 60]
+            if recent:
+                stats["recent_requests"][event_type] = len(recent)
+        
+        return stats
 
-    def get_connection_stats(self, client_id: Optional[str] = None) -> Dict[str, Any]:
-        """Get statistics for WebSocket connections"""
-        if client_id:
-            return self.connection_stats.get(client_id, {})
-        else:
-            return {
-                "total_connections": len(self.connection_stats),
-                "total_messages": sum(
-                    sum(events.values()) for events in self.connection_stats.values()
-                ),
-                "room_stats": {
-                    room_id: sum(events.values())
-                    for room_id, events in self.room_message_counts.items()
-                },
-            }
+    def cleanup_connection(self, websocket: WebSocket):
+        """Clean up tracking data for a disconnected connection."""
+        connection_key = self._get_connection_key(websocket)
+        if connection_key in self.connections:
+            del self.connections[connection_key]
+            logger.debug(f"Cleaned up rate limit data for {connection_key}")
 
-    async def cleanup_connection(self, websocket: WebSocket, room_id: str):
-        """Clean up rate limiting data when a connection closes"""
-        client_id = self._get_client_id(websocket, room_id)
+    def global_cleanup(self):
+        """Perform global cleanup of old connection data."""
+        current_time = time.time()
+        
+        # Only run every 5 minutes
+        if current_time - self._last_global_cleanup < 300:
+            return
+        
+        self._last_global_cleanup = current_time
+        
+        # Remove connections with no recent activity
+        inactive_connections = []
+        for conn_key, conn_data in self.connections.items():
+            # If no requests in the last 10 minutes, consider inactive
+            has_recent_activity = any(
+                any(current_time - ts < 600 for ts in timestamps)
+                for timestamps in conn_data["requests"].values()
+            )
+            
+            if not has_recent_activity:
+                inactive_connections.append(conn_key)
+        
+        for conn_key in inactive_connections:
+            del self.connections[conn_key]
+        
+        if inactive_connections:
+            logger.info(f"Cleaned up {len(inactive_connections)} inactive connections")
 
-        # Remove connection stats after a delay
-        await asyncio.sleep(300)  # Keep stats for 5 minutes after disconnect
 
-        if client_id in self.connection_stats:
-            del self.connection_stats[client_id]
-
-
-# Global WebSocket rate limiter instance
+# Global instance
 _websocket_rate_limiter = None
 
 
 def get_websocket_rate_limiter() -> WebSocketRateLimiter:
-    """Get the global WebSocket rate limiter instance"""
+    """Get the global WebSocket rate limiter instance."""
     global _websocket_rate_limiter
     if _websocket_rate_limiter is None:
         _websocket_rate_limiter = WebSocketRateLimiter()
     return _websocket_rate_limiter
 
 
-async def check_websocket_rate_limit(
-    websocket: WebSocket, room_id: str, event_name: str
-) -> Tuple[bool, Optional[Dict[str, Any]]]:
+# Convenience function for rate limit checking
+async def check_websocket_rate_limit(websocket: WebSocket, event_type: str) -> tuple[bool, str]:
     """
-    Convenience function to check WebSocket rate limits.
-
+    Check if a WebSocket event is allowed under rate limits.
+    
     Args:
         websocket: The WebSocket connection
-        room_id: The room ID
-        event_name: The event being sent
-
+        event_type: Type of event being sent
+        
     Returns:
-        Tuple of (allowed, rate_limit_info)
+        Tuple of (allowed: bool, reason: str)
     """
-    rate_limiter = get_websocket_rate_limiter()
-    return await rate_limiter.check_websocket_message_rate_limit(
-        websocket, room_id, event_name
-    )
+    limiter = get_websocket_rate_limiter()
+    return await limiter.check_rate_limit(websocket, event_type)
 
 
-async def send_rate_limit_error(websocket: WebSocket, rate_info: Dict[str, Any]):
-    """Send a rate limit error message to the client"""
-    if ERROR_CODES_AVAILABLE:
-        error = create_standard_error(
-            ErrorCode.NETWORK_RATE_LIMITED,
-            "Rate limit exceeded for this event type",
-            context={
-                "retry_after": rate_info.get("retry_after", 60),
-                "limit": rate_info.get("limit"),
-                "window": rate_info.get("window"),
-                "blocked": rate_info.get("blocked", False),
-            },
-        )
-        error_data = error.to_dict()
-    else:
-        error_data = {
-            "message": rate_info.get(
-                "reason", "Rate limit exceeded. Please slow down."
-            ),
-            "type": "rate_limit_error",
-            "retry_after": rate_info.get("retry_after", 60),
-            "limit": rate_info.get("limit"),
-            "window": rate_info.get("window"),
-        }
-
-    await websocket.send_json({"event": "error", "data": error_data})
+# Legacy compatibility function
+async def send_rate_limit_error(websocket: WebSocket, event_type: str, message: str = None):
+    """
+    Send a rate limit error message to the WebSocket client.
+    
+    Args:
+        websocket: The WebSocket connection
+        event_type: The event type that was rate limited
+        message: Optional custom error message
+    """
+    error_message = message or f"Rate limit exceeded for event: {event_type}"
+    
+    try:
+        await websocket.send_json({
+            "event": "error",
+            "data": {
+                "code": "RATE_LIMIT_EXCEEDED",
+                "message": error_message,
+                "event_type": event_type
+            }
+        })
+    except Exception as e:
+        logger.error(f"Failed to send rate limit error: {e}")

@@ -35,7 +35,7 @@ const cssPlugin = {
 const buildOptions = {
   entryPoints: [entry],
   bundle: true,
-  outdir: '../backend/static',
+  outdir: process.env.ESBUILD_OUT || '../static',
   entryNames: 'bundle',
   loader: {
     '.js': 'jsx',
@@ -68,7 +68,7 @@ if (process.argv.includes('--production')) {
     })
     .then(() => {
       console.log(
-        `👀 Watching for changes to ${entry}, output to ../backend/static/`
+        `👀 Watching for changes to ${entry}, output to ${buildOptions.outdir}/`
       );
     })
     .catch(() => process.exit(1));

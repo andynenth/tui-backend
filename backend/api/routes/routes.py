@@ -6,7 +6,6 @@ from datetime import datetime
 from typing import Any, Dict, List, Optional
 
 from infrastructure.websocket.connection_singleton import broadcast, get_room_stats
-from shared_instances import shared_bot_manager, shared_room_manager
 from fastapi import APIRouter, HTTPException, Query
 from fastapi.responses import JSONResponse
 
@@ -21,6 +20,17 @@ from api.models.game_models import (
 from api.validation import RestApiValidator
 from engine.state_machine.core import ActionType, GameAction
 
+# Import clean architecture dependencies
+from infrastructure.dependencies import (
+    get_unit_of_work,
+    get_event_publisher,
+    get_bot_service,
+    get_metrics_collector
+)
+from application.services.room_application_service import RoomApplicationService
+from application.services.lobby_application_service import LobbyApplicationService
+from application.dto.lobby import GetRoomListRequest
+
 # Import debug routes
 from . import debug
 
@@ -34,10 +44,8 @@ except ImportError:
     event_store = None
 
 
-# Global instances - REMOVED: RedealController (using state machine instead)
+# Global instances - Using clean architecture
 router = APIRouter()
-room_manager = shared_room_manager
-bot_manager = shared_bot_manager
 
 # Mount debug router
 router.include_router(debug.router)
@@ -55,19 +63,31 @@ router.include_router(debug.router)
 
 
 @router.get("/debug/room-stats")
-async def get_room_stats(room_id: Optional[str] = Query(None)):
+async def get_room_stats_endpoint(room_id: Optional[str] = Query(None)):
     """Get room statistics for debugging"""
-    from backend.socket_manager import _socket_manager
-
-    stats = _socket_manager.get_room_stats(room_id)
+    stats = get_room_stats(room_id)
 
     if room_id:
-        # Include room validation if specific room requested
-        room = await room_manager.get_room(room_id)
-        if room:
-            validation = room.validate_state()
-            stats["room_validation"] = validation
-            stats["room_summary"] = await room.summary()
+        # Include room validation if specific room requested using clean architecture
+        uow = get_unit_of_work()
+        async with uow:
+            room = await uow.rooms.get_by_id(room_id)
+            if room:
+                # Build validation info
+                validation = {
+                    "room_exists": True,
+                    "has_game": room.game is not None,
+                    "player_count": len([s for s in room.slots if s is not None]),
+                    "game_started": room.is_game_started()
+                }
+                stats["room_validation"] = validation
+                stats["room_summary"] = {
+                    "room_id": room.room_id,
+                    "room_code": room.room_code,
+                    "host_name": room.host_name,
+                    "players": [p.name for p in room.slots if p is not None],
+                    "game_started": room.is_game_started()
+                }
 
     return {"timestamp": time.time(), "stats": stats}
 
@@ -94,8 +114,33 @@ async def notify_lobby_room_created(room_data):
             },
         )
 
-        # Also send updated room list
-        available_rooms = await room_manager.list_rooms()
+        # Also send updated room list using clean architecture
+        lobby_service = LobbyApplicationService(
+            unit_of_work=get_unit_of_work(),
+            metrics=get_metrics_collector()
+        )
+        list_request = GetRoomListRequest(
+            player_id="",
+            include_full=False,
+            include_in_game=False
+        )
+        list_response = await lobby_service.get_room_list(list_request)
+        
+        # Convert room summaries to legacy format for WebSocket compatibility
+        available_rooms = [
+            {
+                "room_id": room.room_id,
+                "room_code": room.room_code,
+                "room_name": room.room_name,
+                "host_name": room.host_name,
+                "player_count": room.player_count,
+                "max_players": room.max_players,
+                "game_in_progress": room.game_in_progress,
+                "is_private": room.is_private
+            }
+            for room in list_response.rooms
+        ]
+        
         await broadcast(
             "lobby",
             "room_list_update",
@@ -128,8 +173,33 @@ async def notify_lobby_room_updated(room_data):
             },
         )
 
-        # Send fresh room list
-        available_rooms = await room_manager.list_rooms()
+        # Send fresh room list using clean architecture
+        lobby_service = LobbyApplicationService(
+            unit_of_work=get_unit_of_work(),
+            metrics=get_metrics_collector()
+        )
+        list_request = GetRoomListRequest(
+            player_id="",
+            include_full=False,
+            include_in_game=False
+        )
+        list_response = await lobby_service.get_room_list(list_request)
+        
+        # Convert room summaries to legacy format
+        available_rooms = [
+            {
+                "room_id": room.room_id,
+                "room_code": room.room_code,
+                "room_name": room.room_name,
+                "host_name": room.host_name,
+                "player_count": room.player_count,
+                "max_players": room.max_players,
+                "game_in_progress": room.game_in_progress,
+                "is_private": room.is_private
+            }
+            for room in list_response.rooms
+        ]
+        
         await broadcast(
             "lobby",
             "room_list_update",
@@ -157,8 +227,33 @@ async def notify_lobby_room_closed(room_id, reason="Room closed"):
             },
         )
 
-        # Send updated room list (without the closed room)
-        available_rooms = await room_manager.list_rooms()
+        # Send updated room list (without the closed room) using clean architecture
+        lobby_service = LobbyApplicationService(
+            unit_of_work=get_unit_of_work(),
+            metrics=get_metrics_collector()
+        )
+        list_request = GetRoomListRequest(
+            player_id="",
+            include_full=False,
+            include_in_game=False
+        )
+        list_response = await lobby_service.get_room_list(list_request)
+        
+        # Convert room summaries to legacy format
+        available_rooms = [
+            {
+                "room_id": room.room_id,
+                "room_code": room.room_code,
+                "room_name": room.room_name,
+                "host_name": room.host_name,
+                "player_count": room.player_count,
+                "max_players": room.max_players,
+                "game_in_progress": room.game_in_progress,
+                "is_private": room.is_private
+            }
+            for room in list_response.rooms
+        ]
+        
         await broadcast(
             "lobby",
             "room_list_update",
@@ -231,8 +326,10 @@ async def get_room_reconstructed_state(room_id: str):
         raise HTTPException(status_code=501, detail="Event store not available")
 
     try:
-        # First try to get live room state
-        room = await room_manager.get_room(room_id)
+        # First try to get live room state using clean architecture
+        uow = get_unit_of_work()
+        async with uow:
+            room = await uow.rooms.get_by_id(room_id)
         if room and room.game:
             # Return live state if available
             return {
@@ -493,7 +590,8 @@ async def detailed_health_check():
 
         # Check rate limiting status
         try:
-            from api.middleware.rate_limit import get_rate_limiter
+            from infrastructure.rate_limiting.middleware import RateLimitMiddleware
+            get_rate_limiter = lambda: RateLimitMiddleware()
 
             rate_limiter = get_rate_limiter()
             rate_stats = rate_limiter.get_stats()
@@ -523,12 +621,15 @@ async def detailed_health_check():
         process = psutil.Process()
         memory_usage_mb = process.memory_info().rss / 1024 / 1024
 
-        # Get active rooms and connections
-        active_rooms = len(room_manager.rooms)
-        active_connections = sum(
-            len(conns)
-            for conns in backend.socket_manager._socket_manager.room_connections.values()
-        )
+        # Get active rooms and connections using clean architecture
+        uow_stats = get_unit_of_work()
+        async with uow_stats:
+            all_rooms = await uow_stats.rooms.find_by_criteria({})
+            active_rooms = len(all_rooms)
+        
+        # Get active connections from connection singleton
+        ws_stats = get_room_stats()
+        active_connections = ws_stats.get("total_active_connections", 0)
 
         # Return in the expected DetailedHealthCheck format
         return {
@@ -565,13 +666,8 @@ async def health_metrics():
         str: Metrics in Prometheus format
     """
     try:
-        # Import health monitor and socket manager
-        import sys
-
+        # Import health monitor
         from api.services.health_monitor import health_monitor
-
-        sys.path.append("/Users/nrw/python/tui-project/liap-tui/backend")
-        from socket_manager import _socket_manager as socket_manager
 
         health_status = await health_monitor.get_health_status()
 
@@ -602,9 +698,12 @@ async def health_metrics():
         metrics.append(f"liap_websocket_connections_total {total_connections}")
         metrics.append(f"liap_websocket_pending_messages_total {total_pending}")
 
-        # Room metrics
-        room_count = len(room_manager.rooms)
-        active_games = sum(1 for room in room_manager.rooms.values() if room.started)
+        # Room metrics using clean architecture
+        uow_metrics = get_unit_of_work()
+        async with uow_metrics:
+            all_rooms = await uow_metrics.rooms.find_by_criteria({})
+            room_count = len(all_rooms)
+            active_games = sum(1 for room in all_rooms if room.is_game_started())
 
         metrics.append(f"liap_rooms_total {room_count}")
         metrics.append(f"liap_active_games_total {active_games}")
@@ -842,13 +941,8 @@ async def system_stats():
     """
     try:
         # Import all services
-        import sys
-
         from api.services.health_monitor import health_monitor
         from api.services.recovery_manager import recovery_manager
-
-        sys.path.append("/Users/nrw/python/tui-project/liap-tui/backend")
-        from socket_manager import _socket_manager as socket_manager
 
         # Get health status
         health_status = await health_monitor.get_health_status()
@@ -856,20 +950,28 @@ async def system_stats():
         # Get recovery status
         recovery_status = recovery_manager.get_recovery_status()
 
-        # Get socket manager stats
-        socket_stats = socket_manager.get_message_stats()
-
-        # Get room stats
-        room_stats = {
-            "total_rooms": len(room_manager.rooms),
-            "active_games": sum(
-                1 for room in room_manager.rooms.values() if room.started
-            ),
-            "total_players": sum(
-                len([slot for slot in room.slots if slot is not None])
-                for room in room_manager.rooms.values()
-            ),
+        # Get WebSocket stats from connection singleton
+        ws_room_stats = get_room_stats()
+        socket_stats = {
+            "total_active_connections": ws_room_stats.get("total_active_connections", 0),
+            "rooms_with_connections": ws_room_stats.get("rooms_with_connections", 0),
+            "message_stats": {"note": "Message stats not available in clean architecture"}
         }
+
+        # Get room stats using clean architecture
+        uow_sys = get_unit_of_work()
+        async with uow_sys:
+            all_rooms = await uow_sys.rooms.find_by_criteria({})
+            room_stats = {
+                "total_rooms": len(all_rooms),
+                "active_games": sum(
+                    1 for room in all_rooms if room.is_game_started()
+                ),
+                "total_players": sum(
+                    len([slot for slot in room.slots if slot is not None])
+                    for room in all_rooms
+                ),
+            }
 
         # Get event store stats if available
         event_stats = {}

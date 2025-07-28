@@ -10,6 +10,6 @@ This module contains middleware components for:
 - Request validation
 """
 
-from .rate_limit import RateLimitMiddleware, create_rate_limiter
+from infrastructure.rate_limiting import RateLimitMiddleware, create_rate_limiter
 
 __all__ = ["RateLimitMiddleware", "create_rate_limiter"]

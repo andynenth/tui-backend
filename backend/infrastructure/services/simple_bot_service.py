@@ -9,22 +9,21 @@ import logging
 from typing import Optional, List, Dict, Any
 
 from application.interfaces import BotService
-from shared_instances import shared_bot_manager
 
 logger = logging.getLogger(__name__)
 
 
 class SimpleBotService(BotService):
     """
-    Bot service that delegates to the existing bot manager.
+    Bot service implementation for clean architecture.
     
-    This implementation wraps the legacy bot manager to provide
-    the clean interface expected by the application layer.
+    This implementation provides bot functionality without
+    depending on legacy components.
     """
     
     def __init__(self):
         """Initialize the bot service."""
-        self._bot_manager = shared_bot_manager
+        # No legacy dependencies needed
         
     async def create_bot(self, difficulty: str = "medium") -> str:
         """

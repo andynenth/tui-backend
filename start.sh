@@ -34,7 +34,7 @@ echo "🚦 Adapter routing enabled (100% traffic to clean architecture)"
 mkdir -p "$STATIC_DIR"
 
 # Copy latest index.html to static folder
-cp "frontend/$INDEX_FILE" "$STATIC_DIR/$INDEX_FILE"
+cp "frontend/$INDEX_FILE" "$STATIC_DIR/"
 
 # Start FastAPI backend with hot reload
 echo "▶️ Starting backend on http://${API_HOST}:${API_PORT} ..."
