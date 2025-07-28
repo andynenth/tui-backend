@@ -62,11 +62,17 @@ from application.dto.connection import (
 )
 from application.dto.room_management import (
     CreateRoomRequest,
+    CreateRoomResponse,
     JoinRoomRequest,
+    JoinRoomResponse,
     LeaveRoomRequest,
+    LeaveRoomResponse,
     GetRoomStateRequest,
+    GetRoomStateResponse,
     AddBotRequest,
-    RemovePlayerRequest
+    AddBotResponse,
+    RemovePlayerRequest,
+    RemovePlayerResponse
 )
 from application.dto.lobby import (
     GetRoomListRequest,
@@ -74,14 +80,21 @@ from application.dto.lobby import (
 )
 from application.dto.game import (
     StartGameRequest,
+    StartGameResponse,
     DeclareRequest,
+    DeclareResponse,
     PlayRequest,
+    PlayResponse,
     RequestRedealRequest,
+    RequestRedealResponse,
     AcceptRedealRequest,
+    AcceptRedealResponse,
     DeclineRedealRequest,
-    RedealDecisionRequest,
-    PlayerReadyRequest,
-    LeaveGameRequest
+    DeclineRedealResponse,
+    MarkPlayerReadyRequest,
+    MarkPlayerReadyResponse,
+    LeaveGameRequest,
+    LeaveGameResponse
 )
 
 logger = logging.getLogger(__name__)
@@ -402,7 +415,8 @@ class UseCaseDispatcher:
             room_id=room_id,
             player_id=player_id,
             player_name=player_name,
-            join_code=data.get("join_code")
+            room_code=data.get("join_code") or data.get("room_code"),
+            seat_preference=data.get("seat_preference")
         )
         
         response = await self.join_room_use_case.execute(request)
@@ -414,6 +428,8 @@ class UseCaseDispatcher:
                     "success": True,
                     "room_id": room_id,
                     "player_id": player_id,
+                    "seat_position": response.seat_position,
+                    "is_host": response.is_host,
                     "room_info": self._format_room_info(response.room_info)
                 }
             }
@@ -422,7 +438,7 @@ class UseCaseDispatcher:
                 "event": "join_failed",
                 "data": {
                     "success": False,
-                    "error": response.error_message
+                    "error": getattr(response, 'error', 'Failed to join room')
                 }
             }
     
@@ -463,7 +479,7 @@ class UseCaseDispatcher:
         
         request = GetRoomStateRequest(
             room_id=room_id,
-            requester_id=context.player_id
+            requesting_player_id=context.player_id
         )
         
         response = await self.get_room_state_use_case.execute(request)
@@ -491,9 +507,10 @@ class UseCaseDispatcher:
         
         request = AddBotRequest(
             room_id=room_id,
-            requester_id=context.player_id or data.get("requester_id"),
+            requesting_player_id=context.player_id or data.get("requester_id") or "anonymous",
             bot_difficulty=data.get("difficulty", "medium"),
-            bot_name=data.get("bot_name")
+            bot_name=data.get("bot_name"),
+            seat_position=data.get("seat_position")
         )
         
         response = await self.add_bot_use_case.execute(request)
@@ -503,8 +520,8 @@ class UseCaseDispatcher:
                 "event": "bot_added",
                 "data": {
                     "success": True,
-                    "bot_id": response.bot_id,
-                    "bot_name": response.bot_name,
+                    "bot_id": response.bot_info.player_id,
+                    "bot_name": response.bot_info.player_name,
                     "room_info": self._format_room_info(response.room_info)
                 }
             }
@@ -512,7 +529,7 @@ class UseCaseDispatcher:
             return {
                 "event": "error",
                 "data": {
-                    "message": response.error_message or "Failed to add bot",
+                    "message": getattr(response, 'error', 'Failed to add bot'),
                     "type": "bot_add_failed"
                 }
             }
@@ -533,8 +550,9 @@ class UseCaseDispatcher:
         
         request = RemovePlayerRequest(
             room_id=room_id,
-            player_id=player_to_remove,
-            requester_id=context.player_id or data.get("requester_id")
+            target_player_id=player_to_remove,
+            requesting_player_id=context.player_id or data.get("requester_id") or "anonymous",
+            reason=data.get("reason")
         )
         
         response = await self.remove_player_use_case.execute(request)
@@ -544,8 +562,8 @@ class UseCaseDispatcher:
                 "event": "player_removed",
                 "data": {
                     "success": True,
-                    "removed_player_id": player_to_remove,
-                    "new_host_id": response.new_host_id,
+                    "removed_player_id": response.removed_player_id,
+                    "was_bot": response.was_bot,
                     "room_info": self._format_room_info(response.room_info)
                 }
             }
@@ -553,7 +571,7 @@ class UseCaseDispatcher:
             return {
                 "event": "error",
                 "data": {
-                    "message": response.error_message or "Failed to remove player",
+                    "message": getattr(response, 'error', 'Failed to remove player'),
                     "type": "remove_failed"
                 }
             }
@@ -563,9 +581,10 @@ class UseCaseDispatcher:
     async def _handle_request_room_list(self, data: Dict[str, Any], context: DispatchContext) -> Dict[str, Any]:
         """Handle request_room_list event"""
         request = GetRoomListRequest(
+            player_id=context.player_id,
             include_private=data.get("include_private", False),
             include_full=data.get("include_full", False),
-            include_in_progress=data.get("include_in_progress", False)
+            include_in_game=data.get("include_in_game", False)
         )
         
         response = await self.get_room_list_use_case.execute(request)
@@ -611,7 +630,7 @@ class UseCaseDispatcher:
         
         request = StartGameRequest(
             room_id=room_id,
-            requester_id=context.player_id or data.get("requester_id")
+            requesting_player_id=context.player_id or data.get("requester_id") or "anonymous"
         )
         
         response = await self.start_game_use_case.execute(request)
@@ -639,7 +658,7 @@ class UseCaseDispatcher:
         room_id = data.get("room_id") or context.room_id
         
         request = DeclareRequest(
-            room_id=room_id,
+            game_id=data.get("game_id") or room_id,  # Use room_id as fallback
             player_id=context.player_id or data.get("player_id"),
             pile_count=data.get("pile_count", 0)
         )
@@ -671,10 +690,9 @@ class UseCaseDispatcher:
         room_id = data.get("room_id") or context.room_id
         
         request = PlayRequest(
-            room_id=room_id,
+            game_id=data.get("game_id") or room_id,  # Use room_id as fallback
             player_id=context.player_id or data.get("player_id"),
-            pieces=data.get("pieces", []),
-            piece_count=data.get("piece_count")
+            pieces=data.get("pieces", [])
         )
         
         response = await self.play_use_case.execute(request)
@@ -706,9 +724,9 @@ class UseCaseDispatcher:
         room_id = data.get("room_id") or context.room_id
         
         request = RequestRedealRequest(
-            room_id=room_id,
+            game_id=data.get("game_id") or room_id,  # Use room_id as fallback
             player_id=context.player_id or data.get("player_id"),
-            reason=data.get("reason", "weak_hand")
+            hand_strength_score=data.get("hand_strength_score")
         )
         
         response = await self.request_redeal_use_case.execute(request)
@@ -738,8 +756,9 @@ class UseCaseDispatcher:
         room_id = data.get("room_id") or context.room_id
         
         request = AcceptRedealRequest(
-            room_id=room_id,
-            player_id=context.player_id or data.get("player_id")
+            game_id=data.get("game_id") or room_id,  # Use room_id as fallback
+            player_id=context.player_id or data.get("player_id"),
+            redeal_id=data.get("redeal_id", "")
         )
         
         response = await self.accept_redeal_use_case.execute(request)
@@ -761,8 +780,9 @@ class UseCaseDispatcher:
         room_id = data.get("room_id") or context.room_id
         
         request = DeclineRedealRequest(
-            room_id=room_id,
-            player_id=context.player_id or data.get("player_id")
+            game_id=data.get("game_id") or room_id,  # Use room_id as fallback
+            player_id=context.player_id or data.get("player_id"),
+            redeal_id=data.get("redeal_id", "")
         )
         
         response = await self.decline_redeal_use_case.execute(request)
@@ -800,10 +820,10 @@ class UseCaseDispatcher:
         """Handle player_ready event"""
         room_id = data.get("room_id") or context.room_id
         
-        request = PlayerReadyRequest(
-            room_id=room_id,
+        request = MarkPlayerReadyRequest(
+            game_id=data.get("game_id") or room_id,  # Use room_id as fallback
             player_id=context.player_id or data.get("player_id"),
-            ready_state=data.get("ready", True)
+            ready_for_phase=data.get("phase", "next")
         )
         
         response = await self.player_ready_use_case.execute(request)
@@ -823,8 +843,9 @@ class UseCaseDispatcher:
         room_id = data.get("room_id") or context.room_id
         
         request = LeaveGameRequest(
-            room_id=room_id,
-            player_id=context.player_id or data.get("player_id")
+            game_id=data.get("game_id") or room_id,  # Use room_id as fallback
+            player_id=context.player_id or data.get("player_id"),
+            reason=data.get("reason")
         )
         
         response = await self.leave_game_use_case.execute(request)
@@ -843,6 +864,13 @@ class UseCaseDispatcher:
     
     def _format_room_info(self, room_info) -> Dict[str, Any]:
         """Format room info DTO for WebSocket response"""
+        # Handle different status types
+        status = room_info.status
+        if hasattr(status, 'value'):
+            status = status.value
+        elif not isinstance(status, str):
+            status = str(status)
+            
         return {
             "room_id": room_info.room_id,
             "room_code": room_info.room_code,
@@ -861,7 +889,7 @@ class UseCaseDispatcher:
             ],
             "max_players": room_info.max_players,
             "game_in_progress": room_info.game_in_progress,
-            "status": getattr(room_info, 'status', 'waiting')
+            "status": status
         }
     
     async def _ensure_legacy_visibility(self, room_id: str) -> None:

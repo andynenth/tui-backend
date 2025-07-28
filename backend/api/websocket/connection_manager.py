@@ -127,6 +127,28 @@ class ConnectionManager:
             if room_id in self.connections and player_name in self.connections[room_id]:
                 return self.connections[room_id][player_name]
             return None
+    
+    def get_connection_by_websocket_id(self, websocket_id: str) -> Optional[PlayerConnection]:
+        """Get a player's connection info by websocket ID (synchronous for compatibility)"""
+        # No lock needed for read operation
+        if websocket_id not in self.websocket_to_player:
+            return None
+        
+        room_id, player_name = self.websocket_to_player[websocket_id]
+        
+        if room_id in self.connections and player_name in self.connections[room_id]:
+            connection = self.connections[room_id][player_name]
+            # Create a simple object with the needed attributes
+            class SimpleConnection:
+                def __init__(self, player_id, player_name):
+                    self.player_id = player_id
+                    self.player_name = player_name
+            
+            # Generate player_id from room and name
+            player_id = f"{room_id}_p{hash(player_name) % 100}"
+            return SimpleConnection(player_id, player_name)
+        
+        return None
 
     async def get_disconnected_players(
         self, room_id: str

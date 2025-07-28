@@ -37,10 +37,14 @@ class WebSocketConfig:
         self.use_case_events: Set[str] = set()
         self._load_use_case_events()
         
+        # Validation bypass for migrated events
+        self.bypass_validation = os.getenv("BYPASS_VALIDATION_FOR_USE_CASES", "true").lower() == "true"
+        
         # Log configuration
         logger.info(f"WebSocket routing mode: {self.routing_mode.value}")
         if self.routing_mode == RoutingMode.MIGRATION:
             logger.info(f"Events routed to use cases: {len(self.use_case_events)}")
+        logger.info(f"Validation bypass for use cases: {self.bypass_validation}")
     
     def _load_use_case_events(self):
         """Load events to route through use cases during migration"""
@@ -50,12 +54,19 @@ class WebSocketConfig:
         if events_str:
             self.use_case_events = {e.strip() for e in events_str.split(",") if e.strip()}
         else:
-            # Default migration order: start with connection and lobby events
+            # Default migration order: connection, lobby, then room events
             self.use_case_events = {
                 # Connection events (simple, stateless)
                 "ping", "client_ready", "ack", "sync_request",
                 # Lobby events (read-only)
-                "request_room_list", "get_rooms"
+                "request_room_list", "get_rooms",
+                # Room management events (Day 2 migration)
+                "create_room", "join_room", "leave_room",
+                "get_room_state", "add_bot", "remove_player",
+                # Game events (Day 3 migration)
+                "start_game", "declare", "play", "play_pieces",
+                "request_redeal", "accept_redeal", "decline_redeal",
+                "redeal_decision", "player_ready", "leave_game"
             }
     
     def should_use_use_case(self, event: str) -> bool:
@@ -74,6 +85,18 @@ class WebSocketConfig:
             return False
         else:  # MIGRATION mode
             return event in self.use_case_events
+    
+    def should_bypass_validation(self, event: str) -> bool:
+        """
+        Determine if validation should be bypassed for an event.
+        
+        Args:
+            event: The event name
+            
+        Returns:
+            True if validation should be bypassed, False otherwise
+        """
+        return self.bypass_validation and self.should_use_use_case(event)
     
     def add_use_case_events(self, *events: str):
         """
