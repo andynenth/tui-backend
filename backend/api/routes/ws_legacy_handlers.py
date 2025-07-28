@@ -6,7 +6,7 @@ This allows us to wrap the existing logic and use it as the fallback for the ada
 import asyncio
 import logging
 from typing import Dict, Any, Optional
-from backend.socket_manager import broadcast
+from infrastructure.websocket.broadcast_adapter import broadcast
 from shared_instances import shared_room_manager
 from api.websocket.connection_manager import connection_manager
 from api.websocket.message_queue import message_queue_manager

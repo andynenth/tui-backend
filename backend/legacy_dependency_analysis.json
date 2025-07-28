@@ -1,0 +1,843 @@
+{
+  "analysis_date": "2025-07-27",
+  "circular_dependencies": [
+    [
+      "api/middleware/rate_limit.py",
+      "config/rate_limits.py"
+    ]
+  ],
+  "removal_phases": {
+    "phase_7.2.1": [
+      "verify_adapter_only_mode_simple.py",
+      "simple_ws_test.py",
+      "verify_adapter_only_mode.py",
+      "fix_dto_inheritance.py",
+      "run_tests.py",
+      "start_golden_master_capture.py",
+      "extract_legacy_handlers.py",
+      "fix_domain_imports.py",
+      "run_phase_tests.py",
+      "analyze_golden_master_mismatches.py"
+    ],
+    "phase_7.2.2": [
+      "simple_compatibility_check.py",
+      "socket_manager.py",
+      "config/rate_limits.py",
+      "tests/test_reliable_messaging.py",
+      "tests/test_route_replacement.py"
+    ],
+    "phase_7.2.3": [
+      "engine/player.py",
+      "engine/game.py",
+      "engine/piece.py",
+      "engine/room.py",
+      "engine/bot_manager.py"
+    ]
+  },
+  "clean_with_legacy_deps": [],
+  "total_legacy_files": 192,
+  "dependency_graph": {
+    "capture_from_live_server.py": [
+      "tests/contracts/golden_master.py",
+      "tests/contracts/websocket_contracts.py"
+    ],
+    "simple_compatibility_check.py": [
+      "tests/contracts/websocket_contracts.py"
+    ],
+    "benchmark_async.py": [
+      "engine/piece.py",
+      "engine/ai.py",
+      "engine/async_bot_strategy.py",
+      "engine/player.py"
+    ],
+    "async_migration_example.py": [
+      "engine/async_compat.py",
+      "engine/room_manager.py"
+    ],
+    "shared_instances.py": [
+      "engine/async_room_manager.py",
+      "engine/bot_manager.py"
+    ],
+    "socket_manager.py": [
+      "shared_instances.py"
+    ],
+    "config/rate_limits.py": [
+      "api/middleware/rate_limit.py"
+    ],
+    "tests/test_broadcast_queue.py": [
+      "api/websocket/message_queue.py",
+      "engine/game.py",
+      "engine/room.py",
+      "engine/player.py"
+    ],
+    "tests/test_duplicate_names.py": [
+      "engine/room.py",
+      "engine/player.py"
+    ],
+    "tests/test_bot_state_machine_integration.py": [
+      "engine/game.py",
+      "engine/player.py",
+      "engine/bot_manager.py"
+    ],
+    "tests/test_red_general_assignment.py": [
+      "engine/game.py",
+      "engine/player.py"
+    ],
+    "tests/test_rate_limiting.py": [
+      "api/middleware/rate_limit.py",
+      "api/middleware/websocket_rate_limit.py"
+    ],
+    "tests/test_enterprise_architecture.py": [
+      "engine/piece.py",
+      "engine/game.py",
+      "socket_manager.py",
+      "engine/player.py"
+    ],
+    "tests/test_turn_progression.py": [
+      "engine/piece.py",
+      "engine/game.py",
+      "engine/player.py",
+      "engine/bot_manager.py"
+    ],
+    "tests/test_scoring_delay_investigation.py": [
+      "engine/piece.py",
+      "engine/game.py",
+      "engine/player.py"
+    ],
+    "tests/test_phase_transition_errors.py": [
+      "engine/game.py",
+      "engine/player.py"
+    ],
+    "tests/test_reliable_messaging.py": [
+      "socket_manager.py"
+    ],
+    "tests/test_scoring_object_format.py": [
+      "engine/game.py",
+      "engine/player.py"
+    ],
+    "tests/test_route_replacement.py": [
+      "engine/room.py"
+    ],
+    "tests/test_bot_validation_fix.py": [
+      "engine/piece.py",
+      "engine/game.py",
+      "engine/player.py"
+    ],
+    "tests/test_complete_phase_flow.py": [
+      "engine/piece.py",
+      "engine/game.py",
+      "engine/constants.py",
+      "engine/player.py"
+    ],
+    "tests/test_race_condition_fix.py": [
+      "engine/piece.py",
+      "engine/game.py",
+      "engine/player.py",
+      "engine/bot_manager.py"
+    ],
+    "tests/test_complete_turn_flow.py": [
+      "engine/piece.py",
+      "engine/game.py",
+      "engine/player.py"
+    ],
+    "tests/test_bot_timing_simple.py": [
+      "engine/game.py",
+      "engine/player.py",
+      "engine/bot_manager.py"
+    ],
+    "tests/test_error_recovery.py": [
+      "api/services/recovery_manager.py",
+      "socket_manager.py",
+      "api/services/health_monitor.py",
+      "api/services/logging_service.py"
+    ],
+    "tests/test_bot_turn_timing.py": [
+      "engine/game.py",
+      "engine/player.py",
+      "engine/bot_manager.py"
+    ],
+    "tests/test_websocket_validation.py": [
+      "api/validation/__init__.py"
+    ],
+    "tests/test_bot_timing_fix.py": [
+      "engine/piece.py",
+      "engine/player.py",
+      "engine/bot_manager.py"
+    ],
+    "tests/test_end_to_end_scoring_fix.py": [
+      "engine/game.py",
+      "engine/player.py"
+    ],
+    "tests/test_round_start_phase.py": [
+      "engine/game.py",
+      "engine/player.py"
+    ],
+    "tests/test_bot_redeal_timing.py": [
+      "engine/game.py",
+      "engine/player.py",
+      "engine/bot_manager.py"
+    ],
+    "tests/test_async_performance.py": [
+      "engine/async_compat.py",
+      "engine/async_room_manager.py",
+      "engine/async_bot_strategy.py",
+      "engine/async_room.py",
+      "engine/async_game.py",
+      "engine/piece.py",
+      "engine/room_manager.py",
+      "engine/player.py"
+    ],
+    "tests/test_refined_deduplication.py": [
+      "engine/piece.py",
+      "engine/game.py",
+      "engine/player.py",
+      "engine/bot_manager.py"
+    ],
+    "tests/async_test_utils.py": [
+      "engine/async_compat.py",
+      "engine/room_manager.py",
+      "engine/room.py"
+    ],
+    "tests/test_api_simulation.py": [
+      "engine/room.py"
+    ],
+    "tests/test_bot_manager_call.py": [
+      "engine/piece.py",
+      "engine/game.py",
+      "engine/player.py",
+      "engine/bot_manager.py"
+    ],
+    "tests/test_round_start_scenarios.py": [
+      "engine/piece.py",
+      "engine/game.py",
+      "engine/player.py"
+    ],
+    "tests/test_avatar_colors.py": [
+      "engine/room.py",
+      "engine/player.py"
+    ],
+    "tests/test_full_game_flow.py": [
+      "tests/test_helpers.py"
+    ],
+    "tests/test_immediate_transition_bug.py": [
+      "engine/piece.py",
+      "engine/game.py",
+      "engine/player.py"
+    ],
+    "tests/test_deep_json_check.py": [
+      "engine/game.py",
+      "engine/player.py"
+    ],
+    "tests/test_json_serialization.py": [
+      "engine/game.py",
+      "engine/player.py"
+    ],
+    "tests/test_message_queue.py": [
+      "api/websocket/message_queue.py"
+    ],
+    "tests/test_simple_turn_progression.py": [
+      "engine/piece.py",
+      "engine/game.py",
+      "engine/player.py"
+    ],
+    "tests/test_round_start_bot_integration.py": [
+      "engine/game.py",
+      "engine/player.py",
+      "engine/bot_manager.py"
+    ],
+    "tests/test_phase_broadcast.py": [
+      "engine/game.py",
+      "engine/player.py"
+    ],
+    "tests/test_phase_transitions.py": [
+      "engine/game.py",
+      "engine/player.py"
+    ],
+    "tests/test_disconnect_handling.py": [
+      "engine/game.py",
+      "api/websocket/connection_manager.py",
+      "engine/room.py",
+      "engine/player.py"
+    ],
+    "tests/test_async_compatibility.py": [
+      "engine/async_compat.py",
+      "engine/room_manager.py",
+      "tests/async_test_utils.py",
+      "engine/room.py"
+    ],
+    "tests/test_complete_integration.py": [
+      "engine/room.py",
+      "engine/player.py",
+      "engine/bot_manager.py"
+    ],
+    "tests/test_simultaneous_redeal.py": [
+      "engine/game.py",
+      "engine/player.py"
+    ],
+    "tests/test_turn_state_debug.py": [
+      "engine/piece.py",
+      "engine/game.py",
+      "engine/player.py"
+    ],
+    "tests/test_event_sourcing.py": [
+      "api/services/event_store.py"
+    ],
+    "tests/test_game_over_simple.py": [
+      "engine/win_conditions.py"
+    ],
+    "tests/test_game_over_transition.py": [
+      "engine/win_conditions.py"
+    ],
+    "tests/test_helpers.py": [
+      "engine/piece.py",
+      "engine/constants.py"
+    ],
+    "tests/test_async_game.py": [
+      "engine/win_conditions.py",
+      "engine/async_game.py",
+      "engine/piece.py",
+      "engine/game.py",
+      "engine/player.py"
+    ],
+    "tests/test_integration.py": [
+      "engine/room.py"
+    ],
+    "tests/test_all_phases_enterprise.py": [
+      "engine/piece.py",
+      "engine/game.py",
+      "socket_manager.py",
+      "engine/player.py"
+    ],
+    "tests/test_event_store.py": [
+      "api/services/event_store.py"
+    ],
+    "tests/test_reconnection_flow.py": [
+      "api/websocket/message_queue.py",
+      "engine/room.py",
+      "engine/game.py",
+      "api/websocket/connection_manager.py",
+      "engine/player.py"
+    ],
+    "tests/test_state_replay.py": [
+      "engine/game.py",
+      "api/services/__init__.py",
+      "api/services/event_store.py",
+      "engine/player.py"
+    ],
+    "tests/test_real_game_integration.py": [
+      "engine/room.py"
+    ],
+    "tests/test_realistic_integration.py": [
+      "engine/piece.py",
+      "tests/test_helpers.py",
+      "engine/room.py"
+    ],
+    "tests/test_prep_debug.py": [
+      "engine/game.py",
+      "engine/player.py"
+    ],
+    "tests/test_turn_number_sync.py": [
+      "engine/piece.py",
+      "engine/game.py",
+      "engine/player.py"
+    ],
+    "tests/test_connection_flow.py": [
+      "engine/game.py",
+      "api/websocket/connection_manager.py",
+      "engine/room.py",
+      "engine/player.py"
+    ],
+    "tests/test_auto_transition.py": [
+      "engine/game.py",
+      "engine/player.py"
+    ],
+    "tests/test_round_start_simple.py": [
+      "engine/piece.py",
+      "engine/game.py",
+      "engine/player.py"
+    ],
+    "tests/test_bot_timing.py": [
+      "engine/game.py",
+      "engine/player.py",
+      "engine/bot_manager.py"
+    ],
+    "tests/test_enterprise_fixes.py": [
+      "engine/piece.py",
+      "engine/game.py",
+      "engine/player.py"
+    ],
+    "tests/test_turn_state.py": [
+      "engine/piece.py",
+      "tests/test_helpers.py"
+    ],
+    "tests/test_reconnection_trace.py": [
+      "api/websocket/message_queue.py",
+      "engine/room.py",
+      "engine/game.py",
+      "api/websocket/connection_manager.py",
+      "engine/player.py"
+    ],
+    "tests/contracts/test_websocket_contracts.py": [
+      "tests/contracts/golden_master.py",
+      "tests/contracts/websocket_contracts.py",
+      "tests/contracts/parallel_runner.py"
+    ],
+    "tests/contracts/parallel_runner.py": [
+      "tests/contracts/golden_master.py",
+      "tests/contracts/websocket_contracts.py"
+    ],
+    "tests/contracts/capture_golden_masters.py": [
+      "tests/contracts/golden_master.py",
+      "tests/contracts/websocket_contracts.py"
+    ],
+    "tests/behavioral/test_game_mechanics.py": [
+      "tests/contracts/golden_master.py"
+    ],
+    "tests/behavioral/test_game_flows.py": [
+      "tests/contracts/capture_golden_masters.py",
+      "tests/contracts/golden_master.py",
+      "tests/contracts/websocket_contracts.py"
+    ],
+    "tests/behavioral/test_integration.py": [
+      "tests/contracts/golden_master.py",
+      "tests/contracts/websocket_contracts.py",
+      "tests/contracts/parallel_runner.py"
+    ],
+    "tests/phase6/utilities/validate_test_setup.py": [
+      "tests/contracts/websocket_contracts.py"
+    ],
+    "api/shadow_mode.py": [
+      "tests/contracts/golden_master.py"
+    ],
+    "api/shadow_mode_integration.py": [
+      "api/shadow_mode.py"
+    ],
+    "api/main.py": [
+      "config/logging_config.py"
+    ],
+    "api/shadow_mode_manager.py": [
+      "api/shadow_mode.py"
+    ],
+    "api/middleware/websocket_rate_limit.py": [
+      "config/rate_limits.py"
+    ],
+    "api/middleware/rate_limit.py": [
+      "config/rate_limits.py"
+    ],
+    "api/config/rate_limit_config.py": [
+      "api/middleware/rate_limit.py"
+    ],
+    "api/routes/debug.py": [
+      "api/services/event_store.py"
+    ],
+    "api/routes/ws_integration_patch.py": [
+      "shared_instances.py",
+      "api/routes/ws_legacy_handlers.py"
+    ],
+    "api/routes/ws_legacy_handlers.py": [
+      "api/websocket/message_queue.py",
+      "shared_instances.py",
+      "api/websocket/connection_manager.py"
+    ],
+    "api/routes/routes.py": [
+      "shared_instances.py",
+      "api/models/game_models.py",
+      "config/rate_limits.py",
+      "api/services/health_monitor.py",
+      "api/middleware/websocket_rate_limit.py",
+      "api/validation/__init__.py",
+      "api/services/recovery_manager.py",
+      "api/services/event_store.py",
+      "api/middleware/rate_limit.py",
+      "socket_manager.py"
+    ],
+    "api/services/health_monitor.py": [
+      "shared_instances.py",
+      "socket_manager.py"
+    ],
+    "api/services/recovery_manager.py": [
+      "shared_instances.py",
+      "socket_manager.py"
+    ],
+    "engine/turn_resolution.py": [
+      "engine/piece.py",
+      "engine/rules.py",
+      "engine/player.py"
+    ],
+    "engine/game.py": [
+      "engine/win_conditions.py",
+      "engine/turn_resolution.py",
+      "engine/ai.py",
+      "engine/scoring.py",
+      "engine/piece.py",
+      "engine/rules.py",
+      "engine/player.py"
+    ],
+    "engine/ai.py": [
+      "engine/rules.py"
+    ],
+    "engine/room_manager.py": [
+      "engine/room.py"
+    ],
+    "engine/bot_manager.py": [
+      "engine/win_conditions.py",
+      "engine/async_bot_strategy.py",
+      "engine/ai.py",
+      "engine/rules.py",
+      "engine/player.py"
+    ],
+    "engine/async_bot_strategy.py": [
+      "engine/piece.py",
+      "engine/ai.py",
+      "engine/player.py"
+    ],
+    "engine/piece.py": [
+      "engine/constants.py"
+    ],
+    "engine/room.py": [
+      "engine/game.py",
+      "engine/player.py"
+    ]
+  },
+  "reverse_dependency_graph": {
+    "tests/contracts/golden_master.py": [
+      "tests/contracts/capture_golden_masters.py",
+      "api/shadow_mode.py",
+      "tests/behavioral/test_game_mechanics.py",
+      "tests/behavioral/test_game_flows.py",
+      "capture_from_live_server.py",
+      "tests/behavioral/test_integration.py",
+      "tests/contracts/parallel_runner.py",
+      "tests/contracts/test_websocket_contracts.py"
+    ],
+    "tests/contracts/websocket_contracts.py": [
+      "tests/contracts/capture_golden_masters.py",
+      "tests/phase6/utilities/validate_test_setup.py",
+      "tests/behavioral/test_game_flows.py",
+      "capture_from_live_server.py",
+      "simple_compatibility_check.py",
+      "tests/behavioral/test_integration.py",
+      "tests/contracts/parallel_runner.py",
+      "tests/contracts/test_websocket_contracts.py"
+    ],
+    "engine/piece.py": [
+      "tests/test_complete_turn_flow.py",
+      "tests/test_bot_timing_fix.py",
+      "tests/test_simple_turn_progression.py",
+      "tests/test_scoring_delay_investigation.py",
+      "engine/async_bot_strategy.py",
+      "tests/test_round_start_scenarios.py",
+      "tests/test_turn_state_debug.py",
+      "tests/test_helpers.py",
+      "tests/test_turn_progression.py",
+      "benchmark_async.py",
+      "tests/test_round_start_simple.py",
+      "tests/test_enterprise_architecture.py",
+      "tests/test_bot_validation_fix.py",
+      "tests/test_realistic_integration.py",
+      "tests/test_async_game.py",
+      "tests/test_turn_state.py",
+      "tests/test_bot_manager_call.py",
+      "engine/game.py",
+      "tests/test_race_condition_fix.py",
+      "tests/test_refined_deduplication.py",
+      "tests/test_turn_number_sync.py",
+      "tests/test_complete_phase_flow.py",
+      "engine/turn_resolution.py",
+      "tests/test_async_performance.py",
+      "tests/test_immediate_transition_bug.py",
+      "tests/test_all_phases_enterprise.py",
+      "tests/test_enterprise_fixes.py"
+    ],
+    "engine/ai.py": [
+      "engine/game.py",
+      "benchmark_async.py",
+      "engine/async_bot_strategy.py",
+      "engine/bot_manager.py"
+    ],
+    "engine/async_bot_strategy.py": [
+      "tests/test_async_performance.py",
+      "benchmark_async.py",
+      "engine/bot_manager.py"
+    ],
+    "engine/player.py": [
+      "tests/test_deep_json_check.py",
+      "tests/test_broadcast_queue.py",
+      "tests/test_complete_turn_flow.py",
+      "tests/test_bot_timing_fix.py",
+      "tests/test_connection_flow.py",
+      "tests/test_simple_turn_progression.py",
+      "tests/test_round_start_bot_integration.py",
+      "tests/test_scoring_object_format.py",
+      "engine/room.py",
+      "tests/test_scoring_delay_investigation.py",
+      "engine/async_bot_strategy.py",
+      "tests/test_round_start_scenarios.py",
+      "tests/test_auto_transition.py",
+      "tests/test_turn_state_debug.py",
+      "tests/test_disconnect_handling.py",
+      "tests/test_turn_progression.py",
+      "benchmark_async.py",
+      "tests/test_round_start_simple.py",
+      "tests/test_enterprise_architecture.py",
+      "tests/test_bot_validation_fix.py",
+      "tests/test_phase_transitions.py",
+      "tests/test_phase_transition_errors.py",
+      "tests/test_phase_broadcast.py",
+      "tests/test_async_game.py",
+      "engine/bot_manager.py",
+      "tests/test_bot_redeal_timing.py",
+      "tests/test_bot_manager_call.py",
+      "tests/test_all_phases_enterprise.py",
+      "engine/game.py",
+      "tests/test_duplicate_names.py",
+      "tests/test_race_condition_fix.py",
+      "tests/test_simultaneous_redeal.py",
+      "tests/test_bot_turn_timing.py",
+      "tests/test_complete_integration.py",
+      "tests/test_refined_deduplication.py",
+      "tests/test_turn_number_sync.py",
+      "tests/test_end_to_end_scoring_fix.py",
+      "tests/test_bot_timing.py",
+      "tests/test_red_general_assignment.py",
+      "tests/test_round_start_phase.py",
+      "tests/test_json_serialization.py",
+      "tests/test_complete_phase_flow.py",
+      "tests/test_bot_state_machine_integration.py",
+      "tests/test_reconnection_flow.py",
+      "tests/test_async_performance.py",
+      "tests/test_bot_timing_simple.py",
+      "engine/turn_resolution.py",
+      "tests/test_prep_debug.py",
+      "tests/test_state_replay.py",
+      "tests/test_reconnection_trace.py",
+      "tests/test_immediate_transition_bug.py",
+      "tests/test_avatar_colors.py",
+      "tests/test_enterprise_fixes.py"
+    ],
+    "engine/room_manager.py": [
+      "async_migration_example.py",
+      "tests/test_async_performance.py",
+      "tests/test_async_compatibility.py",
+      "tests/async_test_utils.py"
+    ],
+    "engine/async_compat.py": [
+      "async_migration_example.py",
+      "tests/test_async_performance.py",
+      "tests/test_async_compatibility.py",
+      "tests/async_test_utils.py"
+    ],
+    "engine/bot_manager.py": [
+      "tests/test_refined_deduplication.py",
+      "shared_instances.py",
+      "tests/test_bot_timing_fix.py",
+      "tests/test_round_start_bot_integration.py",
+      "tests/test_bot_timing.py",
+      "tests/test_turn_progression.py",
+      "tests/test_bot_state_machine_integration.py",
+      "tests/test_bot_redeal_timing.py",
+      "tests/test_bot_manager_call.py",
+      "tests/test_bot_timing_simple.py",
+      "tests/test_race_condition_fix.py",
+      "tests/test_bot_turn_timing.py",
+      "tests/test_complete_integration.py"
+    ],
+    "engine/async_room_manager.py": [
+      "shared_instances.py",
+      "tests/test_async_performance.py"
+    ],
+    "shared_instances.py": [
+      "api/routes/routes.py",
+      "api/services/health_monitor.py",
+      "api/services/recovery_manager.py",
+      "socket_manager.py",
+      "api/routes/ws_integration_patch.py",
+      "api/routes/ws_legacy_handlers.py"
+    ],
+    "api/middleware/rate_limit.py": [
+      "api/config/rate_limit_config.py",
+      "config/rate_limits.py",
+      "tests/test_rate_limiting.py",
+      "api/routes/routes.py"
+    ],
+    "api/websocket/message_queue.py": [
+      "tests/test_broadcast_queue.py",
+      "tests/test_reconnection_flow.py",
+      "tests/test_message_queue.py",
+      "api/routes/ws_legacy_handlers.py",
+      "tests/test_reconnection_trace.py"
+    ],
+    "engine/room.py": [
+      "tests/test_broadcast_queue.py",
+      "tests/async_test_utils.py",
+      "tests/test_reconnection_trace.py",
+      "tests/test_route_replacement.py",
+      "tests/test_connection_flow.py",
+      "tests/test_reconnection_flow.py",
+      "tests/test_api_simulation.py",
+      "tests/test_integration.py",
+      "tests/test_disconnect_handling.py",
+      "tests/test_real_game_integration.py",
+      "engine/room_manager.py",
+      "tests/test_duplicate_names.py",
+      "tests/test_realistic_integration.py",
+      "tests/test_async_compatibility.py",
+      "tests/test_avatar_colors.py",
+      "tests/test_complete_integration.py"
+    ],
+    "engine/game.py": [
+      "tests/test_deep_json_check.py",
+      "tests/test_broadcast_queue.py",
+      "tests/test_complete_turn_flow.py",
+      "tests/test_connection_flow.py",
+      "tests/test_simple_turn_progression.py",
+      "tests/test_round_start_bot_integration.py",
+      "tests/test_scoring_object_format.py",
+      "engine/room.py",
+      "tests/test_scoring_delay_investigation.py",
+      "tests/test_round_start_scenarios.py",
+      "tests/test_auto_transition.py",
+      "tests/test_turn_state_debug.py",
+      "tests/test_disconnect_handling.py",
+      "tests/test_turn_progression.py",
+      "tests/test_round_start_simple.py",
+      "tests/test_enterprise_architecture.py",
+      "tests/test_bot_validation_fix.py",
+      "tests/test_phase_transitions.py",
+      "tests/test_phase_transition_errors.py",
+      "tests/test_phase_broadcast.py",
+      "tests/test_async_game.py",
+      "tests/test_bot_redeal_timing.py",
+      "tests/test_bot_manager_call.py",
+      "tests/test_race_condition_fix.py",
+      "tests/test_simultaneous_redeal.py",
+      "tests/test_bot_turn_timing.py",
+      "tests/test_refined_deduplication.py",
+      "tests/test_turn_number_sync.py",
+      "tests/test_end_to_end_scoring_fix.py",
+      "tests/test_bot_timing.py",
+      "tests/test_red_general_assignment.py",
+      "tests/test_round_start_phase.py",
+      "tests/test_json_serialization.py",
+      "tests/test_complete_phase_flow.py",
+      "tests/test_bot_state_machine_integration.py",
+      "tests/test_reconnection_flow.py",
+      "tests/test_bot_timing_simple.py",
+      "tests/test_prep_debug.py",
+      "tests/test_state_replay.py",
+      "tests/test_reconnection_trace.py",
+      "tests/test_immediate_transition_bug.py",
+      "tests/test_all_phases_enterprise.py",
+      "tests/test_enterprise_fixes.py"
+    ],
+    "api/middleware/websocket_rate_limit.py": [
+      "api/routes/routes.py",
+      "tests/test_rate_limiting.py"
+    ],
+    "socket_manager.py": [
+      "tests/test_reliable_messaging.py",
+      "api/routes/routes.py",
+      "api/services/health_monitor.py",
+      "tests/test_enterprise_architecture.py",
+      "api/services/recovery_manager.py",
+      "tests/test_all_phases_enterprise.py",
+      "tests/test_error_recovery.py"
+    ],
+    "engine/constants.py": [
+      "engine/piece.py",
+      "tests/test_helpers.py",
+      "tests/test_complete_phase_flow.py"
+    ],
+    "api/services/health_monitor.py": [
+      "api/routes/routes.py",
+      "tests/test_error_recovery.py"
+    ],
+    "api/services/recovery_manager.py": [
+      "api/routes/routes.py",
+      "tests/test_error_recovery.py"
+    ],
+    "api/services/logging_service.py": [
+      "tests/test_error_recovery.py"
+    ],
+    "api/validation/__init__.py": [
+      "tests/test_websocket_validation.py",
+      "api/routes/routes.py"
+    ],
+    "engine/async_game.py": [
+      "tests/test_async_game.py",
+      "tests/test_async_performance.py"
+    ],
+    "engine/async_room.py": [
+      "tests/test_async_performance.py"
+    ],
+    "tests/test_helpers.py": [
+      "tests/test_realistic_integration.py",
+      "tests/test_turn_state.py",
+      "tests/test_full_game_flow.py"
+    ],
+    "api/websocket/connection_manager.py": [
+      "tests/test_connection_flow.py",
+      "tests/test_reconnection_flow.py",
+      "tests/test_disconnect_handling.py",
+      "api/routes/ws_legacy_handlers.py",
+      "tests/test_reconnection_trace.py"
+    ],
+    "tests/async_test_utils.py": [
+      "tests/test_async_compatibility.py"
+    ],
+    "api/services/event_store.py": [
+      "tests/test_event_store.py",
+      "api/routes/debug.py",
+      "api/routes/routes.py",
+      "tests/test_event_sourcing.py",
+      "tests/test_state_replay.py"
+    ],
+    "engine/win_conditions.py": [
+      "tests/test_game_over_simple.py",
+      "tests/test_async_game.py",
+      "engine/bot_manager.py",
+      "tests/test_game_over_transition.py",
+      "engine/game.py"
+    ],
+    "api/services/__init__.py": [
+      "tests/test_state_replay.py"
+    ],
+    "tests/contracts/parallel_runner.py": [
+      "tests/contracts/test_websocket_contracts.py",
+      "tests/behavioral/test_integration.py"
+    ],
+    "tests/contracts/capture_golden_masters.py": [
+      "tests/behavioral/test_game_flows.py"
+    ],
+    "api/shadow_mode.py": [
+      "api/shadow_mode_integration.py",
+      "api/shadow_mode_manager.py"
+    ],
+    "config/logging_config.py": [
+      "api/main.py"
+    ],
+    "config/rate_limits.py": [
+      "api/middleware/rate_limit.py",
+      "api/routes/routes.py",
+      "api/middleware/websocket_rate_limit.py"
+    ],
+    "api/routes/ws_legacy_handlers.py": [
+      "api/routes/ws_integration_patch.py"
+    ],
+    "api/models/game_models.py": [
+      "api/routes/routes.py"
+    ],
+    "engine/rules.py": [
+      "engine/game.py",
+      "engine/turn_resolution.py",
+      "engine/ai.py",
+      "engine/bot_manager.py"
+    ],
+    "engine/turn_resolution.py": [
+      "engine/game.py"
+    ],
+    "engine/scoring.py": [
+      "engine/game.py"
+    ]
+  }
+}

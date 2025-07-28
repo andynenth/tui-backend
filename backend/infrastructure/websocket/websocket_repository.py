@@ -13,7 +13,7 @@ from datetime import datetime
 import weakref
 from enum import Enum
 
-from domain.repositories import (
+from domain.interfaces.repositories import (
     RoomRepository,
     GameRepository,
     PlayerStatsRepository

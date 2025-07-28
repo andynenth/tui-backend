@@ -200,7 +200,7 @@ class PlayUseCase(UseCase[PlayRequest, PlayResponse]):
                 current_index = game.players.index(player)
                 next_index = (current_index + 1) % len(game.players)
                 next_player_id = game.players[next_index].id
-                PropertyMapper.get_safe(game, "current_player_id") = next_player_id
+                game.current_player_id = next_player_id
             
             # Save the game
             await self._uow.games.save(game)

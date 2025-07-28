@@ -5,9 +5,8 @@ import time
 from datetime import datetime
 from typing import Any, Dict, List, Optional
 
-import socket_manager
+from infrastructure.websocket.broadcast_adapter import broadcast, get_room_stats
 from shared_instances import shared_bot_manager, shared_room_manager
-from socket_manager import broadcast
 from fastapi import APIRouter, HTTPException, Query
 from fastapi.responses import JSONResponse
 
@@ -596,12 +595,9 @@ async def health_metrics():
             )
 
         # WebSocket metrics
-        total_connections = sum(
-            len(conns) for conns in socket_manager.room_connections.values()
-        )
-        total_pending = sum(
-            len(pending) for pending in socket_manager.pending_messages.values()
-        )
+        ws_stats = get_room_stats()
+        total_connections = ws_stats.get("total_active_connections", 0)
+        total_pending = 0  # Not tracked in clean architecture yet
 
         metrics.append(f"liap_websocket_connections_total {total_connections}")
         metrics.append(f"liap_websocket_pending_messages_total {total_pending}")
@@ -621,25 +617,8 @@ async def health_metrics():
         # Uptime
         metrics.append(f"liap_uptime_seconds {health_status.uptime_seconds}")
 
-        # Message delivery stats
-        if socket_manager.message_stats:
-            total_sent = sum(
-                stats.sent for stats in socket_manager.message_stats.values()
-            )
-            total_acked = sum(
-                stats.acknowledged for stats in socket_manager.message_stats.values()
-            )
-            total_failed = sum(
-                stats.failed for stats in socket_manager.message_stats.values()
-            )
-
-            metrics.append(f"liap_messages_sent_total {total_sent}")
-            metrics.append(f"liap_messages_acknowledged_total {total_acked}")
-            metrics.append(f"liap_messages_failed_total {total_failed}")
-
-            if total_sent > 0:
-                success_rate = (total_acked / total_sent) * 100
-                metrics.append(f"liap_message_success_rate_percent {success_rate}")
+        # Message delivery stats (not tracked in clean architecture yet)
+        # TODO: Add message stats to clean architecture if needed
 
         # Add timestamp
         metrics.append(f"liap_metrics_generated_timestamp {time.time()}")

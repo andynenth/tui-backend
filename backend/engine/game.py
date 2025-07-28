@@ -1,3 +1,13 @@
+"""
+LEGACY_CODE: This file is scheduled for removal after Phase 6 migration
+REPLACEMENT: backend/domain/entities/game.py + backend/application/services/game_application_service.py
+REMOVAL_TARGET: Phase 7.2
+FEATURE_FLAG: USE_LEGACY_GAME_LOGIC
+DEPENDENCIES: engine/player.py, engine/piece.py, engine/scoring.py
+LAST_MODIFIED: 2025-07-12
+MIGRATION_STATUS: ready_for_removal
+"""
+
 # backend/engine/game.py
 
 import random

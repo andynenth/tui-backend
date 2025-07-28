@@ -1,3 +1,13 @@
+"""
+LEGACY_CODE: This file is scheduled for removal after Phase 6 migration
+REPLACEMENT: backend/infrastructure/repositories/optimized_room_repository.py
+REMOVAL_TARGET: Phase 7.2
+FEATURE_FLAG: USE_LEGACY_ROOM_MANAGER
+DEPENDENCIES: engine/room.py, socket_manager.py
+LAST_MODIFIED: 2025-07-10
+MIGRATION_STATUS: ready_for_removal
+"""
+
 # backend/engine/room_manager.py
 
 import uuid  # Import the uuid module for generating unique identifiers.

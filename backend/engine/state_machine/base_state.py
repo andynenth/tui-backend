@@ -154,17 +154,7 @@ class GameState(ABC):
 
         try:
             # Import here to avoid circular imports
-            try:
-                from backend.socket_manager import broadcast
-            except ImportError:
-                # Handle different import paths
-                import os
-                import sys
-
-                sys.path.append(
-                    os.path.dirname(os.path.dirname(os.path.dirname(__file__)))
-                )
-                from socket_manager import broadcast
+            from infrastructure.websocket.broadcast_adapter import broadcast
 
             room_id = getattr(self.state_machine, "room_id", None)
             if not room_id:
@@ -323,17 +313,7 @@ class GameState(ABC):
         Use this instead of manual broadcast calls to maintain enterprise architecture.
         """
         try:
-            try:
-                from backend.socket_manager import broadcast
-            except ImportError:
-                # Handle different import paths
-                import os
-                import sys
-
-                sys.path.append(
-                    os.path.dirname(os.path.dirname(os.path.dirname(__file__)))
-                )
-                from socket_manager import broadcast
+            from infrastructure.websocket.broadcast_adapter import broadcast
 
             room_id = getattr(self.state_machine, "room_id", "unknown")
 

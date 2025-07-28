@@ -93,7 +93,7 @@ class WebSocketBroadcastHandler(EventHandler):
             broadcast_data = self._prepare_broadcast_data(event_data)
             
             # Broadcast to room
-            from socket_manager import broadcast
+            from infrastructure.websocket.broadcast_adapter import broadcast
             await broadcast(room_id, ws_event_name, broadcast_data)
             
             logger.debug(f"Broadcasted {event_type} as {ws_event_name} to room {room_id}")

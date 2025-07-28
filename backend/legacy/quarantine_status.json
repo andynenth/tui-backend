@@ -1,0 +1,19 @@
+{
+  "phase": "7.2",
+  "step": "partial_safe_quarantine",
+  "date": "2025-07-27",
+  "moved_files": [
+    "verify_adapter_only_mode_simple.py",
+    "simple_ws_test.py",
+    "verify_adapter_only_mode.py",
+    "fix_dto_inheritance.py",
+    "run_tests.py",
+    "start_golden_master_capture.py",
+    "extract_legacy_handlers.py",
+    "fix_domain_imports.py",
+    "run_phase_tests.py",
+    "analyze_golden_master_mismatches.py"
+  ],
+  "status": "partial_quarantine_safe_files_only",
+  "notes": "Only moved test files and utility scripts with no dependencies"
+}

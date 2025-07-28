@@ -78,7 +78,7 @@ class IntegratedBroadcastHandler:
                 return
             
             # Import here to avoid circular dependency
-            from socket_manager import broadcast, send_to_socket
+            from infrastructure.websocket.broadcast_adapter import broadcast
             
             # Send the broadcast based on target type
             if broadcast_info['target_type'] == 'room' and broadcast_info['target_id']:

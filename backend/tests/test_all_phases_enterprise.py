@@ -33,13 +33,10 @@ async def test_all_phases_enterprise():
     broadcast_calls = []
 
     try:
-        # Mock socket_manager to capture broadcasts
-        try:
-            import backend.socket_manager as socket_manager
-        except ImportError:
-            import socket_manager
+        # Mock broadcast_adapter to capture broadcasts
+        from infrastructure.websocket import broadcast_adapter
 
-        original_broadcast = socket_manager.broadcast
+        original_broadcast = broadcast_adapter.broadcast
 
         async def mock_broadcast(room_id, event_type, data):
             broadcast_calls.append(
@@ -56,7 +53,7 @@ async def test_all_phases_enterprise():
                 f"📤 Enterprise broadcast: {event_type} (seq: {data.get('sequence', 'N/A')})"
             )
 
-        socket_manager.broadcast = mock_broadcast
+        broadcast_adapter.broadcast = mock_broadcast
 
         # Test Preparation Phase
         print("\n🎴 Testing PREPARATION phase...")
@@ -233,7 +230,7 @@ async def test_all_phases_enterprise():
     finally:
         # Restore original broadcast
         if "original_broadcast" in locals():
-            socket_manager.broadcast = original_broadcast
+            broadcast_adapter.broadcast = original_broadcast
 
 
 async def main():

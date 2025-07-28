@@ -1,0 +1,150 @@
+{
+  "registry_version": "1.0",
+  "creation_date": "2025-07-27",
+  "phase_7_status": {
+    "phase_7_0": {
+      "status": "completed",
+      "description": "WebSocket fix - ws.py uses clean architecture repositories",
+      "completed_date": "2025-07-27"
+    },
+    "phase_7_1": {
+      "status": "in_progress",
+      "description": "Legacy code audit and marking",
+      "started_date": "2025-07-27"
+    }
+  },
+  "summary": {
+    "total_legacy_files": 192,
+    "total_lines_to_remove": 15000,
+    "hybrid_files_to_review": 9,
+    "clean_files_with_legacy_deps": 10,
+    "estimated_cleanup_time": "3-4 weeks"
+  },
+  "legacy_files": [
+    {
+      "path": "backend/socket_manager.py",
+      "replacement": "backend/infrastructure/websocket/connection_manager.py",
+      "feature_flag": "USE_LEGACY_SOCKET_MANAGER",
+      "removal_phase": "7.2",
+      "dependencies": ["shared_instances.py"],
+      "lines_of_code": 1000,
+      "last_modified": "2025-07-15",
+      "migration_status": "ready_for_removal",
+      "risk_level": "medium"
+    },
+    {
+      "path": "backend/engine/room_manager.py",
+      "replacement": "backend/infrastructure/repositories/optimized_room_repository.py",
+      "feature_flag": "USE_LEGACY_ROOM_MANAGER",
+      "removal_phase": "7.2",
+      "dependencies": ["engine/room.py", "socket_manager.py"],
+      "lines_of_code": 500,
+      "last_modified": "2025-07-10",
+      "migration_status": "ready_for_removal",
+      "risk_level": "low"
+    },
+    {
+      "path": "backend/engine/async_room_manager.py",
+      "replacement": "backend/infrastructure/repositories/optimized_room_repository.py",
+      "feature_flag": "USE_LEGACY_ROOM_MANAGER",
+      "removal_phase": "7.2",
+      "dependencies": ["engine/async_room.py", "engine/room_manager.py"],
+      "lines_of_code": 400,
+      "last_modified": "2025-07-15",
+      "migration_status": "ready_for_removal",
+      "risk_level": "low"
+    },
+    {
+      "path": "backend/engine/game.py",
+      "replacement": "backend/domain/entities/game.py + backend/application/services/game_application_service.py",
+      "feature_flag": "USE_LEGACY_GAME_LOGIC",
+      "removal_phase": "7.2",
+      "dependencies": ["engine/player.py", "engine/piece.py", "engine/scoring.py"],
+      "lines_of_code": 800,
+      "last_modified": "2025-07-12",
+      "migration_status": "ready_for_removal",
+      "risk_level": "medium"
+    },
+    {
+      "path": "backend/engine/bot_manager.py",
+      "replacement": "backend/infrastructure/services/simple_bot_service.py",
+      "feature_flag": "USE_LEGACY_BOT_MANAGER",
+      "removal_phase": "7.2",
+      "dependencies": ["engine/async_bot_strategy.py"],
+      "lines_of_code": 600,
+      "last_modified": "2025-07-20",
+      "migration_status": "ready_for_removal",
+      "risk_level": "low"
+    },
+    {
+      "path": "backend/engine/scoring.py",
+      "replacement": "backend/domain/services/scoring_service.py",
+      "feature_flag": "USE_LEGACY_SCORING",
+      "removal_phase": "7.2",
+      "dependencies": ["engine/piece.py"],
+      "lines_of_code": 300,
+      "last_modified": "2025-07-10",
+      "migration_status": "ready_for_removal",
+      "risk_level": "low"
+    },
+    {
+      "path": "backend/shared_instances.py",
+      "replacement": "backend/infrastructure/dependencies.py (DI container)",
+      "feature_flag": "USE_LEGACY_SHARED_INSTANCES",
+      "removal_phase": "7.3",
+      "dependencies": ["engine/async_room_manager.py", "engine/bot_manager.py"],
+      "lines_of_code": 50,
+      "last_modified": "2025-07-05",
+      "migration_status": "ready_for_removal",
+      "risk_level": "high",
+      "notes": "Central to legacy architecture - remove last"
+    }
+  ],
+  "hybrid_files": [
+    {
+      "path": "backend/api/routes/ws.py",
+      "clean_lines": "1-327",
+      "legacy_lines": "328+",
+      "status": "partially_migrated",
+      "notes": "Phase 7.0 completed - now uses clean architecture repositories"
+    },
+    {
+      "path": "backend/api/routes/ws_legacy_handlers.py",
+      "status": "scheduled_for_removal",
+      "removal_phase": "7.2"
+    }
+  ],
+  "clean_files_with_legacy_deps": [
+    {
+      "path": "backend/infrastructure/events/application_event_publisher.py",
+      "legacy_import": "from socket_manager import broadcast",
+      "action_required": "Replace with clean architecture event system",
+      "priority": "high"
+    }
+  ],
+  "removal_phases": {
+    "7.0": {
+      "description": "Priority WebSocket Fix",
+      "status": "completed",
+      "files_modified": ["backend/api/routes/ws.py"]
+    },
+    "7.1": {
+      "description": "Legacy Code Audit and Marking",
+      "status": "in_progress",
+      "expected_completion": "2025-07-27"
+    },
+    "7.2": {
+      "description": "Legacy Code Isolation",
+      "status": "pending",
+      "files_to_isolate": 192
+    },
+    "7.3": {
+      "description": "Final Validation and Safety Checks",
+      "status": "pending"
+    },
+    "7.4": {
+      "description": "Complete Removal and Cleanup",
+      "status": "pending"
+    }
+  }
+}
