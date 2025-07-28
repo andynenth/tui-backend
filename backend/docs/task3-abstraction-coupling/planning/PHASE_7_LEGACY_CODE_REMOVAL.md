@@ -40,17 +40,25 @@ Phase 7 focuses on the complete and safe removal of legacy code components after
 - [ ] User experience impact assessment completed
 - [ ] All 6 cross-dependencies from clean to legacy resolved
 - [ ] All 8 hybrid files reviewed and refactored as needed
+- [ ] **NEW**: WebSocket room validation updated to use clean architecture repositories (ws.py lines 280-306)
 
 ## Current Architecture Analysis Results
 
 Based on the automated analysis using `tools/identify_architecture_type.py` (2025-07-27):
 
 ### Distribution Summary
-- **Clean Architecture**: 311 files (57.7%) - Ready for production
-- **Legacy**: 202 files (37.5%) - Scheduled for removal
-- **Enterprise**: 17 files (3.2%) - Modern state machine (keep)
-- **Hybrid**: 8 files (1.5%) - Need partial cleanup
-- **Bridge**: 1 file (0.2%) - Adapter wrapper (keep)
+- **Clean Architecture**: 311 files (57.7%) - Ready for production ✅ KEEP
+- **Legacy**: 202 files (37.5%) - Scheduled for removal ❌ REMOVE
+- **Enterprise**: 17 files (3.2%) - Modern state machine ✅ KEEP
+- **Hybrid**: 8 files (1.5%) - Need partial cleanup ⚠️ PARTIAL
+- **Bridge**: 1 file (0.2%) - Adapter wrapper ✅ KEEP
+
+### Critical Components to PRESERVE
+1. **ALL Clean Architecture Files** (311 files in `application/`, `domain/`, `infrastructure/`)
+2. **Enterprise State Machine** (`engine/state_machine/` - 17 files)
+3. **Adapter System** (`api/adapters/` - handles WebSocket integration)
+4. **WebSocket Infrastructure** (`api/routes/ws.py` - lines 1-327 only)
+5. **Bridge Components** (facilitate architecture communication)
 
 ### Key Findings
 - ✅ Clean architecture is handling 100% of traffic via adapters
@@ -84,13 +92,20 @@ backend/
 └── shared_instances.py           # Legacy shared state management
 ```
 
-**Note**: The `engine/state_machine/` directory contains **17 enterprise architecture files** and should NOT be removed.
+**⚠️ CRITICAL WARNING**: The `engine/state_machine/` directory contains **17 enterprise architecture files** and should **NEVER** be removed. This is modern, production-ready code that implements:
+- Game phase transitions (PREPARATION, DECLARATION, TURN, SCORING)
+- Automatic event broadcasting
+- State change history tracking
+- JSON-safe serialization
+- This is NOT legacy code - it's the enterprise architecture implementation!
 
 #### 2. Hybrid Components (Need Partial Cleanup)
 Based on analysis, **8 hybrid files (1.5%)** need review:
 ```
 backend/api/routes/
 ├── ws.py                         # Hybrid - Infrastructure with legacy handlers (after line 327)
+│                                 # PRIORITY FIX: Lines 280-306 use legacy room_manager
+│                                 # Should use clean architecture repositories instead
 ├── ws_legacy_handlers.py         # Legacy handlers to be removed
 └── ws_integration_patch.py       # May contain legacy integration code
 ```
@@ -201,6 +216,39 @@ def legacy_function_name() -> Any:
 ```
 
 ## Safe Removal Process
+
+### Phase 7.0: Priority WebSocket Fix (Immediate)
+
+#### Step 7.0.1: Update ws.py to Use Clean Architecture
+**Objective**: Fix the room validation issue by using clean architecture repositories
+
+**Actions**:
+1. Replace legacy `room_manager.get_room()` with clean architecture repository call
+2. Update imports to use clean architecture dependencies
+3. Remove the "Room not found" warning that occurs when rooms exist only in clean architecture
+4. Test WebSocket connections to ensure they find rooms created in clean architecture
+
+**Code Changes Required**:
+- Replace lines 280-306 in `backend/api/routes/ws.py`
+- Import `get_unit_of_work` from `infrastructure.dependencies`
+- Use `uow.rooms.get_by_id(room_id)` instead of `room_manager.get_room(room_id)`
+
+**Frontend Integration Validation Checklist**:
+- [ ] **Lobby Events Work Correctly**:
+  - [ ] `room_created` event sent when room created (frontend expects: `{room_id, host_name, ...}`)
+  - [ ] `room_list_update` event sent with room list (frontend expects: `{rooms: [...]}`)
+  - [ ] `room_joined` event sent when joining room (frontend navigates to room page)
+  - [ ] `error` event sent on failures (frontend shows error message)
+- [ ] **Room Events Function Properly**:
+  - [ ] `room_update` event sent when room state changes (frontend updates player list)
+  - [ ] `game_started` event sent when game begins (frontend navigates to game page)
+  - [ ] `room_closed` event sent when room closes (frontend returns to lobby)
+  - [ ] `room_not_found` event NOT sent for valid rooms in clean architecture
+- [ ] **Connection Flow Remains Intact**:
+  - [ ] Frontend can connect to `/ws/lobby` for lobby operations
+  - [ ] Frontend can connect to `/ws/{room_id}` for room operations
+  - [ ] WebSocket registration/unregistration still works
+  - [ ] Heartbeat/ping-pong mechanism continues functioning
 
 ### Phase 7.1: Legacy Code Audit and Marking (Week 1)
 
@@ -325,6 +373,27 @@ python test_quarantine_validation.py
 python benchmark_post_quarantine.py
 ```
 
+**Frontend Functionality Validation Checklist**:
+- [ ] **WebSocket Connection Tests**:
+  - [ ] Frontend can connect to `/ws/lobby` without errors
+  - [ ] Frontend can connect to `/ws/{room_id}` without errors
+  - [ ] No import errors in server logs during connection
+  - [ ] WebSocket handshake completes successfully
+- [ ] **End-to-End Flow Tests**:
+  - [ ] Player can enter name and reach lobby
+  - [ ] Player can create room and receive `room_created` event
+  - [ ] Player can see room list via `room_list_update` event
+  - [ ] Player can join room and receive `room_joined` event
+  - [ ] Players see each other via `room_update` events
+  - [ ] Host can start game and all players receive `game_started`
+  - [ ] Game phases work correctly (preparation, declaration, turn, scoring)
+  - [ ] Players can leave room and others receive updates
+- [ ] **Error Handling Tests**:
+  - [ ] Invalid room ID shows appropriate error message
+  - [ ] Full room prevents joining with clear message
+  - [ ] Network disconnection is handled gracefully
+  - [ ] Reconnection works without breaking game state
+
 ### Phase 7.3: Final Validation and Safety Checks (Week 3)
 
 #### Step 7.3.1: Legacy Usage Detection
@@ -406,6 +475,31 @@ python benchmark_clean_architecture.py
 # Production health check
 curl /api/health/post-cleanup-validation
 ```
+
+**Complete Frontend Integration Validation**:
+- [ ] **All WebSocket Events Function Correctly**:
+  - [ ] Lobby events: `room_created`, `room_list_update`, `room_joined`, `error`
+  - [ ] Room events: `room_update`, `game_started`, `room_closed`
+  - [ ] Game events: All phase transitions work correctly
+  - [ ] Connection events: `connected`, `disconnected`, `reconnected`
+- [ ] **Full Game Flow Works End-to-End**:
+  - [ ] Players can create and join rooms
+  - [ ] Room state synchronizes across all players
+  - [ ] Game can be started by host
+  - [ ] All game phases execute correctly
+  - [ ] Scoring and winner determination work
+  - [ ] Players can start new rounds
+  - [ ] Players can leave and rejoin gracefully
+- [ ] **Performance Meets Requirements**:
+  - [ ] WebSocket latency < 100ms for local connections
+  - [ ] Room creation/join < 500ms
+  - [ ] Game state updates propagate < 200ms
+  - [ ] No memory leaks after extended play
+- [ ] **Error Recovery Works**:
+  - [ ] Disconnection/reconnection preserves game state
+  - [ ] Invalid actions show appropriate errors
+  - [ ] System recovers from transient failures
+  - [ ] No orphaned rooms or ghost players
 
 ## Automation Tools
 
@@ -554,6 +648,10 @@ After any rollback:
 
 ## Timeline and Milestones
 
+### Immediate: Phase 7.0 (Priority WebSocket Fix)
+- **Day 1**: Update ws.py to use clean architecture repositories
+- **Day 1**: Test and validate WebSocket functionality
+
 ### Week 1: Phase 7.1 (Audit and Marking)
 - **Days 1-2**: Legacy code scanning and inventory
 - **Days 3-4**: Registry creation and file marking
@@ -611,6 +709,50 @@ After any rollback:
 
 ---
 
+## Final System Architecture After Phase 7
+
+After successful completion of Phase 7, the system will have:
+
+### What Remains (✅ KEEP)
+1. **Clean Architecture Components** (311 files):
+   - `domain/` - Entities, value objects, and domain events
+   - `application/` - Use cases, DTOs, and interfaces
+   - `infrastructure/` - Repositories, services, and external integrations
+
+2. **Enterprise State Machine** (17 files in `engine/state_machine/`):
+   - Modern game phase management
+   - Automatic event broadcasting
+   - State change history
+
+3. **WebSocket Infrastructure**:
+   - `api/routes/ws.py` (cleaned up, lines 1-327)
+   - `api/adapters/` - All adapter files for WebSocket integration
+   - Connection management and message routing
+
+4. **Frontend** (unchanged):
+   - All React components and pages
+   - WebSocket event handlers
+   - Game UI and state management
+
+### What Gets Removed (❌ DELETE)
+1. **Legacy Engine Files** (202 files):
+   - Old room/game management
+   - Legacy async wrappers
+   - Old scoring and rules
+   - Legacy bot management
+
+2. **Legacy Infrastructure**:
+   - `socket_manager.py`
+   - `shared_instances.py`
+   - Legacy test files
+
+### Frontend Functionality Guarantee
+The frontend will continue to work exactly as before because:
+1. All WebSocket events remain the same (`room_created`, `room_update`, etc.)
+2. Message formats are preserved by the adapter layer
+3. Game flow and phases remain identical
+4. Error handling and recovery mechanisms are maintained
+
 ## Conclusion
 
 Phase 7 provides a comprehensive, safe approach to removing legacy code after successful migration to clean architecture. The emphasis on safety, validation, and rollback capability ensures that legacy code removal enhances rather than risks the system's stability and maintainability.
@@ -621,12 +763,19 @@ Phase 7 provides a comprehensive, safe approach to removing legacy code after su
 - Comprehensive tooling for automation and safety
 - Continuous monitoring and immediate rollback capability
 - Complete documentation and team communication
+- Frontend functionality preserved throughout
 
 **Ready for Execution**: After Phase 6.5 completion and production validation period.
 
 ---
-**Last Updated**: 2025-07-27  
-**Document Version**: 1.1  
+**Last Updated**: 2025-07-28  
+**Document Version**: 1.2  
+**Changes in v1.2**:
+- Added Phase 7.0 for immediate WebSocket fix (user chose Option 2)
+- Updated ws.py priority fix to use clean architecture repositories
+- Removed dependency on legacy repository bridge pattern
+- Added specific line numbers for ws.py changes (lines 280-306)
+
 **Changes in v1.1**: 
 - Updated legacy file count from 12 to 202 based on automated analysis
 - Added current architecture distribution statistics
