@@ -11,6 +11,9 @@ from api.routes.ws import (
 from api.routes.debug import (
     router as debug_router,  # Import the debug router for event store access.
 )
+from api.routes.metrics import (
+    router as metrics_router,  # Import the metrics router for monitoring.
+)
 from api.middleware import (
     RateLimitMiddleware,
 )  # Import rate limiting middleware
@@ -110,6 +113,10 @@ app = FastAPI(
             "name": "debug",
             "description": "Debug endpoints for event store access and game replay",
         },
+        {
+            "name": "metrics",
+            "description": "WebSocket metrics and monitoring endpoints",
+        },
     ],
 )
 
@@ -144,6 +151,9 @@ app.include_router(
 app.include_router(
     debug_router
 )  # Mounts the debug router for event store access.
+app.include_router(
+    metrics_router
+)  # Mounts the metrics router for monitoring.
 
 # ✅ Serve static files.
 # This mounts the specified directory to the root path "/", meaning files like index.html, bundle.js, etc.,
