@@ -154,7 +154,7 @@ class GameState(ABC):
 
         try:
             # Import here to avoid circular imports
-            from infrastructure.websocket.broadcast_adapter import broadcast
+            from infrastructure.websocket.connection_singleton import broadcast
 
             room_id = getattr(self.state_machine, "room_id", None)
             if not room_id:
@@ -313,7 +313,7 @@ class GameState(ABC):
         Use this instead of manual broadcast calls to maintain enterprise architecture.
         """
         try:
-            from infrastructure.websocket.broadcast_adapter import broadcast
+            from infrastructure.websocket.connection_singleton import broadcast
 
             room_id = getattr(self.state_machine, "room_id", "unknown")
 

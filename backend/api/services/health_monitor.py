@@ -233,7 +233,7 @@ class HealthMonitor:
                 await asyncio.sleep(check_interval)
 
                 # Get WebSocket statistics
-                from infrastructure.websocket.broadcast_adapter import get_room_stats
+                from infrastructure.websocket.connection_singleton import get_room_stats
 
                 # Get stats from clean architecture
                 ws_stats = get_room_stats()

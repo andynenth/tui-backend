@@ -9,6 +9,8 @@ This module provides:
 - Adaptive rate limiting based on context
 """
 
+from datetime import timedelta
+
 from .base import (
     # Enums
     RateLimitAlgorithm,
