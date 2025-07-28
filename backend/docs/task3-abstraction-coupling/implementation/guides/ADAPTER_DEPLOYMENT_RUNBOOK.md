@@ -1,6 +1,8 @@
 # Adapter System Deployment Runbook
 
-**Purpose**: Step-by-step procedures for safely deploying adapters to production. Use this document when ready to enable adapters in any environment.
+**Purpose**: Historical reference showing how the adapter system was deployed during the clean architecture migration.
+
+**Status**: ✅ DEPLOYMENT COMPLETE - System running 100% on clean architecture
 
 **See Also**: [Integration Guide](./WS_INTEGRATION_GUIDE.md) for technical integration details
 
@@ -201,18 +203,29 @@ export ADAPTER_ROLLOUT_PERCENTAGE=10  # or last known good value
 - Tech Lead: [EMAIL]
 - Escalation: [PROCESS]
 
-## Appendix: Quick Commands
+## Current Production Configuration
+
+As of 2025-07-28, the system runs with:
 
 ```bash
-# Enable adapters (dev)
-export ADAPTER_ENABLED=true ADAPTER_ROLLOUT_PERCENTAGE=100
+# Production settings (100% clean architecture)
+export ADAPTER_ENABLED=true
+export ADAPTER_ROLLOUT_PERCENTAGE=100
+export FF_USE_CLEAN_ARCHITECTURE=true
+export FF_USE_DOMAIN_EVENTS=true
+export FF_USE_APPLICATION_SERVICES=true
+export FF_USE_CLEAN_REPOSITORIES=true
+export FF_USE_INFRASTRUCTURE_SERVICES=true
 
-# Shadow mode
-export ADAPTER_ENABLED=false SHADOW_MODE_ENABLED=true SHADOW_MODE_PERCENTAGE=1
-
-# Production rollout
-export ADAPTER_ENABLED=true ADAPTER_ROLLOUT_PERCENTAGE=1
-
-# Emergency disable
-export ADAPTER_ENABLED=false
+# Shadow mode no longer needed
+export SHADOW_MODE_ENABLED=false
 ```
+
+## Migration Complete
+
+The adapter deployment was successfully completed as part of the clean architecture migration:
+- Phase 1-5: Built clean architecture components
+- Phase 6: Deployed adapters with gradual rollout
+- Phase 7: Removed all legacy code
+
+The system now runs 100% on clean architecture with no legacy dependencies.

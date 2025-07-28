@@ -378,7 +378,7 @@ async def websocket_endpoint(websocket: WebSocket, room_id: str):
                     logger.warning(f"[ROOM_LOOKUP_DEBUG] Room {room_id} not found in clean architecture repository!")
                     
                     # Send room_not_found event
-                    await registered_ws.send_json(
+                    await websocket.send_json(
                         {
                             "event": "room_not_found",
                             "data": {
@@ -404,7 +404,7 @@ async def websocket_endpoint(websocket: WebSocket, room_id: str):
             # Validate the message structure and content
             is_valid, error_msg, sanitized_data = validate_websocket_message(message)
             if not is_valid:
-                await registered_ws.send_json(
+                await websocket.send_json(
                     {
                         "event": "error",
                         "data": {
@@ -422,13 +422,13 @@ async def websocket_endpoint(websocket: WebSocket, room_id: str):
             # - The legacy code below (line 328+) is NEVER executed
             # - This is NOT legacy code - it's the integration point
             adapter_response = await adapter_wrapper.try_handle_with_adapter(
-                registered_ws, message, room_id
+                websocket, message, room_id
             )
             
             if adapter_response is not None:
                 # Adapter handled it, send response if not empty
                 if adapter_response:  # Some responses like 'ack' return empty
-                    await registered_ws.send_json(adapter_response)
+                    await websocket.send_json(adapter_response)
                 continue  # Skip legacy handling - THIS LINE PREVENTS LEGACY EXECUTION
             # ===== ADAPTER INTEGRATION END =====
 
