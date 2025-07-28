@@ -8,6 +8,7 @@ game operations like starting games, making plays, and declarations.
 from dataclasses import dataclass, field
 from datetime import datetime
 from typing import Optional, List, Dict, Any
+import uuid
 from .base import Request, Response
 from .common import GameStateInfo, PieceInfo, PlayInfo
 
@@ -22,6 +23,11 @@ class StartGameRequest(Request):
     requesting_player_id: str
     shuffle_seats: bool = True
     use_previous_starter: bool = False
+    # Base request fields
+    request_id: str = field(default_factory=lambda: str(uuid.uuid4()))
+    timestamp: datetime = field(default_factory=datetime.utcnow)
+    user_id: Optional[str] = None
+    correlation_id: Optional[str] = None
 
 
 @dataclass
@@ -59,6 +65,11 @@ class DeclareRequest(Request):
     game_id: str
     player_id: str
     pile_count: int
+    # Base request fields
+    request_id: str = field(default_factory=lambda: str(uuid.uuid4()))
+    timestamp: datetime = field(default_factory=datetime.utcnow)
+    user_id: Optional[str] = None
+    correlation_id: Optional[str] = None
 
 
 @dataclass
@@ -97,6 +108,11 @@ class PlayRequest(Request):
     game_id: str
     player_id: str
     pieces: List[PieceInfo]
+    # Base request fields
+    request_id: str = field(default_factory=lambda: str(uuid.uuid4()))
+    timestamp: datetime = field(default_factory=datetime.utcnow)
+    user_id: Optional[str] = None
+    correlation_id: Optional[str] = None
 
 
 @dataclass
@@ -141,6 +157,11 @@ class RequestRedealRequest(Request):
     game_id: str
     player_id: str
     hand_strength_score: Optional[int] = None
+    # Base request fields
+    request_id: str = field(default_factory=lambda: str(uuid.uuid4()))
+    timestamp: datetime = field(default_factory=datetime.utcnow)
+    user_id: Optional[str] = None
+    correlation_id: Optional[str] = None
 
 
 @dataclass
@@ -173,6 +194,11 @@ class AcceptRedealRequest(Request):
     game_id: str
     player_id: str
     redeal_id: str
+    # Base request fields
+    request_id: str = field(default_factory=lambda: str(uuid.uuid4()))
+    timestamp: datetime = field(default_factory=datetime.utcnow)
+    user_id: Optional[str] = None
+    correlation_id: Optional[str] = None
 
 
 @dataclass
@@ -205,6 +231,11 @@ class DeclineRedealRequest(Request):
     game_id: str
     player_id: str
     redeal_id: str
+    # Base request fields
+    request_id: str = field(default_factory=lambda: str(uuid.uuid4()))
+    timestamp: datetime = field(default_factory=datetime.utcnow)
+    user_id: Optional[str] = None
+    correlation_id: Optional[str] = None
 
 
 @dataclass
@@ -241,6 +272,11 @@ class HandleRedealDecisionRequest(Request):
     game_id: str
     redeal_id: str
     force_decision: bool = False
+    # Base request fields
+    request_id: str = field(default_factory=lambda: str(uuid.uuid4()))
+    timestamp: datetime = field(default_factory=datetime.utcnow)
+    user_id: Optional[str] = None
+    correlation_id: Optional[str] = None
 
 
 @dataclass
@@ -261,6 +297,11 @@ class MarkPlayerReadyRequest(Request):
     game_id: str
     player_id: str
     ready_for_phase: str
+    # Base request fields
+    request_id: str = field(default_factory=lambda: str(uuid.uuid4()))
+    timestamp: datetime = field(default_factory=datetime.utcnow)
+    user_id: Optional[str] = None
+    correlation_id: Optional[str] = None
 
 
 @dataclass
@@ -281,6 +322,11 @@ class LeaveGameRequest(Request):
     game_id: str
     player_id: str
     reason: Optional[str] = None
+    # Base request fields
+    request_id: str = field(default_factory=lambda: str(uuid.uuid4()))
+    timestamp: datetime = field(default_factory=datetime.utcnow)
+    user_id: Optional[str] = None
+    correlation_id: Optional[str] = None
 
 
 @dataclass

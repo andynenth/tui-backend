@@ -25,6 +25,7 @@ from domain.events.game_events import (
     RedealDecisionMade  # Using existing event
 )
 from domain.events.base import EventMetadata
+from application.utils import PropertyMapper
 
 logger = logging.getLogger(__name__)
 
@@ -121,7 +122,7 @@ class DeclineRedealUseCase(UseCase[DeclineRedealRequest, DeclineRedealResponse])
             game.redeal_votes[request.player_id] = False
             
             # Declining immediately cancels redeal
-            previous_starter = game.current_player_id
+            previous_starter = PropertyMapper.get_safe(game, "current_player_id")
             game.current_player_id = request.player_id
             game.starting_player_id = request.player_id
             
@@ -139,8 +140,8 @@ class DeclineRedealUseCase(UseCase[DeclineRedealRequest, DeclineRedealResponse])
             # TODO: Emit RedealDeclined event when it's created
             # decline_event = RedealDeclined(
             #     metadata=EventMetadata(user_id=request.user_id),
-            #     room_id=room.id,
-            #     game_id=game.id,
+            #     room_id=room.room_id,
+            #     game_id=game.game_id,
             #     redeal_id=request.redeal_id,
             #     player_id=request.player_id,
             #     player_name=player.name,
@@ -151,8 +152,8 @@ class DeclineRedealUseCase(UseCase[DeclineRedealRequest, DeclineRedealResponse])
             # TODO: Emit RedealCancelled event when it's created
             # cancelled_event = RedealCancelled(
             #     metadata=EventMetadata(user_id=request.user_id),
-            #     room_id=room.id,
-            #     game_id=game.id,
+            #     room_id=room.room_id,
+            #     game_id=game.game_id,
             #     redeal_id=cancelled_redeal_id,
             #     cancelled_by=request.player_id,
             #     reason="Player declined redeal"
@@ -162,8 +163,8 @@ class DeclineRedealUseCase(UseCase[DeclineRedealRequest, DeclineRedealResponse])
             # TODO: Emit StartingPlayerChanged event when it's created
             # starter_event = StartingPlayerChanged(
             #     metadata=EventMetadata(user_id=request.user_id),
-            #     room_id=room.id,
-            #     game_id=game.id,
+            #     room_id=room.room_id,
+            #     game_id=game.game_id,
             #     old_starter_id=previous_starter,
             #     new_starter_id=request.player_id,
             #     new_starter_name=player.name,
@@ -195,7 +196,7 @@ class DeclineRedealUseCase(UseCase[DeclineRedealRequest, DeclineRedealResponse])
             logger.info(
                 f"Player {player.name} declined redeal and becomes starter",
                 extra={
-                    "game_id": game.id,
+                    "game_id": game.game_id,
                     "player_id": request.player_id,
                     "redeal_id": request.redeal_id,
                     "previous_starter": previous_starter,

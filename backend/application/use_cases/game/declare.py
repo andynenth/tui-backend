@@ -20,6 +20,7 @@ from domain.entities.game import GamePhase
 from domain.events.player_events import PlayerDeclaredPiles
 from domain.events.game_events import PhaseChanged
 from domain.events.base import EventMetadata
+from application.utils import PropertyMapper
 
 logger = logging.getLogger(__name__)
 
@@ -140,7 +141,7 @@ class DeclareUseCase(UseCase[DeclareRequest, DeclareResponse]):
             else:
                 # All declared - transition to turn phase
                 game.start_turn_phase()
-                next_player_id = game.current_player_id
+                next_player_id = PropertyMapper.get_safe(game, "current_player_id")
             
             # Save the game
             await self._uow.games.save(game)
@@ -151,8 +152,8 @@ class DeclareUseCase(UseCase[DeclareRequest, DeclareResponse]):
             # Emit PlayerDeclaredPiles event
             declare_event = PlayerDeclaredPiles(
                 metadata=EventMetadata(user_id=request.user_id),
-                room_id=room.id,
-                game_id=game.id,
+                room_id=room.room_id,
+                game_id=game.game_id,
                 player_id=request.player_id,
                 player_name=player.name,
                 declared_piles=request.pile_count,
@@ -165,20 +166,20 @@ class DeclareUseCase(UseCase[DeclareRequest, DeclareResponse]):
             if all_declared:
                 phase_event = PhaseChanged(
                     metadata=EventMetadata(user_id=request.user_id),
-                    room_id=room.id,
-                    game_id=game.id,
+                    room_id=room.room_id,
+                    game_id=game.game_id,
                     old_phase=GamePhase.DECLARATION.value,
                     new_phase=GamePhase.TURN.value,
                     round_number=game.round_number,
-                    current_player_id=game.current_player_id
+                    current_player_id=PropertyMapper.get_safe(game, "current_player_id")
                 )
                 await self._event_publisher.publish(phase_event)
                 
                 # TODO: emit AllPlayersReady event when it's created
                 # ready_event = AllPlayersReady(
                 #     metadata=EventMetadata(user_id=request.user_id),
-                #     room_id=room.id,
-                #     game_id=game.id,
+                #     room_id=room.room_id,
+                #     game_id=game.game_id,
                 #     phase=GamePhase.DECLARATION.value,
                 #     next_phase=GamePhase.TURN.value
                 # )
@@ -209,7 +210,7 @@ class DeclareUseCase(UseCase[DeclareRequest, DeclareResponse]):
             logger.info(
                 f"Player {player.name} declared {request.pile_count} piles",
                 extra={
-                    "game_id": game.id,
+                    "game_id": game.game_id,
                     "player_id": request.player_id,
                     "pile_count": request.pile_count,
                     "all_declared": all_declared,

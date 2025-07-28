@@ -76,7 +76,7 @@ class CreateRoomUseCase(UseCase[CreateRoomRequest, CreateRoomResponse]):
             if existing_room:
                 raise ConflictException(
                     "create room",
-                    f"Player is already in room {existing_room.code}"
+                    f"Player is already in room {existing_room.room_id}"
                 )
             
             # Generate unique room code

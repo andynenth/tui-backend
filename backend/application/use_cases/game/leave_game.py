@@ -17,6 +17,7 @@ from application.exceptions import (
 )
 # from domain.events.player_events import PlayerLeftGame, PlayerConvertedToBot  # TODO: Create these events
 from domain.events.base import EventMetadata
+from application.utils import PropertyMapper
 
 logger = logging.getLogger(__name__)
 
@@ -96,7 +97,7 @@ class LeaveGameUseCase(UseCase[LeaveGameRequest, LeaveGameResponse]):
             # Find player in room
             room_player = None
             for slot in room.slots:
-                if slot and slot.id == request.player_id:
+                if slot and PropertyMapper.generate_player_id(room.room_id, i) == request.player_id:
                     room_player = slot
                     break
             
@@ -124,7 +125,7 @@ class LeaveGameUseCase(UseCase[LeaveGameRequest, LeaveGameResponse]):
             room_player.name = bot_name
             
             # Update current player if it was the leaving player
-            if game.current_player_id == request.player_id:
+            if PropertyMapper.get_safe(game, "current_player_id") == request.player_id:
                 game.current_player_id = bot_id
             
             # Update any other game state that references the player
@@ -155,8 +156,8 @@ class LeaveGameUseCase(UseCase[LeaveGameRequest, LeaveGameResponse]):
             # TODO: Emit PlayerLeftGame event when it's created
             # left_event = PlayerLeftGame(
             #     metadata=EventMetadata(user_id=request.user_id),
-            #     room_id=room.id,
-            #     game_id=game.id,
+            #     room_id=room.room_id,
+            #     game_id=game.game_id,
             #     player_id=request.player_id,
             #     player_name=game_player.original_name,
             #     reason=request.reason or "Player left game",
@@ -168,8 +169,8 @@ class LeaveGameUseCase(UseCase[LeaveGameRequest, LeaveGameResponse]):
             # TODO: Emit PlayerConvertedToBot event when it's created
             # bot_event = PlayerConvertedToBot(
             #     metadata=EventMetadata(user_id=request.user_id),
-            #     room_id=room.id,
-            #     game_id=game.id,
+            #     room_id=room.room_id,
+            #     game_id=game.game_id,
             #     original_player_id=request.player_id,
             #     original_player_name=game_player.original_name,
             #     bot_id=bot_id,
@@ -202,7 +203,7 @@ class LeaveGameUseCase(UseCase[LeaveGameRequest, LeaveGameResponse]):
             logger.info(
                 f"Player {game_player.original_name} left game and was replaced by bot",
                 extra={
-                    "game_id": game.id,
+                    "game_id": game.game_id,
                     "player_id": request.player_id,
                     "bot_id": bot_id,
                     "round": game.round_number,

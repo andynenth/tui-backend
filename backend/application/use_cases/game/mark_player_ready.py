@@ -20,6 +20,7 @@ from domain.entities.game import GamePhase
 # from domain.events.player_events import PlayerReady  # TODO: This event doesn't exist
 from domain.events.game_events import PhaseChanged, PlayerReadyForNext
 from domain.events.base import EventMetadata
+from application.utils import PropertyMapper
 
 logger = logging.getLogger(__name__)
 
@@ -144,8 +145,8 @@ class MarkPlayerReadyUseCase(UseCase[MarkPlayerReadyRequest, MarkPlayerReadyResp
             # Emit PlayerReadyForNext event
             ready_event = PlayerReadyForNext(
                 metadata=EventMetadata(user_id=request.user_id),
-                room_id=room.id,
-                game_id=game.id,
+                room_id=room.room_id,
+                game_id=game.game_id,
                 player_id=request.player_id,
                 player_name=player.name,
                 ready_for_phase=request.ready_for_phase,
@@ -160,8 +161,8 @@ class MarkPlayerReadyUseCase(UseCase[MarkPlayerReadyRequest, MarkPlayerReadyResp
                 # TODO: Emit AllPlayersReady when event is created
                 # all_ready_event = AllPlayersReady(
                 #     metadata=EventMetadata(user_id=request.user_id),
-                #     room_id=room.id,
-                #     game_id=game.id,
+                #     room_id=room.room_id,
+                #     game_id=game.game_id,
                 #     phase=game.phase.value,
                 #     next_phase=next_phase
                 # )
@@ -171,12 +172,12 @@ class MarkPlayerReadyUseCase(UseCase[MarkPlayerReadyRequest, MarkPlayerReadyResp
                 if next_phase and next_phase != game.phase.value:
                     phase_event = PhaseChanged(
                         metadata=EventMetadata(user_id=request.user_id),
-                        room_id=room.id,
-                        game_id=game.id,
+                        room_id=room.room_id,
+                        game_id=game.game_id,
                         old_phase=phase_key.split('_to_')[0],
                         new_phase=next_phase,
                         round_number=game.round_number,
-                        current_player_id=game.current_player_id
+                        current_player_id=PropertyMapper.get_safe(game, "current_player_id")
                     )
                     await self._event_publisher.publish(phase_event)
             
@@ -205,7 +206,7 @@ class MarkPlayerReadyUseCase(UseCase[MarkPlayerReadyRequest, MarkPlayerReadyResp
             logger.info(
                 f"Player {player.name} marked ready",
                 extra={
-                    "game_id": game.id,
+                    "game_id": game.game_id,
                     "player_id": request.player_id,
                     "ready_for": request.ready_for_phase,
                     "ready_count": f"{ready_count}/{total_players}",

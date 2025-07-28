@@ -6,6 +6,10 @@ Handles room list requests and updates.
 from typing import Dict, Any, Optional, Callable, List
 import logging
 
+from infrastructure.dependencies import get_unit_of_work, get_metrics_collector
+from application.use_cases.lobby.get_room_list import GetRoomListUseCase
+from application.dto.lobby import GetRoomListRequest
+
 logger = logging.getLogger(__name__)
 
 # Actions that need lobby adapter handling
@@ -49,27 +53,10 @@ async def _handle_request_room_list(
 ) -> Dict[str, Any]:
     """
     Handle request_room_list - client requesting current room list.
-    This typically triggers a broadcast to all lobby clients.
+    This returns the room list immediately (same as get_rooms).
     """
-    data = message.get("data", {})
-    
-    # In full implementation, this would:
-    # 1. Get current room list from room manager
-    # 2. Broadcast to all lobby clients
-    # 3. Return acknowledgment to requester
-    
-    # For now, return acknowledgment
-    response = {
-        "event": "room_list_requested",
-        "data": {
-            "success": True,
-            "message": "Room list update triggered"
-        }
-    }
-    
-    logger.info("Room list requested")
-    
-    return response
+    # Delegate to get_rooms handler
+    return await _handle_get_rooms(websocket, message, room_state, broadcast_func)
 
 
 async def _handle_get_rooms(
@@ -85,48 +72,65 @@ async def _handle_get_rooms(
     data = message.get("data", {})
     filter_options = data.get("filter", {})
     
-    # In full implementation, would:
-    # 1. Get rooms from room manager
-    # 2. Apply filters (e.g., only non-full rooms, only public rooms)
-    # 3. Format room data for client
-    
-    # Mock room data for adapter
-    mock_rooms = [
-        {
-            "room_id": "room_abc123",
-            "host_name": "Alice",
-            "player_count": 2,
-            "max_players": 4,
-            "game_active": False,
-            "is_public": True
-        },
-        {
-            "room_id": "room_def456",
-            "host_name": "Bob",
-            "player_count": 4,
-            "max_players": 4,
-            "game_active": True,
-            "is_public": True
+    try:
+        # Get dependencies
+        uow = get_unit_of_work()
+        metrics = get_metrics_collector()
+        use_case = GetRoomListUseCase(uow, metrics)
+        
+        # Create request
+        request = GetRoomListRequest(
+            player_id=data.get("player_id"),
+            include_private=filter_options.get("include_private", False),
+            include_full=not filter_options.get("available_only", False),
+            include_in_game=not filter_options.get("not_in_game", False),
+            sort_by="created_at",
+            sort_order="desc",
+            page=1,
+            page_size=50
+        )
+        
+        # Execute use case
+        response_dto = await use_case.execute(request)
+        
+        # Format rooms for WebSocket response
+        rooms = []
+        for room_summary in response_dto.rooms:
+            rooms.append({
+                "room_id": room_summary.room_id,
+                "room_code": room_summary.room_code,
+                "host_name": room_summary.host_name,
+                "player_count": room_summary.player_count,
+                "max_players": room_summary.max_players,
+                "game_active": room_summary.game_in_progress,
+                "is_public": not room_summary.is_private
+            })
+        
+        response = {
+            "event": "room_list",
+            "data": {
+                "rooms": rooms,
+                "total_count": response_dto.total_items,
+                "filter_applied": bool(filter_options),
+                "page": response_dto.page,
+                "total_pages": response_dto.total_pages
+            }
         }
-    ]
-    
-    # Apply basic filtering
-    rooms = mock_rooms
-    if filter_options.get("available_only"):
-        rooms = [r for r in rooms if r["player_count"] < r["max_players"]]
-    if filter_options.get("not_in_game"):
-        rooms = [r for r in rooms if not r["game_active"]]
-    
-    response = {
-        "event": "room_list",
-        "data": {
-            "rooms": rooms,
-            "total_count": len(rooms),
-            "filter_applied": bool(filter_options)
+        
+        logger.info(f"Returning {len(rooms)} rooms from clean architecture")
+        
+    except Exception as e:
+        logger.error(f"Error getting room list: {e}")
+        # Fallback to empty list on error
+        response = {
+            "event": "room_list",
+            "data": {
+                "rooms": [],
+                "total_count": 0,
+                "filter_applied": bool(filter_options),
+                "error": str(e)
+            }
         }
-    }
-    
-    logger.info(f"Returning {len(rooms)} rooms")
     
     return response
 

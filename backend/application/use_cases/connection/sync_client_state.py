@@ -13,6 +13,7 @@ from application.dto.connection import SyncClientStateRequest, SyncClientStateRe
 from application.interfaces import UnitOfWork
 from application.exceptions import ResourceNotFoundException
 from domain.entities.game import GamePhase
+from application.utils import PropertyMapper
 
 logger = logging.getLogger(__name__)
 
@@ -63,8 +64,8 @@ class SyncClientStateUseCase(UseCase[SyncClientStateRequest, SyncClientStateResp
                     room_state = self._serialize_room_state(room, request.player_id)
                     
                     # Get game state if requested and game is active
-                    if request.include_game_state and room.current_game:
-                        game = await self._uow.games.get_by_id(room.current_game.id)
+                    if request.include_game_state and room.game:
+                        game = await self._uow.games.get_by_id(room.game.game_id)
                         if game:
                             game_state = self._serialize_game_state(game, request.player_id)
                             
@@ -79,7 +80,7 @@ class SyncClientStateUseCase(UseCase[SyncClientStateRequest, SyncClientStateResp
                 # Player not in a room - find if they're in any room
                 room = await self._uow.rooms.find_by_player(request.player_id)
                 if room:
-                    request.room_id = room.id
+                    request.room_id = room.room_id
                     # Recursive call with room_id set
                     return await self.execute(request)
             
@@ -119,10 +120,10 @@ class SyncClientStateUseCase(UseCase[SyncClientStateRequest, SyncClientStateResp
         for i, slot in enumerate(room.slots):
             if slot:
                 players.append({
-                    "player_id": slot.id,
+                    "player_id": PropertyMapper.generate_player_id(room.room_id, i),
                     "player_name": slot.name,
                     "is_bot": slot.is_bot,
-                    "is_host": slot.id == room.host_id,
+                    "is_host": PropertyMapper.generate_player_id(room.room_id, i) == PropertyMapper.get_room_attr(room, "host_id"),
                     "is_connected": getattr(slot, 'is_connected', True),
                     "is_ready": getattr(slot, 'is_ready', False),
                     "seat_position": i,
@@ -130,20 +131,20 @@ class SyncClientStateUseCase(UseCase[SyncClientStateRequest, SyncClientStateResp
                 })
         
         return {
-            "room_id": room.id,
-            "room_code": room.code,
-            "room_name": room.name,
-            "host_id": room.host_id,
+            "room_id": room.room_id,
+            "room_code": room.room_id,
+            "room_name": f"{room.host_name}'s Room",
+            "host_id": PropertyMapper.get_room_attr(room, "host_id"),
             "players": players,
             "max_players": room.max_players,
-            "game_in_progress": room.current_game is not None,
+            "game_in_progress": room.game is not None,
             "settings": room.settings.to_dict() if hasattr(room, 'settings') else {}
         }
     
     def _serialize_game_state(self, game, player_id: str) -> Dict[str, Any]:
         """Serialize game state for client."""
         return {
-            "game_id": game.id,
+            "game_id": game.game_id,
             "round_number": game.round_number,
             "turn_number": game.turn_number,
             "phase": game.phase.value if hasattr(game.phase, 'value') else str(game.phase),
@@ -157,7 +158,7 @@ class SyncClientStateUseCase(UseCase[SyncClientStateRequest, SyncClientStateResp
     def _get_player_hand(self, game, player_id: str) -> Dict[str, Any]:
         """Get player's current hand."""
         for player in game.players:
-            if player.id == player_id:
+            if PropertyMapper.get_player_attr(player, "id", room.room_id, i) == player_id:
                 return {
                     "pieces": [
                         {"value": p.value, "kind": p.kind}
@@ -189,12 +190,12 @@ class SyncClientStateUseCase(UseCase[SyncClientStateRequest, SyncClientStateResp
         """Get current scores."""
         scores = {}
         for player in game.players:
-            scores[player.id] = player.score
+            scores[PropertyMapper.get_player_attr(player, "id", room.room_id, i)] = player.score
         return scores
     
     def _get_pieces_remaining(self, game) -> Dict[str, int]:
         """Get pieces remaining for each player."""
         pieces = {}
         for player in game.players:
-            pieces[player.id] = len(player.hand)
+            pieces[PropertyMapper.get_player_attr(player, "id", room.room_id, i)] = len(player.hand)
         return pieces

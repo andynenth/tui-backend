@@ -17,6 +17,8 @@ from application.dto.lobby import (
 from application.dto.common import RoomInfo, PlayerInfo, PlayerStatus, RoomStatus
 from application.interfaces import UnitOfWork, MetricsCollector
 from application.exceptions import ResourceNotFoundException, ValidationException
+from application.utils import PropertyMapper
+from datetime import datetime
 
 logger = logging.getLogger(__name__)
 
@@ -86,19 +88,19 @@ class GetRoomDetailsUseCase(UseCase[GetRoomDetailsRequest, GetRoomDetailsRespons
             
             # Get game settings
             game_settings = {
-                "win_condition_type": room.settings.win_condition_type,
-                "win_condition_value": room.settings.win_condition_value,
-                "max_players": room.settings.max_players,
-                "allow_bots": room.settings.allow_bots,
-                "is_private": room.settings.is_private,
+                "win_condition_type": PropertyMapper.get_room_attr(room, "settings.win_condition_type"),
+                "win_condition_value": PropertyMapper.get_room_attr(room, "settings.win_condition_value"),
+                "max_players": room.max_slots,
+                "allow_bots": PropertyMapper.get_room_attr(room, "settings.allow_bots"),
+                "is_private": PropertyMapper.get_room_attr(room, "settings.is_private"),
                 "rounds_per_game": 20,  # Default game setting
                 "time_limit_seconds": None  # No time limit by default
             }
             
             # Get game state summary if game in progress
             game_state_summary = None
-            if request.include_game_details and room.current_game:
-                game = await self._uow.games.get_by_id(room.current_game.id)
+            if request.include_game_details and room.game:
+                game = await self._uow.games.get_by_id(room.game.game_id)
                 if game:
                     game_state_summary = self._create_game_summary(game)
             
@@ -119,13 +121,13 @@ class GetRoomDetailsUseCase(UseCase[GetRoomDetailsRequest, GetRoomDetailsRespons
                 join_error = "Room is at maximum capacity"
             
             # Check if game in progress
-            if room.current_game:
+            if room.game:
                 join_restrictions.append("Game in progress")
                 can_join = False
                 join_error = "Cannot join while game is active"
             
             # Check if private room
-            if room.settings.is_private:
+            if PropertyMapper.get_room_attr(room, "settings.is_private"):
                 join_restrictions.append("Private room - invite only")
             
             # Check if player already in a room
@@ -133,9 +135,9 @@ class GetRoomDetailsUseCase(UseCase[GetRoomDetailsRequest, GetRoomDetailsRespons
                 existing_room = await self._uow.rooms.find_by_player(
                     request.requesting_player_id
                 )
-                if existing_room and existing_room.id != room.id:
+                if existing_room and existing_room.room_id != room.room_id:
                     can_join = False
-                    join_error = f"Already in room {existing_room.code}"
+                    join_error = f"Already in room {existing_room.room_id}"
             
             # Create room details
             room_details = RoomDetails(
@@ -143,7 +145,7 @@ class GetRoomDetailsUseCase(UseCase[GetRoomDetailsRequest, GetRoomDetailsRespons
                 game_settings=game_settings,
                 game_state_summary=game_state_summary,
                 player_stats=player_stats,
-                is_joinable=can_join and not room.settings.is_private,
+                is_joinable=can_join and not PropertyMapper.get_room_attr(room, "settings.is_private"),
                 join_restrictions=join_restrictions
             )
             
@@ -152,8 +154,8 @@ class GetRoomDetailsUseCase(UseCase[GetRoomDetailsRequest, GetRoomDetailsRespons
                 self._metrics.increment(
                     "lobby.room_details_retrieved",
                     tags={
-                        "room_code": room.code,
-                        "has_game": str(room.current_game is not None).lower(),
+                        "room_code": room.room_id,
+                        "has_game": str(room.game is not None).lower(),
                         "can_join": str(can_join).lower()
                     }
                 )
@@ -168,9 +170,9 @@ class GetRoomDetailsUseCase(UseCase[GetRoomDetailsRequest, GetRoomDetailsRespons
             )
             
             logger.info(
-                f"Retrieved details for room {room.code}",
+                f"Retrieved details for room {room.room_id}",
                 extra={
-                    "room_id": room.id,
+                    "room_id": room.room_id,
                     "requesting_player": request.requesting_player_id,
                     "can_join": can_join
                 }
@@ -186,28 +188,28 @@ class GetRoomDetailsUseCase(UseCase[GetRoomDetailsRequest, GetRoomDetailsRespons
         for i, slot in enumerate(room.slots):
             if slot:
                 players.append(PlayerInfo(
-                    player_id=slot.id,
+                    player_id=PropertyMapper.generate_player_id(room.room_id, i),
                     player_name=slot.name,
                     is_bot=slot.is_bot,
-                    is_host=slot.id == room.host_id,
+                    is_host=PropertyMapper.generate_player_id(room.room_id, i) == PropertyMapper.get_room_attr(room, "host_id"),
                     status=PlayerStatus.CONNECTED if getattr(slot, 'is_connected', True) else PlayerStatus.DISCONNECTED,
                     seat_position=i,
                     score=slot.score,
-                    games_played=slot.games_played,
-                    games_won=slot.games_won
+                    games_played=PropertyMapper.get_safe(slot, "games_played", 0),
+                    games_won=PropertyMapper.get_safe(slot, "games_won", 0)
                 ))
         
         return RoomInfo(
-            room_id=room.id,
-            room_code=room.code,
-            room_name=room.name,
-            host_id=room.host_id,
-            status=RoomStatus.IN_GAME if room.current_game else RoomStatus.WAITING,
+            room_id=room.room_id,
+            room_code=room.room_id,
+            room_name=f"{room.host_name}'s Room",
+            host_id=PropertyMapper.get_room_attr(room, "host_id"),
+            status=RoomStatus.IN_GAME if room.game else RoomStatus.WAITING,
             players=players,
-            max_players=room.settings.max_players,
-            created_at=room.created_at,
-            game_in_progress=room.current_game is not None,
-            current_game_id=room.current_game.id if room.current_game else None
+            max_players=room.max_slots,
+            created_at=datetime.utcnow(),
+            game_in_progress=room.game is not None,
+            current_game_id=room.game.game_id if room.game else None
         )
     
     def _create_game_summary(self, game) -> Dict[str, Any]:
@@ -246,8 +248,8 @@ class GetRoomDetailsUseCase(UseCase[GetRoomDetailsRequest, GetRoomDetailsRespons
         
         for slot in room.slots:
             if slot and not slot.is_bot:
-                player_stats = await self._uow.player_stats.get_stats(slot.id)
-                stats[slot.id] = {
+                player_stats = await self._uow.player_stats.get_stats(PropertyMapper.generate_player_id(room.room_id, i))
+                stats[PropertyMapper.generate_player_id(room.room_id, i)] = {
                     "total_games": player_stats.get("total_games", 0),
                     "games_won": player_stats.get("games_won", 0),
                     "win_rate": player_stats.get("win_rate", 0.0),

@@ -28,6 +28,7 @@ from domain.events.game_events import (
     WeakHandDetected
 )
 from domain.events.base import EventMetadata
+from application.utils import PropertyMapper
 
 logger = logging.getLogger(__name__)
 
@@ -85,14 +86,14 @@ class StartGameUseCase(UseCase[StartGameRequest, StartGameResponse]):
                 raise ResourceNotFoundException("Room", request.room_id)
             
             # Verify requester is host
-            if room.host_id != request.requesting_player_id:
+            if PropertyMapper.get_room_attr(room, "host_id") != request.requesting_player_id:
                 raise AuthorizationException(
                     "start game",
                     f"room {request.room_id}"
                 )
             
             # Check if game already in progress
-            if room.current_game:
+            if room.game:
                 raise ConflictException(
                     "start game",
                     "Game already in progress"
@@ -109,7 +110,7 @@ class StartGameUseCase(UseCase[StartGameRequest, StartGameResponse]):
             for i, slot in enumerate(room.slots):
                 if slot:
                     game_player = Player(
-                        id=slot.id,
+                        id=PropertyMapper.generate_player_id(room.room_id, i),
                         name=slot.name,
                         is_bot=slot.is_bot
                     )
@@ -127,7 +128,7 @@ class StartGameUseCase(UseCase[StartGameRequest, StartGameResponse]):
             starting_player = game_players[0]
             if request.use_previous_starter and hasattr(room, 'last_starter_id'):
                 for player in game_players:
-                    if player.id == room.last_starter_id:
+                    if PropertyMapper.get_player_attr(player, "id", room.room_id, i) == room.last_starter_id:
                         starting_player = player
                         break
             
@@ -135,8 +136,8 @@ class StartGameUseCase(UseCase[StartGameRequest, StartGameResponse]):
             game = Game.create(
                 game_id=None,  # Will be generated
                 players=game_players,
-                win_condition_type=room.settings.win_condition_type,
-                win_condition_value=room.settings.win_condition_value
+                win_condition_type=PropertyMapper.get_room_attr(room, "settings.win_condition_type"),
+                win_condition_value=PropertyMapper.get_room_attr(room, "settings.win_condition_value")
             )
             
             # Start the game (deals pieces)
@@ -146,20 +147,20 @@ class StartGameUseCase(UseCase[StartGameRequest, StartGameResponse]):
             await self._uow.games.save(game)
             
             # Update room with game reference
-            room.current_game = game
+            room.game = game
             room.last_starter_id = starting_player.id
             await self._uow.rooms.save(room)
             
             # Prepare response data
-            game_state = self._create_game_state_info(game, room.id)
+            game_state = self._create_game_state_info(game, room.room_id)
             player_hands = self._get_player_hands(game)
             weak_hands = self._detect_weak_hands(game)
             
             # Emit GameStarted event
             game_started = GameStarted(
                 metadata=EventMetadata(user_id=request.user_id),
-                room_id=room.id,
-                game_id=game.id,
+                room_id=room.room_id,
+                game_id=game.game_id,
                 players=[{
                     "id": p.id,
                     "name": p.name,
@@ -167,8 +168,8 @@ class StartGameUseCase(UseCase[StartGameRequest, StartGameResponse]):
                 } for p in game_players],
                 starting_player_id=starting_player.id,
                 win_condition={
-                    "type": room.settings.win_condition_type,
-                    "value": room.settings.win_condition_value
+                    "type": PropertyMapper.get_room_attr(room, "settings.win_condition_type"),
+                    "value": PropertyMapper.get_room_attr(room, "settings.win_condition_value")
                 }
             )
             await self._event_publisher.publish(game_started)
@@ -176,10 +177,10 @@ class StartGameUseCase(UseCase[StartGameRequest, StartGameResponse]):
             # Emit RoundStarted event
             round_started = RoundStarted(
                 metadata=EventMetadata(user_id=request.user_id),
-                room_id=room.id,
-                game_id=game.id,
+                room_id=room.room_id,
+                game_id=game.game_id,
                 round_number=1,
-                starting_player_id=starting_player.id,
+                starting_player_id=starting_PropertyMapper.get_player_attr(player, "id", room.room_id, i),
                 pieces_per_player=8
             )
             await self._event_publisher.publish(round_started)
@@ -187,10 +188,10 @@ class StartGameUseCase(UseCase[StartGameRequest, StartGameResponse]):
             # Emit PiecesDealt event
             pieces_dealt = PiecesDealt(
                 metadata=EventMetadata(user_id=request.user_id),
-                room_id=room.id,
-                game_id=game.id,
+                room_id=room.room_id,
+                game_id=game.game_id,
                 round_number=1,
-                dealer_id=starting_player.id,
+                dealer_id=starting_PropertyMapper.get_player_attr(player, "id", room.room_id, i),
                 piece_counts={p.id: len(p.hand) for p in game.players}
             )
             await self._event_publisher.publish(pieces_dealt)
@@ -199,8 +200,8 @@ class StartGameUseCase(UseCase[StartGameRequest, StartGameResponse]):
             for player_id in weak_hands:
                 weak_hand_event = WeakHandDetected(
                     metadata=EventMetadata(user_id=request.user_id),
-                    room_id=room.id,
-                    game_id=game.id,
+                    room_id=room.room_id,
+                    game_id=game.game_id,
                     player_id=player_id,
                     player_name=next(p.name for p in game.players if p.id == player_id),
                     hand_strength=self._calculate_hand_strength(game, player_id),
@@ -215,7 +216,7 @@ class StartGameUseCase(UseCase[StartGameRequest, StartGameResponse]):
                     tags={
                         "player_count": str(len(game_players)),
                         "has_bots": str(any(p.is_bot for p in game_players)).lower(),
-                        "win_condition": room.settings.win_condition_type,
+                        "win_condition": PropertyMapper.get_room_attr(room, "settings.win_condition_type"),
                         "weak_hands": str(len(weak_hands))
                     }
                 )
@@ -224,21 +225,21 @@ class StartGameUseCase(UseCase[StartGameRequest, StartGameResponse]):
             response = StartGameResponse(
                 success=True,
                 request_id=request.request_id,
-                game_id=game.id,
-                room_id=room.id,
+                game_id=game.game_id,
+                room_id=room.room_id,
                 initial_state=game_state,
                 player_hands=player_hands,
-                starting_player_id=starting_player.id,
+                starting_player_id=starting_PropertyMapper.get_player_attr(player, "id", room.room_id, i),
                 weak_hands_detected=weak_hands
             )
             
             logger.info(
-                f"Game {game.id} started in room {room.code}",
+                f"Game {game.game_id} started in room {room.room_id}",
                 extra={
-                    "game_id": game.id,
-                    "room_id": room.id,
+                    "game_id": game.game_id,
+                    "room_id": room.room_id,
                     "player_count": len(game_players),
-                    "starting_player": starting_player.id,
+                    "starting_player": starting_PropertyMapper.get_player_attr(player, "id", room.room_id, i),
                     "weak_hands": len(weak_hands)
                 }
             )
@@ -249,12 +250,12 @@ class StartGameUseCase(UseCase[StartGameRequest, StartGameResponse]):
     def _create_game_state_info(self, game: Game, room_id: str) -> GameStateInfo:
         """Create GameStateInfo from game entity."""
         return GameStateInfo(
-            game_id=game.id,
+            game_id=game.game_id,
             room_id=room_id,
             round_number=game.round_number,
             turn_number=game.turn_number,
             phase=game.phase.value if hasattr(game.phase, 'value') else str(game.phase),
-            current_player_id=game.current_player_id,
+            current_player_id=PropertyMapper.get_safe(game, "current_player_id"),
             player_scores={p.id: p.score for p in game.players},
             pieces_remaining={p.id: len(p.hand) for p in game.players}
         )
@@ -263,7 +264,7 @@ class StartGameUseCase(UseCase[StartGameRequest, StartGameResponse]):
         """Get all player hands as PieceInfo objects."""
         hands = {}
         for player in game.players:
-            hands[player.id] = [
+            hands[PropertyMapper.get_player_attr(player, "id", room.room_id, i)] = [
                 PieceInfo(value=piece.value, kind=piece.kind)
                 for piece in player.hand
             ]
@@ -275,13 +276,13 @@ class StartGameUseCase(UseCase[StartGameRequest, StartGameResponse]):
         
         for player in game.players:
             if GameRules.has_weak_hand(player.hand):
-                weak_players.append(player.id)
+                weak_players.append(PropertyMapper.get_player_attr(player, "id", room.room_id, i))
         
         return weak_players
     
     def _calculate_hand_strength(self, game: Game, player_id: str) -> int:
         """Calculate hand strength score for a player."""
         for player in game.players:
-            if player.id == player_id:
+            if PropertyMapper.get_player_attr(player, "id", room.room_id, i) == player_id:
                 return sum(p.value for p in player.hand if p.value > 9)
         return 0

@@ -14,6 +14,7 @@ from application.base import UseCase
 from application.dto.connection import HandlePingRequest, HandlePingResponse
 from application.interfaces import UnitOfWork, MetricsCollector
 from application.exceptions import ResourceNotFoundException
+from application.utils import PropertyMapper
 
 logger = logging.getLogger(__name__)
 
@@ -64,7 +65,7 @@ class HandlePingUseCase(UseCase[HandlePingRequest, HandlePingResponse]):
                     # Find player in room
                     player_found = False
                     for slot in room.slots:
-                        if slot and slot.id == request.player_id:
+                        if slot and PropertyMapper.generate_player_id(room.room_id, i) == request.player_id:
                             # Update last activity timestamp
                             slot.last_activity = datetime.utcnow()
                             player_found = True

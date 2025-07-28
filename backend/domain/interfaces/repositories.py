@@ -92,6 +92,44 @@ class RoomRepository(ABC):
             True if exists, False otherwise
         """
         pass
+    
+    @abstractmethod
+    async def list_active(self, limit: int = 100) -> List[Room]:
+        """
+        Get list of active rooms (not completed/abandoned).
+        
+        Args:
+            limit: Maximum number of rooms to return
+            
+        Returns:
+            List of active rooms
+        """
+        pass
+    
+    @abstractmethod
+    async def find_by_player(self, player_id: str) -> Optional[Room]:
+        """
+        Find a room containing a player by ID.
+        
+        Args:
+            player_id: ID of the player (e.g., "room123_p0")
+            
+        Returns:
+            Room containing the player, None if not found
+        """
+        pass
+    
+    async def get_by_id(self, room_id: str) -> Optional[Room]:
+        """
+        Alias for find_by_id for consistency with use cases.
+        
+        Args:
+            room_id: Unique room identifier
+            
+        Returns:
+            Room if found, None otherwise
+        """
+        return await self.find_by_id(room_id)
 
 
 class GameRepository(ABC):

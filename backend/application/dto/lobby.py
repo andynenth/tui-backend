@@ -8,6 +8,7 @@ lobby operations like room discovery and listing.
 from dataclasses import dataclass, field
 from datetime import datetime
 from typing import Optional, List, Dict, Any
+import uuid
 from .base import Request, Response, PagedResponse
 from .common import RoomInfo
 
@@ -27,6 +28,11 @@ class GetRoomListRequest(Request):
     sort_order: str = "desc"  # asc, desc
     page: int = 1
     page_size: int = 20
+    # Base request fields
+    request_id: str = field(default_factory=lambda: str(uuid.uuid4()))
+    timestamp: datetime = field(default_factory=datetime.utcnow)
+    user_id: Optional[str] = None
+    correlation_id: Optional[str] = None
 
 
 @dataclass
@@ -103,6 +109,11 @@ class GetRoomDetailsRequest(Request):
     requesting_player_id: Optional[str] = None
     include_game_details: bool = True
     include_player_stats: bool = True
+    # Base request fields
+    request_id: str = field(default_factory=lambda: str(uuid.uuid4()))
+    timestamp: datetime = field(default_factory=datetime.utcnow)
+    user_id: Optional[str] = None
+    correlation_id: Optional[str] = None
 
 
 @dataclass

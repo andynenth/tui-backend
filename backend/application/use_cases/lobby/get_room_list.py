@@ -17,6 +17,7 @@ from application.dto.lobby import (
 )
 from application.interfaces import UnitOfWork, MetricsCollector
 from application.exceptions import ValidationException
+from application.utils import PropertyMapper
 
 logger = logging.getLogger(__name__)
 
@@ -152,19 +153,21 @@ class GetRoomListUseCase(UseCase[GetRoomListRequest, GetRoomListResponse]):
         
         for room in rooms:
             # Skip private rooms unless requested
-            if room.settings.is_private and not request.include_private:
+            is_private = PropertyMapper.get_room_attr(room, 'settings.is_private')
+            if is_private and not request.include_private:
                 continue
             
             # Skip full rooms unless requested
-            if room.is_full() and not request.include_full:
+            player_count = len([s for s in room.slots if s])
+            if player_count >= room.max_slots and not request.include_full:
                 continue
             
             # Skip rooms with games in progress unless requested
-            if room.current_game and not request.include_in_game:
+            if room.game and not request.include_in_game:
                 continue
             
             # Filter by host if specified
-            if request.filter_by_host and room.host_id != request.filter_by_host:
+            if request.filter_by_host and room.host_name != request.filter_by_host:
                 continue
             
             filtered.append(room)
@@ -176,21 +179,22 @@ class GetRoomListUseCase(UseCase[GetRoomListRequest, GetRoomListResponse]):
         reverse = request.sort_order == "desc"
         
         if request.sort_by == "created_at":
+            # Since rooms don't have created_at, sort by room_id (newer rooms have higher IDs)
             return sorted(
                 rooms,
-                key=lambda r: r.created_at,
+                key=lambda r: r.room_id,
                 reverse=reverse
             )
         elif request.sort_by == "player_count":
             return sorted(
                 rooms,
-                key=lambda r: r.player_count,
+                key=lambda r: len([s for s in r.slots if s]),
                 reverse=reverse
             )
         elif request.sort_by == "room_name":
             return sorted(
                 rooms,
-                key=lambda r: r.name.lower(),
+                key=lambda r: f"{r.host_name}'s Room".lower(),
                 reverse=reverse
             )
         
@@ -198,21 +202,17 @@ class GetRoomListUseCase(UseCase[GetRoomListRequest, GetRoomListResponse]):
     
     def _create_room_summary(self, room) -> RoomSummary:
         """Create room summary from room aggregate."""
-        # Find host name
-        host_name = "Unknown"
-        for slot in room.slots:
-            if slot and slot.id == room.host_id:
-                host_name = slot.name
-                break
+        # Use PropertyMapper to get consistent room attributes
+        room_mapped = PropertyMapper.map_room_for_use_case(room)
         
         return RoomSummary(
-            room_id=room.id,
-            room_code=room.code,
-            room_name=room.name,
-            host_name=host_name,
-            player_count=room.player_count,
-            max_players=room.settings.max_players,
-            game_in_progress=room.current_game is not None,
-            is_private=room.settings.is_private,
-            created_at=room.created_at
+            room_id=room.room_id,
+            room_code=room_mapped['code'],
+            room_name=room_mapped['name'],
+            host_name=room.host_name,
+            player_count=room_mapped['player_count'],
+            max_players=room.max_slots,
+            game_in_progress=room.game is not None,
+            is_private=room_mapped['settings']['is_private'],
+            created_at=room_mapped['created_at']
         )

@@ -24,6 +24,7 @@ from domain.events.game_events import (
     PiecesDealt
 )
 from domain.events.base import EventMetadata
+from application.utils import PropertyMapper
 
 logger = logging.getLogger(__name__)
 
@@ -149,8 +150,8 @@ class AcceptRedealUseCase(UseCase[AcceptRedealRequest, AcceptRedealResponse]):
             # TODO: Emit RedealAccepted event when it's created
             # accept_event = RedealAccepted(
             #     metadata=EventMetadata(user_id=request.user_id),
-            #     room_id=room.id,
-            #     game_id=game.id,
+            #     room_id=room.room_id,
+            #     game_id=game.game_id,
             #     redeal_id=request.redeal_id,
             #     player_id=request.player_id,
             #     player_name=player.name,
@@ -164,8 +165,8 @@ class AcceptRedealUseCase(UseCase[AcceptRedealRequest, AcceptRedealResponse]):
                 # TODO: Emit RedealApproved when event is created
                 # approved_event = RedealApproved(
                 #     metadata=EventMetadata(user_id=request.user_id),
-                #     room_id=room.id,
-                #     game_id=game.id,
+                #     room_id=room.room_id,
+                #     game_id=game.game_id,
                 #     redeal_id=request.redeal_id,
                 #     total_votes=votes_required,
                 #     accept_votes=votes_collected
@@ -175,21 +176,21 @@ class AcceptRedealUseCase(UseCase[AcceptRedealRequest, AcceptRedealResponse]):
                 # Emit RedealExecuted
                 executed_event = RedealExecuted(
                     metadata=EventMetadata(user_id=request.user_id),
-                    room_id=room.id,
-                    game_id=game.id,
+                    room_id=room.room_id,
+                    game_id=game.game_id,
                     redeal_id=request.redeal_id,
                     round_number=game.round_number,
-                    new_starting_player_id=game.current_player_id
+                    new_starting_player_id=PropertyMapper.get_safe(game, "current_player_id")
                 )
                 await self._event_publisher.publish(executed_event)
                 
                 # Emit PiecesDealt for new hands
                 pieces_event = PiecesDealt(
                     metadata=EventMetadata(user_id=request.user_id),
-                    room_id=room.id,
-                    game_id=game.id,
+                    room_id=room.room_id,
+                    game_id=game.game_id,
                     round_number=game.round_number,
-                    dealer_id=game.current_player_id,
+                    dealer_id=PropertyMapper.get_safe(game, "current_player_id"),
                     piece_counts={p.id: len(p.hand) for p in game.players}
                 )
                 await self._event_publisher.publish(pieces_event)
@@ -220,7 +221,7 @@ class AcceptRedealUseCase(UseCase[AcceptRedealRequest, AcceptRedealResponse]):
             logger.info(
                 f"Player {player.name} accepted redeal",
                 extra={
-                    "game_id": game.id,
+                    "game_id": game.game_id,
                     "player_id": request.player_id,
                     "redeal_id": request.redeal_id,
                     "votes": f"{votes_collected}/{votes_required}",

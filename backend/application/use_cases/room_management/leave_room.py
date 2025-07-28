@@ -14,6 +14,7 @@ from application.interfaces import UnitOfWork, EventPublisher, MetricsCollector
 from application.exceptions import ResourceNotFoundException, ValidationException
 from domain.events.room_events import PlayerLeftRoom, HostChanged, RoomClosed
 from domain.events.base import EventMetadata
+from application.utils import PropertyMapper
 
 logger = logging.getLogger(__name__)
 
@@ -78,7 +79,7 @@ class LeaveRoomUseCase(UseCase[LeaveRoomRequest, LeaveRoomResponse]):
             player_slot = None
             slot_index = None
             for i, slot in enumerate(room.slots):
-                if slot and slot.id == request.player_id:
+                if slot and PropertyMapper.generate_player_id(room.room_id, i) == request.player_id:
                     player_slot = slot
                     slot_index = i
                     break
@@ -87,10 +88,10 @@ class LeaveRoomUseCase(UseCase[LeaveRoomRequest, LeaveRoomResponse]):
                 raise ResourceNotFoundException("Player", request.player_id)
             
             # Check if player is host
-            was_host = room.host_id == request.player_id
+            was_host = PropertyMapper.get_room_attr(room, "host_id") == request.player_id
             
             # Remove player or convert to bot if game in progress
-            if room.current_game:
+            if room.game:
                 # Convert to bot instead of removing
                 player_slot.is_bot = True
                 player_slot.is_connected = False
@@ -103,19 +104,21 @@ class LeaveRoomUseCase(UseCase[LeaveRoomRequest, LeaveRoomResponse]):
             new_host_id = None
             if was_host and room.player_count > 0:
                 # Find new host (first connected non-bot player)
-                for slot in room.slots:
-                    if slot and not slot.is_bot and slot.id != request.player_id:
+                for i, slot in enumerate(room.slots):
+                    if slot and not slot.is_bot and slot.name != request.player_name:
                         if getattr(slot, 'is_connected', True):
-                            new_host_id = slot.id
-                            room.host_id = new_host_id
+                            new_host_id = PropertyMapper.generate_player_id(room.room_id, i)
+                            new_host_name = slot.name
+                            room.host_name = new_host_name  # Update host name
                             break
                 
                 # Fallback to any player if no connected players
                 if not new_host_id:
-                    for slot in room.slots:
-                        if slot and slot.id != request.player_id:
-                            new_host_id = slot.id
-                            room.host_id = new_host_id
+                    for i, slot in enumerate(room.slots):
+                        if slot and slot.name != request.player_name:
+                            new_host_id = PropertyMapper.generate_player_id(room.room_id, i)
+                            new_host_name = slot.name
+                            room.host_name = new_host_name  # Update host name
                             break
             
             # Check if room should be closed
@@ -128,32 +131,32 @@ class LeaveRoomUseCase(UseCase[LeaveRoomRequest, LeaveRoomResponse]):
             
             # Save or delete room
             if room_closed:
-                await self._uow.rooms.delete(room.id)
+                await self._uow.rooms.delete(room.room_id)
             else:
                 await self._uow.rooms.save(room)
             
             # Emit PlayerLeftRoom event
             event = PlayerLeftRoom(
                 metadata=EventMetadata(user_id=request.user_id),
-                room_id=room.id,
+                room_id=room.room_id,
                 player_id=request.player_id,
                 player_name=player_slot.name,
                 reason=request.reason or "Player left",
                 remaining_players=room.player_count if not room_closed else 0,
-                converted_to_bot=room.current_game is not None
+                converted_to_bot=room.game is not None
             )
             await self._event_publisher.publish(event)
             
             # Emit HostChanged if needed
             if new_host_id:
                 new_host = next(
-                    (slot for slot in room.slots if slot and slot.id == new_host_id),
+                    (slot for slot in room.slots if slot and PropertyMapper.generate_player_id(room.room_id, i) == new_host_id),
                     None
                 )
                 if new_host:
                     host_event = HostChanged(
                         metadata=EventMetadata(user_id=request.user_id),
-                        room_id=room.id,
+                        room_id=room.room_id,
                         old_host_id=request.player_id,
                         new_host_id=new_host_id,
                         new_host_name=new_host.name,
@@ -165,8 +168,8 @@ class LeaveRoomUseCase(UseCase[LeaveRoomRequest, LeaveRoomResponse]):
             if room_closed:
                 close_event = RoomClosed(
                     metadata=EventMetadata(user_id=request.user_id),
-                    room_id=room.id,
-                    room_code=room.code,
+                    room_id=room.room_id,
+                    room_code=room.room_id,
                     reason="All players left" if room.player_count == 0 else "Only bots remain"
                 )
                 await self._event_publisher.publish(close_event)
@@ -186,16 +189,16 @@ class LeaveRoomUseCase(UseCase[LeaveRoomRequest, LeaveRoomResponse]):
             response = LeaveRoomResponse(
                 success=True,
                 request_id=request.request_id,
-                room_id=room.id,
+                room_id=room.room_id,
                 new_host_id=new_host_id,
                 room_closed=room_closed
             )
             
             logger.info(
-                f"Player {player_slot.name} left room {room.code}",
+                f"Player {player_slot.name} left room {room.room_id}",
                 extra={
                     "player_id": request.player_id,
-                    "room_id": room.id,
+                    "room_id": room.room_id,
                     "new_host_id": new_host_id,
                     "room_closed": room_closed
                 }
