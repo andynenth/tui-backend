@@ -1,19 +1,20 @@
 # WebSocket Integration Fix Plan (Revised)
 
 ## Date: 2025-01-28
-## Status: Phase 1 Complete, Phase 2 Ready for Execution
+## Status: Phase 3 In Progress (Day 1 of 5 Complete)
 
 ### Executive Summary
 
 This document provides a detailed, actionable plan to fix WebSocket integration issues and establish proper architectural boundaries. Each phase includes specific tasks, testing requirements, and documentation updates following a test-driven, documentation-first workflow.
 
-### Current State (Post-Phase 1)
+### Current State (Post-Phase 3 Day 1)
 
 - ✅ Immediate bugs fixed (variable names, imports)
 - ✅ WebSocket connections working
-- ❌ Architecture still tightly coupled
-- ❌ No clear separation of concerns
-- ❌ Adapter system contains legacy patterns
+- ✅ Infrastructure separated from business logic
+- ✅ Adapter system analyzed - decision to remove
+- 🚧 Direct use case integration in progress (6/22 events migrated)
+- ❌ Clear architectural boundaries not yet established
 
 ---
 
@@ -30,11 +31,11 @@ Restore basic WebSocket functionality
 ### Results
 - WebSocket connections establish successfully
 - Room creation and game operations work
-- See `PHASE_1_WEBSOCKET_FIX_SUMMARY.md` for details
+- See [Phase 1 Completion Summary](./phase-1/PHASE_1_COMPLETION_SUMMARY.md) for details
 
 ---
 
-## Phase 2: Decouple Infrastructure from Business Logic
+## Phase 2: Decouple Infrastructure from Business Logic ✅ COMPLETED
 
 ### Objective
 Separate WebSocket infrastructure from business logic routing
@@ -166,16 +167,23 @@ Separate WebSocket infrastructure from business logic routing
 - `application/websocket/README.md` - Application layer components
 
 ### Phase 2 Completion Criteria
-- [ ] All infrastructure code extracted from ws.py
-- [ ] Message router handles all business logic routing
-- [ ] All tests passing (unit + integration)
-- [ ] Documentation updated to reflect new architecture
-- [ ] No business logic in infrastructure layer
-- [ ] No infrastructure concerns in application layer
+- [x] All infrastructure code extracted from ws.py
+- [x] Message router handles all business logic routing
+- [x] All tests passing (unit + integration)
+- [x] Documentation updated to reflect new architecture
+- [x] No business logic in infrastructure layer
+- [x] No infrastructure concerns in application layer
+
+### Results
+- Successfully created WebSocketServer for infrastructure handling
+- Created MessageRouter for business logic routing
+- Comprehensive test coverage for new components
+- Discovered integration challenges with existing infrastructure
+- See [Phase 2 Completion Report](./phase-2/PHASE_2_COMPLETION_REPORT.md) for details
 
 ---
 
-## Phase 2.5: Adapter System Analysis
+## Phase 2.5: Adapter System Analysis ✅ COMPLETED
 
 ### Objective
 Evaluate whether the adapter system is still needed post-Phase 2
@@ -215,14 +223,20 @@ Evaluate whether the adapter system is still needed post-Phase 2
      - Option B: Remove adapters entirely (Phase 3B)
 
 ### Deliverables
-- [ ] Usage analysis document
-- [ ] Cost/benefit analysis
-- [ ] Decision matrix with recommendation
-- [ ] Updated Phase 3 plan based on decision
+- [x] Usage analysis document
+- [x] Cost/benefit analysis
+- [x] Decision matrix with recommendation
+- [x] Updated Phase 3 plan based on decision
+
+### Results
+- Comprehensive analysis of all 23 adapter files
+- Decision: **Remove adapters entirely** (Score: 7.65/10 vs 4.15/10 for keeping)
+- Benefits: 90% code reduction, better performance, simpler architecture
+- See adapter analysis documents in [docs/adapters/](../../adapters/)
 
 ---
 
-## Phase 3A: Simplify Adapter System (If Keeping)
+## Phase 3A: Simplify Adapter System (If Keeping) ❌ NOT SELECTED
 
 ### Objective
 Modernize adapters to work with clean architecture only
@@ -255,57 +269,53 @@ Modernize adapters to work with clean architecture only
 
 ---
 
-## Phase 3B: Remove Adapter System (If Removing)
+## Phase 3B: Remove Adapter System ✅ SELECTED - 🚧 IN PROGRESS
 
 ### Objective
 Direct integration between WebSocket routing and use cases
 
-### Task 3B.1: Create Direct Use Case Integration
-**Files to create:**
-- `application/websocket/use_case_dispatcher.py`
+### Task 3B.1: Create Direct Use Case Integration ✅ COMPLETED
+**Files created:**
+- `application/websocket/use_case_dispatcher.py` ✅
+- `application/websocket/websocket_config.py` ✅ (migration configuration)
 
-**Specific actions:**
-1. Create dispatcher to call use cases directly:
-   ```python
-   class UseCaseDispatcher:
-       def __init__(self, unit_of_work):
-           self.uow = unit_of_work
-           self.use_cases = self._initialize_use_cases()
-       
-       async def dispatch(self, event: str, data: dict):
-           """Dispatch event to appropriate use case"""
-           use_case = self.use_cases.get(event)
-           if not use_case:
-               raise UnknownEventError(f"Unknown event: {event}")
-           return await use_case.execute(data)
-   ```
+**Actions completed:**
+1. Created UseCaseDispatcher with all 22 event handlers
+2. Implemented migration configuration system
+3. Direct DTO transformation implemented
 
-2. Map events to use cases directly
+### Task 3B.2: Update Message Router ✅ COMPLETED
+**Files modified:**
+- `application/websocket/message_router.py` ✅
 
-### Task 3B.2: Update Message Router
-**Files to modify:**
-- `application/websocket/message_router.py`
+**Actions completed:**
+1. Added support for both adapter and direct routing
+2. Configuration-based routing decisions
+3. Maintained backward compatibility
 
-**Actions:**
-1. Replace adapter calls with use case dispatcher
-2. Handle response transformation
-3. Update error handling
-
-### Task 3B.3: Remove Adapter Files
+### Task 3B.3: Remove Adapter Files 📋 PENDING
 **Actions:**
 1. Delete `api/adapters/` directory
 2. Delete `api/routes/ws_adapter_wrapper.py`
 3. Update all imports
 
-### Task 3B.4: Write Tests
-- Unit tests for dispatcher
-- Integration tests for direct flow
-- E2E tests for all game operations
+### Task 3B.4: Write Tests 🚧 IN PROGRESS
+- Unit tests for dispatcher ✅ COMPLETED
+- Integration tests for direct flow 📋 PENDING
+- E2E tests for all game operations 📋 PENDING
 
-### Task 3B.5: Update Documentation
+### Task 3B.5: Update Documentation 📋 PENDING
 - Document new direct integration
 - Update architecture diagrams
 - Create migration guide
+
+### Progress Summary (Day 1 Complete)
+- **Events Migrated**: 6/22 (27%)
+  - Connection: ping, client_ready, ack, sync_request ✅
+  - Lobby: request_room_list, get_rooms ✅
+- **Code Created**: ~1,200 lines
+- **Tests Written**: Unit tests for dispatcher
+- See [Phase 3 Progress Report](./phase-3/PHASE_3_PROGRESS_REPORT.md) for details
 
 ---
 
@@ -419,19 +429,25 @@ Define and enforce architectural boundaries
 
 ## Timeline
 
-- **Phase 2**: 6-8 hours (including tests and docs)
-- **Phase 2.5**: 2-3 hours (analysis only)
-- **Phase 3**: 4-6 hours (depending on decision)
-- **Phase 4**: 3-4 hours
+- **Phase 1**: ✅ ~1 hour (completed)
+- **Phase 2**: ✅ ~6 hours (completed)
+- **Phase 2.5**: ✅ ~3 hours (completed)
+- **Phase 3**: 🚧 5 days estimated (Day 1 complete)
+  - Day 1: ✅ UseCaseDispatcher & connection/lobby events
+  - Day 2: 📋 Room management events
+  - Day 3: 📋 Game events
+  - Day 4: 📋 Integration testing
+  - Day 5: 📋 Cleanup and documentation
+- **Phase 4**: 📋 3-4 hours
 
-**Total**: 15-21 hours of focused development
+**Total**: ~15-21 hours of focused development
 
 ---
 
 ## Next Steps
 
-1. Review and approve this revised plan
-2. Begin Phase 2 implementation
-3. Follow test-driven development approach
-4. Update documentation continuously
-5. Review at each phase completion
+1. Continue Phase 3 Day 2: Migrate room management events
+2. Update configuration to include room events
+3. Test room operations end-to-end
+4. Monitor for any issues with migrated events
+5. Document migration patterns for future reference
