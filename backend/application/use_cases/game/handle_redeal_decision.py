@@ -26,6 +26,7 @@ from domain.events.game_events import (
     RedealDecisionMade  # Using existing event
 )
 from domain.events.base import EventMetadata
+from application.utils import PropertyMapper
 
 logger = logging.getLogger(__name__)
 
@@ -102,8 +103,8 @@ class HandleRedealDecisionUseCase(UseCase[HandleRedealDecisionRequest, HandleRed
             # Find players who haven't voted
             missing_votes = []
             for player in game.players:
-                if player.id not in game.redeal_votes:
-                    missing_votes.append(player.id)
+                if PropertyMapper.get_player_attr(player, "id", room.room_id, i) not in game.redeal_votes:
+                    missing_votes.append(PropertyMapper.get_player_attr(player, "id", room.room_id, i))
             
             # If forcing decision or timeout, treat missing votes as declines
             if request.force_decision or missing_votes:
@@ -125,8 +126,8 @@ class HandleRedealDecisionUseCase(UseCase[HandleRedealDecisionRequest, HandleRed
                 # TODO: Emit RedealTimedOut event when it's created
                 # timeout_event = RedealTimedOut(
                 #     metadata=EventMetadata(user_id=request.user_id),
-                #     room_id=room.id,
-                #     game_id=game.id,
+                #     room_id=room.room_id,
+                #     game_id=game.game_id,
                 #     redeal_id=request.redeal_id,
                 #     missing_voters=missing_votes,
                 #     accept_votes=accept_votes,
@@ -149,8 +150,8 @@ class HandleRedealDecisionUseCase(UseCase[HandleRedealDecisionRequest, HandleRed
                 # TODO: Emit RedealApproved when event is created
                 # approved_event = RedealApproved(
                 #     metadata=EventMetadata(user_id=request.user_id),
-                #     room_id=room.id,
-                #     game_id=game.id,
+                #     room_id=room.room_id,
+                #     game_id=game.game_id,
                 #     redeal_id=request.redeal_id,
                 #     total_votes=len(game.players),
                 #     accept_votes=accept_votes
@@ -160,21 +161,21 @@ class HandleRedealDecisionUseCase(UseCase[HandleRedealDecisionRequest, HandleRed
                 # Emit RedealExecuted
                 executed_event = RedealExecuted(
                     metadata=EventMetadata(user_id=request.user_id),
-                    room_id=room.id,
-                    game_id=game.id,
+                    room_id=room.room_id,
+                    game_id=game.game_id,
                     redeal_id=request.redeal_id,
                     round_number=game.round_number,
-                    new_starting_player_id=game.current_player_id
+                    new_starting_player_id=PropertyMapper.get_safe(game, "current_player_id")
                 )
                 await self._event_publisher.publish(executed_event)
                 
                 # Emit PiecesDealt
                 pieces_event = PiecesDealt(
                     metadata=EventMetadata(user_id=request.user_id),
-                    room_id=room.id,
-                    game_id=game.id,
+                    room_id=room.room_id,
+                    game_id=game.game_id,
                     round_number=game.round_number,
-                    dealer_id=game.current_player_id,
+                    dealer_id=PropertyMapper.get_safe(game, "current_player_id"),
                     piece_counts={p.id: len(p.hand) for p in game.players}
                 )
                 await self._event_publisher.publish(pieces_event)
@@ -182,7 +183,7 @@ class HandleRedealDecisionUseCase(UseCase[HandleRedealDecisionRequest, HandleRed
                 decision = "declined" if not missing_votes else "timeout"
                 
                 # Find first decliner to become starter
-                new_starter_id = game.current_player_id
+                new_starter_id = PropertyMapper.get_safe(game, "current_player_id")
                 for player_id, vote in game.redeal_votes.items():
                     if not vote:
                         new_starter_id = player_id
@@ -197,8 +198,8 @@ class HandleRedealDecisionUseCase(UseCase[HandleRedealDecisionRequest, HandleRed
                 # TODO: Emit RedealCancelled when event is created
                 # cancelled_event = RedealCancelled(
                 #     metadata=EventMetadata(user_id=request.user_id),
-                #     room_id=room.id,
-                #     game_id=game.id,
+                #     room_id=room.room_id,
+                #     game_id=game.game_id,
                 #     redeal_id=request.redeal_id,
                 #     cancelled_by="timeout" if missing_votes else "vote",
                 #     reason=f"Redeal {decision}: {accept_votes}/{len(game.players)} accepted"
@@ -230,14 +231,14 @@ class HandleRedealDecisionUseCase(UseCase[HandleRedealDecisionRequest, HandleRed
                 redeal_id=request.redeal_id,
                 decision=decision,
                 new_hands_dealt=new_hands_dealt,
-                starting_player_id=game.current_player_id,
+                starting_player_id=PropertyMapper.get_safe(game, "current_player_id"),
                 missing_votes=missing_votes
             )
             
             logger.info(
                 f"Redeal decision: {decision}",
                 extra={
-                    "game_id": game.id,
+                    "game_id": game.game_id,
                     "redeal_id": request.redeal_id,
                     "decision": decision,
                     "accept_votes": accept_votes,

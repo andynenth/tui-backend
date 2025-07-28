@@ -21,6 +21,7 @@ from domain.entities.game import GamePhase
 from domain.services.game_rules import GameRules
 from domain.events.game_events import RedealRequested
 from domain.events.base import EventMetadata
+from application.utils import PropertyMapper
 
 logger = logging.getLogger(__name__)
 
@@ -143,8 +144,8 @@ class RequestRedealUseCase(UseCase[RequestRedealRequest, RequestRedealResponse])
             # Emit RedealRequested event
             redeal_requested = RedealRequested(
                 metadata=EventMetadata(user_id=request.user_id),
-                room_id=room.id,
-                game_id=game.id,
+                room_id=room.room_id,
+                game_id=game.game_id,
                 requesting_player_id=request.player_id,
                 requesting_player_name=player.name,
                 redeal_id=redeal_id,
@@ -157,8 +158,8 @@ class RequestRedealUseCase(UseCase[RequestRedealRequest, RequestRedealResponse])
             # For now, the RedealRequested event is sufficient
             # vote_started = RedealVoteStarted(
             #     metadata=EventMetadata(user_id=request.user_id),
-            #     room_id=room.id,
-            #     game_id=game.id,
+            #     room_id=room.room_id,
+            #     game_id=game.game_id,
             #     redeal_id=redeal_id,
             #     timeout_seconds=self._vote_timeout,
             #     votes_required=votes_required,
@@ -195,7 +196,7 @@ class RequestRedealUseCase(UseCase[RequestRedealRequest, RequestRedealResponse])
             logger.info(
                 f"Player {player.name} requested redeal",
                 extra={
-                    "game_id": game.id,
+                    "game_id": game.game_id,
                     "player_id": request.player_id,
                     "redeal_id": redeal_id,
                     "auto_accepts": len(auto_accept_players),

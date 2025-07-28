@@ -22,6 +22,8 @@ from application.exceptions import (
 from domain.entities.player import Player
 from domain.events.room_events import BotAdded
 from domain.events.base import EventMetadata
+from application.utils import PropertyMapper
+from datetime import datetime
 
 logger = logging.getLogger(__name__)
 
@@ -93,14 +95,14 @@ class AddBotUseCase(UseCase[AddBotRequest, AddBotResponse]):
                 raise ResourceNotFoundException("Room", request.room_id)
             
             # Check authorization - must be host
-            if room.host_id != request.requesting_player_id:
+            if PropertyMapper.get_room_attr(room, "host_id") != request.requesting_player_id:
                 raise AuthorizationException(
                     "add bot",
                     f"room {request.room_id}"
                 )
             
             # Check if bots allowed
-            if not room.settings.allow_bots:
+            if not PropertyMapper.get_room_attr(room, "settings.allow_bots"):
                 raise ConflictException(
                     "add bot",
                     "Bots are not allowed in this room"
@@ -111,7 +113,7 @@ class AddBotUseCase(UseCase[AddBotRequest, AddBotResponse]):
                 raise ConflictException("add bot", "Room is full")
             
             # Check if game in progress
-            if room.current_game:
+            if room.game:
                 raise ConflictException(
                     "add bot",
                     "Cannot add bot while game is in progress"
@@ -152,7 +154,7 @@ class AddBotUseCase(UseCase[AddBotRequest, AddBotResponse]):
             # Emit BotAdded event
             event = BotAdded(
                 metadata=EventMetadata(user_id=request.user_id),
-                room_id=room.id,
+                room_id=room.room_id,
                 bot_id=bot_id,
                 bot_name=bot_name,
                 difficulty=request.bot_difficulty,
@@ -180,10 +182,10 @@ class AddBotUseCase(UseCase[AddBotRequest, AddBotResponse]):
             )
             
             logger.info(
-                f"Bot {bot_name} added to room {room.code}",
+                f"Bot {bot_name} added to room {room.room_id}",
                 extra={
                     "bot_id": bot_id,
-                    "room_id": room.id,
+                    "room_id": room.room_id,
                     "difficulty": request.bot_difficulty,
                     "seat_position": seat_position
                 }
@@ -240,26 +242,26 @@ class AddBotUseCase(UseCase[AddBotRequest, AddBotResponse]):
         for i, slot in enumerate(room.slots):
             if slot:
                 players.append(PlayerInfo(
-                    player_id=slot.id,
+                    player_id=PropertyMapper.generate_player_id(room.room_id, i),
                     player_name=slot.name,
                     is_bot=slot.is_bot,
-                    is_host=slot.id == room.host_id,
+                    is_host=PropertyMapper.generate_player_id(room.room_id, i) == PropertyMapper.get_room_attr(room, "host_id"),
                     status=PlayerStatus.CONNECTED,
                     seat_position=i,
                     score=slot.score,
-                    games_played=slot.games_played,
-                    games_won=slot.games_won
+                    games_played=PropertyMapper.get_safe(slot, "games_played", 0),
+                    games_won=PropertyMapper.get_safe(slot, "games_won", 0)
                 ))
         
         return RoomInfo(
-            room_id=room.id,
-            room_code=room.code,
-            room_name=room.name,
-            host_id=room.host_id,
+            room_id=room.room_id,
+            room_code=room.room_id,
+            room_name=f"{room.host_name}'s Room",
+            host_id=PropertyMapper.get_room_attr(room, "host_id"),
             status=RoomStatus.WAITING,
             players=players,
-            max_players=room.settings.max_players,
-            created_at=room.created_at,
+            max_players=room.max_slots,
+            created_at=datetime.utcnow(),
             game_in_progress=False,
             current_game_id=None
         )

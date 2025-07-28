@@ -7,6 +7,7 @@ or direct room ID.
 
 import logging
 from typing import Optional
+from datetime import datetime
 
 from application.base import UseCase
 from application.dto.room_management import JoinRoomRequest, JoinRoomResponse
@@ -18,6 +19,7 @@ from application.exceptions import (
     ConflictException
 )
 from domain.entities.player import Player
+from application.utils import PropertyMapper
 from domain.events.room_events import PlayerJoinedRoom, HostChanged
 from domain.events.base import EventMetadata
 
@@ -76,7 +78,7 @@ class JoinRoomUseCase(UseCase[JoinRoomRequest, JoinRoomResponse]):
             # Check if player already in a room
             existing_room = await self._uow.rooms.find_by_player(request.player_id)
             if existing_room:
-                if request.room_id and existing_room.id == request.room_id:
+                if request.room_id and existing_room.room_id == request.room_id:
                     # Already in the requested room
                     room_info = self._create_room_info(existing_room)
                     seat_position = self._get_player_seat(existing_room, request.player_id)
@@ -86,12 +88,12 @@ class JoinRoomUseCase(UseCase[JoinRoomRequest, JoinRoomResponse]):
                         request_id=request.request_id,
                         room_info=room_info,
                         seat_position=seat_position,
-                        is_host=existing_room.host_id == request.player_id
+                        is_host=existing_room.host_name == request.player_name
                     )
                 else:
                     raise ConflictException(
                         "join room",
-                        f"Player is already in room {existing_room.code}"
+                        f"Player is already in room {existing_room.room_id}"
                     )
             
             # Find the room
@@ -234,26 +236,29 @@ class JoinRoomUseCase(UseCase[JoinRoomRequest, JoinRoomResponse]):
         for i, slot in enumerate(room.slots):
             if slot:
                 players.append(PlayerInfo(
-                    player_id=slot.id,
+                    player_id=PropertyMapper.generate_player_id(room.room_id, i),
                     player_name=slot.name,
                     is_bot=slot.is_bot,
-                    is_host=slot.id == room.host_id,
-                    status=PlayerStatus.CONNECTED if getattr(slot, 'is_connected', True) else PlayerStatus.DISCONNECTED,
+                    is_host=PropertyMapper.is_host(slot.name, room.host_name),
+                    status=PlayerStatus.CONNECTED if PropertyMapper.get_safe(slot, 'is_connected', True) else PlayerStatus.DISCONNECTED,
                     seat_position=i,
                     score=slot.score,
-                    games_played=slot.games_played,
-                    games_won=slot.games_won
+                    games_played=PropertyMapper.get_safe(slot, 'games_played', 0),
+                    games_won=PropertyMapper.get_safe(slot, 'games_won', 0)
                 ))
         
+        # Use PropertyMapper to get room attributes
+        room_mapped = PropertyMapper.map_room_for_use_case(room)
+        
         return RoomInfo(
-            room_id=room.id,
-            room_code=room.code,
-            room_name=room.name,
-            host_id=room.host_id,
-            status=RoomStatus.IN_GAME if room.current_game else RoomStatus.WAITING,
+            room_id=room.room_id,
+            room_code=room_mapped['code'],
+            room_name=room_mapped['name'],
+            host_id=room_mapped['host_id'],
+            status=RoomStatus.IN_GAME if room.game else RoomStatus.WAITING,
             players=players,
-            max_players=room.settings.max_players,
-            created_at=room.created_at,
-            game_in_progress=room.current_game is not None,
-            current_game_id=room.current_game.id if room.current_game else None
+            max_players=room.max_slots,
+            created_at=room_mapped['created_at'],
+            game_in_progress=room.game is not None,
+            current_game_id=room.game.game_id if room.game else None
         )

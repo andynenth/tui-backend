@@ -29,6 +29,7 @@ from domain.events.game_events import (
 )
 from domain.events.game_events import PiecesPlayed
 from domain.events.base import EventMetadata
+from application.utils import PropertyMapper
 
 logger = logging.getLogger(__name__)
 
@@ -108,10 +109,11 @@ class PlayUseCase(UseCase[PlayRequest, PlayResponse]):
                 )
             
             # Verify it's player's turn
-            if game.current_player_id != request.player_id:
+            current_player_id = PropertyMapper.get_safe(game, "current_player_id")
+            if current_player_id != request.player_id:
                 raise ConflictException(
                     "play pieces",
-                    f"It's not your turn (current: {game.current_player_id})"
+                    f"It's not your turn (current: {current_player_id})"
                 )
             
             # Get player
@@ -192,13 +194,13 @@ class PlayUseCase(UseCase[PlayRequest, PlayResponse]):
                         game.start_new_round()
                 else:
                     # Continue to next turn
-                    next_player_id = game.current_player_id
+                    next_player_id = PropertyMapper.get_safe(game, "current_player_id")
             else:
                 # Find next player
                 current_index = game.players.index(player)
                 next_index = (current_index + 1) % len(game.players)
                 next_player_id = game.players[next_index].id
-                game.current_player_id = next_player_id
+                PropertyMapper.get_safe(game, "current_player_id") = next_player_id
             
             # Save the game
             await self._uow.games.save(game)
@@ -206,8 +208,8 @@ class PlayUseCase(UseCase[PlayRequest, PlayResponse]):
             # Emit PiecesPlayed event
             play_event = PiecesPlayed(
                 metadata=EventMetadata(user_id=request.user_id),
-                room_id=room.id,
-                game_id=game.id,
+                room_id=room.room_id,
+                game_id=game.game_id,
                 player_id=request.player_id,
                 player_name=player.name,
                 pieces_played=len(pieces),
@@ -221,8 +223,8 @@ class PlayUseCase(UseCase[PlayRequest, PlayResponse]):
             if turn_complete:
                 turn_event = TurnCompleted(
                     metadata=EventMetadata(user_id=request.user_id),
-                    room_id=room.id,
-                    game_id=game.id,
+                    room_id=room.room_id,
+                    game_id=game.game_id,
                     turn_number=game.turn_number - 1,  # Already incremented
                     winner_id=turn_winner_id,
                     winner_name=next(p.name for p in game.players if p.id == turn_winner_id),
@@ -236,8 +238,8 @@ class PlayUseCase(UseCase[PlayRequest, PlayResponse]):
             if round_complete:
                 round_event = RoundCompleted(
                     metadata=EventMetadata(user_id=request.user_id),
-                    room_id=room.id,
-                    game_id=game.id,
+                    room_id=room.room_id,
+                    game_id=game.game_id,
                     round_number=game.round_number - 1 if not game.is_game_complete() else game.round_number,
                     round_scores={p.id: p.current_round_score for p in game.players},
                     total_scores={p.id: p.score for p in game.players},
@@ -251,8 +253,8 @@ class PlayUseCase(UseCase[PlayRequest, PlayResponse]):
                 winner = max(game.players, key=lambda p: p.score)
                 game_event = GameEnded(
                     metadata=EventMetadata(user_id=request.user_id),
-                    room_id=room.id,
-                    game_id=game.id,
+                    room_id=room.room_id,
+                    game_id=game.game_id,
                     winner_id=winner.id,
                     winner_name=winner.name,
                     final_scores={p.id: p.score for p in game.players},
@@ -290,7 +292,7 @@ class PlayUseCase(UseCase[PlayRequest, PlayResponse]):
             logger.info(
                 f"Player {player.name} played {len(pieces)} pieces",
                 extra={
-                    "game_id": game.id,
+                    "game_id": game.game_id,
                     "player_id": request.player_id,
                     "pieces_count": len(pieces),
                     "play_type": play_type,

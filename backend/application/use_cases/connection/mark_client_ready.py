@@ -14,6 +14,7 @@ from application.interfaces import UnitOfWork, EventPublisher, MetricsCollector
 from application.exceptions import ResourceNotFoundException, ConflictException
 from domain.events.connection_events import ClientReady
 from domain.events.base import EventMetadata
+from application.utils import PropertyMapper
 
 logger = logging.getLogger(__name__)
 
@@ -71,7 +72,7 @@ class MarkClientReadyUseCase(UseCase[MarkClientReadyRequest, MarkClientReadyResp
             player_slot = None
             slot_index = None
             for i, slot in enumerate(room.slots):
-                if slot and slot.id == request.player_id:
+                if slot and PropertyMapper.generate_player_id(room.room_id, i) == request.player_id:
                     player_slot = slot
                     slot_index = i
                     break
@@ -100,7 +101,7 @@ class MarkClientReadyUseCase(UseCase[MarkClientReadyRequest, MarkClientReadyResp
             # Emit ClientReady event
             event = ClientReady(
                 metadata=EventMetadata(user_id=request.user_id),
-                game_id=room.id,  # ClientReady uses game_id
+                game_id=room.room_id,  # ClientReady uses game_id
                 room_id=request.room_id,
                 player_id=request.player_id,
                 player_name=player_slot.name

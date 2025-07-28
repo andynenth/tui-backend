@@ -14,6 +14,7 @@ from application.dto.room_management import GetRoomStateRequest, GetRoomStateRes
 from application.dto.common import RoomInfo, PlayerInfo, PlayerStatus, RoomStatus
 from application.interfaces import UnitOfWork, MetricsCollector
 from application.exceptions import ResourceNotFoundException, AuthorizationException
+from application.utils import PropertyMapper
 
 logger = logging.getLogger(__name__)
 
@@ -67,12 +68,13 @@ class GetRoomStateUseCase(UseCase[GetRoomStateRequest, GetRoomStateResponse]):
             # Check authorization if player ID provided
             if request.requesting_player_id:
                 player_in_room = any(
-                    slot and slot.id == request.requesting_player_id
-                    for slot in room.slots
+                    slot and PropertyMapper.get_player_attr(slot, 'id', room.room_id, i) == request.requesting_player_id
+                    for i, slot in enumerate(room.slots)
                 )
                 
                 # For private rooms, only allow players in the room
-                if room.settings.is_private and not player_in_room:
+                is_private = PropertyMapper.get_room_attr(room, 'settings.is_private')
+                if is_private and not player_in_room:
                     raise AuthorizationException(
                         "view room state",
                         f"room {request.room_id}"
@@ -106,9 +108,9 @@ class GetRoomStateUseCase(UseCase[GetRoomStateRequest, GetRoomStateResponse]):
             )
             
             logger.debug(
-                f"Retrieved state for room {room.code}",
+                f"Retrieved state for room {room.room_id}",
                 extra={
-                    "room_id": room.id,
+                    "room_id": room.room_id,
                     "requesting_player": request.requesting_player_id,
                     "has_game_state": game_state is not None
                 }
@@ -124,26 +126,29 @@ class GetRoomStateUseCase(UseCase[GetRoomStateRequest, GetRoomStateResponse]):
         for i, slot in enumerate(room.slots):
             if slot:
                 players.append(PlayerInfo(
-                    player_id=f"{room.room_id}_p{i}",  # Generate player ID
+                    player_id=PropertyMapper.generate_player_id(room.room_id, i),
                     player_name=slot.name,
                     is_bot=slot.is_bot,
-                    is_host=slot.name == room.host_name,  # Compare names, not IDs
-                    status=PlayerStatus.CONNECTED if getattr(slot, 'is_connected', True) else PlayerStatus.DISCONNECTED,
+                    is_host=PropertyMapper.is_host(slot.name, room.host_name),
+                    status=PlayerStatus.CONNECTED if PropertyMapper.get_safe(slot, 'is_connected', True) else PlayerStatus.DISCONNECTED,
                     seat_position=i,
                     score=slot.score,
-                    games_played=getattr(slot, 'games_played', 0),  # Player entity might not have this
-                    games_won=getattr(slot, 'games_won', 0)  # Player entity might not have this
+                    games_played=PropertyMapper.get_safe(slot, 'games_played', 0),
+                    games_won=PropertyMapper.get_safe(slot, 'games_won', 0)
                 ))
+        
+        # Use PropertyMapper to get room attributes
+        room_mapped = PropertyMapper.map_room_for_use_case(room)
         
         return RoomInfo(
             room_id=room.room_id,
-            room_code=room.room_id,  # Using room_id as code
-            room_name=f"{room.host_name}'s Room",  # Generate room name from host
-            host_id=f"{room.room_id}_p0",  # Host is always first player
+            room_code=room_mapped['code'],
+            room_name=room_mapped['name'],
+            host_id=room_mapped['host_id'],
             status=RoomStatus.IN_GAME if room.game else RoomStatus.WAITING,
             players=players,
             max_players=room.max_slots,
-            created_at=datetime.utcnow(),  # Room entity doesn't track creation time
+            created_at=room_mapped['created_at'],
             game_in_progress=room.game is not None,
             current_game_id=room.game.game_id if room.game else None
         )
@@ -170,10 +175,11 @@ class GetRoomStateUseCase(UseCase[GetRoomStateRequest, GetRoomStateResponse]):
         
         # Get current turn info
         current_turn = None
-        if hasattr(game, 'current_player_id') and game.current_player_id:
+        current_player_id = PropertyMapper.get_safe(game, 'current_player_id')
+        if current_player_id:
             current_turn = {
-                "player_id": game.current_player_id,
-                "player_name": self._get_player_name(room, game.current_player_id),
+                "player_id": current_player_id,
+                "player_name": self._get_player_name(room, current_player_id),
                 "action_required": self._get_required_action(game)
             }
         

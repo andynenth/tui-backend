@@ -88,3 +88,52 @@ class InMemoryRoomRepository(RoomRepository):
             True if exists, False otherwise
         """
         return room_id in self._rooms
+    
+    async def list_active(self, limit: int = 100) -> List[Room]:
+        """
+        Get list of active rooms (not completed/abandoned).
+        
+        Args:
+            limit: Maximum number of rooms to return
+            
+        Returns:
+            List of active rooms
+        """
+        active_rooms = []
+        for room in self._rooms.values():
+            # Include rooms that are WAITING, READY, or IN_GAME
+            if room.status.value in ['WAITING', 'READY', 'IN_GAME']:
+                active_rooms.append(room)
+                if len(active_rooms) >= limit:
+                    break
+        return active_rooms
+    
+    async def find_by_player(self, player_id: str) -> Optional[Room]:
+        """
+        Find a room containing a player by ID.
+        
+        Args:
+            player_id: ID of the player (e.g., "room123_p0")
+            
+        Returns:
+            Room containing the player, None if not found
+        """
+        # Extract room_id from player_id format
+        if '_p' in player_id:
+            room_id = player_id.split('_p')[0]
+            room = self._rooms.get(room_id)
+            if room:
+                # Verify the player is actually in this room
+                try:
+                    slot_index = int(player_id.split('_p')[1])
+                    if 0 <= slot_index < len(room.slots) and room.slots[slot_index]:
+                        return room
+                except (IndexError, ValueError):
+                    pass
+        
+        # Fallback: search all rooms
+        for room in self._rooms.values():
+            for i, slot in enumerate(room.slots):
+                if slot and f"{room.room_id}_p{i}" == player_id:
+                    return room
+        return None
