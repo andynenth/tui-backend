@@ -1,15 +1,17 @@
 # WebSocket Adapter Integration Guide
 
-**Purpose**: Technical instructions for integrating the adapter system into ws.py. Contains the exact code changes needed.
+**Purpose**: Technical reference showing how the adapter system was integrated into ws.py during the clean architecture migration.
 
-**See Also**: [Deployment Runbook](./ADAPTER_DEPLOYMENT_RUNBOOK.md) for deployment procedures after integration
+**Status**: ✅ INTEGRATION COMPLETE - System running 100% on clean architecture
+
+**See Also**: [Deployment Runbook](./ADAPTER_DEPLOYMENT_RUNBOOK.md) for historical deployment procedures
 
 ## Overview
 
-The integration requires only minimal changes to `ws.py`:
-1. Add 12 lines of code (8-9 actual code lines + comments) to try adapters first
-2. (Optional) Add import if using the wrapper approach
-3. (Optional) Add a status endpoint
+The adapter integration was successfully completed with minimal changes to `ws.py`:
+1. Added adapter integration code to route messages through clean architecture
+2. Updated imports to use clean architecture components
+3. Removed all legacy dependencies after Phase 7
 
 ## Step-by-Step Instructions
 
@@ -152,9 +154,23 @@ ADAPTER_ROLLOUT_PERCENTAGE=0
 4. Test all WebSocket events
 5. Check adapter status endpoint
 
-## Complete Diff Example
+## Current State (Post-Phase 7)
 
-Here's what the change looks like in diff format:
+After Phase 7 completion, the system now:
+- Uses clean architecture repositories directly (no legacy room_manager)
+- Broadcasts via `infrastructure/websocket/connection_singleton.py`
+- Has zero legacy dependencies or imports
+- Runs 100% through the adapter system
+
+### Key Changes from Original:
+1. **Room validation** now uses `RoomApplicationService` instead of legacy room_manager
+2. **Broadcasting** uses `connection_singleton` instead of legacy socket_manager
+3. **All imports** updated to clean architecture components
+4. **Legacy handlers** removed entirely
+
+## Complete Diff Example (Historical Reference)
+
+Here's what the original integration change looked like in diff format:
 
 ```diff
 diff --git a/backend/api/routes/ws.py b/backend/api/routes/ws.py
