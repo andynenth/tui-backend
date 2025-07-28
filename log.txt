@@ -1,1 +1,61 @@
+localhost/:34  GET http://localhost:5050/bundle.css net::ERR_ABORTED 404 (Not Found)
+localhost/:38  GET http://localhost:5050/bundle.js net::ERR_ABORTED 404 (Not Found)
+favicon.ico:1  GET http://localhost:5050/favicon.ico 404 (Not Found)
 
+---
+
+(venv) Narongwits-MacBook-Pro:liap-tui nrw$ ./start.sh
+✅ Clean Architecture activated (8/8 feature flags enabled)
+🚦 Adapter routing enabled (100% traffic to clean architecture)
+▶️ Starting backend on http://0.0.0.0:5050 ...
+INFO:     Will watch for changes in these directories: ['/Users/nrw/python/tui-project/liap-tui']
+INFO:     Uvicorn running on http://0.0.0.0:5050 (Press CTRL+C to quit)
+INFO:     Started reloader process [35913] using WatchFiles
+🌐 Starting esbuild in watch mode...
+/Users/nrw/python/tui-project/liap-tui/venv/lib/python3.11/site-packages/pydantic/_internal/_config.py:373: UserWarning: Valid config keys have changed in V2:
+* 'schema_extra' has been renamed to 'json_schema_extra'
+  warnings.warn(message, UserWarning)
+2025-07-28 07:04:12 - config.logging_config - INFO - Logging configured
+Rate limiting is disabled (configuration needed)
+
+> frontend@1.0.0 dev
+> node esbuild.config.cjs
+
+INFO:     Started server process [35916]
+INFO:     Waiting for application startup.
+2025-07-28 07:04:12 - backend.api.routes.ws - INFO - 🧹 [ROOM_DEBUG] Starting room cleanup background task
+2025-07-28 07:04:12 - backend.api.routes.ws - INFO - 🧹 [ROOM_DEBUG] Room cleanup task started
+INFO:     Application startup complete.
+👀 Watching for changes to ./main.js, output to ../backend/static/
+
+[0.36ms] [@tailwindcss/postcss] src/styles/components/game/gameover.css
+[0.35ms]   ↳ Quick bail check
+
+
+[193.00ms] [@tailwindcss/postcss] src/styles/globals.css
+[  0.08ms]   ↳ Quick bail check
+[ 75.42ms]   ↳ Setup compiler
+[  0.51ms]     ↳ PostCSS AST -> Tailwind CSS AST
+[ 74.88ms]     ↳ Create compiler
+[  1.93ms]   ↳ Register full rebuild paths
+[  1.72ms]   ↳ Setup scanner
+[ 30.88ms]   ↳ Scan for candidates
+[ 17.16ms]   ↳ Register dependency messages
+[ 52.26ms]   ↳ Build utilities
+[  8.48ms]   ↳ Transform Tailwind CSS AST into PostCSS AST
+[  4.63ms]   ↳ Update PostCSS AST
+
+
+[0.05ms] [@tailwindcss/postcss] src/styles/toast-notifications.css
+[0.04ms]   ↳ Quick bail check
+
+INFO:     127.0.0.1:58464 - "GET / HTTP/1.1" 200 OK
+INFO:     127.0.0.1:58464 - "GET /bundle.css HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:58466 - "GET /bundle.js HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:58466 - "GET /.well-known/appspecific/com.chrome.devtools.json HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:58466 - "GET /favicon.ico HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:58492 - "GET / HTTP/1.1" 200 OK
+INFO:     127.0.0.1:58492 - "GET /.well-known/appspecific/com.chrome.devtools.json HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:58494 - "GET /bundle.css HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:58496 - "GET /bundle.js HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:58496 - "GET /favicon.ico HTTP/1.1" 404 Not Found

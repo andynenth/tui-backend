@@ -10,7 +10,7 @@ customized via environment variables.
 import os
 from typing import Dict, Optional
 
-from api.middleware.rate_limit import RateLimitRule
+from infrastructure.rate_limiting.base import RateLimitRule
 
 
 def get_rate_limit_rules() -> Dict[str, RateLimitRule]:

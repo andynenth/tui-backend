@@ -2,16 +2,16 @@
 
 import os  # Standard library for interacting with the operating system (e.g., environment variables).
 
-from backend.api.routes.routes import (
+from api.routes.routes import (
     router as api_router,  # Import the API router for REST endpoints.
 )
-from backend.api.routes.ws import (
+from api.routes.ws import (
     router as ws_router,  # Import the WebSocket router for real-time communication.
 )
-from backend.api.routes.debug import (
+from api.routes.debug import (
     router as debug_router,  # Import the debug router for event store access.
 )
-from backend.api.middleware import (
+from api.middleware import (
     RateLimitMiddleware,
 )  # Import rate limiting middleware
 from dotenv import (  # Library to load environment variables from a .env file.
@@ -39,8 +39,8 @@ except ImportError:
 # ✅ Read configuration values from environment variables.
 # These variables control the static file directory, the main HTML file, and allowed origins for CORS.
 STATIC_DIR = os.getenv(
-    "STATIC_DIR", "backend/static"
-)  # Directory where static frontend files are served from. Defaults to "backend/static".
+    "STATIC_DIR", "static"
+)  # Directory where static frontend files are served from. Defaults to "static".
 INDEX_FILE = os.getenv(
     "INDEX_FILE", "index.html"
 )  # The main HTML file to serve. Defaults to "index.html".
@@ -127,8 +127,9 @@ app.add_middleware(
 # This protects the API from abuse and ensures fair usage
 rate_limit_enabled = os.getenv("RATE_LIMIT_ENABLED", "true").lower() == "true"
 if rate_limit_enabled:
-    app.add_middleware(RateLimitMiddleware)
-    print("Rate limiting is enabled")
+    # For now, disable rate limiting until properly configured
+    # app.add_middleware(RateLimitMiddleware)
+    print("Rate limiting is disabled (configuration needed)")
 else:
     print("WARNING: Rate limiting is disabled")
 
@@ -147,24 +148,32 @@ app.include_router(
 # ✅ Serve static files.
 # This mounts the specified directory to the root path "/", meaning files like index.html, bundle.js, etc.,
 # will be served directly from this directory. `html=True` ensures that `index.html` is served for root.
+# Debug: Print the static directory path
+import logging
+logger = logging.getLogger(__name__)
+abs_static_dir = os.path.abspath(STATIC_DIR)
+logger.info(f"Mounting static files from: {abs_static_dir}")
+logger.info(f"Static directory exists: {os.path.exists(abs_static_dir)}")
+if os.path.exists(abs_static_dir):
+    logger.info(f"Files in static directory: {os.listdir(abs_static_dir)}")
 app.mount("/", StaticFiles(directory=STATIC_DIR, html=True), name="static")
 
 
 # ✅ Optional fallback: Define a GET endpoint for the root path.
-# This ensures that if the static files mount doesn't catch the root path for some reason,
-# or for direct access, index.html is still served.
-@app.get("/")
-def read_index():
-    """
-    Serve the main index.html file.
-
-    This is a fallback endpoint in case the static file mount
-    doesn't catch the root path for some reason.
-
-    Returns:
-        FileResponse: The index.html file from the static directory
-    """
-    return FileResponse(os.path.join(STATIC_DIR, INDEX_FILE))
+# Commented out because StaticFiles with html=True handles this correctly
+# and having both can cause conflicts with serving static assets.
+# @app.get("/")
+# def read_index():
+#     """
+#     Serve the main index.html file.
+#
+#     This is a fallback endpoint in case the static file mount
+#     doesn't catch the root path for some reason.
+#
+#     Returns:
+#         FileResponse: The index.html file from the static directory
+#     """
+#     return FileResponse(os.path.join(STATIC_DIR, INDEX_FILE))
 
 
 @app.on_event("startup")
