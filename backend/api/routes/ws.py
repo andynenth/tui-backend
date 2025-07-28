@@ -16,7 +16,8 @@ from api.middleware.websocket_rate_limit import (
 )
 from api.websocket.connection_manager import connection_manager
 from api.websocket.message_queue import message_queue_manager
-from api.routes.ws_adapter_wrapper import adapter_wrapper
+# Adapter system removed in Phase 3 Day 5
+# from api.routes.ws_adapter_wrapper import adapter_wrapper
 
 # Import clean architecture dependencies
 from infrastructure.dependencies import get_unit_of_work
@@ -24,6 +25,7 @@ from application.services.room_application_service import RoomApplicationService
 from application.services.lobby_application_service import LobbyApplicationService
 from application.dto.lobby import GetRoomListRequest
 from infrastructure.dependencies import get_event_publisher, get_bot_service, get_metrics_collector
+from application.websocket.websocket_config import websocket_config
 
 # Set up logging
 logger = logging.getLogger(__name__)
@@ -401,36 +403,75 @@ async def websocket_endpoint(websocket: WebSocket, room_id: str):
         while True:
             message = await websocket.receive_json()
 
-            # Validate the message structure and content
-            is_valid, error_msg, sanitized_data = validate_websocket_message(message)
-            if not is_valid:
-                await websocket.send_json(
-                    {
+            # Check if validation should be bypassed
+            event_name = message.get("event", "")
+            bypass_validation = websocket_config.should_bypass_validation(event_name)
+            
+            if bypass_validation:
+                # Skip validation for use case events
+                logger.debug(f"Bypassing validation for use case event: {event_name}")
+                sanitized_data = message.get("data", {})
+            else:
+                # Validate the message structure and content
+                is_valid, error_msg, sanitized_data = validate_websocket_message(message)
+                if not is_valid:
+                    await websocket.send_json(
+                        {
+                            "event": "error",
+                            "data": {
+                                "message": f"Invalid message: {error_msg}",
+                                "type": "validation_error",
+                            },
+                        }
+                    )
+                    continue
+
+            # ===== MESSAGE ROUTING START =====
+            # Check if this event should use direct use case routing
+            if websocket_config.should_use_use_case(event_name):
+                # Use direct message router for use case events
+                from application.websocket.message_router import MessageRouter
+                from application.websocket.use_case_dispatcher import DispatchContext
+                
+                # Create message router if not exists
+                if not hasattr(websocket_endpoint, '_message_router'):
+                    websocket_endpoint._message_router = MessageRouter()
+                
+                router = websocket_endpoint._message_router
+                
+                # Route directly to use case
+                try:
+                    response = await router.route_message(websocket, message, room_id)
+                    if response:
+                        await websocket.send_json(response)
+                    continue  # Skip adapter/legacy handling
+                except Exception as e:
+                    logger.error(f"Error in direct use case routing: {e}", exc_info=True)
+                    await websocket.send_json({
                         "event": "error",
                         "data": {
-                            "message": f"Invalid message: {error_msg}",
-                            "type": "validation_error",
-                        },
-                    }
-                )
-                continue
-
-            # ===== ADAPTER INTEGRATION START =====
-            # IMPORTANT: This is where clean architecture handles ALL requests
-            # When ADAPTER_ENABLED=true and ADAPTER_ROLLOUT_PERCENTAGE=100:
-            # - ALL messages are handled by clean architecture adapters
-            # - The legacy code below (line 328+) is NEVER executed
-            # - This is NOT legacy code - it's the integration point
-            adapter_response = await adapter_wrapper.try_handle_with_adapter(
-                websocket, message, room_id
-            )
+                            "message": f"Failed to process {event_name}",
+                            "type": "use_case_error",
+                            "details": str(e)
+                        }
+                    })
+                    continue
             
-            if adapter_response is not None:
-                # Adapter handled it, send response if not empty
-                if adapter_response:  # Some responses like 'ack' return empty
-                    await websocket.send_json(adapter_response)
-                continue  # Skip legacy handling - THIS LINE PREVENTS LEGACY EXECUTION
-            # ===== ADAPTER INTEGRATION END =====
+            # ===== ADAPTER SYSTEM REMOVED =====
+            # Adapter system was removed in Phase 3 Day 5
+            # All events now use direct use case routing
+            # Non-migrated events fall through to error handling below
+            
+            # If we reach here, the event was not handled
+            logger.warning(f"Unhandled event: {event_name}")
+            await websocket.send_json({
+                "event": "error",
+                "data": {
+                    "message": f"Event '{event_name}' is not supported",
+                    "type": "unsupported_event"
+                }
+            })
+            continue
 
 
             # ===== LEGACY HANDLERS REMOVED =====
@@ -457,10 +498,11 @@ async def websocket_endpoint(websocket: WebSocket, room_id: str):
         await handle_disconnect(room_id, websocket)
 
 
-@router.get("/ws/adapter-status")
-async def get_adapter_status():
-    """Get current adapter integration status"""
-    return adapter_wrapper.get_status()
+# Adapter status endpoint removed in Phase 3 Day 5
+# @router.get("/ws/adapter-status")
+# async def get_adapter_status():
+#     """Get current adapter integration status"""
+#     return adapter_wrapper.get_status()
 
 
 async def room_cleanup_task():
