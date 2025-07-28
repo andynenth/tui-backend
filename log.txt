@@ -276,3 +276,5 @@ INFO:     connection open
 2025-07-28 07:29:15 - infrastructure.websocket.connection_singleton - INFO - WebSocket unregistered: conn_9
 2025-07-28 07:29:15 - api.routes.ws - INFO - 🔌 [ROOM_DEBUG] WebSocket unregistered from room 'lobby' (connection_id: conn_9)
 INFO:     connection closed
+--- Testing WebSocket after fix ---
+Mon Jul 28 08:00:53 PDT 2025 - Testing after fix

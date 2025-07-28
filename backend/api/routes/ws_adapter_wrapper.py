@@ -161,10 +161,30 @@ class WSAdapterWrapper:
             # Get room state if not provided
             if room_state is None and room_id != "lobby":
                 try:
-                    from shared_instances import shared_room_manager
-                    room = await shared_room_manager.get_room(room_id)
-                    if room:
-                        room_state = await room.summary()
+                    # Use clean architecture to get room state
+                    from infrastructure.dependencies import get_unit_of_work
+                    from application.dto.room_management import GetRoomStateRequest
+                    from application.services.room_application_service import RoomApplicationService
+                    
+                    uow = get_unit_of_work()
+                    room_service = RoomApplicationService(uow)
+                    
+                    async with uow:
+                        request = GetRoomStateRequest(room_id=room_id)
+                        result = await room_service.get_room_state(request)
+                        
+                        if result.success and result.data:
+                            # Convert to the format adapters expect
+                            room_data = result.data
+                            room_state = {
+                                "room_id": room_data.room_id,
+                                "host": room_data.host,
+                                "players": [p.dict() for p in room_data.players],
+                                "status": room_data.status,
+                                "game_config": room_data.game_config.dict() if room_data.game_config else None,
+                                "current_round": room_data.current_round,
+                                "max_players": room_data.max_players
+                            }
                 except Exception as e:
                     logger.debug(f"Could not get room state: {e}")
             
@@ -233,13 +253,13 @@ To integrate this wrapper into ws.py, make these minimal changes:
 
    # Try adapter first
    adapter_response = await adapter_wrapper.try_handle_with_adapter(
-       registered_ws, message, room_id
+       websocket, message, room_id
    )
    
    if adapter_response is not None:
        # Adapter handled it, send response and continue
        if adapter_response:  # Don't send if response is empty (like ack)
-           await registered_ws.send_json(adapter_response)
+           await websocket.send_json(adapter_response)
        continue
    
    # Continue with existing event handling...
