@@ -22,9 +22,9 @@ from domain.entities import Room, Game, PlayerStats
 from infrastructure.repositories import (
     OptimizedRoomRepository,
     OptimizedGameRepository,
-    OptimizedPlayerStatsRepository,
-    InMemoryUnitOfWork
+    OptimizedPlayerStatsRepository
 )
+from infrastructure.unit_of_work import InMemoryUnitOfWork
 from .connection_manager import ConnectionManager
 
 

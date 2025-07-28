@@ -9,12 +9,12 @@ from .room import Room, RoomStatus
 from .game import Game, GamePhase
 from .player import Player, PlayerStats
 from .connection import PlayerConnection
-from .message_queue import QueuedMessage, MessageStatus
+from .message_queue import QueuedMessage
 
 __all__ = [
     'Room', 'RoomStatus',
     'Game', 'GamePhase',
     'Player', 'PlayerStats',
     'PlayerConnection',
-    'QueuedMessage', 'MessageStatus'
+    'QueuedMessage'
 ]

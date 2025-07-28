@@ -60,6 +60,7 @@ from .metrics import (
     Gauge,
     Histogram,
     Timer,
+    get_metrics_collector,
     
     # Decorators
     track_metrics,
@@ -85,7 +86,8 @@ from .tracing import (
     create_span,
     inject_context,
     extract_context,
-    trace
+    trace,
+    get_tracer
 )
 
 from .health import (
@@ -174,6 +176,7 @@ __all__ = [
     'Gauge',
     'Histogram',
     'Timer',
+    'get_metrics_collector',
     'track_metrics',
     'measure_time',
     
@@ -190,6 +193,7 @@ __all__ = [
     'inject_context',
     'extract_context',
     'trace',
+    'get_tracer',
     
     # Health
     'IHealthCheck',
