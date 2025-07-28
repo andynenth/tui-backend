@@ -5,8 +5,14 @@ import logging
 import uuid
 from typing import Optional
 
-from shared_instances import shared_room_manager
+# Legacy shared_instances removed - using clean architecture
 from infrastructure.websocket.broadcast_adapter import broadcast, register, unregister
+from infrastructure.adapters.room_manager_adapter import (
+    get_room,
+    delete_room,
+    list_rooms,
+    get_rooms_dict,
+)
 from fastapi import APIRouter, WebSocket, WebSocketDisconnect
 
 from api.validation import validate_websocket_message
@@ -26,7 +32,6 @@ logger = logging.getLogger(__name__)
 
 
 router = APIRouter()
-room_manager = shared_room_manager
 
 
 async def get_current_player_name(websocket_id: str) -> Optional[str]:
@@ -82,7 +87,7 @@ async def handle_disconnect(room_id: str, websocket: WebSocket):
 
         if not connection and room_id != "lobby":
             # Fallback: Check if any player in the room is missing their websocket
-            room = await room_manager.get_room(room_id)
+            room = await get_room(room_id)
             if room and room.started and room.game:
                 # This is a workaround - we should improve the tracking mechanism
                 logger.warning(
@@ -90,7 +95,7 @@ async def handle_disconnect(room_id: str, websocket: WebSocket):
                 )
 
         if connection and room_id != "lobby":
-            room = await room_manager.get_room(room_id)
+            room = await get_room(room_id)
             if room and room.started:  # Only treat as in-game if game started!
                 # This is an in-game disconnect
                 logger.info(
@@ -195,7 +200,7 @@ async def handle_disconnect(room_id: str, websocket: WebSocket):
 async def process_leave_room(room_id: str, player_name: str):
     """Shared logic for handling player leaving room (pre-game)
     This is extracted from the existing leave_room event handler"""
-    room = await room_manager.get_room(room_id)
+    room = await get_room(room_id)
     if not room:
         logger.warning(f"[ROOM_DEBUG] Room {room_id} not found in process_leave_room")
         return
@@ -219,11 +224,11 @@ async def process_leave_room(room_id: str, player_name: str):
                 "reason": "host_left",  # Keep existing reason for compatibility
             },
         )
-        await room_manager.delete_room(room_id)
+        await delete_room(room_id)
         logger.info(f"🗑️ [ROOM_DEBUG] Room '{room_id}' deleted because host left")
 
         # Update lobby with room list
-        available_rooms = await room_manager.list_rooms()
+        available_rooms = await list_rooms()
         await broadcast(
             "lobby",
             "room_list_update",
@@ -252,7 +257,7 @@ async def process_leave_room(room_id: str, player_name: str):
         )
 
         # Update lobby with updated room info
-        available_rooms = await room_manager.list_rooms()
+        available_rooms = await list_rooms()
         await broadcast(
             "lobby",
             "room_list_update",
@@ -396,7 +401,7 @@ async def room_cleanup_task():
 
             # Check all rooms (including started ones)
             # Note: list_rooms() only returns non-started rooms, so we need to check all rooms directly
-            all_room_ids = list(room_manager.rooms.keys())
+            all_room_ids = list(get_rooms_dict().keys())
             
             # Also check clean architecture rooms
             try:
@@ -419,7 +424,7 @@ async def room_cleanup_task():
                 )
 
             for room_id in all_room_ids:
-                room = await room_manager.get_room(room_id)
+                room = await get_room(room_id)
                 if room:
                     should_cleanup = room.should_cleanup()
                     game_ended = getattr(room, 'game_ended', False)
@@ -439,17 +444,15 @@ async def room_cleanup_task():
                 )
 
             for room_id in rooms_to_cleanup:
-                room = await room_manager.get_room(room_id)
+                room = await get_room(room_id)
                 if room and room.should_cleanup():  # Double-check
                     logger.info(
                         f"🧹 [ROOM_DEBUG] Cleaning up abandoned room {room_id} (no human players)"
                     )
 
-                    # Unregister from bot manager
-                    from engine.bot_manager import BotManager
-
-                    bot_manager = BotManager()
-                    bot_manager.unregister_game(room_id)
+                    # Bot unregistration handled by clean architecture
+                    # Legacy bot_manager.unregister_game(room_id) no longer needed
+                    # Clean architecture handles bot lifecycle automatically
 
                     # Broadcast room closed
                     await broadcast(
@@ -462,7 +465,7 @@ async def room_cleanup_task():
                     )
 
                     # Delete room
-                    await room_manager.delete_room(room_id)
+                    await delete_room(room_id)
 
                     logger.info(
                         f"✅ [ROOM_DEBUG] Room {room_id} cleaned up successfully"
