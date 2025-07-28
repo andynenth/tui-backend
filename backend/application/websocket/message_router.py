@@ -20,6 +20,7 @@ from api.websocket.message_queue import message_queue_manager
 from infrastructure.websocket.connection_singleton import broadcast
 from infrastructure.dependencies import get_unit_of_work
 from application.services.room_application_service import RoomApplicationService
+from infrastructure.monitoring.metrics_integration import MetricsContext, metrics_collector
 
 logger = logging.getLogger(__name__)
 
@@ -91,18 +92,28 @@ class MessageRouter:
             }
             
         try:
-            # Determine routing based on configuration
-            if websocket_config.should_use_use_case(event):
-                # Route through use case dispatcher
-                response = await self._route_to_use_case(websocket, message, room_id, event)
-            else:
-                # Route through adapter system (for migration)
-                response = await self._route_to_adapter(websocket, message, room_id)
-            
-            # Handle queued messages if needed
-            await self._check_message_queue(websocket, room_id)
-            
-            return response
+            # Track metrics for this event
+            async with MetricsContext(event) as ctx:
+                # Determine routing based on configuration
+                if websocket_config.should_use_use_case(event):
+                    # Route through use case dispatcher
+                    response = await self._route_to_use_case(websocket, message, room_id, event)
+                else:
+                    # Route through adapter system (for migration)
+                    response = await self._route_to_adapter(websocket, message, room_id)
+                
+                # Handle queued messages if needed
+                await self._check_message_queue(websocket, room_id)
+                
+                # Record message metrics
+                await metrics_collector.record_message_received(event, message)
+                if response:
+                    await metrics_collector.record_message_sent(
+                        response.get("event", event),
+                        response
+                    )
+                
+                return response
             
         except Exception as e:
             logger.error(f"Error routing message: {e}", exc_info=True)
