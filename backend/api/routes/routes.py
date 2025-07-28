@@ -5,7 +5,7 @@ import time
 from datetime import datetime
 from typing import Any, Dict, List, Optional
 
-from infrastructure.websocket.broadcast_adapter import broadcast, get_room_stats
+from infrastructure.websocket.connection_singleton import broadcast, get_room_stats
 from shared_instances import shared_bot_manager, shared_room_manager
 from fastapi import APIRouter, HTTPException, Query
 from fastapi.responses import JSONResponse

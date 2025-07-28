@@ -6,13 +6,7 @@ import uuid
 from typing import Optional
 
 # Legacy shared_instances removed - using clean architecture
-from infrastructure.websocket.broadcast_adapter import broadcast, register, unregister
-from infrastructure.adapters.room_manager_adapter import (
-    get_room,
-    delete_room,
-    list_rooms,
-    get_rooms_dict,
-)
+from infrastructure.websocket.connection_singleton import broadcast, register, unregister, get_connection_id_for_websocket
 from fastapi import APIRouter, WebSocket, WebSocketDisconnect
 
 from api.validation import validate_websocket_message
@@ -26,6 +20,10 @@ from api.routes.ws_adapter_wrapper import adapter_wrapper
 
 # Import clean architecture dependencies
 from infrastructure.dependencies import get_unit_of_work
+from application.services.room_application_service import RoomApplicationService
+from application.services.lobby_application_service import LobbyApplicationService
+from application.dto.lobby import GetRoomListRequest
+from infrastructure.dependencies import get_event_publisher, get_bot_service, get_metrics_collector
 
 # Set up logging
 logger = logging.getLogger(__name__)
@@ -87,7 +85,10 @@ async def handle_disconnect(room_id: str, websocket: WebSocket):
 
         if not connection and room_id != "lobby":
             # Fallback: Check if any player in the room is missing their websocket
-            room = await get_room(room_id)
+            # Get room using clean architecture
+            uow_check = get_unit_of_work()
+            async with uow_check:
+                room = await uow_check.rooms.get_by_id(room_id)
             if room and room.started and room.game:
                 # This is a workaround - we should improve the tracking mechanism
                 logger.warning(
@@ -95,32 +96,23 @@ async def handle_disconnect(room_id: str, websocket: WebSocket):
                 )
 
         if connection and room_id != "lobby":
-            room = await get_room(room_id)
-            if room and room.started:  # Only treat as in-game if game started!
+            # Get room using clean architecture
+            uow_check = get_unit_of_work()
+            async with uow_check:
+                room = await uow_check.rooms.get_by_id(room_id)
+            if room and room.is_game_started():  # Only treat as in-game if game started!
                 # This is an in-game disconnect
                 logger.info(
                     f"🎮 [ROOM_DEBUG] In-game disconnect detected for player '{connection.player_name}' in room '{room_id}'"
                 )
+                player = None
                 if room.game:
                     # Find the player in the game
-                    player = next(
-                        (
-                            p
-                            for p in room.game.players
-                            if p.name == connection.player_name
-                        ),
-                        None,
-                    )
+                    player = room.get_player(connection.player_name)
 
                 if player and not player.is_bot:
-
-                    # Store original bot state
-                    player.original_is_bot = player.is_bot
-                    player.is_connected = False
-                    player.disconnect_time = connection.disconnect_time
-
-                    # Convert to bot
-                    player.is_bot = True
+                    # Use the player's disconnect method which handles bot activation
+                    player.disconnect(room_id=room_id, activate_bot=True)
 
                     # Create message queue for the disconnected player
                     await message_queue_manager.create_queue(
@@ -134,7 +126,8 @@ async def handle_disconnect(room_id: str, websocket: WebSocket):
                     # Check if disconnecting player was the host
                     new_host = None
                     if room.is_host(connection.player_name):
-                        new_host = await room.migrate_host()
+                        new_host_player = room.migrate_host()
+                        new_host = new_host_player.name if new_host_player else None
                         if new_host:
                             logger.info(
                                 f"Host migrated to {new_host} in room {room_id}"
@@ -164,14 +157,18 @@ async def handle_disconnect(room_id: str, websocket: WebSocket):
                             },
                         )
 
-                    # Check if all remaining players are bots and mark for cleanup
-                    if not room.has_any_human_players():
-                        room.mark_for_cleanup()
+                    # Save room changes back to repository
+                    await uow_check.rooms.save(room)
+                    await uow_check.commit()
+                    
+                    # Check if all remaining players are bots and update status
+                    if room.get_human_count() == 0:
+                        # Room will automatically be marked as ABANDONED by _update_room_status()
                         logger.info(
-                            f"All players in room {room_id} are now bots. Cleanup scheduled in {room.CLEANUP_TIMEOUT_SECONDS}s"
+                            f"All players in room {room_id} are now bots. Room status: {room.status.value}"
                         )
                         logger.info(
-                            f"🤖 [ROOM_DEBUG] Room '{room_id}' has no human players, marked for cleanup"
+                            f"🤖 [ROOM_DEBUG] Room '{room_id}' has no human players, status: {room.status.value}"
                         )
                 else:
                     logger.warning(f"No game object found for started room {room_id}")
@@ -193,14 +190,21 @@ async def handle_disconnect(room_id: str, websocket: WebSocket):
         logger.error(f"Error handling disconnect: {e}")
     finally:
         # Always unregister the websocket
-        unregister(room_id, websocket)
-        logger.info(f"🔌 [ROOM_DEBUG] WebSocket unregistered from room '{room_id}'")
+        connection_id = getattr(websocket, '_connection_id', None) or get_connection_id_for_websocket(websocket)
+        if connection_id:
+            await unregister(connection_id)
+            logger.info(f"🔌 [ROOM_DEBUG] WebSocket unregistered from room '{room_id}' (connection_id: {connection_id})")
+        else:
+            logger.warning(f"Could not find connection_id for websocket in room '{room_id}'")
 
 
 async def process_leave_room(room_id: str, player_name: str):
     """Shared logic for handling player leaving room (pre-game)
     This is extracted from the existing leave_room event handler"""
-    room = await get_room(room_id)
+    # Get room using clean architecture
+    uow = get_unit_of_work()
+    async with uow:
+        room = await uow.rooms.get_by_id(room_id)
     if not room:
         logger.warning(f"[ROOM_DEBUG] Room {room_id} not found in process_leave_room")
         return
@@ -224,11 +228,40 @@ async def process_leave_room(room_id: str, player_name: str):
                 "reason": "host_left",  # Keep existing reason for compatibility
             },
         )
-        await delete_room(room_id)
+        # Delete room using clean architecture
+        uow_delete = get_unit_of_work()
+        async with uow_delete:
+            await uow_delete.rooms.delete(room_id)
+            await uow_delete.commit()
         logger.info(f"🗑️ [ROOM_DEBUG] Room '{room_id}' deleted because host left")
 
-        # Update lobby with room list
-        available_rooms = await list_rooms()
+        # Update lobby with room list using clean architecture
+        lobby_service = LobbyApplicationService(
+            unit_of_work=get_unit_of_work(),
+            metrics=get_metrics_collector()
+        )
+        list_request = GetRoomListRequest(
+            player_id="",
+            include_full=False,
+            include_in_game=False
+        )
+        list_response = await lobby_service._get_room_list_use_case.execute(list_request)
+        
+        # Convert room summaries to legacy format
+        available_rooms = [
+            {
+                "room_id": room.room_id,
+                "room_code": room.room_code,
+                "room_name": room.room_name,
+                "host_name": room.host_name,
+                "player_count": room.player_count,
+                "max_players": room.max_players,
+                "game_in_progress": room.game_in_progress,
+                "is_private": room.is_private
+            }
+            for room in list_response.rooms
+        ]
+        
         await broadcast(
             "lobby",
             "room_list_update",
@@ -240,8 +273,22 @@ async def process_leave_room(room_id: str, player_name: str):
     else:
         # EXISTING player leave logic from leave_room handler
         logger.info(f"👤 [ROOM_DEBUG] Player '{player_name}' leaving room '{room_id}'")
-        await room.exit_room(player_name)
-        updated_summary = await room.summary()
+        was_host = room.remove_player(player_name)
+        
+        # Save room changes
+        await uow.rooms.save(room)
+        await uow.commit()
+        
+        # Get updated room state
+        updated_summary = {
+            "players": [
+                {"name": p.name, "is_bot": p.is_bot} if p else None
+                for p in room.slots
+            ],
+            "host_name": room.host_name,
+            "room_id": room_id,
+            "started": room.is_game_started()
+        }
         logger.info(
             f"📊 [ROOM_DEBUG] Room state after player left: players={updated_summary['players']}, host={updated_summary['host_name']}"
         )
@@ -252,12 +299,37 @@ async def process_leave_room(room_id: str, player_name: str):
                 "players": updated_summary["players"],
                 "host_name": updated_summary["host_name"],
                 "room_id": room_id,
-                "started": updated_summary.get("started", False),
+                "started": updated_summary["started"],
             },
         )
 
-        # Update lobby with updated room info
-        available_rooms = await list_rooms()
+        # Update lobby with updated room info using clean architecture
+        lobby_service = LobbyApplicationService(
+            unit_of_work=get_unit_of_work(),
+            metrics=get_metrics_collector()
+        )
+        list_request = GetRoomListRequest(
+            player_id="",
+            include_full=False,
+            include_in_game=False
+        )
+        list_response = await lobby_service._get_room_list_use_case.execute(list_request)
+        
+        # Convert room summaries to legacy format
+        available_rooms = [
+            {
+                "room_id": room.room_id,
+                "room_code": room.room_code,
+                "room_name": room.room_name,
+                "host_name": room.host_name,
+                "player_count": room.player_count,
+                "max_players": room.max_players,
+                "game_in_progress": room.game_in_progress,
+                "is_private": room.is_private
+            }
+            for room in list_response.rooms
+        ]
+        
         await broadcast(
             "lobby",
             "room_list_update",
@@ -286,7 +358,9 @@ async def websocket_endpoint(websocket: WebSocket, room_id: str):
     # Ensure cleanup task is running (fallback if startup event missed)
     start_cleanup_task()
 
-    registered_ws = await register(room_id, websocket)
+    connection_id = await register(room_id, websocket)
+    # Store connection_id on websocket for later retrieval
+    websocket._connection_id = connection_id
 
     # Check if room exists (excluding lobby)
     if room_id != "lobby":
@@ -399,24 +473,17 @@ async def room_cleanup_task():
             iteration_count += 1
             rooms_to_cleanup = []
 
-            # Check all rooms (including started ones)
-            # Note: list_rooms() only returns non-started rooms, so we need to check all rooms directly
-            all_room_ids = list(get_rooms_dict().keys())
-            
-            # Also check clean architecture rooms
+            # Get all rooms using clean architecture
+            all_room_ids = []
             try:
-                from infrastructure.dependencies import get_unit_of_work
                 uow = get_unit_of_work()
                 async with uow:
-                    clean_rooms = await uow.rooms.list()
-                    clean_room_ids = [room.room_id for room in clean_rooms]
-                    # Add any clean rooms not in legacy
-                    for room_id in clean_room_ids:
-                        if room_id not in all_room_ids:
-                            all_room_ids.append(room_id)
-                            logger.debug(f"🧹 [ROOM_DEBUG] Found clean architecture room not in legacy: {room_id}")
+                    # Get all rooms (both active and inactive)
+                    clean_rooms = await uow.rooms.list_active(limit=1000)
+                    all_room_ids = [room.room_id for room in clean_rooms]
+                    logger.debug(f"🧹 [ROOM_DEBUG] Found {len(all_room_ids)} rooms in clean architecture")
             except Exception as e:
-                logger.debug(f"🧹 [ROOM_DEBUG] Could not check clean architecture rooms: {e}")
+                logger.error(f"🧹 [ROOM_DEBUG] Error getting rooms from clean architecture: {e}")
 
             if all_room_ids:
                 logger.info(
@@ -424,10 +491,21 @@ async def room_cleanup_task():
                 )
 
             for room_id in all_room_ids:
-                room = await get_room(room_id)
+                # Get room using clean architecture
+                uow_check = get_unit_of_work()
+                async with uow_check:
+                    room = await uow_check.rooms.get_by_id(room_id)
                 if room:
-                    should_cleanup = room.should_cleanup()
-                    game_ended = getattr(room, 'game_ended', False)
+                    # Check cleanup conditions using domain logic
+                    # For clean architecture rooms, check if room has no human players
+                    has_humans = any(slot and not slot.is_bot for slot in room.slots)
+                    game_ended = False  # Clean architecture doesn't track game_ended
+                    
+                    # Check if room should be cleaned up based on status
+                    should_cleanup = (
+                        room.status.value in ["COMPLETED", "ABANDONED"] or
+                        (not has_humans and room.status.value == "IN_GAME")
+                    )
                     logger.info(
                         f"🧹 CLEANUP_CHECK: Room {room_id} - game_ended={game_ended}, should_cleanup={should_cleanup}"
                     )
@@ -444,8 +522,22 @@ async def room_cleanup_task():
                 )
 
             for room_id in rooms_to_cleanup:
-                room = await get_room(room_id)
-                if room and room.should_cleanup():  # Double-check
+                # Get room and double-check cleanup conditions
+                uow_delete = get_unit_of_work()
+                async with uow_delete:
+                    room = await uow_delete.rooms.get_by_id(room_id)
+                    
+                    if room:
+                        # Re-check cleanup conditions
+                        has_humans = any(slot and not slot.is_bot for slot in room.slots)
+                        should_still_cleanup = (
+                            room.status.value in ["COMPLETED", "ABANDONED"] or
+                            (not has_humans and room.status.value == "IN_GAME")
+                        )
+                    else:
+                        should_still_cleanup = False
+                    
+                if room and should_still_cleanup:
                     logger.info(
                         f"🧹 [ROOM_DEBUG] Cleaning up abandoned room {room_id} (no human players)"
                     )
@@ -460,12 +552,14 @@ async def room_cleanup_task():
                         "room_closed",
                         {
                             "reason": "All players disconnected",
-                            "timeout_seconds": room.CLEANUP_TIMEOUT_SECONDS,
+                            "timeout_seconds": 30,  # Using fixed timeout since clean arch rooms don't have CLEANUP_TIMEOUT_SECONDS
                         },
                     )
 
-                    # Delete room
-                    await delete_room(room_id)
+                    # Delete room using clean architecture
+                    async with uow_delete:
+                        await uow_delete.rooms.delete(room_id)
+                        await uow_delete.commit()
 
                     logger.info(
                         f"✅ [ROOM_DEBUG] Room {room_id} cleaned up successfully"

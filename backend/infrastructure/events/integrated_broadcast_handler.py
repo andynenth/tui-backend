@@ -6,7 +6,7 @@ using the event-to-broadcast mapper, maintaining 100% compatibility.
 """
 
 import logging
-from typing import Optional, Dict, Any, TYPE_CHECKING
+from typing import Optional, Dict, Any
 from datetime import datetime
 
 from domain.events.base import DomainEvent, GameEvent
@@ -14,9 +14,6 @@ from domain.events.all_events import *
 from infrastructure.events.decorators import event_handler
 from infrastructure.events.event_broadcast_mapper import event_broadcast_mapper
 from infrastructure.events.in_memory_event_bus import get_event_bus
-
-if TYPE_CHECKING:
-    from room_manager import RoomManager
 
 logger = logging.getLogger(__name__)
 
@@ -32,7 +29,7 @@ class IntegratedBroadcastHandler:
     4. Maintains exact message compatibility
     """
     
-    def __init__(self, room_manager: Optional['RoomManager'] = None):
+    def __init__(self, room_manager: Optional[Any] = None):
         """
         Initialize the broadcast handler.
         
@@ -78,7 +75,7 @@ class IntegratedBroadcastHandler:
                 return
             
             # Import here to avoid circular dependency
-            from infrastructure.websocket.broadcast_adapter import broadcast
+            from infrastructure.websocket.connection_singleton import broadcast
             
             # Send the broadcast based on target type
             if broadcast_info['target_type'] == 'room' and broadcast_info['target_id']:

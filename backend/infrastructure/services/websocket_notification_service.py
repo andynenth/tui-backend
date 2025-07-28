@@ -9,7 +9,7 @@ import logging
 from typing import Dict, Any, List, Optional
 
 from application.interfaces import NotificationService
-from infrastructure.websocket.broadcast_adapter import broadcast
+from infrastructure.websocket.connection_singleton import broadcast
 from infrastructure.feature_flags import get_feature_flags
 
 logger = logging.getLogger(__name__)
