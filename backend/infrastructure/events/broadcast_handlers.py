@@ -11,7 +11,7 @@ from datetime import datetime
 
 from domain.events.all_events import *
 from infrastructure.events.decorators import event_handler
-from socket_manager import broadcast, send_to_socket
+from infrastructure.websocket.broadcast_adapter import broadcast
 
 logger = logging.getLogger(__name__)
 

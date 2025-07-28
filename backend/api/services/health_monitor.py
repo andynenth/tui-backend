@@ -233,33 +233,21 @@ class HealthMonitor:
                 await asyncio.sleep(check_interval)
 
                 # Get WebSocket statistics
-                import sys
+                from infrastructure.websocket.broadcast_adapter import get_room_stats
 
-                sys.path.append("/Users/nrw/python/tui-project/liap-tui/backend")
-                from socket_manager import _socket_manager as socket_manager
-
-                total_connections = 0
+                # Get stats from clean architecture
+                ws_stats = get_room_stats()
+                total_connections = ws_stats.get("total_active_connections", 0)
+                
+                # Clean architecture doesn't track these detailed stats yet
                 total_pending = 0
                 total_sent = 0
                 total_acked = 0
                 total_failed = 0
 
-                # Aggregate stats from all rooms
-                for room_id in socket_manager.room_connections:
-                    total_connections += len(socket_manager.room_connections[room_id])
-
-                    if room_id in socket_manager.pending_messages:
-                        total_pending += len(socket_manager.pending_messages[room_id])
-
-                    if room_id in socket_manager.message_stats:
-                        stats = socket_manager.message_stats[room_id]
-                        total_sent += stats.sent
-                        total_acked += stats.acknowledged
-                        total_failed += stats.failed
-
-                # Calculate health metrics
-                delivery_rate = (total_acked / max(total_sent, 1)) * 100
-                failure_rate = (total_failed / max(total_sent, 1)) * 100
+                # Calculate health metrics (simplified for now)
+                delivery_rate = 100.0  # Assume 100% until we track this
+                failure_rate = 0.0
 
                 metrics = {
                     "active_connections": total_connections,

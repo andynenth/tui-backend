@@ -92,7 +92,7 @@ class WebSocketEventPublisher(EventPublisher):
             }
             
             # Broadcast to room
-            from socket_manager import broadcast
+            from infrastructure.websocket.broadcast_adapter import broadcast
             await broadcast(room_id, ws_event_name, ws_message["data"])
             
             logger.debug(f"Published {event_type} as {ws_event_name} to room {room_id}")

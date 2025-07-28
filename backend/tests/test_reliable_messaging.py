@@ -17,6 +17,8 @@ async def test_socket_manager_enhancements():
     print("🧪 Testing SocketManager Reliable Messaging...")
 
     try:
+        # NOTE: This test is for legacy socket_manager functionality
+        # Clean architecture handles messaging differently
         from socket_manager import MessageStats, PendingMessage, SocketManager
 
         # Create SocketManager

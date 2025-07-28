@@ -1,3 +1,13 @@
+"""
+LEGACY_CODE: This file is scheduled for removal after Phase 6 migration
+REPLACEMENT: backend/infrastructure/repositories/optimized_room_repository.py
+REMOVAL_TARGET: Phase 7.2
+FEATURE_FLAG: USE_LEGACY_ROOM_MANAGER
+DEPENDENCIES: engine/async_room.py, engine/room_manager.py
+LAST_MODIFIED: 2025-07-15
+MIGRATION_STATUS: ready_for_removal
+"""
+
 # backend/engine/async_room_manager.py
 """
 Async implementation of RoomManager for Phase 2 migration.

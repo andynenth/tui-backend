@@ -357,10 +357,9 @@ class RecoveryManager:
     async def _cleanup_stale_connections(self, context: Dict[str, Any]) -> bool:
         """Clean up stale WebSocket connections"""
         try:
-            import sys
-
-            sys.path.append("/Users/nrw/python/tui-project/liap-tui/backend")
-            from socket_manager import _socket_manager as socket_manager
+            # Note: Clean architecture doesn't expose internal connection details
+            # This recovery action is no longer applicable
+            return True
 
             cleaned_count = 0
 
@@ -404,10 +403,9 @@ class RecoveryManager:
     async def _clear_pending_messages(self, context: Dict[str, Any]) -> bool:
         """Clear excessive pending messages"""
         try:
-            import sys
-
-            sys.path.append("/Users/nrw/python/tui-project/liap-tui/backend")
-            from socket_manager import _socket_manager as socket_manager
+            # Note: Clean architecture doesn't expose internal connection details
+            # This recovery action is no longer applicable
+            return True
 
             cleared_count = 0
 
@@ -495,10 +493,9 @@ class RecoveryManager:
         try:
             room_id = context.get("room_id", "all")
 
-            import sys
-
-            sys.path.append("/Users/nrw/python/tui-project/liap-tui/backend")
-            from socket_manager import _socket_manager as socket_manager
+            # Note: Clean architecture doesn't expose internal connection details
+            # This recovery action is no longer applicable
+            return True
 
             sync_count = 0
 

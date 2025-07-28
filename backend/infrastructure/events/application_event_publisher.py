@@ -13,7 +13,7 @@ from application.interfaces import EventPublisher
 from domain.events.base import DomainEvent
 from infrastructure.events.event_broadcast_mapper import event_broadcast_mapper
 from infrastructure.feature_flags import get_feature_flags
-from socket_manager import broadcast
+from infrastructure.websocket.broadcast_adapter import broadcast
 
 logger = logging.getLogger(__name__)
 

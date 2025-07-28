@@ -1,3 +1,13 @@
+"""
+LEGACY_CODE: This file is scheduled for removal after Phase 6 migration
+REPLACEMENT: backend/infrastructure/websocket/connection_manager.py
+REMOVAL_TARGET: Phase 7.2
+FEATURE_FLAG: USE_LEGACY_SOCKET_MANAGER
+DEPENDENCIES: shared_instances.py
+LAST_MODIFIED: 2025-07-15
+MIGRATION_STATUS: ready_for_removal
+"""
+
 # backend/socket_manager.py
 
 import asyncio

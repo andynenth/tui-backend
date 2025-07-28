@@ -1,3 +1,13 @@
+"""
+LEGACY_CODE: This file is scheduled for removal after Phase 6 migration
+REPLACEMENT: backend/infrastructure/dependencies.py (DI container)
+REMOVAL_TARGET: Phase 7.3
+FEATURE_FLAG: USE_LEGACY_SHARED_INSTANCES
+DEPENDENCIES: engine/async_room_manager.py, engine/bot_manager.py
+LAST_MODIFIED: 2025-07-05
+MIGRATION_STATUS: ready_for_removal
+"""
+
 # backend/shared_instances.py
 
 from engine.bot_manager import BotManager

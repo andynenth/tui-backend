@@ -162,12 +162,9 @@ class EnterpriseArchitectureValidator:
         broadcast_calls = []
 
         try:
-            # Mock socket_manager.broadcast to capture calls
-            try:
-                import backend.socket_manager as socket_manager
-            except ImportError:
-                import socket_manager
-            original_broadcast = socket_manager.broadcast
+            # Mock broadcast_adapter.broadcast to capture calls
+            from infrastructure.websocket import broadcast_adapter
+            original_broadcast = broadcast_adapter.broadcast
 
             async def mock_broadcast(room_id, event_type, data):
                 broadcast_calls.append(
@@ -175,7 +172,7 @@ class EnterpriseArchitectureValidator:
                 )
                 print(f"🎯 MOCK_BROADCAST: {event_type} to {room_id}")
 
-            socket_manager.broadcast = mock_broadcast
+            broadcast_adapter.broadcast = mock_broadcast
 
             # Test automatic broadcasting via update_phase_data
             await turn_state.update_phase_data(
@@ -218,7 +215,7 @@ class EnterpriseArchitectureValidator:
         finally:
             # Restore original broadcast function
             if original_broadcast:
-                socket_manager.broadcast = original_broadcast
+                broadcast_adapter.broadcast = original_broadcast
 
         return success
 

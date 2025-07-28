@@ -460,15 +460,12 @@ async def test_performance_monitoring():
         # Test 3: WebSocket performance tracking
         print("🔌 Test 3: WebSocket performance tracking...")
 
-        # Mock socket manager stats
+        # Mock clean architecture stats
         try:
-            import sys
-
-            sys.path.append("/Users/nrw/python/tui-project/liap-tui/backend")
-            from socket_manager import _socket_manager as socket_manager
+            from infrastructure.websocket.broadcast_adapter import get_room_stats
 
             # Get current stats (even if empty)
-            socket_stats = socket_manager.get_message_stats()
+            socket_stats = get_room_stats()
 
             print(
                 f"  ✅ WebSocket stats available: {len(socket_stats.get('rooms', {}))} rooms"

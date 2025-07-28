@@ -5,9 +5,8 @@ import logging
 import uuid
 from typing import Optional
 
-import backend.socket_manager
 from shared_instances import shared_room_manager
-from backend.socket_manager import broadcast, register, unregister
+from infrastructure.websocket.broadcast_adapter import broadcast, register, unregister
 from fastapi import APIRouter, WebSocket, WebSocketDisconnect
 
 from api.validation import validate_websocket_message
@@ -18,6 +17,9 @@ from api.middleware.websocket_rate_limit import (
 from api.websocket.connection_manager import connection_manager
 from api.websocket.message_queue import message_queue_manager
 from api.routes.ws_adapter_wrapper import adapter_wrapper
+
+# Import clean architecture dependencies
+from infrastructure.dependencies import get_unit_of_work
 
 # Set up logging
 logger = logging.getLogger(__name__)
@@ -37,17 +39,22 @@ async def get_current_player_name(websocket_id: str) -> Optional[str]:
 
 async def broadcast_with_queue(room_id: str, event: str, data: dict):
     """Broadcast to room and queue messages for disconnected players"""
-    # Get list of disconnected players in the room
-    room = await room_manager.get_room(room_id)
-    if room and room.game:
-        disconnected_players = []
-        for player in room.game.players:
-            if player and hasattr(player, "is_connected") and not player.is_connected:
-                disconnected_players.append(player.name)
+    # Get list of disconnected players in the room using clean architecture
+    try:
+        uow = get_unit_of_work()
+        async with uow:
+            room = await uow.rooms.get_by_id(room_id)
+            if room and room.game:
+                disconnected_players = []
+                for player in room.game.players:
+                    if player and hasattr(player, "is_connected") and not player.is_connected:
+                        disconnected_players.append(player.name)
 
-        # Queue messages for disconnected players
-        for player_name in disconnected_players:
-            await message_queue_manager.queue_message(room_id, player_name, event, data)
+                # Queue messages for disconnected players
+                for player_name in disconnected_players:
+                    await message_queue_manager.queue_message(room_id, player_name, event, data)
+    except Exception as e:
+        logger.error(f"Error in broadcast_with_queue: {e}", exc_info=True)
 
     # Broadcast to connected players
     await broadcast(room_id, event, data)
@@ -279,30 +286,37 @@ async def websocket_endpoint(websocket: WebSocket, room_id: str):
     # Check if room exists (excluding lobby)
     if room_id != "lobby":
         logger.debug(f"[ROOM_LOOKUP_DEBUG] Checking if room exists: {room_id}")
-        logger.debug(f"[ROOM_LOOKUP_DEBUG] Using room_manager type: {type(room_manager).__name__}")
-        logger.debug(f"[ROOM_LOOKUP_DEBUG] Room manager rooms: {list(room_manager.rooms.keys()) if hasattr(room_manager, 'rooms') else 'No rooms attribute'}")
+        logger.debug(f"[ROOM_LOOKUP_DEBUG] Using clean architecture repository")
         
-        room = await room_manager.get_room(room_id)
-        logger.debug(f"[ROOM_LOOKUP_DEBUG] Room lookup result: {room is not None}")
-        
-        if not room:
-            logger.warning(f"[ROOM_LOOKUP_DEBUG] Room {room_id} not found in legacy AsyncRoomManager!")
-            logger.warning(f"[ROOM_LOOKUP_DEBUG] This is because rooms are created in clean architecture but checked in legacy!")
-            
-            # Send room_not_found event
-            await registered_ws.send_json(
-                {
-                    "event": "room_not_found",
-                    "data": {
-                        "room_id": room_id,
-                        "message": "This game room no longer exists",
-                        "suggestion": "The server may have restarted. Please create or join a new game.",
-                        "timestamp": asyncio.get_event_loop().time(),
-                    },
-                }
-            )
-            logger.info(f"Sent room_not_found for non-existent room: {room_id}")
-            # Continue running to allow frontend to handle gracefully
+        # Use clean architecture repository to check room existence
+        try:
+            uow = get_unit_of_work()
+            async with uow:
+                room = await uow.rooms.get_by_id(room_id)
+                logger.debug(f"[ROOM_LOOKUP_DEBUG] Room lookup result: {room is not None}")
+                
+                if not room:
+                    logger.warning(f"[ROOM_LOOKUP_DEBUG] Room {room_id} not found in clean architecture repository!")
+                    
+                    # Send room_not_found event
+                    await registered_ws.send_json(
+                        {
+                            "event": "room_not_found",
+                            "data": {
+                                "room_id": room_id,
+                                "message": "This game room no longer exists",
+                                "suggestion": "The server may have restarted. Please create or join a new game.",
+                                "timestamp": asyncio.get_event_loop().time(),
+                            },
+                        }
+                    )
+                    logger.info(f"Sent room_not_found for non-existent room: {room_id}")
+                    # Continue running to allow frontend to handle gracefully
+                else:
+                    logger.info(f"[ROOM_LOOKUP_DEBUG] Room {room_id} found successfully in clean architecture!")
+        except Exception as e:
+            logger.error(f"[ROOM_LOOKUP_DEBUG] Error checking room existence: {e}", exc_info=True)
+            # Don't fail the connection, just log the error
 
     try:
         while True:
