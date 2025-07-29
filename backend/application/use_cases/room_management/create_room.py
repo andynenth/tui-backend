@@ -111,17 +111,13 @@ class CreateRoomUseCase(UseCase[CreateRoomRequest, CreateRoomResponse]):
             # Create room info for response
             room_info = self._create_room_info(room, host_player)
             
-            # Emit RoomCreated event
+            # Prepare RoomCreated event (will publish after commit)
             event = RoomCreated(
                 metadata=EventMetadata(user_id=getattr(request, 'user_id', None)),
                 room_id=room.room_id,
                 host_id=request.host_player_id,
                 host_name=request.host_player_name
             )
-            logger.info(f"[CREATE_ROOM_DEBUG] Publishing RoomCreated event for room {room.room_id}")
-            logger.info(f"[CREATE_ROOM_DEBUG] Event publisher type: {self._event_publisher.__class__.__name__}")
-            await self._event_publisher.publish(event)
-            logger.info(f"[CREATE_ROOM_DEBUG] RoomCreated event published successfully")
             
             # Record metrics
             if self._metrics:
@@ -152,7 +148,14 @@ class CreateRoomUseCase(UseCase[CreateRoomRequest, CreateRoomResponse]):
             )
             
             self._log_execution(request, response)
-            return response
+            
+        # Publish event after transaction commits
+        logger.info(f"[CREATE_ROOM_DEBUG] Publishing RoomCreated event for room {room_info.room_id}")
+        logger.info(f"[CREATE_ROOM_DEBUG] Event publisher type: {self._event_publisher.__class__.__name__}")
+        await self._event_publisher.publish(event)
+        logger.info(f"[CREATE_ROOM_DEBUG] RoomCreated event published successfully")
+        
+        return response
     
     def _validate_request(self, request: CreateRoomRequest) -> None:
         """Validate the room creation request."""
