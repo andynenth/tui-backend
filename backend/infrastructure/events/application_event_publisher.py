@@ -156,6 +156,10 @@ class CompositeEventPublisher(EventPublisher):
         Args:
             event: The domain event to publish
         """
+        logger.info(f"[COMPOSITE_DEBUG] Publishing {event.__class__.__name__} to {len(self._publishers)} publishers")
+        for i, pub in enumerate(self._publishers):
+            logger.info(f"[COMPOSITE_DEBUG]   Publisher {i}: {pub.__class__.__name__}")
+        
         # Publish to all publishers concurrently
         tasks = [
             publisher.publish(event)

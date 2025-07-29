@@ -195,3 +195,15 @@ async def startup_event():
     from api.routes.ws import start_cleanup_task
 
     start_cleanup_task()
+    
+    # Initialize event handlers for broadcasting
+    logger.info("Initializing event handlers...")
+    try:
+        from infrastructure.events.decorators import EventHandlerRegistry
+        import infrastructure.events.broadcast_handlers
+        
+        # Scan and register all event handlers in broadcast_handlers module
+        count = EventHandlerRegistry.scan_module(infrastructure.events.broadcast_handlers)
+        logger.info(f"Registered {count} event handlers from broadcast_handlers module")
+    except Exception as e:
+        logger.error(f"Failed to initialize event handlers: {e}", exc_info=True)

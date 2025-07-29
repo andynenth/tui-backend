@@ -254,13 +254,16 @@ class UseCaseDispatcher:
         Returns:
             Response dict or None if event not handled
         """
+        logger.info(f"[DISPATCH_DEBUG] Dispatching event '{event}' from player '{context.player_name}' in room '{context.room_id}'")
         handler = self.event_handlers.get(event)
         if not handler:
             logger.warning(f"No handler found for event: {event}")
             return None
         
         try:
-            return await handler(data, context)
+            result = await handler(data, context)
+            logger.info(f"[DISPATCH_DEBUG] Event '{event}' handled successfully")
+            return result
         except Exception as e:
             logger.error(f"Error handling event {event}: {e}", exc_info=True)
             return {
@@ -669,7 +672,10 @@ class UseCaseDispatcher:
     
     async def _handle_get_rooms(self, data: Dict[str, Any], context: DispatchContext) -> Dict[str, Any]:
         """Handle get_rooms event (alias for request_room_list)"""
-        return await self._handle_request_room_list(data, context)
+        logger.info(f"[GET_ROOMS_DEBUG] Received get_rooms request from {context.player_name} in room {context.room_id}")
+        result = await self._handle_request_room_list(data, context)
+        logger.info(f"[GET_ROOMS_DEBUG] Returning {len(result['data']['rooms'])} rooms")
+        return result
     
     # Game event handlers
     
