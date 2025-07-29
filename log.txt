@@ -4,7 +4,7 @@
 ▶️ Starting backend on http://0.0.0.0:5050 ...
 INFO:     Will watch for changes in these directories: ['/Users/nrw/python/tui-project/liap-tui']
 INFO:     Uvicorn running on http://0.0.0.0:5050 (Press CTRL+C to quit)
-INFO:     Started reloader process [61166] using WatchFiles
+INFO:     Started reloader process [61501] using WatchFiles
 🌐 Starting esbuild in watch mode...
 
 > frontend@1.0.0 dev
@@ -13,303 +13,311 @@ INFO:     Started reloader process [61166] using WatchFiles
 /Users/nrw/python/tui-project/liap-tui/venv/lib/python3.11/site-packages/pydantic/_internal/_config.py:373: UserWarning: Valid config keys have changed in V2:
 * 'schema_extra' has been renamed to 'json_schema_extra'
   warnings.warn(message, UserWarning)
-2025-07-29 09:38:29 - config.logging_config - INFO - Logging configured
+2025-07-29 09:50:07 - config.logging_config - INFO - Logging configured
 Rate limiting is disabled (configuration needed)
-2025-07-29 09:38:29 - backend.api.main - INFO - Mounting static files from: /Users/nrw/python/tui-project/liap-tui/static
-2025-07-29 09:38:29 - backend.api.main - INFO - Static directory exists: True
-2025-07-29 09:38:29 - backend.api.main - INFO - Files in static directory: ['index.html', 'bundle.css', 'bundle.js.map', 'bundle.css.map', 'bundle.js']
-INFO:     Started server process [61169]
+2025-07-29 09:50:07 - backend.api.main - INFO - Mounting static files from: /Users/nrw/python/tui-project/liap-tui/static
+2025-07-29 09:50:07 - backend.api.main - INFO - Static directory exists: True
+2025-07-29 09:50:07 - backend.api.main - INFO - Files in static directory: ['index.html', 'bundle.css', 'bundle.js.map', 'bundle.css.map', 'bundle.js']
+INFO:     Started server process [61504]
 INFO:     Waiting for application startup.
-2025-07-29 09:38:29 - api.routes.ws - INFO - 🧹 [ROOM_DEBUG] Starting room cleanup background task
-2025-07-29 09:38:29 - backend.api.main - INFO - Initializing event handlers...
-2025-07-29 09:38:29 - infrastructure.events.in_memory_event_bus - INFO - Subscribed function handle_connection_heartbeat to ConnectionHeartbeat
-2025-07-29 09:38:29 - infrastructure.events.in_memory_event_bus - INFO - Subscribed function handle_client_ready to ClientReady
-2025-07-29 09:38:29 - infrastructure.events.in_memory_event_bus - INFO - Subscribed function handle_room_created to RoomCreated
-2025-07-29 09:38:29 - infrastructure.events.in_memory_event_bus - INFO - Subscribed function handle_player_joined_room to PlayerJoinedRoom
-2025-07-29 09:38:29 - infrastructure.events.in_memory_event_bus - INFO - Subscribed function handle_player_left_room to PlayerLeftRoom
-2025-07-29 09:38:29 - infrastructure.events.in_memory_event_bus - INFO - Subscribed function handle_host_changed to HostChanged
-2025-07-29 09:38:29 - infrastructure.events.in_memory_event_bus - INFO - Subscribed function handle_bot_added to BotAdded
-2025-07-29 09:38:29 - infrastructure.events.in_memory_event_bus - INFO - Subscribed function handle_game_started to GameStarted
-2025-07-29 09:38:29 - infrastructure.events.in_memory_event_bus - INFO - Subscribed function handle_phase_changed to PhaseChanged
-2025-07-29 09:38:29 - infrastructure.events.in_memory_event_bus - INFO - Subscribed function handle_pieces_played to PiecesPlayed
-2025-07-29 09:38:29 - infrastructure.events.in_memory_event_bus - INFO - Subscribed function handle_turn_winner to TurnWinnerDetermined
-2025-07-29 09:38:29 - infrastructure.events.in_memory_event_bus - INFO - Subscribed function handle_declaration_made to DeclarationMade
-2025-07-29 09:38:29 - infrastructure.events.in_memory_event_bus - INFO - Subscribed function handle_weak_hand_detected to WeakHandDetected
-2025-07-29 09:38:29 - infrastructure.events.in_memory_event_bus - INFO - Subscribed function handle_redeal_decision to RedealDecisionMade
-2025-07-29 09:38:29 - infrastructure.events.in_memory_event_bus - INFO - Subscribed function handle_redeal_executed to RedealExecuted
-2025-07-29 09:38:29 - infrastructure.events.in_memory_event_bus - INFO - Subscribed function handle_scores_calculated to ScoresCalculated
-2025-07-29 09:38:29 - infrastructure.events.in_memory_event_bus - INFO - Subscribed function handle_game_ended to GameEnded
-2025-07-29 09:38:29 - infrastructure.events.in_memory_event_bus - INFO - Subscribed function handle_invalid_action to InvalidActionAttempted
-2025-07-29 09:38:29 - infrastructure.events.in_memory_event_bus - INFO - Subscribed function handle_error to ErrorOccurred
-2025-07-29 09:38:29 - infrastructure.events.in_memory_event_bus - INFO - Subscribed function handle_room_list_updated to RoomListUpdated
-2025-07-29 09:38:29 - infrastructure.events.in_memory_event_bus - INFO - Subscribed function handle_bot_added to BotAdded
-2025-07-29 09:38:29 - infrastructure.events.in_memory_event_bus - INFO - Subscribed function handle_client_ready to ClientReady
-2025-07-29 09:38:29 - infrastructure.events.in_memory_event_bus - INFO - Subscribed function handle_connection_heartbeat to ConnectionHeartbeat
-2025-07-29 09:38:29 - infrastructure.events.in_memory_event_bus - INFO - Subscribed function handle_declaration_made to DeclarationMade
-2025-07-29 09:38:29 - infrastructure.events.in_memory_event_bus - INFO - Subscribed function handle_error to ErrorOccurred
-2025-07-29 09:38:29 - infrastructure.events.in_memory_event_bus - INFO - Subscribed function handle_game_ended to GameEnded
-2025-07-29 09:38:29 - infrastructure.events.in_memory_event_bus - INFO - Subscribed function handle_game_started to GameStarted
-2025-07-29 09:38:29 - infrastructure.events.in_memory_event_bus - INFO - Subscribed function handle_host_changed to HostChanged
-2025-07-29 09:38:29 - infrastructure.events.in_memory_event_bus - INFO - Subscribed function handle_invalid_action to InvalidActionAttempted
-2025-07-29 09:38:29 - infrastructure.events.in_memory_event_bus - INFO - Subscribed function handle_phase_changed to PhaseChanged
-2025-07-29 09:38:29 - infrastructure.events.in_memory_event_bus - INFO - Subscribed function handle_pieces_played to PiecesPlayed
-2025-07-29 09:38:29 - infrastructure.events.in_memory_event_bus - INFO - Subscribed function handle_player_joined_room to PlayerJoinedRoom
-2025-07-29 09:38:29 - infrastructure.events.in_memory_event_bus - INFO - Subscribed function handle_player_left_room to PlayerLeftRoom
-2025-07-29 09:38:29 - infrastructure.events.in_memory_event_bus - INFO - Subscribed function handle_redeal_decision to RedealDecisionMade
-2025-07-29 09:38:29 - infrastructure.events.in_memory_event_bus - INFO - Subscribed function handle_redeal_executed to RedealExecuted
-2025-07-29 09:38:29 - infrastructure.events.in_memory_event_bus - INFO - Subscribed function handle_room_created to RoomCreated
-2025-07-29 09:38:29 - infrastructure.events.in_memory_event_bus - INFO - Subscribed function handle_room_list_updated to RoomListUpdated
-2025-07-29 09:38:29 - infrastructure.events.in_memory_event_bus - INFO - Subscribed function handle_scores_calculated to ScoresCalculated
-2025-07-29 09:38:29 - infrastructure.events.in_memory_event_bus - INFO - Subscribed function handle_turn_winner to TurnWinnerDetermined
-2025-07-29 09:38:29 - infrastructure.events.in_memory_event_bus - INFO - Subscribed function handle_weak_hand_detected to WeakHandDetected
-2025-07-29 09:38:29 - backend.api.main - INFO - Registered 20 event handlers from broadcast_handlers module
-2025-07-29 09:38:29 - api.routes.ws - INFO - 🧹 [ROOM_DEBUG] Room cleanup task started
+2025-07-29 09:50:07 - api.routes.ws - INFO - 🧹 [ROOM_DEBUG] Starting room cleanup background task
+2025-07-29 09:50:07 - backend.api.main - INFO - Initializing event handlers...
+2025-07-29 09:50:07 - infrastructure.events.in_memory_event_bus - INFO - Subscribed function handle_connection_heartbeat to ConnectionHeartbeat
+2025-07-29 09:50:07 - infrastructure.events.in_memory_event_bus - INFO - Subscribed function handle_client_ready to ClientReady
+2025-07-29 09:50:07 - infrastructure.events.in_memory_event_bus - INFO - Subscribed function handle_room_created to RoomCreated
+2025-07-29 09:50:07 - infrastructure.events.in_memory_event_bus - INFO - Subscribed function handle_player_joined_room to PlayerJoinedRoom
+2025-07-29 09:50:07 - infrastructure.events.in_memory_event_bus - INFO - Subscribed function handle_player_left_room to PlayerLeftRoom
+2025-07-29 09:50:07 - infrastructure.events.in_memory_event_bus - INFO - Subscribed function handle_host_changed to HostChanged
+2025-07-29 09:50:07 - infrastructure.events.in_memory_event_bus - INFO - Subscribed function handle_bot_added to BotAdded
+2025-07-29 09:50:07 - infrastructure.events.in_memory_event_bus - INFO - Subscribed function handle_game_started to GameStarted
+2025-07-29 09:50:07 - infrastructure.events.in_memory_event_bus - INFO - Subscribed function handle_phase_changed to PhaseChanged
+2025-07-29 09:50:07 - infrastructure.events.in_memory_event_bus - INFO - Subscribed function handle_pieces_played to PiecesPlayed
+2025-07-29 09:50:07 - infrastructure.events.in_memory_event_bus - INFO - Subscribed function handle_turn_winner to TurnWinnerDetermined
+2025-07-29 09:50:07 - infrastructure.events.in_memory_event_bus - INFO - Subscribed function handle_declaration_made to DeclarationMade
+2025-07-29 09:50:07 - infrastructure.events.in_memory_event_bus - INFO - Subscribed function handle_weak_hand_detected to WeakHandDetected
+2025-07-29 09:50:07 - infrastructure.events.in_memory_event_bus - INFO - Subscribed function handle_redeal_decision to RedealDecisionMade
+2025-07-29 09:50:07 - infrastructure.events.in_memory_event_bus - INFO - Subscribed function handle_redeal_executed to RedealExecuted
+2025-07-29 09:50:07 - infrastructure.events.in_memory_event_bus - INFO - Subscribed function handle_scores_calculated to ScoresCalculated
+2025-07-29 09:50:07 - infrastructure.events.in_memory_event_bus - INFO - Subscribed function handle_game_ended to GameEnded
+2025-07-29 09:50:07 - infrastructure.events.in_memory_event_bus - INFO - Subscribed function handle_invalid_action to InvalidActionAttempted
+2025-07-29 09:50:07 - infrastructure.events.in_memory_event_bus - INFO - Subscribed function handle_error to ErrorOccurred
+2025-07-29 09:50:07 - infrastructure.events.in_memory_event_bus - INFO - Subscribed function handle_room_list_updated to RoomListUpdated
+2025-07-29 09:50:07 - infrastructure.events.in_memory_event_bus - INFO - Subscribed function handle_bot_added to BotAdded
+2025-07-29 09:50:07 - infrastructure.events.in_memory_event_bus - INFO - Subscribed function handle_client_ready to ClientReady
+2025-07-29 09:50:07 - infrastructure.events.in_memory_event_bus - INFO - Subscribed function handle_connection_heartbeat to ConnectionHeartbeat
+2025-07-29 09:50:07 - infrastructure.events.in_memory_event_bus - INFO - Subscribed function handle_declaration_made to DeclarationMade
+2025-07-29 09:50:07 - infrastructure.events.in_memory_event_bus - INFO - Subscribed function handle_error to ErrorOccurred
+2025-07-29 09:50:07 - infrastructure.events.in_memory_event_bus - INFO - Subscribed function handle_game_ended to GameEnded
+2025-07-29 09:50:07 - infrastructure.events.in_memory_event_bus - INFO - Subscribed function handle_game_started to GameStarted
+2025-07-29 09:50:07 - infrastructure.events.in_memory_event_bus - INFO - Subscribed function handle_host_changed to HostChanged
+2025-07-29 09:50:07 - infrastructure.events.in_memory_event_bus - INFO - Subscribed function handle_invalid_action to InvalidActionAttempted
+2025-07-29 09:50:07 - infrastructure.events.in_memory_event_bus - INFO - Subscribed function handle_phase_changed to PhaseChanged
+2025-07-29 09:50:07 - infrastructure.events.in_memory_event_bus - INFO - Subscribed function handle_pieces_played to PiecesPlayed
+2025-07-29 09:50:07 - infrastructure.events.in_memory_event_bus - INFO - Subscribed function handle_player_joined_room to PlayerJoinedRoom
+2025-07-29 09:50:07 - infrastructure.events.in_memory_event_bus - INFO - Subscribed function handle_player_left_room to PlayerLeftRoom
+2025-07-29 09:50:07 - infrastructure.events.in_memory_event_bus - INFO - Subscribed function handle_redeal_decision to RedealDecisionMade
+2025-07-29 09:50:07 - infrastructure.events.in_memory_event_bus - INFO - Subscribed function handle_redeal_executed to RedealExecuted
+2025-07-29 09:50:07 - infrastructure.events.in_memory_event_bus - INFO - Subscribed function handle_room_created to RoomCreated
+2025-07-29 09:50:07 - infrastructure.events.in_memory_event_bus - INFO - Subscribed function handle_room_list_updated to RoomListUpdated
+2025-07-29 09:50:07 - infrastructure.events.in_memory_event_bus - INFO - Subscribed function handle_scores_calculated to ScoresCalculated
+2025-07-29 09:50:07 - infrastructure.events.in_memory_event_bus - INFO - Subscribed function handle_turn_winner to TurnWinnerDetermined
+2025-07-29 09:50:07 - infrastructure.events.in_memory_event_bus - INFO - Subscribed function handle_weak_hand_detected to WeakHandDetected
+2025-07-29 09:50:07 - backend.api.main - INFO - Registered 20 event handlers from broadcast_handlers module
+2025-07-29 09:50:07 - api.routes.ws - INFO - 🧹 [ROOM_DEBUG] Room cleanup task started
 INFO:     Application startup complete.
 👀 Watching for changes to ./main.js, output to ../static//
 
-[0.32ms] [@tailwindcss/postcss] src/styles/toast-notifications.css
-[0.30ms]   ↳ Quick bail check
+[0.43ms] [@tailwindcss/postcss] src/styles/components/game/gameover.css
+[0.42ms]   ↳ Quick bail check
 
 
-[0.13ms] [@tailwindcss/postcss] src/styles/components/game/gameover.css
-[0.12ms]   ↳ Quick bail check
+[0.08ms] [@tailwindcss/postcss] src/styles/toast-notifications.css
+[0.07ms]   ↳ Quick bail check
 
 
-[219.06ms] [@tailwindcss/postcss] src/styles/globals.css
-[  0.08ms]   ↳ Quick bail check
-[ 78.26ms]   ↳ Setup compiler
-[  0.55ms]     ↳ PostCSS AST -> Tailwind CSS AST
-[ 77.68ms]     ↳ Create compiler
+[223.90ms] [@tailwindcss/postcss] src/styles/globals.css
+[  0.09ms]   ↳ Quick bail check
+[ 82.59ms]   ↳ Setup compiler
+[  0.82ms]     ↳ PostCSS AST -> Tailwind CSS AST
+[ 81.74ms]     ↳ Create compiler
 [  0.33ms]   ↳ Register full rebuild paths
-[  9.59ms]   ↳ Setup scanner
-[ 44.60ms]   ↳ Scan for candidates
-[ 17.67ms]   ↳ Register dependency messages
-[ 54.28ms]   ↳ Build utilities
-[  9.06ms]   ↳ Transform Tailwind CSS AST into PostCSS AST
-[  4.71ms]   ↳ Update PostCSS AST
+[ 11.53ms]   ↳ Setup scanner
+[ 42.71ms]   ↳ Scan for candidates
+[ 17.87ms]   ↳ Register dependency messages
+[ 54.35ms]   ↳ Build utilities
+[  9.04ms]   ↳ Transform Tailwind CSS AST into PostCSS AST
+[  4.99ms]   ↳ Update PostCSS AST
 
-2025-07-29 09:38:34 - api.routes.ws - INFO - 🔌 [ROOM_DEBUG] New WebSocket connection to room 'lobby', ws_id: 7b1dccb0-300b-46a6-84bf-3f9963dc8aaa at 1753807114.898512
-2025-07-29 09:38:34 - api.routes.ws - INFO - 🧹 [ROOM_DEBUG] Room cleanup task already running
-INFO:     ('127.0.0.1', 52764) - "WebSocket /ws/lobby" [accepted]
-2025-07-29 09:38:34 - infrastructure.websocket.connection_manager - INFO - WebSocket connected: conn_1
-2025-07-29 09:38:34 - infrastructure.websocket.connection_manager - INFO - WebSocket joined room: conn_1 -> lobby
-2025-07-29 09:38:34 - infrastructure.websocket.connection_singleton - INFO - WebSocket registered: conn_1 -> room lobby
-2025-07-29 09:38:34 - api.websocket.connection_manager - INFO - Player anonymous_7b1dccb0 connected to room lobby
-2025-07-29 09:38:34 - api.routes.ws - INFO - Registered anonymous lobby connection: anonymous_7b1dccb0
+INFO:     127.0.0.1:56043 - "GET / HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56043 - "GET /bundle.css HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56045 - "GET /bundle.js HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56045 - "GET /.well-known/appspecific/com.chrome.devtools.json HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:56045 - "GET /bundle.js.map HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56043 - "GET /bundle.css.map HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56045 - "GET /favicon.ico HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:56056 - "GET / HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56056 - "GET /bundle.js HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56057 - "GET /bundle.css HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56057 - "GET /.well-known/appspecific/com.chrome.devtools.json HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:56056 - "GET /bundle.css.map HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56056 - "GET /bundle.js.map HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56056 - "GET /favicon.ico HTTP/1.1" 404 Not Found
+2025-07-29 09:50:17 - api.routes.ws - INFO - 🔌 [ROOM_DEBUG] New WebSocket connection to room 'lobby', ws_id: 772497bd-24c1-4877-ac5e-85ed11a93061 at 1753807817.595126
+2025-07-29 09:50:17 - api.routes.ws - INFO - 🧹 [ROOM_DEBUG] Room cleanup task already running
+INFO:     ('127.0.0.1', 56079) - "WebSocket /ws/lobby" [accepted]
+2025-07-29 09:50:17 - infrastructure.websocket.connection_manager - INFO - WebSocket connected: conn_1
+2025-07-29 09:50:17 - infrastructure.websocket.connection_manager - INFO - WebSocket joined room: conn_1 -> lobby
+2025-07-29 09:50:17 - infrastructure.websocket.connection_singleton - INFO - WebSocket registered: conn_1 -> room lobby
+2025-07-29 09:50:17 - api.websocket.connection_manager - INFO - Player anonymous_772497bd connected to room lobby
+2025-07-29 09:50:17 - api.routes.ws - INFO - Registered anonymous lobby connection: anonymous_772497bd
 INFO:     connection open
-2025-07-29 09:38:34 - api.routes.ws - INFO - [MESSAGE_DEBUG] Received WebSocket message: event='client_ready' from room 'lobby'
-2025-07-29 09:38:34 - api.routes.ws - INFO - [ROUTING_DEBUG] Event 'client_ready' should_use_use_case=True
-2025-07-29 09:38:34 - application.websocket.use_case_dispatcher - WARNING - Game services not available, game use cases will be limited
-2025-07-29 09:38:34 - application.websocket.use_case_dispatcher - INFO - [DISPATCH_DEBUG] Dispatching event 'client_ready' from player 'anonymous_7b1dccb0' in room 'lobby'
-2025-07-29 09:38:34 - application.websocket.use_case_dispatcher - INFO - _handle_client_ready: room_id=lobby, player_name=anonymous_7b1dccb0, player_id=None
-2025-07-29 09:38:34 - application.websocket.use_case_dispatcher - INFO - Room state available: False
-2025-07-29 09:38:34 - application.use_cases.connection.mark_client_ready - INFO - Client ready for lobby connection: player_id=anonymous
-2025-07-29 09:38:34 - application.websocket.use_case_dispatcher - INFO - Sending client_ready_ack response: success=True, has_room_state=False
-2025-07-29 09:38:34 - application.websocket.use_case_dispatcher - INFO - [DISPATCH_DEBUG] Event 'client_ready' handled successfully
-2025-07-29 09:38:34 - api.routes.ws - INFO - [MESSAGE_DEBUG] Received WebSocket message: event='get_rooms' from room 'lobby'
-2025-07-29 09:38:34 - api.routes.ws - INFO - [ROUTING_DEBUG] Event 'get_rooms' should_use_use_case=True
-2025-07-29 09:38:34 - application.websocket.use_case_dispatcher - INFO - [DISPATCH_DEBUG] Dispatching event 'get_rooms' from player 'anonymous_7b1dccb0' in room 'lobby'
-2025-07-29 09:38:34 - application.websocket.use_case_dispatcher - INFO - [GET_ROOMS_DEBUG] Received get_rooms request from anonymous_7b1dccb0 in room lobby
-2025-07-29 09:38:34 - application.websocket.use_case_dispatcher - INFO - [GET_ROOMS_DEBUG] Returning 0 rooms
-2025-07-29 09:38:34 - application.websocket.use_case_dispatcher - INFO - [DISPATCH_DEBUG] Event 'get_rooms' handled successfully
-2025-07-29 09:38:36 - api.routes.ws - INFO - 🔌 [ROOM_DEBUG] Handling disconnect for room 'lobby', websocket_id: 7b1dccb0-300b-46a6-84bf-3f9963dc8aaa at 1753807116.4219918
-2025-07-29 09:38:36 - api.websocket.connection_manager - INFO - Player anonymous_7b1dccb0 disconnected from room lobby. Can reconnect anytime while game is active.
-2025-07-29 09:38:36 - api.routes.ws - WARNING - No websocket_id found on websocket object for room lobby
-2025-07-29 09:38:36 - api.routes.ws - INFO - ⚠️ [ROOM_DEBUG] WebSocket disconnect without ID for room 'lobby'
-2025-07-29 09:38:36 - infrastructure.websocket.connection_manager - INFO - WebSocket disconnected: conn_1
-2025-07-29 09:38:36 - infrastructure.websocket.connection_singleton - INFO - WebSocket unregistered: conn_1
-2025-07-29 09:38:36 - api.routes.ws - INFO - 🔌 [ROOM_DEBUG] WebSocket unregistered from room 'lobby' (connection_id: conn_1)
+2025-07-29 09:50:17 - api.routes.ws - INFO - [MESSAGE_DEBUG] Received WebSocket message: event='client_ready' from room 'lobby'
+2025-07-29 09:50:17 - api.routes.ws - INFO - [ROUTING_DEBUG] Event 'client_ready' should_use_use_case=True
+2025-07-29 09:50:17 - application.websocket.use_case_dispatcher - WARNING - Game services not available, game use cases will be limited
+2025-07-29 09:50:17 - application.websocket.use_case_dispatcher - INFO - [DISPATCH_DEBUG] Dispatching event 'client_ready' from player 'anonymous_772497bd' in room 'lobby'
+2025-07-29 09:50:17 - application.websocket.use_case_dispatcher - INFO - _handle_client_ready: room_id=lobby, player_name=anonymous_772497bd, player_id=None
+2025-07-29 09:50:17 - application.websocket.use_case_dispatcher - INFO - Room state available: False
+2025-07-29 09:50:17 - application.use_cases.connection.mark_client_ready - INFO - Client ready for lobby connection: player_id=anonymous
+2025-07-29 09:50:17 - application.websocket.use_case_dispatcher - INFO - Sending client_ready_ack response: success=True, has_room_state=False
+2025-07-29 09:50:17 - application.websocket.use_case_dispatcher - INFO - [DISPATCH_DEBUG] Event 'client_ready' handled successfully
+2025-07-29 09:50:17 - api.routes.ws - INFO - [MESSAGE_DEBUG] Received WebSocket message: event='get_rooms' from room 'lobby'
+2025-07-29 09:50:17 - api.routes.ws - INFO - [ROUTING_DEBUG] Event 'get_rooms' should_use_use_case=True
+2025-07-29 09:50:17 - application.websocket.use_case_dispatcher - INFO - [DISPATCH_DEBUG] Dispatching event 'get_rooms' from player 'anonymous_772497bd' in room 'lobby'
+2025-07-29 09:50:17 - application.websocket.use_case_dispatcher - INFO - [GET_ROOMS_DEBUG] Received get_rooms request from anonymous_772497bd in room lobby
+2025-07-29 09:50:17 - application.websocket.use_case_dispatcher - INFO - [GET_ROOMS_DEBUG] Returning 0 rooms
+2025-07-29 09:50:17 - application.websocket.use_case_dispatcher - INFO - [DISPATCH_DEBUG] Event 'get_rooms' handled successfully
+2025-07-29 09:50:19 - api.routes.ws - INFO - 🔌 [ROOM_DEBUG] New WebSocket connection to room 'lobby', ws_id: 7f6f1a54-5f8d-4a5c-b2e1-6523f00a1f87 at 1753807819.111905
+2025-07-29 09:50:19 - api.routes.ws - INFO - 🧹 [ROOM_DEBUG] Room cleanup task already running
+INFO:     ('127.0.0.1', 56089) - "WebSocket /ws/lobby" [accepted]
+2025-07-29 09:50:19 - infrastructure.websocket.connection_manager - INFO - WebSocket connected: conn_2
+2025-07-29 09:50:19 - infrastructure.websocket.connection_manager - INFO - WebSocket joined room: conn_2 -> lobby
+2025-07-29 09:50:19 - infrastructure.websocket.connection_singleton - INFO - WebSocket registered: conn_2 -> room lobby
+2025-07-29 09:50:19 - api.websocket.connection_manager - INFO - Player anonymous_7f6f1a54 connected to room lobby
+2025-07-29 09:50:19 - api.routes.ws - INFO - Registered anonymous lobby connection: anonymous_7f6f1a54
+INFO:     connection open
+2025-07-29 09:50:19 - api.routes.ws - INFO - [MESSAGE_DEBUG] Received WebSocket message: event='client_ready' from room 'lobby'
+2025-07-29 09:50:19 - api.routes.ws - INFO - [ROUTING_DEBUG] Event 'client_ready' should_use_use_case=True
+2025-07-29 09:50:19 - application.websocket.use_case_dispatcher - INFO - [DISPATCH_DEBUG] Dispatching event 'client_ready' from player 'anonymous_7f6f1a54' in room 'lobby'
+2025-07-29 09:50:19 - application.websocket.use_case_dispatcher - INFO - _handle_client_ready: room_id=lobby, player_name=anonymous_7f6f1a54, player_id=None
+2025-07-29 09:50:19 - application.websocket.use_case_dispatcher - INFO - Room state available: False
+2025-07-29 09:50:19 - application.use_cases.connection.mark_client_ready - INFO - Client ready for lobby connection: player_id=anonymous
+2025-07-29 09:50:19 - application.websocket.use_case_dispatcher - INFO - Sending client_ready_ack response: success=True, has_room_state=False
+2025-07-29 09:50:19 - application.websocket.use_case_dispatcher - INFO - [DISPATCH_DEBUG] Event 'client_ready' handled successfully
+2025-07-29 09:50:19 - api.routes.ws - INFO - [MESSAGE_DEBUG] Received WebSocket message: event='get_rooms' from room 'lobby'
+2025-07-29 09:50:19 - api.routes.ws - INFO - [ROUTING_DEBUG] Event 'get_rooms' should_use_use_case=True
+2025-07-29 09:50:19 - application.websocket.use_case_dispatcher - INFO - [DISPATCH_DEBUG] Dispatching event 'get_rooms' from player 'anonymous_7f6f1a54' in room 'lobby'
+2025-07-29 09:50:19 - application.websocket.use_case_dispatcher - INFO - [GET_ROOMS_DEBUG] Received get_rooms request from anonymous_7f6f1a54 in room lobby
+2025-07-29 09:50:19 - application.websocket.use_case_dispatcher - INFO - [GET_ROOMS_DEBUG] Returning 0 rooms
+2025-07-29 09:50:19 - application.websocket.use_case_dispatcher - INFO - [DISPATCH_DEBUG] Event 'get_rooms' handled successfully
+2025-07-29 09:50:20 - api.routes.ws - INFO - 🔌 [ROOM_DEBUG] Handling disconnect for room 'lobby', websocket_id: 772497bd-24c1-4877-ac5e-85ed11a93061 at 1753807820.2798872
+2025-07-29 09:50:20 - api.websocket.connection_manager - INFO - Player anonymous_772497bd disconnected from room lobby. Can reconnect anytime while game is active.
+2025-07-29 09:50:20 - api.routes.ws - WARNING - No websocket_id found on websocket object for room lobby
+2025-07-29 09:50:20 - api.routes.ws - INFO - ⚠️ [ROOM_DEBUG] WebSocket disconnect without ID for room 'lobby'
+2025-07-29 09:50:20 - infrastructure.websocket.connection_manager - INFO - WebSocket disconnected: conn_1
+2025-07-29 09:50:20 - infrastructure.websocket.connection_singleton - INFO - WebSocket unregistered: conn_1
+2025-07-29 09:50:20 - api.routes.ws - INFO - 🔌 [ROOM_DEBUG] WebSocket unregistered from room 'lobby' (connection_id: conn_1)
 INFO:     connection closed
-INFO:     127.0.0.1:52779 - "GET / HTTP/1.1" 200 OK
-INFO:     127.0.0.1:52779 - "GET /bundle.css HTTP/1.1" 200 OK
-INFO:     127.0.0.1:52780 - "GET /bundle.js HTTP/1.1" 200 OK
-INFO:     127.0.0.1:52782 - "GET /.well-known/appspecific/com.chrome.devtools.json HTTP/1.1" 404 Not Found
-INFO:     127.0.0.1:52780 - "GET /bundle.js.map HTTP/1.1" 200 OK
-INFO:     127.0.0.1:52779 - "GET /bundle.css.map HTTP/1.1" 200 OK
-2025-07-29 09:38:48 - api.routes.ws - INFO - 🔌 [ROOM_DEBUG] New WebSocket connection to room 'lobby', ws_id: 84f22fce-a481-40b1-8b39-4f4bf685f098 at 1753807128.009307
-2025-07-29 09:38:48 - api.routes.ws - INFO - 🧹 [ROOM_DEBUG] Room cleanup task already running
-INFO:     ('127.0.0.1', 52824) - "WebSocket /ws/lobby" [accepted]
-2025-07-29 09:38:48 - infrastructure.websocket.connection_manager - INFO - WebSocket connected: conn_2
-2025-07-29 09:38:48 - infrastructure.websocket.connection_manager - INFO - WebSocket joined room: conn_2 -> lobby
-2025-07-29 09:38:48 - infrastructure.websocket.connection_singleton - INFO - WebSocket registered: conn_2 -> room lobby
-2025-07-29 09:38:48 - api.websocket.connection_manager - INFO - Player anonymous_84f22fce connected to room lobby
-2025-07-29 09:38:48 - api.routes.ws - INFO - Registered anonymous lobby connection: anonymous_84f22fce
+2025-07-29 09:50:20 - api.routes.ws - INFO - 🔌 [ROOM_DEBUG] New WebSocket connection to room 'lobby', ws_id: 6d9f5632-1fd0-4a9d-b419-bf3bad24f41f at 1753807820.281749
+2025-07-29 09:50:20 - api.routes.ws - INFO - 🧹 [ROOM_DEBUG] Room cleanup task already running
+INFO:     ('127.0.0.1', 56095) - "WebSocket /ws/lobby" [accepted]
+2025-07-29 09:50:20 - infrastructure.websocket.connection_manager - INFO - WebSocket connected: conn_3
+2025-07-29 09:50:20 - infrastructure.websocket.connection_manager - INFO - WebSocket joined room: conn_3 -> lobby
+2025-07-29 09:50:20 - infrastructure.websocket.connection_singleton - INFO - WebSocket registered: conn_3 -> room lobby
+2025-07-29 09:50:20 - api.websocket.connection_manager - INFO - Player anonymous_6d9f5632 connected to room lobby
+2025-07-29 09:50:20 - api.routes.ws - INFO - Registered anonymous lobby connection: anonymous_6d9f5632
 INFO:     connection open
-2025-07-29 09:38:48 - api.routes.ws - INFO - [MESSAGE_DEBUG] Received WebSocket message: event='client_ready' from room 'lobby'
-2025-07-29 09:38:48 - api.routes.ws - INFO - [ROUTING_DEBUG] Event 'client_ready' should_use_use_case=True
-2025-07-29 09:38:48 - application.websocket.use_case_dispatcher - INFO - [DISPATCH_DEBUG] Dispatching event 'client_ready' from player 'anonymous_84f22fce' in room 'lobby'
-2025-07-29 09:38:48 - application.websocket.use_case_dispatcher - INFO - _handle_client_ready: room_id=lobby, player_name=anonymous_84f22fce, player_id=None
-2025-07-29 09:38:48 - application.websocket.use_case_dispatcher - INFO - Room state available: False
-2025-07-29 09:38:48 - application.use_cases.connection.mark_client_ready - INFO - Client ready for lobby connection: player_id=anonymous
-2025-07-29 09:38:48 - application.websocket.use_case_dispatcher - INFO - Sending client_ready_ack response: success=True, has_room_state=False
-2025-07-29 09:38:48 - application.websocket.use_case_dispatcher - INFO - [DISPATCH_DEBUG] Event 'client_ready' handled successfully
-2025-07-29 09:38:48 - api.routes.ws - INFO - [MESSAGE_DEBUG] Received WebSocket message: event='get_rooms' from room 'lobby'
-2025-07-29 09:38:48 - api.routes.ws - INFO - [ROUTING_DEBUG] Event 'get_rooms' should_use_use_case=True
-2025-07-29 09:38:48 - application.websocket.use_case_dispatcher - INFO - [DISPATCH_DEBUG] Dispatching event 'get_rooms' from player 'anonymous_84f22fce' in room 'lobby'
-2025-07-29 09:38:48 - application.websocket.use_case_dispatcher - INFO - [GET_ROOMS_DEBUG] Received get_rooms request from anonymous_84f22fce in room lobby
-2025-07-29 09:38:48 - application.websocket.use_case_dispatcher - INFO - [GET_ROOMS_DEBUG] Returning 0 rooms
-2025-07-29 09:38:48 - application.websocket.use_case_dispatcher - INFO - [DISPATCH_DEBUG] Event 'get_rooms' handled successfully
-2025-07-29 09:38:49 - api.routes.ws - INFO - 🔌 [ROOM_DEBUG] New WebSocket connection to room 'lobby', ws_id: 91d93b0f-6777-4870-8ff5-600fbeb30134 at 1753807129.639325
-2025-07-29 09:38:49 - api.routes.ws - INFO - 🧹 [ROOM_DEBUG] Room cleanup task already running
-INFO:     ('127.0.0.1', 52834) - "WebSocket /ws/lobby" [accepted]
-2025-07-29 09:38:49 - infrastructure.websocket.connection_manager - INFO - WebSocket connected: conn_3
-2025-07-29 09:38:49 - infrastructure.websocket.connection_manager - INFO - WebSocket joined room: conn_3 -> lobby
-2025-07-29 09:38:49 - infrastructure.websocket.connection_singleton - INFO - WebSocket registered: conn_3 -> room lobby
-2025-07-29 09:38:49 - api.websocket.connection_manager - INFO - Player anonymous_91d93b0f connected to room lobby
-2025-07-29 09:38:49 - api.routes.ws - INFO - Registered anonymous lobby connection: anonymous_91d93b0f
+2025-07-29 09:50:20 - api.routes.ws - INFO - [MESSAGE_DEBUG] Received WebSocket message: event='client_ready' from room 'lobby'
+2025-07-29 09:50:20 - api.routes.ws - INFO - [ROUTING_DEBUG] Event 'client_ready' should_use_use_case=True
+2025-07-29 09:50:20 - application.websocket.use_case_dispatcher - INFO - [DISPATCH_DEBUG] Dispatching event 'client_ready' from player 'anonymous_6d9f5632' in room 'lobby'
+2025-07-29 09:50:20 - application.websocket.use_case_dispatcher - INFO - _handle_client_ready: room_id=lobby, player_name=anonymous_6d9f5632, player_id=None
+2025-07-29 09:50:20 - application.websocket.use_case_dispatcher - INFO - Room state available: False
+2025-07-29 09:50:20 - application.use_cases.connection.mark_client_ready - INFO - Client ready for lobby connection: player_id=anonymous
+2025-07-29 09:50:20 - application.websocket.use_case_dispatcher - INFO - Sending client_ready_ack response: success=True, has_room_state=False
+2025-07-29 09:50:20 - application.websocket.use_case_dispatcher - INFO - [DISPATCH_DEBUG] Event 'client_ready' handled successfully
+2025-07-29 09:50:20 - api.routes.ws - INFO - [MESSAGE_DEBUG] Received WebSocket message: event='create_room' from room 'lobby'
+2025-07-29 09:50:20 - api.routes.ws - INFO - [ROUTING_DEBUG] Event 'create_room' should_use_use_case=True
+2025-07-29 09:50:20 - application.websocket.use_case_dispatcher - INFO - [DISPATCH_DEBUG] Dispatching event 'create_room' from player 'anonymous_6d9f5632' in room 'lobby'
+2025-07-29 09:50:20 - domain.entities.room - INFO - [ROOM_DEBUG] Creating room VNW1NV with 4 slots
+2025-07-29 09:50:20 - domain.entities.room - INFO - [ROOM_DEBUG] Adding host Andy to slot 0
+2025-07-29 09:50:20 - domain.entities.room - INFO - [ROOM_DEBUG] Added player Andy (bot=False) to slot 0 in room VNW1NV
+2025-07-29 09:50:20 - domain.entities.room - INFO - [ROOM_DEBUG] Adding Bot 2 to slot 1
+2025-07-29 09:50:20 - domain.entities.room - INFO - [ROOM_DEBUG] Added player Bot 2 (bot=True) to slot 1 in room VNW1NV
+2025-07-29 09:50:20 - domain.entities.room - INFO - [ROOM_DEBUG] Adding Bot 3 to slot 2
+2025-07-29 09:50:20 - domain.entities.room - INFO - [ROOM_DEBUG] Added player Bot 3 (bot=True) to slot 2 in room VNW1NV
+2025-07-29 09:50:20 - domain.entities.room - INFO - [ROOM_DEBUG] Adding Bot 4 to slot 3
+2025-07-29 09:50:20 - domain.entities.room - INFO - [ROOM_DEBUG] Added player Bot 4 (bot=True) to slot 3 in room VNW1NV
+2025-07-29 09:50:20 - domain.entities.room - INFO - [ROOM_DEBUG] Room initialization complete. Slots: ['Andy', 'Bot 2', 'Bot 3', 'Bot 4']
+2025-07-29 09:50:20 - application.use_cases.room_management.create_room - INFO - [USE_CASE_DEBUG] Room VNW1NV saved with slots:
+2025-07-29 09:50:20 - application.use_cases.room_management.create_room - INFO - [USE_CASE_DEBUG]   Slot 0: Andy (bot=False)
+2025-07-29 09:50:20 - application.use_cases.room_management.create_room - INFO - [USE_CASE_DEBUG]   Slot 1: Bot 2 (bot=True)
+2025-07-29 09:50:20 - application.use_cases.room_management.create_room - INFO - [USE_CASE_DEBUG]   Slot 2: Bot 3 (bot=True)
+2025-07-29 09:50:20 - application.use_cases.room_management.create_room - INFO - [USE_CASE_DEBUG]   Slot 3: Bot 4 (bot=True)
+2025-07-29 09:50:20 - application.use_cases.room_management.create_room - INFO - [CREATE_ROOM_DEBUG] Publishing RoomCreated event for room VNW1NV
+2025-07-29 09:50:20 - application.use_cases.room_management.create_room - INFO - [CREATE_ROOM_DEBUG] Event publisher type: CompositeEventPublisher
+2025-07-29 09:50:20 - infrastructure.events.application_event_publisher - INFO - [COMPOSITE_DEBUG] Publishing RoomCreated to 2 publishers
+2025-07-29 09:50:20 - infrastructure.events.application_event_publisher - INFO - [COMPOSITE_DEBUG]   Publisher 0: WebSocketEventPublisher
+2025-07-29 09:50:20 - infrastructure.events.application_event_publisher - INFO - [COMPOSITE_DEBUG]   Publisher 1: InMemoryEventBus
+2025-07-29 09:50:20 - infrastructure.events.application_event_publisher - INFO - Publishing event RoomCreated as room_created to response:VNW1NV
+2025-07-29 09:50:20 - infrastructure.events.in_memory_event_bus - INFO - [EVENT_BUS_DEBUG] Publishing event RoomCreated
+2025-07-29 09:50:20 - infrastructure.events.in_memory_event_bus - INFO - [EVENT_BUS_DEBUG] Found 2 handlers for RoomCreated
+2025-07-29 09:50:20 - infrastructure.events.broadcast_handlers - INFO - [BROADCAST_HANDLER_DEBUG] handle_room_created called for room VNW1NV
+2025-07-29 09:50:20 - infrastructure.events.broadcast_handlers - INFO - [BROADCAST_DEBUG] Sent room_list_update to lobby with 0 rooms after room created
+2025-07-29 09:50:20 - infrastructure.events.broadcast_handlers - INFO - [BROADCAST_HANDLER_DEBUG] handle_room_created called for room VNW1NV
+2025-07-29 09:50:20 - infrastructure.events.broadcast_handlers - INFO - [BROADCAST_DEBUG] Sent room_list_update to lobby with 0 rooms after room created
+2025-07-29 09:50:20 - application.use_cases.room_management.create_room - INFO - [CREATE_ROOM_DEBUG] RoomCreated event published successfully
+2025-07-29 09:50:20 - application.use_cases.room_management.create_room - INFO - Room VNW1NV created by Andy
+2025-07-29 09:50:20 - application.websocket.use_case_dispatcher - INFO - [DISPATCH_DEBUG] Event 'create_room' handled successfully
+2025-07-29 09:50:20 - api.routes.ws - INFO - 🔌 [ROOM_DEBUG] New WebSocket connection to room 'lobby', ws_id: 9fcc5152-6150-40e0-8c2c-a1569303e7cd at 1753807820.460387
+2025-07-29 09:50:20 - api.routes.ws - INFO - 🧹 [ROOM_DEBUG] Room cleanup task already running
+INFO:     ('127.0.0.1', 56097) - "WebSocket /ws/lobby" [accepted]
+2025-07-29 09:50:20 - infrastructure.websocket.connection_manager - INFO - WebSocket connected: conn_4
+2025-07-29 09:50:20 - infrastructure.websocket.connection_manager - INFO - WebSocket joined room: conn_4 -> lobby
+2025-07-29 09:50:20 - infrastructure.websocket.connection_singleton - INFO - WebSocket registered: conn_4 -> room lobby
+2025-07-29 09:50:20 - api.websocket.connection_manager - INFO - Player anonymous_9fcc5152 connected to room lobby
+2025-07-29 09:50:20 - api.routes.ws - INFO - Registered anonymous lobby connection: anonymous_9fcc5152
 INFO:     connection open
-2025-07-29 09:38:49 - api.routes.ws - INFO - [MESSAGE_DEBUG] Received WebSocket message: event='client_ready' from room 'lobby'
-2025-07-29 09:38:49 - api.routes.ws - INFO - [ROUTING_DEBUG] Event 'client_ready' should_use_use_case=True
-2025-07-29 09:38:49 - application.websocket.use_case_dispatcher - INFO - [DISPATCH_DEBUG] Dispatching event 'client_ready' from player 'anonymous_91d93b0f' in room 'lobby'
-2025-07-29 09:38:49 - application.websocket.use_case_dispatcher - INFO - _handle_client_ready: room_id=lobby, player_name=anonymous_91d93b0f, player_id=None
-2025-07-29 09:38:49 - application.websocket.use_case_dispatcher - INFO - Room state available: False
-2025-07-29 09:38:49 - application.use_cases.connection.mark_client_ready - INFO - Client ready for lobby connection: player_id=anonymous
-2025-07-29 09:38:49 - application.websocket.use_case_dispatcher - INFO - Sending client_ready_ack response: success=True, has_room_state=False
-2025-07-29 09:38:49 - application.websocket.use_case_dispatcher - INFO - [DISPATCH_DEBUG] Event 'client_ready' handled successfully
-2025-07-29 09:38:49 - api.routes.ws - INFO - [MESSAGE_DEBUG] Received WebSocket message: event='get_rooms' from room 'lobby'
-2025-07-29 09:38:49 - api.routes.ws - INFO - [ROUTING_DEBUG] Event 'get_rooms' should_use_use_case=True
-2025-07-29 09:38:49 - application.websocket.use_case_dispatcher - INFO - [DISPATCH_DEBUG] Dispatching event 'get_rooms' from player 'anonymous_91d93b0f' in room 'lobby'
-2025-07-29 09:38:49 - application.websocket.use_case_dispatcher - INFO - [GET_ROOMS_DEBUG] Received get_rooms request from anonymous_91d93b0f in room lobby
-2025-07-29 09:38:49 - application.websocket.use_case_dispatcher - INFO - [GET_ROOMS_DEBUG] Returning 0 rooms
-2025-07-29 09:38:49 - application.websocket.use_case_dispatcher - INFO - [DISPATCH_DEBUG] Event 'get_rooms' handled successfully
-2025-07-29 09:38:51 - api.routes.ws - INFO - 🔌 [ROOM_DEBUG] Handling disconnect for room 'lobby', websocket_id: 91d93b0f-6777-4870-8ff5-600fbeb30134 at 1753807131.33719
-2025-07-29 09:38:51 - api.websocket.connection_manager - INFO - Player anonymous_91d93b0f disconnected from room lobby. Can reconnect anytime while game is active.
-2025-07-29 09:38:51 - api.routes.ws - WARNING - No websocket_id found on websocket object for room lobby
-2025-07-29 09:38:51 - api.routes.ws - INFO - ⚠️ [ROOM_DEBUG] WebSocket disconnect without ID for room 'lobby'
-2025-07-29 09:38:51 - infrastructure.websocket.connection_manager - INFO - WebSocket disconnected: conn_3
-2025-07-29 09:38:51 - infrastructure.websocket.connection_singleton - INFO - WebSocket unregistered: conn_3
-2025-07-29 09:38:51 - api.routes.ws - INFO - 🔌 [ROOM_DEBUG] WebSocket unregistered from room 'lobby' (connection_id: conn_3)
+2025-07-29 09:50:20 - api.routes.ws - INFO - 🔌 [ROOM_DEBUG] Handling disconnect for room 'lobby', websocket_id: 6d9f5632-1fd0-4a9d-b419-bf3bad24f41f at 1753807820.462198
+2025-07-29 09:50:20 - api.websocket.connection_manager - INFO - Player anonymous_6d9f5632 disconnected from room lobby. Can reconnect anytime while game is active.
+2025-07-29 09:50:20 - api.routes.ws - WARNING - No websocket_id found on websocket object for room lobby
+2025-07-29 09:50:20 - api.routes.ws - INFO - ⚠️ [ROOM_DEBUG] WebSocket disconnect without ID for room 'lobby'
+2025-07-29 09:50:20 - infrastructure.websocket.connection_manager - INFO - WebSocket disconnected: conn_3
+2025-07-29 09:50:20 - infrastructure.websocket.connection_singleton - INFO - WebSocket unregistered: conn_3
+2025-07-29 09:50:20 - api.routes.ws - INFO - 🔌 [ROOM_DEBUG] WebSocket unregistered from room 'lobby' (connection_id: conn_3)
 INFO:     connection closed
-2025-07-29 09:38:51 - api.routes.ws - INFO - 🔌 [ROOM_DEBUG] New WebSocket connection to room 'lobby', ws_id: 51c9028a-d5aa-4f80-b064-a499cdd17869 at 1753807131.345574
-2025-07-29 09:38:51 - api.routes.ws - INFO - 🧹 [ROOM_DEBUG] Room cleanup task already running
-INFO:     ('127.0.0.1', 52840) - "WebSocket /ws/lobby" [accepted]
-2025-07-29 09:38:51 - infrastructure.websocket.connection_manager - INFO - WebSocket connected: conn_4
-2025-07-29 09:38:51 - infrastructure.websocket.connection_manager - INFO - WebSocket joined room: conn_4 -> lobby
-2025-07-29 09:38:51 - infrastructure.websocket.connection_singleton - INFO - WebSocket registered: conn_4 -> room lobby
-2025-07-29 09:38:51 - api.websocket.connection_manager - INFO - Player anonymous_51c9028a connected to room lobby
-2025-07-29 09:38:51 - api.routes.ws - INFO - Registered anonymous lobby connection: anonymous_51c9028a
+2025-07-29 09:50:20 - api.routes.ws - INFO - [MESSAGE_DEBUG] Received WebSocket message: event='client_ready' from room 'lobby'
+2025-07-29 09:50:20 - api.routes.ws - INFO - [ROUTING_DEBUG] Event 'client_ready' should_use_use_case=True
+2025-07-29 09:50:20 - application.websocket.use_case_dispatcher - INFO - [DISPATCH_DEBUG] Dispatching event 'client_ready' from player 'anonymous_9fcc5152' in room 'lobby'
+2025-07-29 09:50:20 - application.websocket.use_case_dispatcher - INFO - _handle_client_ready: room_id=lobby, player_name=anonymous_9fcc5152, player_id=None
+2025-07-29 09:50:20 - application.websocket.use_case_dispatcher - INFO - Room state available: False
+2025-07-29 09:50:20 - application.use_cases.connection.mark_client_ready - INFO - Client ready for lobby connection: player_id=anonymous
+2025-07-29 09:50:20 - application.websocket.use_case_dispatcher - INFO - Sending client_ready_ack response: success=True, has_room_state=False
+2025-07-29 09:50:20 - application.websocket.use_case_dispatcher - INFO - [DISPATCH_DEBUG] Event 'client_ready' handled successfully
+2025-07-29 09:50:20 - api.routes.ws - INFO - 🔌 [ROOM_DEBUG] New WebSocket connection to room 'VNW1NV', ws_id: f01c1008-aa81-409c-be99-febfdaf0d385 at 1753807820.474489
+2025-07-29 09:50:20 - api.routes.ws - INFO - 🧹 [ROOM_DEBUG] Room cleanup task already running
+INFO:     ('127.0.0.1', 56099) - "WebSocket /ws/VNW1NV" [accepted]
+2025-07-29 09:50:20 - infrastructure.websocket.connection_manager - INFO - WebSocket connected: conn_5
+2025-07-29 09:50:20 - infrastructure.websocket.connection_manager - INFO - WebSocket joined room: conn_5 -> VNW1NV
+2025-07-29 09:50:20 - infrastructure.websocket.connection_singleton - INFO - WebSocket registered: conn_5 -> room VNW1NV
+2025-07-29 09:50:20 - api.routes.ws - INFO - [ROOM_LOOKUP_DEBUG] Room VNW1NV found successfully in clean architecture!
+2025-07-29 09:50:20 - api.websocket.connection_manager - INFO - Player player_f01c1008 connected to room VNW1NV
+2025-07-29 09:50:20 - api.routes.ws - INFO - Registered temporary player connection: player_f01c1008 for room VNW1NV
 INFO:     connection open
-2025-07-29 09:38:51 - api.routes.ws - INFO - [MESSAGE_DEBUG] Received WebSocket message: event='client_ready' from room 'lobby'
-2025-07-29 09:38:51 - api.routes.ws - INFO - [ROUTING_DEBUG] Event 'client_ready' should_use_use_case=True
-2025-07-29 09:38:51 - application.websocket.use_case_dispatcher - INFO - [DISPATCH_DEBUG] Dispatching event 'client_ready' from player 'anonymous_51c9028a' in room 'lobby'
-2025-07-29 09:38:51 - application.websocket.use_case_dispatcher - INFO - _handle_client_ready: room_id=lobby, player_name=anonymous_51c9028a, player_id=None
-2025-07-29 09:38:51 - application.websocket.use_case_dispatcher - INFO - Room state available: False
-2025-07-29 09:38:51 - application.use_cases.connection.mark_client_ready - INFO - Client ready for lobby connection: player_id=anonymous
-2025-07-29 09:38:51 - application.websocket.use_case_dispatcher - INFO - Sending client_ready_ack response: success=True, has_room_state=False
-2025-07-29 09:38:51 - application.websocket.use_case_dispatcher - INFO - [DISPATCH_DEBUG] Event 'client_ready' handled successfully
-2025-07-29 09:38:51 - api.routes.ws - INFO - [MESSAGE_DEBUG] Received WebSocket message: event='create_room' from room 'lobby'
-2025-07-29 09:38:51 - api.routes.ws - INFO - [ROUTING_DEBUG] Event 'create_room' should_use_use_case=True
-2025-07-29 09:38:51 - application.websocket.use_case_dispatcher - INFO - [DISPATCH_DEBUG] Dispatching event 'create_room' from player 'anonymous_51c9028a' in room 'lobby'
-2025-07-29 09:38:51 - domain.entities.room - INFO - [ROOM_DEBUG] Creating room FOC0HM with 4 slots
-2025-07-29 09:38:51 - domain.entities.room - INFO - [ROOM_DEBUG] Adding host Andy to slot 0
-2025-07-29 09:38:51 - domain.entities.room - INFO - [ROOM_DEBUG] Added player Andy (bot=False) to slot 0 in room FOC0HM
-2025-07-29 09:38:51 - domain.entities.room - INFO - [ROOM_DEBUG] Adding Bot 2 to slot 1
-2025-07-29 09:38:51 - domain.entities.room - INFO - [ROOM_DEBUG] Added player Bot 2 (bot=True) to slot 1 in room FOC0HM
-2025-07-29 09:38:51 - domain.entities.room - INFO - [ROOM_DEBUG] Adding Bot 3 to slot 2
-2025-07-29 09:38:51 - domain.entities.room - INFO - [ROOM_DEBUG] Added player Bot 3 (bot=True) to slot 2 in room FOC0HM
-2025-07-29 09:38:51 - domain.entities.room - INFO - [ROOM_DEBUG] Adding Bot 4 to slot 3
-2025-07-29 09:38:51 - domain.entities.room - INFO - [ROOM_DEBUG] Added player Bot 4 (bot=True) to slot 3 in room FOC0HM
-2025-07-29 09:38:51 - domain.entities.room - INFO - [ROOM_DEBUG] Room initialization complete. Slots: ['Andy', 'Bot 2', 'Bot 3', 'Bot 4']
-2025-07-29 09:38:51 - application.use_cases.room_management.create_room - INFO - [USE_CASE_DEBUG] Room FOC0HM saved with slots:
-2025-07-29 09:38:51 - application.use_cases.room_management.create_room - INFO - [USE_CASE_DEBUG]   Slot 0: Andy (bot=False)
-2025-07-29 09:38:51 - application.use_cases.room_management.create_room - INFO - [USE_CASE_DEBUG]   Slot 1: Bot 2 (bot=True)
-2025-07-29 09:38:51 - application.use_cases.room_management.create_room - INFO - [USE_CASE_DEBUG]   Slot 2: Bot 3 (bot=True)
-2025-07-29 09:38:51 - application.use_cases.room_management.create_room - INFO - [USE_CASE_DEBUG]   Slot 3: Bot 4 (bot=True)
-2025-07-29 09:38:51 - application.use_cases.room_management.create_room - INFO - [CREATE_ROOM_DEBUG] Publishing RoomCreated event for room FOC0HM
-2025-07-29 09:38:51 - application.use_cases.room_management.create_room - INFO - [CREATE_ROOM_DEBUG] Event publisher type: CompositeEventPublisher
-2025-07-29 09:38:51 - infrastructure.events.application_event_publisher - INFO - [COMPOSITE_DEBUG] Publishing RoomCreated to 2 publishers
-2025-07-29 09:38:51 - infrastructure.events.application_event_publisher - INFO - [COMPOSITE_DEBUG]   Publisher 0: WebSocketEventPublisher
-2025-07-29 09:38:51 - infrastructure.events.application_event_publisher - INFO - [COMPOSITE_DEBUG]   Publisher 1: InMemoryEventBus
-2025-07-29 09:38:51 - infrastructure.events.in_memory_event_bus - INFO - [EVENT_BUS_DEBUG] Publishing event RoomCreated
-2025-07-29 09:38:51 - infrastructure.events.in_memory_event_bus - INFO - [EVENT_BUS_DEBUG] Found 2 handlers for RoomCreated
-2025-07-29 09:38:51 - application.use_cases.room_management.create_room - INFO - [CREATE_ROOM_DEBUG] RoomCreated event published successfully
-2025-07-29 09:38:51 - application.use_cases.room_management.create_room - INFO - Room FOC0HM created by Andy
-2025-07-29 09:38:51 - application.websocket.use_case_dispatcher - INFO - [DISPATCH_DEBUG] Event 'create_room' handled successfully
-2025-07-29 09:38:51 - api.routes.ws - INFO - 🔌 [ROOM_DEBUG] Handling disconnect for room 'lobby', websocket_id: 51c9028a-d5aa-4f80-b064-a499cdd17869 at 1753807131.4512699
-2025-07-29 09:38:51 - api.websocket.connection_manager - INFO - Player anonymous_51c9028a disconnected from room lobby. Can reconnect anytime while game is active.
-2025-07-29 09:38:51 - api.routes.ws - WARNING - No websocket_id found on websocket object for room lobby
-2025-07-29 09:38:51 - api.routes.ws - INFO - ⚠️ [ROOM_DEBUG] WebSocket disconnect without ID for room 'lobby'
-2025-07-29 09:38:51 - infrastructure.websocket.connection_manager - INFO - WebSocket disconnected: conn_4
-2025-07-29 09:38:51 - infrastructure.websocket.connection_singleton - INFO - WebSocket unregistered: conn_4
-2025-07-29 09:38:51 - api.routes.ws - INFO - 🔌 [ROOM_DEBUG] WebSocket unregistered from room 'lobby' (connection_id: conn_4)
-INFO:     connection closed
-2025-07-29 09:38:51 - api.routes.ws - INFO - 🔌 [ROOM_DEBUG] New WebSocket connection to room 'lobby', ws_id: 3749e803-bf0e-4421-8e5a-dc7f6432fee6 at 1753807131.471977
-2025-07-29 09:38:51 - api.routes.ws - INFO - 🧹 [ROOM_DEBUG] Room cleanup task already running
-INFO:     ('127.0.0.1', 52842) - "WebSocket /ws/lobby" [accepted]
-2025-07-29 09:38:51 - infrastructure.websocket.connection_manager - INFO - WebSocket connected: conn_5
-2025-07-29 09:38:51 - infrastructure.websocket.connection_manager - INFO - WebSocket joined room: conn_5 -> lobby
-2025-07-29 09:38:51 - infrastructure.websocket.connection_singleton - INFO - WebSocket registered: conn_5 -> room lobby
-2025-07-29 09:38:51 - api.websocket.connection_manager - INFO - Player anonymous_3749e803 connected to room lobby
-2025-07-29 09:38:51 - api.routes.ws - INFO - Registered anonymous lobby connection: anonymous_3749e803
-INFO:     connection open
-2025-07-29 09:38:51 - api.routes.ws - INFO - [MESSAGE_DEBUG] Received WebSocket message: event='client_ready' from room 'lobby'
-2025-07-29 09:38:51 - api.routes.ws - INFO - [ROUTING_DEBUG] Event 'client_ready' should_use_use_case=True
-2025-07-29 09:38:51 - application.websocket.use_case_dispatcher - INFO - [DISPATCH_DEBUG] Dispatching event 'client_ready' from player 'anonymous_3749e803' in room 'lobby'
-2025-07-29 09:38:51 - application.websocket.use_case_dispatcher - INFO - _handle_client_ready: room_id=lobby, player_name=anonymous_3749e803, player_id=None
-2025-07-29 09:38:51 - application.websocket.use_case_dispatcher - INFO - Room state available: False
-2025-07-29 09:38:51 - application.use_cases.connection.mark_client_ready - INFO - Client ready for lobby connection: player_id=anonymous
-2025-07-29 09:38:51 - application.websocket.use_case_dispatcher - INFO - Sending client_ready_ack response: success=True, has_room_state=False
-2025-07-29 09:38:51 - application.websocket.use_case_dispatcher - INFO - [DISPATCH_DEBUG] Event 'client_ready' handled successfully
-2025-07-29 09:38:51 - api.routes.ws - INFO - 🔌 [ROOM_DEBUG] New WebSocket connection to room 'FOC0HM', ws_id: dfe7f2d8-6d83-428a-8499-60ea43e97008 at 1753807131.489124
-2025-07-29 09:38:51 - api.routes.ws - INFO - 🧹 [ROOM_DEBUG] Room cleanup task already running
-INFO:     ('127.0.0.1', 52844) - "WebSocket /ws/FOC0HM" [accepted]
-2025-07-29 09:38:51 - infrastructure.websocket.connection_manager - INFO - WebSocket connected: conn_6
-2025-07-29 09:38:51 - infrastructure.websocket.connection_manager - INFO - WebSocket joined room: conn_6 -> FOC0HM
-2025-07-29 09:38:51 - infrastructure.websocket.connection_singleton - INFO - WebSocket registered: conn_6 -> room FOC0HM
-2025-07-29 09:38:51 - api.routes.ws - INFO - [ROOM_LOOKUP_DEBUG] Room FOC0HM found successfully in clean architecture!
-2025-07-29 09:38:51 - api.websocket.connection_manager - INFO - Player player_dfe7f2d8 connected to room FOC0HM
-2025-07-29 09:38:51 - api.routes.ws - INFO - Registered temporary player connection: player_dfe7f2d8 for room FOC0HM
-INFO:     connection open
-2025-07-29 09:38:51 - api.routes.ws - INFO - [MESSAGE_DEBUG] Received WebSocket message: event='client_ready' from room 'FOC0HM'
-2025-07-29 09:38:51 - api.routes.ws - INFO - [ROUTING_DEBUG] Event 'client_ready' should_use_use_case=True
-2025-07-29 09:38:51 - api.websocket.connection_manager - INFO - Player Andy connected to room FOC0HM
-2025-07-29 09:38:51 - application.websocket.message_router - INFO - Updated player registration: Andy for room FOC0HM with player_id FOC0HM_p0
-2025-07-29 09:38:51 - application.websocket.use_case_dispatcher - INFO - [DISPATCH_DEBUG] Dispatching event 'client_ready' from player 'Andy' in room 'FOC0HM'
-2025-07-29 09:38:51 - application.websocket.use_case_dispatcher - INFO - _handle_client_ready: room_id=FOC0HM, player_name=Andy, player_id=None
-2025-07-29 09:38:51 - application.websocket.use_case_dispatcher - INFO - Room state available: True
-2025-07-29 09:38:51 - application.websocket.use_case_dispatcher - INFO - Looking for player Andy in room state with 4 players
-2025-07-29 09:38:51 - application.websocket.use_case_dispatcher - INFO -   Slot 0: name=Andy, player_id=FOC0HM_p0
-2025-07-29 09:38:51 - application.websocket.use_case_dispatcher - INFO - Found matching player_id: FOC0HM_p0
-2025-07-29 09:38:51 - infrastructure.events.application_event_publisher - INFO - [COMPOSITE_DEBUG] Publishing ClientReady to 2 publishers
-2025-07-29 09:38:51 - infrastructure.events.application_event_publisher - INFO - [COMPOSITE_DEBUG]   Publisher 0: WebSocketEventPublisher
-2025-07-29 09:38:51 - infrastructure.events.application_event_publisher - INFO - [COMPOSITE_DEBUG]   Publisher 1: InMemoryEventBus
-2025-07-29 09:38:51 - infrastructure.events.in_memory_event_bus - INFO - [EVENT_BUS_DEBUG] Publishing event ClientReady
-2025-07-29 09:38:51 - infrastructure.events.in_memory_event_bus - INFO - [EVENT_BUS_DEBUG] Found 2 handlers for ClientReady
-2025-07-29 09:38:51 - application.use_cases.connection.mark_client_ready - INFO - Player FOC0HM_p0 marked as ready in room FOC0HM
-2025-07-29 09:38:51 - application.websocket.use_case_dispatcher - INFO - Sending client_ready_ack response: success=True, has_room_state=True
-2025-07-29 09:38:51 - application.websocket.use_case_dispatcher - INFO - Room state players: ['Andy', 'Bot 2', 'Bot 3', 'Bot 4']
-2025-07-29 09:38:51 - application.websocket.use_case_dispatcher - INFO - [DISPATCH_DEBUG] Event 'client_ready' handled successfully
-2025-07-29 09:38:51 - api.routes.ws - INFO - [MESSAGE_DEBUG] Received WebSocket message: event='get_room_state' from room 'FOC0HM'
-2025-07-29 09:38:51 - api.routes.ws - INFO - [ROUTING_DEBUG] Event 'get_room_state' should_use_use_case=True
-2025-07-29 09:38:51 - application.websocket.use_case_dispatcher - INFO - [DISPATCH_DEBUG] Dispatching event 'get_room_state' from player 'Andy' in room 'FOC0HM'
-2025-07-29 09:38:51 - application.websocket.use_case_dispatcher - INFO - Sending room_state for FOC0HM: 4 players
-2025-07-29 09:38:51 - application.websocket.use_case_dispatcher - INFO - Players: ['Andy', 'Bot 2', 'Bot 3', 'Bot 4']
-2025-07-29 09:38:51 - application.websocket.use_case_dispatcher - INFO - [DISPATCH_DEBUG] Event 'get_room_state' handled successfully
-2025-07-29 09:38:52 - api.routes.ws - INFO - [MESSAGE_DEBUG] Received WebSocket message: event='remove_player' from room 'FOC0HM'
-2025-07-29 09:38:52 - api.routes.ws - INFO - [ROUTING_DEBUG] Event 'remove_player' should_use_use_case=True
-2025-07-29 09:38:52 - application.websocket.use_case_dispatcher - INFO - [DISPATCH_DEBUG] Dispatching event 'remove_player' from player 'Andy' in room 'FOC0HM'
-2025-07-29 09:38:52 - infrastructure.events.application_event_publisher - INFO - [COMPOSITE_DEBUG] Publishing PlayerRemoved to 2 publishers
-2025-07-29 09:38:52 - infrastructure.events.application_event_publisher - INFO - [COMPOSITE_DEBUG]   Publisher 0: WebSocketEventPublisher
-2025-07-29 09:38:52 - infrastructure.events.application_event_publisher - INFO - [COMPOSITE_DEBUG]   Publisher 1: InMemoryEventBus
-2025-07-29 09:38:52 - infrastructure.events.in_memory_event_bus - INFO - [EVENT_BUS_DEBUG] Publishing event PlayerRemoved
-2025-07-29 09:38:52 - infrastructure.events.in_memory_event_bus - WARNING - [EVENT_BUS_DEBUG] No handlers for event PlayerRemoved
-2025-07-29 09:38:52 - infrastructure.events.in_memory_event_bus - WARNING - [EVENT_BUS_DEBUG] Registered handlers: ['ConnectionHeartbeat', 'ClientReady', 'RoomCreated', 'PlayerJoinedRoom', 'PlayerLeftRoom', 'HostChanged', 'BotAdded', 'GameStarted', 'PhaseChanged', 'PiecesPlayed', 'TurnWinnerDetermined', 'DeclarationMade', 'WeakHandDetected', 'RedealDecisionMade', 'RedealExecuted', 'ScoresCalculated', 'GameEnded', 'InvalidActionAttempted', 'ErrorOccurred', 'RoomListUpdated']
-2025-07-29 09:38:52 - application.use_cases.room_management.remove_player - INFO - Player Bot 4 removed from room FOC0HM by host
-2025-07-29 09:38:52 - application.websocket.use_case_dispatcher - INFO - [DISPATCH_DEBUG] Event 'remove_player' handled successfully
-2025-07-29 09:38:54 - api.routes.ws - INFO - 🧹 [ROOM_DEBUG] Cleanup iteration 6: Checking 1 rooms: ['FOC0HM']
-2025-07-29 09:38:54 - api.routes.ws - INFO - 🧹 CLEANUP_CHECK: Room FOC0HM - game_ended=False, should_cleanup=False
-2025-07-29 09:38:58 - api.routes.ws - INFO - [MESSAGE_DEBUG] Received WebSocket message: event='remove_player' from room 'FOC0HM'
-2025-07-29 09:38:58 - api.routes.ws - INFO - [ROUTING_DEBUG] Event 'remove_player' should_use_use_case=True
-2025-07-29 09:38:58 - application.websocket.use_case_dispatcher - INFO - [DISPATCH_DEBUG] Dispatching event 'remove_player' from player 'Andy' in room 'FOC0HM'
-2025-07-29 09:38:58 - infrastructure.events.application_event_publisher - INFO - [COMPOSITE_DEBUG] Publishing PlayerRemoved to 2 publishers
-2025-07-29 09:38:58 - infrastructure.events.application_event_publisher - INFO - [COMPOSITE_DEBUG]   Publisher 0: WebSocketEventPublisher
-2025-07-29 09:38:58 - infrastructure.events.application_event_publisher - INFO - [COMPOSITE_DEBUG]   Publisher 1: InMemoryEventBus
-2025-07-29 09:38:58 - infrastructure.events.in_memory_event_bus - INFO - [EVENT_BUS_DEBUG] Publishing event PlayerRemoved
-2025-07-29 09:38:58 - infrastructure.events.in_memory_event_bus - WARNING - [EVENT_BUS_DEBUG] No handlers for event PlayerRemoved
-2025-07-29 09:38:58 - infrastructure.events.in_memory_event_bus - WARNING - [EVENT_BUS_DEBUG] Registered handlers: ['ConnectionHeartbeat', 'ClientReady', 'RoomCreated', 'PlayerJoinedRoom', 'PlayerLeftRoom', 'HostChanged', 'BotAdded', 'GameStarted', 'PhaseChanged', 'PiecesPlayed', 'TurnWinnerDetermined', 'DeclarationMade', 'WeakHandDetected', 'RedealDecisionMade', 'RedealExecuted', 'ScoresCalculated', 'GameEnded', 'InvalidActionAttempted', 'ErrorOccurred', 'RoomListUpdated']
-2025-07-29 09:38:58 - application.use_cases.room_management.remove_player - INFO - Player Bot 3 removed from room FOC0HM by host
-2025-07-29 09:38:58 - application.websocket.use_case_dispatcher - INFO - [DISPATCH_DEBUG] Event 'remove_player' handled successfully
-2025-07-29 09:38:59 - api.routes.ws - INFO - 🧹 [ROOM_DEBUG] Cleanup iteration 7: Checking 1 rooms: ['FOC0HM']
-2025-07-29 09:38:59 - api.routes.ws - INFO - 🧹 CLEANUP_CHECK: Room FOC0HM - game_ended=False, should_cleanup=False
-2025-07-29 09:39:04 - api.routes.ws - INFO - 🧹 [ROOM_DEBUG] Cleanup iteration 8: Checking 1 rooms: ['FOC0HM']
-2025-07-29 09:39:04 - api.routes.ws - INFO - 🧹 CLEANUP_CHECK: Room FOC0HM - game_ended=False, should_cleanup=False
+2025-07-29 09:50:20 - api.routes.ws - INFO - [MESSAGE_DEBUG] Received WebSocket message: event='client_ready' from room 'VNW1NV'
+2025-07-29 09:50:20 - api.routes.ws - INFO - [ROUTING_DEBUG] Event 'client_ready' should_use_use_case=True
+2025-07-29 09:50:20 - api.websocket.connection_manager - INFO - Player Andy connected to room VNW1NV
+2025-07-29 09:50:20 - application.websocket.message_router - INFO - Updated player registration: Andy for room VNW1NV with player_id VNW1NV_p0
+2025-07-29 09:50:20 - application.websocket.use_case_dispatcher - INFO - [DISPATCH_DEBUG] Dispatching event 'client_ready' from player 'Andy' in room 'VNW1NV'
+2025-07-29 09:50:20 - application.websocket.use_case_dispatcher - INFO - _handle_client_ready: room_id=VNW1NV, player_name=Andy, player_id=None
+2025-07-29 09:50:20 - application.websocket.use_case_dispatcher - INFO - Room state available: True
+2025-07-29 09:50:20 - application.websocket.use_case_dispatcher - INFO - Looking for player Andy in room state with 4 players
+2025-07-29 09:50:20 - application.websocket.use_case_dispatcher - INFO -   Slot 0: name=Andy, player_id=VNW1NV_p0
+2025-07-29 09:50:20 - application.websocket.use_case_dispatcher - INFO - Found matching player_id: VNW1NV_p0
+2025-07-29 09:50:20 - infrastructure.events.application_event_publisher - INFO - [COMPOSITE_DEBUG] Publishing ClientReady to 2 publishers
+2025-07-29 09:50:20 - infrastructure.events.application_event_publisher - INFO - [COMPOSITE_DEBUG]   Publisher 0: WebSocketEventPublisher
+2025-07-29 09:50:20 - infrastructure.events.application_event_publisher - INFO - [COMPOSITE_DEBUG]   Publisher 1: InMemoryEventBus
+2025-07-29 09:50:20 - infrastructure.events.in_memory_event_bus - INFO - [EVENT_BUS_DEBUG] Publishing event ClientReady
+2025-07-29 09:50:20 - infrastructure.events.in_memory_event_bus - INFO - [EVENT_BUS_DEBUG] Found 2 handlers for ClientReady
+2025-07-29 09:50:20 - application.use_cases.connection.mark_client_ready - INFO - Player VNW1NV_p0 marked as ready in room VNW1NV
+2025-07-29 09:50:20 - application.websocket.use_case_dispatcher - INFO - Sending client_ready_ack response: success=True, has_room_state=True
+2025-07-29 09:50:20 - application.websocket.use_case_dispatcher - INFO - Room state players: ['Andy', 'Bot 2', 'Bot 3', 'Bot 4']
+2025-07-29 09:50:20 - application.websocket.use_case_dispatcher - INFO - [DISPATCH_DEBUG] Event 'client_ready' handled successfully
+2025-07-29 09:50:20 - api.routes.ws - INFO - [MESSAGE_DEBUG] Received WebSocket message: event='get_room_state' from room 'VNW1NV'
+2025-07-29 09:50:20 - api.routes.ws - INFO - [ROUTING_DEBUG] Event 'get_room_state' should_use_use_case=True
+2025-07-29 09:50:20 - application.websocket.use_case_dispatcher - INFO - [DISPATCH_DEBUG] Dispatching event 'get_room_state' from player 'Andy' in room 'VNW1NV'
+2025-07-29 09:50:20 - application.websocket.use_case_dispatcher - INFO - Sending room_state for VNW1NV: 4 players
+2025-07-29 09:50:20 - application.websocket.use_case_dispatcher - INFO - Players: ['Andy', 'Bot 2', 'Bot 3', 'Bot 4']
+2025-07-29 09:50:20 - application.websocket.use_case_dispatcher - INFO - [DISPATCH_DEBUG] Event 'get_room_state' handled successfully
+2025-07-29 09:50:22 - api.routes.ws - INFO - [MESSAGE_DEBUG] Received WebSocket message: event='remove_player' from room 'VNW1NV'
+2025-07-29 09:50:22 - api.routes.ws - INFO - [ROUTING_DEBUG] Event 'remove_player' should_use_use_case=True
+2025-07-29 09:50:22 - application.websocket.use_case_dispatcher - INFO - [DISPATCH_DEBUG] Dispatching event 'remove_player' from player 'Andy' in room 'VNW1NV'
+2025-07-29 09:50:22 - infrastructure.events.application_event_publisher - INFO - [COMPOSITE_DEBUG] Publishing PlayerRemoved to 2 publishers
+2025-07-29 09:50:22 - infrastructure.events.application_event_publisher - INFO - [COMPOSITE_DEBUG]   Publisher 0: WebSocketEventPublisher
+2025-07-29 09:50:22 - infrastructure.events.application_event_publisher - INFO - [COMPOSITE_DEBUG]   Publisher 1: InMemoryEventBus
+2025-07-29 09:50:22 - infrastructure.events.in_memory_event_bus - INFO - [EVENT_BUS_DEBUG] Publishing event PlayerRemoved
+2025-07-29 09:50:22 - infrastructure.events.in_memory_event_bus - WARNING - [EVENT_BUS_DEBUG] No handlers for event PlayerRemoved
+2025-07-29 09:50:22 - infrastructure.events.in_memory_event_bus - WARNING - [EVENT_BUS_DEBUG] Registered handlers: ['ConnectionHeartbeat', 'ClientReady', 'RoomCreated', 'PlayerJoinedRoom', 'PlayerLeftRoom', 'HostChanged', 'BotAdded', 'GameStarted', 'PhaseChanged', 'PiecesPlayed', 'TurnWinnerDetermined', 'DeclarationMade', 'WeakHandDetected', 'RedealDecisionMade', 'RedealExecuted', 'ScoresCalculated', 'GameEnded', 'InvalidActionAttempted', 'ErrorOccurred', 'RoomListUpdated']
+2025-07-29 09:50:22 - application.use_cases.room_management.remove_player - INFO - Player Bot 4 removed from room VNW1NV by host
+2025-07-29 09:50:22 - application.websocket.use_case_dispatcher - INFO - [DISPATCH_DEBUG] Event 'remove_player' handled successfully
+2025-07-29 09:50:22 - api.routes.ws - INFO - 🧹 [ROOM_DEBUG] Cleanup iteration 4: Checking 1 rooms: ['VNW1NV']
+2025-07-29 09:50:22 - api.routes.ws - INFO - 🧹 CLEANUP_CHECK: Room VNW1NV - game_ended=False, should_cleanup=False
+2025-07-29 09:50:27 - api.routes.ws - INFO - [MESSAGE_DEBUG] Received WebSocket message: event='get_rooms' from room 'lobby'
+2025-07-29 09:50:27 - api.routes.ws - INFO - [ROUTING_DEBUG] Event 'get_rooms' should_use_use_case=True
+2025-07-29 09:50:27 - application.websocket.use_case_dispatcher - INFO - [DISPATCH_DEBUG] Dispatching event 'get_rooms' from player 'anonymous_7f6f1a54' in room 'lobby'
+2025-07-29 09:50:27 - application.websocket.use_case_dispatcher - INFO - [GET_ROOMS_DEBUG] Received get_rooms request from anonymous_7f6f1a54 in room lobby
+2025-07-29 09:50:27 - application.websocket.use_case_dispatcher - INFO - [GET_ROOMS_DEBUG] Returning 1 rooms
+2025-07-29 09:50:27 - application.websocket.use_case_dispatcher - INFO - [DISPATCH_DEBUG] Event 'get_rooms' handled successfully
+2025-07-29 09:50:27 - api.routes.ws - INFO - 🧹 [ROOM_DEBUG] Cleanup iteration 5: Checking 1 rooms: ['VNW1NV']
+2025-07-29 09:50:27 - api.routes.ws - INFO - 🧹 CLEANUP_CHECK: Room VNW1NV - game_ended=False, should_cleanup=False
+2025-07-29 09:50:32 - api.routes.ws - INFO - 🧹 [ROOM_DEBUG] Cleanup iteration 6: Checking 1 rooms: ['VNW1NV']
+2025-07-29 09:50:32 - api.routes.ws - INFO - 🧹 CLEANUP_CHECK: Room VNW1NV - game_ended=False, should_cleanup=False
+2025-07-29 09:50:34 - api.routes.ws - INFO - [MESSAGE_DEBUG] Received WebSocket message: event='remove_player' from room 'VNW1NV'
+2025-07-29 09:50:34 - api.routes.ws - INFO - [ROUTING_DEBUG] Event 'remove_player' should_use_use_case=True
+2025-07-29 09:50:34 - application.websocket.use_case_dispatcher - INFO - [DISPATCH_DEBUG] Dispatching event 'remove_player' from player 'Andy' in room 'VNW1NV'
+2025-07-29 09:50:34 - infrastructure.events.application_event_publisher - INFO - [COMPOSITE_DEBUG] Publishing PlayerRemoved to 2 publishers
+2025-07-29 09:50:34 - infrastructure.events.application_event_publisher - INFO - [COMPOSITE_DEBUG]   Publisher 0: WebSocketEventPublisher
+2025-07-29 09:50:34 - infrastructure.events.application_event_publisher - INFO - [COMPOSITE_DEBUG]   Publisher 1: InMemoryEventBus
+2025-07-29 09:50:34 - infrastructure.events.in_memory_event_bus - INFO - [EVENT_BUS_DEBUG] Publishing event PlayerRemoved
+2025-07-29 09:50:34 - infrastructure.events.in_memory_event_bus - WARNING - [EVENT_BUS_DEBUG] No handlers for event PlayerRemoved
+2025-07-29 09:50:34 - infrastructure.events.in_memory_event_bus - WARNING - [EVENT_BUS_DEBUG] Registered handlers: ['ConnectionHeartbeat', 'ClientReady', 'RoomCreated', 'PlayerJoinedRoom', 'PlayerLeftRoom', 'HostChanged', 'BotAdded', 'GameStarted', 'PhaseChanged', 'PiecesPlayed', 'TurnWinnerDetermined', 'DeclarationMade', 'WeakHandDetected', 'RedealDecisionMade', 'RedealExecuted', 'ScoresCalculated', 'GameEnded', 'InvalidActionAttempted', 'ErrorOccurred', 'RoomListUpdated']
+2025-07-29 09:50:34 - application.use_cases.room_management.remove_player - INFO - Player Bot 3 removed from room VNW1NV by host
+2025-07-29 09:50:34 - application.websocket.use_case_dispatcher - INFO - [DISPATCH_DEBUG] Event 'remove_player' handled successfully
+2025-07-29 09:50:37 - api.routes.ws - INFO - 🧹 [ROOM_DEBUG] Cleanup iteration 7: Checking 1 rooms: ['VNW1NV']
+2025-07-29 09:50:37 - api.routes.ws - INFO - 🧹 CLEANUP_CHECK: Room VNW1NV - game_ended=False, should_cleanup=False
+2025-07-29 09:50:42 - api.routes.ws - INFO - 🧹 [ROOM_DEBUG] Cleanup iteration 8: Checking 1 rooms: ['VNW1NV']
+2025-07-29 09:50:42 - api.routes.ws - INFO - 🧹 CLEANUP_CHECK: Room VNW1NV - game_ended=False, should_cleanup=False
+2025-07-29 09:50:47 - api.routes.ws - INFO - 🧹 [ROOM_DEBUG] Cleanup iteration 9: Checking 1 rooms: ['VNW1NV']
+2025-07-29 09:50:47 - api.routes.ws - INFO - 🧹 CLEANUP_CHECK: Room VNW1NV - game_ended=False, should_cleanup=False
+2025-07-29 09:50:49 - api.routes.ws - INFO - [MESSAGE_DEBUG] Received WebSocket message: event='ping' from room 'lobby'
+2025-07-29 09:50:49 - api.routes.ws - INFO - [ROUTING_DEBUG] Event 'ping' should_use_use_case=True
+2025-07-29 09:50:49 - application.websocket.use_case_dispatcher - INFO - [DISPATCH_DEBUG] Dispatching event 'ping' from player 'anonymous_7f6f1a54' in room 'lobby'
+2025-07-29 09:50:49 - application.websocket.use_case_dispatcher - INFO - [DISPATCH_DEBUG] Event 'ping' handled successfully
+2025-07-29 09:50:50 - api.routes.ws - INFO - [MESSAGE_DEBUG] Received WebSocket message: event='ping' from room 'lobby'
+2025-07-29 09:50:50 - api.routes.ws - INFO - [ROUTING_DEBUG] Event 'ping' should_use_use_case=True
+2025-07-29 09:50:50 - application.websocket.use_case_dispatcher - INFO - [DISPATCH_DEBUG] Dispatching event 'ping' from player 'anonymous_9fcc5152' in room 'lobby'
+2025-07-29 09:50:50 - application.websocket.use_case_dispatcher - INFO - [DISPATCH_DEBUG] Event 'ping' handled successfully
+2025-07-29 09:50:50 - api.routes.ws - INFO - [MESSAGE_DEBUG] Received WebSocket message: event='ping' from room 'VNW1NV'
+2025-07-29 09:50:50 - api.routes.ws - INFO - [ROUTING_DEBUG] Event 'ping' should_use_use_case=True
+2025-07-29 09:50:50 - application.websocket.use_case_dispatcher - INFO - [DISPATCH_DEBUG] Dispatching event 'ping' from player 'Andy' in room 'VNW1NV'
+2025-07-29 09:50:50 - application.websocket.use_case_dispatcher - INFO - [DISPATCH_DEBUG] Event 'ping' handled successfully
+2025-07-29 09:50:52 - api.routes.ws - INFO - 🧹 [ROOM_DEBUG] Cleanup iteration 10: Checking 1 rooms: ['VNW1NV']
+2025-07-29 09:50:52 - api.routes.ws - INFO - 🧹 CLEANUP_CHECK: Room VNW1NV - game_ended=False, should_cleanup=False
