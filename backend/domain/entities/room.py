@@ -13,6 +13,7 @@ from domain.entities.player import Player
 from domain.entities.game import Game, GamePhase
 from domain.value_objects.piece import Piece
 from domain.events.base import DomainEvent, GameEvent, EventMetadata
+from domain.events.room_events import RoomCreated
 
 
 class RoomStatus(Enum):
@@ -24,19 +25,8 @@ class RoomStatus(Enum):
     ABANDONED = "ABANDONED"  # All humans left
 
 
-@dataclass(frozen=True)
-class RoomCreated(GameEvent):
-    """A room has been created."""
-    host_name: str
-    total_slots: int
-    
-    def _get_event_data(self) -> Dict:
-        data = super()._get_event_data()
-        data.update({
-            'host_name': self.host_name,
-            'total_slots': self.total_slots
-        })
-        return data
+# Note: RoomCreated event moved to domain.events.room_events to avoid confusion
+# The proper RoomCreated event should be imported from domain.events.room_events
 
 
 @dataclass(frozen=True)
@@ -151,13 +141,8 @@ class Room:
         if self.host_id is None:
             self.host_id = f"{self.room_id}_p0"
         
-        # Emit room created event
-        self._emit_event(RoomCreated(
-            room_id=self.room_id,
-            host_name=self.host_name,
-            total_slots=self.max_slots,
-            metadata=EventMetadata()
-        ))
+        # Note: RoomCreated event is emitted by the use case, not here
+        # This avoids duplicate events and ensures proper event data
         
         # Add host to first slot
         logger.info(f"[ROOM_DEBUG] Adding host {self.host_name} to slot 0")

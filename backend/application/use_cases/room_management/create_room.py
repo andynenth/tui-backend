@@ -16,9 +16,10 @@ from application.dto.room_management import CreateRoomRequest, CreateRoomRespons
 from application.dto.common import RoomInfo, PlayerInfo, PlayerStatus, RoomStatus
 from application.interfaces import UnitOfWork, EventPublisher, MetricsCollector
 from application.exceptions import ValidationException, ConflictException
-from domain.entities.room import Room, RoomCreated
+from domain.entities.room import Room
 from domain.entities.player import Player
 from domain.events.base import EventMetadata
+from domain.events.room_events import RoomCreated
 
 logger = logging.getLogger(__name__)
 
@@ -114,8 +115,8 @@ class CreateRoomUseCase(UseCase[CreateRoomRequest, CreateRoomResponse]):
             event = RoomCreated(
                 metadata=EventMetadata(user_id=getattr(request, 'user_id', None)),
                 room_id=room.room_id,
-                host_name=request.host_player_name,
-                total_slots=request.max_players or 4
+                host_id=request.host_player_id,
+                host_name=request.host_player_name
             )
             logger.info(f"[CREATE_ROOM_DEBUG] Publishing RoomCreated event for room {room.room_id}")
             logger.info(f"[CREATE_ROOM_DEBUG] Event publisher type: {self._event_publisher.__class__.__name__}")
