@@ -142,15 +142,9 @@ class ConnectionManager:
         
         if room_id in self.connections and player_name in self.connections[room_id]:
             connection = self.connections[room_id][player_name]
-            # Create a simple object with the needed attributes
-            class SimpleConnection:
-                def __init__(self, player_id, player_name):
-                    self.player_id = player_id
-                    self.player_name = player_name
-            
-            # Generate player_id from room and name
-            player_id = f"{room_id}_p{hash(player_name) % 100}"
-            return SimpleConnection(player_id, player_name)
+            # Return the actual connection which should have the correct player_id
+            # if it was set during registration
+            return connection
         
         return None
 

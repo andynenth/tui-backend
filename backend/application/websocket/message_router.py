@@ -169,9 +169,17 @@ class MessageRouter:
             if data_player_name:
                 player_name = data_player_name
                 # Update the connection manager with the real player name
-                if websocket_id and player_name != connection.player_name if connection else True:
-                    await connection_manager.register_player(room_id, player_name, websocket_id)
-                    logger.info(f"Updated player registration: {player_name} for room {room_id}")
+                if websocket_id and (not connection or player_name != connection.player_name):
+                    # Find the correct player_id from room state
+                    correct_player_id = None
+                    if room_state and room_state.get("players"):
+                        for player in room_state["players"]:
+                            if player and player.get("name") == player_name:
+                                correct_player_id = player.get("player_id")
+                                break
+                    
+                    await connection_manager.register_player(room_id, player_name, websocket_id, correct_player_id)
+                    logger.info(f"Updated player registration: {player_name} for room {room_id} with player_id {correct_player_id}")
         
         # Create dispatch context
         context = DispatchContext(
@@ -260,16 +268,16 @@ class MessageRouter:
                     # Convert to dict format expected by adapters
                     return {
                         "room_id": room.room_id,
-                        "host": room.host_player_id,
+                        "host": f"{room.room_id}_p0",  # Host is always in slot 0
                         "players": players,
                         "status": room.status.value if hasattr(room.status, 'value') else str(room.status),
                         "game_config": {
-                            "max_players": room.max_players,
+                            "max_players": room.max_slots,
                             "max_score": 50,
                             "allow_bot_start": True
                         },
                         "current_round": room.current_round if hasattr(room, 'current_round') else 1,
-                        "max_players": room.max_players
+                        "max_players": room.max_slots
                     }
                     
         except Exception as e:
