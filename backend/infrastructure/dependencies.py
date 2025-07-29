@@ -95,6 +95,10 @@ class DependencyContainer:
         # Always include WebSocket publisher
         publishers.append(WebSocketEventPublisher())
         
+        # Add InMemoryEventBus for broadcast handlers
+        from infrastructure.events.in_memory_event_bus import get_event_bus
+        publishers.append(get_event_bus())
+        
         # Add event store publisher if event sourcing is enabled
         if self._feature_flags.is_enabled(
             self._feature_flags.USE_EVENT_SOURCING

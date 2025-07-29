@@ -117,7 +117,10 @@ class CreateRoomUseCase(UseCase[CreateRoomRequest, CreateRoomResponse]):
                 host_name=request.host_player_name,
                 total_slots=request.max_players or 4
             )
+            logger.info(f"[CREATE_ROOM_DEBUG] Publishing RoomCreated event for room {room.room_id}")
+            logger.info(f"[CREATE_ROOM_DEBUG] Event publisher type: {self._event_publisher.__class__.__name__}")
             await self._event_publisher.publish(event)
+            logger.info(f"[CREATE_ROOM_DEBUG] RoomCreated event published successfully")
             
             # Record metrics
             if self._metrics:

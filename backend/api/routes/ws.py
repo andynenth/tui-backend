@@ -418,6 +418,7 @@ async def websocket_endpoint(websocket: WebSocket, room_id: str):
 
             # Check if validation should be bypassed
             event_name = message.get("event", "")
+            logger.info(f"[MESSAGE_DEBUG] Received WebSocket message: event='{event_name}' from room '{room_id}'")
             bypass_validation = websocket_config.should_bypass_validation(event_name)
             
             if bypass_validation:
@@ -441,7 +442,9 @@ async def websocket_endpoint(websocket: WebSocket, room_id: str):
 
             # ===== MESSAGE ROUTING START =====
             # Check if this event should use direct use case routing
-            if websocket_config.should_use_use_case(event_name):
+            should_use_case = websocket_config.should_use_use_case(event_name)
+            logger.info(f"[ROUTING_DEBUG] Event '{event_name}' should_use_use_case={should_use_case}")
+            if should_use_case:
                 # Use direct message router for use case events
                 from application.websocket.message_router import MessageRouter
                 from application.websocket.use_case_dispatcher import DispatchContext
