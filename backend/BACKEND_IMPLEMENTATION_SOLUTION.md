@@ -3,31 +3,62 @@
 **Date**: 2025-07-29  
 **Source**: Based on comprehensive Frontend Data Contracts Analysis  
 **Priority**: HIGH - Critical fixes required for room functionality  
+**Update**: Root cause identified - see Section 1.A for immediate fix location
 
 ## Executive Summary
 
 This document provides specific implementation requirements for the backend team to resolve critical frontend-backend data contract mismatches. The primary issue is multiple competing ID generation systems causing "waiting" slot displays and player synchronization failures.
+
+### 🚨 ROOT CAUSE IDENTIFIED
+**File**: `backend/api/websocket/connection_manager.py`  
+**Line**: 152  
+**Code**: `player_id = f"{room_id}_p{hash(player_name) % 100}"`  
+**Fix**: Remove this line and let domain layer handle ID generation
 
 ## Critical Issues Requiring Immediate Action
 
 ### 1. **Player ID Generation Standardization** 🚨 CRITICAL
 
 **Problem**: Multiple ID systems generating conflicting player IDs
-- ✅ **Correct System**: `ROOM123_p0`, `ROOM123_p1`, `ROOM123_p2`, `ROOM123_p3`
-- ❌ **Problematic System**: `lobby_p17`, `2DUBXV_p24`, `2DUBXV_p57`
+- ✅ **Correct System**: Slot-based IDs with format `{room_id}_p{0-3}`
+  - `ROOM123_p0` = Player in slot 0 (always the host)
+  - `ROOM123_p1` = Player in slot 1
+  - `ROOM123_p2` = Player in slot 2  
+  - `ROOM123_p3` = Player in slot 3
+- ❌ **Problematic System**: Hash-based IDs like `lobby_p17`, `2DUBXV_p24`, `2DUBXV_p57`
 
-**Root Cause**: Unknown counter-based ID generator competing with slot-based system
+**Root Cause FOUND**: Hash-based ID generator in connection manager
+- **Location**: `backend/api/websocket/connection_manager.py:152`
+- **Problematic Code**: `player_id = f"{room_id}_p{hash(player_name) % 100}"`
+- **Issue**: Generates IDs with suffixes 0-99 instead of 0-3
 
 **Implementation Requirements**:
 
-#### A. Locate and Eliminate Counter-Based ID Generation
+#### A. Fix the Connection Manager ID Generation 🚨 IMMEDIATE ACTION
 ```python
-# FIND: Search for code generating these patterns
-# - "lobby_p" + number > 3
-# - "{room_id}_p" + number > 3
-# - Any counter-based player ID generation
+# FILE: backend/api/websocket/connection_manager.py
+# LINE: 152
 
-# REPLACE: Ensure ALL player ID generation uses slot-based approach
+# REMOVE THIS LINE:
+player_id = f"{room_id}_p{hash(player_name) % 100}"
+
+# REPLACE WITH:
+# Option 1: Don't generate IDs in connection manager at all
+# Let the domain layer handle ID assignment
+
+# Option 2: If ID is needed here, get it from room state
+async def get_player_id_from_room_state(room_id: str, player_name: str) -> str:
+    """Get the correct slot-based player ID from room state"""
+    room_state = await get_room_state(room_id)
+    for player in room_state.get("players", []):
+        if player and player.get("name") == player_name:
+            return player.get("player_id")
+    return None
+```
+
+#### B. Ensure Slot-Based ID Generation
+```python
+# Use ONLY this approach for generating player IDs:
 def generate_player_id(room_id: str, slot_index: int) -> str:
     """Generate consistent slot-based player ID"""
     if not (0 <= slot_index <= 3):
@@ -330,6 +361,16 @@ def test_player_id_generation():
     
     with pytest.raises(ValueError):
         PropertyMapper.generate_player_id("ROOM123", 4)  # Invalid slot
+
+def test_no_hash_based_ids():
+    """Ensure hash-based ID generation is removed"""
+    # This test should fail if the old code is still present
+    from backend.api.websocket import connection_manager
+    
+    # Verify the problematic line doesn't exist
+    source_code = inspect.getsource(connection_manager)
+    assert "hash(player_name) % 100" not in source_code
+    assert "hash(" not in source_code
 
 def test_player_object_structure():
     """Test player object has all required fields"""
