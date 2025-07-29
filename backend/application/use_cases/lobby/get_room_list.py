@@ -106,8 +106,6 @@ class GetRoomListUseCase(UseCase[GetRoomListRequest, GetRoomListResponse]):
             
             # Create response
             response = GetRoomListResponse(
-                success=True,
-                request_id=request.request_id,
                 rooms=room_summaries,
                 player_current_room=player_current_room,
                 page=request.page,
