@@ -22,7 +22,6 @@ from application.exceptions import (
 from domain.entities.player import Player
 from domain.events.room_events import BotAdded
 from domain.events.base import EventMetadata
-from application.utils import PropertyMapper
 from datetime import datetime
 
 logger = logging.getLogger(__name__)
@@ -95,18 +94,13 @@ class AddBotUseCase(UseCase[AddBotRequest, AddBotResponse]):
                 raise ResourceNotFoundException("Room", request.room_id)
             
             # Check authorization - must be host
-            if PropertyMapper.get_room_attr(room, "host_id") != request.requesting_player_id:
+            if room.host_id != request.requesting_player_id:
                 raise AuthorizationException(
                     "add bot",
                     f"room {request.room_id}"
                 )
             
-            # Check if bots allowed
-            if not PropertyMapper.get_room_attr(room, "settings.allow_bots"):
-                raise ConflictException(
-                    "add bot",
-                    "Bots are not allowed in this room"
-                )
+            # Bots are always allowed in this implementation
             
             # Check if room has space
             if room.is_full():
@@ -123,14 +117,15 @@ class AddBotUseCase(UseCase[AddBotRequest, AddBotResponse]):
             bot_id = await self._bot_service.create_bot(request.bot_difficulty)
             bot_name = request.bot_name or self._generate_bot_name(room)
             
-            bot_player = Player(
-                id=bot_id,
-                name=bot_name,
-                is_bot=True
-            )
-            
             # Add bot to room
-            seat_position = room.add_player(bot_player, request.seat_position)
+            try:
+                seat_position = room.add_player(bot_name, is_bot=True, slot=request.seat_position)
+            except ValueError as e:
+                # Convert domain exception to application exception
+                if "occupied" in str(e).lower():
+                    raise ConflictException("add bot", f"Slot {request.seat_position} is already occupied")
+                else:
+                    raise ConflictException("add bot", str(e))
             
             # Save the room
             await self._uow.rooms.save(room)
@@ -157,9 +152,9 @@ class AddBotUseCase(UseCase[AddBotRequest, AddBotResponse]):
                 room_id=room.room_id,
                 bot_id=bot_id,
                 bot_name=bot_name,
-                difficulty=request.bot_difficulty,
-                seat_position=seat_position,
-                current_player_count=room.player_count
+                player_slot=f"P{seat_position + 1}",
+                added_by_id=request.requesting_player_id,
+                added_by_name=room.host_name  # Host is adding the bot
             )
             await self._event_publisher.publish(event)
             
@@ -175,8 +170,6 @@ class AddBotUseCase(UseCase[AddBotRequest, AddBotResponse]):
             
             # Create response
             response = AddBotResponse(
-                success=True,
-                request_id=request.request_id,
                 bot_info=bot_info,
                 room_info=room_info
             )
@@ -242,22 +235,22 @@ class AddBotUseCase(UseCase[AddBotRequest, AddBotResponse]):
         for i, slot in enumerate(room.slots):
             if slot:
                 players.append(PlayerInfo(
-                    player_id=PropertyMapper.generate_player_id(room.room_id, i),
+                    player_id=f"{room.room_id}_p{i}",
                     player_name=slot.name,
                     is_bot=slot.is_bot,
-                    is_host=PropertyMapper.generate_player_id(room.room_id, i) == PropertyMapper.get_room_attr(room, "host_id"),
+                    is_host=slot.name == room.host_name,
                     status=PlayerStatus.CONNECTED,
                     seat_position=i,
                     score=slot.score,
-                    games_played=PropertyMapper.get_safe(slot, "games_played", 0),
-                    games_won=PropertyMapper.get_safe(slot, "games_won", 0)
+                    games_played=0,  # Not tracked in Player entity
+                    games_won=0      # Not tracked in Player entity
                 ))
         
         return RoomInfo(
             room_id=room.room_id,
             room_code=room.room_id,
             room_name=f"{room.host_name}'s Room",
-            host_id=PropertyMapper.get_room_attr(room, "host_id"),
+            host_id=room.host_id,
             status=RoomStatus.WAITING,
             players=players,
             max_players=room.max_slots,

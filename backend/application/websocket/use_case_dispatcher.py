@@ -569,24 +569,20 @@ class UseCaseDispatcher:
         
         response = await self.add_bot_use_case.execute(request)
         
-        if response.success:
-            return {
-                "event": "bot_added",
-                "data": {
-                    "success": True,
-                    "bot_id": response.bot_info.player_id,
-                    "bot_name": response.bot_info.player_name,
-                    "room_info": self._format_room_info(response.room_info)
-                }
+        # Add manual broadcast for room update
+        formatted_room = self._format_room_info(response.room_info)
+        from infrastructure.websocket.connection_singleton import broadcast
+        await broadcast(room_id, "room_update", formatted_room)
+        
+        return {
+            "event": "bot_added",
+            "data": {
+                "success": True,
+                "bot_id": response.bot_info.player_id,
+                "bot_name": response.bot_info.player_name,
+                "room_info": formatted_room
             }
-        else:
-            return {
-                "event": "error",
-                "data": {
-                    "message": getattr(response, 'error', 'Failed to add bot'),
-                    "type": "bot_add_failed"
-                }
-            }
+        }
     
     async def _handle_remove_player(self, data: Dict[str, Any], context: DispatchContext) -> Dict[str, Any]:
         """Handle remove_player event"""
@@ -611,24 +607,22 @@ class UseCaseDispatcher:
         
         response = await self.remove_player_use_case.execute(request)
         
-        if response.success:
-            return {
-                "event": "player_removed",
-                "data": {
-                    "success": True,
-                    "removed_player_id": response.removed_player_id,
-                    "was_bot": response.was_bot,
-                    "room_info": self._format_room_info(response.room_info)
-                }
+        # If we get here, the operation was successful
+        formatted_room = self._format_room_info(response.room_info)
+        
+        # Broadcast the updated room state to all clients
+        from infrastructure.websocket.connection_singleton import broadcast
+        await broadcast(room_id, "room_update", formatted_room)
+        
+        return {
+            "event": "player_removed",
+            "data": {
+                "success": True,
+                "removed_player_id": response.removed_player_id,
+                "was_bot": response.was_bot,
+                "room_info": formatted_room
             }
-        else:
-            return {
-                "event": "error",
-                "data": {
-                    "message": getattr(response, 'error', 'Failed to remove player'),
-                    "type": "remove_failed"
-                }
-            }
+        }
     
     # Lobby event handlers
     

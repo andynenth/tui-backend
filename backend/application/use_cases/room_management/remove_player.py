@@ -80,7 +80,7 @@ class RemovePlayerUseCase(UseCase[RemovePlayerRequest, RemovePlayerResponse]):
                 raise ResourceNotFoundException("Room", request.room_id)
             
             # Check authorization - must be host
-            if room.host_name != request.requesting_player_id:
+            if room.host_id != request.requesting_player_id:
                 raise AuthorizationException(
                     "remove player",
                     f"room {request.room_id}"
@@ -100,14 +100,18 @@ class RemovePlayerUseCase(UseCase[RemovePlayerRequest, RemovePlayerResponse]):
                     "Cannot remove players while game is in progress"
                 )
             
-            # Find target player
+            # Find target player by player_id
             target_slot = None
             slot_index = None
-            for i, slot in enumerate(room.slots):
-                if slot and hasattr(slot, 'name') and slot.name == request.target_player_id:
-                    target_slot = slot
-                    slot_index = i
-                    break
+            
+            # Extract slot index from player_id (format: room_id_p{index})
+            if request.target_player_id.startswith(f"{room.room_id}_p"):
+                try:
+                    slot_index = int(request.target_player_id.split('_p')[1])
+                    if 0 <= slot_index < len(room.slots):
+                        target_slot = room.slots[slot_index]
+                except (ValueError, IndexError):
+                    pass
             
             if not target_slot:
                 raise ResourceNotFoundException("Player", request.target_player_id)
@@ -116,8 +120,8 @@ class RemovePlayerUseCase(UseCase[RemovePlayerRequest, RemovePlayerResponse]):
             was_bot = target_slot.is_bot
             player_name = target_slot.name
             
-            # Remove player from room
-            room.remove_player(request.target_player_id)
+            # Remove player from room (using player name)
+            room.remove_player(player_name)
             
             # Save the room
             await self._uow.rooms.save(room)
@@ -128,7 +132,6 @@ class RemovePlayerUseCase(UseCase[RemovePlayerRequest, RemovePlayerResponse]):
             # Emit PlayerRemoved event for both bots and players
             event = PlayerRemoved(
                 metadata=EventMetadata(user_id=request.user_id),
-                game_id=room.room_id,  # GameEvent uses game_id
                 room_id=room.room_id,
                 removed_player_id=request.target_player_id,
                 removed_player_name=player_name,
@@ -151,8 +154,6 @@ class RemovePlayerUseCase(UseCase[RemovePlayerRequest, RemovePlayerResponse]):
             
             # Create response
             response = RemovePlayerResponse(
-                success=True,
-                request_id=request.request_id,
                 removed_player_id=request.target_player_id,
                 room_info=room_info,
                 was_bot=was_bot

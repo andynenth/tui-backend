@@ -233,9 +233,10 @@ def register_all_mappings():
     event_broadcast_mapper.register(
         BotAdded, "room_update", "room", map_room_update, requires_state=True
     )
-    event_broadcast_mapper.register(
-        PlayerRemoved, "room_update", "room", map_room_update, requires_state=True
-    )
+    # PlayerRemoved broadcast is handled directly in the dispatcher with proper room state
+    # event_broadcast_mapper.register(
+    #     PlayerRemoved, "room_update", "room", map_room_update, requires_state=True
+    # )
     event_broadcast_mapper.register(
         HostChanged, "host_changed", "room",
         lambda e, c: {"old_host": e.old_host_name, "new_host": e.new_host_name, "reason": e.reason}
