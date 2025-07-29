@@ -112,11 +112,26 @@ class CreateRoomUseCase(UseCase[CreateRoomRequest, CreateRoomResponse]):
             room_info = self._create_room_info(room, host_player)
             
             # Prepare RoomCreated event (will publish after commit)
+            # Include room data to avoid re-querying in event handler
             event = RoomCreated(
                 metadata=EventMetadata(user_id=getattr(request, 'user_id', None)),
                 room_id=room.room_id,
                 host_id=request.host_player_id,
-                host_name=request.host_player_name
+                host_name=request.host_player_name,
+                room_data={
+                    "room_id": room.room_id,
+                    "room_code": room.room_id,
+                    "room_name": f"{room.host_name}'s Room",
+                    "host_name": room.host_name,
+                    "player_count": len([slot for slot in room.slots if slot]),
+                    "max_players": room.max_slots,
+                    "game_in_progress": False,
+                    "is_private": False,
+                    "players": [
+                        {"name": slot.name, "is_bot": slot.is_bot} if slot else None
+                        for slot in room.slots
+                    ]
+                }
             )
             
             # Record metrics

@@ -1,0 +1,1175 @@
+{
+  "andyMessages": [
+    {
+      "type": "sent",
+      "timestamp": "2025-07-29T21:40:32.980Z",
+      "message": {
+        "event": "client_ready",
+        "data": {
+          "room_id": "lobby",
+          "is_reconnection": false
+        },
+        "sequence": 1,
+        "timestamp": 1753825232960,
+        "id": "e66c71a5-398d-4dc0-8d6d-1afa411d7984"
+      },
+      "raw": "{\"event\":\"client_ready\",\"data\":{\"room_id\":\"lobby\",\"is_reconnection\":false},\"sequence\":1,\"timestamp\":1753825232960,\"id\":\"e66c71a5-398d-4dc0-8d6d-1afa411d7984\"}"
+    },
+    {
+      "type": "sent",
+      "timestamp": "2025-07-29T21:40:32.983Z",
+      "message": {
+        "event": "get_rooms",
+        "data": {},
+        "sequence": 2,
+        "timestamp": 1753825232963,
+        "id": "026a5293-d4ac-4bcb-89bc-9f64c758101c"
+      },
+      "raw": "{\"event\":\"get_rooms\",\"data\":{},\"sequence\":2,\"timestamp\":1753825232963,\"id\":\"026a5293-d4ac-4bcb-89bc-9f64c758101c\"}"
+    },
+    {
+      "type": "received",
+      "timestamp": "2025-07-29T21:40:32.985Z",
+      "message": {
+        "event": "client_ready_ack",
+        "data": {
+          "success": true,
+          "ready": true,
+          "room_state": null
+        }
+      },
+      "raw": "{\"event\":\"client_ready_ack\",\"data\":{\"success\":true,\"ready\":true,\"room_state\":null}}"
+    },
+    {
+      "type": "received",
+      "timestamp": "2025-07-29T21:40:32.985Z",
+      "message": {
+        "event": "room_list_update",
+        "data": {
+          "rooms": [],
+          "total_count": 0
+        }
+      },
+      "raw": "{\"event\":\"room_list_update\",\"data\":{\"rooms\":[],\"total_count\":0}}"
+    },
+    {
+      "type": "sent",
+      "timestamp": "2025-07-29T21:40:35.539Z",
+      "message": {
+        "event": "client_ready",
+        "data": {
+          "room_id": "lobby",
+          "is_reconnection": false
+        },
+        "sequence": 1,
+        "timestamp": 1753825235536,
+        "id": "d1ae2fa6-a04c-4583-a39a-14d8aebe0e23"
+      },
+      "raw": "{\"event\":\"client_ready\",\"data\":{\"room_id\":\"lobby\",\"is_reconnection\":false},\"sequence\":1,\"timestamp\":1753825235536,\"id\":\"d1ae2fa6-a04c-4583-a39a-14d8aebe0e23\"}"
+    },
+    {
+      "type": "received",
+      "timestamp": "2025-07-29T21:40:35.540Z",
+      "message": {
+        "event": "client_ready_ack",
+        "data": {
+          "success": true,
+          "ready": true,
+          "room_state": null
+        }
+      },
+      "raw": "{\"event\":\"client_ready_ack\",\"data\":{\"success\":true,\"ready\":true,\"room_state\":null}}"
+    },
+    {
+      "type": "sent",
+      "timestamp": "2025-07-29T21:40:35.621Z",
+      "message": {
+        "event": "create_room",
+        "data": {
+          "player_name": "Andy"
+        },
+        "sequence": 2,
+        "timestamp": 1753825235619,
+        "id": "763b9d43-0697-49e1-87b2-254228a4a48b"
+      },
+      "raw": "{\"event\":\"create_room\",\"data\":{\"player_name\":\"Andy\"},\"sequence\":2,\"timestamp\":1753825235619,\"id\":\"763b9d43-0697-49e1-87b2-254228a4a48b\"}"
+    },
+    {
+      "type": "received",
+      "timestamp": "2025-07-29T21:40:35.635Z",
+      "message": {
+        "event": "room_list_update",
+        "data": {
+          "rooms": [
+            {
+              "room_id": "AVJ1C4",
+              "room_code": "AVJ1C4",
+              "room_name": "Andy's Room",
+              "host_name": "Andy",
+              "player_count": 4,
+              "max_players": 4,
+              "game_in_progress": false,
+              "is_private": false,
+              "players": [
+                {
+                  "name": "Andy",
+                  "is_bot": false
+                },
+                {
+                  "name": "Bot 2",
+                  "is_bot": true
+                },
+                {
+                  "name": "Bot 3",
+                  "is_bot": true
+                },
+                {
+                  "name": "Bot 4",
+                  "is_bot": true
+                }
+              ]
+            }
+          ],
+          "timestamp": 244438.066
+        }
+      },
+      "raw": "{\"event\":\"room_list_update\",\"data\":{\"rooms\":[{\"room_id\":\"AVJ1C4\",\"room_code\":\"AVJ1C4\",\"room_name\":\"Andy's Room\",\"host_name\":\"Andy\",\"player_count\":4,\"max_players\":4,\"game_in_progress\":false,\"is_private\":false,\"players\":[{\"name\":\"Andy\",\"is_bot\":false},{\"name\":\"Bot 2\",\"is_bot\":true},{\"name\":\"Bot 3\",\"is_bot\":true},{\"name\":\"Bot 4\",\"is_bot\":true}]}],\"timestamp\":244438.066}}"
+    },
+    {
+      "type": "received",
+      "timestamp": "2025-07-29T21:40:35.635Z",
+      "message": {
+        "event": "room_list_update",
+        "data": {
+          "rooms": [
+            {
+              "room_id": "AVJ1C4",
+              "room_code": "AVJ1C4",
+              "room_name": "Andy's Room",
+              "host_name": "Andy",
+              "player_count": 4,
+              "max_players": 4,
+              "game_in_progress": false,
+              "is_private": false,
+              "players": [
+                {
+                  "name": "Andy",
+                  "is_bot": false
+                },
+                {
+                  "name": "Bot 2",
+                  "is_bot": true
+                },
+                {
+                  "name": "Bot 3",
+                  "is_bot": true
+                },
+                {
+                  "name": "Bot 4",
+                  "is_bot": true
+                }
+              ]
+            }
+          ],
+          "timestamp": 244438.067
+        }
+      },
+      "raw": "{\"event\":\"room_list_update\",\"data\":{\"rooms\":[{\"room_id\":\"AVJ1C4\",\"room_code\":\"AVJ1C4\",\"room_name\":\"Andy's Room\",\"host_name\":\"Andy\",\"player_count\":4,\"max_players\":4,\"game_in_progress\":false,\"is_private\":false,\"players\":[{\"name\":\"Andy\",\"is_bot\":false},{\"name\":\"Bot 2\",\"is_bot\":true},{\"name\":\"Bot 3\",\"is_bot\":true},{\"name\":\"Bot 4\",\"is_bot\":true}]}],\"timestamp\":244438.067}}"
+    },
+    {
+      "type": "received",
+      "timestamp": "2025-07-29T21:40:35.641Z",
+      "message": {
+        "event": "room_created",
+        "data": {
+          "room_id": "AVJ1C4",
+          "room_code": "AVJ1C4",
+          "host_name": "Andy",
+          "success": true,
+          "room_info": {
+            "room_id": "AVJ1C4",
+            "room_code": "AVJ1C4",
+            "room_name": "Andy's Room",
+            "host_id": "AVJ1C4_p0",
+            "players": [
+              {
+                "player_id": "AVJ1C4_p0",
+                "name": "Andy",
+                "is_bot": false,
+                "is_host": true,
+                "seat_position": 0,
+                "avatar_color": null
+              },
+              {
+                "player_id": "AVJ1C4_p1",
+                "name": "Bot 2",
+                "is_bot": true,
+                "is_host": false,
+                "seat_position": 1,
+                "avatar_color": null
+              },
+              {
+                "player_id": "AVJ1C4_p2",
+                "name": "Bot 3",
+                "is_bot": true,
+                "is_host": false,
+                "seat_position": 2,
+                "avatar_color": null
+              },
+              {
+                "player_id": "AVJ1C4_p3",
+                "name": "Bot 4",
+                "is_bot": true,
+                "is_host": false,
+                "seat_position": 3,
+                "avatar_color": null
+              }
+            ],
+            "max_players": 4,
+            "game_in_progress": false,
+            "status": "waiting"
+          }
+        }
+      },
+      "raw": "{\"event\":\"room_created\",\"data\":{\"room_id\":\"AVJ1C4\",\"room_code\":\"AVJ1C4\",\"host_name\":\"Andy\",\"success\":true,\"room_info\":{\"room_id\":\"AVJ1C4\",\"room_code\":\"AVJ1C4\",\"room_name\":\"Andy's Room\",\"host_id\":\"AVJ1C4_p0\",\"players\":[{\"player_id\":\"AVJ1C4_p0\",\"name\":\"Andy\",\"is_bot\":false,\"is_host\":true,\"seat_position\":0,\"avatar_color\":null},{\"player_id\":\"AVJ1C4_p1\",\"name\":\"Bot 2\",\"is_bot\":true,\"is_host\":false,\"seat_position\":1,\"avatar_color\":null},{\"player_id\":\"AVJ1C4_p2\",\"name\":\"Bot 3\",\"is_bot\":true,\"is_host\":false,\"seat_position\":2,\"avatar_color\":null},{\"player_id\":\"AVJ1C4_p3\",\"name\":\"Bot 4\",\"is_bot\":true,\"is_host\":false,\"seat_position\":3,\"avatar_color\":null}],\"max_players\":4,\"game_in_progress\":false,\"status\":\"waiting\"}}}"
+    },
+    {
+      "type": "sent",
+      "timestamp": "2025-07-29T21:40:35.713Z",
+      "message": {
+        "event": "client_ready",
+        "data": {
+          "room_id": "lobby",
+          "is_reconnection": false
+        },
+        "sequence": 1,
+        "timestamp": 1753825235711,
+        "id": "1dd210a6-f041-434c-84f5-77c76726fa55"
+      },
+      "raw": "{\"event\":\"client_ready\",\"data\":{\"room_id\":\"lobby\",\"is_reconnection\":false},\"sequence\":1,\"timestamp\":1753825235711,\"id\":\"1dd210a6-f041-434c-84f5-77c76726fa55\"}"
+    },
+    {
+      "type": "received",
+      "timestamp": "2025-07-29T21:40:35.714Z",
+      "message": {
+        "event": "client_ready_ack",
+        "data": {
+          "success": true,
+          "ready": true,
+          "room_state": null
+        }
+      },
+      "raw": "{\"event\":\"client_ready_ack\",\"data\":{\"success\":true,\"ready\":true,\"room_state\":null}}"
+    },
+    {
+      "type": "sent",
+      "timestamp": "2025-07-29T21:40:35.725Z",
+      "message": {
+        "event": "client_ready",
+        "data": {
+          "room_id": "AVJ1C4",
+          "player_name": "Andy",
+          "is_reconnection": false
+        },
+        "sequence": 1,
+        "timestamp": 1753825235724,
+        "id": "daf03ca2-f2b3-449b-afed-ddf70a0f5b90"
+      },
+      "raw": "{\"event\":\"client_ready\",\"data\":{\"room_id\":\"AVJ1C4\",\"player_name\":\"Andy\",\"is_reconnection\":false},\"sequence\":1,\"timestamp\":1753825235724,\"id\":\"daf03ca2-f2b3-449b-afed-ddf70a0f5b90\"}"
+    },
+    {
+      "type": "sent",
+      "timestamp": "2025-07-29T21:40:35.726Z",
+      "message": {
+        "event": "get_room_state",
+        "data": {
+          "room_id": "AVJ1C4"
+        },
+        "sequence": 2,
+        "timestamp": 1753825235725,
+        "id": "f351dcd2-7af1-4695-a7f8-653df2fae896"
+      },
+      "raw": "{\"event\":\"get_room_state\",\"data\":{\"room_id\":\"AVJ1C4\"},\"sequence\":2,\"timestamp\":1753825235725,\"id\":\"f351dcd2-7af1-4695-a7f8-653df2fae896\"}"
+    },
+    {
+      "type": "received",
+      "timestamp": "2025-07-29T21:40:35.729Z",
+      "message": {
+        "event": "client_ready_ack",
+        "data": {
+          "success": true,
+          "ready": true,
+          "room_state": {
+            "room_id": "AVJ1C4",
+            "host": "AVJ1C4_p0",
+            "players": [
+              {
+                "player_id": "AVJ1C4_p0",
+                "name": "Andy",
+                "is_bot": false,
+                "is_host": true,
+                "seat_position": 0
+              },
+              {
+                "player_id": "AVJ1C4_p1",
+                "name": "Bot 2",
+                "is_bot": true,
+                "is_host": false,
+                "seat_position": 1
+              },
+              {
+                "player_id": "AVJ1C4_p2",
+                "name": "Bot 3",
+                "is_bot": true,
+                "is_host": false,
+                "seat_position": 2
+              },
+              {
+                "player_id": "AVJ1C4_p3",
+                "name": "Bot 4",
+                "is_bot": true,
+                "is_host": false,
+                "seat_position": 3
+              }
+            ],
+            "status": "READY",
+            "game_config": {
+              "max_players": 4,
+              "max_score": 50,
+              "allow_bot_start": true
+            },
+            "current_round": 1,
+            "max_players": 4
+          }
+        }
+      },
+      "raw": "{\"event\":\"client_ready_ack\",\"data\":{\"success\":true,\"ready\":true,\"room_state\":{\"room_id\":\"AVJ1C4\",\"host\":\"AVJ1C4_p0\",\"players\":[{\"player_id\":\"AVJ1C4_p0\",\"name\":\"Andy\",\"is_bot\":false,\"is_host\":true,\"seat_position\":0},{\"player_id\":\"AVJ1C4_p1\",\"name\":\"Bot 2\",\"is_bot\":true,\"is_host\":false,\"seat_position\":1},{\"player_id\":\"AVJ1C4_p2\",\"name\":\"Bot 3\",\"is_bot\":true,\"is_host\":false,\"seat_position\":2},{\"player_id\":\"AVJ1C4_p3\",\"name\":\"Bot 4\",\"is_bot\":true,\"is_host\":false,\"seat_position\":3}],\"status\":\"READY\",\"game_config\":{\"max_players\":4,\"max_score\":50,\"allow_bot_start\":true},\"current_round\":1,\"max_players\":4}}}"
+    },
+    {
+      "type": "received",
+      "timestamp": "2025-07-29T21:40:35.729Z",
+      "message": {
+        "event": "room_update",
+        "data": {
+          "room_id": "AVJ1C4",
+          "room_code": "AVJ1C4",
+          "room_name": "Andy's Room",
+          "host_id": "AVJ1C4_p0",
+          "players": [
+            {
+              "player_id": "AVJ1C4_p0",
+              "name": "Andy",
+              "is_bot": false,
+              "is_host": true,
+              "seat_position": 0,
+              "avatar_color": null
+            },
+            {
+              "player_id": "AVJ1C4_p1",
+              "name": "Bot 2",
+              "is_bot": true,
+              "is_host": false,
+              "seat_position": 1,
+              "avatar_color": null
+            },
+            {
+              "player_id": "AVJ1C4_p2",
+              "name": "Bot 3",
+              "is_bot": true,
+              "is_host": false,
+              "seat_position": 2,
+              "avatar_color": null
+            },
+            {
+              "player_id": "AVJ1C4_p3",
+              "name": "Bot 4",
+              "is_bot": true,
+              "is_host": false,
+              "seat_position": 3,
+              "avatar_color": null
+            }
+          ],
+          "max_players": 4,
+          "game_in_progress": false,
+          "status": "waiting"
+        }
+      },
+      "raw": "{\"event\":\"room_update\",\"data\":{\"room_id\":\"AVJ1C4\",\"room_code\":\"AVJ1C4\",\"room_name\":\"Andy's Room\",\"host_id\":\"AVJ1C4_p0\",\"players\":[{\"player_id\":\"AVJ1C4_p0\",\"name\":\"Andy\",\"is_bot\":false,\"is_host\":true,\"seat_position\":0,\"avatar_color\":null},{\"player_id\":\"AVJ1C4_p1\",\"name\":\"Bot 2\",\"is_bot\":true,\"is_host\":false,\"seat_position\":1,\"avatar_color\":null},{\"player_id\":\"AVJ1C4_p2\",\"name\":\"Bot 3\",\"is_bot\":true,\"is_host\":false,\"seat_position\":2,\"avatar_color\":null},{\"player_id\":\"AVJ1C4_p3\",\"name\":\"Bot 4\",\"is_bot\":true,\"is_host\":false,\"seat_position\":3,\"avatar_color\":null}],\"max_players\":4,\"game_in_progress\":false,\"status\":\"waiting\"}}"
+    }
+  ],
+  "alexanderiumMessages": [
+    {
+      "type": "sent",
+      "timestamp": "2025-07-29T21:40:32.983Z",
+      "message": {
+        "event": "client_ready",
+        "data": {
+          "room_id": "lobby",
+          "is_reconnection": false
+        },
+        "sequence": 1,
+        "timestamp": 1753825232960,
+        "id": "6709af83-5f11-4a87-8deb-0d4fac4d9c71"
+      },
+      "raw": "{\"event\":\"client_ready\",\"data\":{\"room_id\":\"lobby\",\"is_reconnection\":false},\"sequence\":1,\"timestamp\":1753825232960,\"id\":\"6709af83-5f11-4a87-8deb-0d4fac4d9c71\"}"
+    },
+    {
+      "type": "sent",
+      "timestamp": "2025-07-29T21:40:32.984Z",
+      "message": {
+        "event": "get_rooms",
+        "data": {},
+        "sequence": 2,
+        "timestamp": 1753825232964,
+        "id": "3e89d0d5-b3b6-4fa7-bd40-649b0f70e153"
+      },
+      "raw": "{\"event\":\"get_rooms\",\"data\":{},\"sequence\":2,\"timestamp\":1753825232964,\"id\":\"3e89d0d5-b3b6-4fa7-bd40-649b0f70e153\"}"
+    },
+    {
+      "type": "received",
+      "timestamp": "2025-07-29T21:40:32.985Z",
+      "message": {
+        "event": "client_ready_ack",
+        "data": {
+          "success": true,
+          "ready": true,
+          "room_state": null
+        }
+      },
+      "raw": "{\"event\":\"client_ready_ack\",\"data\":{\"success\":true,\"ready\":true,\"room_state\":null}}"
+    },
+    {
+      "type": "received",
+      "timestamp": "2025-07-29T21:40:32.985Z",
+      "message": {
+        "event": "room_list_update",
+        "data": {
+          "rooms": [],
+          "total_count": 0
+        }
+      },
+      "raw": "{\"event\":\"room_list_update\",\"data\":{\"rooms\":[],\"total_count\":0}}"
+    },
+    {
+      "type": "received",
+      "timestamp": "2025-07-29T21:40:35.635Z",
+      "message": {
+        "event": "room_list_update",
+        "data": {
+          "rooms": [
+            {
+              "room_id": "AVJ1C4",
+              "room_code": "AVJ1C4",
+              "room_name": "Andy's Room",
+              "host_name": "Andy",
+              "player_count": 4,
+              "max_players": 4,
+              "game_in_progress": false,
+              "is_private": false,
+              "players": [
+                {
+                  "name": "Andy",
+                  "is_bot": false
+                },
+                {
+                  "name": "Bot 2",
+                  "is_bot": true
+                },
+                {
+                  "name": "Bot 3",
+                  "is_bot": true
+                },
+                {
+                  "name": "Bot 4",
+                  "is_bot": true
+                }
+              ]
+            }
+          ],
+          "timestamp": 244438.066
+        }
+      },
+      "raw": "{\"event\":\"room_list_update\",\"data\":{\"rooms\":[{\"room_id\":\"AVJ1C4\",\"room_code\":\"AVJ1C4\",\"room_name\":\"Andy's Room\",\"host_name\":\"Andy\",\"player_count\":4,\"max_players\":4,\"game_in_progress\":false,\"is_private\":false,\"players\":[{\"name\":\"Andy\",\"is_bot\":false},{\"name\":\"Bot 2\",\"is_bot\":true},{\"name\":\"Bot 3\",\"is_bot\":true},{\"name\":\"Bot 4\",\"is_bot\":true}]}],\"timestamp\":244438.066}}"
+    },
+    {
+      "type": "received",
+      "timestamp": "2025-07-29T21:40:35.636Z",
+      "message": {
+        "event": "room_list_update",
+        "data": {
+          "rooms": [
+            {
+              "room_id": "AVJ1C4",
+              "room_code": "AVJ1C4",
+              "room_name": "Andy's Room",
+              "host_name": "Andy",
+              "player_count": 4,
+              "max_players": 4,
+              "game_in_progress": false,
+              "is_private": false,
+              "players": [
+                {
+                  "name": "Andy",
+                  "is_bot": false
+                },
+                {
+                  "name": "Bot 2",
+                  "is_bot": true
+                },
+                {
+                  "name": "Bot 3",
+                  "is_bot": true
+                },
+                {
+                  "name": "Bot 4",
+                  "is_bot": true
+                }
+              ]
+            }
+          ],
+          "timestamp": 244438.067
+        }
+      },
+      "raw": "{\"event\":\"room_list_update\",\"data\":{\"rooms\":[{\"room_id\":\"AVJ1C4\",\"room_code\":\"AVJ1C4\",\"room_name\":\"Andy's Room\",\"host_name\":\"Andy\",\"player_count\":4,\"max_players\":4,\"game_in_progress\":false,\"is_private\":false,\"players\":[{\"name\":\"Andy\",\"is_bot\":false},{\"name\":\"Bot 2\",\"is_bot\":true},{\"name\":\"Bot 3\",\"is_bot\":true},{\"name\":\"Bot 4\",\"is_bot\":true}]}],\"timestamp\":244438.067}}"
+    },
+    {
+      "type": "sent",
+      "timestamp": "2025-07-29T21:40:41.807Z",
+      "message": {
+        "event": "client_ready",
+        "data": {
+          "room_id": "lobby",
+          "is_reconnection": false
+        },
+        "sequence": 1,
+        "timestamp": 1753825241787,
+        "id": "67e56dd9-c7d6-4e25-9acc-3190b209cb79"
+      },
+      "raw": "{\"event\":\"client_ready\",\"data\":{\"room_id\":\"lobby\",\"is_reconnection\":false},\"sequence\":1,\"timestamp\":1753825241787,\"id\":\"67e56dd9-c7d6-4e25-9acc-3190b209cb79\"}"
+    },
+    {
+      "type": "sent",
+      "timestamp": "2025-07-29T21:40:41.808Z",
+      "message": {
+        "event": "get_rooms",
+        "data": {},
+        "sequence": 2,
+        "timestamp": 1753825241792,
+        "id": "3385fa58-a4c5-4115-8d13-52069dec3034"
+      },
+      "raw": "{\"event\":\"get_rooms\",\"data\":{},\"sequence\":2,\"timestamp\":1753825241792,\"id\":\"3385fa58-a4c5-4115-8d13-52069dec3034\"}"
+    },
+    {
+      "type": "received",
+      "timestamp": "2025-07-29T21:40:41.809Z",
+      "message": {
+        "event": "client_ready_ack",
+        "data": {
+          "success": true,
+          "ready": true,
+          "room_state": null
+        }
+      },
+      "raw": "{\"event\":\"client_ready_ack\",\"data\":{\"success\":true,\"ready\":true,\"room_state\":null}}"
+    },
+    {
+      "type": "received",
+      "timestamp": "2025-07-29T21:40:41.809Z",
+      "message": {
+        "event": "room_list_update",
+        "data": {
+          "rooms": [],
+          "total_count": 0
+        }
+      },
+      "raw": "{\"event\":\"room_list_update\",\"data\":{\"rooms\":[],\"total_count\":0}}"
+    }
+  ],
+  "timeline": [
+    {
+      "timestamp": "2025-07-29T21:40:32.980Z",
+      "player": "Andy",
+      "direction": "sent",
+      "message": {
+        "event": "client_ready",
+        "data": {
+          "room_id": "lobby",
+          "is_reconnection": false
+        },
+        "sequence": 1,
+        "timestamp": 1753825232960,
+        "id": "e66c71a5-398d-4dc0-8d6d-1afa411d7984"
+      }
+    },
+    {
+      "timestamp": "2025-07-29T21:40:32.983Z",
+      "player": "Alexanderium",
+      "direction": "sent",
+      "message": {
+        "event": "client_ready",
+        "data": {
+          "room_id": "lobby",
+          "is_reconnection": false
+        },
+        "sequence": 1,
+        "timestamp": 1753825232960,
+        "id": "6709af83-5f11-4a87-8deb-0d4fac4d9c71"
+      }
+    },
+    {
+      "timestamp": "2025-07-29T21:40:32.983Z",
+      "player": "Andy",
+      "direction": "sent",
+      "message": {
+        "event": "get_rooms",
+        "data": {},
+        "sequence": 2,
+        "timestamp": 1753825232963,
+        "id": "026a5293-d4ac-4bcb-89bc-9f64c758101c"
+      }
+    },
+    {
+      "timestamp": "2025-07-29T21:40:32.984Z",
+      "player": "Alexanderium",
+      "direction": "sent",
+      "message": {
+        "event": "get_rooms",
+        "data": {},
+        "sequence": 2,
+        "timestamp": 1753825232964,
+        "id": "3e89d0d5-b3b6-4fa7-bd40-649b0f70e153"
+      }
+    },
+    {
+      "timestamp": "2025-07-29T21:40:32.985Z",
+      "player": "Andy",
+      "direction": "received",
+      "message": {
+        "event": "client_ready_ack",
+        "data": {
+          "success": true,
+          "ready": true,
+          "room_state": null
+        }
+      }
+    },
+    {
+      "timestamp": "2025-07-29T21:40:32.985Z",
+      "player": "Alexanderium",
+      "direction": "received",
+      "message": {
+        "event": "client_ready_ack",
+        "data": {
+          "success": true,
+          "ready": true,
+          "room_state": null
+        }
+      }
+    },
+    {
+      "timestamp": "2025-07-29T21:40:32.985Z",
+      "player": "Andy",
+      "direction": "received",
+      "message": {
+        "event": "room_list_update",
+        "data": {
+          "rooms": [],
+          "total_count": 0
+        }
+      }
+    },
+    {
+      "timestamp": "2025-07-29T21:40:32.985Z",
+      "player": "Alexanderium",
+      "direction": "received",
+      "message": {
+        "event": "room_list_update",
+        "data": {
+          "rooms": [],
+          "total_count": 0
+        }
+      }
+    },
+    {
+      "timestamp": "2025-07-29T21:40:35.539Z",
+      "player": "Andy",
+      "direction": "sent",
+      "message": {
+        "event": "client_ready",
+        "data": {
+          "room_id": "lobby",
+          "is_reconnection": false
+        },
+        "sequence": 1,
+        "timestamp": 1753825235536,
+        "id": "d1ae2fa6-a04c-4583-a39a-14d8aebe0e23"
+      }
+    },
+    {
+      "timestamp": "2025-07-29T21:40:35.540Z",
+      "player": "Andy",
+      "direction": "received",
+      "message": {
+        "event": "client_ready_ack",
+        "data": {
+          "success": true,
+          "ready": true,
+          "room_state": null
+        }
+      }
+    },
+    {
+      "timestamp": "2025-07-29T21:40:35.621Z",
+      "player": "Andy",
+      "direction": "sent",
+      "message": {
+        "event": "create_room",
+        "data": {
+          "player_name": "Andy"
+        },
+        "sequence": 2,
+        "timestamp": 1753825235619,
+        "id": "763b9d43-0697-49e1-87b2-254228a4a48b"
+      }
+    },
+    {
+      "timestamp": "2025-07-29T21:40:35.635Z",
+      "player": "Andy",
+      "direction": "received",
+      "message": {
+        "event": "room_list_update",
+        "data": {
+          "rooms": [
+            {
+              "room_id": "AVJ1C4",
+              "room_code": "AVJ1C4",
+              "room_name": "Andy's Room",
+              "host_name": "Andy",
+              "player_count": 4,
+              "max_players": 4,
+              "game_in_progress": false,
+              "is_private": false,
+              "players": [
+                {
+                  "name": "Andy",
+                  "is_bot": false
+                },
+                {
+                  "name": "Bot 2",
+                  "is_bot": true
+                },
+                {
+                  "name": "Bot 3",
+                  "is_bot": true
+                },
+                {
+                  "name": "Bot 4",
+                  "is_bot": true
+                }
+              ]
+            }
+          ],
+          "timestamp": 244438.066
+        }
+      }
+    },
+    {
+      "timestamp": "2025-07-29T21:40:35.635Z",
+      "player": "Alexanderium",
+      "direction": "received",
+      "message": {
+        "event": "room_list_update",
+        "data": {
+          "rooms": [
+            {
+              "room_id": "AVJ1C4",
+              "room_code": "AVJ1C4",
+              "room_name": "Andy's Room",
+              "host_name": "Andy",
+              "player_count": 4,
+              "max_players": 4,
+              "game_in_progress": false,
+              "is_private": false,
+              "players": [
+                {
+                  "name": "Andy",
+                  "is_bot": false
+                },
+                {
+                  "name": "Bot 2",
+                  "is_bot": true
+                },
+                {
+                  "name": "Bot 3",
+                  "is_bot": true
+                },
+                {
+                  "name": "Bot 4",
+                  "is_bot": true
+                }
+              ]
+            }
+          ],
+          "timestamp": 244438.066
+        }
+      }
+    },
+    {
+      "timestamp": "2025-07-29T21:40:35.635Z",
+      "player": "Andy",
+      "direction": "received",
+      "message": {
+        "event": "room_list_update",
+        "data": {
+          "rooms": [
+            {
+              "room_id": "AVJ1C4",
+              "room_code": "AVJ1C4",
+              "room_name": "Andy's Room",
+              "host_name": "Andy",
+              "player_count": 4,
+              "max_players": 4,
+              "game_in_progress": false,
+              "is_private": false,
+              "players": [
+                {
+                  "name": "Andy",
+                  "is_bot": false
+                },
+                {
+                  "name": "Bot 2",
+                  "is_bot": true
+                },
+                {
+                  "name": "Bot 3",
+                  "is_bot": true
+                },
+                {
+                  "name": "Bot 4",
+                  "is_bot": true
+                }
+              ]
+            }
+          ],
+          "timestamp": 244438.067
+        }
+      }
+    },
+    {
+      "timestamp": "2025-07-29T21:40:35.636Z",
+      "player": "Alexanderium",
+      "direction": "received",
+      "message": {
+        "event": "room_list_update",
+        "data": {
+          "rooms": [
+            {
+              "room_id": "AVJ1C4",
+              "room_code": "AVJ1C4",
+              "room_name": "Andy's Room",
+              "host_name": "Andy",
+              "player_count": 4,
+              "max_players": 4,
+              "game_in_progress": false,
+              "is_private": false,
+              "players": [
+                {
+                  "name": "Andy",
+                  "is_bot": false
+                },
+                {
+                  "name": "Bot 2",
+                  "is_bot": true
+                },
+                {
+                  "name": "Bot 3",
+                  "is_bot": true
+                },
+                {
+                  "name": "Bot 4",
+                  "is_bot": true
+                }
+              ]
+            }
+          ],
+          "timestamp": 244438.067
+        }
+      }
+    },
+    {
+      "timestamp": "2025-07-29T21:40:35.641Z",
+      "player": "Andy",
+      "direction": "received",
+      "message": {
+        "event": "room_created",
+        "data": {
+          "room_id": "AVJ1C4",
+          "room_code": "AVJ1C4",
+          "host_name": "Andy",
+          "success": true,
+          "room_info": {
+            "room_id": "AVJ1C4",
+            "room_code": "AVJ1C4",
+            "room_name": "Andy's Room",
+            "host_id": "AVJ1C4_p0",
+            "players": [
+              {
+                "player_id": "AVJ1C4_p0",
+                "name": "Andy",
+                "is_bot": false,
+                "is_host": true,
+                "seat_position": 0,
+                "avatar_color": null
+              },
+              {
+                "player_id": "AVJ1C4_p1",
+                "name": "Bot 2",
+                "is_bot": true,
+                "is_host": false,
+                "seat_position": 1,
+                "avatar_color": null
+              },
+              {
+                "player_id": "AVJ1C4_p2",
+                "name": "Bot 3",
+                "is_bot": true,
+                "is_host": false,
+                "seat_position": 2,
+                "avatar_color": null
+              },
+              {
+                "player_id": "AVJ1C4_p3",
+                "name": "Bot 4",
+                "is_bot": true,
+                "is_host": false,
+                "seat_position": 3,
+                "avatar_color": null
+              }
+            ],
+            "max_players": 4,
+            "game_in_progress": false,
+            "status": "waiting"
+          }
+        }
+      }
+    },
+    {
+      "timestamp": "2025-07-29T21:40:35.713Z",
+      "player": "Andy",
+      "direction": "sent",
+      "message": {
+        "event": "client_ready",
+        "data": {
+          "room_id": "lobby",
+          "is_reconnection": false
+        },
+        "sequence": 1,
+        "timestamp": 1753825235711,
+        "id": "1dd210a6-f041-434c-84f5-77c76726fa55"
+      }
+    },
+    {
+      "timestamp": "2025-07-29T21:40:35.714Z",
+      "player": "Andy",
+      "direction": "received",
+      "message": {
+        "event": "client_ready_ack",
+        "data": {
+          "success": true,
+          "ready": true,
+          "room_state": null
+        }
+      }
+    },
+    {
+      "timestamp": "2025-07-29T21:40:35.725Z",
+      "player": "Andy",
+      "direction": "sent",
+      "message": {
+        "event": "client_ready",
+        "data": {
+          "room_id": "AVJ1C4",
+          "player_name": "Andy",
+          "is_reconnection": false
+        },
+        "sequence": 1,
+        "timestamp": 1753825235724,
+        "id": "daf03ca2-f2b3-449b-afed-ddf70a0f5b90"
+      }
+    },
+    {
+      "timestamp": "2025-07-29T21:40:35.726Z",
+      "player": "Andy",
+      "direction": "sent",
+      "message": {
+        "event": "get_room_state",
+        "data": {
+          "room_id": "AVJ1C4"
+        },
+        "sequence": 2,
+        "timestamp": 1753825235725,
+        "id": "f351dcd2-7af1-4695-a7f8-653df2fae896"
+      }
+    },
+    {
+      "timestamp": "2025-07-29T21:40:35.729Z",
+      "player": "Andy",
+      "direction": "received",
+      "message": {
+        "event": "client_ready_ack",
+        "data": {
+          "success": true,
+          "ready": true,
+          "room_state": {
+            "room_id": "AVJ1C4",
+            "host": "AVJ1C4_p0",
+            "players": [
+              {
+                "player_id": "AVJ1C4_p0",
+                "name": "Andy",
+                "is_bot": false,
+                "is_host": true,
+                "seat_position": 0
+              },
+              {
+                "player_id": "AVJ1C4_p1",
+                "name": "Bot 2",
+                "is_bot": true,
+                "is_host": false,
+                "seat_position": 1
+              },
+              {
+                "player_id": "AVJ1C4_p2",
+                "name": "Bot 3",
+                "is_bot": true,
+                "is_host": false,
+                "seat_position": 2
+              },
+              {
+                "player_id": "AVJ1C4_p3",
+                "name": "Bot 4",
+                "is_bot": true,
+                "is_host": false,
+                "seat_position": 3
+              }
+            ],
+            "status": "READY",
+            "game_config": {
+              "max_players": 4,
+              "max_score": 50,
+              "allow_bot_start": true
+            },
+            "current_round": 1,
+            "max_players": 4
+          }
+        }
+      }
+    },
+    {
+      "timestamp": "2025-07-29T21:40:35.729Z",
+      "player": "Andy",
+      "direction": "received",
+      "message": {
+        "event": "room_update",
+        "data": {
+          "room_id": "AVJ1C4",
+          "room_code": "AVJ1C4",
+          "room_name": "Andy's Room",
+          "host_id": "AVJ1C4_p0",
+          "players": [
+            {
+              "player_id": "AVJ1C4_p0",
+              "name": "Andy",
+              "is_bot": false,
+              "is_host": true,
+              "seat_position": 0,
+              "avatar_color": null
+            },
+            {
+              "player_id": "AVJ1C4_p1",
+              "name": "Bot 2",
+              "is_bot": true,
+              "is_host": false,
+              "seat_position": 1,
+              "avatar_color": null
+            },
+            {
+              "player_id": "AVJ1C4_p2",
+              "name": "Bot 3",
+              "is_bot": true,
+              "is_host": false,
+              "seat_position": 2,
+              "avatar_color": null
+            },
+            {
+              "player_id": "AVJ1C4_p3",
+              "name": "Bot 4",
+              "is_bot": true,
+              "is_host": false,
+              "seat_position": 3,
+              "avatar_color": null
+            }
+          ],
+          "max_players": 4,
+          "game_in_progress": false,
+          "status": "waiting"
+        }
+      }
+    },
+    {
+      "timestamp": "2025-07-29T21:40:41.807Z",
+      "player": "Alexanderium",
+      "direction": "sent",
+      "message": {
+        "event": "client_ready",
+        "data": {
+          "room_id": "lobby",
+          "is_reconnection": false
+        },
+        "sequence": 1,
+        "timestamp": 1753825241787,
+        "id": "67e56dd9-c7d6-4e25-9acc-3190b209cb79"
+      }
+    },
+    {
+      "timestamp": "2025-07-29T21:40:41.808Z",
+      "player": "Alexanderium",
+      "direction": "sent",
+      "message": {
+        "event": "get_rooms",
+        "data": {},
+        "sequence": 2,
+        "timestamp": 1753825241792,
+        "id": "3385fa58-a4c5-4115-8d13-52069dec3034"
+      }
+    },
+    {
+      "timestamp": "2025-07-29T21:40:41.809Z",
+      "player": "Alexanderium",
+      "direction": "received",
+      "message": {
+        "event": "client_ready_ack",
+        "data": {
+          "success": true,
+          "ready": true,
+          "room_state": null
+        }
+      }
+    },
+    {
+      "timestamp": "2025-07-29T21:40:41.809Z",
+      "player": "Alexanderium",
+      "direction": "received",
+      "message": {
+        "event": "room_list_update",
+        "data": {
+          "rooms": [],
+          "total_count": 0
+        }
+      }
+    }
+  ],
+  "analysis": {},
+  "bugReport": null,
+  "error": "manualRefreshRoomCount is not defined"
+}

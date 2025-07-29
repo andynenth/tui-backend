@@ -1,0 +1,25 @@
+{
+  "testName": "Lobby Auto-Update Comprehensive Test",
+  "startTime": 1753828416375,
+  "endTime": 1753828419595,
+  "messages": [],
+  "timeline": [],
+  "analysis": {},
+  "bugReport": null,
+  "performance": {},
+  "webSocketConnections": {},
+  "errors": [
+    {
+      "type": "lobby_entry_error",
+      "player": "Andy",
+      "error": "page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:5050/\nCall log:\n\u001b[2m  - navigating to \"http://localhost:5050/\", waiting until \"networkidle\"\u001b[22m\n",
+      "timestamp": "2025-07-29T22:33:39.593Z"
+    },
+    {
+      "type": "test_execution_error",
+      "error": "page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:5050/\nCall log:\n\u001b[2m  - navigating to \"http://localhost:5050/\", waiting until \"networkidle\"\u001b[22m\n",
+      "stack": "page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:5050/\nCall log:\n\u001b[2m  - navigating to \"http://localhost:5050/\", waiting until \"networkidle\"\u001b[22m\n\n    at enterLobby (/Users/nrw/python/tui-project/liap-tui/test_lobby_comprehensive.js:149:16)\n    at testLobbyAutoUpdate (/Users/nrw/python/tui-project/liap-tui/test_lobby_comprehensive.js:579:7)",
+      "timestamp": "2025-07-29T22:33:39.595Z"
+    }
+  ]
+}
