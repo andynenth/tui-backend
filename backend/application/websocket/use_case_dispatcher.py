@@ -637,22 +637,32 @@ class UseCaseDispatcher:
         
         response = await self.get_room_list_use_case.execute(request)
         
+        # Need to fetch full room details to get players
+        rooms_with_players = []
+        async with self.uow:
+            for room_summary in response.rooms:
+                # Get full room details
+                room = await self.uow.rooms.get_by_id(room_summary.room_id)
+                if room:
+                    rooms_with_players.append({
+                        "room_id": room.room_id,
+                        "room_code": room_summary.room_code,
+                        "room_name": room_summary.room_name,
+                        "host_name": room.host_name,
+                        "player_count": room_summary.player_count,
+                        "max_players": room_summary.max_players,
+                        "game_in_progress": room_summary.game_in_progress,
+                        "is_private": room_summary.is_private,
+                        "players": [
+                            {"name": slot.name, "is_bot": slot.is_bot} if slot else None
+                            for slot in room.slots
+                        ]
+                    })
+        
         return {
             "event": "room_list_update",
             "data": {
-                "rooms": [
-                    {
-                        "room_id": room.room_id,
-                        "room_code": room.room_code,
-                        "room_name": room.room_name,
-                        "host_name": room.host_name,
-                        "player_count": room.player_count,
-                        "max_players": room.max_players,
-                        "game_in_progress": room.game_in_progress,
-                        "is_private": room.is_private
-                    }
-                    for room in response.rooms
-                ],
+                "rooms": rooms_with_players,
                 "total_count": response.total_items
             }
         }

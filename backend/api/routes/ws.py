@@ -5,8 +5,8 @@ import logging
 import uuid
 from typing import Optional
 
-# Legacy shared_instances removed - using clean architecture
-from infrastructure.websocket.connection_singleton import broadcast, register, unregister, get_connection_id_for_websocket
+# Import WebSocket functions from infrastructure
+from infrastructure.websocket.connection_singleton import broadcast, register, unregister
 from fastapi import APIRouter, WebSocket, WebSocketDisconnect
 
 from api.validation import validate_websocket_message
@@ -192,12 +192,12 @@ async def handle_disconnect(room_id: str, websocket: WebSocket):
         logger.error(f"Error handling disconnect: {e}")
     finally:
         # Always unregister the websocket
-        connection_id = getattr(websocket, '_connection_id', None) or get_connection_id_for_websocket(websocket)
+        connection_id = getattr(websocket, "_connection_id", None)
         if connection_id:
             await unregister(connection_id)
             logger.info(f"🔌 [ROOM_DEBUG] WebSocket unregistered from room '{room_id}' (connection_id: {connection_id})")
         else:
-            logger.warning(f"Could not find connection_id for websocket in room '{room_id}'")
+            logger.warning(f"🔌 [ROOM_DEBUG] Cannot unregister - no connection_id found for room '{room_id}'")
 
 
 async def process_leave_room(room_id: str, player_name: str):

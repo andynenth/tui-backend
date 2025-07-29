@@ -122,18 +122,20 @@ const LobbyPage = () => {
       networkService.removeEventListener('error', handleError)
     );
 
-    // Request initial room list
-    if (isConnected) {
-      networkService.send('lobby', 'get_rooms', {});
-    }
-
     // Cleanup
     return () => {
       unsubscribers.forEach((unsub) => unsub());
       // Disconnect from lobby when component unmounts
       networkService.disconnectFromRoom('lobby');
     };
-  }, [isConnected, isCreatingRoom, app, navigate, isJoiningRoom]);
+  }, [isCreatingRoom, app, navigate, isJoiningRoom]);
+
+  // Send get_rooms request when connected
+  useEffect(() => {
+    if (isConnected) {
+      networkService.send('lobby', 'get_rooms', {});
+    }
+  }, [isConnected]);
 
   // Refresh room list
   const refreshRooms = () => {
