@@ -61,44 +61,51 @@ async def handle_room_created(event: RoomCreated):
     logger.debug(f"Room {event.room_id} created by {event.host_name}")
     
     # Broadcast updated room list to lobby
-    # Import here to avoid circular dependencies
-    from infrastructure.dependencies import get_unit_of_work
-    from application.services.lobby_application_service import LobbyApplicationService
-    from application.dto.lobby import GetRoomListRequest
     import asyncio
     
     try:
-        # Get updated room list
-        uow = get_unit_of_work()
-        lobby_service = LobbyApplicationService(unit_of_work=uow)
-        list_request = GetRoomListRequest(
-            player_id="",
-            include_full=False,
-            include_in_game=False
-        )
-        list_response = await lobby_service._get_room_list_use_case.execute(list_request)
-        
-        # Convert room summaries to legacy format and fetch player details
-        available_rooms = []
-        async with uow:
-            for room_summary in list_response.rooms:
-                # Get full room details to include players
-                room_entity = await uow.rooms.get_by_id(room_summary.room_id)
-                if room_entity:
-                    available_rooms.append({
-                        "room_id": room_entity.room_id,
-                        "room_code": room_summary.room_code,
-                        "room_name": room_summary.room_name,
-                        "host_name": room_entity.host_name,
-                        "player_count": room_summary.player_count,
-                        "max_players": room_summary.max_players,
-                        "game_in_progress": room_summary.game_in_progress,
-                        "is_private": room_summary.is_private,
-                        "players": [
-                            {"name": slot.name, "is_bot": slot.is_bot} if slot else None
-                            for slot in room_entity.slots
-                        ]
-                    })
+        # Use room data from event if available (avoids transaction timing issues)
+        if event.room_data:
+            logger.info(f"[BROADCAST_HANDLER_DEBUG] Using room data from event for {event.room_id}")
+            available_rooms = [event.room_data]
+        else:
+            logger.info(f"[BROADCAST_HANDLER_DEBUG] Falling back to database query for {event.room_id}")
+            # Fallback to database query (original approach)
+            from infrastructure.dependencies import get_unit_of_work
+            from application.services.lobby_application_service import LobbyApplicationService
+            from application.dto.lobby import GetRoomListRequest
+            
+            # Get updated room list
+            uow = get_unit_of_work()
+            lobby_service = LobbyApplicationService(unit_of_work=uow)
+            list_request = GetRoomListRequest(
+                player_id="",
+                include_full=False,
+                include_in_game=False
+            )
+            list_response = await lobby_service._get_room_list_use_case.execute(list_request)
+            
+            # Convert room summaries to legacy format and fetch player details
+            available_rooms = []
+            async with uow:
+                for room_summary in list_response.rooms:
+                    # Get full room details to include players
+                    room_entity = await uow.rooms.get_by_id(room_summary.room_id)
+                    if room_entity:
+                        available_rooms.append({
+                            "room_id": room_entity.room_id,
+                            "room_code": room_summary.room_code,
+                            "room_name": room_summary.room_name,
+                            "host_name": room_entity.host_name,
+                            "player_count": room_summary.player_count,
+                            "max_players": room_summary.max_players,
+                            "game_in_progress": room_summary.game_in_progress,
+                            "is_private": room_summary.is_private,
+                            "players": [
+                                {"name": slot.name, "is_bot": slot.is_bot} if slot else None
+                                for slot in room_entity.slots
+                            ]
+                        })
         
         # Broadcast to lobby
         await broadcast(

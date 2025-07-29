@@ -14,6 +14,7 @@ class RoomCreated(GameEvent):
     """A new game room has been created."""
     host_id: str
     host_name: str
+    room_data: Optional[Dict[str, Any]] = None
     
     def _get_event_data(self) -> Dict[str, Any]:
         data = super()._get_event_data()
@@ -21,6 +22,8 @@ class RoomCreated(GameEvent):
             'host_id': self.host_id,
             'host_name': self.host_name
         })
+        if self.room_data:
+            data['room_data'] = self.room_data
         return data
 
 
