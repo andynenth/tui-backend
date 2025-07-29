@@ -192,6 +192,6 @@ async def startup_event():
     Run startup tasks when the application starts.
     """
     # Start the room cleanup background task
-    from backend.api.routes.ws import start_cleanup_task
+    from api.routes.ws import start_cleanup_task
 
     start_cleanup_task()

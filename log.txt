@@ -4,7 +4,7 @@
 ▶️ Starting backend on http://0.0.0.0:5050 ...
 INFO:     Will watch for changes in these directories: ['/Users/nrw/python/tui-project/liap-tui']
 INFO:     Uvicorn running on http://0.0.0.0:5050 (Press CTRL+C to quit)
-INFO:     Started reloader process [53974] using WatchFiles
+INFO:     Started reloader process [59687] using WatchFiles
 🌐 Starting esbuild in watch mode...
 /Users/nrw/python/tui-project/liap-tui/venv/lib/python3.11/site-packages/pydantic/_internal/_config.py:373: UserWarning: Valid config keys have changed in V2:
 * 'schema_extra' has been renamed to 'json_schema_extra'
@@ -13,241 +13,622 @@ INFO:     Started reloader process [53974] using WatchFiles
 > frontend@1.0.0 dev
 > node esbuild.config.cjs
 
-2025-07-29 00:23:57 - config.logging_config - INFO - Logging configured
+2025-07-29 08:48:58 - config.logging_config - INFO - Logging configured
 Rate limiting is disabled (configuration needed)
-2025-07-29 00:23:57 - backend.api.main - INFO - Mounting static files from: /Users/nrw/python/tui-project/liap-tui/static
-2025-07-29 00:23:57 - backend.api.main - INFO - Static directory exists: True
-2025-07-29 00:23:57 - backend.api.main - INFO - Files in static directory: ['index.html', 'bundle.css', 'bundle.js.map', 'bundle.css.map', 'bundle.js']
-INFO:     Started server process [53977]
+2025-07-29 08:48:58 - backend.api.main - INFO - Mounting static files from: /Users/nrw/python/tui-project/liap-tui/static
+2025-07-29 08:48:58 - backend.api.main - INFO - Static directory exists: True
+2025-07-29 08:48:58 - backend.api.main - INFO - Files in static directory: ['index.html', 'bundle.css', 'bundle.js.map', 'bundle.css.map', 'bundle.js']
+INFO:     Started server process [59690]
 INFO:     Waiting for application startup.
-2025-07-29 00:23:57 - backend.api.routes.ws - INFO - 🧹 [ROOM_DEBUG] Starting room cleanup background task
-2025-07-29 00:23:57 - backend.api.routes.ws - INFO - 🧹 [ROOM_DEBUG] Room cleanup task started
+2025-07-29 08:48:58 - api.routes.ws - INFO - 🧹 [ROOM_DEBUG] Starting room cleanup background task
+2025-07-29 08:48:58 - api.routes.ws - INFO - 🧹 [ROOM_DEBUG] Room cleanup task started
 INFO:     Application startup complete.
-INFO:     127.0.0.1:63088 - "GET / HTTP/1.1" 200 OK
-INFO:     127.0.0.1:63092 - "GET /bundle.js HTTP/1.1" 304 Not Modified
-INFO:     127.0.0.1:63090 - "GET /bundle.css HTTP/1.1" 304 Not Modified
-INFO:     127.0.0.1:63088 - "GET /.well-known/appspecific/com.chrome.devtools.json HTTP/1.1" 404 Not Found
-INFO:     127.0.0.1:63088 - "GET /bundle.js.map HTTP/1.1" 304 Not Modified
-INFO:     127.0.0.1:63088 - "GET /bundle.css.map HTTP/1.1" 304 Not Modified
 👀 Watching for changes to ./main.js, output to ../static//
 
-[0.40ms] [@tailwindcss/postcss] src/styles/toast-notifications.css
-[0.38ms]   ↳ Quick bail check
+[0.38ms] [@tailwindcss/postcss] src/styles/components/game/gameover.css
+[0.36ms]   ↳ Quick bail check
 
 
-[0.16ms] [@tailwindcss/postcss] src/styles/components/game/gameover.css
-[0.15ms]   ↳ Quick bail check
+[0.07ms] [@tailwindcss/postcss] src/styles/toast-notifications.css
+[0.06ms]   ↳ Quick bail check
 
 
-[279.47ms] [@tailwindcss/postcss] src/styles/globals.css
-[  0.09ms]   ↳ Quick bail check
-[123.02ms]   ↳ Setup compiler
-[  0.71ms]     ↳ PostCSS AST -> Tailwind CSS AST
-[122.28ms]     ↳ Create compiler
-[  0.37ms]   ↳ Register full rebuild paths
-[  2.75ms]   ↳ Setup scanner
-[ 55.38ms]   ↳ Scan for candidates
-[ 20.29ms]   ↳ Register dependency messages
-[ 61.00ms]   ↳ Build utilities
-[ 11.14ms]   ↳ Transform Tailwind CSS AST into PostCSS AST
-[  4.92ms]   ↳ Update PostCSS AST
+[205.71ms] [@tailwindcss/postcss] src/styles/globals.css
+[  0.13ms]   ↳ Quick bail check
+[ 77.72ms]   ↳ Setup compiler
+[  0.63ms]     ↳ PostCSS AST -> Tailwind CSS AST
+[ 77.06ms]     ↳ Create compiler
+[  0.34ms]   ↳ Register full rebuild paths
+[ 11.42ms]   ↳ Setup scanner
+[ 33.79ms]   ↳ Scan for candidates
+[ 16.52ms]   ↳ Register dependency messages
+[ 52.17ms]   ↳ Build utilities
+[  8.43ms]   ↳ Transform Tailwind CSS AST into PostCSS AST
+[  4.71ms]   ↳ Update PostCSS AST
 
-INFO:     127.0.0.1:63103 - "GET / HTTP/1.1" 200 OK
-INFO:     127.0.0.1:63103 - "GET /bundle.css HTTP/1.1" 200 OK
-INFO:     127.0.0.1:63104 - "GET /.well-known/appspecific/com.chrome.devtools.json HTTP/1.1" 404 Not Found
-INFO:     127.0.0.1:63106 - "GET /bundle.js HTTP/1.1" 200 OK
-INFO:     127.0.0.1:63106 - "GET /bundle.css.map HTTP/1.1" 200 OK
-INFO:     127.0.0.1:63106 - "GET /bundle.js.map HTTP/1.1" 200 OK
-2025-07-29 00:24:01 - api.routes.ws - INFO - 🔌 [ROOM_DEBUG] New WebSocket connection to room 'lobby', ws_id: 6accc8f1-64cf-4629-bcbe-05cd4e865f64 at 1753773841.379942
-2025-07-29 00:24:01 - api.routes.ws - INFO - 🧹 [ROOM_DEBUG] Starting room cleanup background task
-INFO:     ('127.0.0.1', 63116) - "WebSocket /ws/lobby" [accepted]
-2025-07-29 00:24:01 - infrastructure.websocket.connection_manager - INFO - WebSocket connected: conn_1
-2025-07-29 00:24:01 - infrastructure.websocket.connection_manager - INFO - WebSocket joined room: conn_1 -> lobby
-2025-07-29 00:24:01 - infrastructure.websocket.connection_singleton - INFO - WebSocket registered: conn_1 -> room lobby
-2025-07-29 00:24:01 - api.websocket.connection_manager - INFO - Player anonymous_6accc8f1 connected to room lobby
-2025-07-29 00:24:01 - api.routes.ws - INFO - Registered anonymous lobby connection: anonymous_6accc8f1
-2025-07-29 00:24:01 - api.routes.ws - INFO - 🧹 [ROOM_DEBUG] Room cleanup task started
+INFO:     127.0.0.1:55277 - "GET / HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55277 - "GET /.well-known/appspecific/com.chrome.devtools.json HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:55279 - "GET /bundle.css HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55277 - "GET /bundle.js HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55277 - "GET /bundle.css.map HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55277 - "GET /bundle.js.map HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55277 - "GET /favicon.ico HTTP/1.1" 404 Not Found
+2025-07-29 08:49:03 - api.routes.ws - INFO - 🔌 [ROOM_DEBUG] New WebSocket connection to room 'lobby', ws_id: 25e6d64e-3c3a-4ace-9f27-2a4f1dedde97 at 1753804143.1671622
+2025-07-29 08:49:03 - api.routes.ws - INFO - 🧹 [ROOM_DEBUG] Room cleanup task already running
+INFO:     ('127.0.0.1', 55295) - "WebSocket /ws/lobby" [accepted]
+2025-07-29 08:49:03 - infrastructure.websocket.connection_manager - INFO - WebSocket connected: conn_1
+2025-07-29 08:49:03 - infrastructure.websocket.connection_manager - INFO - WebSocket joined room: conn_1 -> lobby
+2025-07-29 08:49:03 - infrastructure.websocket.connection_singleton - INFO - WebSocket registered: conn_1 -> room lobby
+2025-07-29 08:49:03 - api.websocket.connection_manager - INFO - Player anonymous_25e6d64e connected to room lobby
+2025-07-29 08:49:03 - api.routes.ws - INFO - Registered anonymous lobby connection: anonymous_25e6d64e
 INFO:     connection open
-2025-07-29 00:24:01 - application.websocket.use_case_dispatcher - WARNING - Game services not available, game use cases will be limited
-2025-07-29 00:24:01 - application.websocket.use_case_dispatcher - INFO - _handle_client_ready: room_id=lobby, player_name=anonymous_6accc8f1, player_id=None
-2025-07-29 00:24:01 - application.websocket.use_case_dispatcher - INFO - Room state available: False
-2025-07-29 00:24:01 - application.use_cases.connection.mark_client_ready - INFO - Client ready for lobby connection: player_id=anonymous
-2025-07-29 00:24:01 - application.websocket.use_case_dispatcher - INFO - Sending client_ready_ack response: success=True, has_room_state=False
-2025-07-29 00:24:01 - api.routes.ws - INFO - 🔌 [ROOM_DEBUG] New WebSocket connection to room 'lobby', ws_id: 9ceea305-ae33-4bf3-ae8d-e30fa4c8f841 at 1753773841.4673522
-2025-07-29 00:24:01 - api.routes.ws - INFO - 🧹 [ROOM_DEBUG] Room cleanup task already running
-INFO:     ('127.0.0.1', 63118) - "WebSocket /ws/lobby" [accepted]
-2025-07-29 00:24:01 - infrastructure.websocket.connection_manager - INFO - WebSocket connected: conn_2
-2025-07-29 00:24:01 - infrastructure.websocket.connection_manager - INFO - WebSocket joined room: conn_2 -> lobby
-2025-07-29 00:24:01 - infrastructure.websocket.connection_singleton - INFO - WebSocket registered: conn_2 -> room lobby
-2025-07-29 00:24:01 - api.websocket.connection_manager - INFO - Player anonymous_9ceea305 connected to room lobby
-2025-07-29 00:24:01 - api.routes.ws - INFO - Registered anonymous lobby connection: anonymous_9ceea305
-INFO:     connection open
-2025-07-29 00:24:01 - api.routes.ws - ERROR - Error in direct use case routing: 
+2025-07-29 08:49:03 - application.websocket.use_case_dispatcher - WARNING - Game services not available, game use cases will be limited
+2025-07-29 08:49:03 - application.websocket.use_case_dispatcher - INFO - _handle_client_ready: room_id=lobby, player_name=anonymous_25e6d64e, player_id=None
+2025-07-29 08:49:03 - application.websocket.use_case_dispatcher - INFO - Room state available: False
+2025-07-29 08:49:03 - application.use_cases.connection.mark_client_ready - INFO - Client ready for lobby connection: player_id=anonymous
+2025-07-29 08:49:03 - application.websocket.use_case_dispatcher - INFO - Sending client_ready_ack response: success=True, has_room_state=False
+2025-07-29 08:49:04 - api.routes.ws - INFO - 🔌 [ROOM_DEBUG] Handling disconnect for room 'lobby', websocket_id: 25e6d64e-3c3a-4ace-9f27-2a4f1dedde97 at 1753804144.677911
+2025-07-29 08:49:04 - api.websocket.connection_manager - INFO - Player anonymous_25e6d64e disconnected from room lobby. Can reconnect anytime while game is active.
+2025-07-29 08:49:04 - api.routes.ws - WARNING - No websocket_id found on websocket object for room lobby
+2025-07-29 08:49:04 - api.routes.ws - INFO - ⚠️ [ROOM_DEBUG] WebSocket disconnect without ID for room 'lobby'
+ERROR:    Exception in ASGI application
 Traceback (most recent call last):
-  File "/Users/nrw/python/tui-project/liap-tui/venv/lib/python3.11/site-packages/uvicorn/protocols/websockets/websockets_impl.py", line 331, in asgi_send
-    await self.send(data)  # type: ignore[arg-type]
-    ^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/nrw/python/tui-project/liap-tui/venv/lib/python3.11/site-packages/websockets/legacy/protocol.py", line 620, in send
-    await self.ensure_open()
-  File "/Users/nrw/python/tui-project/liap-tui/venv/lib/python3.11/site-packages/websockets/legacy/protocol.py", line 930, in ensure_open
-    raise self.connection_closed_exc()
-websockets.exceptions.ConnectionClosedOK: received 1000 (OK) Client disconnect; then sent 1000 (OK) Client disconnect
-
-The above exception was the direct cause of the following exception:
-
-Traceback (most recent call last):
-  File "/Users/nrw/python/tui-project/liap-tui/venv/lib/python3.11/site-packages/starlette/websockets.py", line 85, in send
-    await self._send(message)
-  File "/Users/nrw/python/tui-project/liap-tui/venv/lib/python3.11/site-packages/starlette/_exception_handler.py", line 39, in sender
-    await send(message)
-  File "/Users/nrw/python/tui-project/liap-tui/venv/lib/python3.11/site-packages/uvicorn/protocols/websockets/websockets_impl.py", line 344, in asgi_send
-    raise ClientDisconnected from exc
-uvicorn.protocols.utils.ClientDisconnected
+  File "/Users/nrw/python/tui-project/liap-tui/backend/api/routes/ws.py", line 413, in websocket_endpoint
+    message = await websocket.receive_json()
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/nrw/python/tui-project/liap-tui/venv/lib/python3.11/site-packages/starlette/websockets.py", line 135, in receive_json
+    self._raise_on_disconnect(message)
+  File "/Users/nrw/python/tui-project/liap-tui/venv/lib/python3.11/site-packages/starlette/websockets.py", line 113, in _raise_on_disconnect
+    raise WebSocketDisconnect(message["code"], message.get("reason"))
+starlette.websockets.WebSocketDisconnect: (1000, 'Client disconnect')
 
 During handling of the above exception, another exception occurred:
 
 Traceback (most recent call last):
-  File "/Users/nrw/python/tui-project/liap-tui/backend/api/routes/ws.py", line 459, in websocket_endpoint
-    await websocket.send_json(response)
-  File "/Users/nrw/python/tui-project/liap-tui/venv/lib/python3.11/site-packages/starlette/websockets.py", line 175, in send_json
-    await self.send({"type": "websocket.send", "text": text})
-  File "/Users/nrw/python/tui-project/liap-tui/venv/lib/python3.11/site-packages/starlette/websockets.py", line 88, in send
-    raise WebSocketDisconnect(code=1006)
-starlette.websockets.WebSocketDisconnect
-2025-07-29 00:24:01 - api.routes.ws - ERROR - WebSocket error in room lobby: Cannot call "send" once a close message has been sent.
-2025-07-29 00:24:01 - api.routes.ws - INFO - 🔌 [ROOM_DEBUG] Handling disconnect for room 'lobby', websocket_id: 6accc8f1-64cf-4629-bcbe-05cd4e865f64 at 1753773841.4779341
-2025-07-29 00:24:01 - api.websocket.connection_manager - INFO - Player anonymous_6accc8f1 disconnected from room lobby. Can reconnect anytime while game is active.
-2025-07-29 00:24:01 - api.routes.ws - WARNING - No websocket_id found on websocket object for room lobby
-2025-07-29 00:24:01 - api.routes.ws - INFO - ⚠️ [ROOM_DEBUG] WebSocket disconnect without ID for room 'lobby'
-2025-07-29 00:24:01 - infrastructure.websocket.connection_singleton - ERROR - Failed to unregister connection conn_1: Cannot call "send" once a close message has been sent.
-2025-07-29 00:24:01 - api.routes.ws - INFO - 🔌 [ROOM_DEBUG] WebSocket unregistered from room 'lobby' (connection_id: conn_1)
+  File "/Users/nrw/python/tui-project/liap-tui/venv/lib/python3.11/site-packages/uvicorn/protocols/websockets/websockets_impl.py", line 243, in run_asgi
+    result = await self.app(self.scope, self.asgi_receive, self.asgi_send)  # type: ignore[func-returns-value]
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/nrw/python/tui-project/liap-tui/venv/lib/python3.11/site-packages/uvicorn/middleware/proxy_headers.py", line 60, in __call__
+    return await self.app(scope, receive, send)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/nrw/python/tui-project/liap-tui/venv/lib/python3.11/site-packages/fastapi/applications.py", line 1054, in __call__
+    await super().__call__(scope, receive, send)
+  File "/Users/nrw/python/tui-project/liap-tui/venv/lib/python3.11/site-packages/starlette/applications.py", line 112, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "/Users/nrw/python/tui-project/liap-tui/venv/lib/python3.11/site-packages/starlette/middleware/errors.py", line 152, in __call__
+    await self.app(scope, receive, send)
+  File "/Users/nrw/python/tui-project/liap-tui/venv/lib/python3.11/site-packages/starlette/middleware/cors.py", line 77, in __call__
+    await self.app(scope, receive, send)
+  File "/Users/nrw/python/tui-project/liap-tui/venv/lib/python3.11/site-packages/starlette/middleware/exceptions.py", line 62, in __call__
+    await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
+  File "/Users/nrw/python/tui-project/liap-tui/venv/lib/python3.11/site-packages/starlette/_exception_handler.py", line 53, in wrapped_app
+    raise exc
+  File "/Users/nrw/python/tui-project/liap-tui/venv/lib/python3.11/site-packages/starlette/_exception_handler.py", line 42, in wrapped_app
+    await app(scope, receive, sender)
+  File "/Users/nrw/python/tui-project/liap-tui/venv/lib/python3.11/site-packages/starlette/routing.py", line 714, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "/Users/nrw/python/tui-project/liap-tui/venv/lib/python3.11/site-packages/starlette/routing.py", line 734, in app
+    await route.handle(scope, receive, send)
+  File "/Users/nrw/python/tui-project/liap-tui/venv/lib/python3.11/site-packages/starlette/routing.py", line 362, in handle
+    await self.app(scope, receive, send)
+  File "/Users/nrw/python/tui-project/liap-tui/venv/lib/python3.11/site-packages/starlette/routing.py", line 95, in app
+    await wrap_app_handling_exceptions(app, session)(scope, receive, send)
+  File "/Users/nrw/python/tui-project/liap-tui/venv/lib/python3.11/site-packages/starlette/_exception_handler.py", line 53, in wrapped_app
+    raise exc
+  File "/Users/nrw/python/tui-project/liap-tui/venv/lib/python3.11/site-packages/starlette/_exception_handler.py", line 42, in wrapped_app
+    await app(scope, receive, sender)
+  File "/Users/nrw/python/tui-project/liap-tui/venv/lib/python3.11/site-packages/starlette/routing.py", line 93, in app
+    await func(session)
+  File "/Users/nrw/python/tui-project/liap-tui/venv/lib/python3.11/site-packages/fastapi/routing.py", line 383, in app
+    await dependant.call(**solved_result.values)
+  File "/Users/nrw/python/tui-project/liap-tui/backend/api/routes/ws.py", line 504, in websocket_endpoint
+    await handle_disconnect(room_id, websocket)
+  File "/Users/nrw/python/tui-project/liap-tui/backend/api/routes/ws.py", line 195, in handle_disconnect
+    unregister(room_id, websocket)
+TypeError: unregister() takes 1 positional argument but 2 were given
 INFO:     connection closed
-2025-07-29 00:24:01 - application.websocket.use_case_dispatcher - INFO - _handle_client_ready: room_id=lobby, player_name=anonymous_9ceea305, player_id=None
-2025-07-29 00:24:01 - application.websocket.use_case_dispatcher - INFO - Room state available: False
-2025-07-29 00:24:01 - application.use_cases.connection.mark_client_ready - INFO - Client ready for lobby connection: player_id=anonymous
-2025-07-29 00:24:01 - application.websocket.use_case_dispatcher - INFO - Sending client_ready_ack response: success=True, has_room_state=False
-2025-07-29 00:24:02 - api.routes.ws - INFO - 🔌 [ROOM_DEBUG] Handling disconnect for room 'lobby', websocket_id: 9ceea305-ae33-4bf3-ae8d-e30fa4c8f841 at 1753773842.8072069
-2025-07-29 00:24:02 - api.websocket.connection_manager - INFO - Player anonymous_9ceea305 disconnected from room lobby. Can reconnect anytime while game is active.
-2025-07-29 00:24:02 - api.routes.ws - WARNING - No websocket_id found on websocket object for room lobby
-2025-07-29 00:24:02 - api.routes.ws - INFO - ⚠️ [ROOM_DEBUG] WebSocket disconnect without ID for room 'lobby'
-2025-07-29 00:24:02 - infrastructure.websocket.connection_manager - INFO - WebSocket disconnected: conn_2
-2025-07-29 00:24:02 - infrastructure.websocket.connection_singleton - INFO - WebSocket unregistered: conn_2
-2025-07-29 00:24:02 - api.routes.ws - INFO - 🔌 [ROOM_DEBUG] WebSocket unregistered from room 'lobby' (connection_id: conn_2)
+2025-07-29 08:49:04 - api.routes.ws - INFO - 🔌 [ROOM_DEBUG] New WebSocket connection to room 'lobby', ws_id: 4dae989a-1b8f-4148-997f-2dde8f48f3b3 at 1753804144.705011
+2025-07-29 08:49:04 - api.routes.ws - INFO - 🧹 [ROOM_DEBUG] Room cleanup task already running
+INFO:     ('127.0.0.1', 55301) - "WebSocket /ws/lobby" [accepted]
+2025-07-29 08:49:04 - infrastructure.websocket.connection_manager - INFO - WebSocket connected: conn_2
+2025-07-29 08:49:04 - infrastructure.websocket.connection_manager - INFO - WebSocket joined room: conn_2 -> lobby
+2025-07-29 08:49:04 - infrastructure.websocket.connection_singleton - INFO - WebSocket registered: conn_2 -> room lobby
+2025-07-29 08:49:04 - api.websocket.connection_manager - INFO - Player anonymous_4dae989a connected to room lobby
+2025-07-29 08:49:04 - api.routes.ws - INFO - Registered anonymous lobby connection: anonymous_4dae989a
+INFO:     connection open
+2025-07-29 08:49:04 - application.websocket.use_case_dispatcher - INFO - _handle_client_ready: room_id=lobby, player_name=anonymous_4dae989a, player_id=None
+2025-07-29 08:49:04 - application.websocket.use_case_dispatcher - INFO - Room state available: False
+2025-07-29 08:49:04 - application.use_cases.connection.mark_client_ready - INFO - Client ready for lobby connection: player_id=anonymous
+2025-07-29 08:49:04 - application.websocket.use_case_dispatcher - INFO - Sending client_ready_ack response: success=True, has_room_state=False
+2025-07-29 08:49:04 - domain.entities.room - INFO - [ROOM_DEBUG] Creating room 00E0M3 with 4 slots
+2025-07-29 08:49:04 - domain.entities.room - INFO - [ROOM_DEBUG] Adding host Alexanderium to slot 0
+2025-07-29 08:49:04 - domain.entities.room - INFO - [ROOM_DEBUG] Added player Alexanderium (bot=False) to slot 0 in room 00E0M3
+2025-07-29 08:49:04 - domain.entities.room - INFO - [ROOM_DEBUG] Adding Bot 2 to slot 1
+2025-07-29 08:49:04 - domain.entities.room - INFO - [ROOM_DEBUG] Added player Bot 2 (bot=True) to slot 1 in room 00E0M3
+2025-07-29 08:49:04 - domain.entities.room - INFO - [ROOM_DEBUG] Adding Bot 3 to slot 2
+2025-07-29 08:49:04 - domain.entities.room - INFO - [ROOM_DEBUG] Added player Bot 3 (bot=True) to slot 2 in room 00E0M3
+2025-07-29 08:49:04 - domain.entities.room - INFO - [ROOM_DEBUG] Adding Bot 4 to slot 3
+2025-07-29 08:49:04 - domain.entities.room - INFO - [ROOM_DEBUG] Added player Bot 4 (bot=True) to slot 3 in room 00E0M3
+2025-07-29 08:49:04 - domain.entities.room - INFO - [ROOM_DEBUG] Room initialization complete. Slots: ['Alexanderium', 'Bot 2', 'Bot 3', 'Bot 4']
+2025-07-29 08:49:04 - application.use_cases.room_management.create_room - INFO - [USE_CASE_DEBUG] Room 00E0M3 saved with slots:
+2025-07-29 08:49:04 - application.use_cases.room_management.create_room - INFO - [USE_CASE_DEBUG]   Slot 0: Alexanderium (bot=False)
+2025-07-29 08:49:04 - application.use_cases.room_management.create_room - INFO - [USE_CASE_DEBUG]   Slot 1: Bot 2 (bot=True)
+2025-07-29 08:49:04 - application.use_cases.room_management.create_room - INFO - [USE_CASE_DEBUG]   Slot 2: Bot 3 (bot=True)
+2025-07-29 08:49:04 - application.use_cases.room_management.create_room - INFO - [USE_CASE_DEBUG]   Slot 3: Bot 4 (bot=True)
+2025-07-29 08:49:04 - application.use_cases.room_management.create_room - INFO - Room 00E0M3 created by Alexanderium
+2025-07-29 08:49:04 - api.routes.ws - INFO - 🔌 [ROOM_DEBUG] Handling disconnect for room 'lobby', websocket_id: 4dae989a-1b8f-4148-997f-2dde8f48f3b3 at 1753804144.7985332
+2025-07-29 08:49:04 - api.websocket.connection_manager - INFO - Player anonymous_4dae989a disconnected from room lobby. Can reconnect anytime while game is active.
+2025-07-29 08:49:04 - api.routes.ws - WARNING - No websocket_id found on websocket object for room lobby
+2025-07-29 08:49:04 - api.routes.ws - INFO - ⚠️ [ROOM_DEBUG] WebSocket disconnect without ID for room 'lobby'
+ERROR:    Exception in ASGI application
+Traceback (most recent call last):
+  File "/Users/nrw/python/tui-project/liap-tui/backend/api/routes/ws.py", line 413, in websocket_endpoint
+    message = await websocket.receive_json()
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/nrw/python/tui-project/liap-tui/venv/lib/python3.11/site-packages/starlette/websockets.py", line 135, in receive_json
+    self._raise_on_disconnect(message)
+  File "/Users/nrw/python/tui-project/liap-tui/venv/lib/python3.11/site-packages/starlette/websockets.py", line 113, in _raise_on_disconnect
+    raise WebSocketDisconnect(message["code"], message.get("reason"))
+starlette.websockets.WebSocketDisconnect: (1000, 'Client disconnect')
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/Users/nrw/python/tui-project/liap-tui/venv/lib/python3.11/site-packages/uvicorn/protocols/websockets/websockets_impl.py", line 243, in run_asgi
+    result = await self.app(self.scope, self.asgi_receive, self.asgi_send)  # type: ignore[func-returns-value]
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/nrw/python/tui-project/liap-tui/venv/lib/python3.11/site-packages/uvicorn/middleware/proxy_headers.py", line 60, in __call__
+    return await self.app(scope, receive, send)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/nrw/python/tui-project/liap-tui/venv/lib/python3.11/site-packages/fastapi/applications.py", line 1054, in __call__
+    await super().__call__(scope, receive, send)
+  File "/Users/nrw/python/tui-project/liap-tui/venv/lib/python3.11/site-packages/starlette/applications.py", line 112, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "/Users/nrw/python/tui-project/liap-tui/venv/lib/python3.11/site-packages/starlette/middleware/errors.py", line 152, in __call__
+    await self.app(scope, receive, send)
+  File "/Users/nrw/python/tui-project/liap-tui/venv/lib/python3.11/site-packages/starlette/middleware/cors.py", line 77, in __call__
+    await self.app(scope, receive, send)
+  File "/Users/nrw/python/tui-project/liap-tui/venv/lib/python3.11/site-packages/starlette/middleware/exceptions.py", line 62, in __call__
+    await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
+  File "/Users/nrw/python/tui-project/liap-tui/venv/lib/python3.11/site-packages/starlette/_exception_handler.py", line 53, in wrapped_app
+    raise exc
+  File "/Users/nrw/python/tui-project/liap-tui/venv/lib/python3.11/site-packages/starlette/_exception_handler.py", line 42, in wrapped_app
+    await app(scope, receive, sender)
+  File "/Users/nrw/python/tui-project/liap-tui/venv/lib/python3.11/site-packages/starlette/routing.py", line 714, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "/Users/nrw/python/tui-project/liap-tui/venv/lib/python3.11/site-packages/starlette/routing.py", line 734, in app
+    await route.handle(scope, receive, send)
+  File "/Users/nrw/python/tui-project/liap-tui/venv/lib/python3.11/site-packages/starlette/routing.py", line 362, in handle
+    await self.app(scope, receive, send)
+  File "/Users/nrw/python/tui-project/liap-tui/venv/lib/python3.11/site-packages/starlette/routing.py", line 95, in app
+    await wrap_app_handling_exceptions(app, session)(scope, receive, send)
+  File "/Users/nrw/python/tui-project/liap-tui/venv/lib/python3.11/site-packages/starlette/_exception_handler.py", line 53, in wrapped_app
+    raise exc
+  File "/Users/nrw/python/tui-project/liap-tui/venv/lib/python3.11/site-packages/starlette/_exception_handler.py", line 42, in wrapped_app
+    await app(scope, receive, sender)
+  File "/Users/nrw/python/tui-project/liap-tui/venv/lib/python3.11/site-packages/starlette/routing.py", line 93, in app
+    await func(session)
+  File "/Users/nrw/python/tui-project/liap-tui/venv/lib/python3.11/site-packages/fastapi/routing.py", line 383, in app
+    await dependant.call(**solved_result.values)
+  File "/Users/nrw/python/tui-project/liap-tui/backend/api/routes/ws.py", line 504, in websocket_endpoint
+    await handle_disconnect(room_id, websocket)
+  File "/Users/nrw/python/tui-project/liap-tui/backend/api/routes/ws.py", line 195, in handle_disconnect
+    unregister(room_id, websocket)
+TypeError: unregister() takes 1 positional argument but 2 were given
 INFO:     connection closed
-2025-07-29 00:24:02 - api.routes.ws - INFO - 🔌 [ROOM_DEBUG] New WebSocket connection to room 'lobby', ws_id: 1aeb5f48-4471-4364-bda7-198492d258eb at 1753773842.814327
-2025-07-29 00:24:02 - api.routes.ws - INFO - 🧹 [ROOM_DEBUG] Room cleanup task already running
-INFO:     ('127.0.0.1', 63124) - "WebSocket /ws/lobby" [accepted]
-2025-07-29 00:24:02 - infrastructure.websocket.connection_manager - INFO - WebSocket connected: conn_3
-2025-07-29 00:24:02 - infrastructure.websocket.connection_manager - INFO - WebSocket joined room: conn_3 -> lobby
-2025-07-29 00:24:02 - infrastructure.websocket.connection_singleton - INFO - WebSocket registered: conn_3 -> room lobby
-2025-07-29 00:24:02 - api.websocket.connection_manager - INFO - Player anonymous_1aeb5f48 connected to room lobby
-2025-07-29 00:24:02 - api.routes.ws - INFO - Registered anonymous lobby connection: anonymous_1aeb5f48
+2025-07-29 08:49:04 - api.routes.ws - INFO - 🔌 [ROOM_DEBUG] New WebSocket connection to room 'lobby', ws_id: 54a74831-d7c7-4fe8-a870-01a36492bfc4 at 1753804144.80583
+2025-07-29 08:49:04 - api.routes.ws - INFO - 🧹 [ROOM_DEBUG] Room cleanup task already running
+INFO:     ('127.0.0.1', 55303) - "WebSocket /ws/lobby" [accepted]
+2025-07-29 08:49:04 - infrastructure.websocket.connection_manager - INFO - WebSocket connected: conn_3
+2025-07-29 08:49:04 - infrastructure.websocket.connection_manager - INFO - WebSocket joined room: conn_3 -> lobby
+2025-07-29 08:49:04 - infrastructure.websocket.connection_singleton - INFO - WebSocket registered: conn_3 -> room lobby
+2025-07-29 08:49:04 - api.websocket.connection_manager - INFO - Player anonymous_54a74831 connected to room lobby
+2025-07-29 08:49:04 - api.routes.ws - INFO - Registered anonymous lobby connection: anonymous_54a74831
 INFO:     connection open
-2025-07-29 00:24:02 - application.websocket.use_case_dispatcher - INFO - _handle_client_ready: room_id=lobby, player_name=anonymous_1aeb5f48, player_id=None
-2025-07-29 00:24:02 - application.websocket.use_case_dispatcher - INFO - Room state available: False
-2025-07-29 00:24:02 - application.use_cases.connection.mark_client_ready - INFO - Client ready for lobby connection: player_id=anonymous
-2025-07-29 00:24:02 - application.websocket.use_case_dispatcher - INFO - Sending client_ready_ack response: success=True, has_room_state=False
-2025-07-29 00:24:02 - domain.entities.room - INFO - [ROOM_DEBUG] Creating room C0HC2P with 4 slots
-2025-07-29 00:24:02 - domain.entities.room - INFO - [ROOM_DEBUG] Adding host Andy to slot 0
-2025-07-29 00:24:02 - domain.entities.room - INFO - [ROOM_DEBUG] Added player Andy (bot=False) to slot 0 in room C0HC2P
-2025-07-29 00:24:02 - domain.entities.room - INFO - [ROOM_DEBUG] Adding Bot 2 to slot 1
-2025-07-29 00:24:02 - domain.entities.room - INFO - [ROOM_DEBUG] Added player Bot 2 (bot=True) to slot 1 in room C0HC2P
-2025-07-29 00:24:02 - domain.entities.room - INFO - [ROOM_DEBUG] Adding Bot 3 to slot 2
-2025-07-29 00:24:02 - domain.entities.room - INFO - [ROOM_DEBUG] Added player Bot 3 (bot=True) to slot 2 in room C0HC2P
-2025-07-29 00:24:02 - domain.entities.room - INFO - [ROOM_DEBUG] Adding Bot 4 to slot 3
-2025-07-29 00:24:02 - domain.entities.room - INFO - [ROOM_DEBUG] Added player Bot 4 (bot=True) to slot 3 in room C0HC2P
-2025-07-29 00:24:02 - domain.entities.room - INFO - [ROOM_DEBUG] Room initialization complete. Slots: ['Andy', 'Bot 2', 'Bot 3', 'Bot 4']
-2025-07-29 00:24:02 - application.use_cases.room_management.create_room - INFO - [USE_CASE_DEBUG] Room C0HC2P saved with slots:
-2025-07-29 00:24:02 - application.use_cases.room_management.create_room - INFO - [USE_CASE_DEBUG]   Slot 0: Andy (bot=False)
-2025-07-29 00:24:02 - application.use_cases.room_management.create_room - INFO - [USE_CASE_DEBUG]   Slot 1: Bot 2 (bot=True)
-2025-07-29 00:24:02 - application.use_cases.room_management.create_room - INFO - [USE_CASE_DEBUG]   Slot 2: Bot 3 (bot=True)
-2025-07-29 00:24:02 - application.use_cases.room_management.create_room - INFO - [USE_CASE_DEBUG]   Slot 3: Bot 4 (bot=True)
-2025-07-29 00:24:02 - application.use_cases.room_management.create_room - INFO - Room C0HC2P created by Andy
-2025-07-29 00:24:02 - api.routes.ws - INFO - 🔌 [ROOM_DEBUG] Handling disconnect for room 'lobby', websocket_id: 1aeb5f48-4471-4364-bda7-198492d258eb at 1753773842.917314
-2025-07-29 00:24:02 - api.websocket.connection_manager - INFO - Player anonymous_1aeb5f48 disconnected from room lobby. Can reconnect anytime while game is active.
-2025-07-29 00:24:02 - api.routes.ws - WARNING - No websocket_id found on websocket object for room lobby
-2025-07-29 00:24:02 - api.routes.ws - INFO - ⚠️ [ROOM_DEBUG] WebSocket disconnect without ID for room 'lobby'
-2025-07-29 00:24:02 - infrastructure.websocket.connection_manager - INFO - WebSocket disconnected: conn_3
-2025-07-29 00:24:02 - infrastructure.websocket.connection_singleton - INFO - WebSocket unregistered: conn_3
-2025-07-29 00:24:02 - api.routes.ws - INFO - 🔌 [ROOM_DEBUG] WebSocket unregistered from room 'lobby' (connection_id: conn_3)
+2025-07-29 08:49:04 - api.routes.ws - INFO - 🔌 [ROOM_DEBUG] New WebSocket connection to room '00E0M3', ws_id: f9d57e14-75b1-4e78-a50f-48c3b17073bc at 1753804144.819767
+2025-07-29 08:49:04 - api.routes.ws - INFO - 🧹 [ROOM_DEBUG] Room cleanup task already running
+INFO:     ('127.0.0.1', 55305) - "WebSocket /ws/00E0M3" [accepted]
+2025-07-29 08:49:04 - infrastructure.websocket.connection_manager - INFO - WebSocket connected: conn_4
+2025-07-29 08:49:04 - infrastructure.websocket.connection_manager - INFO - WebSocket joined room: conn_4 -> 00E0M3
+2025-07-29 08:49:04 - infrastructure.websocket.connection_singleton - INFO - WebSocket registered: conn_4 -> room 00E0M3
+2025-07-29 08:49:04 - api.routes.ws - INFO - [ROOM_LOOKUP_DEBUG] Room 00E0M3 found successfully in clean architecture!
+2025-07-29 08:49:04 - api.websocket.connection_manager - INFO - Player player_f9d57e14 connected to room 00E0M3
+2025-07-29 08:49:04 - api.routes.ws - INFO - Registered temporary player connection: player_f9d57e14 for room 00E0M3
+INFO:     connection open
+2025-07-29 08:49:04 - application.websocket.use_case_dispatcher - INFO - _handle_client_ready: room_id=lobby, player_name=anonymous_54a74831, player_id=None
+2025-07-29 08:49:04 - application.websocket.use_case_dispatcher - INFO - Room state available: False
+2025-07-29 08:49:04 - application.use_cases.connection.mark_client_ready - INFO - Client ready for lobby connection: player_id=anonymous
+2025-07-29 08:49:04 - application.websocket.use_case_dispatcher - INFO - Sending client_ready_ack response: success=True, has_room_state=False
+2025-07-29 08:49:04 - api.websocket.connection_manager - INFO - Player Alexanderium connected to room 00E0M3
+2025-07-29 08:49:04 - application.websocket.message_router - INFO - Updated player registration: Alexanderium for room 00E0M3 with player_id 00E0M3_p0
+2025-07-29 08:49:04 - application.websocket.use_case_dispatcher - INFO - _handle_client_ready: room_id=00E0M3, player_name=Alexanderium, player_id=None
+2025-07-29 08:49:04 - application.websocket.use_case_dispatcher - INFO - Room state available: True
+2025-07-29 08:49:04 - application.websocket.use_case_dispatcher - INFO - Looking for player Alexanderium in room state with 4 players
+2025-07-29 08:49:04 - application.websocket.use_case_dispatcher - INFO -   Slot 0: name=Alexanderium, player_id=00E0M3_p0
+2025-07-29 08:49:04 - application.websocket.use_case_dispatcher - INFO - Found matching player_id: 00E0M3_p0
+2025-07-29 08:49:04 - application.use_cases.connection.mark_client_ready - INFO - Player 00E0M3_p0 marked as ready in room 00E0M3
+2025-07-29 08:49:04 - application.websocket.use_case_dispatcher - INFO - Sending client_ready_ack response: success=True, has_room_state=True
+2025-07-29 08:49:04 - application.websocket.use_case_dispatcher - INFO - Room state players: ['Alexanderium', 'Bot 2', 'Bot 3', 'Bot 4']
+2025-07-29 08:49:04 - application.websocket.use_case_dispatcher - INFO - Sending room_state for 00E0M3: 4 players
+2025-07-29 08:49:04 - application.websocket.use_case_dispatcher - INFO - Players: ['Alexanderium', 'Bot 2', 'Bot 3', 'Bot 4']
+2025-07-29 08:49:07 - application.use_cases.room_management.remove_player - INFO - Player Bot 4 removed from room 00E0M3 by host
+2025-07-29 08:49:08 - infrastructure.services.simple_bot_service - INFO - Created bot with ID: bot_753df548, difficulty: medium
+2025-07-29 08:49:08 - infrastructure.events.application_event_publisher - INFO - Publishing event BotAdded as room_update to room:00E0M3
+2025-07-29 08:49:08 - application.use_cases.room_management.add_bot - INFO - Bot GammaBot added to room 00E0M3
+2025-07-29 08:49:08 - api.routes.ws - INFO - 🧹 [ROOM_DEBUG] Cleanup iteration 3: Checking 1 rooms: ['00E0M3']
+2025-07-29 08:49:08 - api.routes.ws - INFO - 🧹 CLEANUP_CHECK: Room 00E0M3 - game_ended=False, should_cleanup=False
+2025-07-29 08:49:09 - application.use_cases.room_management.remove_player - INFO - Player GammaBot removed from room 00E0M3 by host
+2025-07-29 08:49:10 - infrastructure.services.simple_bot_service - INFO - Created bot with ID: bot_a3a016fd, difficulty: medium
+2025-07-29 08:49:10 - infrastructure.events.application_event_publisher - INFO - Publishing event BotAdded as room_update to room:00E0M3
+2025-07-29 08:49:10 - application.use_cases.room_management.add_bot - INFO - Bot DeltaBot added to room 00E0M3
+2025-07-29 08:49:13 - api.routes.ws - INFO - 🧹 [ROOM_DEBUG] Cleanup iteration 4: Checking 1 rooms: ['00E0M3']
+2025-07-29 08:49:13 - api.routes.ws - INFO - 🧹 CLEANUP_CHECK: Room 00E0M3 - game_ended=False, should_cleanup=False
+INFO:     127.0.0.1:55359 - "GET / HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55361 - "GET /bundle.css HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55367 - "GET /bundle.js HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55359 - "GET /.well-known/appspecific/com.chrome.devtools.json HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:55367 - "GET /bundle.css.map HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55367 - "GET /bundle.js.map HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55367 - "GET /favicon.ico HTTP/1.1" 404 Not Found
+2025-07-29 08:49:18 - api.routes.ws - INFO - 🧹 [ROOM_DEBUG] Cleanup iteration 5: Checking 1 rooms: ['00E0M3']
+2025-07-29 08:49:18 - api.routes.ws - INFO - 🧹 CLEANUP_CHECK: Room 00E0M3 - game_ended=False, should_cleanup=False
+2025-07-29 08:49:19 - api.routes.ws - INFO - 🔌 [ROOM_DEBUG] New WebSocket connection to room 'lobby', ws_id: 48ce0182-c8c2-4e5a-8ba6-c61099f7cf69 at 1753804159.8741708
+2025-07-29 08:49:19 - api.routes.ws - INFO - 🧹 [ROOM_DEBUG] Room cleanup task already running
+INFO:     ('127.0.0.1', 55373) - "WebSocket /ws/lobby" [accepted]
+2025-07-29 08:49:19 - infrastructure.websocket.connection_manager - INFO - WebSocket connected: conn_5
+2025-07-29 08:49:19 - infrastructure.websocket.connection_manager - INFO - WebSocket joined room: conn_5 -> lobby
+2025-07-29 08:49:19 - infrastructure.websocket.connection_singleton - INFO - WebSocket registered: conn_5 -> room lobby
+2025-07-29 08:49:19 - api.websocket.connection_manager - INFO - Player anonymous_48ce0182 connected to room lobby
+2025-07-29 08:49:19 - api.routes.ws - INFO - Registered anonymous lobby connection: anonymous_48ce0182
+INFO:     connection open
+2025-07-29 08:49:19 - application.websocket.use_case_dispatcher - INFO - _handle_client_ready: room_id=lobby, player_name=anonymous_48ce0182, player_id=None
+2025-07-29 08:49:19 - application.websocket.use_case_dispatcher - INFO - Room state available: False
+2025-07-29 08:49:19 - application.use_cases.connection.mark_client_ready - INFO - Client ready for lobby connection: player_id=anonymous
+2025-07-29 08:49:19 - application.websocket.use_case_dispatcher - INFO - Sending client_ready_ack response: success=True, has_room_state=False
+2025-07-29 08:49:21 - api.routes.ws - INFO - 🔌 [ROOM_DEBUG] Handling disconnect for room 'lobby', websocket_id: 48ce0182-c8c2-4e5a-8ba6-c61099f7cf69 at 1753804161.260306
+2025-07-29 08:49:21 - api.websocket.connection_manager - INFO - Player anonymous_48ce0182 disconnected from room lobby. Can reconnect anytime while game is active.
+2025-07-29 08:49:21 - api.routes.ws - WARNING - No websocket_id found on websocket object for room lobby
+2025-07-29 08:49:21 - api.routes.ws - INFO - ⚠️ [ROOM_DEBUG] WebSocket disconnect without ID for room 'lobby'
+ERROR:    Exception in ASGI application
+Traceback (most recent call last):
+  File "/Users/nrw/python/tui-project/liap-tui/backend/api/routes/ws.py", line 413, in websocket_endpoint
+    message = await websocket.receive_json()
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/nrw/python/tui-project/liap-tui/venv/lib/python3.11/site-packages/starlette/websockets.py", line 135, in receive_json
+    self._raise_on_disconnect(message)
+  File "/Users/nrw/python/tui-project/liap-tui/venv/lib/python3.11/site-packages/starlette/websockets.py", line 113, in _raise_on_disconnect
+    raise WebSocketDisconnect(message["code"], message.get("reason"))
+starlette.websockets.WebSocketDisconnect: (1000, 'Client disconnect')
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/Users/nrw/python/tui-project/liap-tui/venv/lib/python3.11/site-packages/uvicorn/protocols/websockets/websockets_impl.py", line 243, in run_asgi
+    result = await self.app(self.scope, self.asgi_receive, self.asgi_send)  # type: ignore[func-returns-value]
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/nrw/python/tui-project/liap-tui/venv/lib/python3.11/site-packages/uvicorn/middleware/proxy_headers.py", line 60, in __call__
+    return await self.app(scope, receive, send)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/nrw/python/tui-project/liap-tui/venv/lib/python3.11/site-packages/fastapi/applications.py", line 1054, in __call__
+    await super().__call__(scope, receive, send)
+  File "/Users/nrw/python/tui-project/liap-tui/venv/lib/python3.11/site-packages/starlette/applications.py", line 112, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "/Users/nrw/python/tui-project/liap-tui/venv/lib/python3.11/site-packages/starlette/middleware/errors.py", line 152, in __call__
+    await self.app(scope, receive, send)
+  File "/Users/nrw/python/tui-project/liap-tui/venv/lib/python3.11/site-packages/starlette/middleware/cors.py", line 77, in __call__
+    await self.app(scope, receive, send)
+  File "/Users/nrw/python/tui-project/liap-tui/venv/lib/python3.11/site-packages/starlette/middleware/exceptions.py", line 62, in __call__
+    await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
+  File "/Users/nrw/python/tui-project/liap-tui/venv/lib/python3.11/site-packages/starlette/_exception_handler.py", line 53, in wrapped_app
+    raise exc
+  File "/Users/nrw/python/tui-project/liap-tui/venv/lib/python3.11/site-packages/starlette/_exception_handler.py", line 42, in wrapped_app
+    await app(scope, receive, sender)
+  File "/Users/nrw/python/tui-project/liap-tui/venv/lib/python3.11/site-packages/starlette/routing.py", line 714, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "/Users/nrw/python/tui-project/liap-tui/venv/lib/python3.11/site-packages/starlette/routing.py", line 734, in app
+    await route.handle(scope, receive, send)
+  File "/Users/nrw/python/tui-project/liap-tui/venv/lib/python3.11/site-packages/starlette/routing.py", line 362, in handle
+    await self.app(scope, receive, send)
+  File "/Users/nrw/python/tui-project/liap-tui/venv/lib/python3.11/site-packages/starlette/routing.py", line 95, in app
+    await wrap_app_handling_exceptions(app, session)(scope, receive, send)
+  File "/Users/nrw/python/tui-project/liap-tui/venv/lib/python3.11/site-packages/starlette/_exception_handler.py", line 53, in wrapped_app
+    raise exc
+  File "/Users/nrw/python/tui-project/liap-tui/venv/lib/python3.11/site-packages/starlette/_exception_handler.py", line 42, in wrapped_app
+    await app(scope, receive, sender)
+  File "/Users/nrw/python/tui-project/liap-tui/venv/lib/python3.11/site-packages/starlette/routing.py", line 93, in app
+    await func(session)
+  File "/Users/nrw/python/tui-project/liap-tui/venv/lib/python3.11/site-packages/fastapi/routing.py", line 383, in app
+    await dependant.call(**solved_result.values)
+  File "/Users/nrw/python/tui-project/liap-tui/backend/api/routes/ws.py", line 504, in websocket_endpoint
+    await handle_disconnect(room_id, websocket)
+  File "/Users/nrw/python/tui-project/liap-tui/backend/api/routes/ws.py", line 195, in handle_disconnect
+    unregister(room_id, websocket)
+TypeError: unregister() takes 1 positional argument but 2 were given
 INFO:     connection closed
-2025-07-29 00:24:02 - api.routes.ws - INFO - 🔌 [ROOM_DEBUG] New WebSocket connection to room 'lobby', ws_id: 7af9d4f4-4fea-4a5e-97e9-04c6be448fdb at 1753773842.927673
-2025-07-29 00:24:02 - api.routes.ws - INFO - 🧹 [ROOM_DEBUG] Room cleanup task already running
-INFO:     ('127.0.0.1', 63126) - "WebSocket /ws/lobby" [accepted]
-2025-07-29 00:24:02 - infrastructure.websocket.connection_manager - INFO - WebSocket connected: conn_4
-2025-07-29 00:24:02 - infrastructure.websocket.connection_manager - INFO - WebSocket joined room: conn_4 -> lobby
-2025-07-29 00:24:02 - infrastructure.websocket.connection_singleton - INFO - WebSocket registered: conn_4 -> room lobby
-2025-07-29 00:24:02 - api.websocket.connection_manager - INFO - Player anonymous_7af9d4f4 connected to room lobby
-2025-07-29 00:24:02 - api.routes.ws - INFO - Registered anonymous lobby connection: anonymous_7af9d4f4
+2025-07-29 08:49:21 - api.routes.ws - INFO - 🔌 [ROOM_DEBUG] New WebSocket connection to room 'lobby', ws_id: 9fcfcbad-6a41-4a9f-9959-5c15c9787e2e at 1753804161.269099
+2025-07-29 08:49:21 - api.routes.ws - INFO - 🧹 [ROOM_DEBUG] Room cleanup task already running
+INFO:     ('127.0.0.1', 55383) - "WebSocket /ws/lobby" [accepted]
+2025-07-29 08:49:21 - infrastructure.websocket.connection_manager - INFO - WebSocket connected: conn_6
+2025-07-29 08:49:21 - infrastructure.websocket.connection_manager - INFO - WebSocket joined room: conn_6 -> lobby
+2025-07-29 08:49:21 - infrastructure.websocket.connection_singleton - INFO - WebSocket registered: conn_6 -> room lobby
+2025-07-29 08:49:21 - api.websocket.connection_manager - INFO - Player anonymous_9fcfcbad connected to room lobby
+2025-07-29 08:49:21 - api.routes.ws - INFO - Registered anonymous lobby connection: anonymous_9fcfcbad
 INFO:     connection open
-2025-07-29 00:24:02 - api.routes.ws - INFO - 🔌 [ROOM_DEBUG] New WebSocket connection to room 'C0HC2P', ws_id: b566da25-7c46-408b-8389-5b89461de86b at 1753773842.949854
-2025-07-29 00:24:02 - api.routes.ws - INFO - 🧹 [ROOM_DEBUG] Room cleanup task already running
-INFO:     ('127.0.0.1', 63128) - "WebSocket /ws/C0HC2P" [accepted]
-2025-07-29 00:24:02 - infrastructure.websocket.connection_manager - INFO - WebSocket connected: conn_5
-2025-07-29 00:24:02 - infrastructure.websocket.connection_manager - INFO - WebSocket joined room: conn_5 -> C0HC2P
-2025-07-29 00:24:02 - infrastructure.websocket.connection_singleton - INFO - WebSocket registered: conn_5 -> room C0HC2P
-2025-07-29 00:24:02 - api.routes.ws - INFO - [ROOM_LOOKUP_DEBUG] Room C0HC2P found successfully in clean architecture!
-2025-07-29 00:24:02 - api.websocket.connection_manager - INFO - Player player_b566da25 connected to room C0HC2P
-2025-07-29 00:24:02 - api.routes.ws - INFO - Registered temporary player connection: player_b566da25 for room C0HC2P
-2025-07-29 00:24:02 - application.websocket.use_case_dispatcher - INFO - _handle_client_ready: room_id=lobby, player_name=anonymous_7af9d4f4, player_id=None
-2025-07-29 00:24:02 - application.websocket.use_case_dispatcher - INFO - Room state available: False
-2025-07-29 00:24:02 - application.use_cases.connection.mark_client_ready - INFO - Client ready for lobby connection: player_id=anonymous
-2025-07-29 00:24:02 - application.websocket.use_case_dispatcher - INFO - Sending client_ready_ack response: success=True, has_room_state=False
-INFO:     connection open
-2025-07-29 00:24:02 - api.websocket.connection_manager - INFO - Player Andy connected to room C0HC2P
-2025-07-29 00:24:02 - application.websocket.message_router - INFO - Updated player registration: Andy for room C0HC2P with player_id C0HC2P_p0
-2025-07-29 00:24:02 - application.websocket.use_case_dispatcher - INFO - _handle_client_ready: room_id=C0HC2P, player_name=Andy, player_id=None
-2025-07-29 00:24:02 - application.websocket.use_case_dispatcher - INFO - Room state available: True
-2025-07-29 00:24:02 - application.websocket.use_case_dispatcher - INFO - Looking for player Andy in room state with 4 players
-2025-07-29 00:24:02 - application.websocket.use_case_dispatcher - INFO -   Slot 0: name=Andy, player_id=C0HC2P_p0
-2025-07-29 00:24:02 - application.websocket.use_case_dispatcher - INFO - Found matching player_id: C0HC2P_p0
-2025-07-29 00:24:02 - application.use_cases.connection.mark_client_ready - INFO - Player C0HC2P_p0 marked as ready in room C0HC2P
-2025-07-29 00:24:02 - application.websocket.use_case_dispatcher - INFO - Sending client_ready_ack response: success=True, has_room_state=True
-2025-07-29 00:24:02 - application.websocket.use_case_dispatcher - INFO - Room state players: ['Andy', 'Bot 2', 'Bot 3', 'Bot 4']
-2025-07-29 00:24:02 - application.websocket.use_case_dispatcher - INFO - Sending room_state for C0HC2P: 4 players
-2025-07-29 00:24:02 - application.websocket.use_case_dispatcher - INFO - Players: ['Andy', 'Bot 2', 'Bot 3', 'Bot 4']
-2025-07-29 00:24:04 - application.use_cases.room_management.remove_player - INFO - Player Bot 4 removed from room C0HC2P by host
-2025-07-29 00:24:06 - api.routes.ws - INFO - 🧹 [ROOM_DEBUG] Cleanup iteration 2: Checking 1 rooms: ['C0HC2P']
-2025-07-29 00:24:06 - api.routes.ws - INFO - 🧹 CLEANUP_CHECK: Room C0HC2P - game_ended=False, should_cleanup=False
-2025-07-29 00:24:06 - api.routes.ws - INFO - 🔌 [ROOM_DEBUG] New WebSocket connection to room 'lobby', ws_id: d99f9aac-787a-49f0-995b-0b9dd2f6e281 at 1753773846.520576
-2025-07-29 00:24:06 - api.routes.ws - INFO - 🧹 [ROOM_DEBUG] Room cleanup task already running
-INFO:     ('127.0.0.1', 63146) - "WebSocket /ws/lobby" [accepted]
-2025-07-29 00:24:06 - infrastructure.websocket.connection_manager - INFO - WebSocket connected: conn_6
-2025-07-29 00:24:06 - infrastructure.websocket.connection_manager - INFO - WebSocket joined room: conn_6 -> lobby
-2025-07-29 00:24:06 - infrastructure.websocket.connection_singleton - INFO - WebSocket registered: conn_6 -> room lobby
-2025-07-29 00:24:06 - api.websocket.connection_manager - INFO - Player anonymous_d99f9aac connected to room lobby
-2025-07-29 00:24:06 - api.routes.ws - INFO - Registered anonymous lobby connection: anonymous_d99f9aac
-INFO:     connection open
-2025-07-29 00:24:06 - application.websocket.use_case_dispatcher - INFO - _handle_client_ready: room_id=lobby, player_name=anonymous_d99f9aac, player_id=None
-2025-07-29 00:24:06 - application.websocket.use_case_dispatcher - INFO - Room state available: False
-2025-07-29 00:24:06 - application.use_cases.connection.mark_client_ready - INFO - Client ready for lobby connection: player_id=anonymous
-2025-07-29 00:24:06 - application.websocket.use_case_dispatcher - INFO - Sending client_ready_ack response: success=True, has_room_state=False
-2025-07-29 00:24:06 - api.routes.ws - INFO - 🔌 [ROOM_DEBUG] Handling disconnect for room 'lobby', websocket_id: d99f9aac-787a-49f0-995b-0b9dd2f6e281 at 1753773846.5275269
-2025-07-29 00:24:06 - api.websocket.connection_manager - INFO - Player anonymous_d99f9aac disconnected from room lobby. Can reconnect anytime while game is active.
-2025-07-29 00:24:06 - api.routes.ws - WARNING - No websocket_id found on websocket object for room lobby
-2025-07-29 00:24:06 - api.routes.ws - INFO - ⚠️ [ROOM_DEBUG] WebSocket disconnect without ID for room 'lobby'
-2025-07-29 00:24:06 - infrastructure.websocket.connection_manager - INFO - WebSocket disconnected: conn_6
-2025-07-29 00:24:06 - infrastructure.websocket.connection_singleton - INFO - WebSocket unregistered: conn_6
-2025-07-29 00:24:06 - api.routes.ws - INFO - 🔌 [ROOM_DEBUG] WebSocket unregistered from room 'lobby' (connection_id: conn_6)
+2025-07-29 08:49:21 - application.websocket.use_case_dispatcher - INFO - _handle_client_ready: room_id=lobby, player_name=anonymous_9fcfcbad, player_id=None
+2025-07-29 08:49:21 - application.websocket.use_case_dispatcher - INFO - Room state available: False
+2025-07-29 08:49:21 - application.use_cases.connection.mark_client_ready - INFO - Client ready for lobby connection: player_id=anonymous
+2025-07-29 08:49:21 - application.websocket.use_case_dispatcher - INFO - Sending client_ready_ack response: success=True, has_room_state=False
+2025-07-29 08:49:21 - domain.entities.room - INFO - [ROOM_DEBUG] Creating room A010MM with 4 slots
+2025-07-29 08:49:21 - domain.entities.room - INFO - [ROOM_DEBUG] Adding host Andy to slot 0
+2025-07-29 08:49:21 - domain.entities.room - INFO - [ROOM_DEBUG] Added player Andy (bot=False) to slot 0 in room A010MM
+2025-07-29 08:49:21 - domain.entities.room - INFO - [ROOM_DEBUG] Adding Bot 2 to slot 1
+2025-07-29 08:49:21 - domain.entities.room - INFO - [ROOM_DEBUG] Added player Bot 2 (bot=True) to slot 1 in room A010MM
+2025-07-29 08:49:21 - domain.entities.room - INFO - [ROOM_DEBUG] Adding Bot 3 to slot 2
+2025-07-29 08:49:21 - domain.entities.room - INFO - [ROOM_DEBUG] Added player Bot 3 (bot=True) to slot 2 in room A010MM
+2025-07-29 08:49:21 - domain.entities.room - INFO - [ROOM_DEBUG] Adding Bot 4 to slot 3
+2025-07-29 08:49:21 - domain.entities.room - INFO - [ROOM_DEBUG] Added player Bot 4 (bot=True) to slot 3 in room A010MM
+2025-07-29 08:49:21 - domain.entities.room - INFO - [ROOM_DEBUG] Room initialization complete. Slots: ['Andy', 'Bot 2', 'Bot 3', 'Bot 4']
+2025-07-29 08:49:21 - application.use_cases.room_management.create_room - INFO - [USE_CASE_DEBUG] Room A010MM saved with slots:
+2025-07-29 08:49:21 - application.use_cases.room_management.create_room - INFO - [USE_CASE_DEBUG]   Slot 0: Andy (bot=False)
+2025-07-29 08:49:21 - application.use_cases.room_management.create_room - INFO - [USE_CASE_DEBUG]   Slot 1: Bot 2 (bot=True)
+2025-07-29 08:49:21 - application.use_cases.room_management.create_room - INFO - [USE_CASE_DEBUG]   Slot 2: Bot 3 (bot=True)
+2025-07-29 08:49:21 - application.use_cases.room_management.create_room - INFO - [USE_CASE_DEBUG]   Slot 3: Bot 4 (bot=True)
+2025-07-29 08:49:21 - application.use_cases.room_management.create_room - INFO - Room A010MM created by Andy
+2025-07-29 08:49:21 - api.routes.ws - INFO - 🔌 [ROOM_DEBUG] Handling disconnect for room 'lobby', websocket_id: 9fcfcbad-6a41-4a9f-9959-5c15c9787e2e at 1753804161.360554
+2025-07-29 08:49:21 - api.websocket.connection_manager - INFO - Player anonymous_9fcfcbad disconnected from room lobby. Can reconnect anytime while game is active.
+2025-07-29 08:49:21 - api.routes.ws - WARNING - No websocket_id found on websocket object for room lobby
+2025-07-29 08:49:21 - api.routes.ws - INFO - ⚠️ [ROOM_DEBUG] WebSocket disconnect without ID for room 'lobby'
+ERROR:    Exception in ASGI application
+Traceback (most recent call last):
+  File "/Users/nrw/python/tui-project/liap-tui/backend/api/routes/ws.py", line 413, in websocket_endpoint
+    message = await websocket.receive_json()
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/nrw/python/tui-project/liap-tui/venv/lib/python3.11/site-packages/starlette/websockets.py", line 135, in receive_json
+    self._raise_on_disconnect(message)
+  File "/Users/nrw/python/tui-project/liap-tui/venv/lib/python3.11/site-packages/starlette/websockets.py", line 113, in _raise_on_disconnect
+    raise WebSocketDisconnect(message["code"], message.get("reason"))
+starlette.websockets.WebSocketDisconnect: (1000, 'Client disconnect')
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/Users/nrw/python/tui-project/liap-tui/venv/lib/python3.11/site-packages/uvicorn/protocols/websockets/websockets_impl.py", line 243, in run_asgi
+    result = await self.app(self.scope, self.asgi_receive, self.asgi_send)  # type: ignore[func-returns-value]
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/nrw/python/tui-project/liap-tui/venv/lib/python3.11/site-packages/uvicorn/middleware/proxy_headers.py", line 60, in __call__
+    return await self.app(scope, receive, send)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/nrw/python/tui-project/liap-tui/venv/lib/python3.11/site-packages/fastapi/applications.py", line 1054, in __call__
+    await super().__call__(scope, receive, send)
+  File "/Users/nrw/python/tui-project/liap-tui/venv/lib/python3.11/site-packages/starlette/applications.py", line 112, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "/Users/nrw/python/tui-project/liap-tui/venv/lib/python3.11/site-packages/starlette/middleware/errors.py", line 152, in __call__
+    await self.app(scope, receive, send)
+  File "/Users/nrw/python/tui-project/liap-tui/venv/lib/python3.11/site-packages/starlette/middleware/cors.py", line 77, in __call__
+    await self.app(scope, receive, send)
+  File "/Users/nrw/python/tui-project/liap-tui/venv/lib/python3.11/site-packages/starlette/middleware/exceptions.py", line 62, in __call__
+    await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
+  File "/Users/nrw/python/tui-project/liap-tui/venv/lib/python3.11/site-packages/starlette/_exception_handler.py", line 53, in wrapped_app
+    raise exc
+  File "/Users/nrw/python/tui-project/liap-tui/venv/lib/python3.11/site-packages/starlette/_exception_handler.py", line 42, in wrapped_app
+    await app(scope, receive, sender)
+  File "/Users/nrw/python/tui-project/liap-tui/venv/lib/python3.11/site-packages/starlette/routing.py", line 714, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "/Users/nrw/python/tui-project/liap-tui/venv/lib/python3.11/site-packages/starlette/routing.py", line 734, in app
+    await route.handle(scope, receive, send)
+  File "/Users/nrw/python/tui-project/liap-tui/venv/lib/python3.11/site-packages/starlette/routing.py", line 362, in handle
+    await self.app(scope, receive, send)
+  File "/Users/nrw/python/tui-project/liap-tui/venv/lib/python3.11/site-packages/starlette/routing.py", line 95, in app
+    await wrap_app_handling_exceptions(app, session)(scope, receive, send)
+  File "/Users/nrw/python/tui-project/liap-tui/venv/lib/python3.11/site-packages/starlette/_exception_handler.py", line 53, in wrapped_app
+    raise exc
+  File "/Users/nrw/python/tui-project/liap-tui/venv/lib/python3.11/site-packages/starlette/_exception_handler.py", line 42, in wrapped_app
+    await app(scope, receive, sender)
+  File "/Users/nrw/python/tui-project/liap-tui/venv/lib/python3.11/site-packages/starlette/routing.py", line 93, in app
+    await func(session)
+  File "/Users/nrw/python/tui-project/liap-tui/venv/lib/python3.11/site-packages/fastapi/routing.py", line 383, in app
+    await dependant.call(**solved_result.values)
+  File "/Users/nrw/python/tui-project/liap-tui/backend/api/routes/ws.py", line 504, in websocket_endpoint
+    await handle_disconnect(room_id, websocket)
+  File "/Users/nrw/python/tui-project/liap-tui/backend/api/routes/ws.py", line 195, in handle_disconnect
+    unregister(room_id, websocket)
+TypeError: unregister() takes 1 positional argument but 2 were given
 INFO:     connection closed
-2025-07-29 00:24:06 - api.routes.ws - INFO - 🔌 [ROOM_DEBUG] New WebSocket connection to room 'lobby', ws_id: 5f078061-0d00-4e38-88ea-c0c89503a0b7 at 1753773846.533372
-2025-07-29 00:24:06 - api.routes.ws - INFO - 🧹 [ROOM_DEBUG] Room cleanup task already running
-INFO:     ('127.0.0.1', 63148) - "WebSocket /ws/lobby" [accepted]
-2025-07-29 00:24:06 - infrastructure.websocket.connection_manager - INFO - WebSocket connected: conn_7
-2025-07-29 00:24:06 - infrastructure.websocket.connection_manager - INFO - WebSocket joined room: conn_7 -> lobby
-2025-07-29 00:24:06 - infrastructure.websocket.connection_singleton - INFO - WebSocket registered: conn_7 -> room lobby
-2025-07-29 00:24:06 - api.websocket.connection_manager - INFO - Player anonymous_5f078061 connected to room lobby
-2025-07-29 00:24:06 - api.routes.ws - INFO - Registered anonymous lobby connection: anonymous_5f078061
+2025-07-29 08:49:21 - api.routes.ws - INFO - 🔌 [ROOM_DEBUG] New WebSocket connection to room 'lobby', ws_id: 2d9756c2-8533-46fb-8770-0f5f9544aac9 at 1753804161.380202
+2025-07-29 08:49:21 - api.routes.ws - INFO - 🧹 [ROOM_DEBUG] Room cleanup task already running
+INFO:     ('127.0.0.1', 55385) - "WebSocket /ws/lobby" [accepted]
+2025-07-29 08:49:21 - infrastructure.websocket.connection_manager - INFO - WebSocket connected: conn_7
+2025-07-29 08:49:21 - infrastructure.websocket.connection_manager - INFO - WebSocket joined room: conn_7 -> lobby
+2025-07-29 08:49:21 - infrastructure.websocket.connection_singleton - INFO - WebSocket registered: conn_7 -> room lobby
+2025-07-29 08:49:21 - api.websocket.connection_manager - INFO - Player anonymous_2d9756c2 connected to room lobby
+2025-07-29 08:49:21 - api.routes.ws - INFO - Registered anonymous lobby connection: anonymous_2d9756c2
 INFO:     connection open
-2025-07-29 00:24:06 - application.websocket.use_case_dispatcher - INFO - _handle_client_ready: room_id=lobby, player_name=anonymous_5f078061, player_id=None
-2025-07-29 00:24:06 - application.websocket.use_case_dispatcher - INFO - Room state available: False
-2025-07-29 00:24:06 - application.use_cases.connection.mark_client_ready - INFO - Client ready for lobby connection: player_id=anonymous
-2025-07-29 00:24:06 - application.websocket.use_case_dispatcher - INFO - Sending client_ready_ack response: success=True, has_room_state=False
-2025-07-29 00:24:07 - backend.api.routes.ws - INFO - 🧹 [ROOM_DEBUG] Cleanup iteration 3: Checking 1 rooms: ['C0HC2P']
-2025-07-29 00:24:07 - backend.api.routes.ws - INFO - 🧹 CLEANUP_CHECK: Room C0HC2P - game_ended=False, should_cleanup=False
-2025-07-29 00:24:10 - infrastructure.services.simple_bot_service - INFO - Created bot with ID: bot_e2ead119, difficulty: medium
-2025-07-29 00:24:10 - infrastructure.events.application_event_publisher - INFO - Publishing event BotAdded as room_update to room:C0HC2P
-2025-07-29 00:24:10 - application.use_cases.room_management.add_bot - INFO - Bot OmicronBot added to room C0HC2P
-2025-07-29 00:24:11 - api.routes.ws - INFO - 🧹 [ROOM_DEBUG] Cleanup iteration 3: Checking 1 rooms: ['C0HC2P']
-2025-07-29 00:24:11 - api.routes.ws - INFO - 🧹 CLEANUP_CHECK: Room C0HC2P - game_ended=False, should_cleanup=False
-2025-07-29 00:24:12 - backend.api.routes.ws - INFO - 🧹 [ROOM_DEBUG] Cleanup iteration 4: Checking 1 rooms: ['C0HC2P']
+2025-07-29 08:49:21 - application.websocket.use_case_dispatcher - INFO - _handle_client_ready: room_id=lobby, player_name=anonymous_2d9756c2, player_id=None
+2025-07-29 08:49:21 - application.websocket.use_case_dispatcher - INFO - Room state available: False
+2025-07-29 08:49:21 - application.use_cases.connection.mark_client_ready - INFO - Client ready for lobby connection: player_id=anonymous
+2025-07-29 08:49:21 - application.websocket.use_case_dispatcher - INFO - Sending client_ready_ack response: success=True, has_room_state=False
+2025-07-29 08:49:21 - api.routes.ws - INFO - 🔌 [ROOM_DEBUG] New WebSocket connection to room 'A010MM', ws_id: 75a149c3-be04-4910-977b-039137ad7d6f at 1753804161.405012
+2025-07-29 08:49:21 - api.routes.ws - INFO - 🧹 [ROOM_DEBUG] Room cleanup task already running
+INFO:     ('127.0.0.1', 55387) - "WebSocket /ws/A010MM" [accepted]
+2025-07-29 08:49:21 - infrastructure.websocket.connection_manager - INFO - WebSocket connected: conn_8
+2025-07-29 08:49:21 - infrastructure.websocket.connection_manager - INFO - WebSocket joined room: conn_8 -> A010MM
+2025-07-29 08:49:21 - infrastructure.websocket.connection_singleton - INFO - WebSocket registered: conn_8 -> room A010MM
+2025-07-29 08:49:21 - api.routes.ws - INFO - [ROOM_LOOKUP_DEBUG] Room A010MM found successfully in clean architecture!
+2025-07-29 08:49:21 - api.websocket.connection_manager - INFO - Player player_75a149c3 connected to room A010MM
+2025-07-29 08:49:21 - api.routes.ws - INFO - Registered temporary player connection: player_75a149c3 for room A010MM
+INFO:     connection open
+2025-07-29 08:49:21 - api.websocket.connection_manager - INFO - Player Andy connected to room A010MM
+2025-07-29 08:49:21 - application.websocket.message_router - INFO - Updated player registration: Andy for room A010MM with player_id A010MM_p0
+2025-07-29 08:49:21 - application.websocket.use_case_dispatcher - INFO - _handle_client_ready: room_id=A010MM, player_name=Andy, player_id=None
+2025-07-29 08:49:21 - application.websocket.use_case_dispatcher - INFO - Room state available: True
+2025-07-29 08:49:21 - application.websocket.use_case_dispatcher - INFO - Looking for player Andy in room state with 4 players
+2025-07-29 08:49:21 - application.websocket.use_case_dispatcher - INFO -   Slot 0: name=Andy, player_id=A010MM_p0
+2025-07-29 08:49:21 - application.websocket.use_case_dispatcher - INFO - Found matching player_id: A010MM_p0
+2025-07-29 08:49:21 - application.use_cases.connection.mark_client_ready - INFO - Player A010MM_p0 marked as ready in room A010MM
+2025-07-29 08:49:21 - application.websocket.use_case_dispatcher - INFO - Sending client_ready_ack response: success=True, has_room_state=True
+2025-07-29 08:49:21 - application.websocket.use_case_dispatcher - INFO - Room state players: ['Andy', 'Bot 2', 'Bot 3', 'Bot 4']
+2025-07-29 08:49:21 - application.websocket.use_case_dispatcher - INFO - Sending room_state for A010MM: 4 players
+2025-07-29 08:49:21 - application.websocket.use_case_dispatcher - INFO - Players: ['Andy', 'Bot 2', 'Bot 3', 'Bot 4']
+2025-07-29 08:49:23 - application.websocket.use_case_dispatcher - ERROR - Error handling event leave_room: 'Room' object has no attribute 'player_count'
+Traceback (most recent call last):
+  File "/Users/nrw/python/tui-project/liap-tui/backend/application/websocket/use_case_dispatcher.py", line 263, in dispatch
+    return await handler(data, context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/nrw/python/tui-project/liap-tui/backend/application/websocket/use_case_dispatcher.py", line 516, in _handle_leave_room
+    response = await self.leave_room_use_case.execute(request)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/nrw/python/tui-project/liap-tui/backend/application/use_cases/room_management/leave_room.py", line 105, in execute
+    if was_host and room.player_count > 0:
+                    ^^^^^^^^^^^^^^^^^
+AttributeError: 'Room' object has no attribute 'player_count'
+2025-07-29 08:49:23 - api.routes.ws - INFO - 🔌 [ROOM_DEBUG] New WebSocket connection to room 'lobby', ws_id: 4e1f68d5-f179-4ba7-88f2-0d8f49fe873a at 1753804163.059585
+2025-07-29 08:49:23 - api.routes.ws - INFO - 🧹 [ROOM_DEBUG] Room cleanup task already running
+INFO:     ('127.0.0.1', 55393) - "WebSocket /ws/lobby" [accepted]
+2025-07-29 08:49:23 - infrastructure.websocket.connection_manager - INFO - WebSocket connected: conn_9
+2025-07-29 08:49:23 - infrastructure.websocket.connection_manager - INFO - WebSocket joined room: conn_9 -> lobby
+2025-07-29 08:49:23 - infrastructure.websocket.connection_singleton - INFO - WebSocket registered: conn_9 -> room lobby
+2025-07-29 08:49:23 - api.websocket.connection_manager - INFO - Player anonymous_4e1f68d5 connected to room lobby
+2025-07-29 08:49:23 - api.routes.ws - INFO - Registered anonymous lobby connection: anonymous_4e1f68d5
+INFO:     connection open
+2025-07-29 08:49:23 - api.routes.ws - INFO - 🔌 [ROOM_DEBUG] Handling disconnect for room 'A010MM', websocket_id: 75a149c3-be04-4910-977b-039137ad7d6f at 1753804163.0617511
+2025-07-29 08:49:23 - api.websocket.connection_manager - INFO - Player Andy disconnected from room A010MM. Can reconnect anytime while game is active.
+2025-07-29 08:49:23 - api.routes.ws - INFO - 🚪 [ROOM_DEBUG] Pre-game disconnect detected for player 'Andy' in room 'A010MM'
+2025-07-29 08:49:23 - api.routes.ws - INFO - 👤 [ROOM_DEBUG] process_leave_room: Player 'Andy' leaving room 'A010MM', is_host=True
+2025-07-29 08:49:23 - api.routes.ws - INFO - 👑 [ROOM_DEBUG] Host 'Andy' leaving room 'A010MM' - deleting room
+2025-07-29 08:49:23 - api.routes.ws - INFO - 🗑️ [ROOM_DEBUG] Room 'A010MM' deleted because host left
+2025-07-29 08:49:23 - infrastructure.websocket.connection_manager - ERROR - Error sending to conn_7: 
+ERROR:    Exception in ASGI application
+Traceback (most recent call last):
+  File "/Users/nrw/python/tui-project/liap-tui/backend/api/routes/ws.py", line 413, in websocket_endpoint
+    message = await websocket.receive_json()
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/nrw/python/tui-project/liap-tui/venv/lib/python3.11/site-packages/starlette/websockets.py", line 135, in receive_json
+    self._raise_on_disconnect(message)
+  File "/Users/nrw/python/tui-project/liap-tui/venv/lib/python3.11/site-packages/starlette/websockets.py", line 113, in _raise_on_disconnect
+    raise WebSocketDisconnect(message["code"], message.get("reason"))
+starlette.websockets.WebSocketDisconnect: (1000, 'Client disconnect')
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/Users/nrw/python/tui-project/liap-tui/venv/lib/python3.11/site-packages/uvicorn/protocols/websockets/websockets_impl.py", line 243, in run_asgi
+    result = await self.app(self.scope, self.asgi_receive, self.asgi_send)  # type: ignore[func-returns-value]
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/nrw/python/tui-project/liap-tui/venv/lib/python3.11/site-packages/uvicorn/middleware/proxy_headers.py", line 60, in __call__
+    return await self.app(scope, receive, send)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/nrw/python/tui-project/liap-tui/venv/lib/python3.11/site-packages/fastapi/applications.py", line 1054, in __call__
+    await super().__call__(scope, receive, send)
+  File "/Users/nrw/python/tui-project/liap-tui/venv/lib/python3.11/site-packages/starlette/applications.py", line 112, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "/Users/nrw/python/tui-project/liap-tui/venv/lib/python3.11/site-packages/starlette/middleware/errors.py", line 152, in __call__
+    await self.app(scope, receive, send)
+  File "/Users/nrw/python/tui-project/liap-tui/venv/lib/python3.11/site-packages/starlette/middleware/cors.py", line 77, in __call__
+    await self.app(scope, receive, send)
+  File "/Users/nrw/python/tui-project/liap-tui/venv/lib/python3.11/site-packages/starlette/middleware/exceptions.py", line 62, in __call__
+    await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
+  File "/Users/nrw/python/tui-project/liap-tui/venv/lib/python3.11/site-packages/starlette/_exception_handler.py", line 53, in wrapped_app
+    raise exc
+  File "/Users/nrw/python/tui-project/liap-tui/venv/lib/python3.11/site-packages/starlette/_exception_handler.py", line 42, in wrapped_app
+    await app(scope, receive, sender)
+  File "/Users/nrw/python/tui-project/liap-tui/venv/lib/python3.11/site-packages/starlette/routing.py", line 714, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "/Users/nrw/python/tui-project/liap-tui/venv/lib/python3.11/site-packages/starlette/routing.py", line 734, in app
+    await route.handle(scope, receive, send)
+  File "/Users/nrw/python/tui-project/liap-tui/venv/lib/python3.11/site-packages/starlette/routing.py", line 362, in handle
+    await self.app(scope, receive, send)
+  File "/Users/nrw/python/tui-project/liap-tui/venv/lib/python3.11/site-packages/starlette/routing.py", line 95, in app
+    await wrap_app_handling_exceptions(app, session)(scope, receive, send)
+  File "/Users/nrw/python/tui-project/liap-tui/venv/lib/python3.11/site-packages/starlette/_exception_handler.py", line 53, in wrapped_app
+    raise exc
+  File "/Users/nrw/python/tui-project/liap-tui/venv/lib/python3.11/site-packages/starlette/_exception_handler.py", line 42, in wrapped_app
+    await app(scope, receive, sender)
+  File "/Users/nrw/python/tui-project/liap-tui/venv/lib/python3.11/site-packages/starlette/routing.py", line 93, in app
+    await func(session)
+  File "/Users/nrw/python/tui-project/liap-tui/venv/lib/python3.11/site-packages/fastapi/routing.py", line 383, in app
+    await dependant.call(**solved_result.values)
+  File "/Users/nrw/python/tui-project/liap-tui/backend/api/routes/ws.py", line 504, in websocket_endpoint
+    await handle_disconnect(room_id, websocket)
+  File "/Users/nrw/python/tui-project/liap-tui/backend/api/routes/ws.py", line 195, in handle_disconnect
+    unregister(room_id, websocket)
+TypeError: unregister() takes 1 positional argument but 2 were given
+INFO:     connection closed
+2025-07-29 08:49:23 - api.routes.ws - INFO - 🔌 [ROOM_DEBUG] Handling disconnect for room 'lobby', websocket_id: 2d9756c2-8533-46fb-8770-0f5f9544aac9 at 1753804163.0770402
+2025-07-29 08:49:23 - api.websocket.connection_manager - INFO - Player anonymous_2d9756c2 disconnected from room lobby. Can reconnect anytime while game is active.
+2025-07-29 08:49:23 - api.routes.ws - WARNING - No websocket_id found on websocket object for room lobby
+2025-07-29 08:49:23 - api.routes.ws - INFO - ⚠️ [ROOM_DEBUG] WebSocket disconnect without ID for room 'lobby'
+ERROR:    Exception in ASGI application
+Traceback (most recent call last):
+  File "/Users/nrw/python/tui-project/liap-tui/backend/api/routes/ws.py", line 413, in websocket_endpoint
+    message = await websocket.receive_json()
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/nrw/python/tui-project/liap-tui/venv/lib/python3.11/site-packages/starlette/websockets.py", line 135, in receive_json
+    self._raise_on_disconnect(message)
+  File "/Users/nrw/python/tui-project/liap-tui/venv/lib/python3.11/site-packages/starlette/websockets.py", line 113, in _raise_on_disconnect
+    raise WebSocketDisconnect(message["code"], message.get("reason"))
+starlette.websockets.WebSocketDisconnect: (1000, 'Client disconnect')
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/Users/nrw/python/tui-project/liap-tui/venv/lib/python3.11/site-packages/uvicorn/protocols/websockets/websockets_impl.py", line 243, in run_asgi
+    result = await self.app(self.scope, self.asgi_receive, self.asgi_send)  # type: ignore[func-returns-value]
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/nrw/python/tui-project/liap-tui/venv/lib/python3.11/site-packages/uvicorn/middleware/proxy_headers.py", line 60, in __call__
+    return await self.app(scope, receive, send)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/nrw/python/tui-project/liap-tui/venv/lib/python3.11/site-packages/fastapi/applications.py", line 1054, in __call__
+    await super().__call__(scope, receive, send)
+  File "/Users/nrw/python/tui-project/liap-tui/venv/lib/python3.11/site-packages/starlette/applications.py", line 112, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "/Users/nrw/python/tui-project/liap-tui/venv/lib/python3.11/site-packages/starlette/middleware/errors.py", line 152, in __call__
+    await self.app(scope, receive, send)
+  File "/Users/nrw/python/tui-project/liap-tui/venv/lib/python3.11/site-packages/starlette/middleware/cors.py", line 77, in __call__
+    await self.app(scope, receive, send)
+  File "/Users/nrw/python/tui-project/liap-tui/venv/lib/python3.11/site-packages/starlette/middleware/exceptions.py", line 62, in __call__
+    await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
+  File "/Users/nrw/python/tui-project/liap-tui/venv/lib/python3.11/site-packages/starlette/_exception_handler.py", line 53, in wrapped_app
+    raise exc
+  File "/Users/nrw/python/tui-project/liap-tui/venv/lib/python3.11/site-packages/starlette/_exception_handler.py", line 42, in wrapped_app
+    await app(scope, receive, sender)
+  File "/Users/nrw/python/tui-project/liap-tui/venv/lib/python3.11/site-packages/starlette/routing.py", line 714, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "/Users/nrw/python/tui-project/liap-tui/venv/lib/python3.11/site-packages/starlette/routing.py", line 734, in app
+    await route.handle(scope, receive, send)
+  File "/Users/nrw/python/tui-project/liap-tui/venv/lib/python3.11/site-packages/starlette/routing.py", line 362, in handle
+    await self.app(scope, receive, send)
+  File "/Users/nrw/python/tui-project/liap-tui/venv/lib/python3.11/site-packages/starlette/routing.py", line 95, in app
+    await wrap_app_handling_exceptions(app, session)(scope, receive, send)
+  File "/Users/nrw/python/tui-project/liap-tui/venv/lib/python3.11/site-packages/starlette/_exception_handler.py", line 53, in wrapped_app
+    raise exc
+  File "/Users/nrw/python/tui-project/liap-tui/venv/lib/python3.11/site-packages/starlette/_exception_handler.py", line 42, in wrapped_app
+    await app(scope, receive, sender)
+  File "/Users/nrw/python/tui-project/liap-tui/venv/lib/python3.11/site-packages/starlette/routing.py", line 93, in app
+    await func(session)
+  File "/Users/nrw/python/tui-project/liap-tui/venv/lib/python3.11/site-packages/fastapi/routing.py", line 383, in app
+    await dependant.call(**solved_result.values)
+  File "/Users/nrw/python/tui-project/liap-tui/backend/api/routes/ws.py", line 504, in websocket_endpoint
+    await handle_disconnect(room_id, websocket)
+  File "/Users/nrw/python/tui-project/liap-tui/backend/api/routes/ws.py", line 195, in handle_disconnect
+    unregister(room_id, websocket)
+TypeError: unregister() takes 1 positional argument but 2 were given
+INFO:     connection closed
+2025-07-29 08:49:23 - application.websocket.use_case_dispatcher - INFO - _handle_client_ready: room_id=lobby, player_name=anonymous_4e1f68d5, player_id=None
+2025-07-29 08:49:23 - application.websocket.use_case_dispatcher - INFO - Room state available: False
+2025-07-29 08:49:23 - application.use_cases.connection.mark_client_ready - INFO - Client ready for lobby connection: player_id=anonymous
+2025-07-29 08:49:23 - application.websocket.use_case_dispatcher - INFO - Sending client_ready_ack response: success=True, has_room_state=False
+2025-07-29 08:49:23 - api.routes.ws - INFO - 🧹 [ROOM_DEBUG] Cleanup iteration 6: Checking 1 rooms: ['00E0M3']
+2025-07-29 08:49:23 - api.routes.ws - INFO - 🧹 CLEANUP_CHECK: Room 00E0M3 - game_ended=False, should_cleanup=False
+2025-07-29 08:49:25 - application.use_cases.room_management.remove_player - INFO - Player DeltaBot removed from room 00E0M3 by host
+2025-07-29 08:49:28 - api.routes.ws - INFO - 🧹 [ROOM_DEBUG] Cleanup iteration 7: Checking 1 rooms: ['00E0M3']
+2025-07-29 08:49:28 - api.routes.ws - INFO - 🧹 CLEANUP_CHECK: Room 00E0M3 - game_ended=False, should_cleanup=False
+2025-07-29 08:49:31 - infrastructure.services.simple_bot_service - INFO - Created bot with ID: bot_70612c63, difficulty: medium
+2025-07-29 08:49:31 - infrastructure.events.application_event_publisher - INFO - Publishing event BotAdded as room_update to room:00E0M3
+2025-07-29 08:49:31 - application.use_cases.room_management.add_bot - INFO - Bot BetaBot added to room 00E0M3
+2025-07-29 08:49:33 - api.routes.ws - INFO - 🧹 [ROOM_DEBUG] Cleanup iteration 8: Checking 1 rooms: ['00E0M3']
+2025-07-29 08:49:33 - api.routes.ws - INFO - 🧹 CLEANUP_CHECK: Room 00E0M3 - game_ended=False, should_cleanup=False
+2025-07-29 08:49:38 - api.routes.ws - INFO - 🧹 [ROOM_DEBUG] Cleanup iteration 9: Checking 1 rooms: ['00E0M3']
+2025-07-29 08:49:38 - api.routes.ws - INFO - 🧹 CLEANUP_CHECK: Room 00E0M3 - game_ended=False, should_cleanup=False
+2025-07-29 08:49:40 - application.use_cases.room_management.remove_player - INFO - Player BetaBot removed from room 00E0M3 by host
+2025-07-29 08:49:43 - api.routes.ws - INFO - 🧹 [ROOM_DEBUG] Cleanup iteration 10: Checking 1 rooms: ['00E0M3']
+2025-07-29 08:49:43 - api.routes.ws - INFO - 🧹 CLEANUP_CHECK: Room 00E0M3 - game_ended=False, should_cleanup=False
