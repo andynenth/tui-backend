@@ -294,8 +294,52 @@ class UseCaseDispatcher:
     
     async def _handle_client_ready(self, data: Dict[str, Any], context: DispatchContext) -> Dict[str, Any]:
         """Handle client_ready event"""
+        # For room connections, we need to get the player info from the data
+        player_id = context.player_id or data.get("player_id")
+        player_name = context.player_name or data.get("player_name")
+        
+        logger.info(f"_handle_client_ready: room_id={context.room_id}, player_name={player_name}, player_id={player_id}")
+        logger.info(f"Room state available: {context.room_state is not None}")
+        
+        # If we still don't have player_id but have player_name and room_id, find it
+        if not player_id and player_name and context.room_id != "lobby":
+            # Try to find the player in the room state by matching name
+            if context.room_state and context.room_state.get("players"):
+                logger.info(f"Looking for player {player_name} in room state with {len(context.room_state['players'])} players")
+                for player in context.room_state["players"]:
+                    logger.info(f"  Slot {player.get('seat_position')}: name={player.get('name')}, player_id={player.get('player_id')}")
+                    if player.get("name") == player_name:
+                        player_id = player.get("player_id")
+                        logger.info(f"Found matching player_id: {player_id}")
+                        break
+            
+            # If still no player_id, try to generate it based on the expected format
+            if not player_id and context.room_state:
+                # Look for the player by name in the room state to get their slot
+                for player in context.room_state.get("players", []):
+                    if player.get("name") == player_name:
+                        seat_position = player.get("seat_position")
+                        if seat_position is not None:
+                            player_id = f"{context.room_id}_p{seat_position}"
+                            logger.info(f"Generated player_id based on seat position: {player_id}")
+                            break
+        
+        # Default to anonymous for lobby connections without player info
+        if not player_id and context.room_id == "lobby":
+            player_id = "anonymous"
+        elif not player_id:
+            # For room connections, we need a valid player_id
+            logger.error(f"Could not determine player_id for {player_name} in room {context.room_id}")
+            return {
+                "event": "error",
+                "data": {
+                    "message": "Could not determine player identity",
+                    "type": "validation_error"
+                }
+            }
+        
         request = MarkClientReadyRequest(
-            player_id=context.player_id or data.get("player_id") or "anonymous",
+            player_id=player_id,
             room_id=context.room_id,
             client_version=data.get("version", "unknown")
         )
@@ -306,7 +350,8 @@ class UseCaseDispatcher:
             "event": "client_ready_ack",
             "data": {
                 "success": response.success,
-                "ready": response.is_ready if hasattr(response, 'is_ready') else True
+                "ready": response.is_ready if hasattr(response, 'is_ready') else True,
+                "room_state": context.room_state  # Include room state in response
             }
         }
     
@@ -605,7 +650,7 @@ class UseCaseDispatcher:
                     }
                     for room in response.rooms
                 ],
-                "total_count": response.total_count
+                "total_count": response.total_items
             }
         }
     

@@ -64,7 +64,7 @@ class HandlePingUseCase(UseCase[HandlePingRequest, HandlePingResponse]):
                 if room:
                     # Find player in room
                     player_found = False
-                    for slot in room.slots:
+                    for i, slot in enumerate(room.slots):
                         if slot and PropertyMapper.generate_player_id(room.room_id, i) == request.player_id:
                             # Update last activity timestamp
                             slot.last_activity = datetime.utcnow()

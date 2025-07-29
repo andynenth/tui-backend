@@ -7,6 +7,7 @@ ready to receive game updates. This use case handles that signal.
 
 from typing import Optional
 import logging
+from datetime import datetime
 
 from application.base import UseCase
 from application.dto.connection import MarkClientReadyRequest, MarkClientReadyResponse
@@ -62,6 +63,31 @@ class MarkClientReadyUseCase(UseCase[MarkClientReadyRequest, MarkClientReadyResp
             ResourceNotFoundException: If room or player not found
             ConflictException: If player already ready
         """
+        # Special handling for lobby connections
+        if request.room_id == "lobby":
+            logger.info(
+                f"Client ready for lobby connection: player_id={request.player_id}"
+            )
+            
+            # Record metrics for lobby
+            if self._metrics:
+                self._metrics.increment(
+                    "player.ready",
+                    tags={
+                        "room_id": "lobby",
+                        "client_version": request.client_version or "unknown"
+                    }
+                )
+            
+            # Return success response for lobby
+            return MarkClientReadyResponse(
+                success=True,
+                request_id=request.request_id,
+                player_id=request.player_id,
+                is_ready=True,
+                room_state_provided=False
+            )
+        
         async with self._uow:
             # Get the room
             room = await self._uow.rooms.get_by_id(request.room_id)
@@ -101,10 +127,11 @@ class MarkClientReadyUseCase(UseCase[MarkClientReadyRequest, MarkClientReadyResp
             # Emit ClientReady event
             event = ClientReady(
                 metadata=EventMetadata(user_id=request.user_id),
-                game_id=room.room_id,  # ClientReady uses game_id
                 room_id=request.room_id,
                 player_id=request.player_id,
-                player_name=player_slot.name
+                player_name=player_slot.name,
+                ready_time=datetime.utcnow(),
+                client_version=request.client_version
             )
             await self._event_publisher.publish(event)
             

@@ -363,6 +363,13 @@ async def websocket_endpoint(websocket: WebSocket, room_id: str):
     connection_id = await register(room_id, websocket)
     # Store connection_id on websocket for later retrieval
     websocket._connection_id = connection_id
+    
+    # For lobby connections, register with the API connection manager as anonymous
+    if room_id == "lobby":
+        # Use a unique anonymous identifier for lobby connections
+        anonymous_player = f"anonymous_{websocket._ws_id[:8]}"
+        await connection_manager.register_player(room_id, anonymous_player, websocket._ws_id)
+        logger.info(f"Registered anonymous lobby connection: {anonymous_player}")
 
     # Check if room exists (excluding lobby)
     if room_id != "lobby":
@@ -395,6 +402,12 @@ async def websocket_endpoint(websocket: WebSocket, room_id: str):
                     # Continue running to allow frontend to handle gracefully
                 else:
                     logger.info(f"[ROOM_LOOKUP_DEBUG] Room {room_id} found successfully in clean architecture!")
+                    
+                    # For room connections, we need to register the player
+                    # Try to get player name from the first message or use anonymous
+                    temp_player_name = f"player_{websocket._ws_id[:8]}"
+                    await connection_manager.register_player(room_id, temp_player_name, websocket._ws_id)
+                    logger.info(f"Registered temporary player connection: {temp_player_name} for room {room_id}")
         except Exception as e:
             logger.error(f"[ROOM_LOOKUP_DEBUG] Error checking room existence: {e}", exc_info=True)
             # Don't fail the connection, just log the error

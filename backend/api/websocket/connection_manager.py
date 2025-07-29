@@ -35,6 +35,7 @@ class PlayerConnection:
     disconnect_time: Optional[datetime] = None
     original_is_bot: bool = False
     websocket_id: Optional[str] = None  # To track specific connections
+    player_id: Optional[str] = None  # The actual player ID in the room
 
 
 class ConnectionManager:
@@ -51,7 +52,7 @@ class ConnectionManager:
         self.lock = asyncio.Lock()
 
     async def register_player(
-        self, room_id: str, player_name: str, websocket_id: str
+        self, room_id: str, player_name: str, websocket_id: str, player_id: Optional[str] = None
     ) -> None:
         """Register a player connection"""
         async with self.lock:
@@ -66,6 +67,8 @@ class ConnectionManager:
                     connection.connection_status = ConnectionStatus.CONNECTED
                     connection.disconnect_time = None
                     connection.websocket_id = websocket_id
+                    if player_id:
+                        connection.player_id = player_id
                     logger.info(f"Player {player_name} reconnected to room {room_id}")
             else:
                 # New connection
@@ -74,6 +77,7 @@ class ConnectionManager:
                     room_id=room_id,
                     connection_status=ConnectionStatus.CONNECTED,
                     websocket_id=websocket_id,
+                    player_id=player_id,
                 )
                 logger.info(f"Player {player_name} connected to room {room_id}")
 

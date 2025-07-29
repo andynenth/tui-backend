@@ -163,6 +163,16 @@ class MessageRouter:
                 player_id = connection.player_id
                 player_name = connection.player_name
         
+        # For client_ready events in rooms, extract player name from data
+        if event == "client_ready" and room_id != "lobby":
+            data_player_name = message.get("data", {}).get("player_name")
+            if data_player_name:
+                player_name = data_player_name
+                # Update the connection manager with the real player name
+                if websocket_id and player_name != connection.player_name if connection else True:
+                    await connection_manager.register_player(room_id, player_name, websocket_id)
+                    logger.info(f"Updated player registration: {player_name} for room {room_id}")
+        
         # Create dispatch context
         context = DispatchContext(
             websocket=websocket,
@@ -229,32 +239,35 @@ class MessageRouter:
         """
         try:
             uow = get_unit_of_work()
-            room_service = RoomApplicationService(uow)
+            # Don't use RoomApplicationService here - just get the room directly
             
             async with uow:
                 room = await uow.rooms.get_by_id(room_id)
                 
                 if room:
+                    # Get players from room slots
+                    players = []
+                    for i, slot in enumerate(room.slots):
+                        if slot:
+                            players.append({
+                                "player_id": f"{room_id}_p{i}",
+                                "name": slot.name,
+                                "is_bot": slot.is_bot,
+                                "is_host": i == 0,  # First slot is always host
+                                "seat_position": i
+                            })
+                    
                     # Convert to dict format expected by adapters
                     return {
-                        "room_id": room.id,
+                        "room_id": room.room_id,
                         "host": room.host_player_id,
-                        "players": [
-                            {
-                                "player_id": p.id,
-                                "name": p.name,
-                                "is_bot": p.is_bot,
-                                "is_host": p.id == room.host_player_id,
-                                "seat_position": p.seat_position
-                            }
-                            for p in room.players
-                        ],
-                        "status": room.status.value,
+                        "players": players,
+                        "status": room.status.value if hasattr(room.status, 'value') else str(room.status),
                         "game_config": {
                             "max_players": room.max_players,
                             "max_score": 50,
                             "allow_bot_start": True
-                        } if room else None,
+                        },
                         "current_round": room.current_round if hasattr(room, 'current_round') else 1,
                         "max_players": room.max_players
                     }
@@ -288,6 +301,7 @@ class MessageRouter:
         if connection and connection.player_name:
             # Check for queued messages
             queued_messages = await message_queue_manager.get_queued_messages(
+                room_id,
                 connection.player_name
             )
             
