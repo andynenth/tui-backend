@@ -638,7 +638,7 @@ class UseCaseDispatcher:
         response = await self.get_room_list_use_case.execute(request)
         
         return {
-            "event": "room_list",
+            "event": "room_list_update",
             "data": {
                 "rooms": [
                     {
