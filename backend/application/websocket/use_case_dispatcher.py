@@ -346,7 +346,8 @@ class UseCaseDispatcher:
         
         response = await self.client_ready_use_case.execute(request)
         
-        return {
+        # Log what we're sending back
+        response_data = {
             "event": "client_ready_ack",
             "data": {
                 "success": response.success,
@@ -354,6 +355,12 @@ class UseCaseDispatcher:
                 "room_state": context.room_state  # Include room state in response
             }
         }
+        
+        logger.info(f"Sending client_ready_ack response: success={response.success}, has_room_state={context.room_state is not None}")
+        if context.room_state:
+            logger.info(f"Room state players: {[p.get('name') for p in context.room_state.get('players', [])]}")
+        
+        return response_data
     
     async def _handle_ack(self, data: Dict[str, Any], context: DispatchContext) -> Dict[str, Any]:
         """Handle ack event"""
@@ -530,12 +537,14 @@ class UseCaseDispatcher:
         response = await self.get_room_state_use_case.execute(request)
         
         if response.room_info:
+            formatted_room = self._format_room_info(response.room_info)
+            logger.info(f"Sending room_state for {room_id}: {len(formatted_room.get('players', []))} players")
+            logger.info(f"Players: {[p['name'] for p in formatted_room.get('players', [])]}")
+            
+            # Frontend expects room_update event with room data directly
             return {
-                "event": "room_state",
-                "data": {
-                    "room_info": self._format_room_info(response.room_info),
-                    "game_in_progress": response.room_info.game_in_progress
-                }
+                "event": "room_update",
+                "data": formatted_room  # Send room data directly, not nested
             }
         else:
             return {

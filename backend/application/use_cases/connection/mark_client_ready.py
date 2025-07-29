@@ -128,7 +128,6 @@ class MarkClientReadyUseCase(UseCase[MarkClientReadyRequest, MarkClientReadyResp
             event = ClientReady(
                 metadata=EventMetadata(user_id=request.user_id),
                 room_id=request.room_id,
-                player_id=request.player_id,
                 player_name=player_slot.name,
                 ready_time=datetime.utcnow(),
                 client_version=request.client_version

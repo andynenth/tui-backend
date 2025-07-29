@@ -54,9 +54,9 @@ GameService.ts:1609 Previous: {isConnected: false, roomId: null, playerName: nul
 GameService.ts:1610 New: {isConnected: true, roomId: null, playerName: null, phase: 'waiting', currentRound: 1, …}
 GameService.ts:1611 Diff: {isConnected: {…}, lastEventSequence: {…}}
 NetworkService.ts:150 🌐 NetworkService: Connected to room lobby
-LobbyPage.jsx:65 Received room_created: {roomId: 'lobby', data: {…}, message: {…}, timestamp: 1753737263192}
-LobbyPage.jsx:66 🟢 Navigation: room_id = 2DUBXV navigating to: /room/2DUBXV
-LobbyPage.jsx:75 ✅ Navigating to new room: 2DUBXV
+LobbyPage.jsx:65 Received room_created: {roomId: 'lobby', data: {…}, message: {…}, timestamp: 1753765926080}
+LobbyPage.jsx:66 🟢 Navigation: room_id = H7T80Q navigating to: /room/H7T80Q
+LobbyPage.jsx:75 ✅ Navigating to new room: H7T80Q
 GameService.ts:1608 🎮 State Change: NETWORK_DISCONNECTED
 GameService.ts:1609 Previous: {isConnected: true, roomId: null, playerName: null, phase: 'waiting', currentRound: 1, …}
 GameService.ts:1610 New: {isConnected: false, roomId: null, playerName: null, phase: 'waiting', currentRound: 1, …}
@@ -70,21 +70,35 @@ GameService.ts:1609 Previous: {isConnected: false, roomId: null, playerName: nul
 GameService.ts:1610 New: {isConnected: true, roomId: null, playerName: null, phase: 'waiting', currentRound: 1, …}
 GameService.ts:1611 Diff: {isConnected: {…}, lastEventSequence: {…}}
 NetworkService.ts:150 🌐 NetworkService: Connected to room lobby
-NetworkService.ts:371 🔗 Connection opened to room 2DUBXV
+NetworkService.ts:371 🔗 Connection opened to room H7T80Q
 GameService.ts:1608 🎮 State Change: NETWORK_CONNECTED
 GameService.ts:1609 Previous: {isConnected: true, roomId: null, playerName: null, phase: 'waiting', currentRound: 1, …}
 GameService.ts:1610 New: {isConnected: true, roomId: null, playerName: null, phase: 'waiting', currentRound: 1, …}
 GameService.ts:1611 Diff: {lastEventSequence: {…}}
-NetworkService.ts:150 🌐 NetworkService: Connected to room 2DUBXV
+NetworkService.ts:150 🌐 NetworkService: Connected to room H7T80Q
+RoomPage.jsx:72 🏠 ROOM_UPDATE: Full data received: {room_id: 'H7T80Q', room_code: 'H7T80Q', room_name: "Alexanderium's Room", host_id: 'H7T80Q_p0', players: Array(4), …}
+RoomPage.jsx:73 🏠 ROOM_UPDATE: Players array: (4) [{…}, {…}, {…}, {…}]
+RoomPage.jsx:74 🏠 ROOM_UPDATE: Players array type: object
+RoomPage.jsx:78 🏠 ROOM_UPDATE: Players array length: 4
+RoomPage.jsx:82 🏠 ROOM_UPDATE: Players array entries: (4) [Array(2), Array(2), Array(2), Array(2)]
+PlayerAvatar.jsx:37 🎨 PlayerAvatar received: {name: 'Alexanderium', isBot: false, avatarColor: null}
+PlayerAvatar.jsx:37 🎨 PlayerAvatar received: {name: 'Bot 2', isBot: true, avatarColor: null}
+PlayerAvatar.jsx:37 🎨 PlayerAvatar received: {name: 'Bot 3', isBot: true, avatarColor: null}
+PlayerAvatar.jsx:37 🎨 PlayerAvatar received: {name: 'Bot 4', isBot: true, avatarColor: null}
+RoomPage.jsx:132 🗑️ REMOVE_PLAYER: Button clicked for slot 4
+RoomPage.jsx:133 🗑️ REMOVE_PLAYER: Sending to room H7T80Q
+RoomPage.jsx:132 🗑️ REMOVE_PLAYER: Button clicked for slot 4
+RoomPage.jsx:133 🗑️ REMOVE_PLAYER: Sending to room H7T80Q
+RoomPage.jsx:132 🗑️ REMOVE_PLAYER: Button clicked for slot 4
+RoomPage.jsx:133 🗑️ REMOVE_PLAYER: Sending to room H7T80Q
 ---
-
 (venv) Narongwits-MacBook-Pro:liap-tui nrw$ ./start.sh
 ✅ Clean Architecture activated (8/8 feature flags enabled)
 🚦 Adapter routing enabled (100% traffic to clean architecture)
 ▶️ Starting backend on http://0.0.0.0:5050 ...
 INFO:     Will watch for changes in these directories: ['/Users/nrw/python/tui-project/liap-tui']
 INFO:     Uvicorn running on http://0.0.0.0:5050 (Press CTRL+C to quit)
-INFO:     Started reloader process [45194] using WatchFiles
+INFO:     Started reloader process [51558] using WatchFiles
 🌐 Starting esbuild in watch mode...
 /Users/nrw/python/tui-project/liap-tui/venv/lib/python3.11/site-packages/pydantic/_internal/_config.py:373: UserWarning: Valid config keys have changed in V2:
 * 'schema_extra' has been renamed to 'json_schema_extra'
@@ -93,195 +107,166 @@ INFO:     Started reloader process [45194] using WatchFiles
 > frontend@1.0.0 dev
 > node esbuild.config.cjs
 
-2025-07-28 14:14:15 - config.logging_config - INFO - Logging configured
+2025-07-28 22:12:01 - config.logging_config - INFO - Logging configured
 Rate limiting is disabled (configuration needed)
-2025-07-28 14:14:15 - backend.api.main - INFO - Mounting static files from: /Users/nrw/python/tui-project/liap-tui/static
-2025-07-28 14:14:15 - backend.api.main - INFO - Static directory exists: True
-2025-07-28 14:14:15 - backend.api.main - INFO - Files in static directory: ['index.html', 'bundle.css', 'bundle.js.map', 'bundle.css.map', 'bundle.js']
-INFO:     Started server process [45197]
+2025-07-28 22:12:01 - backend.api.main - INFO - Mounting static files from: /Users/nrw/python/tui-project/liap-tui/static
+2025-07-28 22:12:01 - backend.api.main - INFO - Static directory exists: True
+2025-07-28 22:12:01 - backend.api.main - INFO - Files in static directory: ['index.html', 'bundle.css', 'bundle.js.map', 'bundle.css.map', 'bundle.js']
+INFO:     Started server process [51561]
 INFO:     Waiting for application startup.
-2025-07-28 14:14:15 - backend.api.routes.ws - INFO - 🧹 [ROOM_DEBUG] Starting room cleanup background task
-2025-07-28 14:14:15 - backend.api.routes.ws - INFO - 🧹 [ROOM_DEBUG] Room cleanup task started
+2025-07-28 22:12:01 - backend.api.routes.ws - INFO - 🧹 [ROOM_DEBUG] Starting room cleanup background task
+2025-07-28 22:12:01 - backend.api.routes.ws - INFO - 🧹 [ROOM_DEBUG] Room cleanup task started
 INFO:     Application startup complete.
-INFO:     127.0.0.1:56330 - "GET / HTTP/1.1" 200 OK
-INFO:     127.0.0.1:56332 - "GET /bundle.css HTTP/1.1" 304 Not Modified
-INFO:     127.0.0.1:56334 - "GET /bundle.js HTTP/1.1" 304 Not Modified
-INFO:     127.0.0.1:56330 - "GET /.well-known/appspecific/com.chrome.devtools.json HTTP/1.1" 404 Not Found
-INFO:     127.0.0.1:56330 - "GET /bundle.css.map HTTP/1.1" 304 Not Modified
-INFO:     127.0.0.1:56330 - "GET /bundle.js.map HTTP/1.1" 304 Not Modified
-INFO:     127.0.0.1:56330 - "GET /favicon.ico HTTP/1.1" 404 Not Found
 👀 Watching for changes to ./main.js, output to ../static//
 
-[0.35ms] [@tailwindcss/postcss] src/styles/toast-notifications.css
-[0.34ms]   ↳ Quick bail check
+[0.35ms] [@tailwindcss/postcss] src/styles/components/game/gameover.css
+[0.33ms]   ↳ Quick bail check
 
 
-[0.13ms] [@tailwindcss/postcss] src/styles/components/game/gameover.css
-[0.12ms]   ↳ Quick bail check
+[0.07ms] [@tailwindcss/postcss] src/styles/toast-notifications.css
+[0.06ms]   ↳ Quick bail check
 
 
-[231.70ms] [@tailwindcss/postcss] src/styles/globals.css
-[  0.52ms]   ↳ Quick bail check
-[ 93.17ms]   ↳ Setup compiler
+[210.35ms] [@tailwindcss/postcss] src/styles/globals.css
+[  0.09ms]   ↳ Quick bail check
+[ 80.63ms]   ↳ Setup compiler
 [  0.68ms]     ↳ PostCSS AST -> Tailwind CSS AST
-[ 92.40ms]     ↳ Create compiler
-[  0.34ms]   ↳ Register full rebuild paths
-[  1.66ms]   ↳ Setup scanner
-[ 41.43ms]   ↳ Scan for candidates
-[ 18.82ms]   ↳ Register dependency messages
-[ 59.84ms]   ↳ Build utilities
-[ 10.57ms]   ↳ Transform Tailwind CSS AST into PostCSS AST
-[  4.68ms]   ↳ Update PostCSS AST
+[ 79.82ms]     ↳ Create compiler
+[  0.32ms]   ↳ Register full rebuild paths
+[  1.71ms]   ↳ Setup scanner
+[ 39.10ms]   ↳ Scan for candidates
+[ 17.79ms]   ↳ Register dependency messages
+[ 56.19ms]   ↳ Build utilities
+[  9.44ms]   ↳ Transform Tailwind CSS AST into PostCSS AST
+[  4.67ms]   ↳ Update PostCSS AST
 
-INFO:     127.0.0.1:56330 - "GET / HTTP/1.1" 200 OK
-INFO:     127.0.0.1:56334 - "GET /bundle.css HTTP/1.1" 200 OK
-INFO:     127.0.0.1:56332 - "GET /bundle.js HTTP/1.1" 200 OK
-INFO:     127.0.0.1:56330 - "GET /.well-known/appspecific/com.chrome.devtools.json HTTP/1.1" 404 Not Found
-INFO:     127.0.0.1:56332 - "GET /favicon.ico HTTP/1.1" 404 Not Found
-2025-07-28 14:14:21 - api.routes.ws - INFO - 🔌 [ROOM_DEBUG] New WebSocket connection to room 'lobby', ws_id: 5c832247-b589-489e-b03e-5170e2eb8acc at 1753737261.576551
-2025-07-28 14:14:21 - api.routes.ws - INFO - 🧹 [ROOM_DEBUG] Starting room cleanup background task
-INFO:     ('127.0.0.1', 56360) - "WebSocket /ws/lobby" [accepted]
-2025-07-28 14:14:21 - infrastructure.websocket.connection_manager - INFO - WebSocket connected: conn_1
-2025-07-28 14:14:21 - infrastructure.websocket.connection_manager - INFO - WebSocket joined room: conn_1 -> lobby
-2025-07-28 14:14:21 - infrastructure.websocket.connection_singleton - INFO - WebSocket registered: conn_1 -> room lobby
-2025-07-28 14:14:21 - api.websocket.connection_manager - INFO - Player anonymous_5c832247 connected to room lobby
-2025-07-28 14:14:21 - api.routes.ws - INFO - Registered anonymous lobby connection: anonymous_5c832247
-2025-07-28 14:14:21 - api.routes.ws - INFO - 🧹 [ROOM_DEBUG] Room cleanup task started
+INFO:     127.0.0.1:61240 - "GET / HTTP/1.1" 200 OK
+INFO:     127.0.0.1:61240 - "GET /bundle.js HTTP/1.1" 200 OK
+INFO:     127.0.0.1:61242 - "GET /bundle.css HTTP/1.1" 200 OK
+INFO:     127.0.0.1:61242 - "GET /.well-known/appspecific/com.chrome.devtools.json HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:61240 - "GET /bundle.js.map HTTP/1.1" 200 OK
+INFO:     127.0.0.1:61242 - "GET /bundle.css.map HTTP/1.1" 200 OK
+INFO:     127.0.0.1:61242 - "GET /favicon.ico HTTP/1.1" 404 Not Found
+2025-07-28 22:12:05 - api.routes.ws - INFO - 🔌 [ROOM_DEBUG] New WebSocket connection to room 'lobby', ws_id: 1282a005-c7ba-4e6f-ae24-eba78d9fdbc1 at 1753765925.144365
+2025-07-28 22:12:05 - api.routes.ws - INFO - 🧹 [ROOM_DEBUG] Starting room cleanup background task
+INFO:     ('127.0.0.1', 61248) - "WebSocket /ws/lobby" [accepted]
+2025-07-28 22:12:05 - infrastructure.websocket.connection_manager - INFO - WebSocket connected: conn_1
+2025-07-28 22:12:05 - infrastructure.websocket.connection_manager - INFO - WebSocket joined room: conn_1 -> lobby
+2025-07-28 22:12:05 - infrastructure.websocket.connection_singleton - INFO - WebSocket registered: conn_1 -> room lobby
+2025-07-28 22:12:05 - api.websocket.connection_manager - INFO - Player anonymous_1282a005 connected to room lobby
+2025-07-28 22:12:05 - api.routes.ws - INFO - Registered anonymous lobby connection: anonymous_1282a005
+2025-07-28 22:12:05 - api.routes.ws - INFO - 🧹 [ROOM_DEBUG] Room cleanup task started
 INFO:     connection open
-2025-07-28 14:14:21 - application.websocket.use_case_dispatcher - WARNING - Game services not available, game use cases will be limited
-2025-07-28 14:14:21 - application.use_cases.connection.mark_client_ready - INFO - Client ready for lobby connection: player_id=lobby_p17
-2025-07-28 14:14:21 - api.routes.ws - INFO - 🔌 [ROOM_DEBUG] New WebSocket connection to room 'lobby', ws_id: 52243388-24f7-4aa0-b8cd-6652ac9e0167 at 1753737261.625143
-2025-07-28 14:14:21 - api.routes.ws - INFO - 🧹 [ROOM_DEBUG] Room cleanup task already running
-INFO:     ('127.0.0.1', 56362) - "WebSocket /ws/lobby" [accepted]
-2025-07-28 14:14:21 - infrastructure.websocket.connection_manager - INFO - WebSocket connected: conn_2
-2025-07-28 14:14:21 - infrastructure.websocket.connection_manager - INFO - WebSocket joined room: conn_2 -> lobby
-2025-07-28 14:14:21 - infrastructure.websocket.connection_singleton - INFO - WebSocket registered: conn_2 -> room lobby
-2025-07-28 14:14:21 - api.websocket.connection_manager - INFO - Player anonymous_52243388 connected to room lobby
-2025-07-28 14:14:21 - api.routes.ws - INFO - Registered anonymous lobby connection: anonymous_52243388
-INFO:     connection open
-2025-07-28 14:14:21 - api.routes.ws - INFO - 🔌 [ROOM_DEBUG] Handling disconnect for room 'lobby', websocket_id: 5c832247-b589-489e-b03e-5170e2eb8acc at 1753737261.628652
-2025-07-28 14:14:21 - api.websocket.connection_manager - INFO - Player anonymous_5c832247 disconnected from room lobby. Can reconnect anytime while game is active.
-2025-07-28 14:14:21 - api.routes.ws - WARNING - No websocket_id found on websocket object for room lobby
-2025-07-28 14:14:21 - api.routes.ws - INFO - ⚠️ [ROOM_DEBUG] WebSocket disconnect without ID for room 'lobby'
-2025-07-28 14:14:21 - infrastructure.websocket.connection_manager - INFO - WebSocket disconnected: conn_1
-2025-07-28 14:14:21 - infrastructure.websocket.connection_singleton - INFO - WebSocket unregistered: conn_1
-2025-07-28 14:14:21 - api.routes.ws - INFO - 🔌 [ROOM_DEBUG] WebSocket unregistered from room 'lobby' (connection_id: conn_1)
+2025-07-28 22:12:05 - application.websocket.use_case_dispatcher - WARNING - Game services not available, game use cases will be limited
+2025-07-28 22:12:05 - application.websocket.use_case_dispatcher - INFO - _handle_client_ready: room_id=lobby, player_name=anonymous_1282a005, player_id=None
+2025-07-28 22:12:05 - application.websocket.use_case_dispatcher - INFO - Room state available: False
+2025-07-28 22:12:05 - application.use_cases.connection.mark_client_ready - INFO - Client ready for lobby connection: player_id=anonymous
+2025-07-28 22:12:05 - application.websocket.use_case_dispatcher - INFO - Sending client_ready_ack response: success=True, has_room_state=False
+2025-07-28 22:12:05 - api.routes.ws - INFO - 🔌 [ROOM_DEBUG] Handling disconnect for room 'lobby', websocket_id: 1282a005-c7ba-4e6f-ae24-eba78d9fdbc1 at 1753765925.153246
+2025-07-28 22:12:05 - api.websocket.connection_manager - INFO - Player anonymous_1282a005 disconnected from room lobby. Can reconnect anytime while game is active.
+2025-07-28 22:12:05 - api.routes.ws - WARNING - No websocket_id found on websocket object for room lobby
+2025-07-28 22:12:05 - api.routes.ws - INFO - ⚠️ [ROOM_DEBUG] WebSocket disconnect without ID for room 'lobby'
+2025-07-28 22:12:05 - infrastructure.websocket.connection_manager - INFO - WebSocket disconnected: conn_1
+2025-07-28 22:12:05 - infrastructure.websocket.connection_singleton - INFO - WebSocket unregistered: conn_1
+2025-07-28 22:12:05 - api.routes.ws - INFO - 🔌 [ROOM_DEBUG] WebSocket unregistered from room 'lobby' (connection_id: conn_1)
 INFO:     connection closed
-2025-07-28 14:14:21 - application.use_cases.connection.mark_client_ready - INFO - Client ready for lobby connection: player_id=lobby_p29
-2025-07-28 14:14:23 - api.routes.ws - INFO - 🔌 [ROOM_DEBUG] Handling disconnect for room 'lobby', websocket_id: 52243388-24f7-4aa0-b8cd-6652ac9e0167 at 1753737263.090959
-2025-07-28 14:14:23 - api.websocket.connection_manager - INFO - Player anonymous_52243388 disconnected from room lobby. Can reconnect anytime while game is active.
-2025-07-28 14:14:23 - api.routes.ws - WARNING - No websocket_id found on websocket object for room lobby
-2025-07-28 14:14:23 - api.routes.ws - INFO - ⚠️ [ROOM_DEBUG] WebSocket disconnect without ID for room 'lobby'
-2025-07-28 14:14:23 - infrastructure.websocket.connection_manager - INFO - WebSocket disconnected: conn_2
-2025-07-28 14:14:23 - infrastructure.websocket.connection_singleton - INFO - WebSocket unregistered: conn_2
-2025-07-28 14:14:23 - api.routes.ws - INFO - 🔌 [ROOM_DEBUG] WebSocket unregistered from room 'lobby' (connection_id: conn_2)
+2025-07-28 22:12:05 - api.routes.ws - INFO - 🔌 [ROOM_DEBUG] New WebSocket connection to room 'lobby', ws_id: 12b50b57-6df0-4aba-ac94-7d1cfafe9744 at 1753765925.1589608
+2025-07-28 22:12:05 - api.routes.ws - INFO - 🧹 [ROOM_DEBUG] Room cleanup task already running
+INFO:     ('127.0.0.1', 61250) - "WebSocket /ws/lobby" [accepted]
+2025-07-28 22:12:05 - infrastructure.websocket.connection_manager - INFO - WebSocket connected: conn_2
+2025-07-28 22:12:05 - infrastructure.websocket.connection_manager - INFO - WebSocket joined room: conn_2 -> lobby
+2025-07-28 22:12:05 - infrastructure.websocket.connection_singleton - INFO - WebSocket registered: conn_2 -> room lobby
+2025-07-28 22:12:05 - api.websocket.connection_manager - INFO - Player anonymous_12b50b57 connected to room lobby
+2025-07-28 22:12:05 - api.routes.ws - INFO - Registered anonymous lobby connection: anonymous_12b50b57
+INFO:     connection open
+2025-07-28 22:12:05 - application.websocket.use_case_dispatcher - INFO - _handle_client_ready: room_id=lobby, player_name=anonymous_12b50b57, player_id=None
+2025-07-28 22:12:05 - application.websocket.use_case_dispatcher - INFO - Room state available: False
+2025-07-28 22:12:05 - application.use_cases.connection.mark_client_ready - INFO - Client ready for lobby connection: player_id=anonymous
+2025-07-28 22:12:05 - application.websocket.use_case_dispatcher - INFO - Sending client_ready_ack response: success=True, has_room_state=False
+2025-07-28 22:12:05 - api.routes.ws - INFO - 🔌 [ROOM_DEBUG] Handling disconnect for room 'lobby', websocket_id: 12b50b57-6df0-4aba-ac94-7d1cfafe9744 at 1753765925.967286
+2025-07-28 22:12:05 - api.websocket.connection_manager - INFO - Player anonymous_12b50b57 disconnected from room lobby. Can reconnect anytime while game is active.
+2025-07-28 22:12:05 - api.routes.ws - WARNING - No websocket_id found on websocket object for room lobby
+2025-07-28 22:12:05 - api.routes.ws - INFO - ⚠️ [ROOM_DEBUG] WebSocket disconnect without ID for room 'lobby'
+2025-07-28 22:12:05 - infrastructure.websocket.connection_manager - INFO - WebSocket disconnected: conn_2
+2025-07-28 22:12:05 - infrastructure.websocket.connection_singleton - INFO - WebSocket unregistered: conn_2
+2025-07-28 22:12:05 - api.routes.ws - INFO - 🔌 [ROOM_DEBUG] WebSocket unregistered from room 'lobby' (connection_id: conn_2)
 INFO:     connection closed
-2025-07-28 14:14:23 - api.routes.ws - INFO - 🔌 [ROOM_DEBUG] New WebSocket connection to room 'lobby', ws_id: 9fdf47e8-b105-4493-b70b-d5c6a10babf1 at 1753737263.097905
-2025-07-28 14:14:23 - api.routes.ws - INFO - 🧹 [ROOM_DEBUG] Room cleanup task already running
-INFO:     ('127.0.0.1', 56372) - "WebSocket /ws/lobby" [accepted]
-2025-07-28 14:14:23 - infrastructure.websocket.connection_manager - INFO - WebSocket connected: conn_3
-2025-07-28 14:14:23 - infrastructure.websocket.connection_manager - INFO - WebSocket joined room: conn_3 -> lobby
-2025-07-28 14:14:23 - infrastructure.websocket.connection_singleton - INFO - WebSocket registered: conn_3 -> room lobby
-2025-07-28 14:14:23 - api.websocket.connection_manager - INFO - Player anonymous_9fdf47e8 connected to room lobby
-2025-07-28 14:14:23 - api.routes.ws - INFO - Registered anonymous lobby connection: anonymous_9fdf47e8
+2025-07-28 22:12:05 - api.routes.ws - INFO - 🔌 [ROOM_DEBUG] New WebSocket connection to room 'lobby', ws_id: d8d21efb-9a1f-4c6b-ab3a-3ab8886cfc0c at 1753765925.9683788
+2025-07-28 22:12:05 - api.routes.ws - INFO - 🧹 [ROOM_DEBUG] Room cleanup task already running
+INFO:     ('127.0.0.1', 61256) - "WebSocket /ws/lobby" [accepted]
+2025-07-28 22:12:05 - infrastructure.websocket.connection_manager - INFO - WebSocket connected: conn_3
+2025-07-28 22:12:05 - infrastructure.websocket.connection_manager - INFO - WebSocket joined room: conn_3 -> lobby
+2025-07-28 22:12:05 - infrastructure.websocket.connection_singleton - INFO - WebSocket registered: conn_3 -> room lobby
+2025-07-28 22:12:05 - api.websocket.connection_manager - INFO - Player anonymous_d8d21efb connected to room lobby
+2025-07-28 22:12:05 - api.routes.ws - INFO - Registered anonymous lobby connection: anonymous_d8d21efb
 INFO:     connection open
-2025-07-28 14:14:23 - application.use_cases.connection.mark_client_ready - INFO - Client ready for lobby connection: player_id=lobby_p57
-2025-07-28 14:14:23 - domain.entities.room - INFO - [ROOM_DEBUG] Creating room 2DUBXV with 4 slots
-2025-07-28 14:14:23 - domain.entities.room - INFO - [ROOM_DEBUG] Adding host Alexanderium to slot 0
-2025-07-28 14:14:23 - domain.entities.room - INFO - [ROOM_DEBUG] Added player Alexanderium (bot=False) to slot 0 in room 2DUBXV
-2025-07-28 14:14:23 - domain.entities.room - INFO - [ROOM_DEBUG] Adding Bot 2 to slot 1
-2025-07-28 14:14:23 - domain.entities.room - INFO - [ROOM_DEBUG] Added player Bot 2 (bot=True) to slot 1 in room 2DUBXV
-2025-07-28 14:14:23 - domain.entities.room - INFO - [ROOM_DEBUG] Adding Bot 3 to slot 2
-2025-07-28 14:14:23 - domain.entities.room - INFO - [ROOM_DEBUG] Added player Bot 3 (bot=True) to slot 2 in room 2DUBXV
-2025-07-28 14:14:23 - domain.entities.room - INFO - [ROOM_DEBUG] Adding Bot 4 to slot 3
-2025-07-28 14:14:23 - domain.entities.room - INFO - [ROOM_DEBUG] Added player Bot 4 (bot=True) to slot 3 in room 2DUBXV
-2025-07-28 14:14:23 - domain.entities.room - INFO - [ROOM_DEBUG] Room initialization complete. Slots: ['Alexanderium', 'Bot 2', 'Bot 3', 'Bot 4']
-2025-07-28 14:14:23 - application.use_cases.room_management.create_room - INFO - [USE_CASE_DEBUG] Room 2DUBXV saved with slots:
-2025-07-28 14:14:23 - application.use_cases.room_management.create_room - INFO - [USE_CASE_DEBUG]   Slot 0: Alexanderium (bot=False)
-2025-07-28 14:14:23 - application.use_cases.room_management.create_room - INFO - [USE_CASE_DEBUG]   Slot 1: Bot 2 (bot=True)
-2025-07-28 14:14:23 - application.use_cases.room_management.create_room - INFO - [USE_CASE_DEBUG]   Slot 2: Bot 3 (bot=True)
-2025-07-28 14:14:23 - application.use_cases.room_management.create_room - INFO - [USE_CASE_DEBUG]   Slot 3: Bot 4 (bot=True)
-2025-07-28 14:14:23 - application.use_cases.room_management.create_room - INFO - Room 2DUBXV created by Alexanderium
-2025-07-28 14:14:23 - api.routes.ws - INFO - 🔌 [ROOM_DEBUG] Handling disconnect for room 'lobby', websocket_id: 9fdf47e8-b105-4493-b70b-d5c6a10babf1 at 1753737263.194627
-2025-07-28 14:14:23 - api.websocket.connection_manager - INFO - Player anonymous_9fdf47e8 disconnected from room lobby. Can reconnect anytime while game is active.
-2025-07-28 14:14:23 - api.routes.ws - WARNING - No websocket_id found on websocket object for room lobby
-2025-07-28 14:14:23 - api.routes.ws - INFO - ⚠️ [ROOM_DEBUG] WebSocket disconnect without ID for room 'lobby'
-2025-07-28 14:14:23 - infrastructure.websocket.connection_manager - INFO - WebSocket disconnected: conn_3
-2025-07-28 14:14:23 - infrastructure.websocket.connection_singleton - INFO - WebSocket unregistered: conn_3
-2025-07-28 14:14:23 - api.routes.ws - INFO - 🔌 [ROOM_DEBUG] WebSocket unregistered from room 'lobby' (connection_id: conn_3)
+2025-07-28 22:12:05 - application.websocket.use_case_dispatcher - INFO - _handle_client_ready: room_id=lobby, player_name=anonymous_d8d21efb, player_id=None
+2025-07-28 22:12:05 - application.websocket.use_case_dispatcher - INFO - Room state available: False
+2025-07-28 22:12:05 - application.use_cases.connection.mark_client_ready - INFO - Client ready for lobby connection: player_id=anonymous
+2025-07-28 22:12:05 - application.websocket.use_case_dispatcher - INFO - Sending client_ready_ack response: success=True, has_room_state=False
+2025-07-28 22:12:06 - domain.entities.room - INFO - [ROOM_DEBUG] Creating room H7T80Q with 4 slots
+2025-07-28 22:12:06 - domain.entities.room - INFO - [ROOM_DEBUG] Adding host Alexanderium to slot 0
+2025-07-28 22:12:06 - domain.entities.room - INFO - [ROOM_DEBUG] Added player Alexanderium (bot=False) to slot 0 in room H7T80Q
+2025-07-28 22:12:06 - domain.entities.room - INFO - [ROOM_DEBUG] Adding Bot 2 to slot 1
+2025-07-28 22:12:06 - domain.entities.room - INFO - [ROOM_DEBUG] Added player Bot 2 (bot=True) to slot 1 in room H7T80Q
+2025-07-28 22:12:06 - domain.entities.room - INFO - [ROOM_DEBUG] Adding Bot 3 to slot 2
+2025-07-28 22:12:06 - domain.entities.room - INFO - [ROOM_DEBUG] Added player Bot 3 (bot=True) to slot 2 in room H7T80Q
+2025-07-28 22:12:06 - domain.entities.room - INFO - [ROOM_DEBUG] Adding Bot 4 to slot 3
+2025-07-28 22:12:06 - domain.entities.room - INFO - [ROOM_DEBUG] Added player Bot 4 (bot=True) to slot 3 in room H7T80Q
+2025-07-28 22:12:06 - domain.entities.room - INFO - [ROOM_DEBUG] Room initialization complete. Slots: ['Alexanderium', 'Bot 2', 'Bot 3', 'Bot 4']
+2025-07-28 22:12:06 - application.use_cases.room_management.create_room - INFO - [USE_CASE_DEBUG] Room H7T80Q saved with slots:
+2025-07-28 22:12:06 - application.use_cases.room_management.create_room - INFO - [USE_CASE_DEBUG]   Slot 0: Alexanderium (bot=False)
+2025-07-28 22:12:06 - application.use_cases.room_management.create_room - INFO - [USE_CASE_DEBUG]   Slot 1: Bot 2 (bot=True)
+2025-07-28 22:12:06 - application.use_cases.room_management.create_room - INFO - [USE_CASE_DEBUG]   Slot 2: Bot 3 (bot=True)
+2025-07-28 22:12:06 - application.use_cases.room_management.create_room - INFO - [USE_CASE_DEBUG]   Slot 3: Bot 4 (bot=True)
+2025-07-28 22:12:06 - application.use_cases.room_management.create_room - INFO - Room H7T80Q created by Alexanderium
+2025-07-28 22:12:06 - api.routes.ws - INFO - 🔌 [ROOM_DEBUG] Handling disconnect for room 'lobby', websocket_id: d8d21efb-9a1f-4c6b-ab3a-3ab8886cfc0c at 1753765926.0857658
+2025-07-28 22:12:06 - api.websocket.connection_manager - INFO - Player anonymous_d8d21efb disconnected from room lobby. Can reconnect anytime while game is active.
+2025-07-28 22:12:06 - api.routes.ws - WARNING - No websocket_id found on websocket object for room lobby
+2025-07-28 22:12:06 - api.routes.ws - INFO - ⚠️ [ROOM_DEBUG] WebSocket disconnect without ID for room 'lobby'
+2025-07-28 22:12:06 - infrastructure.websocket.connection_manager - INFO - WebSocket disconnected: conn_3
+2025-07-28 22:12:06 - infrastructure.websocket.connection_singleton - INFO - WebSocket unregistered: conn_3
+2025-07-28 22:12:06 - api.routes.ws - INFO - 🔌 [ROOM_DEBUG] WebSocket unregistered from room 'lobby' (connection_id: conn_3)
 INFO:     connection closed
-2025-07-28 14:14:23 - api.routes.ws - INFO - 🔌 [ROOM_DEBUG] New WebSocket connection to room 'lobby', ws_id: c4781b02-2161-4fd0-86c6-319e503b121b at 1753737263.2022872
-2025-07-28 14:14:23 - api.routes.ws - INFO - 🧹 [ROOM_DEBUG] Room cleanup task already running
-INFO:     ('127.0.0.1', 56374) - "WebSocket /ws/lobby" [accepted]
-2025-07-28 14:14:23 - infrastructure.websocket.connection_manager - INFO - WebSocket connected: conn_4
-2025-07-28 14:14:23 - infrastructure.websocket.connection_manager - INFO - WebSocket joined room: conn_4 -> lobby
-2025-07-28 14:14:23 - infrastructure.websocket.connection_singleton - INFO - WebSocket registered: conn_4 -> room lobby
-2025-07-28 14:14:23 - api.websocket.connection_manager - INFO - Player anonymous_c4781b02 connected to room lobby
-2025-07-28 14:14:23 - api.routes.ws - INFO - Registered anonymous lobby connection: anonymous_c4781b02
+2025-07-28 22:12:06 - api.routes.ws - INFO - 🔌 [ROOM_DEBUG] New WebSocket connection to room 'lobby', ws_id: e93a0bdc-fed9-4734-8c81-7aa8afcb3e02 at 1753765926.100786
+2025-07-28 22:12:06 - api.routes.ws - INFO - 🧹 [ROOM_DEBUG] Room cleanup task already running
+INFO:     ('127.0.0.1', 61258) - "WebSocket /ws/lobby" [accepted]
+2025-07-28 22:12:06 - infrastructure.websocket.connection_manager - INFO - WebSocket connected: conn_4
+2025-07-28 22:12:06 - infrastructure.websocket.connection_manager - INFO - WebSocket joined room: conn_4 -> lobby
+2025-07-28 22:12:06 - infrastructure.websocket.connection_singleton - INFO - WebSocket registered: conn_4 -> room lobby
+2025-07-28 22:12:06 - api.websocket.connection_manager - INFO - Player anonymous_e93a0bdc connected to room lobby
+2025-07-28 22:12:06 - api.routes.ws - INFO - Registered anonymous lobby connection: anonymous_e93a0bdc
 INFO:     connection open
-2025-07-28 14:14:23 - application.use_cases.connection.mark_client_ready - INFO - Client ready for lobby connection: player_id=lobby_p63
-2025-07-28 14:14:23 - api.routes.ws - INFO - 🔌 [ROOM_DEBUG] New WebSocket connection to room '2DUBXV', ws_id: 0b541543-0cab-484e-8da2-173b7f81ac00 at 1753737263.2160199
-2025-07-28 14:14:23 - api.routes.ws - INFO - 🧹 [ROOM_DEBUG] Room cleanup task already running
-INFO:     ('127.0.0.1', 56376) - "WebSocket /ws/2DUBXV" [accepted]
-2025-07-28 14:14:23 - infrastructure.websocket.connection_manager - INFO - WebSocket connected: conn_5
-2025-07-28 14:14:23 - infrastructure.websocket.connection_manager - INFO - WebSocket joined room: conn_5 -> 2DUBXV
-2025-07-28 14:14:23 - infrastructure.websocket.connection_singleton - INFO - WebSocket registered: conn_5 -> room 2DUBXV
-2025-07-28 14:14:23 - api.routes.ws - INFO - [ROOM_LOOKUP_DEBUG] Room 2DUBXV found successfully in clean architecture!
-2025-07-28 14:14:23 - api.websocket.connection_manager - INFO - Player player_0b541543 connected to room 2DUBXV
-2025-07-28 14:14:23 - api.routes.ws - INFO - Registered temporary player connection: player_0b541543 for room 2DUBXV
+2025-07-28 22:12:06 - application.websocket.use_case_dispatcher - INFO - _handle_client_ready: room_id=lobby, player_name=anonymous_e93a0bdc, player_id=None
+2025-07-28 22:12:06 - application.websocket.use_case_dispatcher - INFO - Room state available: False
+2025-07-28 22:12:06 - application.use_cases.connection.mark_client_ready - INFO - Client ready for lobby connection: player_id=anonymous
+2025-07-28 22:12:06 - application.websocket.use_case_dispatcher - INFO - Sending client_ready_ack response: success=True, has_room_state=False
+2025-07-28 22:12:06 - api.routes.ws - INFO - 🔌 [ROOM_DEBUG] New WebSocket connection to room 'H7T80Q', ws_id: 0eb82c72-3bbd-4432-8ffa-6bf04579cb57 at 1753765926.1145868
+2025-07-28 22:12:06 - api.routes.ws - INFO - 🧹 [ROOM_DEBUG] Room cleanup task already running
+INFO:     ('127.0.0.1', 61260) - "WebSocket /ws/H7T80Q" [accepted]
+2025-07-28 22:12:06 - infrastructure.websocket.connection_manager - INFO - WebSocket connected: conn_5
+2025-07-28 22:12:06 - infrastructure.websocket.connection_manager - INFO - WebSocket joined room: conn_5 -> H7T80Q
+2025-07-28 22:12:06 - infrastructure.websocket.connection_singleton - INFO - WebSocket registered: conn_5 -> room H7T80Q
+2025-07-28 22:12:06 - api.routes.ws - INFO - [ROOM_LOOKUP_DEBUG] Room H7T80Q found successfully in clean architecture!
+2025-07-28 22:12:06 - api.websocket.connection_manager - INFO - Player player_0eb82c72 connected to room H7T80Q
+2025-07-28 22:12:06 - api.routes.ws - INFO - Registered temporary player connection: player_0eb82c72 for room H7T80Q
 INFO:     connection open
-2025-07-28 14:14:23 - application.websocket.message_router - ERROR - Error getting room state: 'Room' object has no attribute 'id'
-2025-07-28 14:14:23 - api.websocket.connection_manager - INFO - Player Alexanderium connected to room 2DUBXV
-2025-07-28 14:14:23 - application.websocket.message_router - INFO - Updated player registration: Alexanderium for room 2DUBXV
-2025-07-28 14:14:23 - application.websocket.use_case_dispatcher - ERROR - Error handling event client_ready: Player with id '2DUBXV_p24' not found
-Traceback (most recent call last):
-  File "/Users/nrw/python/tui-project/liap-tui/backend/application/websocket/use_case_dispatcher.py", line 263, in dispatch
-    return await handler(data, context)
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/nrw/python/tui-project/liap-tui/backend/application/websocket/use_case_dispatcher.py", line 330, in _handle_client_ready
-    response = await self.client_ready_use_case.execute(request)
-               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/nrw/python/tui-project/liap-tui/backend/application/use_cases/connection/mark_client_ready.py", line 106, in execute
-    raise ResourceNotFoundException("Player", request.player_id)
-application.exceptions.ResourceNotFoundException: Player with id '2DUBXV_p24' not found
-2025-07-28 14:14:23 - application.websocket.message_router - ERROR - Error getting room state: 'Room' object has no attribute 'id'
-2025-07-28 14:14:25 - backend.api.routes.ws - INFO - 🧹 [ROOM_DEBUG] Cleanup iteration 3: Checking 1 rooms: ['2DUBXV']
-2025-07-28 14:14:25 - backend.api.routes.ws - INFO - 🧹 CLEANUP_CHECK: Room 2DUBXV - game_ended=False, should_cleanup=False
-2025-07-28 14:14:26 - api.routes.ws - INFO - 🧹 [ROOM_DEBUG] Cleanup iteration 2: Checking 1 rooms: ['2DUBXV']
-2025-07-28 14:14:26 - api.routes.ws - INFO - 🧹 CLEANUP_CHECK: Room 2DUBXV - game_ended=False, should_cleanup=False
-2025-07-28 14:14:30 - backend.api.routes.ws - INFO - 🧹 [ROOM_DEBUG] Cleanup iteration 4: Checking 1 rooms: ['2DUBXV']
-2025-07-28 14:14:30 - backend.api.routes.ws - INFO - 🧹 CLEANUP_CHECK: Room 2DUBXV - game_ended=False, should_cleanup=False
-2025-07-28 14:14:31 - api.routes.ws - INFO - 🧹 [ROOM_DEBUG] Cleanup iteration 3: Checking 1 rooms: ['2DUBXV']
-2025-07-28 14:14:31 - api.routes.ws - INFO - 🧹 CLEANUP_CHECK: Room 2DUBXV - game_ended=False, should_cleanup=False
-2025-07-28 14:14:35 - backend.api.routes.ws - INFO - 🧹 [ROOM_DEBUG] Cleanup iteration 5: Checking 1 rooms: ['2DUBXV']
-2025-07-28 14:14:35 - backend.api.routes.ws - INFO - 🧹 CLEANUP_CHECK: Room 2DUBXV - game_ended=False, should_cleanup=False
-2025-07-28 14:14:36 - api.routes.ws - INFO - 🧹 [ROOM_DEBUG] Cleanup iteration 4: Checking 1 rooms: ['2DUBXV']
-2025-07-28 14:14:36 - api.routes.ws - INFO - 🧹 CLEANUP_CHECK: Room 2DUBXV - game_ended=False, should_cleanup=False
-2025-07-28 14:14:40 - backend.api.routes.ws - INFO - 🧹 [ROOM_DEBUG] Cleanup iteration 6: Checking 1 rooms: ['2DUBXV']
-2025-07-28 14:14:40 - backend.api.routes.ws - INFO - 🧹 CLEANUP_CHECK: Room 2DUBXV - game_ended=False, should_cleanup=False
-2025-07-28 14:14:41 - api.routes.ws - INFO - 🧹 [ROOM_DEBUG] Cleanup iteration 5: Checking 1 rooms: ['2DUBXV']
-2025-07-28 14:14:41 - api.routes.ws - INFO - 🧹 CLEANUP_CHECK: Room 2DUBXV - game_ended=False, should_cleanup=False
-2025-07-28 14:14:45 - backend.api.routes.ws - INFO - 🧹 [ROOM_DEBUG] Cleanup iteration 7: Checking 1 rooms: ['2DUBXV']
-2025-07-28 14:14:45 - backend.api.routes.ws - INFO - 🧹 CLEANUP_CHECK: Room 2DUBXV - game_ended=False, should_cleanup=False
-2025-07-28 14:14:46 - api.routes.ws - INFO - 🧹 [ROOM_DEBUG] Cleanup iteration 6: Checking 1 rooms: ['2DUBXV']
-2025-07-28 14:14:46 - api.routes.ws - INFO - 🧹 CLEANUP_CHECK: Room 2DUBXV - game_ended=False, should_cleanup=False
-2025-07-28 14:14:50 - backend.api.routes.ws - INFO - 🧹 [ROOM_DEBUG] Cleanup iteration 8: Checking 1 rooms: ['2DUBXV']
-2025-07-28 14:14:50 - backend.api.routes.ws - INFO - 🧹 CLEANUP_CHECK: Room 2DUBXV - game_ended=False, should_cleanup=False
-2025-07-28 14:14:51 - api.routes.ws - INFO - 🧹 [ROOM_DEBUG] Cleanup iteration 7: Checking 1 rooms: ['2DUBXV']
-2025-07-28 14:14:51 - api.routes.ws - INFO - 🧹 CLEANUP_CHECK: Room 2DUBXV - game_ended=False, should_cleanup=False
-2025-07-28 14:14:53 - application.websocket.message_router - ERROR - Error getting room state: 'Room' object has no attribute 'id'
-2025-07-28 14:14:53 - application.websocket.use_case_dispatcher - ERROR - Error handling event ping: name 'i' is not defined
-Traceback (most recent call last):
-  File "/Users/nrw/python/tui-project/liap-tui/backend/application/websocket/use_case_dispatcher.py", line 263, in dispatch
-    return await handler(data, context)
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/nrw/python/tui-project/liap-tui/backend/application/websocket/use_case_dispatcher.py", line 285, in _handle_ping
-    response = await self.ping_use_case.execute(request)
-               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/nrw/python/tui-project/liap-tui/backend/application/use_cases/connection/handle_ping.py", line 68, in execute
-    if slot and PropertyMapper.generate_player_id(room.room_id, i) == request.player_id:
-                                                                ^
-NameError: name 'i' is not defined
-2025-07-28 14:14:55 - backend.api.routes.ws - INFO - 🧹 [ROOM_DEBUG] Cleanup iteration 9: Checking 1 rooms: ['2DUBXV']
-2025-07-28 14:14:55 - backend.api.routes.ws - INFO - 🧹 CLEANUP_CHECK: Room 2DUBXV - game_ended=False, should_cleanup=False
-2025-07-28 14:14:56 - api.routes.ws - INFO - 🧹 [ROOM_DEBUG] Cleanup iteration 8: Checking 1 rooms: ['2DUBXV']
+2025-07-28 22:12:06 - api.websocket.connection_manager - INFO - Player Alexanderium connected to room H7T80Q
+2025-07-28 22:12:06 - application.websocket.message_router - INFO - Updated player registration: Alexanderium for room H7T80Q with player_id H7T80Q_p0
+2025-07-28 22:12:06 - application.websocket.use_case_dispatcher - INFO - _handle_client_ready: room_id=H7T80Q, player_name=Alexanderium, player_id=None
+2025-07-28 22:12:06 - application.websocket.use_case_dispatcher - INFO - Room state available: True
+2025-07-28 22:12:06 - application.websocket.use_case_dispatcher - INFO - Looking for player Alexanderium in room state with 4 players
+2025-07-28 22:12:06 - application.websocket.use_case_dispatcher - INFO -   Slot 0: name=Alexanderium, player_id=H7T80Q_p0
+2025-07-28 22:12:06 - application.websocket.use_case_dispatcher - INFO - Found matching player_id: H7T80Q_p0
+2025-07-28 22:12:06 - application.use_cases.connection.mark_client_ready - INFO - Player H7T80Q_p0 marked as ready in room H7T80Q
+2025-07-28 22:12:06 - application.websocket.use_case_dispatcher - INFO - Sending client_ready_ack response: success=True, has_room_state=True
+2025-07-28 22:12:06 - application.websocket.use_case_dispatcher - INFO - Room state players: ['Alexanderium', 'Bot 2', 'Bot 3', 'Bot 4']
+2025-07-28 22:12:06 - application.websocket.use_case_dispatcher - INFO - Sending room_state for H7T80Q: 4 players
+2025-07-28 22:12:06 - application.websocket.use_case_dispatcher - INFO - Players: ['Alexanderium', 'Bot 2', 'Bot 3', 'Bot 4']
+2025-07-28 22:12:06 - backend.api.routes.ws - INFO - 🧹 [ROOM_DEBUG] Cleanup iteration 2: Checking 1 rooms: ['H7T80Q']
+2025-07-28 22:12:06 - backend.api.routes.ws - INFO - 🧹 CLEANUP_CHECK: Room H7T80Q - game_ended=False, should_cleanup=False
+2025-07-28 22:12:10 - api.routes.ws - INFO - 🧹 [ROOM_DEBUG] Cleanup iteration 2: Checking 1 rooms: ['H7T80Q']
+2025-07-28 22:12:10 - api.routes.ws - INFO - 🧹 CLEANUP_CHECK: Room H7T80Q - game_ended=False, should_cleanup=False
+2025-07-28 22:12:11 - backend.api.routes.ws - INFO - 🧹 [ROOM_DEBUG] Cleanup iteration 3: Checking 1 rooms: ['H7T80Q']
+2025-07-28 22:12:11 - backend.api.routes.ws - INFO - 🧹 CLEANUP_CHECK: Room H7T80Q - game_ended=False, should_cleanup=False
+2025-07-28 22:12:15 - api.routes.ws - INFO - 🧹 [ROOM_DEBUG] Cleanup iteration 3: Checking 1 rooms: ['H7T80Q']
