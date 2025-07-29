@@ -1,6 +1,6 @@
 // frontend/src/pages/LobbyPage.jsx
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useApp } from '../contexts/AppContext';
 import { useTheme } from '../contexts/ThemeContext';
@@ -25,15 +25,43 @@ const LobbyPage = () => {
   const [joinRoomId, setJoinRoomId] = useState('');
   const [lastUpdateTime, setLastUpdateTime] = useState(Date.now());
 
-  // Initialize lobby connection and event listeners
+  // Stable event handler references to prevent recreation
+  const handleRoomListUpdateRef = useRef();
+  const handleRoomCreatedRef = useRef();
+  const handleRoomJoinedRef = useRef();
+  const handleErrorRef = useRef();
+
+  // Room list update handler with functional state updates
+  const handleRoomListUpdate = useCallback((event) => {
+    const eventData = event.detail;
+    const roomListData = eventData.data;
+    console.log('🔄 [LOBBY UPDATE] Received room_list_update:', eventData);
+    console.log('🔄 [LOBBY UPDATE] Rooms data:', roomListData.rooms);
+    console.log('🔄 [LOBBY UPDATE] Room count:', roomListData.rooms?.length || 0);
+    
+    // Use functional state update to ensure fresh state
+    setRooms(prevRooms => {
+      const newRooms = roomListData.rooms || [];
+      console.log('🔄 [LOBBY UPDATE] State update - prev count:', prevRooms.length, '→ new count:', newRooms.length);
+      return newRooms;
+    });
+    
+    setLastUpdateTime(Date.now());
+  }, []);
+
+  // Store handler reference for cleanup
+  handleRoomListUpdateRef.current = handleRoomListUpdate;
+
+  // Initialize lobby connection and event listeners (stable dependencies)
   useEffect(() => {
     const initializeLobby = async () => {
       try {
-        // Connect to lobby WebSocket
+        console.log('🔗 [LOBBY] Initializing lobby connection...');
         await networkService.connectToRoom('lobby');
+        console.log('✅ [LOBBY] Connected to lobby successfully');
         setIsConnected(true);
       } catch (error) {
-        console.error('Failed to connect to lobby:', error);
+        console.error('❌ [LOBBY] Failed to connect to lobby:', error);
         setIsConnected(false);
       }
     };
@@ -42,60 +70,47 @@ const LobbyPage = () => {
 
     const unsubscribers = [];
 
-    // Room list updates
-    const handleRoomListUpdate = (event) => {
-      const eventData = event.detail;
-      const roomListData = eventData.data; // The actual room_list_update data from backend
-      console.log('Received room_list_update:', eventData);
-      setRooms(roomListData.rooms || []);
-      setLastUpdateTime(Date.now());
-    };
-    networkService.addEventListener('room_list_update', handleRoomListUpdate);
+    // Room list updates - use stable handler reference
+    const roomListHandler = (event) => handleRoomListUpdateRef.current?.(event);
+    networkService.addEventListener('room_list_update', roomListHandler);
     unsubscribers.push(() =>
-      networkService.removeEventListener(
-        'room_list_update',
-        handleRoomListUpdate
-      )
+      networkService.removeEventListener('room_list_update', roomListHandler)
     );
 
-    // Room created successfully
-    const handleRoomCreated = (event) => {
+    // Room created successfully - stable handler
+    const roomCreatedHandler = (event) => {
       const eventData = event.detail;
-      const roomData = eventData.data; // The actual room_created data from backend
-      console.log('Received room_created:', eventData);
-      console.log(
-        '🟢 Navigation: room_id =',
-        roomData.room_id,
-        'navigating to:',
-        `/room/${roomData.room_id}`
-      );
+      const roomData = eventData.data;
+      console.log('🏠 [ROOM CREATED] Received room_created:', eventData);
+      console.log('🏠 [ROOM CREATED] Navigation: room_id =', roomData.room_id);
 
-      // Only navigate if this is a real room ID (not 'lobby') and we're currently creating a room
-      if (roomData.room_id && roomData.room_id !== 'lobby' && isCreatingRoom) {
-        console.log('✅ Navigating to new room:', roomData.room_id);
+      // Get current state to avoid stale closure
+      const currentIsCreating = handleRoomCreatedRef.current?.isCreatingRoom;
+      
+      if (roomData.room_id && roomData.room_id !== 'lobby' && currentIsCreating) {
+        console.log('✅ [ROOM CREATED] Navigating to new room:', roomData.room_id);
         setIsCreatingRoom(false);
         app.goToRoom(roomData.room_id);
-        // Disconnect from lobby before navigating to room
         networkService.disconnectFromRoom('lobby');
         navigate(`/room/${roomData.room_id}`);
       } else {
-        console.log('⏭️ Ignoring room_created event:', {
+        console.log('⏭️ [ROOM CREATED] Ignoring event:', {
           roomId: roomData.room_id,
-          isCreatingRoom,
-          reason:
-            roomData.room_id === 'lobby' ? 'lobby event' : 'not creating room',
+          isCreatingRoom: currentIsCreating,
+          reason: roomData.room_id === 'lobby' ? 'lobby event' : 'not creating room',
         });
       }
     };
-    networkService.addEventListener('room_created', handleRoomCreated);
+    networkService.addEventListener('room_created', roomCreatedHandler);
     unsubscribers.push(() =>
-      networkService.removeEventListener('room_created', handleRoomCreated)
+      networkService.removeEventListener('room_created', roomCreatedHandler)
     );
 
-    // Room joined successfully
-    const handleRoomJoined = (event) => {
+    // Room joined successfully - stable handler
+    const roomJoinedHandler = (event) => {
       const eventData = event.detail;
-      const joinData = eventData.data; // The actual room_joined data from backend
+      const joinData = eventData.data;
+      console.log('🚪 [ROOM JOINED] Received room_joined:', eventData);
       setIsJoiningRoom(false);
       setShowJoinModal(false);
       if (joinData.room_id) {
@@ -103,32 +118,39 @@ const LobbyPage = () => {
         navigate(`/room/${joinData.room_id}`);
       }
     };
-    networkService.addEventListener('room_joined', handleRoomJoined);
+    networkService.addEventListener('room_joined', roomJoinedHandler);
     unsubscribers.push(() =>
-      networkService.removeEventListener('room_joined', handleRoomJoined)
+      networkService.removeEventListener('room_joined', roomJoinedHandler)
     );
 
-    // Error handling
-    const handleError = (event) => {
+    // Error handling - stable handler
+    const errorHandler = (event) => {
       const eventData = event.detail;
-      const errorData = eventData.data; // The actual error data from backend
+      const errorData = eventData.data;
+      console.error('❌ [LOBBY ERROR] Received error:', eventData);
       setIsCreatingRoom(false);
       setIsJoiningRoom(false);
-      console.error('Lobby error:', eventData);
       alert(errorData?.message || 'An error occurred');
     };
-    networkService.addEventListener('error', handleError);
+    networkService.addEventListener('error', errorHandler);
     unsubscribers.push(() =>
-      networkService.removeEventListener('error', handleError)
+      networkService.removeEventListener('error', errorHandler)
     );
 
     // Cleanup
     return () => {
+      console.log('🧹 [CLEANUP] Cleaning up lobby event listeners');
       unsubscribers.forEach((unsub) => unsub());
-      // Disconnect from lobby when component unmounts
       networkService.disconnectFromRoom('lobby');
     };
-  }, [isCreatingRoom, app, navigate, isJoiningRoom]);
+  }, [app, navigate]); // Stable dependencies only
+
+  // Update handler references when state changes (without recreating listeners)
+  useEffect(() => {
+    if (handleRoomCreatedRef.current) {
+      handleRoomCreatedRef.current.isCreatingRoom = isCreatingRoom;
+    }
+  }, [isCreatingRoom]);
 
   // Send get_rooms request when connected
   useEffect(() => {
@@ -214,12 +236,14 @@ const LobbyPage = () => {
     return `${Math.floor(diff / 60)}m ago`;
   };
 
-  // Update timer
+  // Update timer - optimized to reduce re-renders
   useEffect(() => {
     const interval = setInterval(() => {
-      // Force re-render to update time display
-      setLastUpdateTime((prev) => prev);
-    }, 1000);
+      // Only trigger re-render if component is visible and has rooms
+      if (document.visibilityState === 'visible') {
+        setLastUpdateTime((prev) => prev); // Trigger re-render for time display
+      }
+    }, 2000); // Reduced frequency from 1s to 2s
 
     return () => clearInterval(interval);
   }, []);
