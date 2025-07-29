@@ -128,10 +128,10 @@ const RoomPage = () => {
     networkService.send(roomId, 'add_bot', { slot_id: slotId });
   };
 
-  const removePlayer = (slotId) => {
-    console.log('🗑️ REMOVE_PLAYER: Button clicked for slot', slotId);
+  const removePlayer = (playerId) => {
+    console.log('🗑️ REMOVE_PLAYER: Button clicked for player', playerId);
     console.log('🗑️ REMOVE_PLAYER: Sending to room', roomId);
-    networkService.send(roomId, 'remove_player', { slot_id: slotId });
+    networkService.send(roomId, 'remove_player', { player_id: playerId });
   };
 
   const leaveRoom = () => {
@@ -249,7 +249,7 @@ const RoomPage = () => {
                             <div className="rp-playerAction">
                               <button
                                 className="rp-actionBtn rp-removeBtn"
-                                onClick={() => removePlayer(position)}
+                                onClick={() => removePlayer(player?.player_id)}
                                 disabled={!isConnected}
                               >
                                 Remove

@@ -127,6 +127,7 @@ class Room:
     room_id: str
     host_name: str
     max_slots: int = 4
+    host_id: Optional[str] = None
     
     # Room state
     slots: List[Optional[Player]] = field(default_factory=lambda: [None, None, None, None])
@@ -145,6 +146,10 @@ class Room:
         
         if len(self.slots) != self.max_slots:
             self.slots = [None] * self.max_slots
+        
+        # Set host_id if not already set (host is always in slot 0)
+        if self.host_id is None:
+            self.host_id = f"{self.room_id}_p0"
         
         # Emit room created event
         self._emit_event(RoomCreated(
@@ -259,7 +264,7 @@ class Room:
             True if player was host, False otherwise
         """
         for i, player in enumerate(self.slots):
-            if player and player.name == name and not player.is_bot:
+            if player and player.name == name:
                 was_host = (name == self.host_name)
                 self.slots[i] = None
                 
