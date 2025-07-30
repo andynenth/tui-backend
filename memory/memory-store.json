@@ -1,0 +1,10 @@
+{
+  "default": [
+    {
+      "key": "debug-pattern-1",
+      "value": "off-by-one error: slot_index = request.slot_id - 1",
+      "namespace": "default",
+      "timestamp": 1753898735194
+    }
+  ]
+}
