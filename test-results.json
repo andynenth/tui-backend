@@ -1,0 +1,176 @@
+{
+  "config": {
+    "configFile": "/Users/nrw/python/tui-project/liap-tui/playwright.config.js",
+    "rootDir": "/Users/nrw/python/tui-project/liap-tui",
+    "forbidOnly": false,
+    "fullyParallel": false,
+    "globalSetup": null,
+    "globalTeardown": null,
+    "globalTimeout": 0,
+    "grep": {},
+    "grepInvert": null,
+    "maxFailures": 0,
+    "metadata": {
+      "actualWorkers": 1
+    },
+    "preserveOutput": "always",
+    "reporter": [
+      [
+        "html",
+        null
+      ],
+      [
+        "list",
+        null
+      ],
+      [
+        "json",
+        {
+          "outputFile": "test-results.json"
+        }
+      ]
+    ],
+    "reportSlowTests": {
+      "max": 5,
+      "threshold": 300000
+    },
+    "quiet": false,
+    "projects": [
+      {
+        "outputDir": "/Users/nrw/python/tui-project/liap-tui/test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "chromium-lobby-test",
+        "name": "chromium-lobby-test",
+        "testDir": "/Users/nrw/python/tui-project/liap-tui",
+        "testIgnore": [],
+        "testMatch": [
+          "**/*.@(spec|test).?(c|m)[jt]s?(x)"
+        ],
+        "timeout": 30000
+      }
+    ],
+    "shard": null,
+    "updateSnapshots": "missing",
+    "updateSourceMethod": "patch",
+    "version": "1.54.1",
+    "workers": 1,
+    "webServer": null
+  },
+  "suites": [
+    {
+      "title": "test_lobby_game_transition.spec.js",
+      "file": "test_lobby_game_transition.spec.js",
+      "column": 0,
+      "line": 0,
+      "specs": [],
+      "suites": [
+        {
+          "title": "Lobby to Game Transition Debugging",
+          "file": "test_lobby_game_transition.spec.js",
+          "line": 18,
+          "column": 6,
+          "specs": [
+            {
+              "title": "Complete lobby to game transition flow",
+              "ok": false,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium-lobby-test",
+                  "projectName": "chromium-lobby-test",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "failed",
+                      "duration": 12554,
+                      "error": {
+                        "message": "TimeoutError: page.fill: Timeout 10000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('input[placeholder=\"Enter your name\"]')\u001b[22m\n",
+                        "stack": "TimeoutError: page.fill: Timeout 10000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('input[placeholder=\"Enter your name\"]')\u001b[22m\n\n    at /Users/nrw/python/tui-project/liap-tui/test_lobby_game_transition.spec.js:205:16",
+                        "location": {
+                          "file": "/Users/nrw/python/tui-project/liap-tui/test_lobby_game_transition.spec.js",
+                          "column": 16,
+                          "line": 205
+                        },
+                        "snippet": "  203 |     \n  204 |     // Enter player name and create room\n> 205 |     await page.fill('input[placeholder=\"Enter your name\"]', PLAYER_NAMES[0]);\n      |                ^\n  206 |     await page.click('button:has-text(\"Create Room\")');\n  207 |     \n  208 |     // Wait for room creation"
+                      },
+                      "errors": [
+                        {
+                          "location": {
+                            "file": "/Users/nrw/python/tui-project/liap-tui/test_lobby_game_transition.spec.js",
+                            "column": 16,
+                            "line": 205
+                          },
+                          "message": "TimeoutError: page.fill: Timeout 10000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('input[placeholder=\"Enter your name\"]')\u001b[22m\n\n\n  203 |     \n  204 |     // Enter player name and create room\n> 205 |     await page.fill('input[placeholder=\"Enter your name\"]', PLAYER_NAMES[0]);\n      |                ^\n  206 |     await page.click('button:has-text(\"Create Room\")');\n  207 |     \n  208 |     // Wait for room creation\n    at /Users/nrw/python/tui-project/liap-tui/test_lobby_game_transition.spec.js:205:16"
+                        }
+                      ],
+                      "stdout": [
+                        {
+                          "text": "=== Starting Lobby to Game Transition Test ===\n"
+                        },
+                        {
+                          "text": "Step 1: Creating room...\n"
+                        }
+                      ],
+                      "stderr": [
+                        {
+                          "text": "[CONSOLE ERROR] Failed to load resource: the server responded with a status of 404 (Not Found)\n"
+                        }
+                      ],
+                      "retry": 0,
+                      "startTime": "2025-07-30T20:39:09.577Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "screenshot",
+                          "contentType": "image/png",
+                          "path": "/Users/nrw/python/tui-project/liap-tui/test-results/test_lobby_game_transition-797ef-bby-to-game-transition-flow-chromium-lobby-test/test-failed-1.png"
+                        },
+                        {
+                          "name": "video",
+                          "contentType": "video/webm",
+                          "path": "/Users/nrw/python/tui-project/liap-tui/test-results/test_lobby_game_transition-797ef-bby-to-game-transition-flow-chromium-lobby-test/video.webm"
+                        },
+                        {
+                          "name": "error-context",
+                          "contentType": "text/markdown",
+                          "path": "/Users/nrw/python/tui-project/liap-tui/test-results/test_lobby_game_transition-797ef-bby-to-game-transition-flow-chromium-lobby-test/error-context.md"
+                        }
+                      ],
+                      "errorLocation": {
+                        "file": "/Users/nrw/python/tui-project/liap-tui/test_lobby_game_transition.spec.js",
+                        "column": 16,
+                        "line": 205
+                      }
+                    }
+                  ],
+                  "status": "unexpected"
+                }
+              ],
+              "id": "c9a44d66b607b079cb05-f1cd8f7f2d8acb3fd389",
+              "file": "test_lobby_game_transition.spec.js",
+              "line": 196,
+              "column": 3
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "errors": [],
+  "stats": {
+    "startTime": "2025-07-30T20:39:08.474Z",
+    "duration": 15644.556,
+    "expected": 0,
+    "skipped": 0,
+    "unexpected": 1,
+    "flaky": 0
+  }
+}

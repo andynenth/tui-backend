@@ -1,0 +1,17 @@
+{
+  "name": "liap-tui-tests",
+  "version": "1.0.0",
+  "description": "Playwright tests for Liap TUI game",
+  "scripts": {
+    "test": "playwright test",
+    "test:debug": "playwright test --debug",
+    "test:ui": "playwright test --ui",
+    "test:headed": "playwright test --headed",
+    "test:lobby": "playwright test test_lobby_game_transition.js",
+    "test:lobby:debug": "playwright test test_lobby_game_transition.js --debug",
+    "test:lobby:headed": "playwright test test_lobby_game_transition.js --headed"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.40.0"
+  }
+}

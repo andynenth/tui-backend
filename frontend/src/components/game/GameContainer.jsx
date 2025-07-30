@@ -12,9 +12,11 @@
 
 import React, { useMemo } from 'react';
 import PropTypes from 'prop-types';
+import { useNavigate } from 'react-router-dom';
 import useGameState from '../../hooks/useGameState';
 import useGameActions from '../../hooks/useGameActions';
 import useConnectionStatus from '../../hooks/useConnectionStatus';
+import { networkService } from '../../services/NetworkService';
 // Play type detection now handled by backend
 
 // Import Pure UI Components
@@ -33,6 +35,7 @@ import ErrorBoundary from '../ErrorBoundary';
  * Smart container that connects pure UI components to game state
  */
 export function GameContainer({ roomId, onNavigateToLobby }) {
+  const navigate = useNavigate();
   const gameState = useGameState();
   const gameActions = useGameActions();
   const connectionStatus = useConnectionStatus(roomId);
@@ -266,9 +269,18 @@ export function GameContainer({ roomId, onNavigateToLobby }) {
       message: getWaitingMessage(gameState, connectionStatus),
       phase: gameState.phase || 'waiting',
       onRetry: gameActions.triggerRecovery,
-      onCancel: () => (window.location.href = '/lobby'),
+      onCancel: () => {
+        // Send leave_room message before navigating
+        if (roomId && gameState.playerName) {
+          networkService.send(roomId, 'leave_room', {
+            player_name: gameState.playerName,
+          });
+        }
+        // Use React Router navigation
+        navigate('/lobby');
+      },
     }),
-    [gameState, connectionStatus, gameActions]
+    [gameState, connectionStatus, gameActions, roomId, navigate]
   );
 
   const gameOverProps = useMemo(() => {
