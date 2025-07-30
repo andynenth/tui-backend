@@ -935,11 +935,19 @@ class UseCaseDispatcher:
         elif not isinstance(status, str):
             status = str(status)
             
+        # Find host name from players
+        host_name = "Unknown Host"
+        for player in room_info.players:
+            if player.is_host:
+                host_name = player.player_name
+                break
+        
         return {
             "room_id": room_info.room_id,
             "room_code": room_info.room_code,
             "room_name": room_info.room_name,
             "host_id": room_info.host_id,
+            "host_name": host_name,  # Add missing host_name field
             "players": [
                 {
                     "player_id": p.player_id,
@@ -953,6 +961,7 @@ class UseCaseDispatcher:
             ],
             "max_players": room_info.max_players,
             "game_in_progress": room_info.game_in_progress,
+            "started": room_info.game_in_progress,  # Add missing started field
             "status": status
         }
     

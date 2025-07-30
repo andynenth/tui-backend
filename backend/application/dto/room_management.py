@@ -89,6 +89,10 @@ class JoinRoomResponse(Response):
     room_info: RoomInfo
     seat_position: int
     is_host: bool
+    # Base response fields
+    success: bool = True
+    request_id: Optional[str] = None
+    timestamp: datetime = field(default_factory=datetime.utcnow)
     
     def _get_data(self) -> Dict[str, Any]:
         """Include join details in response data."""
