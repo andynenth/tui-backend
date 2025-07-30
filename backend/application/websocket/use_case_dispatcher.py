@@ -634,7 +634,7 @@ class UseCaseDispatcher:
         request = GetRoomListRequest(
             player_id=context.player_id,
             include_private=data.get("include_private", False),
-            include_full=data.get("include_full", False),
+            include_full=data.get("include_full", True),  # Show full rooms by default so newly created rooms are visible
             include_in_game=data.get("include_in_game", False)
         )
         

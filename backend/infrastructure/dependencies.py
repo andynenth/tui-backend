@@ -158,8 +158,8 @@ class DependencyContainer:
         # Check for factory
         if interface in self._factories:
             instance = self._factories[interface]()
-            # Cache as singleton if it's a service
-            if interface.__name__.endswith('Service'):
+            # Cache as singleton if it's a service OR UnitOfWork
+            if interface.__name__.endswith('Service') or interface.__name__ == 'UnitOfWork':
                 self._instances[interface] = instance
             return instance
         

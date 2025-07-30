@@ -19,6 +19,12 @@ const LobbyPage = () => {
   const [rooms, setRooms] = useState([]);
   const [isConnected, setIsConnected] = useState(false);
 
+  // Debug: Log rooms state changes
+  useEffect(() => {
+    console.log('🔄 Rooms state changed:', rooms.length, 'rooms');
+    console.log('📋 Current rooms:', rooms);
+  }, [rooms]);
+
   const [showJoinModal, setShowJoinModal] = useState(false);
   const [isCreatingRoom, setIsCreatingRoom] = useState(false);
   const [isJoiningRoom, setIsJoiningRoom] = useState(false);
@@ -46,9 +52,22 @@ const LobbyPage = () => {
     const handleRoomListUpdate = (event) => {
       const eventData = event.detail;
       const roomListData = eventData.data; // The actual room_list_update data from backend
-      console.log('Received room_list_update:', eventData);
-      setRooms(roomListData.rooms || []);
+      
+      console.log('🎯 Received room_list_update:', eventData);
+      console.log('📊 Room list data structure:', roomListData);
+      console.log('🏠 Rooms array:', roomListData?.rooms);
+      console.log('🔢 Rooms count:', roomListData?.rooms?.length || 0);
+      
+      const newRooms = roomListData?.rooms || [];
+      console.log('🔄 Setting rooms state to:', newRooms);
+      
+      setRooms(newRooms);
       setLastUpdateTime(Date.now());
+      
+      // Force a log after state should be updated
+      setTimeout(() => {
+        console.log('📈 State update check - rooms should now be:', newRooms.length, 'rooms');
+      }, 100);
     };
     networkService.addEventListener('room_list_update', handleRoomListUpdate);
     unsubscribers.push(() =>

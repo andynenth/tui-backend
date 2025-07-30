@@ -27,10 +27,10 @@ class ApplicationRoomRepository(IRoomRepository):
         return await self._domain_repo.find_by_id(room_id)
     
     async def get_by_code(self, room_code: str) -> Optional[Room]:
-        """Get room by code - not implemented in domain repo."""
-        # In a real implementation, this would search by room code
-        # For now, we'll return None as room codes aren't stored
-        return None
+        """Get room by code."""
+        # Since room_code == room_id in this implementation,
+        # we can delegate to get_by_id
+        return await self.get_by_id(room_code)
     
     async def save(self, room: Room) -> None:
         """Save a room."""
