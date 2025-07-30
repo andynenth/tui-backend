@@ -203,11 +203,14 @@ class UseCaseDispatcher:
             self.game_service = None
             self.game_state_store = None
 
-        # Initialize game use cases with available services
+        # Initialize game use cases 
+        # StartGameUseCase doesn't need game_service - it creates the game
+        self.start_game_use_case = StartGameUseCase(
+            self.uow, self.event_publisher, self.metrics
+        )
+        
+        # Other game use cases need game services
         if self.game_service and self.game_state_store:
-            self.start_game_use_case = StartGameUseCase(
-                self.uow, self.event_publisher, self.game_service, self.metrics
-            )
             self.declare_use_case = DeclareUseCase(
                 self.uow, self.event_publisher, self.game_state_store, self.metrics
             )
@@ -233,8 +236,7 @@ class UseCaseDispatcher:
                 self.uow, self.event_publisher, self.game_state_store, self.metrics
             )
         else:
-            # Set to None if game services not available
-            self.start_game_use_case = None
+            # Set other game use cases to None if game services not available
             self.declare_use_case = None
             self.play_use_case = None
             self.request_redeal_use_case = None
