@@ -1077,14 +1077,11 @@ class UseCaseDispatcher:
                 host_name = player.player_name
                 break
 
-        return {
-            "room_id": room_info.room_id,
-            "room_code": room_info.room_code,
-            "room_name": room_info.room_name,
-            "host_id": room_info.host_id,
-            "host_name": host_name,  # Add missing host_name field
-            "players": [
-                {
+        # Create sparse array with 4 elements, placing players at their seat_position index
+        players_array = [None] * 4
+        for p in room_info.players:
+            if 0 <= p.seat_position < 4:
+                players_array[p.seat_position] = {
                     "player_id": p.player_id,
                     "name": p.player_name,  # Frontend expects "name"
                     "is_bot": p.is_bot,
@@ -1092,8 +1089,14 @@ class UseCaseDispatcher:
                     "seat_position": p.seat_position,
                     "avatar_color": getattr(p, "avatar_color", None),
                 }
-                for p in room_info.players
-            ],
+        
+        return {
+            "room_id": room_info.room_id,
+            "room_code": room_info.room_code,
+            "room_name": room_info.room_name,
+            "host_id": room_info.host_id,
+            "host_name": host_name,  # Add missing host_name field
+            "players": players_array,  # Now a 4-element sparse array
             "max_players": room_info.max_players,
             "game_in_progress": room_info.game_in_progress,
             "started": room_info.game_in_progress,  # Add missing started field
