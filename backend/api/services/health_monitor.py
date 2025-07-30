@@ -238,7 +238,7 @@ class HealthMonitor:
                 # Get stats from clean architecture
                 ws_stats = get_room_stats()
                 total_connections = ws_stats.get("total_active_connections", 0)
-                
+
                 # Clean architecture doesn't track these detailed stats yet
                 total_pending = 0
                 total_sent = 0

@@ -148,18 +148,15 @@ app.include_router(
 app.include_router(
     ws_router
 )  # Mounts the WebSocket router at the root (or its defined paths).
-app.include_router(
-    debug_router
-)  # Mounts the debug router for event store access.
-app.include_router(
-    metrics_router
-)  # Mounts the metrics router for monitoring.
+app.include_router(debug_router)  # Mounts the debug router for event store access.
+app.include_router(metrics_router)  # Mounts the metrics router for monitoring.
 
 # ✅ Serve static files.
 # This mounts the specified directory to the root path "/", meaning files like index.html, bundle.js, etc.,
 # will be served directly from this directory. `html=True` ensures that `index.html` is served for root.
 # Debug: Print the static directory path
 import logging
+
 logger = logging.getLogger(__name__)
 abs_static_dir = os.path.abspath(STATIC_DIR)
 logger.info(f"Mounting static files from: {abs_static_dir}")
@@ -195,15 +192,17 @@ async def startup_event():
     from api.routes.ws import start_cleanup_task
 
     start_cleanup_task()
-    
+
     # Initialize event handlers for broadcasting
     logger.info("Initializing event handlers...")
     try:
         from infrastructure.events.decorators import EventHandlerRegistry
         import infrastructure.events.broadcast_handlers
-        
+
         # Scan and register all event handlers in broadcast_handlers module
-        count = EventHandlerRegistry.scan_module(infrastructure.events.broadcast_handlers)
+        count = EventHandlerRegistry.scan_module(
+            infrastructure.events.broadcast_handlers
+        )
         logger.info(f"Registered {count} event handlers from broadcast_handlers module")
     except Exception as e:
         logger.error(f"Failed to initialize event handlers: {e}", exc_info=True)

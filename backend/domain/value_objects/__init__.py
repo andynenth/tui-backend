@@ -22,5 +22,5 @@ __all__ = [
     "GameId",
     "ConnectionStatus",
     "RoomStatus",
-    "PlayerRole"
+    "PlayerRole",
 ]

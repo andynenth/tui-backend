@@ -8,7 +8,4 @@ clean architecture by providing compatibility layers.
 from .clean_architecture_adapter import CleanArchitectureAdapter
 from .reconnection_adapter import ReconnectionAdapter
 
-__all__ = [
-    "CleanArchitectureAdapter",
-    "ReconnectionAdapter"
-]
+__all__ = ["CleanArchitectureAdapter", "ReconnectionAdapter"]

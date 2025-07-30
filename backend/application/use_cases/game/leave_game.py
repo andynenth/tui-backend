@@ -10,11 +10,14 @@ from typing import Optional
 
 from application.base import UseCase
 from application.dto.game import LeaveGameRequest, LeaveGameResponse
-from application.interfaces import UnitOfWork, EventPublisher, BotService, MetricsCollector
-from application.exceptions import (
-    ResourceNotFoundException,
-    ValidationException
+from application.interfaces import (
+    UnitOfWork,
+    EventPublisher,
+    BotService,
+    MetricsCollector,
 )
+from application.exceptions import ResourceNotFoundException, ValidationException
+
 # from domain.events.player_events import PlayerLeftGame, PlayerConvertedToBot  # TODO: Create these events
 from domain.events.base import EventMetadata
 from application.utils import PropertyMapper
@@ -25,7 +28,7 @@ logger = logging.getLogger(__name__)
 class LeaveGameUseCase(UseCase[LeaveGameRequest, LeaveGameResponse]):
     """
     Handles players leaving during an active game.
-    
+
     This use case:
     1. Converts leaving player to bot
     2. Maintains game continuity
@@ -33,17 +36,17 @@ class LeaveGameUseCase(UseCase[LeaveGameRequest, LeaveGameResponse]):
     4. Handles bot takeover
     5. Emits appropriate events
     """
-    
+
     def __init__(
         self,
         unit_of_work: UnitOfWork,
         event_publisher: EventPublisher,
         bot_service: BotService,
-        metrics: Optional[MetricsCollector] = None
+        metrics: Optional[MetricsCollector] = None,
     ):
         """
         Initialize the use case.
-        
+
         Args:
             unit_of_work: Unit of work for data access
             event_publisher: Publisher for domain events
@@ -54,17 +57,17 @@ class LeaveGameUseCase(UseCase[LeaveGameRequest, LeaveGameResponse]):
         self._event_publisher = event_publisher
         self._bot_service = bot_service
         self._metrics = metrics
-    
+
     async def execute(self, request: LeaveGameRequest) -> LeaveGameResponse:
         """
         Leave an active game.
-        
+
         Args:
             request: The leave game request
-            
+
         Returns:
             Response with leave result
-            
+
         Raises:
             ResourceNotFoundException: If game not found
             ValidationException: If player not in game
@@ -74,12 +77,12 @@ class LeaveGameUseCase(UseCase[LeaveGameRequest, LeaveGameResponse]):
             game = await self._uow.games.get_by_id(request.game_id)
             if not game:
                 raise ResourceNotFoundException("Game", request.game_id)
-            
+
             # Get the room
             room = await self._uow.rooms.get_by_id(game.room_id)
             if not room:
                 raise ResourceNotFoundException("Room", game.room_id)
-            
+
             # Find player in game
             game_player = None
             player_index = None
@@ -88,63 +91,63 @@ class LeaveGameUseCase(UseCase[LeaveGameRequest, LeaveGameResponse]):
                     game_player = p
                     player_index = i
                     break
-            
+
             if not game_player:
-                raise ValidationException({
-                    "player_id": "Player not in this game"
-                })
-            
+                raise ValidationException({"player_id": "Player not in this game"})
+
             # Find player in room
             room_player = None
             for slot in room.slots:
-                if slot and PropertyMapper.generate_player_id(room.room_id, i) == request.player_id:
+                if (
+                    slot
+                    and PropertyMapper.generate_player_id(room.room_id, i)
+                    == request.player_id
+                ):
                     room_player = slot
                     break
-            
+
             if not room_player:
-                raise ValidationException({
-                    "player_id": "Player not in room"
-                })
-            
+                raise ValidationException({"player_id": "Player not in room"})
+
             # Create bot replacement
             bot_id = await self._bot_service.create_bot("medium")
             bot_name = f"Bot ({game_player.name})"
-            
+
             # Update game player to bot
             game_player.is_bot = True
             game_player.original_id = request.player_id
             game_player.original_name = game_player.name
             game_player.id = bot_id
             game_player.name = bot_name
-            
+
             # Update room player to bot
             room_player.is_bot = True
             room_player.is_connected = True  # Bots are always "connected"
             room_player.original_id = request.player_id
             room_player.id = bot_id
             room_player.name = bot_name
-            
+
             # Update current player if it was the leaving player
             if PropertyMapper.get_safe(game, "current_player_id") == request.player_id:
                 game.current_player_id = bot_id
-            
+
             # Update any other game state that references the player
-            if hasattr(game, 'declarations') and request.player_id in game.declarations:
+            if hasattr(game, "declarations") and request.player_id in game.declarations:
                 game.declarations[bot_id] = game.declarations.pop(request.player_id)
-            
-            if hasattr(game, 'redeal_votes') and request.player_id in game.redeal_votes:
+
+            if hasattr(game, "redeal_votes") and request.player_id in game.redeal_votes:
                 game.redeal_votes[bot_id] = game.redeal_votes.pop(request.player_id)
-            
-            if hasattr(game, 'ready_players'):
+
+            if hasattr(game, "ready_players"):
                 for phase_key, ready_set in game.ready_players.items():
                     if request.player_id in ready_set:
                         ready_set.remove(request.player_id)
                         ready_set.add(bot_id)
-            
+
             # Save game and room
             await self._uow.games.save(game)
             await self._uow.rooms.save(room)
-            
+
             # Update player statistics
             try:
                 stats = await self._uow.player_stats.get_stats(request.player_id)
@@ -152,7 +155,7 @@ class LeaveGameUseCase(UseCase[LeaveGameRequest, LeaveGameResponse]):
                 await self._uow.player_stats.update_stats(request.player_id, stats)
             except Exception as e:
                 logger.warning(f"Failed to update player stats: {e}")
-            
+
             # TODO: Emit PlayerLeftGame event when it's created
             # left_event = PlayerLeftGame(
             #     metadata=EventMetadata(user_id=request.user_id),
@@ -165,7 +168,7 @@ class LeaveGameUseCase(UseCase[LeaveGameRequest, LeaveGameResponse]):
             #     game_phase=game.phase.value
             # )
             # await self._event_publisher.publish(left_event)
-            
+
             # TODO: Emit PlayerConvertedToBot event when it's created
             # bot_event = PlayerConvertedToBot(
             #     metadata=EventMetadata(user_id=request.user_id),
@@ -178,7 +181,7 @@ class LeaveGameUseCase(UseCase[LeaveGameRequest, LeaveGameResponse]):
             #     bot_difficulty="medium"
             # )
             # await self._event_publisher.publish(bot_event)
-            
+
             # Record metrics
             if self._metrics:
                 self._metrics.increment(
@@ -186,10 +189,10 @@ class LeaveGameUseCase(UseCase[LeaveGameRequest, LeaveGameResponse]):
                     tags={
                         "round_number": str(game.round_number),
                         "phase": game.phase.value,
-                        "reason": request.reason or "voluntary"
-                    }
+                        "reason": request.reason or "voluntary",
+                    },
                 )
-            
+
             # Create response
             response = LeaveGameResponse(
                 success=True,
@@ -197,9 +200,9 @@ class LeaveGameUseCase(UseCase[LeaveGameRequest, LeaveGameResponse]):
                 player_id=request.player_id,
                 converted_to_bot=True,
                 game_continues=True,
-                replacement_bot_id=bot_id
+                replacement_bot_id=bot_id,
             )
-            
+
             logger.info(
                 f"Player {game_player.original_name} left game and was replaced by bot",
                 extra={
@@ -207,9 +210,9 @@ class LeaveGameUseCase(UseCase[LeaveGameRequest, LeaveGameResponse]):
                     "player_id": request.player_id,
                     "bot_id": bot_id,
                     "round": game.round_number,
-                    "phase": game.phase.value
-                }
+                    "phase": game.phase.value,
+                },
             )
-            
+
             self._log_execution(request, response)
             return response

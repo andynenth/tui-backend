@@ -6,7 +6,11 @@ import uuid
 from typing import Optional
 
 # Import WebSocket functions from infrastructure
-from infrastructure.websocket.connection_singleton import broadcast, register, unregister
+from infrastructure.websocket.connection_singleton import (
+    broadcast,
+    register,
+    unregister,
+)
 from fastapi import APIRouter, WebSocket, WebSocketDisconnect
 
 from api.validation import validate_websocket_message
@@ -16,6 +20,7 @@ from api.middleware.websocket_rate_limit import (
 )
 from api.websocket.connection_manager import connection_manager
 from api.websocket.message_queue import message_queue_manager
+
 # Adapter system removed in Phase 3 Day 5
 # from api.routes.ws_adapter_wrapper import adapter_wrapper
 
@@ -24,7 +29,11 @@ from infrastructure.dependencies import get_unit_of_work
 from application.services.room_application_service import RoomApplicationService
 from application.services.lobby_application_service import LobbyApplicationService
 from application.dto.lobby import GetRoomListRequest
-from infrastructure.dependencies import get_event_publisher, get_bot_service, get_metrics_collector
+from infrastructure.dependencies import (
+    get_event_publisher,
+    get_bot_service,
+    get_metrics_collector,
+)
 from application.websocket.websocket_config import websocket_config
 
 # Set up logging
@@ -52,12 +61,18 @@ async def broadcast_with_queue(room_id: str, event: str, data: dict):
             if room and room.game:
                 disconnected_players = []
                 for player in room.game.players:
-                    if player and hasattr(player, "is_connected") and not player.is_connected:
+                    if (
+                        player
+                        and hasattr(player, "is_connected")
+                        and not player.is_connected
+                    ):
                         disconnected_players.append(player.name)
 
                 # Queue messages for disconnected players
                 for player_name in disconnected_players:
-                    await message_queue_manager.queue_message(room_id, player_name, event, data)
+                    await message_queue_manager.queue_message(
+                        room_id, player_name, event, data
+                    )
     except Exception as e:
         logger.error(f"Error in broadcast_with_queue: {e}", exc_info=True)
 
@@ -102,7 +117,9 @@ async def handle_disconnect(room_id: str, websocket: WebSocket):
             uow_check = get_unit_of_work()
             async with uow_check:
                 room = await uow_check.rooms.get_by_id(room_id)
-            if room and room.is_game_started():  # Only treat as in-game if game started!
+            if (
+                room and room.is_game_started()
+            ):  # Only treat as in-game if game started!
                 # This is an in-game disconnect
                 logger.info(
                     f"🎮 [ROOM_DEBUG] In-game disconnect detected for player '{connection.player_name}' in room '{room_id}'"
@@ -162,7 +179,7 @@ async def handle_disconnect(room_id: str, websocket: WebSocket):
                     # Save room changes back to repository
                     await uow_check.rooms.save(room)
                     await uow_check.commit()
-                    
+
                     # Check if all remaining players are bots and update status
                     if room.get_human_count() == 0:
                         # Room will automatically be marked as ABANDONED by _update_room_status()
@@ -195,9 +212,13 @@ async def handle_disconnect(room_id: str, websocket: WebSocket):
         connection_id = getattr(websocket, "_connection_id", None)
         if connection_id:
             await unregister(connection_id)
-            logger.info(f"🔌 [ROOM_DEBUG] WebSocket unregistered from room '{room_id}' (connection_id: {connection_id})")
+            logger.info(
+                f"🔌 [ROOM_DEBUG] WebSocket unregistered from room '{room_id}' (connection_id: {connection_id})"
+            )
         else:
-            logger.warning(f"🔌 [ROOM_DEBUG] Cannot unregister - no connection_id found for room '{room_id}'")
+            logger.warning(
+                f"🔌 [ROOM_DEBUG] Cannot unregister - no connection_id found for room '{room_id}'"
+            )
 
 
 async def process_leave_room(room_id: str, player_name: str):
@@ -239,16 +260,15 @@ async def process_leave_room(room_id: str, player_name: str):
 
         # Update lobby with room list using clean architecture
         lobby_service = LobbyApplicationService(
-            unit_of_work=get_unit_of_work(),
-            metrics=get_metrics_collector()
+            unit_of_work=get_unit_of_work(), metrics=get_metrics_collector()
         )
         list_request = GetRoomListRequest(
-            player_id="",
-            include_full=False,
-            include_in_game=False
+            player_id="", include_full=False, include_in_game=False
         )
-        list_response = await lobby_service._get_room_list_use_case.execute(list_request)
-        
+        list_response = await lobby_service._get_room_list_use_case.execute(
+            list_request
+        )
+
         # Convert room summaries to legacy format
         available_rooms = [
             {
@@ -259,11 +279,11 @@ async def process_leave_room(room_id: str, player_name: str):
                 "player_count": room.player_count,
                 "max_players": room.max_players,
                 "game_in_progress": room.game_in_progress,
-                "is_private": room.is_private
+                "is_private": room.is_private,
             }
             for room in list_response.rooms
         ]
-        
+
         await broadcast(
             "lobby",
             "room_list_update",
@@ -276,20 +296,29 @@ async def process_leave_room(room_id: str, player_name: str):
         # EXISTING player leave logic from leave_room handler
         logger.info(f"👤 [ROOM_DEBUG] Player '{player_name}' leaving room '{room_id}'")
         was_host = room.remove_player(player_name)
-        
+
         # Save room changes
         await uow.rooms.save(room)
         await uow.commit()
-        
-        # Get updated room state
+
+        # Get updated room state with proper host detection
         updated_summary = {
             "players": [
-                {"name": p.name, "is_bot": p.is_bot} if p else None
+                (
+                    {
+                        "name": p.name,
+                        "is_bot": p.is_bot,
+                        "is_host": p.name
+                        == room.host_name,  # Add missing host detection
+                    }
+                    if p
+                    else None
+                )
                 for p in room.slots
             ],
             "host_name": room.host_name,
             "room_id": room_id,
-            "started": room.is_game_started()
+            "started": room.is_game_started(),
         }
         logger.info(
             f"📊 [ROOM_DEBUG] Room state after player left: players={updated_summary['players']}, host={updated_summary['host_name']}"
@@ -307,16 +336,15 @@ async def process_leave_room(room_id: str, player_name: str):
 
         # Update lobby with updated room info using clean architecture
         lobby_service = LobbyApplicationService(
-            unit_of_work=get_unit_of_work(),
-            metrics=get_metrics_collector()
+            unit_of_work=get_unit_of_work(), metrics=get_metrics_collector()
         )
         list_request = GetRoomListRequest(
-            player_id="",
-            include_full=False,
-            include_in_game=False
+            player_id="", include_full=False, include_in_game=False
         )
-        list_response = await lobby_service._get_room_list_use_case.execute(list_request)
-        
+        list_response = await lobby_service._get_room_list_use_case.execute(
+            list_request
+        )
+
         # Convert room summaries to legacy format
         available_rooms = [
             {
@@ -327,11 +355,11 @@ async def process_leave_room(room_id: str, player_name: str):
                 "player_count": room.player_count,
                 "max_players": room.max_players,
                 "game_in_progress": room.game_in_progress,
-                "is_private": room.is_private
+                "is_private": room.is_private,
             }
             for room in list_response.rooms
         ]
-        
+
         await broadcast(
             "lobby",
             "room_list_update",
@@ -363,29 +391,35 @@ async def websocket_endpoint(websocket: WebSocket, room_id: str):
     connection_id = await register(room_id, websocket)
     # Store connection_id on websocket for later retrieval
     websocket._connection_id = connection_id
-    
+
     # For lobby connections, register with the API connection manager as anonymous
     if room_id == "lobby":
         # Use a unique anonymous identifier for lobby connections
         anonymous_player = f"anonymous_{websocket._ws_id[:8]}"
-        await connection_manager.register_player(room_id, anonymous_player, websocket._ws_id)
+        await connection_manager.register_player(
+            room_id, anonymous_player, websocket._ws_id
+        )
         logger.info(f"Registered anonymous lobby connection: {anonymous_player}")
 
     # Check if room exists (excluding lobby)
     if room_id != "lobby":
         logger.debug(f"[ROOM_LOOKUP_DEBUG] Checking if room exists: {room_id}")
         logger.debug(f"[ROOM_LOOKUP_DEBUG] Using clean architecture repository")
-        
+
         # Use clean architecture repository to check room existence
         try:
             uow = get_unit_of_work()
             async with uow:
                 room = await uow.rooms.get_by_id(room_id)
-                logger.debug(f"[ROOM_LOOKUP_DEBUG] Room lookup result: {room is not None}")
-                
+                logger.debug(
+                    f"[ROOM_LOOKUP_DEBUG] Room lookup result: {room is not None}"
+                )
+
                 if not room:
-                    logger.warning(f"[ROOM_LOOKUP_DEBUG] Room {room_id} not found in clean architecture repository!")
-                    
+                    logger.warning(
+                        f"[ROOM_LOOKUP_DEBUG] Room {room_id} not found in clean architecture repository!"
+                    )
+
                     # Send room_not_found event
                     await websocket.send_json(
                         {
@@ -401,15 +435,23 @@ async def websocket_endpoint(websocket: WebSocket, room_id: str):
                     logger.info(f"Sent room_not_found for non-existent room: {room_id}")
                     # Continue running to allow frontend to handle gracefully
                 else:
-                    logger.info(f"[ROOM_LOOKUP_DEBUG] Room {room_id} found successfully in clean architecture!")
-                    
+                    logger.info(
+                        f"[ROOM_LOOKUP_DEBUG] Room {room_id} found successfully in clean architecture!"
+                    )
+
                     # For room connections, we need to register the player
                     # Try to get player name from the first message or use anonymous
                     temp_player_name = f"player_{websocket._ws_id[:8]}"
-                    await connection_manager.register_player(room_id, temp_player_name, websocket._ws_id)
-                    logger.info(f"Registered temporary player connection: {temp_player_name} for room {room_id}")
+                    await connection_manager.register_player(
+                        room_id, temp_player_name, websocket._ws_id
+                    )
+                    logger.info(
+                        f"Registered temporary player connection: {temp_player_name} for room {room_id}"
+                    )
         except Exception as e:
-            logger.error(f"[ROOM_LOOKUP_DEBUG] Error checking room existence: {e}", exc_info=True)
+            logger.error(
+                f"[ROOM_LOOKUP_DEBUG] Error checking room existence: {e}", exc_info=True
+            )
             # Don't fail the connection, just log the error
 
     try:
@@ -418,16 +460,20 @@ async def websocket_endpoint(websocket: WebSocket, room_id: str):
 
             # Check if validation should be bypassed
             event_name = message.get("event", "")
-            logger.info(f"[MESSAGE_DEBUG] Received WebSocket message: event='{event_name}' from room '{room_id}'")
+            logger.info(
+                f"[MESSAGE_DEBUG] Received WebSocket message: event='{event_name}' from room '{room_id}'"
+            )
             bypass_validation = websocket_config.should_bypass_validation(event_name)
-            
+
             if bypass_validation:
                 # Skip validation for use case events
                 logger.debug(f"Bypassing validation for use case event: {event_name}")
                 sanitized_data = message.get("data", {})
             else:
                 # Validate the message structure and content
-                is_valid, error_msg, sanitized_data = validate_websocket_message(message)
+                is_valid, error_msg, sanitized_data = validate_websocket_message(
+                    message
+                )
                 if not is_valid:
                     await websocket.send_json(
                         {
@@ -443,18 +489,20 @@ async def websocket_endpoint(websocket: WebSocket, room_id: str):
             # ===== MESSAGE ROUTING START =====
             # Check if this event should use direct use case routing
             should_use_case = websocket_config.should_use_use_case(event_name)
-            logger.info(f"[ROUTING_DEBUG] Event '{event_name}' should_use_use_case={should_use_case}")
+            logger.info(
+                f"[ROUTING_DEBUG] Event '{event_name}' should_use_use_case={should_use_case}"
+            )
             if should_use_case:
                 # Use direct message router for use case events
                 from application.websocket.message_router import MessageRouter
                 from application.websocket.use_case_dispatcher import DispatchContext
-                
+
                 # Create message router if not exists
-                if not hasattr(websocket_endpoint, '_message_router'):
+                if not hasattr(websocket_endpoint, "_message_router"):
                     websocket_endpoint._message_router = MessageRouter()
-                
+
                 router = websocket_endpoint._message_router
-                
+
                 # Route directly to use case
                 try:
                     response = await router.route_message(websocket, message, room_id)
@@ -462,33 +510,38 @@ async def websocket_endpoint(websocket: WebSocket, room_id: str):
                         await websocket.send_json(response)
                     continue  # Skip adapter/legacy handling
                 except Exception as e:
-                    logger.error(f"Error in direct use case routing: {e}", exc_info=True)
-                    await websocket.send_json({
-                        "event": "error",
-                        "data": {
-                            "message": f"Failed to process {event_name}",
-                            "type": "use_case_error",
-                            "details": str(e)
+                    logger.error(
+                        f"Error in direct use case routing: {e}", exc_info=True
+                    )
+                    await websocket.send_json(
+                        {
+                            "event": "error",
+                            "data": {
+                                "message": f"Failed to process {event_name}",
+                                "type": "use_case_error",
+                                "details": str(e),
+                            },
                         }
-                    })
+                    )
                     continue
-            
+
             # ===== ADAPTER SYSTEM REMOVED =====
             # Adapter system was removed in Phase 3 Day 5
             # All events now use direct use case routing
             # Non-migrated events fall through to error handling below
-            
+
             # If we reach here, the event was not handled
             logger.warning(f"Unhandled event: {event_name}")
-            await websocket.send_json({
-                "event": "error",
-                "data": {
-                    "message": f"Event '{event_name}' is not supported",
-                    "type": "unsupported_event"
+            await websocket.send_json(
+                {
+                    "event": "error",
+                    "data": {
+                        "message": f"Event '{event_name}' is not supported",
+                        "type": "unsupported_event",
+                    },
                 }
-            })
+            )
             continue
-
 
             # ===== LEGACY HANDLERS REMOVED =====
             # Date: 2025-07-27
@@ -539,9 +592,13 @@ async def room_cleanup_task():
                     # Get all rooms (both active and inactive)
                     clean_rooms = await uow.rooms.list_active(limit=1000)
                     all_room_ids = [room.room_id for room in clean_rooms]
-                    logger.debug(f"🧹 [ROOM_DEBUG] Found {len(all_room_ids)} rooms in clean architecture")
+                    logger.debug(
+                        f"🧹 [ROOM_DEBUG] Found {len(all_room_ids)} rooms in clean architecture"
+                    )
             except Exception as e:
-                logger.error(f"🧹 [ROOM_DEBUG] Error getting rooms from clean architecture: {e}")
+                logger.error(
+                    f"🧹 [ROOM_DEBUG] Error getting rooms from clean architecture: {e}"
+                )
 
             if all_room_ids:
                 logger.info(
@@ -558,12 +615,12 @@ async def room_cleanup_task():
                     # For clean architecture rooms, check if room has no human players
                     has_humans = any(slot and not slot.is_bot for slot in room.slots)
                     game_ended = False  # Clean architecture doesn't track game_ended
-                    
+
                     # Check if room should be cleaned up based on status
-                    should_cleanup = (
-                        room.status.value in ["COMPLETED", "ABANDONED"] or
-                        (not has_humans and room.status.value == "IN_GAME")
-                    )
+                    should_cleanup = room.status.value in [
+                        "COMPLETED",
+                        "ABANDONED",
+                    ] or (not has_humans and room.status.value == "IN_GAME")
                     logger.info(
                         f"🧹 CLEANUP_CHECK: Room {room_id} - game_ended={game_ended}, should_cleanup={should_cleanup}"
                     )
@@ -584,17 +641,19 @@ async def room_cleanup_task():
                 uow_delete = get_unit_of_work()
                 async with uow_delete:
                     room = await uow_delete.rooms.get_by_id(room_id)
-                    
+
                     if room:
                         # Re-check cleanup conditions
-                        has_humans = any(slot and not slot.is_bot for slot in room.slots)
-                        should_still_cleanup = (
-                            room.status.value in ["COMPLETED", "ABANDONED"] or
-                            (not has_humans and room.status.value == "IN_GAME")
+                        has_humans = any(
+                            slot and not slot.is_bot for slot in room.slots
                         )
+                        should_still_cleanup = room.status.value in [
+                            "COMPLETED",
+                            "ABANDONED",
+                        ] or (not has_humans and room.status.value == "IN_GAME")
                     else:
                         should_still_cleanup = False
-                    
+
                 if room and should_still_cleanup:
                     logger.info(
                         f"🧹 [ROOM_DEBUG] Cleaning up abandoned room {room_id} (no human players)"

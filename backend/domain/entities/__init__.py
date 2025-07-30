@@ -12,9 +12,12 @@ from .connection import PlayerConnection
 from .message_queue import QueuedMessage
 
 __all__ = [
-    'Room', 'RoomStatus',
-    'Game', 'GamePhase',
-    'Player', 'PlayerStats',
-    'PlayerConnection',
-    'QueuedMessage'
+    "Room",
+    "RoomStatus",
+    "Game",
+    "GamePhase",
+    "Player",
+    "PlayerStats",
+    "PlayerConnection",
+    "QueuedMessage",
 ]

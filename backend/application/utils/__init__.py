@@ -2,4 +2,4 @@
 
 from .property_mapper import PropertyMapper
 
-__all__ = ['PropertyMapper']
+__all__ = ["PropertyMapper"]

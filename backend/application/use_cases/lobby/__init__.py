@@ -8,7 +8,4 @@ and providing room information for the lobby interface.
 from .get_room_list import GetRoomListUseCase
 from .get_room_details import GetRoomDetailsUseCase
 
-__all__ = [
-    "GetRoomListUseCase",
-    "GetRoomDetailsUseCase"
-]
+__all__ = ["GetRoomListUseCase", "GetRoomDetailsUseCase"]

@@ -461,6 +461,7 @@ class GameStateMachine:
                 # Mark the room's game as ended
                 try:
                     from shared_instances import shared_room_manager
+
                     room = await shared_room_manager.get_room(room_id)
                     if room:
                         await room.mark_game_ended()
@@ -771,6 +772,7 @@ class GameStateMachine:
         if hasattr(self, "room_id") and self.room_id:
             try:
                 from shared_instances import shared_room_manager
+
                 room = await shared_room_manager.get_room(self.room_id)
                 if room:
                     await room.handle_critical_error(reason)

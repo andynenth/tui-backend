@@ -20,5 +20,5 @@ __all__ = [
     "SyncClientStateUseCase",
     "HandlePlayerDisconnectUseCase",
     "HandlePlayerReconnectUseCase",
-    "QueueMessageForPlayerUseCase"
+    "QueueMessageForPlayerUseCase",
 ]

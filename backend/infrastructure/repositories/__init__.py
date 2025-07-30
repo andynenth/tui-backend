@@ -12,12 +12,12 @@ from .optimized_game_repository import OptimizedGameRepository
 from .optimized_player_stats_repository import OptimizedPlayerStatsRepository
 
 __all__ = [
-    'InMemoryRoomRepository',
-    'InMemoryGameRepository',
-    'InMemoryPlayerStatsRepository',
-    'InMemoryConnectionRepository',
-    'InMemoryMessageQueueRepository',
-    'OptimizedRoomRepository',
-    'OptimizedGameRepository',
-    'OptimizedPlayerStatsRepository'
+    "InMemoryRoomRepository",
+    "InMemoryGameRepository",
+    "InMemoryPlayerStatsRepository",
+    "InMemoryConnectionRepository",
+    "InMemoryMessageQueueRepository",
+    "OptimizedRoomRepository",
+    "OptimizedGameRepository",
+    "OptimizedPlayerStatsRepository",
 ]

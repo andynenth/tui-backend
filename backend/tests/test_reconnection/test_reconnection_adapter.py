@@ -21,12 +21,12 @@ async def test_adapter_respects_feature_flag():
     # Arrange
     feature_flags = Mock(spec=FeatureFlagService)
     feature_flags.is_enabled.return_value = False
-    
+
     adapter = ReconnectionAdapter(feature_flags)
-    
+
     # Act
     result = await adapter.handle_disconnect("room-123", "player1")
-    
+
     # Assert
     assert result["status"] == "skipped"
     assert result["reason"] == "feature_disabled"
@@ -39,25 +39,28 @@ async def test_adapter_handle_disconnect_success():
     # Arrange
     feature_flags = Mock(spec=FeatureFlagService)
     feature_flags.is_enabled.return_value = True
-    
+
     adapter = ReconnectionAdapter(feature_flags)
-    
+
     # Mock the underlying infrastructure
-    with patch.object(adapter._uow, 'rooms') as mock_rooms, \
-         patch.object(adapter._uow, 'games') as mock_games:
-        
+    with patch.object(adapter._uow, "rooms") as mock_rooms, patch.object(
+        adapter._uow, "games"
+    ) as mock_games:
+
         # Setup room and game
         room = Room(room_id="room-123", host_name="player1")
         room.add_player(Player("player1"))
         mock_rooms.get_by_id = AsyncMock(return_value=room)
         mock_rooms.save = AsyncMock()
-        
+
         game = Game(room_id="room-123", players=[])
         mock_games.get_by_room_id = AsyncMock(return_value=game)
-        
+
         # Act
-        result = await adapter.handle_disconnect("room-123", "player1", activate_bot=True)
-        
+        result = await adapter.handle_disconnect(
+            "room-123", "player1", activate_bot=True
+        )
+
         # Assert
         assert result["status"] == "success"
         assert result["bot_activated"] == True
@@ -70,13 +73,14 @@ async def test_adapter_handle_reconnect_success():
     # Arrange
     feature_flags = Mock(spec=FeatureFlagService)
     feature_flags.is_enabled.return_value = True
-    
+
     adapter = ReconnectionAdapter(feature_flags)
-    
+
     # Mock the underlying infrastructure
-    with patch.object(adapter._uow, 'rooms') as mock_rooms, \
-         patch.object(adapter._uow, 'message_queues') as mock_queues:
-        
+    with patch.object(adapter._uow, "rooms") as mock_rooms, patch.object(
+        adapter._uow, "message_queues"
+    ) as mock_queues:
+
         # Setup disconnected player
         room = Room(room_id="room-123", host_name="player1")
         player = Player("player1")
@@ -84,13 +88,13 @@ async def test_adapter_handle_reconnect_success():
         room.add_player(player)
         mock_rooms.get_by_id = AsyncMock(return_value=room)
         mock_rooms.save = AsyncMock()
-        
+
         # No queued messages
         mock_queues.get_queue = AsyncMock(return_value=None)
-        
+
         # Act
         result = await adapter.handle_reconnect("room-123", "player1", "ws-456")
-        
+
         # Assert
         assert result["status"] == "success"
         assert result["bot_deactivated"] == True
@@ -103,22 +107,22 @@ async def test_adapter_queue_message():
     # Arrange
     feature_flags = Mock(spec=FeatureFlagService)
     feature_flags.is_enabled.return_value = True
-    
+
     adapter = ReconnectionAdapter(feature_flags)
-    
+
     # Mock the queue creation
-    with patch.object(adapter._message_queue_service, 'queue_message') as mock_queue:
+    with patch.object(adapter._message_queue_service, "queue_message") as mock_queue:
         mock_queue.return_value = True
-        
+
         # Act
         result = await adapter.queue_message(
             room_id="room-123",
             player_name="player1",
             event_type="test_event",
             event_data={"test": True},
-            is_critical=True
+            is_critical=True,
         )
-        
+
         # Assert
         assert result == True
         mock_queue.assert_called_once()
@@ -130,21 +134,23 @@ async def test_adapter_get_connection_status():
     # Arrange
     feature_flags = Mock(spec=FeatureFlagService)
     feature_flags.is_enabled.return_value = True
-    
+
     adapter = ReconnectionAdapter(feature_flags)
-    
+
     # Mock the service
     expected_status = [
         {"player_name": "player1", "status": "connected", "health": "healthy"},
-        {"player_name": "player2", "status": "disconnected", "health": "disconnected"}
+        {"player_name": "player2", "status": "disconnected", "health": "disconnected"},
     ]
-    
-    with patch.object(adapter._reconnection_service, 'check_connection_health') as mock_check:
+
+    with patch.object(
+        adapter._reconnection_service, "check_connection_health"
+    ) as mock_check:
         mock_check.return_value = expected_status
-        
+
         # Act
         result = await adapter.get_connection_status("room-123")
-        
+
         # Assert
         assert result == expected_status
         mock_check.assert_called_once_with("room-123")
@@ -156,16 +162,20 @@ async def test_adapter_cleanup_disconnected_players():
     # Arrange
     feature_flags = Mock(spec=FeatureFlagService)
     feature_flags.is_enabled.return_value = True
-    
+
     adapter = ReconnectionAdapter(feature_flags)
-    
+
     # Mock the service
-    with patch.object(adapter._reconnection_service, 'cleanup_disconnected_players') as mock_cleanup:
+    with patch.object(
+        adapter._reconnection_service, "cleanup_disconnected_players"
+    ) as mock_cleanup:
         mock_cleanup.return_value = 2  # 2 players cleaned up
-        
+
         # Act
-        result = await adapter.cleanup_disconnected_players("room-123", timeout_minutes=5)
-        
+        result = await adapter.cleanup_disconnected_players(
+            "room-123", timeout_minutes=5
+        )
+
         # Assert
         assert result == 2
         mock_cleanup.assert_called_once_with("room-123", 5)
@@ -177,23 +187,23 @@ async def test_adapter_get_queue_stats():
     # Arrange
     feature_flags = Mock(spec=FeatureFlagService)
     feature_flags.is_enabled.return_value = True
-    
+
     adapter = ReconnectionAdapter(feature_flags)
-    
+
     # Mock the service
     expected_stats = {
         "room_id": "room-123",
         "total_queues": 2,
         "total_messages": 5,
-        "players": []
+        "players": [],
     }
-    
-    with patch.object(adapter._message_queue_service, 'get_queue_stats') as mock_stats:
+
+    with patch.object(adapter._message_queue_service, "get_queue_stats") as mock_stats:
         mock_stats.return_value = expected_stats
-        
+
         # Act
         result = await adapter.get_queue_stats("room-123")
-        
+
         # Assert
         assert result == expected_stats
         mock_stats.assert_called_once_with("room-123")
@@ -205,16 +215,16 @@ async def test_adapter_error_handling():
     # Arrange
     feature_flags = Mock(spec=FeatureFlagService)
     feature_flags.is_enabled.return_value = True
-    
+
     adapter = ReconnectionAdapter(feature_flags)
-    
+
     # Mock to raise error
-    with patch.object(adapter._disconnect_use_case, 'execute') as mock_execute:
+    with patch.object(adapter._disconnect_use_case, "execute") as mock_execute:
         mock_execute.side_effect = Exception("Test error")
-        
+
         # Act
         result = await adapter.handle_disconnect("room-123", "player1")
-        
+
         # Assert
         assert result["status"] == "error"
         assert "Test error" in result["error"]
@@ -226,12 +236,12 @@ async def test_adapter_is_enabled():
     # Arrange
     feature_flags = Mock(spec=FeatureFlagService)
     feature_flags.is_enabled.return_value = True
-    
+
     adapter = ReconnectionAdapter(feature_flags)
-    
+
     # Act
     enabled = adapter.is_enabled("room-123")
-    
+
     # Assert
     assert enabled == True
     feature_flags.is_enabled.assert_called_with("use_clean_reconnection", "room-123")

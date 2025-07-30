@@ -13,7 +13,7 @@ from .abstractions import (
     StateVersion,
     StateTransition,
     PersistedState,
-    RecoveryPoint
+    RecoveryPoint,
 )
 
 from .snapshot import (
@@ -22,7 +22,7 @@ from .snapshot import (
     FileSystemSnapshotStore,
     SnapshotConfig,
     SnapshotMetadata,
-    CompressedSnapshot
+    CompressedSnapshot,
 )
 
 from .transition_log import (
@@ -31,7 +31,7 @@ from .transition_log import (
     TransitionLogStore,
     InMemoryTransitionLog,
     FileSystemTransitionLog,
-    TransitionQuery
+    TransitionQuery,
 )
 
 from .recovery import (
@@ -42,7 +42,7 @@ from .recovery import (
     HybridRecovery,
     RecoveryResult,
     RecoveryOptions,
-    RecoveryMode
+    RecoveryMode,
 )
 
 from .event_sourcing import (
@@ -53,7 +53,7 @@ from .event_sourcing import (
     EventSourcedStateMachine,
     StateRehydrator,
     InMemoryEventStore,
-    DefaultStateProjection
+    DefaultStateProjection,
 )
 
 from .versioning import (
@@ -64,7 +64,7 @@ from .versioning import (
     MigrationRunner,
     VersionConflictResolver,
     VersionStrategy,
-    VersionConflict
+    VersionConflict,
 )
 
 from .persistence_manager import (
@@ -73,71 +73,65 @@ from .persistence_manager import (
     PersistenceStrategy,
     AutoPersistencePolicy,
     StatePersistenceMetrics,
-    PersistenceMetrics
+    PersistenceMetrics,
 )
 
 __all__ = [
     # Abstractions
-    'IStatePersistence',
-    'IStateSnapshot',
-    'IStateTransitionLog',
-    'IStateRecovery',
-    'StateVersion',
-    'StateTransition',
-    'PersistedState',
-    'RecoveryPoint',
-    
+    "IStatePersistence",
+    "IStateSnapshot",
+    "IStateTransitionLog",
+    "IStateRecovery",
+    "StateVersion",
+    "StateTransition",
+    "PersistedState",
+    "RecoveryPoint",
     # Snapshots
-    'StateSnapshotManager',
-    'InMemorySnapshotStore',
-    'FileSystemSnapshotStore',
-    'SnapshotConfig',
-    'SnapshotMetadata',
-    'CompressedSnapshot',
-    
+    "StateSnapshotManager",
+    "InMemorySnapshotStore",
+    "FileSystemSnapshotStore",
+    "SnapshotConfig",
+    "SnapshotMetadata",
+    "CompressedSnapshot",
     # Transition Logging
-    'StateTransitionLogger',
-    'TransitionEvent',
-    'TransitionLogStore',
-    'InMemoryTransitionLog',
-    'FileSystemTransitionLog',
-    'TransitionQuery',
-    
+    "StateTransitionLogger",
+    "TransitionEvent",
+    "TransitionLogStore",
+    "InMemoryTransitionLog",
+    "FileSystemTransitionLog",
+    "TransitionQuery",
     # Recovery
-    'StateRecoveryManager',
-    'RecoveryStrategy',
-    'SnapshotRecovery',
-    'EventSourcedRecovery',
-    'HybridRecovery',
-    'RecoveryResult',
-    'RecoveryOptions',
-    'RecoveryMode',
-    
+    "StateRecoveryManager",
+    "RecoveryStrategy",
+    "SnapshotRecovery",
+    "EventSourcedRecovery",
+    "HybridRecovery",
+    "RecoveryResult",
+    "RecoveryOptions",
+    "RecoveryMode",
     # Event Sourcing
-    'StateMachineEventStore',
-    'StateEvent',
-    'StateEventType',
-    'StateProjection',
-    'EventSourcedStateMachine',
-    'StateRehydrator',
-    'InMemoryEventStore',
-    'DefaultStateProjection',
-    
+    "StateMachineEventStore",
+    "StateEvent",
+    "StateEventType",
+    "StateProjection",
+    "EventSourcedStateMachine",
+    "StateRehydrator",
+    "InMemoryEventStore",
+    "DefaultStateProjection",
     # Versioning
-    'StateVersionManager',
-    'VersionedState',
-    'StateSchemaVersion',
-    'StateMigration',
-    'MigrationRunner',
-    'VersionConflictResolver',
-    'VersionStrategy',
-    'VersionConflict',
-    
+    "StateVersionManager",
+    "VersionedState",
+    "StateSchemaVersion",
+    "StateMigration",
+    "MigrationRunner",
+    "VersionConflictResolver",
+    "VersionStrategy",
+    "VersionConflict",
     # Manager
-    'StatePersistenceManager',
-    'PersistenceConfig',
-    'PersistenceStrategy',
-    'AutoPersistencePolicy',
-    'StatePersistenceMetrics',
-    'PersistenceMetrics'
+    "StatePersistenceManager",
+    "PersistenceConfig",
+    "PersistenceStrategy",
+    "AutoPersistencePolicy",
+    "StatePersistenceMetrics",
+    "PersistenceMetrics",
 ]

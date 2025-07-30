@@ -15,19 +15,24 @@ def test_application_package_exists():
 
 def test_base_classes_exist():
     """Test that base classes are properly defined."""
-    from application.base import UseCase, ApplicationService, Validator, ValidationResult
-    
+    from application.base import (
+        UseCase,
+        ApplicationService,
+        Validator,
+        ValidationResult,
+    )
+
     # Check UseCase is abstract
     assert inspect.isabstract(UseCase)
     assert hasattr(UseCase, "execute")
-    
+
     # Check ApplicationService is abstract
     assert inspect.isabstract(ApplicationService)
-    
+
     # Check Validator is abstract
     assert inspect.isabstract(Validator)
     assert hasattr(Validator, "validate")
-    
+
     # Check ValidationResult is concrete
     assert not inspect.isabstract(ValidationResult)
 
@@ -41,9 +46,9 @@ def test_exceptions_hierarchy():
         ResourceNotFoundException,
         ConflictException,
         ConcurrencyException,
-        UseCaseException
+        UseCaseException,
     )
-    
+
     # All should inherit from ApplicationException
     assert issubclass(ValidationException, ApplicationException)
     assert issubclass(AuthorizationException, ApplicationException)
@@ -51,7 +56,7 @@ def test_exceptions_hierarchy():
     assert issubclass(ConflictException, ApplicationException)
     assert issubclass(ConcurrencyException, ApplicationException)
     assert issubclass(UseCaseException, ApplicationException)
-    
+
     # Test exception creation
     exc = ValidationException({"field": "error"})
     assert exc.code == "VALIDATION_ERROR"
@@ -69,9 +74,9 @@ def test_interfaces_defined():
         BotService,
         MetricsCollector,
         Logger,
-        UnitOfWork
+        UnitOfWork,
     )
-    
+
     # All should be abstract
     assert inspect.isabstract(RoomRepository)
     assert inspect.isabstract(GameRepository)
@@ -88,21 +93,18 @@ def test_dto_base_classes():
     """Test that DTO base classes work correctly."""
     from application.dto import Request, Response
     from application.dto.base import ErrorResponse, PagedResponse
-    
+
     # Test Request
     assert inspect.isabstract(Request)
-    
+
     # Test Response
     assert inspect.isabstract(Response)
-    
+
     # Test ErrorResponse
-    error = ErrorResponse(
-        error_code="TEST_ERROR",
-        error_message="Test error"
-    )
+    error = ErrorResponse(error_code="TEST_ERROR", error_message="Test error")
     assert error.success is False
     assert error.error_code == "TEST_ERROR"
-    
+
     # Test response serialization
     data = error.to_dict()
     assert data["success"] is False
@@ -116,24 +118,24 @@ def test_common_dtos():
         RoomInfo,
         GameStateInfo,
         PlayerStatus,
-        RoomStatus
+        RoomStatus,
     )
-    
+
     # Test enums
     assert PlayerStatus.CONNECTED == "connected"
     assert RoomStatus.WAITING == "waiting"
-    
+
     # Test PlayerInfo
     player = PlayerInfo(
         player_id="p1",
         player_name="Test",
         is_bot=False,
         is_host=True,
-        status=PlayerStatus.CONNECTED
+        status=PlayerStatus.CONNECTED,
     )
     assert player.player_id == "p1"
     assert player.status == PlayerStatus.CONNECTED
-    
+
     # Test RoomInfo
     room = RoomInfo(
         room_id="r1",
@@ -144,7 +146,7 @@ def test_common_dtos():
         players=[player],
         max_players=4,
         created_at=None,
-        game_in_progress=False
+        game_in_progress=False,
     )
     assert room.player_count == 1
     assert not room.is_full
@@ -154,7 +156,7 @@ def test_common_dtos():
 def test_use_case_packages():
     """Test that use case packages are set up."""
     from application import use_cases
-    
+
     # Check subpackages exist
     assert hasattr(use_cases, "connection")
     assert hasattr(use_cases, "room_management")

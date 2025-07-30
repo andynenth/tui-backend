@@ -15,7 +15,7 @@ from .base import (
     IArchivableAdapter,
     BaseRepository,
     PersistenceBackend,
-    PersistenceConfig
+    PersistenceConfig,
 )
 
 from .memory_adapter import MemoryAdapter
@@ -26,7 +26,7 @@ from .hybrid_repository import (
     EntityState,
     ArchivalPolicy,
     TimeBasedArchivalPolicy,
-    CompletionBasedArchivalPolicy
+    CompletionBasedArchivalPolicy,
 )
 
 from .repository_factory import (
@@ -39,38 +39,35 @@ from .repository_factory import (
     create_room_repository,
     create_game_repository,
     create_player_stats_repository,
-    create_connection_repository
+    create_connection_repository,
 )
 
 __all__ = [
     # Base interfaces
-    'IPersistenceAdapter',
-    'ITransactionalAdapter',
-    'IQueryableAdapter',
-    'IArchivableAdapter',
-    'BaseRepository',
-    'PersistenceBackend',
-    'PersistenceConfig',
-    
+    "IPersistenceAdapter",
+    "ITransactionalAdapter",
+    "IQueryableAdapter",
+    "IArchivableAdapter",
+    "BaseRepository",
+    "PersistenceBackend",
+    "PersistenceConfig",
     # Adapters
-    'MemoryAdapter',
-    'FilesystemAdapter',
-    
+    "MemoryAdapter",
+    "FilesystemAdapter",
     # Hybrid repository
-    'HybridRepository',
-    'EntityState',
-    'ArchivalPolicy',
-    'TimeBasedArchivalPolicy',
-    'CompletionBasedArchivalPolicy',
-    
+    "HybridRepository",
+    "EntityState",
+    "ArchivalPolicy",
+    "TimeBasedArchivalPolicy",
+    "CompletionBasedArchivalPolicy",
     # Factory
-    'RepositoryFactory',
-    'RepositoryStrategy',
-    'RepositoryConfig',
-    'AdapterRegistry',
-    'get_repository_factory',
-    'create_room_repository',
-    'create_game_repository',
-    'create_player_stats_repository',
-    'create_connection_repository'
+    "RepositoryFactory",
+    "RepositoryStrategy",
+    "RepositoryConfig",
+    "AdapterRegistry",
+    "get_repository_factory",
+    "create_room_repository",
+    "create_game_repository",
+    "create_player_stats_repository",
+    "create_connection_repository",
 ]

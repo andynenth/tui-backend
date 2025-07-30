@@ -18,5 +18,5 @@ __all__ = [
     "LeaveRoomUseCase",
     "GetRoomStateUseCase",
     "AddBotUseCase",
-    "RemovePlayerUseCase"
+    "RemovePlayerUseCase",
 ]

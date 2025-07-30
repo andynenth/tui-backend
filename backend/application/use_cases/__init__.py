@@ -11,9 +11,4 @@ functional area:
 - game: Game play operations
 """
 
-__all__ = [
-    "connection",
-    "room_management",
-    "lobby",
-    "game"
-]
+__all__ = ["connection", "room_management", "lobby", "game"]
