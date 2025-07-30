@@ -125,18 +125,38 @@ async def handle_room_created(event: RoomCreated):
 @event_handler(PlayerJoinedRoom, priority=100)
 async def handle_player_joined_room(event: PlayerJoinedRoom):
     """Broadcast room update when player joins."""
-    # Get current room state for room_update broadcast
-    room_update_data = {
-        "room_id": event.room_id,
-        "players": [],  # Will be filled with actual player data
-        "host_name": "",  # Will be filled with actual host
-        "started": False,  # Will be filled with actual state
-        "timestamp": datetime.utcnow().timestamp()
-    }
+    # Get actual room state from database
+    from infrastructure.dependencies import get_unit_of_work
     
-    # Broadcast room update to room participants
-    await broadcast(event.room_id, "room_update", room_update_data)
-    logger.info(f"Player {event.player_name} joined room {event.room_id}")
+    try:
+        uow = get_unit_of_work()
+        async with uow:
+            room = await uow.rooms.get_by_id(event.room_id)
+            if room:
+                # Create room update data with actual room state
+                room_update_data = {
+                    "room_id": event.room_id,
+                    "players": [
+                        {
+                            "name": slot.name, 
+                            "is_bot": slot.is_bot,
+                            "player_id": getattr(slot, 'player_id', f"{event.room_id}_p{i}"),
+                            "seat_position": i
+                        } if slot else None
+                        for i, slot in enumerate(room.slots)
+                    ],
+                    "host_name": room.host_name,
+                    "started": room.is_game_started() if hasattr(room, 'is_game_started') else False,
+                    "timestamp": datetime.utcnow().timestamp()
+                }
+                
+                # Broadcast room update to room participants
+                await broadcast(event.room_id, "room_update", room_update_data)
+                logger.info(f"Player {event.player_name} joined room {event.room_id}")
+            else:
+                logger.warning(f"Room {event.room_id} not found for player joined broadcast")
+    except Exception as e:
+        logger.error(f"Error broadcasting player joined room update: {e}", exc_info=True)
     
     # Broadcast updated room list to lobby (same pattern as handle_room_created)
     import asyncio
@@ -195,18 +215,38 @@ async def handle_player_joined_room(event: PlayerJoinedRoom):
 @event_handler(PlayerLeftRoom, priority=100)
 async def handle_player_left_room(event: PlayerLeftRoom):
     """Broadcast room update when player leaves."""
-    # Get current room state for room_update broadcast
-    room_update_data = {
-        "room_id": event.room_id,
-        "players": [],  # Will be filled with actual player data
-        "host_name": "",  # Will be filled with actual host
-        "started": False,  # Will be filled with actual state
-        "timestamp": datetime.utcnow().timestamp()
-    }
+    # Get actual room state from database
+    from infrastructure.dependencies import get_unit_of_work
     
-    # Broadcast room update to room participants
-    await broadcast(event.room_id, "room_update", room_update_data)
-    logger.info(f"Player {event.player_name} left room {event.room_id}")
+    try:
+        uow = get_unit_of_work()
+        async with uow:
+            room = await uow.rooms.get_by_id(event.room_id)
+            if room:
+                # Create room update data with actual room state
+                room_update_data = {
+                    "room_id": event.room_id,
+                    "players": [
+                        {
+                            "name": slot.name, 
+                            "is_bot": slot.is_bot,
+                            "player_id": getattr(slot, 'player_id', f"{event.room_id}_p{i}"),
+                            "seat_position": i
+                        } if slot else None
+                        for i, slot in enumerate(room.slots)
+                    ],
+                    "host_name": room.host_name,
+                    "started": room.is_game_started() if hasattr(room, 'is_game_started') else False,
+                    "timestamp": datetime.utcnow().timestamp()
+                }
+                
+                # Broadcast room update to room participants
+                await broadcast(event.room_id, "room_update", room_update_data)
+                logger.info(f"Player {event.player_name} left room {event.room_id}")
+            else:
+                logger.warning(f"Room {event.room_id} not found for player left broadcast")
+    except Exception as e:
+        logger.error(f"Error broadcasting player left room update: {e}", exc_info=True)
     
     # Broadcast updated room list to lobby (same pattern as handle_room_created)
     import asyncio
@@ -275,18 +315,38 @@ async def handle_host_changed(event: HostChanged):
 @event_handler(BotAdded, priority=90)
 async def handle_bot_added(event: BotAdded):
     """Handle bot addition - triggers room update."""
-    # Bot addition triggers a room_update broadcast
-    room_update_data = {
-        "room_id": event.room_id,
-        "players": [],  # Will be filled
-        "host_name": "",  # Will be filled
-        "started": False,
-        "timestamp": datetime.utcnow().timestamp()
-    }
+    # Get actual room state from database
+    from infrastructure.dependencies import get_unit_of_work
     
-    # Broadcast room update to room participants
-    await broadcast(event.room_id, "room_update", room_update_data)
-    logger.info(f"Bot {event.bot_name} added to room {event.room_id}")
+    try:
+        uow = get_unit_of_work()
+        async with uow:
+            room = await uow.rooms.get_by_id(event.room_id)
+            if room:
+                # Create room update data with actual room state
+                room_update_data = {
+                    "room_id": event.room_id,
+                    "players": [
+                        {
+                            "name": slot.name, 
+                            "is_bot": slot.is_bot,
+                            "player_id": getattr(slot, 'player_id', f"{event.room_id}_p{i}"),
+                            "seat_position": i
+                        } if slot else None
+                        for i, slot in enumerate(room.slots)
+                    ],
+                    "host_name": room.host_name,
+                    "started": room.is_game_started() if hasattr(room, 'is_game_started') else False,
+                    "timestamp": datetime.utcnow().timestamp()
+                }
+                
+                # Broadcast room update to room participants
+                await broadcast(event.room_id, "room_update", room_update_data)
+                logger.info(f"Bot {event.bot_name} added to room {event.room_id}")
+            else:
+                logger.warning(f"Room {event.room_id} not found for bot added broadcast")
+    except Exception as e:
+        logger.error(f"Error broadcasting bot added room update: {e}", exc_info=True)
     
     # Broadcast updated room list to lobby (same pattern as handle_room_created)
     import asyncio
@@ -345,17 +405,37 @@ async def handle_bot_added(event: BotAdded):
 @event_handler(PlayerRemoved, priority=100)
 async def handle_player_removed(event: PlayerRemoved):
     """Handle player removal (including bots) - triggers room and lobby updates."""
-    # Send room update to room participants
-    room_update_data = {
-        "room_id": event.room_id,
-        "players": [],  # Will be filled with actual player data
-        "host_name": "",  # Will be filled with actual host
-        "started": False,
-        "timestamp": datetime.utcnow().timestamp()
-    }
+    # Get actual room state from database
+    from infrastructure.dependencies import get_unit_of_work
     
-    await broadcast(event.room_id, "room_update", room_update_data)
-    logger.info(f"Player {event.removed_player_name} removed from room {event.room_id}")
+    try:
+        uow = get_unit_of_work()
+        async with uow:
+            room = await uow.rooms.get_by_id(event.room_id)
+            if room:
+                # Create room update data with actual room state
+                room_update_data = {
+                    "room_id": event.room_id,
+                    "players": [
+                        {
+                            "name": slot.name, 
+                            "is_bot": slot.is_bot,
+                            "player_id": getattr(slot, 'player_id', f"{event.room_id}_p{i}"),
+                            "seat_position": i
+                        } if slot else None
+                        for i, slot in enumerate(room.slots)
+                    ],
+                    "host_name": room.host_name,
+                    "started": room.is_game_started() if hasattr(room, 'is_game_started') else False,
+                    "timestamp": datetime.utcnow().timestamp()
+                }
+                
+                await broadcast(event.room_id, "room_update", room_update_data)
+                logger.info(f"Player {event.removed_player_name} removed from room {event.room_id}")
+            else:
+                logger.warning(f"Room {event.room_id} not found for player removed broadcast")
+    except Exception as e:
+        logger.error(f"Error broadcasting player removed room update: {e}", exc_info=True)
     
     # Broadcast updated room list to lobby (same pattern as handle_room_created)
     import asyncio

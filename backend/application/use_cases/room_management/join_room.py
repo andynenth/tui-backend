@@ -140,7 +140,6 @@ class JoinRoomUseCase(UseCase[JoinRoomRequest, JoinRoomResponse]):
             # Emit PlayerJoinedRoom event
             event = PlayerJoinedRoom(
                 metadata=EventMetadata(user_id=request.user_id),
-                game_id=room.room_id,  # GameEvent uses game_id
                 room_id=room.room_id,
                 player_id=request.player_id,
                 player_name=request.player_name,

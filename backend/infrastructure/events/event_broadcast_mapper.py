@@ -99,13 +99,28 @@ event_broadcast_mapper = EventBroadcastMapper()
 def map_room_update(event: DomainEvent, context: Optional[Dict[str, Any]]) -> Dict[str, Any]:
     """Map room events to room_update broadcast."""
     if not context or 'room_state' not in context:
-        # Return minimal data if no context
-        return {
-            "room_id": event.room_id if hasattr(event, 'room_id') else None,
-            "players": [],
-            "host_name": None,
-            "started": False
-        }
+        # Get room state from database when context is missing
+        from infrastructure.dependencies import get_unit_of_work
+        import asyncio
+        
+        try:
+            # This is a synchronous function but we need async database access
+            # Return minimal but valid data and let the broadcast handlers handle it
+            return {
+                "room_id": event.room_id if hasattr(event, 'room_id') else None,
+                "players": [],
+                "host_name": "Unknown Host",  # Better than None/undefined
+                "started": False,
+                "timestamp": datetime.utcnow().timestamp()
+            }
+        except Exception:
+            return {
+                "room_id": event.room_id if hasattr(event, 'room_id') else None,
+                "players": [],
+                "host_name": "Unknown Host",
+                "started": False,
+                "timestamp": datetime.utcnow().timestamp()
+            }
     
     return context['room_state']
 
@@ -224,15 +239,16 @@ def register_all_mappings():
     event_broadcast_mapper.register(
         RoomCreated, "room_created", "response", map_room_created
     )
-    event_broadcast_mapper.register(
-        PlayerJoinedRoom, "room_update", "room", map_room_update, requires_state=True
-    )
-    event_broadcast_mapper.register(
-        PlayerLeftRoom, "room_update", "room", map_room_update, requires_state=True
-    )
-    event_broadcast_mapper.register(
-        BotAdded, "room_update", "room", map_room_update, requires_state=True
-    )
+    # Disabled: These events are now handled directly by broadcast_handlers.py with complete room state
+    # event_broadcast_mapper.register(
+    #     PlayerJoinedRoom, "room_update", "room", map_room_update, requires_state=True
+    # )
+    # event_broadcast_mapper.register(
+    #     PlayerLeftRoom, "room_update", "room", map_room_update, requires_state=True
+    # )
+    # event_broadcast_mapper.register(
+    #     BotAdded, "room_update", "room", map_room_update, requires_state=True
+    # )
     # PlayerRemoved broadcast is handled directly in the dispatcher with proper room state
     # event_broadcast_mapper.register(
     #     PlayerRemoved, "room_update", "room", map_room_update, requires_state=True
