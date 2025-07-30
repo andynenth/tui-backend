@@ -10,6 +10,7 @@ from typing import Dict, Any, Optional, List
 from datetime import datetime
 
 from domain.events.all_events import *
+from domain.events.room_events import PlayerRemoved
 from infrastructure.events.decorators import event_handler
 from infrastructure.websocket.connection_singleton import broadcast
 
@@ -124,8 +125,7 @@ async def handle_room_created(event: RoomCreated):
 @event_handler(PlayerJoinedRoom, priority=100)
 async def handle_player_joined_room(event: PlayerJoinedRoom):
     """Broadcast room update when player joins."""
-    # Get current room state from somewhere (will be provided by adapter)
-    # For now, we'll define the expected structure
+    # Get current room state for room_update broadcast
     room_update_data = {
         "room_id": event.room_id,
         "players": [],  # Will be filled with actual player data
@@ -134,14 +134,68 @@ async def handle_player_joined_room(event: PlayerJoinedRoom):
         "timestamp": datetime.utcnow().timestamp()
     }
     
+    # Broadcast room update to room participants
     await broadcast(event.room_id, "room_update", room_update_data)
     logger.info(f"Player {event.player_name} joined room {event.room_id}")
+    
+    # Broadcast updated room list to lobby (same pattern as handle_room_created)
+    import asyncio
+    
+    try:
+        from infrastructure.dependencies import get_unit_of_work
+        from application.services.lobby_application_service import LobbyApplicationService
+        from application.dto.lobby import GetRoomListRequest
+        
+        # Get updated room list
+        uow = get_unit_of_work()
+        lobby_service = LobbyApplicationService(unit_of_work=uow)
+        list_request = GetRoomListRequest(
+            player_id="",
+            include_full=False,
+            include_in_game=False
+        )
+        list_response = await lobby_service._get_room_list_use_case.execute(list_request)
+        
+        # Convert room summaries to legacy format and fetch player details
+        available_rooms = []
+        async with uow:
+            for room_summary in list_response.rooms:
+                # Get full room details to include players
+                room_entity = await uow.rooms.get_by_id(room_summary.room_id)
+                if room_entity:
+                    available_rooms.append({
+                        "room_id": room_entity.room_id,
+                        "room_code": room_summary.room_code,
+                        "room_name": room_summary.room_name,
+                        "host_name": room_entity.host_name,
+                        "player_count": room_summary.player_count,
+                        "max_players": room_summary.max_players,
+                        "game_in_progress": room_summary.game_in_progress,
+                        "is_private": room_summary.is_private,
+                        "players": [
+                            {"name": slot.name, "is_bot": slot.is_bot} if slot else None
+                            for slot in room_entity.slots
+                        ]
+                    })
+        
+        # Broadcast to lobby
+        await broadcast(
+            "lobby",
+            "room_list_update",
+            {
+                "rooms": available_rooms,
+                "timestamp": asyncio.get_event_loop().time(),
+            }
+        )
+        logger.info(f"[BROADCAST_DEBUG] Sent room_list_update to lobby with {len(available_rooms)} rooms after player joined")
+    except Exception as e:
+        logger.error(f"Failed to broadcast room list update after player joined: {e}", exc_info=True)
 
 
 @event_handler(PlayerLeftRoom, priority=100)
 async def handle_player_left_room(event: PlayerLeftRoom):
     """Broadcast room update when player leaves."""
-    # Similar to join, needs room state
+    # Get current room state for room_update broadcast
     room_update_data = {
         "room_id": event.room_id,
         "players": [],  # Will be filled with actual player data
@@ -150,8 +204,62 @@ async def handle_player_left_room(event: PlayerLeftRoom):
         "timestamp": datetime.utcnow().timestamp()
     }
     
+    # Broadcast room update to room participants
     await broadcast(event.room_id, "room_update", room_update_data)
     logger.info(f"Player {event.player_name} left room {event.room_id}")
+    
+    # Broadcast updated room list to lobby (same pattern as handle_room_created)
+    import asyncio
+    
+    try:
+        from infrastructure.dependencies import get_unit_of_work
+        from application.services.lobby_application_service import LobbyApplicationService
+        from application.dto.lobby import GetRoomListRequest
+        
+        # Get updated room list
+        uow = get_unit_of_work()
+        lobby_service = LobbyApplicationService(unit_of_work=uow)
+        list_request = GetRoomListRequest(
+            player_id="",
+            include_full=False,
+            include_in_game=False
+        )
+        list_response = await lobby_service._get_room_list_use_case.execute(list_request)
+        
+        # Convert room summaries to legacy format and fetch player details
+        available_rooms = []
+        async with uow:
+            for room_summary in list_response.rooms:
+                # Get full room details to include players
+                room_entity = await uow.rooms.get_by_id(room_summary.room_id)
+                if room_entity:
+                    available_rooms.append({
+                        "room_id": room_entity.room_id,
+                        "room_code": room_summary.room_code,
+                        "room_name": room_summary.room_name,
+                        "host_name": room_entity.host_name,
+                        "player_count": room_summary.player_count,
+                        "max_players": room_summary.max_players,
+                        "game_in_progress": room_summary.game_in_progress,
+                        "is_private": room_summary.is_private,
+                        "players": [
+                            {"name": slot.name, "is_bot": slot.is_bot} if slot else None
+                            for slot in room_entity.slots
+                        ]
+                    })
+        
+        # Broadcast to lobby
+        await broadcast(
+            "lobby",
+            "room_list_update",
+            {
+                "rooms": available_rooms,
+                "timestamp": asyncio.get_event_loop().time(),
+            }
+        )
+        logger.info(f"[BROADCAST_DEBUG] Sent room_list_update to lobby with {len(available_rooms)} rooms after player left")
+    except Exception as e:
+        logger.error(f"Failed to broadcast room list update after player left: {e}", exc_info=True)
 
 
 @event_handler(HostChanged, priority=100)
@@ -176,7 +284,131 @@ async def handle_bot_added(event: BotAdded):
         "timestamp": datetime.utcnow().timestamp()
     }
     
+    # Broadcast room update to room participants
     await broadcast(event.room_id, "room_update", room_update_data)
+    logger.info(f"Bot {event.bot_name} added to room {event.room_id}")
+    
+    # Broadcast updated room list to lobby (same pattern as handle_room_created)
+    import asyncio
+    
+    try:
+        from infrastructure.dependencies import get_unit_of_work
+        from application.services.lobby_application_service import LobbyApplicationService
+        from application.dto.lobby import GetRoomListRequest
+        
+        # Get updated room list
+        uow = get_unit_of_work()
+        lobby_service = LobbyApplicationService(unit_of_work=uow)
+        list_request = GetRoomListRequest(
+            player_id="",
+            include_full=False,
+            include_in_game=False
+        )
+        list_response = await lobby_service._get_room_list_use_case.execute(list_request)
+        
+        # Convert room summaries to legacy format and fetch player details
+        available_rooms = []
+        async with uow:
+            for room_summary in list_response.rooms:
+                # Get full room details to include players
+                room_entity = await uow.rooms.get_by_id(room_summary.room_id)
+                if room_entity:
+                    available_rooms.append({
+                        "room_id": room_entity.room_id,
+                        "room_code": room_summary.room_code,
+                        "room_name": room_summary.room_name,
+                        "host_name": room_entity.host_name,
+                        "player_count": room_summary.player_count,
+                        "max_players": room_summary.max_players,
+                        "game_in_progress": room_summary.game_in_progress,
+                        "is_private": room_summary.is_private,
+                        "players": [
+                            {"name": slot.name, "is_bot": slot.is_bot} if slot else None
+                            for slot in room_entity.slots
+                        ]
+                    })
+        
+        # Broadcast to lobby
+        await broadcast(
+            "lobby",
+            "room_list_update",
+            {
+                "rooms": available_rooms,
+                "timestamp": asyncio.get_event_loop().time(),
+            }
+        )
+        logger.info(f"[BROADCAST_DEBUG] Sent room_list_update to lobby with {len(available_rooms)} rooms after bot added")
+    except Exception as e:
+        logger.error(f"Failed to broadcast room list update after bot added: {e}", exc_info=True)
+
+
+@event_handler(PlayerRemoved, priority=100)
+async def handle_player_removed(event: PlayerRemoved):
+    """Handle player removal (including bots) - triggers room and lobby updates."""
+    # Send room update to room participants
+    room_update_data = {
+        "room_id": event.room_id,
+        "players": [],  # Will be filled with actual player data
+        "host_name": "",  # Will be filled with actual host
+        "started": False,
+        "timestamp": datetime.utcnow().timestamp()
+    }
+    
+    await broadcast(event.room_id, "room_update", room_update_data)
+    logger.info(f"Player {event.removed_player_name} removed from room {event.room_id}")
+    
+    # Broadcast updated room list to lobby (same pattern as handle_room_created)
+    import asyncio
+    
+    try:
+        from infrastructure.dependencies import get_unit_of_work
+        from application.services.lobby_application_service import LobbyApplicationService
+        from application.dto.lobby import GetRoomListRequest
+        
+        # Get updated room list
+        uow = get_unit_of_work()
+        lobby_service = LobbyApplicationService(unit_of_work=uow)
+        list_request = GetRoomListRequest(
+            player_id="",
+            include_full=False,
+            include_in_game=False
+        )
+        list_response = await lobby_service._get_room_list_use_case.execute(list_request)
+        
+        # Convert room summaries to legacy format and fetch player details
+        available_rooms = []
+        async with uow:
+            for room_summary in list_response.rooms:
+                # Get full room details to include players
+                room_entity = await uow.rooms.get_by_id(room_summary.room_id)
+                if room_entity:
+                    available_rooms.append({
+                        "room_id": room_entity.room_id,
+                        "room_code": room_summary.room_code,
+                        "room_name": room_summary.room_name,
+                        "host_name": room_entity.host_name,
+                        "player_count": room_summary.player_count,
+                        "max_players": room_summary.max_players,
+                        "game_in_progress": room_summary.game_in_progress,
+                        "is_private": room_summary.is_private,
+                        "players": [
+                            {"name": slot.name, "is_bot": slot.is_bot} if slot else None
+                            for slot in room_entity.slots
+                        ]
+                    })
+        
+        # Broadcast to lobby
+        await broadcast(
+            "lobby",
+            "room_list_update",
+            {
+                "rooms": available_rooms,
+                "timestamp": asyncio.get_event_loop().time(),
+            }
+        )
+        logger.info(f"[BROADCAST_DEBUG] Sent room_list_update to lobby with {len(available_rooms)} rooms after player removed")
+    except Exception as e:
+        logger.error(f"Failed to broadcast room list update after player removed: {e}", exc_info=True)
 
 
 # Game Flow Event Handlers
