@@ -81,7 +81,7 @@ async def handle_room_created(event: RoomCreated):
             lobby_service = LobbyApplicationService(unit_of_work=uow)
             list_request = GetRoomListRequest(
                 player_id="",
-                include_full=False,
+                include_full=True,  # Show full rooms so newly created rooms (4/4 with bots) are visible
                 include_in_game=False
             )
             list_response = await lobby_service._get_room_list_use_case.execute(list_request)
@@ -151,7 +151,7 @@ async def handle_player_joined_room(event: PlayerJoinedRoom):
         lobby_service = LobbyApplicationService(unit_of_work=uow)
         list_request = GetRoomListRequest(
             player_id="",
-            include_full=False,
+            include_full=True,  # Show full rooms so newly created rooms (4/4 with bots) are visible
             include_in_game=False
         )
         list_response = await lobby_service._get_room_list_use_case.execute(list_request)
@@ -221,7 +221,7 @@ async def handle_player_left_room(event: PlayerLeftRoom):
         lobby_service = LobbyApplicationService(unit_of_work=uow)
         list_request = GetRoomListRequest(
             player_id="",
-            include_full=False,
+            include_full=True,  # Show full rooms so newly created rooms (4/4 with bots) are visible
             include_in_game=False
         )
         list_response = await lobby_service._get_room_list_use_case.execute(list_request)
@@ -301,7 +301,7 @@ async def handle_bot_added(event: BotAdded):
         lobby_service = LobbyApplicationService(unit_of_work=uow)
         list_request = GetRoomListRequest(
             player_id="",
-            include_full=False,
+            include_full=True,  # Show full rooms so newly created rooms (4/4 with bots) are visible
             include_in_game=False
         )
         list_response = await lobby_service._get_room_list_use_case.execute(list_request)
@@ -370,7 +370,7 @@ async def handle_player_removed(event: PlayerRemoved):
         lobby_service = LobbyApplicationService(unit_of_work=uow)
         list_request = GetRoomListRequest(
             player_id="",
-            include_full=False,
+            include_full=True,  # Show full rooms so newly created rooms (4/4 with bots) are visible
             include_in_game=False
         )
         list_response = await lobby_service._get_room_list_use_case.execute(list_request)

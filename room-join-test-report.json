@@ -1,0 +1,534 @@
+{
+  "messages": [],
+  "timeline": [
+    {
+      "timestamp": "2025-07-30T01:55:37.171Z",
+      "player": "Player1",
+      "direction": "sent",
+      "message": {
+        "event": "client_ready",
+        "data": {
+          "room_id": "lobby",
+          "is_reconnection": false
+        },
+        "sequence": 1,
+        "timestamp": 1753840537169,
+        "id": "3f7c922a-9fef-4106-89e5-0dba1a75696a"
+      }
+    },
+    {
+      "timestamp": "2025-07-30T01:55:37.174Z",
+      "player": "Player1",
+      "direction": "sent",
+      "message": {
+        "event": "get_rooms",
+        "data": {},
+        "sequence": 2,
+        "timestamp": 1753840537171,
+        "id": "8b9f3ede-3d43-407c-a613-fc4957e77d75"
+      }
+    },
+    {
+      "timestamp": "2025-07-30T01:55:37.175Z",
+      "player": "Player1",
+      "direction": "received",
+      "message": {
+        "event": "client_ready_ack",
+        "data": {
+          "success": true,
+          "ready": true,
+          "room_state": null
+        }
+      }
+    },
+    {
+      "timestamp": "2025-07-30T01:55:37.175Z",
+      "player": "Player1",
+      "direction": "received",
+      "message": {
+        "event": "room_list_update",
+        "data": {
+          "rooms": [],
+          "total_count": 0
+        }
+      }
+    },
+    {
+      "timestamp": "2025-07-30T01:55:39.725Z",
+      "player": "Player1",
+      "direction": "sent",
+      "message": {
+        "event": "client_ready",
+        "data": {
+          "room_id": "lobby",
+          "is_reconnection": false
+        },
+        "sequence": 1,
+        "timestamp": 1753840539722,
+        "id": "d181b735-72d8-468d-943c-c76518c4b46e"
+      }
+    },
+    {
+      "timestamp": "2025-07-30T01:55:39.725Z",
+      "player": "Player1",
+      "direction": "received",
+      "message": {
+        "event": "client_ready_ack",
+        "data": {
+          "success": true,
+          "ready": true,
+          "room_state": null
+        }
+      }
+    },
+    {
+      "timestamp": "2025-07-30T01:55:39.810Z",
+      "player": "Player1",
+      "direction": "sent",
+      "message": {
+        "event": "create_room",
+        "data": {
+          "player_name": "Player1"
+        },
+        "sequence": 2,
+        "timestamp": 1753840539808,
+        "id": "af19b85a-b20b-4515-be15-2e6f7ba4e88b"
+      }
+    },
+    {
+      "timestamp": "2025-07-30T01:55:39.821Z",
+      "player": "Player1",
+      "direction": "received",
+      "message": {
+        "event": "room_list_update",
+        "data": {
+          "rooms": [
+            {
+              "room_id": "80AX30",
+              "room_code": "80AX30",
+              "room_name": "Player1's Room",
+              "host_name": "Player1",
+              "player_count": 4,
+              "max_players": 4,
+              "game_in_progress": false,
+              "is_private": false,
+              "players": [
+                {
+                  "name": "Player1",
+                  "is_bot": false
+                },
+                {
+                  "name": "Bot 2",
+                  "is_bot": true
+                },
+                {
+                  "name": "Bot 3",
+                  "is_bot": true
+                },
+                {
+                  "name": "Bot 4",
+                  "is_bot": true
+                }
+              ]
+            }
+          ],
+          "timestamp": 259741.952
+        }
+      }
+    },
+    {
+      "timestamp": "2025-07-30T01:55:39.829Z",
+      "player": "Player1",
+      "direction": "received",
+      "message": {
+        "event": "room_list_update",
+        "data": {
+          "rooms": [
+            {
+              "room_id": "80AX30",
+              "room_code": "80AX30",
+              "room_name": "Player1's Room",
+              "host_name": "Player1",
+              "player_count": 4,
+              "max_players": 4,
+              "game_in_progress": false,
+              "is_private": false,
+              "players": [
+                {
+                  "name": "Player1",
+                  "is_bot": false
+                },
+                {
+                  "name": "Bot 2",
+                  "is_bot": true
+                },
+                {
+                  "name": "Bot 3",
+                  "is_bot": true
+                },
+                {
+                  "name": "Bot 4",
+                  "is_bot": true
+                }
+              ]
+            }
+          ],
+          "timestamp": 259741.952
+        }
+      }
+    },
+    {
+      "timestamp": "2025-07-30T01:55:39.852Z",
+      "player": "Player1",
+      "direction": "received",
+      "message": {
+        "event": "room_created",
+        "data": {
+          "room_id": "80AX30",
+          "room_code": "80AX30",
+          "host_name": "Player1",
+          "success": true,
+          "room_info": {
+            "room_id": "80AX30",
+            "room_code": "80AX30",
+            "room_name": "Player1's Room",
+            "host_id": "80AX30_p0",
+            "players": [
+              {
+                "player_id": "80AX30_p0",
+                "name": "Player1",
+                "is_bot": false,
+                "is_host": true,
+                "seat_position": 0,
+                "avatar_color": null
+              },
+              {
+                "player_id": "80AX30_p1",
+                "name": "Bot 2",
+                "is_bot": true,
+                "is_host": false,
+                "seat_position": 1,
+                "avatar_color": null
+              },
+              {
+                "player_id": "80AX30_p2",
+                "name": "Bot 3",
+                "is_bot": true,
+                "is_host": false,
+                "seat_position": 2,
+                "avatar_color": null
+              },
+              {
+                "player_id": "80AX30_p3",
+                "name": "Bot 4",
+                "is_bot": true,
+                "is_host": false,
+                "seat_position": 3,
+                "avatar_color": null
+              }
+            ],
+            "max_players": 4,
+            "game_in_progress": false,
+            "status": "waiting"
+          }
+        }
+      }
+    },
+    {
+      "timestamp": "2025-07-30T01:55:39.894Z",
+      "player": "Player1",
+      "direction": "sent",
+      "message": {
+        "event": "client_ready",
+        "data": {
+          "room_id": "lobby",
+          "is_reconnection": false
+        },
+        "sequence": 1,
+        "timestamp": 1753840539893,
+        "id": "6806127d-91d4-4160-9f50-752910957c92"
+      }
+    },
+    {
+      "timestamp": "2025-07-30T01:55:39.895Z",
+      "player": "Player1",
+      "direction": "received",
+      "message": {
+        "event": "client_ready_ack",
+        "data": {
+          "success": true,
+          "ready": true,
+          "room_state": null
+        }
+      }
+    },
+    {
+      "timestamp": "2025-07-30T01:55:39.911Z",
+      "player": "Player1",
+      "direction": "sent",
+      "message": {
+        "event": "client_ready",
+        "data": {
+          "room_id": "80AX30",
+          "player_name": "Player1",
+          "is_reconnection": false
+        },
+        "sequence": 1,
+        "timestamp": 1753840539907,
+        "id": "bb215053-fa4d-455a-86d9-28bbadc91e3b"
+      }
+    },
+    {
+      "timestamp": "2025-07-30T01:55:39.911Z",
+      "player": "Player1",
+      "direction": "sent",
+      "message": {
+        "event": "get_room_state",
+        "data": {
+          "room_id": "80AX30"
+        },
+        "sequence": 2,
+        "timestamp": 1753840539908,
+        "id": "635b0c72-7a34-4976-a861-9b1ebaf221d1"
+      }
+    },
+    {
+      "timestamp": "2025-07-30T01:55:39.916Z",
+      "player": "Player1",
+      "direction": "received",
+      "message": {
+        "event": "client_ready_ack",
+        "data": {
+          "success": true,
+          "ready": true,
+          "room_state": {
+            "room_id": "80AX30",
+            "host": "80AX30_p0",
+            "players": [
+              {
+                "player_id": "80AX30_p0",
+                "name": "Player1",
+                "is_bot": false,
+                "is_host": true,
+                "seat_position": 0
+              },
+              {
+                "player_id": "80AX30_p1",
+                "name": "Bot 2",
+                "is_bot": true,
+                "is_host": false,
+                "seat_position": 1
+              },
+              {
+                "player_id": "80AX30_p2",
+                "name": "Bot 3",
+                "is_bot": true,
+                "is_host": false,
+                "seat_position": 2
+              },
+              {
+                "player_id": "80AX30_p3",
+                "name": "Bot 4",
+                "is_bot": true,
+                "is_host": false,
+                "seat_position": 3
+              }
+            ],
+            "status": "READY",
+            "game_config": {
+              "max_players": 4,
+              "max_score": 50,
+              "allow_bot_start": true
+            },
+            "current_round": 1,
+            "max_players": 4
+          }
+        }
+      }
+    },
+    {
+      "timestamp": "2025-07-30T01:55:39.919Z",
+      "player": "Player1",
+      "direction": "received",
+      "message": {
+        "event": "room_update",
+        "data": {
+          "room_id": "80AX30",
+          "room_code": "80AX30",
+          "room_name": "Player1's Room",
+          "host_id": "80AX30_p0",
+          "players": [
+            {
+              "player_id": "80AX30_p0",
+              "name": "Player1",
+              "is_bot": false,
+              "is_host": true,
+              "seat_position": 0,
+              "avatar_color": null
+            },
+            {
+              "player_id": "80AX30_p1",
+              "name": "Bot 2",
+              "is_bot": true,
+              "is_host": false,
+              "seat_position": 1,
+              "avatar_color": null
+            },
+            {
+              "player_id": "80AX30_p2",
+              "name": "Bot 3",
+              "is_bot": true,
+              "is_host": false,
+              "seat_position": 2,
+              "avatar_color": null
+            },
+            {
+              "player_id": "80AX30_p3",
+              "name": "Bot 4",
+              "is_bot": true,
+              "is_host": false,
+              "seat_position": 3,
+              "avatar_color": null
+            }
+          ],
+          "max_players": 4,
+          "game_in_progress": false,
+          "status": "waiting"
+        }
+      }
+    },
+    {
+      "timestamp": "2025-07-30T01:55:43.779Z",
+      "player": "Player2",
+      "direction": "sent",
+      "message": {
+        "event": "client_ready",
+        "data": {
+          "room_id": "lobby",
+          "is_reconnection": false
+        },
+        "sequence": 1,
+        "timestamp": 1753840543775,
+        "id": "4551adcf-e94b-4464-bb87-538623415eef"
+      }
+    },
+    {
+      "timestamp": "2025-07-30T01:55:43.779Z",
+      "player": "Player2",
+      "direction": "received",
+      "message": {
+        "event": "client_ready_ack",
+        "data": {
+          "success": true,
+          "ready": true,
+          "room_state": null
+        }
+      }
+    },
+    {
+      "timestamp": "2025-07-30T01:55:43.780Z",
+      "player": "Player2",
+      "direction": "sent",
+      "message": {
+        "event": "get_rooms",
+        "data": {},
+        "sequence": 2,
+        "timestamp": 1753840543778,
+        "id": "ed914b02-a0e2-4ac7-a37b-751f3036f9c3"
+      }
+    },
+    {
+      "timestamp": "2025-07-30T01:55:43.782Z",
+      "player": "Player2",
+      "direction": "received",
+      "message": {
+        "event": "room_list_update",
+        "data": {
+          "rooms": [],
+          "total_count": 0
+        }
+      }
+    },
+    {
+      "timestamp": "2025-07-30T01:56:09.896Z",
+      "player": "Player1",
+      "direction": "sent",
+      "message": {
+        "event": "ping",
+        "data": {
+          "timestamp": 1753840569895
+        },
+        "sequence": 2,
+        "timestamp": 1753840569895,
+        "id": "6fd1518c-5b56-4643-980e-80671a7e54ce"
+      }
+    },
+    {
+      "timestamp": "2025-07-30T01:56:09.900Z",
+      "player": "Player1",
+      "direction": "received",
+      "message": {
+        "event": "pong",
+        "data": {
+          "server_time": "2025-07-30T01:56:09.898575",
+          "sequence": 0
+        }
+      }
+    },
+    {
+      "timestamp": "2025-07-30T01:56:09.910Z",
+      "player": "Player1",
+      "direction": "sent",
+      "message": {
+        "event": "ping",
+        "data": {
+          "timestamp": 1753840569909
+        },
+        "sequence": 3,
+        "timestamp": 1753840569909,
+        "id": "d10d9c2b-4d38-4f08-be22-8650bca312ee"
+      }
+    },
+    {
+      "timestamp": "2025-07-30T01:56:09.913Z",
+      "player": "Player1",
+      "direction": "received",
+      "message": {
+        "event": "pong",
+        "data": {
+          "server_time": "2025-07-30T01:56:09.911453",
+          "sequence": 0
+        }
+      }
+    },
+    {
+      "timestamp": "2025-07-30T01:56:13.778Z",
+      "player": "Player2",
+      "direction": "sent",
+      "message": {
+        "event": "ping",
+        "data": {
+          "timestamp": 1753840573777
+        },
+        "sequence": 3,
+        "timestamp": 1753840573777,
+        "id": "0db25cf1-30a0-472d-b5a5-fd4e181e3cea"
+      }
+    },
+    {
+      "timestamp": "2025-07-30T01:56:13.781Z",
+      "player": "Player2",
+      "direction": "received",
+      "message": {
+        "event": "pong",
+        "data": {
+          "server_time": "2025-07-30T01:56:13.780221",
+          "sequence": 0
+        }
+      }
+    }
+  ],
+  "analysis": {},
+  "bugReport": null,
+  "error": "locator.click: Timeout 30000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('button').filter({ hasText: /join|confirm|ok/i }).first()\u001b[22m\n\u001b[2m    - locator resolved to <button class=\"btn btn-secondary btn-sm\">…</button>\u001b[22m\n\u001b[2m  - attempting click action\u001b[22m\n\u001b[2m    2 × waiting for element to be visible, enabled and stable\u001b[22m\n\u001b[2m      - element is visible, enabled and stable\u001b[22m\n\u001b[2m      - scrolling into view if needed\u001b[22m\n\u001b[2m      - done scrolling\u001b[22m\n\u001b[2m      - <div class=\"lp-modalOverlay show\">…</div> intercepts pointer events\u001b[22m\n\u001b[2m    - retrying click action\u001b[22m\n\u001b[2m    - waiting 20ms\u001b[22m\n\u001b[2m    2 × waiting for element to be visible, enabled and stable\u001b[22m\n\u001b[2m      - element is visible, enabled and stable\u001b[22m\n\u001b[2m      - scrolling into view if needed\u001b[22m\n\u001b[2m      - done scrolling\u001b[22m\n\u001b[2m      - <div class=\"lp-modalOverlay show\">…</div> intercepts pointer events\u001b[22m\n\u001b[2m    - retrying click action\u001b[22m\n\u001b[2m      - waiting 100ms\u001b[22m\n\u001b[2m    56 × waiting for element to be visible, enabled and stable\u001b[22m\n\u001b[2m       - element is visible, enabled and stable\u001b[22m\n\u001b[2m       - scrolling into view if needed\u001b[22m\n\u001b[2m       - done scrolling\u001b[22m\n\u001b[2m       - <div class=\"lp-modalOverlay show\">…</div> intercepts pointer events\u001b[22m\n\u001b[2m     - retrying click action\u001b[22m\n\u001b[2m       - waiting 500ms\u001b[22m\n"
+}
