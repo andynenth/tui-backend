@@ -20,6 +20,7 @@ from application.exceptions import (
 )
 from domain.entities.game import Game, GamePhase
 from domain.entities.player import Player
+from domain.entities.room import RoomStatus
 from domain.services.game_rules import GameRules
 from domain.events.game_events import (
     GameStarted,
@@ -141,12 +142,13 @@ class StartGameUseCase(UseCase[StartGameRequest, StartGameResponse]):
             # Start the game 
             game.start_game()
 
-            # Save the game
-            await self._uow.games.save(game)
-
-            # Update room with game reference
+            # Update room status to IN_GAME and set game reference
+            room.status = RoomStatus.IN_GAME
             room.game = game
             room.last_starter_id = starting_player.id
+
+            # Save the game and room
+            await self._uow.games.save(game)
             await self._uow.rooms.save(room)
 
             # Prepare response data
@@ -170,10 +172,9 @@ class StartGameUseCase(UseCase[StartGameRequest, StartGameResponse]):
             round_started = RoundStarted(
                 metadata=EventMetadata(user_id=request.user_id),
                 room_id=room.room_id,
-                game_id=game.room_id,
                 round_number=1,
-                starting_player_id=starting_player.id,
-                pieces_per_player=8,
+                starter_name=starting_player.name,
+                player_hands={p.name: [piece.kind for piece in p.hand] for p in game.players},
             )
             await self._event_publisher.publish(round_started)
 
@@ -181,23 +182,19 @@ class StartGameUseCase(UseCase[StartGameRequest, StartGameResponse]):
             pieces_dealt = PiecesDealt(
                 metadata=EventMetadata(user_id=request.user_id),
                 room_id=room.room_id,
-                game_id=game.room_id,
                 round_number=1,
-                dealer_id=starting_player.id,
-                piece_counts={p.id: len(p.hand) for p in game.players},
+                piece_count=8,  # Standard number of pieces dealt per player
             )
             await self._event_publisher.publish(pieces_dealt)
 
-            # Emit WeakHandDetected events if any
-            for player_id in weak_hands:
+            # Emit WeakHandDetected event if any weak hands
+            if weak_hands:
+                weak_hand_players = [next(p.name for p in game.players if p.id == player_id) for player_id in weak_hands]
                 weak_hand_event = WeakHandDetected(
                     metadata=EventMetadata(user_id=request.user_id),
                     room_id=room.room_id,
-                    game_id=game.room_id,
-                    player_id=player_id,
-                    player_name=next(p.name for p in game.players if p.id == player_id),
-                    hand_strength=self._calculate_hand_strength(game, player_id),
-                    can_request_redeal=True,
+                    round_number=1,
+                    weak_hand_players=weak_hand_players,
                 )
                 await self._event_publisher.publish(weak_hand_event)
 
@@ -215,8 +212,6 @@ class StartGameUseCase(UseCase[StartGameRequest, StartGameResponse]):
 
             # Create response
             response = StartGameResponse(
-                success=True,
-                request_id=request.request_id,
                 game_id=game.room_id,
                 room_id=room.room_id,
                 initial_state=game_state,
