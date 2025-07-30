@@ -304,6 +304,7 @@ class EventStore:
         """
         # Create a deep copy to avoid mutation of nested structures
         import copy
+
         new_state = copy.deepcopy(state)
 
         try:
@@ -325,11 +326,13 @@ class EventStore:
                 if old_phase:
                     new_state["previous_phase"] = old_phase
                 new_state["phase"] = new_phase
-                
+
                 # Store game context if provided
                 game_context = event.payload.get("game_context", {})
                 if game_context:
-                    new_state["round_number"] = game_context.get("round_number", state.get("round_number", 1))
+                    new_state["round_number"] = game_context.get(
+                        "round_number", state.get("round_number", 1)
+                    )
                     new_state["player_count"] = game_context.get("player_count", 4)
                     if "current_player" in game_context:
                         new_state["current_player"] = game_context["current_player"]
@@ -339,10 +342,10 @@ class EventStore:
                 phase = event.payload.get("phase")
                 updates = event.payload.get("updates", {})
                 reason = event.payload.get("reason", "")
-                
+
                 if phase not in new_state["phase_data"]:
                     new_state["phase_data"][phase] = {}
-                
+
                 # Apply updates to phase-specific data
                 new_state["phase_data"][phase].update(updates)
                 new_state["last_update_reason"] = reason
@@ -355,7 +358,7 @@ class EventStore:
                     "action_type": event.payload.get("action_type"),
                     "player_name": event.payload.get("player_name"),
                     "payload": event.payload.get("payload", {}),
-                    "timestamp": event.timestamp
+                    "timestamp": event.timestamp,
                 }
                 new_state["actions"].append(action_data)
 
@@ -368,7 +371,9 @@ class EventStore:
 
             elif event.event_type == "player_declared":
                 player_name = event.payload.get("player_name")
-                declaration = event.payload.get("declaration", event.payload.get("value"))
+                declaration = event.payload.get(
+                    "declaration", event.payload.get("value")
+                )
                 if player_name and declaration is not None:
                     if "declarations" not in new_state["game_state"]:
                         new_state["game_state"]["declarations"] = {}
@@ -381,25 +386,32 @@ class EventStore:
                 if player_name:
                     if "current_turn" not in new_state["game_state"]:
                         new_state["game_state"]["current_turn"] = {"plays": []}
-                    new_state["game_state"]["current_turn"]["plays"].append({
-                        "player": player_name,
-                        "pieces": pieces,
-                        "timestamp": event.timestamp
-                    })
+                    new_state["game_state"]["current_turn"]["plays"].append(
+                        {
+                            "player": player_name,
+                            "pieces": pieces,
+                            "timestamp": event.timestamp,
+                        }
+                    )
 
-            elif event.event_type == "turn_complete" or event.event_type == "turn_resolved":
+            elif (
+                event.event_type == "turn_complete"
+                or event.event_type == "turn_resolved"
+            ):
                 # Handle turn completion
                 winner = event.payload.get("winner")
-                turn_number = event.payload.get("turn_number", state.get("turn_number", 0) + 1)
-                
+                turn_number = event.payload.get(
+                    "turn_number", state.get("turn_number", 0) + 1
+                )
+
                 new_state["turn_number"] = turn_number
                 if winner:
                     new_state["last_turn_winner"] = winner
-                
+
                 # Archive current turn data
                 if "turn_history" not in new_state["game_state"]:
                     new_state["game_state"]["turn_history"] = []
-                
+
                 current_turn = new_state["game_state"].get("current_turn", {})
                 if current_turn:
                     current_turn["winner"] = winner
@@ -407,28 +419,39 @@ class EventStore:
                     new_state["game_state"]["turn_history"].append(current_turn)
                     new_state["game_state"]["current_turn"] = {}
 
-            elif event.event_type == "round_complete" or event.event_type == "round_scoring":
+            elif (
+                event.event_type == "round_complete"
+                or event.event_type == "round_scoring"
+            ):
                 # Handle round scoring
                 new_state["round_number"] = event.payload.get(
                     "round_number", state.get("round_number", 0) + 1
                 )
-                
+
                 scores = event.payload.get("scores", {})
                 if scores:
                     if "round_scores" not in new_state["game_state"]:
                         new_state["game_state"]["round_scores"] = []
-                    new_state["game_state"]["round_scores"].append({
-                        "round": new_state["round_number"],
-                        "scores": scores,
-                        "timestamp": event.timestamp
-                    })
-                    
+                    new_state["game_state"]["round_scores"].append(
+                        {
+                            "round": new_state["round_number"],
+                            "scores": scores,
+                            "timestamp": event.timestamp,
+                        }
+                    )
+
                     # Update player total scores
                     for player, score_data in scores.items():
                         if player in new_state["players"]:
                             current_score = new_state["players"][player].get("score", 0)
-                            round_score = score_data if isinstance(score_data, (int, float)) else score_data.get("score", 0)
-                            new_state["players"][player]["score"] = current_score + round_score
+                            round_score = (
+                                score_data
+                                if isinstance(score_data, (int, float))
+                                else score_data.get("score", 0)
+                            )
+                            new_state["players"][player]["score"] = (
+                                current_score + round_score
+                            )
 
             elif event.event_type == "game_started":
                 new_state["game_state"] = event.payload.get("initial_state", {})
@@ -439,10 +462,10 @@ class EventStore:
                 # Handle game completion
                 new_state["status"] = "complete"
                 new_state["completed_at"] = event.timestamp
-                
+
                 final_scores = event.payload.get("final_scores", {})
                 winner = event.payload.get("winner")
-                
+
                 if final_scores:
                     new_state["final_scores"] = final_scores
                 if winner:
@@ -453,7 +476,9 @@ class EventStore:
                 logger.debug(f"Unhandled event type: {event.event_type}")
 
         except Exception as e:
-            logger.error(f"Error applying event {event.sequence} ({event.event_type}): {e}")
+            logger.error(
+                f"Error applying event {event.sequence} ({event.event_type}): {e}"
+            )
             # Return original state on error to prevent corruption
             return state
 
@@ -577,31 +602,31 @@ class EventStore:
     ) -> List[GameEvent]:
         """
         Get events of a specific type for a room
-        
+
         Args:
             room_id: The room identifier
             event_type: The event type to filter by
             limit: Optional limit on number of events
-            
+
         Returns:
             List[GameEvent]: Filtered events in chronological order
         """
         conn = sqlite3.connect(self.db_path)
-        
+
         query = """
             SELECT sequence, room_id, event_type, payload, player_id, timestamp, created_at
             FROM game_events 
             WHERE room_id = ? AND event_type = ?
             ORDER BY sequence ASC
         """
-        
+
         params = [room_id, event_type]
         if limit:
             query += " LIMIT ?"
             params.append(limit)
-            
+
         cursor = conn.execute(query, params)
-        
+
         events = []
         for row in cursor.fetchall():
             event = GameEvent(
@@ -614,37 +639,39 @@ class EventStore:
                 created_at=row[6],
             )
             events.append(event)
-            
+
         conn.close()
-        
+
         logger.info(f"Retrieved {len(events)} {event_type} events for room {room_id}")
         return events
 
     async def export_room_history(self, room_id: str) -> Dict[str, Any]:
         """
         Export complete room history for debugging
-        
+
         Args:
             room_id: The room identifier
-            
+
         Returns:
             Dict: Complete room history with events and reconstructed state
         """
         events = await self.get_room_events(room_id)
         state = await self.replay_room_state(room_id)
-        
+
         # Group events by type for analysis
         events_by_type = {}
         for event in events:
             if event.event_type not in events_by_type:
                 events_by_type[event.event_type] = []
-            events_by_type[event.event_type].append({
-                "sequence": event.sequence,
-                "timestamp": event.timestamp,
-                "player": event.player_id,
-                "payload": event.payload
-            })
-        
+            events_by_type[event.event_type].append(
+                {
+                    "sequence": event.sequence,
+                    "timestamp": event.timestamp,
+                    "player": event.player_id,
+                    "payload": event.payload,
+                }
+            )
+
         return {
             "room_id": room_id,
             "total_events": len(events),
@@ -656,19 +683,19 @@ class EventStore:
                     "sequence": e.sequence,
                     "type": e.event_type,
                     "timestamp": e.timestamp,
-                    "player": e.player_id
+                    "player": e.player_id,
                 }
                 for e in events
-            ]
+            ],
         }
 
     async def validate_event_sequence(self, room_id: str) -> Dict[str, Any]:
         """
         Validate event sequence integrity for a room
-        
+
         Args:
             room_id: The room identifier
-            
+
         Returns:
             Dict: Validation results including any gaps or issues
         """
@@ -679,20 +706,20 @@ class EventStore:
             WHERE room_id = ?
             ORDER BY sequence ASC
             """,
-            (room_id,)
+            (room_id,),
         )
-        
+
         sequences = [row[0] for row in cursor.fetchall()]
         conn.close()
-        
+
         if not sequences:
             return {
                 "valid": True,
                 "message": "No events found",
                 "gaps": [],
-                "total_events": 0
+                "total_events": 0,
             }
-        
+
         # Check for gaps
         gaps = []
         expected = sequences[0]
@@ -700,14 +727,16 @@ class EventStore:
             if seq != expected:
                 gaps.append({"expected": expected, "found": seq})
             expected = seq + 1
-        
+
         return {
             "valid": len(gaps) == 0,
-            "message": "Sequence valid" if len(gaps) == 0 else f"Found {len(gaps)} gaps",
+            "message": (
+                "Sequence valid" if len(gaps) == 0 else f"Found {len(gaps)} gaps"
+            ),
             "gaps": gaps,
             "total_events": len(sequences),
             "first_sequence": sequences[0],
-            "last_sequence": sequences[-1]
+            "last_sequence": sequences[-1],
         }
 
 

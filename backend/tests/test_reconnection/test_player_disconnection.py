@@ -26,33 +26,31 @@ async def test_player_disconnect_activates_bot():
     uow = InMemoryUnitOfWork()
     event_publisher = AsyncMock()
     metrics = Mock()
-    
+
     use_case = HandlePlayerDisconnectUseCase(uow, event_publisher, metrics)
-    
+
     # Create room with player
     room = Room(room_id="ABC123", host_name="player1")
-    
-    # Start game in the room  
+
+    # Start game in the room
     room.start_game()
     game = room.game
-    
+
     async with uow:
         await uow.rooms.save(room)
         await uow.games.save(game)
-    
+
     # Act
     request = HandlePlayerDisconnectRequest(
-        room_id="ABC123",
-        player_name="player1",
-        activate_bot=True
+        room_id="ABC123", player_name="player1", activate_bot=True
     )
     response = await use_case.execute(request)
-    
+
     # Assert
     assert response.success
     assert response.bot_activated
     assert response.queue_created
-    
+
     # Verify player state
     async with uow:
         updated_room = await uow.rooms.get_by_id("ABC123")
@@ -60,7 +58,7 @@ async def test_player_disconnect_activates_bot():
         assert updated_player.is_bot
         assert not updated_player.is_connected
         assert updated_player.disconnect_time is not None
-    
+
     # Verify event published
     event_publisher.publish.assert_called()
     calls = event_publisher.publish.call_args_list
@@ -82,28 +80,26 @@ async def test_player_disconnect_no_bot_when_no_game():
     uow = InMemoryUnitOfWork()
     event_publisher = AsyncMock()
     metrics = Mock()
-    
+
     use_case = HandlePlayerDisconnectUseCase(uow, event_publisher, metrics)
-    
+
     # Create room with player but no game
     room = Room(room_id="ABC123", host_name="player1")
-    
+
     async with uow:
         await uow.rooms.save(room)
-    
+
     # Act
     request = HandlePlayerDisconnectRequest(
-        room_id="ABC123",
-        player_name="player1",
-        activate_bot=True
+        room_id="ABC123", player_name="player1", activate_bot=True
     )
     response = await use_case.execute(request)
-    
+
     # Assert
     assert response.success
     assert not response.bot_activated  # No bot because no game
-    assert not response.queue_created   # No queue because no game
-    
+    assert not response.queue_created  # No queue because no game
+
     # Verify player state
     async with uow:
         updated_room = await uow.rooms.get_by_id("ABC123")
@@ -120,33 +116,33 @@ async def test_player_disconnect_respects_activate_bot_flag():
     uow = InMemoryUnitOfWork()
     event_publisher = AsyncMock()
     metrics = Mock()
-    
+
     use_case = HandlePlayerDisconnectUseCase(uow, event_publisher, metrics)
-    
+
     # Create room with player and game
     room = Room(room_id="ABC123", host_name="player1")
-    
+
     # Start game in the room
     room.start_game()
     game = room.game
-    
+
     async with uow:
         await uow.rooms.save(room)
         await uow.games.save(game)
-    
+
     # Act
     request = HandlePlayerDisconnectRequest(
         room_id="ABC123",
         player_name="player1",
-        activate_bot=False  # Explicitly disable bot
+        activate_bot=False,  # Explicitly disable bot
     )
     response = await use_case.execute(request)
-    
+
     # Assert
     assert response.success
     assert not response.bot_activated
     assert response.queue_created  # Queue still created
-    
+
     # Verify player state
     async with uow:
         updated_room = await uow.rooms.get_by_id("ABC123")
@@ -161,25 +157,22 @@ async def test_player_disconnect_creates_connection_record():
     uow = InMemoryUnitOfWork()
     event_publisher = AsyncMock()
     metrics = Mock()
-    
+
     use_case = HandlePlayerDisconnectUseCase(uow, event_publisher, metrics)
-    
+
     # Create room with player
     room = Room(room_id="ABC123", host_name="player1")
-    
+
     async with uow:
         await uow.rooms.save(room)
-    
+
     # Act
-    request = HandlePlayerDisconnectRequest(
-        room_id="ABC123",
-        player_name="player1"
-    )
+    request = HandlePlayerDisconnectRequest(room_id="ABC123", player_name="player1")
     response = await use_case.execute(request)
-    
+
     # Assert
     assert response.success
-    
+
     # Verify connection record
     async with uow:
         connection = await uow.connections.get("ABC123", "player1")
@@ -195,35 +188,33 @@ async def test_player_disconnect_with_existing_bot():
     uow = InMemoryUnitOfWork()
     event_publisher = AsyncMock()
     metrics = Mock()
-    
+
     use_case = HandlePlayerDisconnectUseCase(uow, event_publisher, metrics)
-    
-    # Create room with bot player 
+
+    # Create room with bot player
     room = Room(room_id="ABC123", host_name="bot1")
     # Make the host a bot
     room.slots[0].is_bot = True
     room.slots[0].original_is_bot = True
-    
+
     # Start game in the room
     room.start_game()
     game = room.game
-    
+
     async with uow:
         await uow.rooms.save(room)
         await uow.games.save(game)
-    
+
     # Act
     request = HandlePlayerDisconnectRequest(
-        room_id="ABC123",
-        player_name="bot1",
-        activate_bot=True
+        room_id="ABC123", player_name="bot1", activate_bot=True
     )
     response = await use_case.execute(request)
-    
+
     # Assert
     assert response.success
     assert not response.bot_activated  # Already was a bot
-    
+
     # Verify player state
     async with uow:
         updated_room = await uow.rooms.get_by_id("ABC123")
@@ -239,17 +230,14 @@ async def test_player_disconnect_invalid_room():
     uow = InMemoryUnitOfWork()
     event_publisher = AsyncMock()
     metrics = Mock()
-    
+
     use_case = HandlePlayerDisconnectUseCase(uow, event_publisher, metrics)
-    
+
     # Act & Assert
-    request = HandlePlayerDisconnectRequest(
-        room_id="NO_ROO",
-        player_name="player1"
-    )
-    
+    request = HandlePlayerDisconnectRequest(room_id="NO_ROO", player_name="player1")
+
     response = await use_case.execute(request)
-    
+
     # Assert
     assert not response.success
     assert response.error == "Room not found"
@@ -262,24 +250,21 @@ async def test_player_disconnect_invalid_player():
     uow = InMemoryUnitOfWork()
     event_publisher = AsyncMock()
     metrics = Mock()
-    
+
     use_case = HandlePlayerDisconnectUseCase(uow, event_publisher, metrics)
-    
+
     # Create room without the player
     room = Room(room_id="ABC123", host_name="other")
-    
+
     async with uow:
         await uow.rooms.save(room)
-    
+
     # Act & Assert
-    request = HandlePlayerDisconnectRequest(
-        room_id="ABC123",
-        player_name="NO_ROO"
-    )
-    
+    request = HandlePlayerDisconnectRequest(room_id="ABC123", player_name="NO_ROO")
+
     response = await use_case.execute(request)
-    
-    # Assert  
+
+    # Assert
     assert not response.success
     assert response.error == "Player not found in room"
 
@@ -291,21 +276,18 @@ async def test_player_disconnect_metrics_collected():
     uow = InMemoryUnitOfWork()
     event_publisher = AsyncMock()
     metrics = Mock()
-    
+
     use_case = HandlePlayerDisconnectUseCase(uow, event_publisher, metrics)
-    
+
     # Create room with player
     room = Room(room_id="ABC123", host_name="player1")
-    
+
     async with uow:
         await uow.rooms.save(room)
-    
+
     # Act
-    request = HandlePlayerDisconnectRequest(
-        room_id="ABC123",
-        player_name="player1"
-    )
+    request = HandlePlayerDisconnectRequest(room_id="ABC123", player_name="player1")
     await use_case.execute(request)
-    
+
     # Assert metrics collected
     metrics.increment.assert_called()

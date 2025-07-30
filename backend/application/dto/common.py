@@ -14,12 +14,14 @@ from enum import Enum
 @dataclass
 class BaseRequest:
     """Base class for all use case requests."""
+
     pass
 
 
 @dataclass
 class BaseResponse:
     """Base class for all use case responses."""
+
     success: bool = True
     error: Optional[str] = None
     error_code: Optional[str] = None
@@ -28,6 +30,7 @@ class BaseResponse:
 
 class PlayerStatus(str, Enum):
     """Player connection status."""
+
     CONNECTED = "connected"
     DISCONNECTED = "disconnected"
     AWAY = "away"
@@ -35,6 +38,7 @@ class PlayerStatus(str, Enum):
 
 class RoomStatus(str, Enum):
     """Room status."""
+
     WAITING = "waiting"
     IN_GAME = "in_game"
     FINISHED = "finished"
@@ -43,7 +47,7 @@ class RoomStatus(str, Enum):
 @dataclass
 class PlayerInfo:
     """Information about a player."""
-    
+
     player_id: str
     player_name: str
     is_bot: bool
@@ -53,7 +57,7 @@ class PlayerInfo:
     score: int = 0
     games_played: int = 0
     games_won: int = 0
-    
+
     @classmethod
     def from_domain(cls, player) -> "PlayerInfo":
         """Create from domain Player entity."""
@@ -62,18 +66,22 @@ class PlayerInfo:
             player_name=player.name,
             is_bot=player.is_bot,
             is_host=False,  # Will be set by room context
-            status=PlayerStatus.CONNECTED if player.is_connected else PlayerStatus.DISCONNECTED,
+            status=(
+                PlayerStatus.CONNECTED
+                if player.is_connected
+                else PlayerStatus.DISCONNECTED
+            ),
             seat_position=None,  # Will be set by room context
             score=player.score,
             games_played=player.games_played,
-            games_won=player.games_won
+            games_won=player.games_won,
         )
 
 
 @dataclass
 class RoomInfo:
     """Information about a room."""
-    
+
     room_id: str
     room_code: str
     room_name: str
@@ -84,17 +92,17 @@ class RoomInfo:
     created_at: datetime
     game_in_progress: bool
     current_game_id: Optional[str] = None
-    
+
     @property
     def player_count(self) -> int:
         """Get current number of players."""
         return len(self.players)
-    
+
     @property
     def is_full(self) -> bool:
         """Check if room is full."""
         return self.player_count >= self.max_players
-    
+
     @property
     def is_joinable(self) -> bool:
         """Check if room can be joined."""
@@ -104,7 +112,7 @@ class RoomInfo:
 @dataclass
 class GameStateInfo:
     """Information about current game state."""
-    
+
     game_id: str
     room_id: str
     round_number: int
@@ -114,7 +122,7 @@ class GameStateInfo:
     player_scores: Dict[str, int]
     pieces_remaining: Dict[str, int]
     last_play: Optional[Dict[str, Any]] = None
-    
+
     @property
     def is_active(self) -> bool:
         """Check if game is currently active."""
@@ -124,27 +132,24 @@ class GameStateInfo:
 @dataclass
 class PieceInfo:
     """Information about a game piece."""
-    
+
     value: int
     kind: str
-    
+
     def to_dict(self) -> Dict[str, Any]:
         """Convert to dictionary."""
-        return {
-            "value": self.value,
-            "kind": self.kind
-        }
+        return {"value": self.value, "kind": self.kind}
 
 
 @dataclass
 class PlayInfo:
     """Information about a play."""
-    
+
     player_id: str
     pieces: List[PieceInfo]
     play_type: str
     is_valid: bool
-    
+
     @property
     def piece_count(self) -> int:
         """Get number of pieces played."""
@@ -154,6 +159,7 @@ class PlayInfo:
 @dataclass
 class PlayerStats:
     """Player statistics DTO."""
+
     player_id: str
     total_games: int = 0
     games_won: int = 0

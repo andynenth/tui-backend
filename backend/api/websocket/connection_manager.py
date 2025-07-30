@@ -52,7 +52,11 @@ class ConnectionManager:
         self.lock = asyncio.Lock()
 
     async def register_player(
-        self, room_id: str, player_name: str, websocket_id: str, player_id: Optional[str] = None
+        self,
+        room_id: str,
+        player_name: str,
+        websocket_id: str,
+        player_id: Optional[str] = None,
     ) -> None:
         """Register a player connection"""
         async with self.lock:
@@ -131,21 +135,23 @@ class ConnectionManager:
             if room_id in self.connections and player_name in self.connections[room_id]:
                 return self.connections[room_id][player_name]
             return None
-    
-    def get_connection_by_websocket_id(self, websocket_id: str) -> Optional[PlayerConnection]:
+
+    def get_connection_by_websocket_id(
+        self, websocket_id: str
+    ) -> Optional[PlayerConnection]:
         """Get a player's connection info by websocket ID (synchronous for compatibility)"""
         # No lock needed for read operation
         if websocket_id not in self.websocket_to_player:
             return None
-        
+
         room_id, player_name = self.websocket_to_player[websocket_id]
-        
+
         if room_id in self.connections and player_name in self.connections[room_id]:
             connection = self.connections[room_id][player_name]
             # Return the actual connection which should have the correct player_id
             # if it was set during registration
             return connection
-        
+
         return None
 
     async def get_disconnected_players(

@@ -11,8 +11,8 @@ from .in_memory_cache_service import InMemoryCacheService
 from .console_metrics_collector import ConsoleMetricsCollector
 
 __all__ = [
-    'WebSocketNotificationService',
-    'SimpleBotService',
-    'InMemoryCacheService',
-    'ConsoleMetricsCollector'
+    "WebSocketNotificationService",
+    "SimpleBotService",
+    "InMemoryCacheService",
+    "ConsoleMetricsCollector",
 ]

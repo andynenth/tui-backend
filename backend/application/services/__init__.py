@@ -18,5 +18,5 @@ __all__ = [
     "LobbyApplicationService",
     "ConnectionApplicationService",
     "ReconnectionService",
-    "MessageQueueService"
+    "MessageQueueService",
 ]

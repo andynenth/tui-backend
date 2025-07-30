@@ -7,6 +7,4 @@ and decision making.
 
 from .schedule_bot_action import ScheduleBotActionUseCase
 
-__all__ = [
-    "ScheduleBotActionUseCase"
-]
+__all__ = ["ScheduleBotActionUseCase"]

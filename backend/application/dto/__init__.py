@@ -12,9 +12,8 @@ __all__ = [
     # Base classes
     "Request",
     "Response",
-    
     # Common DTOs
     "PlayerInfo",
-    "RoomInfo", 
-    "GameStateInfo"
+    "RoomInfo",
+    "GameStateInfo",
 ]

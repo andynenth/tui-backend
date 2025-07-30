@@ -13,7 +13,7 @@ from .hybrid_event_store import (
     EventType,
     EventStream,
     IEventStore,
-    HybridEventStore
+    HybridEventStore,
 )
 
 from .event_sourcing import (
@@ -26,27 +26,25 @@ from .event_sourcing import (
     GameCreatedEvent,
     GameStartedEvent,
     PlayerActionEvent,
-    PhaseChangedEvent
+    PhaseChangedEvent,
 )
 
 __all__ = [
     # Event store
-    'Event',
-    'EventType',
-    'EventStream',
-    'IEventStore',
-    'HybridEventStore',
-    
+    "Event",
+    "EventType",
+    "EventStream",
+    "IEventStore",
+    "HybridEventStore",
     # Event sourcing
-    'DomainEvent',
-    'EventSourcedAggregate',
-    'EventSourcedRepository',
-    'Projection',
-    'ProjectionManager',
-    
+    "DomainEvent",
+    "EventSourcedAggregate",
+    "EventSourcedRepository",
+    "Projection",
+    "ProjectionManager",
     # Domain events
-    'GameCreatedEvent',
-    'GameStartedEvent', 
-    'PlayerActionEvent',
-    'PhaseChangedEvent'
+    "GameCreatedEvent",
+    "GameStartedEvent",
+    "PlayerActionEvent",
+    "PhaseChangedEvent",
 ]

@@ -24,5 +24,5 @@ __all__ = [
     "DeclineRedealUseCase",
     "HandleRedealDecisionUseCase",
     "MarkPlayerReadyUseCase",
-    "LeaveGameUseCase"
+    "LeaveGameUseCase",
 ]

@@ -104,14 +104,34 @@ const RoomPage = () => {
       navigate('/lobby');
     };
 
+    const handlePlayerKicked = (event) => {
+      const eventData = event.detail;
+      const kickData = eventData.data;
+      console.log('🚨 PLAYER_KICKED: Received kick message');
+      console.log('🚨 PLAYER_KICKED: Reason:', kickData.reason);
+      console.log('🚨 PLAYER_KICKED: Removed by:', kickData.removed_by);
+      console.log('🚨 PLAYER_KICKED: Removed player name:', kickData.removed_player_name);
+      console.log('🚨 PLAYER_KICKED: Current player name:', app.playerName);
+      
+      // Check if this kick message is for the current player
+      if (kickData.removed_player_name === app.playerName) {
+        console.log('🚨 PLAYER_KICKED: This player was kicked, navigating to lobby');
+        navigate('/lobby');
+      } else {
+        console.log('🚨 PLAYER_KICKED: Kick message not for this player, ignoring');
+      }
+    };
+
     networkService.addEventListener('room_update', handleRoomUpdate);
     networkService.addEventListener('game_started', handleGameStarted);
     networkService.addEventListener('room_closed', handleRoomClosed);
+    networkService.addEventListener('player_kicked', handlePlayerKicked);
 
     return () => {
       networkService.removeEventListener('room_update', handleRoomUpdate);
       networkService.removeEventListener('game_started', handleGameStarted);
       networkService.removeEventListener('room_closed', handleRoomClosed);
+      networkService.removeEventListener('player_kicked', handlePlayerKicked);
     };
   }, [isConnected, roomId, navigate]);
 

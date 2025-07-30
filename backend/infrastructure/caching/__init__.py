@@ -24,7 +24,7 @@ from .base import (
     CacheKeyBuilder,
     CacheDecorator,
     CacheInvalidator,
-    CacheWarmer as BaseCacheWarmer
+    CacheWarmer as BaseCacheWarmer,
 )
 
 from .memory_cache import MemoryCache
@@ -33,7 +33,7 @@ from .distributed_cache import (
     DistributedCache,
     IRedisClient,
     MockRedisClient,
-    DistributedCacheLock
+    DistributedCacheLock,
 )
 
 from .cache_patterns import (
@@ -42,7 +42,7 @@ from .cache_patterns import (
     WriteThroughPattern,
     WriteBehindPattern,
     RefreshAheadPattern,
-    CacheStampede
+    CacheStampede,
 )
 
 from .cache_strategies import (
@@ -52,66 +52,64 @@ from .cache_strategies import (
     CacheWarmer,
     WarmUpTask,
     warm_frequently_accessed,
-    warm_by_pattern
+    warm_by_pattern,
 )
 
 __all__ = [
     # Base interfaces
-    'ICache',
-    'IBatchCache',
-    'ITaggedCache',
-    'IDistributedCache',
-    'CacheConfig',
-    'CacheEntry',
-    'CacheBackend',
-    'EvictionPolicy',
-    'CacheLock',
-    'CacheKeyBuilder',
-    'CacheDecorator',
-    'CacheInvalidator',
-    'BaseCacheWarmer',
-    
+    "ICache",
+    "IBatchCache",
+    "ITaggedCache",
+    "IDistributedCache",
+    "CacheConfig",
+    "CacheEntry",
+    "CacheBackend",
+    "EvictionPolicy",
+    "CacheLock",
+    "CacheKeyBuilder",
+    "CacheDecorator",
+    "CacheInvalidator",
+    "BaseCacheWarmer",
     # Implementations
-    'MemoryCache',
-    'DistributedCache',
-    'IRedisClient',
-    'MockRedisClient',
-    'DistributedCacheLock',
-    
+    "MemoryCache",
+    "DistributedCache",
+    "IRedisClient",
+    "MockRedisClient",
+    "DistributedCacheLock",
     # Patterns
-    'IDataSource',
-    'CacheAsidePattern',
-    'WriteThroughPattern',
-    'WriteBehindPattern',
-    'RefreshAheadPattern',
-    'CacheStampede',
-    
+    "IDataSource",
+    "CacheAsidePattern",
+    "WriteThroughPattern",
+    "WriteBehindPattern",
+    "RefreshAheadPattern",
+    "CacheStampede",
     # Strategies
-    'InvalidationStrategy',
-    'InvalidationRule',
-    'SmartInvalidator',
-    'CacheWarmer',
-    'WarmUpTask',
-    'warm_frequently_accessed',
-    'warm_by_pattern'
+    "InvalidationStrategy",
+    "InvalidationRule",
+    "SmartInvalidator",
+    "CacheWarmer",
+    "WarmUpTask",
+    "warm_frequently_accessed",
+    "warm_by_pattern",
 ]
 
 
 # Convenience factory functions
 
+
 def create_memory_cache(
     max_size: int = 10000,
     default_ttl: timedelta = None,
-    eviction_policy: EvictionPolicy = EvictionPolicy.LRU
+    eviction_policy: EvictionPolicy = EvictionPolicy.LRU,
 ) -> MemoryCache:
     """Create a configured memory cache instance."""
     from datetime import timedelta
-    
+
     config = CacheConfig(
         backend=CacheBackend.MEMORY,
         max_size=max_size,
         default_ttl=default_ttl,
-        eviction_policy=eviction_policy
+        eviction_policy=eviction_policy,
     )
     return MemoryCache(config)
 
@@ -120,14 +118,14 @@ def create_distributed_cache(
     redis_client: IRedisClient = None,
     key_prefix: str = "cache",
     default_ttl: timedelta = None,
-    serializer: str = "json"
+    serializer: str = "json",
 ) -> DistributedCache:
     """Create a configured distributed cache instance."""
     from datetime import timedelta
-    
+
     config = CacheConfig(
         backend=CacheBackend.REDIS,
         default_ttl=default_ttl,
-        options={'key_prefix': key_prefix}
+        options={"key_prefix": key_prefix},
     )
     return DistributedCache(config, redis_client, serializer)

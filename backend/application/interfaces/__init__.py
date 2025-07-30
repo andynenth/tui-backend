@@ -7,11 +7,11 @@ application layer to remain decoupled from specific implementations.
 """
 
 from .repositories import (
-    RoomRepository, 
-    GameRepository, 
+    RoomRepository,
+    GameRepository,
     PlayerStatsRepository,
     ConnectionRepository,
-    MessageQueueRepository
+    MessageQueueRepository,
 )
 from .services import (
     EventPublisher,
@@ -19,18 +19,17 @@ from .services import (
     BotService,
     MetricsCollector,
     CacheService,
-    Logger
+    Logger,
 )
 from .unit_of_work import UnitOfWork
 
 __all__ = [
     # Repositories
     "RoomRepository",
-    "GameRepository", 
+    "GameRepository",
     "PlayerStatsRepository",
     "ConnectionRepository",
     "MessageQueueRepository",
-    
     # Services
     "EventPublisher",
     "NotificationService",
@@ -38,7 +37,6 @@ __all__ = [
     "MetricsCollector",
     "CacheService",
     "Logger",
-    
     # Patterns
-    "UnitOfWork"
+    "UnitOfWork",
 ]

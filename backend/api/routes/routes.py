@@ -25,7 +25,7 @@ from infrastructure.dependencies import (
     get_unit_of_work,
     get_event_publisher,
     get_bot_service,
-    get_metrics_collector
+    get_metrics_collector,
 )
 from application.services.room_application_service import RoomApplicationService
 from application.services.lobby_application_service import LobbyApplicationService
@@ -78,7 +78,7 @@ async def get_room_stats_endpoint(room_id: Optional[str] = Query(None)):
                     "room_exists": True,
                     "has_game": room.game is not None,
                     "player_count": len([s for s in room.slots if s is not None]),
-                    "game_started": room.is_game_started()
+                    "game_started": room.is_game_started(),
                 }
                 stats["room_validation"] = validation
                 stats["room_summary"] = {
@@ -86,7 +86,7 @@ async def get_room_stats_endpoint(room_id: Optional[str] = Query(None)):
                     "room_code": room.room_code,
                     "host_name": room.host_name,
                     "players": [p.name for p in room.slots if p is not None],
-                    "game_started": room.is_game_started()
+                    "game_started": room.is_game_started(),
                 }
 
     return {"timestamp": time.time(), "stats": stats}
@@ -116,16 +116,13 @@ async def notify_lobby_room_created(room_data):
 
         # Also send updated room list using clean architecture
         lobby_service = LobbyApplicationService(
-            unit_of_work=get_unit_of_work(),
-            metrics=get_metrics_collector()
+            unit_of_work=get_unit_of_work(), metrics=get_metrics_collector()
         )
         list_request = GetRoomListRequest(
-            player_id="",
-            include_full=False,
-            include_in_game=False
+            player_id="", include_full=False, include_in_game=False
         )
         list_response = await lobby_service.get_room_list(list_request)
-        
+
         # Convert room summaries to legacy format for WebSocket compatibility
         available_rooms = [
             {
@@ -136,11 +133,11 @@ async def notify_lobby_room_created(room_data):
                 "player_count": room.player_count,
                 "max_players": room.max_players,
                 "game_in_progress": room.game_in_progress,
-                "is_private": room.is_private
+                "is_private": room.is_private,
             }
             for room in list_response.rooms
         ]
-        
+
         await broadcast(
             "lobby",
             "room_list_update",
@@ -175,16 +172,13 @@ async def notify_lobby_room_updated(room_data):
 
         # Send fresh room list using clean architecture
         lobby_service = LobbyApplicationService(
-            unit_of_work=get_unit_of_work(),
-            metrics=get_metrics_collector()
+            unit_of_work=get_unit_of_work(), metrics=get_metrics_collector()
         )
         list_request = GetRoomListRequest(
-            player_id="",
-            include_full=False,
-            include_in_game=False
+            player_id="", include_full=False, include_in_game=False
         )
         list_response = await lobby_service.get_room_list(list_request)
-        
+
         # Convert room summaries to legacy format
         available_rooms = [
             {
@@ -195,11 +189,11 @@ async def notify_lobby_room_updated(room_data):
                 "player_count": room.player_count,
                 "max_players": room.max_players,
                 "game_in_progress": room.game_in_progress,
-                "is_private": room.is_private
+                "is_private": room.is_private,
             }
             for room in list_response.rooms
         ]
-        
+
         await broadcast(
             "lobby",
             "room_list_update",
@@ -229,16 +223,13 @@ async def notify_lobby_room_closed(room_id, reason="Room closed"):
 
         # Send updated room list (without the closed room) using clean architecture
         lobby_service = LobbyApplicationService(
-            unit_of_work=get_unit_of_work(),
-            metrics=get_metrics_collector()
+            unit_of_work=get_unit_of_work(), metrics=get_metrics_collector()
         )
         list_request = GetRoomListRequest(
-            player_id="",
-            include_full=False,
-            include_in_game=False
+            player_id="", include_full=False, include_in_game=False
         )
         list_response = await lobby_service.get_room_list(list_request)
-        
+
         # Convert room summaries to legacy format
         available_rooms = [
             {
@@ -249,11 +240,11 @@ async def notify_lobby_room_closed(room_id, reason="Room closed"):
                 "player_count": room.player_count,
                 "max_players": room.max_players,
                 "game_in_progress": room.game_in_progress,
-                "is_private": room.is_private
+                "is_private": room.is_private,
             }
             for room in list_response.rooms
         ]
-        
+
         await broadcast(
             "lobby",
             "room_list_update",
@@ -591,6 +582,7 @@ async def detailed_health_check():
         # Check rate limiting status
         try:
             from infrastructure.rate_limiting.middleware import RateLimitMiddleware
+
             get_rate_limiter = lambda: RateLimitMiddleware()
 
             rate_limiter = get_rate_limiter()
@@ -626,7 +618,7 @@ async def detailed_health_check():
         async with uow_stats:
             all_rooms = await uow_stats.rooms.find_by_criteria({})
             active_rooms = len(all_rooms)
-        
+
         # Get active connections from connection singleton
         ws_stats = get_room_stats()
         active_connections = ws_stats.get("total_active_connections", 0)
@@ -743,31 +735,33 @@ async def architecture_status():
     try:
         # Import feature flags
         from infrastructure.feature_flags import get_feature_flags
-        
+
         flags = get_feature_flags()
         flag_values = flags.get_all_flags()
-        
+
         # Check critical architecture flags
         clean_architecture_flags = {
             "use_clean_architecture": flag_values.get("use_clean_architecture", False),
             "use_domain_events": flag_values.get("use_domain_events", False),
             "use_application_layer": flag_values.get("use_application_layer", False),
-            "use_new_repositories": flag_values.get("use_new_repositories", False)
+            "use_new_repositories": flag_values.get("use_new_repositories", False),
         }
-        
+
         adapter_flags = {
-            "use_connection_adapters": flag_values.get("use_connection_adapters", False),
+            "use_connection_adapters": flag_values.get(
+                "use_connection_adapters", False
+            ),
             "use_room_adapters": flag_values.get("use_room_adapters", False),
             "use_game_adapters": flag_values.get("use_game_adapters", False),
-            "use_lobby_adapters": flag_values.get("use_lobby_adapters", False)
+            "use_lobby_adapters": flag_values.get("use_lobby_adapters", False),
         }
-        
+
         # Calculate architecture status
         clean_enabled = sum(1 for flag in clean_architecture_flags.values() if flag)
         adapter_enabled = sum(1 for flag in adapter_flags.values() if flag)
         total_flags = len(clean_architecture_flags) + len(adapter_flags)
         enabled_flags = clean_enabled + adapter_enabled
-        
+
         # Determine architecture status
         if enabled_flags >= total_flags * 0.8:  # 80% or more enabled
             architecture_status = "clean_architecture"
@@ -781,25 +775,28 @@ async def architecture_status():
             architecture_status = "legacy_code"
             architecture_message = "System is running on Legacy Code"
             confidence = 90
-        
+
         # Check for migration completion evidence
         migration_evidence = []
         try:
             from pathlib import Path
+
             completion_report = Path("PHASE_6_COMPLETION_REPORT.md")
             if completion_report.exists():
                 migration_evidence.append("Phase 6 completion report found")
-                
-            final_validation_report = Path("tests/phase6/reports/final_performance_validation_report.json")
+
+            final_validation_report = Path(
+                "tests/phase6/reports/final_performance_validation_report.json"
+            )
             if final_validation_report.exists():
                 migration_evidence.append("Final performance validation report found")
-                
+
             regression_report = Path("tests/phase6/reports/regression_test_report.json")
             if regression_report.exists():
                 migration_evidence.append("Regression test report found")
         except Exception:
             pass
-        
+
         return {
             "architecture_status": architecture_status,
             "message": architecture_message,
@@ -810,28 +807,40 @@ async def architecture_status():
                 "summary": {
                     "total_flags": total_flags,
                     "enabled_flags": enabled_flags,
-                    "enabled_percentage": (enabled_flags / total_flags) * 100
-                }
+                    "enabled_percentage": (enabled_flags / total_flags) * 100,
+                },
             },
             "migration_evidence": migration_evidence,
             "timestamp": datetime.now().isoformat(),
             "recommendations": {
-                "clean_architecture": [
-                    "✅ System is fully migrated to Clean Architecture",
-                    "✅ All feature flags are enabled",
-                    "✅ Migration validation complete"
-                ] if architecture_status == "clean_architecture" else [],
-                "partial_migration": [
-                    "⚠️ System is in partial migration state",
-                    "🔧 Some feature flags are not enabled",
-                    "📋 Complete migration to enable all clean architecture features"
-                ] if architecture_status == "partial_migration" else [],
-                "legacy_code": [
-                    "❌ System is running on legacy code",
-                    "🚀 Start clean architecture migration",
-                    "🏁 Enable feature flags to begin transition"
-                ] if architecture_status == "legacy_code" else []
-            }
+                "clean_architecture": (
+                    [
+                        "✅ System is fully migrated to Clean Architecture",
+                        "✅ All feature flags are enabled",
+                        "✅ Migration validation complete",
+                    ]
+                    if architecture_status == "clean_architecture"
+                    else []
+                ),
+                "partial_migration": (
+                    [
+                        "⚠️ System is in partial migration state",
+                        "🔧 Some feature flags are not enabled",
+                        "📋 Complete migration to enable all clean architecture features",
+                    ]
+                    if architecture_status == "partial_migration"
+                    else []
+                ),
+                "legacy_code": (
+                    [
+                        "❌ System is running on legacy code",
+                        "🚀 Start clean architecture migration",
+                        "🏁 Enable feature flags to begin transition",
+                    ]
+                    if architecture_status == "legacy_code"
+                    else []
+                ),
+            },
         }
 
     except Exception as e:
@@ -840,7 +849,7 @@ async def architecture_status():
             "message": f"Could not determine architecture status: {str(e)}",
             "confidence_percentage": 0,
             "error": str(e),
-            "timestamp": datetime.now().isoformat()
+            "timestamp": datetime.now().isoformat(),
         }
 
 
@@ -953,9 +962,13 @@ async def system_stats():
         # Get WebSocket stats from connection singleton
         ws_room_stats = get_room_stats()
         socket_stats = {
-            "total_active_connections": ws_room_stats.get("total_active_connections", 0),
+            "total_active_connections": ws_room_stats.get(
+                "total_active_connections", 0
+            ),
             "rooms_with_connections": ws_room_stats.get("rooms_with_connections", 0),
-            "message_stats": {"note": "Message stats not available in clean architecture"}
+            "message_stats": {
+                "note": "Message stats not available in clean architecture"
+            },
         }
 
         # Get room stats using clean architecture
@@ -964,9 +977,7 @@ async def system_stats():
             all_rooms = await uow_sys.rooms.find_by_criteria({})
             room_stats = {
                 "total_rooms": len(all_rooms),
-                "active_games": sum(
-                    1 for room in all_rooms if room.is_game_started()
-                ),
+                "active_games": sum(1 for room in all_rooms if room.is_game_started()),
                 "total_players": sum(
                     len([slot for slot in room.slots if slot is not None])
                     for room in all_rooms
