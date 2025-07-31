@@ -131,7 +131,7 @@
   },
   "scripts": {
     "dev": "node esbuild.config.cjs",
-    "build": "node esbuild.config.cjs --production && cp index.html ../backend/static/",
+    "build": "node esbuild.config.cjs --production && cp index.html \"${ESBUILD_OUT:-../backend/static}/\"",
     "test": "jest",
     "test:watch": "jest --watch",
     "test:coverage": "jest --coverage",

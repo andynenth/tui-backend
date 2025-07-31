@@ -202,7 +202,9 @@ class StartGameUseCase(UseCase[StartGameRequest, StartGameResponse]):
                 metadata=EventMetadata(user_id=request.user_id),
                 room_id=room.room_id,
                 round_number=1,
-                piece_count=8,  # Standard number of pieces dealt per player
+                player_pieces={
+                    p.name: [piece.kind for piece in p.hand] for p in game.players
+                },
             )
             await self._event_publisher.publish(pieces_dealt)
 

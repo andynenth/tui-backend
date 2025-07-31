@@ -822,12 +822,18 @@ class UseCaseDispatcher:
 
         # StartGameResponse doesn't have a success attribute, but successful execution returns a response
         # If there was an error, an exception would have been raised
+        
+        # Convert initial_state to dict if it's a GameStateInfo object
+        initial_state_data = response.initial_state
+        if hasattr(initial_state_data, 'to_dict'):
+            initial_state_data = initial_state_data.to_dict()
+        
         return {
             "event": "game_started",
             "data": {
                 "success": True,
                 "game_id": response.game_id,
-                "initial_state": response.initial_state,
+                "initial_state": initial_state_data,
             },
         }
 

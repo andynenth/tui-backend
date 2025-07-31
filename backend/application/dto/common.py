@@ -128,6 +128,20 @@ class GameStateInfo:
         """Check if game is currently active."""
         return self.phase not in ["ended", "abandoned"]
 
+    def to_dict(self) -> Dict[str, Any]:
+        """Convert to dictionary for JSON serialization."""
+        return {
+            "game_id": self.game_id,
+            "room_id": self.room_id,
+            "round_number": self.round_number,
+            "turn_number": self.turn_number,
+            "phase": self.phase,
+            "current_player_id": self.current_player_id,
+            "player_scores": self.player_scores,
+            "pieces_remaining": self.pieces_remaining,
+            "last_play": self.last_play,
+        }
+
 
 @dataclass
 class PieceInfo:
