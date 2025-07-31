@@ -61,9 +61,17 @@ const RoomPage = () => {
     // Cleanup on unmount
     return () => {
       mounted = false;
-      if (roomId) {
+      // 🎯 FIX: Don't disconnect when navigating to game page
+      // Check if we're navigating to the game page for this room
+      const currentPath = window.location.pathname;
+      const isNavigatingToGame = currentPath.includes(`/game/${roomId}`);
+      
+      if (roomId && !isNavigatingToGame) {
+        console.log('🏠 RoomPage cleanup: Disconnecting from room (not going to game)');
         networkService.disconnectFromRoom(roomId);
         gameService.leaveRoom();
+      } else if (isNavigatingToGame) {
+        console.log('🏠 RoomPage cleanup: Keeping connection (navigating to game)');
       }
     };
   }, [roomId, app.playerName]);

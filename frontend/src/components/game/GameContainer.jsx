@@ -44,6 +44,10 @@ export function GameContainer({ roomId, onNavigateToLobby }) {
   const preparationProps = useMemo(() => {
     if (gameState.phase !== 'preparation') return null;
 
+    console.log('🎮 GameContainer preparationProps:');
+    console.log('   gameState.myHand:', gameState.myHand);
+    console.log('   gameState.myHand length:', gameState.myHand?.length || 0);
+
     return {
       // Data from backend
       myHand: gameState.myHand || [],

@@ -181,9 +181,12 @@ class GameState(ABC):
                         self.logger.debug(f"   Hand type: {type(player_hand)}")
                         self.logger.debug(f"   Hand length: {len(player_hand)}")
 
-                        # Convert hand to string representations
-                        hand_strings = [str(piece) for piece in player_hand]
-                        self.logger.debug(f"   Converted hand: {hand_strings}")
+                        # Convert hand to piece dictionaries with value and kind
+                        hand_data = [
+                            {"value": piece.point, "kind": piece.kind}
+                            for piece in player_hand
+                        ]
+                        self.logger.debug(f"   Converted hand: {hand_data}")
 
                         avatar_color = getattr(player, "avatar_color", None)
                         self.logger.debug(
@@ -194,7 +197,7 @@ class GameState(ABC):
                             "name": player_name,
                             "is_bot": getattr(player, "is_bot", False),
                             "avatar_color": avatar_color,
-                            "hand": hand_strings,
+                            "hand": hand_data,  # Send actual piece data instead of strings
                             "hand_size": len(player_hand),
                             "zero_declares_in_a_row": getattr(
                                 player, "zero_declares_in_a_row", 0

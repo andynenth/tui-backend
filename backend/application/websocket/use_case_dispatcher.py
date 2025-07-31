@@ -820,23 +820,16 @@ class UseCaseDispatcher:
 
         response = await self.start_game_use_case.execute(request)
 
-        if response.success:
-            return {
-                "event": "game_started",
-                "data": {
-                    "success": True,
-                    "game_id": response.game_id,
-                    "initial_state": response.initial_state,
-                },
-            }
-        else:
-            return {
-                "event": "error",
-                "data": {
-                    "message": response.error_message or "Failed to start game",
-                    "type": "start_game_failed",
-                },
-            }
+        # StartGameResponse doesn't have a success attribute, but successful execution returns a response
+        # If there was an error, an exception would have been raised
+        return {
+            "event": "game_started",
+            "data": {
+                "success": True,
+                "game_id": response.game_id,
+                "initial_state": response.initial_state,
+            },
+        }
 
     async def _handle_declare(
         self, data: Dict[str, Any], context: DispatchContext

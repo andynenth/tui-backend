@@ -257,19 +257,7 @@ class RoundEnded(GameEvent):
         return data
 
 
-@dataclass(frozen=True)
-class PiecesDealt(GameEvent):
-    """Pieces have been dealt to players."""
-
-    round_number: int
-    piece_count: int
-
-    def _get_event_data(self) -> Dict[str, Any]:
-        data = super()._get_event_data()
-        data.update(
-            {"round_number": self.round_number, "piece_count": self.piece_count}
-        )
-        return data
+# Removed duplicate PiecesDealt class - using the one with player_pieces parameter
 
 
 @dataclass(frozen=True)

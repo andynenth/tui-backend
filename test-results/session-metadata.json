@@ -1,6 +1,6 @@
 {
-  "testSuiteStart": "2025-07-31T05:07:07.757Z",
-  "setupDuration": 2,
+  "testSuiteStart": "2025-07-31T18:07:25.751Z",
+  "setupDuration": 3,
   "playwrightVersion": "1.54.1",
   "nodeVersion": "v23.11.0",
   "testEnvironment": {
