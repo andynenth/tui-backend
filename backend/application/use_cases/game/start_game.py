@@ -197,7 +197,7 @@ class StartGameUseCase(UseCase[StartGameRequest, StartGameResponse]):
                 round_number=game.round_number,
                 turn_number=game.turn_number,
                 phase_data={
-                    "players": {p.name: {"id": p.id, "score": p.score, "hand_size": len(p.hand)} for p in game.players},
+                    "players": [{"name": p.name, "id": p.id, "score": p.score, "hand_size": len(p.hand)} for p in game.players],
                     "my_hand": {p.id: [{"value": piece.value, "kind": piece.kind} for piece in p.hand] for p in game.players},
                     "current_player": starting_player.name,
                     "game_settings": {

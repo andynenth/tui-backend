@@ -229,3 +229,16 @@ Success Criteria: Millisecond-level timing logs for each phase
 📥 WS Receive [+844682ms]: pong
 📤 WS Send [+846823ms]: ping
 📥 WS Receive [+846832ms]: pong
+🔌 WebSocket connected
+📤 WS Send [+871449ms]: client_ready
+📤 WS Send [+871449ms]: request_recovery
+📥 WS Receive [+871450ms]: room_not_found
+📤 WS Send [+871454ms]: request_state_sync
+🔌 WebSocket connected
+📥 WS Receive [+871457ms]: error
+📥 WS Receive [+871457ms]: error
+📥 WS Receive [+871457ms]: error
+📤 WS Send [+871458ms]: client_ready
+📥 WS Receive [+871459ms]: client_ready_ack
+🧭 Navigation [+874699ms]: /
+🧭 Navigation [+874933ms]: /
