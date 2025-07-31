@@ -349,13 +349,21 @@ export function GameContainer({ roomId, onNavigateToLobby }) {
       {(() => {
         switch (gameState.phase) {
           case 'preparation':
-            // 🎯 FIX: Check if we have actual preparation data or if we're in transition
-            // If we don't have key preparation data (like myHand), show loading state
-            if (!preparationProps || !gameState.myHand || gameState.myHand.length === 0) {
+            // DEBUG: Log preparation phase validation
+            console.log('🎮 GameContainer: Preparation phase validation');
+            console.log('🎮 GameContainer: preparationProps:', preparationProps);
+            console.log('🎮 GameContainer: gameState.myHand:', gameState.myHand);
+            console.log('🎮 GameContainer: gameState.myHand length:', gameState.myHand?.length);
+            console.log('🎮 GameContainer: gameState.phase:', gameState.phase);
+            
+            // 🎯 FIX: Allow preparation UI to render even if myHand is empty/undefined
+            // The backend might send phase change before dealing cards
+            if (!preparationProps) {
+              console.log('🎮 GameContainer: No preparationProps, showing waiting UI');
               return (
                 <WaitingUI
                   {...waitingProps}
-                  message="Starting game... Loading your cards..."
+                  message="Starting game... Preparing cards..."
                 />
               );
             }

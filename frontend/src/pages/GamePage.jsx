@@ -69,14 +69,49 @@ const GamePage = () => {
             );
           }
 
-          // 🎯 FIX: Check if GameService is already connected to this room
+          // 🎯 FIX: Check if GameService is already connected to this room AND has game state
           const currentGameState = gameState;
-          if (currentGameState.roomId === roomId && currentGameState.isConnected) {
-            console.log('🎮 GAME: Already connected to room, skipping connection');
+          console.log('🎮 GAME: Current GameService state from useGameState hook:', {
+            roomId: currentGameState.roomId,
+            isConnected: currentGameState.isConnected,
+            phase: currentGameState.phase,
+            targetRoomId: roomId,
+            playerName: currentGameState.playerName
+          });
+          
+          // Check if we already have active game state (even if temporarily disconnected)
+          const hasActiveGameState = currentGameState.roomId === roomId && 
+                                    currentGameState.playerName === playerName &&
+                                    currentGameState.phase !== 'waiting';
+          
+          const isCurrentlyConnected = currentGameState.isConnected;
+          
+          // 🎯 CRITICAL FIX: Skip connection entirely if we have the right room/player combo
+          // This prevents the double connection issue that resets game state
+          if (currentGameState.roomId === roomId && 
+              currentGameState.playerName === playerName) {
+            console.log('🎮 GAME: Already in correct room with correct player');
+            console.log('🎮 GAME: Connection status:', isCurrentlyConnected);
+            console.log('🎮 GAME: Current phase:', currentGameState.phase);
             setIsInitialized(true);
+            
+            // If disconnected but have the right room, just wait for auto-reconnect
+            if (!isCurrentlyConnected) {
+              console.log('🎮 GAME: Waiting for NetworkService auto-reconnect...');
+            }
             return;
           }
 
+          // Only connect if we're NOT already in the correct room
+          console.log('🎮 GAME: Different room or player, need to connect');
+          console.log('🎮 GAME: Connection decision factors:', {
+            currentRoom: currentGameState.roomId,
+            targetRoom: roomId,
+            currentPlayer: currentGameState.playerName,
+            targetPlayer: playerName,
+            isConnected: currentGameState.isConnected
+          });
+          
           await serviceIntegration.connectToRoom(roomId, playerName);
           console.log('🎮 GAME: Service integration connection completed');
           setIsInitialized(true);
@@ -93,12 +128,19 @@ const GamePage = () => {
 
     initializeGame();
 
-    // Cleanup on unmount
+    // Cleanup on unmount - DON'T disconnect if just navigating within the same game
     return () => {
-      if (roomId) {
+      // Only disconnect if navigating away from the game entirely
+      const currentPath = window.location.pathname;
+      const isLeavingGame = !currentPath.includes(`/game/${roomId}`);
+      
+      if (roomId && isLeavingGame) {
+        console.log('🎮 GAME: Leaving game, disconnecting...');
         serviceIntegration.disconnectFromRoom().catch((err) => {
           console.error('Error disconnecting on unmount:', err);
         });
+      } else {
+        console.log('🎮 GAME: Staying in game, keeping connection');
       }
     };
   }, [roomId, navigate, app.playerName]);
