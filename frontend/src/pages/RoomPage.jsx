@@ -7,7 +7,7 @@ import { useApp } from '../contexts/AppContext';
 import { Layout, Button } from '../components';
 import { PlayerAvatar } from '../components/game/shared';
 import TruncatedName from '../components/shared/TruncatedName';
-import { networkService } from '../services';
+import { networkService, gameService } from '../services';
 // CSS classes are imported globally
 
 const RoomPage = () => {
@@ -36,9 +36,14 @@ const RoomPage = () => {
 
     const initializeRoom = async () => {
       try {
+        // Connect both NetworkService and GameService to the room
         await networkService.connectToRoom(roomId, {
           playerName: app.playerName,
         });
+        
+        // Also connect GameService so it's ready to receive game_started events
+        await gameService.joinRoom(roomId, app.playerName);
+        
         if (mounted) {
           setIsConnected(true);
           // Request room state
@@ -58,6 +63,7 @@ const RoomPage = () => {
       mounted = false;
       if (roomId) {
         networkService.disconnectFromRoom(roomId);
+        gameService.leaveRoom();
       }
     };
   }, [roomId, app.playerName]);

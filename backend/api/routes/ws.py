@@ -192,12 +192,28 @@ async def handle_disconnect(room_id: str, websocket: WebSocket):
                 else:
                     logger.warning(f"No game object found for started room {room_id}")
             else:
-                # This is a pre-game disconnect - treat as leave_room
+                # This is a pre-game disconnect - check if it's a graceful leave vs connection issue
                 logger.info(
                     f"🚪 [ROOM_DEBUG] Pre-game disconnect detected for player '{connection.player_name}' in room '{room_id}'"
                 )
-                # Reuse existing leave_room logic
-                await process_leave_room(room_id, connection.player_name)
+                
+                # Check if this is a graceful disconnect (user navigated away intentionally)
+                # vs a connection error that should allow reconnection
+                websocket_close_code = getattr(websocket, 'close_code', None)
+                is_graceful_disconnect = websocket_close_code in [1000, 1001]  # Normal closure codes
+                
+                if is_graceful_disconnect:
+                    logger.info(
+                        f"🚪 [ROOM_DEBUG] Graceful disconnect detected - treating as intentional leave for room '{room_id}'"
+                    )
+                    # This is likely an intentional leave (user navigated away)
+                    await process_leave_room(room_id, connection.player_name)
+                else:
+                    logger.info(
+                        f"🔄 [ROOM_DEBUG] Connection error disconnect - allowing reconnection opportunity for room '{room_id}'"
+                    )
+                    # This might be a connection issue - allow reconnection
+                    # Room cleanup task will handle truly abandoned rooms after timeout
         else:
             logger.warning(
                 f"No websocket_id found on websocket object for room {room_id}"

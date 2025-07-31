@@ -408,6 +408,7 @@ export class GameService extends EventTarget {
 
     // Game events
     const gameEvents: GameEventType[] = [
+      'game_started',
       'phase_change',
       'weak_hands_found',
       'redeal_decision_needed',
@@ -524,12 +525,21 @@ export class GameService extends EventTarget {
     const customEvent = event as CustomEvent<NetworkEventDetail>;
     const { roomId, data } = customEvent.detail;
 
+    console.log(`🔍 [DEBUG] GameService received network event: ${event.type}`, {
+      eventType: event.type,
+      roomId,
+      currentRoomId: this.state.roomId,
+      data
+    });
+
     // Only process events for our room
     if (roomId !== this.state.roomId) {
+      console.log(`🔍 [DEBUG] Ignoring event - room mismatch: ${roomId} !== ${this.state.roomId}`);
       return;
     }
 
     try {
+      console.log(`🔍 [DEBUG] Processing game event: ${event.type}`);
       const newState = this.processGameEvent(event.type, data);
       this.setState(newState, `NETWORK_EVENT:${event.type.toUpperCase()}`);
     } catch (error) {
@@ -550,9 +560,15 @@ export class GameService extends EventTarget {
    * Process game events from backend
    */
   private processGameEvent(eventType: string, data: any): GameState {
+    console.log(`🔍 [DEBUG] processGameEvent called with eventType: ${eventType}`, data);
     let newState = { ...this.state };
 
     switch (eventType) {
+      case 'game_started':
+        console.log(`🔍 [DEBUG] Calling handleGameStarted`);
+        newState = this.handleGameStarted(newState, data);
+        break;
+
       case 'phase_change':
         newState = this.handlePhaseChange(newState, data);
         break;
@@ -1032,6 +1048,40 @@ export class GameService extends EventTarget {
       storeSession(state.roomId, state.playerName, sessionId, newState.phase);
     }
 
+    return newState;
+  }
+
+  /**
+   * Handle game started event
+   */
+  private handleGameStarted(state: GameState, data: any): GameState {
+    console.log('🎮 Game started! Data:', data);
+    
+    const newState = { ...state };
+    
+    // Basic game initialization - detailed state will come from phase_change events
+    newState.currentRound = data.round_number || data.round || 1;
+    
+    // Update players list if provided (as simple array of names)
+    if (data.players && Array.isArray(data.players)) {
+      newState.players = data.players.map((playerName: string, index: number) => ({
+        name: playerName,
+        score: 0,
+        is_bot: false, // Will be updated by phase_change events
+        is_host: false, // Will be updated by phase_change events
+        avatar_color: null,
+        zero_declares_in_a_row: 0,
+        hand_size: 8, // Default initial hand size
+        captured_piles: 0,
+        declared: 0,
+      }));
+    }
+    
+    // Don't set phase here - wait for phase_change event
+    // newState.phase will be updated by handlePhaseChange when the backend sends the initial phase_change event
+    
+    console.log(`🎮 Game started! Round: ${newState.currentRound}, Players: ${data.players?.length || 0}`);
+    console.log('🎮 Note: Waiting for phase_change event to set detailed game state');
     return newState;
   }
 

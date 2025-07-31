@@ -50,7 +50,7 @@
         "testMatch": [
           "**/*.@(spec|test).?(c|m)[jt]s?(x)"
         ],
-        "timeout": 30000
+        "timeout": 60000
       }
     ],
     "shard": null,
@@ -80,7 +80,7 @@
               "tags": [],
               "tests": [
                 {
-                  "timeout": 30000,
+                  "timeout": 60000,
                   "annotations": [],
                   "expectedStatus": "passed",
                   "projectId": "chromium-lobby-test",
@@ -90,7 +90,7 @@
                       "workerIndex": 0,
                       "parallelIndex": 0,
                       "status": "failed",
-                      "duration": 12554,
+                      "duration": 12541,
                       "error": {
                         "message": "TimeoutError: page.fill: Timeout 10000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('input[placeholder=\"Enter your name\"]')\u001b[22m\n",
                         "stack": "TimeoutError: page.fill: Timeout 10000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('input[placeholder=\"Enter your name\"]')\u001b[22m\n\n    at /Users/nrw/python/tui-project/liap-tui/test_lobby_game_transition.spec.js:205:16",
@@ -125,7 +125,7 @@
                         }
                       ],
                       "retry": 0,
-                      "startTime": "2025-07-30T20:39:09.577Z",
+                      "startTime": "2025-07-30T23:56:02.216Z",
                       "annotations": [],
                       "attachments": [
                         {
@@ -166,8 +166,8 @@
   ],
   "errors": [],
   "stats": {
-    "startTime": "2025-07-30T20:39:08.474Z",
-    "duration": 15644.556,
+    "startTime": "2025-07-30T23:56:01.273Z",
+    "duration": 15121.992,
     "expected": 0,
     "skipped": 0,
     "unexpected": 1,
