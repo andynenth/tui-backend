@@ -111,9 +111,9 @@ class JoinRoomUseCase(UseCase[JoinRoomRequest, JoinRoomResponse]):
                 )
 
             # Check if room is joinable
-            # Count non-None slots
-            filled_slots = sum(1 for slot in room.slots if slot is not None)
-            if filled_slots >= room.max_slots:
+            # Count human players only - bots can be replaced
+            human_players = sum(1 for slot in room.slots if slot is not None and not slot.is_bot)
+            if human_players >= room.max_slots:
                 raise ConflictException("join room", "Room is full")
 
             if room.game:

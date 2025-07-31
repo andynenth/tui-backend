@@ -105,6 +105,7 @@ class PhaseChanged(GameEvent):
     new_phase: str
     round_number: int
     turn_number: int
+    phase_data: Dict[str, Any] = field(default_factory=dict)
 
     def _get_event_data(self) -> Dict[str, Any]:
         data = super()._get_event_data()
@@ -114,6 +115,7 @@ class PhaseChanged(GameEvent):
                 "new_phase": self.new_phase,
                 "round_number": self.round_number,
                 "turn_number": self.turn_number,
+                "phase_data": self.phase_data,
             }
         )
         return data

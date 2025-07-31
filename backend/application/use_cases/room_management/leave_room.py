@@ -106,14 +106,28 @@ class LeaveRoomUseCase(UseCase[LeaveRoomRequest, LeaveRoomResponse]):
                 )
             else:
                 # Remove player from room
-                room.remove_player(request.player_id)
+                room.remove_player(player_slot.name)
 
-            # Handle host migration if needed
+            # Determine if room should be closed first
+            room_closed = False
+            total_players = room.get_human_count() + room.get_bot_count()
+            
+            # Close room if:
+            # 1. Host left (room ends when host leaves)
+            # 2. All players left (total_players == 0)  
+            # 3. Only bots remain (all humans left)
+            if was_host or total_players == 0 or (
+                total_players > 0
+                and all(slot.is_bot for slot in room.slots if slot)
+            ):
+                room_closed = True
+
+            # Handle host migration only if room is NOT being closed
             new_host_id = None
-            if was_host and room.player_count > 0:
+            if was_host and not room_closed and (room.get_human_count() + room.get_bot_count()) > 0:
                 # Find new host (first connected non-bot player)
                 for i, slot in enumerate(room.slots):
-                    if slot and not slot.is_bot and slot.name != request.player_name:
+                    if slot and not slot.is_bot and slot.name != player_slot.name:
                         if getattr(slot, "is_connected", True):
                             new_host_id = PropertyMapper.generate_player_id(
                                 room.room_id, i
@@ -125,21 +139,13 @@ class LeaveRoomUseCase(UseCase[LeaveRoomRequest, LeaveRoomResponse]):
                 # Fallback to any player if no connected players
                 if not new_host_id:
                     for i, slot in enumerate(room.slots):
-                        if slot and slot.name != request.player_name:
+                        if slot and slot.name != player_slot.name:
                             new_host_id = PropertyMapper.generate_player_id(
                                 room.room_id, i
                             )
                             new_host_name = slot.name
                             room.host_name = new_host_name  # Update host name
                             break
-
-            # Check if room should be closed
-            room_closed = False
-            if room.player_count == 0 or (
-                room.player_count > 0
-                and all(slot.is_bot for slot in room.slots if slot)
-            ):
-                room_closed = True
 
             # Save or delete room
             if room_closed:
@@ -153,14 +159,13 @@ class LeaveRoomUseCase(UseCase[LeaveRoomRequest, LeaveRoomResponse]):
                 room_id=room.room_id,
                 player_id=request.player_id,
                 player_name=player_slot.name,
+                player_slot=f"P{slot_index + 1}",
                 reason=request.reason or "Player left",
-                remaining_players=room.player_count if not room_closed else 0,
-                converted_to_bot=room.game is not None,
             )
             await self._event_publisher.publish(event)
 
-            # Emit HostChanged if needed
-            if new_host_id:
+            # Emit HostChanged if needed (only if room is not being closed)
+            if new_host_id and not room_closed:
                 new_host = next(
                     (
                         slot
@@ -176,6 +181,7 @@ class LeaveRoomUseCase(UseCase[LeaveRoomRequest, LeaveRoomResponse]):
                         metadata=EventMetadata(user_id=request.user_id),
                         room_id=room.room_id,
                         old_host_id=request.player_id,
+                        old_host_name=player_slot.name,
                         new_host_id=new_host_id,
                         new_host_name=new_host.name,
                         reason="Previous host left room",
@@ -187,12 +193,12 @@ class LeaveRoomUseCase(UseCase[LeaveRoomRequest, LeaveRoomResponse]):
                 close_event = RoomClosed(
                     metadata=EventMetadata(user_id=request.user_id),
                     room_id=room.room_id,
-                    room_code=room.room_id,
                     reason=(
                         "All players left"
-                        if room.player_count == 0
+                        if (room.get_human_count() + room.get_bot_count()) == 0
                         else "Only bots remain"
                     ),
+                    final_player_count=room.get_human_count() + room.get_bot_count(),
                 )
                 await self._event_publisher.publish(close_event)
 

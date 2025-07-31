@@ -194,13 +194,13 @@ const LobbyPage = () => {
   };
 
   const canJoinRoom = (room) => {
-    // Use players array if available, fallback to occupied_slots
-    const playerCount = room.players
-      ? room.players.filter((player) => player !== null).length
-      : room.occupied_slots || 0;
-    const maxPlayers = room.total_slots || 4;
+    // Count human players only - bots can be replaced
+    const humanPlayerCount = room.players
+      ? room.players.filter((player) => player !== null && !player.is_bot).length
+      : 0;
+    const maxPlayers = room.max_players || 4;
 
-    return !room.started && playerCount < maxPlayers;
+    return !room.game_in_progress && humanPlayerCount < maxPlayers;
   };
 
   const [isRefreshing, setIsRefreshing] = useState(false);
@@ -244,7 +244,7 @@ const LobbyPage = () => {
   }, []);
 
   const renderRoomCard = (room) => {
-    const playerCount = room.players?.filter((p) => p !== null).length || 0;
+    const humanPlayerCount = room.players?.filter((p) => p !== null && !p.is_bot).length || 0;
     const canJoin = canJoinRoom(room);
     const roomId = room.room_id || room.id;
 
@@ -265,9 +265,9 @@ const LobbyPage = () => {
             </span>
           </div>
           <div
-            className={`lp-roomOccupancy ${playerCount === 4 ? 'lp-full' : ''}`}
+            className={`lp-roomOccupancy ${humanPlayerCount === 4 ? 'lp-full' : ''}`}
           >
-            {playerCount}/4
+            {humanPlayerCount}/4
           </div>
         </div>
 

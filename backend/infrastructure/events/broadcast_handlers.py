@@ -442,6 +442,25 @@ async def handle_player_left_room(event: PlayerLeftRoom):
         )
 
 
+@event_handler(RoomClosed, priority=100)
+async def handle_room_closed(event: RoomClosed):
+    """Broadcast room closure to all participants."""
+    logger.info(f"[BROADCAST_DEBUG] Broadcasting room_closed for room {event.room_id}")
+    
+    # Broadcast to all participants in the room that it's being closed
+    await broadcast(
+        event.room_id,
+        "room_closed",
+        {
+            "room_id": event.room_id,
+            "reason": event.reason,
+            "message": f"Room closed: {event.reason}",
+            "final_player_count": event.final_player_count,
+        },
+    )
+    logger.info(f"Room {event.room_id} closed: {event.reason}")
+
+
 @event_handler(HostChanged, priority=100)
 async def handle_host_changed(event: HostChanged):
     """Broadcast host change."""

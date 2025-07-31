@@ -299,6 +299,7 @@ export interface StateChangeEvent {
 }
 
 export type GameEventType =
+  | 'game_started'
   | 'phase_change'
   | 'weak_hands_found'
   | 'redeal_decision_needed'
