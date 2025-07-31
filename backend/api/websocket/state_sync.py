@@ -101,10 +101,8 @@ class GameStateSync:
             if player.name == reconnecting_player:
                 hand_data = [
                     {
-                        "rank": piece.rank,
-                        "suit": piece.suit,
-                        "display": str(piece),
-                        "value": piece.value,
+                        "kind": piece.kind,
+                        "value": piece.point,
                     }
                     for piece in (player.hand or [])
                 ]

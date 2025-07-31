@@ -8,6 +8,7 @@ from typing import List, Dict, Optional, Tuple
 from dataclasses import dataclass, field
 from enum import Enum
 import random
+import logging
 
 from domain.entities.player import Player
 from domain.value_objects.piece import Piece
@@ -25,6 +26,8 @@ from domain.events.game_events import (
     PhaseChanged,
     TurnWinnerDetermined,
 )
+
+logger = logging.getLogger(__name__)
 
 
 class GamePhase(Enum):
@@ -139,16 +142,8 @@ class Game:
             )
         )
 
-        self._emit_event(
-            PhaseChanged(
-                room_id=self.room_id,
-                old_phase=GamePhase.NOT_STARTED.value,
-                new_phase=GamePhase.PREPARATION.value,
-                round_number=self.round_number,
-                turn_number=self.turn_number,
-                metadata=EventMetadata(),
-            )
-        )
+        # Don't emit PhaseChanged here - it will be emitted after start_round()
+        # when players actually have hands
 
     def start_round(self) -> None:
         """Start a new round."""
@@ -181,16 +176,22 @@ class Game:
             )
         )
 
+        # Log before emitting PiecesDealt event
+        pieces_dealt_data = {p.name: [pc.kind for pc in p.hand] for p in self.players}
+        logger.info(
+            f"[GAME_EVENT_DEBUG] Emitting PiecesDealt event for round {self.round_number} with pieces: {pieces_dealt_data}"
+        )
+
         self._emit_event(
             PiecesDealt(
                 room_id=self.room_id,
                 round_number=self.round_number,
-                player_pieces={
-                    p.name: [pc.kind for pc in p.hand] for p in self.players
-                },
+                player_pieces=pieces_dealt_data,
                 metadata=EventMetadata(),
             )
         )
+
+        logger.info("[GAME_EVENT_DEBUG] PiecesDealt event emitted successfully")
 
         # Check for weak hands
         weak_players = self.get_weak_hand_players()
@@ -203,6 +204,43 @@ class Game:
                     metadata=EventMetadata(),
                 )
             )
+
+        # Now emit PhaseChanged with hand data
+        phase_data = {
+            "phase": self.current_phase.value,
+            "round": self.round_number,
+            "players": {},
+        }
+
+        # Add player hands to phase_data
+        for player in self.players:
+            hand_data = (
+                [{"value": piece.point, "kind": piece.kind} for piece in player.hand]
+                if player.hand
+                else []
+            )
+            phase_data["players"][player.name] = {"hand": hand_data}
+            logger.info(
+                f"[GAME_EVENT_DEBUG] Player {player.name} has {len(hand_data)} pieces in hand"
+            )
+
+        logger.info(
+            f"[GAME_EVENT_DEBUG] Emitting PhaseChanged event to PREPARATION with phase_data: {phase_data}"
+        )
+
+        self._emit_event(
+            PhaseChanged(
+                room_id=self.room_id,
+                old_phase=GamePhase.NOT_STARTED.value,
+                new_phase=self.current_phase.value,
+                round_number=self.round_number,
+                turn_number=self.turn_number,
+                phase_data=phase_data,
+                metadata=EventMetadata(),
+            )
+        )
+
+        logger.info("[GAME_EVENT_DEBUG] PhaseChanged event emitted successfully")
 
     def get_weak_hand_players(self) -> List[Dict]:
         """Find players with weak hands (no piece > 9 points)."""

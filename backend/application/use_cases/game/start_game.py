@@ -30,6 +30,7 @@ from domain.events.game_events import (
     PhaseChanged,
 )
 from domain.events.base import EventMetadata
+
 # PropertyMapper import removed - using direct attribute access
 
 logger = logging.getLogger(__name__)
@@ -88,10 +89,7 @@ class StartGameUseCase(UseCase[StartGameRequest, StartGameResponse]):
                 raise ResourceNotFoundException("Room", request.room_id)
 
             # Verify requester is host
-            if (
-                room.host_id
-                != request.requesting_player_id
-            ):
+            if room.host_id != request.requesting_player_id:
                 raise AuthorizationException("start game", f"room {request.room_id}")
 
             # Check if game already in progress
@@ -140,8 +138,26 @@ class StartGameUseCase(UseCase[StartGameRequest, StartGameResponse]):
                 # Using defaults for win condition as they are set in the dataclass
             )
 
-            # Start the game 
+            # Start the game
+            logger.info(f"[START_GAME_DEBUG] Starting game for room {room.room_id}")
             game.start_game()
+
+            # Start the first round (deals cards to players)
+            logger.info(
+                f"[START_GAME_DEBUG] Starting round 1, dealing cards to {len(game.players)} players"
+            )
+            game.start_round()
+
+            # Publish all domain events from the game
+            logger.info(
+                f"[START_GAME_DEBUG] Publishing {len(game.events)} domain events"
+            )
+            for event in game.events:
+                logger.info(
+                    f"[START_GAME_DEBUG] Publishing event: {type(event).__name__}"
+                )
+                await self._event_publisher.publish(event)
+            game.clear_events()
 
             # Update room status to IN_GAME and set game reference
             room.status = RoomStatus.IN_GAME
@@ -175,7 +191,9 @@ class StartGameUseCase(UseCase[StartGameRequest, StartGameResponse]):
                 room_id=room.room_id,
                 round_number=1,
                 starter_name=starting_player.name,
-                player_hands={p.name: [piece.kind for piece in p.hand] for p in game.players},
+                player_hands={
+                    p.name: [piece.kind for piece in p.hand] for p in game.players
+                },
             )
             await self._event_publisher.publish(round_started)
 
@@ -188,30 +206,37 @@ class StartGameUseCase(UseCase[StartGameRequest, StartGameResponse]):
             )
             await self._event_publisher.publish(pieces_dealt)
 
-            # Emit PhaseChanged event to trigger frontend phase transition
-            phase_changed = PhaseChanged(
-                metadata=EventMetadata(user_id=request.user_id),
-                room_id=room.room_id,
-                old_phase="waiting",
-                new_phase=game.current_phase.value if hasattr(game.current_phase, "value") else str(game.current_phase),
-                round_number=game.round_number,
-                turn_number=game.turn_number,
-                phase_data={
-                    "players": [{"name": p.name, "id": p.id, "score": p.score, "hand_size": len(p.hand)} for p in game.players],
-                    "my_hand": {p.id: [{"value": piece.value, "kind": piece.kind} for piece in p.hand] for p in game.players},
-                    "current_player": starting_player.name,
-                    "game_settings": {
-                        "max_score": game.max_score,
-                        "max_rounds": game.max_rounds,
-                        "win_condition": "first_to_reach_50"
-                    }
-                }
-            )
-            await self._event_publisher.publish(phase_changed)
+            # COMMENTED OUT: PhaseChanged event is now handled by the state machine's auto-broadcast
+            # The state machine will automatically broadcast phase changes with the correct hand data
+            # from base_state.py when the preparation phase is entered
+
+            # # Emit PhaseChanged event to trigger frontend phase transition
+            # phase_changed = PhaseChanged(
+            #     metadata=EventMetadata(user_id=request.user_id),
+            #     room_id=room.room_id,
+            #     old_phase="waiting",
+            #     new_phase=game.current_phase.value if hasattr(game.current_phase, "value") else str(game.current_phase),
+            #     round_number=game.round_number,
+            #     turn_number=game.turn_number,
+            #     phase_data={
+            #         "players": [{"name": p.name, "id": p.id, "score": p.score, "hand_size": len(p.hand)} for p in game.players],
+            #         "my_hand": {p.id: [{"value": piece.value, "kind": piece.kind} for piece in p.hand] for p in game.players},
+            #         "current_player": starting_player.name,
+            #         "game_settings": {
+            #             "max_score": game.max_score,
+            #             "max_rounds": game.max_rounds,
+            #             "win_condition": "first_to_reach_50"
+            #         }
+            #     }
+            # )
+            # await self._event_publisher.publish(phase_changed)
 
             # Emit WeakHandDetected event if any weak hands
             if weak_hands:
-                weak_hand_players = [next(p.name for p in game.players if p.id == player_id) for player_id in weak_hands]
+                weak_hand_players = [
+                    next(p.name for p in game.players if p.id == player_id)
+                    for player_id in weak_hands
+                ]
                 weak_hand_event = WeakHandDetected(
                     metadata=EventMetadata(user_id=request.user_id),
                     room_id=room.room_id,
@@ -227,7 +252,11 @@ class StartGameUseCase(UseCase[StartGameRequest, StartGameResponse]):
                     tags={
                         "player_count": str(len(game_players)),
                         "has_bots": str(any(p.is_bot for p in game_players)).lower(),
-                        "win_condition": getattr(room.settings, "win_condition_type", "pile_count") if hasattr(room, "settings") else "pile_count",
+                        "win_condition": (
+                            getattr(room.settings, "win_condition_type", "pile_count")
+                            if hasattr(room, "settings")
+                            else "pile_count"
+                        ),
                         "weak_hands": str(len(weak_hands)),
                     },
                 )
@@ -263,7 +292,11 @@ class StartGameUseCase(UseCase[StartGameRequest, StartGameResponse]):
             room_id=room_id,
             round_number=game.round_number,
             turn_number=game.turn_number,
-            phase=game.current_phase.value if hasattr(game.current_phase, "value") else str(game.current_phase),
+            phase=(
+                game.current_phase.value
+                if hasattr(game.current_phase, "value")
+                else str(game.current_phase)
+            ),
             current_player_id=getattr(game, "current_player_id", None),
             player_scores={p.id: p.score for p in game.players},
             pieces_remaining={p.id: len(p.hand) for p in game.players},
@@ -274,7 +307,7 @@ class StartGameUseCase(UseCase[StartGameRequest, StartGameResponse]):
         hands = {}
         for player in game.players:
             hands[player.id] = [
-                PieceInfo(value=piece.value, kind=piece.kind) for piece in player.hand
+                PieceInfo(value=piece.point, kind=piece.kind) for piece in player.hand
             ]
         return hands
 

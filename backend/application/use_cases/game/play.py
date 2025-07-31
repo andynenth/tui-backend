@@ -313,7 +313,7 @@ class PlayUseCase(UseCase[PlayRequest, PlayResponse]):
         for piece in pieces:
             found = False
             for i, p in enumerate(player_pieces):
-                if p.value == piece.value and p.kind == piece.kind:
+                if p.point == piece.point and p.kind == piece.kind:
                     player_pieces.pop(i)
                     found = True
                     break

@@ -82,6 +82,14 @@ export class GameService extends EventTarget {
       throw new Error('GameService has been destroyed');
     }
 
+    // 🎯 FIX: Check if already connected to the same room with same player
+    if (this.state.roomId === roomId && 
+        this.state.playerName === playerName && 
+        this.state.isConnected) {
+      console.log(`🎮 GameService: Already connected to room ${roomId} as ${playerName}, skipping reconnection`);
+      return;
+    }
+
     try {
       // Set room ID and player name immediately so events can be processed
       this.setState(
@@ -93,8 +101,17 @@ export class GameService extends EventTarget {
         'JOIN_ROOM_INIT'
       );
 
-      // Connect to room via NetworkService
-      await networkService.connectToRoom(roomId, { playerName });
+      // 🎯 FIX: Check NetworkService connection status before connecting
+      const connectionStatus = networkService.getConnectionStatus(roomId);
+      console.log(`🎮 GameService: Current NetworkService connection status for ${roomId}:`, connectionStatus);
+      
+      if (!connectionStatus.connected) {
+        console.log(`🎮 GameService: NetworkService not connected to ${roomId}, connecting...`);
+        // Connect to room via NetworkService
+        await networkService.connectToRoom(roomId, { playerName });
+      } else {
+        console.log(`🎮 GameService: NetworkService already connected to ${roomId}, skipping connection`);
+      }
 
       // Update connection state
       this.setState(
@@ -553,12 +570,18 @@ export class GameService extends EventTarget {
       eventType: event.type,
       roomId,
       currentRoomId: this.state.roomId,
+      isConnected: this.state.isConnected,
       data
     });
 
     // Only process events for our room
     if (roomId !== this.state.roomId) {
-      console.log(`🔍 [DEBUG] Ignoring event - room mismatch: ${roomId} !== ${this.state.roomId}`);
+      console.log(`🔍 [DEBUG] Ignoring event - room mismatch: ${roomId} !== ${this.state.roomId}`, {
+        eventRoomId: roomId,
+        stateRoomId: this.state.roomId,
+        isConnected: this.state.isConnected,
+        eventType: event.type
+      });
       return;
     }
 
@@ -594,6 +617,7 @@ export class GameService extends EventTarget {
         break;
 
       case 'phase_change':
+        console.log(`🔍 [DEBUG] Calling handlePhaseChange with data:`, data);
         newState = this.handlePhaseChange(newState, data);
         break;
 
@@ -682,36 +706,78 @@ export class GameService extends EventTarget {
   private handlePhaseChange(state: GameState, data: any): GameState {
     const newState = { ...state };
 
+    console.log('📡 GameService.handlePhaseChange received:', data);
+    console.log('   data.phase:', data.phase);
+    console.log('   data.players:', data.players);
+    console.log('   data.phase_data:', data.phase_data);
+    console.log('   data.phase_data?.players:', data.phase_data?.players);
+    console.log('   state.playerName:', state.playerName);
+
     // 🎯 FIX: Normalize phase to lowercase to match frontend expectations
     newState.phase = data.phase ? data.phase.toLowerCase() : 'waiting';
     newState.currentRound = data.round || state.currentRound;
 
     // Extract my hand from players data (sent by backend)
+    // Check both data.players and data.phase_data.players
+    let myPlayerData = null;
+    
     if (data.players && state.playerName && data.players[state.playerName]) {
-      const myPlayerData = data.players[state.playerName];
+      myPlayerData = data.players[state.playerName];
+      console.log('   Found player data in data.players');
+    } else if (data.phase_data?.players && state.playerName && data.phase_data.players[state.playerName]) {
+      myPlayerData = data.phase_data.players[state.playerName];
+      console.log('   Found player data in data.phase_data.players');
+    }
+    
+    if (myPlayerData) {
+      console.log('   myPlayerData:', myPlayerData);
+      console.log('   myPlayerData.hand:', myPlayerData.hand);
       if (myPlayerData.hand) {
-        // Convert string pieces back to objects for frontend with original indices
+        // Convert hand data to frontend format with original indices
         const unsortedHand = myPlayerData.hand.map(
-          (pieceStr: string, index: number) => {
-            // Parse piece strings like "ELEPHANT_RED(10)" into objects
-            const match = pieceStr.match(/^(.+)\((\d+)\)$/);
-            if (match) {
-              const [, name, value] = match;
-              const [piece, color] = name.split('_');
+          (piece: any, index: number) => {
+            // Check if piece is already an object with value and kind
+            if (typeof piece === 'object' && piece.value !== undefined && piece.kind) {
+              // New format from backend: {value: number, kind: string}
+              const color = piece.kind.includes('RED') ? 'red' : 'black';
+              const pieceName = piece.kind.split('_')[0]; // e.g., "GENERAL_RED" -> "GENERAL"
+              console.log(`   Converting piece: ${piece.kind} (value: ${piece.value}) -> kind: ${pieceName}, color: ${color}`);
               return {
-                kind: piece, // Keep uppercase "GENERAL"
-                color: color.toLowerCase() as 'red' | 'black', // Convert to lowercase for type compatibility
-                value: parseInt(value),
-                displayName: `${piece} ${color}`,
+                kind: piece.kind, // IMPORTANT: PreparationUI expects the full kind like "SOLDIER_RED"
+                color: color as 'red' | 'black',
+                value: piece.value,
+                displayName: `${pieceName} ${color.toUpperCase()}`,
+                originalIndex: index, // Store the original index before sorting
+              };
+            } else if (typeof piece === 'string') {
+              // Old format: string pieces like "ELEPHANT_RED(10)"
+              const match = piece.match(/^(.+)\((\d+)\)$/);
+              if (match) {
+                const [, name, value] = match;
+                const [pieceName, color] = name.split('_');
+                return {
+                  kind: pieceName, // Keep uppercase "GENERAL"
+                  color: color.toLowerCase() as 'red' | 'black', // Convert to lowercase for type compatibility
+                  value: parseInt(value),
+                  displayName: `${pieceName} ${color}`,
+                  originalIndex: index, // Store the original index before sorting
+                };
+              }
+              return {
+                kind: 'UNKNOWN',
+                color: 'red' as 'red' | 'black', // Default to red for unknown pieces
+                value: 0,
+                displayName: piece,
                 originalIndex: index, // Store the original index before sorting
               };
             }
+            // Fallback for unexpected data
             return {
               kind: 'UNKNOWN',
-              color: 'red' as 'red' | 'black', // Default to red for unknown pieces
+              color: 'red' as 'red' | 'black',
               value: 0,
-              displayName: pieceStr,
-              originalIndex: index, // Store the original index before sorting
+              displayName: String(piece),
+              originalIndex: index,
             };
           }
         );
@@ -725,6 +791,9 @@ export class GameService extends EventTarget {
           // Then sort by value (high to low)
           return (b.value || 0) - (a.value || 0);
         });
+        
+        console.log('   Final myHand after processing:', newState.myHand);
+        console.log('   myHand length:', newState.myHand.length);
       }
     }
 

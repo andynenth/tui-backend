@@ -89,8 +89,16 @@ export class NetworkService extends EventTarget {
       throw new Error('Room ID is required');
     }
 
-    // Close existing connection to this room
+    // 🎯 FIX: Check if already connected to this room
+    const existingConnection = this.connections.get(roomId);
+    if (existingConnection && existingConnection.websocket?.readyState === WebSocket.OPEN) {
+      console.log(`🌐 NetworkService: Already connected to room ${roomId}, returning existing connection`);
+      return existingConnection.websocket;
+    }
+
+    // Close existing connection to this room if not open
     if (this.connections.has(roomId)) {
+      console.log(`🌐 NetworkService: Closing stale connection to room ${roomId}`);
       await this.disconnectFromRoom(roomId);
     }
 

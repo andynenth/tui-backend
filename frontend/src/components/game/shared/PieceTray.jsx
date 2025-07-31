@@ -26,6 +26,13 @@ const PieceTray = ({
   animationType = 'bounce',
   className = '',
 }) => {
+  // Debug logging
+  console.log('🃏 PieceTray received pieces:', pieces);
+  console.log('   pieces length:', pieces.length);
+  if (pieces.length > 0) {
+    console.log('   first piece:', pieces[0]);
+  }
+  
   // Build container class names
   const containerClasses = [
     'piece-tray',
@@ -101,7 +108,7 @@ const PieceTray = ({
 PieceTray.propTypes = {
   pieces: PropTypes.arrayOf(
     PropTypes.shape({
-      type: PropTypes.string,
+      kind: PropTypes.string,
       color: PropTypes.string,
       value: PropTypes.number,
     })

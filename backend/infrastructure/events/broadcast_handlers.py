@@ -299,7 +299,11 @@ async def handle_player_left_room(event: PlayerLeftRoom):
                             is_bot=slot.is_bot,
                             is_host=slot.name
                             == room.host_name,  # Explicit host detection
-                            status=PlayerStatus.CONNECTED if getattr(slot, "is_connected", True) else PlayerStatus.DISCONNECTED,
+                            status=(
+                                PlayerStatus.CONNECTED
+                                if getattr(slot, "is_connected", True)
+                                else PlayerStatus.DISCONNECTED
+                            ),
                             seat_position=i,
                         )
                         players_info.append(player_info)
@@ -329,7 +333,10 @@ async def handle_player_left_room(event: PlayerLeftRoom):
                 # Build players array maintaining slot positions
                 players_array = [None] * 4  # Initialize with 4 None slots
                 for player_info in room_info.players:
-                    if player_info.seat_position is not None and 0 <= player_info.seat_position < 4:
+                    if (
+                        player_info.seat_position is not None
+                        and 0 <= player_info.seat_position < 4
+                    ):
                         players_array[player_info.seat_position] = {
                             "player_id": player_info.player_id,
                             "name": player_info.player_name,
@@ -337,7 +344,7 @@ async def handle_player_left_room(event: PlayerLeftRoom):
                             "is_host": player_info.is_host,
                             "seat_position": player_info.seat_position,
                         }
-                
+
                 formatted_room = {
                     "room_id": room_info.room_id,
                     "room_code": room_info.room_code,
@@ -348,7 +355,11 @@ async def handle_player_left_room(event: PlayerLeftRoom):
                     "max_players": room_info.max_players,
                     "game_in_progress": room_info.game_in_progress,
                     "started": room_info.game_in_progress,
-                    "status": room_info.status.value if hasattr(room_info.status, "value") else str(room_info.status),
+                    "status": (
+                        room_info.status.value
+                        if hasattr(room_info.status, "value")
+                        else str(room_info.status)
+                    ),
                 }
 
                 # Add timestamp for event tracking
@@ -446,7 +457,7 @@ async def handle_player_left_room(event: PlayerLeftRoom):
 async def handle_room_closed(event: RoomClosed):
     """Broadcast room closure to all participants."""
     logger.info(f"[BROADCAST_DEBUG] Broadcasting room_closed for room {event.room_id}")
-    
+
     # Broadcast to all participants in the room that it's being closed
     await broadcast(
         event.room_id,
@@ -626,7 +637,11 @@ async def handle_player_removed(event: PlayerRemoved):
                             is_bot=slot.is_bot,
                             is_host=slot.name
                             == room.host_name,  # Explicit host detection
-                            status=PlayerStatus.CONNECTED if getattr(slot, "is_connected", True) else PlayerStatus.DISCONNECTED,
+                            status=(
+                                PlayerStatus.CONNECTED
+                                if getattr(slot, "is_connected", True)
+                                else PlayerStatus.DISCONNECTED
+                            ),
                             seat_position=i,
                         )
                         players_info.append(player_info)
@@ -656,7 +671,10 @@ async def handle_player_removed(event: PlayerRemoved):
                 # Build players array maintaining slot positions
                 players_array = [None] * 4  # Initialize with 4 None slots
                 for player_info in room_info.players:
-                    if player_info.seat_position is not None and 0 <= player_info.seat_position < 4:
+                    if (
+                        player_info.seat_position is not None
+                        and 0 <= player_info.seat_position < 4
+                    ):
                         players_array[player_info.seat_position] = {
                             "player_id": player_info.player_id,
                             "name": player_info.player_name,
@@ -664,7 +682,7 @@ async def handle_player_removed(event: PlayerRemoved):
                             "is_host": player_info.is_host,
                             "seat_position": player_info.seat_position,
                         }
-                
+
                 formatted_room = {
                     "room_id": room_info.room_id,
                     "room_code": room_info.room_code,
@@ -675,7 +693,11 @@ async def handle_player_removed(event: PlayerRemoved):
                     "max_players": room_info.max_players,
                     "game_in_progress": room_info.game_in_progress,
                     "started": room_info.game_in_progress,
-                    "status": room_info.status.value if hasattr(room_info.status, "value") else str(room_info.status),
+                    "status": (
+                        room_info.status.value
+                        if hasattr(room_info.status, "value")
+                        else str(room_info.status)
+                    ),
                 }
 
                 # Add timestamp for event tracking
@@ -794,6 +816,21 @@ async def handle_game_started(event: GameStarted):
 @event_handler(PhaseChanged, priority=100)
 async def handle_phase_changed(event: PhaseChanged):
     """Broadcast phase change - this is the main game state update."""
+    logger.info(
+        f"[BROADCAST_DEBUG] Broadcasting phase_change event: {event.old_phase} -> {event.new_phase}"
+    )
+    logger.info(
+        f"[BROADCAST_DEBUG] Phase data keys: {list(event.phase_data.keys()) if event.phase_data else 'None'}"
+    )
+
+    # Log player hands if present
+    if event.phase_data and "players" in event.phase_data:
+        for player_name, player_data in event.phase_data["players"].items():
+            hand_size = len(player_data.get("hand", [])) if player_data else 0
+            logger.info(
+                f"[BROADCAST_DEBUG] Player {player_name} has {hand_size} pieces"
+            )
+
     await broadcast(
         event.room_id,
         "phase_change",
@@ -803,6 +840,10 @@ async def handle_phase_changed(event: PhaseChanged):
             "phase_data": event.phase_data,
             "timestamp": datetime.utcnow().timestamp(),
         },
+    )
+
+    logger.info(
+        f"[BROADCAST_DEBUG] phase_change event broadcast complete for room {event.room_id}"
     )
 
 

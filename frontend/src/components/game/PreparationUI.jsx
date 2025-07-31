@@ -45,6 +45,11 @@ export function PreparationUI({
   onAcceptRedeal,
   onDeclineRedeal,
 }) {
+  // Debug log to check what data is received
+  console.log('🎴 PreparationUI received myHand:', myHand);
+  console.log('   myHand length:', myHand.length);
+  console.log('   myHand data:', JSON.stringify(myHand));
+  
   // Simply pass all props through to PreparationContent
   return (
     <PreparationContent
@@ -75,7 +80,7 @@ PreparationUI.propTypes = {
   // Data props
   myHand: PropTypes.arrayOf(
     PropTypes.shape({
-      type: PropTypes.string.isRequired,
+      kind: PropTypes.string.isRequired,
       color: PropTypes.oneOf(['red', 'black']).isRequired,
       value: PropTypes.number.isRequired,
     })
