@@ -703,21 +703,39 @@ export class GameService extends EventTarget {
       }
     }
 
-    // Convert players dictionary to array for UI components
+    // Convert players data to array for UI components (handle both array and object formats)
     if (data.players) {
-      newState.players = Object.entries(data.players).map(
-        ([playerName, playerData]: [string, any]) => ({
-          name: playerName, // Use the key as the name
+      if (Array.isArray(data.players)) {
+        // Players data is already an array
+        newState.players = data.players.map((playerData: any) => ({
+          name: playerData.name,
           score: playerData.score || 0,
           is_bot: playerData.is_bot || false,
           is_host: playerData.is_host || false,
-          avatar_color: playerData.avatar_color || null, // Include avatar_color!
+          avatar_color: playerData.avatar_color || null,
           zero_declares_in_a_row: playerData.zero_declares_in_a_row || 0,
-          hand_size: playerData.hand_size || 0, // Include hand_size from backend
+          hand_size: playerData.hand_size || 0,
           captured_piles: playerData.captured_piles || 0,
           declared: playerData.declared || 0,
-        })
-      );
+        }));
+      } else if (typeof data.players === 'object' && data.players !== null) {
+        // Players data is a dictionary/object - convert to array
+        newState.players = Object.entries(data.players).map(
+          ([playerName, playerData]: [string, any]) => ({
+            name: playerName, // Use the key as the name
+            score: playerData.score || 0,
+            is_bot: playerData.is_bot || false,
+            is_host: playerData.is_host || false,
+            avatar_color: playerData.avatar_color || null,
+            zero_declares_in_a_row: playerData.zero_declares_in_a_row || 0,
+            hand_size: playerData.hand_size || 0,
+            captured_piles: playerData.captured_piles || 0,
+            declared: playerData.declared || 0,
+          })
+        );
+      } else {
+        console.warn('🚫 [GameService] data.players is neither array nor object:', typeof data.players, data.players);
+      }
     }
 
     // Extract phase-specific data
@@ -725,7 +743,7 @@ export class GameService extends EventTarget {
       const phaseData: PhaseData = data.phase_data;
 
       // Update players list (prefer backend phase_data over data.players for player metadata)
-      if (phaseData.players) {
+      if (phaseData.players && Array.isArray(phaseData.players)) {
         // Merge phase_data players with existing player data to preserve zero_declares_in_a_row
         const existingPlayersMap = new Map(
           newState.players.map((p) => [p.name, p])
@@ -754,6 +772,8 @@ export class GameService extends EventTarget {
         newState.disconnectedPlayers = newState.players
           .filter((p) => p.is_bot && p.original_is_bot === false)
           .map((p) => p.name);
+      } else if (phaseData.players) {
+        console.warn('🚫 [GameService] phaseData.players is not an array:', typeof phaseData.players, phaseData.players);
       }
 
       // Phase-specific updates
@@ -1077,11 +1097,15 @@ export class GameService extends EventTarget {
       }));
     }
     
-    // Don't set phase here - wait for phase_change event
-    // newState.phase will be updated by handlePhaseChange when the backend sends the initial phase_change event
+    // 🎯 FIX: Set phase to a transitional state so GamePage shows proper loading instead of stuck "waiting"
+    // This prevents the "stuck on waiting page" issue after game start
+    newState.phase = 'preparation'; // Start with preparation phase as default, will be updated by phase_change event
+    
+    // Clear any previous error state since game is starting
+    newState.error = null;
     
     console.log(`🎮 Game started! Round: ${newState.currentRound}, Players: ${data.players?.length || 0}`);
-    console.log('🎮 Note: Waiting for phase_change event to set detailed game state');
+    console.log('🎮 Setting initial phase to "preparation" - will be updated by phase_change event');
     return newState;
   }
 

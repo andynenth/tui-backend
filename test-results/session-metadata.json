@@ -1,0 +1,20 @@
+{
+  "testSuiteStart": "2025-07-31T05:07:07.757Z",
+  "setupDuration": 2,
+  "playwrightVersion": "1.54.1",
+  "nodeVersion": "v23.11.0",
+  "testEnvironment": {
+    "baseURL": "http://localhost:5050",
+    "workers": 1
+  },
+  "testCategories": [
+    "game-start-flow",
+    "websocket-validation",
+    "regression-tests"
+  ],
+  "swarmCoordination": {
+    "agent": "PlaywrightTester",
+    "role": "Bug reproduction and fix validation",
+    "memoryEnabled": true
+  }
+}

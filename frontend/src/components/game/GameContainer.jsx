@@ -349,6 +349,16 @@ export function GameContainer({ roomId, onNavigateToLobby }) {
       {(() => {
         switch (gameState.phase) {
           case 'preparation':
+            // 🎯 FIX: Check if we have actual preparation data or if we're in transition
+            // If we don't have key preparation data (like myHand), show loading state
+            if (!preparationProps || !gameState.myHand || gameState.myHand.length === 0) {
+              return (
+                <WaitingUI
+                  {...waitingProps}
+                  message="Starting game... Loading your cards..."
+                />
+              );
+            }
             return (
               <GameLayout
                 phase="preparation"

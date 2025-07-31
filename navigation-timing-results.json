@@ -1,0 +1,750 @@
+{
+  "startTime": 1753939422930,
+  "roomCreated": 1753939427571,
+  "startGameClicked": 1753939429491,
+  "waitingPageSeen": 1753939429757,
+  "gamePageReached": 1753939429725,
+  "events": [
+    {
+      "direction": "sent",
+      "event": "client_ready",
+      "timestamp": 1753939425357,
+      "relativeTime": 2427,
+      "data": {
+        "event": "client_ready",
+        "data": {
+          "room_id": "lobby",
+          "is_reconnection": false
+        },
+        "sequence": 1,
+        "timestamp": 1753939425353,
+        "id": "7612c78a-db11-4d04-bd3c-75ca8dfcd397"
+      }
+    },
+    {
+      "direction": "sent",
+      "event": "get_rooms",
+      "timestamp": 1753939425359,
+      "relativeTime": 2429,
+      "data": {
+        "event": "get_rooms",
+        "data": {},
+        "sequence": 2,
+        "timestamp": 1753939425355,
+        "id": "91e92436-a007-413b-a512-8653e2c1efd3"
+      }
+    },
+    {
+      "direction": "received",
+      "event": "client_ready_ack",
+      "timestamp": 1753939425373,
+      "relativeTime": 2443,
+      "data": {
+        "event": "client_ready_ack",
+        "data": {
+          "success": true,
+          "ready": true,
+          "room_state": null
+        }
+      }
+    },
+    {
+      "direction": "received",
+      "event": "room_list_update",
+      "timestamp": 1753939425373,
+      "relativeTime": 2443,
+      "data": {
+        "event": "room_list_update",
+        "data": {
+          "rooms": [],
+          "total_count": 0
+        }
+      }
+    },
+    {
+      "direction": "sent",
+      "event": "client_ready",
+      "timestamp": 1753939427423,
+      "relativeTime": 4493,
+      "data": {
+        "event": "client_ready",
+        "data": {
+          "room_id": "lobby",
+          "is_reconnection": false
+        },
+        "sequence": 1,
+        "timestamp": 1753939427420,
+        "id": "d2000c79-a746-45fe-b9a8-5c0014fa4989"
+      }
+    },
+    {
+      "direction": "received",
+      "event": "client_ready_ack",
+      "timestamp": 1753939427423,
+      "relativeTime": 4493,
+      "data": {
+        "event": "client_ready_ack",
+        "data": {
+          "success": true,
+          "ready": true,
+          "room_state": null
+        }
+      }
+    },
+    {
+      "direction": "sent",
+      "event": "create_room",
+      "timestamp": 1753939427509,
+      "relativeTime": 4579,
+      "data": {
+        "event": "create_room",
+        "data": {
+          "player_name": "TimingTestPlayer"
+        },
+        "sequence": 2,
+        "timestamp": 1753939427508,
+        "id": "a8bf8dd0-665a-4058-8f33-0cb3828984bf"
+      }
+    },
+    {
+      "direction": "received",
+      "event": "room_list_update",
+      "timestamp": 1753939427516,
+      "relativeTime": 4586,
+      "data": {
+        "event": "room_list_update",
+        "data": {
+          "rooms": [
+            {
+              "room_id": "L6WJJE",
+              "room_code": "L6WJJE",
+              "room_name": "TimingTestPlayer's Room",
+              "host_name": "TimingTestPlayer",
+              "player_count": 4,
+              "max_players": 4,
+              "game_in_progress": false,
+              "is_private": false,
+              "players": [
+                {
+                  "name": "TimingTestPlayer",
+                  "is_bot": false
+                },
+                {
+                  "name": "Bot 2",
+                  "is_bot": true
+                },
+                {
+                  "name": "Bot 3",
+                  "is_bot": true
+                },
+                {
+                  "name": "Bot 4",
+                  "is_bot": true
+                }
+              ]
+            }
+          ],
+          "timestamp": 6644.209
+        }
+      }
+    },
+    {
+      "direction": "received",
+      "event": "room_list_update",
+      "timestamp": 1753939427518,
+      "relativeTime": 4588,
+      "data": {
+        "event": "room_list_update",
+        "data": {
+          "rooms": [
+            {
+              "room_id": "L6WJJE",
+              "room_code": "L6WJJE",
+              "room_name": "TimingTestPlayer's Room",
+              "host_name": "TimingTestPlayer",
+              "player_count": 4,
+              "max_players": 4,
+              "game_in_progress": false,
+              "is_private": false,
+              "players": [
+                {
+                  "name": "TimingTestPlayer",
+                  "is_bot": false
+                },
+                {
+                  "name": "Bot 2",
+                  "is_bot": true
+                },
+                {
+                  "name": "Bot 3",
+                  "is_bot": true
+                },
+                {
+                  "name": "Bot 4",
+                  "is_bot": true
+                }
+              ]
+            }
+          ],
+          "timestamp": 6644.209
+        }
+      }
+    },
+    {
+      "direction": "received",
+      "event": "room_created",
+      "timestamp": 1753939427532,
+      "relativeTime": 4602,
+      "data": {
+        "event": "room_created",
+        "data": {
+          "room_id": "L6WJJE",
+          "room_code": "L6WJJE",
+          "host_name": "TimingTestPlayer",
+          "success": true,
+          "room_info": {
+            "room_id": "L6WJJE",
+            "room_code": "L6WJJE",
+            "room_name": "TimingTestPlayer's Room",
+            "host_id": "L6WJJE_p0",
+            "host_name": "TimingTestPlayer",
+            "players": [
+              {
+                "player_id": "L6WJJE_p0",
+                "name": "TimingTestPlayer",
+                "is_bot": false,
+                "is_host": true,
+                "seat_position": 0,
+                "avatar_color": null
+              },
+              {
+                "player_id": "L6WJJE_p1",
+                "name": "Bot 2",
+                "is_bot": true,
+                "is_host": false,
+                "seat_position": 1,
+                "avatar_color": null
+              },
+              {
+                "player_id": "L6WJJE_p2",
+                "name": "Bot 3",
+                "is_bot": true,
+                "is_host": false,
+                "seat_position": 2,
+                "avatar_color": null
+              },
+              {
+                "player_id": "L6WJJE_p3",
+                "name": "Bot 4",
+                "is_bot": true,
+                "is_host": false,
+                "seat_position": 3,
+                "avatar_color": null
+              }
+            ],
+            "max_players": 4,
+            "game_in_progress": false,
+            "started": false,
+            "status": "waiting"
+          }
+        }
+      }
+    },
+    {
+      "direction": "sent",
+      "event": "client_ready",
+      "timestamp": 1753939427579,
+      "relativeTime": 4649,
+      "data": {
+        "event": "client_ready",
+        "data": {
+          "room_id": "lobby",
+          "is_reconnection": false
+        },
+        "sequence": 1,
+        "timestamp": 1753939427575,
+        "id": "12f6fc86-0acd-435c-a845-e7a37e9269f9"
+      }
+    },
+    {
+      "direction": "received",
+      "event": "client_ready_ack",
+      "timestamp": 1753939427580,
+      "relativeTime": 4650,
+      "data": {
+        "event": "client_ready_ack",
+        "data": {
+          "success": true,
+          "ready": true,
+          "room_state": null
+        }
+      }
+    },
+    {
+      "direction": "sent",
+      "event": "client_ready",
+      "timestamp": 1753939427592,
+      "relativeTime": 4662,
+      "data": {
+        "event": "client_ready",
+        "data": {
+          "room_id": "L6WJJE",
+          "player_name": "TimingTestPlayer",
+          "is_reconnection": false
+        },
+        "sequence": 1,
+        "timestamp": 1753939427589,
+        "id": "6a507744-b25c-437f-b694-4b2a753319e0"
+      }
+    },
+    {
+      "direction": "sent",
+      "event": "client_ready",
+      "timestamp": 1753939427607,
+      "relativeTime": 4677,
+      "data": {
+        "event": "client_ready",
+        "data": {
+          "room_id": "L6WJJE",
+          "player_name": "TimingTestPlayer",
+          "is_reconnection": false
+        },
+        "sequence": 1,
+        "timestamp": 1753939427603,
+        "id": "43328f8e-420b-403f-97f9-6f4e02152306"
+      }
+    },
+    {
+      "direction": "sent",
+      "event": "get_room_state",
+      "timestamp": 1753939427607,
+      "relativeTime": 4677,
+      "data": {
+        "event": "get_room_state",
+        "data": {
+          "room_id": "L6WJJE"
+        },
+        "sequence": 2,
+        "timestamp": 1753939427605,
+        "id": "b033f6ab-a452-486f-985f-52406fd7c6bf"
+      }
+    },
+    {
+      "direction": "received",
+      "event": "error",
+      "timestamp": 1753939427617,
+      "relativeTime": 4687,
+      "data": {
+        "event": "error",
+        "data": {
+          "message": "Failed to handle client_ready",
+          "type": "use_case_error",
+          "details": "Cannot mark player ready: Player is already marked as ready"
+        }
+      }
+    },
+    {
+      "direction": "received",
+      "event": "room_update",
+      "timestamp": 1753939427617,
+      "relativeTime": 4687,
+      "data": {
+        "event": "room_update",
+        "data": {
+          "room_id": "L6WJJE",
+          "room_code": "L6WJJE",
+          "room_name": "TimingTestPlayer's Room",
+          "host_id": "L6WJJE_p0",
+          "host_name": "TimingTestPlayer",
+          "players": [
+            {
+              "player_id": "L6WJJE_p0",
+              "name": "TimingTestPlayer",
+              "is_bot": false,
+              "is_host": true,
+              "seat_position": 0,
+              "avatar_color": null
+            },
+            {
+              "player_id": "L6WJJE_p1",
+              "name": "Bot 2",
+              "is_bot": true,
+              "is_host": false,
+              "seat_position": 1,
+              "avatar_color": null
+            },
+            {
+              "player_id": "L6WJJE_p2",
+              "name": "Bot 3",
+              "is_bot": true,
+              "is_host": false,
+              "seat_position": 2,
+              "avatar_color": null
+            },
+            {
+              "player_id": "L6WJJE_p3",
+              "name": "Bot 4",
+              "is_bot": true,
+              "is_host": false,
+              "seat_position": 3,
+              "avatar_color": null
+            }
+          ],
+          "max_players": 4,
+          "game_in_progress": false,
+          "started": false,
+          "status": "waiting"
+        }
+      }
+    },
+    {
+      "direction": "sent",
+      "event": "start_game",
+      "timestamp": 1753939429491,
+      "relativeTime": 6561,
+      "data": {
+        "event": "start_game",
+        "data": {},
+        "sequence": 3,
+        "timestamp": 1753939429484,
+        "id": "44736991-9db3-4f8b-b4bf-0fc0dc661d12"
+      }
+    },
+    {
+      "direction": "received",
+      "event": "game_started",
+      "timestamp": 1753939429503,
+      "relativeTime": 6573,
+      "data": {
+        "event": "game_started",
+        "data": {
+          "round_number": 1,
+          "players": [
+            "Bot 4",
+            "TimingTestPlayer",
+            "Bot 2",
+            "Bot 3"
+          ]
+        }
+      }
+    },
+    {
+      "direction": "received",
+      "event": "game_started",
+      "timestamp": 1753939429516,
+      "relativeTime": 6586,
+      "data": {
+        "event": "game_started",
+        "data": {
+          "round_number": 1,
+          "players": [
+            "Bot 4",
+            "TimingTestPlayer",
+            "Bot 2",
+            "Bot 3"
+          ],
+          "timestamp": 1753964629.496047
+        }
+      }
+    },
+    {
+      "direction": "received",
+      "event": "game_started",
+      "timestamp": 1753939429516,
+      "relativeTime": 6586,
+      "data": {
+        "event": "game_started",
+        "data": {
+          "round_number": 1,
+          "players": [
+            "Bot 4",
+            "TimingTestPlayer",
+            "Bot 2",
+            "Bot 3"
+          ],
+          "timestamp": 1753964629.49628
+        }
+      }
+    },
+    {
+      "direction": "received",
+      "event": "phase_change",
+      "timestamp": 1753939429518,
+      "relativeTime": 6588,
+      "data": {
+        "event": "phase_change",
+        "data": {
+          "phase": "PREPARATION",
+          "previous_phase": "waiting",
+          "phase_data": {
+            "players": {
+              "Bot 4": {
+                "id": "Bot 4",
+                "score": 0,
+                "hand_size": 0
+              },
+              "TimingTestPlayer": {
+                "id": "TimingTestPlayer",
+                "score": 0,
+                "hand_size": 0
+              },
+              "Bot 2": {
+                "id": "Bot 2",
+                "score": 0,
+                "hand_size": 0
+              },
+              "Bot 3": {
+                "id": "Bot 3",
+                "score": 0,
+                "hand_size": 0
+              }
+            },
+            "my_hand": {
+              "Bot 4": [],
+              "TimingTestPlayer": [],
+              "Bot 2": [],
+              "Bot 3": []
+            },
+            "current_player": "Bot 4",
+            "game_settings": {
+              "max_score": 50,
+              "max_rounds": 20,
+              "win_condition": "first_to_reach_50"
+            }
+          }
+        }
+      }
+    },
+    {
+      "direction": "received",
+      "event": "phase_change",
+      "timestamp": 1753939429518,
+      "relativeTime": 6588,
+      "data": {
+        "event": "phase_change",
+        "data": {
+          "phase": "PREPARATION",
+          "previous_phase": "waiting",
+          "phase_data": {
+            "players": {
+              "Bot 4": {
+                "id": "Bot 4",
+                "score": 0,
+                "hand_size": 0
+              },
+              "TimingTestPlayer": {
+                "id": "TimingTestPlayer",
+                "score": 0,
+                "hand_size": 0
+              },
+              "Bot 2": {
+                "id": "Bot 2",
+                "score": 0,
+                "hand_size": 0
+              },
+              "Bot 3": {
+                "id": "Bot 3",
+                "score": 0,
+                "hand_size": 0
+              }
+            },
+            "my_hand": {
+              "Bot 4": [],
+              "TimingTestPlayer": [],
+              "Bot 2": [],
+              "Bot 3": []
+            },
+            "current_player": "Bot 4",
+            "game_settings": {
+              "max_score": 50,
+              "max_rounds": 20,
+              "win_condition": "first_to_reach_50"
+            }
+          },
+          "timestamp": 1753964629.504275
+        }
+      }
+    },
+    {
+      "direction": "received",
+      "event": "phase_change",
+      "timestamp": 1753939429519,
+      "relativeTime": 6589,
+      "data": {
+        "event": "phase_change",
+        "data": {
+          "phase": "PREPARATION",
+          "previous_phase": "waiting",
+          "phase_data": {
+            "players": {
+              "Bot 4": {
+                "id": "Bot 4",
+                "score": 0,
+                "hand_size": 0
+              },
+              "TimingTestPlayer": {
+                "id": "TimingTestPlayer",
+                "score": 0,
+                "hand_size": 0
+              },
+              "Bot 2": {
+                "id": "Bot 2",
+                "score": 0,
+                "hand_size": 0
+              },
+              "Bot 3": {
+                "id": "Bot 3",
+                "score": 0,
+                "hand_size": 0
+              }
+            },
+            "my_hand": {
+              "Bot 4": [],
+              "TimingTestPlayer": [],
+              "Bot 2": [],
+              "Bot 3": []
+            },
+            "current_player": "Bot 4",
+            "game_settings": {
+              "max_score": 50,
+              "max_rounds": 20,
+              "win_condition": "first_to_reach_50"
+            }
+          },
+          "timestamp": 1753964629.504696
+        }
+      }
+    },
+    {
+      "direction": "received",
+      "event": "weak_hands_found",
+      "timestamp": 1753939429519,
+      "relativeTime": 6589,
+      "data": {
+        "event": "weak_hands_found",
+        "data": {
+          "players": [
+            "Bot 4",
+            "TimingTestPlayer",
+            "Bot 2",
+            "Bot 3"
+          ],
+          "round_number": 1
+        }
+      }
+    },
+    {
+      "direction": "received",
+      "event": "weak_hands_found",
+      "timestamp": 1753939429519,
+      "relativeTime": 6589,
+      "data": {
+        "event": "weak_hands_found",
+        "data": {
+          "players": [
+            "Bot 4",
+            "TimingTestPlayer",
+            "Bot 2",
+            "Bot 3"
+          ],
+          "round_number": 1
+        }
+      }
+    },
+    {
+      "direction": "received",
+      "event": "error",
+      "timestamp": 1753939429519,
+      "relativeTime": 6589,
+      "data": {
+        "event": "error",
+        "data": {
+          "message": "Failed to handle start_game",
+          "type": "use_case_error",
+          "details": "'StartGameResponse' object has no attribute 'success'"
+        }
+      }
+    },
+    {
+      "direction": "sent",
+      "event": "client_ready",
+      "timestamp": 1753939429735,
+      "relativeTime": 6805,
+      "data": {
+        "event": "client_ready",
+        "data": {
+          "room_id": "L6WJJE",
+          "player_name": "TimingTestPlayer",
+          "is_reconnection": false
+        },
+        "sequence": 1,
+        "timestamp": 1753939429733,
+        "id": "a9d7dd25-d8d4-4d41-9d04-7ec680e3e881"
+      }
+    },
+    {
+      "direction": "received",
+      "event": "error",
+      "timestamp": 1753939429747,
+      "relativeTime": 6817,
+      "data": {
+        "event": "error",
+        "data": {
+          "message": "Failed to handle client_ready",
+          "type": "use_case_error",
+          "details": "Cannot mark player ready: Player is already marked as ready"
+        }
+      }
+    },
+    {
+      "direction": "received",
+      "event": "room_closed",
+      "timestamp": 1753939432982,
+      "relativeTime": 10052,
+      "data": {
+        "event": "room_closed",
+        "data": {
+          "reason": "All players disconnected",
+          "timeout_seconds": 30
+        }
+      }
+    }
+  ],
+  "navigationSteps": [
+    {
+      "timestamp": 1753939422998,
+      "path": "/",
+      "relativeTime": 68
+    },
+    {
+      "timestamp": 1753939424455,
+      "path": "/",
+      "relativeTime": 1525
+    },
+    {
+      "timestamp": 1753939425299,
+      "path": "/lobby",
+      "relativeTime": 2369
+    },
+    {
+      "timestamp": 1753939427571,
+      "path": "/room/L6WJJE",
+      "relativeTime": 4641
+    },
+    {
+      "timestamp": 1753939429652,
+      "path": "/game/L6WJJE",
+      "relativeTime": 6722
+    },
+    {
+      "timestamp": 1753939429688,
+      "path": "/game/L6WJJE",
+      "relativeTime": 6758
+    },
+    {
+      "timestamp": 1753939429725,
+      "path": "/game/L6WJJE",
+      "relativeTime": 6795
+    }
+  ]
+}

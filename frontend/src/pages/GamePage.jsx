@@ -45,12 +45,14 @@ const GamePage = () => {
         const playerName = app.playerName;
 
         if (!playerName) {
-          console.error('No player name found, redirecting to start page');
+          console.error('🎮 GAME: No player name found, redirecting to start page');
           navigate('/');
           return;
         }
 
         if (roomId) {
+          console.log(`🎮 GAME: Initializing game for ${playerName} in room ${roomId}`);
+          
           // Check if this is a session recovery
           const session = getSession();
           const isRecovery =
@@ -60,20 +62,30 @@ const GamePage = () => {
 
           if (isRecovery) {
             console.log(
-              '🎮 GamePage: Recovering session for',
+              '🎮 GAME: Recovering session for',
               playerName,
               'in room',
               roomId
             );
           }
 
+          // 🎯 FIX: Check if GameService is already connected to this room
+          const currentGameState = gameState;
+          if (currentGameState.roomId === roomId && currentGameState.isConnected) {
+            console.log('🎮 GAME: Already connected to room, skipping connection');
+            setIsInitialized(true);
+            return;
+          }
+
           await serviceIntegration.connectToRoom(roomId, playerName);
+          console.log('🎮 GAME: Service integration connection completed');
           setIsInitialized(true);
         }
       } catch (error) {
-        console.error('Failed to initialize game:', error);
+        console.error('🎮 GAME: Failed to initialize game:', error);
         // Could redirect back to lobby on critical errors
         if (error.message.includes('Room not found')) {
+          console.log('🎮 GAME: Room not found, redirecting to lobby');
           navigate('/lobby');
         }
       }
