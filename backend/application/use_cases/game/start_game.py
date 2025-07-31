@@ -27,6 +27,7 @@ from domain.events.game_events import (
     RoundStarted,
     PiecesDealt,
     WeakHandDetected,
+    PhaseChanged,
 )
 from domain.events.base import EventMetadata
 # PropertyMapper import removed - using direct attribute access
@@ -186,6 +187,27 @@ class StartGameUseCase(UseCase[StartGameRequest, StartGameResponse]):
                 piece_count=8,  # Standard number of pieces dealt per player
             )
             await self._event_publisher.publish(pieces_dealt)
+
+            # Emit PhaseChanged event to trigger frontend phase transition
+            phase_changed = PhaseChanged(
+                metadata=EventMetadata(user_id=request.user_id),
+                room_id=room.room_id,
+                old_phase="waiting",
+                new_phase=game.current_phase.value if hasattr(game.current_phase, "value") else str(game.current_phase),
+                round_number=game.round_number,
+                turn_number=game.turn_number,
+                phase_data={
+                    "players": {p.name: {"id": p.id, "score": p.score, "hand_size": len(p.hand)} for p in game.players},
+                    "my_hand": {p.id: [{"value": piece.value, "kind": piece.kind} for piece in p.hand] for p in game.players},
+                    "current_player": starting_player.name,
+                    "game_settings": {
+                        "max_score": game.max_score,
+                        "max_rounds": game.max_rounds,
+                        "win_condition": "first_to_reach_50"
+                    }
+                }
+            )
+            await self._event_publisher.publish(phase_changed)
 
             # Emit WeakHandDetected event if any weak hands
             if weak_hands:

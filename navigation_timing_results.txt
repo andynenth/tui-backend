@@ -1,0 +1,231 @@
+🕐 Navigation Timing Analysis for Waiting Page Investigation
+
+Objective: Measure precise transition timing from room → waiting → game
+Success Criteria: Millisecond-level timing logs for each phase
+
+⏱️ Starting timing analysis...
+
+📍 Step 1: Enter Lobby
+🧭 Navigation [+68ms]: /
+🧭 Navigation [+1525ms]: /
+🧭 Navigation [+2369ms]: /lobby
+🔌 WebSocket connected
+📤 WS Send [+2427ms]: client_ready
+📤 WS Send [+2429ms]: get_rooms
+📥 WS Receive [+2443ms]: client_ready_ack
+📥 WS Receive [+2443ms]: room_list_update
+  ✓ Entered lobby
+
+📍 Step 2: Create Room
+🔌 WebSocket connected
+📤 WS Send [+4493ms]: client_ready
+📥 WS Receive [+4493ms]: client_ready_ack
+📤 WS Send [+4579ms]: create_room
+📥 WS Receive [+4586ms]: room_list_update
+📥 WS Receive [+4588ms]: room_list_update
+📥 WS Receive [+4602ms]: room_created
+🧭 Navigation [+4641ms]: /room/L6WJJE
+🔌 WebSocket connected
+📤 WS Send [+4649ms]: client_ready
+📥 WS Receive [+4650ms]: client_ready_ack
+🔌 WebSocket connected
+📤 WS Send [+4662ms]: client_ready
+🔌 WebSocket connected
+📤 WS Send [+4677ms]: client_ready
+📤 WS Send [+4677ms]: get_room_state
+📥 WS Receive [+4687ms]: error
+📥 WS Receive [+4687ms]: room_update
+  ✓ Room created: WJJE
+
+📍 Step 3: Start Game with Timing Monitoring
+📤 WS Send [+6561ms]: start_game
+  ✓ Start Game clicked [Button response: 47ms]
+
+🕐 Monitoring transition for 10 seconds...
+📥 WS Receive [+6573ms]: game_started
+📥 WS Receive [+6586ms]: game_started
+📥 WS Receive [+6586ms]: game_started
+📥 WS Receive [+6588ms]: phase_change
+📥 WS Receive [+6588ms]: phase_change
+📥 WS Receive [+6589ms]: phase_change
+📥 WS Receive [+6589ms]: weak_hands_found
+📥 WS Receive [+6589ms]: weak_hands_found
+📥 WS Receive [+6589ms]: error
+🧭 Navigation [+6722ms]: /game/L6WJJE
+🧭 Navigation [+6758ms]: /game/L6WJJE
+🧭 Navigation [+6795ms]: /game/L6WJJE
+  [0s] 🤔 State: http://localhost:5050/game/L6WJJE
+🔌 WebSocket connected
+📤 WS Send [+6805ms]: client_ready
+📥 WS Receive [+6817ms]: error
+⏳ Waiting Page Detected [+6827ms]
+  [1s] ⏳ On waiting page
+  [2s] ⏳ On waiting page
+  [3s] ⏳ On waiting page
+📥 WS Receive [+10052ms]: room_closed
+  [4s] ⏳ On waiting page
+  [5s] ⏳ On waiting page
+  [6s] ⏳ On waiting page
+  [7s] ⏳ On waiting page
+  [8s] ⏳ On waiting page
+  [9s] ⏳ On waiting page
+
+📊 NAVIGATION TIMING ANALYSIS RESULTS
+
+⏱️ TIMING SUMMARY:
+  Total flow time: 6795ms
+  Room creation: 4641ms
+  Start game clicked: 6561ms
+  Waiting page first seen: 6827ms
+  Waiting page duration: -32ms
+  Game page reached: 6795ms
+  Transition time (click → game): 234ms
+
+🧭 NAVIGATION SEQUENCE:
+  1. [+68ms] /
+  2. [+1525ms] /
+  3. [+2369ms] /lobby
+  4. [+4641ms] /room/L6WJJE
+  5. [+6722ms] /game/L6WJJE
+  6. [+6758ms] /game/L6WJJE
+  7. [+6795ms] /game/L6WJJE
+
+📡 WEBSOCKET EVENT SEQUENCE:
+  1. [+6561ms] 📤 start_game
+  2. [+6573ms] 📥 game_started
+  3. [+6586ms] 📥 game_started
+  4. [+6586ms] 📥 game_started
+  5. [+6588ms] 📥 phase_change
+  6. [+6588ms] 📥 phase_change
+  7. [+6589ms] 📥 phase_change
+
+🔍 ANALYSIS:
+  ✅ EXCELLENT: Fast transition (234ms)
+  The waiting page issue appears to be resolved
+  ⏳ Waiting page was visible for -32ms
+  ✅ PASS: Waiting page barely visible (< 200ms)
+
+✅ Navigation timing analysis complete. Browser remains open for inspection.
+📁 Timing data saved to navigation-timing-results.json
+📤 WS Send [+34650ms]: ping
+📥 WS Receive [+34654ms]: pong
+📤 WS Send [+36809ms]: ping
+📥 WS Receive [+36814ms]: pong
+📤 WS Send [+64647ms]: ping
+📥 WS Receive [+64652ms]: pong
+📤 WS Send [+66804ms]: ping
+📥 WS Receive [+66809ms]: pong
+📤 WS Send [+94646ms]: ping
+📥 WS Receive [+94651ms]: pong
+📤 WS Send [+96804ms]: ping
+📥 WS Receive [+96809ms]: pong
+📤 WS Send [+124647ms]: ping
+📥 WS Receive [+124654ms]: pong
+📤 WS Send [+126806ms]: ping
+📥 WS Receive [+126813ms]: pong
+📤 WS Send [+154647ms]: ping
+📥 WS Receive [+154652ms]: pong
+📤 WS Send [+156806ms]: ping
+📥 WS Receive [+156812ms]: pong
+📤 WS Send [+184647ms]: ping
+📥 WS Receive [+184649ms]: pong
+📤 WS Send [+186805ms]: ping
+📥 WS Receive [+186807ms]: pong
+📤 WS Send [+214659ms]: ping
+📥 WS Receive [+214661ms]: pong
+📤 WS Send [+216808ms]: ping
+📥 WS Receive [+216815ms]: pong
+📤 WS Send [+244650ms]: ping
+📥 WS Receive [+244655ms]: pong
+📤 WS Send [+246808ms]: ping
+📥 WS Receive [+246815ms]: pong
+📤 WS Send [+274650ms]: ping
+📥 WS Receive [+274654ms]: pong
+📤 WS Send [+276808ms]: ping
+📥 WS Receive [+276817ms]: pong
+📤 WS Send [+304651ms]: ping
+📥 WS Receive [+304656ms]: pong
+📤 WS Send [+306808ms]: ping
+📥 WS Receive [+306811ms]: pong
+📥 WS Receive [+318794ms]: room_list_update
+📥 WS Receive [+318794ms]: room_list_update
+📤 WS Send [+334653ms]: ping
+📥 WS Receive [+334656ms]: pong
+📥 WS Receive [+335871ms]: room_list_update
+📥 WS Receive [+335871ms]: room_list_update
+📤 WS Send [+336813ms]: ping
+📥 WS Receive [+336821ms]: pong
+📥 WS Receive [+336850ms]: room_list_update
+📥 WS Receive [+336851ms]: room_list_update
+📥 WS Receive [+338988ms]: room_list_update
+📥 WS Receive [+338989ms]: room_list_update
+📥 WS Receive [+343455ms]: room_list_update
+📥 WS Receive [+343455ms]: room_list_update
+📤 WS Send [+364652ms]: ping
+📥 WS Receive [+364659ms]: pong
+📤 WS Send [+366810ms]: ping
+📥 WS Receive [+366820ms]: pong
+📤 WS Send [+394654ms]: ping
+📥 WS Receive [+394659ms]: pong
+📤 WS Send [+396811ms]: ping
+📥 WS Receive [+396820ms]: pong
+📤 WS Send [+424655ms]: ping
+📥 WS Receive [+424662ms]: pong
+📤 WS Send [+426812ms]: ping
+📥 WS Receive [+426822ms]: pong
+📤 WS Send [+454655ms]: ping
+📥 WS Receive [+454660ms]: pong
+📤 WS Send [+456817ms]: ping
+📥 WS Receive [+456826ms]: pong
+📤 WS Send [+484656ms]: ping
+📥 WS Receive [+484661ms]: pong
+📤 WS Send [+486813ms]: ping
+📥 WS Receive [+486820ms]: pong
+📤 WS Send [+514657ms]: ping
+📥 WS Receive [+514660ms]: pong
+📤 WS Send [+516815ms]: ping
+📥 WS Receive [+516823ms]: pong
+📤 WS Send [+544657ms]: ping
+📥 WS Receive [+544662ms]: pong
+📤 WS Send [+546817ms]: ping
+📥 WS Receive [+546826ms]: pong
+📤 WS Send [+574658ms]: ping
+📥 WS Receive [+574662ms]: pong
+📤 WS Send [+576815ms]: ping
+📥 WS Receive [+576823ms]: pong
+📤 WS Send [+604659ms]: ping
+📥 WS Receive [+604665ms]: pong
+📤 WS Send [+606817ms]: ping
+📥 WS Receive [+606826ms]: pong
+📤 WS Send [+634661ms]: ping
+📥 WS Receive [+634667ms]: pong
+📤 WS Send [+636817ms]: ping
+📥 WS Receive [+636821ms]: pong
+📤 WS Send [+664662ms]: ping
+📥 WS Receive [+664667ms]: pong
+📤 WS Send [+666819ms]: ping
+📥 WS Receive [+666828ms]: pong
+📤 WS Send [+694661ms]: ping
+📥 WS Receive [+694666ms]: pong
+📤 WS Send [+696819ms]: ping
+📥 WS Receive [+696828ms]: pong
+📤 WS Send [+724663ms]: ping
+📥 WS Receive [+724669ms]: pong
+📤 WS Send [+726820ms]: ping
+📥 WS Receive [+726830ms]: pong
+📤 WS Send [+754662ms]: ping
+📥 WS Receive [+754666ms]: pong
+📤 WS Send [+756823ms]: ping
+📥 WS Receive [+756831ms]: pong
+📤 WS Send [+784663ms]: ping
+📥 WS Receive [+784668ms]: pong
+📤 WS Send [+786822ms]: ping
+📥 WS Receive [+786831ms]: pong
+📤 WS Send [+814665ms]: ping
+📥 WS Receive [+814671ms]: pong
+📤 WS Send [+816823ms]: ping
+📥 WS Receive [+816831ms]: pong
+📤 WS Send [+844677ms]: ping
+📥 WS Receive [+844682ms]: pong
+📤 WS Send [+846823ms]: ping
+📥 WS Receive [+846832ms]: pong

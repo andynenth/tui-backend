@@ -94,9 +94,16 @@ const RoomPage = () => {
 
     const handleGameStarted = (event) => {
       const eventData = event.detail;
-      // const gameData = eventData.data;
-      console.log('Game started, navigating to game page');
-      navigate(`/game/${roomId}`);
+      const gameData = eventData.data;
+      console.log('🎮 ROOM: Game started event received, preparing navigation');
+      console.log('🎮 ROOM: Game data:', gameData);
+      
+      // 🎯 FIX: Add small delay to ensure GameService has processed the event first
+      // This prevents race condition where navigation happens before GameService state update
+      setTimeout(() => {
+        console.log('🎮 ROOM: Navigating to game page');
+        navigate(`/game/${roomId}`);
+      }, 100); // Small delay to let GameService process first
     };
 
     const handleRoomClosed = (event) => {

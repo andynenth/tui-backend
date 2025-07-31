@@ -1,47 +1,118 @@
 /**
- * Playwright Configuration for Lobby Auto-Update Bug Investigation
+ * 🧪 **Playwright Configuration - Game Start Flow Testing Suite**
+ * 
+ * PlaywrightTester Agent Configuration
+ * 
+ * Test Categories:
+ * - Game Start Flow (Primary bug reproduction & fix validation)
+ * - WebSocket Validation (Connection stability & event validation)
+ * - Regression Tests (Prevent future regressions)
  */
 
 module.exports = {
-  testDir: '.',
-  timeout: 60000, // 1 minute timeout for each test
-  fullyParallel: false, // Run tests sequentially to avoid conflicts
+  testDir: './tests/playwright',
+  timeout: 90000, // 1.5 minute timeout for comprehensive tests
+  fullyParallel: false, // Sequential to avoid WebSocket conflicts
   forbidOnly: !!process.env.CI,
-  retries: process.env.CI ? 2 : 0,
-  workers: 1, // Single worker to avoid WebSocket conflicts
+  retries: process.env.CI ? 2 : 1, // Retry once locally for flaky WebSocket tests
+  workers: 1, // Single worker to avoid conflicts
+  
+  // Enhanced reporting for swarm coordination
   reporter: [
-    ['html'],
+    ['html', { outputFolder: 'playwright-report', open: 'never' }],
     ['list'],
-    ['json', { outputFile: 'test-results.json' }]
+    ['json', { outputFile: 'test-results/test-results.json' }],
+    ['junit', { outputFile: 'test-results/junit.xml' }]
   ],
+  
   use: {
     baseURL: 'http://localhost:5050',
-    trace: 'on-first-retry',
+    trace: 'retain-on-failure', // Enhanced tracing
     screenshot: 'only-on-failure',
     video: 'retain-on-failure',
-    // Increase timeouts for WebSocket operations
-    actionTimeout: 10000,
-    navigationTimeout: 10000,
+    
+    // Optimized timeouts for game testing
+    actionTimeout: 15000,       // Increased for bot operations
+    navigationTimeout: 15000,   // Increased for game transitions
+    
+    // Enhanced browser context
+    contextOptions: {
+      recordVideo: {
+        mode: 'retain-on-failure',
+        size: { width: 1280, height: 720 }
+      }
+    }
   },
+  
   projects: [
+    // Primary browser for comprehensive testing
     {
-      name: 'chromium-lobby-test',
+      name: 'chromium-game-tests',
       use: { 
         ...require('@playwright/test').devices['Desktop Chrome'],
-        // Enable console logs
+        launchOptions: {
+          args: [
+            '--enable-logging',
+            '--v=1',
+            '--disable-web-security', // For WebSocket testing
+            '--disable-features=VizDisplayCompositor'
+          ]
+        },
+        // Enhanced browser context for game testing
+        contextOptions: {
+          permissions: ['clipboard-read', 'clipboard-write'],
+          recordHar: { path: 'test-results/network-trace.har' }
+        }
+      },
+      testMatch: ['**/game-start-flow.spec.js', '**/websocket-validation.spec.js']
+    },
+    
+    // Regression testing project
+    {
+      name: 'regression-tests',
+      use: { 
+        ...require('@playwright/test').devices['Desktop Chrome'],
+        launchOptions: {
+          args: ['--enable-logging', '--disable-web-security']
+        }
+      },
+      testMatch: ['**/regression-tests.spec.js']
+    },
+    
+    // Legacy test compatibility
+    {
+      name: 'legacy-compatibility',
+      use: { 
+        ...require('@playwright/test').devices['Desktop Chrome'],
         launchOptions: {
           args: ['--enable-logging', '--v=1']
         }
       },
-    },
+      testMatch: ['**/test_lobby_game_transition.spec.js']
+    }
   ],
-  // Ensure the application is running before tests
+  
+  // Application server configuration
   webServer: [
     {
-      command: 'echo "Please ensure the application is running on http://localhost:5050"',
+      command: 'echo "🚀 Ensure the game server is running on http://localhost:5050"',
       port: 5050,
-      timeout: 5000,
+      timeout: 10000,
       reuseExistingServer: true
     }
   ],
+  
+  // Global test setup
+  globalSetup: require.resolve('./tests/playwright/global-setup.js'),
+  globalTeardown: require.resolve('./tests/playwright/global-teardown.js'),
+  
+  // Output directories
+  outputDir: 'test-results/',
+  
+  // Expect configuration for enhanced assertions
+  expect: {
+    timeout: 10000,
+    toHaveScreenshot: { threshold: 0.3 },
+    toMatchSnapshot: { threshold: 0.3 }
+  }
 };
