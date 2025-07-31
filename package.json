@@ -7,25 +7,25 @@
     "test:debug": "playwright test --debug",
     "test:ui": "playwright test --ui",
     "test:headed": "playwright test --headed",
-    
     "test:comprehensive": "./run-playwright-tests.sh",
     "test:bug-reproduction": "playwright test --project=chromium-game-tests game-start-flow.spec.js",
     "test:websocket": "playwright test --project=chromium-game-tests websocket-validation.spec.js",
     "test:regression": "playwright test --project=regression-tests regression-tests.spec.js",
-    
     "test:bug:debug": "playwright test --project=chromium-game-tests game-start-flow.spec.js --debug",
     "test:bug:headed": "playwright test --project=chromium-game-tests game-start-flow.spec.js --headed",
-    "test:websocket:debug": "playwright test --project=chromium-game-tests websocket-validation.spec.js --debug", 
+    "test:websocket:debug": "playwright test --project=chromium-game-tests websocket-validation.spec.js --debug",
     "test:regression:debug": "playwright test --project=regression-tests regression-tests.spec.js --debug",
-    
     "test:lobby": "playwright test test_lobby_game_transition.js",
     "test:lobby:debug": "playwright test test_lobby_game_transition.js --debug",
     "test:lobby:headed": "playwright test test_lobby_game_transition.js --headed",
-    
     "test:report": "playwright show-report",
     "test:install": "playwright install"
   },
   "devDependencies": {
     "@playwright/test": "^1.40.0"
+  },
+  "dependencies": {
+    "playwright": "^1.54.1",
+    "puppeteer": "^24.15.0"
   }
 }
