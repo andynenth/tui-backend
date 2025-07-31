@@ -8,7 +8,7 @@ const path = require('path');
 require('dotenv').config({ path: '../.env' });
 
 const entry = process.env.ESBUILD_ENTRY || './main.js';
-const outfile = process.env.ESBUILD_OUT || '../backend/static/bundle.js';
+const outdir = process.env.ESBUILD_OUT || '../backend/static';
 
 // CSS processing plugin for all CSS files
 const cssPlugin = {
@@ -35,7 +35,7 @@ const cssPlugin = {
 const buildOptions = {
   entryPoints: [entry],
   bundle: true,
-  outdir: process.env.ESBUILD_OUT || '../static',
+  outdir: outdir,
   entryNames: 'bundle',
   loader: {
     '.js': 'jsx',
@@ -68,7 +68,7 @@ if (process.argv.includes('--production')) {
     })
     .then(() => {
       console.log(
-        `👀 Watching for changes to ${entry}, output to ${buildOptions.outdir}/`
+        `👀 Watching for changes to ${entry}, output to ${outdir}/`
       );
     })
     .catch(() => process.exit(1));

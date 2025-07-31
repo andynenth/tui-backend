@@ -175,7 +175,7 @@ npm run lint:fix           # Auto-fix linting issues
 This launches:
 - `uvicorn` backend server with hot reload
 - `esbuild` frontend watch mode
-- Auto-copies `index.html` into `static/`
+- Auto-copies `index.html` into `backend/static/`
 
 ---
 
