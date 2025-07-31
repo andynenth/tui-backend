@@ -135,18 +135,42 @@ export class GameService extends EventTarget {
     if (this.state.roomId) {
       await networkService.disconnectFromRoom(this.state.roomId);
 
-      // Clear session storage when leaving room
-      clearSession();
+      // 🎯 FIX: Check if this is an active game state that should be preserved
+      const hasActiveGameState = this.state.phase !== 'waiting' && 
+                                 this.state.currentRound > 0;
+      
+      console.log('🎮 GameService: Leaving room, preserving game state:', {
+        hasActiveGameState,
+        currentPhase: this.state.phase,
+        currentRound: this.state.currentRound
+      });
 
-      this.setState(
-        {
-          ...this.getInitialState(),
-          playerName: this.state.playerName, // Preserve player name
-        },
-        'LEAVE_ROOM'
-      );
+      if (hasActiveGameState) {
+        // Preserve game state during temporary disconnection/reconnection
+        this.setState(
+          {
+            ...this.state,
+            isConnected: false,
+            error: null,
+          },
+          'LEAVE_ROOM'
+        );
+        
+        console.log('🎮 GameService: Left room while preserving active game state');
+      } else {
+        // Clear session storage only when truly leaving (not reconnecting)
+        clearSession();
 
-      console.log('🎮 GameService: Left room');
+        this.setState(
+          {
+            ...this.getInitialState(),
+            playerName: this.state.playerName, // Preserve player name
+          },
+          'LEAVE_ROOM'
+        );
+
+        console.log('🎮 GameService: Left room and reset to initial state');
+      }
     }
   }
 
@@ -658,7 +682,8 @@ export class GameService extends EventTarget {
   private handlePhaseChange(state: GameState, data: any): GameState {
     const newState = { ...state };
 
-    newState.phase = data.phase;
+    // 🎯 FIX: Normalize phase to lowercase to match frontend expectations
+    newState.phase = data.phase ? data.phase.toLowerCase() : 'waiting';
     newState.currentRound = data.round || state.currentRound;
 
     // Extract my hand from players data (sent by backend)
@@ -1075,7 +1100,15 @@ export class GameService extends EventTarget {
    * Handle game started event
    */
   private handleGameStarted(state: GameState, data: any): GameState {
-    console.log('🎮 Game started! Data:', data);
+    console.log('🎮 GameService.handleGameStarted: START');
+    console.log('🎮 GameService.handleGameStarted: Previous state:', {
+      phase: state.phase,
+      isConnected: state.isConnected,
+      roomId: state.roomId,
+      playerName: state.playerName,
+      myHandLength: state.myHand?.length
+    });
+    console.log('🎮 GameService.handleGameStarted: Event data:', data);
     
     const newState = { ...state };
     
@@ -1084,6 +1117,7 @@ export class GameService extends EventTarget {
     
     // Update players list if provided (as simple array of names)
     if (data.players && Array.isArray(data.players)) {
+      console.log('🎮 GameService.handleGameStarted: Updating players list:', data.players);
       newState.players = data.players.map((playerName: string, index: number) => ({
         name: playerName,
         score: 0,
@@ -1099,13 +1133,27 @@ export class GameService extends EventTarget {
     
     // 🎯 FIX: Set phase to a transitional state so GamePage shows proper loading instead of stuck "waiting"
     // This prevents the "stuck on waiting page" issue after game start
+    const previousPhase = newState.phase;
     newState.phase = 'preparation'; // Start with preparation phase as default, will be updated by phase_change event
     
     // Clear any previous error state since game is starting
     newState.error = null;
     
-    console.log(`🎮 Game started! Round: ${newState.currentRound}, Players: ${data.players?.length || 0}`);
-    console.log('🎮 Setting initial phase to "preparation" - will be updated by phase_change event');
+    console.log(`🎮 GameService.handleGameStarted: Phase transition: ${previousPhase} → ${newState.phase}`);
+    console.log(`🎮 GameService.handleGameStarted: Game initialized - Round: ${newState.currentRound}, Players: ${data.players?.length || 0}`);
+    console.log('🎮 GameService.handleGameStarted: New state summary:', {
+      phase: newState.phase,
+      currentRound: newState.currentRound,
+      playersCount: newState.players?.length,
+      myHandLength: newState.myHand?.length,
+      isConnected: newState.isConnected
+    });
+    
+    // Notify listeners about state change
+    console.log('🎮 GameService.handleGameStarted: About to notify listeners of state change');
+    
+    // Store the new state before returning
+    console.log('🎮 GameService.handleGameStarted: COMPLETE - returning new state');
     return newState;
   }
 

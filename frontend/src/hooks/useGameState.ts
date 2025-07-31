@@ -27,6 +27,14 @@ export function useGameState(): GameState {
       // Only update if state actually changed (deep comparison would be expensive)
       // GameService already handles immutable updates, so reference comparison is sufficient
       if (stateRef.current !== newState) {
+        // DEBUG: Log state transitions for debugging UI updates
+        console.log('🎮 useGameState: State transition detected');
+        console.log('🎮 useGameState: Previous phase:', stateRef.current?.phase);
+        console.log('🎮 useGameState: New phase:', newState?.phase);
+        console.log('🎮 useGameState: Previous myHand length:', stateRef.current?.myHand?.length);
+        console.log('🎮 useGameState: New myHand length:', newState?.myHand?.length);
+        console.log('🎮 useGameState: New state object:', newState);
+        
         stateRef.current = newState;
         setState(newState);
       }
