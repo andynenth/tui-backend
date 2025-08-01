@@ -15,6 +15,7 @@ from infrastructure.dependencies import (
     get_event_publisher,
     get_metrics_collector,
 )
+from infrastructure.factories.state_adapter_factory import StateAdapterFactory
 from application.dto.connection import (
     HandlePingRequest,
     MarkClientReadyRequest,
@@ -273,7 +274,11 @@ class CleanArchitectureAdapter:
 
         uow = get_unit_of_work()
         publisher = get_event_publisher()
-        use_case = StartGameUseCase(uow, publisher)
+        
+        # Get state adapter from factory
+        state_adapter = StateAdapterFactory.create_for_use_case("StartGameUseCase", context)
+        
+        use_case = StartGameUseCase(uow, publisher, state_adapter)
 
         response = await use_case.execute(request)
         return response.to_dict()
@@ -291,7 +296,11 @@ class CleanArchitectureAdapter:
 
         uow = get_unit_of_work()
         publisher = get_event_publisher()
-        use_case = DeclareUseCase(uow, publisher)
+        
+        # Get state adapter from factory
+        state_adapter = StateAdapterFactory.create_for_use_case("DeclareUseCase", context)
+        
+        use_case = DeclareUseCase(uow, publisher, state_adapter)
 
         response = await use_case.execute(request)
         return response.to_dict()
@@ -309,7 +318,11 @@ class CleanArchitectureAdapter:
 
         uow = get_unit_of_work()
         publisher = get_event_publisher()
-        use_case = PlayUseCase(uow, publisher)
+        
+        # Get state adapter from factory
+        state_adapter = StateAdapterFactory.create_for_use_case("PlayUseCase", context)
+        
+        use_case = PlayUseCase(uow, publisher, state_adapter)
 
         response = await use_case.execute(request)
         return response.to_dict()

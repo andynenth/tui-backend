@@ -21,6 +21,7 @@ from domain.events.player_events import PlayerDeclaredPiles
 from domain.events.game_events import PhaseChanged
 from domain.events.base import EventMetadata
 from application.utils import PropertyMapper
+from application.adapters.state_management_adapter import StateManagementAdapter
 
 logger = logging.getLogger(__name__)
 
@@ -41,6 +42,7 @@ class DeclareUseCase(UseCase[DeclareRequest, DeclareResponse]):
         self,
         unit_of_work: UnitOfWork,
         event_publisher: EventPublisher,
+        state_adapter: Optional[StateManagementAdapter] = None,
         metrics: Optional[MetricsCollector] = None,
     ):
         """
@@ -49,10 +51,12 @@ class DeclareUseCase(UseCase[DeclareRequest, DeclareResponse]):
         Args:
             unit_of_work: Unit of work for data access
             event_publisher: Publisher for domain events
+            state_adapter: Optional state management adapter
             metrics: Optional metrics collector
         """
         self._uow = unit_of_work
         self._event_publisher = event_publisher
+        self._state_adapter = state_adapter
         self._metrics = metrics
 
     async def execute(self, request: DeclareRequest) -> DeclareResponse:
@@ -124,7 +128,25 @@ class DeclareUseCase(UseCase[DeclareRequest, DeclareResponse]):
                         }
                     )
 
+            # Track player action if adapter available
+            if self._state_adapter:
+                context = self._state_adapter.create_context(
+                    game_id=game.game_id,
+                    room_id=game.room_id,
+                    player_id=request.player_id,
+                    current_phase=str(game.phase)
+                )
+                await self._state_adapter.track_player_action(
+                    context=context,
+                    action="declare",
+                    payload={
+                        "pile_count": request.pile_count,
+                        "player_name": player.name
+                    }
+                )
+
             # Record declaration
+            old_phase = game.phase
             game.declare_piles(request.player_id, request.pile_count)
 
             # Check if all players have declared
@@ -141,6 +163,19 @@ class DeclareUseCase(UseCase[DeclareRequest, DeclareResponse]):
                 # All declared - transition to turn phase
                 game.start_turn_phase()
                 next_player_id = PropertyMapper.get_safe(game, "current_player_id")
+                
+                # Track phase change if adapter available
+                if self._state_adapter and old_phase != game.phase:
+                    await self._state_adapter.track_phase_change(
+                        context=context,
+                        from_phase=old_phase,
+                        to_phase=game.phase,
+                        trigger="all_declared",
+                        payload={
+                            "total_declared": sum(game.declarations.values()),
+                            "round": game.round_number
+                        }
+                    )
 
             # Save the game
             await self._uow.games.save(game)

@@ -30,6 +30,7 @@ from domain.events.game_events import (
 from domain.events.game_events import PiecesPlayed
 from domain.events.base import EventMetadata
 from application.utils import PropertyMapper
+from application.adapters.state_management_adapter import StateManagementAdapter
 
 logger = logging.getLogger(__name__)
 
@@ -50,6 +51,7 @@ class PlayUseCase(UseCase[PlayRequest, PlayResponse]):
         self,
         unit_of_work: UnitOfWork,
         event_publisher: EventPublisher,
+        state_adapter: Optional[StateManagementAdapter] = None,
         metrics: Optional[MetricsCollector] = None,
     ):
         """
@@ -58,10 +60,12 @@ class PlayUseCase(UseCase[PlayRequest, PlayResponse]):
         Args:
             unit_of_work: Unit of work for data access
             event_publisher: Publisher for domain events
+            state_adapter: Optional state management adapter
             metrics: Optional metrics collector
         """
         self._uow = unit_of_work
         self._event_publisher = event_publisher
+        self._state_adapter = state_adapter
         self._metrics = metrics
 
     async def execute(self, request: PlayRequest) -> PlayResponse:
