@@ -12,6 +12,7 @@ import logging
 
 from domain.entities.player import Player
 from domain.value_objects.piece import Piece
+from domain.value_objects.game_phase import UnifiedGamePhase, GamePhase  # Use unified phase
 from domain.events.base import DomainEvent, EventMetadata
 from domain.events.game_events import (
     RoundStarted,
@@ -28,17 +29,6 @@ from domain.events.game_events import (
 )
 
 logger = logging.getLogger(__name__)
-
-
-class GamePhase(Enum):
-    """Game phases."""
-
-    NOT_STARTED = "NOT_STARTED"
-    PREPARATION = "PREPARATION"
-    DECLARATION = "DECLARATION"
-    TURN = "TURN"
-    SCORING = "SCORING"
-    GAME_OVER = "GAME_OVER"
 
 
 class WinConditionType(Enum):

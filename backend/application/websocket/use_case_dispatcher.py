@@ -206,7 +206,7 @@ class UseCaseDispatcher:
         # Initialize game use cases 
         # StartGameUseCase doesn't need game_service - it creates the game
         self.start_game_use_case = StartGameUseCase(
-            self.uow, self.event_publisher, self.metrics
+            self.uow, self.event_publisher, metrics=self.metrics
         )
         
         # Other game use cases need game services

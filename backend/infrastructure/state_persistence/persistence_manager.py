@@ -60,7 +60,7 @@ class PersistenceConfig:
 
     # Recovery settings
     recovery_enabled: bool = True
-    recovery_mode: RecoveryMode = RecoveryMode.HYBRID
+    recovery_mode: RecoveryMode = RecoveryMode.LATEST
     auto_recovery: bool = True
 
     # Performance settings
