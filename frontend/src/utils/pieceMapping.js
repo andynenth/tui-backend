@@ -167,14 +167,70 @@ export function getPieceSVG(pieceData) {
  * @returns {string} The SVG import for the piece
  */
 export function getThemePieceSVG(piece, theme) {
-  if (!piece || !piece.kind || !theme || !theme.pieceAssets) {
+  // DEBUG: Log all parameters to understand what we're receiving
+  console.log('getThemePieceSVG called with:', {
+    piece,
+    theme: theme ? { id: theme.id, name: theme.name, hasPieceAssets: !!theme.pieceAssets } : null,
+    pieceAssets: theme?.pieceAssets
+  });
+
+  // Enhanced validation with more specific error logging
+  if (!piece) {
+    console.log('getThemePieceSVG: piece is null/undefined');
     return null;
   }
 
-  const pieceType = `${piece.kind}_${piece.color.toUpperCase()}`;
+  if (!piece.kind) {
+    console.log('getThemePieceSVG: piece.kind is missing:', piece);
+    return null;
+  }
+
+  if (!piece.color) {
+    console.log('getThemePieceSVG: piece.color is missing:', piece);
+    return null;
+  }
+
+  if (!theme) {
+    console.log('getThemePieceSVG: theme is null/undefined');
+    return null;
+  }
+
+  if (!theme.pieceAssets) {
+    console.log('getThemePieceSVG: theme.pieceAssets is missing:', {
+      themeId: theme.id,
+      themeName: theme.name,
+      themeKeys: Object.keys(theme)
+    });
+    return null;
+  }
+
+  // Safely construct piece type with error handling
+  let pieceType;
+  try {
+    // Handle case where piece.kind already includes color (e.g., "GENERAL_RED")
+    if (piece.kind.includes('_')) {
+      // Kind already includes color, use as-is
+      pieceType = piece.kind;
+    } else {
+      // Kind is just the piece type, append color
+      pieceType = `${piece.kind}_${piece.color.toUpperCase()}`;
+    }
+    console.log('Constructed pieceType:', pieceType, 'from piece:', { kind: piece.kind, color: piece.color });
+  } catch (error) {
+    console.error('getThemePieceSVG: Error constructing pieceType:', error, { piece });
+    return null;
+  }
+
+  const asset = theme.pieceAssets[pieceType];
+  console.log('Found asset for', pieceType, ':', asset ? 'VALID_SVG_URL' : 'NULL');
+
+  if (!asset) {
+    console.log('getThemePieceSVG: No asset found for pieceType:', pieceType);
+    console.log('Available assets:', Object.keys(theme.pieceAssets));
+  }
 
   // Get the SVG from the theme's piece assets
-  return theme.pieceAssets[pieceType] || null;
+  return asset || null;
 }
 
 /**
