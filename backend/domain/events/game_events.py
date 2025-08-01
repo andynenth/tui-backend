@@ -63,6 +63,15 @@ class RoundStarted(GameEvent):
     starter_name: str
     player_hands: Dict[str, List[str]]  # player_name -> piece kinds
 
+    def __post_init__(self):
+        """Validate event parameters after initialization."""
+        if self.round_number < 1:
+            raise ValueError(f"round_number must be >= 1, got {self.round_number}")
+        if not isinstance(self.starter_name, str) or not self.starter_name.strip():
+            raise ValueError(f"starter_name must be a non-empty string, got {self.starter_name}")
+        if not isinstance(self.player_hands, dict) or not self.player_hands:
+            raise ValueError(f"player_hands must be a non-empty dict, got {self.player_hands}")
+
     def _get_event_data(self) -> Dict[str, Any]:
         data = super()._get_event_data()
         data.update(
@@ -192,6 +201,25 @@ class PiecesDealt(GameEvent):
     round_number: int
     player_pieces: Dict[str, List[str]]  # player_name -> piece kinds
 
+    def __post_init__(self):
+        """Validate event parameters after initialization."""
+        if self.round_number < 1:
+            raise ValueError(f"round_number must be >= 1, got {self.round_number}")
+        if not isinstance(self.player_pieces, dict):
+            raise ValueError(f"player_pieces must be a dict, got {type(self.player_pieces)}")
+        if not self.player_pieces:
+            raise ValueError("player_pieces cannot be empty")
+        
+        # Validate each player's pieces
+        for player_name, pieces in self.player_pieces.items():
+            if not isinstance(player_name, str) or not player_name.strip():
+                raise ValueError(f"Player name must be a non-empty string, got {player_name}")
+            if not isinstance(pieces, list):
+                raise ValueError(f"Player {player_name} pieces must be a list, got {type(pieces)}")
+            for piece in pieces:
+                if not isinstance(piece, str):
+                    raise ValueError(f"Player {player_name} piece must be a string, got {type(piece)}: {piece}")
+
     def _get_event_data(self) -> Dict[str, Any]:
         data = super()._get_event_data()
         data.update(
@@ -206,6 +234,16 @@ class WeakHandDetected(GameEvent):
 
     round_number: int
     weak_hand_players: List[str]
+
+    def __post_init__(self):
+        """Validate event parameters after initialization."""
+        if self.round_number < 1:
+            raise ValueError(f"round_number must be >= 1, got {self.round_number}")
+        if not isinstance(self.weak_hand_players, list):
+            raise ValueError(f"weak_hand_players must be a list, got {type(self.weak_hand_players)}")
+        for player in self.weak_hand_players:
+            if not isinstance(player, str) or not player.strip():
+                raise ValueError(f"Player name must be a non-empty string, got {player}")
 
     def _get_event_data(self) -> Dict[str, Any]:
         data = super()._get_event_data()
