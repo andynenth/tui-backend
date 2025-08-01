@@ -22,6 +22,7 @@ import RoomPage from './pages/RoomPage';
 import GamePage from './pages/GamePage';
 import TutorialPage from './pages/TutorialPage';
 import { LoadingOverlay } from './components';
+import PieceRenderTest from './components/debug/PieceRenderTest';
 
 // Service initialization
 import { initializeServices, cleanupServices } from './services';
@@ -134,6 +135,9 @@ const AppRouterContent = ({ sessionToRecover }) => {
       
       {/* Tutorial page - no requirements */}
       <Route path="/tutorial" element={<TutorialPage />} />
+      
+      {/* Debug page - for piece rendering tests */}
+      <Route path="/debug" element={<PieceRenderTest />} />
 
       {/* Lobby - requires player name */}
       <Route

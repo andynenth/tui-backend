@@ -40,6 +40,13 @@ const GamePiece = ({
   animationDelay,
 }) => {
   const { currentTheme } = useTheme();
+  
+  // DEBUG: Log GamePiece render data
+  console.log('GamePiece rendering:', {
+    piece,
+    currentTheme: currentTheme ? { id: currentTheme.id, name: currentTheme.name } : null,
+    USE_SVG_PIECES
+  });
   // Build class names
   const classes = [
     'game-piece',
@@ -75,31 +82,61 @@ const GamePiece = ({
         <div
           className={`game-piece__face game-piece__face--front ${getPieceColorClass(piece)}`}
         >
-          {USE_SVG_PIECES ? (
-            <img
-              src={getThemePieceSVG(piece, currentTheme)}
-              alt={getPieceDisplay(piece)}
-            />
-          ) : (
-            getPieceDisplay(piece)
-          )}
+          {(() => {
+            const svgAsset = USE_SVG_PIECES ? getThemePieceSVG(piece, currentTheme) : null;
+            return USE_SVG_PIECES && svgAsset ? (
+              <>
+                <img
+                  src={svgAsset}
+                  alt={getPieceDisplay(piece)}
+                  onError={(e) => {
+                    console.error('GamePiece: Flippable SVG failed to load, falling back to text:', {
+                      piece,
+                      svgAsset,
+                      errorEvent: e
+                    });
+                    e.target.style.display = 'none';
+                    e.target.nextSibling.style.display = 'block';
+                  }}
+                />
+                <span style={{ display: 'none' }}>
+                  {getPieceDisplay(piece)}
+                </span>
+              </>
+            ) : (
+              getPieceDisplay(piece)
+            );
+          })()}
         </div>
       </div>
     );
   }
 
   // Render default/selectable variants
+  const svgAsset = USE_SVG_PIECES ? getThemePieceSVG(piece, currentTheme) : null;
+  
   return (
     <div className={classes} onClick={onClick} style={style}>
       <div className="game-piece__character">
-        {USE_SVG_PIECES ? (
+        {USE_SVG_PIECES && svgAsset ? (
           <img
-            src={getThemePieceSVG(piece, currentTheme)}
+            src={svgAsset}
             alt={getPieceDisplay(piece)}
+            onError={(e) => {
+              console.error('GamePiece: SVG failed to load, falling back to text:', {
+                piece,
+                svgAsset,
+                errorEvent: e
+              });
+              // Hide the broken image and show fallback text
+              e.target.style.display = 'none';
+              e.target.nextSibling.style.display = 'block';
+            }}
           />
-        ) : (
-          getPieceDisplay(piece)
-        )}
+        ) : null}
+        <span style={{ display: (USE_SVG_PIECES && svgAsset) ? 'none' : 'block' }}>
+          {getPieceDisplay(piece)}
+        </span>
       </div>
       {showValue && (
         <div className="game-piece__value">{formatPieceValue(piece)}</div>

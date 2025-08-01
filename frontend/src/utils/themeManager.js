@@ -67,7 +67,21 @@ export const themes = {
 // Get current theme from localStorage
 export const getTheme = () => {
   const saved = localStorage.getItem('liap-tui-theme');
-  return saved && themes[saved] ? themes[saved] : themes.medieval;
+  const selectedTheme = saved && themes[saved] ? themes[saved] : themes.medieval;
+  
+  // DEBUG: Log theme loading
+  console.log('Theme loaded:', {
+    savedThemeId: saved,
+    selectedTheme: {
+      id: selectedTheme.id,
+      name: selectedTheme.name,
+      hasPieceAssets: !!selectedTheme.pieceAssets,
+      pieceAssetsKeys: selectedTheme.pieceAssets ? Object.keys(selectedTheme.pieceAssets) : [],
+      pieceAssetsValues: selectedTheme.pieceAssets ? Object.values(selectedTheme.pieceAssets).slice(0, 3) : []
+    }
+  });
+  
+  return selectedTheme;
 };
 
 // Save theme
