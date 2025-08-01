@@ -706,16 +706,32 @@ export class GameService extends EventTarget {
   private handlePhaseChange(state: GameState, data: any): GameState {
     const newState = { ...state };
 
-    console.log('📡 GameService.handlePhaseChange received:', data);
-    console.log('   data.phase:', data.phase);
+    console.log('🔄 =============== PHASE CHANGE DEBUG ===============');
+    console.log('📡 GameService.handlePhaseChange received:', JSON.stringify(data, null, 2));
+    console.log('📊 Current state before change:', {
+      phase: state.phase,
+      playerName: state.playerName,
+      roomId: state.roomId,
+      isConnected: state.isConnected,
+      myHandLength: state.myHand?.length || 0
+    });
+    console.log('   data.phase (raw):', data.phase);
+    console.log('   data.previous_phase:', data.previous_phase);
     console.log('   data.players:', data.players);
     console.log('   data.phase_data:', data.phase_data);
     console.log('   data.phase_data?.players:', data.phase_data?.players);
     console.log('   state.playerName:', state.playerName);
 
     // 🎯 FIX: Normalize phase to lowercase to match frontend expectations
+    const oldPhase = state.phase;
     newState.phase = data.phase ? data.phase.toLowerCase() : 'waiting';
     newState.currentRound = data.round || state.currentRound;
+    
+    console.log('🔄 Phase transition:', {
+      from: oldPhase,
+      to: newState.phase,
+      normalized: data.phase ? `${data.phase} -> ${data.phase.toLowerCase()}` : 'none'
+    });
 
     // Extract my hand from players data (sent by backend)
     // Check both data.players and data.phase_data.players
@@ -1161,6 +1177,17 @@ export class GameService extends EventTarget {
       const sessionId = `${state.roomId}-${state.playerName}-${Date.now()}`;
       storeSession(state.roomId, state.playerName, sessionId, newState.phase);
     }
+
+    console.log('✅ Final state after phase change:', {
+      phase: newState.phase,
+      playerName: newState.playerName,
+      roomId: newState.roomId,
+      isConnected: newState.isConnected,
+      myHandLength: newState.myHand?.length || 0,
+      playersCount: newState.players?.length || 0,
+      currentRound: newState.currentRound
+    });
+    console.log('🔄 ============= END PHASE CHANGE DEBUG =============');
 
     return newState;
   }

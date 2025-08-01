@@ -140,8 +140,11 @@ export class NetworkService extends EventTarget {
         is_reconnection: connectionData?.isReconnection || false,
       });
 
-      // Process any queued messages
-      this.processQueuedMessages(roomId);
+      // Process any queued messages after a small delay to ensure WebSocket is fully ready
+      // This prevents race conditions where messages are queued but never sent
+      setTimeout(() => {
+        this.processQueuedMessages(roomId);
+      }, 100);
 
       // Reset reconnection flag after successful connection
       if (connectionData) {
@@ -391,11 +394,28 @@ export class NetworkService extends EventTarget {
       connectionData.messagesReceived++;
       connectionData.lastActivity = Date.now();
 
+      // Enhanced debug logging for all messages
+      console.log('📨 NetworkService received message:', {
+        roomId,
+        event: message.event,
+        timestamp: new Date().toISOString(),
+        messageNumber: connectionData.messagesReceived
+      });
+
+      // Special debug logging for phase_change events
+      if (message.event === 'phase_change') {
+        console.log('🔄 =============== WEBSOCKET PHASE CHANGE ===============');
+        console.log('📨 Raw phase_change message:', JSON.stringify(message, null, 2));
+        console.log('🔄 =================================================');
+      }
+
       // Handle heartbeat response
       if (message.event === 'pong' && message.data?.timestamp) {
         connectionData.latency = Date.now() - message.data.timestamp;
         return;
       }
+
+      console.log('📡 Dispatching CustomEvent:', message.event);
 
       // Emit the specific event
       this.dispatchEvent(
@@ -662,6 +682,11 @@ export class NetworkService extends EventTarget {
       !connectionData?.websocket ||
       connectionData.websocket.readyState !== WebSocket.OPEN
     ) {
+      console.log(`⏳ WebSocket not ready for ${roomId}, readyState: ${connectionData?.websocket?.readyState}, retrying in 50ms`);
+      // Retry after a short delay if WebSocket isn't ready
+      setTimeout(() => {
+        this.processQueuedMessages(roomId);
+      }, 50);
       return;
     }
 
@@ -674,6 +699,9 @@ export class NetworkService extends EventTarget {
       try {
         connectionData.websocket.send(JSON.stringify(message));
         connectionData.messagesSent++;
+        connectionData.lastActivity = Date.now();
+        
+        console.log(`✅ Successfully sent queued message: ${message.event}`);
       } catch (error) {
         console.error(`Failed to send queued message to ${roomId}:`, error);
         queue.push(message); // Re-queue failed message
