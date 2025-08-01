@@ -816,20 +816,7 @@ async def handle_game_started(event: GameStarted):
 @event_handler(PhaseChanged, priority=100)
 async def handle_phase_changed(event: PhaseChanged):
     """Broadcast phase change - this is the main game state update."""
-    logger.info(
-        f"[BROADCAST_DEBUG] Broadcasting phase_change event: {event.old_phase} -> {event.new_phase}"
-    )
-    logger.info(
-        f"[BROADCAST_DEBUG] Phase data keys: {list(event.phase_data.keys()) if event.phase_data else 'None'}"
-    )
-
-    # Log player hands if present
-    if event.phase_data and "players" in event.phase_data:
-        for player_name, player_data in event.phase_data["players"].items():
-            hand_size = len(player_data.get("hand", [])) if player_data else 0
-            logger.info(
-                f"[BROADCAST_DEBUG] Player {player_name} has {hand_size} pieces"
-            )
+    logger.info(f"Phase change: {event.old_phase} -> {event.new_phase}")
 
     await broadcast(
         event.room_id,
@@ -842,9 +829,6 @@ async def handle_phase_changed(event: PhaseChanged):
         },
     )
 
-    logger.info(
-        f"[BROADCAST_DEBUG] phase_change event broadcast complete for room {event.room_id}"
-    )
 
 
 @event_handler(PiecesPlayed, priority=100)
