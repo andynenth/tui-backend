@@ -21,7 +21,7 @@ from infrastructure.state_persistence.abstractions import (
     RecoveryPoint,
 )
 from infrastructure.feature_flags import get_feature_flags
-from domain.entities.game import GamePhase as DomainGamePhase
+from domain.value_objects.game_phase import UnifiedGamePhase
 from infrastructure.resilience.circuit_breaker import (
     get_circuit_breaker,
     CircuitBreakerConfig,
@@ -106,7 +106,7 @@ class StateManagementAdapter:
             return self._forced_enabled
             
         # Check feature flag
-        return self._feature_flags.is_enabled("USE_STATE_PERSISTENCE", {})
+        return self._feature_flags.is_enabled(self._feature_flags.USE_STATE_PERSISTENCE, {})
     
     async def track_game_start(
         self,
@@ -175,8 +175,8 @@ class StateManagementAdapter:
     async def track_phase_change(
         self,
         context: StateTransitionContext,
-        from_phase: DomainGamePhase,
-        to_phase: DomainGamePhase,
+        from_phase: UnifiedGamePhase,
+        to_phase: UnifiedGamePhase,
         trigger: str,
         payload: Optional[Dict[str, Any]] = None
     ) -> bool:
@@ -353,23 +353,13 @@ class StateManagementAdapter:
             logger.error(f"Failed to recover game state for {game_id}: {e}")
             return None
     
-    def _map_domain_to_state_phase(self, domain_phase: DomainGamePhase) -> str:
+    def _map_domain_to_state_phase(self, domain_phase: UnifiedGamePhase) -> str:
         """
-        Map domain GamePhase to state machine phase.
+        Map unified GamePhase to state machine phase string.
         
-        This handles the enum mismatch between architectures.
+        This uses the unified phase's built-in conversion.
         """
-        # Direct mappings
-        mapping = {
-            DomainGamePhase.NOT_STARTED: "NOT_STARTED",
-            DomainGamePhase.PREPARATION: "PREPARATION",
-            DomainGamePhase.DECLARATION: "DECLARATION",
-            DomainGamePhase.TURN: "TURN",
-            DomainGamePhase.SCORING: "SCORING",
-            DomainGamePhase.GAME_OVER: "GAME_OVER",
-        }
-        
-        return mapping.get(domain_phase, str(domain_phase.value))
+        return domain_phase.to_state_machine_phase()
     
     def _log_disabled(self, operation: str) -> None:
         """Log that state management is disabled (only once)."""

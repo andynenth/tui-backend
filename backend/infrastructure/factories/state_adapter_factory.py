@@ -42,7 +42,7 @@ class StateAdapterFactory:
         feature_flags = get_feature_flags()
         
         # Check if state persistence is enabled
-        if not feature_flags.is_enabled("USE_STATE_PERSISTENCE", context or {}):
+        if not feature_flags.is_enabled(feature_flags.USE_STATE_PERSISTENCE, context or {}):
             logger.debug("State persistence disabled by feature flag")
             return None
         

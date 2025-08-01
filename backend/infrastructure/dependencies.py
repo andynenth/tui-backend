@@ -119,12 +119,16 @@ class DependencyContainer:
             from infrastructure.state_persistence.event_sourcing import StateMachineEventStore
             
             # Configure persistence
+            snapshot_enabled = self._feature_flags.is_enabled(self._feature_flags.ENABLE_STATE_SNAPSHOTS)
+            recovery_enabled = self._feature_flags.is_enabled(self._feature_flags.ENABLE_STATE_RECOVERY)
+            
+            logger.info(f"Feature flags - snapshots: {snapshot_enabled}, recovery: {recovery_enabled}")
+            
             config = PersistenceConfig(
                 strategy=PersistenceStrategy.HYBRID,
-                snapshot_enabled=self._feature_flags.is_enabled(self._feature_flags.ENABLE_STATE_SNAPSHOTS),
+                snapshot_enabled=snapshot_enabled,
                 event_sourcing_enabled=True,
-                recovery_enabled=self._feature_flags.is_enabled(self._feature_flags.ENABLE_STATE_RECOVERY),
-                persist_on_phase_change=True,
+                recovery_enabled=recovery_enabled,
                 cache_enabled=True,
                 batch_operations=True,
             )
@@ -132,18 +136,23 @@ class DependencyContainer:
             # Create snapshot stores (in-memory for now)
             snapshot_stores = []
             if config.snapshot_enabled:
-                # Would create actual snapshot stores here
-                pass
+                from infrastructure.state_persistence.stores.in_memory import InMemorySnapshotStore
+                snapshot_stores.append(InMemorySnapshotStore())
+                logger.info(f"Created snapshot stores: {len(snapshot_stores)}")
                 
             # Create transition logs
             transition_logs = []
-            # Would create actual transition logs here
+            if config.event_sourcing_enabled:
+                from infrastructure.state_persistence.stores.in_memory import InMemoryTransitionLog
+                transition_logs.append(InMemoryTransitionLog())
+                logger.info(f"Created transition logs: {len(transition_logs)}")
             
             # Create event store if needed
             event_store = None
             if config.event_sourcing_enabled:
-                # Would create actual event store here
-                pass
+                from infrastructure.state_persistence.stores.in_memory import InMemoryEventStore
+                event_store = InMemoryEventStore()
+                logger.info("Created event store")
             
             return StatePersistenceManager(
                 config=config,
