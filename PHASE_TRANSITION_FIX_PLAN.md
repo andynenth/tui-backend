@@ -1,28 +1,37 @@
-# Phase Transition Bug Fix - Comprehensive Implementation Plan
+# Phase Transition Bug Fix - MINIMAL CONNECTIVITY RESTORATION PLAN
 
-**Document Purpose**: Complete implementation roadmap for fixing phase transition bug in Liap TUI backend  
+**Document Purpose**: ONLY connect existing broken components - NO NEW FEATURES ALLOWED  
 **Priority**: CRITICAL - Game is stuck in PREPARATION phase, no event persistence  
-**Estimated Time**: 4-6 hours with proper agent coordination  
+**Estimated Time**: 1 hour maximum - minimal fixes only  
+**Constraint**: STRICT NO NEW FEATURES - Only enable/connect existing code  
 **Created**: 2025-01-01  
+**Updated**: 2025-01-01 - Added NO NEW FEATURES enforcement  
 
 ## 🎯 Executive Summary
 
-**Root Cause Identified**: Event sourcing is disabled by feature flag, breaking the event persistence chain that enables phase transitions and state recovery.
+**Root Cause Identified**: Event sourcing disabled + State machine operates independently from Clean Architecture domain layer, breaking both event persistence and proper business logic flow.
+
+**Clean Architecture Analysis**:
+- ❌ **Layer Boundary Violation**: `application/use_cases/game/start_game.py:106` bypasses state machine, calling domain directly
+- ❌ **Duplicate Business Logic**: Domain `GamePhase` enum + State machine `GamePhase` enum create inconsistency
+- ❌ **Infrastructure Bypass**: Events broadcast but not persisted due to disabled event sourcing
+- ❌ **Architecture Gap**: State machine exists as engine layer, not integrated with Clean Architecture
 
 **Impact**: 
-- ❌ Events broadcast to frontend but never persisted  
-- ❌ Game gets stuck in PREPARATION phase indefinitely  
-- ❌ No state recovery or replay capability  
-- ❌ Sophisticated state machine logic bypassed  
+- ❌ Events broadcast to frontend but never persisted (infrastructure layer issue)
+- ❌ Game gets stuck in PREPARATION phase (application layer bypasses state machine)
+- ❌ No state recovery or replay capability (event sourcing disabled)
+- ❌ Sophisticated state machine logic bypassed (Clean Architecture integration missing)
+- ❌ Domain business rules duplicated in state machine (DRY violation)
 
-**Solution**: Enable event sourcing + integrate state machine with domain entities + add phase progression logic.
+**Clean Architecture Solution**: Enable event sourcing + Integrate state machine as infrastructure service + Preserve domain layer purity + Ensure proper dependency flow.
 
 ## 📋 Implementation Phases
 
 ### **Phase 1: Enable Event Sourcing Foundation** 🔧
 *Prerequisites: None*  
-*Estimated Time: 30 minutes*  
-*Risk Level: LOW*
+*Estimated Time: 15 minutes*  
+*Risk Level: MINIMAL - Just enabling existing infrastructure*
 
 #### **Tasks:**
 - [ ] **Task 1.1**: Enable `USE_EVENT_SOURCING` feature flag
@@ -69,35 +78,26 @@ def test_event_store_health():
 
 ---
 
-### **Phase 2: Verify Event Persistence Chain** ✅
+### **Phase 2: Connect State Machine to Use Cases** ✅
 *Prerequisites: Phase 1 complete*  
-*Estimated Time: 45 minutes*  
-*Risk Level: MEDIUM*
+*Estimated Time: 30 minutes*  
+*Risk Level: LOW - Modifying existing files only*
 
 #### **Tasks:**
-- [ ] **Task 2.1**: Test event publishing end-to-end
-  - **Action**: Trigger a domain event and verify it reaches both publishers
-  - **Files**: `backend/application/use_cases/game/start_game.py`
-  - **Test**: Event appears in both WebSocket and SQLite
+- [ ] **Task 2.1**: Modify start_game use case to use state machine
+  - **File**: `backend/application/use_cases/game/start_game.py:106`
+  - **Change**: Replace `game.start_round()` with state machine coordination
+  - **Fix**: Use existing state machine instead of bypassing it
 
-- [ ] **Task 2.2**: Verify EventStorePublisher functionality
-  - **File**: `backend/infrastructure/events/application_event_publisher.py:193-245`
-  - **Action**: Test event persistence to SQLite database
-  - **Test**: Query database for stored events
-
-- [ ] **Task 2.3**: Test event serialization/deserialization
-  - **Action**: Ensure domain events convert properly to/from storage format
-  - **Test**: Round-trip serialization maintains data integrity
-
-- [ ] **Task 2.4**: Performance validation
-  - **Action**: Ensure composite publishing doesn't create bottlenecks
-  - **Test**: Measure event publishing latency
+- [ ] **Task 2.2**: Ensure state machine calls domain methods
+  - **File**: `backend/engine/state_machine/states/preparation_state.py`
+  - **Action**: Verify state machine uses existing domain business rules
+  - **No Change**: State machine should enhance, not replace domain logic
 
 #### **Success Criteria:**
-- ✅ Domain events persist to SQLite database
-- ✅ WebSocket broadcasting still works correctly
-- ✅ Event serialization/deserialization working
-- ✅ Performance impact acceptable (<10ms per event)
+- ✅ Use case calls state machine instead of bypassing it
+- ✅ State machine uses existing domain business rules
+- ✅ No new features added, only existing connections fixed
 
 #### **Test Units:**
 ```python
@@ -135,39 +135,34 @@ def test_event_serialization():
 
 ---
 
-### **Phase 3: Fix Phase Progression Logic** 🚀
+### **Phase 3: Test Integration** 🚀
 *Prerequisites: Phase 2 complete*  
-*Estimated Time: 90 minutes*  
-*Risk Level: HIGH*
+*Estimated Time: 15 minutes*  
+*Risk Level: MINIMAL - Testing existing functionality*
 
-#### **Tasks:**
-- [ ] **Task 3.1**: Add automatic phase progression from PREPARATION
-  - **File**: `backend/engine/state_machine/states/preparation_state.py`
-  - **Action**: Implement `check_transition_conditions()` logic
-  - **Logic**: After cards dealt + weak hands processed → transition to DECLARATION
+#### **Minimal Integration Tasks:**
 
-- [ ] **Task 3.2**: Integrate state machine with domain entities
-  - **File**: `backend/application/use_cases/game/start_game.py`
-  - **Action**: Replace direct domain calls with state machine coordination
-  - **Change**: Use state machine for game progression instead of domain-only
+- [ ] **Task 3.1**: Test game doesn't get stuck in PREPARATION
+  - **Test**: Start game → Verify automatic progression to DECLARATION
+  - **Expected**: Game progresses normally (existing functionality restored)
+  - **No Changes**: Just verify the connections work
 
-- [ ] **Task 3.3**: Add phase transition event publishing
-  - **Action**: Ensure state machine phase changes emit proper domain events
-  - **File**: `backend/engine/state_machine/base_state.py:132-145`
-  - **Verify**: Event integration is working properly
+- [ ] **Task 3.2**: Test events persist to database
+  - **Test**: Start game → Check SQLite for stored events
+  - **Expected**: Events saved to database (existing functionality restored)
+  - **No Changes**: Just verify event sourcing works
 
-- [ ] **Task 3.4**: Implement preparation phase completion logic
-  - **Logic**: Automatically progress when:
-    - ✅ All players have received cards
-    - ✅ Weak hand detection completed
-    - ✅ No pending weak hand redeals
-  - **Timeout**: 5-second safety timeout for progression
+- [ ] **Task 3.3**: Test WebSocket still works
+  - **Test**: Ensure frontend still receives events
+  - **Expected**: No regression in existing WebSocket functionality
+  - **No Changes**: Just verify no functionality was broken
 
-#### **Success Criteria:**
+#### **Simple Success Criteria:**
 - ✅ Game automatically progresses from PREPARATION to DECLARATION phase
-- ✅ State machine integration with domain entities working
-- ✅ Phase transition events properly published and persisted
-- ✅ No infinite loops or stuck states
+- ✅ Events persist to database (not just WebSocket)
+- ✅ No existing functionality broken
+- ✅ No new features added
+- ✅ Minimal code changes (< 10 lines modified total)
 
 #### **Test Units:**
 ```python
@@ -214,36 +209,88 @@ async def test_phase_transition_events():
 
 ---
 
-### **Phase 4: Integration Testing & Validation** 🧪
-*Prerequisites: Phase 3 complete*  
-*Estimated Time: 60 minutes*  
-*Risk Level: MEDIUM*
+## 🚨 **STRICT NO NEW FEATURES ENFORCEMENT**
 
-#### **Tasks:**
-- [ ] **Task 4.1**: End-to-end game flow test
+**ABSOLUTE RULE**: This plan ONLY connects existing broken functionality. ZERO new code allowed.
+
+### ❌ **COMPLETELY FORBIDDEN (Will Abort Plan):**
+- ❌ New game features, mechanics, or rules
+- ❌ Additional APIs, endpoints, or routes
+- ❌ New business logic or domain rules
+- ❌ Enhanced monitoring, logging, or metrics
+- ❌ Additional documentation or config files
+- ❌ New database tables, columns, or schemas
+- ❌ New classes, interfaces, or abstractions
+- ❌ Additional error handling beyond existing
+- ❌ Performance optimizations or enhancements
+- ❌ New tests beyond validating existing functionality
+
+### ✅ **ONLY ALLOWED (Minimal Fixes):**
+- ✅ Change 1 line: `USE_EVENT_SOURCING: False → True`
+- ✅ Modify existing use case to call existing state machine
+- ✅ Connect existing components that are already built
+- ✅ Enable existing infrastructure that's already coded
+
+### 🛡️ **ENFORCEMENT MECHANISMS:**
+
+#### **Pre-Implementation Validation:**
+- [ ] **Line Count Limit**: Total changes must be < 10 lines
+- [ ] **File Count Limit**: Modify < 5 existing files, create 0 new files
+- [ ] **Feature Flag Check**: Only enable existing flags, never create new ones
+- [ ] **Code Addition Ban**: No new functions, classes, or methods
+
+#### **During Implementation Validation:**
+- [ ] **Real-time Monitoring**: Each change reviewed for feature creep
+- [ ] **Diff Analysis**: Git diff must show only connectivity changes
+- [ ] **Architecture Boundary Check**: No new layer violations
+- [ ] **Existing Code Only**: Must use infrastructure already present
+
+#### **Post-Implementation Validation:**
+- [ ] **Functionality Test**: Only test that existing features work again
+- [ ] **Performance Test**: No performance improvements expected
+- [ ] **Feature Audit**: Confirm zero new capabilities added
+- [ ] **Rollback Ready**: Changes so minimal rollback takes < 5 minutes
+
+#### **Clean Architecture Validation Tasks:**
+
+- [ ] **Task 4.1**: Layer Boundary Compliance Testing
+  - **Test**: Verify no circular dependencies introduced
+  - **Validation**: Domain layer has zero infrastructure dependencies
+  - **Tools**: Architecture testing, dependency analysis
+  - **Success**: Clean Architecture boundaries maintained post-integration
+
+- [ ] **Task 4.2**: End-to-end game flow with architecture validation
   - **Flow**: Player 1 → Enter Lobby → Create Room → Start Game → Automatic progression
-  - **Verification**: Game progresses through PREPARATION → DECLARATION → TURN phases
-  - **Tools**: Playwright MCP for frontend testing
+  - **Verification**: Game progresses through PREPARATION → DECLARATION with proper layer communication
+  - **Architecture Check**: Events flow Domain → Application → Infrastructure → API
+  - **Tools**: Playwright MCP + architecture compliance validation
 
-- [ ] **Task 4.2**: State recovery testing
-  - **Action**: Simulate server restart, verify game state recovers from events
-  - **Test**: Load persisted events and reconstruct game state
-  - **Validation**: State matches pre-restart conditions
+- [ ] **Task 4.3**: State recovery with Clean Architecture integrity
+  - **Action**: Simulate server restart, verify state recovers through proper layer reconstruction
+  - **Test**: Event sourcing rebuilds domain state through application layer orchestration
+  - **Validation**: State recovery respects Clean Architecture patterns
+  - **Architecture Check**: Infrastructure event store → Application use case → Domain entity reconstruction
 
-- [ ] **Task 4.3**: Performance regression testing
-  - **Metrics**: Event publishing latency, memory usage, database performance
-  - **Benchmark**: Compare with baseline performance
-  - **Threshold**: <10ms event latency, <100MB memory increase
+- [ ] **Task 4.4**: Performance with Clean Architecture overhead
+  - **Metrics**: Event publishing latency, layer communication overhead, memory usage
+  - **Benchmark**: Compare Clean Architecture vs direct calls performance
+  - **Threshold**: <10ms event latency with proper layer separation maintained
+  - **Validation**: Architecture compliance doesn't compromise real-time game performance
 
-- [ ] **Task 4.4**: Error handling validation
-  - **Scenarios**: Database unavailable, event serialization failures, state machine errors
-  - **Expected**: Graceful degradation, error logging, system stability
+- [ ] **Task 4.5**: Error handling with layer isolation
+  - **Scenarios**: Database unavailable, state machine errors, domain validation failures
+  - **Expected**: Errors isolated to appropriate layers, graceful degradation
+  - **Architecture Check**: Error handling respects layer boundaries and dependency directions
 
-#### **Success Criteria:**
-- ✅ Full game flow works end-to-end
-- ✅ State recovery from events functional
-- ✅ Performance within acceptable limits
-- ✅ Error scenarios handled gracefully
+#### **Clean Architecture Success Criteria:**
+- ✅ Full game flow works end-to-end while maintaining Clean Architecture
+- ✅ State recovery from events functional through proper layer orchestration
+- ✅ Performance within acceptable limits (<10ms latency) with layer separation
+- ✅ Error scenarios handled gracefully within appropriate layer boundaries
+- ✅ No Clean Architecture violations introduced during integration
+- ✅ Domain layer business logic remains pure and testable
+- ✅ Infrastructure layer properly implements application interfaces
+- ✅ Application layer coordinates without implementing business logic
 
 #### **Test Units:**
 ```python
@@ -302,10 +349,10 @@ async def test_performance_metrics():
 
 ---
 
-### **Phase 5: Production Readiness** 🚀
-*Prerequisites: Phase 4 complete*  
-*Estimated Time: 30 minutes*  
-*Risk Level: LOW*
+### **Success Validation** 🎯
+*Prerequisites: Phase 3 complete*  
+*Validation Time: 5 minutes*  
+*Risk Level: NONE - Just checking existing functionality works*
 
 #### **Tasks:**
 - [ ] **Task 5.1**: Configuration validation
@@ -336,79 +383,156 @@ async def test_performance_metrics():
 
 ---
 
-## 🤖 Recommended Agent Configuration
+## 🤖 Minimal Fix Agent Configuration
 
-Based on the task complexity and concurrent execution requirements, here's the optimal agent setup:
+**Strategy**: Connect existing components without adding new features
 
-### **Agent Swarm Configuration (6 Agents)**
+### **Simplified Agent Configuration (4 Agents Only)**
+
+Focus on connecting existing pieces, not building new ones:
 
 ```javascript
-// CONCURRENT AGENT DEPLOYMENT
+// MINIMAL FIX DEPLOYMENT - NO NEW FEATURES
 [Single Message - Batch Execution]:
-  mcp__claude-flow__swarm_init { topology: "hierarchical", maxAgents: 6, strategy: "specialized" }
-  mcp__claude-flow__agent_spawn { type: "coordinator", name: "Implementation Lead" }
-  mcp__claude-flow__agent_spawn { type: "coder", name: "Backend Developer" } 
-  mcp__claude-flow__agent_spawn { type: "tester", name: "QA Engineer" }
-  mcp__claude-flow__agent_spawn { type: "analyst", name: "System Architect" }
-  mcp__claude-flow__agent_spawn { type: "reviewer", name: "Code Reviewer" }
-  mcp__claude-flow__agent_spawn { type: "optimizer", name: "Performance Expert" }
+  mcp__claude-flow__swarm_init { 
+    topology: "hierarchical", 
+    maxAgents: 4, 
+    strategy: "minimal_fix_only" 
+  }
+  
+  // Fix-focused agent deployment
+  mcp__claude-flow__agent_spawn { type: "coordinator", name: "Fix Coordinator" }
+  mcp__claude-flow__agent_spawn { type: "coder", name: "Infrastructure Connector" }
+  mcp__claude-flow__agent_spawn { type: "coder", name: "State Machine Integrator" }
+  mcp__claude-flow__agent_spawn { type: "tester", name: "Fix Validator" }
 ```
 
-### **Agent Responsibilities:**
+### **Clean Architecture Layer-Aligned Agent Responsibilities:**
 
-#### **🎯 Implementation Lead (Coordinator)**
-- **Role**: Project coordination and task orchestration
-- **Tasks**: Phase 1-5 coordination, checklist management, blocker resolution
-- **Tools**: TodoWrite, task status tracking, inter-agent communication
-- **Priority**: Ensure all phases complete in sequence
+#### **🎯 Clean Architecture Lead (Coordinator)**
+- **Role**: Orchestrate phase transitions while maintaining Clean Architecture integrity
+- **Layer Focus**: Cross-layer coordination ensuring dependency inversion principles
+- **Tasks**: 
+  - Coordinate domain-first integration approach
+  - Ensure state machine integration respects Clean Architecture boundaries
+  - Validate dependency flow: API → Application → Domain ← Infrastructure
+- **Tools**: TodoWrite, architecture compliance validation, cross-layer coordination
+- **Priority**: Maintain Clean Architecture patterns throughout phase transition fix
 
-#### **💻 Backend Developer (Coder)**  
-- **Role**: Core implementation work
-- **Tasks**: Feature flag changes, event publisher integration, state machine fixes
-- **Tools**: Edit, MultiEdit, Write, Read for code implementation
-- **Focus**: Phases 1, 2, 3 - primary implementation work
+#### **🏗️ Domain Integration Architect (Analyst)**
+- **Role**: Design state machine integration within Domain Layer constraints
+- **Layer Focus**: Domain Layer (entities, events, services) + State Machine integration
+- **Tasks**:
+  - Analyze `domain/entities/game.py` and `engine/state_machine/` integration points
+  - Design domain event emission from state machine phase transitions
+  - Ensure state machine logic enhances rather than bypasses domain business rules
+  - Map state machine phases to domain GamePhase enum consolidation
+- **Tools**: Read, analysis, domain modeling, event design
+- **Focus**: Phases 3, 4 - critical domain-state machine integration
 
-#### **🧪 QA Engineer (Tester)**
-- **Role**: Test creation and validation
-- **Tasks**: Create test units, run test suites, validate functionality
-- **Tools**: Write (test files), Bash (test execution), Read (test results)
-- **Focus**: Phases 2, 3, 4 - comprehensive testing
+#### **💻 Application Layer Developer (Coder)**
+- **Role**: Modify use cases to integrate state machine coordination
+- **Layer Focus**: Application Layer (`application/use_cases/`, `application/services/`)
+- **Tasks**:
+  - Update `application/use_cases/game/start_game.py` to use state machine instead of direct domain calls
+  - Integrate state machine with existing event publishers
+  - Ensure use case orchestration respects Clean Architecture patterns
+  - Coordinate with infrastructure layer through defined interfaces
+- **Tools**: Edit, MultiEdit, use case modification, interface implementation
+- **Focus**: Phases 2, 3 - application layer integration work
 
-#### **🏗️ System Architect (Analyst)**
-- **Role**: Architecture validation and integration
-- **Tasks**: State machine integration, event sourcing design, performance analysis
-- **Tools**: Read, Grep, analysis and documentation
-- **Focus**: Phases 3, 4 - complex integration work
+#### **🔧 Infrastructure Layer Developer (Coder)**
+- **Role**: Enable event sourcing and enhance infrastructure support
+- **Layer Focus**: Infrastructure Layer (`infrastructure/events/`, `infrastructure/dependencies.py`)
+- **Tasks**:
+  - Enable `USE_EVENT_SOURCING` feature flag in `infrastructure/feature_flags.py`
+  - Enhance `CompositeEventPublisher` with state machine event integration
+  - Optimize `EventStorePublisher` for phase transition event persistence
+  - Ensure infrastructure adapts to domain and application layer needs
+- **Tools**: Edit, configuration management, event infrastructure enhancement
+- **Focus**: Phases 1, 2 - foundational infrastructure enabling
 
-#### **👁️ Code Reviewer (Reviewer)**
-- **Role**: Quality assurance and best practices
-- **Tasks**: Code review, architecture compliance, error handling validation
-- **Tools**: Read, analysis, feedback generation
-- **Focus**: All phases - continuous quality monitoring
+#### **⚙️ State Machine Integration Expert (Specialist)**
+- **Role**: Bridge state machine with Clean Architecture layers
+- **Layer Focus**: Engine Layer + Cross-layer integration
+- **Tasks**:
+  - Integrate `GameStateMachine` with domain `Game` entity
+  - Ensure state machine events emit proper domain events
+  - Coordinate `PreparationState` automatic progression with domain business rules
+  - Validate state machine integration doesn't violate Clean Architecture principles
+- **Tools**: State machine modification, integration testing, validation
+- **Focus**: Phases 3, 4 - specialized state machine integration
 
-#### **⚡ Performance Expert (Optimizer)**
-- **Role**: Performance monitoring and optimization
-- **Tasks**: Performance testing, bottleneck identification, optimization
-- **Tools**: Bash (benchmarking), monitoring, analysis
-- **Focus**: Phases 2, 4 - performance validation
+#### **🧪 Layer Boundary QA Engineer (Tester)**
+- **Role**: Validate Clean Architecture compliance and integration correctness
+- **Layer Focus**: Cross-layer testing and boundary validation
+- **Tasks**:
+  - Create tests ensuring no layer boundary violations
+  - Validate dependency inversion is maintained post-integration
+  - Test domain events flow correctly through all layers
+  - Ensure state machine integration doesn't create circular dependencies
+- **Tools**: Architecture testing, boundary validation, integration testing
+- **Focus**: Phases 2, 3, 4 - comprehensive layer boundary testing
 
-### **Coordination Pattern:**
+#### **👁️ Architecture Compliance Reviewer (Reviewer)**
+- **Role**: Ensure all changes maintain Clean Architecture integrity
+- **Layer Focus**: Cross-layer architecture compliance
+- **Tasks**:
+  - Review all code changes for Clean Architecture compliance
+  - Validate dependency directions remain correct
+  - Ensure domain layer remains pure business logic
+  - Confirm infrastructure changes don't leak into higher layers
+- **Tools**: Code review, architecture analysis, compliance validation
+- **Focus**: All phases - continuous architecture compliance monitoring
+
+#### **⚡ Event Sourcing Performance Expert (Optimizer)**
+- **Role**: Optimize event sourcing and state machine performance
+- **Layer Focus**: Infrastructure Layer + Performance monitoring
+- **Tasks**:
+  - Optimize `CompositeEventPublisher` for minimal latency
+  - Ensure event sourcing doesn't impact real-time game performance
+  - Monitor phase transition performance after state machine integration
+  - Validate event persistence doesn't create bottlenecks
+- **Tools**: Performance testing, event sourcing optimization, monitoring
+- **Focus**: Phases 2, 4, 5 - performance validation and optimization
+
+### **Clean Architecture Coordination Pattern:**
 
 ```javascript
-// MANDATORY AGENT COORDINATION HOOKS
-Each agent MUST execute:
+// MANDATORY CLEAN ARCHITECTURE COORDINATION HOOKS
+Each agent MUST execute with layer-aware coordination:
 
 1. BEFORE Starting Work:
-   npx claude-flow@alpha hooks pre-task --description "[agent task]"
-   npx claude-flow@alpha hooks session-restore --session-id "fix-phase-transition"
+   npx claude-flow@alpha hooks pre-task --description "[agent task]" --layer "[domain|application|infrastructure|api]"
+   npx claude-flow@alpha hooks session-restore --session-id "clean-arch-phase-transition"
+   npx claude-flow@alpha hooks architecture-validate --check-dependencies true
 
 2. DURING Work (After EVERY Step):
-   npx claude-flow@alpha hooks post-edit --file "[file]" --memory-key "phase-fix/[agent]/[step]"
-   npx claude-flow@alpha hooks notify --message "[what was accomplished]"
+   npx claude-flow@alpha hooks post-edit --file "[file]" --memory-key "clean-arch/[layer]/[agent]/[step]"
+   npx claude-flow@alpha hooks notify --message "[what was accomplished]" --layer-impact "[affected layers]"
+   npx claude-flow@alpha hooks boundary-check --validate-layer-compliance true
 
 3. AFTER Completing Work:
-   npx claude-flow@alpha hooks post-task --task-id "[task]" --analyze-performance true
+   npx claude-flow@alpha hooks post-task --task-id "[task]" --analyze-performance true --architecture-compliance true
+   npx claude-flow@alpha hooks dependency-validate --ensure-inversion-preserved true
 ```
+
+### **Layer-Specific Coordination Requirements:**
+
+#### **Domain Layer Changes** (Domain Integration Architect):
+- Must validate: No infrastructure dependencies introduced
+- Must ensure: Business rules remain pure and testable
+- Must coordinate: Event emission integrates cleanly with application layer
+
+#### **Application Layer Changes** (Application Layer Developer):
+- Must validate: Use cases remain orchestration-focused
+- Must ensure: State machine integration through proper interfaces
+- Must coordinate: Domain and infrastructure layer coordination
+
+#### **Infrastructure Layer Changes** (Infrastructure Layer Developer):
+- Must validate: No business logic leakage into infrastructure
+- Must ensure: Event sourcing enhances rather than complicates architecture
+- Must coordinate: Performance impact on real-time game requirements
 
 ## 📊 Success Metrics
 
@@ -460,13 +584,71 @@ Each agent MUST execute:
 
 ---
 
-## 🎯 Agent Deployment Command
+## 🎯 Minimal Fix Agent Deployment
 
-Execute this single command to deploy the optimal agent swarm:
+### **Deployment Command for Minimal Fix:**
 
 ```bash
-# Deploy hierarchical swarm for phase transition fix
-npx claude-flow@alpha --agents 6 --topology hierarchical --task "Fix phase transition bug with event sourcing integration"
+# Deploy minimal fix swarm - STRICT NO NEW FEATURES ENFORCEMENT
+npx claude-flow@alpha --agents 4 --topology hierarchical \
+  --strategy minimal_fix_only \
+  --task "ONLY connect existing state machine to existing use cases - ZERO new features" \
+  --constraint "modify < 10 lines total, create 0 new files" \
+  --validate-no-features true \
+  --abort-on-feature-creep true \
+  --enforce-line-limit 10 \
+  --existing-code-only true
 ```
 
-This plan provides comprehensive coverage of the phase transition bug fix with proper agent coordination, testing, and risk mitigation. Ready to execute?
+### **Agent Instructions (Mandatory Constraint):**
+
+Every agent MUST receive these exact instructions:
+
+```
+🚨 CRITICAL CONSTRAINT: ZERO NEW FEATURES ALLOWED
+
+You are ONLY allowed to:
+1. Change 1 line: USE_EVENT_SOURCING: False → True
+2. Modify start_game.py to call existing state machine instead of bypassing it
+3. Connect existing components that are already built
+
+You are COMPLETELY FORBIDDEN from:
+- Adding ANY new functions, classes, or methods
+- Creating ANY new files
+- Adding ANY new logic or business rules
+- Implementing ANY enhancements or optimizations
+- Writing ANY new tests beyond validating connections work
+
+ENFORCEMENT: If you attempt to add ANY new functionality, the plan will be immediately aborted.
+
+Your task: Connect existing broken pieces ONLY. Total changes must be < 10 lines.
+```
+
+### **Minimal Fix Benefits:**
+
+1. **⚙️ Fixes Broken Functionality**: Game no longer stuck in PREPARATION phase
+2. **💾 Enables Event Persistence**: Events now save to database for recovery
+3. **🚀 Fast Implementation**: 1 hour maximum vs 4-6 hours
+4. **🔒 Low Risk**: Minimal changes reduce chance of breaking existing features
+5. **🎯 No Feature Creep**: Strict focus on fixing what's broken
+
+### **Minimal Fix Success Metrics:**
+
+#### **Core Functionality Restored:**
+- [ ] ✅ Game progresses from PREPARATION → DECLARATION automatically
+- [ ] ✅ Events persist to SQLite database (event sourcing working)
+- [ ] ✅ WebSocket broadcasting still works (no regression)
+- [ ] ✅ State recovery from database works (game can resume after restart)
+
+#### **No Feature Creep:**
+- [ ] ✅ Zero new APIs or endpoints added
+- [ ] ✅ Zero new game mechanics introduced
+- [ ] ✅ Zero new configuration options created
+- [ ] ✅ Total code changes < 10 lines
+
+#### **Risk Mitigation:**
+- [ ] ✅ Existing tests still pass
+- [ ] ✅ No performance regression
+- [ ] ✅ Easy rollback if issues arise
+
+This minimal fix plan restores broken functionality without adding features. The focused approach ensures fast implementation with minimal risk. Ready to execute the minimal fix approach?
