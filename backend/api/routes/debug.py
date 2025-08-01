@@ -2,11 +2,13 @@
 
 import logging
 from typing import Optional
+from datetime import datetime, timedelta
 
 from fastapi import APIRouter, HTTPException, Query
 from fastapi.responses import JSONResponse
 
 from api.services.event_store import event_store
+from api.services.log_buffer import get_log_buffer, LogLevel
 
 logger = logging.getLogger(__name__)
 
@@ -361,4 +363,175 @@ async def validate_room_events(room_id: str):
 
     except Exception as e:
         logger.error(f"Error validating events for room {room_id}: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.get("/logs")
+async def get_debug_logs(
+    limit: Optional[int] = Query(100, description="Maximum number of logs to return"),
+    level: Optional[LogLevel] = Query(None, description="Minimum log level to include"),
+    logger_filter: Optional[str] = Query(None, description="Filter by logger name (substring match)"),
+    since_minutes: Optional[int] = Query(None, description="Only return logs from the last N minutes"),
+    search: Optional[str] = Query(None, description="Search in log messages")
+):
+    """
+    Get backend debug logs for AI debugging.
+    
+    This endpoint provides real-time access to backend logs without requiring 
+    file system access or server-side log viewing capabilities.
+    
+    Args:
+        limit: Maximum number of logs to return (default 100, max 1000)
+        level: Minimum log level (DEBUG, INFO, WARNING, ERROR, CRITICAL)
+        logger_filter: Filter by logger name (e.g., 'websocket', 'game', 'api')
+        since_minutes: Only logs from the last N minutes
+        search: Search query in log messages
+        
+    Returns:
+        Structured log data with metadata
+    """
+    try:
+        log_buffer = get_log_buffer()
+        
+        # Validate and cap limit
+        if limit and limit > 1000:
+            limit = 1000
+            
+        # Calculate since timestamp if specified
+        since = None
+        if since_minutes:
+            since = datetime.now() - timedelta(minutes=since_minutes)
+        
+        # Get logs based on whether search is specified
+        if search:
+            logs = log_buffer.search(search, limit or 50)
+        else:
+            logs = log_buffer.get_logs(
+                limit=limit,
+                level=level,
+                logger_filter=logger_filter,
+                since=since
+            )
+        
+        # Get buffer statistics
+        stats = log_buffer.get_stats()
+        
+        return {
+            "success": True,
+            "timestamp": datetime.now().isoformat(),
+            "request_params": {
+                "limit": limit,
+                "level": level.value if level else None,
+                "logger_filter": logger_filter,
+                "since_minutes": since_minutes,
+                "search": search
+            },
+            "buffer_stats": stats,
+            "logs_returned": len(logs),
+            "logs": logs
+        }
+        
+    except Exception as e:
+        logger.error(f"Error retrieving debug logs: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.get("/logs/stats")
+async def get_log_buffer_stats():
+    """
+    Get log buffer statistics and health information.
+    
+    Returns:
+        Buffer statistics including usage, counts, and performance metrics
+    """
+    try:
+        log_buffer = get_log_buffer()
+        stats = log_buffer.get_stats()
+        
+        return {
+            "success": True,
+            "timestamp": datetime.now().isoformat(),
+            "buffer_info": stats,
+            "performance": {
+                "buffer_size_kb": stats["total_logs"] * 0.5,  # Rough estimate
+                "memory_efficient": stats["buffer_usage"] < 80,
+                "recommended_cleanup": stats["buffer_usage"] > 90
+            }
+        }
+        
+    except Exception as e:
+        logger.error(f"Error retrieving log buffer stats: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.post("/logs/clear")
+async def clear_debug_logs():
+    """
+    Clear all logs from the buffer.
+    
+    Useful for starting fresh debugging sessions.
+    
+    Returns:
+        Number of logs cleared
+    """
+    try:
+        log_buffer = get_log_buffer()
+        cleared_count = log_buffer.clear()
+        
+        logger.info(f"Debug log buffer cleared: {cleared_count} logs removed")
+        
+        return {
+            "success": True,
+            "timestamp": datetime.now().isoformat(),
+            "logs_cleared": cleared_count,
+            "message": f"Successfully cleared {cleared_count} log entries"
+        }
+        
+    except Exception as e:
+        logger.error(f"Error clearing debug logs: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.get("/logs/live")
+async def get_live_debug_info():
+    """
+    Get recent debug logs for real-time monitoring.
+    
+    Optimized for frequent polling during debugging sessions.
+    Returns only the most recent important logs.
+    
+    Returns:
+        Recent logs with focus on errors, warnings, and game events
+    """
+    try:
+        log_buffer = get_log_buffer()
+        
+        # Get recent logs from the last 5 minutes
+        since = datetime.now() - timedelta(minutes=5)
+        
+        # Get different types of logs
+        recent_errors = log_buffer.get_logs(limit=10, level=LogLevel.ERROR, since=since)
+        recent_warnings = log_buffer.get_logs(limit=10, level=LogLevel.WARNING, since=since)
+        game_logs = log_buffer.get_logs(limit=20, logger_filter="game", since=since)
+        websocket_logs = log_buffer.get_logs(limit=20, logger_filter="websocket", since=since)
+        
+        return {
+            "success": True,
+            "timestamp": datetime.now().isoformat(),
+            "live_data": {
+                "recent_errors": len(recent_errors),
+                "recent_warnings": len(recent_warnings),
+                "game_activity": len(game_logs),
+                "websocket_activity": len(websocket_logs)
+            },
+            "logs": {
+                "errors": recent_errors[:5],  # Show top 5 errors
+                "warnings": recent_warnings[:5],  # Show top 5 warnings
+                "game_events": game_logs[:10],  # Show top 10 game events
+                "websocket_events": websocket_logs[:10]  # Show top 10 websocket events
+            }
+        }
+        
+    except Exception as e:
+        logger.error(f"Error retrieving live debug info: {e}")
         raise HTTPException(status_code=500, detail=str(e))
