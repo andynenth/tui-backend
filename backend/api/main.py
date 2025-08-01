@@ -39,6 +39,17 @@ try:
 except ImportError:
     print("Warning: Logging configuration not available, using defaults")
 
+# ✅ Set up debug log capture for AI assistance
+try:
+    from api.services.log_buffer import setup_log_capture
+    
+    setup_log_capture()
+    print("✅ Debug log capture initialized successfully")
+except ImportError as e:
+    print(f"Warning: Debug log capture not available: {e}")
+except Exception as e:
+    print(f"Error initializing debug log capture: {e}")
+
 # ✅ Read configuration values from environment variables.
 # These variables control the static file directory, the main HTML file, and allowed origins for CORS.
 STATIC_DIR = os.getenv(
@@ -66,6 +77,7 @@ app = FastAPI(
     * **Game Logic** - Complete game flow with validation
     * **Event Sourcing** - Full game event history and recovery
     * **Health Monitoring** - Comprehensive health checks and metrics
+    * **Debug Logs API** - Real-time backend log access for AI debugging
     
     ## Game Flow
     
@@ -111,7 +123,7 @@ app = FastAPI(
         },
         {
             "name": "debug",
-            "description": "Debug endpoints for event store access and game replay",
+            "description": "Debug endpoints for event store access, game replay, and backend log access",
         },
         {
             "name": "metrics",
