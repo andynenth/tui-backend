@@ -5,6 +5,12 @@
       "value": "off-by-one error: slot_index = request.slot_id - 1",
       "namespace": "default",
       "timestamp": 1753898735194
+    },
+    {
+      "key": "phase-fix-context",
+      "value": "Clean Architecture phase transition bug fix",
+      "namespace": "default",
+      "timestamp": 1754089640093
     }
   ]
 }
