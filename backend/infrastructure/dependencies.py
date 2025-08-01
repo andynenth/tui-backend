@@ -31,6 +31,11 @@ from infrastructure.services import (
     ConsoleMetricsCollector,
 )
 from infrastructure.feature_flags import get_feature_flags
+from infrastructure.state_persistence.persistence_manager import (
+    StatePersistenceManager,
+    PersistenceConfig,
+    PersistenceStrategy,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -71,6 +76,9 @@ class DependencyContainer:
         self.register_factory(CacheService, lambda: InMemoryCacheService())
 
         self.register_factory(MetricsCollector, lambda: ConsoleMetricsCollector())
+        
+        # State Persistence Manager
+        self.register_factory(StatePersistenceManager, self._create_state_persistence_manager)
 
     def _create_event_publisher(self) -> EventPublisher:
         """Create the appropriate event publisher based on feature flags."""
@@ -99,6 +107,54 @@ class DependencyContainer:
             return CompositeEventPublisher(publishers)
 
         return publishers[0]
+    
+    def _create_state_persistence_manager(self) -> Optional[StatePersistenceManager]:
+        """Create state persistence manager if enabled."""
+        if not self._feature_flags.is_enabled(self._feature_flags.USE_STATE_PERSISTENCE):
+            return None
+            
+        try:
+            from infrastructure.state_persistence.snapshot import StateSnapshotManager, SnapshotConfig
+            from infrastructure.state_persistence.transition_log import StateTransitionLogger
+            from infrastructure.state_persistence.event_sourcing import StateMachineEventStore
+            
+            # Configure persistence
+            config = PersistenceConfig(
+                strategy=PersistenceStrategy.HYBRID,
+                snapshot_enabled=self._feature_flags.is_enabled(self._feature_flags.ENABLE_STATE_SNAPSHOTS),
+                event_sourcing_enabled=True,
+                recovery_enabled=self._feature_flags.is_enabled(self._feature_flags.ENABLE_STATE_RECOVERY),
+                persist_on_phase_change=True,
+                cache_enabled=True,
+                batch_operations=True,
+            )
+            
+            # Create snapshot stores (in-memory for now)
+            snapshot_stores = []
+            if config.snapshot_enabled:
+                # Would create actual snapshot stores here
+                pass
+                
+            # Create transition logs
+            transition_logs = []
+            # Would create actual transition logs here
+            
+            # Create event store if needed
+            event_store = None
+            if config.event_sourcing_enabled:
+                # Would create actual event store here
+                pass
+            
+            return StatePersistenceManager(
+                config=config,
+                snapshot_stores=snapshot_stores,
+                transition_logs=transition_logs,
+                event_store=event_store,
+            )
+            
+        except Exception as e:
+            logger.error(f"Failed to create StatePersistenceManager: {e}")
+            return None
 
     def register_factory(self, interface: Type[T], factory: Any):
         """
@@ -214,3 +270,9 @@ def get_cache_service() -> CacheService:
 def get_metrics_collector() -> MetricsCollector:
     """Get a metrics collector instance."""
     return get_container().get(MetricsCollector)
+
+
+@lru_cache(maxsize=None)
+def get_state_persistence_manager() -> Optional[StatePersistenceManager]:
+    """Get a state persistence manager instance (if enabled)."""
+    return get_container().get(StatePersistenceManager)

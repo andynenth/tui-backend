@@ -48,6 +48,11 @@ class FeatureFlags:
     ENABLE_PERFORMANCE_MONITORING = "enable_performance_monitoring"
     ENABLE_SHADOW_MODE = "enable_shadow_mode"
     LOG_ADAPTER_CALLS = "log_adapter_calls"
+    
+    # State management flags
+    USE_STATE_PERSISTENCE = "use_state_persistence"
+    ENABLE_STATE_SNAPSHOTS = "enable_state_snapshots"
+    ENABLE_STATE_RECOVERY = "enable_state_recovery"
 
     def __init__(self, config_file: Optional[str] = None):
         """
@@ -87,6 +92,10 @@ class FeatureFlags:
             self.ENABLE_PERFORMANCE_MONITORING: True,
             self.ENABLE_SHADOW_MODE: True,
             self.LOG_ADAPTER_CALLS: True,
+            # State management - start disabled
+            self.USE_STATE_PERSISTENCE: False,
+            self.ENABLE_STATE_SNAPSHOTS: False,
+            self.ENABLE_STATE_RECOVERY: False,
         }
 
     def _load_from_env(self):

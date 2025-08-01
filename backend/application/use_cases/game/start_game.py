@@ -30,6 +30,7 @@ from domain.events.game_events import (
     PhaseChanged,
 )
 from domain.events.base import EventMetadata
+from application.adapters.state_management_adapter import StateManagementAdapter
 
 # PropertyMapper import removed - using direct attribute access
 
@@ -52,6 +53,7 @@ class StartGameUseCase(UseCase[StartGameRequest, StartGameResponse]):
         self,
         unit_of_work: UnitOfWork,
         event_publisher: EventPublisher,
+        state_adapter: Optional[StateManagementAdapter] = None,
         metrics: Optional[MetricsCollector] = None,
     ):
         """
@@ -60,10 +62,12 @@ class StartGameUseCase(UseCase[StartGameRequest, StartGameResponse]):
         Args:
             unit_of_work: Unit of work for data access
             event_publisher: Publisher for domain events
+            state_adapter: Optional state management adapter
             metrics: Optional metrics collector
         """
         self._uow = unit_of_work
         self._event_publisher = event_publisher
+        self._state_adapter = state_adapter
         self._metrics = metrics
 
     async def execute(self, request: StartGameRequest) -> StartGameResponse:
@@ -138,15 +142,56 @@ class StartGameUseCase(UseCase[StartGameRequest, StartGameResponse]):
                 # Using defaults for win condition as they are set in the dataclass
             )
 
+            # Track game start if adapter available
+            if self._state_adapter:
+                await self._state_adapter.track_game_start(
+                    game_id=game.room_id,
+                    room_id=room.room_id,
+                    players=[p.name for p in game_players],
+                    starting_player=starting_player.name
+                )
+
             # Start the game
             logger.info(f"[START_GAME_DEBUG] Starting game for room {room.room_id}")
+            old_phase = game.current_phase
             game.start_game()
+
+            # Track phase change if occurred and adapter available
+            if self._state_adapter and old_phase != game.current_phase:
+                context = self._state_adapter.create_context(
+                    game_id=game.room_id,
+                    room_id=room.room_id,
+                    current_phase=str(old_phase)
+                )
+                await self._state_adapter.track_phase_change(
+                    context=context,
+                    from_phase=old_phase,
+                    to_phase=game.current_phase,
+                    trigger="start_game",
+                    payload={"player_count": len(game_players)}
+                )
 
             # Start the first round (deals cards to players)
             logger.info(
                 f"[START_GAME_DEBUG] Starting round 1, dealing cards to {len(game.players)} players"
             )
+            old_phase = game.current_phase
             game.start_round()
+            
+            # Track phase change if occurred and adapter available
+            if self._state_adapter and old_phase != game.current_phase:
+                context = self._state_adapter.create_context(
+                    game_id=game.room_id,
+                    room_id=room.room_id,
+                    current_phase=str(old_phase)
+                )
+                await self._state_adapter.track_phase_change(
+                    context=context,
+                    from_phase=old_phase,
+                    to_phase=game.current_phase,
+                    trigger="start_round",
+                    payload={"round": game.round_number}
+                )
 
             # Publish all domain events from the game
             logger.info(
