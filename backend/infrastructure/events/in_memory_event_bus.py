@@ -100,7 +100,6 @@ class InMemoryEventBus(EventPublisher):
             event: Domain event to publish
         """
         event_type = event.__class__.__name__
-        logger.info(f"[EVENT_BUS_DEBUG] Publishing event {event_type}")
 
         # Notify specific handlers
         handlers = self._handlers.get(event_type, [])
@@ -109,15 +108,8 @@ class InMemoryEventBus(EventPublisher):
         all_handlers = handlers + self._global_handlers
 
         if not all_handlers:
-            logger.warning(f"[EVENT_BUS_DEBUG] No handlers for event {event_type}")
-            logger.warning(
-                f"[EVENT_BUS_DEBUG] Registered handlers: {list(self._handlers.keys())}"
-            )
+            logger.warning(f"No handlers for event {event_type}")
             return
-
-        logger.info(
-            f"[EVENT_BUS_DEBUG] Found {len(all_handlers)} handlers for {event_type}"
-        )
 
         # Execute handlers concurrently
         tasks = []

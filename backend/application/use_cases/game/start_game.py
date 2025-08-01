@@ -152,7 +152,7 @@ class StartGameUseCase(UseCase[StartGameRequest, StartGameResponse]):
                 )
 
             # Start the game
-            logger.info(f"[START_GAME_DEBUG] Starting game for room {room.room_id}")
+            logger.info(f"Starting game for room {room.room_id}")
             old_phase = game.current_phase
             game.start_game()
 
@@ -173,7 +173,7 @@ class StartGameUseCase(UseCase[StartGameRequest, StartGameResponse]):
 
             # Start the first round (deals cards to players)
             logger.info(
-                f"[START_GAME_DEBUG] Starting round 1, dealing cards to {len(game.players)} players"
+                f"Starting round 1, dealing cards to {len(game.players)} players"
             )
             old_phase = game.current_phase
             game.start_round()
@@ -200,19 +200,10 @@ class StartGameUseCase(UseCase[StartGameRequest, StartGameResponse]):
             event_failures = []
             for i, event in enumerate(game.events):
                 try:
-                    logger.info(
-                        f"[START_GAME_DEBUG] Publishing event {i+1}/{len(game.events)}: {type(event).__name__}"
-                    )
-                    # Log event data for debugging
-                    if hasattr(event, 'to_dict'):
-                        event_data = event.to_dict()
-                        logger.debug(f"[START_GAME_DEBUG] Event data: {event_data}")
-                    
                     await self._event_publisher.publish(event)
-                    logger.info(f"[START_GAME_DEBUG] Successfully published {type(event).__name__}")
                 except Exception as e:
                     logger.error(
-                        f"[START_GAME_DEBUG] Error publishing {type(event).__name__}: {e}",
+                        f"Error publishing {type(event).__name__}: {e}",
                         exc_info=True
                     )
                     event_failures.append((type(event).__name__, str(e)))

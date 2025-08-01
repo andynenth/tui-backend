@@ -394,19 +394,9 @@ export class NetworkService extends EventTarget {
       connectionData.messagesReceived++;
       connectionData.lastActivity = Date.now();
 
-      // Enhanced debug logging for all messages
-      console.log('📨 NetworkService received message:', {
-        roomId,
-        event: message.event,
-        timestamp: new Date().toISOString(),
-        messageNumber: connectionData.messagesReceived
-      });
-
-      // Special debug logging for phase_change events
+      // Keep essential logging only
       if (message.event === 'phase_change') {
-        console.log('🔄 =============== WEBSOCKET PHASE CHANGE ===============');
-        console.log('📨 Raw phase_change message:', JSON.stringify(message, null, 2));
-        console.log('🔄 =================================================');
+        console.log('🔄 Phase change received:', message.event, message.data?.phase);
       }
 
       // Handle heartbeat response
@@ -414,8 +404,6 @@ export class NetworkService extends EventTarget {
         connectionData.latency = Date.now() - message.data.timestamp;
         return;
       }
-
-      console.log('📡 Dispatching CustomEvent:', message.event);
 
       // Emit the specific event
       this.dispatchEvent(
@@ -682,15 +670,12 @@ export class NetworkService extends EventTarget {
       !connectionData?.websocket ||
       connectionData.websocket.readyState !== WebSocket.OPEN
     ) {
-      console.log(`⏳ WebSocket not ready for ${roomId}, readyState: ${connectionData?.websocket?.readyState}, retrying in 50ms`);
       // Retry after a short delay if WebSocket isn't ready
       setTimeout(() => {
         this.processQueuedMessages(roomId);
       }, 50);
       return;
     }
-
-    console.log(`📤 Processing ${queue.length} queued messages for ${roomId}`);
 
     const messages = [...queue];
     queue.length = 0; // Clear queue
@@ -700,8 +685,6 @@ export class NetworkService extends EventTarget {
         connectionData.websocket.send(JSON.stringify(message));
         connectionData.messagesSent++;
         connectionData.lastActivity = Date.now();
-        
-        console.log(`✅ Successfully sent queued message: ${message.event}`);
       } catch (error) {
         console.error(`Failed to send queued message to ${roomId}:`, error);
         queue.push(message); // Re-queue failed message
