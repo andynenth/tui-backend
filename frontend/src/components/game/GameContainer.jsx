@@ -348,6 +348,16 @@ export function GameContainer({ roomId, onNavigateToLobby }) {
   }
 
   // Phase routing with error boundaries
+  // Add debug logging for phase switching
+  console.log('🎮 GameContainer phase switch debug:', {
+    phase: gameState.phase,
+    playerName: gameState.playerName,
+    roomId: gameState.roomId,
+    isConnected: connectionStatus.isConnected,
+    myHandLength: gameState.myHand?.length || 0,
+    timestamp: new Date().toISOString()
+  });
+
   return (
     <ErrorBoundary>
       {(() => {
