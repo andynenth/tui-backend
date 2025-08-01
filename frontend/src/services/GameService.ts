@@ -1230,11 +1230,35 @@ export class GameService extends EventTarget {
    * Handle weak hands found event
    */
   private handleWeakHandsFound(state: GameState, data: any): GameState {
-    return {
+    console.log('🔍 [DEBUG] handleWeakHandsFound received:', data);
+    
+    const newState = {
       ...state,
-      weakHands: data.weak_hands || [],
-      currentWeakPlayer: data.current_weak_player || null,
+      weakHands: data.players || data.weak_hands || [],
+      currentWeakPlayer: data.current_weak_player || (data.players && data.players[0]) || null,
     };
+
+    // ✅ FIX: Calculate weak hand UI state (same as handlePhaseChange)
+    if (newState.myHand.length > 0) {
+      newState.isMyHandWeak = this.calculateWeakHand(newState.myHand);
+      newState.handValue = this.calculateHandValue(newState.myHand);
+      newState.highestCardValue = this.calculateHighestCardValue(newState.myHand);
+    }
+
+    // ✅ FIX: Determine if it's my decision
+    if (newState.simultaneousMode && newState.playerName) {
+      newState.isMyDecision = newState.weakPlayersAwaiting.includes(
+        newState.playerName
+      );
+    } else if (newState.currentWeakPlayer && newState.playerName) {
+      newState.isMyDecision = newState.currentWeakPlayer === newState.playerName;
+    }
+
+    console.log('🔍 [DEBUG] handleWeakHandsFound calculated UI state:');
+    console.log('  - isMyHandWeak:', newState.isMyHandWeak);
+    console.log('  - isMyDecision:', newState.isMyDecision);
+
+    return newState;
   }
 
   /**

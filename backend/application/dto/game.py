@@ -22,7 +22,7 @@ class StartGameRequest(Request):
 
     room_id: str
     requesting_player_id: str
-    shuffle_seats: bool = True
+    shuffle_seats: bool = False
     use_previous_starter: bool = False
     # Base request fields
     request_id: str = field(default_factory=lambda: str(uuid.uuid4()))
