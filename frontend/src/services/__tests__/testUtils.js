@@ -76,15 +76,39 @@ export const createMockNetworkService = () => {
  */
 export const createTestGameState = (overrides = {}) => ({
   roomId: null,
-  playerName: '',
+  playerName: null,
   isConnected: false,
-  isConnecting: false,
   error: null,
-  phase: 'lobby',
+  phase: 'waiting',
+  currentRound: 1,
   players: [],
   myHand: [],
-  currentPlayer: '',
+  roundStarter: null,
+  weakHands: [],
+  currentWeakPlayer: null,
+  redealRequests: {},
+  redealMultiplier: 1,
   declarations: {},
+  declarationOrder: [],
+  currentDeclarer: null,
+  declarationTotal: 0,
+  currentTurnStarter: null,
+  turnOrder: [],
+  currentPlayer: null,
+  currentTurnPlays: [],
+  requiredPieceCount: null,
+  currentTurnNumber: 0,
+  roundScores: {},
+  totalScores: {},
+  winners: [],
+  disconnectedPlayers: [],
+  host: null,
+  isMyTurn: false,
+  allowedActions: [],
+  validOptions: [],
+  lastEventSequence: 0,
+  gameOver: false,
+  gameStartTime: null,
   ...overrides,
 });
 
@@ -94,11 +118,12 @@ export const createTestGameState = (overrides = {}) => ({
 export const createTestPhaseData = (phase, overrides = {}) => {
   const baseData = {
     phase,
+    round: 1,
     players: [
-      { name: 'Player1', id: 'p1' },
-      { name: 'Player2', id: 'p2' },
-      { name: 'Player3', id: 'p3' },
-      { name: 'Player4', id: 'p4' },
+      { name: 'Player1', score: 0, is_bot: false, is_host: false },
+      { name: 'Player2', score: 0, is_bot: false, is_host: false },
+      { name: 'Player3', score: 0, is_bot: false, is_host: false },
+      { name: 'Player4', score: 0, is_bot: false, is_host: false },
     ],
   };
 
@@ -107,12 +132,13 @@ export const createTestPhaseData = (phase, overrides = {}) => {
       return {
         ...baseData,
         my_hand: [
-          { value: 12, color: 'red', suit: 'hearts' },
-          { value: 11, color: 'red', suit: 'diamonds' },
-          { value: 10, color: 'black', suit: 'spades' },
+          { kind: 'GENERAL_RED', value: 15, color: 'red' },
+          { kind: 'ADVISOR_RED', value: 12, color: 'red' },
+          { kind: 'ELEPHANT_BLACK', value: 11, color: 'black' },
         ],
-        weak_hand_players: [],
-        redeal_responses: {},
+        weak_hands: [],
+        current_weak_player: null,
+        redeal_multiplier: 1,
         ...overrides,
       };
 
@@ -120,8 +146,8 @@ export const createTestPhaseData = (phase, overrides = {}) => {
       return {
         ...baseData,
         my_hand: [
-          { value: 12, color: 'red', suit: 'hearts' },
-          { value: 11, color: 'red', suit: 'diamonds' },
+          { kind: 'GENERAL_RED', value: 15, color: 'red' },
+          { kind: 'ADVISOR_RED', value: 12, color: 'red' },
         ],
         declaration_order: ['Player1', 'Player2', 'Player3', 'Player4'],
         current_declarer: 'Player1',
@@ -145,9 +171,10 @@ export const createTestPhaseData = (phase, overrides = {}) => {
     case 'scoring':
       return {
         ...baseData,
-        scores: { Player1: 10, Player2: 5, Player3: 8, Player4: 12 },
+        total_scores: { Player1: 10, Player2: 5, Player3: 8, Player4: 12 },
         round_scores: { Player1: 2, Player2: -1, Player3: 0, Player4: 3 },
-        winner: 'Player4',
+        winners: ['Player4'],
+        game_complete: false,
         ...overrides,
       };
 
@@ -170,17 +197,19 @@ export const wait = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 /**
  * Create a mock event detail object
  */
-export const createMockEventDetail = (eventType, data = {}) => ({
-  roomId: 'test-room',
-  data,
-  timestamp: Date.now(),
-  message: {
-    event: eventType,
+export const createMockEventDetail = (eventType, data = {}, roomId = 'test-room') => ({
+  detail: {
+    roomId,
     data,
-    sequence: 1,
     timestamp: Date.now(),
-    id: 'test-id',
-  },
+    message: {
+      event: eventType,
+      data,
+      sequence: 1,
+      timestamp: Date.now(),
+      id: 'test-id',
+    },
+  }
 });
 
 /**
@@ -194,7 +223,10 @@ export const expectToThrow = async (fn, expectedMessage) => {
     error = e;
   }
 
-  expect(error).toBeDefined();
+  if (!error) {
+    throw new Error('Expected function to throw an error, but it did not');
+  }
+  
   if (expectedMessage) {
     expect(error.message).toContain(expectedMessage);
   }

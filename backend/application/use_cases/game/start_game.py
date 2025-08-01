@@ -152,12 +152,39 @@ class StartGameUseCase(UseCase[StartGameRequest, StartGameResponse]):
             logger.info(
                 f"[START_GAME_DEBUG] Publishing {len(game.events)} domain events"
             )
-            for event in game.events:
-                logger.info(
-                    f"[START_GAME_DEBUG] Publishing event: {type(event).__name__}"
-                )
-                await self._event_publisher.publish(event)
+            event_failures = []
+            for i, event in enumerate(game.events):
+                try:
+                    logger.info(
+                        f"[START_GAME_DEBUG] Publishing event {i+1}/{len(game.events)}: {type(event).__name__}"
+                    )
+                    # Log event data for debugging
+                    if hasattr(event, 'to_dict'):
+                        event_data = event.to_dict()
+                        logger.debug(f"[START_GAME_DEBUG] Event data: {event_data}")
+                    
+                    await self._event_publisher.publish(event)
+                    logger.info(f"[START_GAME_DEBUG] Successfully published {type(event).__name__}")
+                except Exception as e:
+                    logger.error(
+                        f"[START_GAME_DEBUG] Error publishing {type(event).__name__}: {e}",
+                        exc_info=True
+                    )
+                    event_failures.append((type(event).__name__, str(e)))
+            
+            # Clear events even if some failed to prevent re-processing
             game.clear_events()
+            
+            # If any critical events failed, raise an error
+            if event_failures:
+                failure_details = "; ".join([f"{name}: {error}" for name, error in event_failures])
+                logger.error(f"[START_GAME_DEBUG] {len(event_failures)} events failed: {failure_details}")
+                # Only raise if PiecesDealt-type events failed, as these are critical for phase transitions
+                critical_failures = [name for name, _ in event_failures if "Pieces" in name or "Phase" in name]
+                if critical_failures:
+                    raise ValidationException(
+                        {"domain_events": f"Critical events failed: {', '.join(critical_failures)}"}
+                    )
 
             # Update room status to IN_GAME and set game reference
             room.status = RoomStatus.IN_GAME
@@ -174,39 +201,78 @@ class StartGameUseCase(UseCase[StartGameRequest, StartGameResponse]):
             weak_hands = self._detect_weak_hands(game)
 
             # Emit GameStarted event
-            game_started = GameStarted(
-                metadata=EventMetadata(user_id=request.user_id),
-                room_id=room.room_id,
-                round_number=game.round_number,
-                player_names=[p.name for p in game_players],
-                win_condition="first_to_reach_50",
-                max_score=game.max_score,
-                max_rounds=game.max_rounds,
-            )
-            await self._event_publisher.publish(game_started)
+            try:
+                game_started = GameStarted(
+                    metadata=EventMetadata(user_id=request.user_id),
+                    room_id=room.room_id,
+                    round_number=game.round_number,
+                    player_names=[p.name for p in game_players],
+                    win_condition="first_to_reach_50",
+                    max_score=game.max_score,
+                    max_rounds=game.max_rounds,
+                )
+                logger.info(
+                    f"[START_GAME_DEBUG] Created GameStarted event for {len(game_started.player_names)} players"
+                )
+                await self._event_publisher.publish(game_started)
+                logger.info(f"[START_GAME_DEBUG] Successfully published GameStarted event")
+            except Exception as e:
+                logger.error(
+                    f"[START_GAME_DEBUG] Error creating/publishing GameStarted event: {e}",
+                    exc_info=True
+                )
+                raise ValidationException(
+                    {"game_started": f"Failed to create game started event: {str(e)}"}
+                )
 
             # Emit RoundStarted event
-            round_started = RoundStarted(
-                metadata=EventMetadata(user_id=request.user_id),
-                room_id=room.room_id,
-                round_number=1,
-                starter_name=starting_player.name,
-                player_hands={
-                    p.name: [piece.kind for piece in p.hand] for p in game.players
-                },
-            )
-            await self._event_publisher.publish(round_started)
+            try:
+                round_started = RoundStarted(
+                    metadata=EventMetadata(user_id=request.user_id),
+                    room_id=room.room_id,
+                    round_number=1,
+                    starter_name=starting_player.name,
+                    player_hands={
+                        p.name: [piece.kind for piece in p.hand] for p in game.players
+                    },
+                )
+                logger.info(
+                    f"[START_GAME_DEBUG] Created RoundStarted event with starter: {starting_player.name}"
+                )
+                await self._event_publisher.publish(round_started)
+                logger.info(f"[START_GAME_DEBUG] Successfully published RoundStarted event")
+            except Exception as e:
+                logger.error(
+                    f"[START_GAME_DEBUG] Error creating/publishing RoundStarted event: {e}",
+                    exc_info=True
+                )
+                raise ValidationException(
+                    {"round_started": f"Failed to create round started event: {str(e)}"}
+                )
 
             # Emit PiecesDealt event
-            pieces_dealt = PiecesDealt(
-                metadata=EventMetadata(user_id=request.user_id),
-                room_id=room.room_id,
-                round_number=1,
-                player_pieces={
-                    p.name: [piece.kind for piece in p.hand] for p in game.players
-                },
-            )
-            await self._event_publisher.publish(pieces_dealt)
+            try:
+                pieces_dealt = PiecesDealt(
+                    metadata=EventMetadata(user_id=request.user_id),
+                    room_id=room.room_id,
+                    round_number=1,
+                    player_pieces={
+                        p.name: [piece.kind for piece in p.hand] for p in game.players
+                    },
+                )
+                logger.info(
+                    f"[START_GAME_DEBUG] Created PiecesDealt event with {len(pieces_dealt.player_pieces)} players"
+                )
+                await self._event_publisher.publish(pieces_dealt)
+                logger.info(f"[START_GAME_DEBUG] Successfully published PiecesDealt event")
+            except Exception as e:
+                logger.error(
+                    f"[START_GAME_DEBUG] Error creating/publishing PiecesDealt event: {e}",
+                    exc_info=True
+                )
+                raise ValidationException(
+                    {"pieces_dealt": f"Failed to create pieces dealt event: {str(e)}"}
+                )
 
             # COMMENTED OUT: PhaseChanged event is now handled by the state machine's auto-broadcast
             # The state machine will automatically broadcast phase changes with the correct hand data
@@ -235,17 +301,29 @@ class StartGameUseCase(UseCase[StartGameRequest, StartGameResponse]):
 
             # Emit WeakHandDetected event if any weak hands
             if weak_hands:
-                weak_hand_players = [
-                    next(p.name for p in game.players if p.id == player_id)
-                    for player_id in weak_hands
-                ]
-                weak_hand_event = WeakHandDetected(
-                    metadata=EventMetadata(user_id=request.user_id),
-                    room_id=room.room_id,
-                    round_number=1,
-                    weak_hand_players=weak_hand_players,
-                )
-                await self._event_publisher.publish(weak_hand_event)
+                try:
+                    weak_hand_players = [
+                        next(p.name for p in game.players if p.id == player_id)
+                        for player_id in weak_hands
+                    ]
+                    weak_hand_event = WeakHandDetected(
+                        metadata=EventMetadata(user_id=request.user_id),
+                        room_id=room.room_id,
+                        round_number=1,
+                        weak_hand_players=weak_hand_players,
+                    )
+                    logger.info(
+                        f"[START_GAME_DEBUG] Created WeakHandDetected event for {len(weak_hand_players)} players"
+                    )
+                    await self._event_publisher.publish(weak_hand_event)
+                    logger.info(f"[START_GAME_DEBUG] Successfully published WeakHandDetected event")
+                except Exception as e:
+                    logger.error(
+                        f"[START_GAME_DEBUG] Error creating/publishing WeakHandDetected event: {e}",
+                        exc_info=True
+                    )
+                    # Don't raise here - weak hand detection is not critical for game start
+                    logger.warning(f"[START_GAME_DEBUG] Continuing game start despite weak hand event error")
 
             # Record metrics
             if self._metrics:
