@@ -53,21 +53,64 @@
 *Estimated Time: 15 minutes*  
 *Risk Level: MINIMAL - Just enabling existing infrastructure*
 
-#### **Tasks:**
-- [ ] **Task 1.1**: Enable `USE_EVENT_SOURCING` feature flag
-  - **File**: `backend/infrastructure/feature_flags.py:85`
-  - **Change**: `self.USE_EVENT_SOURCING: True`
-  - **Test**: Verify `CompositeEventPublisher` is instantiated
+#### **Granular Tasks:**
 
-- [ ] **Task 1.2**: Verify EventStore service is accessible
-  - **File**: `backend/api/services/event_store.py`
-  - **Action**: Confirm SQLite database initialization
-  - **Test**: Database connection health check
+##### **Task 1.1: Enable Event Sourcing Feature Flag**
+- [ ] **1.1.1**: Locate feature flag file
+  - **Action**: Navigate to `backend/infrastructure/feature_flags.py`
+  - **Validation**: File exists and contains `USE_EVENT_SOURCING` property
+  - **Time**: 2 minutes
+  - **Success Criteria**: File opened and flag located at line ~85
 
-- [ ] **Task 1.3**: Test CompositeEventPublisher instantiation
-  - **File**: `backend/infrastructure/dependencies.py:96-109`
-  - **Action**: Verify both WebSocket + EventStore publishers are included
-  - **Test**: Check publisher count = 2 in CompositeEventPublisher
+- [ ] **1.1.2**: Change feature flag value
+  - **Action**: Change `self.USE_EVENT_SOURCING = False` to `self.USE_EVENT_SOURCING = True`
+  - **Validation**: Only this single line changed, no other modifications
+  - **Time**: 1 minute
+  - **Success Criteria**: Git diff shows exactly 1 line changed
+
+- [ ] **1.1.3**: Test feature flag activation
+  - **Action**: Run basic feature flag test to verify activation
+  - **Command**: `python -c "from backend.infrastructure.feature_flags import get_feature_flags; flags = get_feature_flags(); print(f'Event sourcing enabled: {flags.is_enabled(flags.USE_EVENT_SOURCING, {})}')"`
+  - **Time**: 2 minutes
+  - **Success Criteria**: Output shows `Event sourcing enabled: True`
+
+##### **Task 1.2: Verify EventStore Database Accessibility**
+- [ ] **1.2.1**: Check EventStore service file exists
+  - **Action**: Verify `backend/api/services/event_store.py` file exists
+  - **Validation**: File is present and readable
+  - **Time**: 1 minute
+  - **Success Criteria**: File exists and contains EventStore class
+
+- [ ] **1.2.2**: Test database connection
+  - **Action**: Run SQLite database health check
+  - **Command**: `python -c "from backend.api.services.event_store import EventStore; store = EventStore(); print('Database accessible:', store.is_healthy())"`
+  - **Time**: 3 minutes
+  - **Success Criteria**: Database connection successful, no errors
+
+- [ ] **1.2.3**: Verify database schema
+  - **Action**: Check that events table exists in SQLite database
+  - **Command**: `sqlite3 backend/data/events.db ".schema events"`
+  - **Time**: 2 minutes
+  - **Success Criteria**: Events table schema displayed without errors
+
+##### **Task 1.3: Validate CompositeEventPublisher Creation**
+- [ ] **1.3.1**: Verify dependency injection setup
+  - **Action**: Check `backend/infrastructure/dependencies.py` lines 96-109
+  - **Validation**: CompositeEventPublisher creation logic exists
+  - **Time**: 2 minutes
+  - **Success Criteria**: Code shows conditional creation based on USE_EVENT_SOURCING flag
+
+- [ ] **1.3.2**: Test CompositeEventPublisher instantiation
+  - **Action**: Import and instantiate EventPublisher with feature flag enabled
+  - **Command**: `python -c "from backend.infrastructure.dependencies import get_container; container = get_container(); publisher = container.get('EventPublisher'); print(f'Publisher type: {type(publisher).__name__}')"`
+  - **Time**: 2 minutes
+  - **Success Criteria**: Output shows `Publisher type: CompositeEventPublisher`
+
+- [ ] **1.3.3**: Verify publisher count
+  - **Action**: Check that CompositeEventPublisher contains both WebSocket and EventStore publishers
+  - **Command**: `python -c "from backend.infrastructure.dependencies import get_container; container = get_container(); publisher = container.get('EventPublisher'); print(f'Publisher count: {len(publisher._publishers)}')"`
+  - **Time**: 1 minute
+  - **Success Criteria**: Output shows `Publisher count: 2`
 
 #### **Success Criteria:**
 - ✅ Event sourcing feature flag enabled
@@ -103,16 +146,84 @@ def test_event_store_health():
 *Estimated Time: 30 minutes*  
 *Risk Level: LOW - Modifying existing files only*
 
-#### **Tasks:**
-- [ ] **Task 2.1**: Modify start_game use case to use state machine
-  - **File**: `backend/application/use_cases/game/start_game.py:106`
-  - **Change**: Replace `game.start_round()` with state machine coordination
-  - **Fix**: Use existing state machine instead of bypassing it
+#### **Granular Tasks:**
 
-- [ ] **Task 2.2**: Ensure state machine calls domain methods
-  - **File**: `backend/engine/state_machine/states/preparation_state.py`
-  - **Action**: Verify state machine uses existing domain business rules
-  - **No Change**: State machine should enhance, not replace domain logic
+##### **Task 2.1: Analyze Current Use Case Implementation**
+- [ ] **2.1.1**: Read current StartGameUseCase implementation
+  - **Action**: Open and analyze `backend/application/use_cases/game/start_game.py`
+  - **Focus**: Line 106 and surrounding logic that bypasses state machine
+  - **Time**: 5 minutes
+  - **Success Criteria**: Understand current flow and identify exact bypass point
+
+- [ ] **2.1.2**: Identify state machine integration points
+  - **Action**: Locate existing state machine imports and integration code
+  - **Validation**: Find where GameStateMachine is available but not used
+  - **Time**: 3 minutes
+  - **Success Criteria**: Clear understanding of what needs to be connected
+
+- [ ] **2.1.3**: Plan minimal modification approach
+  - **Action**: Design exact line changes needed to use state machine
+  - **Constraint**: Must use existing state machine, no new functionality
+  - **Time**: 2 minutes
+  - **Success Criteria**: Clear plan for <5 line changes maximum
+
+##### **Task 2.2: Modify StartGameUseCase State Machine Integration**
+- [ ] **2.2.1**: Backup current implementation
+  - **Action**: Create backup copy of current start_game.py
+  - **Command**: `cp backend/application/use_cases/game/start_game.py backend/application/use_cases/game/start_game.py.backup`
+  - **Time**: 1 minute
+  - **Success Criteria**: Backup file created successfully
+
+- [ ] **2.2.2**: Replace direct domain call with state machine coordination
+  - **Action**: Modify line ~106 from `game.start_round()` to use state machine
+  - **Change**: Replace direct call with state machine transition
+  - **Validation**: Only modify existing line, don't add new logic
+  - **Time**: 5 minutes
+  - **Success Criteria**: Git diff shows minimal, targeted change
+
+- [ ] **2.2.3**: Test basic compilation
+  - **Action**: Run basic syntax check on modified file
+  - **Command**: `python -m py_compile backend/application/use_cases/game/start_game.py`
+  - **Time**: 2 minutes
+  - **Success Criteria**: No syntax errors, file compiles successfully
+
+##### **Task 2.3: Verify State Machine Domain Integration**
+- [ ] **2.3.1**: Check PreparationState implementation
+  - **Action**: Read `backend/engine/state_machine/states/preparation_state.py`
+  - **Validation**: Confirm it calls domain methods appropriately
+  - **Time**: 5 minutes
+  - **Success Criteria**: State machine enhances rather than replaces domain logic
+
+- [ ] **2.3.2**: Verify automatic progression logic
+  - **Action**: Review timeout and progression conditions in PreparationState
+  - **Validation**: Ensure progression triggers are reasonable and working
+  - **Time**: 3 minutes
+  - **Success Criteria**: Automatic progression to DECLARATION phase exists
+
+- [ ] **2.3.3**: Test state machine domain method calls
+  - **Action**: Verify state machine calls existing domain business rules
+  - **Command**: `grep -n "game\." backend/engine/state_machine/states/preparation_state.py`
+  - **Time**: 2 minutes
+  - **Success Criteria**: State machine properly delegates to domain layer
+
+##### **Task 2.4: Integration Testing Preparation**
+- [ ] **2.4.1**: Create simple integration test script
+  - **Action**: Write minimal test to verify use case → state machine → domain flow
+  - **File**: Create `test_phase2_integration.py` in test directory
+  - **Time**: 10 minutes
+  - **Success Criteria**: Test script ready to validate integration
+
+- [ ] **2.4.2**: Test modified use case in isolation
+  - **Action**: Run modified StartGameUseCase with mock dependencies
+  - **Validation**: Ensure no immediate errors or exceptions
+  - **Time**: 5 minutes
+  - **Success Criteria**: Use case executes without crashing
+
+- [ ] **2.4.3**: Verify event publishing chain
+  - **Action**: Confirm events flow from state machine through use case to publishers
+  - **Test**: Mock event publishers and verify they receive state transition events
+  - **Time**: 8 minutes
+  - **Success Criteria**: Event chain intact, no broken connections
 
 #### **Success Criteria:**
 - ✅ Use case calls state machine instead of bypassing it
@@ -160,22 +271,82 @@ def test_event_serialization():
 *Estimated Time: 15 minutes*  
 *Risk Level: MINIMAL - Testing existing functionality*
 
-#### **Minimal Integration Tasks:**
+#### **Granular Tasks:**
 
-- [ ] **Task 3.1**: Test game doesn't get stuck in PREPARATION
-  - **Test**: Start game → Verify automatic progression to DECLARATION
-  - **Expected**: Game progresses normally (existing functionality restored)
-  - **No Changes**: Just verify the connections work
+##### **Task 3.1: Validate Phase Progression Fix**
+- [ ] **3.1.1**: Set up test environment
+  - **Action**: Ensure test database is clean and ready
+  - **Command**: `rm -f backend/data/events_test.db && python setup_test_db.py`
+  - **Time**: 2 minutes
+  - **Success Criteria**: Clean test environment ready
 
-- [ ] **Task 3.2**: Test events persist to database
-  - **Test**: Start game → Check SQLite for stored events
-  - **Expected**: Events saved to database (existing functionality restored)
-  - **No Changes**: Just verify event sourcing works
+- [ ] **3.1.2**: Start game and monitor phase progression
+  - **Action**: Execute StartGameUseCase and track phase changes
+  - **Test Script**: Run integration test with timer to monitor progression
+  - **Time**: 5 minutes
+  - **Success Criteria**: Game transitions from PREPARATION to DECLARATION within 10 seconds
 
-- [ ] **Task 3.3**: Test WebSocket still works
-  - **Test**: Ensure frontend still receives events
-  - **Expected**: No regression in existing WebSocket functionality
-  - **No Changes**: Just verify no functionality was broken
+- [ ] **3.1.3**: Verify no infinite loops or stuck states
+  - **Action**: Monitor for 30 seconds to ensure stable progression
+  - **Validation**: No repeated phase transitions or error loops
+  - **Time**: 3 minutes
+  - **Success Criteria**: Single clean transition, no loops or errors
+
+##### **Task 3.2: Validate Event Persistence**
+- [ ] **3.2.1**: Trigger game start with event tracking
+  - **Action**: Start game while monitoring event store writes
+  - **Monitor**: Watch SQLite database for event insertions
+  - **Time**: 3 minutes
+  - **Success Criteria**: Events appear in database during game start
+
+- [ ] **3.2.2**: Verify event content and structure
+  - **Action**: Query events table and validate event data
+  - **Command**: `sqlite3 backend/data/events_test.db "SELECT * FROM events WHERE room_id='test_room'"`
+  - **Time**: 2 minutes
+  - **Success Criteria**: Events contain correct room_id, event_type, and payload data
+
+- [ ] **3.2.3**: Test event retrieval and replay
+  - **Action**: Retrieve events from store and verify they can be parsed
+  - **Test**: Load events and reconstruct game state
+  - **Time**: 5 minutes
+  - **Success Criteria**: Events can be retrieved and parsed without errors
+
+##### **Task 3.3: Validate WebSocket Functionality**
+- [ ] **3.3.1**: Mock WebSocket connection
+  - **Action**: Set up mock WebSocket client to receive events
+  - **Setup**: Create test WebSocket listener
+  - **Time**: 3 minutes
+  - **Success Criteria**: Mock WebSocket ready to receive events
+
+- [ ] **3.3.2**: Trigger game start and monitor WebSocket events
+  - **Action**: Start game and capture WebSocket messages
+  - **Validation**: Ensure WebSocket events are still published
+  - **Time**: 2 minutes
+  - **Success Criteria**: WebSocket receives game_started and phase_change events
+
+- [ ] **3.3.3**: Verify no regression in real-time updates
+  - **Action**: Compare WebSocket event timing with previous behavior
+  - **Test**: Ensure events arrive within expected timeframe (<1 second)
+  - **Time**: 3 minutes
+  - **Success Criteria**: WebSocket events arrive promptly, no performance regression
+
+##### **Task 3.4: End-to-End Integration Validation**
+- [ ] **3.4.1**: Run complete game flow test
+  - **Action**: Execute full sequence: create room → join players → start game → verify progression
+  - **Time**: 5 minutes
+  - **Success Criteria**: Complete flow works without errors
+
+- [ ] **3.4.2**: Validate both persistence channels working together
+  - **Action**: Confirm both WebSocket and database events occur simultaneously
+  - **Test**: Monitor both channels during single game start
+  - **Time**: 3 minutes
+  - **Success Criteria**: Events appear in both WebSocket and database
+
+- [ ] **3.4.3**: Performance baseline check
+  - **Action**: Measure response times for game start operation
+  - **Benchmark**: Compare with expected performance (<500ms for game start)
+  - **Time**: 2 minutes
+  - **Success Criteria**: No significant performance degradation from integration
 
 #### **Simple Success Criteria:**
 - ✅ Game automatically progresses from PREPARATION to DECLARATION phase
@@ -592,83 +763,250 @@ Each agent MUST execute with layer-aware coordination:
 
 ## 📅 Timeline
 
-**Total Estimated Time: 4-6 hours with 6-agent swarm**
+### **Updated Granular Timeline**
 
-- **Phase 1**: 30 minutes (Low risk, straightforward)
-- **Phase 2**: 45 minutes (Medium risk, validation heavy)  
-- **Phase 3**: 90 minutes (High risk, complex integration)
-- **Phase 4**: 60 minutes (Medium risk, comprehensive testing)
-- **Phase 5**: 30 minutes (Low risk, documentation)
+**Total Estimated Time: 60 minutes with focused execution**
 
-**Parallel Execution**: Agents can work concurrently on different phases where dependencies allow.
+#### **Phase 1: Enable Event Sourcing (15 minutes)**
+- Task 1.1 (Flag Enable): 5 minutes total
+  - 1.1.1: Locate flag (2 min) 
+  - 1.1.2: Change value (1 min)
+  - 1.1.3: Test activation (2 min)
+- Task 1.2 (Database): 6 minutes total
+  - 1.2.1: Check file (1 min)
+  - 1.2.2: Test connection (3 min) 
+  - 1.2.3: Verify schema (2 min)
+- Task 1.3 (Publisher): 4 minutes total
+  - 1.3.1: Check setup (2 min)
+  - 1.3.2: Test creation (2 min)
+  - 1.3.3: Verify count (1 min)
+
+#### **Phase 2: Connect State Machine (30 minutes)**
+- Task 2.1 (Analysis): 10 minutes total
+  - 2.1.1: Read use case (5 min)
+  - 2.1.2: Find integration (3 min)
+  - 2.1.3: Plan changes (2 min)
+- Task 2.2 (Modification): 8 minutes total
+  - 2.2.1: Backup (1 min)
+  - 2.2.2: Replace call (5 min)
+  - 2.2.3: Test compile (2 min)
+- Task 2.3 (Verification): 10 minutes total
+  - 2.3.1: Check prep state (5 min)
+  - 2.3.2: Verify progression (3 min)
+  - 2.3.3: Test calls (2 min)
+- Task 2.4 (Testing): 23 minutes total
+  - 2.4.1: Create test (10 min)
+  - 2.4.2: Test isolation (5 min)
+  - 2.4.3: Verify events (8 min)
+
+#### **Phase 3: Test Integration (15 minutes)**
+- Task 3.1 (Phase Progression): 10 minutes total
+  - 3.1.1: Setup environment (2 min)
+  - 3.1.2: Monitor progression (5 min)
+  - 3.1.3: Verify no loops (3 min)
+- Task 3.2 (Event Persistence): 10 minutes total
+  - 3.2.1: Track events (3 min)
+  - 3.2.2: Verify content (2 min)
+  - 3.2.3: Test retrieval (5 min)
+- Task 3.3 (WebSocket): 8 minutes total
+  - 3.3.1: Mock connection (3 min)
+  - 3.3.2: Monitor events (2 min)
+  - 3.3.3: Verify timing (3 min)
+- Task 3.4 (End-to-End): 10 minutes total
+  - 3.4.1: Complete flow (5 min)
+  - 3.4.2: Dual channels (3 min)
+  - 3.4.3: Performance (2 min)
+
+### **Task Dependencies**
+
+#### **Sequential Dependencies:**
+- **Phase 1 → Phase 2**: Event sourcing must be enabled before connecting state machine
+- **Phase 2 → Phase 3**: State machine integration must be complete before testing
+
+#### **Parallel Opportunities:**
+- **Within Phase 1**: Tasks 1.2 and 1.3 can run parallel after 1.1 completes
+- **Within Phase 2**: Tasks 2.3 can start while 2.2 is in progress
+- **Within Phase 3**: Tasks 3.1, 3.2, 3.3 can run in parallel
+- **Verification**: Task 3.4 must run after all other Phase 3 tasks complete
+
+### **Critical Path:**
+`1.1 → 1.2 → 2.1 → 2.2 → 2.4 → 3.1 → 3.4` = **45 minutes minimum**
+
+### **Parallel Execution Opportunities:**
+- Tasks with no dependencies can run simultaneously
+- Multiple validation steps can be batched
+- Testing phases can overlap where appropriate
 
 ---
 
 ## 🎯 Minimal Fix Agent Deployment
 
-### **Deployment Command for Minimal Fix:**
+### **Updated Deployment Command for Granular Tasks:**
 
 ```bash
-# Deploy minimal fix swarm - STRICT NO NEW FEATURES ENFORCEMENT
-npx claude-flow@alpha --agents 4 --topology hierarchical \
-  --strategy minimal_fix_only \
-  --task "ONLY connect existing state machine to existing use cases - ZERO new features" \
-  --constraint "modify < 10 lines total, create 0 new files" \
-  --validate-no-features true \
-  --abort-on-feature-creep true \
-  --enforce-line-limit 10 \
-  --existing-code-only true
+# Deploy granular task swarm - EFFICIENT PARALLEL EXECUTION
+npx claude-flow@alpha --agents 6 --topology mesh \
+  --strategy parallel_granular_tasks \
+  --task "Execute granular phase transition fix with optimal parallel coordination" \
+  --constraint "follow granular task breakdown, respect dependencies" \
+  --validate-dependencies true \
+  --enable-parallel-execution true \
+  --monitor-performance true \
+  --total-time-limit 60min
 ```
 
-### **Agent Instructions (Mandatory Constraint):**
+### **Optimized Agent Configuration**
 
-Every agent MUST receive these exact instructions:
-
-```
-🚨 CRITICAL CONSTRAINT: ZERO NEW FEATURES ALLOWED
-
-You are ONLY allowed to:
-1. Change 1 line: USE_EVENT_SOURCING: False → True
-2. Modify start_game.py to call existing state machine instead of bypassing it
-3. Connect existing components that are already built
-
-You are COMPLETELY FORBIDDEN from:
-- Adding ANY new functions, classes, or methods
-- Creating ANY new files
-- Adding ANY new logic or business rules
-- Implementing ANY enhancements or optimizations
-- Writing ANY new tests beyond validating connections work
-
-ENFORCEMENT: If you attempt to add ANY new functionality, the plan will be immediately aborted.
-
-Your task: Connect existing broken pieces ONLY. Total changes must be < 10 lines.
+```javascript
+// GRANULAR TASK DEPLOYMENT - PARALLEL EXECUTION
+[Single Message - Batch Execution]:
+  mcp__claude-flow__swarm_init { 
+    topology: "mesh", 
+    maxAgents: 6, 
+    strategy: "parallel_granular_tasks" 
+  }
+  
+  // Task-specific agent deployment
+  mcp__claude-flow__agent_spawn { type: "coordinator", name: "Granular Task Coordinator" }
+  mcp__claude-flow__agent_spawn { type: "coder", name: "Phase 1 Executor" }
+  mcp__claude-flow__agent_spawn { type: "coder", name: "Phase 2 Executor" }
+  mcp__claude-flow__agent_spawn { type: "tester", name: "Phase 3 Validator" }
+  mcp__claude-flow__agent_spawn { type: "analyst", name: "Integration Analyst" }
+  mcp__claude-flow__agent_spawn { type: "optimizer", name: "Performance Monitor" }
 ```
 
-### **Minimal Fix Benefits:**
+### **Granular Task Execution Instructions:**
 
-1. **⚙️ Fixes Broken Functionality**: Game no longer stuck in PREPARATION phase
-2. **💾 Enables Event Persistence**: Events now save to database for recovery
-3. **🚀 Fast Implementation**: 1 hour maximum vs 4-6 hours
-4. **🔒 Low Risk**: Minimal changes reduce chance of breaking existing features
-5. **🎯 No Feature Creep**: Strict focus on fixing what's broken
+Each agent receives specific granular task assignments with clear success criteria:
 
-### **Minimal Fix Success Metrics:**
+#### **Phase 1 Executor Instructions:**
+```
+🎯 PHASE 1 TASKS: Enable Event Sourcing Foundation (15 minutes)
 
-#### **Core Functionality Restored:**
-- [ ] ✅ Game progresses from PREPARATION → DECLARATION automatically
-- [ ] ✅ Events persist to SQLite database (event sourcing working)
-- [ ] ✅ WebSocket broadcasting still works (no regression)
-- [ ] ✅ State recovery from database works (game can resume after restart)
+Your assigned granular tasks:
+- 1.1.1: Locate feature flag file (2 min)
+- 1.1.2: Change USE_EVENT_SOURCING flag (1 min) 
+- 1.1.3: Test flag activation (2 min)
+- 1.2.1-1.2.3: Database verification (6 min, parallel with 1.3)
+- 1.3.1-1.3.3: Publisher validation (4 min, parallel with 1.2)
 
-#### **No Feature Creep:**
-- [ ] ✅ Zero new APIs or endpoints added
-- [ ] ✅ Zero new game mechanics introduced
-- [ ] ✅ Zero new configuration options created
-- [ ] ✅ Total code changes < 10 lines
+SUCCESS CRITERIA for each task are clearly defined in plan.
+Execute in optimal order: 1.1 sequential, then 1.2 & 1.3 parallel.
+Report completion of each granular task to coordinator.
+```
 
-#### **Risk Mitigation:**
-- [ ] ✅ Existing tests still pass
-- [ ] ✅ No performance regression
-- [ ] ✅ Easy rollback if issues arise
+#### **Phase 2 Executor Instructions:**
+```
+🎯 PHASE 2 TASKS: Connect State Machine (30 minutes)
 
-This minimal fix plan restores broken functionality without adding features. The focused approach ensures fast implementation with minimal risk. Ready to execute the minimal fix approach?
+Your assigned granular tasks:
+- 2.1.1-2.1.3: Use case analysis (10 min)
+- 2.2.1-2.2.3: State machine integration (8 min)
+- 2.3.1-2.3.3: Domain integration verification (10 min, can start during 2.2)
+- 2.4.1-2.4.3: Integration testing prep (23 min)
+
+CRITICAL: This is the core fix - replace direct domain calls with state machine.
+Execute with careful coordination, validate each step before proceeding.
+Create backup before modifications as specified in task 2.2.1.
+```
+
+#### **Phase 3 Validator Instructions:**
+```
+🎯 PHASE 3 TASKS: Test Integration (15 minutes)
+
+Your assigned granular tasks:
+- 3.1.1-3.1.3: Phase progression validation (10 min)
+- 3.2.1-3.2.3: Event persistence validation (10 min) 
+- 3.3.1-3.3.3: WebSocket validation (8 min)
+- 3.4.1-3.4.3: End-to-end validation (10 min)
+
+PARALLEL EXECUTION: Tasks 3.1, 3.2, 3.3 run simultaneously.
+Task 3.4 executes only after 3.1-3.3 complete successfully.
+This validates the entire fix works end-to-end.
+```
+
+#### **Coordinator Instructions:**
+```
+🎯 COORDINATION: Manage Dependencies and Critical Path
+
+Your responsibilities:
+- Track all granular tasks via TodoWrite
+- Monitor critical path: 1.1 → 1.2 → 2.1 → 2.2 → 2.4 → 3.1 → 3.4
+- Enable parallel execution where dependencies allow
+- Coordinate rollback if any critical task fails
+- Validate total time stays within 60-minute limit
+
+DEPENDENCY MANAGEMENT: Phase 1 must complete before Phase 2 starts.
+Phase 2 must complete before Phase 3 starts.
+Within phases, enable maximum parallelism.
+```
+
+### **Granular Task Approach Benefits:**
+
+1. **⚙️ Systematic Execution**: Each task has clear 2-10 minute time estimates and success criteria
+2. **🔄 Optimal Parallelism**: Tasks 1.2 & 1.3 parallel, Tasks 3.1-3.3 parallel - reduces total time to 60 minutes  
+3. **📊 Clear Dependencies**: Critical path mapped, no guesswork on execution order
+4. **✅ Validation at Each Step**: Every granular task has specific validation commands and success criteria
+5. **🎯 Precise Scope**: Each agent knows exactly which 8-12 granular tasks they're responsible for
+6. **🔒 Risk Mitigation**: Backup creation and rollback procedures defined for critical modifications
+7. **📈 Progress Tracking**: 24 total granular tasks allow precise progress monitoring (4% per task)
+8. **⚡ Time Optimization**: 45-minute critical path vs 60-minute total allows 15 minutes of parallel execution buffer
+
+### **Granular Task Success Metrics:**
+
+#### **Task Completion Tracking (24 Total Tasks):**
+**Phase 1 Tasks (9 tasks = 37.5% of total)**
+- [ ] 1.1.1: Flag file located (4.2% complete)
+- [ ] 1.1.2: Flag value changed (8.3% complete)  
+- [ ] 1.1.3: Flag activation tested (12.5% complete)
+- [ ] 1.2.1: EventStore file verified (16.7% complete)
+- [ ] 1.2.2: Database connection tested (20.8% complete)
+- [ ] 1.2.3: Database schema verified (25% complete)
+- [ ] 1.3.1: Publisher setup checked (29.2% complete)
+- [ ] 1.3.2: Publisher creation tested (33.3% complete)
+- [ ] 1.3.3: Publisher count verified (37.5% complete)
+
+**Phase 2 Tasks (12 tasks = 50% of total)**
+- [ ] 2.1.1: Use case implementation read (41.7% complete)
+- [ ] 2.1.2: Integration points identified (45.8% complete)
+- [ ] 2.1.3: Modification approach planned (50% complete)
+- [ ] 2.2.1: Implementation backed up (54.2% complete)
+- [ ] 2.2.2: Domain call replaced (58.3% complete)
+- [ ] 2.2.3: Compilation tested (62.5% complete)
+- [ ] 2.3.1: PreparationState checked (66.7% complete)
+- [ ] 2.3.2: Progression logic verified (70.8% complete)
+- [ ] 2.3.3: Domain method calls tested (75% complete)
+- [ ] 2.4.1: Integration test created (79.2% complete)
+- [ ] 2.4.2: Use case tested in isolation (83.3% complete)
+- [ ] 2.4.3: Event publishing verified (87.5% complete)
+
+**Phase 3 Tasks (12 tasks = 50% of total)**
+- [ ] 3.1.1: Test environment setup (91.7% complete)
+- [ ] 3.1.2: Phase progression monitored (95.8% complete)
+- [ ] 3.1.3: No loops verified (100% complete)
+- [ ] 3.2.1: Event tracking triggered (continuing...)
+- [ ] 3.2.2: Event content verified
+- [ ] 3.2.3: Event retrieval tested
+- [ ] 3.3.1: WebSocket connection mocked
+- [ ] 3.3.2: WebSocket events monitored
+- [ ] 3.3.3: Timing regression verified  
+- [ ] 3.4.1: Complete flow tested
+- [ ] 3.4.2: Dual channels validated
+- [ ] 3.4.3: Performance baseline checked
+
+#### **Core Functionality Validation:**
+- [ ] ✅ Game progresses PREPARATION → DECLARATION (Tasks 3.1.1-3.1.3)
+- [ ] ✅ Events persist to SQLite database (Tasks 3.2.1-3.2.3)
+- [ ] ✅ WebSocket broadcasting maintained (Tasks 3.3.1-3.3.3)
+- [ ] ✅ End-to-end integration works (Tasks 3.4.1-3.4.3)
+
+#### **Time and Quality Metrics:**
+- [ ] ✅ Phase 1 completed within 15 minutes (Tasks 1.1.1-1.3.3)
+- [ ] ✅ Phase 2 completed within 30 minutes (Tasks 2.1.1-2.4.3)  
+- [ ] ✅ Phase 3 completed within 15 minutes (Tasks 3.1.1-3.4.3)
+- [ ] ✅ Total execution time ≤ 60 minutes
+- [ ] ✅ All validation commands executed successfully
+- [ ] ✅ Critical path tasks completed in sequence
+- [ ] ✅ Parallel tasks executed simultaneously where possible
+
+This granular approach provides precise progress tracking, optimal parallel execution, and systematic validation at each step. Ready to execute the granular task approach with 6-agent swarm coordination!
