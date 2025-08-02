@@ -61,8 +61,14 @@ class MessageRouter:
 
         # Extract event name (support both 'event' and 'action' for compatibility)
         event = message.get("event") or message.get("action")
+        
+        logger.info(f"📨 [MESSAGE_ROUTER_DEBUG] Received message #{self._message_count}")
+        logger.info(f"📨 [MESSAGE_ROUTER_DEBUG] Raw message: {message}")
+        logger.info(f"📨 [MESSAGE_ROUTER_DEBUG] Room ID: {room_id}")
+        logger.info(f"📨 [MESSAGE_ROUTER_DEBUG] Extracted event: {event}")
 
         if not event:
+            logger.error("📨 [MESSAGE_ROUTER_DEBUG] No event/action found in message!")
             self._error_count += 1
             return {
                 "event": "error",
@@ -74,8 +80,8 @@ class MessageRouter:
 
         # Log routing decision
         category = get_event_category(event)
-        logger.debug(
-            f"Routing message {self._message_count}: "
+        logger.info(
+            f"📨 [MESSAGE_ROUTER_DEBUG] Routing message {self._message_count}: "
             f"event={event}, category={category}, room={room_id}"
         )
 
@@ -95,12 +101,17 @@ class MessageRouter:
             # Track metrics for this event
             async with MetricsContext(event) as ctx:
                 # Determine routing based on configuration
-                if websocket_config.should_use_use_case(event):
+                use_case_routing = websocket_config.should_use_use_case(event)
+                logger.info(f"📨 [MESSAGE_ROUTER_DEBUG] Routing decision for {event}: use_case={use_case_routing}")
+                
+                if use_case_routing:
+                    logger.info(f"📨 [MESSAGE_ROUTER_DEBUG] Routing {event} to use case dispatcher")
                     # Route through use case dispatcher
                     response = await self._route_to_use_case(
                         websocket, message, room_id, event
                     )
                 else:
+                    logger.info(f"📨 [MESSAGE_ROUTER_DEBUG] Routing {event} to adapter system")
                     # Route through adapter system (for migration)
                     response = await self._route_to_adapter(websocket, message, room_id)
 

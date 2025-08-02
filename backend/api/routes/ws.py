@@ -477,7 +477,16 @@ async def websocket_endpoint(websocket: WebSocket, room_id: str):
             # Check if validation should be bypassed
             event_name = message.get("event", "")
             logger.info(
-                f"[MESSAGE_DEBUG] Received WebSocket message: event='{event_name}' from room '{room_id}'"
+                f"🌐 [WEBSOCKET_DEBUG] ===== NEW MESSAGE RECEIVED ====="
+            )
+            logger.info(
+                f"🌐 [WEBSOCKET_DEBUG] Event: '{event_name}' from room '{room_id}'"
+            )
+            logger.info(
+                f"🌐 [WEBSOCKET_DEBUG] Full message: {message}"
+            )
+            logger.info(
+                f"🌐 [WEBSOCKET_DEBUG] WebSocket ID: {websocket._ws_id}"
             )
             bypass_validation = websocket_config.should_bypass_validation(event_name)
 

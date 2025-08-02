@@ -800,7 +800,11 @@ class UseCaseDispatcher:
         self, data: Dict[str, Any], context: DispatchContext
     ) -> Dict[str, Any]:
         """Handle start_game event"""
+        logger.info(f"🚀 [START_GAME_DEBUG] Handler called with data: {data}")
+        logger.info(f"🚀 [START_GAME_DEBUG] Context: room_id={context.room_id}, player_id={context.player_id}, player_name={context.player_name}")
+        
         if not self.start_game_use_case:
+            logger.error("🚀 [START_GAME_DEBUG] start_game_use_case is None!")
             return {
                 "event": "error",
                 "data": {
@@ -810,6 +814,7 @@ class UseCaseDispatcher:
             }
 
         room_id = data.get("room_id") or context.room_id
+        logger.info(f"🚀 [START_GAME_DEBUG] Using room_id: {room_id}")
 
         request = StartGameRequest(
             room_id=room_id,
@@ -817,25 +822,39 @@ class UseCaseDispatcher:
             or data.get("requester_id")
             or "anonymous",
         )
-
-        response = await self.start_game_use_case.execute(request)
-
-        # StartGameResponse doesn't have a success attribute, but successful execution returns a response
-        # If there was an error, an exception would have been raised
         
-        # Convert initial_state to dict if it's a GameStateInfo object
-        initial_state_data = response.initial_state
-        if hasattr(initial_state_data, 'to_dict'):
-            initial_state_data = initial_state_data.to_dict()
-        
-        return {
-            "event": "game_started",
-            "data": {
-                "success": True,
-                "game_id": response.game_id,
-                "initial_state": initial_state_data,
-            },
-        }
+        logger.info(f"🚀 [START_GAME_DEBUG] Created request: {request}")
+        logger.info(f"🚀 [START_GAME_DEBUG] About to execute StartGameUseCase...")
+
+        try:
+            response = await self.start_game_use_case.execute(request)
+            logger.info(f"🚀 [START_GAME_DEBUG] StartGameUseCase completed successfully!")
+            logger.info(f"🚀 [START_GAME_DEBUG] Response: game_id={response.game_id}")
+
+            # StartGameResponse doesn't have a success attribute, but successful execution returns a response
+            # If there was an error, an exception would have been raised
+            
+            # Convert initial_state to dict if it's a GameStateInfo object
+            initial_state_data = response.initial_state
+            if hasattr(initial_state_data, 'to_dict'):
+                initial_state_data = initial_state_data.to_dict()
+            
+            result = {
+                "event": "game_started",
+                "data": {
+                    "success": True,
+                    "game_id": response.game_id,
+                    "initial_state": initial_state_data,
+                },
+            }
+            logger.info(f"🚀 [START_GAME_DEBUG] Returning result: {result}")
+            return result
+            
+        except Exception as e:
+            logger.error(f"🚀 [START_GAME_DEBUG] StartGameUseCase failed with error: {e}")
+            logger.error(f"🚀 [START_GAME_DEBUG] Error type: {type(e).__name__}")
+            logger.error(f"🚀 [START_GAME_DEBUG] Error details:", exc_info=True)
+            raise
 
     async def _handle_declare(
         self, data: Dict[str, Any], context: DispatchContext

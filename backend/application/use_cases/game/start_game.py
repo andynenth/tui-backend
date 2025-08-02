@@ -18,7 +18,7 @@ from application.exceptions import (
     ConflictException,
     ValidationException,
 )
-from domain.entities.game import Game, GamePhase
+from domain.entities.game import Game, GamePhase, WinConditionType
 from domain.entities.player import Player
 from domain.entities.room import RoomStatus
 from domain.services.game_rules import GameRules
@@ -31,8 +31,6 @@ from domain.events.game_events import (
 )
 from domain.events.base import EventMetadata
 from application.adapters.state_management_adapter import StateManagementAdapter
-from engine.state_machine.game_state_machine import GameStateMachine
-from engine.state_machine.core import GamePhase
 
 # PropertyMapper import removed - using direct attribute access
 
@@ -153,50 +151,33 @@ class StartGameUseCase(UseCase[StartGameRequest, StartGameResponse]):
                     starting_player=starting_player.name
                 )
 
-            # Start the game using state machine
-            logger.info(f"Starting game for room {room.room_id} via state machine")
-            state_machine = GameStateMachine(game)
-            state_machine.room_id = room.room_id
-            await state_machine.start(GamePhase.WAITING)
-            await state_machine.transition_to(GamePhase.PREPARATION)
-            old_phase = GamePhase.WAITING
-
-            # Track phase change if occurred and adapter available
-            if self._state_adapter and old_phase != game.current_phase:
+            # Start the game and first round using domain methods
+            logger.info(f"Starting game for room {room.room_id}")
+            
+            # Start the game (sets phase to PREPARATION)
+            game.start_game()
+            
+            # Start the first round (deals cards to players)
+            logger.info(
+                f"🎯 [PHASE_TRANSITION_DEBUG] Starting round 1, dealing cards to {len(game.players)} players"
+            )
+            game.start_round()
+            
+            logger.info(f"🎯 [PHASE_TRANSITION_DEBUG] Game phase after start_round: {game.current_phase}")
+            
+            # Track phase change if adapter available
+            if self._state_adapter:
                 context = self._state_adapter.create_context(
                     game_id=game.room_id,
                     room_id=room.room_id,
-                    current_phase=str(old_phase)
+                    current_phase=str(GamePhase.NOT_STARTED)
                 )
                 await self._state_adapter.track_phase_change(
                     context=context,
-                    from_phase=old_phase,
+                    from_phase=GamePhase.NOT_STARTED,
                     to_phase=game.current_phase,
                     trigger="start_game",
-                    payload={"player_count": len(game_players)}
-                )
-
-            # Start the first round using state machine (deals cards to players)
-            logger.info(
-                f"Starting round 1 via state machine, dealing cards to {len(game.players)} players"
-            )
-            old_phase = state_machine.current_phase
-            # Trigger automatic progression check to ensure transition from PREPARATION phase
-            await state_machine.check_and_handle_transitions()
-            
-            # Track phase change if occurred and adapter available
-            if self._state_adapter and old_phase != game.current_phase:
-                context = self._state_adapter.create_context(
-                    game_id=game.room_id,
-                    room_id=room.room_id,
-                    current_phase=str(old_phase)
-                )
-                await self._state_adapter.track_phase_change(
-                    context=context,
-                    from_phase=old_phase,
-                    to_phase=game.current_phase,
-                    trigger="start_round",
-                    payload={"round": game.round_number}
+                    payload={"player_count": len(game_players), "round": game.round_number}
                 )
 
             # Publish all domain events from the game
