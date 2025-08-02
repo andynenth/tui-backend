@@ -50,3 +50,150 @@ else:
         types: [python]
         files: ^backend/tests/contracts/websocket_contracts\.py$
         pass_filenames: false
+
+      # Architecture validation hooks
+      - id: architecture-boundary-check
+        name: Architecture Boundary Validation
+        entry: python scripts/validate_architecture.py
+        language: system
+        types: [python]
+        files: ^backend/
+        pass_filenames: false
+        verbose: true
+
+      - id: dependency-analysis
+        name: Import Dependency Analysis
+        entry: python scripts/check_dependencies.py
+        language: system
+        types: [python]
+        files: ^backend/
+        pass_filenames: false
+        verbose: true
+
+      - id: feature-flag-validation
+        name: Feature Flag Validation
+        entry: python scripts/validate_feature_flags.py
+        language: system
+        types: [python]
+        files: ^backend/
+        pass_filenames: false
+        verbose: true
+
+      - id: clean-architecture-layer-check
+        name: Clean Architecture Layer Check
+        entry: bash -c 'python -c "
+import sys
+import re
+from pathlib import Path
+
+# Check domain layer purity
+domain_files = list(Path(\"backend/domain\").rglob(\"*.py\"))
+violations = []
+
+for file in domain_files:
+    try:
+        content = file.read_text()
+        # Check for forbidden imports
+        forbidden_patterns = [
+            r\"from backend\.(application|infrastructure|api|engine)\",
+            r\"import backend\.(application|infrastructure|api|engine)\"
+        ]
+        for pattern in forbidden_patterns:
+            if re.search(pattern, content):
+                violations.append(f\"{file}: Domain layer importing outer layers\")
+    except:
+        continue
+
+if violations:
+    print(\"❌ Domain Layer Violations:\")
+    for v in violations:
+        print(f\"  {v}\")
+    sys.exit(1)
+else:
+    print(\"✅ Domain layer purity maintained\")
+"'
+        language: system
+        types: [python]
+        files: ^backend/domain/
+        pass_filenames: false
+
+      - id: engine-layer-isolation-check
+        name: Engine Layer Isolation Check
+        entry: bash -c 'python -c "
+import sys
+import re
+from pathlib import Path
+
+# Check engine layer isolation
+engine_files = list(Path(\"backend/engine\").rglob(\"*.py\"))
+violations = []
+
+for file in engine_files:
+    try:
+        content = file.read_text()
+        # Check for forbidden imports
+        forbidden_patterns = [
+            r\"from backend\.application\.use_cases\",
+            r\"from backend\.infrastructure\.persistence\",
+            r\"from backend\.api\"
+        ]
+        for pattern in forbidden_patterns:
+            if re.search(pattern, content):
+                violations.append(f\"{file}: Engine importing Clean Architecture internals\")
+    except:
+        continue
+
+if violations:
+    print(\"❌ Engine Layer Violations:\")
+    for v in violations:
+        print(f\"  {v}\")
+    sys.exit(1)
+else:
+    print(\"✅ Engine layer isolation maintained\")
+"'
+        language: system
+        types: [python]
+        files: ^backend/engine/
+        pass_filenames: false
+
+      - id: state-management-pattern-check
+        name: State Management Pattern Check
+        entry: bash -c 'python -c "
+import sys
+import re
+from pathlib import Path
+
+# Check for proper state management patterns
+violations = []
+
+# Check use cases for proper StateManagementAdapter usage
+use_case_files = list(Path(\"backend/application/use_cases\").rglob(\"*.py\"))
+
+for file in use_case_files:
+    try:
+        content = file.read_text()
+        
+        # If StateManagementAdapter is used, check for proper patterns
+        if \"StateManagementAdapter\" in content:
+            # Should have null check
+            if \"if self._state_adapter\" not in content and \"if state_adapter\" not in content:
+                violations.append(f\"{file}: Missing state adapter null check\")
+            
+            # Should not import GameStateMachine
+            if \"game_state_machine\" in content.lower():
+                violations.append(f\"{file}: Use case importing GameStateMachine (should use adapter)\")
+    except:
+        continue
+
+if violations:
+    print(\"❌ State Management Violations:\")
+    for v in violations:
+        print(f\"  {v}\")
+    sys.exit(1)
+else:
+    print(\"✅ State management patterns correct\")
+"'
+        language: system
+        types: [python]
+        files: ^backend/application/use_cases/
+        pass_filenames: false
