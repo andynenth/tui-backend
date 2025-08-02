@@ -181,8 +181,7 @@ class StartGameUseCase(UseCase[StartGameRequest, StartGameResponse]):
                 f"Starting round 1 via state machine, dealing cards to {len(game.players)} players"
             )
             old_phase = state_machine.current_phase
-            # Trigger automatic progression check to ensure transition from PREPARATION phase
-            await state_machine.check_and_handle_transitions()
+            # State machine will handle round start automatically through phase progression
             
             # Track phase change if occurred and adapter available
             if self._state_adapter and old_phase != game.current_phase:

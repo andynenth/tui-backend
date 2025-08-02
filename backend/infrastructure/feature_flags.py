@@ -82,7 +82,7 @@ class FeatureFlags:
             self.USE_DOMAIN_EVENTS: False,
             self.USE_APPLICATION_LAYER: False,
             self.USE_NEW_REPOSITORIES: False,
-            self.USE_EVENT_SOURCING: False,
+            self.USE_EVENT_SOURCING: True,
             # Individual adapter flags - can be enabled independently
             self.USE_CONNECTION_ADAPTERS: False,
             self.USE_ROOM_ADAPTERS: False,
