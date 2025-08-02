@@ -266,9 +266,21 @@ export function GameContainer({ roomId, onNavigateToLobby }) {
       message: getWaitingMessage(gameState, connectionStatus),
       phase: gameState.phase || 'waiting',
       onRetry: gameActions.triggerRecovery,
-      onCancel: () => (window.location.href = '/lobby'),
+      onCancel: async () => {
+        try {
+          // Gracefully disconnect from room before navigating
+          await gameActions.disconnectFromRoom();
+        } catch (error) {
+          console.warn('Error disconnecting during cancel:', error);
+        } finally {
+          // Navigate to lobby using proper React Router approach
+          if (onNavigateToLobby) {
+            onNavigateToLobby();
+          }
+        }
+      },
     }),
-    [gameState, connectionStatus, gameActions]
+    [gameState, connectionStatus, gameActions, onNavigateToLobby]
   );
 
   const gameOverProps = useMemo(() => {
