@@ -1,70 +1,75 @@
-## Description
-<!-- Provide a brief description of the changes in this PR -->
+## Pull Request Checklist
 
+### Description
+Brief description of changes and why they were made.
 
-## Type of Change
-<!-- Check all that apply -->
-- [ ] 🐛 Bug fix
-- [ ] ✨ New feature
-- [ ] 📝 Documentation update
-- [ ] ♻️ Code refactoring
-- [ ] 🎨 Style/formatting changes
-- [ ] ⚡ Performance improvement
-- [ ] ✅ Test addition/update
-- [ ] 🔧 Configuration change
-
-## Quality Checklist
-<!-- Verify your code meets our quality standards -->
-
-### Pre-commit Checks
-- [ ] All tests pass locally (`npm test`, `pytest`)
-- [ ] Linting passes (`npm run lint`)
-- [ ] Type checking passes (`npm run type-check`)
-- [ ] Code is formatted (`npm run format`)
-
-### Code Quality
-- [ ] Code follows the style guidelines in CODE_QUALITY_CHECKLIST.md
-- [ ] Self-review completed
-- [ ] Comments added for complex logic
-- [ ] No console.log or debugging code left
-- [ ] No hardcoded values that should be configurable
+### Type of Change
+- [ ] Bug fix (non-breaking change which fixes an issue)
+- [ ] New feature (non-breaking change which adds functionality)
+- [ ] Breaking change (fix or feature that would cause existing functionality to not work as expected)
+- [ ] Documentation update
+- [ ] Performance improvement
+- [ ] Code refactoring
 
 ### Testing
-- [ ] New tests added for new functionality
-- [ ] Existing tests updated if needed
-- [ ] Test coverage maintained or improved
-- [ ] Manual testing completed
+- [ ] I have added unit tests for new functionality
+- [ ] I have added integration tests if applicable  
+- [ ] I have run the test suite locally and all tests pass
+- [ ] I have tested the changes manually
+
+### Code Quality
+- [ ] My code follows the established style guidelines
+- [ ] I have run `black .` for Python formatting
+- [ ] I have run `npm run lint` for frontend linting
+- [ ] I have run `pylint` on modified Python files
+- [ ] I have run `npm run type-check` for TypeScript validation
+
+### Performance
+- [ ] Changes do not negatively impact performance
+- [ ] I have considered the impact on the CI/CD pipeline runtime
+- [ ] Performance tests pass (if applicable)
+
+### Security
+- [ ] No sensitive information is exposed in code or logs
+- [ ] External dependencies are necessary and from trusted sources
+- [ ] Changes follow security best practices
 
 ### Documentation
-- [ ] Code comments are clear and helpful
-- [ ] README updated if needed
-- [ ] API documentation updated if endpoints changed
-- [ ] REVIEW_STATUS.md updated if applicable
+- [ ] I have updated relevant documentation
+- [ ] Code comments are clear and necessary
+- [ ] CLAUDE.md has been updated if development processes changed
 
-## Related Issues
-<!-- Link to related issues -->
-Closes #
+### Related Issues
+Closes #(issue number)
 
-## Screenshots/Demos
-<!-- If applicable, add screenshots or demos of the changes -->
+### Screenshots (if applicable)
+Add screenshots for UI changes
 
-
-## Review Focus Areas
-<!-- Help reviewers by highlighting areas that need special attention -->
-- 
-
-## Deployment Notes
-<!-- Any special considerations for deployment? -->
-- [ ] No special deployment steps needed
-- [ ] Database migration required
-- [ ] Environment variables added/changed
-- [ ] Breaking changes (requires coordination)
-
-## Post-Merge Tasks
-<!-- Any follow-up tasks after merging? -->
-- [ ] Update QUALITY_METRICS.md
-- [ ] Update QUALITY_REVIEW_LOG.md
-- [ ] Create follow-up issues for remaining work
+### Additional Notes
+Any additional information that reviewers should know.
 
 ---
-**Reviewer Note**: Please check against CODE_QUALITY_CHECKLIST.md during review
+
+## For Reviewers
+
+### Test Commands
+```bash
+# Backend tests
+cd backend
+source venv/bin/activate
+pytest tests/unit/ -v
+pytest tests/integration/ -v
+
+# Frontend tests  
+cd frontend
+npm test
+npm run lint
+npm run type-check
+```
+
+### What to Review
+- [ ] Code quality and style consistency
+- [ ] Test coverage for new functionality
+- [ ] Security implications
+- [ ] Performance impact
+- [ ] Documentation accuracy
