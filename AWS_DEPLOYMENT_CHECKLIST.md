@@ -168,10 +168,16 @@ CMD ["uvicorn", "backend.api.main:app", "--host", "0.0.0.0", "--port", "5050"]
 - Enable WebSocket support on target group
 - Set idle timeout to 3600 seconds (1 hour)
 
-### Static Assets
+### Static Assets (Optional Optimization)
+**Option 1: Serve from FastAPI (Recommended for budget)**
+- Frontend served directly from container (already configured in Dockerfile.prod)
+- Simpler deployment, lower cost (~$45-55/month total)
+
+**Option 2: S3 + CloudFront (For high traffic)**
 - Upload frontend build to S3
 - Use CloudFront for CDN
 - Update FastAPI to redirect static requests
+- Higher cost but better performance for global users
 
 ### Database
 - Currently uses in-memory storage
