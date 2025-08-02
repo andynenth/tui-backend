@@ -574,29 +574,35 @@ async def test_performance_metrics():
 
 ---
 
-## 🤖 Minimal Fix Agent Configuration
+## 🤖 Alternative: Simplified Agent Configuration
 
-**Strategy**: Connect existing components without adding new features
+**Strategy**: For simpler deployments or limited resources
 
-### **Simplified Agent Configuration (4 Agents Only)**
+### **Minimal Agent Configuration (4 Agents Only)**
 
-Focus on connecting existing pieces, not building new ones:
+If you prefer a simpler approach with fewer agents:
 
 ```javascript
-// MINIMAL FIX DEPLOYMENT - NO NEW FEATURES
+// SIMPLIFIED DEPLOYMENT - FEWER AGENTS
 [Single Message - Batch Execution]:
   mcp__claude-flow__swarm_init { 
     topology: "hierarchical", 
     maxAgents: 4, 
-    strategy: "minimal_fix_only" 
+    strategy: "simplified_sequential" 
   }
   
-  // Fix-focused agent deployment
-  mcp__claude-flow__agent_spawn { type: "coordinator", name: "Fix Coordinator" }
-  mcp__claude-flow__agent_spawn { type: "coder", name: "Infrastructure Connector" }
-  mcp__claude-flow__agent_spawn { type: "coder", name: "State Machine Integrator" }
-  mcp__claude-flow__agent_spawn { type: "tester", name: "Fix Validator" }
+  // Simplified agent deployment
+  mcp__claude-flow__agent_spawn { type: "coordinator", name: "Task Coordinator" }
+  mcp__claude-flow__agent_spawn { type: "coder", name: "Phase 1&2 Executor" }
+  mcp__claude-flow__agent_spawn { type: "coder", name: "Integration Developer" }
+  mcp__claude-flow__agent_spawn { type: "tester", name: "Validation Specialist" }
 ```
+
+**Trade-offs of Simplified Approach:**
+- ✅ **Fewer Agents**: Easier coordination with 4 vs 6 agents
+- ✅ **Simpler Setup**: Less complex swarm initialization
+- ❌ **Sequential Execution**: Less parallelism, slower overall execution (~90 minutes vs 60 minutes)
+- ❌ **Less Specialization**: Agents handle broader responsibilities
 
 ### **Clean Architecture Layer-Aligned Agent Responsibilities:**
 
@@ -839,7 +845,7 @@ Each agent MUST execute with layer-aware coordination:
 
 ---
 
-## 🎯 Minimal Fix Agent Deployment
+## 🎯 Granular Task Agent Deployment
 
 ### **Updated Deployment Command for Granular Tasks:**
 
