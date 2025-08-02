@@ -33,7 +33,15 @@ export default {
   testMatch: [
     '<rootDir>/src/**/__tests__/**/*.{js,jsx,ts,tsx}',
     '<rootDir>/src/**/*.{spec,test}.{js,jsx,ts,tsx}',
-    '!<rootDir>/src/**/__tests__/testUtils.js', // Exclude utility files
+  ],
+
+  // Ignore patterns
+  testPathIgnorePatterns: [
+    '/node_modules/', 
+    '/build/', 
+    '/dist/',
+    'testUtils\\.js$', // Exclude utility files
+    '/setup/', // Exclude setup files
   ],
 
   // Coverage configuration
@@ -49,7 +57,4 @@ export default {
 
   // File extensions
   moduleFileExtensions: ['js', 'jsx', 'ts', 'tsx', 'json'],
-
-  // Ignore patterns
-  testPathIgnorePatterns: ['/node_modules/', '/build/', '/dist/'],
 };
