@@ -23,13 +23,13 @@ class TestBotManagerRoundStartIntegration:
     @pytest.fixture
     def game_with_bots(self):
         """Create a game with mix of human and bot players"""
-        game = Game()
-        game.players = [
+        players = [
             Player("Human1", is_bot=False),
             Player("Bot1", is_bot=True),
             Player("Bot2", is_bot=True),
             Player("Human2", is_bot=False),
         ]
+        game = Game(players)
         game.round_number = 1
         return game
 
@@ -209,7 +209,8 @@ class TestErrorScenarios:
     @pytest.mark.asyncio
     async def test_recovery_from_invalid_transition_attempt(self):
         """Test system recovers gracefully from invalid transition attempts"""
-        game = Game()
+        players = [Player(f"Player{i}") for i in range(1, 5)]
+        game = Game(players)
         sm = GameStateMachine(game)
         await sm.initialize()
 
@@ -231,7 +232,8 @@ class TestErrorScenarios:
     @pytest.mark.asyncio
     async def test_concurrent_transition_protection(self):
         """Test that concurrent transition attempts don't cause issues"""
-        game = Game()
+        players = [Player(f"Player{i}") for i in range(1, 5)]
+        game = Game(players)
         sm = GameStateMachine(game)
         await sm.initialize()
 

@@ -22,8 +22,8 @@ class TestRoundStartPhaseTransitions:
     @pytest.fixture
     def game(self):
         """Create a test game with 4 players"""
-        game = Game()
-        game.players = [Player(f"Player{i}", is_bot=(i > 1)) for i in range(1, 5)]
+        players = [Player(f"Player{i}", is_bot=(i > 1)) for i in range(1, 5)]
+        game = Game(players)
         game.round_number = 1
         return game
 
@@ -252,7 +252,8 @@ class TestPhaseTransitionValidation:
     @pytest.mark.asyncio
     async def test_transition_validation_map(self):
         """Test that transition validation map is correctly configured"""
-        game = Game()
+        players = [Player(f"Player{i}") for i in range(1, 5)]
+        game = Game(players)
         sm = GameStateMachine(game)
 
         # Check PREPARATION transitions
