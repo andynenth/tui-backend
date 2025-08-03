@@ -131,7 +131,7 @@ const AppRouterContent = ({ sessionToRecover }) => {
     <Routes>
       {/* Start page - no requirements */}
       <Route path="/" element={<StartPage />} />
-      
+
       {/* Tutorial page - no requirements */}
       <Route path="/tutorial" element={<TutorialPage />} />
 

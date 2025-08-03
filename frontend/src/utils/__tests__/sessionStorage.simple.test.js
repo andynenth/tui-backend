@@ -1,6 +1,6 @@
 /**
  * Session Storage Simple Tests
- * 
+ *
  * Simplified tests focusing on core functionality
  */
 
@@ -15,12 +15,20 @@ import {
 Object.defineProperty(window, 'localStorage', {
   value: {
     store: {},
-    getItem: jest.fn(function(key) { return this.store[key] || null; }),
-    setItem: jest.fn(function(key, value) { this.store[key] = value; }),
-    removeItem: jest.fn(function(key) { delete this.store[key]; }),
-    clear: jest.fn(function() { this.store = {}; }),
+    getItem: jest.fn(function (key) {
+      return this.store[key] || null;
+    }),
+    setItem: jest.fn(function (key, value) {
+      this.store[key] = value;
+    }),
+    removeItem: jest.fn(function (key) {
+      delete this.store[key];
+    }),
+    clear: jest.fn(function () {
+      this.store = {};
+    }),
   },
-  writable: true
+  writable: true,
 });
 
 // Mock console
@@ -62,7 +70,7 @@ describe('Session Storage Core Functions', () => {
       gamePhase: 'lobby',
     };
 
-    localStorage.store['liap_tui_session'] = JSON.stringify(sessionData);
+    localStorage.store.liap_tui_session = JSON.stringify(sessionData);
 
     const result = getSession();
     expect(result).toEqual(sessionData);
@@ -70,7 +78,7 @@ describe('Session Storage Core Functions', () => {
 
   test('clearSession removes data', () => {
     // Store some data first
-    localStorage.store['liap_tui_session'] = 'some data';
+    localStorage.store.liap_tui_session = 'some data';
 
     clearSession();
 
@@ -91,7 +99,7 @@ describe('Session Storage Core Functions', () => {
       gamePhase: 'lobby',
     };
 
-    localStorage.store['liap_tui_session'] = JSON.stringify(sessionData);
+    localStorage.store.liap_tui_session = JSON.stringify(sessionData);
     expect(hasValidSession()).toBe(true);
 
     // Clear session

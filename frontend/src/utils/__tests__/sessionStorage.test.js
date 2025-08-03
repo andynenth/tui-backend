@@ -52,15 +52,15 @@ describe('Session Storage Utilities', () => {
   beforeEach(() => {
     // Clear storage first
     mockLocalStorage.store = {};
-    
+
     // Clear all mocks
     jest.clearAllMocks();
-    
+
     // Mock localStorage
     originalLocalStorage = global.localStorage;
     Object.defineProperty(global, 'localStorage', {
       value: mockLocalStorage,
-      writable: true
+      writable: true,
     });
 
     // Mock console
@@ -95,10 +95,10 @@ describe('Session Storage Utilities', () => {
         })
       );
 
-      expect(mockConsole.log).toHaveBeenCalledWith(
-        'Session stored:',
-        { roomId: 'room123', playerName: 'Alice' }
-      );
+      expect(mockConsole.log).toHaveBeenCalledWith('Session stored:', {
+        roomId: 'room123',
+        playerName: 'Alice',
+      });
     });
 
     test('stores session with null gamePhase', () => {
@@ -145,7 +145,7 @@ describe('Session Storage Utilities', () => {
         gamePhase: 'lobby',
       };
 
-      mockLocalStorage.store['liap_tui_session'] = JSON.stringify(sessionData);
+      mockLocalStorage.store.liap_tui_session = JSON.stringify(sessionData);
 
       const result = getSession();
       expect(result).toEqual(sessionData);
@@ -162,19 +162,21 @@ describe('Session Storage Utilities', () => {
         playerName: 'Alice',
         sessionId: 'session456',
         createdAt: 1000000,
-        lastActivity: 1000000 - (25 * 60 * 60 * 1000), // 25 hours ago
+        lastActivity: 1000000 - 25 * 60 * 60 * 1000, // 25 hours ago
         gamePhase: 'lobby',
       };
 
-      mockLocalStorage.store['liap_tui_session'] = JSON.stringify(expiredSession);
+      mockLocalStorage.store.liap_tui_session = JSON.stringify(expiredSession);
 
       const result = getSession();
       expect(result).toBeNull();
-      expect(mockLocalStorage.removeItem).toHaveBeenCalledWith('liap_tui_session');
+      expect(mockLocalStorage.removeItem).toHaveBeenCalledWith(
+        'liap_tui_session'
+      );
     });
 
     test('handles corrupted session data', () => {
-      mockLocalStorage.store['liap_tui_session'] = 'invalid json';
+      mockLocalStorage.store.liap_tui_session = 'invalid json';
 
       const result = getSession();
       expect(result).toBeNull();
@@ -203,11 +205,12 @@ describe('Session Storage Utilities', () => {
         playerName: 'Alice',
         sessionId: 'session456',
         createdAt: 1000000,
-        lastActivity: 1000000 - (23 * 60 * 60 * 1000), // 23 hours ago (still valid)
+        lastActivity: 1000000 - 23 * 60 * 60 * 1000, // 23 hours ago (still valid)
         gamePhase: 'lobby',
       };
 
-      mockLocalStorage.store['liap_tui_session'] = JSON.stringify(almostExpiredSession);
+      mockLocalStorage.store.liap_tui_session =
+        JSON.stringify(almostExpiredSession);
 
       const result = getSession();
       expect(result).toEqual(almostExpiredSession);
@@ -226,13 +229,15 @@ describe('Session Storage Utilities', () => {
         gamePhase: 'lobby',
       };
 
-      mockLocalStorage.store['liap_tui_session'] = JSON.stringify(sessionData);
+      mockLocalStorage.store.liap_tui_session = JSON.stringify(sessionData);
 
       Date.now = jest.fn(() => 2000000); // Later timestamp
 
       updateSessionActivity();
 
-      const updatedSession = JSON.parse(mockLocalStorage.setItem.mock.calls[0][1]);
+      const updatedSession = JSON.parse(
+        mockLocalStorage.setItem.mock.calls[0][1]
+      );
       expect(updatedSession.lastActivity).toBe(2000000);
       expect(updatedSession.createdAt).toBe(1000000); // Should not change
     });
@@ -253,7 +258,7 @@ describe('Session Storage Utilities', () => {
         gamePhase: 'lobby',
       };
 
-      mockLocalStorage.store['liap_tui_session'] = JSON.stringify(sessionData);
+      mockLocalStorage.store.liap_tui_session = JSON.stringify(sessionData);
 
       mockLocalStorage.setItem.mockImplementationOnce(() => {
         throw new Error('Storage error');
@@ -269,11 +274,13 @@ describe('Session Storage Utilities', () => {
 
   describe('clearSession', () => {
     test('removes session from localStorage', () => {
-      mockLocalStorage.store['liap_tui_session'] = 'some data';
+      mockLocalStorage.store.liap_tui_session = 'some data';
 
       clearSession();
 
-      expect(mockLocalStorage.removeItem).toHaveBeenCalledWith('liap_tui_session');
+      expect(mockLocalStorage.removeItem).toHaveBeenCalledWith(
+        'liap_tui_session'
+      );
       expect(mockConsole.log).toHaveBeenCalledWith('Session cleared');
     });
 
@@ -301,7 +308,7 @@ describe('Session Storage Utilities', () => {
         gamePhase: 'lobby',
       };
 
-      mockLocalStorage.store['liap_tui_session'] = JSON.stringify(sessionData);
+      mockLocalStorage.store.liap_tui_session = JSON.stringify(sessionData);
 
       expect(hasValidSession()).toBe(true);
     });
@@ -316,11 +323,11 @@ describe('Session Storage Utilities', () => {
         playerName: 'Alice',
         sessionId: 'session456',
         createdAt: 1000000,
-        lastActivity: 1000000 - (25 * 60 * 60 * 1000), // Expired
+        lastActivity: 1000000 - 25 * 60 * 60 * 1000, // Expired
         gamePhase: 'lobby',
       };
 
-      mockLocalStorage.store['liap_tui_session'] = JSON.stringify(expiredSession);
+      mockLocalStorage.store.liap_tui_session = JSON.stringify(expiredSession);
 
       expect(hasValidSession()).toBe(false);
     });
@@ -337,7 +344,7 @@ describe('Session Storage Utilities', () => {
         gamePhase: 'lobby',
       };
 
-      mockLocalStorage.store['liap_tui_session'] = JSON.stringify(sessionData);
+      mockLocalStorage.store.liap_tui_session = JSON.stringify(sessionData);
 
       const age = getSessionAge();
       expect(age).toBe(500000); // 1000000 - 500000
@@ -360,7 +367,7 @@ describe('Session Storage Utilities', () => {
         gamePhase: 'lobby',
       };
 
-      mockLocalStorage.store['liap_tui_session'] = JSON.stringify(sessionData);
+      mockLocalStorage.store.liap_tui_session = JSON.stringify(sessionData);
 
       const timeSince = getTimeSinceLastActivity();
       expect(timeSince).toBe(300000); // 1000000 - 700000
@@ -383,7 +390,7 @@ describe('Session Storage Utilities', () => {
         gamePhase: 'lobby',
       };
 
-      mockLocalStorage.store['liap_tui_session'] = JSON.stringify(sessionData);
+      mockLocalStorage.store.liap_tui_session = JSON.stringify(sessionData);
 
       const info = formatSessionInfo();
       expect(info).toEqual({
@@ -401,11 +408,11 @@ describe('Session Storage Utilities', () => {
         playerName: 'Alice',
         sessionId: 'session456',
         createdAt: 1000000,
-        lastActivity: 1000000 - (3 * 60 * 1000), // 3 minutes ago
+        lastActivity: 1000000 - 3 * 60 * 1000, // 3 minutes ago
         gamePhase: 'turn',
       };
 
-      mockLocalStorage.store['liap_tui_session'] = JSON.stringify(sessionData);
+      mockLocalStorage.store.liap_tui_session = JSON.stringify(sessionData);
 
       const info = formatSessionInfo();
       expect(info).toEqual({
@@ -423,11 +430,11 @@ describe('Session Storage Utilities', () => {
         playerName: 'Alice',
         sessionId: 'session456',
         createdAt: 1000000,
-        lastActivity: 1000000 - (10 * 60 * 1000), // 10 minutes ago
+        lastActivity: 1000000 - 10 * 60 * 1000, // 10 minutes ago
         gamePhase: 'scoring',
       };
 
-      mockLocalStorage.store['liap_tui_session'] = JSON.stringify(sessionData);
+      mockLocalStorage.store.liap_tui_session = JSON.stringify(sessionData);
 
       const info = formatSessionInfo();
       expect(info).toEqual({
@@ -445,11 +452,11 @@ describe('Session Storage Utilities', () => {
         playerName: 'Alice',
         sessionId: 'session456',
         createdAt: 1000000,
-        lastActivity: 1000000 - (1 * 60 * 1000), // 1 minute ago
+        lastActivity: 1000000 - 1 * 60 * 1000, // 1 minute ago
         gamePhase: 'declaration',
       };
 
-      mockLocalStorage.store['liap_tui_session'] = JSON.stringify(sessionData);
+      mockLocalStorage.store.liap_tui_session = JSON.stringify(sessionData);
 
       const info = formatSessionInfo();
       expect(info.lastSeenText).toBe('1 minute ago');
@@ -496,18 +503,19 @@ describe('Session Storage Utilities', () => {
           },
         ];
 
-        mockLocalStorage.store['liap_tui_sessions'] = JSON.stringify(initialSessions);
+        mockLocalStorage.store.liap_tui_sessions =
+          JSON.stringify(initialSessions);
 
         storeMultiSession('room123', 'Alice', 'newSession');
 
         const stored = JSON.parse(mockLocalStorage.setItem.mock.calls[0][1]);
         expect(stored).toHaveLength(2);
-        
-        const aliceSession = stored.find(s => s.roomId === 'room123');
+
+        const aliceSession = stored.find((s) => s.roomId === 'room123');
         expect(aliceSession.sessionId).toBe('newSession');
         expect(aliceSession.createdAt).toBe(1000000);
-        
-        const bobSession = stored.find(s => s.roomId === 'room999');
+
+        const bobSession = stored.find((s) => s.roomId === 'room999');
         expect(bobSession).toEqual(initialSessions[1]);
       });
 
@@ -521,16 +529,17 @@ describe('Session Storage Utilities', () => {
           lastActivity: 900000 + i * 1000,
         }));
 
-        mockLocalStorage.store['liap_tui_sessions'] = JSON.stringify(existingSessions);
+        mockLocalStorage.store.liap_tui_sessions =
+          JSON.stringify(existingSessions);
 
         storeMultiSession('room999', 'NewPlayer', 'newSession');
 
         const stored = JSON.parse(mockLocalStorage.setItem.mock.calls[0][1]);
         expect(stored).toHaveLength(5);
-        
+
         // Should have removed the oldest session (room0)
-        expect(stored.find(s => s.roomId === 'room0')).toBeUndefined();
-        expect(stored.find(s => s.roomId === 'room999')).toBeDefined();
+        expect(stored.find((s) => s.roomId === 'room0')).toBeUndefined();
+        expect(stored.find((s) => s.roomId === 'room999')).toBeDefined();
       });
 
       test('handles localStorage errors gracefully', () => {
@@ -568,7 +577,7 @@ describe('Session Storage Utilities', () => {
           },
         ];
 
-        mockLocalStorage.store['liap_tui_sessions'] = JSON.stringify(sessions);
+        mockLocalStorage.store.liap_tui_sessions = JSON.stringify(sessions);
 
         const result = getMultiSessions();
         expect(result).toEqual(sessions);
@@ -588,11 +597,11 @@ describe('Session Storage Utilities', () => {
             playerName: 'Bob',
             sessionId: 'session789',
             createdAt: 500000,
-            lastActivity: 1000000 - (25 * 60 * 60 * 1000), // Expired
+            lastActivity: 1000000 - 25 * 60 * 60 * 1000, // Expired
           },
         ];
 
-        mockLocalStorage.store['liap_tui_sessions'] = JSON.stringify(sessions);
+        mockLocalStorage.store.liap_tui_sessions = JSON.stringify(sessions);
 
         const result = getMultiSessions();
         expect(result).toHaveLength(1);
@@ -605,7 +614,7 @@ describe('Session Storage Utilities', () => {
       });
 
       test('handles corrupted data gracefully', () => {
-        mockLocalStorage.store['liap_tui_sessions'] = 'invalid json';
+        mockLocalStorage.store.liap_tui_sessions = 'invalid json';
 
         const result = getMultiSessions();
         expect(result).toEqual([]);
@@ -635,19 +644,19 @@ describe('Session Storage Utilities', () => {
       // Functions should handle undefined localStorage gracefully (not throw)
       const originalLS = global.localStorage;
       global.localStorage = undefined;
-      
+
       expect(() => {
         storeSession('room', 'player', 'session');
       }).not.toThrow();
-      
+
       expect(() => {
         getSession();
       }).not.toThrow();
-      
+
       expect(() => {
         clearSession();
       }).not.toThrow();
-      
+
       global.localStorage = originalLS;
     });
 
@@ -669,7 +678,8 @@ describe('Session Storage Utilities', () => {
         // Missing other fields
       };
 
-      mockLocalStorage.store['liap_tui_session'] = JSON.stringify(incompleteSession);
+      mockLocalStorage.store.liap_tui_session =
+        JSON.stringify(incompleteSession);
 
       expect(() => getSession()).not.toThrow();
       expect(() => getSessionAge()).not.toThrow();

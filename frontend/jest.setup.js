@@ -4,9 +4,11 @@ import '@testing-library/jest-dom';
 
 // Add TextEncoder/TextDecoder polyfills for JSDOM
 if (typeof TextEncoder === 'undefined') {
+  // eslint-disable-next-line @typescript-eslint/no-var-requires
   global.TextEncoder = require('util').TextEncoder;
 }
 if (typeof TextDecoder === 'undefined') {
+  // eslint-disable-next-line @typescript-eslint/no-var-requires
   global.TextDecoder = require('util').TextDecoder;
 }
 

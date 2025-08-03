@@ -29,7 +29,7 @@ jest.mock('../LoadingOverlay', () => ({
 jest.mock('../ConnectionIndicator', () => ({
   __esModule: true,
   default: ({ isConnected, isConnecting, isReconnecting, error }) => (
-    <div 
+    <div
       data-testid="connection-indicator"
       data-connected={isConnected}
       data-connecting={isConnecting}
@@ -76,7 +76,9 @@ describe('WaitingUI Component', () => {
       ];
 
       phases.forEach(({ phase, title }) => {
-        const { rerender } = render(<WaitingUI {...defaultProps} phase={phase} />);
+        const { rerender } = render(
+          <WaitingUI {...defaultProps} phase={phase} />
+        );
         expect(screen.getByText(title)).toBeInTheDocument();
         rerender(<div />); // Clear previous render
       });
@@ -92,7 +94,9 @@ describe('WaitingUI Component', () => {
       ];
 
       phases.forEach(({ phase, icon }) => {
-        const { rerender } = render(<WaitingUI {...defaultProps} phase={phase} />);
+        const { rerender } = render(
+          <WaitingUI {...defaultProps} phase={phase} />
+        );
         expect(screen.getByText(icon)).toBeInTheDocument();
         rerender(<div />); // Clear previous render
       });
@@ -133,25 +137,50 @@ describe('WaitingUI Component', () => {
 
     test('shows correct connection status text', () => {
       const statusTests = [
-        { 
-          props: { isConnected: true, isConnecting: false, isReconnecting: false, connectionError: null },
-          expected: 'Connected'
+        {
+          props: {
+            isConnected: true,
+            isConnecting: false,
+            isReconnecting: false,
+            connectionError: null,
+          },
+          expected: 'Connected',
         },
-        { 
-          props: { isConnected: false, isConnecting: true, isReconnecting: false, connectionError: null },
-          expected: 'Connecting'
+        {
+          props: {
+            isConnected: false,
+            isConnecting: true,
+            isReconnecting: false,
+            connectionError: null,
+          },
+          expected: 'Connecting',
         },
-        { 
-          props: { isConnected: false, isConnecting: false, isReconnecting: true, connectionError: null },
-          expected: 'Reconnecting'
+        {
+          props: {
+            isConnected: false,
+            isConnecting: false,
+            isReconnecting: true,
+            connectionError: null,
+          },
+          expected: 'Reconnecting',
         },
-        { 
-          props: { isConnected: false, isConnecting: false, isReconnecting: false, connectionError: 'Error' },
-          expected: 'Error'
+        {
+          props: {
+            isConnected: false,
+            isConnecting: false,
+            isReconnecting: false,
+            connectionError: 'Error',
+          },
+          expected: 'Error',
         },
-        { 
-          props: { isConnected: false, isConnecting: false, isReconnecting: false, connectionError: null },
-          expected: 'Disconnected'
+        {
+          props: {
+            isConnected: false,
+            isConnecting: false,
+            isReconnecting: false,
+            connectionError: null,
+          },
+          expected: 'Disconnected',
         },
       ];
 
@@ -181,13 +210,25 @@ describe('WaitingUI Component', () => {
     });
 
     test('does not show LoadingOverlay when not connecting', () => {
-      render(<WaitingUI {...defaultProps} isConnecting={false} isReconnecting={false} />);
+      render(
+        <WaitingUI
+          {...defaultProps}
+          isConnecting={false}
+          isReconnecting={false}
+        />
+      );
 
       expect(screen.queryByTestId('loading-overlay')).not.toBeInTheDocument();
     });
 
     test('shows waiting animation when not connecting and no error', () => {
-      render(<WaitingUI {...defaultProps} isConnecting={false} connectionError={null} />);
+      render(
+        <WaitingUI
+          {...defaultProps}
+          isConnecting={false}
+          connectionError={null}
+        />
+      );
 
       const waitingDots = document.querySelectorAll('.waiting-dot');
       expect(waitingDots).toHaveLength(3);
@@ -200,7 +241,11 @@ describe('WaitingUI Component', () => {
       expect(document.querySelectorAll('.waiting-dot')).toHaveLength(0);
 
       rerender(
-        <WaitingUI {...defaultProps} isConnecting={false} connectionError="Error" />
+        <WaitingUI
+          {...defaultProps}
+          isConnecting={false}
+          connectionError="Error"
+        />
       );
       expect(document.querySelectorAll('.waiting-dot')).toHaveLength(0);
     });
@@ -211,12 +256,20 @@ describe('WaitingUI Component', () => {
       const errorMessage = 'Failed to connect to server';
       render(<WaitingUI {...defaultProps} connectionError={errorMessage} />);
 
-      expect(screen.getByText(`Connection Error: ${errorMessage}`)).toBeInTheDocument();
+      expect(
+        screen.getByText(`Connection Error: ${errorMessage}`)
+      ).toBeInTheDocument();
     });
 
     test('shows retry button when error and onRetry provided', () => {
       const onRetry = jest.fn();
-      render(<WaitingUI {...defaultProps} connectionError="Error" onRetry={onRetry} />);
+      render(
+        <WaitingUI
+          {...defaultProps}
+          connectionError="Error"
+          onRetry={onRetry}
+        />
+      );
 
       const retryButton = screen.getByText('Retry Connection');
       expect(retryButton).toBeInTheDocument();
@@ -224,7 +277,9 @@ describe('WaitingUI Component', () => {
     });
 
     test('does not show retry button when error but no onRetry', () => {
-      render(<WaitingUI {...defaultProps} connectionError="Error" onRetry={null} />);
+      render(
+        <WaitingUI {...defaultProps} connectionError="Error" onRetry={null} />
+      );
 
       expect(screen.queryByText('Retry Connection')).not.toBeInTheDocument();
     });
@@ -239,7 +294,13 @@ describe('WaitingUI Component', () => {
   describe('User Interactions', () => {
     test('calls onRetry when retry button is clicked', () => {
       const onRetry = jest.fn();
-      render(<WaitingUI {...defaultProps} connectionError="Error" onRetry={onRetry} />);
+      render(
+        <WaitingUI
+          {...defaultProps}
+          connectionError="Error"
+          onRetry={onRetry}
+        />
+      );
 
       const retryButton = screen.getByText('Retry Connection');
       fireEvent.click(retryButton);
@@ -274,10 +335,16 @@ describe('WaitingUI Component', () => {
 
     test('retry button has hover effects', () => {
       const onRetry = jest.fn();
-      render(<WaitingUI {...defaultProps} connectionError="Error" onRetry={onRetry} />);
+      render(
+        <WaitingUI
+          {...defaultProps}
+          connectionError="Error"
+          onRetry={onRetry}
+        />
+      );
 
       const retryButton = screen.getByText('Retry Connection');
-      
+
       // Test mouse over
       fireEvent.mouseOver(retryButton);
       expect(retryButton.style.background).toBe('var(--color-danger-dark)');
@@ -292,7 +359,7 @@ describe('WaitingUI Component', () => {
       render(<WaitingUI {...defaultProps} onCancel={onCancel} />);
 
       const cancelButton = screen.getByText('Cancel');
-      
+
       // Test mouse over
       fireEvent.mouseOver(cancelButton);
       expect(cancelButton.style.color).toBe('var(--color-gray-600)');
@@ -342,11 +409,18 @@ describe('WaitingUI Component', () => {
     test('buttons have proper accessibility labels', () => {
       const onRetry = jest.fn();
       const onCancel = jest.fn();
-      render(<WaitingUI {...defaultProps} connectionError="Error" onRetry={onRetry} onCancel={onCancel} />);
+      render(
+        <WaitingUI
+          {...defaultProps}
+          connectionError="Error"
+          onRetry={onRetry}
+          onCancel={onCancel}
+        />
+      );
 
       const retryButton = screen.getByLabelText('Retry connection');
       const cancelButton = screen.getByLabelText('Cancel and return');
-      
+
       expect(retryButton).toBeInTheDocument();
       expect(cancelButton).toBeInTheDocument();
     });
@@ -354,7 +428,9 @@ describe('WaitingUI Component', () => {
     test('error section has proper styling for accessibility', () => {
       render(<WaitingUI {...defaultProps} connectionError="Test error" />);
 
-      const errorSection = document.querySelector('[style*="rgba(220, 53, 69"]');
+      const errorSection = document.querySelector(
+        '[style*="rgba(220, 53, 69"]'
+      );
       expect(errorSection).toBeInTheDocument();
     });
   });
@@ -364,7 +440,9 @@ describe('WaitingUI Component', () => {
       render(<WaitingUI {...defaultProps} />);
 
       // Check main container
-      const container = document.querySelector('.min-h-screen.flex.items-center.justify-center');
+      const container = document.querySelector(
+        '.min-h-screen.flex.items-center.justify-center'
+      );
       expect(container).toBeInTheDocument();
 
       // Check card container
@@ -404,12 +482,14 @@ describe('WaitingUI Component', () => {
 
     test('handles null or undefined props gracefully', () => {
       expect(() => {
-        render(<WaitingUI 
-          isConnected={null}
-          isConnecting={undefined}
-          message={null}
-          phase={undefined}
-        />);
+        render(
+          <WaitingUI
+            isConnected={null}
+            isConnecting={undefined}
+            message={null}
+            phase={undefined}
+          />
+        );
       }).not.toThrow();
     });
 
@@ -422,23 +502,25 @@ describe('WaitingUI Component', () => {
 
     test('handles boolean connection props correctly', () => {
       // Test with string values (should be falsy)
-      render(<WaitingUI 
-        {...defaultProps} 
-        isConnected="false" 
-        isConnecting="true" 
-      />);
+      render(
+        <WaitingUI {...defaultProps} isConnected="false" isConnecting="true" />
+      );
 
       // Should handle non-boolean values appropriately
-      expect(document.querySelector('[data-connected="false"]')).toBeInTheDocument();
+      expect(
+        document.querySelector('[data-connected="false"]')
+      ).toBeInTheDocument();
     });
 
     test('handles missing callback functions', () => {
       expect(() => {
-        render(<WaitingUI 
-          {...defaultProps} 
-          onRetry={undefined} 
-          onCancel={undefined} 
-        />);
+        render(
+          <WaitingUI
+            {...defaultProps}
+            onRetry={undefined}
+            onCancel={undefined}
+          />
+        );
       }).not.toThrow();
 
       // Should not show buttons when callbacks are undefined
@@ -449,11 +531,13 @@ describe('WaitingUI Component', () => {
 
   describe('Component State Consistency', () => {
     test('shows only one loading state at a time', () => {
-      render(<WaitingUI 
-        {...defaultProps} 
-        isConnecting={true} 
-        isReconnecting={true} 
-      />);
+      render(
+        <WaitingUI
+          {...defaultProps}
+          isConnecting={true}
+          isReconnecting={true}
+        />
+      );
 
       // Should prioritize one loading state
       const loadingOverlays = screen.getAllByTestId('loading-overlay');
@@ -461,12 +545,14 @@ describe('WaitingUI Component', () => {
     });
 
     test('error state overrides loading animations', () => {
-      render(<WaitingUI 
-        {...defaultProps} 
-        isConnecting={false}
-        isReconnecting={false}
-        connectionError="Network error" 
-      />);
+      render(
+        <WaitingUI
+          {...defaultProps}
+          isConnecting={false}
+          isReconnecting={false}
+          connectionError="Network error"
+        />
+      );
 
       // Should show error, not waiting animation
       expect(screen.getByText(/Connection Error/)).toBeInTheDocument();
@@ -474,11 +560,19 @@ describe('WaitingUI Component', () => {
     });
 
     test('maintains consistent state during rapid prop changes', async () => {
-      const { rerender } = render(<WaitingUI {...defaultProps} isConnecting={true} />);
+      const { rerender } = render(
+        <WaitingUI {...defaultProps} isConnecting={true} />
+      );
 
       expect(screen.getByTestId('loading-overlay')).toBeInTheDocument();
 
-      rerender(<WaitingUI {...defaultProps} isConnecting={false} connectionError="Error" />);
+      rerender(
+        <WaitingUI
+          {...defaultProps}
+          isConnecting={false}
+          connectionError="Error"
+        />
+      );
 
       await waitFor(() => {
         expect(screen.queryByTestId('loading-overlay')).not.toBeInTheDocument();
@@ -507,12 +601,14 @@ describe('WaitingUI Component', () => {
       const onRetry = jest.fn();
       const onCancel = jest.fn();
 
-      render(<WaitingUI 
-        {...defaultProps} 
-        connectionError="Error" 
-        onRetry={onRetry} 
-        onCancel={onCancel} 
-      />);
+      render(
+        <WaitingUI
+          {...defaultProps}
+          connectionError="Error"
+          onRetry={onRetry}
+          onCancel={onCancel}
+        />
+      );
 
       fireEvent.click(screen.getByText('Retry Connection'));
       fireEvent.click(screen.getByText('Cancel'));
