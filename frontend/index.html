@@ -9,23 +9,23 @@
     />
     <script>
       // Dynamically adjust viewport scale based on screen width
-      (function() {
+      (function () {
         const viewportMeta = document.querySelector('meta[name="viewport"]');
         const screenWidth = window.screen.width;
-        
+
         // Default scale is 1 (no zoom)
         let scale = 1;
-        
+
         // Only scale down for screens smaller than 400px
         if (screenWidth < 360) {
-          scale = 0.80;  // Very small screens
+          scale = 0.8; // Very small screens
         } else if (screenWidth < 380) {
-          scale = 0.85;  // Small screens like older iPhones
+          scale = 0.85; // Small screens like older iPhones
         } else if (screenWidth < 400) {
-          scale = 0.90;  // iPhone 12 Pro (390px), iPhone SE (375px)
+          scale = 0.9; // iPhone 12 Pro (390px), iPhone SE (375px)
         }
         // screenWidth >= 400: scale remains 1 (default)
-        
+
         // Update viewport meta tag
         viewportMeta.content = `width=device-width, initial-scale=${scale}, maximum-scale=1, user-scalable=no`;
       })();

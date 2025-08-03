@@ -43,10 +43,12 @@
    - During bot's turn, the avatar will have a thinking animation
 
 ### Visual Design:
+
 - **Human Players**: Letter avatar (current design)
 - **Bot Players**: Robot icon avatar
 - **Bot Thinking**: Pulsing glow animation
 - **Color Scheme**: Gray tones for bots vs colored for humans
 
 ### Next Steps:
+
 This foundation is ready for the disconnect handling system. When a player disconnects and `player.is_bot` is set to `true`, they will automatically show the robot avatar.

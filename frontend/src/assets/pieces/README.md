@@ -5,11 +5,14 @@ This directory contains SVG representations of all xiangqi (Chinese chess) piece
 ## File Organization
 
 ### Naming Convention
+
 All files follow the exact naming convention from `backend/engine/constants.py`:
+
 - `PIECE_TYPE_COLOR.svg`
 - Examples: `GENERAL_RED.svg`, `CHARIOT_BLACK.svg`
 
 ### Complete Piece Set
+
 - ✅ **GENERAL_RED.svg** - 帥 (Red General)
 - ✅ **GENERAL_BLACK.svg** - 將 (Black General)
 - ✅ **ADVISOR_RED.svg** - 仕 (Red Advisor)
@@ -28,8 +31,9 @@ All files follow the exact naming convention from `backend/engine/constants.py`:
 ## Technical Specifications
 
 ### SVG Properties
+
 - **Format**: Scalable Vector Graphics (SVG)
-- **Colors**: 
+- **Colors**:
   - Red pieces: `#dc3545` (exact match to project CSS)
   - Black pieces: `#495057` (exact match to project CSS)
 - **Font**: SimSun/宋体 serif (matches current character rendering)
@@ -37,6 +41,7 @@ All files follow the exact naming convention from `backend/engine/constants.py`:
 - **Size**: Vector (scalable to any resolution)
 
 ### File Structure
+
 ```
 frontend/src/assets/pieces/
 ├── index.js              # Import/export utilities
@@ -50,16 +55,19 @@ frontend/src/assets/pieces/
 ## Usage
 
 ### Import Individual Pieces
+
 ```javascript
 import { GENERAL_RED, CHARIOT_BLACK } from './assets/pieces';
 ```
 
 ### Import All Pieces
+
 ```javascript
 import * as PieceAssets from './assets/pieces';
 ```
 
 ### Dynamic Access
+
 ```javascript
 import { getPieceAsset } from './assets/pieces';
 
@@ -68,27 +76,24 @@ const svgAsset = getPieceAsset(pieceType);
 ```
 
 ### React Component Usage
+
 ```jsx
 import { GENERAL_RED } from './assets/pieces';
 
 function GamePiece({ pieceType }) {
-  return (
-    <img 
-      src={GENERAL_RED} 
-      alt="Red General"
-      className="game-piece"
-    />
-  );
+  return <img src={GENERAL_RED} alt="Red General" className="game-piece" />;
 }
 ```
 
 ## Migration from Chinese Characters
 
 These SVG assets can replace the current Chinese character rendering in:
+
 - `frontend/src/components/game/shared/GamePiece.jsx`
 - `frontend/src/utils/pieceMapping.js`
 
 ### Benefits of SVG Migration
+
 1. **No font dependencies** - eliminates SimSun/宋体 requirements
 2. **Perfect scaling** - crisp at all sizes from 34px to 68px+
 3. **Consistent rendering** - identical appearance across platforms
@@ -96,6 +101,7 @@ These SVG assets can replace the current Chinese character rendering in:
 5. **Easier styling** - CSS can be applied directly to SVG
 
 ### Migration Steps
+
 1. Update `GamePiece.jsx` to use SVG imports instead of text
 2. Modify `pieceMapping.js` to map piece types to SVG assets
 3. Remove Chinese font loading from CSS
@@ -104,6 +110,7 @@ These SVG assets can replace the current Chinese character rendering in:
 ## File Origins
 
 Generated from Chinese characters using exact project styling:
+
 - Source: `/pieces-svg/xiangqi-[character]-[color].svg`
 - Converted to constants naming convention
 - Organized in frontend assets structure
@@ -111,6 +118,7 @@ Generated from Chinese characters using exact project styling:
 ## Maintenance
 
 When adding new pieces or modifying existing ones:
+
 1. Follow the `PIECE_TYPE_COLOR.svg` naming convention
 2. Update `index.js` with new imports/exports
 3. Update this README.md with new pieces

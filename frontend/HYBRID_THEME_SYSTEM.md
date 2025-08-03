@@ -3,31 +3,37 @@
 ## Overview
 
 The theme system now supports a hybrid approach that combines:
+
 1. **Different SVG designs** (classic vs modern piece styles)
 2. **CSS color filters** for color variations without new SVG files
 
 ## Current Themes
 
 ### 1. Classic (No filters)
+
 - Uses classic SVG designs
 - Original red (#dc3545) and black (#495057) colors
 - No color filters applied
 
 ### 2. Modern (Color filters)
+
 - Uses same classic SVG designs
 - Transforms colors to yellow (#ffc107) and blue (#0d6efd)
 - Uses CSS filters: `hue-rotate()`, `brightness()`, `saturate()`
 
 ### 3. Modern Alternative (Different SVGs)
+
 - Uses different SVG designs from `pieces/modern/`
 - Can have completely different visual style
 - No filters needed if SVGs have built-in colors
 
 ### 4. Dark Mode (Color filters)
+
 - Uses classic SVGs with inversion filters
 - Good for dark backgrounds
 
 ### 5. Ocean (Color filters)
+
 - Transforms to teal and navy colors
 - Calming color scheme
 
@@ -44,6 +50,7 @@ yellowBlue: {
 ```
 
 ### Filter Effects:
+
 - `brightness()` - Lightens/darkens the color
 - `sepia()` - Converts to sepia tone (required for color shifting)
 - `hue-rotate()` - Shifts the hue on the color wheel
@@ -58,30 +65,30 @@ To add a new color variation:
 // In themeManager.js
 const colorFilters = {
   // ... existing filters
-  
+
   // New sunset theme
   sunset: {
     red: 'brightness(1.1) sepia(1) hue-rotate(15deg) saturate(2)',
     black: 'brightness(0.9) sepia(1) hue-rotate(270deg) saturate(1.5)',
-  }
+  },
 };
 
 // Add theme definition
 export const themes = {
   // ... existing themes
-  
+
   sunset: {
     id: 'sunset',
     name: 'Sunset',
     description: 'Warm orange and purple tones',
     pieceColors: {
-      red: '#ff7043',   // Orange
+      red: '#ff7043', // Orange
       black: '#7b1fa2', // Purple
     },
     pieceAssets: ClassicPieces, // Use existing SVGs
     colorFilter: colorFilters.sunset, // Apply color transformation
     // ... rest of config
-  }
+  },
 };
 ```
 
