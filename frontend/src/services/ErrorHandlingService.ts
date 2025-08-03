@@ -301,7 +301,7 @@ export class ErrorHandlingService {
       try {
         return await operation();
       } catch (error) {
-        lastError = this.reportError(error, context);
+        lastError = this.reportError(error as Error, context);
 
         const retryStrategy = this.getRetryStrategy(lastError);
         if (!retryStrategy || attempt >= retryStrategy.maxAttempts) {
@@ -389,7 +389,6 @@ export class ErrorHandlingService {
     context: Partial<ErrorContext> = {}
   ): StandardError {
     let code: ErrorCode;
-    let message: string;
 
     // Map HTTP status codes to error codes
     switch (response.status) {
