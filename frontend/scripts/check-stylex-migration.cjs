@@ -32,12 +32,12 @@ const MIGRATED_COMPONENTS = [
   'DeclarationUI',
   'ScoringUI',
   'GameOverUI',
+  'TurnUI',
+  'TurnResultsUI',
 ];
 
 // Components still using old styling
 const PENDING_COMPONENTS = [
-  'TurnUI',
-  'TurnResultsUI',
   'ConnectionIndicator',
   'ErrorBoundary',
 ];
