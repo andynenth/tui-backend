@@ -109,7 +109,7 @@ export class GameService extends EventTarget {
 
       // Store session for reconnection after browser close/refresh
       const sessionId = `${roomId}-${playerName}-${Date.now()}`;
-      storeSession(roomId, playerName, sessionId, this.state.phase);
+      storeSession(roomId, playerName, sessionId, this.state.phase as any);
 
       console.log(`🎮 GameService: Joined room ${roomId} as ${playerName}`);
     } catch (error) {
@@ -1029,7 +1029,7 @@ export class GameService extends EventTarget {
     // Update session storage with new phase
     if (state.roomId && state.playerName) {
       const sessionId = `${state.roomId}-${state.playerName}-${Date.now()}`;
-      storeSession(state.roomId, state.playerName, sessionId, newState.phase);
+      storeSession(state.roomId, state.playerName, sessionId, newState.phase as any);
     }
 
     return newState;
