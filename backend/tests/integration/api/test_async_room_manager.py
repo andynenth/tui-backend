@@ -291,7 +291,7 @@ class TestAsyncRoom:
         await room.join_room("Player3")
 
         # Mock bot manager
-        with patch("backend.engine.bot_manager.BotManager") as mock_bot_manager:
+        with patch("engine.bot_manager.BotManager") as mock_bot_manager:
             mock_bot_manager.return_value.register_game = MagicMock()
 
             # Start game
