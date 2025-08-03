@@ -34,7 +34,7 @@ jobs:
     - name: Cache npm dependencies
       uses: actions/cache@v4
       with:
-        path: frontend/node_modules
+        path: ~/.npm
         key: ${{ runner.os }}-node-${{ hashFiles('frontend/package-lock.json') }}
         restore-keys: |
           ${{ runner.os }}-node-
@@ -137,15 +137,15 @@ jobs:
     - name: Cache npm dependencies
       uses: actions/cache@v4
       with:
-        path: frontend/node_modules
+        path: ~/.npm
         key: ${{ runner.os }}-node-${{ hashFiles('frontend/package-lock.json') }}
         restore-keys: |
           ${{ runner.os }}-node-
 
     - name: Install dependencies
       run: |
-        cd backend && python -m pip install --upgrade pip && pip install -r requirements.txt -r requirements-test.txt
-        cd ../frontend && npm ci
+        python -m pip install --upgrade pip && pip install -r requirements.txt -r backend/requirements-test.txt
+        cd frontend && npm ci
 
     - name: Build Frontend
       working-directory: frontend
