@@ -11,10 +11,10 @@ from pathlib import Path
 # Add backend to path
 sys.path.insert(0, str(Path(__file__).parent))
 
-from engine.async_bot_strategy import async_bot_strategy
-from engine.piece import Piece
-from engine.player import Player
-import engine.ai as ai
+from backend.engine.async_bot_strategy import async_bot_strategy
+from backend.engine.piece import Piece
+from backend.engine.player import Player
+import backend.engine.ai as ai
 
 
 async def benchmark_bot_decisions():

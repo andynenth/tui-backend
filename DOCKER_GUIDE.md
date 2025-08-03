@@ -20,6 +20,7 @@ Docker is a platform that packages your application and all its dependencies int
 ### 3. **Dockerfile**
 - A text file with instructions to build an image
 - Each line is a step in building your application environment
+- **Two types**: `Dockerfile` (development) and `Dockerfile.prod` (production)
 
 ### 4. **docker-compose**
 - A tool for defining multi-container applications
@@ -28,7 +29,13 @@ Docker is a platform that packages your application and all its dependencies int
 
 ## Understanding Liap Tui's Docker Setup
 
-### The Dockerfile
+### 🔧 Development vs Production Dockerfiles
+
+**Why Two Dockerfiles?**
+- **Dockerfile**: Optimized for development (fast builds, hot reload)
+- **Dockerfile.prod**: Optimized for production (security, performance, size)
+
+### The Development Dockerfile
 ```dockerfile
 FROM python:3.11-slim          # Start with Python 3.11
 WORKDIR /app                   # Set working directory
@@ -36,15 +43,75 @@ COPY backend/ ./backend        # Copy backend code
 COPY shared/ ./shared          # Copy shared code
 COPY requirements.txt ./       # Copy dependencies list
 RUN pip install -r requirements.txt  # Install dependencies
-ENV PYTHONPATH=/app/backend    # Set Python path
+ENV PYTHONPATH=/app            # Set Python path
 EXPOSE 5050                    # Open port 5050
-CMD ["uvicorn", "backend.api.main:app", "--host", "0.0.0.0", "--port", "5050"]
+CMD ["uvicorn", "backend.api.main:app", "--reload", "--host", "0.0.0.0", "--port", "5050"]
 ```
 
+### The Production Dockerfile.prod
+```dockerfile
+# Frontend build stage
+FROM node:18-alpine as frontend-builder
+WORKDIR /app
+RUN apk add --no-cache python3 make g++ libc6-compat
+COPY frontend/package*.json ./
+RUN npm ci
+COPY frontend/ ./
+RUN npm run build
+
+# Python production stage  
+FROM python:3.11-slim
+WORKDIR /app
+
+# Create non-root user for security
+RUN groupadd -r appuser && useradd -r -g appuser appuser
+RUN apt-get update && apt-get install -y curl && rm -rf /var/lib/apt/lists/*
+
+# Install Python dependencies
+COPY requirements.txt ./
+RUN pip install --no-cache-dir -r requirements.txt
+
+# Copy application files
+COPY backend/ ./backend
+COPY shared/ ./shared
+COPY backend/shared_instances.py ./
+
+# Copy built frontend files
+COPY --from=frontend-builder /app/bundle.* ./backend/static/
+COPY --from=frontend-builder /app/index.html ./backend/static/
+
+# Set ownership and switch to non-root user
+RUN chown -R appuser:appuser /app
+USER appuser
+
+# Health check for AWS
+HEALTHCHECK --interval=30s --timeout=10s --start-period=30s --retries=3 \
+  CMD curl -f http://localhost:5050/api/health || exit 1
+
+ENV PYTHONPATH=/app
+ENV DEBUG=false
+EXPOSE 5050
+
+CMD ["uvicorn", "backend.api.main:app", "--host", "0.0.0.0", "--port", "5050", "--workers", "1"]
+```
+
+### 📊 Key Differences
+
+| Feature | Development | Production |
+|---------|-------------|------------|
+| **Build Time** | Fast (~2 min) | Slower (~5-8 min) |
+| **Image Size** | ~300MB | ~256MB |
+| **Hot Reload** | ✅ `--reload` | ❌ Static |
+| **Frontend** | Served separately | Built into container |
+| **Security** | Root user | Non-root user |
+| **Health Checks** | None | AWS-compatible |
+| **Multi-stage** | Single stage | Multi-stage (optimized) |
+| **Debug Mode** | Enabled | Disabled |
+
 ### How It Works
-1. **Backend runs in Docker**: The Python/FastAPI server runs inside the container
-2. **Frontend is pre-built**: JavaScript is compiled into static files (bundle.js, bundle.css)
-3. **FastAPI serves both**: The backend serves API endpoints AND the static frontend files
+1. **Development**: Fast iteration with hot reload
+2. **Production**: Optimized, secure, single container with frontend built-in
+3. **CI/CD**: Automatically uses Dockerfile.prod for AWS deployment
 4. **Single container**: Everything runs in one container on port 5050
 
 ## Essential Docker Commands
@@ -52,17 +119,19 @@ CMD ["uvicorn", "backend.api.main:app", "--host", "0.0.0.0", "--port", "5050"]
 ### Building and Running
 
 ```bash
-# Build the image (run this after code changes)
-docker build -t liap-tui .
+# Development: Build and run (fast iteration)
+docker build -t liap-tui:dev .
+docker run -p 5050:5050 --name liap-dev liap-tui:dev
 
-# Run the container
-docker run -p 5050:5050 liap-tui
+# Production: Build and run (optimized)
+docker build -f Dockerfile.prod -t liap-tui:prod .
+docker run -p 5050:5050 --name liap-prod liap-tui:prod
 
-# Run with a custom name
-docker run -p 5050:5050 --name my-game liap-tui
+# Run with environment variables
+docker run -p 5050:5050 -e DEBUG=false -e ALLOWED_ORIGINS="https://yourdomain.com" liap-tui:prod
 
 # Run in background (detached)
-docker run -d -p 5050:5050 liap-tui
+docker run -d -p 5050:5050 --name liap-game liap-tui:prod
 ```
 
 ### Managing Containers
@@ -134,12 +203,16 @@ docker-compose -f docker-compose.dev.yml logs -f
 ### 1. Making Code Changes
 
 ```bash
-# For production build
-docker build -t liap-tui .
-docker run -p 5050:5050 liap-tui
+# Development workflow (recommended)
+./start.sh                              # Uses docker-compose with hot reload
 
-# For development (with hot reload)
-docker-compose -f docker-compose.dev.yml up
+# Manual development build
+docker build -t liap-tui:dev .
+docker run -p 5050:5050 liap-tui:dev
+
+# Production build (for deployment testing)
+docker build -f Dockerfile.prod -t liap-tui:prod .
+docker run -p 5050:5050 -e DEBUG=false liap-tui:prod
 ```
 
 ### 2. Debugging Issues
@@ -260,31 +333,55 @@ docker-compose -f docker-compose.dev.yml down
 
 ### Deployment
 ```bash
-# Build production image
-docker build -t liap-tui:v1.0 .
+# Build production image (with version tag)
+docker build -f Dockerfile.prod -t liap-tui:v1.0 .
 
 # Run production container
 docker run -d \
   --name liap-tui-prod \
   --restart unless-stopped \
   -p 5050:5050 \
+  -e DEBUG=false \
+  -e ALLOWED_ORIGINS="https://yourdomain.com" \
   liap-tui:v1.0
+
+# Test health endpoint
+curl http://localhost:5050/api/health
 ```
 
 ## Tips and Best Practices
 
-1. **Always use `.dockerignore`** to exclude unnecessary files
-2. **Tag your images** with versions: `liap-tui:v1.0`
-3. **Use docker-compose** for development - it's easier
-4. **Check logs first** when debugging issues
-5. **Clean up regularly** to save disk space
-6. **One process per container** - Docker philosophy
+1. **Use the right Dockerfile** for the right purpose:
+   - Development: `Dockerfile` (fast builds, hot reload)
+   - Production: `Dockerfile.prod` (optimized, secure)
+2. **Always use `.dockerignore`** to exclude unnecessary files
+3. **Tag your images** with versions: `liap-tui:v1.0`
+4. **Use docker-compose** for development - it's easier
+5. **Test production builds locally** before deploying
+6. **Check logs first** when debugging issues
+7. **Clean up regularly** to save disk space
+8. **Use environment variables** for configuration
+9. **Non-root users** in production for security
 
 ## Next Steps
 
-1. Try building and running the container
-2. Make a small code change and see it reflected
-3. Practice viewing logs and debugging
-4. Experiment with docker-compose commands
+1. **Development**: Use `./start.sh` for daily development
+2. **Test production build**: `docker build -f Dockerfile.prod -t liap-tui:prod .`
+3. **Practice debugging**: View logs and inspect containers
+4. **CI/CD**: Push to GitHub and watch automatic deployment
+5. **AWS deployment**: Use production Docker image in ECS
 
-Remember: Docker ensures your app runs the same everywhere - from your laptop to production servers!
+## 🚀 CI/CD Integration
+
+**Automatic Deployment**: 
+- GitHub Actions uses `Dockerfile.prod` for AWS deployment
+- You develop with `./start.sh`, CI/CD handles production builds
+- No manual Docker commands needed for deployment!
+
+**Your Workflow**:
+```bash
+./start.sh          # Development
+git push            # Automatic production deployment
+```
+
+Remember: Docker ensures your app runs the same everywhere - from your laptop to AWS production!

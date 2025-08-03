@@ -7,7 +7,7 @@ from typing import AsyncGenerator, List, Optional
 from .core import GameAction
 
 # Import EventStore for action persistence
-from api.services.event_store import event_store
+from backend.api.services.event_store import event_store
 
 
 class ActionQueue:

@@ -451,7 +451,7 @@ class RecoveryManager:
             import sys
 
             sys.path.append("/Users/nrw/python/tui-project/liap-tui/backend")
-            from shared_instances import shared_room_manager
+            from backend.shared_instances import shared_room_manager
 
             room = shared_room_manager.get_room(room_id)
             if not room:

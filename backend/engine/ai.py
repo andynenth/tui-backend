@@ -3,7 +3,7 @@
 from collections import Counter
 from itertools import combinations
 
-from engine.rules import get_play_type, is_valid_play
+from backend.engine.rules import get_play_type, is_valid_play
 
 
 # ------------------------------------------------------------------

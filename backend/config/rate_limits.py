@@ -10,7 +10,7 @@ with support for environment-based configuration and runtime updates.
 import os
 from dataclasses import dataclass, field
 from typing import Dict, Optional
-from api.middleware.rate_limit import RateLimitRule
+from backend.api.middleware.rate_limit import RateLimitRule
 
 
 @dataclass

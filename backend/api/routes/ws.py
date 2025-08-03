@@ -6,17 +6,17 @@ import uuid
 from typing import Optional
 
 import backend.socket_manager
-from shared_instances import shared_room_manager
+from backend.shared_instances import shared_room_manager
 from backend.socket_manager import broadcast, register, unregister
 from fastapi import APIRouter, WebSocket, WebSocketDisconnect
 
-from api.validation import validate_websocket_message
-from api.middleware.websocket_rate_limit import (
+from backend.api.validation import validate_websocket_message
+from backend.api.middleware.websocket_rate_limit import (
     check_websocket_rate_limit,
     send_rate_limit_error,
 )
-from api.websocket.connection_manager import connection_manager
-from api.websocket.message_queue import message_queue_manager
+from backend.api.websocket.connection_manager import connection_manager
+from backend.api.websocket.message_queue import message_queue_manager
 
 # Set up logging
 logger = logging.getLogger(__name__)
@@ -1142,7 +1142,7 @@ async def websocket_endpoint(websocket: WebSocket, room_id: str):
                             continue
 
                         # Create GameAction for declaration (same as REST endpoint)
-                        from engine.state_machine.core import ActionType, GameAction
+                        from backend.engine.state_machine.core import ActionType, GameAction
 
                         action = GameAction(
                             player_name=player_name,
@@ -1193,7 +1193,7 @@ async def websocket_endpoint(websocket: WebSocket, room_id: str):
                             continue
 
                         # Create GameAction for piece playing (convert indices to pieces)
-                        from engine.state_machine.core import ActionType, GameAction
+                        from backend.engine.state_machine.core import ActionType, GameAction
 
                         # Convert indices to actual pieces
                         pieces = []
@@ -1274,7 +1274,7 @@ async def websocket_endpoint(websocket: WebSocket, room_id: str):
                             continue
 
                         # Create GameAction for piece playing (convert indices to pieces)
-                        from engine.state_machine.core import ActionType, GameAction
+                        from backend.engine.state_machine.core import ActionType, GameAction
 
                         # Convert indices to actual pieces
                         pieces = []
@@ -1348,7 +1348,7 @@ async def websocket_endpoint(websocket: WebSocket, room_id: str):
                             continue
 
                         # Create GameAction for redeal request (same as REST endpoint)
-                        from engine.state_machine.core import ActionType, GameAction
+                        from backend.engine.state_machine.core import ActionType, GameAction
 
                         action = GameAction(
                             player_name=player_name,
@@ -1411,7 +1411,7 @@ async def websocket_endpoint(websocket: WebSocket, room_id: str):
                             continue
 
                         # Create GameAction for redeal acceptance
-                        from engine.state_machine.core import ActionType, GameAction
+                        from backend.engine.state_machine.core import ActionType, GameAction
 
                         action = GameAction(
                             player_name=player_name,
@@ -1479,7 +1479,7 @@ async def websocket_endpoint(websocket: WebSocket, room_id: str):
                             continue
 
                         # Create GameAction for redeal decline
-                        from engine.state_machine.core import ActionType, GameAction
+                        from backend.engine.state_machine.core import ActionType, GameAction
 
                         action = GameAction(
                             player_name=player_name,
@@ -1545,7 +1545,7 @@ async def websocket_endpoint(websocket: WebSocket, room_id: str):
                             continue
 
                         # Create GameAction for player ready
-                        from engine.state_machine.core import ActionType, GameAction
+                        from backend.engine.state_machine.core import ActionType, GameAction
 
                         action = GameAction(
                             player_name=player_name,
@@ -1767,7 +1767,7 @@ async def room_cleanup_task():
                     )
 
                     # Unregister from bot manager
-                    from engine.bot_manager import BotManager
+                    from backend.engine.bot_manager import BotManager
 
                     bot_manager = BotManager()
                     bot_manager.unregister_game(room_id)

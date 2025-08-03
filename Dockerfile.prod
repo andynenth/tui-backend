@@ -1,0 +1,59 @@
+# Frontend build stage
+FROM node:18-alpine as frontend-builder
+WORKDIR /app
+
+# Install build dependencies for native modules
+RUN apk add --no-cache python3 make g++ libc6-compat
+
+# Copy package files and install dependencies
+COPY frontend/package*.json ./
+RUN npm ci
+
+# Copy frontend source and build
+COPY frontend/ ./
+RUN npm run build
+
+# Python production stage
+FROM python:3.11-slim
+WORKDIR /app
+
+# Create non-root user for security
+RUN groupadd -r appuser && useradd -r -g appuser appuser
+
+# Install system dependencies for health checks
+RUN apt-get update && apt-get install -y \
+    curl \
+    && rm -rf /var/lib/apt/lists/*
+
+# Install Python dependencies
+COPY requirements.txt ./
+RUN pip install --no-cache-dir -r requirements.txt
+
+# Copy application files
+COPY backend/ ./backend
+COPY shared/ ./shared
+
+
+# Copy built frontend files from frontend-builder stage
+COPY --from=frontend-builder /app/bundle.* ./backend/static/
+COPY --from=frontend-builder /app/bundle.*.map ./backend/static/
+COPY --from=frontend-builder /app/index.html ./backend/static/
+
+# Set ownership and switch to non-root user
+RUN chown -R appuser:appuser /app
+USER appuser
+
+# Health check using existing health endpoint
+HEALTHCHECK --interval=30s --timeout=10s --start-period=30s --retries=3 \
+  CMD curl -f http://localhost:5050/api/health || exit 1
+
+# Environment configuration
+ENV PYTHONPATH=/app
+ENV DEBUG=false
+ENV API_HOST=0.0.0.0
+ENV API_PORT=5050
+
+EXPOSE 5050
+
+# Use uvicorn with single worker for WebSocket compatibility
+CMD ["uvicorn", "backend.api.main:app", "--host", "0.0.0.0", "--port", "5050", "--workers", "1"]

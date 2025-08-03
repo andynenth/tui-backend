@@ -1,0 +1,977 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Castellan Tutorial - Exact Replica</title>
+    <style>
+        :root {
+            --container-width: min(100vw, 56.25vh);
+            --container-height: min(100vh, 177.78vw);
+            --container-max-width: 400px;
+            --container-max-height: 711px;
+            --color-gray-50: #f9fafb;
+            --color-gray-100: #f3f4f6;
+            --color-gray-200: #e5e7eb;
+            --color-gray-300: #d1d5db;
+            --color-gray-400: #9ca3af;
+            --color-gray-500: #6b7280;
+            --color-gray-600: #4b5563;
+            --color-gray-700: #374151;
+            --color-gray-800: #1f2937;
+            --color-warning: #ffc107;
+            --color-danger: #dc3545;
+            --color-success: #28a745;
+            --color-amber-50: #fffbeb;
+            --color-amber-200: #fde68a;
+            --color-amber-900: #78350f;
+            --radius-sm: 4px;
+            --radius-md: 8px;
+            --radius-lg: 12px;
+            --radius-xl: 16px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: #2a2a3e;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        /* Main container - exact replica */
+        .tp-gameContainer {
+            width: var(--container-width);
+            height: var(--container-height);
+            max-width: var(--container-max-width);
+            max-height: var(--container-max-height);
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            border-radius: var(--radius-xl);
+            border: 1px solid rgba(173, 181, 189, 0.3);
+            box-shadow: 
+                0 20px 25px -5px rgba(0, 0, 0, 0.1),
+                0 10px 10px -5px rgba(0, 0, 0, 0.04),
+                inset 0 1px 0 0 rgba(255, 255, 255, 0.1);
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* Back Button */
+        .tp-backButton {
+            position: absolute;
+            left: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: linear-gradient(145deg, #ffffff 0%, #f8f9fa 100%);
+            border: 1px solid rgba(173, 181, 189, 0.3);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            z-index: 1000;
+            color: var(--color-gray-700);
+        }
+
+        .tp-backButton:hover {
+            transform: translateY(-50%) scale(1.05);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Tutorial Header */
+        .tp-tutorialHeader {
+            text-align: center;
+            padding: 20px;
+            background: linear-gradient(180deg, rgba(248, 249, 250, 0.8) 0%, transparent 100%);
+            border-bottom: 1px solid rgba(173, 181, 189, 0.2);
+            position: relative;
+        }
+
+        .tp-tutorialTitle {
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--color-gray-700);
+            letter-spacing: -0.5px;
+            margin: 0;
+        }
+
+        /* Tutorial Content Area */
+        .tp-tutorialContent {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            background: rgba(248, 249, 250, 0.3);
+            padding: 16px 20px 20px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        /* Slide Container */
+        .tp-slideContainer {
+            flex: 1;
+            position: relative;
+            overflow: hidden;
+            background: white;
+            border-radius: var(--radius-lg);
+            border: 1px solid rgba(173, 181, 189, 0.2);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Individual Slide */
+        .tp-slide {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            transition: transform 0.3s ease;
+            overflow-y: auto;
+        }
+
+        .tp-slide.active {
+            transform: translateX(0);
+        }
+
+        .tp-slideContent {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        /* Navigation Dots */
+        .tp-navDots {
+            display: flex;
+            justify-content: center;
+            gap: 6px;
+            padding: 16px 0 0;
+        }
+
+        .tp-dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: var(--color-gray-300);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            opacity: 0.6;
+        }
+
+        .tp-dot.active {
+            width: 20px;
+            border-radius: 3px;
+            background: var(--color-gray-600);
+            opacity: 1;
+        }
+
+        /* Footer */
+        .tp-footer {
+            padding: 16px 20px;
+            background: rgba(248, 249, 250, 0.6);
+            border-top: 1px solid rgba(173, 181, 189, 0.2);
+            position: relative;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        /* Navigation arrows */
+        .tp-navArrow {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(145deg, #ffffff 0%, #f8f9fa 100%);
+            border: 1px solid rgba(173, 181, 189, 0.3);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            color: var(--color-gray-600);
+        }
+
+        .tp-navArrow:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+        }
+
+        .tp-navArrow:disabled {
+            opacity: 0.3;
+            cursor: not-allowed;
+        }
+
+        .tp-slideCounter {
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--color-gray-600);
+        }
+
+        .tp-skipButton {
+            position: absolute;
+            bottom: 100%;
+            right: 20px;
+            margin-bottom: 8px;
+            font-size: 12px;
+            color: var(--color-gray-500);
+            background: none;
+            border: none;
+            cursor: pointer;
+            text-decoration: underline;
+            opacity: 0.7;
+            transition: opacity 0.3s ease;
+        }
+
+        .tp-skipButton:hover {
+            opacity: 1;
+        }
+
+        /* Slide Content Styles */
+        .tutorial-phase {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            height: 100%;
+        }
+
+        /* Preparation Steps */
+        .prep-steps {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .prep-step {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            padding: 10px 12px;
+            background: white;
+            border-radius: var(--radius-md);
+            border: 1px solid rgba(173, 181, 189, 0.15);
+        }
+
+        .step-number {
+            width: 24px;
+            height: 24px;
+            background: var(--color-gray-800);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            font-weight: 700;
+            flex-shrink: 0;
+        }
+
+        .step-text {
+            flex: 1;
+            font-size: 13px;
+            color: var(--color-gray-700);
+            line-height: 1.4;
+        }
+
+        .step-text strong {
+            color: var(--color-gray-800);
+            display: block;
+            margin-bottom: 4px;
+        }
+
+        .step-detail {
+            font-size: 12px;
+            color: var(--color-gray-600);
+            margin: 0;
+            line-height: 1.5;
+        }
+
+        /* Game Setup Details */
+        .game-setup-details {
+            margin-top: 8px;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .setup-row {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 12px;
+            color: var(--color-gray-600);
+        }
+
+        .setup-icon {
+            font-size: 16px;
+            width: 20px;
+            text-align: center;
+        }
+
+        .setup-row strong {
+            color: var(--color-gray-800);
+        }
+
+        /* Key Rule */
+        .key-rule {
+            background: rgba(255, 193, 7, 0.1);
+            padding: 8px 10px;
+            border-radius: var(--radius-sm);
+            margin-top: 8px;
+            font-size: 12px;
+            line-height: 1.5;
+            color: var(--color-gray-600);
+        }
+
+        .key-rule strong {
+            color: var(--color-gray-800);
+        }
+
+        /* Piece Showcase */
+        .tutorial-pieces {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            height: 100%;
+        }
+
+        .piece-showcase {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            padding: 0 10px;
+        }
+
+        .piece-group {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            align-items: center;
+        }
+
+        .piece-set {
+            display: flex;
+            gap: 4px;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .piece {
+            width: 25px;
+            height: 25px;
+            background: #f0f0f0;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            border: 1px solid #ddd;
+        }
+
+        .soldiers-section {
+            margin-top: 10px;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            align-items: center;
+        }
+
+        .soldier-row {
+            display: flex;
+            gap: 2px;
+            justify-content: center;
+        }
+
+        .tutorial-note {
+            text-align: center;
+            font-size: 13px;
+            color: var(--color-gray-600);
+            font-style: italic;
+            margin-top: auto;
+        }
+
+        /* Special step styles */
+        .prep-step.weak {
+            background: rgba(255, 193, 7, 0.05);
+            border-color: rgba(255, 193, 7, 0.2);
+        }
+
+        .prep-step.starter {
+            background: rgba(220, 53, 69, 0.05);
+            border-color: rgba(220, 53, 69, 0.2);
+        }
+
+        .prep-step.compact {
+            padding: 8px 10px;
+        }
+
+        /* Weak definition */
+        .weak-definition {
+            margin-top: 6px;
+            font-size: 12px;
+            color: var(--color-gray-600);
+        }
+
+        .redeal-option {
+            background: rgba(255, 193, 7, 0.1);
+            padding: 8px 10px;
+            border-radius: var(--radius-sm);
+            line-height: 1.6;
+            margin-top: 8px;
+        }
+
+        .warning {
+            color: var(--color-danger);
+            font-weight: 600;
+            font-size: 11px;
+        }
+
+        /* Example box */
+        .example-box {
+            background: var(--color-gray-50);
+            border: 1px solid rgba(173, 181, 189, 0.2);
+            border-radius: var(--radius-md);
+            padding: 10px;
+            font-size: 11px;
+            color: var(--color-gray-600);
+            line-height: 1.5;
+        }
+
+        /* Play types */
+        .play-types-showcase {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .play-type-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 10px;
+            background: var(--color-gray-50);
+            border-radius: var(--radius-md);
+            border: 1px solid rgba(173, 181, 189, 0.1);
+        }
+
+        .play-type-visual {
+            display: flex;
+            gap: 2px;
+            min-width: 80px;
+        }
+
+        .play-type-info {
+            flex: 1;
+        }
+
+        .play-type-info strong {
+            font-size: 13px;
+            color: var(--color-gray-800);
+            display: block;
+            margin-bottom: 2px;
+        }
+
+        /* Example inline */
+        .example-inline {
+            font-size: 11px;
+            color: var(--color-gray-600);
+            margin-top: 4px;
+        }
+
+        .example-inline strong {
+            color: var(--color-success);
+        }
+    </style>
+</head>
+<body>
+    <div class="tp-gameContainer">
+        <!-- Header -->
+        <div class="tp-tutorialHeader">
+            <button class="tp-backButton" onclick="alert('Back to Start')">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M19 12H5M12 19l-7-7 7-7"/>
+                </svg>
+            </button>
+            <h1 class="tp-tutorialTitle" id="slideTitle">Welcome to Castellan!</h1>
+        </div>
+
+        <!-- Content Area -->
+        <div class="tp-tutorialContent">
+            <div class="tp-slideContainer">
+                <!-- Slide 1: Welcome -->
+                <div class="tp-slide active" data-slide="0">
+                    <div class="tp-slideContent">
+                        <div class="tutorial-phase">
+                            <div class="prep-steps">
+                                <div class="prep-step">
+                                    <div class="step-number">🎮</div>
+                                    <div class="step-text">
+                                        <strong>What is Castellan?</strong>
+                                        <p class="step-detail">A strategic trick-taking game where prediction meets skill. Outsmart your opponents by accurately forecasting your victories!</p>
+                                    </div>
+                                </div>
+                                
+                                <div class="prep-step">
+                                    <div class="step-number">📊</div>
+                                    <div class="step-text">
+                                        <strong>Game Setup</strong>
+                                        <div class="game-setup-details">
+                                            <div class="setup-row">
+                                                <span class="setup-icon">👥</span>
+                                                <span><strong>4 Players</strong> compete each round</span>
+                                            </div>
+                                            <div class="setup-row">
+                                                <span class="setup-icon">🎯</span>
+                                                <span>First to <strong>50 Points</strong> wins</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="prep-step" style="background: rgba(255, 193, 7, 0.05); border-color: rgba(255, 193, 7, 0.2);">
+                                    <div class="step-number" style="background: var(--color-warning); color: var(--color-gray-800);">🎯</div>
+                                    <div class="step-text">
+                                        <strong>How to Win</strong>
+                                        <p class="step-detail">Score points by accurately predicting how many tricks (piles) you'll win each round.</p>
+                                        <div class="key-rule">
+                                            💡 Remember: It's not about winning the most tricks — it's about winning <strong>exactly</strong> what you predict!
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Slide 2: Know Your Army -->
+                <div class="tp-slide" data-slide="1" style="transform: translateX(100%);">
+                    <div class="tp-slideContent">
+                        <div class="tutorial-pieces">
+                            <div class="piece-showcase">
+                                <!-- Generals - 1 each -->
+                                <div class="piece-group">
+                                    <div class="piece-set">
+                                        <div class="piece">帥</div>
+                                    </div>
+                                    <div class="piece-set">
+                                        <div class="piece">將</div>
+                                    </div>
+                                </div>
+                                
+                                <!-- Advisors - 2 each -->
+                                <div class="piece-group">
+                                    <div class="piece-set">
+                                        <div class="piece">仕</div>
+                                        <div class="piece">仕</div>
+                                    </div>
+                                    <div class="piece-set">
+                                        <div class="piece">士</div>
+                                        <div class="piece">士</div>
+                                    </div>
+                                </div>
+                                
+                                <!-- Elephants - 2 each -->
+                                <div class="piece-group">
+                                    <div class="piece-set">
+                                        <div class="piece">相</div>
+                                        <div class="piece">相</div>
+                                    </div>
+                                    <div class="piece-set">
+                                        <div class="piece">象</div>
+                                        <div class="piece">象</div>
+                                    </div>
+                                </div>
+                                
+                                <!-- Horses - 2 each -->
+                                <div class="piece-group">
+                                    <div class="piece-set">
+                                        <div class="piece">傌</div>
+                                        <div class="piece">傌</div>
+                                    </div>
+                                    <div class="piece-set">
+                                        <div class="piece">馬</div>
+                                        <div class="piece">馬</div>
+                                    </div>
+                                </div>
+                                
+                                <!-- Chariots - 2 each -->
+                                <div class="piece-group">
+                                    <div class="piece-set">
+                                        <div class="piece">俥</div>
+                                        <div class="piece">俥</div>
+                                    </div>
+                                    <div class="piece-set">
+                                        <div class="piece">車</div>
+                                        <div class="piece">車</div>
+                                    </div>
+                                </div>
+                                
+                                <!-- Cannons - 2 each -->
+                                <div class="piece-group">
+                                    <div class="piece-set">
+                                        <div class="piece">炮</div>
+                                        <div class="piece">炮</div>
+                                    </div>
+                                    <div class="piece-set">
+                                        <div class="piece">砲</div>
+                                        <div class="piece">砲</div>
+                                    </div>
+                                </div>
+                                
+                                <!-- Soldiers - 5 each -->
+                                <div class="soldiers-section">
+                                    <div class="soldier-row">
+                                        <div class="piece">兵</div>
+                                        <div class="piece">兵</div>
+                                        <div class="piece">兵</div>
+                                        <div class="piece">兵</div>
+                                        <div class="piece">兵</div>
+                                    </div>
+                                    <div class="soldier-row">
+                                        <div class="piece">卒</div>
+                                        <div class="piece">卒</div>
+                                        <div class="piece">卒</div>
+                                        <div class="piece">卒</div>
+                                        <div class="piece">卒</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <p class="tutorial-note">
+                                Higher value pieces beat lower ones. Same value? First played wins!
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Slide 3: Phase 1 - Preparation -->
+                <div class="tp-slide" data-slide="2" style="transform: translateX(100%);">
+                    <div class="tp-slideContent">
+                        <div class="tutorial-phase">
+                            <div class="prep-steps">
+                                <div class="prep-step">
+                                    <div class="step-number">1</div>
+                                    <div class="step-text">
+                                        <strong>Deal Phase</strong>
+                                        <p class="step-detail">Each player receives 8 random pieces from the deck. These are your soldiers for this round.</p>
+                                    </div>
+                                </div>
+                                
+                                <div class="prep-step weak">
+                                    <div class="step-number">2</div>
+                                    <div class="step-text">
+                                        <strong>Check for Weak Hand</strong>
+                                        <div class="weak-definition">
+                                            <div>If your strongest piece is only <span class="piece">象</span> or lower:</div>
+                                            <div class="redeal-option">
+                                                • You may request a redeal<br/>
+                                                • All players get new hands<br/>
+                                                • <span class="warning">Warning: Reduces your score multiplier!</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="prep-step starter">
+                                    <div class="step-number">3</div>
+                                    <div class="step-text">
+                                        <strong>Starting Player</strong>
+                                        <p class="step-detail">
+                                            The player holding <span class="piece">帥</span> will lead the first trick and set the pace for the round.
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Slide 4: Phase 2 - Declaration -->
+                <div class="tp-slide" data-slide="3" style="transform: translateX(100%);">
+                    <div class="tp-slideContent">
+                        <div class="tutorial-phase">
+                            <div class="prep-steps">
+                                <div class="prep-step">
+                                    <div class="step-number">1</div>
+                                    <div class="step-text">
+                                        <strong>Make Your Prediction</strong>
+                                        <p class="step-detail">Each player declares how many tricks (0-8) they expect to win this round. This is your target score.</p>
+                                    </div>
+                                </div>
+                                <div class="prep-step" style="background: rgba(220, 53, 69, 0.05); border-color: rgba(220, 53, 69, 0.2);">
+                                    <div class="step-number" style="background: var(--color-danger); color: white;">!</div>
+                                    <div class="step-text">
+                                        <strong>The Forcing Rule</strong>
+                                        <p class="step-detail">Total declarations cannot equal 8! This guarantees competition - not everyone can achieve their goal.</p>
+                                        <div class="example-box" style="margin-top: 8px;">
+                                            <strong>Example:</strong> If 3 players declared 2, 2, 3 (total = 7), the last player CANNOT declare 1
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Slide 5: Phase 3 - Playing -->
+                <div class="tp-slide" data-slide="4" style="transform: translateX(100%);">
+                    <div class="tp-slideContent">
+                        <div class="tutorial-phase">
+                            <div class="prep-steps">
+                                <div class="prep-step">
+                                    <div class="step-number">1</div>
+                                    <div class="step-text">
+                                        <strong>Leader Plays First</strong>
+                                        <p class="step-detail">The trick leader plays 1-6 pieces. Must be a valid combination (single, pair, three-of-a-kind, or straight).</p>
+                                    </div>
+                                </div>
+                                <div class="prep-step">
+                                    <div class="step-number">2</div>
+                                    <div class="step-text">
+                                        <strong>Others Follow</strong>
+                                        <p class="step-detail">Each player must play the same number of pieces. You can play invalid combinations to forfeit the trick.</p>
+                                    </div>
+                                </div>
+                                <div class="prep-step">
+                                    <div class="step-number">3</div>
+                                    <div class="step-text">
+                                        <strong>Winner Takes Trick</strong>
+                                        <p class="step-detail">Highest valid play wins all pieces in the trick and leads the next one.</p>
+                                    </div>
+                                </div>
+                                <div class="prep-step" style="background: rgba(255, 193, 7, 0.05); border-color: rgba(255, 193, 7, 0.2);">
+                                    <div class="step-number" style="background: var(--color-warning); color: var(--color-gray-800);">💡</div>
+                                    <div class="step-text">
+                                        <strong>Strategic Forfeit</strong>
+                                        <p class="step-detail">Playing invalid combinations lets you dump unwanted pieces without winning tricks you don't want!</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Slide 6: Valid Play Types -->
+                <div class="tp-slide" data-slide="5" style="transform: translateX(100%);">
+                    <div class="tp-slideContent">
+                        <div class="tutorial-phase">
+                            <div class="play-types-showcase">
+                                <div class="play-type-item">
+                                    <div class="play-type-visual">
+                                        <div class="piece">砲</div>
+                                    </div>
+                                    <div class="play-type-info">
+                                        <strong>Single</strong>
+                                        <p class="step-detail">Any one piece</p>
+                                    </div>
+                                </div>
+                                
+                                <div class="play-type-item">
+                                    <div class="play-type-visual">
+                                        <div class="piece">馬</div>
+                                        <div class="piece">馬</div>
+                                    </div>
+                                    <div class="play-type-info">
+                                        <strong>Pair</strong>
+                                        <p class="step-detail">Two pieces of same type AND same color</p>
+                                    </div>
+                                </div>
+                                
+                                <div class="play-type-item">
+                                    <div class="play-type-visual">
+                                        <div class="piece">兵</div>
+                                        <div class="piece">兵</div>
+                                        <div class="piece">兵</div>
+                                    </div>
+                                    <div class="play-type-info">
+                                        <strong>Three-of-a-kind</strong>
+                                        <p class="step-detail">Three soldiers only (any combination)</p>
+                                    </div>
+                                </div>
+                                
+                                <div class="play-type-item">
+                                    <div class="play-type-visual">
+                                        <div class="piece">炮</div>
+                                        <div class="piece">俥</div>
+                                        <div class="piece">傌</div>
+                                    </div>
+                                    <div class="play-type-info">
+                                        <strong>Straight</strong>
+                                        <p class="step-detail">Consecutive values (all same color)</p>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="prep-step" style="background: rgba(255, 193, 7, 0.05); border-color: rgba(255, 193, 7, 0.2); margin-top: 16px;">
+                                <div class="step-number" style="background: var(--color-warning); color: var(--color-gray-800);">!</div>
+                                <div class="step-text">
+                                    <strong>Key Rule</strong>
+                                    <p class="step-detail">Only the trick leader needs valid combinations. Others can play any pieces to match the count!</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Slide 7: Scoring System -->
+                <div class="tp-slide" data-slide="6" style="transform: translateX(100%);">
+                    <div class="tp-slideContent">
+                        <div class="tutorial-phase">
+                            <div class="prep-steps">
+                                <div class="prep-step compact">
+                                    <div class="step-number">✓</div>
+                                    <div class="step-text">
+                                        <strong>Hit Your Target</strong>
+                                        <p class="step-detail">Win exactly what you declared = <strong>Tricks + 5 bonus</strong></p>
+                                        <div class="example-inline">
+                                            Example: Declare 2, win 2 = 2 + 5 = <strong>+7 points</strong>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="prep-step compact" style="background: rgba(220, 53, 69, 0.05); border-color: rgba(220, 53, 69, 0.2);">
+                                    <div class="step-number" style="background: var(--color-danger); color: white;">✗</div>
+                                    <div class="step-text">
+                                        <strong>Miss Your Target</strong>
+                                        <p class="step-detail">Penalty = <strong>-|difference|</strong> between declared and won</p>
+                                        <div class="example-inline">
+                                            Example: Declare 3, win 1 = -(3-1) = <strong style="color: var(--color-danger);">-2 points</strong>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="prep-step" style="background: rgba(255, 193, 7, 0.05); border-color: rgba(255, 193, 7, 0.2);">
+                                    <div class="step-number" style="background: var(--color-warning); color: var(--color-gray-800);">💎</div>
+                                    <div class="step-text">
+                                        <strong>Special: The 0/0 Strategy</strong>
+                                        <p class="step-detail">Declaring 0 and winning 0 tricks gives <strong>+3 points</strong>. High risk, but saves you when you have a terrible hand!</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Navigation Dots -->
+            <div class="tp-navDots">
+                <div class="tp-dot active" onclick="goToSlide(0)"></div>
+                <div class="tp-dot" onclick="goToSlide(1)"></div>
+                <div class="tp-dot" onclick="goToSlide(2)"></div>
+                <div class="tp-dot" onclick="goToSlide(3)"></div>
+                <div class="tp-dot" onclick="goToSlide(4)"></div>
+                <div class="tp-dot" onclick="goToSlide(5)"></div>
+                <div class="tp-dot" onclick="goToSlide(6)"></div>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="tp-footer">
+            <button class="tp-navArrow" disabled onclick="prevSlide()">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M15 18l-6-6 6-6"/>
+                </svg>
+            </button>
+            
+            <div class="tp-slideCounter">1 / 7</div>
+            
+            <button class="tp-navArrow" onclick="nextSlide()">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M9 18l6-6-6-6"/>
+                </svg>
+            </button>
+            
+            <button class="tp-skipButton" onclick="alert('Skip tutorial')">
+                Skip tutorial
+            </button>
+        </div>
+    </div>
+
+    <script>
+        let currentSlide = 0;
+        const totalSlides = 7;
+        const slides = document.querySelectorAll('.tp-slide');
+        const dots = document.querySelectorAll('.tp-dot');
+        const prevBtn = document.querySelectorAll('.tp-navArrow')[0];
+        const nextBtn = document.querySelectorAll('.tp-navArrow')[1];
+        const slideCounter = document.querySelector('.tp-slideCounter');
+        const slideTitle = document.getElementById('slideTitle');
+        const skipBtn = document.querySelector('.tp-skipButton');
+        
+        const titles = [
+            'Welcome to Castellan!',
+            'Know Your Army',
+            'Phase 1: Preparation',
+            'Phase 2: Declaration',
+            'Phase 3: Playing',
+            'Valid Play Types',
+            'Scoring System'
+        ];
+
+        function updateSlide() {
+            slides.forEach((slide, index) => {
+                if (index === currentSlide) {
+                    slide.style.transform = 'translateX(0)';
+                } else if (index < currentSlide) {
+                    slide.style.transform = 'translateX(-100%)';
+                } else {
+                    slide.style.transform = 'translateX(100%)';
+                }
+            });
+
+            dots.forEach((dot, index) => {
+                dot.classList.toggle('active', index === currentSlide);
+            });
+
+            prevBtn.disabled = currentSlide === 0;
+            nextBtn.disabled = currentSlide === totalSlides - 1;
+            
+            slideCounter.textContent = `${currentSlide + 1} / ${totalSlides}`;
+            slideTitle.textContent = titles[currentSlide];
+            
+            skipBtn.style.display = currentSlide === totalSlides - 1 ? 'none' : 'block';
+        }
+
+        function goToSlide(index) {
+            currentSlide = index;
+            updateSlide();
+        }
+
+        function prevSlide() {
+            if (currentSlide > 0) {
+                currentSlide--;
+                updateSlide();
+            }
+        }
+
+        function nextSlide() {
+            if (currentSlide < totalSlides - 1) {
+                currentSlide++;
+                updateSlide();
+            }
+        }
+
+        // Initialize
+        updateSlide();
+
+        // Keyboard navigation
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowLeft') prevSlide();
+            if (e.key === 'ArrowRight') nextSlide();
+        });
+    </script>
+</body>
+</html>

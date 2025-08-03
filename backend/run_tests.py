@@ -14,8 +14,8 @@ sys.path.append(os.path.join(os.path.dirname(__file__), ".."))
 
 from datetime import datetime
 
-from engine.state_machine.core import ActionType, GameAction, GamePhase
-from engine.state_machine.game_state_machine import GameStateMachine
+from backend.engine.state_machine.core import ActionType, GameAction, GamePhase
+from backend.engine.state_machine.game_state_machine import GameStateMachine
 
 
 class TestGame:

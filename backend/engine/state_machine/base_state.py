@@ -242,7 +242,7 @@ class GameState(ABC):
 
             # Store state change in EventStore for replay capability
             try:
-                from api.services.event_store import event_store
+                from backend.api.services.event_store import event_store
                 await event_store.store_event(
                     room_id=room_id,
                     event_type="phase_change",

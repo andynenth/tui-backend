@@ -8,8 +8,8 @@ import asyncio
 import logging
 from typing import Union, Dict, Any, List, Optional
 
-from engine.game import Game
-from engine.async_game import AsyncGame
+from backend.engine.game import Game
+from backend.engine.async_game import AsyncGame
 
 logger = logging.getLogger(__name__)
 
@@ -97,7 +97,7 @@ class AsyncGameAdapter:
             round_scores = getattr(self.game, 'round_scores', {})
             if not round_scores:
                 # Calculate manually if needed
-                from engine.scoring import calculate_round_scores
+                from backend.engine.scoring import calculate_round_scores
                 round_scores = calculate_round_scores(
                     self.game.players,
                     self.game.pile_counts,
@@ -158,7 +158,7 @@ class AsyncGameAdapter:
             if not self.game._is_game_over():
                 return None
             
-            from engine.win_conditions import get_winners
+            from backend.engine.win_conditions import get_winners
             winners = get_winners(self.game)
             
             return {

@@ -65,8 +65,18 @@ class SocketManager:
             {}
         )  # room_id -> {client_id -> sequence}
 
-        # Start background retry task
-        self._retry_task = asyncio.create_task(self._message_retry_worker())
+        # Background retry task (will be created when needed)
+        self._retry_task = None
+
+    def _ensure_retry_task(self):
+        """Ensure the retry task is running"""
+        if self._retry_task is None or self._retry_task.done():
+            try:
+                self._retry_task = asyncio.create_task(self._message_retry_worker())
+                print("🔄 RELIABLE_MSG: Message retry worker started")
+            except RuntimeError:
+                # No event loop running, will be started later
+                pass
 
     def __del__(self):
         """Cleanup background tasks"""
@@ -266,7 +276,7 @@ class SocketManager:
             # Clean up empty rooms - BUT PROTECT ACTIVE GAMES
             if not self.room_connections[room_id]:
                 # Check if room has an active game before cleanup
-                from shared_instances import shared_room_manager
+                from backend.shared_instances import shared_room_manager
 
                 room = await shared_room_manager.get_room(room_id)
 
@@ -366,6 +376,9 @@ class SocketManager:
         # Ensure stats exist
         if room_id not in self.message_stats:
             self.message_stats[room_id] = MessageStats()
+
+        # Ensure retry task is running
+        self._ensure_retry_task()
 
         # Prepare message with sequence and ack requirement
         message = {

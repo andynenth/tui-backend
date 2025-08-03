@@ -6,13 +6,13 @@ import random
 import time
 from typing import Dict, List, Optional, Set, Any
 
-import engine.ai as ai
-from engine.player import Player
-from engine.state_machine.core import ActionType, GameAction
+import backend.engine.ai as ai
+from backend.engine.player import Player
+from backend.engine.state_machine.core import ActionType, GameAction
 
 # Try to import async bot strategy for improved performance
 try:
-    from engine.async_bot_strategy import async_bot_strategy
+    from backend.engine.async_bot_strategy import async_bot_strategy
     ASYNC_BOT_STRATEGY_AVAILABLE = True
 except ImportError:
     ASYNC_BOT_STRATEGY_AVAILABLE = False
@@ -680,7 +680,7 @@ class GameBotHandler:
 
             # Get indices and play type
             indices = self._get_piece_indices(bot.hand, selected)
-            from engine.rules import get_play_type
+            from backend.engine.rules import get_play_type
 
             play_type = get_play_type(selected) if selected else "UNKNOWN"
 
@@ -800,7 +800,7 @@ class GameBotHandler:
         print(f"🔍 BOT_HANDLER: _handle_round_complete called")
         from backend.socket_manager import broadcast
 
-        from engine.win_conditions import get_winners, is_game_over
+        from backend.engine.win_conditions import get_winners, is_game_over
 
         # Handle scoring via state machine or fallback
         if self.state_machine:
@@ -894,7 +894,7 @@ class GameBotHandler:
             indices = self._get_piece_indices(bot.hand, selected)
 
             # Get the play type for the selected pieces
-            from engine.rules import get_play_type
+            from backend.engine.rules import get_play_type
 
             play_type = get_play_type(selected) if selected else "UNKNOWN"
 
