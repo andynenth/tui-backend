@@ -11,7 +11,7 @@ const ToastNotification = ({
   message,
   duration = 5000,
   onClose,
-  position = 'top-right',
+  _position = 'top-right',
 }) => {
   useEffect(() => {
     if (duration > 0) {

@@ -42,8 +42,8 @@ const TutorialPage = () => {
                 <span>Objective</span>
               </div>
               <div className="info-card-desc">
-                Predict how many tricks you&apos;ll win each round and match your
-                prediction exactly for bonus points!
+                Predict how many tricks you&apos;ll win each round and match
+                your prediction exactly for bonus points!
               </div>
             </div>
 

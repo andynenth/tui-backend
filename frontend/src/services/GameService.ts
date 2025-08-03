@@ -1029,7 +1029,12 @@ export class GameService extends EventTarget {
     // Update session storage with new phase
     if (state.roomId && state.playerName) {
       const sessionId = `${state.roomId}-${state.playerName}-${Date.now()}`;
-      storeSession(state.roomId, state.playerName, sessionId, newState.phase as any);
+      storeSession(
+        state.roomId,
+        state.playerName,
+        sessionId,
+        newState.phase as any
+      );
     }
 
     return newState;

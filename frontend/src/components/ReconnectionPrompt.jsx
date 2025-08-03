@@ -6,7 +6,7 @@ import { formatSessionInfo } from '../utils/sessionStorage';
 import '../styles/reconnection-prompt.css';
 
 const ReconnectionPrompt = ({
-  sessionInfo,
+  _sessionInfo,
   onReconnect,
   onJoinAsNew,
   isReconnecting,
