@@ -9,6 +9,7 @@ import os
 from pathlib import Path
 import importlib.util
 
+
 def check_module(module_name, file_path):
     """Check if a Python module can be imported"""
     try:
@@ -22,19 +23,20 @@ def check_module(module_name, file_path):
     except Exception as e:
         return False, f"Import error: {str(e)}"
 
+
 def main():
     """Run validation checks"""
     print("Contract Testing Infrastructure Validation")
     print("=" * 50)
-    
+
     # Check we're in the right directory
     if not Path("engine").exists() or not Path("api").exists():
         print("❌ ERROR: Must run from backend directory")
         print("   cd backend && python validate_test_setup.py")
         return False
-    
+
     all_good = True
-    
+
     # Check directory structure
     print("\n1. Checking directory structure...")
     dirs_to_check = [
@@ -42,9 +44,9 @@ def main():
         "tests/contracts/golden_masters",
         "tests/behavioral",
         "tests/behavioral/results",
-        "shadow_mode_data"
+        "shadow_mode_data",
     ]
-    
+
     for dir_path in dirs_to_check:
         path = Path(dir_path)
         if path.exists():
@@ -52,7 +54,7 @@ def main():
         else:
             print(f"   ❌ {dir_path} - Creating...")
             path.mkdir(parents=True, exist_ok=True)
-    
+
     # Check contract testing modules
     print("\n2. Checking contract testing modules...")
     modules_to_check = [
@@ -61,7 +63,7 @@ def main():
         ("parallel_runner", Path("tests/contracts/parallel_runner.py")),
         ("capture_golden_masters", Path("tests/contracts/capture_golden_masters.py")),
     ]
-    
+
     for module_name, file_path in modules_to_check:
         success, message = check_module(module_name, file_path)
         if success:
@@ -69,7 +71,7 @@ def main():
         else:
             print(f"   ❌ {module_name}: {message}")
             all_good = False
-    
+
     # Check behavioral testing modules
     print("\n3. Checking behavioral testing modules...")
     behavioral_modules = [
@@ -77,7 +79,7 @@ def main():
         ("test_game_mechanics", Path("tests/behavioral/test_game_mechanics.py")),
         ("test_integration", Path("tests/behavioral/test_integration.py")),
     ]
-    
+
     for module_name, file_path in behavioral_modules:
         success, message = check_module(module_name, file_path)
         if success:
@@ -85,7 +87,7 @@ def main():
         else:
             print(f"   ❌ {module_name}: {message}")
             all_good = False
-    
+
     # Check shadow mode modules
     print("\n4. Checking shadow mode modules...")
     shadow_modules = [
@@ -93,7 +95,7 @@ def main():
         ("shadow_mode_manager", Path("api/shadow_mode_manager.py")),
         ("shadow_mode_integration", Path("api/shadow_mode_integration.py")),
     ]
-    
+
     for module_name, file_path in shadow_modules:
         success, message = check_module(module_name, file_path)
         if success:
@@ -101,11 +103,12 @@ def main():
         else:
             print(f"   ❌ {module_name}: {message}")
             all_good = False
-    
+
     # Check contract count
     print("\n5. Validating contract definitions...")
     try:
         from tests.contracts.websocket_contracts import get_all_contracts
+
         contracts = get_all_contracts()
         print(f"   ✅ Found {len(contracts)} WebSocket contracts")
         if len(contracts) != 21:
@@ -113,7 +116,7 @@ def main():
     except Exception as e:
         print(f"   ❌ Failed to load contracts: {e}")
         all_good = False
-    
+
     # Check for existing golden masters
     print("\n6. Checking for existing golden masters...")
     golden_masters_dir = Path("tests/contracts/golden_masters")
@@ -121,10 +124,12 @@ def main():
         masters = list(golden_masters_dir.glob("*.json"))
         if masters:
             print(f"   ⚠️  Found {len(masters)} existing golden masters")
-            print("      These will be overwritten when you run capture_golden_masters.py")
+            print(
+                "      These will be overwritten when you run capture_golden_masters.py"
+            )
         else:
             print("   ✅ No golden masters yet (expected for first run)")
-    
+
     # Summary
     print("\n" + "=" * 50)
     if all_good:
@@ -137,6 +142,7 @@ def main():
     else:
         print("❌ Some checks failed. Please fix the issues above.")
         return False
+
 
 if __name__ == "__main__":
     success = main()

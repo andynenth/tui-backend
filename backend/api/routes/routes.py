@@ -718,7 +718,9 @@ async def rate_limit_stats():
     """
     try:
         from api.middleware.rate_limit import get_rate_limiter
-        from backend.api.middleware.websocket_rate_limit import get_websocket_rate_limiter
+        from backend.api.middleware.websocket_rate_limit import (
+            get_websocket_rate_limiter,
+        )
 
         # Get HTTP rate limiter stats
         http_limiter = get_rate_limiter()
@@ -863,7 +865,9 @@ async def get_rate_limit_metrics():
     try:
         # Import rate limiting components
         from api.middleware.rate_limit import get_rate_limiter
-        from backend.api.middleware.websocket_rate_limit import get_websocket_rate_limiter
+        from backend.api.middleware.websocket_rate_limit import (
+            get_websocket_rate_limiter,
+        )
 
         # Import configuration if available
         try:

@@ -13,6 +13,7 @@ from backend.engine.state_machine.core import ActionType, GameAction
 # Try to import async bot strategy for improved performance
 try:
     from backend.engine.async_bot_strategy import async_bot_strategy
+
     ASYNC_BOT_STRATEGY_AVAILABLE = True
 except ImportError:
     ASYNC_BOT_STRATEGY_AVAILABLE = False
@@ -36,7 +37,9 @@ class BotManager:
             cls._instance.active_games = {}
             print(f"🔍 BOT_MANAGER: Created new singleton instance")
         else:
-            print(f"🔍 BOT_MANAGER: Returning existing singleton instance with {len(cls._instance.active_games)} active games")
+            print(
+                f"🔍 BOT_MANAGER: Returning existing singleton instance with {len(cls._instance.active_games)} active games"
+            )
         return cls._instance
 
     def __init__(self):
@@ -56,7 +59,9 @@ class BotManager:
         """
         print(f"🔍 BOT_MANAGER: Registering game for room {room_id}")
         self.active_games[room_id] = GameBotHandler(room_id, game, state_machine)
-        print(f"✅ BOT_MANAGER: Game registered for room {room_id}, active games: {list(self.active_games.keys())}")
+        print(
+            f"✅ BOT_MANAGER: Game registered for room {room_id}, active games: {list(self.active_games.keys())}"
+        )
 
     def unregister_game(self, room_id: str):
         """
@@ -132,7 +137,7 @@ class GameBotHandler:
         """Get current game state from state machine or fallback to direct game access"""
         if self.state_machine:
             # Use game adapter if available for async compatibility
-            if hasattr(self.state_machine, 'game_adapter'):
+            if hasattr(self.state_machine, "game_adapter"):
                 return self.state_machine.game_adapter
             return self.state_machine.game  # Access game through state machine
         return self.game  # Fallback to direct access
@@ -226,7 +231,9 @@ class GameBotHandler:
         # 🔧 PHASE_TRACKING_FIX: Detect actual phase transitions and reset tracking
         if event == "phase_change":
             new_phase = data.get("phase")
-            print(f"🔍 BOT_HANDLER: Phase change detected - new phase: {new_phase}, last phase: {self._last_processed_phase}")
+            print(
+                f"🔍 BOT_HANDLER: Phase change detected - new phase: {new_phase}, last phase: {self._last_processed_phase}"
+            )
             if new_phase != self._last_processed_phase:
                 # Clear action tracking for new phase
                 self._phase_action_triggered.clear()
@@ -257,7 +264,9 @@ class GameBotHandler:
                     current_phase in self._phase_action_triggered
                     and self._phase_action_triggered[current_phase]
                 ):
-                    print(f"⚠️ BOT_HANDLER: Phase {current_phase} already triggered, skipping")
+                    print(
+                        f"⚠️ BOT_HANDLER: Phase {current_phase} already triggered, skipping"
+                    )
                     return
 
                 # Small delay to ensure phase data is ready
@@ -281,7 +290,9 @@ class GameBotHandler:
         """
         phase = data.get("phase")
         phase_data = data.get("phase_data", {})
-        print(f"🔍 BOT_HANDLER: _handle_enterprise_phase_change - phase: {phase}, phase_data keys: {list(phase_data.keys())}")
+        print(
+            f"🔍 BOT_HANDLER: _handle_enterprise_phase_change - phase: {phase}, phase_data keys: {list(phase_data.keys())}"
+        )
         reason = data.get("reason", "")
 
         # 🔧 PHASE_TRACKING_FIX: Check if we already triggered actions for this phase
@@ -342,7 +353,9 @@ class GameBotHandler:
             current_player = data.get("current_player") or phase_data.get(
                 "current_player"
             )
-            print(f"🔍 BOT_HANDLER: Turn plays: {list(turn_plays.keys())}, current player: {current_player}")
+            print(
+                f"🔍 BOT_HANDLER: Turn plays: {list(turn_plays.keys())}, current player: {current_player}"
+            )
 
             # If there are turn plays, find the last player who played
             if turn_plays:
@@ -367,13 +380,17 @@ class GameBotHandler:
 
     async def _handle_declaration_phase(self, last_declarer: str):
         """Handle bot declarations in order"""
-        print(f"🔍 BOT_HANDLER: _handle_declaration_phase called with last_declarer: '{last_declarer}'")
+        print(
+            f"🔍 BOT_HANDLER: _handle_declaration_phase called with last_declarer: '{last_declarer}'"
+        )
         from backend.socket_manager import broadcast
 
         # Get declaration order
         declaration_order = self._get_declaration_order()
-        print(f"🔍 BOT_HANDLER: Declaration order: {[getattr(p, 'name', str(p)) for p in declaration_order]}")
-        
+        print(
+            f"🔍 BOT_HANDLER: Declaration order: {[getattr(p, 'name', str(p)) for p in declaration_order]}"
+        )
+
         if not declaration_order:
             print(f"⚠️ BOT_HANDLER: No declaration order found!")
             return
@@ -436,7 +453,9 @@ class GameBotHandler:
 
     async def _bot_declare(self, bot: Player, position: int):
         """Make a bot declaration"""
-        print(f"🔍 BOT_HANDLER: _bot_declare called for bot {bot.name} at position {position}")
+        print(
+            f"🔍 BOT_HANDLER: _bot_declare called for bot {bot.name} at position {position}"
+        )
         from backend.socket_manager import broadcast
 
         try:
@@ -542,24 +561,26 @@ class GameBotHandler:
         print(f"🔍 BOT_HANDLER: Game state type: {type(game_state)}")
 
         # Get the round starter from game state
-        starter_name = getattr(game_state, 'round_starter', None)
+        starter_name = getattr(game_state, "round_starter", None)
         print(f"🔍 BOT_HANDLER: round_starter attribute: {starter_name}")
-        if not starter_name and hasattr(game_state, 'players') and game_state.players:
+        if not starter_name and hasattr(game_state, "players") and game_state.players:
             # Fallback: first player is starter
             starter_name = game_state.players[0].name if game_state.players else None
             print(f"🔍 BOT_HANDLER: Using fallback starter: {starter_name}")
-        
+
         # Find the starter player object
         starter = None
-        if starter_name and hasattr(game_state, 'players'):
+        if starter_name and hasattr(game_state, "players"):
             for p in game_state.players:
-                if getattr(p, 'name', str(p)) == starter_name:
+                if getattr(p, "name", str(p)) == starter_name:
                     starter = p
                     break
-        
-        print(f"🔍 BOT_HANDLER: Starter object found: {starter}, is_bot: {getattr(starter, 'is_bot', None) if starter else 'N/A'}")
-        
-        if starter and getattr(starter, 'is_bot', False):
+
+        print(
+            f"🔍 BOT_HANDLER: Starter object found: {starter}, is_bot: {getattr(starter, 'is_bot', None) if starter else 'N/A'}"
+        )
+
+        if starter and getattr(starter, "is_bot", False):
             print(f"🤖 Round starter is bot: {starter.name}")
             await asyncio.sleep(1)
             await self._handle_declaration_phase(
@@ -726,7 +747,9 @@ class GameBotHandler:
         weak_players_awaiting = phase_data.get("weak_players_awaiting", set())
         redeal_decisions = phase_data.get("redeal_decisions", {})
         decisions_received = phase_data.get("decisions_received", 0)
-        print(f"🔍 BOT_HANDLER: Weak players awaiting: {weak_players_awaiting}, decisions: {redeal_decisions}")
+        print(
+            f"🔍 BOT_HANDLER: Weak players awaiting: {weak_players_awaiting}, decisions: {redeal_decisions}"
+        )
 
         # 🔧 REDEAL_DECISION_FIX: Detect new decision cycle
         if decisions_received == 0:
@@ -890,7 +913,9 @@ class GameBotHandler:
                     bot.hand, required_count=None, verbose=True
                 )
             else:
-                selected = ai.choose_best_play(bot.hand, required_count=None, verbose=True)
+                selected = ai.choose_best_play(
+                    bot.hand, required_count=None, verbose=True
+                )
             indices = self._get_piece_indices(bot.hand, selected)
 
             # Get the play type for the selected pieces
@@ -954,12 +979,12 @@ class GameBotHandler:
         else:
             # Fallback to game state - create order from round_starter
             game_state = self._get_game_state()
-            round_starter = getattr(game_state, 'round_starter', None)
-            if round_starter and hasattr(game_state, 'get_player_order_from'):
+            round_starter = getattr(game_state, "round_starter", None)
+            if round_starter and hasattr(game_state, "get_player_order_from"):
                 return game_state.get_player_order_from(round_starter)
             else:
                 # Last resort: return players in default order
-                return getattr(game_state, 'players', [])
+                return getattr(game_state, "players", [])
 
     def _get_turn_order(self) -> List[str]:
         """Get players in turn order - identical pattern to declaration order"""
@@ -1008,18 +1033,18 @@ class GameBotHandler:
         # Use async strategy if available
         if ASYNC_BOT_STRATEGY_AVAILABLE:
             game_state = self._get_game_state()
-            
+
             # Get opponent scores
             opponent_scores = {}
             for player in game_state.players:
                 if player.name != bot.name:
                     opponent_scores[player.name] = player.score
-            
+
             should_decline = not await async_bot_strategy.should_accept_redeal(
                 hand=bot.hand,
-                round_number=getattr(game_state, 'round_number', 1),
+                round_number=getattr(game_state, "round_number", 1),
                 current_score=bot.score,
-                opponent_scores=opponent_scores
+                opponent_scores=opponent_scores,
             )
         else:
             # Fallback: Bots always accept redeals for testing purposes

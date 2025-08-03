@@ -8,7 +8,9 @@ from typing import (  # Import Optional for type hinting variables that can be N
     Optional,
 )
 
-from backend.engine.game import Game  # Import the Game class, representing the core game logic.
+from backend.engine.game import (
+    Game,
+)  # Import the Game class, representing the core game logic.
 from backend.engine.player import (  # Import the Player class, representing a player in the game.
     Player,
 )
@@ -61,7 +63,9 @@ class Room:
         self.cleanup_scheduled = False  # Flag to prevent duplicate scheduling
 
         # Assign the host to the first slot (P1).
-        self.players[0] = Player(host_name, is_bot=False, available_colors=self.get_available_colors())
+        self.players[0] = Player(
+            host_name, is_bot=False, available_colors=self.get_available_colors()
+        )
 
         # Assign bots to the remaining slots (P2-P4) by default.
         for i in range(1, 4):
@@ -87,15 +91,26 @@ class Room:
 
     def get_available_colors(self) -> list[str]:
         """Get list of avatar colors not currently in use by human players"""
-        all_colors = ["blue", "purple", "orange", "red", "green", "teal", "pink", "yellow"]
+        all_colors = [
+            "blue",
+            "purple",
+            "orange",
+            "red",
+            "green",
+            "teal",
+            "pink",
+            "yellow",
+        ]
         used_colors = []
-        
+
         for player in self.players:
             if player and not player.is_bot and player.avatar_color:
                 used_colors.append(player.avatar_color)
-        
+
         available = [color for color in all_colors if color not in used_colors]
-        logger.debug(f"[Room {self.room_id}] Available colors: {available}, Used: {used_colors}")
+        logger.debug(
+            f"[Room {self.room_id}] Available colors: {available}, Used: {used_colors}"
+        )
         return available
 
     async def assign_slot_safe(self, slot: int, name_or_none: Optional[str]) -> dict:
@@ -485,13 +500,21 @@ class Room:
         # 2. Find the first truly empty slot (None).
         for i, player in enumerate(self.players):
             if player is None:
-                self.players[i] = Player(player_name, is_bot=False, available_colors=self.get_available_colors())
+                self.players[i] = Player(
+                    player_name,
+                    is_bot=False,
+                    available_colors=self.get_available_colors(),
+                )
                 return i
 
         # 3. If no empty slots, find the first bot slot to replace.
         for i, player in enumerate(self.players):
             if player and player.is_bot:
-                self.players[i] = Player(player_name, is_bot=False, available_colors=self.get_available_colors())
+                self.players[i] = Player(
+                    player_name,
+                    is_bot=False,
+                    available_colors=self.get_available_colors(),
+                )
                 return i
 
         # If no suitable slot was found (all slots are filled by other human players).
