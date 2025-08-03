@@ -7,8 +7,8 @@ import sys
 
 sys.path.append("/Users/nrw/python/tui-project/liap-tui")
 
-from backend.api.services.event_store import event_store
-from backend.shared_instances import shared_room_manager
+from api.services.event_store import event_store
+from shared_instances import shared_room_manager
 
 
 async def test_state_sync():
