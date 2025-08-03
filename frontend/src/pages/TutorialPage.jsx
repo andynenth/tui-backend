@@ -238,184 +238,90 @@ const TutorialPage = () => {
     {
       title: 'Phase 1: Preparation',
       content: (
-        <div
-          style={{
-            padding: '20px',
-            display: 'flex',
-            flexDirection: 'column',
-            height: '100%',
-            gap: '20px',
-          }}
-        >
-          {/* Header Section */}
-          <div style={{ textAlign: 'center' }}>
-            <div style={{ fontSize: '48px', marginBottom: '8px' }}>🎴</div>
-            <h2 style={{
-              fontSize: '22px',
-              color: '#1f2937',
-              fontWeight: 700,
-              letterSpacing: '-0.025em',
-            }}>
-              Getting Ready to Play
-            </h2>
+        <div className="prep-container">
+          {/* Header */}
+          <div className="prep-header">
+            <div className="prep-emoji">🎴</div>
+            <h2 className="prep-title">Getting Ready to Play</h2>
+            <p className="prep-subtitle">
+              Three simple steps to start the round
+            </p>
           </div>
 
-          {/* Main Content - 3 Clear Steps */}
-          <div style={{ 
-            flex: 1, 
-            display: 'flex', 
-            flexDirection: 'column',
-            gap: '16px'
-          }}>
-            {/* Step 1: Deal */}
-            <div style={{
-              background: 'linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%)',
-              borderRadius: '12px',
-              padding: '16px',
-              border: '1px solid #bae6fd',
-            }}>
-              <div style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: '12px',
-                marginBottom: '10px'
-              }}>
-                <div style={{
-                  width: '28px',
-                  height: '28px',
-                  borderRadius: '50%',
-                  background: '#0ea5e9',
-                  color: 'white',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  fontWeight: 700,
-                  fontSize: '14px'
-                }}>1</div>
-                <h3 style={{
-                  fontSize: '16px',
-                  color: '#0c4a6e',
-                  fontWeight: 600,
-                  margin: 0
-                }}>Everyone Gets 8 Pieces</h3>
-              </div>
-              <div style={{
-                display: 'flex',
-                gap: '6px',
-                justifyContent: 'center',
-                flexWrap: 'wrap'
-              }}>
-                <GamePiece piece={{ kind: 'GENERAL', color: 'RED', value: 11 }} size="mini" />
-                <GamePiece piece={{ kind: 'ADVISOR', color: 'BLACK', value: 10 }} size="mini" />
-                <GamePiece piece={{ kind: 'ELEPHANT', color: 'RED', value: 9 }} size="mini" />
-                <GamePiece piece={{ kind: 'HORSE', color: 'BLACK', value: 8 }} size="mini" />
-                <GamePiece piece={{ kind: 'CHARIOT', color: 'RED', value: 7 }} size="mini" />
-                <GamePiece piece={{ kind: 'CANNON', color: 'BLACK', value: 6 }} size="mini" />
-                <GamePiece piece={{ kind: 'SOLDIER', color: 'RED', value: 3 }} size="mini" />
-                <GamePiece piece={{ kind: 'SOLDIER', color: 'BLACK', value: 2 }} size="mini" />
+          {/* Main Content - Clean list style */}
+          <div className="prep-content">
+            {/* Step 1 */}
+            <div className="prep-item">
+              <h3 className="prep-item-title">Deal 8 pieces to each player</h3>
+              <div className="prep-item-pieces">
+                <GamePiece
+                  piece={{ kind: 'GENERAL', color: 'RED', value: 11 }}
+                  size="mini"
+                />
+                <GamePiece
+                  piece={{ kind: 'ADVISOR', color: 'BLACK', value: 10 }}
+                  size="mini"
+                />
+                <GamePiece
+                  piece={{ kind: 'ELEPHANT', color: 'RED', value: 9 }}
+                  size="mini"
+                />
+                <GamePiece
+                  piece={{ kind: 'HORSE', color: 'BLACK', value: 8 }}
+                  size="mini"
+                />
+                <GamePiece
+                  piece={{ kind: 'CHARIOT', color: 'RED', value: 7 }}
+                  size="mini"
+                />
+                <GamePiece
+                  piece={{ kind: 'CANNON', color: 'BLACK', value: 6 }}
+                  size="mini"
+                />
+                <GamePiece
+                  piece={{ kind: 'SOLDIER', color: 'RED', value: 3 }}
+                  size="mini"
+                />
+                <GamePiece
+                  piece={{ kind: 'SOLDIER', color: 'BLACK', value: 2 }}
+                  size="mini"
+                />
               </div>
             </div>
 
-            {/* Step 2: Starting Player */}
-            <div style={{
-              background: 'linear-gradient(135deg, #fef3c7 0%, #fde68a 100%)',
-              borderRadius: '12px',
-              padding: '16px',
-              border: '1px solid #fcd34d',
-            }}>
-              <div style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: '12px'
-              }}>
-                <div style={{
-                  width: '28px',
-                  height: '28px',
-                  borderRadius: '50%',
-                  background: '#f59e0b',
-                  color: 'white',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  fontWeight: 700,
-                  fontSize: '14px'
-                }}>2</div>
-                <div style={{ flex: 1 }}>
-                  <h3 style={{
-                    fontSize: '16px',
-                    color: '#78350f',
-                    fontWeight: 600,
-                    margin: '0 0 4px 0'
-                  }}>Who Goes First?</h3>
-                  <p style={{
-                    fontSize: '14px',
-                    color: '#92400e',
-                    margin: 0,
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '6px'
-                  }}>
-                    <span>👑</span>
-                    Player with{' '}
-                    <GamePiece piece={{ kind: 'GENERAL', color: 'RED', value: 11 }} size="mini" />
-                    {' '}leads the round
-                  </p>
-                </div>
-              </div>
+            {/* Divider */}
+            <div className="prep-divider" />
+
+            {/* Step 2 */}
+            <div className="prep-item">
+              <h3 className="prep-item-title">Find who goes first</h3>
+              <p className="prep-item-text">
+                The player with{' '}
+                <GamePiece
+                  piece={{ kind: 'GENERAL', color: 'RED', value: 11 }}
+                  size="mini"
+                />{' '}
+                (Red General) leads the first trick
+              </p>
             </div>
 
-            {/* Step 3: Weak Hand Rule */}
-            <div style={{
-              background: 'linear-gradient(135deg, #fee2e2 0%, #fecaca 100%)',
-              borderRadius: '12px',
-              padding: '16px',
-              border: '1px solid #fca5a5',
-            }}>
-              <div style={{
-                display: 'flex',
-                alignItems: 'flex-start',
-                gap: '12px'
-              }}>
-                <div style={{
-                  width: '28px',
-                  height: '28px',
-                  borderRadius: '50%',
-                  background: '#ef4444',
-                  color: 'white',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  fontWeight: 700,
-                  fontSize: '14px',
-                  flexShrink: 0
-                }}>3</div>
-                <div style={{ flex: 1 }}>
-                  <h3 style={{
-                    fontSize: '16px',
-                    color: '#7f1d1d',
-                    fontWeight: 600,
-                    margin: '0 0 8px 0'
-                  }}>Weak Hand? You Can Redeal!</h3>
-                  <div style={{
-                    fontSize: '13px',
-                    color: '#991b1b',
-                    lineHeight: 1.5
-                  }}>
-                    <div style={{ marginBottom: '6px' }}>
-                      If your best piece is ≤{' '}
-                      <GamePiece piece={{ kind: 'ELEPHANT', color: 'BLACK', value: 9 }} size="mini" />
-                    </div>
-                    <div style={{ 
-                      display: 'flex', 
-                      flexDirection: 'column',
-                      gap: '4px',
-                      paddingLeft: '8px'
-                    }}>
-                      <span style={{ color: '#16a34a' }}>✓ Request new cards for everyone</span>
-                      <span style={{ color: '#dc2626', fontSize: '12px' }}>⚠️ But scores multiply (risk & reward!)</span>
-                    </div>
-                  </div>
-                </div>
+            {/* Divider */}
+            <div className="prep-divider" />
+
+            {/* Step 3 */}
+            <div className="prep-item">
+              <h3 className="prep-item-title">Check for weak hands</h3>
+              <p className="prep-item-text-with-margin">
+                If your best piece is ≤{' '}
+                <GamePiece
+                  piece={{ kind: 'ELEPHANT', color: 'BLACK', value: 9 }}
+                  size="mini"
+                />{' '}
+                you may request a redeal
+              </p>
+              <div className="prep-warning">
+                <strong>Note:</strong> Redealing multiplies everyone's scores
+                (both wins and losses!)
               </div>
             </div>
           </div>

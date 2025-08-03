@@ -80,7 +80,8 @@
 }
 
 @keyframes connectionPulse {
-  0%, 100% {
+  0%,
+  100% {
     opacity: 1;
   }
   50% {
@@ -95,11 +96,21 @@
 }
 
 @keyframes loadingDots {
-  0% { content: ''; }
-  25% { content: '.'; }
-  50% { content: '..'; }
-  75% { content: '...'; }
-  100% { content: ''; }
+  0% {
+    content: '';
+  }
+  25% {
+    content: '.';
+  }
+  50% {
+    content: '..';
+  }
+  75% {
+    content: '...';
+  }
+  100% {
+    content: '';
+  }
 }
 
 /* Toast notification slide in */
@@ -139,16 +150,25 @@
   transition: transform 0.3s ease-out;
 }
 
-.toast-stack:nth-child(1) { transform: translateY(0); }
-.toast-stack:nth-child(2) { transform: translateY(calc(100% + 8px)); }
-.toast-stack:nth-child(3) { transform: translateY(calc(200% + 16px)); }
-.toast-stack:nth-child(4) { transform: translateY(calc(300% + 24px)); }
+.toast-stack:nth-child(1) {
+  transform: translateY(0);
+}
+.toast-stack:nth-child(2) {
+  transform: translateY(calc(100% + 8px));
+}
+.toast-stack:nth-child(3) {
+  transform: translateY(calc(200% + 16px));
+}
+.toast-stack:nth-child(4) {
+  transform: translateY(calc(300% + 24px));
+}
 
 /* Player avatar state transitions */
 .player-avatar-transition {
-  transition: opacity 0.3s ease-in-out, 
-              filter 0.3s ease-in-out,
-              transform 0.3s ease-in-out;
+  transition:
+    opacity 0.3s ease-in-out,
+    filter 0.3s ease-in-out,
+    transform 0.3s ease-in-out;
 }
 
 .player-disconnected {
@@ -174,8 +194,9 @@
 
 /* Network strength bars animation */
 .signal-bar {
-  transition: background-color 0.3s ease-in-out,
-              height 0.3s ease-in-out;
+  transition:
+    background-color 0.3s ease-in-out,
+    height 0.3s ease-in-out;
 }
 
 /* Progress bar smooth fill */
@@ -219,7 +240,8 @@
 
 /* Smooth color transitions */
 .color-transition {
-  transition: color 0.3s ease-in-out,
-              background-color 0.3s ease-in-out,
-              border-color 0.3s ease-in-out;
+  transition:
+    color 0.3s ease-in-out,
+    background-color 0.3s ease-in-out,
+    border-color 0.3s ease-in-out;
 }

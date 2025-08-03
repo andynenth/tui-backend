@@ -35,16 +35,19 @@ src/
 ## Test Organization Principles ✅
 
 ### 1. Co-located Tests (Preferred)
+
 - **Location**: Next to source files in `__tests__/` folders
 - **Benefits**: Easy to find, maintain, and understand relationships
 - **Pattern**: `src/[module]/__tests__/[file].test.js`
 
 ### 2. Centralized Tests (When Needed)
+
 - **Location**: `src/tests/` directory
 - **Use cases**: Integration tests, complex multi-module tests, specialized test utilities
 - **Organization**: Grouped by functionality or test type
 
 ### 3. Configuration Files
+
 - **Jest config**: `jest.config.js` (root level)
 - **Jest setup**: `jest.setup.js` (root level)
 - **Test utilities**: `src/tests/setup/` directory
@@ -52,6 +55,7 @@ src/
 ## Test Coverage Status ✅
 
 ### ✅ Well-Tested Modules
+
 - **Utils**: Complete coverage (72 tests)
   - `roomHelpers.js`: 30 tests covering all functions
   - `sessionStorage.js`: 42 tests including edge cases
@@ -65,6 +69,7 @@ src/
   - `test_frontend_connection.js`: Frontend-backend data flow simulation
 
 ### 📝 Modules Needing Tests
+
 - Most React components in `src/components/`
 - React hooks in `src/hooks/`
 - Page components in `src/pages/`
@@ -113,6 +118,7 @@ python tests/integration/manual/test_websocket_debug.py
 ## Test Quality Standards ✅
 
 ### ✅ Implemented Standards
+
 1. **Comprehensive Coverage**: Test happy path, edge cases, and error conditions
 2. **Proper Mocking**: Isolate dependencies with Jest mocks
 3. **Clear Test Names**: Descriptive test names explaining what is being tested
@@ -120,6 +126,7 @@ python tests/integration/manual/test_websocket_debug.py
 5. **Setup/Cleanup**: Proper beforeEach/afterEach for test isolation
 
 ### 📋 Example Test Structure
+
 ```javascript
 describe('ModuleName', () => {
   beforeEach(() => {

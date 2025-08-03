@@ -1,48 +1,48 @@
 /* Player avatar color variants */
 .player-avatar--color-blue {
-  background: linear-gradient(145deg, #EBF5FF 0%, #DBEAFE 100%);
-  border-color: #3B82F6;
-  color: #1E40AF;
+  background: linear-gradient(145deg, #ebf5ff 0%, #dbeafe 100%);
+  border-color: #3b82f6;
+  color: #1e40af;
 }
 
 .player-avatar--color-purple {
-  background: linear-gradient(145deg, #F3E8FF 0%, #E9D5FF 100%);
-  border-color: #8B5CF6;
-  color: #5B21B6;
+  background: linear-gradient(145deg, #f3e8ff 0%, #e9d5ff 100%);
+  border-color: #8b5cf6;
+  color: #5b21b6;
 }
 
 .player-avatar--color-orange {
-  background: linear-gradient(145deg, #FFF7ED 0%, #FED7AA 100%);
-  border-color: #F97316;
-  color: #C2410C;
+  background: linear-gradient(145deg, #fff7ed 0%, #fed7aa 100%);
+  border-color: #f97316;
+  color: #c2410c;
 }
 
 .player-avatar--color-red {
-  background: linear-gradient(145deg, #FEF2F2 0%, #FECACA 100%);
-  border-color: #EF4444;
-  color: #B91C1C;
+  background: linear-gradient(145deg, #fef2f2 0%, #fecaca 100%);
+  border-color: #ef4444;
+  color: #b91c1c;
 }
 
 .player-avatar--color-green {
-  background: linear-gradient(145deg, #F0FDF4 0%, #D1FAE5 100%);
-  border-color: #10B981;
+  background: linear-gradient(145deg, #f0fdf4 0%, #d1fae5 100%);
+  border-color: #10b981;
   color: #047857;
 }
 
 .player-avatar--color-teal {
-  background: linear-gradient(145deg, #F0FDFA 0%, #CCFBF1 100%);
-  border-color: #14B8A6;
-  color: #0F766E;
+  background: linear-gradient(145deg, #f0fdfa 0%, #ccfbf1 100%);
+  border-color: #14b8a6;
+  color: #0f766e;
 }
 
 .player-avatar--color-pink {
-  background: linear-gradient(145deg, #FDF2F8 0%, #FCE7F3 100%);
-  border-color: #EC4899;
-  color: #BE185D;
+  background: linear-gradient(145deg, #fdf2f8 0%, #fce7f3 100%);
+  border-color: #ec4899;
+  color: #be185d;
 }
 
 .player-avatar--color-yellow {
-  background: linear-gradient(145deg, #FFFBEB 0%, #FEF3C7 100%);
-  border-color: #F59E0B;
-  color: #B45309;
+  background: linear-gradient(145deg, #fffbeb 0%, #fef3c7 100%);
+  border-color: #f59e0b;
+  color: #b45309;
 }

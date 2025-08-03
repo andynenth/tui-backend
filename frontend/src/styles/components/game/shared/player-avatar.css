@@ -111,9 +111,15 @@
 .player-avatar--bot.thinking {
   position: relative;
   border: 2px solid transparent;
-  background: 
+  background:
     linear-gradient(145deg, #f3f4f6 0%, #e5e7eb 100%) padding-box,
-    conic-gradient(from 0deg, transparent 0deg, rgba(107, 114, 128, 0.6) 90deg, transparent 180deg) border-box;
+    conic-gradient(
+        from 0deg,
+        transparent 0deg,
+        rgba(107, 114, 128, 0.6) 90deg,
+        transparent 180deg
+      )
+      border-box;
 }
 
 .player-avatar--bot.thinking::before {
@@ -124,7 +130,12 @@
   right: -2px;
   bottom: -2px;
   border-radius: 50%;
-  background: conic-gradient(from 0deg, transparent 0deg, rgba(107, 114, 128, 0.6) 90deg, transparent 180deg);
+  background: conic-gradient(
+    from 0deg,
+    transparent 0deg,
+    rgba(107, 114, 128, 0.6) 90deg,
+    transparent 180deg
+  );
   animation: bot-thinking-spin 1.5s linear infinite;
   z-index: -1;
 }
@@ -143,8 +154,12 @@
 }
 
 @keyframes bot-thinking-spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
 }
 
 /* Bot avatar hover effect */
