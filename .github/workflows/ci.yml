@@ -8,7 +8,7 @@ on:
 
 env:
   PYTHON_VERSION: '3.11'
-  NODE_VERSION: '20'
+  NODE_VERSION: '22'
   DOCKER_REGISTRY: ${{ secrets.DOCKER_REGISTRY }}
 
 jobs:
@@ -44,6 +44,10 @@ jobs:
         python -m pip install --upgrade pip
         pip install -r requirements.txt
         pip install -r backend/requirements-test.txt
+
+    - name: Clear npm cache
+      working-directory: frontend
+      run: npm cache clean --force
 
     - name: Install Frontend dependencies
       working-directory: frontend
