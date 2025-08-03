@@ -5,14 +5,9 @@ export class NetworkService {
   static instance = null;
 
   constructor() {
-    if (NetworkService.instance) {
-      return NetworkService.instance;
-    }
-    if (new.target === NetworkService) {
-      throw new Error(
-        'NetworkService is a singleton. Use getInstance() instead.'
-      );
-    }
+    throw new Error(
+      'NetworkService is a singleton. Use getInstance() instead.'
+    );
   }
 
   static getInstance() {

@@ -42,7 +42,7 @@ describe('GameService', () => {
     mockNetworkService = createMockNetworkService();
 
     // Mock the networkService import
-    const NetworkServiceModule = require('../NetworkService');
+    const NetworkServiceModule = await import('../NetworkService');
     NetworkServiceModule.networkService = mockNetworkService;
 
     // Get fresh GameService instance

@@ -171,7 +171,7 @@ export class ErrorHandlingService {
     };
 
     // Merge context into error
-    standardError.context = { ...standardError.context, ...fullContext };
+    Object.assign(standardError.context, fullContext);
 
     this.processError(standardError, fullContext);
     return standardError;
@@ -421,7 +421,7 @@ export class ErrorHandlingService {
         code = ErrorCode.SYSTEM_INTERNAL_ERROR;
     }
 
-    message = errorData?.message || response.statusText || 'HTTP error';
+    const message = errorData?.message || response.statusText || 'HTTP error';
 
     const error = createStandardError(code, message, {
       details: `HTTP ${response.status}: ${response.statusText}`,

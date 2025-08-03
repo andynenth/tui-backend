@@ -42,7 +42,7 @@ const TutorialPage = () => {
                 <span>Objective</span>
               </div>
               <div className="info-card-desc">
-                Predict how many tricks you'll win each round and match your
+                Predict how many tricks you&apos;ll win each round and match your
                 prediction exactly for bonus points!
               </div>
             </div>
@@ -393,7 +393,7 @@ const TutorialPage = () => {
                 <strong>Strategic Forfeit</strong>
                 <p className="step-detail">
                   Playing invalid combinations lets you dump unwanted pieces
-                  without winning tricks you don't want!
+                  without winning tricks you don&apos;t want!
                 </p>
               </div>
             </div>

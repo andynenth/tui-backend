@@ -5,9 +5,6 @@ export class GameService {
   static instance = null;
 
   constructor() {
-    if (GameService.instance) {
-      return GameService.instance;
-    }
     throw new Error('GameService is a singleton. Use getInstance() instead.');
   }
 
