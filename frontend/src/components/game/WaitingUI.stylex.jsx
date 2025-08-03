@@ -15,7 +15,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import * as stylex from '@stylexjs/stylex';
 import LoadingOverlay from '../LoadingOverlay.stylex';
-import ConnectionIndicator from '../ConnectionIndicator';
+import ConnectionIndicator from '../ConnectionIndicator.stylex';
 import Button from '../Button.stylex';
 import { colors, spacing, shadows, layout, motion, typography } from '../../design-system/tokens.stylex';
 

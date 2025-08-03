@@ -30,7 +30,7 @@ import TurnResultsUI from './TurnResultsUI.stylex';
 import ScoringUI from './ScoringUI.stylex';
 import GameOverUI from './GameOverUI.stylex';
 import GameLayout from './GameLayout.stylex';
-import ErrorBoundary from '../ErrorBoundary';
+import ErrorBoundary from '../ErrorBoundary.stylex';
 
 // Import design tokens
 import { colors, spacing, shadows, layout, motion, typography } from '../../design-system/tokens.stylex';

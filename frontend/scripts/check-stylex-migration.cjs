@@ -16,6 +16,8 @@ const MIGRATED_COMPONENTS = [
   'Input',
   'ToastNotification',
   'LoadingOverlay',
+  'ConnectionIndicator',
+  'ErrorBoundary',
   
   // Game shared components
   'GamePiece',
@@ -37,10 +39,7 @@ const MIGRATED_COMPONENTS = [
 ];
 
 // Components still using old styling
-const PENDING_COMPONENTS = [
-  'ConnectionIndicator',
-  'ErrorBoundary',
-];
+const PENDING_COMPONENTS = [];
 
 // CSS files to be removed after migration
 const CSS_FILES = [
