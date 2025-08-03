@@ -37,8 +37,8 @@ export default {
 
   // Ignore patterns
   testPathIgnorePatterns: [
-    '/node_modules/', 
-    '/build/', 
+    '/node_modules/',
+    '/build/',
     '/dist/',
     'testUtils\\.js$', // Exclude utility files
     '/setup/', // Exclude setup files

@@ -42,8 +42,12 @@ describe('Room Helpers Utilities', () => {
 
   describe('getRoomStatusText', () => {
     test('returns ready message when room is full', () => {
-      expect(getRoomStatusText(4, 4)).toBe('All players ready - Start the game!');
-      expect(getRoomStatusText(2, 2)).toBe('All players ready - Start the game!');
+      expect(getRoomStatusText(4, 4)).toBe(
+        'All players ready - Start the game!'
+      );
+      expect(getRoomStatusText(2, 2)).toBe(
+        'All players ready - Start the game!'
+      );
     });
 
     test('returns waiting message when room is not full', () => {
@@ -58,7 +62,9 @@ describe('Room Helpers Utilities', () => {
     });
 
     test('handles edge cases', () => {
-      expect(getRoomStatusText(0, 0)).toBe('All players ready - Start the game!');
+      expect(getRoomStatusText(0, 0)).toBe(
+        'All players ready - Start the game!'
+      );
       expect(getRoomStatusText(-1, 4)).toBe('Waiting for players to join');
       expect(getRoomStatusText(5, 4)).toBe('Waiting for players to join'); // Over capacity still treated as not full
     });
@@ -79,7 +85,7 @@ describe('Room Helpers Utilities', () => {
     test('returns player name for human players', () => {
       const humanPlayer = { name: 'Alice', is_bot: false };
       expect(getPlayerDisplayName(humanPlayer, 1)).toBe('Alice');
-      
+
       const humanPlayerNoFlag = { name: 'Bob' }; // is_bot undefined
       expect(getPlayerDisplayName(humanPlayerNoFlag, 2)).toBe('Bob');
     });
@@ -106,7 +112,12 @@ describe('Room Helpers Utilities', () => {
       expect(getRoomOccupancyText(startedRoom)).toBe('🎮 In Game (2/4)');
 
       const playingRoom = {
-        players: [{ name: 'Alice' }, { name: 'Bob' }, { name: 'Charlie' }, null],
+        players: [
+          { name: 'Alice' },
+          { name: 'Bob' },
+          { name: 'Charlie' },
+          null,
+        ],
         total_slots: 4,
         status: 'playing',
       };
@@ -115,7 +126,12 @@ describe('Room Helpers Utilities', () => {
 
     test('returns "Full" status for full rooms', () => {
       const fullRoom = {
-        players: [{ name: 'Alice' }, { name: 'Bob' }, { name: 'Charlie' }, { name: 'Diana' }],
+        players: [
+          { name: 'Alice' },
+          { name: 'Bob' },
+          { name: 'Charlie' },
+          { name: 'Diana' },
+        ],
         total_slots: 4,
         started: false,
       };
@@ -213,7 +229,12 @@ describe('Room Helpers Utilities', () => {
 
     test('prevents joining when room is full', () => {
       const fullRoom = {
-        players: [{ name: 'Alice' }, { name: 'Bob' }, { name: 'Charlie' }, { name: 'Diana' }],
+        players: [
+          { name: 'Alice' },
+          { name: 'Bob' },
+          { name: 'Charlie' },
+          { name: 'Diana' },
+        ],
         total_slots: 4,
         started: false,
       };
@@ -222,7 +243,12 @@ describe('Room Helpers Utilities', () => {
 
     test('prevents joining when room is both started and full', () => {
       const startedFullRoom = {
-        players: [{ name: 'Alice' }, { name: 'Bob' }, { name: 'Charlie' }, { name: 'Diana' }],
+        players: [
+          { name: 'Alice' },
+          { name: 'Bob' },
+          { name: 'Charlie' },
+          { name: 'Diana' },
+        ],
         total_slots: 4,
         started: true,
       };
@@ -259,7 +285,13 @@ describe('Room Helpers Utilities', () => {
     test('handles edge cases with player count', () => {
       // Over capacity (should not be joinable)
       const overCapacityRoom = {
-        players: [{ name: 'A' }, { name: 'B' }, { name: 'C' }, { name: 'D' }, { name: 'E' }],
+        players: [
+          { name: 'A' },
+          { name: 'B' },
+          { name: 'C' },
+          { name: 'D' },
+          { name: 'E' },
+        ],
         total_slots: 4,
         started: false,
       };
@@ -293,7 +325,14 @@ describe('Room Helpers Utilities', () => {
 
       // 6-player room with 3 players
       const sixPlayerRoom = {
-        players: [{ name: 'A' }, { name: 'B' }, { name: 'C' }, null, null, null],
+        players: [
+          { name: 'A' },
+          { name: 'B' },
+          { name: 'C' },
+          null,
+          null,
+          null,
+        ],
         total_slots: 6,
         started: false,
       };
@@ -330,7 +369,7 @@ describe('Room Helpers Utilities', () => {
     });
 
     test('handles room state transitions', () => {
-      let room = {
+      const room = {
         players: [{ name: 'Alice' }, null, null, null],
         total_slots: 4,
         started: false,
@@ -341,7 +380,12 @@ describe('Room Helpers Utilities', () => {
       expect(getRoomOccupancyText(room)).toBe('⏳ Waiting (1/4)');
 
       // Add players until full
-      room.players = [{ name: 'Alice' }, { name: 'Bob' }, { name: 'Charlie' }, { name: 'Diana' }];
+      room.players = [
+        { name: 'Alice' },
+        { name: 'Bob' },
+        { name: 'Charlie' },
+        { name: 'Diana' },
+      ];
       expect(canJoinRoom(room)).toBe(false);
       expect(getRoomOccupancyText(room)).toBe('🔒 Full (4/4)');
 
@@ -354,7 +398,7 @@ describe('Room Helpers Utilities', () => {
     test('maintains consistency across different room sizes', () => {
       const roomSizes = [2, 4, 6, 8];
 
-      roomSizes.forEach(size => {
+      roomSizes.forEach((size) => {
         const emptyRoom = {
           players: new Array(size).fill(null),
           total_slots: size,
@@ -372,8 +416,12 @@ describe('Room Helpers Utilities', () => {
         };
 
         expect(canJoinRoom(fullRoom)).toBe(false);
-        expect(getRoomOccupancyText(fullRoom)).toBe(`🔒 Full (${size}/${size})`);
-        expect(getRoomStatusText(size, size)).toBe('All players ready - Start the game!');
+        expect(getRoomOccupancyText(fullRoom)).toBe(
+          `🔒 Full (${size}/${size})`
+        );
+        expect(getRoomStatusText(size, size)).toBe(
+          'All players ready - Start the game!'
+        );
       });
     });
   });
