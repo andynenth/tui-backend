@@ -128,7 +128,7 @@ class GameState(ABC):
 
         # Store state transition event for replay capability
         await self._store_state_transition_event(updates, reason)
-        
+
         # Automatic broadcasting (enterprise guarantee)
         if broadcast and self._auto_broadcast_enabled:
             await self._auto_broadcast_phase_change(reason)
@@ -185,8 +185,10 @@ class GameState(ABC):
                         self.logger.debug(f"   Converted hand: {hand_strings}")
 
                         avatar_color = getattr(player, "avatar_color", None)
-                        self.logger.debug(f"   🎨 Player {player_name} avatar_color: {avatar_color}")
-                        
+                        self.logger.debug(
+                            f"   🎨 Player {player_name} avatar_color: {avatar_color}"
+                        )
+
                         players_data[player_name] = {
                             "name": player_name,
                             "is_bot": getattr(player, "is_bot", False),
@@ -243,6 +245,7 @@ class GameState(ABC):
             # Store state change in EventStore for replay capability
             try:
                 from backend.api.services.event_store import event_store
+
                 await event_store.store_event(
                     room_id=room_id,
                     event_type="phase_change",
@@ -252,10 +255,12 @@ class GameState(ABC):
                         "players": players_data,
                         "reason": reason,
                         "sequence": self._sequence_number,
-                        "timestamp": time.time()
-                    }
+                        "timestamp": time.time(),
+                    },
                 )
-                self.logger.debug(f"Stored phase_change event in EventStore for room {room_id}")
+                self.logger.debug(
+                    f"Stored phase_change event in EventStore for room {room_id}"
+                )
             except Exception as e:
                 # Don't let event storage failures break the game
                 self.logger.error(f"Failed to store phase_change in EventStore: {e}")
@@ -345,28 +350,35 @@ class GameState(ABC):
 
         except Exception as e:
             self.logger.error(f"❌ Custom broadcast failed: {e}", exc_info=True)
-    
-    async def _store_state_transition_event(self, updates: Dict[str, Any], reason: str) -> None:
+
+    async def _store_state_transition_event(
+        self, updates: Dict[str, Any], reason: str
+    ) -> None:
         """
         Store state transition in event store for replay capability
-        
+
         Args:
             updates: The phase data updates being applied
             reason: Human-readable reason for the change
         """
         try:
-            if hasattr(self.state_machine, 'action_queue') and self.state_machine.action_queue:
+            if (
+                hasattr(self.state_machine, "action_queue")
+                and self.state_machine.action_queue
+            ):
                 await self.state_machine.action_queue.store_state_event(
-                    event_type='phase_data_update',
+                    event_type="phase_data_update",
                     payload={
-                        'phase': self.phase_name.value,
-                        'updates': self._make_json_safe(updates),
-                        'reason': reason,
-                        'sequence': self._sequence_number,
-                        'timestamp': time.time()
-                    }
+                        "phase": self.phase_name.value,
+                        "updates": self._make_json_safe(updates),
+                        "reason": reason,
+                        "sequence": self._sequence_number,
+                        "timestamp": time.time(),
+                    },
                 )
-                self.logger.debug(f"Stored state transition event for {self.phase_name.value}")
+                self.logger.debug(
+                    f"Stored state transition event for {self.phase_name.value}"
+                )
         except Exception as e:
             # Don't let event storage failures break the game
             self.logger.error(f"Failed to store state transition event: {e}")

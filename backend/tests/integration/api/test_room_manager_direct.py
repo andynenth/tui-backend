@@ -16,11 +16,11 @@ from shared_instances import shared_room_manager
 async def test_room_manager():
     """Test AsyncRoomManager directly"""
     print("🧪 Testing AsyncRoomManager directly...")
-    
+
     # Create a room
     room_id = await shared_room_manager.create_room("TestHost")
     print(f"✅ Created room: {room_id}")
-    
+
     # Try to get the room
     room = await shared_room_manager.get_room(room_id)
     if room:
@@ -29,13 +29,13 @@ async def test_room_manager():
         print(f"   Players: {room.players}")
     else:
         print(f"❌ Could not retrieve room {room_id}")
-    
+
     # List all rooms
     rooms = await shared_room_manager.list_rooms()
     print(f"\n📋 Total rooms: {len(rooms)}")
     for room_data in rooms:
         print(f"   - {room_data}")
-    
+
     # Check the internal rooms dict
     print(f"\n🔍 Direct check of rooms dict:")
     print(f"   Keys: {list(shared_room_manager.rooms.keys())}")

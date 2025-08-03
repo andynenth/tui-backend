@@ -37,20 +37,33 @@ class Player:
             return None  # Bots don't get colors
 
         # Default colors
-        all_colors = ["blue", "purple", "orange", "red", "green", "teal", "pink", "yellow"]
-        
+        all_colors = [
+            "blue",
+            "purple",
+            "orange",
+            "red",
+            "green",
+            "teal",
+            "pink",
+            "yellow",
+        ]
+
         # Use available colors if provided, otherwise use all colors
         colors_to_choose_from = available_colors if available_colors else all_colors
-        
+
         if not colors_to_choose_from:
             # Fallback: if no colors available, cycle through colors based on player name hash
             color_index = hash(self.name) % len(all_colors)
             color = all_colors[color_index]
-            print(f"🎨 DEBUG: Assigned fallback avatar color '{color}' to player '{self.name}' (all colors taken)")
+            print(
+                f"🎨 DEBUG: Assigned fallback avatar color '{color}' to player '{self.name}' (all colors taken)"
+            )
         else:
             color = random.choice(colors_to_choose_from)
-            print(f"🎨 DEBUG: Assigned avatar color '{color}' to player '{self.name}' from {len(colors_to_choose_from)} available colors")
-        
+            print(
+                f"🎨 DEBUG: Assigned avatar color '{color}' to player '{self.name}' from {len(colors_to_choose_from)} available colors"
+            )
+
         return color
 
     def has_red_general(self):
