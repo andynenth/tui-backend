@@ -31,6 +31,7 @@ export function TurnUI({
   playerHandSizes = {},
 
   // State flags
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   isMyTurn = false,
   canPlayAnyCount = false,
 

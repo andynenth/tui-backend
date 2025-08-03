@@ -21,6 +21,7 @@ const GameLayout = ({
   // Additional props for turn phase
   playType = '',
   currentPlayer = '',
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   turnRequirement = null,
   // Additional props for turn results phase
   winner = '',

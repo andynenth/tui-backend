@@ -3,10 +3,10 @@
 import asyncio
 from typing import Any, Dict, List, Optional, Set
 
-from ...constants import PIECE_POINTS
-from ...player import Player
-from ...rules import get_play_type
-from ...turn_resolution import TurnPlay, TurnResult, resolve_turn
+from engine.constants import PIECE_POINTS
+from engine.player import Player
+from engine.rules import get_play_type
+from engine.turn_resolution import TurnPlay, TurnResult, resolve_turn
 from ..base_state import GameState
 from ..core import ActionType, GameAction, GamePhase, GameStateError
 
@@ -815,7 +815,7 @@ class TurnState(GameState):
     ):
         """🚀 ENTERPRISE: Broadcast play event using centralized system"""
         try:
-            from backend.engine.rules import get_play_type
+            from engine.rules import get_play_type
 
             # Get play type
             play_type = get_play_type(pieces) if pieces else "UNKNOWN"

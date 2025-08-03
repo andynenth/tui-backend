@@ -27,8 +27,8 @@ class GameStateMachine:
 
     def __init__(self, game, broadcast_callback=None):
         # Wrap game with AsyncGameAdapter for unified async interface
-        from backend.engine.async_game import AsyncGame
-        from backend.engine.game import Game
+        from ..async_game import AsyncGame
+        from ..game import Game
 
         if isinstance(game, (Game, AsyncGame)):
             self.game_adapter = wrap_game_for_async(game)
@@ -460,7 +460,7 @@ class GameStateMachine:
 
                 # Mark the room's game as ended
                 try:
-                    from backend.shared_instances import shared_room_manager
+                    from shared_instances import shared_room_manager
 
                     room = await shared_room_manager.get_room(room_id)
                     if room:
@@ -771,7 +771,7 @@ class GameStateMachine:
         # Notify room manager if available
         if hasattr(self, "room_id") and self.room_id:
             try:
-                from backend.shared_instances import shared_room_manager
+                from shared_instances import shared_room_manager
 
                 room = await shared_room_manager.get_room(self.room_id)
                 if room:

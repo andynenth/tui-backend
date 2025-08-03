@@ -145,7 +145,7 @@ class GameState(ABC):
         try:
             # Import here to avoid circular imports
             try:
-                from backend.socket_manager import broadcast
+                from ...socket_manager import broadcast
             except ImportError:
                 # Handle different import paths
                 import os
@@ -244,7 +244,7 @@ class GameState(ABC):
 
             # Store state change in EventStore for replay capability
             try:
-                from backend.api.services.event_store import event_store
+                from ...api.services.event_store import event_store
 
                 await event_store.store_event(
                     room_id=room_id,
@@ -319,7 +319,7 @@ class GameState(ABC):
         """
         try:
             try:
-                from backend.socket_manager import broadcast
+                from ...socket_manager import broadcast
             except ImportError:
                 # Handle different import paths
                 import os

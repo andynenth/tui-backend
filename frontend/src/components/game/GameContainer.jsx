@@ -231,7 +231,7 @@ export function GameContainer({ roomId, onNavigateToLobby }) {
     };
 
     return props;
-  }, [gameState, gameActions]);
+  }, [gameState]);
 
   const scoringProps = useMemo(() => {
     if (gameState.phase !== 'scoring') return null;

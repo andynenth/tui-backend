@@ -7,9 +7,9 @@ import asyncio
 import pytest
 from unittest.mock import MagicMock, AsyncMock, patch
 
-from backend.engine.async_room_manager import AsyncRoomManager, RoomCreationResult
-from backend.engine.async_room import AsyncRoom
-from backend.engine.player import Player
+from engine.async_room_manager import AsyncRoomManager, RoomCreationResult
+from engine.async_room import AsyncRoom
+from engine.player import Player
 
 
 class TestAsyncRoomManager:

@@ -2,7 +2,7 @@
 
 from typing import Any, Dict, List, Optional
 
-from ...scoring import calculate_score
+from engine.scoring import calculate_score
 from ..base_state import GameState
 from ..core import ActionType, GameAction, GamePhase
 

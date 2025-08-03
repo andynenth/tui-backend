@@ -18,6 +18,7 @@ export function TurnResultsUI({
   // Data props
   winner = '',
   winningPlay = null,
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   playerPiles = {},
   players = [],
   turnNumber = 1,
