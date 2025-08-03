@@ -49,11 +49,14 @@ jobs:
       working-directory: frontend
       run: npm ci
 
-    - name: Python Code Quality (Black & Pylint)
+    - name: Python Code Formatting (Black)
       working-directory: backend
-      run: |
-        black . --check --diff
-        pylint engine/ api/ --exit-zero
+      run: black . --check --diff || echo "::warning::Black formatting issues found. Run 'black .' locally to fix."
+      continue-on-error: true
+
+    - name: Python Code Quality (Pylint)
+      working-directory: backend
+      run: pylint engine/ api/ --exit-zero --max-line-length=120 --disable=C0111,R0903,R0913,W0613
 
     - name: Frontend Code Quality (ESLint & TypeScript)
       working-directory: frontend

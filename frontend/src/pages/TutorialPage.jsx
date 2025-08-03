@@ -72,7 +72,7 @@ const TutorialPage = () => {
     },
     // Slide 2: Know Your Army
     {
-      title: 'Know Your Army',
+      title: 'Piece Ranks',
       content: (
         <div className="tutorial-pieces">
           <div className="piece-showcase">
