@@ -21,11 +21,11 @@ export function DeclarationUI({
   players = [],
   currentTotal = 0,
 
-  // State props
-  isMyTurn = false,
-  validOptions = [],
-  declarationProgress = { declared: 0, total: 4 },
-  isLastPlayer = false,
+  // State props (prefixed with _ to indicate intentionally unused)
+  _isMyTurn = false,
+  _validOptions = [],
+  _declarationProgress = { declared: 0, total: 4 },
+  _isLastPlayer = false,
   estimatedPiles = 0,
   handStrength = 0,
   currentPlayer = '',
