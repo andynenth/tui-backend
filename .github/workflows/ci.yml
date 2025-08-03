@@ -74,7 +74,7 @@ jobs:
         # Try with coverage first, fallback to basic pytest
         python -m pytest tests/unit/ -v --cov=. --cov-report=term-missing || python -m pytest tests/unit/ -v || echo "::warning::Some unit tests may have failed"
       env:
-        PYTHONPATH: ${{ github.workspace }}
+        PYTHONPATH: ${{ github.workspace }}/backend
       continue-on-error: true
 
     - name: Frontend Unit Tests
@@ -122,7 +122,7 @@ jobs:
       run: |
         pytest tests/integration/ -v --maxfail=5
       env:
-        PYTHONPATH: ${{ github.workspace }}
+        PYTHONPATH: ${{ github.workspace }}/backend
 
   # Stage 3: End-to-end tests (comprehensive but slower)
   e2e-tests:
@@ -166,7 +166,7 @@ jobs:
       run: |
         pytest tests/e2e/ -v --maxfail=3
       env:
-        PYTHONPATH: ${{ github.workspace }}
+        PYTHONPATH: ${{ github.workspace }}/backend
 
   # Stage 4: Docker build and security scanning
   docker-build:
@@ -274,7 +274,7 @@ jobs:
       run: |
         pytest tests/e2e/performance/ -v --benchmark-only --benchmark-json=benchmark.json
       env:
-        PYTHONPATH: ${{ github.workspace }}
+        PYTHONPATH: ${{ github.workspace }}/backend
 
     - name: Performance Report Comment
       uses: benchmark-action/github-action-benchmark@v1
