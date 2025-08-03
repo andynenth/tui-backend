@@ -37,7 +37,6 @@ dist/
 *.map
 backend/static/bundle.*
 backend/static/*.map
-frontend/package-lock.json
 
 # Frontend temp/dev/test files
 frontend/test.js

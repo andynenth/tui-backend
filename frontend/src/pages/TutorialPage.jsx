@@ -228,7 +228,8 @@ const TutorialPage = () => {
             </div>
           </div>
           <p className="tutorial-note">
-            Higher value pieces beat lower ones. Same value? First played wins!
+            Pieces with higher rank beat lower rank. Same value? First played
+            wins!
           </p>
         </div>
       ),

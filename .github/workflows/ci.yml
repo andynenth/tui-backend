@@ -45,10 +45,6 @@ jobs:
         pip install -r requirements.txt
         pip install -r backend/requirements-test.txt
 
-    - name: Clear npm cache
-      working-directory: frontend
-      run: npm cache clean --force
-
     - name: Install Frontend dependencies
       working-directory: frontend
       run: npm ci
