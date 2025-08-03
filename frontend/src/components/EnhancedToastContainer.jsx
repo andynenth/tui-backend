@@ -1,6 +1,6 @@
 // frontend/src/components/EnhancedToastContainer.jsx
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import PropTypes from 'prop-types';
 import '../styles/connection-animations.css';
 
@@ -16,14 +16,14 @@ const EnhancedToast = ({ toast, onRemove, index }) => {
     }, toast.duration || 5000);
 
     return () => clearTimeout(timer);
-  }, [toast]);
+  }, [toast, handleRemove]);
 
-  const handleRemove = () => {
+  const handleRemove = useCallback(() => {
     setIsExiting(true);
     setTimeout(() => {
       onRemove(toast.id);
     }, 300);
-  };
+  }, [onRemove, toast.id]);
 
   const getTypeStyles = () => {
     switch (toast.type) {
@@ -154,21 +154,24 @@ const EnhancedToastContainer = ({ maxToasts = 4 }) => {
     return () => {
       window.removeEventListener('show-toast', handleToastEvent);
     };
-  }, []);
+  }, [addToast]);
 
-  const addToast = (toast) => {
-    const id = Date.now() + Math.random();
-    const newToast = { ...toast, id };
+  const addToast = useCallback(
+    (toast) => {
+      const id = Date.now() + Math.random();
+      const newToast = { ...toast, id };
 
-    setToasts((prev) => {
-      const updated = [...prev, newToast];
-      // Keep only the most recent toasts
-      if (updated.length > maxToasts) {
-        return updated.slice(-maxToasts);
-      }
-      return updated;
-    });
-  };
+      setToasts((prev) => {
+        const updated = [...prev, newToast];
+        // Keep only the most recent toasts
+        if (updated.length > maxToasts) {
+          return updated.slice(-maxToasts);
+        }
+        return updated;
+      });
+    },
+    [maxToasts]
+  );
 
   const removeToast = (id) => {
     setToasts((prev) => prev.filter((toast) => toast.id !== id));

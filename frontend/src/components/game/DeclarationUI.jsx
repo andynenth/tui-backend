@@ -21,12 +21,18 @@ export function DeclarationUI({
   players = [],
   currentTotal = 0,
 
-  // State props (prefixed with _ to indicate intentionally unused)
+  // State props (intentionally unused for future features)
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   _isMyTurn = false,
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   _validOptions = [],
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   _declarationProgress = { declared: 0, total: 4 },
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   _isLastPlayer = false,
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   estimatedPiles = 0,
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   handStrength = 0,
   currentPlayer = '',
   myName = '',
