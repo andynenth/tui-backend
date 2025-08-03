@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useTheme } from '../contexts/ThemeContext';
 import { themes } from '../utils/themeManager';
 
@@ -24,10 +24,10 @@ const SettingsModal = ({ isOpen, onClose }) => {
     onClose();
   };
 
-  const handleCancel = () => {
+  const handleCancel = useCallback(() => {
     setSelectedTheme(currentTheme.id);
     onClose();
-  };
+  }, [currentTheme.id, onClose]);
 
   const handleOverlayClick = (e) => {
     if (e.target === e.currentTarget) {
@@ -44,7 +44,7 @@ const SettingsModal = ({ isOpen, onClose }) => {
 
     document.addEventListener('keydown', handleEscape);
     return () => document.removeEventListener('keydown', handleEscape);
-  }, [isOpen]);
+  }, [isOpen, handleCancel]);
 
   if (!isOpen) return null;
 

@@ -6,6 +6,7 @@ import { formatSessionInfo } from '../utils/sessionStorage';
 import '../styles/reconnection-prompt.css';
 
 const ReconnectionPrompt = ({
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   _sessionInfo,
   onReconnect,
   onJoinAsNew,
