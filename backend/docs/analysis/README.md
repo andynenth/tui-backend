@@ -1,6 +1,16 @@
 # Analysis Documentation Index
 
-This directory contains various analysis tools and generated documentation for the Liap Tui codebase.
+This directory contains comprehensive analysis tools, specifications, and generated documentation for the Liap Tui codebase.
+
+## 📋 Project Specifications ⭐ NEW
+
+- **[PROJECT_SPECIFICATIONS.md](PROJECT_SPECIFICATIONS.md)** - Complete project specifications including:
+  - Game rules and mechanics
+  - Technical architecture
+  - API specifications
+  - Technology stack details
+  - Performance targets
+  - Deployment requirements
 
 ## 📊 Dataflow Analysis (Latest)
 
@@ -10,6 +20,7 @@ This directory contains various analysis tools and generated documentation for t
 - **[codebase_analysis.md](codebase_analysis.md)** - Initial system analysis
 - **[deep_analysis.md](deep_analysis.md)** - Deep component analysis
 - **[websocket_flows.md](websocket_flows.md)** - WebSocket event flow details
+- **[ORGANIZATION.md](ORGANIZATION.md)** - Documentation structure guide
 
 ### Analysis Tools
 - **[final_dataflow_analyzer.py](final_dataflow_analyzer.py)** - Comprehensive analyzer (use this one)
@@ -51,69 +62,125 @@ This directory contains various analysis tools and generated documentation for t
 
 ## 📈 How to Use
 
-### Generate Fresh Analysis
+### Quick Start Guide
 ```bash
+# Navigate to analysis directory
 cd backend/docs/analysis
+
+# Use the interactive menu
+./run_analysis.sh
+
+# Or generate all analyses at once
 python3 final_dataflow_analyzer.py
 ```
 
-### View Diagrams
-1. Open `complete_dataflow_analysis.md` in:
+### View Documentation
+1. **Project Specs**: Start with `PROJECT_SPECIFICATIONS.md` for complete overview
+2. **Architecture Diagrams**: Open `complete_dataflow_analysis.md` in:
    - GitHub (automatic Mermaid rendering)
    - VS Code with Mermaid extension
    - [mermaid.live](https://mermaid.live) online editor
+3. **Quick Summary**: Check `dataflow_summary.md` for key metrics
 
 ### Run Specific Analyzers
 ```bash
+# Complete analysis (recommended)
+python3 final_dataflow_analyzer.py
+
 # WebSocket flow analysis
 python3 websocket_flow_analyzer.py
 
 # Deep component analysis
 python3 deep_codebase_analyzer.py
 
-# Initial analysis
+# Basic analysis
 python3 analyze_codebase.py
 ```
 
 ## 📋 Key Findings Summary
 
-From the latest analysis:
+### Project Scale
+- **Codebase**: 50+ Python modules, 55+ React components
+- **Tests**: 78+ test suites with comprehensive coverage
+- **Documentation**: 30+ markdown files
+
+### Technical Metrics
 - **22 WebSocket events** handling all game operations
 - **4 game phases**: PREPARATION, DECLARATION, TURN, SCORING
-- **55 React components** identified
 - **20 API endpoints** (debug/health only, no game operations)
 - **39 data flows** traced between components
+- **8 valid play types** with complex validation rules
+
+### Architecture Highlights
+- **WebSocket-first**: All game operations via WebSocket (no REST)
+- **State Machine**: Enterprise-grade with event sourcing
+- **Modern Stack**: React 19 + FastAPI + Docker
+- **Auto-recovery**: Reconnection and state restoration
 
 ## 🗂️ File Organization
 
 ```
 docs/analysis/
 ├── README.md                           # This index file
+├── PROJECT_SPECIFICATIONS.md           # Complete project specs ⭐
+├── ORGANIZATION.md                     # File structure guide
+├── run_analysis.sh                     # Interactive analysis menu
 │
 ├── Dataflow Analysis/
-│   ├── complete_dataflow_analysis.md   # Main diagrams
-│   ├── dataflow_summary.md            # Summary
-│   ├── *_analyzer.py                  # Analysis tools
-│   └── *.md                          # Generated docs
+│   ├── complete_dataflow_analysis.md   # 10 Mermaid diagrams
+│   ├── dataflow_summary.md            # Executive summary
+│   ├── deep_analysis.md               # Component analysis
+│   ├── websocket_flows.md             # WebSocket mappings
+│   └── codebase_analysis.md           # Initial analysis
+│
+├── Analysis Tools/
+│   ├── final_dataflow_analyzer.py      # Main analyzer
+│   ├── deep_codebase_analyzer.py      # Component detector
+│   ├── websocket_flow_analyzer.py     # WebSocket tracer
+│   └── analyze_codebase.py            # Basic analyzer
 │
 ├── Architecture Docs/
-│   ├── MODULE_ARCHITECTURE_*.md
-│   ├── CIRCULAR_IMPORT_*.md
-│   └── ASYNC_PATTERNS_*.md
+│   ├── MODULE_ARCHITECTURE_ANALYSIS.md
+│   ├── CIRCULAR_IMPORT_CLEANUP_PLAN.md
+│   ├── ASYNC_PATTERNS_GUIDE.md
+│   └── PHASE_IMPLEMENTATION_ROADMAP.md
 │
-└── Testing Tools/
-    ├── run_*.py
-    ├── validate_*.py
-    └── capture_*.py
+├── Testing Docs/
+│   ├── CONTRACT_TESTING_README.md
+│   ├── WEBSOCKET_VALIDATION_SUMMARY.md
+│   └── REVIEW_STATUS.md
+│
+└── Utility Scripts/
+    ├── run_tests.py
+    ├── validate_test_setup.py
+    ├── benchmark_async.py
+    └── [various other utilities]
 ```
 
 ## 🔄 Maintenance
 
-To update the analysis:
-1. Run `python3 final_dataflow_analyzer.py` after code changes
-2. Review generated diagrams in `complete_dataflow_analysis.md`
-3. Check `dataflow_summary.md` for high-level changes
-4. Commit updated documentation files
+### Update Process
+1. After significant code changes, run `./run_analysis.sh`
+2. Select option 5 to run all analyses
+3. Review updated diagrams in `complete_dataflow_analysis.md`
+4. Check `dataflow_summary.md` for metric changes
+5. Update `PROJECT_SPECIFICATIONS.md` if requirements change
+6. Commit all updated `.md` files
+
+### Regular Tasks
+- **Weekly**: Run analysis to detect architectural drift
+- **Per Feature**: Update specifications and regenerate diagrams
+- **Per Release**: Full documentation review and update
+
+## 📚 Quick Reference
+
+| Document | Purpose | When to Use |
+|----------|---------|-------------|
+| PROJECT_SPECIFICATIONS.md | Complete project specs | Understanding requirements |
+| complete_dataflow_analysis.md | Architecture diagrams | Visualizing system design |
+| dataflow_summary.md | Quick metrics | Status check |
+| run_analysis.sh | Analysis runner | Regenerating docs |
 
 ---
-*Last updated: August 3, 2025*
+*Last updated: December 2024*
+*Version: 2.0.0 - Added PROJECT_SPECIFICATIONS.md*

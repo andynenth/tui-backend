@@ -1,204 +1,251 @@
-# CLAUDE.md
+# CLAUDE.md - AI Assistant Guidelines
 
-This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+This file provides essential guidance to Claude Code (claude.ai/code) when working with the Liap Tui codebase.
 
-## Project Overview
+## 📋 Project Overview
 
-Liap Tui is a real-time multiplayer board game inspired by traditional Chinese-Thai gameplay. The project uses a Python FastAPI backend with a JavaScript/PixiJS frontend, packaged in a single Docker container.
+**Liap Tui** is a production-ready, real-time multiplayer board game inspired by traditional Chinese-Thai gameplay. Built with enterprise-grade architecture, WebSocket-first communication, and modern web technologies.
+
+### Quick Stats
+- **Scale**: 50+ Python modules, 55+ React components, 78+ test suites
+- **Architecture**: WebSocket-only game operations, State Machine with Event Sourcing
+- **Stack**: React 19.1.0 + FastAPI 0.115.12 + Docker
+- **Documentation**: See `backend/docs/analysis/PROJECT_SPECIFICATIONS.md` for complete specs
 
 
-## Key Architecture
+## 🏗️ Key Architecture
 
-### Backend Structure
-- **FastAPI** with WebSocket support for real-time gameplay
-- **🚀 ENTERPRISE ARCHITECTURE** (`backend/engine/state_machine/`) **FULLY IMPLEMENTED** - production-ready enterprise patterns:
-  - **Automatic Broadcasting System**: All state changes trigger automatic phase_change broadcasts
-  - **Centralized State Management**: `update_phase_data()` ensures consistent state updates
-  - **Event Sourcing**: Complete change history with sequence numbers and timestamps
-  - **JSON-Safe Serialization**: Automatic conversion of game objects for WebSocket broadcasting
-  - **Single Source of Truth**: No manual broadcast calls - all automatic and guaranteed
-- **State Machine Phases** - All using enterprise architecture:
-  - `PREPARATION`: Deal cards, handle weak hands ✅ ENTERPRISE ARCHITECTURE
-  - `DECLARATION`: Players declare target pile counts ✅ ENTERPRISE ARCHITECTURE  
-  - `TURN`: Turn-based piece playing ✅ ENTERPRISE ARCHITECTURE
-  - `SCORING`: Calculate scores and check win conditions ✅ ENTERPRISE ARCHITECTURE
-- **Game Engine** (`backend/engine/`) contains core game logic:
-  - `game.py`: Main Game class with round management
-  - `rules.py`: Play validation and game rules
-  - `scoring.py`: Score calculation
-  - `player.py`, `piece.py`: Core game entities
-- **API Layer** (`backend/api/`) - WebSocket for ALL game operations, REST only for monitoring/debugging
-- **WebSocket-Only Game Operations**:
-  - ALL game actions use WebSocket: room creation, joining, game moves, everything
-  - No REST endpoints for game operations - this is by design to avoid duplication
-  - WebSocket endpoint: `/ws/{room_id}` (also `/ws/lobby` for lobby operations)
-  - Game events: `create_room`, `join_room`, `start_game`, `declare`, `play`, `accept_redeal`, `decline_redeal`, `leave_room`
-
-### Frontend Structure
-- **React 19.1.0** with React Router DOM for modern UI architecture
-- **ESBuild** for bundling and hot reload during development
-- **Component Architecture** (`frontend/src/components/`) with reusable UI components
-- **Page Components** (`frontend/src/pages/`) handle different application states
-- **React Game Phases** (`frontend/src/phases/`) mirror backend state machine
-- **Network Layer** (`frontend/network/`) manages WebSocket communication
-- **React Hooks** (`frontend/src/hooks/`) bridge existing game managers
-
-## Development Commands
-
-### Local Development
-```bash
-# Start both backend and frontend with hot reload
-./start.sh
-
-# Backend only (in Docker)
-docker-compose -f docker-compose.dev.yml up backend
-
-# Frontend development server
-cd frontend && npm run dev
+### Backend Structure (`backend/`)
+```
+backend/
+├── engine/                      # Core game logic
+│   ├── state_machine/          # ✅ ENTERPRISE ARCHITECTURE
+│   │   ├── game_state.py       # Base state with auto-broadcasting
+│   │   ├── preparation_state.py
+│   │   ├── declaration_state.py
+│   │   ├── turn_state.py
+│   │   └── scoring_state.py
+│   ├── game.py                 # Main game controller
+│   ├── rules.py                # Play validation
+│   ├── scoring.py              # Score calculation
+│   └── player.py, piece.py     # Core entities
+├── api/
+│   ├── routes/
+│   │   └── ws.py              # WebSocket handler (22 events)
+│   └── services/              # Logging, monitoring, recovery
+└── tests/                     # 78+ test suites
 ```
 
+### Frontend Structure (`frontend/`)
+```
+frontend/
+├── src/
+│   ├── pages/                 # StartPage, LobbyPage, RoomPage, GamePage
+│   ├── components/            # 55+ React components
+│   ├── services/              # NetworkService, GameStateManager
+│   ├── hooks/                 # Custom React hooks
+│   └── contexts/              # React contexts
+├── network/                   # WebSocket management
+└── esbuild.config.cjs        # Build configuration
+```
 
-### Building
+### 🔌 WebSocket-Only Architecture
+- **22 WebSocket Events** for ALL game operations
+- **NO REST endpoints** for game actions (by design)
+- **Endpoints**: `/ws/{room_id}`, `/ws/lobby`
+- **Key Events**: 
+  - Lobby: `create_room`, `join_room`, `request_room_list`
+  - Game: `start_game`, `declare`, `play`, `request_redeal`
+  - Room: `add_bot`, `remove_player`, `leave_room`
+
+## 💻 Development Commands
+
+### Quick Start
 ```bash
-# Frontend bundle
-cd frontend && npm run build
+# Full development environment
+./start.sh                      # Starts both backend and frontend
 
-# Docker production build
+# Backend only
+cd backend
+python3 -m venv venv
+source venv/bin/activate
+pip install -r requirements.txt
+python main.py
+
+# Frontend only
+cd frontend
+npm install
+npm run dev
+```
+
+### Code Quality Checks (RUN BEFORE COMMITS)
+```bash
+# Backend (Python)
+source venv/bin/activate
+cd backend
+black .                         # Format code
+pylint engine/ api/ tests/      # Lint check
+pytest tests/                   # Run tests
+
+# Frontend (JavaScript/React)
+cd frontend
+npm run lint                    # ESLint check
+npm run lint:fix               # Auto-fix issues
+npm run type-check             # TypeScript validation
+npm run format:fix             # Prettier formatting
+npm test                       # Run tests
+```
+
+### Building & Deployment
+```bash
+# Production build
 docker build -t liap-tui .
+
+# Development with Docker
+docker-compose -f docker-compose.dev.yml up
+
+# Frontend production bundle
+cd frontend && npm run build
 ```
 
-### Code Quality
+## ⚠️ CRITICAL Development Rules for Claude
+
+### 1. ALWAYS Check Before Modifying
 ```bash
-# Python formatting and linting (ALWAYS in venv)
-source venv/bin/activate && cd backend && black .
-source venv/bin/activate && cd backend && pylint engine/ api/ tests/
-
-# Frontend TypeScript checking and linting  
-cd frontend && npm run type-check
-cd frontend && npm run lint
-cd frontend && npm run lint:fix  # Auto-fix issues
+# Before ANY code changes:
+cd frontend && npm run lint && npm run type-check
+cd backend && source venv/bin/activate && pylint [target_files]
 ```
 
-## Development Best Practices
+### 2. Python Virtual Environment
+- **ALWAYS** activate venv: `source venv/bin/activate`
+- **NEVER** install packages globally
+- **VERIFY** with `which python` → should show `.../venv/bin/python`
 
-- **CRITICAL**: Always run Python commands in venv: `source venv/bin/activate`
-- **CRITICAL FOR CLAUDE**: Before making code changes, run quality checks:
-  - `cd frontend && npm run lint` to catch constructor.name and type issues
-  - `source venv/bin/activate && cd backend && pylint [files]` to catch import/attribute errors
-  - `cd frontend && npm run type-check` for TypeScript validation
+### 3. WebSocket-Only Operations
+- **NEVER** create REST endpoints for game actions
+- **ALWAYS** use WebSocket events in `ws.py`
+- **CHECK** `backend/docs/analysis/websocket_flows.md` for event mappings
 
-### **🚀 Enterprise Architecture Guidelines (MANDATORY)**
+## 🚀 Enterprise Architecture Patterns (MANDATORY)
 
-**For State Machine Development:**
-- **✅ ALWAYS USE**: `await self.update_phase_data()` for state changes
-- **❌ NEVER USE**: Direct `self.phase_data.update()` or `self.phase_data[key] = value`
-- **✅ ALWAYS USE**: `await self.broadcast_custom_event()` for game events  
-- **❌ NEVER USE**: Manual `broadcast()` function calls
-- **✅ ALWAYS INCLUDE**: Human-readable reason parameter for debugging
-
-**Enterprise Pattern Examples:**
+### State Machine Rules
 ```python
-# ✅ CORRECT - Enterprise pattern
+# ✅ CORRECT - Always use enterprise methods
 await self.update_phase_data({
     'current_player': next_player,
-    'required_piece_count': count
-}, f"Player {player_name} played {count} pieces")
+    'turn_number': game.turn_number
+}, f"Player {player_name} took turn")
 
-# ❌ WRONG - Manual pattern (causes sync bugs)
-self.phase_data['current_player'] = next_player
-self.phase_data['required_piece_count'] = count
-await broadcast(room_id, "play", data)  # This will cause sync issues!
+# ❌ WRONG - Never use direct updates
+self.phase_data['current_player'] = next_player  # FORBIDDEN
+await broadcast(room_id, "event", data)          # FORBIDDEN
 ```
 
-**Testing Enterprise Architecture:**
-- Run `python test_enterprise_architecture.py` to validate enterprise features
-- Run `python test_turn_number_sync.py` to verify sync bug prevention
-- All state changes must go through enterprise methods (no exceptions)
+### Key Principles
+1. **Automatic Broadcasting**: All state changes auto-broadcast
+2. **Event Sourcing**: Every change is logged with timestamp
+3. **Single Source of Truth**: Only `update_phase_data()` modifies state
+4. **Human-Readable Logging**: Always include reason parameter
 
-## 🚀 Enterprise Architecture Implementation ✅ PRODUCTION READY
-
-### **Automatic Broadcasting System**
-The backend now implements a **guaranteed automatic broadcasting system** that eliminates sync bugs:
-
-```python
-# 🚀 ENTERPRISE PATTERN - All state changes use this:
-await self.update_phase_data({
-    'current_player': next_player,
-    'turn_number': game.turn_number,
-    'phase_data': updated_data
-}, "Human-readable reason for change")
-# ↑ Automatically broadcasts phase_change event to all clients
+### Testing Requirements
+```bash
+cd backend
+pytest tests/test_enterprise_architecture.py
+pytest tests/test_state_machine.py
+pytest tests/test_websocket.py
 ```
 
-### **Key Enterprise Features IMPLEMENTED:**
-- **✅ Automatic Broadcasting**: No manual `broadcast()` calls needed - all automatic
-- **✅ Event Sourcing**: Complete change history with sequence numbers and timestamps  
-- **✅ JSON-Safe Serialization**: Game objects automatically converted for WebSocket transmission
-- **✅ Centralized State Management**: Single `update_phase_data()` method for all state changes
-- **✅ Custom Event Broadcasting**: `broadcast_custom_event()` for game-specific events
-- **✅ Change History Tracking**: `get_change_history()` for debugging and audit trails
+## 📊 Game Rules & Logic
 
-### **Enterprise Architecture Benefits DELIVERED:**
-1. **🔒 Sync Bug Prevention**: Impossible to forget broadcasting - it's automatic
-2. **🔍 Complete Debugging**: Every state change logged with reason and sequence
-3. **⚡ Performance**: JSON serialization optimized for WebSocket transmission
-4. **🏗️ Maintainability**: Single source of truth for all state management
-5. **🧪 Testability**: Predictable state changes with full history tracking
+### Game Flow
+1. **4 Players**: Exactly 4 players (human or AI)
+2. **32 Pieces**: 8 per player per round
+3. **Win Condition**: First to 50 points
+4. **Phases**: PREPARATION → DECLARATION → TURN → SCORING
 
-### **Backend State Machine ✅ ENTERPRISE READY**
-All phases now use enterprise architecture:
-- **`PreparationState`**: ✅ Enterprise automatic broadcasting
-- **`DeclarationState`**: ✅ Enterprise automatic broadcasting  
-- **`TurnState`**: ✅ Enterprise automatic broadcasting
-- **`ScoringState`**: ✅ Enterprise automatic broadcasting
+### Key Mechanics
+- **Weak Hand**: No piece > 9 points → redeal option (2x multiplier)
+- **Declaration**: Players declare target piles (sum ≠ 8)
+- **Valid Plays**: SINGLE, PAIR, THREE_OF_A_KIND, STRAIGHT, etc.
+- **Scoring**: Actual vs declared piles (+5 for exact, negative for miss)
 
-Key classes **ALL ENTERPRISE**:
-- `GameAction`: Represents player/system actions with payloads
-- `GamePhase`: Enum defining the four main game phases  
-- `ActionType`: All possible action types in the game
-- `GameState`: Base class with enterprise `update_phase_data()` and `broadcast_custom_event()`
+### Implementation Status
+✅ **All 4 phases fully implemented with enterprise architecture**
+✅ **22 WebSocket events handling all operations**
+✅ **AI bots with strategic decision-making**
+✅ **Complete scoring system with multipliers**
+✅ **Event sourcing for game replay**
 
-## Game Rules Summary
+## 📁 Important File Locations
 
-- 4 players, 8 pieces each per round
-- **Weak Hand Rule**: Players with no piece > 9 points can request redeal
-- **Declaration Phase**: Players declare target pile count (total ≠ 8)
-- **Turn Phase**: Play 1-6 pieces in sets, winner takes all pieces
-- **Scoring**: Compare actual vs declared piles, apply multipliers
-- **Win Condition**: First to 50 points or highest after 20 rounds
+### Core Files
+- **Game Engine**: `backend/engine/game.py`
+- **State Machine**: `backend/engine/state_machine/`
+- **WebSocket Handler**: `backend/api/routes/ws.py`
+- **Frontend Entry**: `frontend/main.js`
+- **Game Rules**: `RULES.md`
+- **Project Specs**: `backend/docs/analysis/PROJECT_SPECIFICATIONS.md`
 
-## Development Notes
+### Documentation
+- **Analysis**: `backend/docs/analysis/`
+  - `complete_dataflow_analysis.md` - Architecture diagrams
+  - `PROJECT_SPECIFICATIONS.md` - Full specifications
+  - `run_analysis.sh` - Regenerate documentation
+- **API Docs**: `docs/WEBSOCKET_API.md`
+- **Architecture**: `docs/ENTERPRISE_ARCHITECTURE.md`
 
-- The project uses both `requirements.txt` and `pyproject.toml` (Poetry) for Python dependencies
-- Frontend uses ESBuild for fast compilation and bundling  
-- ALL game operations use WebSocket exclusively - there are NO REST endpoints for game actions
-- The `start.sh` script sets up the full development environment automatically
+## 🔧 Troubleshooting Guide
 
-## File Locations
+### Common Issues
+1. **Import Errors**: Check virtual environment is activated
+2. **WebSocket Connection Failed**: Ensure port 5050 is free
+3. **Frontend Build Errors**: Update Node to v22, run `npm install`
+4. **Test Failures**: Run `npm run lint:fix` and `black .`
 
-- Main game engine: `backend/engine/game.py`
-- State machine: `backend/engine/state_machine/game_state_machine.py`
-- API routes: `backend/api/routes/`
-- Frontend entry: `frontend/main.js`
-- Game rules documentation: `RULES.md`
+### Debug Commands
+```bash
+# Check system status
+curl http://localhost:5050/api/health/detailed
 
-## Important Architecture Clarifications
+# View WebSocket events
+cd backend/docs/analysis
+python3 websocket_flow_analyzer.py
 
-### WebSocket vs REST Usage
-- **WebSocket**: Used for ALL game operations without exception
-  - Room management: create, join, leave rooms
-  - Game actions: start game, declare, play pieces, handle redeals
-  - Real-time updates: game state changes, player actions
-  
-- **REST Endpoints** (all require `/api` prefix): Used ONLY for:
-  - Health monitoring: `/api/health`, `/api/health/detailed`, `/api/health/metrics`
-  - Debugging: `/api/debug/room-stats`
-  - Admin tools: `/api/event-store/*`, `/api/recovery/*`, `/api/system/stats`
-  - NO game operations whatsoever
+# Regenerate documentation
+./run_analysis.sh
+```
 
-## Claude Memories
+## 📝 Claude-Specific Instructions
 
-- When I tell you to read log, read it from `/log.txt`
-- As you complete each task listed in CODE_QUALITY_CHECKLIST.md, follow the documentation procedures outlined in CODE_QUALITY_TRACKING_GUIDE.md
-- CRITICAL: This project uses WebSocket for ALL game operations. Do not look for or suggest REST endpoints for game actions - they don't exist by design.
-- When implementing game features, always use WebSocket events through the NetworkService (frontend) or ws.py handlers (backend)
+### When Asked to Implement Features
+1. **First**: Check existing WebSocket events in `ws.py`
+2. **Then**: Look for similar patterns in state machine
+3. **Always**: Use enterprise architecture methods
+4. **Never**: Create new REST endpoints for game logic
+
+### When Debugging
+1. Check `backend/docs/analysis/websocket_flows.md` for event flow
+2. Review `complete_dataflow_analysis.md` for architecture
+3. Use `pytest -v` for detailed test output
+4. Enable debug logging in `backend/api/services/logging_service.py`
+
+### When Documenting
+1. Update `PROJECT_SPECIFICATIONS.md` for requirement changes
+2. Run `final_dataflow_analyzer.py` after major changes
+3. Keep CLAUDE.md current with new patterns
+4. Document WebSocket events in `websocket_flows.md`
+
+## ✅ Quick Checklist for Claude
+
+Before making changes:
+- [ ] Virtual environment activated? (`source venv/bin/activate`)
+- [ ] Linting passed? (`npm run lint`, `pylint`)
+- [ ] Tests passing? (`npm test`, `pytest`)
+- [ ] Using WebSocket for game operations? (not REST)
+- [ ] Following enterprise architecture patterns?
+- [ ] Documentation updated if needed?
+
+---
+*Last Updated: December 2024*
+*Version: 2.0 - Comprehensive revision with current architecture*
