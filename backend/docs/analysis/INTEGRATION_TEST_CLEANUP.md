@@ -2,6 +2,19 @@
 
 ## 🗑️ Tests Removed
 
+### Removed Standalone Scripts (2 files)
+These were not pytest tests but standalone scripts that shouldn't be in test directory:
+
+1. **`test_room_operations.py`**
+   - Standalone script with `if __name__ == "__main__"`
+   - Imported non-existent `shared_instances` module
+   - Not a pytest test
+
+2. **`test_websocket_room_creation.py`**
+   - Standalone script for manual testing
+   - Imported non-existent `shared_instances` module
+   - Not a pytest test
+
 ### Removed Bot Tests (5 files)
 These tests were calling non-existent methods and testing outdated implementations:
 
@@ -37,7 +50,7 @@ These were outdated integration tests that were consistently skipped:
 ### Fixed Tests (1 file)
 - **`test_async_room_manager.py`** - Fixed import path from `backend.engine` to `engine`
 
-## ✅ Tests Kept (20 files)
+## ✅ Tests Kept (18 files)
 
 ### Enterprise Tests (2 files)
 - Testing current enterprise architecture patterns
@@ -53,27 +66,27 @@ These were outdated integration tests that were consistently skipped:
 - Scoring object format validation
 - Bot integration for scoring
 
-### WebSocket Tests (5 files)
+### WebSocket Tests (4 files)
 - Connection and disconnection flows
 - Reconnection handling
-- Room creation via WebSocket
+- Test duplicate reconnection scenarios
 
-### API Tests (2 files)
+### API Tests (1 file)
 - Async room manager operations
-- Basic room operations
 
 ## 📊 Impact
 
 ### Before Cleanup
-- **Total Integration Tests**: 28 files
+- **Total Integration Tests**: 30 files
 - **Failing Tests**: 5
 - **Skipped Tests**: 9
+- **Import Errors**: 2
 - **CI Status**: ❌ Failing
 
 ### After Cleanup
-- **Total Integration Tests**: 20 files
+- **Total Integration Tests**: 18 files
 - **Expected Failures**: 0
-- **Tests Removed**: 10 (36% reduction)
+- **Tests Removed**: 12 (40% reduction)
 - **CI Status**: ✅ Should pass
 
 ## 🎯 Why This Was Necessary
@@ -122,5 +135,6 @@ If integration testing for bot behavior is needed:
 
 ---
 *Cleanup Date: December 2024*
-*Removed: 10 outdated test files*
-*Kept: 20 valuable test files*
+*Removed: 12 outdated/invalid test files*
+*Kept: 18 valuable test files*
+*Fixed: 1 import path issue*
