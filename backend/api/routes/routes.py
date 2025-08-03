@@ -6,28 +6,28 @@ from datetime import datetime
 from typing import Any, Dict, List, Optional
 
 import backend.socket_manager
-from shared_instances import shared_bot_manager, shared_room_manager
+from backend.shared_instances import shared_bot_manager, shared_room_manager
 from backend.socket_manager import broadcast
 from fastapi import APIRouter, HTTPException, Query
 from fastapi.responses import JSONResponse
 
 # Import Pydantic models for OpenAPI documentation
-from api.models.game_models import (
+from backend.api.models.game_models import (
     HealthCheck,
     DetailedHealthCheck,
     ErrorResponse,
     HealthStatus,
 )
 
-from api.validation import RestApiValidator
-from engine.state_machine.core import ActionType, GameAction
+from backend.api.validation import RestApiValidator
+from backend.engine.state_machine.core import ActionType, GameAction
 
 # Import debug routes
 from . import debug
 
 # Import EventStore for recovery endpoints
 try:
-    from api.services.event_store import event_store
+    from backend.api.services.event_store import event_store
 
     EVENT_STORE_AVAILABLE = True
 except ImportError:
@@ -413,7 +413,7 @@ async def health_check():
     """
     try:
         # Import health monitor
-        from api.services.health_monitor import health_monitor
+        from backend.api.services.health_monitor import health_monitor
 
         health_status = await health_monitor.get_health_status()
 
@@ -474,7 +474,7 @@ async def detailed_health_check():
     """
     try:
         # Import health monitor and get system stats
-        from api.services.health_monitor import health_monitor
+        from backend.api.services.health_monitor import health_monitor
         import psutil
 
         health_status = await health_monitor.get_health_status()
@@ -495,7 +495,7 @@ async def detailed_health_check():
 
         # Check rate limiting status
         try:
-            from api.middleware.rate_limit import get_rate_limiter
+            from backend.api.middleware.rate_limit import get_rate_limiter
 
             rate_limiter = get_rate_limiter()
             rate_stats = rate_limiter.get_stats()
@@ -570,7 +570,7 @@ async def health_metrics():
         # Import health monitor and socket manager
         import sys
 
-        from api.services.health_monitor import health_monitor
+        from backend.api.services.health_monitor import health_monitor
 
         sys.path.append("/Users/nrw/python/tui-project/liap-tui/backend")
         from socket_manager import _socket_manager as socket_manager
@@ -665,7 +665,7 @@ async def recovery_status():
     """
     try:
         # Import recovery manager
-        from api.services.recovery_manager import recovery_manager
+        from backend.api.services.recovery_manager import recovery_manager
 
         status = recovery_manager.get_recovery_status()
 
@@ -691,7 +691,7 @@ async def trigger_recovery(procedure_name: str, context: dict = None):
     """
     try:
         # Import recovery manager
-        from api.services.recovery_manager import recovery_manager
+        from backend.api.services.recovery_manager import recovery_manager
 
         success = await recovery_manager.trigger_recovery(procedure_name, context or {})
 
@@ -718,7 +718,7 @@ async def rate_limit_stats():
     """
     try:
         from api.middleware.rate_limit import get_rate_limiter
-        from api.middleware.websocket_rate_limit import get_websocket_rate_limiter
+        from backend.api.middleware.websocket_rate_limit import get_websocket_rate_limiter
 
         # Get HTTP rate limiter stats
         http_limiter = get_rate_limiter()
@@ -754,8 +754,8 @@ async def system_stats():
         # Import all services
         import sys
 
-        from api.services.health_monitor import health_monitor
-        from api.services.recovery_manager import recovery_manager
+        from backend.api.services.health_monitor import health_monitor
+        from backend.api.services.recovery_manager import recovery_manager
 
         sys.path.append("/Users/nrw/python/tui-project/liap-tui/backend")
         from socket_manager import _socket_manager as socket_manager
@@ -863,7 +863,7 @@ async def get_rate_limit_metrics():
     try:
         # Import rate limiting components
         from api.middleware.rate_limit import get_rate_limiter
-        from api.middleware.websocket_rate_limit import get_websocket_rate_limiter
+        from backend.api.middleware.websocket_rate_limit import get_websocket_rate_limiter
 
         # Import configuration if available
         try:

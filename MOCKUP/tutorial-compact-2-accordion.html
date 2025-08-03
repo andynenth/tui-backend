@@ -1,0 +1,691 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Castellan Tutorial - Compact Design 2: Accordion</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: #1a1a2e;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        /* Fixed Container */
+        .tutorial-container {
+            width: min(100vw, 56.25vh);
+            height: min(100vh, 177.78vw);
+            max-width: 400px;
+            max-height: 711px;
+            background: #f0f2f5;
+            border-radius: 16px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            display: flex;
+            overflow: hidden;
+        }
+
+        /* Sidebar Quick Nav */
+        .sidebar {
+            width: 50px;
+            background: linear-gradient(180deg, #2d3748, #1a202c);
+            padding: 15px 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .nav-icon {
+            width: 35px;
+            height: 35px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s;
+            position: relative;
+        }
+
+        .nav-icon:hover {
+            background: rgba(102, 126, 234, 0.3);
+            transform: scale(1.1);
+        }
+
+        .nav-icon.active {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+        }
+
+        .nav-icon.completed::after {
+            content: '✓';
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            width: 16px;
+            height: 16px;
+            background: #4CAF50;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 10px;
+            color: white;
+        }
+
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Minimal Header */
+        .header {
+            background: white;
+            padding: 15px 20px;
+            border-bottom: 1px solid #e0e0e0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header-title {
+            font-size: 16px;
+            font-weight: bold;
+            color: #2d3748;
+        }
+
+        .progress-bar {
+            width: 200px;
+            height: 6px;
+            background: #e0e0e0;
+            border-radius: 3px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            width: 20%;
+            background: linear-gradient(90deg, #667eea, #764ba2);
+            transition: width 0.5s ease;
+        }
+
+        /* Accordion Content */
+        .accordion-container {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+        }
+
+        .accordion-item {
+            background: white;
+            border-radius: 10px;
+            margin-bottom: 10px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+            overflow: hidden;
+            transition: all 0.3s;
+        }
+
+        .accordion-item.expanded {
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+        }
+
+        .accordion-header {
+            padding: 15px 20px;
+            background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            transition: all 0.3s;
+        }
+
+        .accordion-header:hover {
+            background: linear-gradient(135deg, #e9ecef, #dee2e6);
+        }
+
+        .accordion-item.expanded .accordion-header {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+        }
+
+        .accordion-title {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-weight: 600;
+            font-size: 15px;
+        }
+
+        .accordion-icon {
+            font-size: 20px;
+        }
+
+        .accordion-arrow {
+            transition: transform 0.3s;
+            color: #999;
+        }
+
+        .accordion-item.expanded .accordion-arrow {
+            transform: rotate(180deg);
+            color: white;
+        }
+
+        .accordion-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease;
+            padding: 0 20px;
+        }
+
+        .accordion-item.expanded .accordion-content {
+            max-height: 400px;
+            padding: 20px;
+        }
+
+        /* Compact Content Styles */
+        .content-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            margin-bottom: 15px;
+        }
+
+        .info-tile {
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 12px;
+            border-left: 3px solid #667eea;
+        }
+
+        .info-tile-title {
+            font-size: 13px;
+            font-weight: bold;
+            color: #667eea;
+            margin-bottom: 5px;
+        }
+
+        .info-tile-desc {
+            font-size: 12px;
+            color: #666;
+            line-height: 1.4;
+        }
+
+        /* Visual Demo Area */
+        .demo-area {
+            background: linear-gradient(135deg, #f0f4ff, #e8ecff);
+            border-radius: 8px;
+            padding: 15px;
+            margin-top: 15px;
+        }
+
+        .piece-row {
+            display: flex;
+            justify-content: space-around;
+            margin: 10px 0;
+        }
+
+        .piece-item {
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .piece-item:hover {
+            transform: scale(1.15);
+        }
+
+        .piece-icon {
+            width: 40px;
+            height: 40px;
+            background: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            margin: 0 auto 5px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .piece-value {
+            font-size: 11px;
+            color: #666;
+            font-weight: bold;
+        }
+
+        /* Interactive Elements */
+        .interactive-zone {
+            background: #fff;
+            border: 2px dashed #667eea;
+            border-radius: 8px;
+            padding: 15px;
+            text-align: center;
+            margin-top: 10px;
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .mini-btn {
+            flex: 1;
+            padding: 8px;
+            background: #667eea;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 12px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .mini-btn:hover {
+            background: #764ba2;
+            transform: translateY(-1px);
+        }
+
+        /* Footer */
+        .footer {
+            background: white;
+            padding: 15px 20px;
+            border-top: 1px solid #e0e0e0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .footer-btn {
+            padding: 8px 20px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .footer-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+        }
+
+        .footer-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .step-indicator {
+            font-size: 13px;
+            color: #666;
+        }
+
+        /* Scrollbar */
+        .accordion-container::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .accordion-container::-webkit-scrollbar-track {
+            background: #f1f1f1;
+        }
+
+        .accordion-container::-webkit-scrollbar-thumb {
+            background: #999;
+            border-radius: 3px;
+        }
+
+        /* Mobile */
+        @media (max-width: 450px) {
+            .tutorial-container {
+                width: 100%;
+                max-width: 400px;
+            }
+
+            .content-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .sidebar {
+                width: 50px;
+            }
+
+            .nav-icon {
+                width: 35px;
+                height: 35px;
+                font-size: 18px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="tutorial-container">
+        <!-- Sidebar Quick Nav -->
+        <div class="sidebar">
+            <div class="nav-icon active" onclick="scrollToSection(0)" title="Basics">🎮</div>
+            <div class="nav-icon" onclick="scrollToSection(1)" title="Pieces">♟️</div>
+            <div class="nav-icon" onclick="scrollToSection(2)" title="Combat">⚔️</div>
+            <div class="nav-icon" onclick="scrollToSection(3)" title="Scoring">🏆</div>
+            <div class="nav-icon" onclick="scrollToSection(4)" title="Strategy">💡</div>
+            <div class="nav-icon completed" onclick="scrollToSection(5)" title="Quiz">✅</div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <!-- Header -->
+            <div class="header">
+                <div class="header-title">⚔️ Castellan Quick Learn</div>
+                <div class="progress-bar">
+                    <div class="progress-fill"></div>
+                </div>
+            </div>
+
+            <!-- Accordion Content -->
+            <div class="accordion-container">
+                <!-- Section 1: Basics -->
+                <div class="accordion-item expanded">
+                    <div class="accordion-header" onclick="toggleAccordion(this)">
+                        <div class="accordion-title">
+                            <span class="accordion-icon">🎮</span>
+                            <span>Game Basics</span>
+                        </div>
+                        <span class="accordion-arrow">▼</span>
+                    </div>
+                    <div class="accordion-content">
+                        <div class="content-grid">
+                            <div class="info-tile">
+                                <div class="info-tile-title">🎯 Goal</div>
+                                <div class="info-tile-desc">Predict tricks, match to score!</div>
+                            </div>
+                            <div class="info-tile">
+                                <div class="info-tile-title">👥 Players</div>
+                                <div class="info-tile-desc">4 players, 8 pieces each</div>
+                            </div>
+                            <div class="info-tile">
+                                <div class="info-tile-title">🏆 Win</div>
+                                <div class="info-tile-desc">First to 50 points</div>
+                            </div>
+                            <div class="info-tile">
+                                <div class="info-tile-title">📋 Phases</div>
+                                <div class="info-tile-desc">Deal → Declare → Play → Score</div>
+                            </div>
+                        </div>
+                        <div class="interactive-zone">
+                            <strong>Try it!</strong> Click to see game flow
+                            <div class="btn-group">
+                                <button class="mini-btn">Deal</button>
+                                <button class="mini-btn">Declare</button>
+                                <button class="mini-btn">Play</button>
+                                <button class="mini-btn">Score</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Section 2: Pieces -->
+                <div class="accordion-item">
+                    <div class="accordion-header" onclick="toggleAccordion(this)">
+                        <div class="accordion-title">
+                            <span class="accordion-icon">♟️</span>
+                            <span>Know Your Pieces</span>
+                        </div>
+                        <span class="accordion-arrow">▼</span>
+                    </div>
+                    <div class="accordion-content">
+                        <div class="demo-area">
+                            <div class="piece-row">
+                                <div class="piece-item">
+                                    <div class="piece-icon">👑</div>
+                                    <div class="piece-value">11</div>
+                                </div>
+                                <div class="piece-item">
+                                    <div class="piece-icon">🎯</div>
+                                    <div class="piece-value">10</div>
+                                </div>
+                                <div class="piece-item">
+                                    <div class="piece-icon">🐘</div>
+                                    <div class="piece-value">9</div>
+                                </div>
+                                <div class="piece-item">
+                                    <div class="piece-icon">🐴</div>
+                                    <div class="piece-value">8</div>
+                                </div>
+                            </div>
+                            <div class="piece-row">
+                                <div class="piece-item">
+                                    <div class="piece-icon">🚗</div>
+                                    <div class="piece-value">7</div>
+                                </div>
+                                <div class="piece-item">
+                                    <div class="piece-icon">💣</div>
+                                    <div class="piece-value">6</div>
+                                </div>
+                                <div class="piece-item">
+                                    <div class="piece-icon">⚔️</div>
+                                    <div class="piece-value">1-5</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="content-grid" style="margin-top: 15px;">
+                            <div class="info-tile">
+                                <div class="info-tile-title">Total</div>
+                                <div class="info-tile-desc">32 pieces in deck</div>
+                            </div>
+                            <div class="info-tile">
+                                <div class="info-tile-title">Colors</div>
+                                <div class="info-tile-desc">Red & Black sets</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Section 3: Combat -->
+                <div class="accordion-item">
+                    <div class="accordion-header" onclick="toggleAccordion(this)">
+                        <div class="accordion-title">
+                            <span class="accordion-icon">⚔️</span>
+                            <span>Combat Rules</span>
+                        </div>
+                        <span class="accordion-arrow">▼</span>
+                    </div>
+                    <div class="accordion-content">
+                        <div class="content-grid">
+                            <div class="info-tile">
+                                <div class="info-tile-title">Single</div>
+                                <div class="info-tile-desc">Any one piece</div>
+                            </div>
+                            <div class="info-tile">
+                                <div class="info-tile-title">Pair</div>
+                                <div class="info-tile-desc">Two matching pieces</div>
+                            </div>
+                            <div class="info-tile">
+                                <div class="info-tile-title">Triple</div>
+                                <div class="info-tile-desc">Three soldiers only</div>
+                            </div>
+                            <div class="info-tile">
+                                <div class="info-tile-title">Straight</div>
+                                <div class="info-tile-desc">3+ consecutive values</div>
+                            </div>
+                        </div>
+                        <div class="interactive-zone">
+                            <strong>Battle Rule:</strong> Higher value wins!
+                            <div style="display: flex; justify-content: center; align-items: center; gap: 20px; margin-top: 10px;">
+                                <span style="font-size: 24px;">👑</span>
+                                <span style="color: #667eea;">beats</span>
+                                <span style="font-size: 24px;">⚔️</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Section 4: Scoring -->
+                <div class="accordion-item">
+                    <div class="accordion-header" onclick="toggleAccordion(this)">
+                        <div class="accordion-title">
+                            <span class="accordion-icon">🏆</span>
+                            <span>Scoring System</span>
+                        </div>
+                        <span class="accordion-arrow">▼</span>
+                    </div>
+                    <div class="accordion-content">
+                        <div class="content-grid">
+                            <div class="info-tile" style="border-left-color: #4CAF50;">
+                                <div class="info-tile-title">✅ Match</div>
+                                <div class="info-tile-desc">Tricks + 5 bonus</div>
+                            </div>
+                            <div class="info-tile" style="border-left-color: #f44336;">
+                                <div class="info-tile-title">❌ Miss</div>
+                                <div class="info-tile-desc">-|difference|</div>
+                            </div>
+                            <div class="info-tile" style="border-left-color: #FFC107;">
+                                <div class="info-tile-title">💎 Zero</div>
+                                <div class="info-tile-desc">0/0 = +3 points</div>
+                            </div>
+                            <div class="info-tile" style="border-left-color: #9C27B0;">
+                                <div class="info-tile-title">📏 Rule</div>
+                                <div class="info-tile-desc">Total ≠ 8</div>
+                            </div>
+                        </div>
+                        <div class="demo-area">
+                            <strong>Example:</strong> Declare 2, Win 2 = 2 + 5 = <span style="color: #4CAF50; font-weight: bold;">+7 points!</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Section 5: Strategy -->
+                <div class="accordion-item">
+                    <div class="accordion-header" onclick="toggleAccordion(this)">
+                        <div class="accordion-title">
+                            <span class="accordion-icon">💡</span>
+                            <span>Pro Tips</span>
+                        </div>
+                        <span class="accordion-arrow">▼</span>
+                    </div>
+                    <div class="accordion-content">
+                        <div class="content-grid">
+                            <div class="info-tile">
+                                <div class="info-tile-title">🎯 Forfeit</div>
+                                <div class="info-tile-desc">Lose tricks on purpose</div>
+                            </div>
+                            <div class="info-tile">
+                                <div class="info-tile-title">📊 Track</div>
+                                <div class="info-tile-desc">Count played pieces</div>
+                            </div>
+                            <div class="info-tile">
+                                <div class="info-tile-title">🔮 Read</div>
+                                <div class="info-tile-desc">Watch opponent patterns</div>
+                            </div>
+                            <div class="info-tile">
+                                <div class="info-tile-title">💎 Weak?</div>
+                                <div class="info-tile-desc">Go for 0/0 strategy</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Section 6: Quiz -->
+                <div class="accordion-item">
+                    <div class="accordion-header" onclick="toggleAccordion(this)">
+                        <div class="accordion-title">
+                            <span class="accordion-icon">✅</span>
+                            <span>Quick Quiz</span>
+                        </div>
+                        <span class="accordion-arrow">▼</span>
+                    </div>
+                    <div class="accordion-content">
+                        <div class="interactive-zone">
+                            <strong>Test Your Knowledge!</strong>
+                            <div style="text-align: left; margin-top: 10px;">
+                                <p style="margin: 10px 0;">Q1: How many points to win? <span style="color: #4CAF50;">A: 50</span></p>
+                                <p style="margin: 10px 0;">Q2: Total declarations must not equal? <span style="color: #4CAF50;">A: 8</span></p>
+                                <p style="margin: 10px 0;">Q3: Perfect match bonus? <span style="color: #4CAF50;">A: +5</span></p>
+                            </div>
+                            <button class="mini-btn" style="width: 100%; margin-top: 10px;">Complete Tutorial!</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Footer -->
+            <div class="footer">
+                <button class="footer-btn" disabled>← Previous</button>
+                <span class="step-indicator">Section 1 of 6</span>
+                <button class="footer-btn">Next →</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function toggleAccordion(header) {
+            const item = header.parentElement;
+            const wasExpanded = item.classList.contains('expanded');
+            
+            // Close all
+            document.querySelectorAll('.accordion-item').forEach(i => {
+                i.classList.remove('expanded');
+            });
+            
+            // Open clicked if it was closed
+            if (!wasExpanded) {
+                item.classList.add('expanded');
+                updateProgress(item);
+            }
+        }
+
+        function scrollToSection(index) {
+            const items = document.querySelectorAll('.accordion-item');
+            items.forEach(i => i.classList.remove('expanded'));
+            items[index].classList.add('expanded');
+            items[index].scrollIntoView({ behavior: 'smooth' });
+            
+            // Update nav icons
+            document.querySelectorAll('.nav-icon').forEach(icon => icon.classList.remove('active'));
+            document.querySelectorAll('.nav-icon')[index].classList.add('active');
+            
+            updateProgress(items[index]);
+        }
+
+        function updateProgress(item) {
+            const items = Array.from(document.querySelectorAll('.accordion-item'));
+            const index = items.indexOf(item);
+            const progress = ((index + 1) / items.length) * 100;
+            document.querySelector('.progress-fill').style.width = progress + '%';
+            document.querySelector('.step-indicator').textContent = `Section ${index + 1} of ${items.length}`;
+            
+            // Update nav buttons
+            const prevBtn = document.querySelectorAll('.footer-btn')[0];
+            const nextBtn = document.querySelectorAll('.footer-btn')[1];
+            prevBtn.disabled = index === 0;
+            nextBtn.disabled = index === items.length - 1;
+        }
+
+        // Navigation buttons
+        document.querySelectorAll('.footer-btn').forEach((btn, i) => {
+            btn.addEventListener('click', () => {
+                const items = document.querySelectorAll('.accordion-item');
+                const current = Array.from(items).findIndex(item => item.classList.contains('expanded'));
+                
+                if (i === 0 && current > 0) {
+                    scrollToSection(current - 1);
+                } else if (i === 1 && current < items.length - 1) {
+                    scrollToSection(current + 1);
+                }
+            });
+        });
+    </script>
+</body>
+</html>

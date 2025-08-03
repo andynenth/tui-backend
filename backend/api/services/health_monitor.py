@@ -393,7 +393,7 @@ class HealthMonitor:
                 import sys
 
                 sys.path.append("/Users/nrw/python/tui-project/liap-tui/backend")
-                from shared_instances import shared_room_manager
+                from backend.shared_instances import shared_room_manager
 
                 total_rooms = len(shared_room_manager.rooms)
                 active_games = 0

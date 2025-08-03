@@ -1,7 +1,7 @@
 # backend/shared_instances.py
 
-from engine.bot_manager import BotManager
-from engine.async_room_manager import AsyncRoomManager  # Import the AsyncRoomManager class.
+from backend.engine.bot_manager import BotManager
+from backend.engine.async_room_manager import AsyncRoomManager  # Import the AsyncRoomManager class.
 
 # Create a single instance of AsyncRoomManager.
 # This instance will be shared across the entire application,

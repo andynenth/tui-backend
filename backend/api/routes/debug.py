@@ -6,7 +6,7 @@ from typing import Optional
 from fastapi import APIRouter, HTTPException, Query
 from fastapi.responses import JSONResponse
 
-from api.services.event_store import event_store
+from backend.api.services.event_store import event_store
 
 logger = logging.getLogger(__name__)
 

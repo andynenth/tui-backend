@@ -1,0 +1,1138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Castellan Tutorial - Design 3: Interactive Gamified</title>
+    <style>
+        :root {
+            --container-width: min(100vw, 56.25vh);
+            --container-height: min(100vh, 177.78vw);
+            --container-max-width: 400px;
+            --container-max-height: 711px;
+            --gold: #fbbf24;
+            --purple: #a855f7;
+            --blue: #3b82f6;
+            --green: #10b981;
+            --red: #ef4444;
+            --dark: #1e293b;
+            --light: #f8fafc;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: radial-gradient(ellipse at top, #4c1d95, #1e1b4b);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        /* Container with game-like design */
+        .game-container {
+            width: var(--container-width);
+            height: var(--container-height);
+            max-width: var(--container-max-width);
+            max-height: var(--container-max-height);
+            background: linear-gradient(180deg, #1e293b 0%, #0f172a 100%);
+            border-radius: 24px;
+            overflow: hidden;
+            box-shadow: 
+                0 25px 50px rgba(0, 0, 0, 0.5),
+                inset 0 1px 0 rgba(255, 255, 255, 0.1);
+            display: flex;
+            flex-direction: column;
+            position: relative;
+        }
+
+        /* Game Header with XP Bar */
+        .game-header {
+            background: linear-gradient(180deg, #2e1065 0%, #1e1b4b 100%);
+            padding: 16px 20px;
+            border-bottom: 2px solid rgba(251, 191, 36, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .game-header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(251, 191, 36, 0.2), transparent);
+            animation: shimmer 3s infinite;
+        }
+
+        @keyframes shimmer {
+            0% { left: -100%; }
+            100% { left: 100%; }
+        }
+
+        .xp-container {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 10px;
+        }
+
+        .level-badge {
+            width: 36px;
+            height: 36px;
+            background: linear-gradient(135deg, var(--gold), #f59e0b);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            color: var(--dark);
+            box-shadow: 0 0 20px rgba(251, 191, 36, 0.5);
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        .xp-bar {
+            flex: 1;
+            height: 20px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 10px;
+            padding: 2px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .xp-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--blue), var(--purple));
+            border-radius: 8px;
+            transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .xp-fill::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+            animation: shimmer 2s infinite;
+        }
+
+        .xp-text {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 10px;
+            font-weight: 600;
+            color: white;
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+        }
+
+        .coins-display {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            background: rgba(251, 191, 36, 0.1);
+            padding: 4px 12px;
+            border-radius: 20px;
+            border: 1px solid rgba(251, 191, 36, 0.3);
+        }
+
+        .coin-icon {
+            width: 20px;
+            height: 20px;
+            background: linear-gradient(135deg, var(--gold), #f59e0b);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            animation: rotate 3s linear infinite;
+        }
+
+        @keyframes rotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        .coin-amount {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--gold);
+        }
+
+        /* Quest/Achievement Banner */
+        .quest-banner {
+            background: linear-gradient(90deg, rgba(168, 85, 247, 0.2), rgba(59, 130, 246, 0.2));
+            padding: 8px 16px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-radius: 8px;
+            margin-top: 8px;
+        }
+
+        .quest-text {
+            font-size: 11px;
+            color: #e0e7ff;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .quest-icon {
+            width: 20px;
+            height: 20px;
+            background: var(--purple);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+        }
+
+        /* Game Content */
+        .game-content {
+            flex: 1;
+            overflow: hidden;
+            position: relative;
+            background: linear-gradient(180deg, transparent, rgba(168, 85, 247, 0.05));
+        }
+
+        .slide {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            padding: 20px;
+            overflow-y: auto;
+            display: none;
+        }
+
+        .slide.active {
+            display: block;
+            animation: slideIn 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Interactive Cards */
+        .game-card {
+            background: linear-gradient(135deg, #334155, #1e293b);
+            border: 2px solid transparent;
+            border-radius: 16px;
+            padding: 16px;
+            margin-bottom: 12px;
+            position: relative;
+            overflow: hidden;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .game-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, var(--purple), var(--blue));
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .game-card:hover {
+            transform: translateY(-2px);
+            border-color: var(--purple);
+            box-shadow: 0 10px 30px rgba(168, 85, 247, 0.3);
+        }
+
+        .game-card:hover::before {
+            opacity: 0.1;
+        }
+
+        .game-card.completed {
+            border-color: var(--green);
+            opacity: 0.8;
+        }
+
+        .game-card.completed::after {
+            content: '✓';
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            width: 24px;
+            height: 24px;
+            background: var(--green);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+        }
+
+        .card-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        .card-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: white;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .card-desc {
+            font-size: 12px;
+            color: #94a3b8;
+            line-height: 1.5;
+        }
+
+        .reward-tag {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            background: rgba(251, 191, 36, 0.2);
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 10px;
+            color: var(--gold);
+            margin-top: 8px;
+        }
+
+        /* Interactive Piece Board */
+        .piece-board {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 8px;
+            padding: 16px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 12px;
+            margin: 16px 0;
+        }
+
+        .piece-slot {
+            aspect-ratio: 1;
+            background: linear-gradient(135deg, #475569, #334155);
+            border: 2px solid #475569;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            cursor: pointer;
+            transition: all 0.3s;
+            position: relative;
+        }
+
+        .piece-slot:hover {
+            transform: scale(1.1);
+            border-color: var(--purple);
+            box-shadow: 0 0 20px rgba(168, 85, 247, 0.5);
+        }
+
+        .piece-slot.discovered {
+            background: linear-gradient(135deg, var(--purple), var(--blue));
+            border-color: var(--gold);
+            animation: discover 0.5s ease;
+        }
+
+        @keyframes discover {
+            0% { transform: scale(0) rotate(180deg); }
+            50% { transform: scale(1.2) rotate(90deg); }
+            100% { transform: scale(1) rotate(0deg); }
+        }
+
+        .piece-value {
+            position: absolute;
+            bottom: 2px;
+            right: 4px;
+            font-size: 10px;
+            color: var(--gold);
+            font-weight: bold;
+        }
+
+        /* Mini-game area */
+        .mini-game {
+            background: linear-gradient(135deg, rgba(59, 130, 246, 0.1), rgba(168, 85, 247, 0.1));
+            border-radius: 12px;
+            padding: 16px;
+            margin: 16px 0;
+            text-align: center;
+        }
+
+        .mini-game-title {
+            font-size: 13px;
+            color: white;
+            margin-bottom: 12px;
+            font-weight: 600;
+        }
+
+        .battle-area {
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            margin: 16px 0;
+        }
+
+        .battle-piece {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, #334155, #1e293b);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+            border: 2px solid #475569;
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+
+        .battle-piece:hover {
+            transform: scale(1.1) rotate(5deg);
+            border-color: var(--gold);
+        }
+
+        .battle-piece.winner {
+            background: linear-gradient(135deg, var(--green), #059669);
+            border-color: var(--gold);
+            animation: victory 0.5s ease;
+        }
+
+        @keyframes victory {
+            0%, 100% { transform: scale(1) rotate(0deg); }
+            50% { transform: scale(1.3) rotate(180deg); }
+        }
+
+        .vs-indicator {
+            font-size: 20px;
+            font-weight: bold;
+            color: var(--gold);
+            text-shadow: 0 0 10px rgba(251, 191, 36, 0.5);
+        }
+
+        /* Achievement popup */
+        .achievement {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: linear-gradient(135deg, var(--gold), #f59e0b);
+            color: var(--dark);
+            padding: 12px 16px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 600;
+            box-shadow: 0 10px 30px rgba(251, 191, 36, 0.5);
+            transform: translateX(400px);
+            transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+            z-index: 1000;
+        }
+
+        .achievement.show {
+            transform: translateX(0);
+        }
+
+        /* Navigation with rewards */
+        .game-nav {
+            background: linear-gradient(180deg, #1e293b, #0f172a);
+            padding: 16px 20px;
+            border-top: 2px solid rgba(251, 191, 36, 0.3);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .nav-btn {
+            padding: 10px 20px;
+            background: linear-gradient(135deg, #475569, #334155);
+            border: 2px solid #475569;
+            border-radius: 12px;
+            color: white;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .nav-btn:hover:not(:disabled) {
+            background: linear-gradient(135deg, var(--purple), var(--blue));
+            border-color: var(--purple);
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(168, 85, 247, 0.3);
+        }
+
+        .nav-btn:disabled {
+            opacity: 0.3;
+            cursor: not-allowed;
+        }
+
+        .nav-btn.primary {
+            background: linear-gradient(135deg, var(--purple), var(--blue));
+            border-color: var(--purple);
+        }
+
+        .nav-btn.primary:hover {
+            background: linear-gradient(135deg, var(--blue), var(--purple));
+        }
+
+        .progress-dots {
+            display: flex;
+            gap: 8px;
+        }
+
+        .dot {
+            width: 8px;
+            height: 8px;
+            background: #475569;
+            border-radius: 50%;
+            transition: all 0.3s;
+        }
+
+        .dot.active {
+            width: 24px;
+            border-radius: 4px;
+            background: linear-gradient(90deg, var(--purple), var(--blue));
+            box-shadow: 0 0 10px rgba(168, 85, 247, 0.5);
+        }
+
+        .dot.completed {
+            background: var(--green);
+        }
+
+        /* Scrollbar */
+        .slide::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .slide::-webkit-scrollbar-track {
+            background: rgba(0, 0, 0, 0.3);
+        }
+
+        .slide::-webkit-scrollbar-thumb {
+            background: linear-gradient(180deg, var(--purple), var(--blue));
+            border-radius: 3px;
+        }
+    </style>
+</head>
+<body>
+    <div class="game-container">
+        <!-- Game Header -->
+        <div class="game-header">
+            <div class="xp-container">
+                <div class="level-badge">1</div>
+                <div class="xp-bar">
+                    <div class="xp-fill" style="width: 14%"></div>
+                    <span class="xp-text">100 / 700 XP</span>
+                </div>
+                <div class="coins-display">
+                    <div class="coin-icon">₵</div>
+                    <span class="coin-amount">0</span>
+                </div>
+            </div>
+            <div class="quest-banner">
+                <div class="quest-text">
+                    <div class="quest-icon">🎯</div>
+                    <span>Quest: Complete the tutorial</span>
+                </div>
+                <span style="color: var(--gold); font-size: 11px;">+50 ₵</span>
+            </div>
+        </div>
+
+        <!-- Achievement Popup -->
+        <div class="achievement" id="achievement">
+            🏆 Achievement Unlocked!
+        </div>
+
+        <!-- Game Content -->
+        <div class="game-content">
+            <!-- Slide 1: Welcome Quest -->
+            <div class="slide active">
+                <h2 style="color: white; font-size: 18px; margin-bottom: 12px; text-align: center;">
+                    ⚔️ Welcome, Castellan Recruit!
+                </h2>
+                <p style="color: #94a3b8; font-size: 12px; text-align: center; margin-bottom: 20px;">
+                    Complete these training missions to become a master strategist
+                </p>
+
+                <div class="game-card" onclick="completeCard(this)">
+                    <div class="card-content">
+                        <div class="card-title">
+                            <span>📜</span>
+                            <span>Mission 1: Learn the Basics</span>
+                        </div>
+                        <div class="card-desc">
+                            Understand the core mechanics of Castellan
+                        </div>
+                        <div class="reward-tag">
+                            <span>+10</span>
+                            <div class="coin-icon" style="width: 14px; height: 14px; font-size: 8px;">₵</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="game-card" onclick="completeCard(this)">
+                    <div class="card-content">
+                        <div class="card-title">
+                            <span>🎯</span>
+                            <span>Mission 2: Master Prediction</span>
+                        </div>
+                        <div class="card-desc">
+                            Learn to accurately predict your performance
+                        </div>
+                        <div class="reward-tag">
+                            <span>+10</span>
+                            <div class="coin-icon" style="width: 14px; height: 14px; font-size: 8px;">₵</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="game-card" onclick="completeCard(this)">
+                    <div class="card-content">
+                        <div class="card-title">
+                            <span>🏆</span>
+                            <span>Mission 3: Path to Victory</span>
+                        </div>
+                        <div class="card-desc">
+                            First to 50 points wins the crown!
+                        </div>
+                        <div class="reward-tag">
+                            <span>+10</span>
+                            <div class="coin-icon" style="width: 14px; height: 14px; font-size: 8px;">₵</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div style="background: rgba(168, 85, 247, 0.1); border-radius: 12px; padding: 12px; margin-top: 20px; border: 1px solid rgba(168, 85, 247, 0.3);">
+                    <p style="color: #e0e7ff; font-size: 11px; text-align: center;">
+                        💡 <strong>Pro Tip:</strong> Click on cards to complete missions and earn coins!
+                    </p>
+                </div>
+            </div>
+
+            <!-- Slide 2: Discover Pieces -->
+            <div class="slide">
+                <h2 style="color: white; font-size: 18px; margin-bottom: 12px; text-align: center;">
+                    🎴 Discover Your Army
+                </h2>
+                <p style="color: #94a3b8; font-size: 12px; text-align: center; margin-bottom: 16px;">
+                    Click pieces to reveal their power!
+                </p>
+
+                <div class="piece-board">
+                    <div class="piece-slot" onclick="discoverPiece(this, '帥', 11)">
+                        ?
+                    </div>
+                    <div class="piece-slot" onclick="discoverPiece(this, '將', 11)">
+                        ?
+                    </div>
+                    <div class="piece-slot" onclick="discoverPiece(this, '仕', 10)">
+                        ?
+                    </div>
+                    <div class="piece-slot" onclick="discoverPiece(this, '士', 10)">
+                        ?
+                    </div>
+                    <div class="piece-slot" onclick="discoverPiece(this, '相', 9)">
+                        ?
+                    </div>
+                    <div class="piece-slot" onclick="discoverPiece(this, '象', 9)">
+                        ?
+                    </div>
+                    <div class="piece-slot" onclick="discoverPiece(this, '傌', 8)">
+                        ?
+                    </div>
+                    <div class="piece-slot" onclick="discoverPiece(this, '馬', 8)">
+                        ?
+                    </div>
+                    <div class="piece-slot" onclick="discoverPiece(this, '俥', 7)">
+                        ?
+                    </div>
+                    <div class="piece-slot" onclick="discoverPiece(this, '車', 7)">
+                        ?
+                    </div>
+                    <div class="piece-slot" onclick="discoverPiece(this, '炮', 6)">
+                        ?
+                    </div>
+                    <div class="piece-slot" onclick="discoverPiece(this, '砲', 6)">
+                        ?
+                    </div>
+                    <div class="piece-slot" onclick="discoverPiece(this, '兵', '1-5')">
+                        ?
+                    </div>
+                    <div class="piece-slot" onclick="discoverPiece(this, '兵', '1-5')">
+                        ?
+                    </div>
+                    <div class="piece-slot" onclick="discoverPiece(this, '卒', '1-5')">
+                        ?
+                    </div>
+                    <div class="piece-slot" onclick="discoverPiece(this, '卒', '1-5')">
+                        ?
+                    </div>
+                </div>
+
+                <div class="game-card">
+                    <div class="card-content">
+                        <div class="card-title">
+                            <span>📊</span>
+                            <span>Discovered: <span id="discovered">0</span>/16</span>
+                        </div>
+                        <div class="card-desc">
+                            Find all pieces to unlock bonus XP!
+                        </div>
+                        <div class="reward-tag">
+                            <span>+20</span>
+                            <div class="coin-icon" style="width: 14px; height: 14px; font-size: 8px;">₵</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Slide 3: Battle Simulator -->
+            <div class="slide">
+                <h2 style="color: white; font-size: 18px; margin-bottom: 12px; text-align: center;">
+                    ⚔️ Battle Training
+                </h2>
+
+                <div class="mini-game">
+                    <div class="mini-game-title">Choose your fighter!</div>
+                    <div class="battle-area">
+                        <div class="battle-piece" onclick="battle(this, '帥', 11)">
+                            帥
+                        </div>
+                        <div class="vs-indicator">VS</div>
+                        <div class="battle-piece" onclick="battle(this, '兵', 3)">
+                            兵
+                        </div>
+                    </div>
+                    <p style="color: #94a3b8; font-size: 11px; margin-top: 12px;">
+                        Click a piece to see who wins! Higher value always wins.
+                    </p>
+                </div>
+
+                <div class="game-card">
+                    <div class="card-content">
+                        <div class="card-title">
+                            <span>🎓</span>
+                            <span>Lesson: Combat Rules</span>
+                        </div>
+                        <div class="card-desc">
+                            • Higher value pieces beat lower ones<br>
+                            • Same value? First played wins<br>
+                            • Invalid combinations = automatic forfeit
+                        </div>
+                    </div>
+                </div>
+
+                <div class="game-card">
+                    <div class="card-content">
+                        <div class="card-title">
+                            <span>💡</span>
+                            <span>Strategic Tip</span>
+                        </div>
+                        <div class="card-desc">
+                            Sometimes losing is winning! Forfeit tricks you don't want.
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Slide 4: Combination Builder -->
+            <div class="slide">
+                <h2 style="color: white; font-size: 18px; margin-bottom: 12px; text-align: center;">
+                    🎮 Build Valid Combinations
+                </h2>
+
+                <div class="mini-game">
+                    <div class="mini-game-title">Drag pieces to create combos!</div>
+                    <div style="display: flex; justify-content: center; gap: 8px; margin: 16px 0;">
+                        <div class="battle-piece" style="width: 50px; height: 50px; font-size: 24px;">馬</div>
+                        <div class="battle-piece" style="width: 50px; height: 50px; font-size: 24px;">馬</div>
+                        <div class="battle-piece" style="width: 50px; height: 50px; font-size: 24px;">+</div>
+                    </div>
+                    <p style="color: var(--green); font-size: 12px; font-weight: 600;">✓ Valid Pair!</p>
+                </div>
+
+                <div class="game-card">
+                    <div class="card-content">
+                        <div class="card-title">
+                            <span>1️⃣</span>
+                            <span>Single</span>
+                        </div>
+                        <div class="card-desc">Any one piece</div>
+                    </div>
+                </div>
+
+                <div class="game-card">
+                    <div class="card-content">
+                        <div class="card-title">
+                            <span>2️⃣</span>
+                            <span>Pair</span>
+                        </div>
+                        <div class="card-desc">Two matching pieces (same type & color)</div>
+                    </div>
+                </div>
+
+                <div class="game-card">
+                    <div class="card-content">
+                        <div class="card-title">
+                            <span>3️⃣</span>
+                            <span>Triple</span>
+                        </div>
+                        <div class="card-desc">Three soldiers only</div>
+                    </div>
+                </div>
+
+                <div class="game-card">
+                    <div class="card-content">
+                        <div class="card-title">
+                            <span>🔢</span>
+                            <span>Straight</span>
+                        </div>
+                        <div class="card-desc">3+ consecutive values (same color)</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Slide 5: Score Calculator -->
+            <div class="slide">
+                <h2 style="color: white; font-size: 18px; margin-bottom: 12px; text-align: center;">
+                    💰 Score Calculator
+                </h2>
+
+                <div class="mini-game">
+                    <div class="mini-game-title">Calculate your score!</div>
+                    <div style="display: flex; justify-content: space-around; align-items: center; margin: 16px 0;">
+                        <div>
+                            <label style="color: #94a3b8; font-size: 11px; display: block; margin-bottom: 4px;">Declared</label>
+                            <select id="declared" style="padding: 8px; border-radius: 8px; background: #334155; color: white; border: 1px solid #475569;">
+                                <option>0</option>
+                                <option>1</option>
+                                <option selected>2</option>
+                                <option>3</option>
+                                <option>4</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label style="color: #94a3b8; font-size: 11px; display: block; margin-bottom: 4px;">Won</label>
+                            <select id="won" style="padding: 8px; border-radius: 8px; background: #334155; color: white; border: 1px solid #475569;">
+                                <option>0</option>
+                                <option>1</option>
+                                <option selected>2</option>
+                                <option>3</option>
+                                <option>4</option>
+                            </select>
+                        </div>
+                    </div>
+                    <button onclick="calculateScore()" style="padding: 8px 16px; background: linear-gradient(135deg, var(--purple), var(--blue)); border: none; border-radius: 8px; color: white; font-weight: 600; cursor: pointer;">
+                        Calculate!
+                    </button>
+                    <div id="scoreResult" style="margin-top: 12px; font-size: 20px; font-weight: bold; color: var(--green);">
+                        +7 Points!
+                    </div>
+                </div>
+
+                <div class="game-card">
+                    <div class="card-content">
+                        <div class="card-title">
+                            <span>✅</span>
+                            <span>Perfect Match</span>
+                        </div>
+                        <div class="card-desc">Tricks + 5 bonus points</div>
+                    </div>
+                </div>
+
+                <div class="game-card">
+                    <div class="card-content">
+                        <div class="card-title">
+                            <span>❌</span>
+                            <span>Miss Target</span>
+                        </div>
+                        <div class="card-desc">Lose points equal to difference</div>
+                    </div>
+                </div>
+
+                <div class="game-card">
+                    <div class="card-content">
+                        <div class="card-title">
+                            <span>💎</span>
+                            <span>Zero Strategy</span>
+                        </div>
+                        <div class="card-desc">Declare 0, Win 0 = +3 points</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Slide 6: Final Challenge -->
+            <div class="slide">
+                <h2 style="color: white; font-size: 18px; margin-bottom: 12px; text-align: center;">
+                    🏆 Final Challenge
+                </h2>
+                <p style="color: #94a3b8; font-size: 12px; text-align: center; margin-bottom: 20px;">
+                    Test your knowledge and earn your badge!
+                </p>
+
+                <div class="game-card" onclick="completeCard(this)">
+                    <div class="card-content">
+                        <div class="card-title">
+                            <span>❓</span>
+                            <span>How many points to win?</span>
+                        </div>
+                        <div class="card-desc">Click to answer: 50 points</div>
+                        <div class="reward-tag">
+                            <span>+5</span>
+                            <div class="coin-icon" style="width: 14px; height: 14px; font-size: 8px;">₵</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="game-card" onclick="completeCard(this)">
+                    <div class="card-content">
+                        <div class="card-title">
+                            <span>❓</span>
+                            <span>Total declarations must not equal?</span>
+                        </div>
+                        <div class="card-desc">Click to answer: 8</div>
+                        <div class="reward-tag">
+                            <span>+5</span>
+                            <div class="coin-icon" style="width: 14px; height: 14px; font-size: 8px;">₵</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="game-card" onclick="completeCard(this)">
+                    <div class="card-content">
+                        <div class="card-title">
+                            <span>❓</span>
+                            <span>Perfect match bonus?</span>
+                        </div>
+                        <div class="card-desc">Click to answer: +5 points</div>
+                        <div class="reward-tag">
+                            <span>+5</span>
+                            <div class="coin-icon" style="width: 14px; height: 14px; font-size: 8px;">₵</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div style="background: linear-gradient(135deg, var(--gold), #f59e0b); border-radius: 12px; padding: 16px; margin-top: 20px; text-align: center;">
+                    <h3 style="color: var(--dark); font-size: 16px; margin-bottom: 8px;">
+                        🎉 Congratulations, Castellan!
+                    </h3>
+                    <p style="color: var(--dark); font-size: 12px;">
+                        You've completed your training! Ready to conquer?
+                    </p>
+                </div>
+            </div>
+
+            <!-- Slide 7: Rewards -->
+            <div class="slide">
+                <h2 style="color: white; font-size: 18px; margin-bottom: 12px; text-align: center;">
+                    🎊 Training Complete!
+                </h2>
+                
+                <div style="background: linear-gradient(135deg, #334155, #1e293b); border-radius: 16px; padding: 20px; text-align: center; margin-bottom: 20px;">
+                    <div style="font-size: 48px; margin-bottom: 12px;">🏅</div>
+                    <h3 style="color: var(--gold); font-size: 16px; margin-bottom: 8px;">Castellan Apprentice</h3>
+                    <p style="color: #94a3b8; font-size: 12px;">You've mastered the basics!</p>
+                </div>
+
+                <div class="game-card completed">
+                    <div class="card-content">
+                        <div class="card-title">
+                            <span>🎁</span>
+                            <span>Rewards Earned</span>
+                        </div>
+                        <div class="card-desc">
+                            • 50 Coins<br>
+                            • 700 XP<br>
+                            • Apprentice Badge<br>
+                            • Unlock: Ranked Matches
+                        </div>
+                    </div>
+                </div>
+
+                <button onclick="alert('Start Playing!')" style="width: 100%; padding: 14px; background: linear-gradient(135deg, var(--purple), var(--blue)); border: none; border-radius: 12px; color: white; font-size: 14px; font-weight: 600; cursor: pointer; margin-top: 20px;">
+                    🎮 Start Your First Game
+                </button>
+            </div>
+        </div>
+
+        <!-- Game Navigation -->
+        <div class="game-nav">
+            <button class="nav-btn" onclick="prevSlide()" disabled>
+                ← Back
+            </button>
+            
+            <div class="progress-dots">
+                <div class="dot active"></div>
+                <div class="dot"></div>
+                <div class="dot"></div>
+                <div class="dot"></div>
+                <div class="dot"></div>
+                <div class="dot"></div>
+                <div class="dot"></div>
+            </div>
+            
+            <button class="nav-btn primary" onclick="nextSlide()">
+                Next →
+            </button>
+        </div>
+    </div>
+
+    <script>
+        let currentSlide = 0;
+        let coins = 0;
+        let xp = 100;
+        let discovered = 0;
+        const totalSlides = 7;
+
+        function updateSlide() {
+            const slides = document.querySelectorAll('.slide');
+            const dots = document.querySelectorAll('.dot');
+            
+            slides.forEach((slide, index) => {
+                slide.classList.toggle('active', index === currentSlide);
+            });
+
+            dots.forEach((dot, index) => {
+                dot.classList.remove('active', 'completed');
+                if (index === currentSlide) {
+                    dot.classList.add('active');
+                } else if (index < currentSlide) {
+                    dot.classList.add('completed');
+                }
+            });
+
+            // Update XP bar
+            const progress = ((currentSlide + 1) / totalSlides) * 100;
+            document.querySelector('.xp-fill').style.width = progress + '%';
+            document.querySelector('.xp-text').textContent = `${xp} / 700 XP`;
+
+            // Update nav buttons
+            document.querySelectorAll('.nav-btn')[0].disabled = currentSlide === 0;
+            document.querySelectorAll('.nav-btn')[1].disabled = currentSlide === totalSlides - 1;
+        }
+
+        function nextSlide() {
+            if (currentSlide < totalSlides - 1) {
+                currentSlide++;
+                xp += 100;
+                updateSlide();
+                showAchievement(`Level Progress: ${currentSlide + 1}/${totalSlides}`);
+            }
+        }
+
+        function prevSlide() {
+            if (currentSlide > 0) {
+                currentSlide--;
+                updateSlide();
+            }
+        }
+
+        function completeCard(card) {
+            if (!card.classList.contains('completed')) {
+                card.classList.add('completed');
+                addCoins(10);
+                showAchievement('Mission Complete! +10 Coins');
+            }
+        }
+
+        function discoverPiece(slot, piece, value) {
+            if (slot.textContent === '?') {
+                slot.textContent = piece;
+                slot.classList.add('discovered');
+                slot.innerHTML = piece + `<span class="piece-value">${value}</span>`;
+                discovered++;
+                document.getElementById('discovered').textContent = discovered;
+                addCoins(2);
+                
+                if (discovered === 16) {
+                    showAchievement('All Pieces Discovered! +20 Coins');
+                    addCoins(18);
+                }
+            }
+        }
+
+        function battle(piece, symbol, value) {
+            const pieces = document.querySelectorAll('.battle-piece');
+            pieces.forEach(p => p.classList.remove('winner'));
+            
+            setTimeout(() => {
+                if (value > 5) {
+                    pieces[0].classList.add('winner');
+                    showAchievement('Victory! General wins!');
+                } else {
+                    pieces[1].classList.add('winner');
+                    showAchievement('Defeated! Soldier wins!');
+                }
+            }, 300);
+        }
+
+        function calculateScore() {
+            const declared = parseInt(document.getElementById('declared').value);
+            const won = parseInt(document.getElementById('won').value);
+            const result = document.getElementById('scoreResult');
+            
+            if (declared === won) {
+                const score = declared === 0 ? 3 : declared + 5;
+                result.textContent = `+${score} Points!`;
+                result.style.color = 'var(--green)';
+                showAchievement('Perfect Match!');
+            } else {
+                const score = Math.abs(declared - won);
+                result.textContent = `-${score} Points`;
+                result.style.color = 'var(--red)';
+            }
+        }
+
+        function addCoins(amount) {
+            coins += amount;
+            document.querySelector('.coin-amount').textContent = coins;
+        }
+
+        function showAchievement(text) {
+            const achievement = document.getElementById('achievement');
+            achievement.textContent = `🏆 ${text}`;
+            achievement.classList.add('show');
+            
+            setTimeout(() => {
+                achievement.classList.remove('show');
+            }, 3000);
+        }
+
+        // Initialize
+        updateSlide();
+    </script>
+</body>
+</html>

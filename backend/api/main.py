@@ -44,17 +44,22 @@ STATIC_DIR = os.getenv(
 INDEX_FILE = os.getenv(
     "INDEX_FILE", "index.html"
 )  # The main HTML file to serve. Defaults to "index.html".
+# ✅ Production configuration
+DEBUG = os.getenv("DEBUG", "false").lower() == "true"
+if DEBUG:
+    print("⚠️  DEBUG MODE ENABLED - Not for production")
+
 ALLOWED_ORIGINS = os.getenv("ALLOWED_ORIGINS", "*").split(
     ","
 )  # A comma-separated list of allowed origins for CORS. Defaults to "*" (all origins).
 
 # ✅ Create the FastAPI application instance.
 app = FastAPI(
-    title="Liap Tui API",
+    title="Castellan API",
     description="""
-    **Backend API for Liap Tui Board Game**
+    **Backend API for Castellan Board Game**
     
-    A real-time multiplayer board game inspired by traditional Chinese-Thai gameplay.
+    A real-time multiplayer medieval strategy board game.
     
     ## Features
     
@@ -79,8 +84,8 @@ app = FastAPI(
     """,
     version="1.0.0",
     contact={
-        "name": "Liap Tui Development Team",
-        "url": "https://github.com/your-org/liap-tui",
+        "name": "Castellan Development Team",
+        "url": "https://github.com/your-org/castellan",
     },
     license_info={
         "name": "MIT",

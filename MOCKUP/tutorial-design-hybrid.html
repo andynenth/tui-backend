@@ -1,0 +1,1214 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Castellan Tutorial - Hybrid Design</title>
+    <style>
+        :root {
+            --container-width: min(100vw, 56.25vh);
+            --container-height: min(100vh, 177.78vw);
+            --container-max-width: 400px;
+            --container-max-height: 711px;
+            --primary: #6366f1;
+            --primary-dark: #4f46e5;
+            --gold: #fbbf24;
+            --purple: #a855f7;
+            --blue: #3b82f6;
+            --green: #10b981;
+            --red: #ef4444;
+            --warning: #f59e0b;
+            --dark: #1e293b;
+            --light: #f8fafc;
+            --card-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: radial-gradient(ellipse at top, #4c1d95, #1e1b4b);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        /* Main container with game aesthetics */
+        .tutorial-container {
+            width: var(--container-width);
+            height: var(--container-height);
+            max-width: var(--container-max-width);
+            max-height: var(--container-max-height);
+            background: linear-gradient(180deg, #1e293b 0%, #0f172a 100%);
+            border-radius: 24px;
+            overflow: hidden;
+            box-shadow: 
+                0 25px 50px rgba(0, 0, 0, 0.3),
+                inset 0 1px 0 rgba(255, 255, 255, 0.1);
+            display: flex;
+            flex-direction: column;
+            position: relative;
+        }
+
+        /* Gamified header with XP */
+        .header {
+            background: linear-gradient(180deg, #2e1065 0%, #1e1b4b 100%);
+            padding: 16px 20px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+            z-index: 10;
+            position: relative;
+            border-bottom: 2px solid rgba(251, 191, 36, 0.3);
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(251, 191, 36, 0.2), transparent);
+            animation: shimmer 3s infinite;
+        }
+
+        @keyframes shimmer {
+            0% { left: -100%; }
+            100% { left: 100%; }
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .back-btn {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--purple), var(--blue));
+            border: none;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 0 20px rgba(168, 85, 247, 0.3);
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        .back-btn:hover {
+            transform: scale(1.1);
+            box-shadow: 0 0 30px rgba(168, 85, 247, 0.5);
+        }
+
+        .slide-title {
+            font-size: 16px;
+            font-weight: 700;
+            color: white;
+            flex: 1;
+            text-align: center;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .level-badge {
+            width: 36px;
+            height: 36px;
+            background: linear-gradient(135deg, var(--gold), #f59e0b);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            color: var(--dark);
+            box-shadow: 0 0 20px rgba(251, 191, 36, 0.5);
+            animation: rotate 3s linear infinite;
+        }
+
+        @keyframes rotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        /* XP Bar */
+        .xp-bar-container {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .xp-bar {
+            flex: 1;
+            height: 6px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 3px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .xp-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--blue), var(--purple));
+            transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .xp-fill::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+            animation: shimmer 2s infinite;
+        }
+
+        .coins-display {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            background: rgba(251, 191, 36, 0.1);
+            padding: 4px 12px;
+            border-radius: 20px;
+            border: 1px solid rgba(251, 191, 36, 0.3);
+        }
+
+        .coin-icon {
+            width: 20px;
+            height: 20px;
+            background: linear-gradient(135deg, var(--gold), #f59e0b);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            animation: coinSpin 3s linear infinite;
+        }
+
+        @keyframes coinSpin {
+            from { transform: rotateY(0deg); }
+            to { transform: rotateY(360deg); }
+        }
+
+        .coin-amount {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--gold);
+            text-shadow: 0 0 10px rgba(251, 191, 36, 0.5);
+        }
+
+        /* Card Stack Content Area */
+        .content-area {
+            flex: 1;
+            padding: 20px;
+            overflow: hidden;
+            position: relative;
+            perspective: 1000px;
+            background: linear-gradient(180deg, transparent, rgba(168, 85, 247, 0.05));
+        }
+
+        .card-stack {
+            height: 100%;
+            position: relative;
+        }
+
+        .slide-card {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #334155, #1e293b);
+            border: 2px solid rgba(168, 85, 247, 0.3);
+            border-radius: 16px;
+            box-shadow: 
+                0 10px 30px rgba(0, 0, 0, 0.3),
+                inset 0 1px 0 rgba(255, 255, 255, 0.1);
+            padding: 20px;
+            transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+            transform-style: preserve-3d;
+            backface-visibility: hidden;
+            overflow-y: auto;
+        }
+
+        .slide-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, transparent, rgba(168, 85, 247, 0.1));
+            border-radius: 16px;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .slide-card:hover::before {
+            opacity: 1;
+        }
+
+        .slide-card.active {
+            transform: translateX(0) scale(1);
+            opacity: 1;
+            z-index: 3;
+            border-color: var(--purple);
+            box-shadow: 
+                0 20px 40px rgba(168, 85, 247, 0.3),
+                0 0 60px rgba(168, 85, 247, 0.1);
+        }
+
+        .slide-card.prev {
+            transform: translateX(-100%) scale(0.9) rotateY(15deg);
+            opacity: 0;
+            z-index: 1;
+        }
+
+        .slide-card.next {
+            transform: translateX(100%) scale(0.9) rotateY(-15deg);
+            opacity: 0;
+            z-index: 1;
+        }
+
+        .slide-card.far {
+            transform: translateX(200%) scale(0.8);
+            opacity: 0;
+            z-index: 0;
+        }
+
+        /* Card content with gamified elements */
+        .welcome-hero {
+            text-align: center;
+            padding: 30px 0;
+        }
+
+        .hero-icon {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, var(--purple), var(--blue));
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 40px;
+            margin: 0 auto 20px;
+            box-shadow: 0 0 40px rgba(168, 85, 247, 0.5);
+            animation: float 3s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0) rotate(0deg); }
+            50% { transform: translateY(-10px) rotate(5deg); }
+        }
+
+        .info-cards {
+            display: grid;
+            gap: 12px;
+            margin-top: 20px;
+        }
+
+        .info-card {
+            background: linear-gradient(135deg, rgba(99, 102, 241, 0.1), rgba(168, 85, 247, 0.1));
+            border-radius: 12px;
+            padding: 12px 16px;
+            border: 1px solid rgba(168, 85, 247, 0.3);
+            transition: all 0.3s;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .info-card::after {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(168, 85, 247, 0.3), transparent);
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .info-card:hover {
+            transform: translateX(4px);
+            border-color: var(--gold);
+            box-shadow: 0 0 20px rgba(251, 191, 36, 0.3);
+        }
+
+        .info-card:hover::after {
+            opacity: 1;
+            animation: ripple 0.6s ease-out;
+        }
+
+        @keyframes ripple {
+            from { transform: scale(0); }
+            to { transform: scale(1); }
+        }
+
+        .info-card-title {
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--gold);
+            margin-bottom: 4px;
+            text-shadow: 0 0 10px rgba(251, 191, 36, 0.3);
+        }
+
+        .info-card-desc {
+            font-size: 12px;
+            color: #cbd5e1;
+            line-height: 1.4;
+        }
+
+        /* Interactive piece grid */
+        .piece-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+            margin: 20px 0;
+        }
+
+        .piece-card {
+            aspect-ratio: 1;
+            background: linear-gradient(135deg, #475569, #334155);
+            border: 2px solid rgba(168, 85, 247, 0.3);
+            border-radius: 12px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .piece-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, var(--purple), var(--blue));
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .piece-card:hover {
+            transform: scale(1.1) rotate(5deg);
+            border-color: var(--gold);
+            z-index: 10;
+            box-shadow: 0 0 30px rgba(251, 191, 36, 0.5);
+        }
+
+        .piece-card:hover::before {
+            opacity: 0.2;
+        }
+
+        .piece-card.discovered {
+            background: linear-gradient(135deg, var(--purple), var(--blue));
+            border-color: var(--gold);
+            animation: discover 0.5s ease;
+        }
+
+        @keyframes discover {
+            0% { transform: scale(0) rotate(180deg); }
+            50% { transform: scale(1.2) rotate(90deg); }
+            100% { transform: scale(1) rotate(0deg); }
+        }
+
+        .piece-icon {
+            font-size: 24px;
+            margin-bottom: 4px;
+            position: relative;
+            color: white;
+            text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+        }
+
+        .piece-value {
+            font-size: 10px;
+            font-weight: 600;
+            color: var(--gold);
+            position: relative;
+            text-shadow: 0 0 5px rgba(251, 191, 36, 0.5);
+        }
+
+        /* Phase cards with glow effects */
+        .phase-cards {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .phase-card {
+            background: linear-gradient(135deg, rgba(99, 102, 241, 0.1), rgba(168, 85, 247, 0.1));
+            border: 1px solid rgba(168, 85, 247, 0.3);
+            border-radius: 12px;
+            padding: 12px;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+
+        .phase-card::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 4px;
+            height: 100%;
+            background: var(--purple);
+            box-shadow: 0 0 10px rgba(168, 85, 247, 0.5);
+        }
+
+        .phase-card:hover {
+            transform: translateX(4px);
+            box-shadow: 0 0 20px rgba(168, 85, 247, 0.3);
+        }
+
+        .phase-card.warning::after {
+            background: var(--gold);
+            box-shadow: 0 0 10px rgba(251, 191, 36, 0.5);
+        }
+
+        .phase-card.danger::after {
+            background: var(--red);
+            box-shadow: 0 0 10px rgba(239, 68, 68, 0.5);
+        }
+
+        .phase-card.success::after {
+            background: var(--green);
+            box-shadow: 0 0 10px rgba(16, 185, 129, 0.5);
+        }
+
+        .phase-number {
+            width: 24px;
+            height: 24px;
+            background: linear-gradient(135deg, var(--purple), var(--blue));
+            color: white;
+            border-radius: 50%;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            font-weight: 600;
+            margin-right: 8px;
+            box-shadow: 0 0 15px rgba(168, 85, 247, 0.5);
+            animation: pulse 2s infinite;
+        }
+
+        .phase-title {
+            font-size: 13px;
+            font-weight: 600;
+            color: white;
+            margin-bottom: 4px;
+        }
+
+        .phase-desc {
+            font-size: 11px;
+            color: #cbd5e1;
+            line-height: 1.4;
+            margin-left: 32px;
+        }
+
+        /* Interactive demo area */
+        .demo-area {
+            background: linear-gradient(135deg, rgba(251, 191, 36, 0.1), rgba(245, 158, 11, 0.1));
+            border: 1px solid rgba(251, 191, 36, 0.3);
+            border-radius: 12px;
+            padding: 16px;
+            text-align: center;
+            margin: 20px 0;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .demo-area::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(251, 191, 36, 0.2), transparent);
+            animation: rotate 10s linear infinite;
+        }
+
+        .demo-pieces {
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+            margin-top: 12px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .demo-piece {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, #334155, #1e293b);
+            border: 2px solid rgba(251, 191, 36, 0.3);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        .demo-piece:hover {
+            transform: translateY(-4px) rotate(5deg) scale(1.1);
+            box-shadow: 0 8px 20px rgba(251, 191, 36, 0.4);
+            border-color: var(--gold);
+        }
+
+        .demo-piece.selected {
+            background: linear-gradient(135deg, var(--purple), var(--blue));
+            transform: translateY(-4px) scale(1.2);
+            box-shadow: 0 0 30px rgba(168, 85, 247, 0.5);
+        }
+
+        /* Achievement popup */
+        .achievement {
+            position: fixed;
+            top: 80px;
+            right: 20px;
+            background: linear-gradient(135deg, var(--gold), #f59e0b);
+            color: var(--dark);
+            padding: 12px 20px;
+            border-radius: 12px;
+            font-size: 13px;
+            font-weight: 600;
+            box-shadow: 0 10px 30px rgba(251, 191, 36, 0.5);
+            transform: translateX(400px);
+            transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+            z-index: 1000;
+        }
+
+        .achievement.show {
+            transform: translateX(0);
+            animation: achievementPulse 0.5s ease;
+        }
+
+        @keyframes achievementPulse {
+            0% { transform: translateX(0) scale(0.8); }
+            50% { transform: translateX(0) scale(1.1); }
+            100% { transform: translateX(0) scale(1); }
+        }
+
+        /* Navigation with game feel */
+        .navigation {
+            background: linear-gradient(180deg, #1e293b, #0f172a);
+            padding: 16px 20px;
+            border-top: 2px solid rgba(251, 191, 36, 0.3);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 16px;
+            position: relative;
+        }
+
+        .navigation::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, var(--gold), transparent);
+            animation: scanline 3s infinite;
+        }
+
+        @keyframes scanline {
+            0% { left: -100%; }
+            100% { left: 100%; }
+        }
+
+        .nav-dots {
+            display: flex;
+            gap: 6px;
+            flex: 1;
+            justify-content: center;
+        }
+
+        .nav-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #475569;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .nav-dot.active {
+            width: 24px;
+            border-radius: 4px;
+            background: linear-gradient(90deg, var(--purple), var(--blue));
+            box-shadow: 0 0 15px rgba(168, 85, 247, 0.5);
+        }
+
+        .nav-dot.completed {
+            background: var(--green);
+            box-shadow: 0 0 10px rgba(16, 185, 129, 0.5);
+        }
+
+        .nav-btn {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #475569, #334155);
+            border: 2px solid rgba(168, 85, 247, 0.3);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 0 20px rgba(168, 85, 247, 0.2);
+        }
+
+        .nav-btn:hover:not(:disabled) {
+            background: linear-gradient(135deg, var(--purple), var(--blue));
+            border-color: var(--gold);
+            transform: scale(1.1);
+            box-shadow: 0 0 30px rgba(251, 191, 36, 0.5);
+        }
+
+        .nav-btn:disabled {
+            opacity: 0.3;
+            cursor: not-allowed;
+        }
+
+        /* Scrollbar styling */
+        .slide-card::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .slide-card::-webkit-scrollbar-track {
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 3px;
+        }
+
+        .slide-card::-webkit-scrollbar-thumb {
+            background: linear-gradient(180deg, var(--purple), var(--blue));
+            border-radius: 3px;
+        }
+
+        /* Reward animation */
+        .reward-tag {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            background: rgba(251, 191, 36, 0.2);
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 10px;
+            color: var(--gold);
+            margin-top: 8px;
+            animation: glow 2s ease-in-out infinite;
+        }
+
+        @keyframes glow {
+            0%, 100% { box-shadow: 0 0 5px rgba(251, 191, 36, 0.5); }
+            50% { box-shadow: 0 0 20px rgba(251, 191, 36, 0.8); }
+        }
+    </style>
+</head>
+<body>
+    <div class="tutorial-container">
+        <!-- Gamified Header -->
+        <div class="header">
+            <div class="header-content">
+                <button class="back-btn" onclick="alert('Back to menu')">
+                    ←
+                </button>
+                <h1 class="slide-title" id="slideTitle">Welcome to Castellan!</h1>
+                <div class="level-badge">1</div>
+            </div>
+            <div class="xp-bar-container">
+                <div class="xp-bar">
+                    <div class="xp-fill" style="width: 14%"></div>
+                </div>
+                <div class="coins-display">
+                    <div class="coin-icon">₵</div>
+                    <span class="coin-amount" id="coinAmount">0</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Achievement Popup -->
+        <div class="achievement" id="achievement">
+            🏆 Achievement Unlocked!
+        </div>
+
+        <!-- Card Stack Content -->
+        <div class="content-area">
+            <div class="card-stack">
+                <!-- Slide 1: Welcome -->
+                <div class="slide-card active" data-slide="0">
+                    <div class="welcome-hero">
+                        <div class="hero-icon">🏰</div>
+                        <h2 style="font-size: 20px; color: white; margin-bottom: 8px;">Welcome to Castellan!</h2>
+                        <p style="font-size: 13px; color: #94a3b8;">Master the art of prediction in this strategic card game</p>
+                    </div>
+                    
+                    <div class="info-cards">
+                        <div class="info-card" onclick="earnCoins(5, this)">
+                            <div class="info-card-title">🎯 Objective</div>
+                            <div class="info-card-desc">Predict how many tricks you'll win each round and match your prediction exactly for bonus points!</div>
+                            <div class="reward-tag">
+                                <span>+5</span>
+                                <div class="coin-icon" style="width: 14px; height: 14px; font-size: 8px;">₵</div>
+                            </div>
+                        </div>
+                        <div class="info-card" onclick="earnCoins(5, this)">
+                            <div class="info-card-title">👥 Players</div>
+                            <div class="info-card-desc">4 players compete with 8 pieces each per round</div>
+                            <div class="reward-tag">
+                                <span>+5</span>
+                                <div class="coin-icon" style="width: 14px; height: 14px; font-size: 8px;">₵</div>
+                            </div>
+                        </div>
+                        <div class="info-card" onclick="earnCoins(5, this)">
+                            <div class="info-card-title">🏆 Victory</div>
+                            <div class="info-card-desc">First player to reach 50 points wins the game</div>
+                            <div class="reward-tag">
+                                <span>+5</span>
+                                <div class="coin-icon" style="width: 14px; height: 14px; font-size: 8px;">₵</div>
+                            </div>
+                        </div>
+                        <div class="info-card" onclick="earnCoins(10, this)" style="border-left-color: var(--gold);">
+                            <div class="info-card-title">💡 Key Strategy</div>
+                            <div class="info-card-desc">It's not about winning the most tricks — it's about winning exactly what you predict!</div>
+                            <div class="reward-tag">
+                                <span>+10</span>
+                                <div class="coin-icon" style="width: 14px; height: 14px; font-size: 8px;">₵</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Slide 2: Pieces -->
+                <div class="slide-card next" data-slide="1">
+                    <h2 style="font-size: 16px; color: white; margin-bottom: 16px; text-align: center;">Know Your Army</h2>
+                    
+                    <div class="piece-grid">
+                        <div class="piece-card" onclick="discoverPiece(this, '帥', 11)">
+                            <div class="piece-icon">?</div>
+                            <div class="piece-value" style="display: none;">11</div>
+                        </div>
+                        <div class="piece-card" onclick="discoverPiece(this, '將', 11)">
+                            <div class="piece-icon">?</div>
+                            <div class="piece-value" style="display: none;">11</div>
+                        </div>
+                        <div class="piece-card" onclick="discoverPiece(this, '仕', 10)">
+                            <div class="piece-icon">?</div>
+                            <div class="piece-value" style="display: none;">10</div>
+                        </div>
+                        <div class="piece-card" onclick="discoverPiece(this, '士', 10)">
+                            <div class="piece-icon">?</div>
+                            <div class="piece-value" style="display: none;">10</div>
+                        </div>
+                        <div class="piece-card" onclick="discoverPiece(this, '相', 9)">
+                            <div class="piece-icon">?</div>
+                            <div class="piece-value" style="display: none;">9</div>
+                        </div>
+                        <div class="piece-card" onclick="discoverPiece(this, '象', 9)">
+                            <div class="piece-icon">?</div>
+                            <div class="piece-value" style="display: none;">9</div>
+                        </div>
+                        <div class="piece-card" onclick="discoverPiece(this, '傌', 8)">
+                            <div class="piece-icon">?</div>
+                            <div class="piece-value" style="display: none;">8</div>
+                        </div>
+                        <div class="piece-card" onclick="discoverPiece(this, '馬', 8)">
+                            <div class="piece-icon">?</div>
+                            <div class="piece-value" style="display: none;">8</div>
+                        </div>
+                        <div class="piece-card" onclick="discoverPiece(this, '俥', 7)">
+                            <div class="piece-icon">?</div>
+                            <div class="piece-value" style="display: none;">7</div>
+                        </div>
+                        <div class="piece-card" onclick="discoverPiece(this, '車', 7)">
+                            <div class="piece-icon">?</div>
+                            <div class="piece-value" style="display: none;">7</div>
+                        </div>
+                        <div class="piece-card" onclick="discoverPiece(this, '炮', 6)">
+                            <div class="piece-icon">?</div>
+                            <div class="piece-value" style="display: none;">6</div>
+                        </div>
+                        <div class="piece-card" onclick="discoverPiece(this, '砲', 6)">
+                            <div class="piece-icon">?</div>
+                            <div class="piece-value" style="display: none;">6</div>
+                        </div>
+                        <div class="piece-card" onclick="discoverPiece(this, '兵', '1-5')">
+                            <div class="piece-icon">?</div>
+                            <div class="piece-value" style="display: none;">1-5</div>
+                        </div>
+                        <div class="piece-card" onclick="discoverPiece(this, '兵', '1-5')">
+                            <div class="piece-icon">?</div>
+                            <div class="piece-value" style="display: none;">1-5</div>
+                        </div>
+                        <div class="piece-card" onclick="discoverPiece(this, '卒', '1-5')">
+                            <div class="piece-icon">?</div>
+                            <div class="piece-value" style="display: none;">1-5</div>
+                        </div>
+                        <div class="piece-card" onclick="discoverPiece(this, '卒', '1-5')">
+                            <div class="piece-icon">?</div>
+                            <div class="piece-value" style="display: none;">1-5</div>
+                        </div>
+                    </div>
+
+                    <div class="info-card" style="margin-top: 16px;">
+                        <div class="info-card-title">📏 Rule</div>
+                        <div class="info-card-desc">Higher value pieces beat lower ones. When values are equal, the first played wins!</div>
+                    </div>
+                </div>
+
+                <!-- Slide 3: Preparation -->
+                <div class="slide-card far" data-slide="2">
+                    <h2 style="font-size: 16px; color: white; margin-bottom: 16px;">Phase 1: Preparation</h2>
+                    
+                    <div class="phase-cards">
+                        <div class="phase-card" onclick="earnCoins(3, this)">
+                            <div>
+                                <span class="phase-number">1</span>
+                                <span class="phase-title">Deal Phase</span>
+                            </div>
+                            <div class="phase-desc">Each player receives 8 random pieces from the deck</div>
+                        </div>
+                        
+                        <div class="phase-card warning" onclick="earnCoins(3, this)">
+                            <div>
+                                <span class="phase-number">2</span>
+                                <span class="phase-title">Check for Weak Hand</span>
+                            </div>
+                            <div class="phase-desc">If your strongest piece is 象 (9) or lower, you may request a redeal for all players</div>
+                            <div style="background: rgba(251, 191, 36, 0.1); border-radius: 8px; padding: 8px; margin: 8px 0 0 32px; font-size: 10px; color: var(--gold);">
+                                ⚠️ Warning: Requesting redeal reduces your score multiplier!
+                            </div>
+                        </div>
+                        
+                        <div class="phase-card danger" onclick="earnCoins(3, this)">
+                            <div>
+                                <span class="phase-number">3</span>
+                                <span class="phase-title">Starting Player</span>
+                            </div>
+                            <div class="phase-desc">The player holding 帥 (General) will lead the first trick</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Slide 4: Declaration -->
+                <div class="slide-card far" data-slide="3">
+                    <h2 style="font-size: 16px; color: white; margin-bottom: 16px;">Phase 2: Declaration</h2>
+                    
+                    <div class="phase-cards">
+                        <div class="phase-card" onclick="earnCoins(5, this)">
+                            <div>
+                                <span class="phase-number">1</span>
+                                <span class="phase-title">Make Your Prediction</span>
+                            </div>
+                            <div class="phase-desc">Each player declares how many tricks (0-8) they expect to win this round</div>
+                        </div>
+                        
+                        <div class="phase-card danger" onclick="earnCoins(5, this)">
+                            <div>
+                                <span class="phase-number">!</span>
+                                <span class="phase-title">The Forcing Rule</span>
+                            </div>
+                            <div class="phase-desc">Total declarations cannot equal 8! This guarantees competition</div>
+                        </div>
+                    </div>
+
+                    <div class="demo-area">
+                        <div style="font-size: 12px; font-weight: 600; color: var(--gold); position: relative; z-index: 1;">Example Scenario</div>
+                        <div style="font-size: 11px; color: #cbd5e1; margin-top: 8px; line-height: 1.5; position: relative; z-index: 1;">
+                            Players A, B, C declared: 2, 2, 3 (total = 7)<br>
+                            Player D <strong style="color: var(--red);">CANNOT</strong> declare 1 (would make total 8)
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Slide 5: Playing -->
+                <div class="slide-card far" data-slide="4">
+                    <h2 style="font-size: 16px; color: white; margin-bottom: 16px;">Phase 3: Playing</h2>
+                    
+                    <div class="phase-cards">
+                        <div class="phase-card" onclick="earnCoins(3, this)">
+                            <div>
+                                <span class="phase-number">1</span>
+                                <span class="phase-title">Leader Plays First</span>
+                            </div>
+                            <div class="phase-desc">Play 1-6 pieces in a valid combination</div>
+                        </div>
+                        
+                        <div class="phase-card" onclick="earnCoins(3, this)">
+                            <div>
+                                <span class="phase-number">2</span>
+                                <span class="phase-title">Others Follow</span>
+                            </div>
+                            <div class="phase-desc">Must play same number of pieces (can be invalid to forfeit)</div>
+                        </div>
+                        
+                        <div class="phase-card success" onclick="earnCoins(3, this)">
+                            <div>
+                                <span class="phase-number">3</span>
+                                <span class="phase-title">Winner Takes All</span>
+                            </div>
+                            <div class="phase-desc">Highest valid play wins the trick and leads next</div>
+                        </div>
+                    </div>
+
+                    <div class="info-card" style="margin-top: 16px; border-left-color: var(--gold);">
+                        <div class="info-card-title">💡 Strategic Forfeit</div>
+                        <div class="info-card-desc">Play invalid combinations intentionally to avoid winning unwanted tricks!</div>
+                    </div>
+                </div>
+
+                <!-- Slide 6: Valid Plays -->
+                <div class="slide-card far" data-slide="5">
+                    <h2 style="font-size: 16px; color: white; margin-bottom: 16px;">Valid Play Types</h2>
+                    
+                    <div class="demo-area">
+                        <div style="font-size: 12px; font-weight: 600; color: var(--gold); position: relative; z-index: 1;">Try clicking pieces to combine them!</div>
+                        <div class="demo-pieces">
+                            <div class="demo-piece" onclick="this.classList.toggle('selected')">砲</div>
+                            <div class="demo-piece" onclick="this.classList.toggle('selected')">砲</div>
+                            <div class="demo-piece" onclick="this.classList.toggle('selected')">馬</div>
+                            <div class="demo-piece" onclick="this.classList.toggle('selected')">俥</div>
+                        </div>
+                    </div>
+
+                    <div class="info-cards" style="margin-top: 16px;">
+                        <div class="info-card" onclick="earnCoins(2, this)">
+                            <div class="info-card-title">Single</div>
+                            <div class="info-card-desc">Any one piece</div>
+                        </div>
+                        <div class="info-card" onclick="earnCoins(2, this)">
+                            <div class="info-card-title">Pair</div>
+                            <div class="info-card-desc">Two pieces of same type AND color</div>
+                        </div>
+                        <div class="info-card" onclick="earnCoins(2, this)">
+                            <div class="info-card-title">Triple</div>
+                            <div class="info-card-desc">Three soldiers only (兵/卒)</div>
+                        </div>
+                        <div class="info-card" onclick="earnCoins(2, this)">
+                            <div class="info-card-title">Straight</div>
+                            <div class="info-card-desc">3+ consecutive values, same color</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Slide 7: Scoring -->
+                <div class="slide-card far" data-slide="6">
+                    <h2 style="font-size: 16px; color: white; margin-bottom: 16px;">Scoring System</h2>
+                    
+                    <div class="phase-cards">
+                        <div class="phase-card success" onclick="earnCoins(5, this)">
+                            <div>
+                                <span class="phase-number">✓</span>
+                                <span class="phase-title">Perfect Match</span>
+                            </div>
+                            <div class="phase-desc">Win exactly what you declared = Tricks + 5 bonus</div>
+                            <div style="font-size: 11px; color: var(--green); margin: 4px 0 0 32px;">
+                                Example: Declare 2, Win 2 = 2 + 5 = <strong>+7 points</strong>
+                            </div>
+                        </div>
+                        
+                        <div class="phase-card danger" onclick="earnCoins(5, this)">
+                            <div>
+                                <span class="phase-number">✗</span>
+                                <span class="phase-title">Miss Target</span>
+                            </div>
+                            <div class="phase-desc">Penalty = -|difference| between declared and won</div>
+                            <div style="font-size: 11px; color: var(--red); margin: 4px 0 0 32px;">
+                                Example: Declare 3, Win 1 = -(3-1) = <strong>-2 points</strong>
+                            </div>
+                        </div>
+                        
+                        <div class="phase-card warning" onclick="earnCoins(5, this)">
+                            <div>
+                                <span class="phase-number">💎</span>
+                                <span class="phase-title">Zero Strategy</span>
+                            </div>
+                            <div class="phase-desc">Declaring 0 and winning 0 tricks = +3 points</div>
+                            <div style="font-size: 11px; color: var(--gold); margin: 4px 0 0 32px;">
+                                High risk strategy for weak hands!
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="info-card" style="margin-top: 16px; background: linear-gradient(135deg, rgba(251, 191, 36, 0.2), rgba(245, 158, 11, 0.2)); border-left-color: var(--gold);">
+                        <div class="info-card-title">🎯 Ready to Play?</div>
+                        <div class="info-card-desc">You've learned the basics! Jump in and start mastering Castellan!</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Navigation -->
+        <div class="navigation">
+            <button class="nav-btn" onclick="prevSlide()" disabled>
+                ←
+            </button>
+            
+            <div class="nav-dots">
+                <div class="nav-dot active" onclick="goToSlide(0)"></div>
+                <div class="nav-dot" onclick="goToSlide(1)"></div>
+                <div class="nav-dot" onclick="goToSlide(2)"></div>
+                <div class="nav-dot" onclick="goToSlide(3)"></div>
+                <div class="nav-dot" onclick="goToSlide(4)"></div>
+                <div class="nav-dot" onclick="goToSlide(5)"></div>
+                <div class="nav-dot" onclick="goToSlide(6)"></div>
+            </div>
+            
+            <button class="nav-btn" onclick="nextSlide()">
+                →
+            </button>
+        </div>
+    </div>
+
+    <script>
+        let currentSlide = 0;
+        const totalSlides = 7;
+        const slides = document.querySelectorAll('.slide-card');
+        const dots = document.querySelectorAll('.nav-dot');
+        const titles = [
+            'Welcome to Castellan!',
+            'Know Your Army',
+            'Phase 1: Preparation',
+            'Phase 2: Declaration',
+            'Phase 3: Playing',
+            'Valid Play Types',
+            'Scoring System'
+        ];
+        let coins = 0;
+        let discoveredPieces = 0;
+        const clickedElements = new Set();
+
+        function updateSlide() {
+            slides.forEach((slide, index) => {
+                slide.classList.remove('active', 'prev', 'next', 'far');
+                
+                if (index === currentSlide) {
+                    slide.classList.add('active');
+                } else if (index === currentSlide - 1) {
+                    slide.classList.add('prev');
+                } else if (index === currentSlide + 1) {
+                    slide.classList.add('next');
+                } else {
+                    slide.classList.add('far');
+                }
+            });
+
+            dots.forEach((dot, index) => {
+                dot.classList.remove('active', 'completed');
+                if (index === currentSlide) {
+                    dot.classList.add('active');
+                } else if (index < currentSlide) {
+                    dot.classList.add('completed');
+                }
+            });
+
+            document.getElementById('slideTitle').textContent = titles[currentSlide];
+            
+            // Update XP bar
+            const progress = ((currentSlide + 1) / totalSlides) * 100;
+            document.querySelector('.xp-fill').style.width = progress + '%';
+
+            // Update nav buttons
+            document.querySelectorAll('.nav-btn')[0].disabled = currentSlide === 0;
+            document.querySelectorAll('.nav-btn')[1].disabled = currentSlide === totalSlides - 1;
+        }
+
+        function goToSlide(index) {
+            currentSlide = index;
+            updateSlide();
+        }
+
+        function prevSlide() {
+            if (currentSlide > 0) {
+                currentSlide--;
+                updateSlide();
+            }
+        }
+
+        function nextSlide() {
+            if (currentSlide < totalSlides - 1) {
+                currentSlide++;
+                updateSlide();
+                showAchievement(`Progress: ${currentSlide + 1}/${totalSlides} Complete!`);
+            }
+        }
+
+        function earnCoins(amount, element) {
+            if (!clickedElements.has(element)) {
+                clickedElements.add(element);
+                coins += amount;
+                document.getElementById('coinAmount').textContent = coins;
+                element.style.opacity = '0.7';
+                element.style.pointerEvents = 'none';
+                showAchievement(`+${amount} Coins Earned!`);
+                
+                // Add visual feedback
+                element.style.borderColor = 'var(--green)';
+                element.style.boxShadow = '0 0 30px rgba(16, 185, 129, 0.5)';
+            }
+        }
+
+        function discoverPiece(card, piece, value) {
+            if (!card.classList.contains('discovered')) {
+                card.classList.add('discovered');
+                card.querySelector('.piece-icon').textContent = piece;
+                card.querySelector('.piece-value').style.display = 'block';
+                card.querySelector('.piece-value').textContent = value;
+                discoveredPieces++;
+                earnCoins(2, card);
+                
+                if (discoveredPieces === 16) {
+                    showAchievement('All Pieces Discovered! +20 Bonus Coins!');
+                    coins += 20;
+                    document.getElementById('coinAmount').textContent = coins;
+                }
+            }
+        }
+
+        function showAchievement(text) {
+            const achievement = document.getElementById('achievement');
+            achievement.textContent = `🏆 ${text}`;
+            achievement.classList.add('show');
+            
+            setTimeout(() => {
+                achievement.classList.remove('show');
+            }, 3000);
+        }
+
+        // Initialize
+        updateSlide();
+
+        // Keyboard navigation
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowLeft') prevSlide();
+            if (e.key === 'ArrowRight') nextSlide();
+        });
+    </script>
+</body>
+</html>

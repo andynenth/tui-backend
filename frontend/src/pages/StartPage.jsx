@@ -64,7 +64,7 @@ const StartPage = () => {
   return (
     <>
       <Layout
-        title="Liap TUI - Welcome"
+        title="Castellan - Welcome"
         showConnection={false}
         showHeader={false}
       >
@@ -98,7 +98,7 @@ const StartPage = () => {
               </div>
 
               {/* Header */}
-              <h1 className="sp-game-title">Welcome to Liap TUI</h1>
+              <h1 className="sp-game-title">Welcome to Castellan</h1>
               <p className="sp-game-subtitle">
                 Enter your player name to start playing
               </p>

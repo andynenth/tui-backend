@@ -4,8 +4,8 @@ Example showing how WebSocket handlers will transition from sync to async room o
 This file demonstrates the migration pattern for Phase 1.
 """
 
-from engine.room_manager import RoomManager
-from engine.async_compat import AsyncCompatRoomManager, AsyncCompatRoom
+from backend.engine.room_manager import RoomManager
+from backend.engine.async_compat import AsyncCompatRoomManager, AsyncCompatRoom
 
 # Initialize the compatibility layer
 sync_room_manager = RoomManager()

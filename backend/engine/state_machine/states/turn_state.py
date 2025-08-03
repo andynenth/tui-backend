@@ -815,7 +815,7 @@ class TurnState(GameState):
     ):
         """🚀 ENTERPRISE: Broadcast play event using centralized system"""
         try:
-            from engine.rules import get_play_type
+            from backend.engine.rules import get_play_type
 
             # Get play type
             play_type = get_play_type(pieces) if pieces else "UNKNOWN"

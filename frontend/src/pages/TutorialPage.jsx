@@ -27,14 +27,14 @@ const TutorialPage = () => {
   const slides = [
     // Slide 1: Welcome
     {
-      title: 'Welcome to Liap!',
+      title: 'Welcome to Castellan!',
       content: (
         <div className="tutorial-phase">
           <div className="prep-steps">
             <div className="prep-step">
               <div className="step-number">🎮</div>
               <div className="step-text">
-                <strong>What is Liap?</strong>
+                <strong>What is Castellan?</strong>
                 <p className="step-detail">A strategic trick-taking game where prediction meets skill. Outsmart your opponents by accurately forecasting your victories!</p>
               </div>
             </div>

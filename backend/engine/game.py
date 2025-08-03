@@ -3,13 +3,13 @@
 import random
 from typing import List
 
-import engine.ai as ai
-from engine.piece import Piece
-from engine.player import Player
-from engine.rules import get_play_type, get_valid_declares, is_valid_play
-from engine.scoring import calculate_round_scores
-from engine.turn_resolution import TurnPlay, resolve_turn
-from engine.win_conditions import WinConditionType, get_winners, is_game_over
+import backend.engine.ai as ai
+from backend.engine.piece import Piece
+from backend.engine.player import Player
+from backend.engine.rules import get_play_type, get_valid_declares, is_valid_play
+from backend.engine.scoring import calculate_round_scores
+from backend.engine.turn_resolution import TurnPlay, resolve_turn
+from backend.engine.win_conditions import WinConditionType, get_winners, is_game_over
 
 
 class Game:

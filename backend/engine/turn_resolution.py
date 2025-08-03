@@ -3,9 +3,9 @@
 from dataclasses import dataclass
 from typing import List, Optional
 
-from engine.piece import Piece
-from engine.player import Player
-from engine.rules import compare_plays
+from backend.engine.piece import Piece
+from backend.engine.player import Player
+from backend.engine.rules import compare_plays
 
 
 @dataclass
