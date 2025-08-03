@@ -13,7 +13,7 @@ sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 from engine.piece import Piece
 from engine.room import Room
 from engine.state_machine.core import ActionType, GameAction, GamePhase
-from tests.test_helpers import create_strong_hand, create_test_hand_realistic
+from tests.utilities.helpers.test_helpers import create_strong_hand, create_test_hand_realistic
 
 
 async def test_realistic_integration():
