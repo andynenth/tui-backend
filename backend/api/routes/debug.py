@@ -7,6 +7,7 @@ from fastapi import APIRouter, HTTPException, Query
 from fastapi.responses import JSONResponse
 
 from backend.api.services.event_store import event_store
+from backend.api.services.log_buffer import log_buffer, LogLevel
 
 logger = logging.getLogger(__name__)
 
@@ -361,4 +362,104 @@ async def validate_room_events(room_id: str):
 
     except Exception as e:
         logger.error(f"Error validating events for room {room_id}: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+# === LOG BUFFER ENDPOINTS ===
+
+@router.get("/logs")
+async def get_debug_logs(
+    limit: Optional[int] = Query(100, le=1000, description="Maximum entries to return"),
+    level: Optional[LogLevel] = Query(None, description="Filter by log level"),
+    logger_filter: Optional[str] = Query(None, description="Filter by logger name (substring match)"),
+    since_minutes: Optional[int] = Query(None, description="Only logs from last N minutes"),
+    search: Optional[str] = Query(None, description="Search in log messages (case-insensitive)")
+):
+    """
+    Retrieve filtered log entries from the buffer for Claude AI debugging assistance.
+    
+    Args:
+        limit: Maximum entries to return (default: 100, max: 1000)
+        level: Filter by log level (DEBUG, INFO, WARNING, ERROR, CRITICAL)
+        logger_filter: Filter by logger name (substring match)
+        since_minutes: Only logs from last N minutes
+        search: Search in log messages (case-insensitive)
+        
+    Returns:
+        Filtered log entries with metadata
+    """
+    try:
+        entries = log_buffer.get_entries(
+            limit=limit,
+            level=level,
+            logger_filter=logger_filter,
+            since_minutes=since_minutes,
+            search=search
+        )
+        
+        return {
+            "success": True,
+            "data": entries,
+            "count": len(entries),
+            "filters_applied": {
+                k: v for k, v in {
+                    "limit": limit,
+                    "level": level.value if level else None,
+                    "logger_filter": logger_filter,
+                    "since_minutes": since_minutes,
+                    "search": search
+                }.items() if v is not None
+            }
+        }
+        
+    except Exception as e:
+        logger.error(f"Error retrieving log entries: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.get("/logs/stats")
+async def get_log_stats():
+    """
+    Get log buffer statistics and health information.
+    
+    Returns:
+        Buffer statistics including entry counts, timestamps, and level distribution
+    """
+    try:
+        stats = log_buffer.get_stats()
+        
+        return {
+            "success": True,
+            "data": stats
+        }
+        
+    except Exception as e:
+        logger.error(f"Error retrieving log statistics: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.delete("/logs")
+async def clear_logs():
+    """
+    Clear all log entries from the buffer (useful for testing).
+    
+    Returns:
+        Confirmation of cleared entries
+    """
+    try:
+        # Get count before clearing
+        stats = log_buffer.get_stats()
+        entries_count = stats.get('total_entries', 0)
+        
+        # Clear the buffer
+        log_buffer.clear()
+        
+        return {
+            "success": True,
+            "message": "Log buffer cleared",
+            "entries_removed": entries_count
+        }
+        
+    except Exception as e:
+        logger.error(f"Error clearing log buffer: {e}")
         raise HTTPException(status_code=500, detail=str(e))

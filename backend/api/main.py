@@ -36,6 +36,25 @@ try:
 except ImportError:
     print("Warning: Logging configuration not available, using defaults")
 
+# ✅ Set up log buffer for Claude AI access
+import logging
+from backend.api.services.log_buffer import log_buffer_handler
+
+def setup_log_buffer():
+    """Configure log buffer handler for Claude AI debugging access"""
+    root_logger = logging.getLogger()
+    
+    # Add the log buffer handler to capture all logs
+    root_logger.addHandler(log_buffer_handler)
+    
+    # Ensure we capture all log levels (the individual loggers can still filter)
+    if root_logger.level > logging.DEBUG:
+        root_logger.setLevel(logging.DEBUG)
+    
+    print("✅ Log buffer enabled for Claude AI access")
+
+setup_log_buffer()
+
 # ✅ Read configuration values from environment variables.
 # These variables control the static file directory, the main HTML file, and allowed origins for CORS.
 STATIC_DIR = os.getenv(
