@@ -1,0 +1,8 @@
+# Temporary analysis files
+*.tmp
+*.cache
+*.pyc
+__pycache__/
+
+# Keep only final outputs
+# Intermediate analysis results can be regenerated
