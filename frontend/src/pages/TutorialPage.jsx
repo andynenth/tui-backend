@@ -238,56 +238,50 @@ const TutorialPage = () => {
     {
       title: 'Phase 1: Preparation',
       content: (
-        <div className="tutorial-phase">
-          <div className="prep-steps">
-            <div className="prep-step">
-              <div className="step-number">1</div>
-              <div className="step-text">
-                <strong>Deal Phase</strong>
-                <p className="step-detail">
-                  Each player receives 8 random pieces from the deck. These are
-                  your soldiers for this round.
-                </p>
-              </div>
+        <div style={{ padding: '20px', textAlign: 'center' }}>
+          <div style={{ fontSize: '48px', marginBottom: '16px' }}>🎴</div>
+          
+          <h2 style={{ fontSize: '18px', color: '#1f2937', marginBottom: '20px', fontWeight: 600 }}>
+            Getting Ready to Play
+          </h2>
+          
+          <div style={{ marginBottom: '24px' }}>
+            <p style={{ fontSize: '14px', color: '#475569', marginBottom: '12px' }}>
+              Each player gets 8 pieces
+            </p>
+            <div style={{ display: 'flex', gap: '6px', justifyContent: 'center', marginBottom: '8px' }}>
+              <GamePiece piece={{ kind: 'GENERAL', color: 'RED', value: 11 }} size="mini" />
+              <GamePiece piece={{ kind: 'ADVISOR', color: 'BLACK', value: 10 }} size="mini" />
+              <GamePiece piece={{ kind: 'ELEPHANT', color: 'RED', value: 9 }} size="mini" />
+              <GamePiece piece={{ kind: 'HORSE', color: 'BLACK', value: 8 }} size="mini" />
+              <GamePiece piece={{ kind: 'CHARIOT', color: 'RED', value: 7 }} size="mini" />
+              <GamePiece piece={{ kind: 'CANNON', color: 'BLACK', value: 6 }} size="mini" />
+              <GamePiece piece={{ kind: 'SOLDIER', color: 'RED', value: 3 }} size="mini" />
+              <GamePiece piece={{ kind: 'SOLDIER', color: 'BLACK', value: 2 }} size="mini" />
             </div>
+          </div>
 
-            <div className="prep-step weak">
-              <div className="step-number">2</div>
-              <div className="step-text">
-                <strong>Check for Weak Hand</strong>
-                <div className="weak-definition">
-                  <div>
-                    If your strongest piece is only{' '}
-                    <GamePiece
-                      piece={{ kind: 'ELEPHANT', color: 'BLACK', value: 9 }}
-                      size="mini"
-                    />{' '}
-                    or lower:
-                  </div>
-                  <div className="redeal-option">
-                    • You may request a redeal
-                    <br />
-                    • All players get new hands
-                    <br />•{' '}
-                    <span className="warning">
-                      Warning: Reduces your score multiplier!
-                    </span>
-                  </div>
-                </div>
-              </div>
-            </div>
+          <div style={{ borderTop: '1px solid #e5e7eb', paddingTop: '20px', marginBottom: '20px' }}>
+            <p style={{ fontSize: '14px', color: '#1f2937', marginBottom: '8px' }}>
+              <span style={{ display: 'inline-block', marginRight: '6px' }}>👑</span>
+              Player with{' '}
+              <GamePiece piece={{ kind: 'GENERAL', color: 'RED', value: 11 }} size="mini" />
+              {' '}goes first
+            </p>
+          </div>
 
-            <div className="prep-step starter">
-              <div className="step-number">3</div>
-              <div className="step-text">
-                <strong>Starting Player</strong>
-                <p className="step-detail">
-                  The player holding{' '}
-                  <GamePiece piece={samplePieces.general} size="mini" /> will
-                  lead the first trick and set the pace for the round.
-                </p>
-              </div>
-            </div>
+          <div style={{ borderTop: '1px solid #e5e7eb', paddingTop: '20px' }}>
+            <p style={{ fontSize: '13px', color: '#64748b', marginBottom: '8px' }}>
+              <span style={{ color: '#f59e0b', fontWeight: 600 }}>Special Rule:</span>{' '}
+              If your best piece is ≤{' '}
+              <GamePiece piece={{ kind: 'ELEPHANT', color: 'BLACK', value: 9 }} size="mini" />
+            </p>
+            <p style={{ fontSize: '12px', color: '#16a34a' }}>
+              ✓ You may request a redeal
+            </p>
+            <p style={{ fontSize: '11px', color: '#dc2626', marginTop: '4px' }}>
+              ⚠️ Makes all scores bigger (good AND bad!)
+            </p>
           </div>
         </div>
       ),

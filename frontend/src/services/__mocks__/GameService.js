@@ -63,6 +63,9 @@ export class GameService {
     }
 
     try {
+      if (!networkService) {
+        throw new Error('NetworkService not available');
+      }
       await networkService.connectToRoom(roomId);
       this.setState(
         {
