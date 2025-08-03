@@ -35,12 +35,16 @@ jobs:
     - name: Run quick phase validation
       run: |
         cd backend
-        python -m pytest tests/test_phase_transition_errors.py::test_phase_transitions_are_valid -v --tb=short
+        python -m pytest tests/unit/engine/test_phase_transition_errors.py::test_phase_transitions_are_valid -v --tb=short
+      env:
+        PYTHONPATH: ${{ github.workspace }}/backend
     
     - name: Run all phase tests
       run: |
         cd backend
         python run_phase_tests.py 2>&1 | tee test_output.txt
+      env:
+        PYTHONPATH: ${{ github.workspace }}/backend
     
     - name: Upload test results
       if: always()
