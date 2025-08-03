@@ -3,7 +3,7 @@
 import uuid  # Import the uuid module for generating unique identifiers.
 from typing import Dict  # Import Dict for type hinting dictionaries.
 
-from backend.engine.room import (  # Import the Room class, which represents a single game room.
+from .room import (  # Import the Room class, which represents a single game room.
     Room,
 )
 

@@ -19,6 +19,7 @@ const DeclarationContent = ({
   declarations = {},
   totalDeclared = 0,
   consecutiveZeros = 0,
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   redealMultiplier = 1,
   onDeclare,
 }) => {

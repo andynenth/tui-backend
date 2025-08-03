@@ -218,7 +218,7 @@
   height: 100%;
   display: flex;
   flex-direction: column;
-  padding: 20px 0;
+  padding: 5px 0;
 }
 
 /* Welcome hero section */
@@ -268,7 +268,6 @@
 .info-cards {
   display: grid;
   gap: 10px;
-  margin-top: 20px;
   padding: 0 10px;
 }
 
@@ -671,23 +670,12 @@
   margin-bottom: 24px;
 }
 
-.prep-emoji {
-  font-size: 48px;
-  margin-bottom: 12px;
-}
-
 .prep-title {
   font-size: 24px;
   color: #1f2937;
   font-weight: 700;
   letter-spacing: -0.025em;
   margin-bottom: 8px;
-}
-
-.prep-subtitle {
-  font-size: 14px;
-  color: #64748b;
-  font-style: italic;
 }
 
 .prep-content {
@@ -711,17 +699,12 @@
   margin: 0 0 8px 0;
 }
 
-.prep-item-pieces {
-  display: flex;
-  gap: 4px;
-  flex-wrap: wrap;
-}
-
 .prep-item-text {
   font-size: 14px;
   color: #475569;
   margin: 0;
   line-height: 1.6;
+  display: block;
 }
 
 .prep-item-text-with-margin {
@@ -729,6 +712,29 @@
   color: #475569;
   line-height: 1.6;
   margin-bottom: 8px;
+  display: block;
+}
+
+/* Make GamePiece components inline and smaller in prep text */
+.prep-item-text .game-piece,
+.prep-item-text-with-margin .game-piece {
+  display: inline-block !important;
+  vertical-align: middle;
+  margin: 0 4px;
+}
+
+.prep-item-text .game-piece--mini,
+.prep-item-text-with-margin .game-piece--mini {
+  width: 18px !important;
+  height: 18px !important;
+  font-size: 9px !important;
+}
+
+/* Ensure spans are inline */
+.prep-item-text span,
+.prep-item-text-with-margin span {
+  display: inline;
+  vertical-align: middle;
 }
 
 .prep-divider {

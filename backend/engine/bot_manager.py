@@ -6,13 +6,13 @@ import random
 import time
 from typing import Dict, List, Optional, Set, Any
 
-import backend.engine.ai as ai
-from backend.engine.player import Player
-from backend.engine.state_machine.core import ActionType, GameAction
+from . import ai
+from .player import Player
+from .state_machine.core import ActionType, GameAction
 
 # Try to import async bot strategy for improved performance
 try:
-    from backend.engine.async_bot_strategy import async_bot_strategy
+    from .async_bot_strategy import async_bot_strategy
 
     ASYNC_BOT_STRATEGY_AVAILABLE = True
 except ImportError:
@@ -383,7 +383,7 @@ class GameBotHandler:
         print(
             f"🔍 BOT_HANDLER: _handle_declaration_phase called with last_declarer: '{last_declarer}'"
         )
-        from backend.socket_manager import broadcast
+        from ..socket_manager import broadcast
 
         # Get declaration order
         declaration_order = self._get_declaration_order()
@@ -456,7 +456,7 @@ class GameBotHandler:
         print(
             f"🔍 BOT_HANDLER: _bot_declare called for bot {bot.name} at position {position}"
         )
-        from backend.socket_manager import broadcast
+        from ..socket_manager import broadcast
 
         try:
             # Get previous declarations
@@ -660,7 +660,7 @@ class GameBotHandler:
         """Make a bot play"""
         print(f"🔍 BOT_HANDLER: _bot_play called for bot {bot.name}")
         try:
-            from backend.socket_manager import broadcast
+            from ..socket_manager import broadcast
         except ImportError:
 
             def broadcast(*args, **kwargs):
@@ -701,7 +701,7 @@ class GameBotHandler:
 
             # Get indices and play type
             indices = self._get_piece_indices(bot.hand, selected)
-            from backend.engine.rules import get_play_type
+            from .rules import get_play_type
 
             play_type = get_play_type(selected) if selected else "UNKNOWN"
 
@@ -805,7 +805,7 @@ class GameBotHandler:
     async def _handle_turn_resolved(self, result: dict):
         """Handle end of turn"""
         print(f"🔍 BOT_HANDLER: _handle_turn_resolved called with result: {result}")
-        from backend.socket_manager import broadcast
+        from ..socket_manager import broadcast
 
         # 🚀 ENTERPRISE: This should go through state machine, not manual broadcast
         # State machine automatically handles turn_resolved broadcasting via update_phase_data()
@@ -821,9 +821,9 @@ class GameBotHandler:
     async def _handle_round_complete(self):
         """Handle round scoring"""
         print(f"🔍 BOT_HANDLER: _handle_round_complete called")
-        from backend.socket_manager import broadcast
+        from ..socket_manager import broadcast
 
-        from backend.engine.win_conditions import get_winners, is_game_over
+        from .win_conditions import get_winners, is_game_over
 
         # Handle scoring via state machine or fallback
         if self.state_machine:
@@ -899,7 +899,7 @@ class GameBotHandler:
     async def _bot_play_first(self, bot: Player):
         """Bot plays as first player"""
         print(f"🔍 BOT_HANDLER: _bot_play_first called for bot {bot.name}")
-        from backend.socket_manager import broadcast
+        from ..socket_manager import broadcast
 
         try:
             print(f"🤖 Bot {bot.name} choosing first play...")
@@ -919,7 +919,7 @@ class GameBotHandler:
             indices = self._get_piece_indices(bot.hand, selected)
 
             # Get the play type for the selected pieces
-            from backend.engine.rules import get_play_type
+            from .rules import get_play_type
 
             play_type = get_play_type(selected) if selected else "UNKNOWN"
 

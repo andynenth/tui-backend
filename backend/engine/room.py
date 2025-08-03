@@ -8,14 +8,14 @@ from typing import (  # Import Optional for type hinting variables that can be N
     Optional,
 )
 
-from backend.engine.game import (
+from .game import (
     Game,
 )  # Import the Game class, representing the core game logic.
-from backend.engine.player import (  # Import the Player class, representing a player in the game.
+from .player import (  # Import the Player class, representing a player in the game.
     Player,
 )
-from backend.engine.state_machine.core import GamePhase
-from backend.engine.state_machine.game_state_machine import GameStateMachine
+from .state_machine.core import GamePhase
+from .state_machine.game_state_machine import GameStateMachine
 
 logger = logging.getLogger(__name__)
 

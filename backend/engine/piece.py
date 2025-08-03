@@ -1,6 +1,6 @@
 # backend/engine/piece.py
 
-from backend.engine.constants import PIECE_POINTS
+from .constants import PIECE_POINTS
 
 
 class Piece:

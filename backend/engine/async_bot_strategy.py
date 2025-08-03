@@ -10,9 +10,9 @@ import time
 from typing import List, Optional, Dict, Any
 import logging
 
-from backend.engine.piece import Piece
-from backend.engine.player import Player
-import backend.engine.ai as ai
+from .piece import Piece
+from .player import Player
+from . import ai
 
 logger = logging.getLogger(__name__)
 

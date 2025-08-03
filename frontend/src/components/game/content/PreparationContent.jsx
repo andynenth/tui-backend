@@ -13,12 +13,16 @@ import { TIMING } from '../../../constants';
  */
 const PreparationContent = ({
   myHand = [],
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   players = [],
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   weakHands = [],
   redealMultiplier = 1,
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   currentWeakPlayer,
   isMyDecision = false,
   isMyHandWeak = false,
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   handValue = 0,
   highestCardValue = 0,
   simultaneousMode = false,

@@ -4,7 +4,7 @@ import asyncio
 import time
 from typing import List, Optional
 
-from backend.engine.win_conditions import get_winners
+from engine.win_conditions import get_winners
 
 from ..base_state import GameState
 from ..core import ActionType, GameAction, GamePhase

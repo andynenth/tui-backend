@@ -29,7 +29,9 @@ export function ScoringUI({
   playerName = '',
 
   // State props
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   gameOver = false,
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   winners = [],
 
   // Action props

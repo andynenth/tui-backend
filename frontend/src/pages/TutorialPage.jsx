@@ -241,11 +241,7 @@ const TutorialPage = () => {
         <div className="prep-container">
           {/* Header */}
           <div className="prep-header">
-            <div className="prep-emoji">🎴</div>
             <h2 className="prep-title">Getting Ready to Play</h2>
-            <p className="prep-subtitle">
-              Three simple steps to start the round
-            </p>
           </div>
 
           {/* Main Content - Clean list style */}
@@ -253,40 +249,6 @@ const TutorialPage = () => {
             {/* Step 1 */}
             <div className="prep-item">
               <h3 className="prep-item-title">Deal 8 pieces to each player</h3>
-              <div className="prep-item-pieces">
-                <GamePiece
-                  piece={{ kind: 'GENERAL', color: 'RED', value: 11 }}
-                  size="mini"
-                />
-                <GamePiece
-                  piece={{ kind: 'ADVISOR', color: 'BLACK', value: 10 }}
-                  size="mini"
-                />
-                <GamePiece
-                  piece={{ kind: 'ELEPHANT', color: 'RED', value: 9 }}
-                  size="mini"
-                />
-                <GamePiece
-                  piece={{ kind: 'HORSE', color: 'BLACK', value: 8 }}
-                  size="mini"
-                />
-                <GamePiece
-                  piece={{ kind: 'CHARIOT', color: 'RED', value: 7 }}
-                  size="mini"
-                />
-                <GamePiece
-                  piece={{ kind: 'CANNON', color: 'BLACK', value: 6 }}
-                  size="mini"
-                />
-                <GamePiece
-                  piece={{ kind: 'SOLDIER', color: 'RED', value: 3 }}
-                  size="mini"
-                />
-                <GamePiece
-                  piece={{ kind: 'SOLDIER', color: 'BLACK', value: 2 }}
-                  size="mini"
-                />
-              </div>
             </div>
 
             {/* Divider */}
@@ -295,14 +257,13 @@ const TutorialPage = () => {
             {/* Step 2 */}
             <div className="prep-item">
               <h3 className="prep-item-title">Find who goes first</h3>
-              <p className="prep-item-text">
-                The player with{' '}
+              <div className="prep-item-text">
                 <GamePiece
                   piece={{ kind: 'GENERAL', color: 'RED', value: 11 }}
                   size="mini"
-                />{' '}
-                (Red General) leads the first trick
-              </p>
+                />
+                <span>holder starts the first round</span>
+              </div>
             </div>
 
             {/* Divider */}
@@ -311,17 +272,16 @@ const TutorialPage = () => {
             {/* Step 3 */}
             <div className="prep-item">
               <h3 className="prep-item-title">Check for weak hands</h3>
-              <p className="prep-item-text-with-margin">
-                If your best piece is ≤{' '}
+              <div className="prep-item-text-with-margin">
                 <GamePiece
                   piece={{ kind: 'ELEPHANT', color: 'BLACK', value: 9 }}
                   size="mini"
-                />{' '}
-                you may request a redeal
-              </p>
+                />
+                <span>or below qualifies for redeal request</span>
+              </div>
               <div className="prep-warning">
-                <strong>Note:</strong> Redealing multiplies everyone's scores
-                (both wins and losses!)
+                <strong>Note:</strong> Redealing multiplies everyone&apos;s
+                scores (both wins and losses!)
               </div>
             </div>
           </div>
