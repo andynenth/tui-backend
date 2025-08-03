@@ -29,41 +29,41 @@ const TutorialPage = () => {
     {
       title: 'Welcome to Castellan!',
       content: (
-        <div className="tutorial-phase">
-          <div className="prep-steps">
-            <div className="prep-step">
-              <div className="step-number">🎮</div>
-              <div className="step-text">
-                <strong>What is Castellan?</strong>
-                <p className="step-detail">A strategic trick-taking game where prediction meets skill. Outsmart your opponents by accurately forecasting your victories!</p>
+        <div className="tutorial-welcome">
+          <div className="welcome-hero">
+            <div className="hero-icon">🏰</div>
+            <h2>Master the art of prediction in this strategic card game!</h2>
+          </div>
+
+          <div className="info-cards">
+            <div className="info-card">
+              <div className="info-card-title">
+                <span>🎯</span>
+                <span>Objective</span>
+              </div>
+              <div className="info-card-desc">
+                Predict how many tricks you'll win each round and match your
+                prediction exactly for bonus points!
               </div>
             </div>
-            
-            <div className="prep-step">
-              <div className="step-number">📊</div>
-              <div className="step-text">
-                <strong>Game Setup</strong>
-                <div className="game-setup-details">
-                  <div className="setup-row">
-                    <span className="setup-icon">👥</span>
-                    <span><strong>4 Players</strong> compete each round</span>
-                  </div>
-                  <div className="setup-row">
-                    <span className="setup-icon">🎯</span>
-                    <span>First to <strong>50 Points</strong> wins</span>
-                  </div>
-                </div>
+
+            <div className="info-card">
+              <div className="info-card-title">
+                <span>👥</span>
+                <span>Players</span>
+              </div>
+              <div className="info-card-desc">
+                4 players compete with 8 pieces each per round
               </div>
             </div>
-            
-            <div className="prep-step" style={{background: 'rgba(255, 193, 7, 0.05)', borderColor: 'rgba(255, 193, 7, 0.2)'}}>
-              <div className="step-number" style={{background: 'var(--color-warning)', color: 'var(--color-gray-800)'}}>🎯</div>
-              <div className="step-text">
-                <strong>How to Win</strong>
-                <p className="step-detail">Score points by accurately predicting how many tricks (piles) you'll win each round.</p>
-                <div className="key-rule">
-                  💡 Remember: It's not about winning the most tricks — it's about winning <strong>exactly</strong> what you predict!
-                </div>
+
+            <div className="info-card">
+              <div className="info-card-title">
+                <span>🏆</span>
+                <span>Victory</span>
+              </div>
+              <div className="info-card-desc">
+                First player to reach 50 points wins the game
               </div>
             </div>
           </div>
@@ -82,22 +82,31 @@ const TutorialPage = () => {
                 <GamePiece piece={samplePieces.general} size="small" />
               </div>
               <div className="piece-set">
-                <GamePiece piece={{ ...samplePieces.general, color: 'BLACK' }} size="small" />
+                <GamePiece
+                  piece={{ ...samplePieces.general, color: 'BLACK' }}
+                  size="small"
+                />
               </div>
             </div>
-            
+
             {/* Advisors - 2 each */}
             <div className="piece-group">
               <div className="piece-set">
-                <GamePiece piece={{ ...samplePieces.advisor, color: 'RED' }} size="small" />
-                <GamePiece piece={{ ...samplePieces.advisor, color: 'RED' }} size="small" />
+                <GamePiece
+                  piece={{ ...samplePieces.advisor, color: 'RED' }}
+                  size="small"
+                />
+                <GamePiece
+                  piece={{ ...samplePieces.advisor, color: 'RED' }}
+                  size="small"
+                />
               </div>
               <div className="piece-set">
                 <GamePiece piece={samplePieces.advisor} size="small" />
                 <GamePiece piece={samplePieces.advisor} size="small" />
               </div>
             </div>
-            
+
             {/* Elephants - 2 each */}
             <div className="piece-group">
               <div className="piece-set">
@@ -105,23 +114,35 @@ const TutorialPage = () => {
                 <GamePiece piece={samplePieces.elephant} size="small" />
               </div>
               <div className="piece-set">
-                <GamePiece piece={{ ...samplePieces.elephant, color: 'BLACK' }} size="small" />
-                <GamePiece piece={{ ...samplePieces.elephant, color: 'BLACK' }} size="small" />
+                <GamePiece
+                  piece={{ ...samplePieces.elephant, color: 'BLACK' }}
+                  size="small"
+                />
+                <GamePiece
+                  piece={{ ...samplePieces.elephant, color: 'BLACK' }}
+                  size="small"
+                />
               </div>
             </div>
-            
+
             {/* Horses - 2 each */}
             <div className="piece-group">
               <div className="piece-set">
-                <GamePiece piece={{ ...samplePieces.horse, color: 'RED' }} size="small" />
-                <GamePiece piece={{ ...samplePieces.horse, color: 'RED' }} size="small" />
+                <GamePiece
+                  piece={{ ...samplePieces.horse, color: 'RED' }}
+                  size="small"
+                />
+                <GamePiece
+                  piece={{ ...samplePieces.horse, color: 'RED' }}
+                  size="small"
+                />
               </div>
               <div className="piece-set">
                 <GamePiece piece={samplePieces.horse} size="small" />
                 <GamePiece piece={samplePieces.horse} size="small" />
               </div>
             </div>
-            
+
             {/* Chariots - 2 each */}
             <div className="piece-group">
               <div className="piece-set">
@@ -129,38 +150,80 @@ const TutorialPage = () => {
                 <GamePiece piece={samplePieces.chariot} size="small" />
               </div>
               <div className="piece-set">
-                <GamePiece piece={{ ...samplePieces.chariot, color: 'BLACK' }} size="small" />
-                <GamePiece piece={{ ...samplePieces.chariot, color: 'BLACK' }} size="small" />
+                <GamePiece
+                  piece={{ ...samplePieces.chariot, color: 'BLACK' }}
+                  size="small"
+                />
+                <GamePiece
+                  piece={{ ...samplePieces.chariot, color: 'BLACK' }}
+                  size="small"
+                />
               </div>
             </div>
-            
+
             {/* Cannons - 2 each */}
             <div className="piece-group">
               <div className="piece-set">
-                <GamePiece piece={{ ...samplePieces.cannon, color: 'RED' }} size="small" />
-                <GamePiece piece={{ ...samplePieces.cannon, color: 'RED' }} size="small" />
+                <GamePiece
+                  piece={{ ...samplePieces.cannon, color: 'RED' }}
+                  size="small"
+                />
+                <GamePiece
+                  piece={{ ...samplePieces.cannon, color: 'RED' }}
+                  size="small"
+                />
               </div>
               <div className="piece-set">
                 <GamePiece piece={samplePieces.cannon} size="small" />
                 <GamePiece piece={samplePieces.cannon} size="small" />
               </div>
             </div>
-            
+
             {/* Soldiers - 5 each, stacked vertically */}
             <div className="soldiers-section">
               <div className="soldier-row">
-                <GamePiece piece={{ kind: 'SOLDIER', color: 'RED', value: 5 }} size="small" />
-                <GamePiece piece={{ kind: 'SOLDIER', color: 'RED', value: 4 }} size="small" />
-                <GamePiece piece={{ kind: 'SOLDIER', color: 'RED', value: 3 }} size="small" />
-                <GamePiece piece={{ kind: 'SOLDIER', color: 'RED', value: 2 }} size="small" />
-                <GamePiece piece={{ kind: 'SOLDIER', color: 'RED', value: 1 }} size="small" />
+                <GamePiece
+                  piece={{ kind: 'SOLDIER', color: 'RED', value: 5 }}
+                  size="small"
+                />
+                <GamePiece
+                  piece={{ kind: 'SOLDIER', color: 'RED', value: 4 }}
+                  size="small"
+                />
+                <GamePiece
+                  piece={{ kind: 'SOLDIER', color: 'RED', value: 3 }}
+                  size="small"
+                />
+                <GamePiece
+                  piece={{ kind: 'SOLDIER', color: 'RED', value: 2 }}
+                  size="small"
+                />
+                <GamePiece
+                  piece={{ kind: 'SOLDIER', color: 'RED', value: 1 }}
+                  size="small"
+                />
               </div>
               <div className="soldier-row">
-                <GamePiece piece={{ kind: 'SOLDIER', color: 'BLACK', value: 5 }} size="small" />
-                <GamePiece piece={{ kind: 'SOLDIER', color: 'BLACK', value: 4 }} size="small" />
-                <GamePiece piece={{ kind: 'SOLDIER', color: 'BLACK', value: 3 }} size="small" />
-                <GamePiece piece={{ kind: 'SOLDIER', color: 'BLACK', value: 2 }} size="small" />
-                <GamePiece piece={{ kind: 'SOLDIER', color: 'BLACK', value: 1 }} size="small" />
+                <GamePiece
+                  piece={{ kind: 'SOLDIER', color: 'BLACK', value: 5 }}
+                  size="small"
+                />
+                <GamePiece
+                  piece={{ kind: 'SOLDIER', color: 'BLACK', value: 4 }}
+                  size="small"
+                />
+                <GamePiece
+                  piece={{ kind: 'SOLDIER', color: 'BLACK', value: 3 }}
+                  size="small"
+                />
+                <GamePiece
+                  piece={{ kind: 'SOLDIER', color: 'BLACK', value: 2 }}
+                  size="small"
+                />
+                <GamePiece
+                  piece={{ kind: 'SOLDIER', color: 'BLACK', value: 1 }}
+                  size="small"
+                />
               </div>
             </div>
           </div>
@@ -180,31 +243,47 @@ const TutorialPage = () => {
               <div className="step-number">1</div>
               <div className="step-text">
                 <strong>Deal Phase</strong>
-                <p className="step-detail">Each player receives 8 random pieces from the deck. These are your soldiers for this round.</p>
+                <p className="step-detail">
+                  Each player receives 8 random pieces from the deck. These are
+                  your soldiers for this round.
+                </p>
               </div>
             </div>
-            
+
             <div className="prep-step weak">
               <div className="step-number">2</div>
               <div className="step-text">
                 <strong>Check for Weak Hand</strong>
                 <div className="weak-definition">
-                  <div>If your strongest piece is only <GamePiece piece={{ kind: 'ELEPHANT', color: 'BLACK', value: 9 }} size="mini" /> or lower:</div>
+                  <div>
+                    If your strongest piece is only{' '}
+                    <GamePiece
+                      piece={{ kind: 'ELEPHANT', color: 'BLACK', value: 9 }}
+                      size="mini"
+                    />{' '}
+                    or lower:
+                  </div>
                   <div className="redeal-option">
-                    • You may request a redeal<br/>
-                    • All players get new hands<br/>
-                    • <span className="warning">Warning: Reduces your score multiplier!</span>
+                    • You may request a redeal
+                    <br />
+                    • All players get new hands
+                    <br />•{' '}
+                    <span className="warning">
+                      Warning: Reduces your score multiplier!
+                    </span>
                   </div>
                 </div>
               </div>
             </div>
-            
+
             <div className="prep-step starter">
               <div className="step-number">3</div>
               <div className="step-text">
                 <strong>Starting Player</strong>
                 <p className="step-detail">
-                  The player holding <GamePiece piece={samplePieces.general} size="mini" /> will lead the first trick and set the pace for the round.
+                  The player holding{' '}
+                  <GamePiece piece={samplePieces.general} size="mini" /> will
+                  lead the first trick and set the pace for the round.
                 </p>
               </div>
             </div>
@@ -222,16 +301,34 @@ const TutorialPage = () => {
               <div className="step-number">1</div>
               <div className="step-text">
                 <strong>Make Your Prediction</strong>
-                <p className="step-detail">Each player declares how many tricks (0-8) they expect to win this round. This is your target score.</p>
+                <p className="step-detail">
+                  Each player declares how many tricks (0-8) they expect to win
+                  this round. This is your target score.
+                </p>
               </div>
             </div>
-            <div className="prep-step" style={{background: 'rgba(220, 53, 69, 0.05)', borderColor: 'rgba(220, 53, 69, 0.2)'}}>
-              <div className="step-number" style={{background: 'var(--color-danger)', color: 'white'}}>!</div>
+            <div
+              className="prep-step"
+              style={{
+                background: 'rgba(220, 53, 69, 0.05)',
+                borderColor: 'rgba(220, 53, 69, 0.2)',
+              }}
+            >
+              <div
+                className="step-number"
+                style={{ background: 'var(--color-danger)', color: 'white' }}
+              >
+                !
+              </div>
               <div className="step-text">
                 <strong>The Forcing Rule</strong>
-                <p className="step-detail">Total declarations cannot equal 8! This guarantees competition - not everyone can achieve their goal.</p>
-                <div className="example-box" style={{marginTop: '8px'}}>
-                  <strong>Example:</strong> If 3 players declared 2, 2, 3 (total = 7), the last player CANNOT declare 1
+                <p className="step-detail">
+                  Total declarations cannot equal 8! This guarantees competition
+                  - not everyone can achieve their goal.
+                </p>
+                <div className="example-box" style={{ marginTop: '8px' }}>
+                  <strong>Example:</strong> If 3 players declared 2, 2, 3 (total
+                  = 7), the last player CANNOT declare 1
                 </div>
               </div>
             </div>
@@ -249,28 +346,54 @@ const TutorialPage = () => {
               <div className="step-number">1</div>
               <div className="step-text">
                 <strong>Leader Plays First</strong>
-                <p className="step-detail">The trick leader plays 1-6 pieces. Must be a valid combination (single, pair, three-of-a-kind, or straight).</p>
+                <p className="step-detail">
+                  The trick leader plays 1-6 pieces. Must be a valid combination
+                  (single, pair, three-of-a-kind, or straight).
+                </p>
               </div>
             </div>
             <div className="prep-step">
               <div className="step-number">2</div>
               <div className="step-text">
                 <strong>Others Follow</strong>
-                <p className="step-detail">Each player must play the same number of pieces. You can play invalid combinations to forfeit the trick.</p>
+                <p className="step-detail">
+                  Each player must play the same number of pieces. You can play
+                  invalid combinations to forfeit the trick.
+                </p>
               </div>
             </div>
             <div className="prep-step">
               <div className="step-number">3</div>
               <div className="step-text">
                 <strong>Winner Takes Trick</strong>
-                <p className="step-detail">Highest valid play wins all pieces in the trick and leads the next one.</p>
+                <p className="step-detail">
+                  Highest valid play wins all pieces in the trick and leads the
+                  next one.
+                </p>
               </div>
             </div>
-            <div className="prep-step" style={{background: 'rgba(255, 193, 7, 0.05)', borderColor: 'rgba(255, 193, 7, 0.2)'}}>
-              <div className="step-number" style={{background: 'var(--color-warning)', color: 'var(--color-gray-800)'}}>💡</div>
+            <div
+              className="prep-step"
+              style={{
+                background: 'rgba(255, 193, 7, 0.05)',
+                borderColor: 'rgba(255, 193, 7, 0.2)',
+              }}
+            >
+              <div
+                className="step-number"
+                style={{
+                  background: 'var(--color-warning)',
+                  color: 'var(--color-gray-800)',
+                }}
+              >
+                💡
+              </div>
               <div className="step-text">
                 <strong>Strategic Forfeit</strong>
-                <p className="step-detail">Playing invalid combinations lets you dump unwanted pieces without winning tricks you don't want!</p>
+                <p className="step-detail">
+                  Playing invalid combinations lets you dump unwanted pieces
+                  without winning tricks you don't want!
+                </p>
               </div>
             </div>
           </div>
@@ -292,7 +415,7 @@ const TutorialPage = () => {
                 <p className="step-detail">Any one piece</p>
               </div>
             </div>
-            
+
             <div className="play-type-item">
               <div className="play-type-visual">
                 <GamePiece piece={samplePieces.horse} size="small" />
@@ -300,10 +423,12 @@ const TutorialPage = () => {
               </div>
               <div className="play-type-info">
                 <strong>Pair</strong>
-                <p className="step-detail">Two pieces of same type AND same color</p>
+                <p className="step-detail">
+                  Two pieces of same type AND same color
+                </p>
               </div>
             </div>
-            
+
             <div className="play-type-item">
               <div className="play-type-visual">
                 <GamePiece piece={samplePieces.soldier1} size="small" />
@@ -312,28 +437,56 @@ const TutorialPage = () => {
               </div>
               <div className="play-type-info">
                 <strong>Three-of-a-kind</strong>
-                <p className="step-detail">Three soldiers only (any combination)</p>
+                <p className="step-detail">
+                  Three soldiers only (any combination)
+                </p>
               </div>
             </div>
-            
+
             <div className="play-type-item">
               <div className="play-type-visual">
-                <GamePiece piece={{ ...samplePieces.cannon, color: 'RED' }} size="small" />
+                <GamePiece
+                  piece={{ ...samplePieces.cannon, color: 'RED' }}
+                  size="small"
+                />
                 <GamePiece piece={samplePieces.chariot} size="small" />
-                <GamePiece piece={{ ...samplePieces.horse, color: 'RED' }} size="small" />
+                <GamePiece
+                  piece={{ ...samplePieces.horse, color: 'RED' }}
+                  size="small"
+                />
               </div>
               <div className="play-type-info">
                 <strong>Straight</strong>
-                <p className="step-detail">Consecutive values (all same color)</p>
+                <p className="step-detail">
+                  Consecutive values (all same color)
+                </p>
               </div>
             </div>
           </div>
-          
-          <div className="prep-step" style={{background: 'rgba(255, 193, 7, 0.05)', borderColor: 'rgba(255, 193, 7, 0.2)', marginTop: '16px'}}>
-            <div className="step-number" style={{background: 'var(--color-warning)', color: 'var(--color-gray-800)'}}>!</div>
+
+          <div
+            className="prep-step"
+            style={{
+              background: 'rgba(255, 193, 7, 0.05)',
+              borderColor: 'rgba(255, 193, 7, 0.2)',
+              marginTop: '16px',
+            }}
+          >
+            <div
+              className="step-number"
+              style={{
+                background: 'var(--color-warning)',
+                color: 'var(--color-gray-800)',
+              }}
+            >
+              !
+            </div>
             <div className="step-text">
               <strong>Key Rule</strong>
-              <p className="step-detail">Only the trick leader needs valid combinations. Others can play any pieces to match the count!</p>
+              <p className="step-detail">
+                Only the trick leader needs valid combinations. Others can play
+                any pieces to match the count!
+              </p>
             </div>
           </div>
         </div>
@@ -349,29 +502,65 @@ const TutorialPage = () => {
               <div className="step-number">✓</div>
               <div className="step-text">
                 <strong>Hit Your Target</strong>
-                <p className="step-detail">Win exactly what you declared = <strong>Tricks + 5 bonus</strong></p>
+                <p className="step-detail">
+                  Win exactly what you declared ={' '}
+                  <strong>Tricks + 5 bonus</strong>
+                </p>
                 <div className="example-inline">
                   Example: Declare 2, win 2 = 2 + 5 = <strong>+7 points</strong>
                 </div>
               </div>
             </div>
-            
-            <div className="prep-step compact" style={{background: 'rgba(220, 53, 69, 0.05)', borderColor: 'rgba(220, 53, 69, 0.2)'}}>
-              <div className="step-number" style={{background: 'var(--color-danger)', color: 'white'}}>✗</div>
+
+            <div
+              className="prep-step compact"
+              style={{
+                background: 'rgba(220, 53, 69, 0.05)',
+                borderColor: 'rgba(220, 53, 69, 0.2)',
+              }}
+            >
+              <div
+                className="step-number"
+                style={{ background: 'var(--color-danger)', color: 'white' }}
+              >
+                ✗
+              </div>
               <div className="step-text">
                 <strong>Miss Your Target</strong>
-                <p className="step-detail">Penalty = <strong>-|difference|</strong> between declared and won</p>
+                <p className="step-detail">
+                  Penalty = <strong>-|difference|</strong> between declared and
+                  won
+                </p>
                 <div className="example-inline">
-                  Example: Declare 3, win 1 = -(3-1) = <strong>-2 points</strong>
+                  Example: Declare 3, win 1 = -(3-1) ={' '}
+                  <strong>-2 points</strong>
                 </div>
               </div>
             </div>
-            
-            <div className="prep-step" style={{background: 'rgba(255, 193, 7, 0.05)', borderColor: 'rgba(255, 193, 7, 0.2)'}}>
-              <div className="step-number" style={{background: 'var(--color-warning)', color: 'var(--color-gray-800)'}}>💎</div>
+
+            <div
+              className="prep-step"
+              style={{
+                background: 'rgba(255, 193, 7, 0.05)',
+                borderColor: 'rgba(255, 193, 7, 0.2)',
+              }}
+            >
+              <div
+                className="step-number"
+                style={{
+                  background: 'var(--color-warning)',
+                  color: 'var(--color-gray-800)',
+                }}
+              >
+                💎
+              </div>
               <div className="step-text">
                 <strong>Special: The 0/0 Strategy</strong>
-                <p className="step-detail">Declaring 0 and winning 0 tricks gives <strong>+3 points</strong>. High risk, but saves you when you have a terrible hand!</p>
+                <p className="step-detail">
+                  Declaring 0 and winning 0 tricks gives{' '}
+                  <strong>+3 points</strong>. High risk, but saves you when you
+                  have a terrible hand!
+                </p>
               </div>
             </div>
           </div>
@@ -403,21 +592,13 @@ const TutorialPage = () => {
     updateSlide();
   };
 
-  const skipTutorial = () => {
-    navigate('/');
-  };
-
   const finishTutorial = () => {
     navigate('/');
   };
 
   return (
-    <Layout 
-      title="How to Play" 
-      showConnection={false}
-      showHeader={false}
-    >
-      <div 
+    <Layout title="How to Play" showConnection={false} showHeader={false}>
+      <div
         className="min-h-screen flex items-center justify-center"
         style={{ background: 'var(--gradient-gray)' }}
       >
@@ -425,30 +606,37 @@ const TutorialPage = () => {
           {/* Tutorial Header with dynamic slide title */}
           <div className="tp-tutorialHeader">
             {/* Back Button */}
-            <button 
-              className="tp-backButton" 
+            <button
+              className="tp-backButton"
               onClick={() => navigate('/')}
               title="Back to Start"
             >
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <path d="M19 12H5M12 19l-7-7 7-7"/>
+              <svg
+                width="20"
+                height="20"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+              >
+                <path d="M19 12H5M12 19l-7-7 7-7" />
               </svg>
             </button>
             <h1 className="tp-tutorialTitle">{slides[currentSlide].title}</h1>
           </div>
-          
+
           {/* Tutorial Content */}
           <div className="tp-tutorialContent">
             <div className="tp-slideContainer">
               {slides.map((slide, index) => (
-                <div 
+                <div
                   key={index}
                   className={`tp-slide ${index === currentSlide ? 'active' : ''}`}
-                  style={{ transform: `translateX(${(index - currentSlide) * 100}%)` }}
+                  style={{
+                    transform: `translateX(${(index - currentSlide) * 100}%)`,
+                  }}
                 >
-                  <div className="tp-slideContent">
-                    {slide.content}
-                  </div>
+                  <div className="tp-slideContent">{slide.content}</div>
                 </div>
               ))}
             </div>
@@ -456,7 +644,7 @@ const TutorialPage = () => {
             {/* Navigation Dots */}
             <div className="tp-navDots">
               {slides.map((_, index) => (
-                <div 
+                <div
                   key={index}
                   className={`tp-dot ${index === currentSlide ? 'active' : ''}`}
                   onClick={() => goToSlide(index)}
@@ -467,43 +655,47 @@ const TutorialPage = () => {
 
           {/* Footer Navigation */}
           <div className="tp-footer">
-            <button 
+            <button
               className="tp-navArrow"
               onClick={prevSlide}
               disabled={currentSlide === 0}
               title="Previous"
             >
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <path d="M15 18l-6-6 6-6"/>
+              <svg
+                width="24"
+                height="24"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+              >
+                <path d="M15 18l-6-6 6-6" />
               </svg>
             </button>
-            
+
             <div className="tp-slideCounter">
               {currentSlide + 1} / {totalSlides}
             </div>
-            
+
             {currentSlide === totalSlides - 1 ? (
-              <button 
+              <button
                 className="btn btn-primary btn-sm"
                 onClick={finishTutorial}
               >
                 Start Playing
               </button>
             ) : (
-              <button 
-                className="tp-navArrow"
-                onClick={nextSlide}
-                title="Next"
-              >
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <path d="M9 18l6-6-6-6"/>
+              <button className="tp-navArrow" onClick={nextSlide} title="Next">
+                <svg
+                  width="24"
+                  height="24"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                >
+                  <path d="M9 18l6-6-6-6" />
                 </svg>
-              </button>
-            )}
-            
-            {currentSlide < totalSlides - 1 && (
-              <button className="tp-skipButton" onClick={skipTutorial}>
-                Skip tutorial
               </button>
             )}
           </div>
