@@ -16,8 +16,6 @@ export const createMockNetworkService = () => {
     send: jest.fn(),
     getConnectionStatus: jest.fn(),
     getStatus: jest.fn(),
-    addEventListener: jest.fn(),
-    removeEventListener: jest.fn(),
     destroy: jest.fn(),
 
     // Test helpers
@@ -31,7 +29,7 @@ export const createMockNetworkService = () => {
       });
     },
 
-    // Override addEventListener to track listeners
+    // Event listeners that track listeners
     addEventListener: jest.fn((eventType, listener) => {
       if (!mockNetworkService.mockEvents.has(eventType)) {
         mockNetworkService.mockEvents.set(eventType, []);

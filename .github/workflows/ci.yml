@@ -58,17 +58,20 @@ jobs:
       working-directory: backend
       run: pylint engine/ api/ --exit-zero --max-line-length=120 --disable=C0111,R0903,R0913,W0613
 
-    - name: Frontend Code Quality (ESLint & TypeScript)
+    - name: Frontend ESLint
       working-directory: frontend
-      run: |
-        npm run lint -- --max-warnings 150 || echo "::warning::ESLint found issues. Run 'npm run lint:fix' locally to fix."
-        npm run type-check
+      run: npm run lint -- --max-warnings 150 --format=compact
+      continue-on-error: true
+
+    - name: Frontend TypeScript Check
+      working-directory: frontend
+      run: npm run type-check
       continue-on-error: true
 
     - name: Backend Unit Tests
       working-directory: backend
       run: |
-        pytest tests/unit/ -v --cov=backend --cov-report=xml --cov-report=term-missing
+        pytest tests/unit/ -v --cov=. --cov-report=term-missing || pytest tests/unit/ -v
       env:
         PYTHONPATH: ${{ github.workspace }}/backend
 
