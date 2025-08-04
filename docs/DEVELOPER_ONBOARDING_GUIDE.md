@@ -92,14 +92,26 @@ The backend uses an **Enterprise Architecture** pattern with:
    cd liap-tui
    ```
 
-2. **Start Development Environment**
+2. **⚠️ IMPORTANT: Setup Dependencies After Git Operations**
+   After any `git checkout`, `git reset`, `git clone`, or branch switching:
+   ```bash
+   # Frontend dependencies (required for build to work)
+   cd frontend && npm install
+   
+   # Backend dependencies (if using virtual environment)
+   source venv/bin/activate && pip install -r requirements.txt
+   ```
+   
+   **Why this matters**: The project now tracks `package-lock.json` in version control to ensure reproducible builds. This prevents "Cannot find module" errors that occur when dependencies aren't properly installed.
+
+3. **Start Development Environment**
    ```bash
    ./start.sh
    ```
-   This script:
+   This script automatically:
+   - Checks and installs frontend dependencies if needed
    - Sets up Python virtual environment
    - Installs backend dependencies
-   - Installs frontend dependencies
    - Starts both backend and frontend with hot reload
 
 3. **Access the Application**

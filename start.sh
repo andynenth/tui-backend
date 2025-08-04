@@ -31,10 +31,18 @@ BACKEND_PID=$!
 # Wait for backend to boot
 sleep 1
 
+# Ensure frontend dependencies are installed
+echo "📦 Checking frontend dependencies..."
+cd frontend
+if [ ! -d "node_modules" ] || [ ! -f "node_modules/.package-lock.json" ]; then
+  echo "🔧 Installing frontend dependencies..."
+  npm install
+else
+  echo "✅ Frontend dependencies already installed"
+fi
+
 # Start esbuild in watch mode
 echo "🌐 Starting esbuild in watch mode..."
-
-cd frontend
 npm run dev
 
 # When esbuild exits, stop backend too
