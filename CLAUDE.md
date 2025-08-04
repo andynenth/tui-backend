@@ -45,6 +45,16 @@ Liap Tui is a real-time multiplayer board game inspired by traditional Chinese-T
 
 ## Development Commands
 
+### ⚠️ IMPORTANT: Setup After Git Operations
+After any `git checkout`, `git reset`, `git clone`, or branch switching:
+```bash
+# Install frontend dependencies (required for build to work)
+cd frontend && npm install
+
+# Backend dependencies (if using virtual environment)
+source venv/bin/activate && pip install -r requirements.txt
+```
+
 ### Local Development
 ```bash
 # Start both backend and frontend with hot reload
