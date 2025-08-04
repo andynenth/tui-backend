@@ -159,17 +159,6 @@ jobs:
           --service-arn ${{ secrets.APPRUNNER_SERVICE_ARN }} \
           --no-cli-pager
 
-    - name: Deploy to AWS Lambda (if configured)
-      if: ${{ secrets.LAMBDA_FUNCTION_NAME }}
-      env:
-        ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-        IMAGE_TAG: ${{ github.sha }}
-      run: |
-        # Update Lambda function with new image
-        aws lambda update-function-code \
-          --function-name ${{ secrets.LAMBDA_FUNCTION_NAME }} \
-          --image-uri $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG \
-          --no-cli-pager
 
     - name: Deploy notification
       env:
@@ -188,8 +177,4 @@ jobs:
         
         if [ ! -z "${{ secrets.APPRUNNER_SERVICE_ARN }}" ]; then
           echo "🏃 App Runner: ${{ secrets.APPRUNNER_SERVICE_ARN }}"
-        fi
-        
-        if [ ! -z "${{ secrets.LAMBDA_FUNCTION_NAME }}" ]; then
-          echo "⚡ Lambda: ${{ secrets.LAMBDA_FUNCTION_NAME }}"
         fi
