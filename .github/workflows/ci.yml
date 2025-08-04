@@ -102,6 +102,10 @@ jobs:
     needs: [code-quality, docker-build]
     if: github.ref == 'refs/heads/main' && github.event_name == 'push'
     
+    env:
+      HAS_ECS_CONFIG: ${{ secrets.ECS_CLUSTER_NAME }}
+      HAS_APPRUNNER_CONFIG: ${{ secrets.APPRUNNER_SERVICE_ARN }}
+    
     steps:
     - name: Checkout code
       uses: actions/checkout@v4
@@ -137,7 +141,7 @@ jobs:
           .
 
     - name: Deploy to AWS ECS (if configured)
-      if: ${{ secrets.ECS_CLUSTER_NAME && secrets.ECS_SERVICE_NAME }}
+      if: ${{ env.HAS_ECS_CONFIG != '' }}
       run: |
         # Force new deployment of ECS service
         aws ecs update-service \
@@ -152,7 +156,7 @@ jobs:
           --services ${{ secrets.ECS_SERVICE_NAME }}
 
     - name: Deploy to AWS App Runner (if configured)
-      if: ${{ secrets.APPRUNNER_SERVICE_ARN }}
+      if: ${{ env.HAS_APPRUNNER_CONFIG != '' }}
       run: |
         # Start App Runner deployment
         aws apprunner start-deployment \
