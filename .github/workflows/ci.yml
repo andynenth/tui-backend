@@ -47,8 +47,8 @@ jobs:
     - name: Python Code Quality (Black & Pylint)
       working-directory: backend
       run: |
-        black . --check --diff
-        pylint engine/ api/ --exit-zero
+        python -m black . --check --diff
+        python -m pylint engine/ api/ --exit-zero
 
     - name: Frontend Code Quality (ESLint & TypeScript)
       working-directory: frontend
