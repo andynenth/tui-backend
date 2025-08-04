@@ -49,7 +49,12 @@
   padding: 20px;
   background:
     linear-gradient(180deg, rgba(248, 249, 250, 0.8) 0%, transparent 100%),
-    linear-gradient(90deg, transparent 0%, rgba(173, 181, 189, 0.1) 50%, transparent 100%);
+    linear-gradient(
+      90deg,
+      transparent 0%,
+      rgba(173, 181, 189, 0.1) 50%,
+      transparent 100%
+    );
   border-bottom: 1px solid rgba(173, 181, 189, 0.2);
   position: relative;
 }
@@ -62,7 +67,12 @@
   transform: translateX(-50%);
   width: 40px;
   height: 2px;
-  background: linear-gradient(90deg, transparent, var(--color-gray-500), transparent);
+  background: linear-gradient(
+    90deg,
+    transparent,
+    var(--color-gray-500),
+    transparent
+  );
 }
 
 .tp-tutorialTitle {
@@ -207,8 +217,90 @@
 .tutorial-welcome {
   height: 100%;
   display: flex;
+  flex-direction: column;
+  padding: 5px 0;
+}
+
+/* Welcome hero section */
+.welcome-hero {
+  text-align: center;
+  padding: 20px 0;
+}
+
+.hero-icon {
+  width: 60px;
+  height: 60px;
+  background: linear-gradient(135deg, #6366f1, #4f46e5);
+  border-radius: 16px;
+  display: flex;
   align-items: center;
   justify-content: center;
+  font-size: 32px;
+  margin: 0 auto 16px;
+  animation: float 3s ease-in-out infinite;
+  box-shadow: 0 10px 25px rgba(99, 102, 241, 0.25);
+}
+
+@keyframes float {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-8px);
+  }
+}
+
+.welcome-hero h2 {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--color-gray-800);
+  margin-bottom: 8px;
+}
+
+.welcome-hero p {
+  font-size: 13px;
+  color: var(--color-gray-600);
+  line-height: 1.5;
+}
+
+/* Info cards grid */
+.info-cards {
+  display: grid;
+  gap: 10px;
+  padding: 0 10px;
+}
+
+.info-card {
+  background: linear-gradient(135deg, #f8fafc, #f1f5f9);
+  border-radius: 10px;
+  padding: 12px 14px;
+  border-left: 4px solid #6366f1;
+  transition:
+    transform 0.2s,
+    box-shadow 0.2s;
+  cursor: default;
+}
+
+.info-card:hover {
+  transform: translateX(3px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+.info-card-title {
+  font-size: 13px;
+  font-weight: 600;
+  color: #6366f1;
+  margin-bottom: 4px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.info-card-desc {
+  font-size: 12px;
+  color: var(--color-gray-600);
+  line-height: 1.4;
 }
 
 .tutorial-pieces,
@@ -565,6 +657,100 @@
   margin-bottom: 2px;
 }
 
+/* Phase 1: Preparation - Clean list style */
+.prep-container {
+  padding: 20px 24px;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  text-align: center;
+}
+
+.prep-header {
+  margin-bottom: 24px;
+}
+
+.prep-title {
+  font-size: 24px;
+  color: #1f2937;
+  font-weight: 700;
+  letter-spacing: -0.025em;
+  margin-bottom: 8px;
+}
+
+.prep-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  text-align: left;
+}
+
+.prep-item {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.prep-item-title {
+  font-size: 18px;
+  color: #1e293b;
+  font-weight: 600;
+  margin: 0 0 8px 0;
+}
+
+.prep-item-text {
+  font-size: 14px;
+  color: #475569;
+  margin: 0;
+  line-height: 1.6;
+  display: block;
+}
+
+.prep-item-text-with-margin {
+  font-size: 14px;
+  color: #475569;
+  line-height: 1.6;
+  margin-bottom: 8px;
+  display: block;
+}
+
+/* Make GamePiece components inline and smaller in prep text */
+.prep-item-text .game-piece,
+.prep-item-text-with-margin .game-piece {
+  display: inline-block !important;
+  vertical-align: middle;
+  margin: 0 4px;
+}
+
+.prep-item-text .game-piece--mini,
+.prep-item-text-with-margin .game-piece--mini {
+  width: 18px !important;
+  height: 18px !important;
+  font-size: 9px !important;
+}
+
+/* Ensure spans are inline */
+.prep-item-text span,
+.prep-item-text-with-margin span {
+  display: inline;
+  vertical-align: middle;
+}
+
+.prep-divider {
+  border-bottom: 1px solid #e2e8f0;
+  margin: 4px 0;
+}
+
+.prep-warning {
+  font-size: 13px;
+  color: #64748b;
+  background: #fef3c7;
+  padding: 8px 12px;
+  border-radius: 6px;
+  border-left: 3px solid #f59e0b;
+}
+
 /* Scoring Elements - removed formula boxes to save space */
 
 .example-inline {
@@ -577,7 +763,7 @@
   color: var(--color-success);
 }
 
-.prep-step[style*="rgba(220, 53, 69"] .example-inline strong {
+.prep-step[style*='rgba(220, 53, 69'] .example-inline strong {
   color: var(--color-danger);
 }
 
@@ -719,4 +905,3 @@
   color: var(--color-gray-600);
   line-height: 1.2;
 }
-
