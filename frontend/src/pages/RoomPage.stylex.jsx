@@ -47,96 +47,96 @@ const styles = stylex.create({
     position: 'relative',
     width: '100%',
     maxWidth: '800px',
-    padding: spacing.xl,
+    padding: '2rem',
   },
   
   connectionStatus: {
     position: 'absolute',
-    top: spacing.md,
-    right: spacing.md,
+    top: '1rem',
+    right: '1rem',
     display: 'flex',
     alignItems: 'center',
-    gap: spacing.xs,
-    padding: `${spacing.xs} ${spacing.md}`,
-    backgroundColor: colors.white,
-    borderRadius: layout.radiusFull,
-    boxShadow: shadows.sm,
-    fontSize: typography.textXs,
-    fontWeight: typography.weightMedium,
+    gap: '0.25rem',
+    padding: `'0.25rem' '1rem'`,
+    backgroundColor: '#ffffff',
+    borderRadius: '9999px',
+    boxShadow: '0 1px 2px 0 rgba(0, 0, 0, 0.05)',
+    fontSize: '0.75rem',
+    fontWeight: '500',
   },
   
   statusDot: {
     width: '8px',
     height: '8px',
     borderRadius: '50%',
-    backgroundColor: colors.success,
+    backgroundColor: '#198754',
   },
   
   statusDotDisconnected: {
-    backgroundColor: colors.danger,
-    animation: `${pulse} 2s ${motion.easeInOut} infinite`,
+    backgroundColor: '#dc3545',
+    animation: `${pulse} 2s 'cubic-bezier(0.4, 0, 0.2, 1)' infinite`,
   },
   
   roomHeader: {
     textAlign: 'center',
-    marginBottom: spacing.xl,
+    marginBottom: '2rem',
   },
   
   roomTitle: {
-    fontSize: typography.text3xl,
-    fontWeight: typography.weightBold,
-    color: colors.gray900,
-    marginBottom: spacing.md,
+    fontSize: '1.875rem',
+    fontWeight: '700',
+    color: '#212529',
+    marginBottom: '1rem',
   },
   
   roomIdBadge: {
     display: 'inline-flex',
     alignItems: 'center',
-    gap: spacing.sm,
-    backgroundColor: colors.white,
-    padding: `${spacing.sm} ${spacing.lg}`,
-    borderRadius: layout.radiusFull,
-    boxShadow: shadows.md,
+    gap: '0.5rem',
+    backgroundColor: '#ffffff',
+    padding: `'0.5rem' '1.5rem'`,
+    borderRadius: '9999px',
+    boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)',
   },
   
   roomIdLabel: {
-    fontSize: typography.textSm,
-    color: colors.gray600,
-    fontWeight: typography.weightMedium,
+    fontSize: '0.875rem',
+    color: '#6c757d',
+    fontWeight: '500',
   },
   
   roomIdValue: {
-    fontSize: typography.textLg,
-    color: colors.primary,
-    fontWeight: typography.weightBold,
+    fontSize: '1.125rem',
+    color: '#0d6efd',
+    fontWeight: '700',
     letterSpacing: '0.05em',
   },
   
   playersSection: {
-    backgroundColor: colors.white,
-    borderRadius: layout.radiusLg,
-    padding: spacing.lg,
-    boxShadow: shadows.xl,
-    marginBottom: spacing.lg,
+    backgroundColor: '#ffffff',
+    borderRadius: '0.5rem',
+    padding: '1.5rem',
+    boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)',
+    marginBottom: '1.5rem',
   },
   
   sectionHeader: {
     display: 'flex',
     justifyContent: 'center',
-    marginBottom: spacing.lg,
+    marginBottom: '1.5rem',
   },
   
   playerCount: {
-    fontSize: typography.text2xl,
-    fontWeight: typography.weightBold,
-    color: colors.gray700,
-    padding: `${spacing.sm} ${spacing.lg}`,
-    backgroundColor: colors.gray100,
-    borderRadius: layout.radiusFull,
+    fontSize: '1.5rem',
+    fontWeight: '700',
+    color: '#495057',
+    padding: `'0.5rem' '1.5rem'`,
+    backgroundColor: '#f1f3f5',
+    borderRadius: '9999px',
   },
   
   playerCountFull: {
-    color: colors.successDark,
+    color: '#146c43',
     backgroundColor: '#dcfce7',
   },
   
@@ -178,24 +178,24 @@ const styles = stylex.create({
   
   centerIcon: {
     fontSize: '48px',
-    marginBottom: spacing.xs,
+    marginBottom: '0.25rem',
   },
   
   centerText: {
-    fontSize: typography.textXs,
+    fontSize: '0.75rem',
     color: 'rgba(255,255,255,0.8)',
-    fontWeight: typography.weightMedium,
+    fontWeight: '500',
   },
   
   playerSlot: {
     position: 'absolute',
     width: '100px',
-    backgroundColor: colors.white,
-    borderRadius: layout.radiusMd,
-    padding: spacing.sm,
-    boxShadow: shadows.md,
-    transition: `all ${motion.durationBase} ${motion.easeInOut}`,
-    animation: `${fadeIn} 0.3s ${motion.easeOut}`,
+    backgroundColor: '#ffffff',
+    borderRadius: '0.375rem',
+    padding: '0.5rem',
+    boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)',
+    transition: `all '300ms' 'cubic-bezier(0.4, 0, 0.2, 1)'`,
+    animation: `${fadeIn} 0.3s 'cubic-bezier(0, 0, 0.2, 1)'`,
   },
   
   slotTop: {
@@ -223,18 +223,22 @@ const styles = stylex.create({
   },
   
   slotEmpty: {
-    backgroundColor: colors.gray50,
-    border: `2px dashed ${colors.gray300}`,
+    backgroundColor: '#f8f9fa',
+    borderWidth: '2px',
+    borderStyle: 'dashed',
+    borderColor: '#dee2e6',
   },
   
   slotBot: {
     backgroundColor: '#f3e8ff',
-    border: '2px solid #a855f7',
+    borderWidth: '2px',
+    borderStyle: 'solid',
+    borderColor: '#a855f7',
   },
   
   slotHost: {
     border: '2px solid',
-    borderColor: colors.warning,
+    borderColor: '#ffc107',
     boxShadow: '0 0 20px rgba(251, 191, 36, 0.3)',
   },
   
@@ -242,55 +246,55 @@ const styles = stylex.create({
     display: 'flex',
     flexDirection: 'column',
     alignItems: 'center',
-    gap: spacing.xs,
+    gap: '0.25rem',
   },
   
   playerName: {
-    fontSize: typography.textSm,
-    fontWeight: typography.weightMedium,
+    fontSize: '0.875rem',
+    fontWeight: '500',
     textAlign: 'center',
   },
   
   emptyText: {
-    fontSize: typography.textSm,
-    color: colors.gray500,
+    fontSize: '0.875rem',
+    color: '#adb5bd',
   },
   
   hostBadge: {
-    fontSize: typography.textXs,
-    padding: `2px ${spacing.xs}`,
-    backgroundColor: colors.warning,
+    fontSize: '0.75rem',
+    padding: `2px '0.25rem'`,
+    backgroundColor: '#ffc107',
     color: '#92400e',
-    borderRadius: layout.radiusSm,
-    fontWeight: typography.weightMedium,
+    borderRadius: '0.125rem',
+    fontWeight: '500',
   },
   
   slotActions: {
-    marginTop: spacing.xs,
+    marginTop: '0.25rem',
     display: 'flex',
-    gap: spacing.xs,
+    gap: '0.25rem',
   },
   
   slotButton: {
-    fontSize: typography.textXs,
-    padding: `${spacing.xs} ${spacing.sm}`,
-    borderRadius: layout.radiusSm,
+    fontSize: '0.75rem',
+    padding: `'0.25rem' '0.5rem'`,
+    borderRadius: '0.125rem',
     border: 'none',
     cursor: 'pointer',
-    transition: `all ${motion.durationFast} ${motion.easeInOut}`,
+    transition: `all '150ms' 'cubic-bezier(0.4, 0, 0.2, 1)'`,
   },
   
   addBotButton: {
-    backgroundColor: colors.gray200,
-    color: colors.gray700,
+    backgroundColor: '#e9ecef',
+    color: '#495057',
     ':hover': {
-      backgroundColor: colors.gray300,
+      backgroundColor: '#dee2e6',
     },
   },
   
   removeButton: {
     backgroundColor: '#fef2f2',
-    color: colors.danger,
+    color: '#dc3545',
     ':hover': {
       backgroundColor: '#fee2e2',
     },
@@ -303,13 +307,13 @@ const styles = stylex.create({
   },
   
   footerButton: {
-    padding: `${spacing.sm} ${spacing.lg}`,
-    fontSize: typography.textBase,
-    fontWeight: typography.weightMedium,
-    borderRadius: layout.radiusMd,
+    padding: `'0.5rem' '1.5rem'`,
+    fontSize: '1rem',
+    fontWeight: '500',
+    borderRadius: '0.375rem',
     border: 'none',
     cursor: 'pointer',
-    transition: `all ${motion.durationFast} ${motion.easeInOut}`,
+    transition: `all '150ms' 'cubic-bezier(0.4, 0, 0.2, 1)'`,
     ':disabled': {
       opacity: 0.5,
       cursor: 'not-allowed',
@@ -317,38 +321,38 @@ const styles = stylex.create({
   },
   
   leaveButton: {
-    backgroundColor: colors.gray200,
-    color: colors.gray700,
+    backgroundColor: '#e9ecef',
+    color: '#495057',
     ':hover': {
-      backgroundColor: colors.gray300,
+      backgroundColor: '#dee2e6',
     },
   },
   
   startButton: {
-    backgroundColor: colors.success,
-    color: colors.white,
+    backgroundColor: '#198754',
+    color: '#ffffff',
     ':hover:not(:disabled)': {
-      backgroundColor: colors.successDark,
+      backgroundColor: '#146c43',
       transform: 'scale(1.05)',
     },
   },
   
   centerMessage: {
     textAlign: 'center',
-    padding: `${spacing.xl} ${spacing.lg}`,
+    padding: `'2rem' '1.5rem'`,
   },
   
   messageTitle: {
-    fontSize: typography.textXl,
-    fontWeight: typography.weightSemibold,
-    color: colors.gray900,
-    marginBottom: spacing.sm,
+    fontSize: '1.25rem',
+    fontWeight: '600',
+    color: '#212529',
+    marginBottom: '0.5rem',
   },
   
   messageText: {
-    fontSize: typography.textBase,
-    color: colors.gray600,
-    marginBottom: spacing.lg,
+    fontSize: '1rem',
+    color: '#6c757d',
+    marginBottom: '1.5rem',
   },
 });
 

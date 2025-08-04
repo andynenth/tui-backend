@@ -43,7 +43,7 @@ const slideInUp = stylex.keyframes({
 const styles = stylex.create({
   content: {
     position: 'relative',
-    padding: spacing.xl,
+    padding: '2rem',
     minHeight: '100vh',
     display: 'flex',
     flexDirection: 'column',
@@ -71,19 +71,19 @@ const styles = stylex.create({
   },
   
   confettiColor1: {
-    backgroundColor: colors.primary,
+    backgroundColor: '#0d6efd',
   },
   
   confettiColor2: {
-    backgroundColor: colors.success,
+    backgroundColor: '#198754',
   },
   
   confettiColor3: {
-    backgroundColor: colors.warning,
+    backgroundColor: '#ffc107',
   },
   
   confettiColor4: {
-    backgroundColor: colors.danger,
+    backgroundColor: '#dc3545',
   },
   
   confettiColor5: {
@@ -110,58 +110,60 @@ const styles = stylex.create({
   },
   
   trophyContainer: {
-    marginBottom: spacing.xl,
-    animation: `${slideInUp} 0.5s ${motion.easeOut}`,
+    marginBottom: '2rem',
+    animation: `${slideInUp} 0.5s 'cubic-bezier(0, 0, 0.2, 1)'`,
   },
   
   trophy: {
     fontSize: '5rem',
-    animation: `${trophyBounce} 2s ${motion.easeInOut} infinite`,
+    animation: `${trophyBounce} 2s 'cubic-bezier(0.4, 0, 0.2, 1)' infinite`,
   },
   
   winnerSection: {
     textAlign: 'center',
-    marginBottom: spacing.xxl,
-    animation: `${slideInUp} 0.5s ${motion.easeOut} 0.2s`,
+    marginBottom: '3rem',
+    animation: `${slideInUp} 0.5s 'cubic-bezier(0, 0, 0.2, 1)' 0.2s`,
     animationFillMode: 'both',
   },
   
   winnerName: {
-    fontSize: typography.text3xl,
-    fontWeight: typography.weightBold,
+    fontSize: '1.875rem',
+    fontWeight: '700',
     background: gradients.gold,
     backgroundClip: 'text',
     WebkitBackgroundClip: 'text',
     WebkitTextFillColor: 'transparent',
-    marginBottom: spacing.sm,
+    marginBottom: '0.5rem',
   },
   
   winnerSubtitle: {
-    fontSize: typography.textXl,
-    color: colors.gray600,
-    fontWeight: typography.weightMedium,
+    fontSize: '1.25rem',
+    color: '#6c757d',
+    fontWeight: '500',
   },
   
   rankingsContainer: {
     width: '100%',
     maxWidth: '500px',
-    marginBottom: spacing.xxl,
-    animation: `${slideInUp} 0.5s ${motion.easeOut} 0.4s`,
+    marginBottom: '3rem',
+    animation: `${slideInUp} 0.5s 'cubic-bezier(0, 0, 0.2, 1)' 0.4s`,
     animationFillMode: 'both',
   },
   
   rankings: {
-    backgroundColor: colors.white,
-    borderRadius: layout.radiusXl,
-    padding: spacing.lg,
-    boxShadow: shadows.xl,
+    backgroundColor: '#ffffff',
+    borderRadius: '1rem',
+    padding: '1.5rem',
+    boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)',
   },
   
   rankItem: {
     display: 'flex',
     alignItems: 'center',
-    padding: spacing.md,
-    borderBottom: `1px solid ${colors.gray200}`,
+    padding: '1rem',
+    borderBottomWidth: '1px',
+    borderBottomStyle: 'solid',
+    borderBottomColor: '#e9ecef',
     
     ':last-child': {
       borderBottom: 'none',
@@ -174,17 +176,17 @@ const styles = stylex.create({
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
-    borderRadius: layout.radiusFull,
-    backgroundColor: colors.gray100,
-    fontSize: typography.textBase,
-    fontWeight: typography.weightBold,
-    color: colors.gray700,
-    marginRight: spacing.sm,
+    borderRadius: '9999px',
+    backgroundColor: '#f1f3f5',
+    fontSize: '1rem',
+    fontWeight: '700',
+    color: '#495057',
+    marginRight: '0.5rem',
   },
   
   medal: {
     fontSize: '24px',
-    marginRight: spacing.sm,
+    marginRight: '0.5rem',
   },
   
   playerInfo: {
@@ -195,46 +197,48 @@ const styles = stylex.create({
   },
   
   playerName: {
-    fontSize: typography.textBase,
-    fontWeight: typography.weightMedium,
-    color: colors.gray800,
+    fontSize: '1rem',
+    fontWeight: '500',
+    color: '#343a40',
   },
   
   playerScore: {
-    fontSize: typography.textSm,
-    color: colors.gray500,
+    fontSize: '0.875rem',
+    color: '#adb5bd',
   },
   
   finalScore: {
-    fontSize: typography.textXl,
-    fontWeight: typography.weightBold,
-    color: colors.gray800,
+    fontSize: '1.25rem',
+    fontWeight: '700',
+    color: '#343a40',
   },
   
   stats: {
-    backgroundColor: colors.gray50,
-    borderRadius: layout.radiusLg,
-    padding: spacing.lg,
-    marginBottom: spacing.xl,
+    backgroundColor: '#f8f9fa',
+    borderRadius: '0.5rem',
+    padding: '1.5rem',
+    marginBottom: '2rem',
     width: '100%',
     maxWidth: '400px',
-    animation: `${slideInUp} 0.5s ${motion.easeOut} 0.6s`,
+    animation: `${slideInUp} 0.5s 'cubic-bezier(0, 0, 0.2, 1)' 0.6s`,
     animationFillMode: 'both',
   },
   
   statsTitle: {
-    fontSize: typography.textLg,
-    fontWeight: typography.weightBold,
-    color: colors.gray700,
-    marginBottom: spacing.md,
+    fontSize: '1.125rem',
+    fontWeight: '700',
+    color: '#495057',
+    marginBottom: '1rem',
     textAlign: 'center',
   },
   
   statItem: {
     display: 'flex',
     justifyContent: 'space-between',
-    padding: spacing.sm,
-    borderBottom: `1px solid ${colors.gray200}`,
+    padding: '0.5rem',
+    borderBottomWidth: '1px',
+    borderBottomStyle: 'solid',
+    borderBottomColor: '#e9ecef',
     
     ':last-child': {
       borderBottom: 'none',
@@ -242,47 +246,47 @@ const styles = stylex.create({
   },
   
   statLabel: {
-    fontSize: typography.textSm,
-    color: colors.gray600,
+    fontSize: '0.875rem',
+    color: '#6c757d',
   },
   
   statValue: {
-    fontSize: typography.textSm,
-    fontWeight: typography.weightMedium,
-    color: colors.gray800,
+    fontSize: '0.875rem',
+    fontWeight: '500',
+    color: '#343a40',
   },
   
   actions: {
     display: 'flex',
-    gap: spacing.md,
-    marginBottom: spacing.xl,
-    animation: `${slideInUp} 0.5s ${motion.easeOut} 0.8s`,
+    gap: '1rem',
+    marginBottom: '2rem',
+    animation: `${slideInUp} 0.5s 'cubic-bezier(0, 0, 0.2, 1)' 0.8s`,
     animationFillMode: 'both',
   },
   
   actionButton: {
-    padding: `${spacing.md} ${spacing.xl}`,
-    borderRadius: layout.radiusMd,
-    fontSize: typography.textBase,
-    fontWeight: typography.weightMedium,
+    padding: `'1rem' '2rem'`,
+    borderRadius: '0.375rem',
+    fontSize: '1rem',
+    fontWeight: '500',
     border: 'none',
     cursor: 'pointer',
-    transition: `all ${motion.durationBase} ${motion.easeInOut}`,
+    transition: `all '300ms' 'cubic-bezier(0.4, 0, 0.2, 1)'`,
   },
   
   primaryButton: {
     background: gradients.primary,
-    color: colors.white,
+    color: '#ffffff',
     
     ':hover': {
       transform: 'translateY(-2px)',
-      boxShadow: shadows.md,
+      boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)',
     },
   },
   
   secondaryButton: {
-    backgroundColor: colors.gray200,
-    color: colors.gray600,
+    backgroundColor: '#e9ecef',
+    color: '#6c757d',
     
     ':disabled': {
       opacity: 0.5,
@@ -421,7 +425,7 @@ const GameOverContent = ({
                   </div>
                   <div {...stylex.props(styles.playerScore)}>
                     {player.perfect_rounds > 0
-                      ? `${player.perfect_rounds} perfect round${player.perfect_rounds > 1 ? 's' : ''}`
+                      ? `${player.perfect_rounds} perfect round${player.perfect_rounds > 1 ? 's' : '}`
                       : 'Aim needs work 🎯'}
                   </div>
                 </div>

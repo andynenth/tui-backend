@@ -113,6 +113,7 @@
     "@tailwindcss/postcss": "^4.1.11",
     "@typescript-eslint/eslint-plugin": "^6.21.0",
     "@typescript-eslint/parser": "^6.21.0",
+    "@vitejs/plugin-react": "^4.7.0",
     "autoprefixer": "^10.4.21",
     "esbuild": "^0.25.5",
     "esbuild-css-modules-plugin": "^3.1.5",
@@ -125,11 +126,13 @@
     "postcss-modules": "^6.0.1",
     "prettier": "^3.6.2",
     "tailwindcss": "^4.1.10",
-    "typescript": "^5.3.3"
+    "typescript": "^5.3.3",
+    "vite": "^7.0.6"
   },
   "scripts": {
-    "dev": "node esbuild.config.cjs",
-    "build": "node esbuild.config.cjs --production && cp index.html ../backend/static/",
+    "dev": "vite",
+    "build": "vite build && cp -r dist/* ../backend/static/",
+    "preview": "vite preview",
     "lint": "eslint . --ext .js,.jsx,.ts,.tsx",
     "lint:fix": "eslint . --ext .js,.jsx,.ts,.tsx --fix",
     "type-check": "tsc --noEmit",

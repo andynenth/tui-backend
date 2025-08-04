@@ -7,8 +7,8 @@ import { colors, spacing, typography } from '../../../design-system/tokens.style
 
 const styles = stylex.create({
   container: {
-    padding: spacing.lg,
-    backgroundColor: colors.gray100,
+    padding: '1.5rem',
+    backgroundColor: '#f1f3f5',
     minHeight: '100vh',
   },
   
@@ -16,13 +16,13 @@ const styles = stylex.create({
     fontSize: typography.fontSize.xl,
     fontWeight: typography.fontWeight.bold,
     color: colors.text,
-    marginBottom: spacing.lg,
+    marginBottom: '1.5rem',
   },
   
   testGrid: {
     display: 'flex',
-    gap: spacing.lg,
-    marginTop: spacing.lg,
+    gap: '1.5rem',
+    marginTop: '1.5rem',
   },
   
   sizeSection: {
@@ -33,14 +33,14 @@ const styles = stylex.create({
     fontSize: typography.fontSize.lg,
     fontWeight: typography.fontWeight.semibold,
     color: colors.text,
-    marginBottom: spacing.md,
+    marginBottom: '1rem',
   },
   
   playerRow: {
-    margin: `${spacing.sm} 0`,
+    margin: `'0.5rem' 0`,
     display: 'flex',
     alignItems: 'center',
-    gap: spacing.sm,
+    gap: '0.5rem',
   },
   
   playerLabel: {
@@ -49,19 +49,19 @@ const styles = stylex.create({
   },
   
   statesSection: {
-    marginTop: spacing.xl,
+    marginTop: '2rem',
   },
   
   statesGrid: {
     display: 'flex',
-    gap: spacing.lg,
-    marginTop: spacing.md,
+    gap: '1.5rem',
+    marginTop: '1rem',
   },
   
   stateItem: {
     display: 'flex',
     alignItems: 'center',
-    gap: spacing.sm,
+    gap: '0.5rem',
   },
 });
 

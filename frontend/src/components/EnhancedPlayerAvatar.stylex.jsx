@@ -62,11 +62,11 @@ const styles = stylex.create({
   },
   
   avatarTransition: {
-    transition: `all ${motion.durationBase} ${motion.easeInOut}`,
+    transition: `all '300ms' 'cubic-bezier(0.4, 0, 0.2, 1)'`,
   },
   
   stateChange: {
-    animation: `${stateChange} 0.5s ${motion.easeInOut}`,
+    animation: `${stateChange} 0.5s 'cubic-bezier(0.4, 0, 0.2, 1)'`,
   },
   
   disconnected: {
@@ -76,21 +76,21 @@ const styles = stylex.create({
   
   botActive: {
     animation: `${botPulse} 2s infinite`,
-    borderRadius: layout.radiusFull,
+    borderRadius: '9999px',
   },
   
   hostIndicator: {
     position: 'absolute',
     top: '-8px',
     right: '-8px',
-    animation: `${fadeIn} 0.3s ${motion.easeOut}`,
+    animation: `${fadeIn} 0.3s 'cubic-bezier(0, 0, 0.2, 1)'`,
   },
   
   disconnectBadge: {
     position: 'absolute',
     bottom: '-4px',
     right: '-4px',
-    animation: `${fadeIn} 0.3s ${motion.easeOut}`,
+    animation: `${fadeIn} 0.3s 'cubic-bezier(0, 0, 0.2, 1)'`,
   },
   
   aiBadge: {
@@ -100,12 +100,14 @@ const styles = stylex.create({
     paddingBottom: '2px',
     paddingLeft: '6px',
     paddingRight: '6px',
-    borderRadius: layout.radiusFull,
-    fontSize: typography.textXs,
-    fontWeight: typography.weightMedium,
+    borderRadius: '9999px',
+    fontSize: '0.75rem',
+    fontWeight: '500',
     backgroundColor: 'rgba(239, 68, 68, 0.1)',
-    color: colors.danger,
-    border: `1px solid ${colors.danger}`,
+    color: '#dc3545',
+    borderWidth: '1px',
+    borderStyle: 'solid',
+    borderColor: '#dc3545',
   },
   
   connectionQuality: {
@@ -116,10 +118,10 @@ const styles = stylex.create({
   },
   
   qualityWrapper: {
-    backgroundColor: colors.white,
-    borderRadius: layout.radiusSm,
+    backgroundColor: '#ffffff',
+    borderRadius: '0.125rem',
     padding: '2px 4px',
-    boxShadow: shadows.sm,
+    boxShadow: '0 1px 2px 0 rgba(0, 0, 0, 0.05)',
   },
   
   reconnectingOverlay: {
@@ -134,7 +136,7 @@ const styles = stylex.create({
   reconnectingSpinner: {
     width: '32px',
     height: '32px',
-    color: colors.primary,
+    color: '#0d6efd',
     opacity: 0.8,
     animation: `${spin} 1s linear infinite`,
   },

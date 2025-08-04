@@ -21,7 +21,7 @@ import RoundStartContent from './content/RoundStartContent';
 export function RoundStartUI({
   // Data props
   roundNumber = 1,
-  starter = '',
+  starter = ',
   starterReason = 'default',
 }) {
   // Pass props to content component
@@ -48,7 +48,7 @@ RoundStartUI.propTypes = {
 
 RoundStartUI.defaultProps = {
   roundNumber: 1,
-  starter: '',
+  starter: ',
   starterReason: 'default',
 };
 

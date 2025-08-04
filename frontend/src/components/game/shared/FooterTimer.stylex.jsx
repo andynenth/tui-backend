@@ -22,13 +22,13 @@ const styles = stylex.create({
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
-    transition: `all ${motion.durationBase} ${motion.easeInOut}`,
+    transition: `all '300ms' 'cubic-bezier(0.4, 0, 0.2, 1)'`,
   },
   
   // Variant styles
   inline: {
-    padding: spacing.sm,
-    borderRadius: layout.radiusMd,
+    padding: '0.5rem',
+    borderRadius: '0.375rem',
     backgroundColor: 'rgba(37, 99, 235, 0.1)',
   },
   
@@ -37,55 +37,57 @@ const styles = stylex.create({
     bottom: 0,
     left: 0,
     right: 0,
-    padding: spacing.md,
-    backgroundColor: colors.white,
-    borderTop: `1px solid ${colors.gray200}`,
-    boxShadow: shadows.lg,
+    padding: '1rem',
+    backgroundColor: '#ffffff',
+    borderTopWidth: '1px',
+    borderTopStyle: 'solid',
+    borderTopColor: '#e9ecef',
+    boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)',
     zIndex: 50,
   },
   
   text: {
     display: 'flex',
     alignItems: 'center',
-    gap: spacing.xs,
-    fontSize: typography.textBase,
-    color: colors.gray700,
+    gap: '0.25rem',
+    fontSize: '1rem',
+    color: '#495057',
   },
   
   prefix: {
-    fontWeight: typography.weightNormal,
-    color: colors.gray600,
+    fontWeight: '400',
+    color: '#6c757d',
   },
   
   count: {
-    fontWeight: typography.weightBold,
-    fontSize: typography.textLg,
-    color: colors.primary,
-    animation: `${countdownPulse} 1s ${motion.easeInOut} infinite`,
+    fontWeight: '700',
+    fontSize: '1.125rem',
+    color: '#0d6efd',
+    animation: `${countdownPulse} 1s 'cubic-bezier(0.4, 0, 0.2, 1)' infinite`,
     display: 'inline-block',
     minWidth: '2ch',
     textAlign: 'center',
   },
   
   countUrgent: {
-    color: colors.danger,
+    color: '#dc3545',
     animationDuration: '0.5s',
   },
   
   suffix: {
-    fontWeight: typography.weightNormal,
-    color: colors.gray600,
+    fontWeight: '400',
+    color: '#6c757d',
   },
   
   // Special styles for different states
   warning: {
     backgroundColor: 'rgba(245, 158, 11, 0.1)',
-    borderColor: colors.warning,
+    borderColor: '#ffc107',
   },
   
   danger: {
     backgroundColor: 'rgba(239, 68, 68, 0.1)',
-    borderColor: colors.danger,
+    borderColor: '#dc3545',
   },
 });
 
@@ -105,7 +107,7 @@ const styles = stylex.create({
 const FooterTimer = ({
   duration = 5,
   onComplete,
-  prefix = '',
+  prefix = ',
   suffix = 'seconds',
   variant = 'inline',
   className = '',

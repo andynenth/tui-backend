@@ -14,21 +14,21 @@ const styles = stylex.create({
   
   label: {
     display: 'block',
-    fontSize: typography.textSm,
-    fontWeight: typography.weightMedium,
-    color: colors.gray700,
-    marginBottom: spacing.xs,
+    fontSize: '0.875rem',
+    fontWeight: '500',
+    color: '#495057',
+    marginBottom: '0.25rem',
   },
   
   required: {
-    color: colors.danger,
-    marginLeft: spacing.xs,
+    color: '#dc3545',
+    marginLeft: '0.25rem',
   },
   
   input: {
     // Reset
     appearance: 'none',
-    background: 'none',
+    backgroundColor: 'none',
     
     // Layout
     display: 'block',
@@ -39,83 +39,85 @@ const styles = stylex.create({
     lineHeight: typography.lineHeightNormal,
     
     // Visual
-    backgroundColor: colors.white,
-    border: `1px solid ${colors.gray300}`,
-    borderRadius: layout.radiusMd,
-    transition: `all ${motion.durationFast} ${motion.easeInOut}`,
+    backgroundColor: '#ffffff',
+    borderWidth: '1px',
+    borderStyle: 'solid',
+    borderColor: '#dee2e6',
+    borderRadius: '0.375rem',
+    transition: `all '150ms' 'cubic-bezier(0.4, 0, 0.2, 1)'`,
     
     // States
     ':hover:not(:disabled)': {
-      borderColor: colors.gray400,
+      borderColor: '#ced4da',
     },
     
     ':focus': {
       outline: 'none',
-      borderColor: colors.primary,
+      borderColor: '#0d6efd',
       boxShadow: `0 0 0 3px rgba(13, 110, 253, 0.1)`,
     },
     
     ':disabled': {
       opacity: 0.5,
       cursor: 'not-allowed',
-      backgroundColor: colors.gray100,
+      backgroundColor: '#f1f3f5',
     },
     
     '::placeholder': {
-      color: colors.gray400,
+      color: '#ced4da',
     },
   },
   
   // Input sizes
   sm: {
-    paddingTop: spacing.xs,
-    paddingBottom: spacing.xs,
-    paddingLeft: spacing.md,
-    paddingRight: spacing.md,
-    fontSize: typography.textSm,
+    paddingTop: '0.25rem',
+    paddingBottom: '0.25rem',
+    paddingLeft: '1rem',
+    paddingRight: '1rem',
+    fontSize: '0.875rem',
   },
   
   md: {
-    paddingTop: spacing.sm,
-    paddingBottom: spacing.sm,
-    paddingLeft: spacing.lg,
-    paddingRight: spacing.lg,
-    fontSize: typography.textBase,
+    paddingTop: '0.5rem',
+    paddingBottom: '0.5rem',
+    paddingLeft: '1.5rem',
+    paddingRight: '1.5rem',
+    fontSize: '1rem',
   },
   
   lg: {
-    paddingTop: spacing.md,
-    paddingBottom: spacing.md,
-    paddingLeft: spacing.xl,
-    paddingRight: spacing.xl,
-    fontSize: typography.textLg,
+    paddingTop: '1rem',
+    paddingBottom: '1rem',
+    paddingLeft: '2rem',
+    paddingRight: '2rem',
+    fontSize: '1.125rem',
   },
   
   // Error state
   error: {
-    borderColor: colors.danger,
+    borderColor: '#dc3545',
     
     ':hover:not(:disabled)': {
-      borderColor: colors.dangerDark,
+      borderColor: '#a71e2a',
     },
     
     ':focus': {
-      borderColor: colors.danger,
+      borderColor: '#dc3545',
       boxShadow: `0 0 0 3px rgba(220, 53, 69, 0.1)`,
     },
   },
   
   message: {
-    marginTop: spacing.xs,
-    fontSize: typography.textSm,
+    marginTop: '0.25rem',
+    fontSize: '0.875rem',
   },
   
   errorMessage: {
-    color: colors.danger,
+    color: '#dc3545',
   },
   
   helperText: {
-    color: colors.gray500,
+    color: '#adb5bd',
   },
 });
 

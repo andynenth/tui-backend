@@ -8,22 +8,24 @@ import GamePiece from './GamePiece.stylex';
 const styles = stylex.create({
   container: {
     width: '100%',
-    padding: spacing.lg,
+    padding: '1.5rem',
     backgroundColor: 'rgba(255, 255, 255, 0.05)',
-    borderRadius: layout.radiusLg,
-    border: `1px solid ${colors.gray200}`,
+    borderRadius: '0.5rem',
+    borderWidth: '1px',
+    borderStyle: 'solid',
+    borderColor: '#e9ecef',
   },
   
   // Variants
   active: {
     backgroundColor: 'rgba(13, 110, 253, 0.05)',
-    borderColor: colors.primary,
+    borderColor: '#0d6efd',
     boxShadow: `0 0 0 2px rgba(13, 110, 253, 0.1)`,
   },
   
   fixed: {
-    backgroundColor: colors.gray50,
-    borderColor: colors.gray300,
+    backgroundColor: '#f8f9fa',
+    borderColor: '#dee2e6',
   },
   
   inner: {
@@ -34,7 +36,7 @@ const styles = stylex.create({
   grid: {
     display: 'flex',
     flexWrap: 'wrap',
-    gap: spacing.md,
+    gap: '1rem',
     justifyContent: 'center',
     alignItems: 'center',
     minHeight: '100px',

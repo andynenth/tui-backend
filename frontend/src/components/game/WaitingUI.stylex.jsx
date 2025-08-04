@@ -25,91 +25,91 @@ const styles = stylex.create({
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
-    padding: spacing.lg,
+    padding: '1.5rem',
   },
   
   card: {
-    borderRadius: layout.radiusXl,
-    padding: spacing.xxxl,
+    borderRadius: '1rem',
+    padding: '4rem',
     maxWidth: '28rem',
     width: '100%',
     textAlign: 'center',
     background: gradients.white,
-    boxShadow: `${shadows.lg}, ${shadows.insetWhite}`,
+    boxShadow: `'0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)', ${shadows.insetWhite}`,
   },
   
   connectionSection: {
-    marginBottom: spacing.xxl,
+    marginBottom: '3rem',
   },
   
   mainSection: {
-    marginBottom: spacing.xxxl,
+    marginBottom: '4rem',
   },
   
   phaseIcon: {
     fontSize: '4rem',
-    marginBottom: spacing.lg,
+    marginBottom: '1.5rem',
     lineHeight: 1,
   },
   
   phaseTitle: {
-    fontSize: typography.text2xl,
-    fontWeight: typography.weightBold,
-    marginBottom: spacing.sm,
-    color: colors.gray700,
+    fontSize: '1.5rem',
+    fontWeight: '700',
+    marginBottom: '0.5rem',
+    color: '#495057',
   },
   
   message: {
-    fontSize: typography.textLg,
-    color: colors.gray500,
+    fontSize: '1.125rem',
+    color: '#adb5bd',
   },
   
   loadingSection: {
-    marginBottom: spacing.xxl,
+    marginBottom: '3rem',
   },
   
   errorSection: {
-    marginBottom: spacing.xxl,
-    padding: spacing.lg,
-    borderRadius: layout.radiusLg,
+    marginBottom: '3rem',
+    padding: '1.5rem',
+    borderRadius: '0.5rem',
     backgroundColor: 'rgba(220, 53, 69, 0.1)',
     border: '1px solid rgba(220, 53, 69, 0.3)',
   },
   
   errorText: {
-    fontSize: typography.textSm,
-    marginBottom: spacing.md,
-    color: colors.danger,
+    fontSize: '0.875rem',
+    marginBottom: '1rem',
+    color: '#dc3545',
   },
   
   retryButton: {
-    padding: `${spacing.sm} ${spacing.lg}`,
-    borderRadius: layout.radiusLg,
-    fontSize: typography.textSm,
-    fontWeight: typography.weightMedium,
-    transition: `colors ${motion.durationBase} ${motion.easeInOut}`,
-    color: colors.white,
+    padding: `'0.5rem' '1.5rem'`,
+    borderRadius: '0.5rem',
+    fontSize: '0.875rem',
+    fontWeight: '500',
+    transition: `colors '300ms' 'cubic-bezier(0.4, 0, 0.2, 1)'`,
+    color: '#ffffff',
     background: gradients.danger,
     border: 'none',
     cursor: 'pointer',
     
     ':hover': {
-      backgroundColor: colors.dangerDark,
+      backgroundColor: '#a71e2a',
     },
   },
   
   waitingDots: {
     display: 'flex',
     justifyContent: 'center',
-    gap: spacing.sm,
-    marginBottom: spacing.xxl,
+    gap: '0.5rem',
+    marginBottom: '3rem',
   },
   
   waitingDot: {
     width: '12px',
     height: '12px',
-    borderRadius: layout.radiusFull,
-    backgroundColor: colors.primary,
+    borderRadius: '9999px',
+    backgroundColor: '#0d6efd',
     animation: `${dotAnimation} 1.4s infinite`,
   },
   
@@ -126,43 +126,43 @@ const styles = stylex.create({
   },
   
   phaseInfo: {
-    fontSize: typography.textSm,
-    color: colors.gray600,
+    fontSize: '0.875rem',
+    color: '#6c757d',
     display: 'flex',
     flexDirection: 'column',
-    gap: spacing.xs,
+    gap: '0.25rem',
   },
   
   phaseInfoRow: {
     display: 'flex',
     justifyContent: 'center',
-    gap: spacing.xs,
+    gap: '0.25rem',
   },
   
   phaseInfoLabel: {
-    color: colors.gray600,
+    color: '#6c757d',
   },
   
   phaseInfoValue: {
-    fontWeight: typography.weightMedium,
-    color: colors.gray500,
+    fontWeight: '500',
+    color: '#adb5bd',
   },
   
   cancelSection: {
-    marginTop: spacing.xxl,
+    marginTop: '3rem',
   },
   
   cancelButton: {
-    fontSize: typography.textSm,
+    fontSize: '0.875rem',
     textDecoration: 'underline',
-    transition: `color ${motion.durationBase} ${motion.easeInOut}`,
-    color: colors.gray400,
-    background: 'none',
+    transition: `color '300ms' 'cubic-bezier(0.4, 0, 0.2, 1)'`,
+    color: '#ced4da',
+    backgroundColor: 'none',
     border: 'none',
     cursor: 'pointer',
     
     ':hover': {
-      color: colors.gray600,
+      color: '#6c757d',
     },
   },
 });

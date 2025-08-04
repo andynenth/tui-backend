@@ -28,20 +28,20 @@ const shine = stylex.keyframes({
 // ScoringContent styles
 const styles = stylex.create({
   scoringSection: {
-    padding: spacing.lg,
+    padding: '1.5rem',
     flex: 1,
     overflowY: 'auto',
     display: 'flex',
     flexDirection: 'column',
-    gap: spacing.md,
+    gap: '1rem',
   },
   
   scoreCard: {
-    backgroundColor: colors.white,
-    borderRadius: layout.radiusLg,
-    padding: spacing.lg,
-    boxShadow: shadows.md,
-    animation: `${slideIn} 0.3s ${motion.easeOut}`,
+    backgroundColor: '#ffffff',
+    borderRadius: '0.5rem',
+    padding: '1.5rem',
+    boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)',
+    animation: `${slideIn} 0.3s 'cubic-bezier(0, 0, 0.2, 1)'`,
     animationFillMode: 'both',
   },
   
@@ -49,21 +49,23 @@ const styles = stylex.create({
     display: 'flex',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: spacing.md,
-    paddingBottom: spacing.md,
-    borderBottom: `1px solid ${colors.gray200}`,
+    marginBottom: '1rem',
+    paddingBottom: '1rem',
+    borderBottomWidth: '1px',
+    borderBottomStyle: 'solid',
+    borderBottomColor: '#e9ecef',
   },
   
   playerInfo: {
     display: 'flex',
     alignItems: 'center',
-    gap: spacing.md,
+    gap: '1rem',
   },
   
   playerName: {
-    fontSize: typography.textLg,
-    fontWeight: typography.weightMedium,
-    color: colors.gray800,
+    fontSize: '1.125rem',
+    fontWeight: '500',
+    color: '#343a40',
   },
   
   totalScore: {
@@ -74,25 +76,25 @@ const styles = stylex.create({
   },
   
   totalLabel: {
-    fontSize: typography.textSm,
-    color: colors.gray500,
+    fontSize: '0.875rem',
+    color: '#adb5bd',
     textTransform: 'uppercase',
     letterSpacing: '0.05em',
   },
   
   totalValue: {
-    fontSize: typography.text2xl,
-    fontWeight: typography.weightBold,
+    fontSize: '1.5rem',
+    fontWeight: '700',
   },
   
   totalNeutral: {
-    color: colors.gray700,
+    color: '#495057',
   },
   
   bottomRow: {
     display: 'flex',
     justifyContent: 'space-between',
-    gap: spacing.md,
+    gap: '1rem',
   },
   
   stat: {
@@ -104,56 +106,60 @@ const styles = stylex.create({
   },
   
   statTarget: {
-    borderRight: `1px solid ${colors.gray200}`,
-    paddingRight: spacing.md,
+    borderRightWidth: '1px',
+    borderRightStyle: 'solid',
+    borderRightColor: '#e9ecef',
+    paddingRight: '1rem',
   },
   
   statLabel: {
-    fontSize: typography.textXs,
-    color: colors.gray500,
+    fontSize: '0.75rem',
+    color: '#adb5bd',
     textTransform: 'uppercase',
     letterSpacing: '0.05em',
   },
   
   targetValue: {
-    fontSize: typography.textLg,
-    fontWeight: typography.weightBold,
+    fontSize: '1.125rem',
+    fontWeight: '700',
   },
   
   statValue: {
-    fontSize: typography.textBase,
-    fontWeight: typography.weightMedium,
+    fontSize: '1rem',
+    fontWeight: '500',
   },
   
   valuePositive: {
-    color: colors.success,
+    color: '#198754',
   },
   
   valueNegative: {
-    color: colors.danger,
+    color: '#dc3545',
   },
   
   valueNeutral: {
-    color: colors.gray600,
+    color: '#6c757d',
   },
   
   valueBlue: {
-    color: colors.primary,
+    color: '#0d6efd',
   },
   
   multiplier: {
-    fontSize: typography.textBase,
-    fontWeight: typography.weightBold,
-    color: colors.warning,
-    padding: `${spacing.xxs} ${spacing.sm}`,
+    fontSize: '1rem',
+    fontWeight: '700',
+    color: '#ffc107',
+    padding: `${spacing.xxs} '0.5rem'`,
     backgroundColor: 'rgba(245, 158, 11, 0.1)',
-    borderRadius: layout.radiusSm,
+    borderRadius: '0.125rem',
   },
   
   continueSection: {
-    padding: spacing.lg,
-    backgroundColor: colors.gray50,
-    borderTop: `1px solid ${colors.gray200}`,
+    padding: '1.5rem',
+    backgroundColor: '#f8f9fa',
+    borderTopWidth: '1px',
+    borderTopStyle: 'solid',
+    borderTopColor: '#e9ecef',
   },
   
   continueInfo: {
@@ -161,10 +167,10 @@ const styles = stylex.create({
   },
   
   nextRound: {
-    fontSize: typography.textLg,
-    fontWeight: typography.weightMedium,
-    color: colors.gray700,
-    marginBottom: spacing.md,
+    fontSize: '1.125rem',
+    fontWeight: '500',
+    color: '#495057',
+    marginBottom: '1rem',
   },
   
   autoContinue: {
@@ -173,7 +179,7 @@ const styles = stylex.create({
   },
   
   perfectScore: {
-    background: `linear-gradient(90deg, ${colors.success}33 0%, ${colors.success}66 50%, ${colors.success}33 100%)`,
+    backgroundImage: `linear-gradient(90deg, '#198754'33 0%, '#198754'66 50%, '#198754'33 100%)`,
     backgroundSize: '200% 100%',
     animation: `${shine} 3s linear infinite`,
   },
@@ -196,7 +202,7 @@ const ScoringContent = ({
   scores = [], // Array of score objects
   roundNumber = 1,
   redealMultiplier = 1,
-  myName = '',
+  myName = ',
   onContinue,
 }) => {
   // Format score display
@@ -279,7 +285,7 @@ const ScoringContent = ({
                   />
                   <div {...stylex.props(styles.playerName)}>
                     {player.name}
-                    {player.name === myName ? ' (You)' : ''}
+                    {player.name === myName ? ' (You)' : '}
                   </div>
                 </div>
 

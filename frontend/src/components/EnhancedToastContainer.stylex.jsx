@@ -33,21 +33,21 @@ const toastStyles = stylex.create({
   toast: {
     display: 'flex',
     alignItems: 'flex-start',
-    padding: spacing.md,
-    marginBottom: spacing.sm,
+    padding: '1rem',
+    marginBottom: '0.5rem',
     borderWidth: '1px',
     borderStyle: 'solid',
-    borderRadius: layout.radiusMd,
-    boxShadow: shadows.lg,
-    transition: `all ${motion.durationBase} ${motion.easeInOut}`,
+    borderRadius: '0.375rem',
+    boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)',
+    transition: `all '300ms' 'cubic-bezier(0.4, 0, 0.2, 1)'`,
   },
   
   toastEntering: {
-    animation: `${slideIn} 0.3s ${motion.easeOut} forwards`,
+    animation: `${slideIn} 0.3s 'cubic-bezier(0, 0, 0.2, 1)' forwards`,
   },
   
   toastExiting: {
-    animation: `${slideOut} 0.3s ${motion.easeIn} forwards`,
+    animation: `${slideOut} 0.3s 'cubic-bezier(0.4, 0, 1, 1)' forwards`,
   },
   
   successToast: {
@@ -100,32 +100,32 @@ const toastStyles = stylex.create({
   },
   
   content: {
-    marginLeft: spacing.md,
+    marginLeft: '1rem',
     flex: 1,
   },
   
   title: {
-    fontSize: typography.textSm,
-    fontWeight: typography.weightSemibold,
-    marginBottom: spacing.xs,
+    fontSize: '0.875rem',
+    fontWeight: '600',
+    marginBottom: '0.25rem',
   },
   
   message: {
-    fontSize: typography.textSm,
+    fontSize: '0.875rem',
   },
   
   closeButton: {
-    marginLeft: spacing.md,
+    marginLeft: '1rem',
     flexShrink: 0,
     display: 'inline-flex',
-    color: colors.gray400,
-    background: 'transparent',
+    color: '#ced4da',
+    backgroundColor: 'transparent',
     border: 'none',
     cursor: 'pointer',
     padding: 0,
-    transition: `color ${motion.durationFast} ${motion.easeInOut}`,
+    transition: `color '150ms' 'cubic-bezier(0.4, 0, 0.2, 1)'`,
     ':hover': {
-      color: colors.gray500,
+      color: '#adb5bd',
     },
     ':focus': {
       outline: 'none',
@@ -142,8 +142,8 @@ const toastStyles = stylex.create({
 const containerStyles = stylex.create({
   container: {
     position: 'fixed',
-    top: spacing.md,
-    right: spacing.md,
+    top: '1rem',
+    right: '1rem',
     zIndex: 50,
     pointerEvents: 'none',
   },
@@ -299,7 +299,7 @@ const EnhancedToast = ({ toast, onRemove, index }) => {
  *
  * Container for toast notifications with stacking behavior
  */
-const EnhancedToastContainer = ({ maxToasts = 4, className = '' }) => {
+const EnhancedToastContainer = ({ maxToasts = 4, className = ' }) => {
   const [toasts, setToasts] = useState([]);
 
   useEffect(() => {

@@ -8,26 +8,28 @@ import settingIcon from '../assets/setting.svg';
 // SettingsButton styles
 const styles = stylex.create({
   button: {
-    backgroundColor: colors.white,
-    border: `1px solid ${colors.gray300}`,
-    borderRadius: layout.radiusMd,
-    padding: spacing.sm,
+    backgroundColor: '#ffffff',
+    borderWidth: '1px',
+    borderStyle: 'solid',
+    borderColor: '#dee2e6',
+    borderRadius: '0.375rem',
+    padding: '0.5rem',
     cursor: 'pointer',
     display: 'inline-flex',
     alignItems: 'center',
     justifyContent: 'center',
-    transition: `all ${motion.durationFast} ${motion.easeInOut}`,
+    transition: `all '150ms' 'cubic-bezier(0.4, 0, 0.2, 1)'`,
     ':hover': {
-      backgroundColor: colors.gray50,
-      borderColor: colors.gray400,
-      boxShadow: shadows.md,
+      backgroundColor: '#f8f9fa',
+      borderColor: '#ced4da',
+      boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)',
       transform: 'scale(1.05)',
     },
     ':active': {
       transform: 'scale(0.95)',
     },
     ':focus': {
-      outline: `2px solid ${colors.primary}`,
+      outline: `2px solid '#0d6efd'`,
       outlineOffset: '2px',
     },
   },

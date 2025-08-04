@@ -20,15 +20,15 @@ export function TurnUI({
   // Game state data
   myHand = [],
   players = [],
-  currentPlayer = '',
-  playerName = '',
+  currentPlayer = ',
+  playerName = ',
   currentPile = [],
   requiredPieceCount = 0,
   turnNumber = 1,
   piecesWonCount = {},
-  previousWinner = '',
+  previousWinner = ',
   currentTurnPlays = [],
-  playType = '',
+  playType = ',
   declarationData = {},
   playerHandSizes = {},
 
@@ -77,7 +77,7 @@ export function TurnUI({
       if (validPlays.length > 0) {
         const lastPlay = validPlays[validPlays.length - 1];
         // Check both camelCase and snake_case
-        const extractedType = lastPlay.playType || lastPlay.play_type || '';
+        const extractedType = lastPlay.playType || lastPlay.play_type || ';
         console.log('[TurnUI] Extracting play type:', {
           playType,
           currentTurnPlays,
@@ -88,7 +88,7 @@ export function TurnUI({
         return extractedType;
       }
       console.log('[TurnUI] No valid plays found, returning empty play type');
-      return '';
+      return ';
     })();
 
   // Build player stats from declaration and piles won

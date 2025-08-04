@@ -38,29 +38,29 @@ const styles = stylex.create({
     flexDirection: 'column',
     justifyContent: 'center',
     alignItems: 'center',
-    padding: spacing.lg,
+    padding: '1.5rem',
   },
   
   dealingContainer: {
     textAlign: 'center',
-    animation: `${cardDeal} 0.5s ${motion.easeOut}`,
+    animation: `${cardDeal} 0.5s 'cubic-bezier(0, 0, 0.2, 1)'`,
   },
   
   dealingIcon: {
     display: 'flex',
     justifyContent: 'center',
-    gap: spacing.xs,
-    marginBottom: spacing.xl,
+    gap: '0.25rem',
+    marginBottom: '2rem',
   },
   
   cardStack: {
     width: '60px',
     height: '90px',
-    backgroundColor: colors.primary,
-    borderRadius: layout.radiusMd,
-    boxShadow: shadows.md,
+    backgroundColor: '#0d6efd',
+    borderRadius: '0.375rem',
+    boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)',
     position: 'relative',
-    animation: `${cardDeal} 0.5s ${motion.easeOut}`,
+    animation: `${cardDeal} 0.5s 'cubic-bezier(0, 0, 0.2, 1)'`,
     animationDelay: 'calc(var(--index) * 0.1s)',
     
     '::before': {
@@ -70,8 +70,8 @@ const styles = stylex.create({
       left: '-4px',
       right: '4px',
       bottom: '4px',
-      backgroundColor: colors.primaryLight,
-      borderRadius: layout.radiusMd,
+      backgroundColor: '#e7f1ff',
+      borderRadius: '0.375rem',
       zIndex: -1,
     },
     
@@ -83,7 +83,7 @@ const styles = stylex.create({
       right: '8px',
       bottom: '8px',
       backgroundColor: colors.primaryLighter,
-      borderRadius: layout.radiusMd,
+      borderRadius: '0.375rem',
       zIndex: -2,
     },
   },
@@ -101,23 +101,23 @@ const styles = stylex.create({
   },
   
   dealingMessage: {
-    fontSize: typography.text2xl,
-    fontWeight: typography.weightBold,
-    color: colors.gray800,
-    marginBottom: spacing.sm,
+    fontSize: '1.5rem',
+    fontWeight: '700',
+    color: '#343a40',
+    marginBottom: '0.5rem',
   },
   
   dealingStatus: {
-    fontSize: typography.textBase,
-    color: colors.gray600,
-    marginBottom: spacing.xl,
+    fontSize: '1rem',
+    color: '#6c757d',
+    marginBottom: '2rem',
   },
   
   progressContainer: {
     width: '200px',
     height: '8px',
-    backgroundColor: colors.gray200,
-    borderRadius: layout.radiusFull,
+    backgroundColor: '#e9ecef',
+    borderRadius: '9999px',
     overflow: 'hidden',
     margin: '0 auto',
   },
@@ -130,21 +130,23 @@ const styles = stylex.create({
   progressFill: {
     height: '100%',
     background: gradients.primary,
-    borderRadius: layout.radiusFull,
-    animation: `${progressFill} ${TIMING.DEALING_ANIMATION_DURATION}ms ${motion.easeInOut}`,
+    borderRadius: '9999px',
+    animation: `${progressFill} ${TIMING.DEALING_ANIMATION_DURATION}ms 'cubic-bezier(0.4, 0, 0.2, 1)'`,
   },
   
   weakHandAlert: {
-    backgroundColor: colors.white,
-    borderRadius: layout.radiusLg,
-    padding: spacing.xl,
-    boxShadow: shadows.lg,
-    border: `2px solid ${colors.warning}`,
+    backgroundColor: '#ffffff',
+    borderRadius: '0.5rem',
+    padding: '2rem',
+    boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)',
+    borderWidth: '2px',
+    borderStyle: 'solid',
+    borderColor: '#ffc107',
     maxWidth: '400px',
     margin: '0 auto',
     opacity: 0,
     transform: 'scale(0.9)',
-    transition: `all ${motion.durationBase} ${motion.easeOut}`,
+    transition: `all '300ms' 'cubic-bezier(0, 0, 0.2, 1)'`,
   },
   
   weakHandAlertShow: {
@@ -153,84 +155,84 @@ const styles = stylex.create({
   },
   
   alertTitle: {
-    fontSize: typography.textXl,
-    fontWeight: typography.weightBold,
-    color: colors.warning,
-    marginBottom: spacing.md,
+    fontSize: '1.25rem',
+    fontWeight: '700',
+    color: '#ffc107',
+    marginBottom: '1rem',
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
-    gap: spacing.sm,
+    gap: '0.5rem',
   },
   
   alertMessage: {
-    fontSize: typography.textBase,
-    color: colors.gray700,
-    marginBottom: spacing.lg,
+    fontSize: '1rem',
+    color: '#495057',
+    marginBottom: '1.5rem',
     lineHeight: 1.5,
   },
   
   multiplierWarning: {
-    marginTop: spacing.sm,
-    padding: spacing.sm,
+    marginTop: '0.5rem',
+    padding: '0.5rem',
     backgroundColor: 'rgba(245, 158, 11, 0.1)',
-    borderRadius: layout.radiusMd,
-    fontSize: typography.textSm,
-    color: colors.warningDark,
-    fontWeight: typography.weightMedium,
+    borderRadius: '0.375rem',
+    fontSize: '0.875rem',
+    color: '#cc9a06',
+    fontWeight: '500',
   },
   
   alertButtons: {
     display: 'flex',
-    gap: spacing.md,
+    gap: '1rem',
     justifyContent: 'center',
   },
   
   alertButton: {
-    padding: `${spacing.sm} ${spacing.lg}`,
-    borderRadius: layout.radiusMd,
-    fontSize: typography.textBase,
-    fontWeight: typography.weightMedium,
+    padding: `'0.5rem' '1.5rem'`,
+    borderRadius: '0.375rem',
+    fontSize: '1rem',
+    fontWeight: '500',
     border: 'none',
     cursor: 'pointer',
-    transition: `all ${motion.durationBase} ${motion.easeInOut}`,
+    transition: `all '300ms' 'cubic-bezier(0.4, 0, 0.2, 1)'`,
   },
   
   primaryButton: {
     background: gradients.primary,
-    color: colors.white,
+    color: '#ffffff',
     
     ':hover': {
       transform: 'translateY(-2px)',
-      boxShadow: shadows.md,
+      boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)',
     },
   },
   
   secondaryButton: {
-    backgroundColor: colors.gray200,
-    color: colors.gray700,
+    backgroundColor: '#e9ecef',
+    color: '#495057',
     
     ':hover': {
-      backgroundColor: colors.gray300,
+      backgroundColor: '#dee2e6',
     },
   },
   
   waitingIndicator: {
     textAlign: 'center',
-    padding: spacing.lg,
-    backgroundColor: colors.gray50,
-    borderRadius: layout.radiusMd,
+    padding: '1.5rem',
+    backgroundColor: '#f8f9fa',
+    borderRadius: '0.375rem',
   },
   
   waitingText: {
-    fontSize: typography.textLg,
-    color: colors.gray700,
-    marginBottom: spacing.sm,
+    fontSize: '1.125rem',
+    color: '#495057',
+    marginBottom: '0.5rem',
   },
   
   waitingProgress: {
-    fontSize: typography.textSm,
-    color: colors.gray600,
+    fontSize: '0.875rem',
+    color: '#6c757d',
   },
 });
 

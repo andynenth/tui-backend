@@ -36,36 +36,36 @@ const styles = stylex.create({
   container: {
     minHeight: '100vh',
     backgroundImage: gradients.gray,
-    padding: spacing.lg,
+    padding: '1.5rem',
   },
   
   tutorialCard: {
     maxWidth: '900px',
     margin: '0 auto',
-    backgroundColor: colors.white,
-    borderRadius: layout.radiusLg,
-    boxShadow: shadows.xl,
+    backgroundColor: '#ffffff',
+    borderRadius: '0.5rem',
+    boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)',
     overflow: 'hidden',
   },
   
   header: {
-    backgroundColor: colors.primary,
-    color: colors.white,
-    padding: spacing.lg,
+    backgroundColor: '#0d6efd',
+    color: '#ffffff',
+    padding: '1.5rem',
     textAlign: 'center',
   },
   
   headerTitle: {
-    fontSize: typography.text2xl,
-    fontWeight: typography.weightBold,
-    marginBottom: spacing.sm,
+    fontSize: '1.5rem',
+    fontWeight: '700',
+    marginBottom: '0.5rem',
   },
   
   progressBar: {
     display: 'flex',
-    gap: spacing.xs,
+    gap: '0.25rem',
     justifyContent: 'center',
-    marginTop: spacing.md,
+    marginTop: '1rem',
   },
   
   progressDot: {
@@ -73,74 +73,74 @@ const styles = stylex.create({
     height: '8px',
     borderRadius: '50%',
     backgroundColor: 'rgba(255, 255, 255, 0.3)',
-    transition: `all ${motion.durationFast} ${motion.easeInOut}`,
+    transition: `all '150ms' 'cubic-bezier(0.4, 0, 0.2, 1)'`,
   },
   
   progressDotActive: {
     width: '24px',
     borderRadius: '4px',
-    backgroundColor: colors.white,
+    backgroundColor: '#ffffff',
   },
   
   content: {
-    padding: spacing.xl,
+    padding: '2rem',
     minHeight: '400px',
-    animation: `${fadeIn} 0.3s ${motion.easeOut}`,
+    animation: `${fadeIn} 0.3s 'cubic-bezier(0, 0, 0.2, 1)'`,
   },
   
   slideTitle: {
-    fontSize: typography.text2xl,
-    fontWeight: typography.weightBold,
-    color: colors.gray900,
-    marginBottom: spacing.lg,
+    fontSize: '1.5rem',
+    fontWeight: '700',
+    color: '#212529',
+    marginBottom: '1.5rem',
     textAlign: 'center',
   },
   
   // Welcome slide styles
   welcomeHero: {
     textAlign: 'center',
-    marginBottom: spacing.xl,
+    marginBottom: '2rem',
   },
   
   heroIcon: {
     fontSize: '64px',
-    marginBottom: spacing.md,
+    marginBottom: '1rem',
   },
   
   heroText: {
-    fontSize: typography.textLg,
-    color: colors.gray700,
+    fontSize: '1.125rem',
+    color: '#495057',
   },
   
   infoCards: {
     display: 'grid',
     gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))',
-    gap: spacing.md,
-    marginTop: spacing.xl,
+    gap: '1rem',
+    marginTop: '2rem',
   },
   
   infoCard: {
-    backgroundColor: colors.gray50,
-    borderRadius: layout.radiusMd,
-    padding: spacing.lg,
+    backgroundColor: '#f8f9fa',
+    borderRadius: '0.375rem',
+    padding: '1.5rem',
     textAlign: 'center',
-    animation: `${slideIn} 0.4s ${motion.easeOut} both`,
+    animation: `${slideIn} 0.4s 'cubic-bezier(0, 0, 0.2, 1)' both`,
   },
   
   infoCardTitle: {
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
-    gap: spacing.sm,
-    fontSize: typography.textLg,
-    fontWeight: typography.weightSemibold,
-    color: colors.gray900,
-    marginBottom: spacing.sm,
+    gap: '0.5rem',
+    fontSize: '1.125rem',
+    fontWeight: '600',
+    color: '#212529',
+    marginBottom: '0.5rem',
   },
   
   infoCardDesc: {
-    fontSize: typography.textSm,
-    color: colors.gray600,
+    fontSize: '0.875rem',
+    color: '#6c757d',
     lineHeight: 1.5,
   },
   
@@ -148,104 +148,106 @@ const styles = stylex.create({
   pieceShowcase: {
     display: 'flex',
     flexDirection: 'column',
-    gap: spacing.md,
-    padding: spacing.lg,
-    backgroundColor: colors.gray50,
-    borderRadius: layout.radiusMd,
+    gap: '1rem',
+    padding: '1.5rem',
+    backgroundColor: '#f8f9fa',
+    borderRadius: '0.375rem',
   },
   
   pieceGroup: {
     display: 'flex',
     justifyContent: 'space-around',
     alignItems: 'center',
-    padding: spacing.sm,
-    borderBottom: `1px solid ${colors.gray200}`,
+    padding: '0.5rem',
+    borderBottomWidth: '1px',
+    borderBottomStyle: 'solid',
+    borderBottomColor: '#e9ecef',
   },
   
   pieceSet: {
     display: 'flex',
-    gap: spacing.sm,
+    gap: '0.5rem',
     alignItems: 'center',
   },
   
   soldiersSection: {
-    marginTop: spacing.md,
-    padding: spacing.md,
-    backgroundColor: colors.white,
-    borderRadius: layout.radiusMd,
+    marginTop: '1rem',
+    padding: '1rem',
+    backgroundColor: '#ffffff',
+    borderRadius: '0.375rem',
   },
   
   soldierRow: {
     display: 'flex',
-    gap: spacing.sm,
+    gap: '0.5rem',
     justifyContent: 'center',
-    marginBottom: spacing.sm,
+    marginBottom: '0.5rem',
   },
   
   tutorialNote: {
-    marginTop: spacing.lg,
-    padding: spacing.md,
-    backgroundColor: colors.primaryLight,
-    borderRadius: layout.radiusMd,
+    marginTop: '1.5rem',
+    padding: '1rem',
+    backgroundColor: '#e7f1ff',
+    borderRadius: '0.375rem',
     textAlign: 'center',
-    fontSize: typography.textSm,
-    color: colors.primaryDark,
-    fontWeight: typography.weightMedium,
+    fontSize: '0.875rem',
+    color: '#0056b3',
+    fontWeight: '500',
   },
   
   // Phase content styles
   prepContainer: {
-    padding: spacing.lg,
+    padding: '1.5rem',
   },
   
   prepHeader: {
     textAlign: 'center',
-    marginBottom: spacing.xl,
+    marginBottom: '2rem',
   },
   
   prepTitle: {
-    fontSize: typography.textXl,
-    fontWeight: typography.weightSemibold,
-    color: colors.gray800,
+    fontSize: '1.25rem',
+    fontWeight: '600',
+    color: '#343a40',
   },
   
   prepContent: {
-    backgroundColor: colors.gray50,
-    borderRadius: layout.radiusMd,
-    padding: spacing.lg,
+    backgroundColor: '#f8f9fa',
+    borderRadius: '0.375rem',
+    padding: '1.5rem',
   },
   
   prepItem: {
-    padding: spacing.md,
+    padding: '1rem',
   },
   
   prepItemTitle: {
-    fontSize: typography.textLg,
-    fontWeight: typography.weightMedium,
-    color: colors.gray900,
-    marginBottom: spacing.sm,
+    fontSize: '1.125rem',
+    fontWeight: '500',
+    color: '#212529',
+    marginBottom: '0.5rem',
   },
   
   prepItemText: {
     display: 'flex',
     alignItems: 'center',
-    gap: spacing.sm,
-    fontSize: typography.textBase,
-    color: colors.gray700,
+    gap: '0.5rem',
+    fontSize: '1rem',
+    color: '#495057',
   },
   
   prepDivider: {
     height: '1px',
-    backgroundColor: colors.gray200,
-    margin: `${spacing.md} 0`,
+    backgroundColor: '#e9ecef',
+    margin: `'1rem' 0`,
   },
   
   prepWarning: {
-    marginTop: spacing.sm,
-    padding: spacing.sm,
+    marginTop: '0.5rem',
+    padding: '0.5rem',
     backgroundColor: '#fef3c7',
-    borderRadius: layout.radiusSm,
-    fontSize: typography.textSm,
+    borderRadius: '0.125rem',
+    fontSize: '0.875rem',
     color: '#92400e',
   },
   
@@ -254,28 +256,30 @@ const styles = stylex.create({
     display: 'flex',
     justifyContent: 'space-between',
     alignItems: 'center',
-    padding: spacing.lg,
-    borderTop: `1px solid ${colors.gray200}`,
+    padding: '1.5rem',
+    borderTopWidth: '1px',
+    borderTopStyle: 'solid',
+    borderTopColor: '#e9ecef',
   },
   
   navButton: {
-    padding: `${spacing.sm} ${spacing.lg}`,
-    fontSize: typography.textBase,
-    fontWeight: typography.weightMedium,
-    borderRadius: layout.radiusMd,
+    padding: `'0.5rem' '1.5rem'`,
+    fontSize: '1rem',
+    fontWeight: '500',
+    borderRadius: '0.375rem',
     border: 'none',
     cursor: 'pointer',
-    transition: `all ${motion.durationFast} ${motion.easeInOut}`,
+    transition: `all '150ms' 'cubic-bezier(0.4, 0, 0.2, 1)'`,
     display: 'inline-flex',
     alignItems: 'center',
-    gap: spacing.sm,
+    gap: '0.5rem',
   },
   
   prevButton: {
-    backgroundColor: colors.gray200,
-    color: colors.gray700,
+    backgroundColor: '#e9ecef',
+    color: '#495057',
     ':hover:not(:disabled)': {
-      backgroundColor: colors.gray300,
+      backgroundColor: '#dee2e6',
       transform: 'translateX(-4px)',
     },
     ':disabled': {
@@ -285,10 +289,10 @@ const styles = stylex.create({
   },
   
   nextButton: {
-    backgroundColor: colors.primary,
-    color: colors.white,
+    backgroundColor: '#0d6efd',
+    color: '#ffffff',
     ':hover:not(:disabled)': {
-      backgroundColor: colors.primaryDark,
+      backgroundColor: '#0056b3',
       transform: 'translateX(4px)',
     },
     ':disabled': {
@@ -298,18 +302,18 @@ const styles = stylex.create({
   },
   
   exitButton: {
-    backgroundColor: colors.danger,
-    color: colors.white,
+    backgroundColor: '#dc3545',
+    color: '#ffffff',
     ':hover': {
-      backgroundColor: colors.dangerDark,
+      backgroundColor: '#a71e2a',
       transform: 'scale(1.05)',
     },
   },
   
   slideIndicator: {
-    fontSize: typography.textSm,
-    color: colors.gray600,
-    fontWeight: typography.weightMedium,
+    fontSize: '0.875rem',
+    color: '#6c757d',
+    fontWeight: '500',
   },
 });
 

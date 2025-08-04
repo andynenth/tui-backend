@@ -27,7 +27,7 @@ export function ScoringUI({
   redealMultiplier = 1,
   playersWithScores = [], // backend provides sorted players with all calculated data
   roundNumber = 1,
-  playerName = '',
+  playerName = ',
 
   // State props
   gameOver = false,
@@ -131,7 +131,7 @@ ScoringUI.defaultProps = {
   totalScores: {},
   redealMultiplier: 1,
   roundNumber: 1,
-  playerName: '',
+  playerName: ',
   playersWithScores: [],
   gameOver: false,
   winners: [],

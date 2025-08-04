@@ -39,8 +39,8 @@ const styles = stylex.create({
     pointerEvents: 'none',
     display: 'flex',
     flexDirection: 'column',
-    gap: spacing.sm,
-    padding: spacing.md,
+    gap: '0.5rem',
+    padding: '1rem',
   },
   
   topLeft: {
@@ -72,11 +72,11 @@ const styles = stylex.create({
   },
   
   wrapperRight: {
-    animation: `${slideIn} ${motion.durationBase} ${motion.easeOut} both`,
+    animation: `${slideIn} '300ms' 'cubic-bezier(0, 0, 0.2, 1)' both`,
   },
   
   wrapperLeft: {
-    animation: `${slideInLeft} ${motion.durationBase} ${motion.easeOut} both`,
+    animation: `${slideInLeft} '300ms' 'cubic-bezier(0, 0, 0.2, 1)' both`,
   },
 });
 

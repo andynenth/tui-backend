@@ -21,8 +21,8 @@ const styles = stylex.create({
   
   connectionStatusArea: {
     position: 'absolute',
-    top: spacing.md,
-    right: spacing.md,
+    top: '1rem',
+    right: '1rem',
     zIndex: 100,
   },
 });

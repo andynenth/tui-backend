@@ -11,19 +11,21 @@ const styles = stylex.create({
     minHeight: '100vh',
     display: 'flex',
     flexDirection: 'column',
-    backgroundColor: colors.gray50,
+    backgroundColor: '#f8f9fa',
   },
   
   header: {
-    backgroundColor: colors.white,
-    borderBottom: `1px solid ${colors.gray200}`,
-    boxShadow: shadows.sm,
+    backgroundColor: '#ffffff',
+    borderBottomWidth: '1px',
+    borderBottomStyle: 'solid',
+    borderBottomColor: '#e9ecef',
+    boxShadow: '0 1px 2px 0 rgba(0, 0, 0, 0.05)',
   },
   
   headerContent: {
     maxWidth: '1200px',
     margin: '0 auto',
-    padding: spacing.lg,
+    padding: '1.5rem',
   },
   
   headerInner: {
@@ -38,16 +40,16 @@ const styles = stylex.create({
   },
   
   title: {
-    fontSize: typography.text2xl,
-    fontWeight: typography.weightBold,
-    color: colors.gray800,
+    fontSize: '1.5rem',
+    fontWeight: '700',
+    color: '#343a40',
     margin: 0,
   },
   
   headerRight: {
     display: 'flex',
     alignItems: 'center',
-    gap: spacing.lg,
+    gap: '1.5rem',
   },
   
   main: {
