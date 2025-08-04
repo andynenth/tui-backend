@@ -41,6 +41,11 @@ export const NETWORK = {
   // Build WebSocket URL dynamically based on current location
   get WEBSOCKET_BASE_URL(): string {
     if (typeof window !== 'undefined') {
+      // In development, always use the backend port 5050
+      if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+        return 'ws://localhost:5050/ws';
+      }
+      // In production, use the same host
       const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
       const host = window.location.host;
       return `${protocol}//${host}/ws`;

@@ -21,7 +21,7 @@ const styles = stylex.create({
   container: {
     display: 'flex',
     alignItems: 'center',
-    gap: spacing.sm,
+    gap: '0.5rem',
   },
   
   signalIndicator: {
@@ -47,15 +47,15 @@ const styles = stylex.create({
   
   signalBar: {
     width: '4px',
-    transition: `all ${motion.durationBase} ${motion.easeInOut}`,
+    transition: `all '300ms' 'cubic-bezier(0.4, 0, 0.2, 1)'`,
   },
   
   barInactive: {
-    backgroundColor: colors.gray300,
+    backgroundColor: '#dee2e6',
   },
   
   barExcellent: {
-    backgroundColor: colors.success,
+    backgroundColor: '#198754',
   },
   
   barGood: {
@@ -63,46 +63,46 @@ const styles = stylex.create({
   },
   
   barFair: {
-    backgroundColor: colors.warning,
+    backgroundColor: '#ffc107',
   },
   
   barPoor: {
-    backgroundColor: colors.danger,
+    backgroundColor: '#dc3545',
   },
   
   latencyText: {
-    fontSize: typography.textXs,
-    fontWeight: typography.weightMedium,
+    fontSize: '0.75rem',
+    fontWeight: '500',
   },
   
   latencyExcellent: {
-    color: colors.successDark,
+    color: '#146c43',
   },
   
   latencyGood: {
-    color: colors.success,
+    color: '#198754',
   },
   
   latencyFair: {
-    color: colors.warning,
+    color: '#ffc107',
   },
   
   latencyPoor: {
-    color: colors.danger,
+    color: '#dc3545',
   },
   
   latencyOffline: {
-    color: colors.gray500,
+    color: '#adb5bd',
   },
   
   reconnectingIcon: {
-    animation: `${pulse} 2s ${motion.easeInOut} infinite`,
+    animation: `${pulse} 2s 'cubic-bezier(0.4, 0, 0.2, 1)' infinite`,
   },
   
   reconnectingSvg: {
     width: '16px',
     height: '16px',
-    color: colors.warning,
+    color: '#ffc107',
   },
 });
 

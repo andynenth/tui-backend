@@ -8,7 +8,7 @@ const styles = stylex.create({
   base: {
     // Reset
     border: 'none',
-    background: 'none',
+    backgroundColor: 'none',
     font: 'inherit',
     cursor: 'pointer',
     outline: 'none',
@@ -17,16 +17,16 @@ const styles = stylex.create({
     display: 'inline-flex',
     alignItems: 'center',
     justifyContent: 'center',
-    gap: spacing.sm,
+    gap: '0.5rem',
     
     // Typography
     fontFamily: typography.fontPrimary,
-    fontWeight: typography.weightSemibold,
+    fontWeight: '600',
     lineHeight: typography.lineHeightNormal,
     
     // Visual
-    borderRadius: layout.radiusMd,
-    transition: `all ${motion.durationBase} ${motion.easeOut}`,
+    borderRadius: '0.375rem',
+    transition: `all '300ms' 'cubic-bezier(0, 0, 0.2, 1)'`,
     transformOrigin: 'center',
     
     // Interaction
@@ -34,7 +34,7 @@ const styles = stylex.create({
     
     ':hover': {
       transform: 'scale(1.05)',
-      boxShadow: shadows.lg,
+      boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)',
     },
     
     ':active': {
@@ -42,7 +42,7 @@ const styles = stylex.create({
     },
     
     ':focus-visible': {
-      outline: `2px solid ${colors.primary}`,
+      outline: `2px solid '#0d6efd'`,
       outlineOffset: '2px',
     },
     
@@ -57,93 +57,97 @@ const styles = stylex.create({
   // Variants
   primary: {
     background: gradients.primary,
-    color: colors.white,
+    color: '#ffffff',
     boxShadow: shadows.primaryGlow,
     
     ':hover': {
-      background: `linear-gradient(135deg, ${colors.primaryDark} 0%, ${colors.primary} 100%)`,
+      backgroundImage: `linear-gradient(135deg, '#0056b3' 0%, '#0d6efd' 100%)`,
       boxShadow: `0 8px 16px rgba(13, 110, 253, 0.3)`,
     },
   },
   
   secondary: {
-    background: `linear-gradient(135deg, ${colors.gray200} 0%, ${colors.gray300} 100%)`,
-    color: colors.gray800,
+    backgroundImage: `linear-gradient(135deg, '#e9ecef' 0%, '#dee2e6' 100%)`,
+    color: '#343a40',
     boxShadow: '0 2px 4px rgba(0, 0, 0, 0.06)',
     
     ':hover': {
-      background: `linear-gradient(135deg, ${colors.gray300} 0%, ${colors.gray400} 100%)`,
+      backgroundImage: `linear-gradient(135deg, '#dee2e6' 0%, '#ced4da' 100%)`,
       boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
     },
   },
   
   success: {
     background: gradients.success,
-    color: colors.white,
+    color: '#ffffff',
     boxShadow: shadows.successGlow,
     
     ':hover': {
-      background: `linear-gradient(135deg, ${colors.successLight} 0%, ${colors.success} 100%)`,
+      backgroundImage: `linear-gradient(135deg, ${colors.successLight} 0%, '#198754' 100%)`,
       boxShadow: `0 8px 16px rgba(40, 167, 69, 0.3)`,
     },
   },
   
   danger: {
     background: gradients.danger,
-    color: colors.white,
+    color: '#ffffff',
     boxShadow: shadows.dangerGlow,
     
     ':hover': {
-      background: `linear-gradient(135deg, ${colors.dangerDark} 0%, ${colors.danger} 100%)`,
+      backgroundImage: `linear-gradient(135deg, '#a71e2a' 0%, '#dc3545' 100%)`,
       boxShadow: `0 8px 16px rgba(220, 53, 69, 0.3)`,
     },
   },
   
   ghost: {
     backgroundColor: 'transparent',
-    color: colors.gray700,
-    border: `1px solid ${colors.gray300}`,
+    color: '#495057',
+    borderWidth: '1px',
+    borderStyle: 'solid',
+    borderColor: '#dee2e6',
     
     ':hover': {
-      backgroundColor: colors.gray100,
+      backgroundColor: '#f1f3f5',
       boxShadow: '0 2px 4px rgba(0, 0, 0, 0.04)',
     },
   },
   
   outline: {
     backgroundColor: 'transparent',
-    border: `2px solid ${colors.primary}`,
-    color: colors.primary,
+    borderWidth: '2px',
+    borderStyle: 'solid',
+    borderColor: '#0d6efd',
+    color: '#0d6efd',
     
     ':hover': {
       backgroundColor: 'rgba(13, 110, 253, 0.05)',
-      borderColor: colors.primaryDark,
+      borderColor: '#0056b3',
     },
   },
   
   // Sizes
   sm: {
-    paddingTop: spacing.xs,
-    paddingBottom: spacing.xs,
-    paddingLeft: spacing.md,
-    paddingRight: spacing.md,
-    fontSize: typography.textSm,
+    paddingTop: '0.25rem',
+    paddingBottom: '0.25rem',
+    paddingLeft: '1rem',
+    paddingRight: '1rem',
+    fontSize: '0.875rem',
   },
   
   md: {
-    paddingTop: spacing.sm,
-    paddingBottom: spacing.sm,
-    paddingLeft: spacing.lg,
-    paddingRight: spacing.lg,
-    fontSize: typography.textBase,
+    paddingTop: '0.5rem',
+    paddingBottom: '0.5rem',
+    paddingLeft: '1.5rem',
+    paddingRight: '1.5rem',
+    fontSize: '1rem',
   },
   
   lg: {
-    paddingTop: spacing.md,
-    paddingBottom: spacing.md,
-    paddingLeft: spacing.xxl,
-    paddingRight: spacing.xxl,
-    fontSize: typography.textLg,
+    paddingTop: '1rem',
+    paddingBottom: '1rem',
+    paddingLeft: '3rem',
+    paddingRight: '3rem',
+    fontSize: '1.125rem',
   },
   
   // States
@@ -162,13 +166,15 @@ const spinnerStyles = stylex.create({
   container: {
     display: 'flex',
     alignItems: 'center',
-    gap: spacing.sm,
+    gap: '0.5rem',
   },
   
   spinner: {
     width: '16px',
     height: '16px',
-    border: '2px solid currentColor',
+    borderWidth: '2px',
+    borderStyle: 'solid',
+    borderColor: 'currentColor',
     borderTopColor: 'transparent',
     borderRadius: '50%',
     animation: `${animations.spin} 0.6s linear infinite`,
@@ -184,7 +190,7 @@ const iconStyles = stylex.create({
   container: {
     display: 'flex',
     alignItems: 'center',
-    gap: spacing.sm,
+    gap: '0.5rem',
   },
   
   icon: {

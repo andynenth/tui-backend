@@ -47,8 +47,8 @@ const styles = stylex.create({
   
   serviceInitContainer: {
     backgroundColor: colors.surface,
-    borderRadius: spacing.md,
-    padding: spacing.xl,
+    borderRadius: '1rem',
+    padding: '2rem',
     maxWidth: '400px',
     width: '90%',
     textAlign: 'center',
@@ -60,28 +60,28 @@ const styles = stylex.create({
     fontWeight: typography.fontWeight.bold,
     color: colors.error,
     marginTop: 0,
-    marginBottom: spacing.md,
+    marginBottom: '1rem',
   },
   
   serviceErrorMessage: {
     fontSize: typography.fontSize.base,
     color: colors.textSecondary,
-    marginBottom: spacing.lg,
+    marginBottom: '1.5rem',
     lineHeight: 1.5,
   },
   
   serviceRetryButton: {
-    backgroundColor: colors.primary,
-    color: colors.white,
+    backgroundColor: '#0d6efd',
+    color: '#ffffff',
     border: 'none',
-    borderRadius: spacing.sm,
-    padding: `${spacing.sm} ${spacing.lg}`,
+    borderRadius: '0.5rem',
+    padding: `'0.5rem' '1.5rem'`,
     fontSize: typography.fontSize.base,
     fontWeight: typography.fontWeight.semibold,
     cursor: 'pointer',
     transition: 'background-color 0.2s ease',
     ':hover': {
-      backgroundColor: colors.primaryDark,
+      backgroundColor: '#0056b3',
     },
     ':active': {
       transform: 'scale(0.98)',
@@ -91,11 +91,13 @@ const styles = stylex.create({
   serviceLoadingSpinner: {
     width: '48px',
     height: '48px',
-    border: `4px solid ${colors.gray300}`,
-    borderTopColor: colors.primary,
+    borderWidth: '4px',
+    borderStyle: 'solid',
+    borderColor: '#dee2e6',
+    borderTopColor: '#0d6efd',
     borderRadius: '50%',
     margin: '0 auto',
-    marginBottom: spacing.md,
+    marginBottom: '1rem',
     animationName: animations.spin,
     animationDuration: '1s',
     animationTimingFunction: 'linear',

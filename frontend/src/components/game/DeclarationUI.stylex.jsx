@@ -28,8 +28,8 @@ export function DeclarationUI({
   isLastPlayer = false,
   estimatedPiles = 0,
   handStrength = 0,
-  currentPlayer = '',
-  myName = '',
+  currentPlayer = ',
+  myName = ',
   consecutiveZeros = 0,
   redealMultiplier = 1,
 

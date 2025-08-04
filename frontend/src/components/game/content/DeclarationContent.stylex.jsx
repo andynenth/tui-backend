@@ -28,7 +28,7 @@ const pulse = stylex.keyframes({
 // DeclarationContent styles
 const styles = stylex.create({
   gameStatusSection: {
-    padding: spacing.lg,
+    padding: '1.5rem',
     overflowY: 'auto',
     flex: 1,
   },
@@ -36,39 +36,41 @@ const styles = stylex.create({
   playersList: {
     display: 'flex',
     flexDirection: 'column',
-    gap: spacing.md,
+    gap: '1rem',
   },
   
   playerRow: {
     display: 'flex',
     alignItems: 'center',
-    padding: spacing.md,
-    borderRadius: layout.radiusLg,
-    backgroundColor: colors.white,
-    boxShadow: shadows.sm,
-    transition: `all ${motion.durationBase} ${motion.easeInOut}`,
+    padding: '1rem',
+    borderRadius: '0.5rem',
+    backgroundColor: '#ffffff',
+    boxShadow: '0 1px 2px 0 rgba(0, 0, 0, 0.05)',
+    transition: `all '300ms' 'cubic-bezier(0.4, 0, 0.2, 1)'`,
   },
   
   playerRowCurrentTurn: {
     backgroundColor: 'rgba(37, 99, 235, 0.05)',
-    borderLeft: `4px solid ${colors.primary}`,
-    animation: `${pulse} 2s ${motion.easeInOut} infinite`,
+    borderLeftWidth: '4px',
+    borderLeftStyle: 'solid',
+    borderLeftColor: '#0d6efd',
+    animation: `${pulse} 2s 'cubic-bezier(0.4, 0, 0.2, 1)' infinite`,
   },
   
   playerRowDeclared: {
     opacity: 0.8,
-    backgroundColor: colors.gray50,
+    backgroundColor: '#f8f9fa',
   },
   
   playerInfo: {
     flex: 1,
-    marginLeft: spacing.md,
+    marginLeft: '1rem',
   },
   
   playerName: {
-    fontSize: typography.textBase,
-    fontWeight: typography.weightMedium,
-    color: colors.gray800,
+    fontSize: '1rem',
+    fontWeight: '500',
+    color: '#343a40',
   },
   
   playerStatus: {
@@ -81,35 +83,35 @@ const styles = stylex.create({
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
-    borderRadius: layout.radiusFull,
+    borderRadius: '9999px',
     background: gradients.primary,
-    color: colors.white,
-    fontSize: typography.textXl,
-    fontWeight: typography.weightBold,
-    boxShadow: shadows.md,
+    color: '#ffffff',
+    fontSize: '1.25rem',
+    fontWeight: '700',
+    boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)',
   },
   
   statusBadge: {
-    padding: `${spacing.xs} ${spacing.md}`,
-    borderRadius: layout.radiusFull,
-    fontSize: typography.textSm,
-    fontWeight: typography.weightMedium,
-    transition: `all ${motion.durationBase} ${motion.easeInOut}`,
+    padding: `'0.25rem' '1rem'`,
+    borderRadius: '9999px',
+    fontSize: '0.875rem',
+    fontWeight: '500',
+    transition: `all '300ms' 'cubic-bezier(0.4, 0, 0.2, 1)'`,
   },
   
   statusCurrent: {
-    backgroundColor: colors.primary,
-    color: colors.white,
+    backgroundColor: '#0d6efd',
+    color: '#ffffff',
   },
   
   statusPending: {
-    backgroundColor: colors.warning,
-    color: colors.white,
+    backgroundColor: '#ffc107',
+    color: '#ffffff',
   },
   
   statusWaiting: {
-    backgroundColor: colors.gray200,
-    color: colors.gray600,
+    backgroundColor: '#e9ecef',
+    color: '#6c757d',
   },
   
   panel: {
@@ -117,88 +119,90 @@ const styles = stylex.create({
     bottom: '-200px',
     left: 0,
     right: 0,
-    backgroundColor: colors.white,
-    borderTopLeftRadius: layout.radiusXl,
-    borderTopRightRadius: layout.radiusXl,
-    boxShadow: shadows.xl,
-    padding: spacing.xl,
-    transition: `transform ${motion.durationBase} ${motion.easeOut}`,
+    backgroundColor: '#ffffff',
+    borderTopLeftRadius: '1rem',
+    borderTopRightRadius: '1rem',
+    boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)',
+    padding: '2rem',
+    transition: `transform '300ms' 'cubic-bezier(0, 0, 0.2, 1)'`,
     zIndex: 40,
   },
   
   panelShow: {
     transform: 'translateY(-200px)',
-    animation: `${slideInFromBottom} 0.3s ${motion.easeOut}`,
+    animation: `${slideInFromBottom} 0.3s 'cubic-bezier(0, 0, 0.2, 1)'`,
   },
   
   options: {
     display: 'grid',
     gridTemplateColumns: 'repeat(3, 1fr)',
-    gap: spacing.md,
-    marginBottom: spacing.lg,
+    gap: '1rem',
+    marginBottom: '1.5rem',
   },
   
   option: {
     aspectRatio: '1',
-    borderRadius: layout.radiusLg,
-    border: `2px solid ${colors.gray300}`,
-    backgroundColor: colors.white,
-    fontSize: typography.text2xl,
-    fontWeight: typography.weightBold,
-    color: colors.gray700,
+    borderRadius: '0.5rem',
+    borderWidth: '2px',
+    borderStyle: 'solid',
+    borderColor: '#dee2e6',
+    backgroundColor: '#ffffff',
+    fontSize: '1.5rem',
+    fontWeight: '700',
+    color: '#495057',
     cursor: 'pointer',
-    transition: `all ${motion.durationBase} ${motion.easeInOut}`,
+    transition: `all '300ms' 'cubic-bezier(0.4, 0, 0.2, 1)'`,
     
     ':hover': {
-      borderColor: colors.primary,
-      backgroundColor: colors.primaryLight,
+      borderColor: '#0d6efd',
+      backgroundColor: '#e7f1ff',
       transform: 'scale(1.05)',
     },
   },
   
   optionSelected: {
-    borderColor: colors.primary,
-    backgroundColor: colors.primary,
-    color: colors.white,
+    borderColor: '#0d6efd',
+    backgroundColor: '#0d6efd',
+    color: '#ffffff',
     transform: 'scale(1.1)',
-    boxShadow: shadows.md,
+    boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)',
   },
   
   optionDisabled: {
     opacity: 0.4,
     cursor: 'not-allowed',
-    backgroundColor: colors.gray100,
+    backgroundColor: '#f1f3f5',
     
     ':hover': {
-      borderColor: colors.gray300,
-      backgroundColor: colors.gray100,
+      borderColor: '#dee2e6',
+      backgroundColor: '#f1f3f5',
       transform: 'scale(1)',
     },
   },
   
   actions: {
     display: 'flex',
-    gap: spacing.md,
+    gap: '1rem',
     justifyContent: 'center',
   },
   
   actionBtn: {
-    padding: `${spacing.sm} ${spacing.xl}`,
-    borderRadius: layout.radiusMd,
-    fontSize: typography.textBase,
-    fontWeight: typography.weightMedium,
+    padding: `'0.5rem' '2rem'`,
+    borderRadius: '0.375rem',
+    fontSize: '1rem',
+    fontWeight: '500',
     border: 'none',
     cursor: 'pointer',
-    transition: `all ${motion.durationBase} ${motion.easeInOut}`,
+    transition: `all '300ms' 'cubic-bezier(0.4, 0, 0.2, 1)'`,
   },
   
   primaryBtn: {
     background: gradients.primary,
-    color: colors.white,
+    color: '#ffffff',
     
     ':hover': {
       transform: 'translateY(-2px)',
-      boxShadow: shadows.md,
+      boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)',
     },
     
     ':disabled': {
@@ -209,11 +213,11 @@ const styles = stylex.create({
   },
   
   secondaryBtn: {
-    backgroundColor: colors.gray200,
-    color: colors.gray700,
+    backgroundColor: '#e9ecef',
+    color: '#495057',
     
     ':hover': {
-      backgroundColor: colors.gray300,
+      backgroundColor: '#dee2e6',
     },
   },
 });
@@ -230,8 +234,8 @@ const styles = stylex.create({
 const DeclarationContent = ({
   myHand = [],
   players = [],
-  currentPlayer = '',
-  myName = '',
+  currentPlayer = ',
+  myName = ',
   declarations = {},
   totalDeclared = 0,
   consecutiveZeros = 0,
@@ -401,7 +405,7 @@ const DeclarationContent = ({
                 <div {...stylex.props(styles.playerInfo)}>
                   <div {...stylex.props(styles.playerName)}>
                     {displayName}
-                    {playerName === myName ? ' (You)' : ''}
+                    {playerName === myName ? ' (You)' : '}
                   </div>
                 </div>
                 <div {...stylex.props(styles.playerStatus)}>

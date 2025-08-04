@@ -6,99 +6,99 @@ import { colors, spacing, typography, motion, shadows, layout } from '../design-
 const styles = stylex.create({
   container: {
     minHeight: '100vh',
-    backgroundColor: colors.gray100,
+    backgroundColor: '#f1f3f5',
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
-    padding: spacing.lg,
+    padding: '1.5rem',
   },
   
   card: {
-    backgroundColor: colors.white,
-    borderRadius: layout.radiusLg,
-    boxShadow: shadows.lg,
-    padding: spacing.xxl,
+    backgroundColor: '#ffffff',
+    borderRadius: '0.5rem',
+    boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)',
+    padding: '3rem',
     maxWidth: '28rem',
     width: '100%',
   },
   
   errorSection: {
     textAlign: 'center',
-    marginBottom: spacing.lg,
+    marginBottom: '1.5rem',
   },
   
   errorIcon: {
     width: '64px',
     height: '64px',
     margin: '0 auto',
-    marginBottom: spacing.lg,
-    color: colors.danger,
+    marginBottom: '1.5rem',
+    color: '#dc3545',
   },
   
   errorTitle: {
-    fontSize: typography.textXl,
-    fontWeight: typography.weightBold,
-    marginBottom: spacing.sm,
-    color: colors.danger,
+    fontSize: '1.25rem',
+    fontWeight: '700',
+    marginBottom: '0.5rem',
+    color: '#dc3545',
   },
   
   errorMessage: {
-    color: colors.gray600,
-    marginBottom: spacing.lg,
+    color: '#6c757d',
+    marginBottom: '1.5rem',
   },
   
   buttonGroup: {
     display: 'flex',
     flexDirection: 'column',
-    gap: spacing.sm,
+    gap: '0.5rem',
   },
   
   button: {
     width: '100%',
-    padding: `${spacing.sm} ${spacing.lg}`,
-    borderRadius: layout.radiusMd,
+    padding: `'0.5rem' '1.5rem'`,
+    borderRadius: '0.375rem',
     border: 'none',
     cursor: 'pointer',
-    fontSize: typography.textBase,
-    fontWeight: typography.weightMedium,
-    transition: `all ${motion.durationBase} ${motion.easeInOut}`,
+    fontSize: '1rem',
+    fontWeight: '500',
+    transition: `all '300ms' 'cubic-bezier(0.4, 0, 0.2, 1)'`,
   },
   
   primaryButton: {
-    backgroundColor: colors.primary,
-    color: colors.white,
+    backgroundColor: '#0d6efd',
+    color: '#ffffff',
     
     ':hover': {
-      backgroundColor: colors.primaryDark,
+      backgroundColor: '#0056b3',
     },
   },
   
   secondaryButton: {
-    backgroundColor: colors.gray300,
-    color: colors.gray700,
+    backgroundColor: '#dee2e6',
+    color: '#495057',
     
     ':hover': {
-      backgroundColor: colors.gray400,
+      backgroundColor: '#ced4da',
     },
   },
   
   errorDetails: {
-    marginTop: spacing.lg,
-    padding: spacing.sm,
-    backgroundColor: colors.gray100,
-    borderRadius: layout.radiusMd,
-    fontSize: typography.textXs,
+    marginTop: '1.5rem',
+    padding: '0.5rem',
+    backgroundColor: '#f1f3f5',
+    borderRadius: '0.375rem',
+    fontSize: '0.75rem',
   },
   
   errorSummary: {
     cursor: 'pointer',
-    fontWeight: typography.weightMedium,
+    fontWeight: '500',
   },
   
   errorStack: {
-    marginTop: spacing.sm,
+    marginTop: '0.5rem',
     whiteSpace: 'pre-wrap',
-    color: colors.danger,
+    color: '#dc3545',
     fontFamily: typography.fontMono || 'monospace',
   },
 });

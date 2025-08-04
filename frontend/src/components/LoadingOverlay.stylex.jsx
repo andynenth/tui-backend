@@ -36,7 +36,7 @@ const styles = stylex.create({
     backgroundColor: 'rgba(0, 0, 0, 0.5)',
     backdropFilter: 'blur(4px)',
     zIndex: 50,
-    animation: `${animations.fadeIn} ${motion.durationBase} ${motion.easeOut}`,
+    animation: `${animations.fadeIn} '300ms' 'cubic-bezier(0, 0, 0.2, 1)'`,
   },
   
   overlayLight: {
@@ -50,25 +50,25 @@ const styles = stylex.create({
     justifyContent: 'center',
     backgroundColor: 'rgba(255, 255, 255, 0.9)',
     zIndex: 10,
-    animation: `${animations.fadeIn} ${motion.durationBase} ${motion.easeOut}`,
+    animation: `${animations.fadeIn} '300ms' 'cubic-bezier(0, 0, 0.2, 1)'`,
   },
   
   card: {
-    backgroundColor: colors.white,
-    borderRadius: layout.radiusXl,
-    boxShadow: shadows.xl,
-    padding: spacing.xxxl,
+    backgroundColor: '#ffffff',
+    borderRadius: '1rem',
+    boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)',
+    padding: '4rem',
     maxWidth: '24rem',
     width: '100%',
-    margin: spacing.lg,
-    animation: `${animations.scaleIn} ${motion.durationBase} ${motion.easeOut} 100ms`,
+    margin: '1.5rem',
+    animation: `${animations.scaleIn} '300ms' 'cubic-bezier(0, 0, 0.2, 1)' 100ms`,
   },
   
   content: {
     display: 'flex',
     flexDirection: 'column',
     alignItems: 'center',
-    gap: spacing.lg,
+    gap: '1.5rem',
   },
   
   spinnerContainer: {
@@ -80,9 +80,11 @@ const styles = stylex.create({
   spinner: {
     width: '48px',
     height: '48px',
-    border: `4px solid ${colors.gray200}`,
-    borderTopColor: colors.primary,
-    borderRadius: layout.radiusFull,
+    borderWidth: '4px',
+    borderStyle: 'solid',
+    borderColor: '#e9ecef',
+    borderTopColor: '#0d6efd',
+    borderRadius: '9999px',
     animation: `${spinAnimation} 1s linear infinite`,
   },
   
@@ -92,27 +94,29 @@ const styles = stylex.create({
     left: 0,
     width: '48px',
     height: '48px',
-    border: '4px solid transparent',
+    borderWidth: '4px',
+    borderStyle: 'solid',
+    borderColor: 'transparent',
     borderLeftColor: 'rgba(13, 110, 253, 0.5)',
-    borderRadius: layout.radiusFull,
+    borderRadius: '9999px',
     animation: `${spinReverseAnimation} 1.5s linear infinite`,
   },
   
   textContainer: {
     textAlign: 'center',
-    animation: `${animations.slideIn} ${motion.durationSlow} ${motion.easeOut} 200ms`,
+    animation: `${animations.slideIn} '500ms' 'cubic-bezier(0, 0, 0.2, 1)' 200ms`,
   },
   
   message: {
-    fontSize: typography.textLg,
-    fontWeight: typography.weightMedium,
-    color: colors.gray800,
-    marginBottom: spacing.xs,
+    fontSize: '1.125rem',
+    fontWeight: '500',
+    color: '#343a40',
+    marginBottom: '0.25rem',
   },
   
   subtitle: {
-    fontSize: typography.textSm,
-    color: colors.gray500,
+    fontSize: '0.875rem',
+    color: '#adb5bd',
   },
 });
 

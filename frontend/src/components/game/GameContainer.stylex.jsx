@@ -75,7 +75,7 @@ export function GameContainer({ roomId, onNavigateToLobby }) {
     return {
       // Data from backend
       roundNumber: gameState.currentRound || 1,
-      starter: gameState.currentStarter || '',
+      starter: gameState.currentStarter || ',
       starterReason: gameState.starterReason || 'default',
     };
   }, [gameState]);
@@ -110,8 +110,8 @@ export function GameContainer({ roomId, onNavigateToLobby }) {
       declarations: gameState.declarations || {},
       players: orderedPlayers,
       currentTotal: gameState.currentTotal || 0,
-      currentPlayer: gameState.currentDeclarer || '',
-      myName: gameState.playerName || '',
+      currentPlayer: gameState.currentDeclarer || ',
+      myName: gameState.playerName || ',
 
       // State calculated by backend
       isMyTurn: gameState.isMyTurn || false,
@@ -135,7 +135,7 @@ export function GameContainer({ roomId, onNavigateToLobby }) {
     if (gameState.phase !== 'turn') return null;
 
     // Extract play type from the starter's play
-    let playType = '';
+    let playType = ';
     if (
       gameState.currentTurnPlays &&
       gameState.currentTurnPlays.length > 0 &&
@@ -147,24 +147,24 @@ export function GameContainer({ roomId, onNavigateToLobby }) {
       );
 
       if (starterPlay) {
-        playType = starterPlay.play_type || '';
+        playType = starterPlay.play_type || ';
       }
     }
 
     return {
       // Data from backend
       myHand: gameState.myHand || [],
-      currentPlayer: gameState.currentPlayer || '',
+      currentPlayer: gameState.currentPlayer || ',
       turnNumber: gameState.turnNumber || 1,
       players: gameState.players || [],
       declarations: gameState.declarations || {},
       piles: gameState.piles || {},
       currentTurnPlays: gameState.currentTurnPlays || [],
-      turnStarter: gameState.currentTurnStarter || '',
+      turnStarter: gameState.currentTurnStarter || ',
       requiredPieceCount: gameState.requiredPieceCount || 1,
       playType,
       selectedPieces: gameState.selectedPieces || [],
-      myName: gameState.playerName || '',
+      myName: gameState.playerName || ',
 
       // State calculated by backend
       isMyTurn: gameState.isMyTurn || false,
@@ -183,9 +183,9 @@ export function GameContainer({ roomId, onNavigateToLobby }) {
     return {
       // Data from backend
       turnNumber: gameState.turnNumber || 1,
-      winner: gameState.lastTurnWinner || '',
+      winner: gameState.lastTurnWinner || ',
       plays: gameState.lastTurnPlays || [],
-      nextStarter: gameState.nextStarter || '',
+      nextStarter: gameState.nextStarter || ',
     };
   }, [gameState]);
 
@@ -208,7 +208,7 @@ export function GameContainer({ roomId, onNavigateToLobby }) {
 
     return {
       // Data from backend
-      winner: gameState.winner || '',
+      winner: gameState.winner || ',
       players: gameState.players || [],
       scores: gameState.finalScores || {},
       totalRounds: gameState.totalRounds || 1,

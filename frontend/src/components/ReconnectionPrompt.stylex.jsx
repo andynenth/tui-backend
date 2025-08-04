@@ -26,123 +26,125 @@ const styles = stylex.create({
     alignItems: 'center',
     justifyContent: 'center',
     zIndex: 100,
-    padding: spacing.md,
+    padding: '1rem',
   },
   
   prompt: {
-    backgroundColor: colors.white,
-    borderRadius: layout.radiusLg,
-    padding: spacing.xl,
+    backgroundColor: '#ffffff',
+    borderRadius: '0.5rem',
+    padding: '2rem',
     maxWidth: '450px',
     width: '100%',
-    boxShadow: shadows.xl,
+    boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)',
   },
   
   icon: {
     fontSize: '48px',
     textAlign: 'center',
-    marginBottom: spacing.md,
+    marginBottom: '1rem',
   },
   
   title: {
-    fontSize: typography.text2xl,
-    fontWeight: typography.weightBold,
-    color: colors.gray900,
-    marginBottom: spacing.sm,
+    fontSize: '1.5rem',
+    fontWeight: '700',
+    color: '#212529',
+    marginBottom: '0.5rem',
     textAlign: 'center',
   },
   
   message: {
-    fontSize: typography.textBase,
-    color: colors.gray600,
-    marginBottom: spacing.lg,
+    fontSize: '1rem',
+    color: '#6c757d',
+    marginBottom: '1.5rem',
     textAlign: 'center',
   },
   
   info: {
-    backgroundColor: colors.gray50,
-    borderRadius: layout.radiusMd,
-    padding: spacing.md,
-    marginBottom: spacing.lg,
+    backgroundColor: '#f8f9fa',
+    borderRadius: '0.375rem',
+    padding: '1rem',
+    marginBottom: '1.5rem',
   },
   
   infoItem: {
     display: 'flex',
     justifyContent: 'space-between',
-    paddingTop: spacing.xs,
-    paddingBottom: spacing.xs,
+    paddingTop: '0.25rem',
+    paddingBottom: '0.25rem',
   },
   
   infoLabel: {
-    fontSize: typography.textSm,
-    color: colors.gray500,
-    fontWeight: typography.weightMedium,
+    fontSize: '0.875rem',
+    color: '#adb5bd',
+    fontWeight: '500',
   },
   
   infoValue: {
-    fontSize: typography.textSm,
-    color: colors.gray900,
-    fontWeight: typography.weightMedium,
+    fontSize: '0.875rem',
+    color: '#212529',
+    fontWeight: '500',
   },
   
   infoValueRecent: {
-    color: colors.successDark,
+    color: '#146c43',
   },
   
   warning: {
-    fontSize: typography.textSm,
-    color: colors.warningDark,
+    fontSize: '0.875rem',
+    color: '#cc9a06',
     textAlign: 'center',
-    marginTop: spacing.md,
-    fontWeight: typography.weightMedium,
+    marginTop: '1rem',
+    fontWeight: '500',
   },
   
   error: {
     display: 'flex',
     alignItems: 'center',
-    gap: spacing.sm,
+    gap: '0.5rem',
     backgroundColor: '#fef2f2',
-    border: `1px solid ${colors.danger}`,
-    borderRadius: layout.radiusMd,
-    padding: spacing.md,
-    marginBottom: spacing.lg,
+    borderWidth: '1px',
+    borderStyle: 'solid',
+    borderColor: '#dc3545',
+    borderRadius: '0.375rem',
+    padding: '1rem',
+    marginBottom: '1.5rem',
   },
   
   errorIcon: {
-    fontSize: typography.textLg,
+    fontSize: '1.125rem',
   },
   
   errorText: {
-    fontSize: typography.textSm,
-    color: colors.dangerDark,
+    fontSize: '0.875rem',
+    color: '#a71e2a',
   },
   
   actions: {
     display: 'flex',
-    gap: spacing.md,
-    marginTop: spacing.lg,
+    gap: '1rem',
+    marginTop: '1.5rem',
   },
   
   button: {
     flex: 1,
-    padding: `${spacing.sm} ${spacing.lg}`,
-    borderRadius: layout.radiusMd,
-    fontSize: typography.textBase,
-    fontWeight: typography.weightMedium,
+    padding: `'0.5rem' '1.5rem'`,
+    borderRadius: '0.375rem',
+    fontSize: '1rem',
+    fontWeight: '500',
     border: 'none',
     cursor: 'pointer',
-    transition: `all ${motion.durationFast} ${motion.easeInOut}`,
+    transition: `all '150ms' 'cubic-bezier(0.4, 0, 0.2, 1)'`,
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
-    gap: spacing.sm,
+    gap: '0.5rem',
   },
   
   buttonPrimary: {
-    backgroundColor: colors.primary,
-    color: colors.white,
+    backgroundColor: '#0d6efd',
+    color: '#ffffff',
     ':hover:not(:disabled)': {
-      backgroundColor: colors.primaryDark,
+      backgroundColor: '#0056b3',
     },
     ':disabled': {
       opacity: 0.5,
@@ -151,10 +153,10 @@ const styles = stylex.create({
   },
   
   buttonSecondary: {
-    backgroundColor: colors.gray200,
-    color: colors.gray700,
+    backgroundColor: '#e9ecef',
+    color: '#495057',
     ':hover:not(:disabled)': {
-      backgroundColor: colors.gray300,
+      backgroundColor: '#dee2e6',
     },
     ':disabled': {
       opacity: 0.5,
@@ -167,16 +169,16 @@ const styles = stylex.create({
     width: '16px',
     height: '16px',
     border: '2px solid rgba(255, 255, 255, 0.3)',
-    borderTopColor: colors.white,
+    borderTopColor: '#ffffff',
     borderRadius: '50%',
     animation: `${spin} 0.6s linear infinite`,
   },
   
   note: {
-    fontSize: typography.textXs,
-    color: colors.gray500,
+    fontSize: '0.75rem',
+    color: '#adb5bd',
     textAlign: 'center',
-    marginTop: spacing.md,
+    marginTop: '1rem',
     fontStyle: 'italic',
   },
 });

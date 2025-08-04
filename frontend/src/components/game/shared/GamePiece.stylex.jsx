@@ -30,10 +30,12 @@ const styles = stylex.create({
     flexDirection: 'column',
     alignItems: 'center',
     justifyContent: 'center',
-    borderRadius: layout.radiusMd,
-    backgroundColor: colors.white,
-    border: `2px solid ${colors.gray300}`,
-    transition: `all ${motion.durationBase} ${motion.easeInOut}`,
+    borderRadius: '0.375rem',
+    backgroundColor: '#ffffff',
+    borderWidth: '2px',
+    borderStyle: 'solid',
+    borderColor: '#dee2e6',
+    transition: `all '300ms' 'cubic-bezier(0.4, 0, 0.2, 1)'`,
     cursor: 'pointer',
     userSelect: 'none',
     transformStyle: 'preserve-3d',
@@ -43,56 +45,56 @@ const styles = stylex.create({
   mini: {
     width: '30px',
     height: '40px',
-    fontSize: typography.textXs,
+    fontSize: '0.75rem',
   },
   
   small: {
     width: '40px',
     height: '50px',
-    fontSize: typography.textSm,
+    fontSize: '0.875rem',
   },
   
   medium: {
     width: '50px',
     height: '65px',
-    fontSize: typography.textBase,
+    fontSize: '1rem',
   },
   
   large: {
     width: '60px',
     height: '80px',
-    fontSize: typography.textLg,
+    fontSize: '1.125rem',
   },
   
   // Variants
   default: {
-    boxShadow: shadows.sm,
+    boxShadow: '0 1px 2px 0 rgba(0, 0, 0, 0.05)',
     ':hover': {
       transform: 'translateY(-2px)',
-      boxShadow: shadows.md,
+      boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)',
     },
   },
   
   table: {
     backgroundColor: 'rgba(255, 255, 255, 0.95)',
-    boxShadow: shadows.md,
+    boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)',
   },
   
   selectable: {
     cursor: 'pointer',
     ':hover': {
-      borderColor: colors.primary,
+      borderColor: '#0d6efd',
       transform: 'scale(1.05)',
     },
   },
   
   dealing: {
-    animation: `${flipAnimation} 0.6s ${motion.easeInOut}`,
+    animation: `${flipAnimation} 0.6s 'cubic-bezier(0.4, 0, 0.2, 1)'`,
   },
   
   // States
   selected: {
-    borderColor: colors.primary,
+    borderColor: '#0d6efd',
     backgroundColor: 'rgba(13, 110, 253, 0.1)',
     transform: 'scale(1.1)',
     boxShadow: `0 0 0 3px rgba(13, 110, 253, 0.2)`,
@@ -110,14 +112,14 @@ const styles = stylex.create({
   // Piece colors
   red: {
     backgroundColor: 'rgba(220, 53, 69, 0.1)',
-    borderColor: colors.danger,
-    color: colors.danger,
+    borderColor: '#dc3545',
+    color: '#dc3545',
   },
   
   black: {
     backgroundColor: 'rgba(33, 37, 41, 0.1)',
-    borderColor: colors.gray700,
-    color: colors.gray800,
+    borderColor: '#495057',
+    color: '#343a40',
   },
   
   // Piece face (for flippable pieces)
@@ -129,7 +131,7 @@ const styles = stylex.create({
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
-    borderRadius: layout.radiusMd,
+    borderRadius: '0.375rem',
   },
   
   faceFront: {
@@ -138,8 +140,8 @@ const styles = stylex.create({
   
   faceBack: {
     transform: 'rotateY(180deg)',
-    backgroundColor: colors.gray600,
-    backgroundImage: `linear-gradient(45deg, ${colors.gray700} 25%, transparent 25%, transparent 75%, ${colors.gray700} 75%, ${colors.gray700}), linear-gradient(45deg, ${colors.gray700} 25%, transparent 25%, transparent 75%, ${colors.gray700} 75%, ${colors.gray700})`,
+    backgroundColor: '#6c757d',
+    backgroundImage: `linear-gradient(45deg, '#495057' 25%, transparent 25%, transparent 75%, '#495057' 75%, '#495057'), linear-gradient(45deg, '#495057' 25%, transparent 25%, transparent 75%, '#495057' 75%, '#495057')`,
     backgroundSize: '10px 10px',
     backgroundPosition: '0 0, 5px 5px',
   },
@@ -151,7 +153,7 @@ const styles = stylex.create({
     justifyContent: 'center',
     flex: 1,
     width: '100%',
-    fontWeight: typography.weightBold,
+    fontWeight: '700',
   },
   
   characterImage: {
@@ -161,9 +163,9 @@ const styles = stylex.create({
   },
   
   value: {
-    fontSize: typography.textXs,
-    fontWeight: typography.weightSemibold,
-    color: colors.gray600,
+    fontSize: '0.75rem',
+    fontWeight: '600',
+    color: '#6c757d',
     marginTop: spacing.xxs,
   },
 });
@@ -221,7 +223,7 @@ const GamePiece = ({
       <div
         {...combinedPieceProps}
         onClick={onClick}
-        title={className.includes('invalid-play') ? "Play type doesn't match" : ''}
+        title={className.includes('invalid-play') ? "Play type doesn't match" : '}
       >
         <div {...stylex.props(styles.face, styles.faceBack)} />
         <div {...stylex.props(styles.face, styles.faceFront, getPieceColorStyle())}>

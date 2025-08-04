@@ -34,7 +34,7 @@ const crownBounce = stylex.keyframes({
 // TurnResultsContent styles
 const styles = stylex.create({
   playersSummary: {
-    padding: spacing.lg,
+    padding: '1.5rem',
     flex: 1,
     overflowY: 'auto',
   },
@@ -42,24 +42,26 @@ const styles = stylex.create({
   playerList: {
     display: 'flex',
     flexDirection: 'column',
-    gap: spacing.md,
+    gap: '1rem',
   },
   
   playerRow: {
     display: 'flex',
     alignItems: 'center',
-    padding: spacing.md,
-    borderRadius: layout.radiusLg,
-    backgroundColor: colors.white,
-    boxShadow: shadows.sm,
-    transition: `all ${motion.durationBase} ${motion.easeInOut}`,
-    animation: `${fadeIn} 0.3s ${motion.easeOut}`,
+    padding: '1rem',
+    borderRadius: '0.5rem',
+    backgroundColor: '#ffffff',
+    boxShadow: '0 1px 2px 0 rgba(0, 0, 0, 0.05)',
+    transition: `all '300ms' 'cubic-bezier(0.4, 0, 0.2, 1)'`,
+    animation: `${fadeIn} 0.3s 'cubic-bezier(0, 0, 0.2, 1)'`,
   },
   
   winner: {
     background: gradients.gold,
-    borderLeft: `4px solid ${colors.warning}`,
-    boxShadow: shadows.md,
+    borderLeftWidth: '4px',
+    borderLeftStyle: 'solid',
+    borderLeftColor: '#ffc107',
+    boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)',
     position: 'relative',
     
     '::before': {
@@ -68,7 +70,7 @@ const styles = stylex.create({
       top: '-15px',
       left: '20px',
       fontSize: '24px',
-      animation: `${crownBounce} 2s ${motion.easeInOut} infinite`,
+      animation: `${crownBounce} 2s 'cubic-bezier(0.4, 0, 0.2, 1)' infinite`,
     },
   },
   
@@ -80,37 +82,37 @@ const styles = stylex.create({
   },
   
   playerName: {
-    fontSize: typography.textBase,
-    fontWeight: typography.weightMedium,
-    color: colors.gray800,
+    fontSize: '1rem',
+    fontWeight: '500',
+    color: '#343a40',
   },
   
   playerPiles: {
-    fontSize: typography.textSm,
-    color: colors.gray600,
+    fontSize: '0.875rem',
+    color: '#6c757d',
   },
   
   pileStatusNone: {
-    color: colors.gray600,
+    color: '#6c757d',
   },
   
   pileStatusPerfect: {
-    color: colors.success,
-    fontWeight: typography.weightBold,
+    color: '#198754',
+    fontWeight: '700',
   },
   
   pileStatusOver: {
-    color: colors.warning,
+    color: '#ffc107',
   },
   
   pileStatusUnder: {
-    color: colors.danger,
+    color: '#dc3545',
   },
   
   playedPieces: {
     flex: 1,
     display: 'flex',
-    gap: spacing.sm,
+    gap: '0.5rem',
     justifyContent: 'flex-end',
     alignItems: 'center',
     flexWrap: 'wrap',
@@ -123,20 +125,20 @@ const styles = stylex.create({
   
   piecesRow: {
     display: 'flex',
-    gap: spacing.xs,
+    gap: '0.25rem',
   },
   
   passIndicator: {
-    padding: `${spacing.xs} ${spacing.md}`,
-    backgroundColor: colors.gray200,
-    borderRadius: layout.radiusFull,
-    fontSize: typography.textSm,
-    color: colors.gray600,
+    padding: `'0.25rem' '1rem'`,
+    backgroundColor: '#e9ecef',
+    borderRadius: '9999px',
+    fontSize: '0.875rem',
+    color: '#6c757d',
     fontStyle: 'italic',
   },
   
   playedPiece: {
-    transition: `all ${motion.durationBase} ${motion.easeInOut}`,
+    transition: `all '300ms' 'cubic-bezier(0.4, 0, 0.2, 1)'`,
   },
   
   invalidPlay: {
@@ -145,17 +147,19 @@ const styles = stylex.create({
   },
   
   nextTurnInfo: {
-    padding: spacing.lg,
-    borderTop: `1px solid ${colors.gray200}`,
-    backgroundColor: colors.gray50,
+    padding: '1.5rem',
+    borderTopWidth: '1px',
+    borderTopStyle: 'solid',
+    borderTopColor: '#e9ecef',
+    backgroundColor: '#f8f9fa',
     textAlign: 'center',
   },
   
   nextStarter: {
-    fontSize: typography.textLg,
-    fontWeight: typography.weightMedium,
-    color: colors.gray700,
-    marginBottom: spacing.md,
+    fontSize: '1.125rem',
+    fontWeight: '500',
+    color: '#495057',
+    marginBottom: '1rem',
   },
   
   autoContinue: {
@@ -175,16 +179,16 @@ const styles = stylex.create({
  * - Next turn/round information
  */
 const TurnResultsContent = ({
-  winner = '',
+  winner = ',
   winningPieces = [],
   playerPlays = [], // [{ playerName, pieces }]
-  myName = '',
+  myName = ',
   turnNumber = 1,
   roundNumber = 1,
   isLastTurn = false,
-  nextStarter = '',
-  starterPlayType = '',
-  starterName = '',
+  nextStarter = ',
+  starterPlayType = ',
+  starterName = ',
   onContinue,
 }) => {
   const [flippedPieces, setFlippedPieces] = useState(new Set());
@@ -196,7 +200,7 @@ const TurnResultsContent = ({
       const starterPlay = playerPlays.find(
         (p) => p.playerName === starterName || p.playerName === winner
       );
-      const calculatedType = starterPlay ? getPlayType(starterPlay.pieces) : '';
+      const calculatedType = starterPlay ? getPlayType(starterPlay.pieces) : ';
       console.log('[TurnResultsContent] Calculating starter play type:', {
         starterPlayType,
         starterName,

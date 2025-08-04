@@ -30,14 +30,14 @@ const pulse = stylex.keyframes({
 const styles = stylex.create({
   container: {
     position: 'fixed',
-    bottom: spacing.md,
-    right: spacing.md,
-    backgroundColor: colors.white,
-    borderRadius: layout.radiusMd,
-    boxShadow: shadows.lg,
-    padding: spacing.md,
+    bottom: '1rem',
+    right: '1rem',
+    backgroundColor: '#ffffff',
+    borderRadius: '0.375rem',
+    boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)',
+    padding: '1rem',
     minWidth: '300px',
-    transition: `all ${motion.durationBase} ${motion.easeInOut}`,
+    transition: `all '300ms' 'cubic-bezier(0.4, 0, 0.2, 1)'`,
     zIndex: 50,
   },
   
@@ -53,24 +53,24 @@ const styles = stylex.create({
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'space-between',
-    marginBottom: spacing.md,
+    marginBottom: '1rem',
   },
   
   title: {
-    fontSize: typography.textSm,
-    fontWeight: typography.weightSemibold,
-    color: colors.gray800,
+    fontSize: '0.875rem',
+    fontWeight: '600',
+    color: '#343a40',
   },
   
   cancelButton: {
-    color: colors.gray500,
-    background: 'transparent',
+    color: '#adb5bd',
+    backgroundColor: 'transparent',
     border: 'none',
     cursor: 'pointer',
     padding: 0,
-    transition: `color ${motion.durationFast} ${motion.easeInOut}`,
+    transition: `color '150ms' 'cubic-bezier(0.4, 0, 0.2, 1)'`,
     ':hover': {
-      color: colors.gray700,
+      color: '#495057',
     },
   },
   
@@ -81,27 +81,27 @@ const styles = stylex.create({
   
   progressContainer: {
     position: 'relative',
-    marginBottom: spacing.sm,
+    marginBottom: '0.5rem',
   },
   
   progressBar: {
     height: '8px',
-    backgroundColor: colors.gray200,
-    borderRadius: layout.radiusFull,
+    backgroundColor: '#e9ecef',
+    borderRadius: '9999px',
     overflow: 'hidden',
   },
   
   progressFill: {
     height: '100%',
-    transition: `width ${motion.durationSlow} ${motion.easeOut}`,
+    transition: `width '500ms' 'cubic-bezier(0, 0, 0.2, 1)'`,
   },
   
   progressFillConnecting: {
-    backgroundColor: colors.primary,
+    backgroundColor: '#0d6efd',
   },
   
   progressFillSuccess: {
-    backgroundColor: colors.success,
+    backgroundColor: '#198754',
   },
   
   attemptIndicator: {
@@ -115,7 +115,7 @@ const styles = stylex.create({
   attemptLine: {
     height: '100%',
     borderRight: '2px dashed',
-    borderRightColor: colors.gray400,
+    borderRightColor: '#ced4da',
     opacity: 0.5,
   },
   
@@ -123,43 +123,43 @@ const styles = stylex.create({
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'space-between',
-    fontSize: typography.textXs,
+    fontSize: '0.75rem',
   },
   
   statusText: {
-    color: colors.gray600,
+    color: '#6c757d',
   },
   
   successText: {
-    color: colors.successDark,
-    fontWeight: typography.weightMedium,
+    color: '#146c43',
+    fontWeight: '500',
   },
   
   successAnimation: {
     display: 'flex',
     alignItems: 'center',
-    color: colors.successDark,
-    animation: `${fadeIn} 0.3s ${motion.easeOut}`,
+    color: '#146c43',
+    animation: `${fadeIn} 0.3s 'cubic-bezier(0, 0, 0.2, 1)'`,
   },
   
   successIcon: {
     width: '20px',
     height: '20px',
-    marginRight: spacing.xs,
+    marginRight: '0.25rem',
   },
   
   successLabel: {
-    fontWeight: typography.weightMedium,
+    fontWeight: '500',
   },
   
   additionalInfo: {
-    marginTop: spacing.md,
-    fontSize: typography.textXs,
-    color: colors.gray500,
+    marginTop: '1rem',
+    fontSize: '0.75rem',
+    color: '#adb5bd',
   },
   
   pulsingText: {
-    animation: `${pulse} 2s ${motion.easeInOut} infinite`,
+    animation: `${pulse} 2s 'cubic-bezier(0.4, 0, 0.2, 1)' infinite`,
   },
 });
 

@@ -22,31 +22,31 @@ const styles = stylex.create({
     flexDirection: 'column',
     alignItems: 'center',
     justifyContent: 'center',
-    padding: spacing.md,
-    borderRadius: layout.radiusMd,
+    padding: '1rem',
+    borderRadius: '0.375rem',
     borderWidth: '2px',
     borderStyle: 'solid',
     minHeight: '120px',
-    transition: `all ${motion.durationBase} ${motion.easeOut}`,
+    transition: `all '300ms' 'cubic-bezier(0, 0, 0.2, 1)'`,
     transformOrigin: 'center',
     ':hover': {
-      boxShadow: shadows.lg,
+      boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)',
       transform: 'scale(1.05)',
     },
   },
   
   emptySlot: {
     borderStyle: 'dashed',
-    borderColor: colors.gray300,
-    backgroundImage: `linear-gradient(135deg, ${colors.gray50} 0%, ${colors.gray100} 100%)`,
+    borderColor: '#dee2e6',
+    backgroundImage: `linear-gradient(135deg, '#f8f9fa' 0%, '#f1f3f5' 100%)`,
     ':hover': {
-      borderColor: colors.gray400,
-      backgroundImage: `linear-gradient(135deg, ${colors.gray100} 0%, ${colors.gray200} 100%)`,
+      borderColor: '#ced4da',
+      backgroundImage: `linear-gradient(135deg, '#f1f3f5' 0%, '#e9ecef' 100%)`,
     },
   },
   
   hostSlot: {
-    borderColor: colors.warning,
+    borderColor: '#ffc107',
     backgroundImage: `linear-gradient(135deg, #fef3c7 0%, #fde68a 100%)`,
     boxShadow: '0 10px 15px -3px rgba(251, 191, 36, 0.2)',
     outline: `2px solid rgba(251, 191, 36, 0.5)`,
@@ -54,12 +54,12 @@ const styles = stylex.create({
   },
   
   currentPlayerSlot: {
-    borderColor: colors.primary,
-    backgroundImage: `linear-gradient(135deg, ${colors.primaryLight} 0%, #dbeafe 100%)`,
+    borderColor: '#0d6efd',
+    backgroundImage: `linear-gradient(135deg, '#e7f1ff' 0%, #dbeafe 100%)`,
     boxShadow: '0 10px 15px -3px rgba(59, 130, 246, 0.2)',
     outline: `4px solid rgba(59, 130, 246, 0.5)`,
     outlineOffset: '2px',
-    animation: `${pulse} 2s ${motion.easeInOut} infinite`,
+    animation: `${pulse} 2s 'cubic-bezier(0.4, 0, 0.2, 1)' infinite`,
   },
   
   botSlot: {
@@ -69,8 +69,8 @@ const styles = stylex.create({
   },
   
   normalSlot: {
-    borderColor: colors.gray400,
-    backgroundImage: `linear-gradient(135deg, ${colors.white} 0%, ${colors.gray50} 100%)`,
+    borderColor: '#ced4da',
+    backgroundImage: `linear-gradient(135deg, '#ffffff' 0%, '#f8f9fa' 100%)`,
     boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)',
   },
   
@@ -78,40 +78,40 @@ const styles = stylex.create({
     display: 'flex',
     flexDirection: 'column',
     alignItems: 'center',
-    gap: spacing.sm,
+    gap: '0.5rem',
     width: '100%',
   },
   
   emptyContent: {
-    gap: spacing.md,
+    gap: '1rem',
   },
   
   slotLabel: {
-    fontSize: typography.textSm,
-    color: colors.gray500,
-    fontWeight: typography.weightMedium,
+    fontSize: '0.875rem',
+    color: '#adb5bd',
+    fontWeight: '500',
   },
   
   emptyLabel: {
-    fontSize: typography.textXs,
-    color: colors.gray400,
+    fontSize: '0.75rem',
+    color: '#ced4da',
   },
   
   buttonContainer: {
     display: 'flex',
     flexDirection: 'column',
-    gap: spacing.sm,
+    gap: '0.5rem',
     width: '100%',
   },
   
   playerInfo: {
     display: 'flex',
     alignItems: 'center',
-    gap: spacing.sm,
+    gap: '0.5rem',
   },
   
   icon: {
-    fontSize: typography.textLg,
+    fontSize: '1.125rem',
   },
   
   nameContainer: {
@@ -119,8 +119,8 @@ const styles = stylex.create({
   },
   
   playerName: {
-    fontWeight: typography.weightMedium,
-    fontSize: typography.textSm,
+    fontWeight: '500',
+    fontSize: '0.875rem',
     maxWidth: '100px',
     overflow: 'hidden',
     textOverflow: 'ellipsis',
@@ -128,37 +128,37 @@ const styles = stylex.create({
   },
   
   slotNumber: {
-    fontSize: typography.textXs,
-    color: colors.gray500,
+    fontSize: '0.75rem',
+    color: '#adb5bd',
   },
   
   youBadge: {
-    fontSize: typography.textXs,
-    fontWeight: typography.weightBold,
-    color: colors.primaryDark,
-    backgroundColor: colors.primaryLight,
-    paddingTop: spacing.xs,
-    paddingBottom: spacing.xs,
-    paddingLeft: spacing.sm,
-    paddingRight: spacing.sm,
-    borderRadius: layout.radiusSm,
+    fontSize: '0.75rem',
+    fontWeight: '700',
+    color: '#0056b3',
+    backgroundColor: '#e7f1ff',
+    paddingTop: '0.25rem',
+    paddingBottom: '0.25rem',
+    paddingLeft: '0.5rem',
+    paddingRight: '0.5rem',
+    borderRadius: '0.125rem',
   },
   
   scoreBadge: {
-    fontSize: typography.textXs,
-    color: colors.gray600,
-    backgroundColor: colors.gray100,
-    paddingTop: spacing.xs,
-    paddingBottom: spacing.xs,
-    paddingLeft: spacing.sm,
-    paddingRight: spacing.sm,
-    borderRadius: layout.radiusSm,
+    fontSize: '0.75rem',
+    color: '#6c757d',
+    backgroundColor: '#f1f3f5',
+    paddingTop: '0.25rem',
+    paddingBottom: '0.25rem',
+    paddingLeft: '0.5rem',
+    paddingRight: '0.5rem',
+    borderRadius: '0.125rem',
   },
   
   actionButtons: {
     display: 'flex',
     flexDirection: 'column',
-    gap: spacing.xs,
+    gap: '0.25rem',
     width: '100%',
   },
 });

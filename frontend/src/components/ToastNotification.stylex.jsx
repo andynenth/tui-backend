@@ -19,59 +19,59 @@ const styles = stylex.create({
   container: {
     display: 'flex',
     alignItems: 'flex-start',
-    gap: spacing.md,
-    padding: spacing.lg,
-    borderRadius: layout.radiusMd,
-    boxShadow: shadows.lg,
-    backgroundColor: colors.white,
+    gap: '1rem',
+    padding: '1.5rem',
+    borderRadius: '0.375rem',
+    boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)',
+    backgroundColor: '#ffffff',
     border: '1px solid',
-    borderColor: colors.gray200,
+    borderColor: '#e9ecef',
     position: 'relative',
     overflow: 'hidden',
     minWidth: '300px',
     maxWidth: '400px',
-    animation: `${animations.slideIn} ${motion.durationBase} ${motion.easeOut}`,
+    animation: `${animations.slideIn} '300ms' 'cubic-bezier(0, 0, 0.2, 1)'`,
   },
   
   // Toast types
   info: {
-    borderColor: colors.primary,
+    borderColor: '#0d6efd',
     backgroundColor: 'rgba(13, 110, 253, 0.05)',
   },
   
   success: {
-    borderColor: colors.success,
+    borderColor: '#198754',
     backgroundColor: 'rgba(40, 167, 69, 0.05)',
   },
   
   warning: {
-    borderColor: colors.warning,
+    borderColor: '#ffc107',
     backgroundColor: 'rgba(255, 193, 7, 0.05)',
   },
   
   error: {
-    borderColor: colors.danger,
+    borderColor: '#dc3545',
     backgroundColor: 'rgba(220, 53, 69, 0.05)',
   },
   
   disconnect: {
-    borderColor: colors.danger,
+    borderColor: '#dc3545',
     backgroundColor: 'rgba(220, 53, 69, 0.08)',
   },
   
   reconnect: {
-    borderColor: colors.success,
+    borderColor: '#198754',
     backgroundColor: 'rgba(40, 167, 69, 0.08)',
   },
   
   aiActivated: {
-    borderColor: colors.primary,
+    borderColor: '#0d6efd',
     backgroundColor: 'rgba(13, 110, 253, 0.08)',
   },
   
   // Toast elements
   icon: {
-    fontSize: typography.text2xl,
+    fontSize: '1.5rem',
     flexShrink: 0,
     lineHeight: 1,
   },
@@ -82,33 +82,33 @@ const styles = stylex.create({
   },
   
   title: {
-    fontSize: typography.textBase,
-    fontWeight: typography.weightSemibold,
-    color: colors.gray800,
-    marginBottom: spacing.xs,
+    fontSize: '1rem',
+    fontWeight: '600',
+    color: '#343a40',
+    marginBottom: '0.25rem',
   },
   
   message: {
-    fontSize: typography.textSm,
-    color: colors.gray600,
+    fontSize: '0.875rem',
+    color: '#6c757d',
     lineHeight: typography.lineHeightRelaxed,
   },
   
   closeButton: {
     position: 'absolute',
-    top: spacing.sm,
-    right: spacing.sm,
-    background: 'none',
+    top: '0.5rem',
+    right: '0.5rem',
+    backgroundColor: 'none',
     border: 'none',
     cursor: 'pointer',
-    fontSize: typography.text2xl,
-    color: colors.gray400,
-    padding: spacing.xs,
+    fontSize: '1.5rem',
+    color: '#ced4da',
+    padding: '0.25rem',
     lineHeight: 1,
-    transition: `color ${motion.durationFast} ${motion.easeInOut}`,
+    transition: `color '150ms' 'cubic-bezier(0.4, 0, 0.2, 1)'`,
     
     ':hover': {
-      color: colors.gray600,
+      color: '#6c757d',
     },
   },
   
@@ -125,13 +125,13 @@ const styles = stylex.create({
 
 // Type-specific icon colors
 const iconStyles = stylex.create({
-  info: { color: colors.primary },
-  success: { color: colors.success },
-  warning: { color: colors.warning },
-  error: { color: colors.danger },
-  disconnect: { color: colors.danger },
-  reconnect: { color: colors.success },
-  aiActivated: { color: colors.primary },
+  info: { color: '#0d6efd' },
+  success: { color: '#198754' },
+  warning: { color: '#ffc107' },
+  error: { color: '#dc3545' },
+  disconnect: { color: '#dc3545' },
+  reconnect: { color: '#198754' },
+  aiActivated: { color: '#0d6efd' },
 });
 
 const ToastNotification = ({
@@ -196,14 +196,14 @@ const ToastNotification = ({
           {...stylex.props(styles.progress)}
           style={{ 
             animation: `${progressAnimation} ${duration}ms linear`,
-            color: typeStyleKey === 'info' ? colors.primary :
-                   typeStyleKey === 'success' ? colors.success :
-                   typeStyleKey === 'warning' ? colors.warning :
-                   typeStyleKey === 'error' ? colors.danger :
-                   typeStyleKey === 'disconnect' ? colors.danger :
-                   typeStyleKey === 'reconnect' ? colors.success :
-                   typeStyleKey === 'aiActivated' ? colors.primary :
-                   colors.gray500
+            color: typeStyleKey === 'info' ? '#0d6efd' :
+                   typeStyleKey === 'success' ? '#198754' :
+                   typeStyleKey === 'warning' ? '#ffc107' :
+                   typeStyleKey === 'error' ? '#dc3545' :
+                   typeStyleKey === 'disconnect' ? '#dc3545' :
+                   typeStyleKey === 'reconnect' ? '#198754' :
+                   typeStyleKey === 'aiActivated' ? '#0d6efd' :
+                   '#adb5bd'
           }}
         />
       )}

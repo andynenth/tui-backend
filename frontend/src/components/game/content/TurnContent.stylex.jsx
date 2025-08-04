@@ -34,37 +34,37 @@ const pulse = stylex.keyframes({
 const styles = stylex.create({
   turnIndicator: {
     position: 'absolute',
-    top: spacing.md,
-    right: spacing.md,
-    padding: `${spacing.xs} ${spacing.sm}`,
-    borderRadius: layout.radiusFull,
-    fontSize: typography.textSm,
-    fontWeight: typography.weightBold,
-    backgroundColor: colors.white,
-    boxShadow: shadows.md,
+    top: '1rem',
+    right: '1rem',
+    padding: `'0.25rem' '0.5rem'`,
+    borderRadius: '9999px',
+    fontSize: '0.875rem',
+    fontWeight: '700',
+    backgroundColor: '#ffffff',
+    boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)',
     zIndex: 10,
   },
   
   pileStatusNone: {
-    color: colors.gray600,
-    borderColor: colors.gray300,
+    color: '#6c757d',
+    borderColor: '#dee2e6',
   },
   
   pileStatusPerfect: {
-    color: colors.success,
-    borderColor: colors.success,
+    color: '#198754',
+    borderColor: '#198754',
     backgroundColor: 'rgba(16, 185, 129, 0.1)',
   },
   
   pileStatusOver: {
-    color: colors.warning,
-    borderColor: colors.warning,
+    color: '#ffc107',
+    borderColor: '#ffc107',
     backgroundColor: 'rgba(245, 158, 11, 0.1)',
   },
   
   pileStatusUnder: {
-    color: colors.danger,
-    borderColor: colors.danger,
+    color: '#dc3545',
+    borderColor: '#dc3545',
     backgroundColor: 'rgba(239, 68, 68, 0.1)',
   },
   
@@ -73,7 +73,7 @@ const styles = stylex.create({
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
-    padding: spacing.lg,
+    padding: '1.5rem',
     position: 'relative',
   },
   
@@ -91,8 +91,8 @@ const styles = stylex.create({
     right: '25%',
     bottom: '25%',
     backgroundColor: '#8B4513',
-    borderRadius: layout.radiusLg,
-    boxShadow: `${shadows.xl}, inset 0 2px 4px rgba(0,0,0,0.2)`,
+    borderRadius: '0.5rem',
+    boxShadow: `'0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)', inset 0 2px 4px rgba(0,0,0,0.2)`,
     overflow: 'hidden',
   },
   
@@ -107,8 +107,8 @@ const styles = stylex.create({
     position: 'absolute',
     display: 'flex',
     flexWrap: 'wrap',
-    gap: spacing.xs,
-    padding: spacing.sm,
+    gap: '0.25rem',
+    padding: '0.5rem',
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -145,14 +145,14 @@ const styles = stylex.create({
   
   playerSummaryBar: {
     position: 'absolute',
-    backgroundColor: colors.white,
-    borderRadius: layout.radiusMd,
-    padding: spacing.sm,
-    boxShadow: shadows.md,
+    backgroundColor: '#ffffff',
+    borderRadius: '0.375rem',
+    padding: '0.5rem',
+    boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)',
     display: 'flex',
     alignItems: 'center',
-    gap: spacing.sm,
-    transition: `all ${motion.durationBase} ${motion.easeInOut}`,
+    gap: '0.5rem',
+    transition: `all '300ms' 'cubic-bezier(0.4, 0, 0.2, 1)'`,
   },
   
   summaryBarTop: {
@@ -176,9 +176,9 @@ const styles = stylex.create({
   },
   
   summaryBarActive: {
-    backgroundColor: colors.primaryLight,
-    borderColor: colors.primary,
-    animation: `${pulse} 2s ${motion.easeInOut} infinite`,
+    backgroundColor: '#e7f1ff',
+    borderColor: '#0d6efd',
+    animation: `${pulse} 2s 'cubic-bezier(0.4, 0, 0.2, 1)' infinite`,
   },
   
   summaryBarPlayed: {
@@ -188,28 +188,28 @@ const styles = stylex.create({
   summaryContent: {
     display: 'flex',
     alignItems: 'center',
-    gap: spacing.xs,
+    gap: '0.25rem',
   },
   
   playerNameShort: {
-    fontSize: typography.textSm,
-    fontWeight: typography.weightMedium,
-    color: colors.gray700,
+    fontSize: '0.875rem',
+    fontWeight: '500',
+    color: '#495057',
   },
   
   playerStatsCompact: {
     display: 'flex',
     alignItems: 'center',
     gap: spacing.xxs,
-    fontSize: typography.textSm,
+    fontSize: '0.875rem',
   },
   
   statNumber: {
-    fontWeight: typography.weightBold,
+    fontWeight: '700',
   },
   
   statSeparator: {
-    color: colors.gray400,
+    color: '#ced4da',
   },
   
   statusIcons: {
@@ -220,7 +220,7 @@ const styles = stylex.create({
   statusIcon: {
     width: '4px',
     height: '12px',
-    backgroundColor: colors.gray400,
+    backgroundColor: '#ced4da',
     borderRadius: layout.radiusXs,
   },
   
@@ -229,55 +229,55 @@ const styles = stylex.create({
     bottom: 0,
     left: 0,
     right: 0,
-    backgroundColor: colors.white,
-    borderTopLeftRadius: layout.radiusXl,
-    borderTopRightRadius: layout.radiusXl,
-    boxShadow: shadows.xl,
-    padding: spacing.lg,
+    backgroundColor: '#ffffff',
+    borderTopLeftRadius: '1rem',
+    borderTopRightRadius: '1rem',
+    boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)',
+    padding: '1.5rem',
     transform: 'translateY(100%)',
-    transition: `transform ${motion.durationBase} ${motion.easeOut}`,
+    transition: `transform '300ms' 'cubic-bezier(0, 0, 0.2, 1)'`,
     zIndex: 40,
   },
   
   confirmPanelShow: {
     transform: 'translateY(0)',
-    animation: `${slideUp} 0.3s ${motion.easeOut}`,
+    animation: `${slideUp} 0.3s 'cubic-bezier(0, 0, 0.2, 1)'`,
   },
   
   selectionInfo: {
-    marginBottom: spacing.md,
+    marginBottom: '1rem',
     textAlign: 'center',
   },
   
   selectionCount: {
-    fontSize: typography.textBase,
-    color: colors.gray700,
-    fontWeight: typography.weightMedium,
+    fontSize: '1rem',
+    color: '#495057',
+    fontWeight: '500',
   },
   
   actionButtons: {
     display: 'flex',
-    gap: spacing.md,
+    gap: '1rem',
     justifyContent: 'center',
   },
   
   actionButton: {
-    padding: `${spacing.sm} ${spacing.xl}`,
-    borderRadius: layout.radiusMd,
-    fontSize: typography.textBase,
-    fontWeight: typography.weightMedium,
+    padding: `'0.5rem' '2rem'`,
+    borderRadius: '0.375rem',
+    fontSize: '1rem',
+    fontWeight: '500',
     border: 'none',
     cursor: 'pointer',
-    transition: `all ${motion.durationBase} ${motion.easeInOut}`,
+    transition: `all '300ms' 'cubic-bezier(0.4, 0, 0.2, 1)'`,
   },
   
   primaryButton: {
     background: gradients.primary,
-    color: colors.white,
+    color: '#ffffff',
     
     ':hover': {
       transform: 'translateY(-2px)',
-      boxShadow: shadows.md,
+      boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)',
     },
     
     ':disabled': {
@@ -288,11 +288,11 @@ const styles = stylex.create({
   },
   
   secondaryButton: {
-    backgroundColor: colors.gray200,
-    color: colors.gray700,
+    backgroundColor: '#e9ecef',
+    color: '#495057',
     
     ':hover': {
-      backgroundColor: colors.gray300,
+      backgroundColor: '#dee2e6',
     },
   },
   
@@ -316,14 +316,14 @@ const styles = stylex.create({
 const TurnContent = ({
   myHand = [],
   players = [],
-  currentPlayer = '',
-  myName = '',
+  currentPlayer = ',
+  myName = ',
   currentPile = [],
   requiredPieceCount = 0,
   turnNumber = 1,
   playerPieces = {}, // { playerName: pieces[] }
-  lastWinner = '',
-  playType = '', // e.g., "Pair", "Straight", "Five of a Kind"
+  lastWinner = ',
+  playType = ', // e.g., "Pair", "Straight", "Five of a Kind"
   playerStats = {}, // { playerName: { pilesWon: 0, declared: 0 } }
   playerHandSizes = {}, // { playerName: handSize }
   onPlayPieces,
@@ -535,7 +535,7 @@ const TurnContent = ({
 
     return {
       type: 'active',
-      text: `Must play exactly ${requiredPieceCount} piece${requiredPieceCount > 1 ? 's' : ''}`,
+      text: `Must play exactly ${requiredPieceCount} piece${requiredPieceCount > 1 ? 's' : '}`,
     };
   };
 
@@ -592,7 +592,7 @@ const TurnContent = ({
                           variant="table"
                           flippable
                           flipped={isFlipped}
-                          className={isInvalidPlay ? 'invalid-play' : ''}
+                          className={isInvalidPlay ? 'invalid-play' : '}
                           animationDelay={
                             isFlipped ? animationDelay : undefined
                           }
@@ -689,7 +689,7 @@ const TurnContent = ({
               }
 
               // Follower logic
-              const defaultText = `Must play exactly ${requiredPieceCount} piece${requiredPieceCount > 1 ? 's' : ''}`;
+              const defaultText = `Must play exactly ${requiredPieceCount} piece${requiredPieceCount > 1 ? 's' : '}`;
 
               // Check if exact count is selected
               if (selectedPieces.length === requiredPieceCount) {

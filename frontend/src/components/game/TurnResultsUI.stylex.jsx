@@ -16,14 +16,14 @@ import TurnResultsContent from './content/TurnResultsContent.stylex';
  */
 export function TurnResultsUI({
   // Data props
-  winner = '',
+  winner = ',
   winningPlay = null,
   playerPiles = {},
   players = [],
   turnNumber = 1,
   roundNumber = 1,
-  nextStarter = '',
-  playerName = '',
+  nextStarter = ',
+  playerName = ',
   isLastTurn = false,
   currentTurnPlays = [], // Turn plays data from turn phase
 
@@ -72,7 +72,7 @@ export function TurnResultsUI({
   );
   const starterName = starterPlay?.player || winner;
   const starterPlayType =
-    starterPlay?.playType || starterPlay?.play_type || winningPlay?.type || '';
+    starterPlay?.playType || starterPlay?.play_type || winningPlay?.type || ';
 
   console.log('[TurnResultsUI] Extracting starter info:', {
     currentTurnPlays,

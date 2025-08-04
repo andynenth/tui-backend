@@ -35,33 +35,35 @@ const styles = stylex.create({
     alignItems: 'center',
     justifyContent: 'center',
     zIndex: 1000,
-    animation: `${fadeIn} 0.2s ${motion.easeOut}`,
+    animation: `${fadeIn} 0.2s 'cubic-bezier(0, 0, 0.2, 1)'`,
   },
   
   modal: {
-    backgroundColor: colors.white,
-    borderRadius: layout.radiusXl,
+    backgroundColor: '#ffffff',
+    borderRadius: '1rem',
     width: '90%',
     maxWidth: '600px',
     maxHeight: '80vh',
     display: 'flex',
     flexDirection: 'column',
-    boxShadow: shadows.xl,
-    animation: `${slideUp} 0.3s ${motion.easeOut}`,
+    boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)',
+    animation: `${slideUp} 0.3s 'cubic-bezier(0, 0, 0.2, 1)'`,
   },
   
   header: {
     display: 'flex',
     justifyContent: 'space-between',
     alignItems: 'center',
-    padding: spacing.lg,
-    borderBottom: `1px solid ${colors.gray200}`,
+    padding: '1.5rem',
+    borderBottomWidth: '1px',
+    borderBottomStyle: 'solid',
+    borderBottomColor: '#e9ecef',
   },
   
   title: {
-    fontSize: typography.textXl,
-    fontWeight: typography.weightBold,
-    color: colors.gray800,
+    fontSize: '1.25rem',
+    fontWeight: '700',
+    color: '#343a40',
     margin: 0,
   },
   
@@ -71,16 +73,16 @@ const styles = stylex.create({
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
-    borderRadius: layout.radiusMd,
+    borderRadius: '0.375rem',
     backgroundColor: 'transparent',
     border: 'none',
     cursor: 'pointer',
-    transition: `background-color ${motion.durationBase} ${motion.easeInOut}`,
-    color: colors.gray500,
+    transition: `background-color '300ms' 'cubic-bezier(0.4, 0, 0.2, 1)'`,
+    color: '#adb5bd',
     
     ':hover': {
-      backgroundColor: colors.gray100,
-      color: colors.gray700,
+      backgroundColor: '#f1f3f5',
+      color: '#495057',
     },
   },
   
@@ -92,52 +94,54 @@ const styles = stylex.create({
   body: {
     flex: 1,
     overflowY: 'auto',
-    padding: spacing.lg,
+    padding: '1.5rem',
   },
   
   section: {
-    marginBottom: spacing.xl,
+    marginBottom: '2rem',
   },
   
   sectionTitle: {
-    fontSize: typography.textLg,
-    fontWeight: typography.weightSemibold,
-    color: colors.gray700,
-    marginBottom: spacing.md,
+    fontSize: '1.125rem',
+    fontWeight: '600',
+    color: '#495057',
+    marginBottom: '1rem',
   },
   
   themeOptions: {
     display: 'flex',
     flexDirection: 'column',
-    gap: spacing.md,
+    gap: '1rem',
   },
   
   themeOption: {
     display: 'flex',
     alignItems: 'center',
-    padding: spacing.md,
-    borderRadius: layout.radiusLg,
-    border: `2px solid ${colors.gray200}`,
+    padding: '1rem',
+    borderRadius: '0.5rem',
+    borderWidth: '2px',
+    borderStyle: 'solid',
+    borderColor: '#e9ecef',
     cursor: 'pointer',
-    transition: `all ${motion.durationBase} ${motion.easeInOut}`,
-    backgroundColor: colors.white,
+    transition: `all '300ms' 'cubic-bezier(0.4, 0, 0.2, 1)'`,
+    backgroundColor: '#ffffff',
     
     ':hover': {
-      borderColor: colors.primary,
-      backgroundColor: colors.primaryLight,
+      borderColor: '#0d6efd',
+      backgroundColor: '#e7f1ff',
     },
   },
   
   themeOptionActive: {
-    borderColor: colors.primary,
-    backgroundColor: colors.primaryLight,
-    boxShadow: `0 0 0 3px ${colors.primaryLight}`,
+    borderColor: '#0d6efd',
+    backgroundColor: '#e7f1ff',
+    boxShadow: `0 0 0 3px '#e7f1ff'`,
   },
   
   themePreview: {
     display: 'flex',
-    gap: spacing.sm,
-    marginRight: spacing.md,
+    gap: '0.5rem',
+    marginRight: '1rem',
   },
   
   piecePreview: {
@@ -154,25 +158,25 @@ const styles = stylex.create({
   },
   
   themeName: {
-    fontSize: typography.textBase,
-    fontWeight: typography.weightMedium,
-    color: colors.gray800,
+    fontSize: '1rem',
+    fontWeight: '500',
+    color: '#343a40',
   },
   
   themeDesc: {
-    fontSize: typography.textSm,
-    color: colors.gray600,
+    fontSize: '0.875rem',
+    color: '#6c757d',
   },
   
   themeCheck: {
     width: '24px',
     height: '24px',
-    borderRadius: layout.radiusFull,
-    backgroundColor: colors.primary,
+    borderRadius: '9999px',
+    backgroundColor: '#0d6efd',
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
-    color: colors.white,
+    color: '#ffffff',
   },
   
   checkIcon: {
@@ -181,49 +185,51 @@ const styles = stylex.create({
   },
   
   placeholder: {
-    padding: spacing.lg,
-    backgroundColor: colors.gray50,
-    borderRadius: layout.radiusMd,
+    padding: '1.5rem',
+    backgroundColor: '#f8f9fa',
+    borderRadius: '0.375rem',
     textAlign: 'center',
-    color: colors.gray500,
-    fontSize: typography.textSm,
+    color: '#adb5bd',
+    fontSize: '0.875rem',
     lineHeight: 1.5,
   },
   
   footer: {
     display: 'flex',
     justifyContent: 'flex-end',
-    gap: spacing.md,
-    padding: spacing.lg,
-    borderTop: `1px solid ${colors.gray200}`,
+    gap: '1rem',
+    padding: '1.5rem',
+    borderTopWidth: '1px',
+    borderTopStyle: 'solid',
+    borderTopColor: '#e9ecef',
   },
   
   button: {
-    padding: `${spacing.sm} ${spacing.lg}`,
-    borderRadius: layout.radiusMd,
-    fontSize: typography.textBase,
-    fontWeight: typography.weightMedium,
+    padding: `'0.5rem' '1.5rem'`,
+    borderRadius: '0.375rem',
+    fontSize: '1rem',
+    fontWeight: '500',
     border: 'none',
     cursor: 'pointer',
-    transition: `all ${motion.durationBase} ${motion.easeInOut}`,
+    transition: `all '300ms' 'cubic-bezier(0.4, 0, 0.2, 1)'`,
   },
   
   cancelButton: {
-    backgroundColor: colors.gray200,
-    color: colors.gray700,
+    backgroundColor: '#e9ecef',
+    color: '#495057',
     
     ':hover': {
-      backgroundColor: colors.gray300,
+      backgroundColor: '#dee2e6',
     },
   },
   
   applyButton: {
     background: gradients.primary,
-    color: colors.white,
+    color: '#ffffff',
     
     ':hover': {
       transform: 'translateY(-2px)',
-      boxShadow: shadows.md,
+      boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)',
     },
   },
 });

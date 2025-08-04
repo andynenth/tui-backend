@@ -14,7 +14,7 @@ const styles = stylex.create({
   },
 });
 
-const TruncatedName = ({ name, maxLength = 8, className = '' }) => {
+const TruncatedName = ({ name, maxLength = 8, className = ' }) => {
   const displayName =
     name.length > maxLength ? `${name.substring(0, maxLength - 1)}…` : name;
 

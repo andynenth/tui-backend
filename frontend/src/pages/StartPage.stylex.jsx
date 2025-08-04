@@ -54,14 +54,14 @@ const styles = stylex.create({
     position: 'relative',
     width: '100%',
     maxWidth: '400px',
-    padding: spacing.xl,
+    padding: '2rem',
   },
   
   contentWrapper: {
-    backgroundColor: colors.white,
-    borderRadius: layout.radiusLg,
-    boxShadow: shadows.xl,
-    padding: spacing.xl,
+    backgroundColor: '#ffffff',
+    borderRadius: '0.5rem',
+    boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)',
+    padding: '2rem',
     textAlign: 'center',
   },
   
@@ -70,7 +70,7 @@ const styles = stylex.create({
     width: '120px',
     height: '120px',
     margin: '0 auto',
-    marginBottom: spacing.xl,
+    marginBottom: '2rem',
   },
   
   iconCircle: {
@@ -79,7 +79,7 @@ const styles = stylex.create({
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
-    animation: `${float} 3s ${motion.easeInOut} infinite`,
+    animation: `${float} 3s 'cubic-bezier(0.4, 0, 0.2, 1)' infinite`,
   },
   
   iconImage: {
@@ -106,89 +106,89 @@ const styles = stylex.create({
   },
   
   gameTitle: {
-    fontSize: typography.text3xl,
-    fontWeight: typography.weightBold,
-    color: colors.gray900,
-    marginBottom: spacing.sm,
+    fontSize: '1.875rem',
+    fontWeight: '700',
+    color: '#212529',
+    marginBottom: '0.5rem',
   },
   
   gameSubtitle: {
-    fontSize: typography.textBase,
-    color: colors.gray600,
-    marginBottom: spacing.xl,
+    fontSize: '1rem',
+    color: '#6c757d',
+    marginBottom: '2rem',
   },
   
   formContainer: {
-    marginTop: spacing.xl,
+    marginTop: '2rem',
   },
   
   inputWrapper: {
-    marginBottom: spacing.lg,
+    marginBottom: '1.5rem',
     textAlign: 'left',
   },
   
   inputLabel: {
     display: 'block',
-    fontSize: typography.textSm,
-    fontWeight: typography.weightMedium,
-    color: colors.gray700,
-    marginBottom: spacing.sm,
+    fontSize: '0.875rem',
+    fontWeight: '500',
+    color: '#495057',
+    marginBottom: '0.5rem',
   },
   
   glowingInput: {
     width: '100%',
-    padding: `${spacing.sm} ${spacing.md}`,
-    fontSize: typography.textBase,
+    padding: `'0.5rem' '1rem'`,
+    fontSize: '1rem',
     borderWidth: '2px',
     borderStyle: 'solid',
-    borderColor: colors.gray300,
-    borderRadius: layout.radiusMd,
-    backgroundColor: colors.white,
-    transition: `all ${motion.durationFast} ${motion.easeInOut}`,
+    borderColor: '#dee2e6',
+    borderRadius: '0.375rem',
+    backgroundColor: '#ffffff',
+    transition: `all '150ms' 'cubic-bezier(0.4, 0, 0.2, 1)'`,
     ':focus': {
       outline: 'none',
-      borderColor: colors.primary,
+      borderColor: '#0d6efd',
       boxShadow: `0 0 0 3px rgba(59, 130, 246, 0.1)`,
     },
     '::placeholder': {
-      color: colors.gray400,
+      color: '#ced4da',
     },
   },
   
   inputError: {
-    marginTop: spacing.xs,
-    fontSize: typography.textXs,
-    color: colors.danger,
+    marginTop: '0.25rem',
+    fontSize: '0.75rem',
+    color: '#dc3545',
     display: 'flex',
     alignItems: 'center',
-    gap: spacing.xs,
+    gap: '0.25rem',
   },
   
   inputHelperText: {
-    marginTop: spacing.xs,
-    fontSize: typography.textXs,
-    color: colors.gray500,
+    marginTop: '0.25rem',
+    fontSize: '0.75rem',
+    color: '#adb5bd',
   },
   
   buttonGroup: {
     display: 'flex',
     flexDirection: 'column',
-    gap: spacing.sm,
+    gap: '0.5rem',
   },
   
   button: {
     width: '100%',
-    padding: `${spacing.md} ${spacing.lg}`,
-    fontSize: typography.textBase,
-    fontWeight: typography.weightMedium,
-    borderRadius: layout.radiusMd,
+    padding: `'1rem' '1.5rem'`,
+    fontSize: '1rem',
+    fontWeight: '500',
+    borderRadius: '0.375rem',
     border: 'none',
     cursor: 'pointer',
-    transition: `all ${motion.durationFast} ${motion.easeInOut}`,
+    transition: `all '150ms' 'cubic-bezier(0.4, 0, 0.2, 1)'`,
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
-    gap: spacing.sm,
+    gap: '0.5rem',
     ':disabled': {
       opacity: 0.5,
       cursor: 'not-allowed',
@@ -197,31 +197,31 @@ const styles = stylex.create({
   
   primaryButton: {
     backgroundColor: '#495057',
-    color: colors.white,
+    color: '#ffffff',
     ':hover:not(:disabled)': {
       backgroundColor: '#343a40',
       transform: 'translateY(-2px)',
-      boxShadow: shadows.md,
+      boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)',
     },
   },
   
   secondaryButton: {
-    backgroundColor: colors.gray200,
-    color: colors.gray700,
+    backgroundColor: '#e9ecef',
+    color: '#495057',
     ':hover:not(:disabled)': {
-      backgroundColor: colors.gray300,
+      backgroundColor: '#dee2e6',
       transform: 'translateY(-2px)',
-      boxShadow: shadows.md,
+      boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)',
     },
   },
   
   dangerButton: {
-    backgroundColor: colors.danger,
-    color: colors.white,
+    backgroundColor: '#dc3545',
+    color: '#ffffff',
     ':hover:not(:disabled)': {
-      backgroundColor: colors.dangerDark,
+      backgroundColor: '#a71e2a',
       transform: 'translateY(-2px)',
-      boxShadow: shadows.md,
+      boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)',
     },
   },
   
@@ -230,7 +230,7 @@ const styles = stylex.create({
     width: '16px',
     height: '16px',
     border: '2px solid rgba(255, 255, 255, 0.3)',
-    borderTopColor: colors.white,
+    borderTopColor: '#ffffff',
     borderRadius: '50%',
     animation: `${spin} 0.6s linear infinite`,
   },
@@ -238,13 +238,13 @@ const styles = stylex.create({
   separator: {
     height: '1px',
     backgroundColor: 'rgba(173, 181, 189, 0.2)',
-    margin: `${spacing.xs} 0`,
+    margin: `'0.25rem' 0`,
   },
   
   settingsButtonPosition: {
     position: 'absolute',
-    top: spacing.md,
-    right: spacing.md,
+    top: '1rem',
+    right: '1rem',
     zIndex: 10,
   },
 });
@@ -264,7 +264,7 @@ const StartPage = () => {
     watch,
   } = useForm({
     defaultValues: {
-      playerName: app.playerName || '',
+      playerName: app.playerName || ',
     },
   });
 

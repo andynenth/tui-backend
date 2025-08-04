@@ -53,93 +53,93 @@ const styles = stylex.create({
     position: 'relative',
     width: '100%',
     maxWidth: '800px',
-    padding: spacing.xl,
+    padding: '2rem',
   },
   
   playerInfoBadge: {
     position: 'absolute',
-    top: spacing.md,
-    left: spacing.md,
+    top: '1rem',
+    left: '1rem',
     display: 'flex',
     alignItems: 'center',
-    gap: spacing.sm,
-    backgroundColor: colors.white,
-    padding: `${spacing.xs} ${spacing.md}`,
-    borderRadius: layout.radiusFull,
-    boxShadow: shadows.md,
-    fontSize: typography.textSm,
-    fontWeight: typography.weightMedium,
+    gap: '0.5rem',
+    backgroundColor: '#ffffff',
+    padding: `'0.25rem' '1rem'`,
+    borderRadius: '9999px',
+    boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)',
+    fontSize: '0.875rem',
+    fontWeight: '500',
   },
   
   connectionStatus: {
     position: 'absolute',
-    top: spacing.md,
-    right: spacing.md,
+    top: '1rem',
+    right: '1rem',
     display: 'flex',
     alignItems: 'center',
-    gap: spacing.xs,
-    padding: `${spacing.xs} ${spacing.md}`,
-    backgroundColor: colors.white,
-    borderRadius: layout.radiusFull,
-    boxShadow: shadows.sm,
-    fontSize: typography.textXs,
-    fontWeight: typography.weightMedium,
+    gap: '0.25rem',
+    padding: `'0.25rem' '1rem'`,
+    backgroundColor: '#ffffff',
+    borderRadius: '9999px',
+    boxShadow: '0 1px 2px 0 rgba(0, 0, 0, 0.05)',
+    fontSize: '0.75rem',
+    fontWeight: '500',
   },
   
   statusDot: {
     width: '8px',
     height: '8px',
     borderRadius: '50%',
-    backgroundColor: colors.success,
+    backgroundColor: '#198754',
   },
   
   statusDotDisconnected: {
-    backgroundColor: colors.danger,
-    animation: `${pulse} 2s ${motion.easeInOut} infinite`,
+    backgroundColor: '#dc3545',
+    animation: `${pulse} 2s 'cubic-bezier(0.4, 0, 0.2, 1)' infinite`,
   },
   
   lobbyHeader: {
     textAlign: 'center',
-    marginBottom: spacing.xl,
+    marginBottom: '2rem',
   },
   
   lobbyTitle: {
-    fontSize: typography.text3xl,
-    fontWeight: typography.weightBold,
-    color: colors.gray900,
-    marginBottom: spacing.sm,
+    fontSize: '1.875rem',
+    fontWeight: '700',
+    color: '#212529',
+    marginBottom: '0.5rem',
   },
   
   lobbySubtitle: {
-    fontSize: typography.textBase,
-    color: colors.gray600,
+    fontSize: '1rem',
+    color: '#6c757d',
   },
   
   actionBar: {
     display: 'flex',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: spacing.lg,
-    gap: spacing.md,
+    marginBottom: '1.5rem',
+    gap: '1rem',
   },
   
   actionButtonsLeft: {
     display: 'flex',
-    gap: spacing.sm,
+    gap: '0.5rem',
     flex: 1,
   },
   
   button: {
-    padding: `${spacing.sm} ${spacing.md}`,
-    fontSize: typography.textSm,
-    fontWeight: typography.weightMedium,
-    borderRadius: layout.radiusMd,
+    padding: `'0.5rem' '1rem'`,
+    fontSize: '0.875rem',
+    fontWeight: '500',
+    borderRadius: '0.375rem',
     border: 'none',
     cursor: 'pointer',
     display: 'inline-flex',
     alignItems: 'center',
-    gap: spacing.xs,
-    transition: `all ${motion.durationFast} ${motion.easeInOut}`,
+    gap: '0.25rem',
+    transition: `all '150ms' 'cubic-bezier(0.4, 0, 0.2, 1)'`,
     ':disabled': {
       opacity: 0.5,
       cursor: 'not-allowed',
@@ -147,34 +147,34 @@ const styles = stylex.create({
   },
   
   successButton: {
-    backgroundColor: colors.success,
-    color: colors.white,
+    backgroundColor: '#198754',
+    color: '#ffffff',
     ':hover:not(:disabled)': {
-      backgroundColor: colors.successDark,
+      backgroundColor: '#146c43',
       transform: 'translateY(-2px)',
-      boxShadow: shadows.md,
+      boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)',
     },
   },
   
   secondaryButton: {
-    backgroundColor: colors.gray200,
-    color: colors.gray700,
+    backgroundColor: '#e9ecef',
+    color: '#495057',
     ':hover:not(:disabled)': {
-      backgroundColor: colors.gray300,
+      backgroundColor: '#dee2e6',
       transform: 'translateY(-2px)',
-      boxShadow: shadows.md,
+      boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)',
     },
   },
   
   iconButton: {
-    padding: spacing.sm,
+    padding: '0.5rem',
     minWidth: '36px',
     minHeight: '36px',
   },
   
   refreshIcon: {
     display: 'inline-block',
-    transition: `transform ${motion.durationBase} ${motion.easeInOut}`,
+    transition: `transform '300ms' 'cubic-bezier(0.4, 0, 0.2, 1)'`,
   },
   
   refreshIconLoading: {
@@ -182,50 +182,52 @@ const styles = stylex.create({
   },
   
   roomListSection: {
-    backgroundColor: colors.white,
-    borderRadius: layout.radiusLg,
-    padding: spacing.lg,
-    boxShadow: shadows.lg,
-    marginBottom: spacing.lg,
+    backgroundColor: '#ffffff',
+    borderRadius: '0.5rem',
+    padding: '1.5rem',
+    boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)',
+    marginBottom: '1.5rem',
   },
   
   roomListHeader: {
     display: 'flex',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: spacing.md,
+    marginBottom: '1rem',
   },
   
   roomCount: {
-    fontSize: typography.textLg,
-    fontWeight: typography.weightSemibold,
-    color: colors.gray900,
+    fontSize: '1.125rem',
+    fontWeight: '600',
+    color: '#212529',
   },
   
   lastUpdated: {
-    fontSize: typography.textXs,
-    color: colors.gray500,
+    fontSize: '0.75rem',
+    color: '#adb5bd',
   },
   
   roomList: {
     display: 'grid',
     gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))',
-    gap: spacing.md,
+    gap: '1rem',
     maxHeight: '400px',
     overflowY: 'auto',
-    padding: spacing.xs,
+    padding: '0.25rem',
   },
   
   roomCard: {
-    backgroundColor: colors.white,
-    border: `2px solid ${colors.gray200}`,
-    borderRadius: layout.radiusMd,
-    padding: spacing.md,
+    backgroundColor: '#ffffff',
+    borderWidth: '2px',
+    borderStyle: 'solid',
+    borderColor: '#e9ecef',
+    borderRadius: '0.375rem',
+    padding: '1rem',
     cursor: 'pointer',
-    transition: `all ${motion.durationFast} ${motion.easeInOut}`,
+    transition: `all '150ms' 'cubic-bezier(0.4, 0, 0.2, 1)'`,
     ':hover': {
-      borderColor: colors.primary,
-      boxShadow: shadows.md,
+      borderColor: '#0d6efd',
+      boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)',
       transform: 'translateY(-2px)',
     },
   },
@@ -234,7 +236,7 @@ const styles = stylex.create({
     opacity: 0.6,
     cursor: 'not-allowed',
     ':hover': {
-      borderColor: colors.gray200,
+      borderColor: '#e9ecef',
       boxShadow: 'none',
       transform: 'none',
     },
@@ -244,7 +246,7 @@ const styles = stylex.create({
     display: 'flex',
     justifyContent: 'space-between',
     alignItems: 'flex-start',
-    marginBottom: spacing.sm,
+    marginBottom: '0.5rem',
   },
   
   roomInfo: {
@@ -252,67 +254,73 @@ const styles = stylex.create({
   },
   
   roomId: {
-    fontSize: typography.textSm,
-    fontWeight: typography.weightBold,
-    color: colors.gray900,
-    marginBottom: spacing.xs,
+    fontSize: '0.875rem',
+    fontWeight: '700',
+    color: '#212529',
+    marginBottom: '0.25rem',
   },
   
   hostName: {
-    fontSize: typography.textXs,
-    color: colors.gray600,
+    fontSize: '0.75rem',
+    color: '#6c757d',
   },
   
   roomOccupancy: {
-    fontSize: typography.textSm,
-    fontWeight: typography.weightMedium,
-    padding: `${spacing.xs} ${spacing.sm}`,
-    backgroundColor: colors.gray100,
-    borderRadius: layout.radiusSm,
-    color: colors.gray700,
+    fontSize: '0.875rem',
+    fontWeight: '500',
+    padding: `'0.25rem' '0.5rem'`,
+    backgroundColor: '#f1f3f5',
+    borderRadius: '0.125rem',
+    color: '#495057',
   },
   
   roomOccupancyFull: {
     backgroundColor: '#fef2f2',
-    color: colors.danger,
+    color: '#dc3545',
   },
   
   roomPlayers: {
     display: 'grid',
     gridTemplateColumns: '1fr 1fr',
-    gap: spacing.xs,
-    marginTop: spacing.sm,
+    gap: '0.25rem',
+    marginTop: '0.5rem',
   },
   
   playerSlot: {
-    fontSize: typography.textXs,
-    padding: spacing.xs,
-    borderRadius: layout.radiusSm,
+    fontSize: '0.75rem',
+    padding: '0.25rem',
+    borderRadius: '0.125rem',
     textAlign: 'center',
   },
   
   playerSlotEmpty: {
-    backgroundColor: colors.gray50,
-    color: colors.gray400,
-    border: `1px dashed ${colors.gray300}`,
+    backgroundColor: '#f8f9fa',
+    color: '#ced4da',
+    borderWidth: '1px',
+    borderStyle: 'dashed',
+    borderColor: '#dee2e6',
   },
   
   playerSlotFilled: {
-    backgroundColor: colors.primaryLight,
-    color: colors.primaryDark,
-    border: `1px solid ${colors.primary}`,
+    backgroundColor: '#e7f1ff',
+    color: '#0056b3',
+    borderWidth: '1px',
+    borderStyle: 'solid',
+    borderColor: '#0d6efd',
   },
   
   playerSlotBot: {
     backgroundColor: '#f3e8ff',
     color: '#6b21a8',
-    border: '1px solid #a855f7',
+    borderWidth: '1px',
+    borderStyle: 'solid',
+    borderColor: '#a855f7',
   },
   
   playerSlotContent: {
     display: 'flex',
     alignItems: 'center',
-    gap: spacing.xs,
+    gap: '0.25rem',
   },
   
   playerSlotName: {
@@ -323,11 +331,11 @@ const styles = stylex.create({
   
   emptyState: {
     textAlign: 'center',
-    padding: `${spacing.xl} ${spacing.lg}`,
+    padding: `'2rem' '1.5rem'`,
   },
   
   emptyIcon: {
-    marginBottom: spacing.md,
+    marginBottom: '1rem',
   },
   
   iconCircle: {
@@ -340,8 +348,8 @@ const styles = stylex.create({
   },
   
   emptyText: {
-    fontSize: typography.textBase,
-    color: colors.gray500,
+    fontSize: '1rem',
+    color: '#adb5bd',
   },
   
   footerActions: {
@@ -360,45 +368,47 @@ const styles = stylex.create({
   
   modalOverlayShow: {
     display: 'flex',
-    animation: `${fadeIn} 0.2s ${motion.easeOut}`,
+    animation: `${fadeIn} 0.2s 'cubic-bezier(0, 0, 0.2, 1)'`,
   },
   
   modalContent: {
-    backgroundColor: colors.white,
-    borderRadius: layout.radiusLg,
-    padding: spacing.xl,
+    backgroundColor: '#ffffff',
+    borderRadius: '0.5rem',
+    padding: '2rem',
     maxWidth: '400px',
     width: '90%',
-    boxShadow: shadows.xl,
+    boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)',
   },
   
   modalTitle: {
-    fontSize: typography.textLg,
-    fontWeight: typography.weightBold,
-    marginBottom: spacing.md,
+    fontSize: '1.125rem',
+    fontWeight: '700',
+    marginBottom: '1rem',
     textAlign: 'center',
   },
   
   modalInput: {
     width: '100%',
-    padding: `${spacing.sm} ${spacing.md}`,
-    fontSize: typography.textBase,
-    border: `2px solid ${colors.gray300}`,
-    borderRadius: layout.radiusMd,
-    marginBottom: spacing.lg,
+    padding: `'0.5rem' '1rem'`,
+    fontSize: '1rem',
+    borderWidth: '2px',
+    borderStyle: 'solid',
+    borderColor: '#dee2e6',
+    borderRadius: '0.375rem',
+    marginBottom: '1.5rem',
     textAlign: 'center',
     textTransform: 'uppercase',
     letterSpacing: '0.1em',
     ':focus': {
       outline: 'none',
-      borderColor: colors.primary,
+      borderColor: '#0d6efd',
       boxShadow: `0 0 0 3px rgba(59, 130, 246, 0.1)`,
     },
   },
   
   modalButtons: {
     display: 'flex',
-    gap: spacing.sm,
+    gap: '0.5rem',
     justifyContent: 'center',
   },
   
@@ -409,7 +419,7 @@ const styles = stylex.create({
     display: 'none',
     alignItems: 'center',
     justifyContent: 'center',
-    borderRadius: layout.radiusLg,
+    borderRadius: '0.5rem',
   },
   
   loadingOverlayShow: {
@@ -420,8 +430,8 @@ const styles = stylex.create({
     width: '40px',
     height: '40px',
     border: '3px solid',
-    borderColor: colors.gray200,
-    borderTopColor: colors.primary,
+    borderColor: '#e9ecef',
+    borderTopColor: '#0d6efd',
     borderRadius: '50%',
     animation: `${spin} 0.8s linear infinite`,
   },
@@ -437,7 +447,7 @@ const LobbyPage = () => {
   const [showJoinModal, setShowJoinModal] = useState(false);
   const [isCreatingRoom, setIsCreatingRoom] = useState(false);
   const [isJoiningRoom, setIsJoiningRoom] = useState(false);
-  const [joinRoomId, setJoinRoomId] = useState('');
+  const [joinRoomId, setJoinRoomId] = useState(');
   const [lastUpdateTime, setLastUpdateTime] = useState(Date.now());
   const [isRefreshing, setIsRefreshing] = useState(false);
 
@@ -822,7 +832,7 @@ const LobbyPage = () => {
                     {...stylex.props(styles.button, styles.secondaryButton)}
                     onClick={() => {
                       setShowJoinModal(false);
-                      setJoinRoomId('');
+                      setJoinRoomId(');
                     }}
                   >
                     Cancel

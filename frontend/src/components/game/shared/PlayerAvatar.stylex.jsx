@@ -31,11 +31,13 @@ const styles = stylex.create({
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
-    borderRadius: layout.radiusFull,
-    backgroundColor: colors.gray200,
-    border: `2px solid ${colors.gray300}`,
+    borderRadius: '9999px',
+    backgroundColor: '#e9ecef',
+    borderWidth: '2px',
+    borderStyle: 'solid',
+    borderColor: '#dee2e6',
     overflow: 'hidden',
-    transition: `all ${motion.durationBase} ${motion.easeInOut}`,
+    transition: `all '300ms' 'cubic-bezier(0.4, 0, 0.2, 1)'`,
   },
   
   // Sizes
@@ -61,19 +63,19 @@ const styles = stylex.create({
   
   // Themes
   yellow: {
-    backgroundColor: colors.warning,
-    borderColor: colors.warningDark,
+    backgroundColor: '#ffc107',
+    borderColor: '#cc9a06',
   },
   
   // Bot specific
   bot: {
     backgroundColor: 'rgba(13, 110, 253, 0.1)',
-    borderColor: colors.primary,
+    borderColor: '#0d6efd',
   },
   
   // States
   thinking: {
-    animation: `${thinkingAnimation} 1.5s ${motion.easeInOut} infinite`,
+    animation: `${thinkingAnimation} 1.5s 'cubic-bezier(0.4, 0, 0.2, 1)' infinite`,
   },
   
   disconnected: {
@@ -84,22 +86,22 @@ const styles = stylex.create({
   // Avatar colors (for human players)
   colorRed: {
     backgroundColor: 'rgba(220, 53, 69, 0.1)',
-    borderColor: colors.danger,
+    borderColor: '#dc3545',
   },
   
   colorBlue: {
     backgroundColor: 'rgba(13, 110, 253, 0.1)',
-    borderColor: colors.primary,
+    borderColor: '#0d6efd',
   },
   
   colorGreen: {
     backgroundColor: 'rgba(40, 167, 69, 0.1)',
-    borderColor: colors.success,
+    borderColor: '#198754',
   },
   
   colorYellow: {
     backgroundColor: 'rgba(255, 193, 7, 0.1)',
-    borderColor: colors.warning,
+    borderColor: '#ffc107',
   },
   
   colorPurple: {
@@ -109,7 +111,7 @@ const styles = stylex.create({
   
   colorOrange: {
     backgroundColor: 'rgba(255, 152, 0, 0.1)',
-    borderColor: colors.warningDark,
+    borderColor: '#cc9a06',
   },
   
   // Icon styles
@@ -122,30 +124,30 @@ const styles = stylex.create({
   // Badge styles
   badge: {
     position: 'absolute',
-    fontSize: typography.textXs,
-    fontWeight: typography.weightBold,
-    padding: `${spacing.xxs} ${spacing.xs}`,
-    borderRadius: layout.radiusSm,
+    fontSize: '0.75rem',
+    fontWeight: '700',
+    padding: `${spacing.xxs} '0.25rem'`,
+    borderRadius: '0.125rem',
     border: '1px solid',
   },
   
   aiBadge: {
     bottom: '-4px',
     right: '-4px',
-    backgroundColor: colors.primary,
-    color: colors.white,
-    borderColor: colors.primaryDark,
+    backgroundColor: '#0d6efd',
+    color: '#ffffff',
+    borderColor: '#0056b3',
   },
   
   disconnectBadge: {
     top: '-4px',
     right: '-4px',
-    backgroundColor: colors.danger,
-    color: colors.white,
-    borderColor: colors.dangerDark,
+    backgroundColor: '#dc3545',
+    color: '#ffffff',
+    borderColor: '#a71e2a',
     fontSize: '10px',
     padding: spacing.xxs,
-    borderRadius: layout.radiusFull,
+    borderRadius: '9999px',
     width: '16px',
     height: '16px',
     display: 'flex',

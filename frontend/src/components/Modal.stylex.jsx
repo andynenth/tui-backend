@@ -18,18 +18,18 @@ const styles = stylex.create({
     justifyContent: 'center',
     backgroundColor: 'rgba(0, 0, 0, 0.5)',
     backdropFilter: 'blur(4px)',
-    animation: `${animations.fadeIn} ${motion.durationBase} ${motion.easeOut}`,
+    animation: `${animations.fadeIn} '300ms' 'cubic-bezier(0, 0, 0.2, 1)'`,
   },
   
   modal: {
     position: 'relative',
-    backgroundColor: colors.white,
-    borderRadius: layout.radiusLg,
-    boxShadow: shadows.xl,
+    backgroundColor: '#ffffff',
+    borderRadius: '0.5rem',
+    boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)',
     maxHeight: '90vh',
     width: '100%',
     overflow: 'hidden',
-    animation: `${animations.scaleIn} ${motion.durationBase} ${motion.easeOut}`,
+    animation: `${animations.scaleIn} '300ms' 'cubic-bezier(0, 0, 0.2, 1)'`,
   },
   
   // Size variants
@@ -51,33 +51,35 @@ const styles = stylex.create({
   
   full: {
     maxWidth: '100%',
-    margin: spacing.lg,
+    margin: '1.5rem',
   },
   
   header: {
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'space-between',
-    padding: spacing.lg,
-    borderBottom: `1px solid ${colors.gray200}`,
+    padding: '1.5rem',
+    borderBottomWidth: '1px',
+    borderBottomStyle: 'solid',
+    borderBottomColor: '#e9ecef',
   },
   
   title: {
-    fontSize: typography.textLg,
-    fontWeight: typography.weightSemibold,
-    color: colors.gray800,
+    fontSize: '1.125rem',
+    fontWeight: '600',
+    color: '#343a40',
     margin: 0,
   },
   
   closeButton: {
-    padding: spacing.xs,
-    borderRadius: layout.radiusFull,
+    padding: '0.25rem',
+    borderRadius: '9999px',
     backgroundColor: 'transparent',
     border: 'none',
     cursor: 'pointer',
-    fontSize: typography.textXl,
-    color: colors.gray500,
-    transition: `all ${motion.durationFast} ${motion.easeInOut}`,
+    fontSize: '1.25rem',
+    color: '#adb5bd',
+    transition: `all '150ms' 'cubic-bezier(0.4, 0, 0.2, 1)'`,
     lineHeight: 1,
     display: 'flex',
     alignItems: 'center',
@@ -86,13 +88,13 @@ const styles = stylex.create({
     height: '32px',
     
     ':hover': {
-      backgroundColor: colors.gray100,
-      color: colors.gray700,
+      backgroundColor: '#f1f3f5',
+      color: '#495057',
     },
   },
   
   content: {
-    padding: spacing.lg,
+    padding: '1.5rem',
     overflowY: 'auto',
     maxHeight: 'calc(90vh - 64px)',
   },
@@ -101,7 +103,7 @@ const styles = stylex.create({
 const Modal = ({
   isOpen = false,
   onClose,
-  title = '',
+  title = ',
   children,
   size = 'md',
   showCloseButton = true,

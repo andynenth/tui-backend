@@ -8,77 +8,79 @@ const styles = stylex.create({
   container: {
     display: 'flex',
     flexDirection: 'column',
-    gap: spacing.sm,
+    gap: '0.5rem',
   },
   
   indicator: {
     display: 'inline-flex',
     alignItems: 'center',
-    gap: spacing.sm,
-    paddingTop: spacing.xs,
-    paddingBottom: spacing.xs,
-    paddingLeft: spacing.md,
-    paddingRight: spacing.md,
-    borderRadius: layout.radiusFull,
-    fontSize: typography.textSm,
-    fontWeight: typography.weightMedium,
-    color: colors.white,
-    transition: `all ${motion.durationBase} ${motion.easeInOut}`,
+    gap: '0.5rem',
+    paddingTop: '0.25rem',
+    paddingBottom: '0.25rem',
+    paddingLeft: '1rem',
+    paddingRight: '1rem',
+    borderRadius: '9999px',
+    fontSize: '0.875rem',
+    fontWeight: '500',
+    color: '#ffffff',
+    transition: `all '300ms' 'cubic-bezier(0.4, 0, 0.2, 1)'`,
   },
   
   // Status variants
   connected: {
-    backgroundColor: colors.success,
+    backgroundColor: '#198754',
   },
   
   connecting: {
-    backgroundColor: colors.warning,
-    animation: `${animations.pulse} 2s ${motion.easeInOut} infinite`,
+    backgroundColor: '#ffc107',
+    animation: `${animations.pulse} 2s 'cubic-bezier(0.4, 0, 0.2, 1)' infinite`,
   },
   
   reconnecting: {
-    backgroundColor: colors.warning,
-    animation: `${animations.pulse} 2s ${motion.easeInOut} infinite`,
+    backgroundColor: '#ffc107',
+    animation: `${animations.pulse} 2s 'cubic-bezier(0.4, 0, 0.2, 1)' infinite`,
   },
   
   disconnected: {
-    backgroundColor: colors.gray500,
+    backgroundColor: '#adb5bd',
   },
   
   error: {
-    backgroundColor: colors.danger,
+    backgroundColor: '#dc3545',
   },
   
   icon: {
-    fontSize: typography.textXs,
+    fontSize: '0.75rem',
   },
   
   text: {
-    fontSize: typography.textSm,
+    fontSize: '0.875rem',
   },
   
   details: {
-    fontSize: typography.textXs,
+    fontSize: '0.75rem',
     opacity: 0.75,
   },
   
   aiNotification: {
     display: 'inline-flex',
     alignItems: 'center',
-    gap: spacing.xs,
-    fontSize: typography.textXs,
-    color: colors.gray600,
+    gap: '0.25rem',
+    fontSize: '0.75rem',
+    color: '#6c757d',
     backgroundColor: 'rgba(255, 193, 7, 0.1)',
-    paddingTop: spacing.xs,
-    paddingBottom: spacing.xs,
-    paddingLeft: spacing.md,
-    paddingRight: spacing.md,
-    borderRadius: layout.radiusFull,
-    border: `1px solid ${colors.warning}`,
+    paddingTop: '0.25rem',
+    paddingBottom: '0.25rem',
+    paddingLeft: '1rem',
+    paddingRight: '1rem',
+    borderRadius: '9999px',
+    borderWidth: '1px',
+    borderStyle: 'solid',
+    borderColor: '#ffc107',
   },
   
   aiIcon: {
-    marginRight: spacing.xs,
+    marginRight: '0.25rem',
   },
 });
 
