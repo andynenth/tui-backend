@@ -127,7 +127,7 @@ class PreparationState(GameState):
         # Choose dealing mode - uncomment ONE of the following:
 
         # 1. Normal random dealing (production)
-        game.deal_pieces()
+        game._deal_pieces()
 
         # 2. Guaranteed no weak hands (testing)
         # game._deal_guaranteed_no_redeal(red_general_player_index=0)

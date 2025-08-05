@@ -442,18 +442,40 @@ class Game:
 
     def _deal_pieces(self):
         """Shuffle and deal 32 pieces evenly among the 4 players."""
-        deck = Piece.build_deck()
+        # Initialize round data
+        self._initialize_round_data()
+        
+        # Use helper methods
+        deck = self._prepare_deck_and_hands()
+        
+        # Shuffle the deck (already shuffled in _prepare_deck_and_hands, but shuffle again for consistency)
         random.shuffle(deck)
-        for player in self.players:
-            player.hand.clear()
+        
+        # Deal 8 pieces to each player
         for i in range(32):
             self.players[i % 4].hand.append(deck[i])
+        
+        # Shuffle each player's hand to randomize position
+        for player in self.players:
+            random.shuffle(player.hand)
 
     def deal_pieces(self):
         """Public method for dealing pieces - used by state machine"""
         self._deal_pieces()
 
     # ===== SHARED HELPER METHODS =====
+
+    def _initialize_round_data(self):
+        """Initialize/reset round-specific data before dealing"""
+        # Initialize pile_counts if needed
+        if not hasattr(self, "pile_counts"):
+            self.pile_counts = {}
+        
+        # Reset player round data
+        for player in self.players:
+            player.declared = 0
+            player.captured_piles = 0
+            self.pile_counts[player.name] = 0
 
     def _prepare_deck_and_hands(self):
         """Helper: Prepare shuffled deck and clear all player hands"""
@@ -541,6 +563,9 @@ class Game:
             self._deal_guaranteed_no_redeal()
             return
 
+        # Initialize round data
+        self._initialize_round_data()
+        
         # Use helper methods
         deck = self._prepare_deck_and_hands()
         categories = self._categorize_pieces(deck)
@@ -644,6 +669,9 @@ class Game:
         if red_general_player_index is not None:
             pass
 
+        # Initialize round data
+        self._initialize_round_data()
+        
         # Use helper methods
         deck = self._prepare_deck_and_hands()
         categories = self._categorize_pieces(deck)
@@ -726,6 +754,9 @@ class Game:
         if color not in ["RED", "BLACK"]:
             color = "RED"  # Default to RED
 
+        # Initialize round data
+        self._initialize_round_data()
+        
         # Use helper methods
         deck = self._prepare_deck_and_hands()
 
