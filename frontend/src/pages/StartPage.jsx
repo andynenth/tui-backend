@@ -8,6 +8,7 @@ import { useTheme } from '../contexts/ThemeContext';
 import { Layout, LoadingOverlay } from '../components';
 import SettingsButton from '../components/SettingsButton';
 import SettingsModal from '../components/SettingsModal';
+import VersionDisplay from '../components/VersionDisplay';
 // CSS classes are imported globally
 
 const StartPage = () => {
@@ -74,6 +75,7 @@ const StartPage = () => {
         >
           <div className="sp-game-container">
             <SettingsButton onClick={() => setShowSettings(true)} />
+            <VersionDisplay />
             <div className="sp-content-wrapper">
               {/* Game Icon with rotating pieces - always using SVGs */}
               <div className="sp-game-icon">
