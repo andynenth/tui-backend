@@ -8,7 +8,7 @@
   "containerDefinitions": [
     {
       "name": "liap-tui",
-      "image": "300079938592.dkr.ecr.us-east-1.amazonaws.com/liap-tui:fixed",
+      "image": "300079938592.dkr.ecr.us-east-1.amazonaws.com/liap-tui:websocket-fix-v3",
       "portMappings": [
         {
           "containerPort": 5050,

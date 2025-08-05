@@ -25,7 +25,7 @@ const LobbyPage = () => {
   const [joinRoomId, setJoinRoomId] = useState('');
   const [lastUpdateTime, setLastUpdateTime] = useState(Date.now());
 
-  // Initialize lobby connection and event listeners
+  // Initialize lobby connection
   useEffect(() => {
     const initializeLobby = async () => {
       try {
@@ -39,6 +39,15 @@ const LobbyPage = () => {
     };
 
     initializeLobby();
+
+    // Cleanup - disconnect when component unmounts
+    return () => {
+      networkService.disconnectFromRoom('lobby');
+    };
+  }, []); // Only run once on mount
+
+  // Set up event listeners
+  useEffect(() => {
 
     const unsubscribers = [];
 
@@ -70,8 +79,8 @@ const LobbyPage = () => {
         `/room/${roomData.room_id}`
       );
 
-      // Only navigate if this is a real room ID (not 'lobby') and we're currently creating a room
-      if (roomData.room_id && roomData.room_id !== 'lobby' && isCreatingRoom) {
+      // Only navigate if this is a real room ID (not 'lobby')
+      if (roomData.room_id && roomData.room_id !== 'lobby') {
         console.log('✅ Navigating to new room:', roomData.room_id);
         setIsCreatingRoom(false);
         app.goToRoom(roomData.room_id);
@@ -81,9 +90,7 @@ const LobbyPage = () => {
       } else {
         console.log('⏭️ Ignoring room_created event:', {
           roomId: roomData.room_id,
-          isCreatingRoom,
-          reason:
-            roomData.room_id === 'lobby' ? 'lobby event' : 'not creating room',
+          reason: 'lobby event',
         });
       }
     };
@@ -127,13 +134,11 @@ const LobbyPage = () => {
       networkService.send('lobby', 'get_rooms', {});
     }
 
-    // Cleanup
+    // Cleanup event listeners
     return () => {
       unsubscribers.forEach((unsub) => unsub());
-      // Disconnect from lobby when component unmounts
-      networkService.disconnectFromRoom('lobby');
     };
-  }, [isConnected, isCreatingRoom, app, navigate, isJoiningRoom]);
+  }, [isConnected]); // Re-run when connection status changes
 
   // Refresh room list
   const refreshRooms = () => {

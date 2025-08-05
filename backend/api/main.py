@@ -23,6 +23,7 @@ from fastapi.middleware.cors import (  # Middleware for handling Cross-Origin Re
 )
 from fastapi.responses import FileResponse  # Used to return a file as a response.
 from fastapi.staticfiles import StaticFiles  # Utility to serve static files.
+from backend.api.middleware.static_cache import NoCacheStaticFiles  # Custom static files handler with cache control
 
 # ✅ Load environment variables from the .env file.
 # This makes configuration values available via os.getenv().
@@ -166,10 +167,11 @@ app.include_router(
 )  # Mounts the WebSocket router at the root (or its defined paths).
 app.include_router(debug_router)  # Mounts the debug router for event store access.
 
-# ✅ Serve static files.
+# ✅ Serve static files with cache control headers.
 # This mounts the specified directory to the root path "/", meaning files like index.html, bundle.js, etc.,
 # will be served directly from this directory. `html=True` ensures that `index.html` is served for root.
-app.mount("/", StaticFiles(directory=STATIC_DIR, html=True), name="static")
+# Using custom NoCacheStaticFiles to prevent caching issues with JavaScript files
+app.mount("/", NoCacheStaticFiles(directory=STATIC_DIR, html=True), name="static")
 
 
 # ✅ Optional fallback: Define a GET endpoint for the root path.
