@@ -250,6 +250,9 @@
   min-width: 280px;
   max-width: 400px;
   height: 68px; /* Consistent height for much larger pieces */
+  position: relative;
+  z-index: 1;
+  margin-left: -100px; /* Allow overlap with player info */
 }
 
 /* Two-row layout for many pieces */
