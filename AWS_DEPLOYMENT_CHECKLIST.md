@@ -164,7 +164,7 @@ CMD ["uvicorn", "backend.api.main:app", "--host", "0.0.0.0", "--port", "5050", "
          - docker push $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$IMAGE_REPO_NAME:$IMAGE_TAG
    ```
 
-2. **Create ECS Task Definition** `task-definition.json`:
+2. **Create ECS Task Definition** `task-definition.json` (FREE TIER OPTIMIZED):
    ```json
    {
      "family": "liap-tui",
@@ -257,27 +257,41 @@ CMD ["uvicorn", "backend.api.main:app", "--host", "0.0.0.0", "--port", "5050", "
 
 ## 📊 Cost Estimation
 
-### 💰 Low-Budget Setup (Recommended Starting Point)
-**Target: ~$30-40/month**
-- ECS Fargate (0.25 vCPU, 512MB): ~$15-20/month
-- ALB: ~$18/month  
+### 🆓 **AWS FREE TIER OPTIMIZED** (First 12 Months)
+**Target: ~$18-20/month** (Save $25-30/month!)
+
+#### **What's FREE for 12 Months:**
+- ✅ **ECS Fargate**: First 20 GB-hours/month (covers your usage)
+- ✅ **CloudWatch Logs**: First 5 GB/month (plenty for game logs)
+- ✅ **ECR Storage**: 500 MB (more than enough for your Docker image)
+- ✅ **Data Transfer**: First 15 GB out/month (covers multiplayer traffic)
+- ✅ **Route 53**: First hosted zone + 1 billion queries
+
+#### **Free Tier Breakdown:**
+```bash
+✅ ECS Fargate (0.5 vCPU, 1GB): $0 (was $15-20) - FREE
+❌ Application Load Balancer: $18/month - REQUIRED
+✅ CloudWatch Logs: $0 (was $3-5) - FREE
+✅ ECR Storage: $0 - FREE
+✅ Data Transfer: $0 (was $5) - FREE
+✅ Route 53 (domain): $0.50/month - MOSTLY FREE
+
+💰 Total First Year: ~$18-20/month
+💰 Savings: ~$25-30/month for 12 months = $300-360 saved!
+```
+
+### 💰 After Free Tier (Month 13+)
+**Standard Production Costs Resume:**
+- ECS Fargate (0.5 vCPU, 1GB): ~$15-20/month
+- ALB: ~$18/month
 - CloudWatch Logs: ~$3-5/month
 - Route 53 (domain): ~$0.50/month
 - **Total: ~$36-43/month**
 
-**Budget Optimizations**:
-- Single task (no redundancy initially)
-- Serve frontend from container (no S3/CloudFront)
-- In-memory storage (no database costs)
-- Basic monitoring only
-
-### Standard Production Setup
-- ECS Fargate (2 tasks): ~$40-60/month
-- ALB: ~$20/month
-- RDS (db.t3.micro): ~$15/month
-- ElastiCache: ~$15/month
-- CloudFront: ~$10/month
-- **Total: ~$100-120/month**
+### 🎯 **Free Tier Strategy**
+1. **Launch Phase** (Months 1-12): ~$18/month with professional infrastructure
+2. **Growth Decision** (Month 12): Evaluate based on revenue/usage
+3. **Scale Options**: Continue full pricing or optimize based on success
 
 ### 🎯 Updated Deployment Steps (Based on Analysis)
 
@@ -298,12 +312,12 @@ CMD ["uvicorn", "backend.api.main:app", "--host", "0.0.0.0", "--port", "5050", "
 - [x] **COMPLETED**: Docker build tested locally and working ✅
 - [x] **COMPLETED**: All Python import issues fixed ✅
 
-**Phase 3: AWS Infrastructure** 📋 **READY TO START**
-- [ ] Set up AWS account
-- [ ] Create ECR repository  
-- [ ] Create ECS cluster (Fargate, 0.25 vCPU, 512MB)
-- [ ] Configure ALB with WebSocket support
-- [ ] Set up CloudWatch log groups
+**Phase 3: AWS Infrastructure (FREE TIER OPTIMIZED)** 📋 **READY TO START**
+- [ ] Set up AWS account + enable free tier monitoring
+- [ ] Create ECR repository (FREE - 500MB included)
+- [ ] Create ECS cluster (Fargate, 0.5 vCPU, 1GB - FREE for 20 GB-hours/month)
+- [ ] Configure ALB with WebSocket support ($18/month - only paid component)
+- [ ] Set up CloudWatch log groups (FREE - 5GB/month included)
 
 **Phase 4: Deployment & Testing** 🚀 **INFRASTRUCTURE DEPENDENT**
 - [ ] Deploy first version
@@ -384,11 +398,11 @@ LOG_LEVEL=INFO
 3. [x] **COMPLETED**: Dockerfile.prod created and tested locally ✅
 4. [x] **COMPLETED**: All Python import issues resolved ✅
 
-### **📋 Next: AWS Setup (Ready to Start)**
-1. [ ] Set up AWS account + ECR repository
-2. [ ] Create minimal ECS Fargate infrastructure (0.25 vCPU, 512MB)
-3. [ ] Configure ALB with WebSocket support  
-4. [ ] **Deploy MVP**: Single-task deployment (~$36-43/month)
+### **📋 Next: AWS Setup (FREE TIER OPTIMIZED)**
+1. [ ] Set up AWS account + ECR repository (FREE)
+2. [ ] Create ECS Fargate infrastructure (0.5 vCPU, 1GB - FREE for 12 months)
+3. [ ] Configure ALB with WebSocket support ($18/month only)
+4. [ ] **Deploy MVP**: Single-task deployment (~$18-20/month first year!)
 
 ### **🚀 After Deployment: Production Polish**
 5. [ ] Configure custom domain + SSL certificate
@@ -413,11 +427,58 @@ LOG_LEVEL=INFO
 - **Logging**: CloudWatch JSON logging ready
 
 **Estimated Time to First Deployment**: 2-4 hours (mostly AWS setup)
-**Monthly Cost**: $36-43 for fully functional multiplayer game
+**Monthly Cost**: 
+- **First 12 months**: ~$18-20/month (FREE TIER!)
+- **After month 13**: ~$36-43/month
+**Total Savings**: ~$300-360 in first year with AWS Free Tier
+
+## 🆓 **AWS Free Tier Optimization Guide**
+
+### **Monitor Your Free Tier Usage**
+```bash
+# Enable AWS Free Tier alerts (CRITICAL!)
+# Go to AWS Billing Console → Free Tier → Set up alerts
+# Alert at: 50%, 75%, 90% of limits
+
+# Key metrics to monitor:
+- ECS Fargate: <20 GB-hours/month
+- CloudWatch Logs: <5 GB/month  
+- Data Transfer: <15 GB out/month
+- ECR Storage: <500 MB
+```
+
+### **Free Tier Best Practices**
+1. **Set Billing Alarms**: Get alerts before hitting limits
+2. **Monitor Resource Usage**: Check monthly usage in AWS console
+3. **Optimize Container Size**: Keep Docker image <200 MB if possible
+4. **Log Rotation**: Prevent CloudWatch log overflow
+5. **Traffic Monitoring**: Watch data transfer limits
+
+### **Free Tier Exit Strategy** (Month 12)
+```bash
+# Option 1: Continue with full pricing (~$36-43/month)
+# Option 2: Optimize for lower cost:
+- Switch to EC2 t3.micro (another 12 months free)
+- Use CloudFront (cheaper than ALB for static content)
+- Implement usage-based scaling
+
+# Option 3: Alternative platforms:
+- DigitalOcean App Platform (~$12/month)
+- Railway/Render (~$15-20/month)
+- Heroku (if they bring back free tier)
+```
+
+### **Free Tier Risk Mitigation**
+- **Spending Limit**: Set AWS budget caps to prevent overages
+- **Resource Limits**: Configure auto-scaling limits
+- **Alert System**: Multiple alert levels (50%, 75%, 90%, 100%)
+- **Backup Plan**: Have alternative deployment ready
 
 ## 🔗 Useful AWS Resources
 
+- [AWS Free Tier Guide](https://aws.amazon.com/free/)
 - [ECS with Fargate Guide](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/getting-started-fargate.html)
 - [ALB WebSocket Support](https://docs.aws.amazon.com/elasticloadbalancing/latest/application/load-balancer-listeners.html#listener-configuration)
 - [CloudWatch Container Insights](https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/ContainerInsights.html)
 - [AWS Well-Architected Framework](https://aws.amazon.com/architecture/well-architected/)
+- [AWS Billing and Cost Management](https://docs.aws.amazon.com/awsaccountbilling/)
