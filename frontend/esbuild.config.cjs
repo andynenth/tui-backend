@@ -10,6 +10,10 @@ require('dotenv').config({ path: '../.env' });
 const entry = process.env.ESBUILD_ENTRY || './main.js';
 const outfile = process.env.ESBUILD_OUT || '../backend/static/bundle.js';
 
+// Read version from package.json
+const packageJson = require('./package.json');
+const appVersion = packageJson.version;
+
 // CSS processing plugin for all CSS files
 const cssPlugin = {
   name: 'css',
@@ -49,6 +53,9 @@ const buildOptions = {
   minify: true,
   sourcemap: true,
   plugins: [cssPlugin],
+  define: {
+    '__APP_VERSION__': JSON.stringify(appVersion),
+  },
 };
 
 if (process.argv.includes('--production')) {
