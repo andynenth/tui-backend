@@ -39,7 +39,8 @@ export type GameConfigKey = keyof typeof GAME;
 export const NETWORK = {
   RECONNECT_BACKOFF: [1000, 2000, 4000, 8000, 16000] as const,
   // Build WebSocket URL dynamically based on current location
-  get WEBSOCKET_BASE_URL(): string {
+  // Using a function instead of getter to prevent ESBuild optimization
+  WEBSOCKET_BASE_URL: function(): string {
     if (typeof window !== 'undefined') {
       const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
       const host = window.location.host;

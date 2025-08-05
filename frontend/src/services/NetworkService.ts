@@ -72,7 +72,7 @@ export class NetworkService extends EventTarget {
 
     // Default configuration
     this.config = {
-      baseUrl: NETWORK.WEBSOCKET_BASE_URL,
+      baseUrl: '', // Will be set dynamically
       heartbeatInterval: TIMING.HEARTBEAT_INTERVAL,
       maxReconnectAttempts: GAME.MAX_RECONNECT_ATTEMPTS,
       reconnectBackoff: [...NETWORK.RECONNECT_BACKOFF],
@@ -105,7 +105,9 @@ export class NetworkService extends EventTarget {
       await this.disconnectFromRoom(roomId);
     }
 
-    const url = `${this.config.baseUrl}/${roomId}`;
+    // Get dynamic WebSocket URL based on current location
+    const baseUrl = NETWORK.WEBSOCKET_BASE_URL();
+    const url = `${baseUrl}/${roomId}`;
 
     try {
       const connection = await this.createConnection(url, roomId);
