@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { PlayerAvatar, PieceTray } from '../shared';
+import TruncatedName from '../../shared/TruncatedName';
 
 /**
  * DeclarationContent Component
@@ -169,7 +170,7 @@ const DeclarationContent = ({
                 />
                 <div className="dec-player-info">
                   <div className="dec-player-name">
-                    {displayName}
+                    <TruncatedName name={displayName} />
                     {playerName === myName ? ' (You)' : ''}
                   </div>
                 </div>

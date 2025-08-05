@@ -6,6 +6,7 @@ import { useApp } from '../contexts/AppContext';
 import { useTheme } from '../contexts/ThemeContext';
 import { Layout } from '../components';
 import { PlayerAvatar } from '../components/game/shared';
+import TruncatedName from '../components/shared/TruncatedName';
 // Phase 1-4 Enterprise Architecture
 import { networkService } from '../services';
 import { TIMING } from '../constants';
@@ -300,7 +301,7 @@ const LobbyPage = () => {
                 size="mini"
                 theme="yellow"
               />
-              <span>{app.playerName}</span>
+              <TruncatedName name={app.playerName} />
             </div>
 
             {/* Connection Status */}
