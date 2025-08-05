@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { GamePiece, FooterTimer } from '../shared';
+import TruncatedName from '../../shared/TruncatedName';
 import {
   determinePiecesToReveal,
   calculateRevealDelay,
@@ -122,7 +123,9 @@ const TurnResultsContent = ({
                 className={`tr-player-row ${isWinner ? 'winner' : ''}`}
               >
                 <div className="tr-player-info">
-                  <div className="tr-player-name">{play.playerName}</div>
+                  <div className="tr-player-name">
+                    <TruncatedName name={play.playerName} />
+                  </div>
                   <div
                     className={`tr-player-piles ${getPileColorClass(play.player?.captured_piles || 0, play.player?.declared || 0)}`}
                   >

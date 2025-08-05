@@ -7,6 +7,7 @@ import {
   calculateRevealDelay,
 } from '../../../utils/playTypeMatching';
 import { PlayerAvatar, GamePiece, PieceTray } from '../shared';
+import TruncatedName from '../../shared/TruncatedName';
 import { TIMING } from '../../../constants';
 
 /**
@@ -313,7 +314,7 @@ const TurnContent = ({
                     avatarColor={player.avatar_color}
                     size="mini"
                   />
-                  <span className="turn-player-name-short">{player.name}</span>
+                  <TruncatedName name={player.name} className="turn-player-name-short" />
                   <div className="turn-player-stats-compact">
                     <span
                       className={`turn-stat-number ${getPileColorClass(stats.pilesWon, stats.declared)}`}

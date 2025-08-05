@@ -1,6 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { PlayerAvatar, FooterTimer } from '../shared';
+import TruncatedName from '../../shared/TruncatedName';
 
 /**
  * ScoringContent Component
@@ -99,7 +100,7 @@ const ScoringContent = ({
                     size="medium"
                   />
                   <div className="sc-player-name">
-                    {player.name}
+                    <TruncatedName name={player.name} />
                     {player.name === myName ? ' (You)' : ''}
                   </div>
                 </div>

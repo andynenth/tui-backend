@@ -1,6 +1,7 @@
 import React, { useCallback } from 'react';
 import PropTypes from 'prop-types';
 import { FooterTimer } from '../shared';
+import TruncatedName from '../../shared/TruncatedName';
 import '../../../styles/components/game/gameover.css';
 
 const GameOverContent = ({
@@ -110,7 +111,9 @@ const GameOverContent = ({
                 <div className="go-rank-position">{position}</div>
                 {medal && <div className="go-medal">{medal}</div>}
                 <div className="go-player-info">
-                  <div className="go-player-name">{player.name}</div>
+                  <div className="go-player-name">
+                  <TruncatedName name={player.name} />
+                </div>
                   <div className="go-player-score">
                     {player.perfect_rounds > 0
                       ? `${player.perfect_rounds} perfect round${player.perfect_rounds > 1 ? 's' : ''}`
