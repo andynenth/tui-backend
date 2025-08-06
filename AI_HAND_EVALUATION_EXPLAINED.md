@@ -14,21 +14,19 @@ In Liap Tui, players need to:
 The AI categorizes pieces based on the game's point system:
 
 ```python
-# Point values from the game:
-GENERAL = 14 points (highest)
-KING = 13 points
-QUEEN = 12 points
-JACK = 11 points
-10 = 10 points
-9 = 9 points
-8 = 8 points
-7 = 7 points
-# ... down to SOLDIER = 1 point
+# Point values from the game (RED/BLACK):
+GENERAL = 14/13 points (highest)
+ADVISOR = 12/11 points
+ELEPHANT = 10/9 points
+CHARIOT = 8/7 points
+HORSE = 6/5 points
+CANNON = 4/3 points
+SOLDIER = 2/1 points (lowest)
 
 # AI categories:
-high_pieces = [p for p in hand if p.point >= 9]      # Strong individual pieces
-mid_pieces = [p for p in hand if 7 <= p.point < 9]   # Moderate pieces
-# Low pieces (< 7) are implicitly weak
+high_pieces = [p for p in hand if p.point >= 9]      # GENERAL, ADVISOR, ELEPHANT
+mid_pieces = [p for p in hand if 7 <= p.point < 9]   # CHARIOT (and CHARIOT_BLACK at 7)
+# Low pieces (< 7) are HORSE, CANNON, SOLDIER
 ```
 
 ### Step 2: Combination Analysis
@@ -40,11 +38,13 @@ The AI searches for valid play types as defined in the rules:
 - SINGLE: Any 1 piece
 - PAIR: 2 of same name and color
 - THREE_OF_A_KIND: 3 SOLDIERs of same color
-- STRAIGHT: 3 pieces (GENERAL-ELEPHANT or CHARIOT-CANNON groups)
+- STRAIGHT: 3 pieces of same color, either:
+  - High group: GENERAL-ADVISOR-ELEPHANT
+  - Low group: CHARIOT-HORSE-CANNON
 - FOUR_OF_A_KIND: 4 SOLDIERs of same color
-- EXTENDED_STRAIGHT: 4 pieces with 1 duplicate
+- EXTENDED_STRAIGHT: 4 pieces with 1 duplicate (e.g., CHARIOT-HORSE-HORSE-CANNON)
 - FIVE_OF_A_KIND: 5 SOLDIERs of same color
-- DOUBLE_STRAIGHT: 2 each of CHARIOT, HORSE, CANNON
+- DOUBLE_STRAIGHT: 2 each of CHARIOT, HORSE, CANNON (6 pieces total)
 ```
 
 The AI identifies "strong" combinations (everything except SINGLE and PAIR) because these are more likely to win turns.
@@ -58,9 +58,9 @@ has_strong_opening = any(
 ```
 
 This checks for:
-- **GENERAL piece**: Worth 14 points, likely to win first turn
-- **Kings (13 points)**: Also very strong openers
-- **High-value straights**: Total 20+ points
+- **GENERAL piece**: Worth 14/13 points, likely to win first turn
+- **High-value pieces**: Any piece worth 13+ points (GENERAL_RED or GENERAL_BLACK)
+- **High-value straights**: Total 20+ points (e.g., CHARIOT-HORSE-CANNON_RED = 18 points)
 
 ### Step 4: Declaration Score Calculation
 
@@ -76,29 +76,29 @@ Base score = Number of strong combinations found
 
 #### Strong Hand Example
 ```
-Hand: [GENERAL_RED, KING_BLACK, HORSE_RED, HORSE_RED, CHARIOT_RED, CANNON_RED, SOLDIER_BLACK, SOLDIER_BLACK]
+Hand: [GENERAL_RED, ADVISOR_BLACK, HORSE_RED, HORSE_RED, CHARIOT_RED, CANNON_RED, SOLDIER_BLACK, SOLDIER_BLACK]
 
 Analysis:
-- High pieces: 2 (GENERAL=14, KING=13)
+- High pieces: 2 (GENERAL_RED=14, ADVISOR_BLACK=11)
 - Strong combos: 2
-  1. STRAIGHT (CHARIOT-HORSE-CANNON) = 21 points
-  2. PAIR (HORSE-HORSE) = 16 points
-- Has strong opening: Yes (GENERAL)
+  1. STRAIGHT (CHARIOT-HORSE-CANNON) = 18 points (8+6+4)
+  2. PAIR (SOLDIER-SOLDIER) = 2 points (not counted as strong)
+- Has strong opening: Yes (GENERAL_RED)
 - First player bonus: +1 (if applicable)
 
-Score calculation: 2 (combos) + 1 (strong opening) + 1 (if first) = 4
-Declaration: 4 piles
+Score calculation: 1 (strong combo) + 1 (strong opening) + 1 (if first) = 3
+Declaration: 3 piles
 ```
 
 #### Medium Hand Example
 ```
-Hand: [10_RED, 9_BLACK, 8_RED, 7_RED, 6_BLACK, 5_BLACK, 4_RED, 3_RED]
+Hand: [ELEPHANT_RED, ELEPHANT_BLACK, CHARIOT_RED, CHARIOT_BLACK, HORSE_BLACK, CANNON_BLACK, SOLDIER_RED, SOLDIER_RED]
 
 Analysis:
-- High pieces: 2 (10, 9)
+- High pieces: 2 (ELEPHANT_RED=10, ELEPHANT_BLACK=9)
 - Strong combos: 1
-  1. STRAIGHT (8-7-6) = 21 points
-- Has strong opening: No
+  1. STRAIGHT (CHARIOT-HORSE-CANNON_BLACK) = 15 points (7+5+3)
+- Has strong opening: No (highest is 10, need 13+)
 - First player bonus: +1 (if applicable)
 
 Score calculation: 1 (combo) + 0 + 1 (if first) = 2
@@ -107,13 +107,13 @@ Declaration: 2 piles
 
 #### Weak Hand Example
 ```
-Hand: [6_RED, 5_BLACK, 4_RED, 3_BLACK, 3_RED, 2_BLACK, 2_RED, SOLDIER_RED]
+Hand: [HORSE_RED, HORSE_BLACK, CANNON_RED, CANNON_BLACK, CANNON_BLACK, SOLDIER_BLACK, SOLDIER_BLACK, SOLDIER_RED]
 
 Analysis:
-- High pieces: 0 (all pieces < 9)
-- Strong combos: 0
+- High pieces: 0 (all pieces < 9, highest is HORSE=6/5)
+- Strong combos: 0 (only pairs available, no straights or 3+ of same)
 - Has strong opening: No
-- Would trigger redeal request!
+- Would trigger redeal request! (no piece > 9 points)
 
 Score calculation: 0 → adjusted to 1 (minimum)
 Declaration: 1 pile (forced minimum)
@@ -123,7 +123,7 @@ Declaration: 1 pile (forced minimum)
 
 1. **Strong combinations win turns**: The AI correctly identifies that THREE_OF_A_KIND, STRAIGHT, etc. are more likely to capture piles than singles or pairs.
 
-2. **High pieces matter**: A GENERAL (14 points) or KING (13 points) can often win turns even as singles.
+2. **High pieces matter**: A GENERAL (14/13 points) or ADVISOR (12/11 points) can often win turns even as singles.
 
 3. **Position advantage**: Being first player means you can declare without knowing others' intentions.
 
