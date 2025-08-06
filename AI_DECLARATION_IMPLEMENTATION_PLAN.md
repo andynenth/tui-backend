@@ -9,43 +9,43 @@ This plan details the implementation of ALL strategic features from the AI Decla
 These must be done before adding new features.
 
 #### Task 1.1: Remove Starter Bonus
-- [ ] **File**: `backend/engine/ai.py`, Line ~81
-- [ ] **Action**: Delete the `if is_first_player: score += 1` block
-- [ ] **Test**: Verify same hand produces same declaration regardless of position
+- [x] **File**: `backend/engine/ai.py`, Line ~81
+- [x] **Action**: Delete the `if is_first_player: score += 1` block
+- [x] **Test**: Verify same hand produces same declaration regardless of position
 
 #### Task 1.2: Fix Declaration Range Bug  
-- [ ] **File**: `backend/engine/ai.py`, Line 89
-- [ ] **Action**: Change `min(max(score, 1), 7)` to `min(max(score, 0), 8)`
-- [ ] **Test**: Verify AI can declare 0 and 8 when appropriate
+- [x] **File**: `backend/engine/ai.py`, Line 89
+- [x] **Action**: Change `min(max(score, 1), 7)` to `min(max(score, 0), 8)`
+- [x] **Test**: Verify AI can declare 0 and 8 when appropriate
 
 ### Phase 2: Core Infrastructure
 Build the foundation for strategic features.
 
 #### Task 2.1: Create Strategy Context Class
-- [ ] **Create**: New class `DeclarationContext` to hold all strategic data
-- [ ] **Include**: 
+- [x] **Create**: New class `DeclarationContext` to hold all strategic data
+- [x] **Include**: 
   - `position_in_order: int`
   - `previous_declarations: List[int]`
   - `is_starter: bool`
   - `pile_room: int`
   - `field_strength: str` (weak/normal/strong)
-- [ ] **Location**: Add to `backend/engine/ai.py` or new file
+- [x] **Location**: Add to `backend/engine/ai.py` or new file
 
 #### Task 2.2: Calculate Pile Room
-- [ ] **Add function**: `calculate_pile_room(previous_declarations: List[int]) -> int`
-- [ ] **Logic**: `return max(0, 8 - sum(previous_declarations))`
-- [ ] **Test**: Unit test with various declaration combinations
+- [x] **Add function**: `calculate_pile_room(previous_declarations: List[int]) -> int`
+- [x] **Logic**: `return max(0, 8 - sum(previous_declarations))`
+- [x] **Test**: Unit test with various declaration combinations
 
 #### Task 2.3: Assess Field Strength
-- [ ] **Add function**: `assess_field_strength(previous_declarations: List[int]) -> str`
-- [ ] **Logic**:
+- [x] **Add function**: `assess_field_strength(previous_declarations: List[int]) -> str`
+- [x] **Logic**:
   ```python
   avg = sum(previous_declarations) / len(previous_declarations) if previous_declarations else 0
   if avg <= 1.0: return "weak"
   elif avg >= 3.5: return "strong"
   else: return "normal"
   ```
-- [ ] **Test**: Verify correct categorization
+- [x] **Test**: Verify correct categorization
 
 ### Phase 3: Strategic Analysis Functions
 
