@@ -91,8 +91,13 @@ def test_example(example_num: int, hand_str: str, position: int,
     # Parse hand
     hand = parse_hand(hand_str)
     
-    # Print bot's hand
-    hand_summary = ", ".join(f"{piece.name}" for piece in hand)
+    # Print bot's hand with pieces ordered by color then rank
+    def sort_pieces_by_color_and_rank(pieces):
+        """Sort pieces by color (RED first), then by point value (highest first)."""
+        return sorted(pieces, key=lambda p: (p.color != "RED", -p.point))
+    
+    sorted_hand = sort_pieces_by_color_and_rank(hand)
+    hand_summary = ", ".join(f"{piece.kind}" for piece in sorted_hand)
     print(f"🃏 Bot's Hand: [{hand_summary}]")
     print(f"📊 Position: {position} ({'Starter' if is_starter else 'Non-starter'})")
     print(f"📋 Previous Declarations: {previous_decl}")
