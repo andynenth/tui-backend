@@ -51,19 +51,33 @@ def choose_declare(
         }
     ]
 
-    # Determine if the hand has a strong opener (e.g. GENERAL or high STRAIGHT)
+    # Determine if the hand has a strong opener (11+ points: GENERAL, ADVISOR)
     has_strong_opening = any(
-        p.name.startswith("GENERAL") or p.point >= 13 for p in hand
+        p.point >= 11 for p in hand  # Includes GENERAL (14/13) and ADVISOR (12/11)
     )
     for combo_type, pieces in strong_combos:
         if combo_type in {"STRAIGHT", "EXTENDED_STRAIGHT"}:
             if sum(p.point for p in pieces) >= 20:
                 has_strong_opening = True
 
-    # Estimate base declare score
-    score = len(strong_combos)
+    # Estimate base declare score by counting expected PILES (not combo count)
+    # Count piles from combinations based on pieces used
+    score = 0
+    for combo_type, pieces in strong_combos:
+        if combo_type == "THREE_OF_A_KIND" or combo_type == "STRAIGHT":
+            score += 3  # 3-piece play = 3 piles
+        elif combo_type == "FOUR_OF_A_KIND" or combo_type == "EXTENDED_STRAIGHT":
+            score += 4  # 4-piece play = 4 piles
+        elif combo_type == "FIVE_OF_A_KIND" or combo_type == "EXTENDED_STRAIGHT_5":
+            score += 5  # 5-piece play = 5 piles
+        elif combo_type == "DOUBLE_STRAIGHT":
+            score += 6  # 6-piece play = 6 piles
+
+    # Add pile for opener (can win 1-piece turn)
     if has_strong_opening:
         score += 1
+
+    # First player advantage (control to play combos)
     if is_first_player:
         score += 1
 
@@ -95,7 +109,8 @@ def choose_declare(
         print(f"  Found {len(strong_combos)} strong combo(s):")
         for play_type, pieces in strong_combos:
             summary = ", ".join(p.name for p in pieces)
-            print(f"    - {play_type}: {summary}")
+            pile_count = len(pieces)  # Piles = number of pieces in the combo
+            print(f"    - {play_type}: {summary} = {pile_count} piles")
         print(f"  Has strong opening: {has_strong_opening}")
         print(f"  Raw declare score (before filtering): {score}")
 

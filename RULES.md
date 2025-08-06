@@ -83,7 +83,9 @@ A player wins by reaching **50 points**.
     1. **Starter** plays a valid set (must pass validation)
     2. Others must play **same number of pieces** (can be invalid, but auto lose the turn)
     3. Winner is determined using `compare_plays()`
-        - Winner takes all pieces as a **pile**
+        - Winner captures a number of **piles** equal to the number of pieces each player played
+        - Example: Win a 3-piece turn (STRAIGHT) = capture 3 piles
+        - Example: Win a 1-piece turn (SINGLE) = capture 1 pile
         - Winner starts next turn
 
 ### 5. Scoring Phase
