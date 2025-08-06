@@ -3,12 +3,29 @@
 [![Docker](https://img.shields.io/badge/docker-ready-blue?logo=docker)](https://www.docker.com/)
 [![Python](https://img.shields.io/badge/python-3.11+-blue?logo=python)](https://www.python.org/)
 [![FastAPI](https://img.shields.io/badge/FastAPI-async--ready-009688?logo=fastapi)](https://fastapi.tiangolo.com/)
-[![PixiJS](https://img.shields.io/badge/PixiJS-8.x-ff69b4?logo=pixiv)](https://pixijs.com/)
+[![React](https://img.shields.io/badge/React-19.1-61dafb?logo=react)](https://react.dev/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
 > A real-time online multiplayer board game inspired by *Liap Tui*, a traditional Chinese-Thai game.  
 > Built with **FastAPI** for the backend and **React 19 + ESBuild** for the frontend.  
 > Uses **WebSocket-first architecture** for all game operations, packaged in a single Docker container.
+
+## Table of Contents
+- [Features](#-features)
+- [System Requirements](#-system-requirements)
+- [Quick Start](#-quick-start)
+- [Project Structure](#-project-structure)
+- [Configuration](#-configuration)
+- [Development](#-development-local-with-hot-reload)
+- [Testing](#-testing)
+- [Game Mechanics](#-game-mechanics)
+- [API Architecture](#-api-architecture)
+- [Documentation](#-comprehensive-documentation)
+- [Contributing](#-contributing)
+- [Architecture Evolution](#-architecture-evolution)
+- [Troubleshooting](#-troubleshooting)
+- [Support](#-support)
+- [License](#-license)
 
 ---
 
@@ -46,37 +63,21 @@
 
 ---
 
-## 📁 Project Structure
+## 💻 System Requirements
 
-```
-frontend/                    → React 19 + TypeScript frontend
-├── src/
-│   ├── components/         → Pure UI components (Button, Modal, GamePiece, etc.)
-│   ├── contexts/           → React contexts (GameContext, AppContext)
-│   ├── hooks/              → Custom hooks (useGameState, useGameActions, useConnectionStatus)
-│   ├── pages/              → Page components (GamePage, LobbyPage, RoomPage)
-│   ├── services/           → TypeScript services (GameService, NetworkService, RecoveryService)
-│   └── styles/             → CSS and styling
-├── network/                → WebSocket management and message queuing
-└── game/                   → Legacy PixiJS game components
+- **Python** 3.11 or higher
+- **Node.js** 16 or higher
+- **Docker** (optional, for containerized deployment)
+- **Git** for version control
 
-backend/                     → FastAPI + Python backend
-├── api/
-│   ├── routes/             → REST API and WebSocket endpoints
-│   └── services/           → Enterprise services (logging, health monitoring, recovery)
-├── engine/                 → Core game engine
-│   ├── state_machine/      → Robust state management system
-│   └── *.py                → Game logic, rules, scoring, AI
-├── tests/                  → Comprehensive test suite (78+ tests)
-└── *.py                    → Shared instances, socket management
-
-Dockerfile                  → Multi-stage Docker build (Node + Python)
-docker-compose.dev.yml      → Development environment setup
-```
+### Minimum Hardware
+- 2GB RAM
+- 1 CPU core
+- 1GB free disk space
 
 ---
 
-## 📦 Installation
+## 📦 Quick Start
 
 ### 1. Clone the repository
 
@@ -102,6 +103,67 @@ Then open your browser:
 
 > The frontend is served from FastAPI’s static files.  
 > WebSocket and API routes are available under `/ws/` and `/api`.
+
+---
+
+## 📁 Project Structure
+
+```
+liap-tui/
+├── frontend/                    → React 19 + TypeScript frontend
+│   ├── src/
+│   │   ├── components/         → Pure UI components
+│   │   ├── contexts/           → React contexts (Game, App)
+│   │   ├── hooks/              → Custom React hooks
+│   │   ├── pages/              → Page components
+│   │   ├── services/           → TypeScript services
+│   │   └── styles/             → CSS and styling
+│   └── network/                → WebSocket management
+│
+├── backend/                     → FastAPI + Python backend
+│   ├── api/                    → API endpoints
+│   ├── engine/                 → Core game engine
+│   │   └── state_machine/      → State management
+│   └── tests/                  → Test suite (78+ tests)
+│
+├── docs/                       → Comprehensive documentation (27 docs)
+│   ├── 01-overview/           → Architecture overview
+│   ├── 02-flow-traces/        → Application flows
+│   ├── 03-*-deep-dives/       → Component details
+│   ├── 04-data-structures/    → Data formats
+│   ├── 05-patterns-practices/ → Best practices
+│   └── 06-tutorials/          → Step-by-step guides
+│
+├── Dockerfile                  → Production container
+├── docker-compose.dev.yml      → Development setup
+├── requirements.txt            → Python dependencies
+├── .env.example               → Configuration template
+└── start.sh                   → Quick start script
+```
+
+---
+
+## ⚙️ Configuration
+
+The application uses environment variables for configuration. Copy `.env.example` to `.env` and adjust as needed:
+
+### Core Settings
+- `API_HOST` - Backend host (default: 0.0.0.0)
+- `API_PORT` - Backend port (default: 5050)
+- `DEBUG` - Debug mode (default: true)
+- `LOG_LEVEL` - Logging level (INFO, DEBUG, WARNING)
+
+### Game Settings
+- `MAX_SCORE` - Winning score (default: 50)
+- `MAX_ROUNDS` - Maximum rounds (default: 20)
+- `BOT_ENABLED` - Enable AI bots (default: true)
+
+### Rate Limiting
+- `RATE_LIMIT_ENABLED` - Enable rate limiting (default: true)
+- `RATE_LIMIT_GLOBAL_RPM` - Global requests per minute (default: 100)
+- Various endpoint-specific limits (see `.env.example`)
+
+For complete configuration options, see [`.env.example`](.env.example).
 
 ---
 
@@ -195,119 +257,128 @@ npm run dev
 
 > This ensures backend runs in Docker, while frontend is live-rebuilt by host.
 
----
-
-## 📊 Production Monitoring
-
-The application includes enterprise-grade monitoring and observability:
-
-### Health Check Endpoints
-```bash
-# Basic health check (for load balancers)
-curl http://localhost:5050/api/health
-
-# Detailed health information
-curl http://localhost:5050/api/health/detailed
-
-# Prometheus-compatible metrics
-curl http://localhost:5050/api/health/metrics
-```
-
-### System Statistics
-```bash
-# Complete system overview
-curl http://localhost:5050/api/system/stats
-
-# Recovery system status
-curl http://localhost:5050/api/recovery/status
-
-# Room and game statistics
-curl http://localhost:5050/api/debug/room-stats
-```
-
-### Event Store & Recovery
-```bash
-# View game events for analysis
-curl http://localhost:5050/api/rooms/{room_id}/events
-
-# Get reconstructed game state
-curl http://localhost:5050/api/rooms/{room_id}/state
-
-# Event store statistics
-curl http://localhost:5050/api/event-store/stats
-```
-
-### Logging
-All system events are logged in structured JSON format with correlation IDs:
-- Game events (phases, player actions, scoring)
-- WebSocket activity (connections, message delivery)
-- Performance metrics (operation timing, resource usage)
-- Security events (authentication, suspicious activity)
-- Error tracking with full context
-
----
 
 ## 🎯 Game Mechanics
 
-### 📋 Core Game Flow
-- **4 phases per round**: Preparation → Declaration → Turn → Scoring
-- **4 players**, 8 pieces each per round
-- **Turn-based piece playing** with strategic pile declarations
-- **First to 50 points** or highest score after 20 rounds wins
+Liap Tui is a strategic 4-player board game with unique piece-playing and scoring mechanics.
 
-### 🔄 Redeal System
+### Quick Overview
+- **Players**: 4 (human or AI bots)
+- **Pieces**: 8 pieces per player per round
+- **Game Flow**: 4 phases - Preparation → Declaration → Turn → Scoring
+- **Winning**: First to 50 points or highest after 20 rounds
 
-The redeal system handles rare cases where players receive weak hands (no pieces > 9 points):
+### Key Features
+- **Declaration Phase**: Players declare how many piles they'll win (must total ≠ 8)
+- **Turn-Based Play**: Play 1-6 pieces per turn, winner takes all pieces
+- **Redeal System**: Players with weak hands can request new pieces
+- **Scoring**: Points based on declaration accuracy with multipliers
 
-**🎯 Trigger Conditions:**
-- Player has no pieces worth more than 9 points
-- Occurs naturally during piece distribution (low probability)
+> **📖 Complete Rules**: See [RULES.md](RULES.md) for detailed game mechanics, piece types, scoring system, and strategic tips.
 
-**⚡ Decision Process:**
-- All weak players vote simultaneously (Accept/Decline)
-- Real-time decision collection with UI prompts
-- Bot players use strategic decision algorithms
+---
 
-**🏁 Starter Determination Logic:**
-- **Single accepter**: That player becomes round starter
-- **Multiple accepters**: First accepter in current play order becomes starter  
-- **No accepters**: Normal starter determination (RED_GENERAL holder for round 1)
+## 📚 Comprehensive Documentation
 
-**📈 Score Multiplier:**
-- Each redeal increases the round score multiplier
-- Affects final scoring calculations for strategic depth
+The project includes extensive teaching materials organized into 7 categories:
 
-**💡 Real-World Examples:**
+#### 1. **Overview Documents** (3 docs)
+- Project architecture and system design
+- Technology stack decisions and rationale
+- Core design principles and patterns
 
-*Scenario 1 - Single Accept:*
+#### 2. **Flow Traces** (4 docs)
+- Application startup sequence
+- Complete user journey from login to game end
+- WebSocket message patterns and lifecycle
+- Game state machine transitions
+
+#### 3. **Component Deep Dives** (8 docs)
+- **Backend**: State machine, room manager, game engine, WebSocket handler
+- **Frontend**: React architecture, context system, network service, UI flow
+
+#### 4. **Data Structures** (4 docs)
+- Message format specifications
+- Game state shapes at each phase
+- Database schema design (future)
+- API contracts and type definitions
+
+#### 5. **Patterns & Practices** (4 docs)
+- Enterprise architecture implementation
+- Error handling and recovery strategies
+- Comprehensive testing approach
+- AWS ECS deployment patterns
+
+#### 6. **Tutorials** (4 docs)
+- Local development setup guide
+- Step-by-step feature addition tutorial
+- Debugging guide with common issues
+- Production deployment walkthrough
+
+> **📖 All Documentation**: See [`/docs`](docs/) for complete teaching materials (27 documents total).
+
+---
+
+## 🤝 Contributing
+
+We welcome contributions to Liap Tui! Here's how you can help:
+
+### Getting Started
+1. Fork the repository
+2. Clone your fork: `git clone https://github.com/YOUR-USERNAME/tui-backend.git`
+3. Create a feature branch: `git checkout -b feature/amazing-feature`
+4. Make your changes
+5. Run tests and quality checks (see below)
+6. Commit with clear messages: `git commit -m "Add amazing feature"`
+7. Push to your fork: `git push origin feature/amazing-feature`
+8. Open a Pull Request
+
+### Development Guidelines
+- Follow existing code style and patterns
+- Add tests for new features
+- Update documentation as needed
+- Keep commits focused and atomic
+
+### Quality Checks Before Submitting
+
+**Python (Backend)**:
+```bash
+# Activate virtual environment
+source venv/bin/activate
+
+# Format code
+cd backend && black .
+
+# Run linting
+pylint engine/ api/ tests/
+
+# Run tests
+python -m pytest tests/ -v
 ```
-Initial: Andy (weak), Bot 2 (weak) 
-Decisions: Andy=Decline, Bot 2=Accept
-Result: Bot 2 becomes starter, multiplier +1
+
+**JavaScript (Frontend)**:
+```bash
+cd frontend
+
+# Type checking
+npm run type-check
+
+# Linting
+npm run lint
+
+# Fix linting issues
+npm run lint:fix
 ```
 
-*Scenario 2 - Multiple Accept:*
-```
-Play order: [Andy, Bot 2, Bot 3, Bot 4]
-Weak players: Andy, Bot 3
-Decisions: Andy=Accept, Bot 3=Accept  
-Result: Andy becomes starter (first in original order)
-```
+### Areas for Contribution
+- 🐛 Bug fixes and issue resolution
+- ✨ New features and enhancements
+- 📝 Documentation improvements
+- 🧪 Test coverage expansion
+- 🎨 UI/UX improvements
+- 🌐 Internationalization
 
-*Scenario 3 - Redeal Chain:*
-```
-Round 1: Bot 2 accepts → Bot 2 starter
-Round 2: Andy + Bot 2 accept → Bot 2 remains starter 
-(Bot 2 first in current play order starting from Bot 2)
-```
-
-### 🎮 Strategic Elements
-- **Weak hand acceptance** can secure starting position
-- **Score multipliers** create risk/reward decisions  
-- **Simultaneous voting** prevents information leakage
-- **Dynamic play order** maintains fairness across redeals
-
-> **Complete Rules**: See `/docs` for piece types, scoring details, and advanced strategies.
+For detailed contribution guidelines, see [docs/CONTRIBUTING_GUIDE.md](docs/CONTRIBUTING_GUIDE.md).
 
 ---
 
@@ -351,6 +422,81 @@ This project evolved through 4 major development phases:
 - **Observable**: Full logging and monitoring for production environments
 - **Resilient**: Automatic recovery and graceful degradation
 - **Scalable**: Modular design that supports future enhancements
+
+---
+
+## 🔧 Troubleshooting
+
+### Common Issues
+
+#### WebSocket Connection Failed
+```
+Error: WebSocket connection to 'ws://localhost:5050/ws/lobby' failed
+```
+**Solutions:**
+- Ensure backend is running: `docker ps` or check `localhost:5050/api/health`
+- Check firewall/proxy settings aren't blocking WebSocket
+- Try different browser or incognito mode
+
+#### Player Cannot Reconnect
+**Symptoms:** "Room is full" error or name not recognized
+**Solutions:**
+- Use exact same player name (case-sensitive)
+- Clear browser cache and localStorage
+- Check if room still exists: `/api/debug/room-stats`
+
+#### Frontend Build Errors
+```
+Error: Cannot find module 'react'
+```
+**Solution:** Install dependencies:
+```bash
+cd frontend && npm install
+```
+
+#### Python Import Errors
+```
+ImportError: No module named 'fastapi'
+```
+**Solution:** Activate virtual environment:
+```bash
+source venv/bin/activate
+pip install -r requirements.txt
+```
+
+#### High Memory Usage
+**Solutions:**
+- Check for zombie rooms: `/api/system/stats`
+- Restart container: `docker restart liap-tui`
+- Enable event store pruning in production
+
+### Getting Help
+
+For more detailed troubleshooting:
+- See [docs/troubleshooting.md](docs/troubleshooting.md) for comprehensive guide
+- Check [OPERATIONS.md](OPERATIONS.md) for production issues
+- Review logs: `docker logs liap-tui`
+
+---
+
+## 📞 Support
+
+### Resources
+- **Documentation**: [/docs](docs/) - Comprehensive guides and tutorials
+- **Issues**: [GitHub Issues](https://github.com/andynenth/tui-backend/issues)
+- **Discussions**: [GitHub Discussions](https://github.com/andynenth/tui-backend/discussions)
+
+### Before Reporting Issues
+1. Check existing issues for duplicates
+2. Try troubleshooting steps above
+3. Gather relevant information:
+   - Browser console logs
+   - Backend logs (`docker logs`)
+   - Steps to reproduce
+   - Environment details
+
+### Security Issues
+For security vulnerabilities, please email directly instead of creating public issues.
 
 ---
 

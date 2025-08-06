@@ -19,10 +19,27 @@ A player wins by reaching **50 points**.
 
 - **Total:** 32 pieces
 - Each piece has a `name` (e.g., GENERAL, SOLDIER) and a `color` (RED or BLACK)
-- Each piece has a `point` value defined in `PIECE_POINTS`
-- Example:
-    - `GENERAL_RED` = 14 points
-    - `SOLDIER_BLACK` = 1 point
+- Each piece has a `point` value defined below
+
+### Piece Types and Point Values
+
+| Piece Type | RED Points | BLACK Points | Quantity per Color |
+|------------|------------|--------------|-------------------|
+| GENERAL    | 14         | 13           | 1                 |
+| ADVISOR    | 12         | 11           | 2                 |
+| ELEPHANT   | 10         | 9            | 2                 |
+| CHARIOT    | 8          | 7            | 2                 |
+| HORSE      | 6          | 5            | 2                 |
+| CANNON     | 4          | 3            | 2                 |
+| SOLDIER    | 2          | 1            | 5                 |
+
+**Total pieces**: 16 RED + 16 BLACK = 32 pieces
+
+### Key Notes:
+- RED pieces are always 1 point stronger than their BLACK counterparts
+- GENERAL is the strongest piece (14/13 points)
+- SOLDIER is the weakest piece (2/1 points) but most numerous (5 per color)
+- Point values determine winner when comparing plays of the same type
 
 ---
 
