@@ -221,6 +221,12 @@ useEffect(() => {
 - Playwright/Puppeteer can automate investigation
 - Check the actual bundle output, not just source code
 
+### 6. ECS Task Definition Management
+- Task definitions store specific image tags, not tag references
+- Pushing `:latest` doesn't automatically update running services
+- Must create new task definition revision with updated image tag
+- Always verify which image tag the service is actually using
+
 ## Best Practices Discovered
 
 ### 1. WebSocket URL Configuration
@@ -274,6 +280,31 @@ docker push $ECR_URI:tag
 # Update ECS
 aws ecs register-task-definition --cli-input-json file://task-def.json
 aws ecs update-service --cluster cluster-name --service service-name --task-definition task:revision
+```
+
+### 6. ECS Task Definition Tag Management
+
+**Issue Discovered**: ECS task definitions can be configured with specific image tags instead of `latest`, causing deployments to use outdated images.
+
+**Symptom**: After pushing new image with `latest` tag, the application still runs old version.
+
+**Solution**: Update task definition to use the correct tag:
+```bash
+# Check current task definition
+aws ecs describe-services --cluster cluster-name --service service-name --query 'services[0].taskDefinition'
+
+# Get image being used
+aws ecs describe-task-definition --task-definition task:revision --query 'taskDefinition.containerDefinitions[0].image'
+
+# Create new task definition with updated image
+aws ecs describe-task-definition --task-definition task:revision | \
+  jq '.taskDefinition | del(.taskDefinitionArn, .revision, .status, .requiresAttributes, .compatibilities, .registeredAt, .registeredBy) | .containerDefinitions[0].image = "ECR_URI:latest"' > new-task-def.json
+
+# Register new task definition
+aws ecs register-task-definition --cli-input-json file://new-task-def.json
+
+# Update service with new task definition
+aws ecs update-service --cluster cluster-name --service service-name --task-definition task:new-revision --force-new-deployment
 ```
 
 ### 5. Health Check Configuration
