@@ -706,7 +706,7 @@ class GameBotHandler:
                         }
                         for play in getattr(game_state, 'current_turn_plays', [])
                     ],
-                    revealed_pieces=self._extract_revealed_pieces(game_state),
+                    revealed_pieces=self._extract_revealed_pieces(game_state) if hasattr(self, '_extract_revealed_pieces') else [],
                     player_states=player_states
                 )
                 
@@ -1191,7 +1191,8 @@ class GameBotHandler:
         for turn in turn_history:
             for play in turn.get('plays', []):
                 # Only include valid plays (skip forfeits)
-                if play.get('is_valid', False):
+                # Default to True to match turn_state.py behavior
+                if play.get('is_valid', True):
                     pieces = play.get('pieces', [])
                     revealed_pieces.extend(pieces)
         
