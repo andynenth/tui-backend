@@ -83,14 +83,31 @@ def choose_strategic_play(hand: List[Piece], context: TurnPlayContext) -> List[P
         print(f"🎲 {context.my_name} plays weak pieces (value={play_value}) to avoid overcapture: {[p.name for p in result]}")
         return result
     
-    # For now, delegate to existing logic
-    print(f"📈 {context.my_name} below target ({context.my_captured}/{context.my_declared}) - using standard play selection")
-    from backend.engine.ai import choose_best_play
-    result = choose_best_play(hand, context.required_piece_count)
+    # Phase 4: Target Achievement Strategy
+    print(f"📈 {context.my_name} below target ({context.my_captured}/{context.my_declared}) - using target achievement strategy")
+    
+    # Generate strategic plan
+    plan = generate_strategic_plan(hand, context)
+    
+    # Evaluate hand
+    hand_eval = evaluate_hand(hand, context)
+    
+    # Log strategic context
+    print(f"📊 {context.my_name} - Urgency: {plan.urgency_level}, Target remaining: {plan.target_remaining}, "
+          f"Openers: {len(hand_eval['openers'])}, Burden pieces: {len(hand_eval['burden_pieces'])}")
+    
+    # Execute appropriate strategy based on role
+    if context.am_i_starter:
+        result = execute_starter_strategy(plan, context, hand_eval)
+    else:
+        # For now, responder uses basic AI (Phase 5 will implement responder strategy)
+        print(f"🎯 {context.my_name} as responder - using basic play selection for now")
+        from backend.engine.ai import choose_best_play
+        result = choose_best_play(hand, context.required_piece_count)
     
     # Validate result
     if not validate_play_result(result, hand, context):
-        print(f"⚠️ Strategic AI: Invalid result from basic play, using fallback")
+        print(f"⚠️ Strategic AI: Invalid result, using fallback")
         # Fallback: return minimum required pieces
         if context.required_piece_count and context.required_piece_count <= len(hand):
             return hand[:context.required_piece_count]
@@ -157,6 +174,230 @@ def avoid_overcapture_strategy(hand: List[Piece], context: TurnPlayContext) -> L
     
     # If no valid combination found, just return weakest pieces (will forfeit)
     return sorted_hand[:required]
+
+
+# ------------------------------------------------------------------
+# Phase 4: Target Achievement Strategy Functions
+# ------------------------------------------------------------------
+
+def evaluate_hand(hand: List[Piece], context: TurnPlayContext) -> Dict:
+    """
+    Evaluate and categorize pieces in the hand.
+    
+    Args:
+        hand: Bot's current hand
+        context: Game context
+        
+    Returns:
+        Dict with categorized pieces:
+        - openers: List of pieces with point >= 11
+        - burden_pieces: Pieces that don't contribute to winning combos
+        - combo_pieces: Pieces that form valid winning combinations
+    """
+    # Find all valid combinations
+    from backend.engine.ai import find_all_valid_combos
+    valid_combos = find_all_valid_combos(hand)
+    
+    # Identify opener pieces (11+ points)
+    openers = identify_opener_pieces(hand)
+    
+    # Find pieces that appear in winning combinations
+    pieces_in_combos = set()
+    combo_pieces = []
+    
+    for combo_type, pieces in valid_combos:
+        # Consider pairs, three-of-a-kind, straights as winning combos
+        if combo_type in ["PAIR", "THREE_OF_A_KIND", "STRAIGHT", "FOUR_OF_A_KIND", 
+                         "EXTENDED_STRAIGHT", "FIVE_OF_A_KIND", "DOUBLE_STRAIGHT"]:
+            pieces_in_combos.update(pieces)
+            combo_pieces.extend(pieces)
+    
+    # Remove duplicates from combo_pieces
+    combo_pieces = list(set(combo_pieces))
+    
+    # Identify burden pieces (not in any winning combo and not openers)
+    burden_pieces = identify_burden_pieces(hand, valid_combos)
+    
+    return {
+        'openers': openers,
+        'burden_pieces': burden_pieces,
+        'combo_pieces': combo_pieces,
+        'all_valid_combos': valid_combos
+    }
+
+
+def identify_opener_pieces(hand: List[Piece]) -> List[Piece]:
+    """
+    Filter pieces with point >= 11 and sort by reliability.
+    
+    Args:
+        hand: List of pieces
+        
+    Returns:
+        List of opener pieces sorted by point value descending
+    """
+    openers = [p for p in hand if p.point >= 11]
+    # Sort by point value descending for reliability ranking
+    return sorted(openers, key=lambda p: p.point, reverse=True)
+
+
+def identify_burden_pieces(hand: List[Piece], valid_combos: List[Tuple]) -> List[Piece]:
+    """
+    Find pieces that don't appear in any valid winning combination.
+    
+    Args:
+        hand: List of pieces
+        valid_combos: All valid combinations from the hand
+        
+    Returns:
+        List of burden pieces
+    """
+    # Track which pieces appear in winning combos
+    pieces_in_winning_combos = set()
+    
+    for combo_type, pieces in valid_combos:
+        # Only consider combinations that can actually win turns
+        if combo_type in ["PAIR", "THREE_OF_A_KIND", "STRAIGHT", "FOUR_OF_A_KIND",
+                         "EXTENDED_STRAIGHT", "FIVE_OF_A_KIND", "DOUBLE_STRAIGHT"]:
+            pieces_in_winning_combos.update(pieces)
+    
+    # Burden pieces are those not in any winning combo
+    burden_pieces = [p for p in hand if p not in pieces_in_winning_combos]
+    
+    # Sort by point value ascending (weakest first for disposal)
+    return sorted(burden_pieces, key=lambda p: p.point)
+
+
+def calculate_urgency(context: TurnPlayContext) -> str:
+    """
+    Calculate urgency level based on turns remaining and piles needed.
+    
+    Args:
+        context: Game context
+        
+    Returns:
+        Urgency level: "none", "low", "medium", "high", "critical"
+    """
+    turns_remaining = 8 - context.turn_number
+    piles_needed = context.my_declared - context.my_captured
+    
+    if piles_needed == 0:
+        return "none"  # Already at target
+    elif piles_needed < 0:
+        return "none"  # Already exceeded target
+    elif turns_remaining <= 0:
+        return "critical"  # No turns left
+    elif piles_needed >= turns_remaining:
+        return "critical"  # Need to win every turn
+    elif piles_needed >= turns_remaining * 0.75:
+        return "high"  # Need to win most turns
+    elif piles_needed >= turns_remaining * 0.5:
+        return "medium"  # Need to win half the turns
+    else:
+        return "low"  # Have cushion for strategic play
+
+
+def generate_strategic_plan(hand: List[Piece], context: TurnPlayContext) -> StrategicPlan:
+    """
+    Generate a strategic plan for achieving target piles.
+    
+    Args:
+        hand: Bot's current hand
+        context: Game context
+        
+    Returns:
+        StrategicPlan with target analysis and valid plays
+    """
+    # Calculate target remaining
+    target_remaining = context.my_declared - context.my_captured
+    
+    # Find all valid combinations
+    from backend.engine.ai import find_all_valid_combos
+    valid_combos = find_all_valid_combos(hand)
+    
+    # Identify openers
+    opener_pieces = identify_opener_pieces(hand)
+    
+    # Assess urgency
+    urgency_level = calculate_urgency(context)
+    
+    # Create and return plan
+    return StrategicPlan(
+        target_remaining=target_remaining,
+        valid_combos=valid_combos,
+        opener_pieces=opener_pieces,
+        urgency_level=urgency_level
+    )
+
+
+def execute_starter_strategy(plan: StrategicPlan, context: TurnPlayContext, hand_eval: Dict) -> List[Piece]:
+    """
+    Execute strategy when leading the turn.
+    
+    Args:
+        plan: Strategic plan
+        context: Game context
+        hand_eval: Hand evaluation from evaluate_hand()
+        
+    Returns:
+        List of pieces to play
+    """
+    required = context.required_piece_count or 1
+    
+    # Critical urgency: need to win remaining turns
+    if plan.urgency_level == "critical" and plan.target_remaining > 0:
+        # Find strongest valid combination of required size
+        best_combo = None
+        best_value = 0
+        
+        for combo_type, pieces in plan.valid_combos:
+            if len(pieces) == required:
+                combo_value = sum(p.point for p in pieces)
+                if combo_value > best_value:
+                    best_value = combo_value
+                    best_combo = pieces
+        
+        if best_combo:
+            print(f"⚡ {context.my_name} (critical urgency) plays strong combo: {[p.name for p in best_combo]}")
+            return best_combo
+    
+    # Have reliable opener AND still need wins
+    if plan.opener_pieces and plan.target_remaining > 1:
+        # Check if we can play opener(s) with required count
+        if required == 1 and plan.opener_pieces:
+            print(f"👑 {context.my_name} plays opener for turn control: {plan.opener_pieces[0].name}")
+            return [plan.opener_pieces[0]]
+        elif required == 2 and len(plan.opener_pieces) >= 2:
+            print(f"👑 {context.my_name} plays double opener: {[p.name for p in plan.opener_pieces[:2]]}")
+            return plan.opener_pieces[:2]
+    
+    # Low urgency AND have burden pieces: dispose of them
+    if plan.urgency_level in ["low", "medium"] and hand_eval['burden_pieces']:
+        burden_count = min(required, len(hand_eval['burden_pieces']))
+        if burden_count == required:
+            burden_play = hand_eval['burden_pieces'][:required]
+            # Check if this is a valid play for starter
+            if is_valid_play(burden_play):
+                print(f"🗑️ {context.my_name} disposes burden pieces: {[p.name for p in burden_play]}")
+                return burden_play
+            else:
+                print(f"📝 {context.my_name} burden pieces don't form valid play, trying other options")
+    
+    # Default: play weakest valid combination
+    from backend.engine.ai import choose_best_play
+    # For starter, we want weakest valid play, not strongest
+    # Sort combos by total value ascending
+    valid_of_size = [(combo_type, pieces) for combo_type, pieces in plan.valid_combos 
+                     if len(pieces) == required]
+    
+    if valid_of_size:
+        # Get weakest valid combination
+        weakest_combo = min(valid_of_size, key=lambda x: sum(p.point for p in x[1]))
+        print(f"🎯 {context.my_name} plays weakest valid combo: {[p.name for p in weakest_combo[1]]}")
+        return weakest_combo[1]
+    
+    # Fallback to basic AI
+    return choose_best_play(context.my_hand, required)
 
 
 # ------------------------------------------------------------------
