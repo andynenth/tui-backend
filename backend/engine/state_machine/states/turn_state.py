@@ -600,22 +600,31 @@ class TurnState(GameState):
         """Process the completion of a turn"""
         game = self.state_machine.game
 
-        # STEP 1: Remove played pieces from player hands FIRST
-        # NOTE: Pieces are now removed immediately in _handle_play_pieces
-        # This section is no longer needed
-        """
-        if hasattr(game, "players") and game.players:
-            for player in game.players:
-                player_name = player.name
+        # STEP 1: Add completed turn to turn history
+        # Build turn summary for AI tracking
+        if hasattr(game, 'turn_history_this_round'):
+            turn_summary = {
+                'turn_number': getattr(game, 'turn_number', 0),
+                'plays': [],
+                'winner': self.winner,
+                'piles_won': self.required_piece_count if self.winner else 0
+            }
+            
+            # Add all plays in turn order
+            for player_name in self.turn_order:
                 if player_name in self.turn_plays:
                     play_data = self.turn_plays[player_name]
-                    pieces_to_remove = play_data["pieces"]
-
-                    # Remove each piece from player's hand
-                    for piece in pieces_to_remove:
-                        if piece in player.hand:
-                            player.hand.remove(piece)
-        """
+                    turn_summary['plays'].append({
+                        'player': player_name,
+                        'pieces': play_data.get('pieces', []),
+                        'play_type': play_data.get('play_type'),
+                        'is_valid': play_data.get('is_valid', True),
+                        'play_value': play_data.get('play_value', 0)
+                    })
+            
+            # Append to game's turn history
+            game.turn_history_this_round.append(turn_summary)
+            self.logger.info(f"📚 Added turn {turn_summary['turn_number']} to history (winner: {self.winner})")
 
         # STEP 2: Check if any hands are empty AFTER pieces removed
         all_hands_empty = True

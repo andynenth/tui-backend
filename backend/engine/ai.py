@@ -520,3 +520,34 @@ def choose_best_play(hand: list, required_count, verbose: bool = True) -> list:
         print(f"    🧠 Hand left: {[p.name for p in hand]}")
 
     return fallback
+
+
+# ------------------------------------------------------------------
+# Compatibility wrapper for context-aware strategic play
+# ------------------------------------------------------------------
+def choose_best_play_with_context(hand: list, context=None, required_count=None, verbose=True):
+    """
+    Wrapper to support both old and new AI interfaces.
+    
+    Args:
+        hand: List of pieces in hand
+        context: Optional TurnPlayContext for strategic play
+        required_count: Number of pieces required (for classic AI)
+        verbose: Whether to print debug output
+        
+    Returns:
+        List of pieces to play
+    """
+    if context is not None:
+        # Use strategic AI if context provided
+        try:
+            from backend.engine.ai_turn_strategy import choose_strategic_play
+            return choose_strategic_play(hand, context)
+        except ImportError:
+            # Fall back to classic AI if strategic module not available
+            if verbose:
+                print("⚠️ Strategic AI module not available, using classic AI")
+            return choose_best_play(hand, required_count, verbose)
+    else:
+        # Use classic AI for backward compatibility
+        return choose_best_play(hand, required_count, verbose)
