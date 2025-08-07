@@ -64,8 +64,12 @@ def choose_strategic_play(hand: List[Piece], context: TurnPlayContext) -> List[P
         from backend.engine.ai import choose_best_play
         return choose_best_play(hand, context.required_piece_count if hasattr(context, 'required_piece_count') else None)
     
+    # Log the decision context
+    print(f"🎯 Strategic AI for {context.my_name}: captured={context.my_captured}, declared={context.my_declared}, required={context.required_piece_count}")
+    
     # Check if at declared target
     if context.my_captured == context.my_declared:
+        print(f"🛡️ {context.my_name} is at target ({context.my_captured}/{context.my_declared}) - activating overcapture avoidance")
         result = avoid_overcapture_strategy(hand, context)
         
         # Validate result
@@ -74,9 +78,13 @@ def choose_strategic_play(hand: List[Piece], context: TurnPlayContext) -> List[P
             from backend.engine.ai import choose_best_play
             return choose_best_play(hand, context.required_piece_count)
         
+        # Log the decision
+        play_value = sum(p.point for p in result)
+        print(f"🎲 {context.my_name} plays weak pieces (value={play_value}) to avoid overcapture: {[p.name for p in result]}")
         return result
     
     # For now, delegate to existing logic
+    print(f"📈 {context.my_name} below target ({context.my_captured}/{context.my_declared}) - using standard play selection")
     from backend.engine.ai import choose_best_play
     result = choose_best_play(hand, context.required_piece_count)
     

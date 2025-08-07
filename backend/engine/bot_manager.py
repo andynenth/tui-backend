@@ -9,6 +9,7 @@ from typing import Dict, List, Optional, Set, Any
 import backend.engine.ai as ai
 from backend.engine.player import Player
 from backend.engine.state_machine.core import ActionType, GameAction
+from backend.engine.rules import get_play_type
 
 # Try to import async bot strategy for improved performance
 try:
@@ -677,10 +678,14 @@ class GameBotHandler:
             
             # Create context if strategic AI is available
             if use_strategic_ai and TurnPlayContext:
+                pile_counts = game_state.pile_counts if hasattr(game_state, 'pile_counts') else {}
+                bot_captured = pile_counts.get(bot.name, 0)
+                print(f"📊 Building context for {bot.name}: pile_counts={pile_counts}, bot_captured={bot_captured}, bot_declared={bot.declared}")
+                
                 context = TurnPlayContext(
                     my_name=bot.name,
                     my_hand=bot.hand,
-                    my_captured=game_state.pile_counts.get(bot.name, 0) if hasattr(game_state, 'pile_counts') else 0,
+                    my_captured=bot_captured,
                     my_declared=bot.declared,
                     required_piece_count=required_piece_count,
                     turn_number=getattr(game_state, 'turn_number', 0),
@@ -688,31 +693,35 @@ class GameBotHandler:
                     am_i_starter=(current_turn_starter == bot.name),
                     current_plays=[],  # TODO: Get from state machine
                     revealed_pieces=[],  # TODO: Track revealed pieces
-                    player_states={p.name: {"captured": game_state.pile_counts.get(p.name, 0) if hasattr(game_state, 'pile_counts') else 0, 
+                    player_states={p.name: {"captured": pile_counts.get(p.name, 0), 
                                             "declared": p.declared} for p in game_state.players}
                 )
             else:
                 # No strategic AI available, use None for context
                 context = None
+                print(f"⚠️ No strategic AI available for {bot.name}")
 
             # Choose play using safe wrapper that handles import failures
             if ASYNC_BOT_STRATEGY_AVAILABLE:
-                # TODO: Update async bot strategy to use strategic play
+                # Use async bot strategy with strategic AI context
                 selected = await async_bot_strategy.choose_best_play(
-                    bot.hand, required_count=required_piece_count, verbose=True
+                    bot.hand, required_count=required_piece_count, verbose=False, context=context
                 )
             else:
                 # Use strategic play with context (safe wrapper handles import failures)
                 selected = ai.choose_strategic_play_safe(bot.hand, context, verbose=False)
-                if selected:
-                    # Print play info for debugging
-                    play_type = get_play_type(selected) if selected else "UNKNOWN"
-                    points = sum(p.point for p in selected)
-                    summary = ", ".join(p.name for p in selected)
-                    if context.my_captured == context.my_declared:
-                        print(f"🤖 BOT {bot.name} (at target {context.my_declared}/{context.my_declared}) plays weakly: {play_type} ({points} pts): {summary}")
-                    else:
-                        print(f"🤖 BOT {bot.name} ({context.my_captured}/{context.my_declared}) plays: {play_type} ({points} pts): {summary}")
+            
+            # Log play info for debugging (works for both async and sync)
+            if selected and context:
+                # Print play info for debugging
+                from backend.engine.rules import get_play_type
+                play_type = get_play_type(selected) if selected else "UNKNOWN"
+                points = sum(p.point for p in selected)
+                summary = ", ".join(p.name for p in selected)
+                if context.my_captured == context.my_declared:
+                    print(f"🤖 BOT {bot.name} (at target {context.my_declared}/{context.my_declared}) plays weakly: {play_type} ({points} pts): {summary}")
+                else:
+                    print(f"🤖 BOT {bot.name} ({context.my_captured}/{context.my_declared}) plays: {play_type} ({points} pts): {summary}")
 
             # Comprehensive validation of AI output
             if not selected or not isinstance(selected, list):
