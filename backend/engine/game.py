@@ -36,6 +36,7 @@ class Game:
         self.turn_order = []  # Player order for current turn
         self.last_turn_winner = None  # Player who won the last turn
         self.turn_number = 0  # Current turn number within the round
+        self.turn_history_this_round = []  # Complete history of all turns this round
 
         # Player tracking for state machine
         self.current_player = None  # Current player (for round start/declarations)

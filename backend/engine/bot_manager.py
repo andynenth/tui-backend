@@ -8,6 +8,7 @@ from typing import Dict, List, Optional, Set, Any
 
 import backend.engine.ai as ai
 from backend.engine.player import Player
+from backend.engine.rules import get_play_type
 from backend.engine.state_machine.core import ActionType, GameAction
 
 # Try to import async bot strategy for improved performance
@@ -656,14 +657,74 @@ class GameBotHandler:
                 game_state = self._get_game_state()
                 required_piece_count = getattr(game_state, "required_piece_count", None)
 
-            if ASYNC_BOT_STRATEGY_AVAILABLE:
-                selected = await async_bot_strategy.choose_best_play(
-                    bot.hand, required_count=required_piece_count, verbose=True
+            # Build turn play context for strategic AI
+            game_state = self._get_game_state()
+            
+            # Try to build context for strategic play
+            try:
+                from backend.engine.ai_turn_strategy import TurnPlayContext, choose_strategic_play
+                
+                # Get pile counts - handle both game and state machine sources
+                pile_counts = {}
+                if hasattr(game_state, 'pile_counts'):
+                    pile_counts = game_state.pile_counts
+                elif self.state_machine and hasattr(self.state_machine, 'get_phase_data'):
+                    phase_data = self.state_machine.get_phase_data()
+                    pile_counts = phase_data.get('pile_counts', {})
+                
+                # Determine if bot is starter
+                am_i_starter = False
+                if self.state_machine:
+                    phase_data = self.state_machine.get_phase_data()
+                    current_turn_starter = phase_data.get('current_turn_starter')
+                    am_i_starter = (current_turn_starter == bot.name)
+                elif hasattr(game_state, 'current_turn_starter'):
+                    am_i_starter = (game_state.current_turn_starter == bot.name)
+                
+                # Build player states
+                player_states = {}
+                for player in game_state.players:
+                    player_states[player.name] = {
+                        "captured": pile_counts.get(player.name, 0),
+                        "declared": player.declared
+                    }
+                
+                # Create context
+                context = TurnPlayContext(
+                    my_hand=bot.hand,
+                    my_captured=pile_counts.get(bot.name, 0),
+                    my_declared=bot.declared,
+                    required_piece_count=required_piece_count,
+                    turn_number=getattr(game_state, 'turn_number', 0),
+                    pieces_per_player=len(bot.hand),
+                    am_i_starter=am_i_starter,
+                    current_plays=[
+                        {
+                            'player': play.player,
+                            'pieces': play.pieces,
+                            'play_type': get_play_type(play.pieces) if play.is_valid else None
+                        }
+                        for play in getattr(game_state, 'current_turn_plays', [])
+                    ],
+                    revealed_pieces=self._extract_revealed_pieces(game_state),
+                    player_states=player_states
                 )
-            else:
-                selected = ai.choose_best_play(
-                    bot.hand, required_count=required_piece_count, verbose=True
-                )
+                
+                # Use strategic play
+                selected = choose_strategic_play(bot.hand, context)
+                print(f"🎯 Bot {bot.name} using strategic play (captured: {context.my_captured}/{context.my_declared})")
+                
+            except ImportError:
+                # Fallback to original logic if strategic module not available
+                print(f"⚠️ Strategic AI not available, using classic AI")
+                if ASYNC_BOT_STRATEGY_AVAILABLE:
+                    selected = await async_bot_strategy.choose_best_play(
+                        bot.hand, required_count=required_piece_count, verbose=True
+                    )
+                else:
+                    selected = ai.choose_best_play(
+                        bot.hand, required_count=required_piece_count, verbose=True
+                    )
 
             # Validate that bot respects required piece count
             if (
@@ -1114,3 +1175,24 @@ class GameBotHandler:
         if is_bot:
             # For failed bot actions, similar to rejection - prevent downstream processing
             pass
+    
+    def _extract_revealed_pieces(self, game_state) -> List:
+        """Extract revealed pieces from turn history, filtering out forfeits.
+        
+        Returns:
+            List of Piece objects that have been validly played this round
+        """
+        revealed_pieces = []
+        
+        # Get turn history if it exists
+        turn_history = getattr(game_state, 'turn_history_this_round', [])
+        
+        # Extract all valid plays
+        for turn in turn_history:
+            for play in turn.get('plays', []):
+                # Only include valid plays (skip forfeits)
+                if play.get('is_valid', False):
+                    pieces = play.get('pieces', [])
+                    revealed_pieces.extend(pieces)
+        
+        return revealed_pieces
