@@ -520,3 +520,46 @@ def choose_best_play(hand: list, required_count, verbose: bool = True) -> list:
         print(f"    🧠 Hand left: {[p.name for p in hand]}")
 
     return fallback
+
+
+# ------------------------------------------------------------------
+# Strategic Turn Play with Import Fallback
+# ------------------------------------------------------------------
+def choose_strategic_play_safe(hand: list, context, verbose: bool = True) -> list:
+    """
+    Safe wrapper for strategic play that falls back to basic AI if needed.
+    
+    Args:
+        hand: List of pieces in player's hand
+        context: TurnPlayContext object (or None for fallback)
+        verbose: Whether to print debug info
+        
+    Returns:
+        List of pieces to play
+    """
+    try:
+        # Try to import and use strategic play
+        from backend.engine.ai_turn_strategy import choose_strategic_play
+        return choose_strategic_play(hand, context)
+    except ImportError:
+        # Fallback to basic AI if strategic module not available
+        if verbose:
+            print("⚠️ Strategic AI module not available, using basic AI")
+        
+        # Extract required_piece_count from context if available
+        required_count = None
+        if context and hasattr(context, 'required_piece_count'):
+            required_count = context.required_piece_count
+            
+        return choose_best_play(hand, required_count, verbose)
+    except Exception as e:
+        # Any other error, fall back to basic AI
+        if verbose:
+            print(f"⚠️ Error in strategic AI: {e}, using basic AI")
+            
+        # Extract required_piece_count from context if available
+        required_count = None
+        if context and hasattr(context, 'required_piece_count'):
+            required_count = context.required_piece_count
+            
+        return choose_best_play(hand, required_count, verbose)

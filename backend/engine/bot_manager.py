@@ -646,7 +646,6 @@ class GameBotHandler:
                 pass
 
         try:
-            # Choose play
             # Get required piece count from state machine if available
             if self.state_machine:
                 phase_data = self.state_machine.get_phase_data()
@@ -656,20 +655,89 @@ class GameBotHandler:
                 game_state = self._get_game_state()
                 required_piece_count = getattr(game_state, "required_piece_count", None)
 
+            # Build turn play context
+            game_state = self._get_game_state()
+            
+            # Try to use TurnPlayContext if available
+            try:
+                from backend.engine.ai_turn_strategy import TurnPlayContext
+                use_strategic_ai = True
+            except ImportError:
+                # Fallback - strategic AI not available
+                use_strategic_ai = False
+                TurnPlayContext = None
+            
+            # Get turn starter info from phase data or game state
+            current_turn_starter = None
+            if self.state_machine:
+                phase_data = self.state_machine.get_phase_data()
+                current_turn_starter = phase_data.get("current_turn_starter")
+            if not current_turn_starter and hasattr(game_state, "last_turn_winner"):
+                current_turn_starter = getattr(game_state.last_turn_winner, "name", None) if game_state.last_turn_winner else None
+            
+            # Create context if strategic AI is available
+            if use_strategic_ai and TurnPlayContext:
+                context = TurnPlayContext(
+                    my_name=bot.name,
+                    my_hand=bot.hand,
+                    my_captured=game_state.pile_counts.get(bot.name, 0) if hasattr(game_state, 'pile_counts') else 0,
+                    my_declared=bot.declared,
+                    required_piece_count=required_piece_count,
+                    turn_number=getattr(game_state, 'turn_number', 0),
+                    pieces_per_player=len(bot.hand),
+                    am_i_starter=(current_turn_starter == bot.name),
+                    current_plays=[],  # TODO: Get from state machine
+                    revealed_pieces=[],  # TODO: Track revealed pieces
+                    player_states={p.name: {"captured": game_state.pile_counts.get(p.name, 0) if hasattr(game_state, 'pile_counts') else 0, 
+                                            "declared": p.declared} for p in game_state.players}
+                )
+            else:
+                # No strategic AI available, use None for context
+                context = None
+
+            # Choose play using safe wrapper that handles import failures
             if ASYNC_BOT_STRATEGY_AVAILABLE:
+                # TODO: Update async bot strategy to use strategic play
                 selected = await async_bot_strategy.choose_best_play(
                     bot.hand, required_count=required_piece_count, verbose=True
                 )
             else:
-                selected = ai.choose_best_play(
-                    bot.hand, required_count=required_piece_count, verbose=True
-                )
+                # Use strategic play with context (safe wrapper handles import failures)
+                selected = ai.choose_strategic_play_safe(bot.hand, context, verbose=False)
+                if selected:
+                    # Print play info for debugging
+                    play_type = get_play_type(selected) if selected else "UNKNOWN"
+                    points = sum(p.point for p in selected)
+                    summary = ", ".join(p.name for p in selected)
+                    if context.my_captured == context.my_declared:
+                        print(f"🤖 BOT {bot.name} (at target {context.my_declared}/{context.my_declared}) plays weakly: {play_type} ({points} pts): {summary}")
+                    else:
+                        print(f"🤖 BOT {bot.name} ({context.my_captured}/{context.my_declared}) plays: {play_type} ({points} pts): {summary}")
 
+            # Comprehensive validation of AI output
+            if not selected or not isinstance(selected, list):
+                print(f"⚠️ BOT {bot.name}: AI returned invalid selection, using fallback")
+                # Fallback: select required number of weakest pieces
+                sorted_hand = sorted(bot.hand, key=lambda p: p.point)
+                selected = sorted_hand[:required_piece_count or 1]
+            
+            # Validate all pieces are in hand
+            invalid_pieces = [p for p in selected if p not in bot.hand]
+            if invalid_pieces:
+                print(f"⚠️ BOT {bot.name}: AI selected pieces not in hand: {invalid_pieces}")
+                # Remove invalid pieces and add valid ones
+                selected = [p for p in selected if p in bot.hand]
+                remaining = [p for p in bot.hand if p not in selected]
+                needed = (required_piece_count or 1) - len(selected)
+                if needed > 0 and remaining:
+                    selected.extend(remaining[:needed])
+            
             # Validate that bot respects required piece count
             if (
                 required_piece_count is not None
                 and len(selected) != required_piece_count
             ):
+                print(f"⚠️ BOT {bot.name}: Adjusting piece count from {len(selected)} to {required_piece_count}")
                 # Force bot to select valid number of pieces
                 if len(selected) > required_piece_count:
                     selected = selected[:required_piece_count]

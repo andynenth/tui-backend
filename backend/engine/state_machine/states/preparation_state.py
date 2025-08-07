@@ -124,6 +124,10 @@ class PreparationState(GameState):
         for player in game.players:
             game.pile_counts[player.name] = 0
 
+        # Clear turn history for new round
+        if hasattr(game, "turn_history_this_round"):
+            game.turn_history_this_round.clear()
+
         # Choose dealing mode - uncomment ONE of the following:
 
         # 1. Normal random dealing (production)

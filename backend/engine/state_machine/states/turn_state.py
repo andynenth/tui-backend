@@ -634,6 +634,29 @@ class TurnState(GameState):
             self.logger.critical(f"Hand size validation failed: {e}")
             return  # Exit early
 
+        # STEP 2.5: Store turn history for AI strategy
+        if hasattr(game, 'turn_history_this_round'):
+            turn_summary = {
+                'turn_number': getattr(game, 'turn_number', 0),
+                'plays': [],
+                'winner': self.winner,
+                'piles_won': self.required_piece_count if self.winner else 0
+            }
+            
+            # Add all plays from this turn
+            for player_name in self.turn_order:
+                if player_name in self.turn_plays:
+                    play_data = self.turn_plays[player_name]
+                    turn_summary['plays'].append({
+                        'player': player_name,
+                        'pieces': play_data.get('pieces', []),
+                        'is_valid': play_data.get('is_valid', True),
+                        'play_type': play_data.get('play_type', 'unknown')
+                    })
+            
+            game.turn_history_this_round.append(turn_summary)
+            self.logger.info(f"📝 Stored turn {turn_summary['turn_number']} in history")
+
         # STEP 3: Broadcast turn completion using centralized system
         await self._broadcast_turn_completion_enterprise()
 
