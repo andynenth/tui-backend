@@ -4,6 +4,8 @@
 
 This document outlines the implementation plan for improving AI turn play strategy based on requirements in AI_TURN_PLAY_REQUIREMENTS.md. All tasks are derived from the existing codebase with no assumptions.
 
+**STATUS**: Phase 1 ✅ COMPLETE | Phase 3 ✅ COMPLETE | Overcapture Avoidance ✅ WORKING
+
 ## Critical Bug Fix
 
 ### Task 1: Fix Pile Counting Bug in game.py
@@ -18,8 +20,8 @@ This document outlines the implementation plan for improving AI turn play strate
 
 ### Task 2: Create AI Turn Strategy Module
 
-- [ ] **Create file**: `backend/engine/ai_turn_strategy.py`
-- [ ] **Import dependencies**:
+- [x] **Create file**: `backend/engine/ai_turn_strategy.py`
+- [x] **Import dependencies**:
   ```python
   from dataclasses import dataclass
   from typing import List, Dict, Optional, Tuple
@@ -29,8 +31,8 @@ This document outlines the implementation plan for improving AI turn play strate
 
 ### Task 3: Define Turn Play Context
 
-- [ ] **In**: `ai_turn_strategy.py`
-- [ ] **Create dataclass**: `TurnPlayContext` with fields:
+- [x] **In**: `ai_turn_strategy.py`
+- [x] **Create dataclass**: `TurnPlayContext` with fields:
   - `my_hand: List[Piece]` - Current bot hand
   - `my_captured: int` - Piles already captured
   - `my_declared: int` - Target pile count
@@ -44,8 +46,8 @@ This document outlines the implementation plan for improving AI turn play strate
 
 ### Task 4: Create Strategic Plan Structure
 
-- [ ] **In**: `ai_turn_strategy.py`
-- [ ] **Create dataclass**: `StrategicPlan` with fields:
+- [x] **In**: `ai_turn_strategy.py`
+- [x] **Create dataclass**: `StrategicPlan` with fields:
   - `target_remaining: int` - Piles still needed (declared - captured)
   - `valid_combos: List[Tuple[str, List[Piece]]]` - All valid plays
   - `opener_pieces: List[Piece]` - Pieces with point >= 11
@@ -55,9 +57,9 @@ This document outlines the implementation plan for improving AI turn play strate
 
 ### Task 5: Implement Core Decision Function
 
-- [ ] **In**: `ai_turn_strategy.py`
-- [ ] **Create function**: `choose_strategic_play(hand: List[Piece], context: TurnPlayContext) -> List[Piece]`
-- [ ] **Initial logic**:
+- [x] **In**: `ai_turn_strategy.py`
+- [x] **Create function**: `choose_strategic_play(hand: List[Piece], context: TurnPlayContext) -> List[Piece]`
+- [x] **Initial logic**:
 
   ```python
   # Check if at declared target
@@ -71,9 +73,9 @@ This document outlines the implementation plan for improving AI turn play strate
 
 ### Task 6: Implement Overcapture Avoidance
 
-- [ ] **In**: `ai_turn_strategy.py`
-- [ ] **Create function**: `avoid_overcapture_strategy(hand: List[Piece], context: TurnPlayContext) -> List[Piece]`
-- [ ] **Logic**:
+- [x] **In**: `ai_turn_strategy.py`
+- [x] **Create function**: `avoid_overcapture_strategy(hand: List[Piece], context: TurnPlayContext) -> List[Piece]`
+- [x] **Logic**:
   - Find weakest valid combination of required_piece_count
   - If no valid combo, return weakest pieces (will forfeit)
   - Sort pieces by point value ascending
@@ -81,9 +83,9 @@ This document outlines the implementation plan for improving AI turn play strate
 
 ### Task 7: Create Test for Overcapture Avoidance
 
-- [ ] **Create directory**: `tests/ai_turn_play/`
-- [ ] **Create file**: `tests/ai_turn_play/test_overcapture.py`
-- [ ] **Test case**:
+- [x] **Create directory**: `tests/ai_turn_play/`
+- [x] **Create file**: `tests/ai_turn_play/test_overcapture.py`
+- [x] **Test case**:
   ```python
   def test_avoid_overcapture_when_at_target():
       hand = [Piece("GENERAL_RED"), Piece("SOLDIER_BLACK"), Piece("SOLDIER_BLACK")]
@@ -241,10 +243,10 @@ This document outlines the implementation plan for improving AI turn play strate
 
 ### Phase 1 Completion Checklist
 
-- [ ] Pile counting bug fixed
-- [ ] Basic strategic module created
-- [ ] Overcapture avoidance working
-- [ ] Tests passing
+- [x] Pile counting bug fixed (commit 5ab6e260)
+- [x] Basic strategic module created
+- [x] Overcapture avoidance working
+- [x] Tests passing
 
 ### Phase 2 Completion Checklist
 
