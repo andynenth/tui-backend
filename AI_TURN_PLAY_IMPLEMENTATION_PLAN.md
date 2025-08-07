@@ -158,9 +158,9 @@ This document outlines the implementation plan for improving AI turn play strate
 
 ### Task 11: Implement Target Planning (Requirements 3.2 Hand Evaluation & 3.3 Strategic Planning)
 
-- [ ] **In**: `ai_turn_strategy.py`
-- [ ] **Create function**: `generate_strategic_plan(hand: List[Piece], context: TurnPlayContext) -> StrategicPlan`
-- [ ] **Logic**:
+- [x] **In**: `ai_turn_strategy.py`
+- [x] **Create function**: `generate_strategic_plan(hand: List[Piece], context: TurnPlayContext) -> StrategicPlan`
+- [x] **Logic**:
   - Calculate target_remaining = declared - captured
   - Find all valid combinations using existing `find_all_valid_combos()`
   - Identify openers (pieces with point >= 11)
@@ -168,23 +168,23 @@ This document outlines the implementation plan for improving AI turn play strate
 
 **NEW SUB-TASKS for Requirements 3.2 Hand Evaluation:**
 
-- [ ] **Create helper function**: `evaluate_hand(hand: List[Piece], context: TurnPlayContext) -> Dict`
+- [x] **Create helper function**: `evaluate_hand(hand: List[Piece], context: TurnPlayContext) -> Dict`
   - Returns categorized pieces:
     - `openers`: List of pieces with point >= 11
     - `burden_pieces`: Pieces that don't contribute to winning combos
     - `combo_pieces`: Pieces that form valid winning combinations
 
-- [ ] **Create function**: `identify_opener_pieces(hand: List[Piece]) -> List[Piece]`
+- [x] **Create function**: `identify_opener_pieces(hand: List[Piece]) -> List[Piece]`
   - Filter pieces with point >= 11
   - Sort by point value descending for reliability ranking
 
-- [ ] **Create function**: `identify_burden_pieces(hand: List[Piece], valid_combos: List[Tuple]) -> List[Piece]`
+- [x] **Create function**: `identify_burden_pieces(hand: List[Piece], valid_combos: List[Tuple]) -> List[Piece]`
   - Find pieces that don't appear in any valid winning combination
   - Consider pieces that only appear in weak combinations as semi-burdens
 
 **NEW SUB-TASKS for Requirements 3.3 Strategic Planning:**
 
-- [ ] **Create function**: `calculate_urgency(context: TurnPlayContext) -> str`
+- [x] **Create function**: `calculate_urgency(context: TurnPlayContext) -> str`
   ```python
   def calculate_urgency(context: TurnPlayContext) -> str:
       turns_remaining = 8 - context.turn_number
@@ -214,9 +214,9 @@ This document outlines the implementation plan for improving AI turn play strate
 
 ### Task 12: Implement Starter Strategy (Using Hand Evaluation from Task 11)
 
-- [ ] **In**: `ai_turn_strategy.py`
-- [ ] **Create function**: `execute_starter_strategy(plan: StrategicPlan, context: TurnPlayContext) -> List[Piece]`
-- [ ] **Enhanced decision tree using hand evaluation**:
+- [x] **In**: `ai_turn_strategy.py`
+- [x] **Create function**: `execute_starter_strategy(plan: StrategicPlan, context: TurnPlayContext) -> List[Piece]`
+- [x] **Enhanced decision tree using hand evaluation**:
   - If urgency critical AND have combo that captures needed piles: play it
   - If have reliable opener AND target_remaining > 1: play opener
   - If have burden pieces AND urgency low: dispose burdens
@@ -224,10 +224,12 @@ This document outlines the implementation plan for improving AI turn play strate
 
 ### Task 13: Test Target Achievement
 
-- [ ] **Create file**: `tests/ai_turn_play/test_target_achievement.py`
-- [ ] **Test case**: Opener strategy
-- [ ] **Test case**: Urgent capture scenario
-- [ ] **Test case**: Normal progression
+- [x] **Create file**: `tests/ai_turn_play/test_target_achievement.py`
+- [x] **Test case**: Opener strategy
+- [x] **Test case**: Urgent capture scenario  
+- [x] **Test case**: Normal progression
+- [x] **Test case**: Edge case - impossible target
+- [x] **Test case**: Already at target (overcapture avoidance)
 
 ## Phase 5: Responder Strategy
 
