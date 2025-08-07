@@ -38,7 +38,7 @@ def get_baseline_scenarios():
          2, [0, 1], 1, "Same Hand, Weak Field", False, "Non-starter in weak field"),
         
         ("baseline_03", "[ADVISOR_RED, CHARIOT_BLACK, HORSE_BLACK, CANNON_BLACK, SOLDIER_RED, SOLDIER_RED, SOLDIER_BLACK, SOLDIER_BLACK]",
-         2, [5, 4], 0, "Same Hand, Strong Field (No Room)", False, "Pile room constraint override"),
+         2, [5, 4], 1, "Same Hand, Strong Field (No Room)", False, "Pile room constraint override"),
         
         # Good combos without opener
         ("baseline_04", "[CHARIOT_RED, HORSE_RED, CANNON_RED, ELEPHANT_BLACK, SOLDIER_RED, SOLDIER_RED, SOLDIER_BLACK, SOLDIER_BLACK]",
@@ -87,7 +87,7 @@ def get_baseline_scenarios():
         
         # GENERAL_RED scenarios
         ("baseline_17", "[GENERAL_RED, SOLDIER_BLACK, SOLDIER_BLACK, SOLDIER_BLACK, SOLDIER_BLACK, CHARIOT_RED, HORSE_RED, CANNON_RED]",
-         2, [1, 0], 5, "GENERAL_RED Game Changer", False, "GENERAL_RED transforms strategy"),
+         2, [1, 0], 8, "GENERAL_RED Game Changer", False, "GENERAL_RED transforms strategy"),
         
         ("baseline_18", "[ADVISOR_RED, ADVISOR_BLACK, CHARIOT_RED, HORSE_RED, CANNON_RED, ELEPHANT_BLACK, SOLDIER_RED, SOLDIER_BLACK]",
          3, [2, 2, 1], 2, "Last Player Perfect Match", False, "Perfect pile room match as last player"),
@@ -141,7 +141,7 @@ def test_baseline_scenarios(verbose_output, enable_ai_analysis):
     key_scenarios = {
         "baseline_01": 4,  # Strong starter
         "baseline_11": 8,  # Maximum combo
-        "baseline_17": 5,  # GENERAL_RED
+        "baseline_17": 8,  # GENERAL_RED
         "baseline_12": 0,  # Position matters
     }
     

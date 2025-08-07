@@ -165,12 +165,15 @@ def execute_test_scenario(scenario: TestScenario,
     import time
     start_time = time.time()
     
+    # Determine if this is a must_declare_nonzero scenario
+    must_declare_nonzero = scenario.subcategory == "must_declare_nonzero"
+    
     actual_result = choose_declare(
         hand=hand,
         is_first_player=scenario.is_starter,
         position_in_order=scenario.position,
         previous_declarations=scenario.previous_decl,
-        must_declare_nonzero=False,
+        must_declare_nonzero=must_declare_nonzero,
         verbose=verbose,
         analysis_callback=capture_analysis_callback if enable_analysis else None
     )
