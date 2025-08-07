@@ -76,7 +76,8 @@ class AsyncBotStrategy:
         self,
         hand: List[Piece],
         required_count: Optional[int] = None,
-        verbose: bool = True
+        verbose: bool = True,
+        context=None
     ) -> List[Piece]:
         """
         Async version of play choice.
@@ -86,21 +87,34 @@ class AsyncBotStrategy:
             hand: Player's current hand
             required_count: Required number of pieces to play
             verbose: Whether to log decision process
+            context: TurnPlayContext for strategic AI (optional)
             
         Returns:
             List of pieces to play
         """
         start_time = time.time()
         
-        # Run AI decision in thread pool to avoid blocking
-        loop = asyncio.get_event_loop()
-        pieces = await loop.run_in_executor(
-            None,
-            ai.choose_best_play,
-            hand,
-            required_count,
-            verbose
-        )
+        # If context is provided, use strategic AI
+        if context is not None:
+            # Run strategic AI decision in thread pool to avoid blocking
+            loop = asyncio.get_event_loop()
+            pieces = await loop.run_in_executor(
+                None,
+                ai.choose_strategic_play_safe,
+                hand,
+                context,
+                verbose
+            )
+        else:
+            # Fall back to basic AI
+            loop = asyncio.get_event_loop()
+            pieces = await loop.run_in_executor(
+                None,
+                ai.choose_best_play,
+                hand,
+                required_count,
+                verbose
+            )
         
         elapsed = (time.time() - start_time) * 1000
         logger.debug(f"Async play choice took {elapsed:.2f}ms")

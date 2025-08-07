@@ -540,6 +540,8 @@ def choose_strategic_play_safe(hand: list, context, verbose: bool = True) -> lis
     try:
         # Try to import and use strategic play
         from backend.engine.ai_turn_strategy import choose_strategic_play
+        if context and hasattr(context, 'my_name'):
+            print(f"🤖 Strategic AI wrapper called for {context.my_name}")
         return choose_strategic_play(hand, context)
     except ImportError:
         # Fallback to basic AI if strategic module not available
