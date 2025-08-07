@@ -6,11 +6,12 @@ This document outlines the implementation plan for improving AI turn play strate
 ## Critical Bug Fix
 
 ### Task 1: Fix Pile Counting Bug in game.py
-- [ ] **File**: `backend/engine/game.py` line 406
-- [ ] **Current**: `self.pile_counts[turn_result.winner.player.name] += 1`
-- [ ] **Fix to**: `self.pile_counts[turn_result.winner.player.name] += len(turn_result.winner.pieces)`
-- [ ] **Verification**: Ensure winner captures X piles when winning X-piece turn
-- [ ] **Note**: State machine (turn_state.py) already implements this correctly
+- [x] **File**: `backend/engine/game.py` line 406
+- [x] **Current**: `self.pile_counts[turn_result.winner.player.name] += 1`
+- [x] **Fix to**: `self.pile_counts[turn_result.winner.player.name] += len(turn_result.winner.pieces)`
+- [x] **Verification**: Ensure winner captures X piles when winning X-piece turn
+- [x] **Note**: State machine (turn_state.py) already implements this correctly
+- [x] **Completed**: Fixed in commit 5ab6e260
 
 ## Phase 1: Foundation - Core Data Structures
 
@@ -27,6 +28,7 @@ This document outlines the implementation plan for improving AI turn play strate
 ### Task 3: Define Turn Play Context
 - [ ] **In**: `ai_turn_strategy.py`
 - [ ] **Create dataclass**: `TurnPlayContext` with fields:
+  - `my_name: str` - Bot's name for self-identification
   - `my_hand: List[Piece]` - Current bot hand
   - `my_captured: int` - Piles already captured
   - `my_declared: int` - Target pile count
@@ -100,6 +102,7 @@ This document outlines the implementation plan for improving AI turn play strate
   # Build turn play context
   game = self.game
   context = TurnPlayContext(
+      my_name=bot.name,
       my_hand=bot.hand,
       my_captured=game.pile_counts.get(bot.name, 0),
       my_declared=bot.declared,
@@ -113,6 +116,12 @@ This document outlines the implementation plan for improving AI turn play strate
                               "declared": p.declared} for p in game.players}
   )
   ```
+
+### Task 8a: Implement Turn History Tracking
+- [ ] **File**: `backend/engine/game.py`
+- [ ] **Add field**: `turn_history_this_round = []`
+- [ ] **Update**: Store all turns with plays, winners, and pile counts
+- [ ] **Clear**: Reset in preparation_state.py when dealing new round
 
 ### Task 9: Update Bot Manager to Use Strategic Play
 - [ ] **File**: `backend/engine/bot_manager.py`
@@ -138,6 +147,12 @@ This document outlines the implementation plan for improving AI turn play strate
       else:
           return choose_best_play(hand, required_count, verbose)
   ```
+
+### Task 10a: Add Defensive Checks
+- [ ] **File**: `backend/engine/bot_manager.py`
+- [ ] **Add check**: `if hasattr(self, '_extract_revealed_pieces')` before calling
+- [ ] **Default values**: Ensure is_valid defaults match between files (True)
+- [ ] **Validation**: Check method existence before calling
 
 ## Phase 4: Target Achievement Strategy
 
@@ -183,19 +198,27 @@ This document outlines the implementation plan for improving AI turn play strate
 
 ## Phase 6: Advanced Features
 
+### Strategic Priority Order
+1. Opponent Disruption (highest priority)
+2. Overcapture Avoidance
+3. Target Achievement
+4. Burden Disposal (lowest priority)
+
 ### Task 16: Track Revealed Pieces
-- [ ] **In**: `bot_manager.py` or state machine
-- [ ] **Track**: All face-up played pieces throughout the round
-- [ ] **Store**: In game state or bot handler
+- [ ] **In**: `backend/engine/state_machine/states/turn_state.py`
+- [ ] **Store**: Turn history with is_valid flag (default True)
+- [ ] **Extract**: Filter only valid plays (is_valid=True) for revealed pieces
+- [ ] **Note**: Forfeit plays have is_valid=False and should be excluded
 - [ ] **Pass**: To context when building
 
 ### Task 17: Implement Opponent Disruption
 - [ ] **In**: `ai_turn_strategy.py`
-- [ ] **Create function**: `check_disruption_opportunity(context: TurnPlayContext) -> Optional[List[Piece]]`
+- [ ] **Create function**: `check_opponent_disruption(hand: List[Piece], context: TurnPlayContext) -> Optional[List[Piece]]`
 - [ ] **Logic**:
-  - Check if any opponent is at their declared target
-  - If am starter: play low-value pieces to bait them
-  - Return pieces if disruption possible, None otherwise
+  - Check if any opponent would transition from captured < declared to captured = declared THIS TURN
+  - Calculate: if opponent wins current turn, would they reach target?
+  - If yes AND we can win: play pieces to disrupt
+  - Return disruption pieces or None
 
 ### Task 18: Add Burden Disposal Logic
 - [ ] **In**: `ai_turn_strategy.py`
@@ -218,7 +241,7 @@ This document outlines the implementation plan for improving AI turn play strate
 ## Rollout Plan
 
 ### Phase 1 Completion Checklist
-- [ ] Pile counting bug fixed
+- [x] Pile counting bug fixed (commit 5ab6e260)
 - [ ] Basic strategic module created
 - [ ] Overcapture avoidance working
 - [ ] Tests passing
