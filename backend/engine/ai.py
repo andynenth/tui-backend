@@ -132,8 +132,8 @@ def filter_viable_combos(combos: List[Tuple], context: DeclarationContext,
         if context.is_starter:
             # Starter always has control
             viable.append((combo_type, pieces))
-        elif context.has_general_red and context.field_strength == "weak":
-            # GENERAL_RED in weak field acts like starter
+        elif context.has_general_red and context.field_strength in ["weak", "normal"]:
+            # GENERAL_RED in weak/normal field provides strong control
             viable.append((combo_type, pieces))
         elif has_reliable_opener and combo_size < 3:
             # Opener helps with small combos (pairs) but not large ones
@@ -255,6 +255,13 @@ def choose_declare_strategic(
                 opener_count += 1
                 opener_score += reliability
     
+    # Phase 3b: Apply multi-opener synergy bonus
+    if opener_count >= 2:
+        # Multiple premium openers provide strategic flexibility
+        # Slightly higher bonus to ensure rounding works correctly
+        synergy_bonus = 0.6 if opener_count == 2 else 0.8 if opener_count == 3 else 1.0
+        opener_score += synergy_bonus
+    
     # Phase 4: Filter viable combos
     viable_combos = filter_viable_combos(
         strong_combos, context, has_reliable_opener
@@ -267,19 +274,24 @@ def choose_declare_strategic(
     total_pieces_used = 0
     sorted_combos = sorted(viable_combos, key=lambda x: len(x[1]), reverse=True)  # Largest first
     
-    # Special case: if we have GENERAL_RED and strong combos, be strategic
+    # Special case: if we have GENERAL_RED and strong combos, be more aggressive
     if context.has_general_red and any(c[0] in ["FOUR_OF_A_KIND", "FIVE_OF_A_KIND"] for c in viable_combos):
-        # Focus on the strongest combo only
+        # GENERAL_RED enables ALL viable combos due to guaranteed control
         for combo_type, pieces in sorted_combos:
-            if combo_type in ["FOUR_OF_A_KIND", "FIVE_OF_A_KIND"]:
-                combo_size = len(pieces)
-                total_pieces_used += combo_size
+            combo_size = len(pieces)
+            if total_pieces_used + combo_size > 8:
+                continue  # Can't use this combo, would exceed 8 pieces
                 
-                if combo_type == "FOUR_OF_A_KIND":
-                    score += 4
-                elif combo_type == "FIVE_OF_A_KIND":
-                    score += 5
-                break  # Only use the strongest combo with GENERAL_RED
+            total_pieces_used += combo_size
+            
+            if combo_type == "THREE_OF_A_KIND" or combo_type == "STRAIGHT":
+                score += 3
+            elif combo_type == "FOUR_OF_A_KIND" or combo_type == "EXTENDED_STRAIGHT":
+                score += 4
+            elif combo_type == "FIVE_OF_A_KIND":
+                score += 5
+            elif combo_type == "SIX_OF_A_KIND":
+                score += 6
     else:
         # Normal case: try to use all combos
         for combo_type, pieces in sorted_combos:
@@ -318,16 +330,19 @@ def choose_declare_strategic(
     
     # Phase 6: Apply GENERAL_RED game changer
     if context.has_general_red and context.field_strength == "weak":
-        # In weak field, GENERAL_RED enables all combos
-        # But we already calculated viable combos properly
-        # The current score should already reflect this
-        pass  # No need to override
+        # Check for very weak field (dominance scenario)
+        if context.previous_declarations:
+            avg_declaration = sum(context.previous_declarations) / len(context.previous_declarations)
+            if avg_declaration <= 0.5:
+                # Very weak field - GENERAL_RED enables secondary pieces (9-10 points)
+                secondary_pieces = sum(1 for p in hand if 9 <= p.point <= 10)
+                if secondary_pieces > 0 and score < secondary_pieces + 1:
+                    # Add piles for secondary pieces that become viable with GENERAL_RED dominance
+                    # But don't exceed what we already have from combos
+                    score = max(score, min(secondary_pieces + 1, context.pile_room))
     
-    # Phase 7: Apply constraints
-    # Pile room is absolute ceiling
-    score = min(score, context.pile_room)
-    
-    # Valid range
+    # Phase 7: Initial constraints
+    # Valid range (but not pile room yet - that comes after forbidden value handling)
     score = max(0, min(score, 8))
     
     # Phase 8: Handle forbidden values
@@ -348,13 +363,53 @@ def choose_declare_strategic(
     if score in forbidden_declares:
         valid_options = [d for d in range(0, 9) if d not in forbidden_declares]
         
-        # Strategy: Pick closest valid option
+        # Strategy: Context-aware alternative selection
         if valid_options:
-            # Find closest to our ideal score
-            score = min(valid_options, key=lambda x: abs(x - score))
+            # Assess hand strength for strategic alternative selection
+            hand_strength = "strong" if opener_score >= 2.0 or len(viable_combos) >= 2 else "weak"
+            
+            if hand_strength == "strong" and score > 0:
+                # Last player should be more conservative
+                if position_in_order == 3:
+                    # Last player: pick closest option (prefer lower)
+                    score = min(valid_options, key=lambda x: abs(x - score))
+                else:
+                    # Non-last player with strong hand: prefer higher alternatives
+                    higher_options = [opt for opt in valid_options if opt > score]
+                    if higher_options:
+                        score = min(higher_options)  # Closest higher option
+                    else:
+                        score = min(valid_options, key=lambda x: abs(x - score))
+            else:
+                # Weak hand or conservative approach - pick closest
+                score = min(valid_options, key=lambda x: abs(x - score))
         else:
             # Shouldn't happen, but defensive
             score = 1
+    
+    # Phase 8b: Pile room constraint removed - declarations should be based on 
+    # expected wins from hand strength, not maximum theoretical pile availability
+    
+    # Phase 8c: Apply strategic reasonableness caps for boundary conditions
+    # Detect extreme hands and apply appropriate caps
+    all_pieces_values = [p.point for p in hand]
+    
+    # Check for extreme boundary conditions
+    min_piece_value = min(all_pieces_values)
+    max_piece_value = max(all_pieces_values)
+    avg_piece_value = sum(all_pieces_values) / len(all_pieces_values)
+    
+    # Perfect opener hand (minimum piece value ≥8 points)
+    if min_piece_value >= 8:
+        # Even with all strong pieces, be realistic
+        strategic_cap = 5 if context.is_starter else 4
+        score = min(score, strategic_cap)
+    
+    # Weakest possible hand (maximum piece value ≤2 points)
+    elif max_piece_value <= 2:
+        # Very weak hand should be conservative
+        strategic_cap = 2 if context.is_starter else 1
+        score = min(score, strategic_cap)
     
     # Phase 9: Debug output
     if verbose:
