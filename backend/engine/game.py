@@ -403,9 +403,12 @@ class Game:
             turn_result = resolve_turn(self.current_turn_plays)
 
             if turn_result.winner:
-                self.pile_counts[turn_result.winner.player.name] += 1
+                # Award piles equal to the number of pieces played
+                piles_won = len(turn_result.winner.pieces)
+                self.pile_counts[turn_result.winner.player.name] += piles_won
                 self.last_turn_winner = turn_result.winner.player
                 result["turn_winner"] = turn_result.winner.player.name
+                result["piles_won"] = piles_won
 
             # Clear for next turn
             self.current_turn_plays.clear()
