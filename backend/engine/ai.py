@@ -7,6 +7,39 @@ from typing import Dict, List, Tuple, Any, Optional, Callable
 
 from backend.engine.rules import get_play_type, is_valid_play
 
+# Strong combo types that starters should prefer over individual openers
+STARTER_PREFERRED_COMBOS = [
+    "THREE_OF_A_KIND",
+    "STRAIGHT", 
+    "FOUR_OF_A_KIND",
+    "EXTENDED_STRAIGHT",
+    "FIVE_OF_A_KIND",
+    "DOUBLE_STRAIGHT"
+]
+
+def is_starter_preferred_combo(combo_type: str, pieces: List) -> bool:
+    """
+    Check if a combo is strong enough for a starter to prefer over individual openers.
+    
+    Args:
+        combo_type: Type of combination
+        pieces: List of pieces in the combo
+        
+    Returns:
+        True if the combo should be preferred by starters
+    """
+    # Always preferred combo types
+    if combo_type in STARTER_PREFERRED_COMBOS:
+        return True
+    
+    # High-value pairs (ELEPHANT_BLACK is 9 points)
+    if combo_type == "PAIR":
+        total_value = sum(p.point for p in pieces)
+        # ELEPHANT pairs = 18+ points total
+        return total_value >= 18
+    
+    return False
+
 
 # ------------------------------------------------------------------
 # Strategic AI Declaration System - Data Structures
@@ -104,6 +137,37 @@ def evaluate_opener_reliability(piece, field_strength: str) -> float:
             return 0.7  # Might lose to GENERALs
     else:
         return 0.0  # Not an opener
+
+
+def is_combo_viable_simplified(combo_type: str, pieces: List, has_opener: bool, field_strength: str) -> bool:
+    """
+    Simplified combo viability rules.
+    Key insight: Having an opener dramatically increases combo viability.
+    """
+    total_points = sum(p.point for p in pieces)
+    
+    if has_opener:
+        # With opener control, most combos are viable
+        if combo_type == "PAIR":
+            # In weak field, any pair works. In normal field, need decent pair
+            if field_strength == "weak":
+                return True
+            else:
+                return total_points >= 10  # HORSE pair (5+5) or better
+        elif combo_type == "THREE_OF_A_KIND":
+            return True  # Any THREE_OF_A_KIND works with opener control
+        elif combo_type in ["STRAIGHT", "FOUR_OF_A_KIND", "EXTENDED_STRAIGHT", "FIVE_OF_A_KIND"]:
+            return True  # Strong combos always viable with control
+    else:
+        # Without opener control, need exceptional combos
+        if combo_type == "PAIR":
+            return total_points >= 18  # ELEPHANT pair or better
+        elif combo_type == "THREE_OF_A_KIND":
+            return total_points >= 12  # Average 4+ per piece
+        elif combo_type in ["STRAIGHT", "FOUR_OF_A_KIND"]:
+            return total_points >= 20  # Strong straight/four
+            
+    return False
 
 
 def filter_viable_combos(combos: List[Tuple], context: DeclarationContext, 
@@ -208,142 +272,143 @@ def choose_declare_strategic(
     analysis_callback: Optional[Callable] = None,
 ) -> int:
     """
-    Strategic declaration logic implementing all principles from strategy guide.
+    Simplified strategic declaration logic:
+    - With opener + combo: declare 1 (control) + combo_size
+    - With opener no combo: declare opener_count  
+    - No opener: declare based on strong combos only
     """
-    # Phase 1: Build context
-    context = DeclarationContext(
-        position_in_order=position_in_order,
-        previous_declarations=previous_declarations,
-        is_starter=is_first_player,
-        pile_room=calculate_pile_room(previous_declarations),
-        field_strength=assess_field_strength(previous_declarations),
-        has_general_red=any(p.name == "GENERAL" and p.point == 14 for p in hand),
-        opponent_patterns=analyze_opponent_patterns(previous_declarations)
-    )
+    # Get bot name for logging (if available)
+    bot_name = "Bot" if not hasattr(hand[0], '_bot_name') else getattr(hand[0], '_bot_name', 'Bot')
     
-    # Phase 2: Find and filter combos
+    print(f"\n📢 DECLARATION DECISION for position {position_in_order}")
+    print(f"  Hand: {[f'{p.name}({p.point})' for p in hand]}")
+    print(f"  Previous declarations: {previous_declarations}")
+    print(f"  Must declare non-zero: {must_declare_nonzero}")
+    
+    # Phase 1: Identify openers (11+ points)
+    openers = [p for p in hand if p.point >= 11]
+    opener_count = len(openers)
+    
+    # Assess field strength
+    if not previous_declarations:
+        field_strength = "normal"
+    else:
+        avg = sum(previous_declarations) / len(previous_declarations)
+        if avg <= 1.5:
+            field_strength = "weak"
+        elif avg >= 3.0:
+            field_strength = "strong"
+        else:
+            field_strength = "normal"
+    
+    print(f"  Openers found: {opener_count} - {[f'{p.name}({p.point})' for p in openers]}")
+    print(f"  Field strength: {field_strength}")
+    
+    # Phase 2: Find all combos
     all_combos = find_all_valid_combos(hand)
     strong_combos = [c for c in all_combos if c[0] in {
-        "THREE_OF_A_KIND", "STRAIGHT", "FOUR_OF_A_KIND", 
+        "PAIR", "THREE_OF_A_KIND", "STRAIGHT", "FOUR_OF_A_KIND", 
         "EXTENDED_STRAIGHT", "FIVE_OF_A_KIND", "DOUBLE_STRAIGHT"
     }]
+    print(f"  Found {len(strong_combos)} strong combos")
     
-    # Remove overlapping THREE_OF_A_KIND if FOUR_OF_A_KIND or FIVE_OF_A_KIND exists
-    has_four_kind = any(c[0] == "FOUR_OF_A_KIND" for c in strong_combos)
-    has_five_kind = any(c[0] == "FIVE_OF_A_KIND" for c in strong_combos)
+    # Phase 3: Filter viable combos with simplified rules
+    viable_combos = []
+    for combo_type, pieces in strong_combos:
+        if is_combo_viable_simplified(combo_type, pieces, opener_count > 0, field_strength):
+            viable_combos.append((combo_type, pieces))
     
-    if has_five_kind or has_four_kind:
-        # Filter out THREE_OF_A_KIND that overlap with larger kinds
-        filtered_combos = []
-        for combo_type, pieces in strong_combos:
-            if combo_type == "THREE_OF_A_KIND":
-                # Check if all pieces are SOLDIERs (the overlapping case)
-                if all(p.name == "SOLDIER" for p in pieces):
-                    continue  # Skip overlapping THREE_OF_A_KIND
-            filtered_combos.append((combo_type, pieces))
-        strong_combos = filtered_combos
+    print(f"  Viable combos: {len(viable_combos)}")
+    for combo_type, pieces in viable_combos:
+        print(f"    - {combo_type}: {[f'{p.name}({p.point})' for p in pieces]}")
     
-    # Phase 3: Evaluate openers
-    opener_score = 0
-    has_reliable_opener = False
-    opener_count = 0
-    for piece in hand:
-        if piece.point >= 11:
-            reliability = evaluate_opener_reliability(piece, context.field_strength)
-            if reliability > 0:
-                has_reliable_opener = True
-                opener_count += 1
-                opener_score += reliability
+    # Phase 4: Calculate declaration with simplified logic
+    print(f"\n  📊 SIMPLIFIED CALCULATION:")
     
-    # Phase 3b: Apply multi-opener synergy bonus
-    if opener_count >= 2:
-        # Multiple premium openers provide strategic flexibility
-        # Slightly higher bonus to ensure rounding works correctly
-        synergy_bonus = 0.6 if opener_count == 2 else 0.8 if opener_count == 3 else 1.0
-        opener_score += synergy_bonus
+    # Find best combo (largest that fits in 8 pieces)
+    best_combo = None
+    best_combo_size = 0
     
-    # Phase 4: Filter viable combos
-    viable_combos = filter_viable_combos(
-        strong_combos, context, has_reliable_opener
-    )
+    # Check for overlap between openers and combos
+    opener_pieces = set(openers)
     
-    # Phase 5: Calculate base score
-    score = 0
+    for combo_type, pieces in viable_combos:
+        combo_size = len(pieces)
+        combo_pieces_set = set(pieces)
+        
+        # Check if combo uses any opener pieces
+        overlap = combo_pieces_set.intersection(opener_pieces)
+        
+        if overlap and opener_count > 0:
+            # Combo overlaps with openers - must choose one or the other
+            print(f"    Note: {combo_type} overlaps with openers: {[f'{p.name}({p.point})' for p in overlap]}")
+            # For declaration, we can still count it as potential wins, just not both
+            if combo_size > best_combo_size:
+                best_combo = (combo_type, pieces)
+                best_combo_size = combo_size
+        else:
+            # No overlap - can use both openers and combo
+            if opener_count > 0 and (opener_count + combo_size) <= 8:
+                if combo_size > best_combo_size:
+                    best_combo = (combo_type, pieces)
+                    best_combo_size = combo_size
+            elif opener_count == 0 and combo_size <= 8:
+                if combo_size > best_combo_size:
+                    best_combo = (combo_type, pieces)
+                    best_combo_size = combo_size
     
-    # Add piles from viable combos (but respect 8-piece limit)
-    total_pieces_used = 0
-    sorted_combos = sorted(viable_combos, key=lambda x: len(x[1]), reverse=True)  # Largest first
-    
-    # Special case: if we have GENERAL_RED and strong combos, be more aggressive
-    if context.has_general_red and any(c[0] in ["FOUR_OF_A_KIND", "FIVE_OF_A_KIND"] for c in viable_combos):
-        # GENERAL_RED enables ALL viable combos due to guaranteed control
-        for combo_type, pieces in sorted_combos:
-            combo_size = len(pieces)
-            if total_pieces_used + combo_size > 8:
-                continue  # Can't use this combo, would exceed 8 pieces
-                
-            total_pieces_used += combo_size
+    # Calculate declaration
+    if best_combo and opener_count > 0:
+        # Check for overlap
+        combo_pieces_set = set(best_combo[1])
+        overlap = combo_pieces_set.intersection(opener_pieces)
+        
+        if overlap:
+            # Must choose between openers OR combo
+            # Compare: individual openers vs combo
+            openers_in_combo = len(overlap)
+            openers_not_in_combo = opener_count - openers_in_combo
             
-            if combo_type == "THREE_OF_A_KIND" or combo_type == "STRAIGHT":
-                score += 3
-            elif combo_type == "FOUR_OF_A_KIND" or combo_type == "EXTENDED_STRAIGHT":
-                score += 4
-            elif combo_type == "FIVE_OF_A_KIND":
-                score += 5
-            elif combo_type == "SIX_OF_A_KIND":
-                score += 6
+            # Piles from playing combo vs playing openers separately
+            combo_piles = len(best_combo[1])  # Number of pieces = piles captured
+            separate_piles = opener_count  # Each opener captures 1 pile
+            
+            # Starters should prefer strong combos when they have control
+            if is_first_player and is_starter_preferred_combo(best_combo[0], best_combo[1]):
+                # Starter with strong combo should use it
+                score = openers_not_in_combo + combo_piles
+                print(f"    Decision: Starter prefers {best_combo[0]} ({combo_piles} piles) + {openers_not_in_combo} free openers = {score}")
+            elif separate_piles >= combo_piles:
+                score = separate_piles
+                print(f"    Decision: {opener_count} openers separately ({separate_piles} piles) > {best_combo[0]} ({combo_piles} piles) = {score}")
+            else:
+                score = openers_not_in_combo + combo_piles
+                print(f"    Decision: {openers_not_in_combo} free openers + {best_combo[0]} ({combo_piles} piles) = {score}")
+        else:
+            # No overlap - can use all openers + combo
+            combo_piles = len(best_combo[1])
+            score = opener_count + combo_piles  # All openers + combo piles
+            print(f"    Decision: {opener_count} openers + {best_combo[0]} ({combo_piles} piles) = {score}")
+    elif opener_count > 0:
+        # Has opener(s) but no combo: each opener is a potential win
+        score = opener_count
+        print(f"    Decision: {opener_count} openers, no viable combos = {score}")
+    elif best_combo:
+        # No openers but has strong combo
+        combo_piles = len(best_combo[1])  # Number of pieces = piles captured
+        score = combo_piles
+        print(f"    Decision: No openers, but {best_combo[0]} ({combo_piles} piles) = {score}")
     else:
-        # Normal case: try to use all combos
-        for combo_type, pieces in sorted_combos:
-            combo_size = len(pieces)
-            if total_pieces_used + combo_size > 8:
-                continue  # Can't use this combo, would exceed 8 pieces
-                
-            total_pieces_used += combo_size
-            
-            if combo_type in ["THREE_OF_A_KIND", "STRAIGHT"]:
-                score += 3
-            elif combo_type in ["FOUR_OF_A_KIND", "EXTENDED_STRAIGHT"]:
-                score += 4
-            elif combo_type in ["FIVE_OF_A_KIND", "EXTENDED_STRAIGHT_5"]:
-                score += 5
-            elif combo_type == "DOUBLE_STRAIGHT":
-                score += 6
+        # Weak hand
+        score = 0
+        print(f"    Decision: Weak hand, no openers or combos = {score}")
     
-    # Add opener piles (round to nearest integer)
-    score += round(opener_score)
-    
-    # Phase 5b: Consider singles in weak fields or as starter
-    if score == 0:
-        if context.field_strength == "weak":
-            # Count decent singles that might win in weak field
-            decent_singles = sum(1 for p in hand if 7 <= p.point <= 10)
-            if decent_singles >= 3:
-                score = 2  # Can win with multiple medium pieces in very weak field
-            elif decent_singles > 0:
-                score = 1  # Conservative estimate
-        elif context.is_starter:
-            # As starter, might win with best piece
-            best_piece = max((p.point for p in hand), default=0)
-            if best_piece >= 9:
-                score = 1  # Starter can lead with best piece
-    
-    # Phase 6: Apply GENERAL_RED game changer
-    if context.has_general_red and context.field_strength == "weak":
-        # Check for very weak field (dominance scenario)
-        if context.previous_declarations:
-            avg_declaration = sum(context.previous_declarations) / len(context.previous_declarations)
-            if avg_declaration <= 0.5:
-                # Very weak field - GENERAL_RED enables secondary pieces (9-10 points)
-                secondary_pieces = sum(1 for p in hand if 9 <= p.point <= 10)
-                if secondary_pieces > 0 and score < secondary_pieces + 1:
-                    # Add piles for secondary pieces that become viable with GENERAL_RED dominance
-                    # But don't exceed what we already have from combos
-                    score = max(score, min(secondary_pieces + 1, context.pile_room))
-    
-    # Phase 7: Initial constraints
-    # Valid range (but not pile room yet - that comes after forbidden value handling)
-    score = max(0, min(score, 8))
+    # Phase 5: Handle edge cases
+    if score == 0 and field_strength == "weak":
+        # In very weak field, might win with decent singles
+        decent_singles = sum(1 for p in hand if 7 <= p.point <= 10)
+        if decent_singles >= 3:
+            score = 1  # Conservative estimate
     
     # Phase 8: Handle forbidden values
     forbidden_declares = set()
@@ -366,7 +431,7 @@ def choose_declare_strategic(
         # Strategy: Context-aware alternative selection
         if valid_options:
             # Assess hand strength for strategic alternative selection
-            hand_strength = "strong" if opener_score >= 2.0 or len(viable_combos) >= 2 else "weak"
+            hand_strength = "strong" if opener_count >= 2 or len(viable_combos) >= 2 else "weak"
             
             if hand_strength == "strong" and score > 0:
                 # Last player should be more conservative
@@ -390,53 +455,30 @@ def choose_declare_strategic(
     # Phase 8b: Pile room constraint removed - declarations should be based on 
     # expected wins from hand strength, not maximum theoretical pile availability
     
-    # Phase 8c: Apply strategic reasonableness caps for boundary conditions
-    # Detect extreme hands and apply appropriate caps
-    all_pieces_values = [p.point for p in hand]
-    
-    # Check for extreme boundary conditions
-    min_piece_value = min(all_pieces_values)
-    max_piece_value = max(all_pieces_values)
-    avg_piece_value = sum(all_pieces_values) / len(all_pieces_values)
-    
-    # Perfect opener hand (minimum piece value ≥8 points)
-    if min_piece_value >= 8:
-        # Even with all strong pieces, be realistic
-        strategic_cap = 5 if context.is_starter else 4
-        score = min(score, strategic_cap)
-    
-    # Weakest possible hand (maximum piece value ≤2 points)
-    elif max_piece_value <= 2:
-        # Very weak hand should be conservative
-        strategic_cap = 2 if context.is_starter else 1
-        score = min(score, strategic_cap)
+    # No need for strategic caps with simplified logic
     
     # Phase 9: Debug output
+    print(f"\n  🎯 FINAL DECLARATION: {score}")
+    
     if verbose:
         print(f"\n🎯 STRATEGIC DECLARATION ANALYSIS")
-        print(f"Position: {position_in_order} (Starter: {context.is_starter})")
+        print(f"Position: {position_in_order} (Starter: {is_first_player})")
         print(f"Previous declarations: {previous_declarations}")
-        print(f"Pile room: {context.pile_room}")
-        print(f"Field strength: {context.field_strength}")
-        print(f"Has GENERAL_RED: {context.has_general_red}")
-        print(f"Combo opportunity: {context.opponent_patterns['combo_opportunity']}")
+        print(f"Field strength: {field_strength}")
+        print(f"Openers: {opener_count}")
         print(f"Found {len(strong_combos)} combos, {len(viable_combos)} viable")
-        print(f"Opener score: {opener_score}")
         print(f"Final declaration: {score}")
     
     # Phase 10: Optional analysis callback
     if analysis_callback:
         analysis_data = {
             'position_in_order': position_in_order,
-            'is_starter': context.is_starter,
+            'is_starter': is_first_player,
             'previous_declarations': previous_declarations,
-            'pile_room': context.pile_room,
-            'field_strength': context.field_strength,
-            'has_general_red': context.has_general_red,
-            'combo_opportunity': context.opponent_patterns['combo_opportunity'],
+            'field_strength': field_strength,
+            'opener_count': opener_count,
             'strong_combos_found': len(strong_combos),
             'viable_combos_count': len(viable_combos),
-            'opener_score': opener_score,
             'final_decision': score
         }
         analysis_callback(analysis_data)
