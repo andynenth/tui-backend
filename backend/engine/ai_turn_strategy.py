@@ -9,6 +9,47 @@ from backend.engine.ai import assess_field_strength, is_starter_preferred_combo
 
 
 # ------------------------------------------------------------------
+# Helper Functions for Single Opener Random Timing
+# ------------------------------------------------------------------
+def should_randomly_play_opener(hand_size: int) -> bool:
+    """
+    Determine if bot should randomly play opener based on game stage.
+    
+    Args:
+        hand_size: Number of pieces in hand
+        
+    Returns:
+        True if random check succeeds, False otherwise
+    """
+    # Probability increases as game progresses
+    if hand_size >= 6:
+        threshold = 0.35  # 35% early game
+    elif hand_size >= 4:
+        threshold = 0.40  # 40% mid game
+    else:
+        threshold = 0.50  # 50% late game
+    
+    return random.random() < threshold
+
+
+def detect_opener_only_plan(plan: 'StrategicPlan') -> bool:
+    """
+    Check if bot has an opener-only plan (no viable combos).
+    
+    Args:
+        plan: Strategic plan with piece assignments
+        
+    Returns:
+        True if only openers available, False otherwise
+    """
+    return (
+        len(plan.assigned_openers) > 0 and
+        len(plan.assigned_combos) == 0 and
+        plan.main_plan_size == len(plan.assigned_openers)
+    )
+
+
+# ------------------------------------------------------------------
 # Strategic AI Turn Play System - Data Structures
 # ------------------------------------------------------------------
 @dataclass
@@ -725,6 +766,26 @@ def execute_responder_strategy(plan: StrategicPlan, context: TurnPlayContext, ha
     print(f"  Urgency: {plan.urgency_level}, Target remaining: {plan.target_remaining}")
     print(f"  Overcapture risk: {constraints.risk_level}")
     
+    # Check for opener timing when required to play singles
+    if required == 1:
+        # Check if we have opener-only plan
+        opener_only_plan = detect_opener_only_plan(plan)
+        
+        if opener_only_plan and should_randomly_play_opener(len(context.my_hand)):
+            # Random timing triggered!
+            hand_size = len(context.my_hand)
+            probability = 35 if hand_size >= 6 else 40 if hand_size >= 4 else 50
+            print(f"  🎲 {context.my_name} (RESPONDER) randomly playing opener due to timing")
+            print(f"     - Hand size: {hand_size}, Probability was {probability}%")
+            print(f"     - Opener-only plan with {len(plan.assigned_openers)} openers")
+            
+            # Play the strongest opener available in hand
+            openers_in_hand = [p for p in plan.assigned_openers if p in context.my_hand]
+            if openers_in_hand:
+                opener_to_play = max(openers_in_hand, key=lambda p: p.point)
+                print(f"  🎯 Playing opener: {opener_to_play.name}({opener_to_play.point})")
+                return [opener_to_play]
+    
     # Critical urgency: need to win remaining turns
     if plan.urgency_level == "critical" and plan.target_remaining > 0:
         print(f"  💥 CRITICAL URGENCY - must try to win!")
@@ -872,26 +933,47 @@ def execute_starter_strategy(plan: StrategicPlan, context: TurnPlayContext, hand
     Returns:
         List of pieces to play
     """
+    # FIRST: Detect if we have opener-only plan
+    opener_only_plan = detect_opener_only_plan(plan)
+    
+    # Debug logging
+    if opener_only_plan:
+        print(f"\n🎯 {context.my_name} has opener-only plan with {len(plan.assigned_openers)} openers")
+        print(f"  Openers: {[f'{p.name}({p.point})' for p in plan.assigned_openers]}")
+    
     # Since we're the starter, we need to choose how many pieces to play
     # Consider constraints when choosing piece count
     if context.required_piece_count is None:  # We're setting the count
-        # Check if we're at or above target (negative piles needed)
-        piles_needed = context.my_declared - context.my_captured
+        hand_size = len(context.my_hand)
         
-        if piles_needed <= 0:
-            # At or above target - minimize pieces played
+        # Check for random opener timing
+        if opener_only_plan and should_randomly_play_opener(hand_size):
+            probability = 35 if hand_size >= 6 else 40 if hand_size >= 4 else 50
+            print(f"🎲 {context.my_name} (STARTER) randomly choosing singles")
+            print(f"   - Hand size: {hand_size}, Probability was {probability}%")
             required = 1
-            print(f"  🛡️ At/above target - choosing minimum 1 piece")
-        elif constraints.risk_level != "none":
-            # Below target but at risk - prefer playing safe piece counts
-            max_safe = constraints.max_safe_pieces
-            if max_safe >= 1:
-                required = min(max_safe, len(context.my_hand), 6)  # Cap at 6
-            else:
-                required = 1  # At least play 1
-            print(f"  🛡️ Applying constraints: choosing to play {required} pieces (max safe: {max_safe})")
         else:
-            required = 1  # Default for starters
+            # Normal starter logic
+            if opener_only_plan:
+                print(f"🎲 {context.my_name} (STARTER) random check failed, using normal strategy")
+            
+            # Check if we're at or above target (negative piles needed)
+            piles_needed = context.my_declared - context.my_captured
+            
+            if piles_needed <= 0:
+                # At or above target - minimize pieces played
+                required = 1
+                print(f"  🛡️ At/above target - choosing minimum 1 piece")
+            elif constraints.risk_level != "none":
+                # Below target but at risk - prefer playing safe piece counts
+                max_safe = constraints.max_safe_pieces
+                if max_safe >= 1:
+                    required = min(max_safe, len(context.my_hand), 6)  # Cap at 6
+                else:
+                    required = 1  # At least play 1
+                print(f"  🛡️ Applying constraints: choosing to play {required} pieces (max safe: {max_safe})")
+            else:
+                required = 1  # Default for starters
     else:
         required = context.required_piece_count
     
@@ -920,50 +1002,6 @@ def execute_starter_strategy(plan: StrategicPlan, context: TurnPlayContext, hand
             print(f"  ⚡ Playing strongest combo (value={best_value}): {[p.name for p in best_combo]}")
             return best_combo
     
-    # Opener timing logic based on plan type
-    # Check if plan is opener-only
-    opener_only_plan = len(plan.assigned_combos) == 0
-    
-    # Debug logging for opener timing
-    print(f"\n🎲 OPENER TIMING CHECK for {context.my_name}:")
-    print(f"  - Required piece count: {context.required_piece_count}")
-    print(f"  - Has assigned openers: {len(plan.assigned_openers) if plan.assigned_openers else 0}")
-    if plan.assigned_openers:
-        print(f"  - Assigned openers: {[f'{p.name}({p.point})' for p in plan.assigned_openers]}")
-    print(f"  - Opener-only plan: {opener_only_plan}")
-    print(f"  - Hand size: {len(context.my_hand)}")
-    
-    if context.required_piece_count == 1 and plan.assigned_openers:
-        if opener_only_plan:
-            # Opener-only plan: play more freely throughout the game
-            hand_size = len(context.my_hand)
-            if hand_size >= 6:
-                chance = 0.35  # 35% chance early
-            elif hand_size >= 4:
-                chance = 0.40  # 40% chance mid-game
-            else:
-                chance = 0.50  # 50% chance late game
-            
-            # Generate random value and log it
-            random_value = random.random()
-            print(f"  - Random value: {random_value:.3f} vs threshold: {chance:.3f}")
-            print(f"  - Will play opener: {random_value < chance}")
-                
-            if random_value < chance:
-                print(f"👑 {context.my_name} (opener-only plan) plays opener randomly: {plan.assigned_openers[0].name}")
-                return [plan.assigned_openers[0]]
-        else:
-            # Mixed plan: protect combos
-            print(f"  - Mixed plan check: hand_size ({len(context.my_hand)}) > main_plan_size ({plan.main_plan_size})")
-            if len(context.my_hand) > plan.main_plan_size:
-                # Generate random value and log it
-                random_value = random.random()
-                print(f"  - Random value: {random_value:.3f} vs threshold: 0.3")
-                print(f"  - Will play opener: {random_value < 0.3}")
-                
-                if random_value < 0.3:  # 30% chance
-                    print(f"👑 {context.my_name} plays opener for turn control: {plan.assigned_openers[0].name}")
-                    return [plan.assigned_openers[0]]
     
     # Check if we have an assigned combo that matches required pieces
     if plan.assigned_combos:

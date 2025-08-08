@@ -31,18 +31,22 @@ def create_player_from_hand_string(name: str, hand_str: str, declared: int) -> P
     player.declared = declared
     return player
 
-def test_round_scenario(round_name: str, players_data: list, iterations: int = 10):
-    """Test a specific round scenario multiple times"""
+def test_round_scenario(round_name: str, players_data: list, iterations: int = 100):
+    """Test a specific round scenario multiple times with enhanced tracking"""
     print(f"\n{'='*80}")
     print(f"TESTING {round_name}")
     print(f"{'='*80}")
     
-    # Track results
-    opener_play_counts = {p[0]: 0 for p in players_data}
-    total_starter_turns = {p[0]: 0 for p in players_data}
+    # Enhanced tracking - separate starter and responder
+    starter_opener_plays = {p[0]: 0 for p in players_data}
+    starter_opportunities = {p[0]: 0 for p in players_data}
+    responder_opener_plays = {p[0]: 0 for p in players_data}
+    responder_opportunities = {p[0]: 0 for p in players_data}
+    starter_forced_singles = {p[0]: 0 for p in players_data}  # Track when starter forces singles
     
     for iteration in range(iterations):
-        print(f"\n--- Iteration {iteration + 1} ---")
+        if iteration % 20 == 0:  # Less verbose output
+            print(f"\n--- Iteration {iteration + 1} ---")
         
         # Create players
         players = []
@@ -54,9 +58,20 @@ def test_round_scenario(round_name: str, players_data: list, iterations: int = 1
         for turn_num in range(1, 4):  # Test first 3 turns
             for starter_idx, starter in enumerate(players):
                 # Skip if bot has no pieces
-                if len(starter.hand) < 1:
+                if len(starter.hand) < 2:
                     continue
                     
+                # Check if starter has opener-only plan
+                from backend.engine.ai_turn_strategy import form_execution_plan, evaluate_hand
+                hand_eval = evaluate_hand(starter.hand)
+                plan = form_execution_plan(starter.hand, hand_eval, starter.declared - 0, turn_num)
+                
+                has_opener_only = (
+                    len(plan.assigned_openers) > 0 and
+                    len(plan.assigned_combos) == 0 and
+                    plan.main_plan_size == len(plan.assigned_openers)
+                )
+                
                 # Create context for starter
                 context = TurnPlayContext(
                     my_name=starter.name,
@@ -72,28 +87,84 @@ def test_round_scenario(round_name: str, players_data: list, iterations: int = 1
                     player_states={p.name: {"captured": 0, "declared": p.declared} for p in players}
                 )
                 
-                print(f"\nTurn {turn_num} - {starter.name} as STARTER")
-                print(f"  Hand: {[f'{p.name}({p.point})' for p in starter.hand]}")
-                
-                # Get strategic play
+                # Get strategic play for starter
                 result = choose_strategic_play(starter.hand, context)
                 
-                # Track if opener was played
-                if result and len(result) == 1 and result[0].point >= 11:
-                    opener_play_counts[starter.name] += 1
-                    print(f"  🎯 OPENER PLAYED: {result[0].name}")
+                # Track starter behavior
+                if has_opener_only:
+                    starter_opportunities[starter.name] += 1
+                    if result and len(result) == 1:
+                        starter_forced_singles[starter.name] += 1
+                        if result[0].point >= 11:
+                            starter_opener_plays[starter.name] += 1
                 
-                total_starter_turns[starter.name] += 1
+                # Now simulate responders if starter played singles
+                if result and len(result) == 1:
+                    # Test each other player as responder
+                    for responder in players:
+                        if responder.name == starter.name or len(responder.hand) < 1:
+                            continue
+                        
+                        # Check if responder has opener-only plan
+                        resp_eval = evaluate_hand(responder.hand)
+                        resp_plan = form_execution_plan(responder.hand, resp_eval, responder.declared - 0, turn_num)
+                        
+                        resp_has_opener_only = (
+                            len(resp_plan.assigned_openers) > 0 and
+                            len(resp_plan.assigned_combos) == 0 and
+                            resp_plan.main_plan_size == len(resp_plan.assigned_openers)
+                        )
+                        
+                        if resp_has_opener_only:
+                            responder_opportunities[responder.name] += 1
+                            
+                            # Create responder context
+                            resp_context = TurnPlayContext(
+                                my_name=responder.name,
+                                my_hand=responder.hand,
+                                my_captured=0,
+                                my_declared=responder.declared,
+                                required_piece_count=1,  # Singles required
+                                turn_number=turn_num,
+                                pieces_per_player=8 - turn_num + 1,
+                                am_i_starter=False,
+                                current_plays=[{"player": starter.name, "pieces": result}],
+                                revealed_pieces=result,
+                                player_states={p.name: {"captured": 0, "declared": p.declared} for p in players}
+                            )
+                            
+                            # Get responder play
+                            resp_result = choose_strategic_play(responder.hand, resp_context)
+                            
+                            if resp_result and len(resp_result) == 1 and resp_result[0].point >= 11:
+                                responder_opener_plays[responder.name] += 1
     
-    # Print summary
+    # Print enhanced summary
     print(f"\n{'='*60}")
     print(f"SUMMARY for {round_name} ({iterations} iterations)")
     print(f"{'='*60}")
     
-    for name in opener_play_counts:
-        if total_starter_turns[name] > 0:
-            percentage = (opener_play_counts[name] / total_starter_turns[name]) * 100
-            print(f"{name}: {opener_play_counts[name]}/{total_starter_turns[name]} opener plays ({percentage:.1f}%)")
+    print("\nSTARTER OPENER TIMING:")
+    for name in starter_opener_plays:
+        if starter_opportunities[name] > 0:
+            singles_rate = (starter_forced_singles[name] / starter_opportunities[name]) * 100
+            opener_rate = (starter_opener_plays[name] / starter_opportunities[name]) * 100
+            print(f"  {name}: {starter_forced_singles[name]}/{starter_opportunities[name]} forced singles ({singles_rate:.1f}%)")
+            print(f"        {starter_opener_plays[name]}/{starter_opportunities[name]} opener plays ({opener_rate:.1f}%)")
+            
+            # Verify randomness (should be 35-50% depending on hand size)
+            if starter_opportunities[name] > 20:  # Need enough samples
+                assert 25 <= singles_rate <= 60, f"Starter singles rate {singles_rate:.1f}% outside expected 35-50% range"
+    
+    print("\nRESPONDER OPENER TIMING:")
+    for name in responder_opener_plays:
+        if responder_opportunities[name] > 0:
+            rate = (responder_opener_plays[name] / responder_opportunities[name]) * 100
+            print(f"  {name}: {responder_opener_plays[name]}/{responder_opportunities[name]} opener plays ({rate:.1f}%)")
+            
+            # Verify randomness
+            if responder_opportunities[name] > 20:
+                assert 25 <= rate <= 60, f"Responder rate {rate:.1f}% outside expected 35-50% range"
 
 def main():
     """Test multiple scenarios from game history"""
@@ -119,10 +190,10 @@ def main():
         ("Bot 4", "[SOLDIER_BLACK(1), SOLDIER_BLACK(1), ADVISOR_BLACK(11), SOLDIER_RED(2), HORSE_RED(6), CHARIOT_RED(8), ADVISOR_RED(12), ADVISOR_RED(12)]", 3),
     ]
     
-    # Run tests
-    test_round_scenario("Round 2", round_2_data, iterations=20)
-    test_round_scenario("Round 5", round_5_data, iterations=20)
-    test_round_scenario("Round 8", round_8_data, iterations=20)
+    # Run tests with more iterations for statistical validity
+    test_round_scenario("Round 2", round_2_data, iterations=100)
+    test_round_scenario("Round 5", round_5_data, iterations=100)
+    test_round_scenario("Round 8", round_8_data, iterations=100)
     
     print("\n" + "="*80)
     print("EXPECTED RESULTS (if random timing working):")
