@@ -680,7 +680,21 @@ class GameBotHandler:
             if use_strategic_ai and TurnPlayContext:
                 pile_counts = game_state.pile_counts if hasattr(game_state, 'pile_counts') else {}
                 bot_captured = pile_counts.get(bot.name, 0)
-                print(f"📊 Building context for {bot.name}: pile_counts={pile_counts}, bot_captured={bot_captured}, bot_declared={bot.declared}")
+                
+                # DEBUG: Add detailed logging for overcapture investigation
+                print(f"\n🔍 DEBUG: Bot Turn Decision for {bot.name}")
+                print(f"  📊 pile_counts from game_state: {pile_counts}")
+                print(f"  🎯 {bot.name}: captured={bot_captured}, declared={bot.declared}")
+                print(f"  🎮 Game turn_number: {getattr(game_state, 'turn_number', 'unknown')}")
+                print(f"  📝 Required piece count: {required_piece_count}")
+                
+                # Check if bot is at target
+                if bot_captured == bot.declared:
+                    print(f"  ⚠️ {bot.name} IS AT TARGET! Should play weak pieces to avoid overcapture!")
+                elif bot_captured > bot.declared:
+                    print(f"  🚨 {bot.name} ALREADY OVERCAPTURED by {bot_captured - bot.declared} piles!")
+                else:
+                    print(f"  ✅ {bot.name} needs {bot.declared - bot_captured} more piles")
                 
                 context = TurnPlayContext(
                     my_name=bot.name,
