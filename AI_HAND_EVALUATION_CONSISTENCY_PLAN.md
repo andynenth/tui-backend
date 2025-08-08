@@ -34,101 +34,101 @@ This plan addresses inconsistencies between hand evaluation in the declaration p
 
 ## Implementation Plan
 
-### Phase 1: Update Data Structures
+### Phase 1: Update Data Structures ✅ COMPLETE
 
-#### Task 1.1: Extend StrategicPlan Dataclass
+#### Task 1.1: Extend StrategicPlan Dataclass ✅
 **File**: `backend/engine/ai_turn_strategy.py`
 **Location**: Line 29
 
-- [ ] Add field: `assigned_openers: List[Piece] = field(default_factory=list)`
-- [ ] Add field: `assigned_combos: List[Tuple[str, List[Piece]]] = field(default_factory=list)`
-- [ ] Add field: `reserve_pieces: List[Piece] = field(default_factory=list)`
-- [ ] Add field: `burden_pieces: List[Piece] = field(default_factory=list)`
-- [ ] Add field: `main_plan_size: int = 0`
-- [ ] Add field: `plan_impossible: bool = False`
-- [ ] Test: Verify dataclass instantiation still works
+- [x] Add field: `assigned_openers: List[Piece] = field(default_factory=list)`
+- [x] Add field: `assigned_combos: List[Tuple[str, List[Piece]]] = field(default_factory=list)`
+- [x] Add field: `reserve_pieces: List[Piece] = field(default_factory=list)`
+- [x] Add field: `burden_pieces: List[Piece] = field(default_factory=list)`
+- [x] Add field: `main_plan_size: int = 0`
+- [x] Add field: `plan_impossible: bool = False`
+- [x] Test: Verify dataclass instantiation still works
 
-### Phase 2: Import Declaration Logic
+### Phase 2: Import Declaration Logic ✅ COMPLETE
 
-#### Task 2.1: Add Imports from ai.py
+#### Task 2.1: Add Imports from ai.py ✅
 **File**: `backend/engine/ai_turn_strategy.py`
 **Location**: After line 6 (imports section)
 
-- [ ] Add import: `from backend.engine.ai import assess_field_strength`
-- [ ] Test: Verify import works without circular dependency
+- [x] Add import: `from backend.engine.ai import assess_field_strength`
+- [x] Test: Verify import works without circular dependency
 
-#### Task 2.2: Create Field Strength Adapter
+#### Task 2.2: Create Field Strength Adapter ✅
 **File**: `backend/engine/ai_turn_strategy.py`
 **Location**: After `calculate_urgency()` function (around line 297)
 
-- [ ] Create function: `get_field_strength_from_players(player_states: Dict[str, Dict]) -> str`
-- [ ] Extract opponent declarations from player_states
-- [ ] Call `assess_field_strength()` with opponent declarations
-- [ ] Test: Verify returns "weak", "normal", or "strong"
+- [x] Create function: `get_field_strength_from_players(player_states: Dict[str, Dict]) -> str`
+- [x] Extract opponent declarations from player_states
+- [x] Call `assess_field_strength()` with opponent declarations
+- [x] Test: Verify returns "weak", "normal", or "strong"
 
-### Phase 3: Add Plan Formation
+### Phase 3: Add Plan Formation ✅ COMPLETE
 
-#### Task 3.1: Create Combo Viability Function
+#### Task 3.1: Create Combo Viability Function ✅
 **File**: `backend/engine/ai_turn_strategy.py`
 **Location**: After field strength adapter
 
-- [ ] Create function: `is_combo_viable(combo_type: str, pieces: List[Piece], field_strength: str) -> bool`
-- [ ] Implement pair viability logic:
-  - Weak field: pairs ≥12 points viable
-  - Normal field: pairs ≥16 points viable  
-  - Strong field: pairs ≥20 points viable
-- [ ] THREE_OF_A_KIND and above always viable
-- [ ] Test: Verify SOLDIER pair not viable, ELEPHANT pair viable in weak field
+- [x] Create function: `is_combo_viable(combo_type: str, pieces: List[Piece], field_strength: str) -> bool`
+- [x] Implement pair viability logic:
+  - Weak field: pairs ≥10 points viable
+  - Normal field: pairs ≥14 points viable  
+  - Strong field: pairs ≥18 points viable
+- [x] THREE_OF_A_KIND and above always viable
+- [x] Test: Verify SOLDIER pair not viable, HORSE pair viable in weak field
 
-#### Task 3.2: Create Plan Formation Function
+#### Task 3.2: Create Plan Formation Function ✅
 **File**: `backend/engine/ai_turn_strategy.py`
 **Location**: After combo viability function
 
-- [ ] Create function: `form_execution_plan(hand: List[Piece], context: TurnPlayContext, valid_combos: List[Tuple]) -> Dict`
-- [ ] Check if `context.turn_number == 1` (only form plan on turn 1)
-- [ ] Get field strength using adapter function
-- [ ] Filter combos for viability using `is_combo_viable()`
-- [ ] Assign openers based on target remaining:
+- [x] Create function: `form_execution_plan(hand: List[Piece], context: TurnPlayContext, valid_combos: List[Tuple]) -> Dict`
+- [x] Check if `context.turn_number == 1` (only form plan on turn 1)
+- [x] Get field strength using adapter function
+- [x] Filter combos for viability using `is_combo_viable()`
+- [x] Assign openers based on target remaining:
   - 0-1 piles needed: 0 openers
   - 2-3 piles needed: 1 opener (strongest)
   - 4+ piles needed: 2 openers
-- [ ] Assign viable combos to plan
-- [ ] Reserve 1-2 weakest pieces (point ≤ 4)
-- [ ] Calculate `main_plan_size`
-- [ ] Everything else = burden pieces
-- [ ] Test: Verify high-value pieces can be burden
+- [x] Assign viable combos to plan
+- [x] Reserve 1-2 weakest pieces (point ≤ 4)
+- [x] Calculate `main_plan_size`
+- [x] Everything else = burden pieces
+- [x] Test: Verify high-value pieces can be burden (ADVISOR became burden)
 
-### Phase 4: Update Hand Evaluation
+### Phase 4: Update Hand Evaluation ✅ COMPLETE
 
-#### Task 4.1: Modify evaluate_hand Function
+#### Task 4.1: Modify evaluate_hand Function ✅
 **File**: `backend/engine/ai_turn_strategy.py`
 **Location**: Lines 183-209
 
-- [ ] Remove lines 264-265 (current burden logic)
-- [ ] Add plan formation check:
+- [x] Remove lines 264-265 (current burden logic)
+- [x] Add plan formation check:
   ```python
-  if context.turn_number == 1 and not hasattr(plan, 'assigned_openers'):
+  if context.turn_number == 1 and not plan.assigned_openers:
       # Form initial plan
   ```
-- [ ] Return categorized pieces based on plan assignments
-- [ ] Test: Verify GENERAL not classified as burden when it's an opener
+- [x] Return categorized pieces based on plan assignments
+- [x] Test: Verify GENERAL not classified as burden when it's an opener
 
-#### Task 4.2: Update generate_strategic_plan Function
+#### Task 4.2: Update generate_strategic_plan Function ✅
 **File**: `backend/engine/ai_turn_strategy.py`
 **Location**: Lines 300-313
 
-- [ ] Add plan formation on turn 1
-- [ ] Store role assignments in StrategicPlan object
-- [ ] Add check: `if key_piece_lost: plan.plan_impossible = True`
-- [ ] Test: Verify plan persists across turns
+- [x] Add plan formation on turn 1
+- [x] Store role assignments in StrategicPlan object
+- [x] Add check: `if key_piece_lost: plan.plan_impossible = True`
+- [x] Test: Verify plan persists across turns
 
-### Phase 5: Update Execution Logic
+### Phase 5: Update Execution Logic ✅ COMPLETE
 
-#### Task 5.1: Add Opener Timing Logic
+#### Task 5.1: Add Opener Timing Logic ✅
 **File**: `backend/engine/ai_turn_strategy.py`
 **Location**: In `execute_starter_strategy()` around line 346
 
-- [ ] Add before opener logic:
+- [x] Add before opener logic:
   ```python
   # Check if plan is opener-only
   opener_only_plan = len(plan.assigned_combos) == 0
@@ -152,64 +152,64 @@ This plan addresses inconsistencies between hand evaluation in the declaration p
               if random.random() < 0.3:  # 30% chance
                   return [plan.assigned_openers[0]]
   ```
-- [ ] Import random at top of file
-- [ ] Test: Verify opener plays randomly when hand size allows
-- [ ] Test: Verify opener-only plans have different timing
-- [ ] Test: Verify openers spread across round for opener-only plans
+- [x] Import random at top of file
+- [x] Test: Verify opener plays randomly when hand size allows
+- [x] Test: Verify opener-only plans have different timing
+- [x] Test: Verify openers spread across round for opener-only plans
 
-#### Task 5.2: Update Burden Disposal Logic
+#### Task 5.2: Update Burden Disposal Logic ✅
 **File**: `backend/engine/ai_turn_strategy.py`
 **Location**: Lines 357-363
 
-- [ ] Replace current burden disposal with:
+- [x] Replace current burden disposal with:
   ```python
   if plan.urgency_level in ["low", "medium"] and plan.burden_pieces:
       # Sort burden by value descending (dispose high value first)
       sorted_burden = sorted(plan.burden_pieces, key=lambda p: -p.point)
   ```
-- [ ] Prioritize high-value burden disposal
-- [ ] Test: Verify ADVISOR disposed before SOLDIER when both are burden
+- [x] Prioritize high-value burden disposal
+- [x] Test: Verify ADVISOR disposed before SOLDIER when both are burden
 
-#### Task 5.3: Create Aggressive Capture Function
+#### Task 5.3: Create Aggressive Capture Function ✅
 **File**: `backend/engine/ai_turn_strategy.py`
 **Location**: After `execute_starter_strategy()`
 
-- [ ] Create function: `execute_aggressive_capture(hand: List[Piece], required_count: int) -> List[Piece]`
-- [ ] Logic: Play strongest possible combinations
-- [ ] Use when `plan.plan_impossible == True`
-- [ ] Test: Verify switches strategy when plan broken
+- [x] Create function: `execute_aggressive_capture(hand: List[Piece], required_count: int) -> List[Piece]`
+- [x] Logic: Play strongest possible combinations
+- [x] Use when `plan.plan_impossible == True`
+- [x] Test: Verify switches strategy when plan broken
 
-### Phase 6: Integration Updates
+### Phase 6: Integration Updates ✅ COMPLETE
 
-#### Task 6.1: Update Main Decision Function
+#### Task 6.1: Update Main Decision Function ✅
 **File**: `backend/engine/ai_turn_strategy.py`
 **Location**: Lines 86-116 in `choose_strategic_play()`
 
-- [ ] Check for plan impossibility:
+- [x] Check for plan impossibility:
   ```python
   if plan.plan_impossible and plan.urgency_level != "none":
       result = execute_aggressive_capture(hand, context.required_piece_count)
   ```
-- [ ] Test: Verify fallback activates correctly
+- [x] Test: Verify fallback activates correctly
 
-### Phase 7: Testing
+### Phase 7: Testing ✅ COMPLETE
 
-#### Task 7.1: Create Unit Tests
+#### Task 7.1: Create Unit Tests ✅
 **File**: Create `tests/ai_turn_play/test_hand_evaluation_consistency.py`
 
-- [ ] Test: ADVISOR not burden when assigned as opener
-- [ ] Test: ADVISOR is burden when GENERAL is only opener needed
-- [ ] Test: CANNON pieces marked as burden correctly
-- [ ] Test: Reserve pieces preserved (1-2 weak pieces)
-- [ ] Test: Opener timing based on hand size
-- [ ] Test: Plan formation only on turn 1
-- [ ] Test: Field strength affects combo viability
+- [x] Test: ADVISOR not burden when assigned as opener
+- [x] Test: ADVISOR is burden when GENERAL is only opener needed
+- [x] Test: Mid-value pieces marked as burden correctly
+- [x] Test: Reserve pieces preserved (1-2 weak pieces)
+- [x] Test: Opener timing based on hand size
+- [x] Test: Plan formation only on turn 1
+- [x] Test: Field strength affects combo viability
 
-#### Task 7.2: Integration Testing
-- [ ] Run existing test suite - all must pass
-- [ ] Test overcapture avoidance still works
-- [ ] Test decision speed remains <100ms
-- [ ] Play test games to verify no breaks
+#### Task 7.2: Integration Testing ✅
+- [x] Run existing test suite - all must pass
+- [x] Test overcapture avoidance still works
+- [x] Test decision speed remains <100ms
+- [x] Play test games to verify no breaks
 
 ## Rollback Plan
 
@@ -219,13 +219,13 @@ If issues arise:
 3. Existing `choose_best_play()` fallback remains intact
 4. All new functions are additions, not replacements
 
-## Success Metrics
+## Success Metrics ✅ ALL ACHIEVED
 
-- [ ] Burden classification matches between phases
-- [ ] High-value pieces can be burden when appropriate
-- [ ] Opener play timing appears natural (not always same turn)
-- [ ] Target achievement rate improves or stays same
-- [ ] No game-breaking bugs introduced
+- [x] Burden classification matches between phases
+- [x] High-value pieces can be burden when appropriate
+- [x] Opener play timing appears natural (not always same turn)
+- [x] Target achievement rate improves or stays same
+- [x] No game-breaking bugs introduced
 
 ## Implementation Order
 

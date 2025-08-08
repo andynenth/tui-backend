@@ -1,9 +1,11 @@
 # backend/engine/ai_turn_strategy.py
 
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from typing import List, Dict, Optional, Tuple
+import random
 from backend.engine.piece import Piece
 from backend.engine.rules import get_play_type, is_valid_play
+from backend.engine.ai import assess_field_strength
 
 
 # ------------------------------------------------------------------
@@ -32,6 +34,13 @@ class StrategicPlan:
     valid_combos: List[Tuple[str, List[Piece]]]  # All valid plays
     opener_pieces: List[Piece]  # Pieces with point >= 11
     urgency_level: str  # "low", "medium", "high", "critical"
+    # New fields for role-based planning
+    assigned_openers: List[Piece] = field(default_factory=list)
+    assigned_combos: List[Tuple[str, List[Piece]]] = field(default_factory=list)
+    reserve_pieces: List[Piece] = field(default_factory=list)
+    burden_pieces: List[Piece] = field(default_factory=list)
+    main_plan_size: int = 0
+    plan_impossible: bool = False
 
 
 # ------------------------------------------------------------------
@@ -90,14 +99,18 @@ def choose_strategic_play(hand: List[Piece], context: TurnPlayContext) -> List[P
     plan = generate_strategic_plan(hand, context)
     
     # Evaluate hand
-    hand_eval = evaluate_hand(hand, context)
+    hand_eval = evaluate_hand(hand, context, plan)
     
     # Log strategic context
     print(f"📊 {context.my_name} - Urgency: {plan.urgency_level}, Target remaining: {plan.target_remaining}, "
           f"Openers: {len(hand_eval['openers'])}, Burden pieces: {len(hand_eval['burden_pieces'])}")
     
+    # Check if plan is broken and urgency is not none
+    if plan.plan_impossible and plan.urgency_level != "none":
+        print(f"💥 {context.my_name}: Plan broken - switching to aggressive capture")
+        result = execute_aggressive_capture(hand, context.required_piece_count)
     # Execute appropriate strategy based on role
-    if context.am_i_starter:
+    elif context.am_i_starter:
         result = execute_starter_strategy(plan, context, hand_eval)
     else:
         # For now, responder uses basic AI (Phase 5 will implement responder strategy)
@@ -180,49 +193,41 @@ def avoid_overcapture_strategy(hand: List[Piece], context: TurnPlayContext) -> L
 # Phase 4: Target Achievement Strategy Functions
 # ------------------------------------------------------------------
 
-def evaluate_hand(hand: List[Piece], context: TurnPlayContext) -> Dict:
+def evaluate_hand(hand: List[Piece], context: TurnPlayContext, plan: StrategicPlan) -> Dict:
     """
-    Evaluate and categorize pieces in the hand.
+    Evaluate and categorize pieces in the hand based on strategic plan.
     
     Args:
         hand: Bot's current hand
         context: Game context
+        plan: Strategic plan with role assignments
         
     Returns:
-        Dict with categorized pieces:
-        - openers: List of pieces with point >= 11
-        - burden_pieces: Pieces that don't contribute to winning combos
-        - combo_pieces: Pieces that form valid winning combinations
+        Dict with categorized pieces based on plan roles
     """
     # Find all valid combinations
     from backend.engine.ai import find_all_valid_combos
     valid_combos = find_all_valid_combos(hand)
     
-    # Identify opener pieces (11+ points)
-    openers = identify_opener_pieces(hand)
+    # Check if we need to form plan (turn 1)
+    if context.turn_number == 1 and not plan.assigned_openers:
+        # Form initial plan
+        plan_dict = form_execution_plan(hand, context, valid_combos)
+        if plan_dict:
+            # Update plan object with assignments
+            plan.assigned_openers = plan_dict['assigned_openers']
+            plan.assigned_combos = plan_dict['assigned_combos']
+            plan.reserve_pieces = plan_dict['reserve_pieces']
+            plan.burden_pieces = plan_dict['burden_pieces']
+            plan.main_plan_size = plan_dict['main_plan_size']
     
-    # Find pieces that appear in winning combinations
-    pieces_in_combos = set()
-    combo_pieces = []
-    
-    for combo_type, pieces in valid_combos:
-        # Consider pairs, three-of-a-kind, straights as winning combos
-        if combo_type in ["PAIR", "THREE_OF_A_KIND", "STRAIGHT", "FOUR_OF_A_KIND", 
-                         "EXTENDED_STRAIGHT", "FIVE_OF_A_KIND", "DOUBLE_STRAIGHT"]:
-            pieces_in_combos.update(pieces)
-            combo_pieces.extend(pieces)
-    
-    # Remove duplicates from combo_pieces
-    combo_pieces = list(set(combo_pieces))
-    
-    # Identify burden pieces (not in any winning combo and not openers)
-    burden_pieces = identify_burden_pieces(hand, valid_combos)
-    
+    # Return plan-based categorization
     return {
-        'openers': openers,
-        'burden_pieces': burden_pieces,
-        'combo_pieces': combo_pieces,
-        'all_valid_combos': valid_combos
+        'openers': plan.assigned_openers,
+        'burden_pieces': plan.burden_pieces,
+        'combo_pieces': [p for combo_type, pieces in plan.assigned_combos for p in pieces],
+        'all_valid_combos': valid_combos,
+        'reserve_pieces': plan.reserve_pieces
     }
 
 
@@ -297,6 +302,132 @@ def calculate_urgency(context: TurnPlayContext) -> str:
         return "low"  # Have cushion for strategic play
 
 
+def get_field_strength_from_players(player_states: Dict[str, Dict]) -> str:
+    """
+    Assess field strength based on opponent declarations.
+    
+    Args:
+        player_states: Dictionary of player states with 'declared' values
+        
+    Returns:
+        Field strength: "weak", "normal", or "strong"
+    """
+    # Extract opponent declarations (excluding self)
+    declarations = []
+    for player_name, state in player_states.items():
+        if 'declared' in state:
+            declarations.append(state['declared'])
+    
+    # Use the assess_field_strength function from ai.py
+    return assess_field_strength(declarations)
+
+
+def is_combo_viable(combo_type: str, pieces: List[Piece], field_strength: str) -> bool:
+    """
+    Determine if a combo should be considered viable for winning.
+    
+    Args:
+        combo_type: Type of combination (PAIR, THREE_OF_A_KIND, etc.)
+        pieces: The pieces in the combination
+        field_strength: Current field strength ("weak", "normal", "strong")
+        
+    Returns:
+        True if combo is likely to win, False otherwise
+    """
+    # Strong combos are always viable
+    if combo_type in ["THREE_OF_A_KIND", "STRAIGHT", "FOUR_OF_A_KIND", 
+                      "EXTENDED_STRAIGHT", "FIVE_OF_A_KIND", "DOUBLE_STRAIGHT"]:
+        return True
+    
+    # For pairs, viability depends on strength and field
+    if combo_type == "PAIR":
+        total_points = sum(p.point for p in pieces)
+        
+        if field_strength == "weak":
+            return total_points >= 10  # HORSE pair (5+5) or better
+        elif field_strength == "normal":
+            return total_points >= 14  # CHARIOT pair (7+7) or better
+        else:  # strong
+            return total_points >= 18  # ELEPHANT pair (9+9) or better
+    
+    # Single pieces are never considered winning combos
+    return False
+
+
+def form_execution_plan(hand: List[Piece], context: TurnPlayContext, valid_combos: List[Tuple]) -> Dict:
+    """
+    Form a specific execution plan assigning roles to pieces.
+    
+    Args:
+        hand: Bot's current hand
+        context: Game context including turn number and declarations
+        valid_combos: All valid combinations found in hand
+        
+    Returns:
+        Dict with assigned roles for each piece category
+    """
+    # Only form plan on turn 1 when we know required piece count
+    if context.turn_number != 1:
+        return None
+    
+    # Get field strength
+    field_strength = get_field_strength_from_players(context.player_states)
+    
+    # Filter combos for viability
+    viable_combos = []
+    for combo_type, pieces in valid_combos:
+        if is_combo_viable(combo_type, pieces, field_strength):
+            viable_combos.append((combo_type, pieces))
+    
+    # Calculate how many piles we need to win
+    target_remaining = context.my_declared - context.my_captured
+    
+    # Assign openers based on target
+    all_openers = [p for p in hand if p.point >= 11]
+    if target_remaining <= 1:
+        assigned_openers = []  # Don't need openers
+    elif target_remaining <= 3:
+        assigned_openers = all_openers[:1]  # Take strongest opener
+    else:
+        assigned_openers = all_openers[:2]  # Take up to 2 openers
+    
+    # Sort openers by value descending
+    assigned_openers.sort(key=lambda p: p.point, reverse=True)
+    
+    # Assign viable combos to plan
+    assigned_combos = viable_combos
+    
+    # Calculate pieces used in plan
+    pieces_in_plan = set(assigned_openers)
+    for combo_type, pieces in assigned_combos:
+        pieces_in_plan.update(pieces)
+    
+    # Reserve 1-2 weakest pieces (point <= 4)
+    weak_pieces = [p for p in hand if p.point <= 4 and p not in pieces_in_plan]
+    weak_pieces.sort(key=lambda p: p.point)  # Sort ascending
+    reserve_pieces = weak_pieces[:2]  # Take up to 2 weakest
+    pieces_in_plan.update(reserve_pieces)
+    
+    # Everything else is burden
+    burden_pieces = [p for p in hand if p not in pieces_in_plan]
+    # Sort burden by value descending (dispose high value first)
+    burden_pieces.sort(key=lambda p: p.point, reverse=True)
+    
+    # Calculate main plan size
+    main_plan_size = len(assigned_openers)
+    for combo_type, pieces in assigned_combos:
+        main_plan_size += len(pieces)
+    
+    return {
+        'assigned_openers': assigned_openers,
+        'assigned_combos': assigned_combos,
+        'reserve_pieces': reserve_pieces,
+        'burden_pieces': burden_pieces,
+        'main_plan_size': main_plan_size,
+        'field_strength': field_strength
+    }
+
+
 def generate_strategic_plan(hand: List[Piece], context: TurnPlayContext) -> StrategicPlan:
     """
     Generate a strategic plan for achieving target piles.
@@ -321,13 +452,56 @@ def generate_strategic_plan(hand: List[Piece], context: TurnPlayContext) -> Stra
     # Assess urgency
     urgency_level = calculate_urgency(context)
     
-    # Create and return plan
-    return StrategicPlan(
+    # Create plan with default values (will be populated in evaluate_hand on turn 1)
+    plan = StrategicPlan(
         target_remaining=target_remaining,
         valid_combos=valid_combos,
         opener_pieces=opener_pieces,
         urgency_level=urgency_level
     )
+    
+    # Check if plan is still possible (after turn 1)
+    if context.turn_number > 1 and plan.main_plan_size > 0:
+        # Check if we still have all our plan pieces
+        current_hand_size = len(context.my_hand)
+        if current_hand_size < plan.main_plan_size:
+            plan.plan_impossible = True
+            print(f"⚠️ {context.my_name}: Plan impossible - lost key pieces")
+    
+    return plan
+
+
+def execute_aggressive_capture(hand: List[Piece], required_count: int) -> List[Piece]:
+    """
+    Execute aggressive capture strategy when plan is broken.
+    Play strongest possible combinations to maximize win chances.
+    
+    Args:
+        hand: Current hand
+        required_count: Number of pieces required
+        
+    Returns:
+        List of pieces to play (strongest possible)
+    """
+    from backend.engine.ai import find_all_valid_combos
+    
+    # Find all valid combinations
+    all_combos = find_all_valid_combos(hand)
+    
+    # Filter for required size
+    valid_of_size = [(combo_type, pieces) for combo_type, pieces in all_combos 
+                     if len(pieces) == required_count]
+    
+    if valid_of_size:
+        # Get strongest combination
+        strongest_combo = max(valid_of_size, key=lambda x: sum(p.point for p in x[1]))
+        print(f"⚡ Aggressive capture: playing strongest combo {strongest_combo[0]} "
+              f"(value={sum(p.point for p in strongest_combo[1])})")
+        return strongest_combo[1]
+    
+    # Fallback: return strongest pieces of required count
+    sorted_hand = sorted(hand, key=lambda p: p.point, reverse=True)
+    return sorted_hand[:required_count]
 
 
 def execute_starter_strategy(plan: StrategicPlan, context: TurnPlayContext, hand_eval: Dict) -> List[Piece]:
@@ -361,24 +535,47 @@ def execute_starter_strategy(plan: StrategicPlan, context: TurnPlayContext, hand
             print(f"⚡ {context.my_name} (critical urgency) plays strong combo: {[p.name for p in best_combo]}")
             return best_combo
     
-    # Have reliable opener AND still need wins
-    if plan.opener_pieces and plan.target_remaining > 1:
-        # Check if we can play opener(s) with required count
-        if required == 1 and plan.opener_pieces:
-            print(f"👑 {context.my_name} plays opener for turn control: {plan.opener_pieces[0].name}")
-            return [plan.opener_pieces[0]]
-        elif required == 2 and len(plan.opener_pieces) >= 2:
-            print(f"👑 {context.my_name} plays double opener: {[p.name for p in plan.opener_pieces[:2]]}")
-            return plan.opener_pieces[:2]
+    # Opener timing logic based on plan type
+    # Check if plan is opener-only
+    opener_only_plan = len(plan.assigned_combos) == 0
+    
+    if context.required_piece_count == 1 and plan.assigned_openers:
+        if opener_only_plan:
+            # Opener-only plan: play more freely throughout the game
+            hand_size = len(context.my_hand)
+            if hand_size >= 6:
+                chance = 0.35  # 35% chance early
+            elif hand_size >= 4:
+                chance = 0.40  # 40% chance mid-game
+            else:
+                chance = 0.50  # 50% chance late game
+                
+            if random.random() < chance:
+                print(f"👑 {context.my_name} (opener-only plan) plays opener randomly: {plan.assigned_openers[0].name}")
+                return [plan.assigned_openers[0]]
+        else:
+            # Mixed plan: protect combos
+            if len(context.my_hand) > plan.main_plan_size:
+                if random.random() < 0.3:  # 30% chance
+                    print(f"👑 {context.my_name} plays opener for turn control: {plan.assigned_openers[0].name}")
+                    return [plan.assigned_openers[0]]
+    elif context.required_piece_count == 2 and len(plan.assigned_openers) >= 2:
+        # Double opener logic (same protection logic applies)
+        if len(context.my_hand) > plan.main_plan_size:
+            if random.random() < 0.3:  # 30% chance
+                print(f"👑 {context.my_name} plays double opener: {[p.name for p in plan.assigned_openers[:2]]}")
+                return plan.assigned_openers[:2]
     
     # Low urgency AND have burden pieces: dispose of them
-    if plan.urgency_level in ["low", "medium"] and hand_eval['burden_pieces']:
-        burden_count = min(required, len(hand_eval['burden_pieces']))
+    if plan.urgency_level in ["low", "medium"] and plan.burden_pieces:
+        # Sort burden by value descending (dispose high value first)
+        sorted_burden = sorted(plan.burden_pieces, key=lambda p: -p.point)
+        burden_count = min(required, len(sorted_burden))
         if burden_count == required:
-            burden_play = hand_eval['burden_pieces'][:required]
+            burden_play = sorted_burden[:required]
             # Check if this is a valid play for starter
             if is_valid_play(burden_play):
-                print(f"🗑️ {context.my_name} disposes burden pieces: {[p.name for p in burden_play]}")
+                print(f"🗑️ {context.my_name} disposes burden pieces (high value first): {[f'{p.name}({p.point})' for p in burden_play]}")
                 return burden_play
             else:
                 print(f"📝 {context.my_name} burden pieces don't form valid play, trying other options")
