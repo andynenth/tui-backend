@@ -204,12 +204,18 @@ def choose_strategic_play(hand: List[Piece], context: TurnPlayContext) -> List[P
         from backend.engine.ai import choose_best_play
         return choose_best_play(hand, context.required_piece_count if hasattr(context, 'required_piece_count') else None)
     
-    # Log the decision context
+    # Log the decision context with debug information
     print(f"\n🎯 Strategic AI Decision Process for {context.my_name}")
     print(f"  📊 Status: captured={context.my_captured}, declared={context.my_declared}")
     print(f"  🎮 Turn {context.turn_number}, required pieces={context.required_piece_count}")
     print(f"  🃏 Hand size: {len(hand)} pieces")
     print(f"  👥 Starter: {'YES' if context.am_i_starter else 'NO'}")
+    
+    # Additional debug logging for starter detection
+    print(f"\n🎯 STRATEGIC PLAY DEBUG for {context.my_name}:")
+    print(f"  - Is starter: {context.am_i_starter}")
+    print(f"  - Turn number: {context.turn_number}")
+    print(f"  - Required pieces: {context.required_piece_count}")
     
     # Calculate overcapture constraints
     constraints = get_overcapture_constraints(context)
@@ -476,6 +482,12 @@ def form_execution_plan(hand: List[Piece], context: TurnPlayContext, valid_combo
     all_openers = [p for p in hand if p.point >= 11]
     print(f"  Openers available: {[f'{p.name}({p.point})' for p in all_openers]}")
     
+    # Debug logging for opener assignment
+    print(f"  🎯 Opener Assignment Debug:")
+    print(f"    - All openers found: {[f'{p.name}({p.point})' for p in all_openers]}")
+    print(f"    - Target remaining: {target_remaining}")
+    print(f"    - Has viable combos: {len(viable_combos) > 0}")
+    
     if target_remaining <= 0:
         assigned_openers = []  # Already at/above target
         print(f"  → Assigning 0 openers (already at target)")
@@ -495,6 +507,8 @@ def form_execution_plan(hand: List[Piece], context: TurnPlayContext, valid_combo
         # For 4+ piles, take up to 2 openers
         assigned_openers = all_openers[:2]  # Take up to 2 openers
         print(f"  → Assigning {len(assigned_openers)} openers for {target_remaining} piles")
+    
+    print(f"    - Assigned openers: {[f'{p.name}({p.point})' for p in assigned_openers]}")
     
     # Sort openers by value descending
     assigned_openers.sort(key=lambda p: p.point, reverse=True)
@@ -910,6 +924,15 @@ def execute_starter_strategy(plan: StrategicPlan, context: TurnPlayContext, hand
     # Check if plan is opener-only
     opener_only_plan = len(plan.assigned_combos) == 0
     
+    # Debug logging for opener timing
+    print(f"\n🎲 OPENER TIMING CHECK for {context.my_name}:")
+    print(f"  - Required piece count: {context.required_piece_count}")
+    print(f"  - Has assigned openers: {len(plan.assigned_openers) if plan.assigned_openers else 0}")
+    if plan.assigned_openers:
+        print(f"  - Assigned openers: {[f'{p.name}({p.point})' for p in plan.assigned_openers]}")
+    print(f"  - Opener-only plan: {opener_only_plan}")
+    print(f"  - Hand size: {len(context.my_hand)}")
+    
     if context.required_piece_count == 1 and plan.assigned_openers:
         if opener_only_plan:
             # Opener-only plan: play more freely throughout the game
@@ -920,14 +943,25 @@ def execute_starter_strategy(plan: StrategicPlan, context: TurnPlayContext, hand
                 chance = 0.40  # 40% chance mid-game
             else:
                 chance = 0.50  # 50% chance late game
+            
+            # Generate random value and log it
+            random_value = random.random()
+            print(f"  - Random value: {random_value:.3f} vs threshold: {chance:.3f}")
+            print(f"  - Will play opener: {random_value < chance}")
                 
-            if random.random() < chance:
+            if random_value < chance:
                 print(f"👑 {context.my_name} (opener-only plan) plays opener randomly: {plan.assigned_openers[0].name}")
                 return [plan.assigned_openers[0]]
         else:
             # Mixed plan: protect combos
+            print(f"  - Mixed plan check: hand_size ({len(context.my_hand)}) > main_plan_size ({plan.main_plan_size})")
             if len(context.my_hand) > plan.main_plan_size:
-                if random.random() < 0.3:  # 30% chance
+                # Generate random value and log it
+                random_value = random.random()
+                print(f"  - Random value: {random_value:.3f} vs threshold: 0.3")
+                print(f"  - Will play opener: {random_value < 0.3}")
+                
+                if random_value < 0.3:  # 30% chance
                     print(f"👑 {context.my_name} plays opener for turn control: {plan.assigned_openers[0].name}")
                     return [plan.assigned_openers[0]]
     
