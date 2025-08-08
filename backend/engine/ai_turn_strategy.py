@@ -801,12 +801,16 @@ def execute_starter_strategy(plan: StrategicPlan, context: TurnPlayContext, hand
                 if random.random() < 0.3:  # 30% chance
                     print(f"👑 {context.my_name} plays opener for turn control: {plan.assigned_openers[0].name}")
                     return [plan.assigned_openers[0]]
-    elif context.required_piece_count == 2 and len(plan.assigned_openers) >= 2:
-        # Double opener logic (same protection logic applies)
-        if len(context.my_hand) > plan.main_plan_size:
-            if random.random() < 0.3:  # 30% chance
-                print(f"👑 {context.my_name} plays double opener: {[p.name for p in plan.assigned_openers[:2]]}")
-                return plan.assigned_openers[:2]
+    
+    # Check if we have an assigned combo that matches required pieces
+    if plan.assigned_combos:
+        for combo_type, pieces in plan.assigned_combos:
+            if len(pieces) == required:
+                # Check if all pieces are still in hand
+                all_in_hand = all(p in context.my_hand for p in pieces)
+                if all_in_hand:
+                    print(f"🎯 {context.my_name} plays assigned {combo_type}: {[f'{p.name}({p.point})' for p in pieces]}")
+                    return pieces
     
     # Low urgency AND have burden pieces: dispose of them
     if plan.urgency_level in ["low", "medium"] and plan.burden_pieces:
@@ -826,20 +830,65 @@ def execute_starter_strategy(plan: StrategicPlan, context: TurnPlayContext, hand
             else:
                 print(f"    ❌ Burden pieces don't form valid play for starter")
     
-    # Default: play weakest valid combination
+    # Default: play random pieces that are not part of combos
+    # Collect pieces that are disposable (not in main plan)
+    pieces_in_plan = set()
+    
+    # Add opener pieces to protected set
+    if plan.assigned_openers:
+        pieces_in_plan.update(plan.assigned_openers)
+    
+    # Add combo pieces to protected set
+    for combo_type, pieces in plan.assigned_combos:
+        pieces_in_plan.update(pieces)
+    
+    # Find disposable pieces (burden + reserve + any not in plan)
+    disposable_pieces = []
+    
+    # First priority: burden pieces
+    if plan.burden_pieces:
+        burden_in_hand = [p for p in plan.burden_pieces if p in context.my_hand and p not in pieces_in_plan]
+        disposable_pieces.extend(burden_in_hand)
+    
+    # Second priority: reserve pieces
+    if plan.reserve_pieces:
+        reserve_in_hand = [p for p in plan.reserve_pieces if p in context.my_hand and p not in pieces_in_plan]
+        disposable_pieces.extend(reserve_in_hand)
+    
+    # Third priority: any piece not in plan
+    other_pieces = [p for p in context.my_hand if p not in pieces_in_plan and p not in disposable_pieces]
+    disposable_pieces.extend(other_pieces)
+    
+    print(f"  🎲 Selecting random play from disposable pieces")
+    print(f"    Disposable pieces: {[f'{p.name}({p.point})' for p in disposable_pieces]}")
+    
+    if len(disposable_pieces) >= required:
+        # Randomly select required pieces
+        import random
+        selected_pieces = random.sample(disposable_pieces, required)
+        
+        # For starter, check if this forms a valid play
+        if is_valid_play(selected_pieces):
+            print(f"  🎯 {context.my_name} plays random disposable pieces: {[f'{p.name}({p.point})' for p in selected_pieces]}")
+            return selected_pieces
+        else:
+            # Try to find a valid combination from disposable pieces
+            print(f"    Random selection not valid for starter, trying to find valid combo...")
+            from itertools import combinations
+            for combo in combinations(disposable_pieces, required):
+                if is_valid_play(list(combo)):
+                    print(f"  🎯 {context.my_name} plays valid disposable combo: {[f'{p.name}({p.point})' for p in combo]}")
+                    return list(combo)
+    
+    # Last resort: play any required pieces from hand
+    print(f"  ⚠️ Not enough disposable pieces, playing from full hand")
+    if required <= len(context.my_hand):
+        selected = random.sample(context.my_hand, required)
+        print(f"  🎯 {context.my_name} plays random pieces: {[f'{p.name}({p.point})' for p in selected]}")
+        return selected
+    
+    # Absolute fallback
     from backend.engine.ai import choose_best_play
-    # For starter, we want weakest valid play, not strongest
-    # Sort combos by total value ascending
-    valid_of_size = [(combo_type, pieces) for combo_type, pieces in plan.valid_combos 
-                     if len(pieces) == required]
-    
-    if valid_of_size:
-        # Get weakest valid combination
-        weakest_combo = min(valid_of_size, key=lambda x: sum(p.point for p in x[1]))
-        print(f"🎯 {context.my_name} plays weakest valid combo: {[p.name for p in weakest_combo[1]]}")
-        return weakest_combo[1]
-    
-    # Fallback to basic AI
     return choose_best_play(context.my_hand, required)
 
 
