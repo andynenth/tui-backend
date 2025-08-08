@@ -113,10 +113,10 @@ class RoundRecreatorWithResolution:
             print(f"\n🎯 {player.name} FINAL DECLARATION: {declared}")
             print(f"Previous declarations so far: {previous_declarations}")
     
-    def simulate_turn(self, turn_number: int, starter_name: str, required_count: int) -> TurnResult:
+    def simulate_turn(self, turn_number: int, starter_name: str, required_count: Optional[int]) -> TurnResult:
         """Simulate a turn and return the resolution"""
         print(f"\n" + "="*80)
-        print(f"TURN {turn_number} (Starter: {starter_name}, Required: {required_count} pieces)")
+        print(f"TURN {turn_number} (Starter: {starter_name})")
         print(f"="*80)
         
         # Calculate current pile counts from history
@@ -176,6 +176,11 @@ class RoundRecreatorWithResolution:
                     print(f"  ⚠️ Invalid play for starter!")
             
             turn_plays.append(TurnPlay(player=player, pieces=pieces_to_play, is_valid=is_valid))
+            
+            # If this is the starter and required_count was None, update it
+            if player.name == starter_name and required_count is None:
+                required_count = len(pieces_to_play)
+                print(f"\n  🎲 Starter sets required count: {required_count} pieces")
         
         # Resolve the turn
         turn_result = resolve_turn(turn_plays)
@@ -245,13 +250,9 @@ class RoundRecreatorWithResolution:
                 print("ALL HANDS EMPTY - ROUND COMPLETE")
                 break
             
-            # Determine required piece count
-            if turn_number == 1:
-                required_count = 3
-            elif turn_number == 2:
-                required_count = 2
-            else:
-                required_count = 1
+            # Let the starter determine required piece count
+            # (In the real game, starter sets this)
+            required_count = None  # Will be set by starter
             
             print("\n" + "#"*80)
             print(f"TURN {turn_number}: {current_starter} starts")

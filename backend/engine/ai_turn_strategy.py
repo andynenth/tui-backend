@@ -44,6 +44,137 @@ class StrategicPlan:
 
 
 # ------------------------------------------------------------------
+# Overcapture Avoidance Constraint System
+# ------------------------------------------------------------------
+@dataclass
+class OvercaptureConstraints:
+    """Constraints to avoid capturing too many piles."""
+    max_safe_pieces: int  # Maximum pieces that can be played safely
+    avoid_piece_counts: List[int]  # Piece counts that would cause overcapture
+    risky_play_types: List[str]  # Play types likely to win and cause overcapture
+    risk_level: str  # "none", "low", "medium", "high"
+
+
+def get_overcapture_constraints(context: TurnPlayContext) -> OvercaptureConstraints:
+    """
+    Calculate constraints to avoid overcapture based on current game state.
+    
+    Args:
+        context: Game context with capture/declaration info
+        
+    Returns:
+        OvercaptureConstraints object with safety limits
+    """
+    piles_needed = context.my_declared - context.my_captured
+    current_hand_size = len(context.my_hand)
+    
+    # No constraints if already over target or target is 0
+    if piles_needed <= 0 or context.my_declared == 0:
+        return OvercaptureConstraints(
+            max_safe_pieces=current_hand_size,
+            avoid_piece_counts=[],
+            risky_play_types=[],
+            risk_level="none"
+        )
+    
+    # Calculate safe piece counts
+    max_safe_pieces = piles_needed
+    avoid_piece_counts = list(range(piles_needed + 1, 7))  # 1-6 pieces possible
+    
+    # Determine risk level
+    if piles_needed >= current_hand_size:
+        risk_level = "none"  # No risk, need to win many turns
+    elif piles_needed >= current_hand_size * 0.75:
+        risk_level = "low"
+    elif piles_needed >= current_hand_size * 0.5:
+        risk_level = "medium"
+    else:
+        risk_level = "high"  # Very close to target
+    
+    # Identify risky play types based on field strength
+    field_strength = get_field_strength_from_players(context.player_states)
+    
+    # Always risky multi-piece plays when close to target
+    risky_play_types = []
+    if piles_needed < 3:
+        risky_play_types.extend(["THREE_OF_A_KIND", "STRAIGHT", "FOUR_OF_A_KIND", 
+                                "EXTENDED_STRAIGHT", "FIVE_OF_A_KIND", "DOUBLE_STRAIGHT"])
+    if piles_needed < 2:
+        risky_play_types.append("PAIR")
+    
+    # In weak fields, even small combos might win
+    if field_strength == "weak" and piles_needed < current_hand_size * 0.5:
+        if "PAIR" not in risky_play_types:
+            risky_play_types.append("PAIR")
+    
+    return OvercaptureConstraints(
+        max_safe_pieces=max_safe_pieces,
+        avoid_piece_counts=avoid_piece_counts,
+        risky_play_types=risky_play_types,
+        risk_level=risk_level
+    )
+
+
+def is_play_risky_for_overcapture(pieces: List[Piece], constraints: OvercaptureConstraints, 
+                                  field_strength: str) -> bool:
+    """
+    Check if a play is likely to win and cause overcapture.
+    
+    Args:
+        pieces: Pieces to play
+        constraints: Overcapture constraints
+        field_strength: Current field strength assessment
+        
+    Returns:
+        True if play is risky for overcapture
+    """
+    # Check piece count constraint
+    if len(pieces) in constraints.avoid_piece_counts:
+        return True
+    
+    # Check play type constraint
+    play_type = get_play_type(pieces)
+    if play_type in constraints.risky_play_types:
+        return True
+    
+    # Additional checks for high-value plays in weak fields
+    if constraints.risk_level in ["medium", "high"] and field_strength == "weak":
+        total_value = sum(p.point for p in pieces)
+        avg_value = total_value / len(pieces)
+        
+        # High average value plays are risky in weak fields
+        if avg_value >= 7:  # Above CHARIOT_BLACK value
+            return True
+    
+    return False
+
+
+def filter_plays_by_constraints(valid_plays: List[Tuple[str, List[Piece]]], 
+                               constraints: OvercaptureConstraints,
+                               field_strength: str) -> List[Tuple[str, List[Piece]]]:
+    """
+    Filter valid plays to exclude those that risk overcapture.
+    
+    Args:
+        valid_plays: List of (play_type, pieces) tuples
+        constraints: Overcapture constraints
+        field_strength: Current field strength
+        
+    Returns:
+        Filtered list of safe plays
+    """
+    if constraints.risk_level == "none":
+        return valid_plays
+    
+    safe_plays = []
+    for play_type, pieces in valid_plays:
+        if not is_play_risky_for_overcapture(pieces, constraints, field_strength):
+            safe_plays.append((play_type, pieces))
+    
+    return safe_plays
+
+
+# ------------------------------------------------------------------
 # Core Decision Function
 # ------------------------------------------------------------------
 def choose_strategic_play(hand: List[Piece], context: TurnPlayContext) -> List[Piece]:
@@ -80,26 +211,22 @@ def choose_strategic_play(hand: List[Piece], context: TurnPlayContext) -> List[P
     print(f"  🃏 Hand size: {len(hand)} pieces")
     print(f"  👥 Starter: {'YES' if context.am_i_starter else 'NO'}")
     
-    # Check if at declared target
-    if context.my_captured == context.my_declared:
-        print(f"\n🛡️ OVERCAPTURE AVOIDANCE ACTIVATED!")
-        print(f"  {context.my_name} is at target ({context.my_captured}/{context.my_declared})")
-        print(f"  Calling avoid_overcapture_strategy()...")
-        result = avoid_overcapture_strategy(hand, context)
-        
-        # Validate result
-        if not validate_play_result(result, hand, context):
-            print(f"⚠️ Strategic AI: Invalid result from overcapture strategy, falling back")
-            from backend.engine.ai import choose_best_play
-            return choose_best_play(hand, context.required_piece_count)
-        
-        # Log the decision
-        play_value = sum(p.point for p in result)
-        print(f"🎲 {context.my_name} plays weak pieces (value={play_value}) to avoid overcapture: {[p.name for p in result]}")
-        return result
+    # Calculate overcapture constraints
+    constraints = get_overcapture_constraints(context)
+    
+    if constraints.risk_level != "none":
+        print(f"\n⚠️ OVERCAPTURE RISK DETECTED - Level: {constraints.risk_level}")
+        print(f"  Piles needed: {context.my_declared - context.my_captured}")
+        print(f"  Max safe pieces: {constraints.max_safe_pieces}")
+        print(f"  Avoid piece counts: {constraints.avoid_piece_counts}")
+        print(f"  Risky play types: {constraints.risky_play_types}")
     
     # Phase 4: Target Achievement Strategy
-    print(f"📈 {context.my_name} below target ({context.my_captured}/{context.my_declared}) - using target achievement strategy")
+    piles_needed = context.my_declared - context.my_captured
+    if piles_needed > 0:
+        print(f"📈 {context.my_name} needs {piles_needed} more pile(s) - using strategic play with constraints")
+    else:
+        print(f"🎯 {context.my_name} at/above target - minimizing wins")
     
     # Generate strategic plan
     plan = generate_strategic_plan(hand, context)
@@ -114,13 +241,13 @@ def choose_strategic_play(hand: List[Piece], context: TurnPlayContext) -> List[P
     # Check if plan is broken and urgency is not none
     if plan.plan_impossible and plan.urgency_level != "none":
         print(f"💥 {context.my_name}: Plan broken - switching to aggressive capture")
-        result = execute_aggressive_capture(hand, context.required_piece_count)
+        result = execute_aggressive_capture(hand, context.required_piece_count, constraints)
     # Execute appropriate strategy based on role
     elif context.am_i_starter:
-        result = execute_starter_strategy(plan, context, hand_eval)
+        result = execute_starter_strategy(plan, context, hand_eval, constraints)
     else:
         # Responder strategy: dispose of burden pieces
-        result = execute_responder_strategy(plan, context, hand_eval)
+        result = execute_responder_strategy(plan, context, hand_eval, constraints)
     
     # Validate result
     if not validate_play_result(result, hand, context):
@@ -134,80 +261,6 @@ def choose_strategic_play(hand: List[Piece], context: TurnPlayContext) -> List[P
     pieces_with_values = [f"{p.name}({p.point})" for p in result]
     print(f"\n🎲 {context.my_name} decides to play: {pieces_with_values}")
     
-    return result
-
-
-# ------------------------------------------------------------------
-# Overcapture Avoidance Strategy
-# ------------------------------------------------------------------
-def avoid_overcapture_strategy(hand: List[Piece], context: TurnPlayContext) -> List[Piece]:
-    """
-    Strategy to avoid winning piles when already at declared target.
-    
-    Args:
-        hand: Bot's current hand
-        context: Game context
-        
-    Returns:
-        Weakest possible play to avoid winning
-    """
-    print(f"\n📋 AVOID OVERCAPTURE STRATEGY EXECUTION")
-    print(f"  Bot: {context.my_name if context else 'Unknown'}")
-    print(f"  Hand: {[f'{p.name}({p.point})' for p in hand]}")
-    
-    # Defensive check: validate hand
-    if not hand:
-        print(f"  ⚠️ Empty hand provided")
-        return []
-    
-    required = context.required_piece_count if context else None
-    print(f"  Required pieces: {required}")
-    
-    if required is None:
-        # If no required count set yet, play single weakest piece
-        weakest = min(hand, key=lambda p: p.point)
-        print(f"  No required count, playing single weakest: {weakest.name}({weakest.point})")
-        return [weakest]
-    
-    # Defensive check: validate required count
-    if required <= 0:
-        print(f"⚠️ Overcapture strategy: Invalid required count {required}")
-        return [min(hand, key=lambda p: p.point)]
-    
-    if required > len(hand):
-        print(f"⚠️ Overcapture strategy: Required {required} but only {len(hand)} pieces in hand")
-        # Return all pieces if we don't have enough
-        return list(hand)
-    
-    # Sort pieces by point value ascending (weakest first)
-    sorted_hand = sorted(hand, key=lambda p: p.point)
-    print(f"  Sorted hand (weakest first): {[f'{p.name}({p.point})' for p in sorted_hand]}")
-    
-    # Try to find a valid combination of weak pieces
-    if required <= len(sorted_hand):
-        # Take the weakest N pieces
-        weak_pieces = sorted_hand[:required]
-        print(f"  Selected {required} weakest pieces: {[f'{p.name}({p.point})' for p in weak_pieces]}")
-        
-        # Check if this forms a valid play (only matters for starter)
-        if context and context.am_i_starter:
-            print(f"  Bot is starter, checking if weak pieces form valid play...")
-            if is_valid_play(weak_pieces):
-                print(f"  ✅ Weak pieces form valid play!")
-                return weak_pieces
-            else:
-                # Try to find valid weak combination for starter
-                # This is a simple approach - could be enhanced
-                print(f"  ⚠️ Weak pieces not valid for starter, trying alternatives")
-        else:
-            # Non-starter can play any pieces
-            print(f"  Bot is non-starter, can play any pieces")
-            print(f"  🎲 RETURNING WEAK PIECES: {[f'{p.name}({p.point})' for p in weak_pieces]}")
-            return weak_pieces
-    
-    # If no valid combination found, just return weakest pieces (will forfeit)
-    result = sorted_hand[:required]
-    print(f"  🎲 FINAL RESULT (fallback): {[f'{p.name}({p.point})' for p in result]}")
     return result
 
 
@@ -578,17 +631,19 @@ def generate_strategic_plan(hand: List[Piece], context: TurnPlayContext) -> Stra
     return plan
 
 
-def execute_aggressive_capture(hand: List[Piece], required_count: int) -> List[Piece]:
+def execute_aggressive_capture(hand: List[Piece], required_count: int, 
+                             constraints: OvercaptureConstraints) -> List[Piece]:
     """
     Execute aggressive capture strategy when plan is broken.
-    Play strongest possible combinations to maximize win chances.
+    Play strongest possible combinations to maximize win chances, but respect constraints.
     
     Args:
         hand: Current hand
         required_count: Number of pieces required
+        constraints: Overcapture avoidance constraints
         
     Returns:
-        List of pieces to play (strongest possible)
+        List of pieces to play (strongest possible within constraints)
     """
     from backend.engine.ai import find_all_valid_combos
     
@@ -600,20 +655,40 @@ def execute_aggressive_capture(hand: List[Piece], required_count: int) -> List[P
                      if len(pieces) == required_count]
     
     if valid_of_size:
-        # Get strongest combination
-        strongest_combo = max(valid_of_size, key=lambda x: sum(p.point for p in x[1]))
-        print(f"⚡ Aggressive capture: playing strongest combo {strongest_combo[0]} "
-              f"(value={sum(p.point for p in strongest_combo[1])})")
-        return strongest_combo[1]
+        # Check constraints if risk level is high
+        if constraints.risk_level in ["medium", "high"]:
+            print(f"⚠️ Aggressive capture with overcapture risk - filtering safe combos")
+            field_strength = "normal"  # Default assumption for aggressive play
+            safe_combos = [(t, p) for t, p in valid_of_size 
+                          if not is_play_risky_for_overcapture(p, constraints, field_strength)]
+            
+            if safe_combos:
+                # Get strongest safe combination
+                strongest_combo = max(safe_combos, key=lambda x: sum(p.point for p in x[1]))
+                print(f"⚡ Aggressive capture: playing strongest SAFE combo {strongest_combo[0]} "
+                      f"(value={sum(p.point for p in strongest_combo[1])})")
+                return strongest_combo[1]
+            else:
+                print(f"⚠️ No safe combos available - playing weakest risky combo")
+                # If no safe combos, play weakest risky one
+                weakest_combo = min(valid_of_size, key=lambda x: sum(p.point for p in x[1]))
+                return weakest_combo[1]
+        else:
+            # No constraints, play strongest
+            strongest_combo = max(valid_of_size, key=lambda x: sum(p.point for p in x[1]))
+            print(f"⚡ Aggressive capture: playing strongest combo {strongest_combo[0]} "
+                  f"(value={sum(p.point for p in strongest_combo[1])})")
+            return strongest_combo[1]
     
     # Fallback: return strongest pieces of required count
     sorted_hand = sorted(hand, key=lambda p: p.point, reverse=True)
     return sorted_hand[:required_count]
 
 
-def execute_responder_strategy(plan: StrategicPlan, context: TurnPlayContext, hand_eval: Dict) -> List[Piece]:
+def execute_responder_strategy(plan: StrategicPlan, context: TurnPlayContext, hand_eval: Dict,
+                             constraints: OvercaptureConstraints) -> List[Piece]:
     """
-    Execute strategy when responding (not leading the turn).
+    Execute strategy when responding (not leading the turn) with overcapture constraints.
     Primary goal: Dispose of pieces in priority order:
     1. Burden pieces (highest value first)
     2. Reserve pieces (if necessary)
@@ -623,6 +698,7 @@ def execute_responder_strategy(plan: StrategicPlan, context: TurnPlayContext, ha
         plan: Strategic plan
         context: Game context
         hand_eval: Hand evaluation from evaluate_hand()
+        constraints: Overcapture avoidance constraints
         
     Returns:
         List of pieces to play
@@ -633,6 +709,7 @@ def execute_responder_strategy(plan: StrategicPlan, context: TurnPlayContext, ha
     print(f"  Current hand: {[f'{p.name}({p.point})' for p in context.my_hand]}")
     print(f"  Required pieces: {required}")
     print(f"  Urgency: {plan.urgency_level}, Target remaining: {plan.target_remaining}")
+    print(f"  Overcapture risk: {constraints.risk_level}")
     
     # Critical urgency: need to win remaining turns
     if plan.urgency_level == "critical" and plan.target_remaining > 0:
@@ -708,6 +785,34 @@ def execute_responder_strategy(plan: StrategicPlan, context: TurnPlayContext, ha
         openers_in_hand = [p for p in plan.assigned_openers if p in context.my_hand]
         print(f"    3. Openers (last resort): {[f'{p.name}({p.point})' for p in openers_in_hand]}")
     
+    # Special handling for high overcapture risk
+    if constraints.risk_level in ["medium", "high"] and required in constraints.avoid_piece_counts:
+        print(f"  🛡️ High overcapture risk - required count {required} would cause overcapture")
+        print(f"  Seeking weak non-matching pieces to minimize win chance")
+        
+        # Try to select pieces that won't form strong combinations
+        # Prefer different types/colors to avoid accidental combos
+        selected_pieces = []
+        used_names = set()
+        
+        # First pass: try to get different piece types
+        for p in disposal_candidates:
+            if len(selected_pieces) < required and p.name not in used_names:
+                selected_pieces.append(p)
+                used_names.add(p.name)
+        
+        # Second pass: fill remaining slots
+        for p in disposal_candidates:
+            if len(selected_pieces) < required and p not in selected_pieces:
+                selected_pieces.append(p)
+        
+        if len(selected_pieces) >= required:
+            pieces_to_play = selected_pieces[:required]
+            print(f"  🎯 Selected non-matching pieces to avoid combos: {[f'{p.name}({p.point})' for p in pieces_to_play]}")
+            total_value = sum(p.point for p in pieces_to_play)
+            print(f"  Total value: {total_value} pts (minimized)")
+            return pieces_to_play
+    
     # Take required number from disposal candidates
     if len(disposal_candidates) >= required:
         pieces_to_play = disposal_candidates[:required]
@@ -739,24 +844,48 @@ def execute_responder_strategy(plan: StrategicPlan, context: TurnPlayContext, ha
         return disposal_candidates
 
 
-def execute_starter_strategy(plan: StrategicPlan, context: TurnPlayContext, hand_eval: Dict) -> List[Piece]:
+def execute_starter_strategy(plan: StrategicPlan, context: TurnPlayContext, hand_eval: Dict, 
+                           constraints: OvercaptureConstraints) -> List[Piece]:
     """
-    Execute strategy when leading the turn.
+    Execute strategy when leading the turn with overcapture constraints.
     
     Args:
         plan: Strategic plan
         context: Game context
         hand_eval: Hand evaluation from evaluate_hand()
+        constraints: Overcapture avoidance constraints
         
     Returns:
         List of pieces to play
     """
-    required = context.required_piece_count or 1
+    # Since we're the starter, we need to choose how many pieces to play
+    # Consider constraints when choosing piece count
+    if context.required_piece_count is None:  # We're setting the count
+        # Check if we're at or above target (negative piles needed)
+        piles_needed = context.my_declared - context.my_captured
+        
+        if piles_needed <= 0:
+            # At or above target - minimize pieces played
+            required = 1
+            print(f"  🛡️ At/above target - choosing minimum 1 piece")
+        elif constraints.risk_level != "none":
+            # Below target but at risk - prefer playing safe piece counts
+            max_safe = constraints.max_safe_pieces
+            if max_safe >= 1:
+                required = min(max_safe, len(context.my_hand), 6)  # Cap at 6
+            else:
+                required = 1  # At least play 1
+            print(f"  🛡️ Applying constraints: choosing to play {required} pieces (max safe: {max_safe})")
+        else:
+            required = 1  # Default for starters
+    else:
+        required = context.required_piece_count
     
     print(f"\n🎮 STARTER STRATEGY for {context.my_name} (Turn {context.turn_number})")
     print(f"  Current hand: {[f'{p.name}({p.point})' for p in context.my_hand]}")
     print(f"  Required pieces: {required}")
     print(f"  Urgency: {plan.urgency_level}, Target remaining: {plan.target_remaining}")
+    print(f"  Overcapture risk: {constraints.risk_level}")
     
     # Critical urgency: need to win remaining turns
     if plan.urgency_level == "critical" and plan.target_remaining > 0:
@@ -804,11 +933,16 @@ def execute_starter_strategy(plan: StrategicPlan, context: TurnPlayContext, hand
     
     # Check if we have an assigned combo that matches required pieces
     if plan.assigned_combos:
+        field_strength = get_field_strength_from_players(context.player_states)
         for combo_type, pieces in plan.assigned_combos:
             if len(pieces) == required:
                 # Check if all pieces are still in hand
                 all_in_hand = all(p in context.my_hand for p in pieces)
                 if all_in_hand:
+                    # Check if this combo is risky for overcapture
+                    if is_play_risky_for_overcapture(pieces, constraints, field_strength):
+                        print(f"  ⚠️ Skipping {combo_type} - risky for overcapture")
+                        continue
                     print(f"🎯 {context.my_name} plays assigned {combo_type}: {[f'{p.name}({p.point})' for p in pieces]}")
                     return pieces
     
@@ -858,6 +992,31 @@ def execute_starter_strategy(plan: StrategicPlan, context: TurnPlayContext, hand
     # Third priority: any piece not in plan
     other_pieces = [p for p in context.my_hand if p not in pieces_in_plan and p not in disposable_pieces]
     disposable_pieces.extend(other_pieces)
+    
+    # Special handling for high overcapture risk
+    if constraints.risk_level in ["medium", "high"]:
+        print(f"  🛡️ High overcapture risk - seeking weak valid combinations")
+        field_strength = get_field_strength_from_players(context.player_states)
+        
+        # Try to find weakest valid combination
+        from itertools import combinations
+        valid_combos = []
+        
+        # Check all possible combinations of required size
+        for combo in combinations(context.my_hand, required):
+            combo_list = list(combo)
+            if is_valid_play(combo_list):
+                # Check if this combo is safe
+                if not is_play_risky_for_overcapture(combo_list, constraints, field_strength):
+                    total_value = sum(p.point for p in combo_list)
+                    valid_combos.append((combo_list, total_value))
+        
+        if valid_combos:
+            # Sort by value ascending (weakest first)
+            valid_combos.sort(key=lambda x: x[1])
+            weakest_combo = valid_combos[0][0]
+            print(f"  🎯 Playing weakest safe combo (value={valid_combos[0][1]}): {[f'{p.name}({p.point})' for p in weakest_combo]}")
+            return weakest_combo
     
     print(f"  🎲 Selecting random play from disposable pieces")
     print(f"    Disposable pieces: {[f'{p.name}({p.point})' for p in disposable_pieces]}")
