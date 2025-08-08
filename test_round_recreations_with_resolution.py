@@ -165,6 +165,76 @@ class RoundRecreatorWithResolution:
                 }
             )
             
+            # Add special debug for opener timing check
+            # Check for STARTERS choosing piece count
+            if player.name == starter_name and required_count is None:
+                print(f"\n🎲 OPENER TIMING CHECK for {player.name} (STARTER):")
+                # Import needed functions
+                from backend.engine.ai_turn_strategy import generate_strategic_plan, detect_opener_only_plan, should_randomly_play_opener
+                import random
+                
+                # Generate plan to check if opener-only
+                plan = generate_strategic_plan(current_hand, context)
+                opener_only = detect_opener_only_plan(plan)
+                
+                print(f"   - Opener-only plan detected: {'YES' if opener_only else 'NO'}")
+                if opener_only:
+                    print(f"     • {len(plan.assigned_openers)} openers: {[f'{p.name}({p.point})' for p in plan.assigned_openers]}")
+                    print(f"     • {len(plan.assigned_combos)} combos")
+                    
+                    # Check random timing
+                    hand_size = len(current_hand)
+                    threshold = 0.35 if hand_size >= 6 else 0.40 if hand_size >= 4 else 0.50
+                    
+                    # Save current random state to show actual roll
+                    saved_state = random.getstate()
+                    roll = random.random()
+                    random.setstate(saved_state)  # Restore state so game logic uses same roll
+                    
+                    will_play_singles = roll < threshold
+                    
+                    print(f"   - Hand size: {hand_size} pieces")
+                    print(f"   - Random threshold: {int(threshold * 100)}%")
+                    print(f"   - Random roll: {roll:.3f} ({int(roll * 100)}%)")
+                    print(f"   - Result: {roll:.3f} < {threshold:.2f}? {'✅ YES' if will_play_singles else '❌ NO'}")
+                    print(f"   - Decision: {'Play SINGLES due to random timing!' if will_play_singles else 'Use normal strategy'}")
+                else:
+                    print(f"   - Has viable combos available - normal strategy applies")
+            
+            # Check for RESPONDERS when required=1
+            elif player.name != starter_name and required_count == 1:
+                print(f"\n🎲 OPENER TIMING CHECK for {player.name} (RESPONDER, required=1):")
+                from backend.engine.ai_turn_strategy import generate_strategic_plan, detect_opener_only_plan, should_randomly_play_opener
+                import random
+                
+                # Generate plan to check if opener-only
+                plan = generate_strategic_plan(current_hand, context)
+                opener_only = detect_opener_only_plan(plan)
+                
+                print(f"   - Opener-only plan detected: {'YES' if opener_only else 'NO'}")
+                if opener_only:
+                    print(f"     • {len(plan.assigned_openers)} openers: {[f'{p.name}({p.point})' for p in plan.assigned_openers]}")
+                    print(f"     • {len(plan.assigned_combos)} combos")
+                    
+                    # Check random timing
+                    hand_size = len(current_hand)
+                    threshold = 0.35 if hand_size >= 6 else 0.40 if hand_size >= 4 else 0.50
+                    
+                    # Save current random state to show actual roll
+                    saved_state = random.getstate()
+                    roll = random.random()
+                    random.setstate(saved_state)  # Restore state so game logic uses same roll
+                    
+                    will_play_singles = roll < threshold
+                    
+                    print(f"   - Hand size: {hand_size} pieces")
+                    print(f"   - Random threshold: {int(threshold * 100)}%")
+                    print(f"   - Random roll: {roll:.3f} ({int(roll * 100)}%)")
+                    print(f"   - Result: {roll:.3f} < {threshold:.2f}? {'✅ YES' if will_play_singles else '❌ NO'}")
+                    print(f"   - Decision: {'Play opener randomly!' if will_play_singles else 'Use normal disposal strategy'}")
+                else:
+                    print(f"   - Has viable combos available - normal strategy applies")
+            
             # Get strategic play
             pieces_to_play = choose_strategic_play(current_hand, context)
             
