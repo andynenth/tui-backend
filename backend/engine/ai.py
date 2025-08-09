@@ -810,6 +810,208 @@ def find_and_select_strong_combos_iteratively(hand_copy, play_list, verbose=Fals
 
 
 # ------------------------------------------------------------------
+# Rebuild play list to avoid forbidden values
+# ------------------------------------------------------------------
+def rebuild_play_list_avoiding_forbidden(
+    original_hand: List,
+    pile_room: int,
+    forbidden_declares: set,
+    is_first_player: bool,
+    verbose: bool = False
+) -> List[Dict]:
+    """
+    Rebuild play_list to avoid forbidden declaration values.
+    
+    Instead of just adjusting the declaration number, this function
+    generates valid play combinations that avoid forbidden values.
+    
+    Args:
+        original_hand: The full hand before any plays
+        pile_room: Maximum pieces allowed
+        forbidden_declares: Set of forbidden declaration values
+        is_first_player: Whether this is the starter
+        verbose: Whether to print debug info
+        
+    Returns:
+        New play_list that avoids forbidden values
+    """
+    if verbose:
+        print(f"\n🔄 Rebuilding play_list to avoid forbidden values: {forbidden_declares}")
+    
+    # Find all possible individual plays
+    all_plays = []
+    
+    # 1. Find openers (high-value pieces)
+    openers = []
+    for threshold in [13, 12, 11]:
+        candidates = [p for p in original_hand if p.point >= threshold]
+        for piece in candidates:
+            if piece not in [p for play in openers for p in play['pieces']]:
+                openers.append({
+                    'type': 'opener',
+                    'pieces': [piece],
+                    'value': piece.point
+                })
+    
+    # 2. Find all strong combos
+    combos = []
+    all_valid_combos = find_all_valid_combos(original_hand)
+    for combo_type, pieces in all_valid_combos:
+        if combo_type != "SINGLE" and is_strong_combo(combo_type, pieces):
+            combos.append({
+                'type': 'combo',
+                'combo_type': combo_type,
+                'pieces': pieces,
+                'value': sum(p.point for p in pieces)
+            })
+    
+    # Sort combos by size (descending) then by value
+    combos.sort(key=lambda x: (len(x['pieces']), x['value']), reverse=True)
+    
+    # 3. Generate valid play combinations
+    valid_combinations = []
+    
+    if not is_first_player:
+        # Non-starters need at least one opener, but when avoiding forbidden values,
+        # they can also play single combos
+        
+        # Try: single combo (allowed when avoiding forbidden values)
+        for combo in combos:
+            pieces_count = len(combo['pieces'])
+            if pieces_count not in forbidden_declares and pieces_count <= pile_room:
+                valid_combinations.append({
+                    'plays': [combo],
+                    'total_pieces': pieces_count,
+                    'total_value': combo['value'],
+                    'has_combo': True
+                })
+        
+        # Try: opener only
+        for opener in openers:
+            pieces_count = len(opener['pieces'])
+            if pieces_count not in forbidden_declares and pieces_count <= pile_room:
+                valid_combinations.append({
+                    'plays': [opener],
+                    'total_pieces': pieces_count,
+                    'total_value': opener['value'],
+                    'has_combo': False
+                })
+        
+        # Try: opener + combo
+        for opener in openers:
+            for combo in combos:
+                # Check pieces don't overlap
+                opener_pieces = set(p.name + p.color for p in opener['pieces'])
+                combo_pieces = set(p.name + p.color for p in combo['pieces'])
+                if not opener_pieces.intersection(combo_pieces):
+                    pieces_count = len(opener['pieces']) + len(combo['pieces'])
+                    if pieces_count not in forbidden_declares and pieces_count <= pile_room:
+                        valid_combinations.append({
+                            'plays': [opener, combo],
+                            'total_pieces': pieces_count,
+                            'total_value': opener['value'] + combo['value'],
+                            'has_combo': True
+                        })
+        
+        # Try: multiple openers
+        if len(openers) >= 2:
+            for i in range(len(openers)):
+                for j in range(i + 1, len(openers)):
+                    pieces_count = len(openers[i]['pieces']) + len(openers[j]['pieces'])
+                    if pieces_count not in forbidden_declares and pieces_count <= pile_room:
+                        valid_combinations.append({
+                            'plays': [openers[i], openers[j]],
+                            'total_pieces': pieces_count,
+                            'total_value': openers[i]['value'] + openers[j]['value'],
+                            'has_combo': False
+                        })
+    else:
+        # Starters can play combos without openers
+        # Try: single combo
+        for combo in combos:
+            pieces_count = len(combo['pieces'])
+            if pieces_count not in forbidden_declares and pieces_count <= pile_room:
+                valid_combinations.append({
+                    'plays': [combo],
+                    'total_pieces': pieces_count,
+                    'total_value': combo['value'],
+                    'has_combo': True
+                })
+        
+        # Try: opener + combo
+        for opener in openers:
+            for combo in combos:
+                opener_pieces = set(p.name + p.color for p in opener['pieces'])
+                combo_pieces = set(p.name + p.color for p in combo['pieces'])
+                if not opener_pieces.intersection(combo_pieces):
+                    pieces_count = len(opener['pieces']) + len(combo['pieces'])
+                    if pieces_count not in forbidden_declares and pieces_count <= pile_room:
+                        valid_combinations.append({
+                            'plays': [opener, combo],
+                            'total_pieces': pieces_count,
+                            'total_value': opener['value'] + combo['value'],
+                            'has_combo': True
+                        })
+        
+        # Try: multiple combos (if non-overlapping)
+        if len(combos) >= 2:
+            for i in range(len(combos)):
+                for j in range(i + 1, len(combos)):
+                    pieces_i = set(p.name + p.color for p in combos[i]['pieces'])
+                    pieces_j = set(p.name + p.color for p in combos[j]['pieces'])
+                    if not pieces_i.intersection(pieces_j):
+                        pieces_count = len(combos[i]['pieces']) + len(combos[j]['pieces'])
+                        if pieces_count not in forbidden_declares and pieces_count <= pile_room:
+                            valid_combinations.append({
+                                'plays': [combos[i], combos[j]],
+                                'total_pieces': pieces_count,
+                                'total_value': combos[i]['value'] + combos[j]['value'],
+                                'has_combo': True
+                            })
+    
+    # If no valid combinations, return empty play_list (declare 0)
+    if not valid_combinations:
+        if verbose:
+            print("  No valid combinations found - will declare 0")
+        return []
+    
+    # Select best valid combination
+    # Priority: 1) Maximum pieces, 2) Has combo, 3) Highest value
+    valid_combinations.sort(key=lambda x: (
+        x['total_pieces'],
+        x['has_combo'],
+        x['total_value']
+    ), reverse=True)
+    
+    best_combination = valid_combinations[0]
+    
+    if verbose:
+        print(f"  Selected combination with {best_combination['total_pieces']} pieces:")
+        for play in best_combination['plays']:
+            if play['type'] == 'combo':
+                print(f"    - {play['combo_type']}: {[f'{p.name}({p.point})' for p in play['pieces']]}")
+            else:
+                print(f"    - Opener: {play['pieces'][0].name}({play['pieces'][0].point})")
+    
+    # Build and return new play_list
+    new_play_list = []
+    for play in best_combination['plays']:
+        if play['type'] == 'combo':
+            new_play_list.append({
+                'type': 'combo',
+                'combo_type': play['combo_type'],
+                'pieces': play['pieces']
+            })
+        else:
+            new_play_list.append({
+                'type': 'opener',
+                'pieces': play['pieces']
+            })
+    
+    return new_play_list
+
+
+# ------------------------------------------------------------------
 # New AI Declaration V2 Implementation
 # ------------------------------------------------------------------
 def choose_declare_strategic_v2(
@@ -980,12 +1182,22 @@ def choose_declare_strategic_v2(
     if must_declare_nonzero:
         forbidden_declares.add(0)
     
-    # Adjust if needed
+    # Adjust if needed by rebuilding play_list
     if declaration in forbidden_declares:
-        valid_options = [d for d in range(0, 9) if d not in forbidden_declares]
-        if valid_options:
-            # Pick closest valid option
-            declaration = min(valid_options, key=lambda x: abs(x - declaration))
+        # Calculate pile room for this position
+        pile_room = calculate_pile_room(previous_declarations)
+        
+        # Rebuild play_list to avoid forbidden values
+        play_list = rebuild_play_list_avoiding_forbidden(
+            original_hand=hand,  # Use original hand, not hand_copy
+            pile_room=pile_room,
+            forbidden_declares=forbidden_declares,
+            is_first_player=is_first_player,
+            verbose=verbose
+        )
+        
+        # Recalculate declaration based on new play_list
+        declaration = sum(len(play['pieces']) for play in play_list)
     
     if verbose:
         print(f"\n🎯 FINAL DECLARATION: {declaration}")

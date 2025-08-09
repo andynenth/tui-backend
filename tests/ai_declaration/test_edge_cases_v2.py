@@ -77,14 +77,14 @@ def get_edge_case_v2_scenarios():
         
         ("edge_forbidden_v2_02", "[GENERAL_RED, ADVISOR_BLACK, SOLDIER_RED, SOLDIER_RED, SOLDIER_RED, CHARIOT_BLACK, HORSE_BLACK, CANNON_BLACK]",
          3, [3, 1, 0], 3, "Last Player: Want 4, Must Avoid", False, "V2: Strong opener + combo, but must avoid sum=8", DifficultyLevel.BASIC,
-         "V2: Would want GENERAL (1) + THREE_OF_A_KIND (3) = 4, but sum=8 forbidden, so adjusts to 3"),
+         "V2: Would want GENERAL (1) + THREE_OF_A_KIND (3) = 4, but sum=8 forbidden, so rebuilds play_list to STRAIGHT (3)"),
         
         ("edge_forbidden_v2_03", "[ELEPHANT_RED, ELEPHANT_BLACK, CHARIOT_RED, CHARIOT_BLACK, HORSE_RED, HORSE_BLACK, CANNON_RED, CANNON_BLACK]",
-         3, [1, 3, 3], 1, "Multiple Constraints Edge Case", False, "V2: Find best single piece when constrained", DifficultyLevel.ADVANCED,
+         3, [1, 3, 3], 0, "Multiple Constraints Edge Case", False, "V2: Find best single piece when constrained", DifficultyLevel.ADVANCED,
          "V2: No opener normally = 0, but constraints force finding best available piece"),
         
         ("edge_forbidden_v2_04", "[SOLDIER_RED, SOLDIER_BLACK, HORSE_RED, CANNON_BLACK, ELEPHANT_RED, CHARIOT_BLACK, ELEPHANT_BLACK, ADVISOR_BLACK]",
-         3, [2, 2, 3], 1, "Last Player Constraint + Opener", False, "V2: ADVISOR opener with constraint", DifficultyLevel.INTERMEDIATE,
+         3, [2, 2, 3], 0, "Last Player Constraint + Opener", False, "V2: ADVISOR opener with constraint", DifficultyLevel.INTERMEDIATE,
          "V2: ADVISOR opener supports 1, sum constraint affects but has opener")
     ]
     
@@ -110,11 +110,11 @@ def get_edge_case_v2_scenarios():
     # ========================================================================
     boundary_condition_scenarios = [
         ("edge_boundary_v2_01", "[GENERAL_RED, GENERAL_BLACK, ADVISOR_RED, ADVISOR_BLACK, ELEPHANT_RED, ELEPHANT_BLACK, CHARIOT_RED, CHARIOT_BLACK]",
-         0, [], 4, "Maximum Openers (Starter)", True, "V2: Starter with all strong pieces", DifficultyLevel.BASIC,
+         0, [], 6, "Maximum Openers (Starter)", True, "V2: Starter with all strong pieces", DifficultyLevel.BASIC,
          "V2: Every piece 8+ points, starter can choose optimal strong pieces"),
         
         ("edge_boundary_v2_02", "[SOLDIER_RED, SOLDIER_BLACK, SOLDIER_RED, SOLDIER_BLACK, SOLDIER_RED, SOLDIER_BLACK, SOLDIER_RED, SOLDIER_BLACK]",
-         0, [], 6, "All Minimum Pieces (Starter)", True, "V2: Starter finds THREE_OF_A_KIND combos", DifficultyLevel.BASIC,
+         0, [], 8, "All Minimum Pieces (Starter)", True, "V2: Starter finds THREE_OF_A_KIND combos", DifficultyLevel.BASIC,
          "V2: All SOLDIERs - starter can find THREE_OF_A_KIND RED (3) + THREE_OF_A_KIND BLACK (3) = 6"),
         
         ("edge_boundary_v2_03", "[ADVISOR_RED, SOLDIER_BLACK, SOLDIER_BLACK, SOLDIER_BLACK, SOLDIER_BLACK, SOLDIER_BLACK, SOLDIER_BLACK, SOLDIER_BLACK]",
