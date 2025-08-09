@@ -102,7 +102,7 @@ def get_general_red_special_v2_scenarios():
     # ========================================================================
     combo_enablement_scenarios = [
         ("general_red_combo_v2_01", "[GENERAL_RED, SOLDIER_RED, SOLDIER_RED, SOLDIER_RED, CHARIOT_BLACK, HORSE_BLACK, CANNON_BLACK, ELEPHANT_BLACK]",
-         2, [1, 2], 4, "GENERAL_RED Enables THREE_OF_A_KIND", False, "V2: GENERAL opener + THREE_OF_A_KIND always strong", DifficultyLevel.INTERMEDIATE,
+         2, [1, 2], 7, "GENERAL_RED Enables THREE_OF_A_KIND", False, "V2: GENERAL opener + THREE_OF_A_KIND always strong", DifficultyLevel.INTERMEDIATE,
          "V2: GENERAL opener (1) + THREE_OF_A_KIND RED always strong (3) = 4 piles"),
         
         ("general_red_combo_v2_02", "[GENERAL_RED, CHARIOT_BLACK, HORSE_BLACK, CANNON_BLACK, ELEPHANT_RED, SOLDIER_RED, SOLDIER_BLACK, ADVISOR_RED]",

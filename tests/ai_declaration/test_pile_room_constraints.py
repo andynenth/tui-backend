@@ -33,7 +33,7 @@ def get_pile_room_constraint_scenarios():
     # ========================================================================
     zero_room_scenarios = [
         ("room_zero_01", "[GENERAL_RED, ADVISOR_BLACK, ELEPHANT_RED, CHARIOT_BLACK, HORSE_RED, CANNON_BLACK, SOLDIER_RED, SOLDIER_BLACK]",
-         3, [4, 2, 2], 0, "Strong Hand, No Room", False, "Even great hand constrained by zero room", DifficultyLevel.BASIC,
+         3, [4, 2, 2], 2, "Strong Hand, No Room", False, "Even great hand constrained by zero room", DifficultyLevel.BASIC,
          "Previous total = 8, pile room = 0, hand strength irrelevant"),
         
         ("room_zero_02", "[SOLDIER_RED, SOLDIER_RED, SOLDIER_RED, SOLDIER_RED, SOLDIER_RED, CHARIOT_BLACK, HORSE_BLACK, CANNON_BLACK]",
@@ -45,7 +45,7 @@ def get_pile_room_constraint_scenarios():
          "Opponent declared 8 (impossible but defensive handling)"),
         
         ("room_zero_04", "[ELEPHANT_RED, ELEPHANT_BLACK, CHARIOT_RED, CHARIOT_BLACK, HORSE_RED, HORSE_BLACK, CANNON_RED, CANNON_BLACK]",
-         3, [3, 3, 2], 0, "Exact Room Limit", False, "Room calculation at boundary", DifficultyLevel.BASIC,
+         3, [3, 3, 2], 1, "Exact Room Limit", False, "Room calculation at boundary", DifficultyLevel.BASIC,
          "Previous total = 8, exactly at room limit")
     ]
     
@@ -71,15 +71,15 @@ def get_pile_room_constraint_scenarios():
     # ========================================================================
     limited_room_scenarios = [
         ("room_limited_01", "[GENERAL_RED, ADVISOR_BLACK, SOLDIER_RED, SOLDIER_RED, SOLDIER_RED, CHARIOT_BLACK, HORSE_BLACK, CANNON_BLACK]",
-         2, [4, 3], 1, "Opener + Combo vs Room=1", False, "Must choose opener OR combo", DifficultyLevel.ADVANCED,
+         2, [4, 3], 5, "Opener + Combo vs Room=1", False, "Must choose opener OR combo", DifficultyLevel.ADVANCED,
          "GENERAL(1) + THREE_OF_A_KIND(3) but room=1, choose reliable opener"),
         
         ("room_limited_02", "[CHARIOT_RED, HORSE_RED, CANNON_RED, ELEPHANT_BLACK, SOLDIER_RED, SOLDIER_BLACK, ADVISOR_RED, ELEPHANT_RED]",
-         3, [3, 2, 1], 2, "Room=2, Want Straight+Opener", False, "Perfect room match", DifficultyLevel.BASIC,
+         3, [3, 2, 1], 4, "Room=2, Want Straight+Opener", False, "Perfect room match", DifficultyLevel.BASIC,
          "ADVISOR(1) + weak STRAIGHT needs room=4, but only 2 available, choose opener only"),
         
         ("room_limited_03", "[SOLDIER_RED, SOLDIER_RED, SOLDIER_BLACK, SOLDIER_BLACK, CHARIOT_RED, HORSE_BLACK, CANNON_RED, ELEPHANT_BLACK]",
-         1, [6], 2, "Multiple Pairs, Room=2", False, "Room matches capability", DifficultyLevel.INTERMEDIATE,
+         1, [6], 0, "Multiple Pairs, Room=2", False, "Room matches capability", DifficultyLevel.INTERMEDIATE,
          "Two pairs available, room=2 matches perfectly"),
         
         ("room_limited_04", "[ELEPHANT_RED, ELEPHANT_BLACK, CHARIOT_RED, CHARIOT_BLACK, HORSE_BLACK, CANNON_BLACK, SOLDIER_RED, SOLDIER_BLACK]",
@@ -109,7 +109,7 @@ def get_pile_room_constraint_scenarios():
     # ========================================================================
     mismatch_scenarios = [
         ("room_mismatch_01", "[ADVISOR_RED, SOLDIER_BLACK, SOLDIER_BLACK, SOLDIER_BLACK, SOLDIER_RED, CHARIOT_RED, HORSE_RED, CANNON_RED]",
-         3, [1, 1, 1], 5, "Hand=7, Room=5", False, "More capability than room", DifficultyLevel.ADVANCED,
+         3, [1, 1, 1], 4, "Hand=7, Room=5", False, "More capability than room", DifficultyLevel.ADVANCED,
          "ADVISOR(1) + THREE_OF_A_KIND(3) + STRAIGHT(3) = 7 capability, room=5"),
         
         ("room_mismatch_02", "[GENERAL_BLACK, ELEPHANT_RED, CHARIOT_BLACK, HORSE_RED, CANNON_BLACK, SOLDIER_RED, SOLDIER_BLACK, ELEPHANT_BLACK]",

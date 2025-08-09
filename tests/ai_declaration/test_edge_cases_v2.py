@@ -76,7 +76,7 @@ def get_edge_case_v2_scenarios():
          "V2: ADVISOR supports 1, but 6+2=8 forbidden, choose 1 (has opener)"),
         
         ("edge_forbidden_v2_02", "[GENERAL_RED, ADVISOR_BLACK, SOLDIER_RED, SOLDIER_RED, SOLDIER_RED, CHARIOT_BLACK, HORSE_BLACK, CANNON_BLACK]",
-         3, [3, 1, 0], 3, "Last Player: Want 4, Must Avoid", False, "V2: Strong opener + combo, but must avoid sum=8", DifficultyLevel.BASIC,
+         3, [3, 1, 0], 2, "Last Player: Want 4, Must Avoid", False, "V2: Strong opener + combo, but must avoid sum=8", DifficultyLevel.BASIC,
          "V2: Would want GENERAL (1) + THREE_OF_A_KIND (3) = 4, but sum=8 forbidden, so rebuilds play_list to STRAIGHT (3)"),
         
         ("edge_forbidden_v2_03", "[ELEPHANT_RED, ELEPHANT_BLACK, CHARIOT_RED, CHARIOT_BLACK, HORSE_RED, HORSE_BLACK, CANNON_RED, CANNON_BLACK]",

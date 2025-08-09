@@ -89,9 +89,12 @@ class DeclarationContext:
 # ------------------------------------------------------------------
 # Strategic Helper Functions
 # ------------------------------------------------------------------
-def calculate_pile_room(previous_declarations: List[int]) -> int:
+def calculate_pile_room(previous_declarations: List[int], has_general_red: bool = False) -> int:
     """
     Calculate maximum piles available in this round.
+    
+    Special Rule: If player has GENERAL_RED, they can ignore all declarations
+    after the starter when calculating pile room, giving them more opportunities.
     
     If the sum of previous declarations exceeds 8, ignore the last declaration
     that caused the overflow.
@@ -107,19 +110,35 @@ def calculate_pile_room(previous_declarations: List[int]) -> int:
     Examples:
         [2, 4, 4] -> sum=10 > 8, ignore last 4 -> pile_room = 8 - (2+4) = 2
         [4, 5] -> sum=9 > 8, ignore 5 -> pile_room = 8 - 4 = 4
+        [3, 2, 2] with GENERAL_RED -> keep only starter's 3 -> pile_room = 8 - 3 = 5
     
+    Args:
+        previous_declarations: List of previous player declarations
+        has_general_red: Whether the current player has GENERAL_RED
+        
     Returns:
         int: Available pile room (0-8)
     """
     if not previous_declarations:
         return 8
     
-    total_declared = sum(previous_declarations)
+    # GENERAL_RED special rule: ignore declarations after the starter
+    if has_general_red and len(previous_declarations) >= 1:
+        # Keep only the starter's declaration, ignore all others
+        modified_declarations = previous_declarations[:1]
+        total_declared = sum(modified_declarations) if modified_declarations else 0
+    else:
+        total_declared = sum(previous_declarations)
     
     # If total exceeds 8, ignore the last declaration that caused overflow
     if total_declared > 8:
-        # Recalculate without the last declaration
-        total_declared = sum(previous_declarations[:-1])
+        if has_general_red and len(previous_declarations) >= 1:
+            # With GENERAL_RED, we already only count starter's declaration
+            # which shouldn't exceed 8 by itself, but handle edge case
+            total_declared = 0  # If starter declares >8, treat as 0
+        else:
+            # Recalculate without the last declaration
+            total_declared = sum(previous_declarations[:-1])
     
     return max(0, 8 - total_declared)
 
@@ -886,19 +905,8 @@ def rebuild_play_list_avoiding_forbidden(
     valid_combinations = []
     
     if not is_first_player:
-        # Non-starters need at least one opener, but when avoiding forbidden values,
-        # they can also play single combos
-        
-        # Try: single combo (allowed when avoiding forbidden values)
-        for combo in combos:
-            pieces_count = len(combo['pieces'])
-            if pieces_count not in forbidden_declares and pieces_count <= pile_room:
-                valid_combinations.append({
-                    'plays': [combo],
-                    'total_pieces': pieces_count,
-                    'total_value': combo['value'],
-                    'has_combo': True
-                })
+        # Non-starters ALWAYS need at least one opener
+        # Even when avoiding forbidden values, they cannot play combos alone
         
         # Try: opener only
         for opener in openers:
@@ -1107,9 +1115,14 @@ def choose_declare_strategic_v2(
         if verbose:
             print("\n🎯 NON-STARTER STRATEGY:")
         
+        # Check if player has GENERAL_RED for special rule
+        has_general_red = any(p.name == "GENERAL" and p.color == "RED" for p in hand)
+        
         # Step 1: Calculate pile room from previous declarations
-        pile_room = calculate_pile_room(previous_declarations)
+        pile_room = calculate_pile_room(previous_declarations, has_general_red)
         if verbose:
+            if has_general_red:
+                print(f"  Has GENERAL_RED - ignoring starter's declaration")
             print(f"  Pile room available: {pile_room}")
         
         # If no pile room, cannot declare anything
@@ -1153,7 +1166,8 @@ def choose_declare_strategic_v2(
         
         if room_left > 0:
             # Use the original threshold throughout piece selection
-            strong_pieces = get_individual_strong_pieces(hand_copy, room_left, original_threshold, pile_room)
+            # Pass pile_room as the current pile_room, and also as original_pile_room for consistency
+            strong_pieces = get_individual_strong_pieces(hand_copy, pile_room, original_threshold, pile_room)
             # Sort by value descending to take best pieces first
             strong_pieces.sort(key=lambda p: p.point, reverse=True)
             
@@ -1169,6 +1183,49 @@ def choose_declare_strategic_v2(
         
         # Step 5: Fit to pile room if needed
         play_list = fit_plays_to_pile_room(play_list, pile_room)
+        
+        # Step 6: After fitting, check if we have room for more individual pieces
+        # This is important when combos were removed during fitting
+        current_pieces_after_fit = sum(len(play['pieces']) for play in play_list)
+        final_room_left = pile_room - current_pieces_after_fit
+        
+        if final_room_left > 0 and verbose:
+            print(f"  After fitting: {current_pieces_after_fit} pieces used, {final_room_left} room left")
+        
+        if final_room_left > 0:
+            # Try to add more strong pieces with the remaining room
+            # Get remaining pieces not already in play_list
+            pieces_in_play = []
+            for play in play_list:
+                pieces_in_play.extend(play['pieces'])
+            
+            # Find pieces not yet used
+            remaining_hand = [p for p in hand if not any(
+                p.name == used.name and p.color == used.color 
+                for used in pieces_in_play
+            )]
+            
+            # Get strong pieces from remaining hand
+            # For the last few slots, be more selective about which pieces to add
+            # If only 1 slot left, require higher value pieces
+            if final_room_left == 1:
+                # For last slot, only take GENERAL pieces or ADVISOR_RED
+                additional_strong = [p for p in remaining_hand if p.point >= 12]
+            else:
+                # For multiple slots, use original threshold
+                additional_strong = get_individual_strong_pieces(remaining_hand, pile_room, original_threshold, pile_room)
+            additional_strong.sort(key=lambda p: p.point, reverse=True)
+            
+            pieces_added = 0
+            for piece in additional_strong:
+                if pieces_added < final_room_left:
+                    play_list.append({
+                        'type': 'opener',
+                        'pieces': [piece]
+                    })
+                    pieces_added += 1
+                    if verbose:
+                        print(f"    Added additional piece: {piece.name}({piece.point})")
         
         # Calculate declaration
         declaration = sum(len(play['pieces']) for play in play_list)
@@ -1192,7 +1249,7 @@ def choose_declare_strategic_v2(
     # Adjust if needed by rebuilding play_list
     if declaration in forbidden_declares:
         # Calculate pile room for this position
-        pile_room = calculate_pile_room(previous_declarations)
+        pile_room = calculate_pile_room(previous_declarations, has_general_red)
         
         # Rebuild play_list to avoid forbidden values
         play_list = rebuild_play_list_avoiding_forbidden(
