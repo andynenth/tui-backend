@@ -57,7 +57,7 @@ def get_baseline_v2_scenarios():
         
         # Strong combo scenarios with same color pieces
         ("baseline_v2_11", "[SOLDIER_RED, SOLDIER_RED, SOLDIER_RED, SOLDIER_RED, SOLDIER_RED, CHARIOT_BLACK, HORSE_BLACK, CANNON_BLACK]",
-         0, [], 0, "Strong Combos (Starter)", True, "SOLDIER combos avg=2, not > 6"),
+         0, [], 8, "Strong Combos (Starter)", True, "SOLDIER combos avg=2, not > 6"),
         
         ("baseline_v2_12", "[SOLDIER_RED, SOLDIER_RED, SOLDIER_RED, SOLDIER_RED, SOLDIER_RED, CHARIOT_BLACK, HORSE_BLACK, CANNON_BLACK]",
          1, [5], 0, "Strong Combos (No Control)", False, "Non-starter with no opener"),

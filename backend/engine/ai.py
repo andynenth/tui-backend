@@ -412,7 +412,8 @@ def fit_plays_to_pile_room(play_list: List[Dict], pile_room: int) -> List[Dict]:
     """
     Adjust play list to fit within pile room constraints.
     
-    Strategy: Remove lowest value combos first, keep openers if possible.
+    Strategy: Remove combos based on their strength hierarchy and size.
+    Prefer to keep larger combos (FOUR_OF_A_KIND over STRAIGHT).
     
     Args:
         play_list: List of planned plays
@@ -430,12 +431,25 @@ def fit_plays_to_pile_room(play_list: List[Dict], pile_room: int) -> List[Dict]:
     openers = [p for p in play_list if p['type'] == 'opener']
     combos = [p for p in play_list if p['type'] == 'combo']
     
-    # Sort combos by total value (ascending) to remove weakest first
-    combos.sort(key=lambda x: sum(p.point for p in x['pieces']))
+    # Sort combos by hierarchy and size (prefer larger combos)
+    # Priority order: FIVE_OF_A_KIND > FOUR_OF_A_KIND > EXTENDED_STRAIGHT > STRAIGHT > THREE_OF_A_KIND > PAIR
+    combo_hierarchy = {
+        "FIVE_OF_A_KIND": 6,
+        "FOUR_OF_A_KIND": 5,
+        "EXTENDED_STRAIGHT": 4,
+        "EXTENDED_STRAIGHT_5": 4,
+        "DOUBLE_STRAIGHT": 4,
+        "STRAIGHT": 3,
+        "THREE_OF_A_KIND": 2,
+        "PAIR": 1
+    }
     
-    # Remove combos until we fit
+    # Sort by hierarchy (descending) then by number of pieces (descending)
+    combos.sort(key=lambda x: (combo_hierarchy.get(x.get('combo_type', ''), 0), len(x['pieces'])), reverse=True)
+    
+    # Remove combos from the end (weakest/smallest first) until we fit
     while total_pieces > pile_room and combos:
-        removed = combos.pop(0)  # Remove weakest combo
+        removed = combos.pop()  # Remove weakest/smallest combo
         total_pieces -= len(removed['pieces'])
     
     # Rebuild play list
@@ -732,6 +746,70 @@ def choose_declare_strategic(
 
 
 # ------------------------------------------------------------------
+# Helper function for iterative combo finding with size preference
+# ------------------------------------------------------------------
+def find_and_select_strong_combos_iteratively(hand_copy, play_list, verbose=False):
+    """
+    Find strong combos iteratively, preferring larger combos.
+    
+    This function:
+    1. Finds all valid combos in the current hand
+    2. Filters for strong combos only
+    3. Sorts by size (descending) to prefer larger combos
+    4. Selects the largest combo and adds to play list
+    5. Removes pieces from hand
+    6. Repeats until no more strong combos found
+    
+    Args:
+        hand_copy: Current hand (will be modified)
+        play_list: List to append combos to
+        verbose: Whether to print debug info
+        
+    Returns:
+        tuple: (updated hand_copy, number of combos found)
+    """
+    combos_found = 0
+    
+    while True:
+        all_combos = find_all_valid_combos(hand_copy)
+        
+        # Filter and sort strong combos by size (largest first)
+        strong_combos = []
+        for combo_type, pieces in all_combos:
+            # Skip single pieces - they're not combos
+            if combo_type == "SINGLE":
+                continue
+                
+            if is_strong_combo(combo_type, pieces):
+                strong_combos.append((combo_type, pieces))
+        
+        # Sort by number of pieces (descending) to prefer larger combos
+        # This ensures DOUBLE_STRAIGHT (6) > FIVE_OF_A_KIND (5) > EXTENDED_STRAIGHT_5 (5) 
+        # > EXTENDED_STRAIGHT/FOUR_OF_A_KIND (4) > THREE_OF_A_KIND/STRAIGHT (3) > PAIR (2)
+        strong_combos.sort(key=lambda x: len(x[1]), reverse=True)
+        
+        if not strong_combos:
+            break  # No more strong combos found
+            
+        # Take the largest strong combo
+        combo_type, pieces = strong_combos[0]
+        if verbose:
+            total = sum(p.point for p in pieces)
+            print(f"    Found {combo_type}: {[f'{p.name}({p.point})' for p in pieces]} (total={total})")
+        
+        # Add to play list and remove from hand
+        play_list.append({
+            'type': 'combo',
+            'combo_type': combo_type,
+            'pieces': pieces
+        })
+        hand_copy = remove_pieces_from_hand(hand_copy, pieces)
+        combos_found += 1
+    
+    return hand_copy, combos_found
+
+
+# ------------------------------------------------------------------
 # New AI Declaration V2 Implementation
 # ------------------------------------------------------------------
 def choose_declare_strategic_v2(
@@ -774,35 +852,8 @@ def choose_declare_strategic_v2(
         if verbose:
             print("\n🎯 STARTER STRATEGY:")
         
-        # Step 1: Find strong combos iteratively (re-check after each combo)
-        combos_found = 0
-        while True:
-            all_combos = find_all_valid_combos(hand_copy)
-            found_combo = False
-            
-            for combo_type, pieces in all_combos:
-                # Skip single pieces - they're not combos
-                if combo_type == "SINGLE":
-                    continue
-                    
-                if is_strong_combo(combo_type, pieces):
-                    if verbose:
-                        total = sum(p.point for p in pieces)
-                        print(f"    Found {combo_type}: {[f'{p.name}({p.point})' for p in pieces]} (total={total})")
-                    
-                    # Add to play list and remove from hand
-                    play_list.append({
-                        'type': 'combo',
-                        'combo_type': combo_type,
-                        'pieces': pieces
-                    })
-                    hand_copy = remove_pieces_from_hand(hand_copy, pieces)
-                    combos_found += 1
-                    found_combo = True
-                    break  # Re-scan for combos with updated hand
-            
-            if not found_combo:
-                break  # No more strong combos found
+        # Step 1: Find strong combos iteratively using the helper function
+        hand_copy, combos_found = find_and_select_strong_combos_iteratively(hand_copy, play_list, verbose)
         
         if verbose:
             print(f"  Found {combos_found} strong combos")
@@ -871,38 +922,41 @@ def choose_declare_strategic_v2(
                 print("  No opener found - declaring 0")
             return 0
         
-        # Step 3: Find all strong combos from remaining pieces
-        all_combos = find_all_valid_combos(hand_copy)
-        for combo_type, pieces in all_combos:
-            # Skip single pieces - they're not combos
-            if combo_type == "SINGLE":
-                continue
-            if is_strong_combo(combo_type, pieces):
-                play_list.append({
-                    'type': 'combo',
-                    'combo_type': combo_type,
-                    'pieces': pieces
-                })
-                hand_copy = remove_pieces_from_hand(hand_copy, pieces)
+        # Step 3: Find strong combos iteratively using the helper function
+        hand_copy, combos_found = find_and_select_strong_combos_iteratively(hand_copy, play_list, verbose)
         
         # Step 4: Find additional individual strong pieces
         current_pieces = sum(len(play['pieces']) for play in play_list)
         room_left = pile_room - current_pieces
         
-        if room_left > 0:
-            # Check pieces with current room left
-            strong_pieces = get_individual_strong_pieces(hand_copy, room_left)
+        # Special case: Double GENERAL bonus
+        # If we used GENERAL_RED as opener and still have GENERAL_BLACK
+        double_general_bonus = 0
+        if opener and opener.name == "GENERAL" and opener.color == "RED":
+            if any(p.name == "GENERAL" and p.color == "BLACK" for p in hand_copy):
+                double_general_bonus = 1
+                if verbose:
+                    print("  Double GENERAL bonus: +1 pile room for individual pieces")
+        
+        # Apply bonus to room calculation for piece selection
+        room_left_adjusted = room_left + double_general_bonus
+        
+        if room_left_adjusted > 0:
+            # Check pieces with adjusted room
+            strong_pieces = get_individual_strong_pieces(hand_copy, room_left_adjusted)
             # Sort by value descending to take best pieces first
             strong_pieces.sort(key=lambda p: p.point, reverse=True)
             
+            # Use original room_left for actual tracking
+            pieces_added = 0
             for piece in strong_pieces:
-                if room_left > 0:
+                if pieces_added < room_left:  # Use original room_left, not adjusted
                     play_list.append({
                         'type': 'opener',
                         'pieces': [piece]
                     })
                     hand_copy = remove_pieces_from_hand(hand_copy, [piece])
-                    room_left -= 1
+                    pieces_added += 1
         
         # Step 5: Fit to pile room if needed
         play_list = fit_plays_to_pile_room(play_list, pile_room)
