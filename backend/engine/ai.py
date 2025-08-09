@@ -388,21 +388,30 @@ def get_piece_threshold(pile_room: int) -> int:
         return 11  # >=11 for pile room > 5 (default to standard opener threshold)
 
 
-def get_individual_strong_pieces(hand: List, pile_room: int) -> List:
+def get_individual_strong_pieces(hand: List, pile_room: int, threshold: Optional[int] = None, 
+                                original_pile_room: Optional[int] = None) -> List:
     """
     Find individual pieces that meet the threshold for given pile room.
     
     Args:
         hand: Current hand
-        pile_room: Available pile room
+        pile_room: Available pile room (current)
+        threshold: Optional threshold to use instead of calculating from pile_room
+        original_pile_room: Original pile room when threshold was calculated (for > vs >= logic)
         
     Returns:
         List of qualifying pieces
     """
-    threshold = get_piece_threshold(pile_room)
+    if threshold is None:
+        threshold = get_piece_threshold(pile_room)
+        original_pile_room = pile_room
     
-    if pile_room == 1:
-        # Special case: pile room 1 requires > 13 (not >=)
+    # Use original pile room to determine > vs >= logic
+    if original_pile_room is None:
+        original_pile_room = pile_room
+        
+    if original_pile_room == 1:
+        # Special case: original pile room 1 requires > threshold (not >=)
         return [p for p in hand if p.point > threshold]
     else:
         return [p for p in hand if p.point >= threshold]
@@ -1111,13 +1120,14 @@ def choose_declare_strategic_v2(
         
         # Step 2: Find ONE opener that meets pile room requirements
         opener = None
-        threshold = get_piece_threshold(pile_room)
+        # Calculate threshold once based on original pile room
+        original_threshold = get_piece_threshold(pile_room)
         
         # For pile_room = 1, need > threshold (not >=)
         if pile_room == 1:
-            candidates = [p for p in hand_copy if p.point > threshold]
+            candidates = [p for p in hand_copy if p.point > original_threshold]
         else:
-            candidates = [p for p in hand_copy if p.point >= threshold]
+            candidates = [p for p in hand_copy if p.point >= original_threshold]
         
         if candidates:
             opener = max(candidates, key=lambda p: p.point)
@@ -1141,28 +1151,15 @@ def choose_declare_strategic_v2(
         current_pieces = sum(len(play['pieces']) for play in play_list)
         room_left = pile_room - current_pieces
         
-        # Special case: Double GENERAL bonus
-        # If we used GENERAL_RED as opener and still have GENERAL_BLACK
-        double_general_bonus = 0
-        if opener and opener.name == "GENERAL" and opener.color == "RED":
-            if any(p.name == "GENERAL" and p.color == "BLACK" for p in hand_copy):
-                double_general_bonus = 1
-                if verbose:
-                    print("  Double GENERAL bonus: +1 pile room for individual pieces")
-        
-        # Apply bonus to room calculation for piece selection
-        room_left_adjusted = room_left + double_general_bonus
-        
-        if room_left_adjusted > 0:
-            # Check pieces with adjusted room
-            strong_pieces = get_individual_strong_pieces(hand_copy, room_left_adjusted)
+        if room_left > 0:
+            # Use the original threshold throughout piece selection
+            strong_pieces = get_individual_strong_pieces(hand_copy, room_left, original_threshold, pile_room)
             # Sort by value descending to take best pieces first
             strong_pieces.sort(key=lambda p: p.point, reverse=True)
             
-            # Use original room_left for actual tracking
             pieces_added = 0
             for piece in strong_pieces:
-                if pieces_added < room_left:  # Use original room_left, not adjusted
+                if pieces_added < room_left:
                     play_list.append({
                         'type': 'opener',
                         'pieces': [piece]
