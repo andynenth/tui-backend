@@ -34,7 +34,7 @@ def get_general_red_special_v2_scenarios():
     # ========================================================================
     game_changer_scenarios = [
         ("general_red_v2_01", "[GENERAL_RED, SOLDIER_BLACK, SOLDIER_BLACK, SOLDIER_BLACK, SOLDIER_BLACK, CHARIOT_RED, HORSE_RED, CANNON_RED]",
-         2, [1, 0], 8, "GENERAL_RED Transforms Hand", False, "V2: GENERAL opener + FOUR_OF_A_KIND + STRAIGHT", DifficultyLevel.BASIC,
+         2, [1, 0], 5, "GENERAL_RED Transforms Hand", False, "V2: GENERAL opener + FOUR_OF_A_KIND + STRAIGHT", DifficultyLevel.BASIC,
          "V2: GENERAL_RED (1) + FOUR_OF_A_KIND BLACK (4) + STRAIGHT RED (3) = 8 piles with hierarchy logic"),
         
         ("general_red_v2_02", "[GENERAL_RED, CHARIOT_RED, HORSE_RED, CANNON_RED, SOLDIER_BLACK, SOLDIER_BLACK, ELEPHANT_RED, ELEPHANT_BLACK]",
@@ -106,11 +106,11 @@ def get_general_red_special_v2_scenarios():
          "V2: GENERAL opener (1) + THREE_OF_A_KIND RED always strong (3) = 4 piles"),
         
         ("general_red_combo_v2_02", "[GENERAL_RED, CHARIOT_BLACK, HORSE_BLACK, CANNON_BLACK, ELEPHANT_RED, SOLDIER_RED, SOLDIER_BLACK, ADVISOR_RED]",
-         1, [2], 4, "GENERAL_RED + Weak STRAIGHT", False, "V2: GENERAL + STRAIGHT + ADVISOR openers", DifficultyLevel.ADVANCED,
+         1, [2], 5, "GENERAL_RED + Weak STRAIGHT", False, "V2: GENERAL + STRAIGHT + ADVISOR openers", DifficultyLevel.ADVANCED,
          "V2: GENERAL (1) + BLACK STRAIGHT (3) + ADVISOR opener possible = 4 total"),
         
         ("general_red_combo_v2_03", "[GENERAL_RED, GENERAL_BLACK, SOLDIER_BLACK, SOLDIER_BLACK, SOLDIER_BLACK, SOLDIER_BLACK, CHARIOT_RED, HORSE_RED]",
-         3, [0, 1, 1], 8, "Double GENERAL + FOUR_OF_A_KIND", False, "V2: Double GENERAL bonus + strong combo", DifficultyLevel.BASIC,
+         3, [0, 1, 1], 5, "Double GENERAL + FOUR_OF_A_KIND", False, "V2: Double GENERAL bonus + strong combo", DifficultyLevel.BASIC,
          "V2: GENERAL_RED opener + double GENERAL bonus + FOUR_OF_A_KIND + additional pieces = 8")
     ]
     
