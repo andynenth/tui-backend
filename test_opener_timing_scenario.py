@@ -1,9 +1,7 @@
 #!/usr/bin/env python3
 """
-Test framework to recreate game rounds using turn resolution system.
-This properly tracks plays and winners through the game's resolution logic.
-
-Starting with Round 1 from game_play_history_rounds_1_8.md
+Test framework to test Single Opener Random Timing Feature with specific hand data.
+Uses hands designed to better showcase opener timing scenarios.
 """
 
 import sys
@@ -24,8 +22,8 @@ from backend.engine.turn_resolution import TurnPlay, TurnResult, resolve_turn
 from backend.engine.rules import is_valid_play
 
 
-class RoundRecreatorWithResolution:
-    """Recreates specific game rounds using turn resolution system"""
+class OpenerTimingTestScenario:
+    """Test scenario designed to showcase Single Opener Random Timing Feature"""
     
     def __init__(self):
         self.players = []
@@ -33,15 +31,15 @@ class RoundRecreatorWithResolution:
         self.bot_manager = None
         self.turn_history = []  # List of TurnResult objects
         
-    def setup_round_1(self):
-        """Set up the exact initial conditions from Round 1"""
+    def setup_opener_scenario(self):
+        """Set up hands designed to test opener timing feature"""
         print("\n" + "="*80)
-        print("RECREATING ROUND 1 WITH TURN RESOLUTION SYSTEM")
+        print("SINGLE OPENER TIMING FEATURE TEST SCENARIO")
         print("="*80)
         
         # Create players - treat all as bots for testing
         self.players = [
-            Player("Bot 1", is_bot=True),  # All use consistent bot naming
+            Player("Bot 1", is_bot=True),
             Player("Bot 2", is_bot=True),
             Player("Bot 3", is_bot=True),
             Player("Bot 4", is_bot=True)
@@ -51,23 +49,23 @@ class RoundRecreatorWithResolution:
         self.game = Game(players=self.players)
         self.bot_manager = BotManager()
         
-        # Set up exact initial hands from game history
+        # Set up hands designed to showcase opener timing
         hands = {
             "Bot 1": [
-                "SOLDIER_BLACK", "SOLDIER_BLACK", "CANNON_BLACK", "CANNON_RED",
-                "HORSE_RED", "ELEPHANT_RED", "ADVISOR_RED", "GENERAL_RED"
+                "SOLDIER_BLACK", "SOLDIER_BLACK", "SOLDIER_BLACK", "ELEPHANT_BLACK",
+                "ELEPHANT_BLACK", "ELEPHANT_RED", "ADVISOR_RED", "GENERAL_RED"
             ],
             "Bot 2": [
                 "CHARIOT_BLACK", "ADVISOR_BLACK", "SOLDIER_RED", "SOLDIER_RED",
                 "SOLDIER_RED", "CANNON_RED", "CHARIOT_RED", "ADVISOR_RED"
             ],
             "Bot 3": [
-                "SOLDIER_BLACK", "HORSE_BLACK", "HORSE_BLACK", "ELEPHANT_BLACK",
-                "GENERAL_BLACK", "HORSE_RED", "CHARIOT_RED", "ELEPHANT_RED"
+                "CANNON_BLACK", "HORSE_BLACK", "HORSE_BLACK", "CANNON_RED",
+                "GENERAL_BLACK", "HORSE_RED", "CHARIOT_BLACK", "ELEPHANT_RED"
             ],
             "Bot 4": [
                 "SOLDIER_BLACK", "SOLDIER_BLACK", "CANNON_BLACK", "CHARIOT_BLACK",
-                "ELEPHANT_BLACK", "ADVISOR_BLACK", "SOLDIER_RED", "SOLDIER_RED"
+                "HORSE_RED", "ADVISOR_BLACK", "SOLDIER_RED", "SOLDIER_RED"
             ]
         }
         
@@ -117,7 +115,7 @@ class RoundRecreatorWithResolution:
         """Simulate a turn and return the resolution"""
         print(f"\n" + "="*80)
         print(f"TURN {turn_number} (Starter: {starter_name})")
-        print(f"="*80)
+        print("="*80)
         
         # Calculate current pile counts from history
         pile_counts = self.get_pile_counts()
@@ -171,7 +169,6 @@ class RoundRecreatorWithResolution:
                 print(f"\n🎲 OPENER TIMING CHECK for {player.name} (STARTER):")
                 # Import needed functions
                 from backend.engine.ai_turn_strategy import generate_strategic_plan, detect_opener_only_plan, should_randomly_play_opener
-                import random
                 
                 # Generate plan to check if opener-only
                 plan = generate_strategic_plan(current_hand, context)
@@ -205,7 +202,6 @@ class RoundRecreatorWithResolution:
             elif player.name != starter_name and required_count == 1:
                 print(f"\n🎲 OPENER TIMING CHECK for {player.name} (RESPONDER, required=1):")
                 from backend.engine.ai_turn_strategy import generate_strategic_plan, detect_opener_only_plan, should_randomly_play_opener
-                import random
                 
                 # Generate plan to check if opener-only
                 plan = generate_strategic_plan(current_hand, context)
@@ -266,7 +262,7 @@ class RoundRecreatorWithResolution:
             winner_pieces = [f'{p.name}({p.point})' for p in turn_result.winner.pieces]
             print(f"\n🏆 WINNER: {turn_result.winner.player.name} with {winner_pieces}")
         else:
-            print("\n❌ No valid plays - no winner")
+            print(f"\n❌ No valid plays - no winner")
         
         return turn_result
     
@@ -297,16 +293,16 @@ class RoundRecreatorWithResolution:
         
         return current_hand
     
-    def run_full_analysis(self):
-        """Run the complete Round 1 recreation with turn resolution"""
-        self.setup_round_1()
+    def run_opener_timing_test(self):
+        """Run the test focused on opener timing scenarios"""
+        self.setup_opener_scenario()
         self.test_declarations()
         
-        # Play turns until all hands are empty
+        # Play a few turns to test opener timing
         turn_number = 1
         current_starter = "Bot 1"  # First player starts round
         
-        while True:
+        for _ in range(5):  # Run 5 turns maximum
             # Check if all players have empty hands
             all_empty = True
             for player in self.players:
@@ -317,11 +313,9 @@ class RoundRecreatorWithResolution:
             
             if all_empty:
                 print("\n" + "="*80)
-                print("ALL HANDS EMPTY - ROUND COMPLETE")
+                print("ALL HANDS EMPTY - TEST COMPLETE")
                 break
             
-            # Let the starter determine required piece count
-            # (In the real game, starter sets this)
             required_count = None  # Will be set by starter
             
             print("\n" + "#"*80)
@@ -337,15 +331,10 @@ class RoundRecreatorWithResolution:
             # else keep the same starter
             
             turn_number += 1
-            
-            # Safety check to prevent infinite loops
-            if turn_number > 10:
-                print("\n⚠️ Safety limit reached - stopping after 10 turns")
-                break
         
         # Summary
         print("\n" + "="*80)
-        print("ROUND SUMMARY")
+        print("OPENER TIMING TEST SUMMARY")
         print("="*80)
         
         final_counts = self.get_pile_counts()
@@ -357,9 +346,9 @@ class RoundRecreatorWithResolution:
 
 
 if __name__ == "__main__":
-    recreator = RoundRecreatorWithResolution()
-    recreator.run_full_analysis()
+    test = OpenerTimingTestScenario()
+    test.run_opener_timing_test()
     
     print("\n" + "="*80)
-    print("ROUND 1 RECREATION WITH TURN RESOLUTION COMPLETE")
+    print("SINGLE OPENER TIMING FEATURE TEST COMPLETE")
     print("="*80)
