@@ -17,6 +17,36 @@ STARTER_PREFERRED_COMBOS = [
     "DOUBLE_STRAIGHT"
 ]
 
+# ------------------------------------------------------------------
+# New AI Declaration V2 Constants
+# ------------------------------------------------------------------
+
+# Strong combo types - combos that beat PAIR in hierarchy
+STRONG_COMBO_TYPES = {
+    "THREE_OF_A_KIND",
+    "STRAIGHT", 
+    "FOUR_OF_A_KIND",
+    "EXTENDED_STRAIGHT",
+    "EXTENDED_STRAIGHT_5",
+    "FIVE_OF_A_KIND",
+    "DOUBLE_STRAIGHT"
+}
+
+# Threshold for PAIR to be considered strong (must exceed HORSE_RED pair value)
+STRONG_PAIR_THRESHOLD = 12  # HORSE_RED + HORSE_RED = 12 points
+
+# All combo types for reference
+ALL_COMBO_TYPES = {
+    "PAIR",
+    "THREE_OF_A_KIND",
+    "STRAIGHT", 
+    "FOUR_OF_A_KIND",
+    "EXTENDED_STRAIGHT",
+    "EXTENDED_STRAIGHT_5",
+    "FIVE_OF_A_KIND",
+    "DOUBLE_STRAIGHT"
+}
+
 def is_starter_preferred_combo(combo_type: str, pieces: List) -> bool:
     """
     Check if a combo is strong enough for a starter to prefer over individual openers.
@@ -63,11 +93,34 @@ def calculate_pile_room(previous_declarations: List[int]) -> int:
     """
     Calculate maximum piles available in this round.
     
+    If the sum of previous declarations exceeds 8, ignore the last declaration
+    that caused the overflow.
+    
+    Strategic Note:
+    This approach forces bots to fight against aggressive players who declare
+    high values, making the game more competitive. Instead of being locked out
+    (declaring 0), later position bots can still compete for piles when early
+    players are overly aggressive. This creates tension between:
+    - Early players: Can't just declare maximum to block others
+    - Later players: Must fight for remaining piles instead of giving up
+    
+    Examples:
+        [2, 4, 4] -> sum=10 > 8, ignore last 4 -> pile_room = 8 - (2+4) = 2
+        [4, 5] -> sum=9 > 8, ignore 5 -> pile_room = 8 - 4 = 4
+    
     Returns:
         int: Available pile room (0-8)
     """
+    if not previous_declarations:
+        return 8
+    
     total_declared = sum(previous_declarations)
-    # Handle edge case where sum > 8 (shouldn't happen but defensive)
+    
+    # If total exceeds 8, ignore the last declaration that caused overflow
+    if total_declared > 8:
+        # Recalculate without the last declaration
+        total_declared = sum(previous_declarations[:-1])
+    
     return max(0, 8 - total_declared)
 
 
@@ -257,6 +310,136 @@ def find_all_valid_combos(hand):
                 play_type = get_play_type(pieces)
                 results.append((play_type, pieces))
     return results
+
+
+# ------------------------------------------------------------------
+# New AI Declaration V2 Helper Functions
+# ------------------------------------------------------------------
+
+def is_strong_combo(combo_type: str, pieces: List) -> bool:
+    """
+    Check if a combo qualifies as a strong combo.
+    
+    A combo is strong if:
+    - It's THREE_OF_A_KIND or higher in hierarchy, OR
+    - It's a PAIR with total value > 12 (HORSE_RED pair)
+    
+    Args:
+        combo_type: Type of combo (e.g., "PAIR", "STRAIGHT")
+        pieces: List of pieces in the combo
+        
+    Returns:
+        True if combo is strong
+    """
+    # Combos that beat PAIR in hierarchy are always strong
+    if combo_type in STRONG_COMBO_TYPES:
+        return True
+    
+    # For PAIR, check if stronger than HORSE_RED pair
+    if combo_type == "PAIR":
+        total_value = sum(p.point for p in pieces)
+        return total_value > STRONG_PAIR_THRESHOLD
+    
+    return False
+
+
+def remove_pieces_from_hand(hand: List, pieces_to_remove: List) -> List:
+    """
+    Remove specific pieces from hand to avoid overlap in play planning.
+    
+    Args:
+        hand: Current hand
+        pieces_to_remove: Pieces to remove
+        
+    Returns:
+        New hand with pieces removed
+    """
+    hand_copy = hand.copy()
+    for piece in pieces_to_remove:
+        if piece in hand_copy:
+            hand_copy.remove(piece)
+    return hand_copy
+
+
+def get_piece_threshold(pile_room: int) -> int:
+    """
+    Get minimum piece value needed for given pile room.
+    More restrictive with less room, more flexible with more room.
+    
+    Args:
+        pile_room: Available pile slots
+        
+    Returns:
+        Minimum piece value threshold
+    """
+    if pile_room <= 0:
+        return float('inf')  # Impossible threshold
+    elif pile_room == 1:
+        return 13  # >13 (only GENERAL_RED qualifies)
+    elif pile_room == 2:
+        return 13  # >=13 (GENERAL_BLACK/RED)
+    elif pile_room == 3:
+        return 12  # >=12 (ADVISOR_RED and up)
+    elif pile_room == 4:
+        return 12  # >=12 (ADVISOR_RED and up)
+    elif pile_room == 5:
+        return 11  # >=11 (ADVISOR_BLACK and up)
+    else:
+        return 11  # >=11 for pile room > 5 (default to standard opener threshold)
+
+
+def get_individual_strong_pieces(hand: List, pile_room: int) -> List:
+    """
+    Find individual pieces that meet the threshold for given pile room.
+    
+    Args:
+        hand: Current hand
+        pile_room: Available pile room
+        
+    Returns:
+        List of qualifying pieces
+    """
+    threshold = get_piece_threshold(pile_room)
+    
+    if pile_room == 1:
+        # Special case: pile room 1 requires > 13 (not >=)
+        return [p for p in hand if p.point > threshold]
+    else:
+        return [p for p in hand if p.point >= threshold]
+
+
+def fit_plays_to_pile_room(play_list: List[Dict], pile_room: int) -> List[Dict]:
+    """
+    Adjust play list to fit within pile room constraints.
+    
+    Strategy: Remove lowest value combos first, keep openers if possible.
+    
+    Args:
+        play_list: List of planned plays
+        pile_room: Maximum pieces allowed
+        
+    Returns:
+        Adjusted play list that fits pile room
+    """
+    total_pieces = sum(len(play['pieces']) for play in play_list)
+    
+    if total_pieces <= pile_room:
+        return play_list
+    
+    # Separate openers and combos
+    openers = [p for p in play_list if p['type'] == 'opener']
+    combos = [p for p in play_list if p['type'] == 'combo']
+    
+    # Sort combos by total value (ascending) to remove weakest first
+    combos.sort(key=lambda x: sum(p.point for p in x['pieces']))
+    
+    # Remove combos until we fit
+    while total_pieces > pile_room and combos:
+        removed = combos.pop(0)  # Remove weakest combo
+        total_pieces -= len(removed['pieces'])
+    
+    # Rebuild play list
+    return openers + combos
 
 
 # ------------------------------------------------------------------
@@ -546,6 +729,220 @@ def choose_declare_strategic(
         analysis_callback(analysis_data)
     
     return score
+
+
+# ------------------------------------------------------------------
+# New AI Declaration V2 Implementation
+# ------------------------------------------------------------------
+def choose_declare_strategic_v2(
+    hand,
+    is_first_player: bool,
+    position_in_order: int,
+    previous_declarations: list[int],
+    must_declare_nonzero: bool,
+    verbose: bool = True
+) -> int:
+    """
+    New declaration logic with separate starter/non-starter strategies.
+    
+    Starter Strategy:
+    1. Find all strong combos first
+    2. Find individual strong pieces
+    3. Declaration = total pieces in play list
+    
+    Non-Starter Strategy:
+    1. Find ONE opener first for control
+    2. Find strong combos from remaining pieces
+    3. Find additional individual pieces
+    4. Fit to pile room by removing combos if needed
+    5. If no opener found, declare 0
+    """
+    
+    play_list = []
+    hand_copy = hand.copy()
+    
+    if verbose:
+        print(f"\n📢 DECLARATION DECISION V2 for position {position_in_order}")
+        print(f"  Hand: {[f'{p.name}({p.point})' for p in hand]}")
+        print(f"  Previous declarations: {previous_declarations}")
+        print(f"  Starter: {is_first_player}")
+    
+    if is_first_player:
+        # =====================================================
+        # STARTER LOGIC
+        # =====================================================
+        if verbose:
+            print("\n🎯 STARTER STRATEGY:")
+        
+        # Step 1: Find strong combos iteratively (re-check after each combo)
+        combos_found = 0
+        while True:
+            all_combos = find_all_valid_combos(hand_copy)
+            found_combo = False
+            
+            for combo_type, pieces in all_combos:
+                # Skip single pieces - they're not combos
+                if combo_type == "SINGLE":
+                    continue
+                    
+                if is_strong_combo(combo_type, pieces):
+                    if verbose:
+                        total = sum(p.point for p in pieces)
+                        print(f"    Found {combo_type}: {[f'{p.name}({p.point})' for p in pieces]} (total={total})")
+                    
+                    # Add to play list and remove from hand
+                    play_list.append({
+                        'type': 'combo',
+                        'combo_type': combo_type,
+                        'pieces': pieces
+                    })
+                    hand_copy = remove_pieces_from_hand(hand_copy, pieces)
+                    combos_found += 1
+                    found_combo = True
+                    break  # Re-scan for combos with updated hand
+            
+            if not found_combo:
+                break  # No more strong combos found
+        
+        if verbose:
+            print(f"  Found {combos_found} strong combos")
+        
+        # Step 2: Calculate pile room
+        total_pieces_planned = sum(len(play['pieces']) for play in play_list)
+        pile_room_left = 8 - total_pieces_planned
+        
+        if verbose:
+            print(f"  After combos: {total_pieces_planned} pieces planned, {pile_room_left} room left")
+        
+        # Step 3: Find individual strong pieces
+        if pile_room_left > 0:
+            # Check pieces with current pile room
+            strong_pieces = get_individual_strong_pieces(hand_copy, pile_room_left)
+            # Sort by value descending to take best pieces first
+            strong_pieces.sort(key=lambda p: p.point, reverse=True)
+            
+            for piece in strong_pieces:
+                if pile_room_left > 0:
+                    play_list.append({
+                        'type': 'opener',
+                        'pieces': [piece]
+                    })
+                    hand_copy = remove_pieces_from_hand(hand_copy, [piece])
+                    pile_room_left -= 1
+        
+        # Calculate declaration
+        declaration = sum(len(play['pieces']) for play in play_list)
+        
+    else:
+        # =====================================================
+        # NON-STARTER LOGIC
+        # =====================================================
+        if verbose:
+            print("\n🎯 NON-STARTER STRATEGY:")
+        
+        # Step 1: Calculate pile room from previous declarations
+        pile_room = calculate_pile_room(previous_declarations)
+        if verbose:
+            print(f"  Pile room available: {pile_room}")
+        
+        # If no pile room, cannot declare anything
+        if pile_room <= 0:
+            if verbose:
+                print("  No pile room available - declaring 0")
+            return 0
+        
+        # Step 2: Find ONE opener first
+        opener = None
+        for threshold in [13, 12, 11]:  # Try highest first
+            candidates = [p for p in hand_copy if p.point >= threshold]
+            if candidates:
+                opener = max(candidates, key=lambda p: p.point)
+                play_list.append({
+                    'type': 'opener',
+                    'pieces': [opener]
+                })
+                hand_copy = remove_pieces_from_hand(hand_copy, [opener])
+                if verbose:
+                    print(f"  Found opener: {opener.name}({opener.point})")
+                break
+        
+        if not opener:
+            if verbose:
+                print("  No opener found - declaring 0")
+            return 0
+        
+        # Step 3: Find all strong combos from remaining pieces
+        all_combos = find_all_valid_combos(hand_copy)
+        for combo_type, pieces in all_combos:
+            # Skip single pieces - they're not combos
+            if combo_type == "SINGLE":
+                continue
+            if is_strong_combo(combo_type, pieces):
+                play_list.append({
+                    'type': 'combo',
+                    'combo_type': combo_type,
+                    'pieces': pieces
+                })
+                hand_copy = remove_pieces_from_hand(hand_copy, pieces)
+        
+        # Step 4: Find additional individual strong pieces
+        current_pieces = sum(len(play['pieces']) for play in play_list)
+        room_left = pile_room - current_pieces
+        
+        if room_left > 0:
+            # Check pieces with current room left
+            strong_pieces = get_individual_strong_pieces(hand_copy, room_left)
+            # Sort by value descending to take best pieces first
+            strong_pieces.sort(key=lambda p: p.point, reverse=True)
+            
+            for piece in strong_pieces:
+                if room_left > 0:
+                    play_list.append({
+                        'type': 'opener',
+                        'pieces': [piece]
+                    })
+                    hand_copy = remove_pieces_from_hand(hand_copy, [piece])
+                    room_left -= 1
+        
+        # Step 5: Fit to pile room if needed
+        play_list = fit_plays_to_pile_room(play_list, pile_room)
+        
+        # Calculate declaration
+        declaration = sum(len(play['pieces']) for play in play_list)
+    
+    # =====================================================
+    # HANDLE FORBIDDEN VALUES (same for both)
+    # =====================================================
+    forbidden_declares = set()
+    
+    # Last player can't make sum = 8
+    if position_in_order == 3:
+        total_so_far = sum(previous_declarations)
+        forbidden = 8 - total_so_far
+        if 0 <= forbidden <= 8:
+            forbidden_declares.add(forbidden)
+    
+    # Must declare non-zero rule
+    if must_declare_nonzero:
+        forbidden_declares.add(0)
+    
+    # Adjust if needed
+    if declaration in forbidden_declares:
+        valid_options = [d for d in range(0, 9) if d not in forbidden_declares]
+        if valid_options:
+            # Pick closest valid option
+            declaration = min(valid_options, key=lambda x: abs(x - declaration))
+    
+    if verbose:
+        print(f"\n🎯 FINAL DECLARATION: {declaration}")
+        print(f"  Play list has {len(play_list)} plays:")
+        for play in play_list:
+            if play['type'] == 'combo':
+                print(f"    - {play['combo_type']}: {[f'{p.name}({p.point})' for p in play['pieces']]}")
+            else:
+                print(f"    - Opener: {play['pieces'][0].name}({play['pieces'][0].point})")
+    
+    return declaration
 
 
 # ------------------------------------------------------------------
