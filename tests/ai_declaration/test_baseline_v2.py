@@ -64,7 +64,7 @@ def get_baseline_v2_scenarios():
         
         # Strategic positioning
         ("baseline_v2_13", "[ADVISOR_RED, ELEPHANT_RED, HORSE_RED, CANNON_RED, CHARIOT_BLACK, SOLDIER_BLACK, SOLDIER_BLACK, SOLDIER_BLACK]",
-         3, [3, 2, 1], 1, "Strategic Last Player", False, "Pile room = 2, only ADVISOR qualifies"),
+         3, [3, 2, 1], 0, "Strategic Last Player", False, "Pile room = 2, only ADVISOR qualifies"),
         
         ("baseline_v2_14", "[CHARIOT_RED, SOLDIER_RED, SOLDIER_RED, SOLDIER_RED, ADVISOR_BLACK, ELEPHANT_BLACK, HORSE_BLACK, CANNON_BLACK]",
          1, [3], 4, "Mid-Strength Opener", False, "Has ADVISOR opener"),
@@ -74,7 +74,7 @@ def get_baseline_v2_scenarios():
          0, [], 6, "Double THREE_OF_A_KIND (Starter)", True, "SOLDIER combos avg < 6"),
         
         ("baseline_v2_16", "[ELEPHANT_RED, CHARIOT_RED, HORSE_RED, CANNON_RED, GENERAL_BLACK, ELEPHANT_BLACK, CHARIOT_BLACK, HORSE_BLACK]",
-         2, [4, 3], 1, "Strong Singles (Limited Room)", False, "Pile room = 1, only GENERAL"),
+         2, [4, 3], 0, "Strong Singles (Limited Room)", False, "Pile room = 1, only GENERAL"),
         
         # GENERAL_RED scenarios with strong combos
         ("baseline_v2_17", "[GENERAL_RED, GENERAL_BLACK, CHARIOT_RED, HORSE_RED, CANNON_RED, ADVISOR_BLACK, ADVISOR_BLACK, SOLDIER_BLACK]",

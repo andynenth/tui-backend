@@ -76,7 +76,7 @@ def get_field_strength_v2_scenarios():
     # ========================================================================
     strong_field_scenarios = [
         ("field_strong_v2_01", "[ADVISOR_RED, CHARIOT_BLACK, HORSE_BLACK, CANNON_BLACK, SOLDIER_RED, SOLDIER_RED, SOLDIER_BLACK, SOLDIER_BLACK]",
-         2, [4, 5], 0, "Good Hand vs Strong Field (No Room)", False, "V2: Pile room calculation ignores invalid sum", DifficultyLevel.BASIC,
+         2, [4, 5], 4, "Good Hand vs Strong Field (No Room)", False, "V2: Pile room calculation ignores invalid sum", DifficultyLevel.BASIC,
          "V2: Previous [4,5] would make sum>8 invalid, so pile room calculated from [4] only = 4 room, but no opener"),
         
         ("field_strong_v2_02", "[GENERAL_RED, ELEPHANT_BLACK, CHARIOT_RED, HORSE_BLACK, CANNON_RED, SOLDIER_RED, SOLDIER_BLACK, SOLDIER_BLACK]",

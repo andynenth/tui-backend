@@ -841,17 +841,22 @@ def rebuild_play_list_avoiding_forbidden(
     # Find all possible individual plays
     all_plays = []
     
-    # 1. Find openers (high-value pieces)
+    # 1. Find openers (high-value pieces based on pile room)
     openers = []
-    for threshold in [13, 12, 11]:
+    threshold = get_piece_threshold(pile_room)
+    
+    # For pile_room = 1, need > threshold (not >=)
+    if pile_room == 1:
+        candidates = [p for p in original_hand if p.point > threshold]
+    else:
         candidates = [p for p in original_hand if p.point >= threshold]
-        for piece in candidates:
-            if piece not in [p for play in openers for p in play['pieces']]:
-                openers.append({
-                    'type': 'opener',
-                    'pieces': [piece],
-                    'value': piece.point
-                })
+    
+    for piece in candidates:
+        openers.append({
+            'type': 'opener',
+            'pieces': [piece],
+            'value': piece.point
+        })
     
     # 2. Find all strong combos
     combos = []
@@ -1104,20 +1109,25 @@ def choose_declare_strategic_v2(
                 print("  No pile room available - declaring 0")
             return 0
         
-        # Step 2: Find ONE opener first
+        # Step 2: Find ONE opener that meets pile room requirements
         opener = None
-        for threshold in [13, 12, 11]:  # Try highest first
+        threshold = get_piece_threshold(pile_room)
+        
+        # For pile_room = 1, need > threshold (not >=)
+        if pile_room == 1:
+            candidates = [p for p in hand_copy if p.point > threshold]
+        else:
             candidates = [p for p in hand_copy if p.point >= threshold]
-            if candidates:
-                opener = max(candidates, key=lambda p: p.point)
-                play_list.append({
-                    'type': 'opener',
-                    'pieces': [opener]
-                })
-                hand_copy = remove_pieces_from_hand(hand_copy, [opener])
-                if verbose:
-                    print(f"  Found opener: {opener.name}({opener.point})")
-                break
+        
+        if candidates:
+            opener = max(candidates, key=lambda p: p.point)
+            play_list.append({
+                'type': 'opener',
+                'pieces': [opener]
+            })
+            hand_copy = remove_pieces_from_hand(hand_copy, [opener])
+            if verbose:
+                print(f"  Found opener: {opener.name}({opener.point})")
         
         if not opener:
             if verbose:

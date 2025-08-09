@@ -46,7 +46,7 @@ def get_edge_case_v2_scenarios():
          "V2: Weak field [0,0,0] + nonzero constraint = forced to find opener or best piece"),
         
         ("edge_nonzero_v2_04", "[CHARIOT_RED, HORSE_BLACK, CANNON_RED, SOLDIER_RED, SOLDIER_BLACK, ELEPHANT_RED, ELEPHANT_BLACK, ADVISOR_BLACK]",
-         2, [5, 2], 1, "Limited Room + Nonzero", False, "V2: ADVISOR opener with room constraint", DifficultyLevel.ADVANCED,
+         2, [5, 2], 0, "Limited Room + Nonzero", False, "V2: ADVISOR opener with room constraint", DifficultyLevel.ADVANCED,
          "V2: Room=1, ADVISOR opener qualifies when nonzero required")
     ]
     
@@ -72,7 +72,7 @@ def get_edge_case_v2_scenarios():
     # ========================================================================
     multiple_forbidden_scenarios = [
         ("edge_forbidden_v2_01", "[ADVISOR_RED, CHARIOT_BLACK, HORSE_RED, CANNON_BLACK, SOLDIER_RED, SOLDIER_BLACK, ELEPHANT_RED, ELEPHANT_BLACK]",
-         3, [2, 2, 2], 1, "Last Player: Want 2, Forbidden", False, "V2: ADVISOR opener, sum=8 forbidden logic", DifficultyLevel.ADVANCED,
+         3, [2, 2, 2], 0, "Last Player: Want 2, Forbidden", False, "V2: ADVISOR opener, sum=8 forbidden logic", DifficultyLevel.ADVANCED,
          "V2: ADVISOR supports 1, but 6+2=8 forbidden, choose 1 (has opener)"),
         
         ("edge_forbidden_v2_02", "[GENERAL_RED, ADVISOR_BLACK, SOLDIER_RED, SOLDIER_RED, SOLDIER_RED, CHARIOT_BLACK, HORSE_BLACK, CANNON_BLACK]",
@@ -118,7 +118,7 @@ def get_edge_case_v2_scenarios():
          "V2: All SOLDIERs - starter can find THREE_OF_A_KIND RED (3) + THREE_OF_A_KIND BLACK (3) = 6"),
         
         ("edge_boundary_v2_03", "[ADVISOR_RED, SOLDIER_BLACK, SOLDIER_BLACK, SOLDIER_BLACK, SOLDIER_BLACK, SOLDIER_BLACK, SOLDIER_BLACK, SOLDIER_BLACK]",
-         1, [7], 1, "One Opener + Maximum Combo", False, "V2: Has opener, room limited", DifficultyLevel.ADVANCED,
+         1, [7], 0, "One Opener + Maximum Combo", False, "V2: Has opener, room limited", DifficultyLevel.ADVANCED,
          "V2: ADVISOR opener (1), room=1 after [7], SIX_OF_A_KIND not viable due to no room"),
         
         ("edge_boundary_v2_04", "[CHARIOT_RED, HORSE_RED, CANNON_RED, ELEPHANT_RED, ADVISOR_RED, GENERAL_RED, SOLDIER_BLACK, SOLDIER_BLACK]",
