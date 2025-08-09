@@ -83,7 +83,7 @@ def assess_field_strength(previous_declarations: List[int]) -> str:
         
     avg = sum(previous_declarations) / len(previous_declarations)
     
-    if avg <= 1.0:
+    if avg <= 2.0:
         return "weak"  # Opponents have poor hands
     elif avg >= 3.5:
         return "strong"  # Opponents have excellent hands
@@ -402,6 +402,68 @@ def choose_declare_strategic(
         # Weak hand
         score = 0
         print(f"    Decision: Weak hand, no openers or combos = {score}")
+    
+    # Phase 4.5: Consider full hand potential (not just best combo)
+    # Check if we're underestimating a strong hand
+    if len(hand) >= 6 and score < len(hand):
+        print(f"\n    🔍 FULL HAND EVALUATION:")
+        print(f"    Current score: {score}, but have {len(hand)} pieces total")
+        
+        # Track which pieces are already accounted for
+        accounted_pieces = set()
+        
+        # Add opener pieces
+        accounted_pieces.update(openers)
+        
+        # Add best combo pieces if any
+        if best_combo:
+            accounted_pieces.update(best_combo[1])
+        
+        # Evaluate remaining pieces
+        remaining_pieces = [p for p in hand if p not in accounted_pieces]
+        if remaining_pieces:
+            print(f"    Remaining pieces: {[f'{p.name}({p.point})' for p in remaining_pieces]}")
+            
+            # Don't count single pieces - only combos provide reliable wins
+            strong_remaining = 0
+            
+            # Also check for additional combos in remaining pieces
+            from backend.engine.rules import get_play_type
+            additional_combos = 0
+            
+            # Check for pairs in remaining
+            remaining_counts = {}
+            for p in remaining_pieces:
+                remaining_counts[p.name] = remaining_counts.get(p.name, 0) + 1
+            
+            for piece_name, count in remaining_counts.items():
+                if count >= 2:
+                    # Found a pair
+                    pair_pieces = [p for p in remaining_pieces if p.name == piece_name][:2]
+                    if len(pair_pieces) == 2:
+                        # Check if pair is strong enough
+                        pair_value = sum(p.point for p in pair_pieces)
+                        if (field_strength == "weak" and pair_value >= 10) or \
+                           (field_strength == "normal" and pair_value >= 14) or \
+                           (field_strength == "strong" and pair_value >= 18):
+                            additional_combos += 1
+                            print(f"    Found viable PAIR in remaining: {[f'{p.name}({p.point})' for p in pair_pieces]}")
+            
+            # Update score with additional combo wins only
+            additional_wins = additional_combos
+            if additional_wins > 0:
+                old_score = score
+                
+                # Add combo wins conservatively
+                # Early positions can be slightly more optimistic
+                if position_in_order <= 1:
+                    score = min(score + additional_wins, 8)
+                else:
+                    # Later positions add only half to be conservative
+                    score = min(score + (additional_wins // 2), 8)
+                    
+                print(f"    Additional combos: {additional_combos}")
+                print(f"    Adjusted score: {old_score} → {score}")
     
     # Phase 5: Handle edge cases
     if score == 0 and field_strength == "weak":
