@@ -6,6 +6,7 @@ This guide covers production monitoring, maintenance, and operational procedures
 1. [Health Monitoring](#health-monitoring)
 2. [System Statistics](#system-statistics)
 3. [Event Store & Recovery](#event-store--recovery)
+   - [Automated Log Maintenance System](#automated-log-maintenance-system)
 4. [Logging](#logging)
 5. [Performance Monitoring](#performance-monitoring)
 6. [Troubleshooting Production Issues](#troubleshooting-production-issues)
@@ -132,6 +133,73 @@ Metrics include:
 - Storage usage
 - Compression ratios
 
+### Automated Log Maintenance System
+
+The application includes an automated log maintenance system that prevents database growth and manages storage efficiently.
+
+#### Maintenance Status
+Check the current status of the log maintenance system:
+```bash
+curl http://localhost:5050/api/maintenance/status
+```
+
+Response:
+```json
+{
+  "database": {
+    "size_mb": 4.68,
+    "days_retained": 3
+  },
+  "archives": {
+    "count": 15,
+    "size_mb": 234.5,
+    "oldest": "game_events_2024_12_15.db.gz",
+    "days_retained": 30
+  },
+  "total_size_mb": 239.18,
+  "last_cleanup": "2024-01-15T03:00:15Z",
+  "next_cleanup": "2024-01-16T03:00:00Z",
+  "scheduler_running": true
+}
+```
+
+#### How It Works
+1. **Automatic Daily Cleanup**: Runs at 3 AM (configurable)
+2. **3-Day Active Retention**: Recent events stay in main database for fast queries
+3. **30-Day Archive**: Older events compressed to `.gz` files
+4. **Self-Limiting Storage**: Total usage capped at ~1.1GB
+
+#### Configuration
+Set these environment variables to customize behavior:
+```bash
+LOG_RETENTION_ACTIVE_DAYS=3     # Days in main database
+LOG_RETENTION_ARCHIVE_DAYS=30   # Days to keep archives
+LOG_CLEANUP_ENABLED=true        # Enable/disable automation
+LOG_CLEANUP_HOUR=3              # Hour to run (0-23)
+```
+
+#### Manual Operations
+
+Trigger cleanup manually (for testing or emergency):
+```bash
+curl -X POST http://localhost:5050/api/maintenance/trigger-cleanup
+```
+
+View current configuration:
+```bash
+curl http://localhost:5050/api/maintenance/config
+```
+
+#### Emergency Cleanup
+When disk space is critical:
+```bash
+./emergency_cleanup.sh
+```
+This script:
+- Keeps only 24 hours in database
+- Deletes archives older than 7 days
+- Vacuums database immediately
+
 ## Logging
 
 ### Log Structure
@@ -244,7 +312,7 @@ Logs can be aggregated using standard tools:
 **Solutions**:
 - Implement connection limits
 - Add memory-based auto-scaling
-- Configure event store pruning
+- Event store pruning is automated (see [Automated Log Maintenance System](#automated-log-maintenance-system))
 
 #### WebSocket Connection Drops
 **Symptoms**: Frequent disconnections, reconnection storms
@@ -325,7 +393,7 @@ Configure alerts for:
 - Update monitoring thresholds
 
 **Monthly**
-- Prune old event data
+- Review log maintenance metrics
 - Optimize database indices
 - Review capacity planning
 - Update documentation
