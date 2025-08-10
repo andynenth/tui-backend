@@ -11,6 +11,9 @@ from backend.api.routes.ws import (
 from backend.api.routes.debug import (
     router as debug_router,  # Import the debug router for event store access.
 )
+from backend.api.routes.maintenance import (
+    router as maintenance_router,  # Import the maintenance router for log management.
+)
 from backend.api.middleware import (
     RateLimitMiddleware,
 )  # Import rate limiting middleware
@@ -166,6 +169,7 @@ app.include_router(
     ws_router
 )  # Mounts the WebSocket router at the root (or its defined paths).
 app.include_router(debug_router)  # Mounts the debug router for event store access.
+app.include_router(maintenance_router)  # Mounts the maintenance router for log management.
 
 # ✅ Serve static files with cache control headers.
 # This mounts the specified directory to the root path "/", meaning files like index.html, bundle.js, etc.,
@@ -198,5 +202,38 @@ async def startup_event():
     """
     # Start the room cleanup background task
     from backend.api.routes.ws import start_cleanup_task
-
     start_cleanup_task()
+    
+    # Start the maintenance scheduler if enabled
+    if os.getenv("LOG_CLEANUP_ENABLED", "true").lower() == "true":
+        from backend.api.services.event_store import EventStore
+        from backend.api.services.simple_maintenance import SimpleMaintenanceScheduler
+        from backend.api.routes.maintenance import set_maintenance_scheduler
+        
+        # Get or create event store instance
+        event_store = EventStore()
+        
+        # Create and start maintenance scheduler
+        scheduler = SimpleMaintenanceScheduler(event_store)
+        scheduler.start()
+        
+        # Make it available to the maintenance API
+        set_maintenance_scheduler(scheduler)
+        
+        print("✅ Log maintenance scheduler started")
+        
+        # Store scheduler reference for shutdown
+        app.state.maintenance_scheduler = scheduler
+    else:
+        print("ℹ️  Log maintenance scheduler disabled")
+
+
+@app.on_event("shutdown")
+async def shutdown_event():
+    """
+    Run cleanup tasks when the application shuts down.
+    """
+    # Stop the maintenance scheduler if it's running
+    if hasattr(app.state, "maintenance_scheduler"):
+        app.state.maintenance_scheduler.stop()
+        print("✅ Log maintenance scheduler stopped")

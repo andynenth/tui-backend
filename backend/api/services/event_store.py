@@ -485,6 +485,28 @@ class EventStore:
         )
         return deleted_count
 
+    async def count_events_for_date(self, date: datetime) -> int:
+        """
+        Count events for a specific date
+
+        Args:
+            date: The date to count events for
+
+        Returns:
+            int: Number of events on that date
+        """
+        date_str = date.strftime('%Y-%m-%d')
+        
+        conn = sqlite3.connect(self.db_path)
+        cursor = conn.execute(
+            "SELECT COUNT(*) FROM game_events WHERE date(created_at) = date(?)",
+            (date_str,)
+        )
+        count = cursor.fetchone()[0]
+        conn.close()
+        
+        return count
+
     async def get_event_stats(self) -> Dict[str, Any]:
         """
         Get statistics about stored events
