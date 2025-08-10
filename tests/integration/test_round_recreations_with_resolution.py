@@ -177,10 +177,14 @@ class RoundRecreatorWithResolution:
                 plan = generate_strategic_plan(current_hand, context)
                 has_openers = detect_opener_only_plan(plan)
                 
-                print(f"   - Has openers for random timing: {'YES' if has_openers else 'NO'}")
-                if has_openers:
+                print(f"   - Has opener-ONLY plan (no combos): {'YES' if has_openers else 'NO'}")
+                if plan.assigned_openers:
                     print(f"     • {len(plan.assigned_openers)} openers: {[f'{p.name}({p.point})' for p in plan.assigned_openers]}")
+                if plan.assigned_combos:
                     print(f"     • {len(plan.assigned_combos)} combos: {[f'{t}: {[p.name for p in pieces]}' for t, pieces in plan.assigned_combos[:2]]}")
+                
+                if has_openers:
+                    print(f"   - RANDOM TIMING ELIGIBLE (openers only, no combos)")
                     
                     # Check random timing
                     hand_size = len(current_hand)
@@ -199,7 +203,7 @@ class RoundRecreatorWithResolution:
                     print(f"   - Result: {roll:.3f} < {threshold:.2f}? {'✅ YES' if will_play_singles else '❌ NO'}")
                     print(f"   - Decision: {'Play SINGLES due to random timing!' if will_play_singles else 'Use normal strategy'}")
                 else:
-                    print(f"   - No openers assigned in plan - normal strategy applies")
+                    print(f"   - NOT eligible for random timing (has combos or no openers)")
             
             # Check for RESPONDERS when required=1
             elif player.name != starter_name and required_count == 1:
@@ -211,10 +215,14 @@ class RoundRecreatorWithResolution:
                 plan = generate_strategic_plan(current_hand, context)
                 has_openers = detect_opener_only_plan(plan)
                 
-                print(f"   - Has openers for random timing: {'YES' if has_openers else 'NO'}")
-                if has_openers:
+                print(f"   - Has opener-ONLY plan (no combos): {'YES' if has_openers else 'NO'}")
+                if plan.assigned_openers:
                     print(f"     • {len(plan.assigned_openers)} openers: {[f'{p.name}({p.point})' for p in plan.assigned_openers]}")
+                if plan.assigned_combos:
                     print(f"     • {len(plan.assigned_combos)} combos: {[f'{t}: {[p.name for p in pieces]}' for t, pieces in plan.assigned_combos[:2]]}")
+                
+                if has_openers:
+                    print(f"   - RANDOM TIMING ELIGIBLE (openers only, no combos)")
                     
                     # Check random timing
                     hand_size = len(current_hand)
@@ -233,7 +241,7 @@ class RoundRecreatorWithResolution:
                     print(f"   - Result: {roll:.3f} < {threshold:.2f}? {'✅ YES' if will_play_singles else '❌ NO'}")
                     print(f"   - Decision: {'Play opener randomly!' if will_play_singles else 'Use normal disposal strategy'}")
                 else:
-                    print(f"   - No openers assigned in plan - normal strategy applies")
+                    print(f"   - NOT eligible for random timing (has combos or no openers)")
             
             # Get strategic play
             pieces_to_play = choose_strategic_play(current_hand, context)
