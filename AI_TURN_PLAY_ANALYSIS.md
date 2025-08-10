@@ -150,26 +150,30 @@ Based on role (starter vs responder) and constraints:
 
 #### 4.1 Starter Strategy (`execute_starter_strategy`)
 
-When leading the turn, bot must choose piece count:
+When leading the turn, bot uses a **combo-first approach** to choose piece count:
 
-1. **Random Opener Timing** (35-50% chance based on hand size)
-   - If bot has opener-only plan, may randomly play singles
-   - Simulates human unpredictability
+1. **New Optimal Piece Count Selection** (`get_optimal_piece_count_for_starter`)
+   - **Already at/above target**: Always play 1 piece to minimize wins
+   - **Critical urgency**: Find strongest viable combo regardless of assignment
+   - **Assigned combos**: Prioritize combos from planning phase
+   - **No combos available**: Choose count based on urgency level:
+     - High urgency + 2+ openers → play 2 pieces
+     - Medium urgency + need 3+ piles → play 2 pieces
+     - Low urgency → conserve with 1 piece
+   - Returns both piece count and specific combo if selected
 
-2. **Constraint-Based Selection**
-   - If at/above target → play 1 piece (minimize wins)
-   - If overcapture risk → play max_safe_pieces
-   - Otherwise → prefer playing assigned combos
+2. **Immediate Combo Return**
+   - If function selected a specific combo → return it immediately
+   - No further processing needed when combo pre-selected
 
-3. **Combo Selection Priority**
-   - Exact match for required pieces
-   - Best ranked combo that fits (by hierarchy then value)
-   - Dispose burden pieces if low urgency
+3. **Overcapture Constraint Override**
+   - After count selection, apply max_safe_pieces limit
+   - Ensures safety even with aggressive strategies
 
-4. **Fallback Logic**
-   - Try any available combo before random selection
-   - Select from disposable pieces (burden → reserve → other)
-   - Validate plays for starter requirements
+4. **Fallback Selection** (when count set but no combo pre-selected)
+   - Multi-piece plays: Find any valid combo of required size
+   - Single pieces: Select from disposable pieces
+   - Last resort: Use emergency selection logic
 
 #### 4.2 Responder Strategy (`execute_responder_strategy`)
 
@@ -263,7 +267,7 @@ Affects combo viability:
 
 ### 3. Random Timing System
 
-Adds human-like unpredictability:
+Adds human-like unpredictability (responders only):
 ```python
 def should_randomly_play_opener(hand_size: int) -> bool:
     if hand_size >= 6:
@@ -274,6 +278,9 @@ def should_randomly_play_opener(hand_size: int) -> bool:
         threshold = 0.50  # 50% late game
     return random.random() < threshold
 ```
+
+**Note**: Random opener timing has been removed for starters (Phase 1 improvement).
+Starters now focus on achieving declaration goals through strategic combo usage.
 
 ### 4. Starter Preference System
 
@@ -340,6 +347,29 @@ Plus high-value pairs (ELEPHANT pairs = 18+ points).
 🗑️ DISPOSING 1 burden + 1 reserve: [CANNON_RED(3), SOLDIER_BLACK(1)]
 Total value: 4 pts
 ```
+
+### Example 5: Starter Combo-First Strategy (NEW)
+```
+🎯 Strategic AI Decision Process for Bot_2
+  📊 Status: captured=1, declared=3
+  🎮 Turn 4, required pieces=None (starter)
+  🃏 Hand size: 6 pieces
+  👥 Starter: YES
+
+🎯 Bot_2 has opener-only plan with 2 openers
+  Openers: [GENERAL_RED(14), ADVISOR_BLACK(11)]
+
+  🎯 Already at/above target - minimizing play
+  📊 Evaluating 1 assigned combos
+    Selected PAIR worth 11 pts
+  
+🎮 STARTER STRATEGY for Bot_2 (Turn 4)
+  Current hand: [GENERAL_RED(14), ADVISOR_BLACK(11), HORSE_RED(6), HORSE_BLACK(5), CANNON_RED(4), SOLDIER_BLACK(1)]
+  🎯 Playing pre-selected combo: [HORSE_RED(6), HORSE_BLACK(5)]
+```
+
+This example shows how starters now prioritize assigned combos over random singles,
+even when they have an opener-only plan.
 
 ### Example 4: Responder Random Opener Timing
 ```

@@ -926,6 +926,111 @@ def execute_responder_strategy(plan: StrategicPlan, context: TurnPlayContext, ha
         return disposal_candidates
 
 
+def get_optimal_piece_count_for_starter(
+    plan: StrategicPlan,
+    constraints: OvercaptureConstraints,
+    context: TurnPlayContext,
+    hand: List[Piece]
+) -> Tuple[int, Optional[List[Piece]]]:
+    """
+    Determine optimal piece count for starter based on strategic goals.
+    
+    This function implements a combo-first approach where we:
+    1. Check if already at/above target
+    2. Handle critical urgency situations
+    3. Prioritize assigned combos from planning phase
+    4. Choose strategic count when no combos available
+    5. Always respect overcapture constraints
+    
+    Args:
+        plan: Strategic plan with assigned combos and urgency
+        constraints: Overcapture risk constraints
+        context: Current game context
+        hand: Current hand pieces
+        
+    Returns:
+        Tuple of (piece_count, combo_to_play)
+        - piece_count: Optimal number of pieces to play
+        - combo_to_play: Specific combo if one is selected, None otherwise
+    """
+    # 1. Already at/above target - minimize to avoid overcapture
+    if context.my_declared - context.my_captured <= 0:
+        print(f"  🎯 Already at/above target - minimizing play")
+        return (1, None)
+    
+    # 2. Critical urgency override - must win every turn
+    if plan.urgency_level == "critical" and plan.target_remaining > 0:
+        print(f"  💥 CRITICAL URGENCY - finding strongest viable combo")
+        # Find strongest combo regardless of assignment
+        best_combo = None
+        best_value = 0
+        
+        for combo_type, pieces in plan.valid_combos:
+            if all(p in hand for p in pieces):
+                if not is_play_risky_for_overcapture(
+                    pieces, constraints, 
+                    get_field_strength_from_players(context.player_states)
+                ):
+                    combo_value = sum(p.point for p in pieces)
+                    if combo_value > best_value:
+                        best_value = combo_value
+                        best_combo = pieces
+        
+        if best_combo:
+            print(f"    Found combo worth {best_value} pts")
+            return (len(best_combo), best_combo)
+    
+    # 3. Check assigned combos (primary strategy)
+    if plan.assigned_combos:
+        print(f"  📊 Evaluating {len(plan.assigned_combos)} assigned combos")
+        field_strength = get_field_strength_from_players(context.player_states)
+        
+        # Sort combos by strategic value (rank then points)
+        sorted_combos = []
+        for combo_type, pieces in plan.assigned_combos:
+            if all(p in hand for p in pieces):
+                combo_rank = COMBO_TYPE_RANK.get(combo_type, 0)
+                combo_value = sum(p.point for p in pieces)
+                sorted_combos.append((combo_type, pieces, combo_rank, combo_value))
+        
+        sorted_combos.sort(key=lambda x: (x[2], x[3]), reverse=True)
+        
+        # Try each combo in order
+        for combo_type, pieces, rank, value in sorted_combos:
+            if not is_play_risky_for_overcapture(pieces, constraints, field_strength):
+                print(f"    Selected {combo_type} worth {value} pts")
+                return (len(pieces), pieces)
+            else:
+                print(f"    Skipping {combo_type} - overcapture risk")
+    
+    # 4. No viable combos - choose strategic count based on urgency
+    print(f"  📈 No viable combos - choosing count strategically")
+    
+    # Count available openers
+    openers_in_hand = [p for p in plan.assigned_openers if p in hand]
+    
+    if plan.urgency_level == "high":
+        # Try to maximize winning chances
+        if len(openers_in_hand) >= 2:
+            print(f"    High urgency with {len(openers_in_hand)} openers - playing 2")
+            return (2, None)
+        else:
+            return (1, None)
+    
+    elif plan.urgency_level == "medium":
+        # Balanced approach
+        if plan.target_remaining >= 3 and len(hand) >= 4:
+            print(f"    Medium urgency, need {plan.target_remaining} piles - playing 2")
+            return (2, None)
+        else:
+            return (1, None)
+    
+    else:  # "low" or "none" urgency
+        # Conservative, save resources
+        print(f"    Low urgency - conserving with 1 piece")
+        return (1, None)
+
+
 def execute_starter_strategy(plan: StrategicPlan, context: TurnPlayContext, hand_eval: Dict, 
                            constraints: OvercaptureConstraints) -> List[Piece]:
     """
@@ -949,38 +1054,23 @@ def execute_starter_strategy(plan: StrategicPlan, context: TurnPlayContext, hand
         print(f"  Openers: {[f'{p.name}({p.point})' for p in plan.assigned_openers]}")
     
     # Since we're the starter, we need to choose how many pieces to play
-    # Consider constraints when choosing piece count
+    # NEW: Use combo-first approach for better goal achievement
     if context.required_piece_count is None:  # We're setting the count
-        hand_size = len(context.my_hand)
+        required, combo_to_play = get_optimal_piece_count_for_starter(
+            plan, constraints, context, context.my_hand
+        )
         
-        # Check for random opener timing
-        if opener_only_plan and should_randomly_play_opener(hand_size):
-            probability = 35 if hand_size >= 6 else 40 if hand_size >= 4 else 50
-            print(f"🎲 {context.my_name} (STARTER) randomly choosing singles")
-            print(f"   - Hand size: {hand_size}, Probability was {probability}%")
-            required = 1
-        else:
-            # Normal starter logic
-            if opener_only_plan:
-                print(f"🎲 {context.my_name} (STARTER) random check failed, using normal strategy")
+        # If we selected a specific combo, return it immediately
+        if combo_to_play:
+            print(f"\n🎮 STARTER STRATEGY for {context.my_name} (Turn {context.turn_number})")
+            print(f"  Current hand: {[f'{p.name}({p.point})' for p in context.my_hand]}")
+            print(f"  🎯 Playing pre-selected combo: {[f'{p.name}({p.point})' for p in combo_to_play]}")
+            return combo_to_play
             
-            # Check if we're at or above target (negative piles needed)
-            piles_needed = context.my_declared - context.my_captured
-            
-            if piles_needed <= 0:
-                # At or above target - minimize pieces played
-                required = 1
-                print(f"  🛡️ At/above target - choosing minimum 1 piece")
-            elif constraints.risk_level != "none":
-                # Below target but at risk - prefer playing safe piece counts
-                max_safe = constraints.max_safe_pieces
-                if max_safe >= 1:
-                    required = min(max_safe, len(context.my_hand), 6)  # Cap at 6
-                else:
-                    required = 1  # At least play 1
-                print(f"  🛡️ Applying constraints: choosing to play {required} pieces (max safe: {max_safe})")
-            else:
-                required = 1  # Default for starters
+        # Apply overcapture constraint override if needed
+        if constraints.risk_level != "none" and constraints.max_safe_pieces < required:
+            print(f"  🛡️ Overcapture constraint override: {required} → {constraints.max_safe_pieces}")
+            required = constraints.max_safe_pieces
     else:
         required = context.required_piece_count
     
@@ -990,25 +1080,7 @@ def execute_starter_strategy(plan: StrategicPlan, context: TurnPlayContext, hand
     print(f"  Urgency: {plan.urgency_level}, Target remaining: {plan.target_remaining}")
     print(f"  Overcapture risk: {constraints.risk_level}")
     
-    # Critical urgency: need to win remaining turns
-    if plan.urgency_level == "critical" and plan.target_remaining > 0:
-        # Find strongest valid combination of required size
-        best_combo = None
-        best_value = 0
-        
-        print(f"  💥 CRITICAL URGENCY - must win turns!")
-        for combo_type, pieces in plan.valid_combos:
-            if len(pieces) == required:
-                combo_value = sum(p.point for p in pieces)
-                print(f"    Checking {combo_type}: {[f'{p.name}({p.point})' for p in pieces]} = {combo_value} pts")
-                if combo_value > best_value:
-                    best_value = combo_value
-                    best_combo = pieces
-        
-        if best_combo:
-            print(f"  ⚡ Playing strongest combo (value={best_value}): {[p.name for p in best_combo]}")
-            return best_combo
-    
+    # NOTE: Critical urgency now handled in get_optimal_piece_count_for_starter()
     
     # Check if we have an assigned combo that matches required pieces
     if plan.assigned_combos:

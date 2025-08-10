@@ -28,23 +28,23 @@ This document outlines the implementation plan to improve bot starter turn play 
 ## Implementation Checklist
 
 ### Phase 1: Remove Random Opener Timing for Starters ✅
-- [ ] **Task 1.1**: Comment out lines 956-965 (random opener timing block)
-- [ ] **Task 1.2**: Add comment explaining why removed
-- [ ] **Task 1.3**: Keep the `opener_only_plan` detection for logging only
+- [x] **Task 1.1**: Comment out lines 956-965 (random opener timing block)
+- [x] **Task 1.2**: Add comment explaining why removed
+- [x] **Task 1.3**: Keep the `opener_only_plan` detection for logging only
 
 ### Phase 2: Restructure Starter Logic Flow ✅
-- [ ] **Task 2.1**: Move critical urgency check before piece count selection
-- [ ] **Task 2.2**: Check assigned combos before setting required count
-- [ ] **Task 2.3**: Remove the default `required = 1` (line 983)
+- [x] **Task 2.1**: Move critical urgency check before piece count selection
+- [x] **Task 2.2**: Check assigned combos before setting required count
+- [x] **Task 2.3**: Remove the default `required = 1` (line 983)
 
 ### Phase 3: Implement Combo-First Piece Count Selection ✅
-- [ ] **Task 3.1**: Create new function `get_optimal_piece_count_for_starter()`
-- [ ] **Task 3.2**: Function should:
+- [x] **Task 3.1**: Create new function `get_optimal_piece_count_for_starter()`
+- [x] **Task 3.2**: Function should:
   - Check assigned combos first
   - Consider urgency level
   - Respect overcapture constraints
   - Return optimal piece count
-- [ ] **Task 3.3**: Replace current piece count logic with function call
+- [x] **Task 3.3**: Replace current piece count logic with function call
 
 ### Phase 4: Consolidate Combo Selection Logic ✅
 - [ ] **Task 4.1**: Remove redundant combo checking (lines 1074-1093)
@@ -59,16 +59,16 @@ This document outlines the implementation plan to improve bot starter turn play 
 - [ ] **Task 5.2**: Document the decision logic clearly
 
 ### Phase 6: Update Documentation ✅
-- [ ] **Task 6.1**: Update AI_TURN_PLAY_ANALYSIS.md section 4.1
-- [ ] **Task 6.2**: Remove random opener timing from starter strategy
-- [ ] **Task 6.3**: Add new combo-first flow description
-- [ ] **Task 6.4**: Update examples to show new behavior
+- [x] **Task 6.1**: Update AI_TURN_PLAY_ANALYSIS.md section 4.1
+- [x] **Task 6.2**: Remove random opener timing from starter strategy
+- [x] **Task 6.3**: Add new combo-first flow description
+- [x] **Task 6.4**: Update examples to show new behavior
 
 ### Phase 7: Testing Considerations ✅
-- [ ] **Task 7.1**: Test with various urgency levels
-- [ ] **Task 7.2**: Test with combo-heavy hands
-- [ ] **Task 7.3**: Test with opener-only hands
-- [ ] **Task 7.4**: Test overcapture scenarios
+- [x] **Task 7.1**: Test with various urgency levels
+- [x] **Task 7.2**: Test with combo-heavy hands
+- [x] **Task 7.3**: Test with opener-only hands
+- [x] **Task 7.4**: Test overcapture scenarios
 
 ## Proposed New Logic Flow
 
