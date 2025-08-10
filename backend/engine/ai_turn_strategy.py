@@ -76,8 +76,8 @@ class TurnPlayContext:
     turn_number: int  # Current turn in round
     pieces_per_player: int  # Remaining pieces per player
     am_i_starter: bool  # Leading this turn?
-    current_plays: List[Dict]  # This turn's plays so far
-    revealed_pieces: List[Piece]  # All face-up played pieces
+    current_plays: List[Dict]  # ⚠️ NOT IMPLEMENTED - Always empty list, do not use in strategy
+    revealed_pieces: List[Piece]  # ⚠️ NOT IMPLEMENTED - Always empty list, do not use in strategy
     player_states: Dict[str, Dict]  # All players' captured/declared
 
 

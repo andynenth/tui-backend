@@ -705,8 +705,8 @@ class GameBotHandler:
                     turn_number=getattr(game_state, 'turn_number', 0),
                     pieces_per_player=len(bot.hand),
                     am_i_starter=(current_turn_starter == bot.name),
-                    current_plays=[],  # TODO: Get from state machine
-                    revealed_pieces=[],  # TODO: Track revealed pieces
+                    current_plays=[],  # ⚠️ NOT IMPLEMENTED - Always empty, AI strategy does not use this
+                    revealed_pieces=[],  # ⚠️ NOT IMPLEMENTED - Always empty, AI strategy does not use this
                     player_states={p.name: {"captured": pile_counts.get(p.name, 0), 
                                             "declared": p.declared} for p in game_state.players}
                 )

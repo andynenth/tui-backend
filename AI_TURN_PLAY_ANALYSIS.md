@@ -45,8 +45,8 @@ context = TurnPlayContext(
     turn_number=turn_number,
     pieces_per_player=len(bot.hand),
     am_i_starter=(current_turn_starter == bot.name),
-    current_plays=[],              # Plays so far this turn
-    revealed_pieces=[],            # All face-up pieces
+    current_plays=[],              # ⚠️ NOT IMPLEMENTED - Always empty
+    revealed_pieces=[],            # ⚠️ NOT IMPLEMENTED - Always empty
     player_states=player_states    # All players' captured/declared
 )
 ```
@@ -97,22 +97,39 @@ Urgency calculation:
 hand_eval = evaluate_hand(hand, context, plan)
 ```
 
-This categorizes pieces into roles:
+This calls `form_execution_plan()` which categorizes pieces into roles:
 
 1. **Assigned Openers**: High-value pieces (≥11 points) reserved for winning
-   - Position 0 (starter): May prefer combos over individual openers
-   - Non-starters: Keep 1-2 openers based on target remaining
+   - **Selection**: `[p for p in hand if p.point >= 11]`
+   - **Sorting**: By point value descending (strongest first)
+   - **Assignment based on target_remaining**:
+     - 0 piles needed: 0 openers (already at target)
+     - 1 pile needed: 1 opener (for control)
+     - 2 piles needed: up to 2 openers
+     - 3 piles needed: 1-2 openers (leave room for combos)
+     - 4+ piles needed: up to 2 openers
+   - **Starter exception**: May remove openers if they overlap with preferred combos
 
 2. **Assigned Combos**: Valid combinations that can win turns
-   - Evaluated based on field strength (weak/normal/strong)
-   - PAIRs need higher value in stronger fields
-   - THREE_OF_A_KIND and above always considered viable
+   - **First filter**: All valid combos from `find_all_valid_combos()`
+   - **Viability check**: `is_combo_viable(combo_type, pieces, field_strength)`
+     - THREE_OF_A_KIND and above: Always viable
+     - PAIR viability by field strength:
+       - Weak field: ≥10 points (HORSE pair)
+       - Normal field: ≥14 points (CHARIOT pair)
+       - Strong field: ≥18 points (ELEPHANT pair)
+   - **Overlap handling**: Skip combos that use already assigned opener pieces
+   - **Starter preference**: May replace openers with strong combos
 
 3. **Reserve Pieces**: 1-2 weakest pieces (≤4 points) for overcapture avoidance
+   - **Selection**: `[p for p in hand if p.point <= 4 and p not in pieces_in_plan]`
+   - **Sorting**: By point value ascending (weakest first)
+   - **Limit**: Maximum 2 pieces
 
-4. **Burden Pieces**: Pieces not in any winning combination
-   - Disposed of when not leading to minimize win chances
-   - Sorted by value (high to low) for disposal priority
+4. **Burden Pieces**: Everything not assigned to other roles
+   - **Selection**: `[p for p in hand if p not in pieces_in_plan]`
+   - **Sorting**: By point value descending (dispose high value first)
+   - **Purpose**: Disposed of when not leading to minimize win chances
 
 Example plan formation:
 ```
@@ -158,11 +175,18 @@ When leading the turn, bot must choose piece count:
 
 When following, must match starter's piece count:
 
-1. **Critical Urgency Override**
+1. **Random Opener Timing** (only when required = 1)
+   - Checks if bot has opener-only plan (no viable combos)
+   - Uses same probability as starters (35-50% based on hand size)
+   - If triggered, plays strongest opener immediately
+   - This happens BEFORE all other strategies
+
+2. **Critical Urgency Override**
    - If must win remaining turns → play strongest valid combo
+   - Searches all possible combinations of required size
    - Ignores disposal priority in critical situations
 
-2. **Disposal Priority System**
+3. **Disposal Priority System**
    ```
    Priority 1: Burden pieces (highest value first)
    Priority 2: Reserve pieces (if needed)
@@ -170,14 +194,10 @@ When following, must match starter's piece count:
    Priority 4: Combo pieces (emergency only)
    ```
 
-3. **Overcapture Risk Handling**
+4. **Overcapture Risk Handling**
    - High risk + required count risky → select non-matching pieces
    - Avoids accidental strong combinations
    - Minimizes total play value
-
-4. **Random Opener Timing** (responders can also trigger)
-   - Same probability system as starters
-   - Adds unpredictability to bot play
 
 ### Phase 5: Aggressive Capture (Plan Broken)
 
@@ -319,6 +339,20 @@ Plus high-value pairs (ELEPHANT pairs = 18+ points).
 
 🗑️ DISPOSING 1 burden + 1 reserve: [CANNON_RED(3), SOLDIER_BLACK(1)]
 Total value: 4 pts
+```
+
+### Example 4: Responder Random Opener Timing
+```
+🎯 RESPONDER STRATEGY for Bot_3 (Turn 5)
+  Current hand: [GENERAL_RED(14), ADVISOR_RED(12), CANNON_BLACK(3), SOLDIER_RED(1)]
+  Required pieces: 1
+  Urgency: low, Target remaining: 1
+  Overcapture risk: none
+
+  🎲 Bot_3 (RESPONDER) randomly playing opener due to timing
+     - Hand size: 4, Probability was 40%
+     - Opener-only plan with 2 openers
+  🎯 Playing opener: GENERAL_RED(14)
 ```
 
 ## Summary
