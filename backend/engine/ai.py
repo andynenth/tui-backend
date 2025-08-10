@@ -1288,17 +1288,16 @@ def choose_declare(
     analysis_callback: Optional[Callable] = None,
 ) -> int:
     """
-    Main declaration function - now uses strategic implementation.
+    Main declaration function - now uses V2 strategic implementation.
     Maintains backward compatibility with existing API.
     """
-    return choose_declare_strategic(
+    return choose_declare_strategic_v2(
         hand=hand,
         is_first_player=is_first_player,
         position_in_order=position_in_order,
         previous_declarations=previous_declarations,
         must_declare_nonzero=must_declare_nonzero,
-        verbose=verbose,
-        analysis_callback=analysis_callback
+        verbose=verbose
     )
 
 
