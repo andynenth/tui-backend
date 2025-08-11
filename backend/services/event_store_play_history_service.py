@@ -242,6 +242,10 @@ class EventStorePlayHistoryService:
                 starter = data.get("starter")
                 starter_reason = data.get("starter_reason", "default")
                 
+                # Ensure starter_reason is never None
+                if starter_reason is None:
+                    starter_reason = "default"
+                
                 # Extract player order from hands data
                 if data.get("hands"):
                     player_order = list(data["hands"].keys())

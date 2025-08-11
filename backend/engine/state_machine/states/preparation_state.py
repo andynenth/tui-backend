@@ -175,16 +175,21 @@ class PreparationState(GameState):
             starter_reason = "default"
         
         # Broadcast hands_dealt event for complete game history
+        hands_dealt_data = {
+            "round_number": game.round_number,
+            "hands": hands_data,
+            "starter": starter_name,
+            "starter_reason": starter_reason,
+            "redeal_multiplier": getattr(game, "redeal_multiplier", 1)
+        }
+        
         await self.broadcast_custom_event(
             event_type="hands_dealt",
-            data={
-                "round_number": game.round_number,
-                "hands": hands_data,
-                "starter": starter_name,
-                "starter_reason": starter_reason,
-                "redeal_multiplier": getattr(game, "redeal_multiplier", 1)
-            }
+            data=hands_dealt_data
         )
+        
+        # Store hands_dealt event for play history
+        await self.store_custom_event("hands_dealt", hands_dealt_data)
 
         self.initial_deal_complete = True
 

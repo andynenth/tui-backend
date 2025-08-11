@@ -346,6 +346,30 @@ class GameState(ABC):
         except Exception as e:
             self.logger.error(f"❌ Custom broadcast failed: {e}", exc_info=True)
     
+    async def store_custom_event(self, event_type: str, data: Dict[str, Any]) -> None:
+        """
+        Store custom event in event store for play history
+        
+        This method stores custom events like hands_dealt and play_with_context
+        that need to be persisted for the Play History API.
+        
+        Args:
+            event_type: Type of custom event (e.g., 'hands_dealt', 'play_with_context')
+            data: Event data to store
+        """
+        try:
+            if hasattr(self.state_machine, 'action_queue') and self.state_machine.action_queue:
+                await self.state_machine.action_queue.store_state_event(
+                    event_type=event_type,
+                    payload=self._make_json_safe(data)
+                )
+                self.logger.debug(f"Stored custom event: {event_type}")
+            else:
+                self.logger.warning(f"Cannot store custom event {event_type}: action_queue not available")
+        except Exception as e:
+            # Don't let event storage failures break the game
+            self.logger.error(f"Failed to store custom event {event_type}: {e}")
+    
     async def _store_state_transition_event(self, updates: Dict[str, Any], reason: str) -> None:
         """
         Store state transition in event store for replay capability
