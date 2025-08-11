@@ -349,30 +349,26 @@ class TurnState(GameState):
                 f"Removed {len(pieces)} pieces from {action.player_name}'s hand"
             )
             
-            # Broadcast enhanced play event with hand state for play history
-            play_context_data = {
-                "round_number": game.round_number,
-                "turn_number": game.turn_number,
-                "player": action.player_name,
-                "pieces_played": [
-                    {"kind": p.kind, "point": p.point} for p in pieces
-                ],
-                "hand_after": [
-                    {"kind": p.kind, "point": p.point} for p in player.hand
-                ],
-                "captured_count": getattr(player, "captured_piles", 0),
-                "declared_count": getattr(player, "declared", 0),
-                "play_type": play_type,
-                "play_value": play_value
-            }
-            
+            # Broadcast enhanced play event for real-time updates (but don't store it)
             await self.broadcast_custom_event(
                 event_type="play_with_context",
-                data=play_context_data
+                data={
+                    "round_number": game.round_number,
+                    "turn_number": game.turn_number,
+                    "player": action.player_name,
+                    "pieces_played": [
+                        {"kind": p.kind, "point": p.point} for p in pieces
+                    ],
+                    "hand_after": [
+                        {"kind": p.kind, "point": p.point} for p in player.hand
+                    ],
+                    "captured_count": getattr(player, "captured_piles", 0),
+                    "declared_count": getattr(player, "declared", 0),
+                    "play_type": play_type,
+                    "play_value": play_value
+                }
             )
-            
-            # Store play_with_context event for play history
-            await self.store_custom_event("play_with_context", play_context_data)
+            # Note: We don't store play_with_context - Play History calculates hand states from hands_dealt + action_processed
         else:
             self.logger.error(
                 f"Could not find player {action.player_name} to remove pieces"

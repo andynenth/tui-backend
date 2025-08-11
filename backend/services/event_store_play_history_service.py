@@ -404,7 +404,23 @@ class EventStorePlayHistoryService:
         turn_number = 1
         turn_declarations = {}  # Store declared counts
         
-        # First, extract declarations for all players
+        # First, extract initial hands from hands_dealt event
+        player_hands = {}  # Current hand for each player
+        initial_hands = {}  # Store initial hands for reference
+        
+        for event in events:
+            if event.event_type == "hands_dealt":
+                hands_data = event.payload.get("hands", {})
+                for player_name, pieces in hands_data.items():
+                    # Convert to PieceInfo objects for easier comparison
+                    hand_pieces = [
+                        {"kind": p["kind"], "point": p["point"]} for p in pieces
+                    ]
+                    player_hands[player_name] = hand_pieces.copy()
+                    initial_hands[player_name] = hand_pieces.copy()
+                break
+        
+        # Extract declarations for all players
         for event in events:
             if event.event_type == "action_processed" and event.payload.get("action_type") == "declare":
                 player_name = event.payload.get("player_name")
@@ -432,38 +448,42 @@ class EventStorePlayHistoryService:
             # Update captured counts from phase_change events
             update_captured_from_event(event)
             
-            if event.event_type == "play_with_context":
-                # New enhanced event with full context
-                data = event.payload
-                player_name = data.get("player")
-                
-                play_data = PlayData(
-                    player_id=player_name.lower().replace(" ", "_"),
-                    player_name=player_name,
-                    pieces_played=[
-                        PieceInfo(kind=p["kind"], point=p["point"])
-                        for p in data.get("pieces_played", [])
-                    ],
-                    play_type=data.get("play_type", "UNKNOWN"),
-                    hand_before=[],  # Would need to track this
-                    hand_after=[
-                        PieceInfo(kind=p["kind"], point=p["point"])
-                        for p in data.get("hand_after", [])
-                    ],
-                    captured_count=data.get("captured_count", 0),
-                    declared_count=data.get("declared_count", 0),
-                    ai_decision_analysis=None  # TODO: Add AI analysis
-                )
-                current_turn_plays.append(play_data)
-                
-            elif event.event_type == "action_processed" and event.payload.get("action_type") in ["play_pieces", "play"]:
-                # Fallback to basic play event
+            if event.event_type == "action_processed" and event.payload.get("action_type") in ["play_pieces", "play"]:
+                # Process play event with hand tracking
                 player_name = event.payload.get("player_name")
                 pieces = event.payload.get("payload", {}).get("pieces", [])
                 
                 # Track pieces played
                 if player_name in player_pieces_played:
                     player_pieces_played[player_name] += len(pieces)
+                
+                # Calculate hand_before (current hand)
+                hand_before = []
+                if player_name in player_hands:
+                    hand_before = [
+                        PieceInfo(kind=p["kind"], point=p["point"])
+                        for p in player_hands[player_name]
+                    ]
+                
+                # Remove played pieces from player's hand
+                hand_after_data = player_hands.get(player_name, []).copy()
+                for played_piece in pieces:
+                    # Find and remove the played piece from hand
+                    for i, hand_piece in enumerate(hand_after_data):
+                        if (hand_piece["kind"] == played_piece["kind"] and 
+                            hand_piece["point"] == played_piece["point"]):
+                            hand_after_data.pop(i)
+                            break
+                
+                # Update player's current hand
+                if player_name in player_hands:
+                    player_hands[player_name] = hand_after_data
+                
+                # Convert hand_after to PieceInfo objects
+                hand_after = [
+                    PieceInfo(kind=p["kind"], point=p["point"])
+                    for p in hand_after_data
+                ]
                 
                 play_data = PlayData(
                     player_id=player_name.lower().replace(" ", "_"),
@@ -473,8 +493,8 @@ class EventStorePlayHistoryService:
                         for p in pieces
                     ],
                     play_type=get_play_type_from_dicts(pieces) if pieces else "UNKNOWN",
-                    hand_before=[],
-                    hand_after=[],
+                    hand_before=hand_before,
+                    hand_after=hand_after,
                     captured_count=player_captured.get(player_name, 0),
                     declared_count=turn_declarations.get(player_name, 0),
                     ai_decision_analysis=None
