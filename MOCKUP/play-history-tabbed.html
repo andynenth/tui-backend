@@ -1,0 +1,469 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Play History - Tabbed Interface</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    animation: {
+                        'slide-in': 'slideIn 0.3s ease-out',
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-gray-50">
+    <!-- Navigation Bar -->
+    <nav class="bg-white shadow-sm border-b">
+        <div class="container mx-auto px-4 py-3">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center space-x-4">
+                    <button class="text-gray-600 hover:text-gray-900">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
+                        </svg>
+                    </button>
+                    <h1 class="text-xl font-semibold">Game History</h1>
+                    <span class="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm">Room C5E645</span>
+                </div>
+                <div class="flex items-center space-x-3">
+                    <button class="text-gray-600 hover:text-gray-900">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
+                        </svg>
+                    </button>
+                    <button class="text-gray-600 hover:text-gray-900">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m9.632 4.316C18.886 14.938 19 14.482 19 14c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Container -->
+    <div class="container mx-auto px-4 py-6 max-w-7xl">
+        <!-- Player Summary Cards -->
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+            <div class="bg-white rounded-xl shadow-sm p-4 border-t-4 border-amber-500">
+                <div class="flex items-center justify-between mb-2">
+                    <h3 class="font-semibold text-gray-900">Player 1</h3>
+                    <span class="bg-gray-100 text-gray-600 px-2 py-1 rounded text-xs">AI v2</span>
+                </div>
+                <div class="space-y-1">
+                    <div class="flex justify-between text-sm">
+                        <span class="text-gray-600">Total Score</span>
+                        <span class="font-bold">12</span>
+                    </div>
+                    <div class="flex justify-between text-sm">
+                        <span class="text-gray-600">Win Rate</span>
+                        <span class="font-bold">25%</span>
+                    </div>
+                    <div class="flex justify-between text-sm">
+                        <span class="text-gray-600">Avg Capture</span>
+                        <span class="font-bold">2.5</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="bg-white rounded-xl shadow-sm p-4 border-t-4 border-blue-500">
+                <div class="flex items-center justify-between mb-2">
+                    <h3 class="font-semibold text-gray-900">Player 2</h3>
+                    <span class="bg-gray-100 text-gray-600 px-2 py-1 rounded text-xs">AI v2</span>
+                </div>
+                <div class="space-y-1">
+                    <div class="flex justify-between text-sm">
+                        <span class="text-gray-600">Total Score</span>
+                        <span class="font-bold">8</span>
+                    </div>
+                    <div class="flex justify-between text-sm">
+                        <span class="text-gray-600">Win Rate</span>
+                        <span class="font-bold">20%</span>
+                    </div>
+                    <div class="flex justify-between text-sm">
+                        <span class="text-gray-600">Avg Capture</span>
+                        <span class="font-bold">1.8</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="bg-white rounded-xl shadow-sm p-4 border-t-4 border-emerald-500">
+                <div class="flex items-center justify-between mb-2">
+                    <h3 class="font-semibold text-gray-900">Player 3</h3>
+                    <span class="bg-emerald-100 text-emerald-700 px-2 py-1 rounded text-xs">Leading</span>
+                </div>
+                <div class="space-y-1">
+                    <div class="flex justify-between text-sm">
+                        <span class="text-gray-600">Total Score</span>
+                        <span class="font-bold text-emerald-600">15</span>
+                    </div>
+                    <div class="flex justify-between text-sm">
+                        <span class="text-gray-600">Win Rate</span>
+                        <span class="font-bold">35%</span>
+                    </div>
+                    <div class="flex justify-between text-sm">
+                        <span class="text-gray-600">Avg Capture</span>
+                        <span class="font-bold">3.2</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="bg-white rounded-xl shadow-sm p-4 border-t-4 border-rose-500">
+                <div class="flex items-center justify-between mb-2">
+                    <h3 class="font-semibold text-gray-900">Player 4</h3>
+                    <span class="bg-gray-100 text-gray-600 px-2 py-1 rounded text-xs">AI v2</span>
+                </div>
+                <div class="space-y-1">
+                    <div class="flex justify-between text-sm">
+                        <span class="text-gray-600">Total Score</span>
+                        <span class="font-bold">5</span>
+                    </div>
+                    <div class="flex justify-between text-sm">
+                        <span class="text-gray-600">Win Rate</span>
+                        <span class="font-bold">20%</span>
+                    </div>
+                    <div class="flex justify-between text-sm">
+                        <span class="text-gray-600">Avg Capture</span>
+                        <span class="font-bold">1.5</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tabbed Interface -->
+        <div class="bg-white rounded-xl shadow-sm">
+            <!-- Tab Headers -->
+            <div class="border-b">
+                <div class="flex space-x-1 p-1 bg-gray-100 rounded-t-xl">
+                    <button onclick="switchTab('overview')" class="tab-btn flex-1 py-2 px-4 rounded-lg font-medium text-sm transition bg-white shadow-sm text-gray-900">
+                        Overview
+                    </button>
+                    <button onclick="switchTab('round1')" class="tab-btn flex-1 py-2 px-4 rounded-lg font-medium text-sm transition text-gray-600 hover:text-gray-900">
+                        Round 1
+                    </button>
+                    <button onclick="switchTab('round2')" class="tab-btn flex-1 py-2 px-4 rounded-lg font-medium text-sm transition text-gray-600 hover:text-gray-900">
+                        Round 2
+                    </button>
+                    <button onclick="switchTab('statistics')" class="tab-btn flex-1 py-2 px-4 rounded-lg font-medium text-sm transition text-gray-600 hover:text-gray-900">
+                        Statistics
+                    </button>
+                    <button onclick="switchTab('hands')" class="tab-btn flex-1 py-2 px-4 rounded-lg font-medium text-sm transition text-gray-600 hover:text-gray-900">
+                        Hands
+                    </button>
+                </div>
+            </div>
+
+            <!-- Tab Content -->
+            <div class="p-6">
+                <!-- Overview Tab -->
+                <div id="overview" class="tab-content">
+                    <h2 class="text-xl font-semibold mb-4">Game Overview</h2>
+                    
+                    <!-- Score Progression Chart -->
+                    <div class="bg-gray-50 rounded-lg p-4 mb-6">
+                        <h3 class="text-sm font-medium text-gray-700 mb-3">Score Progression</h3>
+                        <div class="h-48 relative">
+                            <!-- Simple line chart representation -->
+                            <div class="absolute inset-0 flex items-end">
+                                <div class="flex-1 flex justify-around items-end">
+                                    <div class="w-16 bg-amber-200 rounded-t" style="height: 40%"></div>
+                                    <div class="w-16 bg-amber-300 rounded-t" style="height: 48%"></div>
+                                </div>
+                                <div class="flex-1 flex justify-around items-end">
+                                    <div class="w-16 bg-blue-200 rounded-t" style="height: 30%"></div>
+                                    <div class="w-16 bg-blue-300 rounded-t" style="height: 32%"></div>
+                                </div>
+                                <div class="flex-1 flex justify-around items-end">
+                                    <div class="w-16 bg-emerald-200 rounded-t" style="height: 50%"></div>
+                                    <div class="w-16 bg-emerald-300 rounded-t" style="height: 60%"></div>
+                                </div>
+                                <div class="flex-1 flex justify-around items-end">
+                                    <div class="w-16 bg-rose-200 rounded-t" style="height: 25%"></div>
+                                    <div class="w-16 bg-rose-300 rounded-t" style="height: 20%"></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="flex justify-around mt-2 text-xs text-gray-600">
+                            <span>Round 1</span>
+                            <span>Round 2</span>
+                        </div>
+                    </div>
+
+                    <!-- Key Statistics -->
+                    <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                        <div class="bg-gray-50 rounded-lg p-4 text-center">
+                            <div class="text-2xl font-bold text-gray-900">16</div>
+                            <div class="text-sm text-gray-600">Total Turns</div>
+                        </div>
+                        <div class="bg-gray-50 rounded-lg p-4 text-center">
+                            <div class="text-2xl font-bold text-gray-900">128</div>
+                            <div class="text-sm text-gray-600">Pieces Played</div>
+                        </div>
+                        <div class="bg-gray-50 rounded-lg p-4 text-center">
+                            <div class="text-2xl font-bold text-gray-900">P3</div>
+                            <div class="text-sm text-gray-600">Current Leader</div>
+                        </div>
+                        <div class="bg-gray-50 rounded-lg p-4 text-center">
+                            <div class="text-2xl font-bold text-gray-900">2.5</div>
+                            <div class="text-sm text-gray-600">Avg Pieces/Turn</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Round 1 Tab -->
+                <div id="round1" class="tab-content hidden">
+                    <div class="flex items-center justify-between mb-4">
+                        <h2 class="text-xl font-semibold">Round 1 Details</h2>
+                        <span class="text-sm text-gray-600">Starter: Player 1 (GENERAL_RED)</span>
+                    </div>
+
+                    <!-- Declaration Summary -->
+                    <div class="bg-blue-50 rounded-lg p-4 mb-6">
+                        <h3 class="font-medium mb-3">Declarations</h3>
+                        <div class="flex justify-between items-center">
+                            <div class="flex space-x-6">
+                                <div><span class="font-medium">P1:</span> 2 piles</div>
+                                <div><span class="font-medium">P2:</span> 1 pile</div>
+                                <div><span class="font-medium">P3:</span> 3 piles</div>
+                                <div><span class="font-medium">P4:</span> 2 piles</div>
+                            </div>
+                            <div class="text-sm text-gray-600">Total: 8 piles</div>
+                        </div>
+                    </div>
+
+                    <!-- Turn Details -->
+                    <div class="space-y-4">
+                        <div class="border rounded-lg overflow-hidden">
+                            <div class="bg-gray-50 px-4 py-3 flex items-center justify-between">
+                                <span class="font-medium">Turn 1</span>
+                                <span class="text-sm">Winner: <span class="font-semibold text-emerald-600">Player 3</span></span>
+                            </div>
+                            <div class="p-4">
+                                <div class="grid grid-cols-2 md:grid-cols-4 gap-3 text-sm">
+                                    <div class="flex items-center justify-between p-2 bg-gray-50 rounded">
+                                        <span>P1:</span>
+                                        <span class="font-mono">SOLDIER_BLACK(1)</span>
+                                    </div>
+                                    <div class="flex items-center justify-between p-2 bg-gray-50 rounded">
+                                        <span>P2:</span>
+                                        <span class="font-mono">SOLDIER_BLACK(2)</span>
+                                    </div>
+                                    <div class="flex items-center justify-between p-2 bg-emerald-50 rounded border border-emerald-200">
+                                        <span>P3:</span>
+                                        <span class="font-mono text-emerald-700">SOLDIER_RED(7)</span>
+                                    </div>
+                                    <div class="flex items-center justify-between p-2 bg-gray-50 rounded">
+                                        <span>P4:</span>
+                                        <span class="font-mono">SOLDIER_BLACK(3)</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- More turns... -->
+                    </div>
+
+                    <!-- Round Scoring -->
+                    <div class="mt-6 bg-gray-50 rounded-lg p-4">
+                        <h3 class="font-medium mb-3">Round Scoring</h3>
+                        <table class="w-full text-sm">
+                            <thead>
+                                <tr class="text-left text-gray-600">
+                                    <th class="pb-2">Player</th>
+                                    <th class="pb-2 text-center">Declared</th>
+                                    <th class="pb-2 text-center">Captured</th>
+                                    <th class="pb-2 text-center">Diff</th>
+                                    <th class="pb-2 text-right">Points</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr class="border-t">
+                                    <td class="py-2">Player 1</td>
+                                    <td class="text-center">2</td>
+                                    <td class="text-center">2</td>
+                                    <td class="text-center text-green-600">0</td>
+                                    <td class="text-right font-bold">0</td>
+                                </tr>
+                                <tr class="border-t">
+                                    <td class="py-2">Player 2</td>
+                                    <td class="text-center">1</td>
+                                    <td class="text-center">0</td>
+                                    <td class="text-center text-red-600">-1</td>
+                                    <td class="text-right font-bold">-2</td>
+                                </tr>
+                                <tr class="border-t">
+                                    <td class="py-2">Player 3</td>
+                                    <td class="text-center">3</td>
+                                    <td class="text-center">5</td>
+                                    <td class="text-center text-amber-600">+2</td>
+                                    <td class="text-right font-bold text-green-600">+2</td>
+                                </tr>
+                                <tr class="border-t">
+                                    <td class="py-2">Player 4</td>
+                                    <td class="text-center">2</td>
+                                    <td class="text-center">1</td>
+                                    <td class="text-center text-red-600">-1</td>
+                                    <td class="text-right font-bold">-2</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Round 2 Tab -->
+                <div id="round2" class="tab-content hidden">
+                    <h2 class="text-xl font-semibold mb-4">Round 2 Details</h2>
+                    <!-- Similar structure to Round 1 -->
+                </div>
+
+                <!-- Statistics Tab -->
+                <div id="statistics" class="tab-content hidden">
+                    <h2 class="text-xl font-semibold mb-4">Game Statistics</h2>
+                    
+                    <!-- Win Rate Chart -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div class="bg-gray-50 rounded-lg p-4">
+                            <h3 class="font-medium mb-3">Turn Win Distribution</h3>
+                            <div class="space-y-3">
+                                <div>
+                                    <div class="flex justify-between mb-1">
+                                        <span class="text-sm">Player 1</span>
+                                        <span class="text-sm font-medium">4 wins (25%)</span>
+                                    </div>
+                                    <div class="w-full bg-gray-200 rounded-full h-2">
+                                        <div class="bg-amber-500 h-2 rounded-full" style="width: 25%"></div>
+                                    </div>
+                                </div>
+                                <div>
+                                    <div class="flex justify-between mb-1">
+                                        <span class="text-sm">Player 2</span>
+                                        <span class="text-sm font-medium">3 wins (19%)</span>
+                                    </div>
+                                    <div class="w-full bg-gray-200 rounded-full h-2">
+                                        <div class="bg-blue-500 h-2 rounded-full" style="width: 19%"></div>
+                                    </div>
+                                </div>
+                                <div>
+                                    <div class="flex justify-between mb-1">
+                                        <span class="text-sm">Player 3</span>
+                                        <span class="text-sm font-medium">6 wins (38%)</span>
+                                    </div>
+                                    <div class="w-full bg-gray-200 rounded-full h-2">
+                                        <div class="bg-emerald-500 h-2 rounded-full" style="width: 38%"></div>
+                                    </div>
+                                </div>
+                                <div>
+                                    <div class="flex justify-between mb-1">
+                                        <span class="text-sm">Player 4</span>
+                                        <span class="text-sm font-medium">3 wins (19%)</span>
+                                    </div>
+                                    <div class="w-full bg-gray-200 rounded-full h-2">
+                                        <div class="bg-rose-500 h-2 rounded-full" style="width: 19%"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="bg-gray-50 rounded-lg p-4">
+                            <h3 class="font-medium mb-3">Most Played Pieces</h3>
+                            <div class="space-y-2 text-sm">
+                                <div class="flex justify-between items-center">
+                                    <span class="font-mono">SOLDIER_BLACK</span>
+                                    <span class="bg-gray-200 px-2 py-1 rounded">32 times</span>
+                                </div>
+                                <div class="flex justify-between items-center">
+                                    <span class="font-mono">SOLDIER_RED</span>
+                                    <span class="bg-gray-200 px-2 py-1 rounded">28 times</span>
+                                </div>
+                                <div class="flex justify-between items-center">
+                                    <span class="font-mono">GENERAL_BLACK</span>
+                                    <span class="bg-gray-200 px-2 py-1 rounded">12 times</span>
+                                </div>
+                                <div class="flex justify-between items-center">
+                                    <span class="font-mono">GENERAL_RED</span>
+                                    <span class="bg-gray-200 px-2 py-1 rounded">8 times</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Hands Tab -->
+                <div id="hands" class="tab-content hidden">
+                    <h2 class="text-xl font-semibold mb-4">Initial Hands</h2>
+                    
+                    <div class="space-y-4">
+                        <!-- Player 1 Hands -->
+                        <div class="border rounded-lg p-4">
+                            <h3 class="font-medium mb-3">Player 1</h3>
+                            <div class="grid grid-cols-2 gap-4">
+                                <div>
+                                    <h4 class="text-sm text-gray-600 mb-2">Round 1</h4>
+                                    <div class="flex flex-wrap gap-2">
+                                        <span class="piece-card red">GENERAL_RED(14)</span>
+                                        <span class="piece-card red">GENERAL_RED(14)</span>
+                                        <span class="piece-card">GENERAL_BLACK(11)</span>
+                                        <span class="piece-card">SOLDIER_BLACK(9)</span>
+                                        <span class="piece-card">SOLDIER_BLACK(6)</span>
+                                        <span class="piece-card">SOLDIER_BLACK(5)</span>
+                                        <span class="piece-card">SOLDIER_BLACK(3)</span>
+                                        <span class="piece-card">SOLDIER_BLACK(1)</span>
+                                    </div>
+                                </div>
+                                <div>
+                                    <h4 class="text-sm text-gray-600 mb-2">Round 2</h4>
+                                    <div class="flex flex-wrap gap-2">
+                                        <!-- Round 2 pieces -->
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- More players... -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <style>
+        .piece-card {
+            @apply px-2 py-1 rounded text-xs font-mono bg-gray-100 text-gray-800;
+        }
+        .piece-card.red {
+            @apply bg-red-100 text-red-800;
+        }
+        .tab-btn.active {
+            @apply bg-white shadow-sm text-gray-900;
+        }
+    </style>
+
+    <script>
+        function switchTab(tabName) {
+            // Hide all tab contents
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.classList.add('hidden');
+            });
+            
+            // Remove active class from all buttons
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.classList.remove('bg-white', 'shadow-sm', 'text-gray-900');
+                btn.classList.add('text-gray-600');
+            });
+            
+            // Show selected tab
+            document.getElementById(tabName).classList.remove('hidden');
+            
+            // Add active class to clicked button
+            event.target.classList.add('bg-white', 'shadow-sm', 'text-gray-900');
+            event.target.classList.remove('text-gray-600');
+        }
+    </script>
+</body>
+</html>

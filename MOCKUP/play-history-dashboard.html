@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Play History - Dashboard View</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body class="bg-gray-900 text-gray-100">
+    <!-- Sidebar -->
+    <div class="fixed left-0 top-0 h-full w-64 bg-gray-800 shadow-xl">
+        <div class="p-6">
+            <h1 class="text-2xl font-bold mb-8">Game Analytics</h1>
+            
+            <nav class="space-y-2">
+                <a href="#" class="flex items-center gap-3 px-4 py-3 bg-indigo-600 text-white rounded-lg">
+                    <i class="fas fa-chart-line w-5"></i>
+                    <span>Overview</span>
+                </a>
+                <a href="#" class="flex items-center gap-3 px-4 py-3 hover:bg-gray-700 rounded-lg transition">
+                    <i class="fas fa-users w-5"></i>
+                    <span>Players</span>
+                </a>
+                <a href="#" class="flex items-center gap-3 px-4 py-3 hover:bg-gray-700 rounded-lg transition">
+                    <i class="fas fa-layer-group w-5"></i>
+                    <span>Rounds</span>
+                </a>
+                <a href="#" class="flex items-center gap-3 px-4 py-3 hover:bg-gray-700 rounded-lg transition">
+                    <i class="fas fa-chess w-5"></i>
+                    <span>Turns</span>
+                </a>
+                <a href="#" class="flex items-center gap-3 px-4 py-3 hover:bg-gray-700 rounded-lg transition">
+                    <i class="fas fa-chart-bar w-5"></i>
+                    <span>Statistics</span>
+                </a>
+            </nav>
+        </div>
+        
+        <div class="absolute bottom-0 left-0 right-0 p-6">
+            <div class="bg-gray-700 rounded-lg p-4">
+                <p class="text-sm text-gray-400 mb-1">Room ID</p>
+                <p class="font-mono font-bold">C5E645</p>
+                <p class="text-xs text-gray-500 mt-2">2 rounds • 16 turns</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="ml-64 p-8">
+        <!-- Top Stats Bar -->
+        <div class="grid grid-cols-4 gap-6 mb-8">
+            <div class="bg-gradient-to-br from-indigo-600 to-indigo-800 rounded-xl p-6 shadow-xl">
+                <div class="flex items-center justify-between mb-2">
+                    <i class="fas fa-trophy text-3xl text-indigo-200"></i>
+                    <span class="text-xs bg-white/20 px-2 py-1 rounded">Leader</span>
+                </div>
+                <h3 class="text-3xl font-bold mb-1">Player 3</h3>
+                <p class="text-indigo-200">15 points</p>
+            </div>
+            
+            <div class="bg-gray-800 rounded-xl p-6 shadow-xl">
+                <div class="flex items-center justify-between mb-2">
+                    <i class="fas fa-percentage text-3xl text-gray-400"></i>
+                </div>
+                <h3 class="text-3xl font-bold mb-1">38%</h3>
+                <p class="text-gray-400">Win Rate (P3)</p>
+            </div>
+            
+            <div class="bg-gray-800 rounded-xl p-6 shadow-xl">
+                <div class="flex items-center justify-between mb-2">
+                    <i class="fas fa-chess-board text-3xl text-gray-400"></i>
+                </div>
+                <h3 class="text-3xl font-bold mb-1">128</h3>
+                <p class="text-gray-400">Total Pieces</p>
+            </div>
+            
+            <div class="bg-gray-800 rounded-xl p-6 shadow-xl">
+                <div class="flex items-center justify-between mb-2">
+                    <i class="fas fa-clock text-3xl text-gray-400"></i>
+                </div>
+                <h3 class="text-3xl font-bold mb-1">2.5</h3>
+                <p class="text-gray-400">Avg Pieces/Turn</p>
+            </div>
+        </div>
+
+        <!-- Main Dashboard Grid -->
+        <div class="grid grid-cols-12 gap-6">
+            <!-- Score Progression Chart -->
+            <div class="col-span-8 bg-gray-800 rounded-xl p-6 shadow-xl">
+                <div class="flex items-center justify-between mb-6">
+                    <h3 class="text-lg font-semibold">Score Progression</h3>
+                    <div class="flex gap-2">
+                        <button class="text-xs px-3 py-1 bg-gray-700 rounded hover:bg-gray-600 transition">1D</button>
+                        <button class="text-xs px-3 py-1 bg-indigo-600 rounded">All</button>
+                    </div>
+                </div>
+                
+                <!-- Chart Area -->
+                <div class="h-64 relative">
+                    <!-- SVG Chart -->
+                    <svg class="w-full h-full">
+                        <!-- Grid lines -->
+                        <line x1="0" y1="25%" x2="100%" y2="25%" stroke="#374151" stroke-dasharray="5,5"/>
+                        <line x1="0" y1="50%" x2="100%" y2="50%" stroke="#374151" stroke-dasharray="5,5"/>
+                        <line x1="0" y1="75%" x2="100%" y2="75%" stroke="#374151" stroke-dasharray="5,5"/>
+                        
+                        <!-- Player 1 Line -->
+                        <polyline points="50,200 200,150 350,150" fill="none" stroke="#fbbf24" stroke-width="3"/>
+                        <circle cx="50" cy="200" r="4" fill="#fbbf24"/>
+                        <circle cx="200" cy="150" r="4" fill="#fbbf24"/>
+                        <circle cx="350" cy="150" r="4" fill="#fbbf24"/>
+                        
+                        <!-- Player 2 Line -->
+                        <polyline points="50,200 200,210 350,180" fill="none" stroke="#60a5fa" stroke-width="3"/>
+                        
+                        <!-- Player 3 Line -->
+                        <polyline points="50,200 200,140 350,100" fill="none" stroke="#34d399" stroke-width="3"/>
+                        
+                        <!-- Player 4 Line -->
+                        <polyline points="50,200 200,210 350,215" fill="none" stroke="#f87171" stroke-width="3"/>
+                    </svg>
+                    
+                    <!-- Legend -->
+                    <div class="absolute bottom-0 left-0 flex gap-4 text-xs">
+                        <span class="flex items-center gap-1">
+                            <span class="w-3 h-3 bg-amber-400 rounded-full"></span> P1
+                        </span>
+                        <span class="flex items-center gap-1">
+                            <span class="w-3 h-3 bg-blue-400 rounded-full"></span> P2
+                        </span>
+                        <span class="flex items-center gap-1">
+                            <span class="w-3 h-3 bg-green-400 rounded-full"></span> P3
+                        </span>
+                        <span class="flex items-center gap-1">
+                            <span class="w-3 h-3 bg-red-400 rounded-full"></span> P4
+                        </span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Player Rankings -->
+            <div class="col-span-4 bg-gray-800 rounded-xl p-6 shadow-xl">
+                <h3 class="text-lg font-semibold mb-4">Current Standings</h3>
+                <div class="space-y-3">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 bg-green-600 rounded-full flex items-center justify-center font-bold">
+                            1
+                        </div>
+                        <div class="flex-1">
+                            <p class="font-semibold">Player 3</p>
+                            <p class="text-sm text-gray-400">15 points • 6 wins</p>
+                        </div>
+                        <i class="fas fa-crown text-yellow-400"></i>
+                    </div>
+                    
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 bg-gray-700 rounded-full flex items-center justify-center font-bold">
+                            2
+                        </div>
+                        <div class="flex-1">
+                            <p class="font-semibold">Player 1</p>
+                            <p class="text-sm text-gray-400">12 points • 4 wins</p>
+                        </div>
+                    </div>
+                    
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 bg-gray-700 rounded-full flex items-center justify-center font-bold">
+                            3
+                        </div>
+                        <div class="flex-1">
+                            <p class="font-semibold">Player 2</p>
+                            <p class="text-sm text-gray-400">8 points • 3 wins</p>
+                        </div>
+                    </div>
+                    
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 bg-gray-700 rounded-full flex items-center justify-center font-bold">
+                            4
+                        </div>
+                        <div class="flex-1">
+                            <p class="font-semibold">Player 4</p>
+                            <p class="text-sm text-gray-400">5 points • 3 wins</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Win Rate Distribution -->
+            <div class="col-span-6 bg-gray-800 rounded-xl p-6 shadow-xl">
+                <h3 class="text-lg font-semibold mb-4">Turn Win Distribution</h3>
+                <div class="flex items-end justify-around h-40">
+                    <div class="text-center">
+                        <div class="bg-amber-500 rounded-t" style="height: 60px; width: 60px;"></div>
+                        <p class="text-sm mt-2">P1</p>
+                        <p class="text-xs text-gray-400">25%</p>
+                    </div>
+                    <div class="text-center">
+                        <div class="bg-blue-500 rounded-t" style="height: 45px; width: 60px;"></div>
+                        <p class="text-sm mt-2">P2</p>
+                        <p class="text-xs text-gray-400">19%</p>
+                    </div>
+                    <div class="text-center">
+                        <div class="bg-green-500 rounded-t" style="height: 90px; width: 60px;"></div>
+                        <p class="text-sm mt-2">P3</p>
+                        <p class="text-xs text-gray-400">38%</p>
+                    </div>
+                    <div class="text-center">
+                        <div class="bg-red-500 rounded-t" style="height: 45px; width: 60px;"></div>
+                        <p class="text-sm mt-2">P4</p>
+                        <p class="text-xs text-gray-400">19%</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Most Valuable Pieces -->
+            <div class="col-span-6 bg-gray-800 rounded-xl p-6 shadow-xl">
+                <h3 class="text-lg font-semibold mb-4">Most Valuable Pieces</h3>
+                <div class="space-y-3">
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center gap-3">
+                            <div class="w-10 h-10 bg-red-600 rounded flex items-center justify-center">
+                                <i class="fas fa-chess-king"></i>
+                            </div>
+                            <div>
+                                <p class="font-mono">GENERAL_RED(14)</p>
+                                <p class="text-xs text-gray-400">8 turn wins</p>
+                            </div>
+                        </div>
+                        <div class="text-right">
+                            <p class="text-2xl font-bold">50%</p>
+                            <p class="text-xs text-gray-400">win rate</p>
+                        </div>
+                    </div>
+                    
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center gap-3">
+                            <div class="w-10 h-10 bg-red-600/70 rounded flex items-center justify-center">
+                                <i class="fas fa-chess-pawn"></i>
+                            </div>
+                            <div>
+                                <p class="font-mono">SOLDIER_RED(10)</p>
+                                <p class="text-xs text-gray-400">5 turn wins</p>
+                            </div>
+                        </div>
+                        <div class="text-right">
+                            <p class="text-2xl font-bold">31%</p>
+                            <p class="text-xs text-gray-400">win rate</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Recent Activity Feed -->
+            <div class="col-span-12 bg-gray-800 rounded-xl p-6 shadow-xl">
+                <div class="flex items-center justify-between mb-4">
+                    <h3 class="text-lg font-semibold">Recent Activity</h3>
+                    <button class="text-sm text-indigo-400 hover:text-indigo-300">View All</button>
+                </div>
+                
+                <div class="space-y-3">
+                    <div class="flex items-center gap-4 p-3 bg-gray-700/50 rounded-lg">
+                        <div class="w-10 h-10 bg-green-600 rounded-full flex items-center justify-center">
+                            <i class="fas fa-trophy text-sm"></i>
+                        </div>
+                        <div class="flex-1">
+                            <p class="text-sm">Round 2 completed</p>
+                            <p class="text-xs text-gray-400">Player 3 maintains lead with 15 points</p>
+                        </div>
+                        <span class="text-xs text-gray-500">2m ago</span>
+                    </div>
+                    
+                    <div class="flex items-center gap-4 p-3 bg-gray-700/50 rounded-lg">
+                        <div class="w-10 h-10 bg-amber-600 rounded-full flex items-center justify-center">
+                            <i class="fas fa-fire text-sm"></i>
+                        </div>
+                        <div class="flex-1">
+                            <p class="text-sm">Player 1 wins Turn 8</p>
+                            <p class="text-xs text-gray-400">Triple GENERAL_BLACK(12) play</p>
+                        </div>
+                        <span class="text-xs text-gray-500">5m ago</span>
+                    </div>
+                    
+                    <div class="flex items-center gap-4 p-3 bg-gray-700/50 rounded-lg">
+                        <div class="w-10 h-10 bg-blue-600 rounded-full flex items-center justify-center">
+                            <i class="fas fa-chart-line text-sm"></i>
+                        </div>
+                        <div class="flex-1">
+                            <p class="text-sm">Player 2 captures 3 piles</p>
+                            <p class="text-xs text-gray-400">Exceeded declaration by 2</p>
+                        </div>
+                        <span class="text-xs text-gray-500">8m ago</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Floating Controls -->
+    <div class="fixed bottom-6 right-6 flex gap-3">
+        <button class="bg-gray-700 hover:bg-gray-600 text-white px-4 py-2 rounded-lg shadow-xl transition flex items-center gap-2">
+            <i class="fas fa-filter"></i>
+            Filter
+        </button>
+        <button class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg shadow-xl transition flex items-center gap-2">
+            <i class="fas fa-download"></i>
+            Export
+        </button>
+    </div>
+</body>
+</html>

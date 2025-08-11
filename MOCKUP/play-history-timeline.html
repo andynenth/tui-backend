@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Play History - Timeline View</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body class="bg-slate-900 text-white">
+    <!-- Fixed Header -->
+    <header class="fixed top-0 left-0 right-0 bg-slate-800 shadow-xl z-50">
+        <div class="container mx-auto px-4 py-4">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center space-x-6">
+                    <h1 class="text-2xl font-bold bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">
+                        Game Timeline
+                    </h1>
+                    <div class="flex items-center space-x-2 text-sm">
+                        <span class="text-slate-400">Room:</span>
+                        <code class="bg-slate-700 px-2 py-1 rounded font-mono">C5E645</code>
+                    </div>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <button class="bg-purple-600 hover:bg-purple-700 px-4 py-2 rounded-lg transition flex items-center space-x-2">
+                        <i class="fas fa-download"></i>
+                        <span>Export</span>
+                    </button>
+                    <button class="bg-slate-700 hover:bg-slate-600 p-2 rounded-lg transition">
+                        <i class="fas fa-cog"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="pt-20 pb-8">
+        <div class="container mx-auto px-4 max-w-6xl">
+            <!-- Score Summary Bar -->
+            <div class="bg-slate-800 rounded-2xl p-6 mb-8 shadow-xl">
+                <div class="grid grid-cols-4 gap-4">
+                    <div class="text-center">
+                        <div class="text-3xl font-bold text-yellow-400">Player 1</div>
+                        <div class="text-sm text-slate-400 mt-1">12 points • Leading</div>
+                        <div class="mt-2 h-2 bg-slate-700 rounded-full overflow-hidden">
+                            <div class="h-full bg-yellow-400" style="width: 80%"></div>
+                        </div>
+                    </div>
+                    <div class="text-center">
+                        <div class="text-3xl font-bold text-blue-400">Player 2</div>
+                        <div class="text-sm text-slate-400 mt-1">8 points</div>
+                        <div class="mt-2 h-2 bg-slate-700 rounded-full overflow-hidden">
+                            <div class="h-full bg-blue-400" style="width: 53%"></div>
+                        </div>
+                    </div>
+                    <div class="text-center">
+                        <div class="text-3xl font-bold text-green-400">Player 3</div>
+                        <div class="text-sm text-slate-400 mt-1">15 points • 2nd</div>
+                        <div class="mt-2 h-2 bg-slate-700 rounded-full overflow-hidden">
+                            <div class="h-full bg-green-400" style="width: 100%"></div>
+                        </div>
+                    </div>
+                    <div class="text-center">
+                        <div class="text-3xl font-bold text-red-400">Player 4</div>
+                        <div class="text-sm text-slate-400 mt-1">5 points</div>
+                        <div class="mt-2 h-2 bg-slate-700 rounded-full overflow-hidden">
+                            <div class="h-full bg-red-400" style="width: 33%"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Timeline -->
+            <div class="relative">
+                <!-- Vertical Line -->
+                <div class="absolute left-12 top-0 bottom-0 w-0.5 bg-slate-700"></div>
+
+                <!-- Round 1 -->
+                <div class="relative mb-12">
+                    <!-- Round Marker -->
+                    <div class="absolute left-12 w-6 h-6 bg-purple-600 rounded-full -translate-x-1/2 ring-4 ring-slate-800"></div>
+                    <div class="ml-24">
+                        <h2 class="text-2xl font-bold mb-6">Round 1</h2>
+                        
+                        <!-- Declaration Phase -->
+                        <div class="bg-slate-800 rounded-xl p-6 mb-4 border border-slate-700">
+                            <div class="flex items-center justify-between mb-4">
+                                <h3 class="text-lg font-semibold flex items-center">
+                                    <i class="fas fa-bullhorn mr-2 text-purple-400"></i>
+                                    Declaration Phase
+                                </h3>
+                                <span class="text-sm text-slate-400">Starter: Player 1</span>
+                            </div>
+                            <div class="grid grid-cols-4 gap-4">
+                                <div class="bg-slate-700/50 rounded-lg p-3 text-center">
+                                    <div class="text-yellow-400 font-bold">P1</div>
+                                    <div class="text-2xl font-bold">2</div>
+                                    <div class="text-xs text-slate-400">piles</div>
+                                </div>
+                                <div class="bg-slate-700/50 rounded-lg p-3 text-center">
+                                    <div class="text-blue-400 font-bold">P2</div>
+                                    <div class="text-2xl font-bold">1</div>
+                                    <div class="text-xs text-slate-400">pile</div>
+                                </div>
+                                <div class="bg-slate-700/50 rounded-lg p-3 text-center">
+                                    <div class="text-green-400 font-bold">P3</div>
+                                    <div class="text-2xl font-bold">3</div>
+                                    <div class="text-xs text-slate-400">piles</div>
+                                </div>
+                                <div class="bg-slate-700/50 rounded-lg p-3 text-center">
+                                    <div class="text-red-400 font-bold">P4</div>
+                                    <div class="text-2xl font-bold">2</div>
+                                    <div class="text-xs text-slate-400">piles</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Turn Timeline -->
+                        <div class="space-y-3">
+                            <!-- Turn 1 -->
+                            <div class="bg-slate-800 rounded-xl p-4 border border-slate-700 hover:border-purple-500 transition">
+                                <div class="flex items-center justify-between">
+                                    <div class="flex items-center space-x-4">
+                                        <div class="bg-purple-600/20 rounded-lg p-2">
+                                            <i class="fas fa-chess text-purple-400"></i>
+                                        </div>
+                                        <div>
+                                            <div class="font-semibold">Turn 1</div>
+                                            <div class="text-sm text-slate-400">4 pieces played</div>
+                                        </div>
+                                    </div>
+                                    <div class="flex items-center space-x-2">
+                                        <span class="text-sm text-slate-400">Winner:</span>
+                                        <span class="bg-green-500/20 text-green-400 px-3 py-1 rounded-full text-sm font-semibold">
+                                            Player 3
+                                        </span>
+                                    </div>
+                                </div>
+                                <!-- Expandable Details -->
+                                <details class="mt-3">
+                                    <summary class="cursor-pointer text-sm text-purple-400 hover:text-purple-300">
+                                        View plays
+                                    </summary>
+                                    <div class="mt-3 grid grid-cols-2 gap-2 text-sm">
+                                        <div class="bg-slate-700/50 rounded p-2">P1: SOLDIER_BLACK(1)</div>
+                                        <div class="bg-slate-700/50 rounded p-2">P2: SOLDIER_BLACK(2)</div>
+                                        <div class="bg-green-500/20 rounded p-2">P3: SOLDIER_RED(7) 🏆</div>
+                                        <div class="bg-slate-700/50 rounded p-2">P4: SOLDIER_BLACK(3)</div>
+                                    </div>
+                                </details>
+                            </div>
+
+                            <!-- Turn 2 -->
+                            <div class="bg-slate-800 rounded-xl p-4 border border-slate-700 hover:border-purple-500 transition">
+                                <div class="flex items-center justify-between">
+                                    <div class="flex items-center space-x-4">
+                                        <div class="bg-purple-600/20 rounded-lg p-2">
+                                            <i class="fas fa-chess text-purple-400"></i>
+                                        </div>
+                                        <div>
+                                            <div class="font-semibold">Turn 2</div>
+                                            <div class="text-sm text-slate-400">8 pieces played</div>
+                                        </div>
+                                    </div>
+                                    <div class="flex items-center space-x-2">
+                                        <span class="text-sm text-slate-400">Winner:</span>
+                                        <span class="bg-yellow-500/20 text-yellow-400 px-3 py-1 rounded-full text-sm font-semibold">
+                                            Player 1
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- More turns... -->
+                        </div>
+
+                        <!-- Round Summary -->
+                        <div class="bg-gradient-to-r from-purple-900/20 to-pink-900/20 rounded-xl p-6 mt-4 border border-purple-800/50">
+                            <h4 class="font-semibold mb-3 flex items-center">
+                                <i class="fas fa-trophy mr-2 text-yellow-400"></i>
+                                Round Results
+                            </h4>
+                            <div class="grid grid-cols-4 gap-4 text-sm">
+                                <div class="text-center">
+                                    <div class="text-yellow-400 font-bold mb-1">Player 1</div>
+                                    <div class="text-2xl font-bold">0</div>
+                                    <div class="text-xs text-slate-400">Exact match!</div>
+                                </div>
+                                <div class="text-center">
+                                    <div class="text-blue-400 font-bold mb-1">Player 2</div>
+                                    <div class="text-2xl font-bold text-red-400">-2</div>
+                                    <div class="text-xs text-slate-400">Missed by 1</div>
+                                </div>
+                                <div class="text-center">
+                                    <div class="text-green-400 font-bold mb-1">Player 3</div>
+                                    <div class="text-2xl font-bold text-green-400">+2</div>
+                                    <div class="text-xs text-slate-400">Exceeded by 2</div>
+                                </div>
+                                <div class="text-center">
+                                    <div class="text-red-400 font-bold mb-1">Player 4</div>
+                                    <div class="text-2xl font-bold text-red-400">-2</div>
+                                    <div class="text-xs text-slate-400">Missed by 1</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Round 2 -->
+                <div class="relative">
+                    <!-- Round Marker -->
+                    <div class="absolute left-12 w-6 h-6 bg-purple-600 rounded-full -translate-x-1/2 ring-4 ring-slate-800"></div>
+                    <div class="ml-24">
+                        <h2 class="text-2xl font-bold mb-6">Round 2</h2>
+                        <!-- Similar structure... -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Floating Action Button -->
+            <button class="fixed bottom-8 right-8 bg-purple-600 hover:bg-purple-700 w-14 h-14 rounded-full shadow-lg flex items-center justify-center transition transform hover:scale-110">
+                <i class="fas fa-play"></i>
+            </button>
+        </div>
+    </main>
+</body>
+</html>

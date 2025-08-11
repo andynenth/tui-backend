@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Liap Tui - Play History Viewer</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Custom styles for piece colors */
+        .piece-red { color: #dc2626; }
+        .piece-black { color: #1f2937; }
+        .piece-general { font-weight: bold; }
+        .piece-soldier { font-style: italic; }
+    </style>
+</head>
+<body class="bg-gray-100">
+    <div class="container mx-auto px-4 py-8 max-w-7xl">
+        <!-- Header -->
+        <div class="bg-white rounded-lg shadow-md p-6 mb-6">
+            <h1 class="text-3xl font-bold text-gray-800 mb-2">Liap Tui Play History</h1>
+            <div class="flex items-center justify-between">
+                <div class="flex items-center space-x-4">
+                    <span class="text-gray-600">Room ID: <span class="font-mono font-semibold">C5E645</span></span>
+                    <span class="text-gray-600">Total Rounds: <span class="font-semibold">2</span></span>
+                </div>
+                <button class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition">
+                    Refresh
+                </button>
+            </div>
+        </div>
+
+        <!-- Players Overview -->
+        <div class="bg-white rounded-lg shadow-md p-6 mb-6">
+            <h2 class="text-xl font-semibold mb-4">Players</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                <div class="border rounded-lg p-4">
+                    <div class="flex items-center justify-between mb-2">
+                        <span class="font-semibold">Player 1</span>
+                        <span class="bg-green-100 text-green-800 px-2 py-1 rounded text-sm">AI v2</span>
+                    </div>
+                    <div class="text-sm text-gray-600">
+                        <div>Total Score: <span class="font-semibold">12</span></div>
+                        <div>Rounds Won: <span class="font-semibold">0</span></div>
+                    </div>
+                </div>
+                <div class="border rounded-lg p-4">
+                    <div class="flex items-center justify-between mb-2">
+                        <span class="font-semibold">Player 2</span>
+                        <span class="bg-green-100 text-green-800 px-2 py-1 rounded text-sm">AI v2</span>
+                    </div>
+                    <div class="text-sm text-gray-600">
+                        <div>Total Score: <span class="font-semibold">8</span></div>
+                        <div>Rounds Won: <span class="font-semibold">0</span></div>
+                    </div>
+                </div>
+                <div class="border rounded-lg p-4">
+                    <div class="flex items-center justify-between mb-2">
+                        <span class="font-semibold">Player 3</span>
+                        <span class="bg-green-100 text-green-800 px-2 py-1 rounded text-sm">AI v2</span>
+                    </div>
+                    <div class="text-sm text-gray-600">
+                        <div>Total Score: <span class="font-semibold">15</span></div>
+                        <div>Rounds Won: <span class="font-semibold">1</span></div>
+                    </div>
+                </div>
+                <div class="border rounded-lg p-4">
+                    <div class="flex items-center justify-between mb-2">
+                        <span class="font-semibold">Player 4</span>
+                        <span class="bg-green-100 text-green-800 px-2 py-1 rounded text-sm">AI v2</span>
+                    </div>
+                    <div class="text-sm text-gray-600">
+                        <div>Total Score: <span class="font-semibold">5</span></div>
+                        <div>Rounds Won: <span class="font-semibold">0</span></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Round Details -->
+        <div class="space-y-6">
+            <!-- Round 1 -->
+            <div class="bg-white rounded-lg shadow-md p-6">
+                <div class="flex items-center justify-between mb-4">
+                    <h2 class="text-xl font-semibold">Round 1</h2>
+                    <span class="text-sm text-gray-500">Starter: Player 1 (has GENERAL_RED)</span>
+                </div>
+
+                <!-- Declaration Phase -->
+                <div class="mb-6">
+                    <h3 class="text-lg font-medium mb-3">Declaration Phase</h3>
+                    <div class="bg-gray-50 rounded p-4">
+                        <div class="grid grid-cols-4 gap-4 text-sm">
+                            <div>Player 1: <span class="font-semibold">2 piles</span></div>
+                            <div>Player 2: <span class="font-semibold">1 pile</span></div>
+                            <div>Player 3: <span class="font-semibold">3 piles</span></div>
+                            <div>Player 4: <span class="font-semibold">2 piles</span></div>
+                        </div>
+                        <div class="mt-2 text-sm text-gray-600">Total declared: 8 piles</div>
+                    </div>
+                </div>
+
+                <!-- Turn History -->
+                <div class="mb-6">
+                    <h3 class="text-lg font-medium mb-3">Turn History</h3>
+                    <div class="space-y-3">
+                        <!-- Turn 1 -->
+                        <div class="border rounded-lg p-4">
+                            <div class="flex items-center justify-between mb-2">
+                                <span class="font-medium">Turn 1</span>
+                                <span class="text-sm text-gray-600">Winner: Player 3</span>
+                            </div>
+                            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-2 text-sm">
+                                <div class="flex items-center justify-between">
+                                    <span>Player 1:</span>
+                                    <span class="font-mono piece-black">SOLDIER_BLACK(1)</span>
+                                </div>
+                                <div class="flex items-center justify-between">
+                                    <span>Player 2:</span>
+                                    <span class="font-mono piece-black">SOLDIER_BLACK(2)</span>
+                                </div>
+                                <div class="flex items-center justify-between bg-green-50 px-2 rounded">
+                                    <span>Player 3:</span>
+                                    <span class="font-mono piece-red">SOLDIER_RED(7)</span>
+                                </div>
+                                <div class="flex items-center justify-between">
+                                    <span>Player 4:</span>
+                                    <span class="font-mono piece-black">SOLDIER_BLACK(3)</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Turn 2 -->
+                        <div class="border rounded-lg p-4">
+                            <div class="flex items-center justify-between mb-2">
+                                <span class="font-medium">Turn 2</span>
+                                <span class="text-sm text-gray-600">Winner: Player 1</span>
+                            </div>
+                            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-2 text-sm">
+                                <div class="flex items-center justify-between">
+                                    <span>Player 3:</span>
+                                    <span class="font-mono">
+                                        <span class="piece-black">SOLDIER_BLACK(5)</span>,
+                                        <span class="piece-black">SOLDIER_BLACK(6)</span>
+                                    </span>
+                                </div>
+                                <div class="flex items-center justify-between">
+                                    <span>Player 4:</span>
+                                    <span class="font-mono">
+                                        <span class="piece-red">GENERAL_RED(13)</span>,
+                                        <span class="piece-black">GENERAL_BLACK(13)</span>
+                                    </span>
+                                </div>
+                                <div class="flex items-center justify-between bg-green-50 px-2 rounded">
+                                    <span>Player 1:</span>
+                                    <span class="font-mono piece-red piece-general">GENERAL_RED(14)</span> x2
+                                </div>
+                                <div class="flex items-center justify-between">
+                                    <span>Player 2:</span>
+                                    <span class="font-mono">
+                                        <span class="piece-black">SOLDIER_BLACK(8)</span>,
+                                        <span class="piece-red">SOLDIER_RED(9)</span>
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Additional turns would go here -->
+                    </div>
+                </div>
+
+                <!-- Round Summary -->
+                <div>
+                    <h3 class="text-lg font-medium mb-3">Round Summary</h3>
+                    <div class="bg-gray-50 rounded p-4">
+                        <table class="w-full text-sm">
+                            <thead>
+                                <tr class="border-b">
+                                    <th class="text-left py-2">Player</th>
+                                    <th class="text-center py-2">Declared</th>
+                                    <th class="text-center py-2">Captured</th>
+                                    <th class="text-center py-2">Difference</th>
+                                    <th class="text-center py-2">Multiplier</th>
+                                    <th class="text-right py-2">Score</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr class="border-b">
+                                    <td class="py-2">Player 1</td>
+                                    <td class="text-center">2</td>
+                                    <td class="text-center">2</td>
+                                    <td class="text-center text-green-600">0</td>
+                                    <td class="text-center">0x</td>
+                                    <td class="text-right font-semibold">0</td>
+                                </tr>
+                                <tr class="border-b">
+                                    <td class="py-2">Player 2</td>
+                                    <td class="text-center">1</td>
+                                    <td class="text-center">0</td>
+                                    <td class="text-center text-red-600">-1</td>
+                                    <td class="text-center">2x</td>
+                                    <td class="text-right font-semibold">-2</td>
+                                </tr>
+                                <tr class="border-b">
+                                    <td class="py-2">Player 3</td>
+                                    <td class="text-center">3</td>
+                                    <td class="text-center">5</td>
+                                    <td class="text-center text-yellow-600">+2</td>
+                                    <td class="text-center">1x</td>
+                                    <td class="text-right font-semibold">2</td>
+                                </tr>
+                                <tr>
+                                    <td class="py-2">Player 4</td>
+                                    <td class="text-center">2</td>
+                                    <td class="text-center">1</td>
+                                    <td class="text-center text-red-600">-1</td>
+                                    <td class="text-center">2x</td>
+                                    <td class="text-right font-semibold">-2</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Round 2 would be similar -->
+        </div>
+
+        <!-- Hand Viewer (Collapsible) -->
+        <div class="bg-white rounded-lg shadow-md p-6 mt-6">
+            <details class="cursor-pointer">
+                <summary class="text-lg font-medium mb-3 select-none">Player Hands Detail</summary>
+                <div class="space-y-4 mt-4">
+                    <!-- Player 1 Hand -->
+                    <div class="border rounded p-4">
+                        <h4 class="font-medium mb-2">Player 1 - Initial Hand</h4>
+                        <div class="flex flex-wrap gap-2">
+                            <span class="px-3 py-1 rounded bg-red-100 text-red-800 font-mono text-sm">GENERAL_RED(14)</span>
+                            <span class="px-3 py-1 rounded bg-red-100 text-red-800 font-mono text-sm">GENERAL_RED(14)</span>
+                            <span class="px-3 py-1 rounded bg-gray-100 text-gray-800 font-mono text-sm">GENERAL_BLACK(11)</span>
+                            <span class="px-3 py-1 rounded bg-gray-100 text-gray-800 font-mono text-sm">SOLDIER_BLACK(9)</span>
+                            <span class="px-3 py-1 rounded bg-gray-100 text-gray-800 font-mono text-sm">SOLDIER_BLACK(6)</span>
+                            <span class="px-3 py-1 rounded bg-gray-100 text-gray-800 font-mono text-sm">SOLDIER_BLACK(5)</span>
+                            <span class="px-3 py-1 rounded bg-gray-100 text-gray-800 font-mono text-sm">SOLDIER_BLACK(3)</span>
+                            <span class="px-3 py-1 rounded bg-gray-100 text-gray-800 font-mono text-sm">SOLDIER_BLACK(1)</span>
+                        </div>
+                    </div>
+                    <!-- Additional player hands would go here -->
+                </div>
+            </details>
+        </div>
+    </div>
+
+    <script>
+        // JavaScript to fetch and populate data would go here
+        // Example structure:
+        async function loadPlayHistory(roomId) {
+            try {
+                const response = await fetch(`/api/rooms/${roomId}/play-history`);
+                const data = await response.json();
+                // Populate the UI with the data
+                updateUI(data);
+            } catch (error) {
+                console.error('Failed to load play history:', error);
+            }
+        }
+
+        function updateUI(data) {
+            // Update room info, players, rounds, etc.
+            // This would dynamically generate the HTML based on the API response
+        }
+
+        // Load data on page load
+        // loadPlayHistory('C5E645');
+    </script>
+</body>
+</html>
