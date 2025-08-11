@@ -133,6 +133,41 @@ Metrics include:
 - Storage usage
 - Compression ratios
 
+### Play History API
+The Play History API provides comprehensive game history for analysis and debugging:
+
+#### Get Complete Play History
+```bash
+curl http://localhost:5050/api/rooms/{room_id}/play-history
+```
+
+Features:
+- **Persistent Storage**: Retrieves data from SQLite event store
+- **Works Without Memory**: Returns history even when room not in memory
+- **Survives Restarts**: Historical data always available
+- **5-Minute Cache**: Improves performance for repeated requests
+
+#### Get Specific Rounds
+```bash
+# Get rounds 1-5
+curl "http://localhost:5050/api/rooms/{room_id}/play-history/rounds?from=1&to=5"
+
+# Get compact format (30-50% smaller)
+curl "http://localhost:5050/api/rooms/{room_id}/play-history?format=compact"
+
+# Exclude AI analysis
+curl "http://localhost:5050/api/rooms/{room_id}/play-history?include_ai_analysis=false"
+```
+
+#### Performance Monitoring
+- **Warning Alert**: Response time > 1 second
+- **Critical Alert**: Response time > 3 seconds
+- Monitor via `/api/metrics/play-history`
+
+#### Data Sources
+1. **Primary**: SQLite event store (`game_events.db`)
+2. **Fallback**: In-memory game state (for active games)
+
 ### Automated Log Maintenance System
 
 The application includes an automated log maintenance system that prevents database growth and manages storage efficiently.
@@ -270,32 +305,38 @@ Logs can be aggregated using standard tools:
 - WebSocket message round-trip time
 - API endpoint latency
 - Database query duration
+- Play History API response time (target < 1s)
 
 **Throughput**
 - Messages per second
 - Concurrent games
 - Active connections
+- Play History API requests per minute
 
 **Resource Usage**
 - CPU utilization
 - Memory consumption
 - Network bandwidth
 - Disk I/O
+- SQLite database size (auto-managed)
 
 **Game Metrics**
 - Average game duration
 - Actions per minute
 - Bot vs human player ratio
 - Popular game times
+- Historical games retrieved via Play History API
 
 ### Performance Thresholds
 
 | Metric | Good | Warning | Critical |
 |--------|------|---------|----------|
 | WebSocket Latency | <50ms | 50-200ms | >200ms |
+| Play History API | <500ms | 1-3s | >3s |
 | CPU Usage | <60% | 60-80% | >80% |
 | Memory Usage | <70% | 70-85% | >85% |
 | Error Rate | <0.1% | 0.1-1% | >1% |
+| SQLite Cache Hit | >80% | 50-80% | <50% |
 
 ## Troubleshooting Production Issues
 
@@ -339,6 +380,20 @@ Logs can be aggregated using standard tools:
 - Optimize state machine transitions
 - Implement caching layer
 - Batch message broadcasts
+
+#### Play History API Performance Issues
+**Symptoms**: Slow response times, timeouts on history requests
+
+**Diagnosis**:
+1. Check SQLite database size
+2. Review cache hit rates
+3. Analyze query complexity
+
+**Solutions**:
+- Ensure automated log maintenance is running
+- Increase cache TTL if appropriate
+- Use compact format for large histories
+- Query specific rounds instead of full history
 
 ### Emergency Procedures
 

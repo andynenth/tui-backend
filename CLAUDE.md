@@ -192,6 +192,19 @@ Key classes **ALL ENTERPRISE**:
 - Frontend entry: `frontend/main.js`
 - Game rules documentation: `RULES.md`
 
+## Play History API
+
+The play history API provides comprehensive game history for analysis:
+- **Main endpoint**: `/api/rooms/{room_id}/play-history` - Get complete game history
+- **Range endpoint**: `/api/rooms/{room_id}/play-history/rounds?from=1&to=5` - Get specific rounds
+- **Query parameters**:
+  - `rounds`: Comma-separated round numbers (e.g., "1,3,5")
+  - `include_hands`: Include/exclude hand details (default: true)
+  - `include_ai_analysis`: Include/exclude AI reasoning (default: true)
+  - `format`: "full" or "compact" response format
+- **Performance monitoring**: Alerts trigger if response time exceeds 1s (warning) or 3s (critical)
+- **Documentation**: See `backend/api/docs/PLAY_HISTORY_API.md` for complete details
+
 ## Important Architecture Clarifications
 
 ### WebSocket vs REST Usage
@@ -204,7 +217,9 @@ Key classes **ALL ENTERPRISE**:
   - Health monitoring: `/api/health`, `/api/health/detailed`, `/api/health/metrics`
   - Debugging: `/api/debug/room-stats`
   - Admin tools: `/api/event-store/*`, `/api/recovery/*`, `/api/system/stats`
-  - NO game operations whatsoever
+  - Play history: `/api/rooms/{room_id}/play-history` (read-only game analysis)
+  - Monitoring: `/api/metrics`, `/api/alerts`, `/api/health/performance`
+  - NO game operations whatsoever (play history is read-only)
 
 ## Claude Memories
 

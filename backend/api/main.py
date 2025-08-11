@@ -20,13 +20,19 @@ from backend.api.middleware import (
 from dotenv import (  # Library to load environment variables from a .env file.
     load_dotenv,
 )
-from fastapi import FastAPI  # Import FastAPI framework for building the API.
+from fastapi import FastAPI, HTTPException  # Import FastAPI framework for building the API.
 from fastapi.middleware.cors import (  # Middleware for handling Cross-Origin Resource Sharing (CORS).
     CORSMiddleware,
 )
 from fastapi.responses import FileResponse  # Used to return a file as a response.
 from fastapi.staticfiles import StaticFiles  # Utility to serve static files.
+from fastapi.exceptions import RequestValidationError
 from backend.api.middleware.static_cache import NoCacheStaticFiles  # Custom static files handler with cache control
+from backend.api.middleware.error_handlers import (
+    custom_http_exception_handler,
+    custom_validation_exception_handler
+)
+from backend.api.middleware.logging_middleware import StructuredLoggingMiddleware
 
 # ✅ Load environment variables from the .env file.
 # This makes configuration values available via os.getenv().
@@ -141,6 +147,10 @@ app = FastAPI(
     ],
 )
 
+# ✅ Add custom exception handlers for standardized error responses
+app.add_exception_handler(HTTPException, custom_http_exception_handler)
+app.add_exception_handler(RequestValidationError, custom_validation_exception_handler)
+
 # ✅ Add CORS middleware to the application.
 # This is crucial for allowing the frontend (running on a different origin) to communicate with the backend.
 app.add_middleware(
@@ -150,6 +160,10 @@ app.add_middleware(
     allow_methods=["*"],  # Allows all HTTP methods (GET, POST, PUT, DELETE, etc.).
     allow_headers=["*"],  # Allows all HTTP headers.
 )
+
+# ✅ Add Structured Logging middleware
+# This provides detailed request/response logging for monitoring
+app.add_middleware(StructuredLoggingMiddleware)
 
 # ✅ Add Rate Limiting middleware (if enabled)
 # This protects the API from abuse and ensures fair usage

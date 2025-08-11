@@ -348,6 +348,26 @@ class TurnState(GameState):
             self.logger.info(
                 f"Removed {len(pieces)} pieces from {action.player_name}'s hand"
             )
+            
+            # Broadcast enhanced play event with hand state for play history
+            await self.broadcast_custom_event(
+                event_type="play_with_context",
+                data={
+                    "round_number": game.round_number,
+                    "turn_number": game.turn_number,
+                    "player": action.player_name,
+                    "pieces_played": [
+                        {"kind": p.kind, "point": p.point} for p in pieces
+                    ],
+                    "hand_after": [
+                        {"kind": p.kind, "point": p.point} for p in player.hand
+                    ],
+                    "captured_count": getattr(player, "captured_piles", 0),
+                    "declared_count": getattr(player, "declared", 0),
+                    "play_type": play_type,
+                    "play_value": play_value
+                }
+            )
         else:
             self.logger.error(
                 f"Could not find player {action.player_name} to remove pieces"

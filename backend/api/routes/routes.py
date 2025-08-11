@@ -25,6 +25,12 @@ from backend.engine.state_machine.core import ActionType, GameAction
 # Import debug routes
 from . import debug
 
+# Import play history routes
+from . import play_history
+
+# Import monitoring routes
+from . import monitoring
+
 # Import EventStore for recovery endpoints
 try:
     from backend.api.services.event_store import event_store
@@ -43,6 +49,12 @@ bot_manager = shared_bot_manager
 
 # Mount debug router
 router.include_router(debug.router)
+
+# Mount play history router
+router.include_router(play_history.router)
+
+# Mount monitoring router
+router.include_router(monitoring.router)
 
 # REMOVED: All redeal controller endpoints - state machine handles redeal logic
 

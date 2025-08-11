@@ -148,6 +148,44 @@ class PreparationState(GameState):
         # game._deal_weak_hand([0, 1])                                   # Players 1 & 2 get weak hands
         # game._deal_weak_hand([0], max_weak_points=7, limit=1)          # Player 1 weak, max 1 redeal
 
+        # Store complete hand information in event store for play history
+        hands_data = {}
+        starter_name = None
+        starter_reason = None
+        
+        # Collect all hands data
+        for player in game.players:
+            player_name = getattr(player, "name", str(player))
+            hands_data[player_name] = [
+                {"kind": piece.kind, "point": piece.point} 
+                for piece in player.hand
+            ]
+            
+            # Check for GENERAL_RED if round 1
+            if game.round_number == 1 and not starter_name:
+                for piece in player.hand:
+                    if piece.kind == "GENERAL_RED":
+                        starter_name = player_name
+                        starter_reason = "has_general_red"
+                        break
+        
+        # If no GENERAL_RED found (shouldn't happen), use first player
+        if game.round_number == 1 and not starter_name:
+            starter_name = getattr(game.players[0], "name", str(game.players[0]))
+            starter_reason = "default"
+        
+        # Broadcast hands_dealt event for complete game history
+        await self.broadcast_custom_event(
+            event_type="hands_dealt",
+            data={
+                "round_number": game.round_number,
+                "hands": hands_data,
+                "starter": starter_name,
+                "starter_reason": starter_reason,
+                "redeal_multiplier": getattr(game, "redeal_multiplier", 1)
+            }
+        )
+
         self.initial_deal_complete = True
 
         # Check for weak hands
