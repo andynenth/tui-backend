@@ -1,0 +1,830 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Liap Tui - Interactive Replay (Lichess Style)</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background-color: #161512;
+            color: #bababa;
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+            display: grid;
+            grid-template-columns: 1fr 400px;
+            gap: 20px;
+        }
+
+        @media (max-width: 1200px) {
+            .container {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Left Panel - Game Board */
+        .game-panel {
+            background-color: #262522;
+            border-radius: 8px;
+            padding: 20px;
+        }
+
+        .board-container {
+            background-color: #1a1815;
+            border-radius: 8px;
+            padding: 30px;
+            margin-bottom: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .game-state {
+            width: 100%;
+            max-width: 600px;
+            aspect-ratio: 1;
+            background: linear-gradient(45deg, #2a2a2a 25%, #333 25%, #333 50%, #2a2a2a 50%, #2a2a2a 75%, #333 75%, #333);
+            background-size: 20px 20px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            margin-bottom: 20px;
+        }
+
+        .pile-display {
+            background-color: rgba(0,0,0,0.5);
+            padding: 30px;
+            border-radius: 12px;
+            text-align: center;
+            backdrop-filter: blur(5px);
+        }
+
+        .pile-count {
+            font-size: 48px;
+            font-weight: bold;
+            color: #fff;
+            margin-bottom: 10px;
+        }
+
+        .pile-label {
+            font-size: 14px;
+            color: #999;
+            text-transform: uppercase;
+        }
+
+        .current-player {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            background-color: #3692e7;
+            color: white;
+            padding: 8px 16px;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        /* Player Hands Display */
+        .players-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .player-hand {
+            background-color: #1a1815;
+            padding: 15px;
+            border-radius: 8px;
+            border: 2px solid transparent;
+            transition: border-color 0.2s;
+        }
+
+        .player-hand.active {
+            border-color: #3692e7;
+        }
+
+        .player-hand-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .player-name {
+            font-weight: 500;
+            color: #fff;
+        }
+
+        .hand-count {
+            font-size: 12px;
+            color: #999;
+        }
+
+        .hand-pieces {
+            display: flex;
+            gap: 5px;
+            flex-wrap: wrap;
+        }
+
+        .piece-mini {
+            width: 30px;
+            height: 30px;
+            background-color: #333;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 10px;
+            font-weight: bold;
+            color: #fff;
+        }
+
+        .piece-red {
+            background-color: #d85040;
+        }
+
+        .piece-black {
+            background-color: #333;
+            border: 1px solid #555;
+        }
+
+        /* Controls */
+        .controls {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 20px;
+            background-color: #1a1815;
+            border-radius: 8px;
+            justify-content: center;
+        }
+
+        .control-btn {
+            background-color: #333;
+            border: none;
+            color: #bababa;
+            width: 40px;
+            height: 40px;
+            border-radius: 6px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            transition: all 0.2s;
+        }
+
+        .control-btn:hover {
+            background-color: #444;
+            color: #fff;
+        }
+
+        .control-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .play-pause-btn {
+            width: 50px;
+            height: 50px;
+            font-size: 20px;
+            background-color: #3692e7;
+            color: white;
+        }
+
+        .play-pause-btn:hover {
+            background-color: #2980b9;
+        }
+
+        .turn-display {
+            margin: 0 20px;
+            font-size: 16px;
+            color: #fff;
+            min-width: 100px;
+            text-align: center;
+        }
+
+        .speed-control {
+            margin-left: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .speed-select {
+            background-color: #333;
+            color: #bababa;
+            border: none;
+            padding: 8px 12px;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+
+        /* Right Panel - Move List */
+        .side-panel {
+            background-color: #262522;
+            border-radius: 8px;
+            padding: 20px;
+            max-height: calc(100vh - 40px);
+            overflow-y: auto;
+        }
+
+        .panel-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #333;
+        }
+
+        .panel-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #fff;
+        }
+
+        .view-toggle {
+            display: flex;
+            gap: 5px;
+        }
+
+        .toggle-btn {
+            background-color: #333;
+            border: none;
+            color: #bababa;
+            padding: 6px 12px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 12px;
+            transition: all 0.2s;
+        }
+
+        .toggle-btn.active {
+            background-color: #3692e7;
+            color: white;
+        }
+
+        /* Move List */
+        .moves-container {
+            margin-bottom: 30px;
+        }
+
+        .turn-group {
+            margin-bottom: 20px;
+            background-color: #1a1815;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .turn-header {
+            background-color: #333;
+            padding: 10px 15px;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: background-color 0.2s;
+        }
+
+        .turn-header:hover {
+            background-color: #3a3a3a;
+        }
+
+        .turn-header.active {
+            background-color: #3692e7;
+            color: white;
+        }
+
+        .turn-moves {
+            padding: 15px;
+        }
+
+        .move-item {
+            padding: 10px;
+            margin-bottom: 8px;
+            background-color: #262522;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .move-item:hover {
+            background-color: #333;
+            transform: translateX(5px);
+        }
+
+        .move-item.current {
+            background-color: #3692e7;
+            color: white;
+        }
+
+        .move-player {
+            font-weight: 500;
+        }
+
+        .move-pieces {
+            font-size: 14px;
+            color: #999;
+        }
+
+        .move-item.current .move-pieces {
+            color: rgba(255,255,255,0.8);
+        }
+
+        .winner-badge {
+            background-color: #4caf50;
+            color: white;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 11px;
+            font-weight: bold;
+        }
+
+        /* AI Analysis */
+        .analysis-section {
+            background-color: #1a1815;
+            padding: 20px;
+            border-radius: 8px;
+            margin-top: 20px;
+        }
+
+        .analysis-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .ai-icon {
+            width: 30px;
+            height: 30px;
+            background-color: #9b59b6;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            color: white;
+        }
+
+        .analysis-title {
+            font-size: 16px;
+            font-weight: 500;
+            color: #fff;
+        }
+
+        .analysis-content {
+            font-size: 14px;
+            line-height: 1.6;
+            color: #bababa;
+        }
+
+        .suggestion-box {
+            background-color: #262522;
+            padding: 15px;
+            border-radius: 6px;
+            margin-top: 15px;
+            border-left: 3px solid #3692e7;
+        }
+
+        .suggestion-label {
+            font-size: 12px;
+            color: #3692e7;
+            text-transform: uppercase;
+            margin-bottom: 5px;
+        }
+
+        .suggestion-move {
+            font-size: 16px;
+            font-weight: 500;
+            color: #fff;
+        }
+
+        /* Evaluation Bar */
+        .evaluation-bar {
+            background-color: #1a1815;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 20px;
+        }
+
+        .eval-label {
+            font-size: 12px;
+            color: #999;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+        }
+
+        .eval-bar-container {
+            height: 30px;
+            background-color: #000;
+            border-radius: 15px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .eval-bar-fill {
+            position: absolute;
+            left: 0;
+            top: 0;
+            height: 100%;
+            background: linear-gradient(90deg, #d85040, #3692e7);
+            transition: width 0.3s ease;
+        }
+
+        .eval-text {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 14px;
+            font-weight: bold;
+            color: white;
+            text-shadow: 0 0 4px rgba(0,0,0,0.5);
+        }
+
+        /* Keyboard shortcuts help */
+        .shortcuts-help {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background-color: #333;
+            padding: 10px 15px;
+            border-radius: 6px;
+            font-size: 12px;
+            color: #999;
+        }
+
+        .shortcut {
+            margin-right: 15px;
+        }
+
+        .shortcut-key {
+            background-color: #444;
+            padding: 2px 6px;
+            border-radius: 3px;
+            color: #fff;
+            font-family: monospace;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Left Panel - Game Board -->
+        <div class="game-panel">
+            <div class="board-container">
+                <div class="game-state">
+                    <div class="current-player">Phil AI's Turn</div>
+                    <div class="pile-display">
+                        <div class="pile-count">12</div>
+                        <div class="pile-label">Pieces in Pile</div>
+                    </div>
+                </div>
+
+                <!-- Player Hands -->
+                <div class="players-grid">
+                    <div class="player-hand">
+                        <div class="player-hand-header">
+                            <span class="player-name">Daniel</span>
+                            <span class="hand-count">6 pieces</span>
+                        </div>
+                        <div class="hand-pieces">
+                            <div class="piece-mini piece-red">G</div>
+                            <div class="piece-mini piece-red">H</div>
+                            <div class="piece-mini piece-red">S</div>
+                            <div class="piece-mini piece-black">C</div>
+                            <div class="piece-mini piece-black">S</div>
+                            <div class="piece-mini piece-black">S</div>
+                        </div>
+                    </div>
+
+                    <div class="player-hand active">
+                        <div class="player-hand-header">
+                            <span class="player-name">Phil AI</span>
+                            <span class="hand-count">6 pieces</span>
+                        </div>
+                        <div class="hand-pieces">
+                            <div class="piece-mini piece-red">A</div>
+                            <div class="piece-mini piece-red">E</div>
+                            <div class="piece-mini piece-red">C</div>
+                            <div class="piece-mini piece-black">A</div>
+                            <div class="piece-mini piece-black">H</div>
+                            <div class="piece-mini piece-black">C</div>
+                        </div>
+                    </div>
+
+                    <div class="player-hand">
+                        <div class="player-hand-header">
+                            <span class="player-name">Doyle Bot</span>
+                            <span class="hand-count">6 pieces</span>
+                        </div>
+                        <div class="hand-pieces">
+                            <div class="piece-mini piece-red">A</div>
+                            <div class="piece-mini piece-red">E</div>
+                            <div class="piece-mini piece-red">C</div>
+                            <div class="piece-mini piece-black">G</div>
+                            <div class="piece-mini piece-black">C</div>
+                            <div class="piece-mini piece-black">C</div>
+                        </div>
+                    </div>
+
+                    <div class="player-hand">
+                        <div class="player-hand-header">
+                            <span class="player-name">Vanessa</span>
+                            <span class="hand-count">6 pieces</span>
+                        </div>
+                        <div class="hand-pieces">
+                            <div class="piece-mini piece-red">H</div>
+                            <div class="piece-mini piece-red">C</div>
+                            <div class="piece-mini piece-red">C</div>
+                            <div class="piece-mini piece-black">A</div>
+                            <div class="piece-mini piece-black">E</div>
+                            <div class="piece-mini piece-black">H</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Controls -->
+            <div class="controls">
+                <button class="control-btn" onclick="goToStart()">⏮</button>
+                <button class="control-btn" onclick="goBack()">◀</button>
+                <button class="control-btn play-pause-btn" onclick="togglePlay()">▶</button>
+                <button class="control-btn" onclick="goForward()">▶</button>
+                <button class="control-btn" onclick="goToEnd()">⏭</button>
+                <div class="turn-display">Turn 3/8</div>
+                <div class="speed-control">
+                    <label style="color: #999; font-size: 14px;">Speed:</label>
+                    <select class="speed-select">
+                        <option value="0.5">0.5x</option>
+                        <option value="1" selected>1x</option>
+                        <option value="2">2x</option>
+                        <option value="4">4x</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Evaluation Bar -->
+            <div class="evaluation-bar">
+                <div class="eval-label">Position Evaluation</div>
+                <div class="eval-bar-container">
+                    <div class="eval-bar-fill" style="width: 65%;"></div>
+                    <div class="eval-text">Phil AI +2.3</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Right Panel - Move List and Analysis -->
+        <div class="side-panel">
+            <div class="panel-header">
+                <h2 class="panel-title">Move List</h2>
+                <div class="view-toggle">
+                    <button class="toggle-btn active">Moves</button>
+                    <button class="toggle-btn">Analysis</button>
+                    <button class="toggle-btn">Stats</button>
+                </div>
+            </div>
+
+            <!-- Move List -->
+            <div class="moves-container">
+                <div class="turn-group">
+                    <div class="turn-header">
+                        <span>Turn 1</span>
+                        <span class="winner-badge">Daniel wins</span>
+                    </div>
+                    <div class="turn-moves">
+                        <div class="move-item">
+                            <span class="move-player">1. Daniel</span>
+                            <span class="move-pieces">SOLDIER_RED (1)</span>
+                        </div>
+                        <div class="move-item">
+                            <span class="move-player">2. Phil AI</span>
+                            <span class="move-pieces">SOLDIER_RED (1)</span>
+                        </div>
+                        <div class="move-item">
+                            <span class="move-player">3. Doyle Bot</span>
+                            <span class="move-pieces">SOLDIER_RED (1)</span>
+                        </div>
+                        <div class="move-item">
+                            <span class="move-player">4. Vanessa</span>
+                            <span class="move-pieces">SOLDIER_RED (1)</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="turn-group">
+                    <div class="turn-header">
+                        <span>Turn 2</span>
+                        <span class="winner-badge">Daniel wins</span>
+                    </div>
+                    <div class="turn-moves">
+                        <div class="move-item">
+                            <span class="move-player">1. Daniel</span>
+                            <span class="move-pieces">GENERAL_RED ★</span>
+                        </div>
+                        <div class="move-item">
+                            <span class="move-player">2. Phil AI</span>
+                            <span class="move-pieces">CHARIOT_RED (20)</span>
+                        </div>
+                        <div class="move-item">
+                            <span class="move-player">3. Doyle Bot</span>
+                            <span class="move-pieces">CHARIOT_RED (20)</span>
+                        </div>
+                        <div class="move-item">
+                            <span class="move-player">4. Vanessa</span>
+                            <span class="move-pieces">CANNON_RED (15)</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="turn-group">
+                    <div class="turn-header active">
+                        <span>Turn 3</span>
+                        <span style="color: #999; font-size: 12px;">In Progress</span>
+                    </div>
+                    <div class="turn-moves">
+                        <div class="move-item">
+                            <span class="move-player">1. Daniel</span>
+                            <span class="move-pieces">HORSE_RED (40)</span>
+                        </div>
+                        <div class="move-item current">
+                            <span class="move-player">2. Phil AI</span>
+                            <span class="move-pieces">Thinking...</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- AI Analysis -->
+            <div class="analysis-section">
+                <div class="analysis-header">
+                    <div class="ai-icon">🤖</div>
+                    <h3 class="analysis-title">AI Analysis</h3>
+                </div>
+                <div class="analysis-content">
+                    Phil AI is considering options after Daniel's HORSE_RED play. The AI has strong pieces remaining including ADVISOR_RED (60) and ADVISOR_BLACK (70).
+                </div>
+                <div class="suggestion-box">
+                    <div class="suggestion-label">Best Move</div>
+                    <div class="suggestion-move">Play ADVISOR_RED (60)</div>
+                </div>
+                <div class="analysis-content" style="margin-top: 15px; font-style: italic; color: #999;">
+                    "Playing ADVISOR_RED establishes dominance in this pile while preserving ADVISOR_BLACK for a guaranteed future pile win."
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Keyboard shortcuts help -->
+    <div class="shortcuts-help">
+        <span class="shortcut"><span class="shortcut-key">←</span> Previous</span>
+        <span class="shortcut"><span class="shortcut-key">→</span> Next</span>
+        <span class="shortcut"><span class="shortcut-key">Space</span> Play/Pause</span>
+        <span class="shortcut"><span class="shortcut-key">Shift+←</span> First</span>
+        <span class="shortcut"><span class="shortcut-key">Shift+→</span> Last</span>
+    </div>
+
+    <script>
+        let isPlaying = false;
+        let currentMove = 5; // Current position in the game
+        const totalMoves = 32; // Total moves in the game
+
+        function togglePlay() {
+            isPlaying = !isPlaying;
+            const playBtn = document.querySelector('.play-pause-btn');
+            playBtn.textContent = isPlaying ? '⏸' : '▶';
+            
+            if (isPlaying) {
+                playGame();
+            }
+        }
+
+        function playGame() {
+            if (!isPlaying || currentMove >= totalMoves) {
+                isPlaying = false;
+                document.querySelector('.play-pause-btn').textContent = '▶';
+                return;
+            }
+
+            goForward();
+            const speed = parseFloat(document.querySelector('.speed-select').value);
+            setTimeout(() => playGame(), 1000 / speed);
+        }
+
+        function goToStart() {
+            currentMove = 0;
+            updateDisplay();
+        }
+
+        function goBack() {
+            if (currentMove > 0) {
+                currentMove--;
+                updateDisplay();
+            }
+        }
+
+        function goForward() {
+            if (currentMove < totalMoves) {
+                currentMove++;
+                updateDisplay();
+            }
+        }
+
+        function goToEnd() {
+            currentMove = totalMoves;
+            updateDisplay();
+        }
+
+        function updateDisplay() {
+            // Update turn display
+            const turnNum = Math.floor(currentMove / 4) + 1;
+            document.querySelector('.turn-display').textContent = `Turn ${turnNum}/8`;
+            
+            // Update evaluation bar (simulated)
+            const evalPercent = 50 + (Math.sin(currentMove / 5) * 30);
+            document.querySelector('.eval-bar-fill').style.width = evalPercent + '%';
+            
+            // Update current move highlighting
+            document.querySelectorAll('.move-item').forEach((item, index) => {
+                item.classList.toggle('current', index === currentMove - 1);
+            });
+            
+            // Update pile count (simulated)
+            const pileCount = 4 + currentMove;
+            document.querySelector('.pile-count').textContent = pileCount;
+            
+            console.log(`Current position: Move ${currentMove} of ${totalMoves}`);
+        }
+
+        // Keyboard controls
+        document.addEventListener('keydown', (e) => {
+            switch(e.key) {
+                case 'ArrowLeft':
+                    e.preventDefault();
+                    if (e.shiftKey) {
+                        goToStart();
+                    } else {
+                        goBack();
+                    }
+                    break;
+                case 'ArrowRight':
+                    e.preventDefault();
+                    if (e.shiftKey) {
+                        goToEnd();
+                    } else {
+                        goForward();
+                    }
+                    break;
+                case ' ':
+                    e.preventDefault();
+                    togglePlay();
+                    break;
+            }
+        });
+
+        // Move item click handling
+        document.querySelectorAll('.move-item').forEach((item, index) => {
+            item.addEventListener('click', () => {
+                currentMove = index + 1;
+                updateDisplay();
+            });
+        });
+
+        // Turn header toggle
+        document.querySelectorAll('.turn-header').forEach(header => {
+            header.addEventListener('click', () => {
+                header.classList.toggle('active');
+                // In a real app, this would expand/collapse the turn moves
+            });
+        });
+
+        // View toggle
+        document.querySelectorAll('.toggle-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.querySelectorAll('.toggle-btn').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                // In a real app, this would switch between different views
+            });
+        });
+    </script>
+</body>
+</html>

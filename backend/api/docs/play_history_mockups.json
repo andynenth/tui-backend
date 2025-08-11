@@ -1,0 +1,1164 @@
+{
+  "mockup_1_poker_inspired": {
+    "room_id": "TEXAS-HOLDEM-2024",
+    "total_rounds": 3,
+    "players": {
+      "Daniel": {
+        "player_id": "daniel_n",
+        "player_name": "Daniel",
+        "player_type": "human",
+        "ai_version": null
+      },
+      "Phil AI": {
+        "player_id": "phil_bot",
+        "player_name": "Phil AI",
+        "player_type": "ai",
+        "ai_version": "v3.2"
+      },
+      "Doyle Bot": {
+        "player_id": "doyle_bot",
+        "player_name": "Doyle Bot",
+        "player_type": "ai",
+        "ai_version": "v3.2"
+      },
+      "Vanessa": {
+        "player_id": "vanessa_s",
+        "player_name": "Vanessa",
+        "player_type": "human",
+        "ai_version": null
+      }
+    },
+    "rounds": [
+      {
+        "round_number": 1,
+        "initial_state": {
+          "starter": {
+            "player_id": "daniel_n",
+            "player_name": "Daniel",
+            "reason": "red_general",
+            "highest_card": "GENERAL_RED"
+          },
+          "player_order": ["Daniel", "Phil AI", "Doyle Bot", "Vanessa"]
+        },
+        "hands_dealt": {
+          "Daniel": [
+            {"kind": "GENERAL_RED", "point": 9999},
+            {"kind": "HORSE_RED", "point": 40},
+            {"kind": "SOLDIER_RED", "point": 1},
+            {"kind": "SOLDIER_RED", "point": 1},
+            {"kind": "CANNON_BLACK", "point": 30},
+            {"kind": "SOLDIER_BLACK", "point": 2},
+            {"kind": "SOLDIER_BLACK", "point": 2},
+            {"kind": "SOLDIER_BLACK", "point": 2}
+          ],
+          "Phil AI": [
+            {"kind": "ADVISOR_RED", "point": 60},
+            {"kind": "ELEPHANT_RED", "point": 50},
+            {"kind": "CHARIOT_RED", "point": 20},
+            {"kind": "SOLDIER_RED", "point": 1},
+            {"kind": "ADVISOR_BLACK", "point": 70},
+            {"kind": "HORSE_BLACK", "point": 45},
+            {"kind": "CANNON_BLACK", "point": 30},
+            {"kind": "SOLDIER_BLACK", "point": 2}
+          ],
+          "Doyle Bot": [
+            {"kind": "ADVISOR_RED", "point": 60},
+            {"kind": "ELEPHANT_RED", "point": 50},
+            {"kind": "CHARIOT_RED", "point": 20},
+            {"kind": "SOLDIER_RED", "point": 1},
+            {"kind": "GENERAL_BLACK", "point": 10000},
+            {"kind": "CHARIOT_BLACK", "point": 25},
+            {"kind": "CHARIOT_BLACK", "point": 25},
+            {"kind": "SOLDIER_BLACK", "point": 2}
+          ],
+          "Vanessa": [
+            {"kind": "HORSE_RED", "point": 40},
+            {"kind": "CANNON_RED", "point": 15},
+            {"kind": "CANNON_RED", "point": 15},
+            {"kind": "SOLDIER_RED", "point": 1},
+            {"kind": "ADVISOR_BLACK", "point": 70},
+            {"kind": "ELEPHANT_BLACK", "point": 55},
+            {"kind": "HORSE_BLACK", "point": 45},
+            {"kind": "CANNON_BLACK", "point": 30}
+          ]
+        },
+        "declaration_phase": {
+          "declarations": [
+            {
+              "player_id": "daniel_n",
+              "declared": 1,
+              "position": 0,
+              "strategy_notes": "Strong general, minimal pile strategy"
+            },
+            {
+              "player_id": "phil_bot",
+              "declared": 3,
+              "position": 1,
+              "strategy_notes": "Balanced high cards, multi-pile approach",
+              "ai_reasoning": "With ADVISOR_RED(60) and ADVISOR_BLACK(70), I can control at least 2 piles. Declaring 3 to pressure opponents."
+            },
+            {
+              "player_id": "doyle_bot",
+              "declared": 2,
+              "position": 2,
+              "strategy_notes": "Black general protection strategy",
+              "ai_reasoning": "GENERAL_BLACK must win one pile. Second pile achievable with ADVISOR_RED(60) or ELEPHANT_RED(50)."
+            },
+            {
+              "player_id": "vanessa_s",
+              "declared": 2,
+              "position": 3,
+              "strategy_notes": null
+            }
+          ],
+          "total_declared": 8,
+          "pile_room_calculation": {
+            "Daniel": 7,
+            "Phil AI": 5,
+            "Doyle Bot": 6,
+            "Vanessa": 6
+          }
+        },
+        "turn_history": [
+          {
+            "turn_number": 1,
+            "plays": [
+              {
+                "player_id": "daniel_n",
+                "player_name": "Daniel",
+                "pieces_played": [{"kind": "SOLDIER_RED", "point": 1}],
+                "play_type": "SINGLE",
+                "hand_before_size": 8,
+                "hand_after_size": 7,
+                "captured_count": 0,
+                "declared_count": 1,
+                "ai_decision_analysis": null
+              },
+              {
+                "player_id": "phil_bot",
+                "player_name": "Phil AI",
+                "pieces_played": [{"kind": "SOLDIER_RED", "point": 1}],
+                "play_type": "SINGLE",
+                "hand_before_size": 8,
+                "hand_after_size": 7,
+                "captured_count": 0,
+                "declared_count": 3,
+                "ai_decision_analysis": "Matching minimum bet to stay in pile. Saving high cards for critical piles."
+              },
+              {
+                "player_id": "doyle_bot",
+                "player_name": "Doyle Bot",
+                "pieces_played": [{"kind": "SOLDIER_RED", "point": 1}],
+                "play_type": "SINGLE",
+                "hand_before_size": 8,
+                "hand_after_size": 7,
+                "captured_count": 0,
+                "declared_count": 2,
+                "ai_decision_analysis": "Minimal investment in first pile. Protecting GENERAL_BLACK for later."
+              },
+              {
+                "player_id": "vanessa_s",
+                "player_name": "Vanessa",
+                "pieces_played": [{"kind": "SOLDIER_RED", "point": 1}],
+                "play_type": "SINGLE",
+                "hand_before_size": 8,
+                "hand_after_size": 7,
+                "captured_count": 0,
+                "declared_count": 2,
+                "ai_decision_analysis": null
+              }
+            ],
+            "winner": {
+              "player_id": "daniel_n",
+              "player_name": "Daniel",
+              "winning_play": [{"kind": "SOLDIER_RED", "point": 1}],
+              "pieces_captured": 4,
+              "reason": "First player advantage on tie"
+            },
+            "next_starter": "Daniel",
+            "game_state_after": {
+              "Daniel": {"captured": 4, "declared": 1, "hand_size": 7},
+              "Phil AI": {"captured": 0, "declared": 3, "hand_size": 7},
+              "Doyle Bot": {"captured": 0, "declared": 2, "hand_size": 7},
+              "Vanessa": {"captured": 0, "declared": 2, "hand_size": 7}
+            }
+          },
+          {
+            "turn_number": 2,
+            "plays": [
+              {
+                "player_id": "daniel_n",
+                "player_name": "Daniel",
+                "pieces_played": [{"kind": "GENERAL_RED", "point": 9999}],
+                "play_type": "SINGLE",
+                "hand_before_size": 7,
+                "hand_after_size": 6,
+                "captured_count": 4,
+                "declared_count": 1,
+                "ai_decision_analysis": null
+              },
+              {
+                "player_id": "phil_bot",
+                "player_name": "Phil AI",
+                "pieces_played": [{"kind": "CHARIOT_RED", "point": 20}],
+                "play_type": "SINGLE",
+                "hand_before_size": 7,
+                "hand_after_size": 6,
+                "captured_count": 0,
+                "declared_count": 3,
+                "ai_decision_analysis": "Cannot beat GENERAL_RED. Playing low value to minimize loss."
+              },
+              {
+                "player_id": "doyle_bot",
+                "player_name": "Doyle Bot",
+                "pieces_played": [{"kind": "CHARIOT_RED", "point": 20}],
+                "play_type": "SINGLE",
+                "hand_before_size": 7,
+                "hand_after_size": 6,
+                "captured_count": 0,
+                "declared_count": 2,
+                "ai_decision_analysis": "Folding against GENERAL_RED. Saving GENERAL_BLACK for guaranteed pile."
+              },
+              {
+                "player_id": "vanessa_s",
+                "player_name": "Vanessa",
+                "pieces_played": [{"kind": "CANNON_RED", "point": 15}],
+                "play_type": "SINGLE",
+                "hand_before_size": 7,
+                "hand_after_size": 6,
+                "captured_count": 0,
+                "declared_count": 2,
+                "ai_decision_analysis": null
+              }
+            ],
+            "winner": {
+              "player_id": "daniel_n",
+              "player_name": "Daniel",
+              "winning_play": [{"kind": "GENERAL_RED", "point": 9999}],
+              "pieces_captured": 4,
+              "reason": "Highest card - GENERAL_RED"
+            },
+            "next_starter": "Daniel",
+            "game_state_after": {
+              "Daniel": {"captured": 8, "declared": 1, "hand_size": 6},
+              "Phil AI": {"captured": 0, "declared": 3, "hand_size": 6},
+              "Doyle Bot": {"captured": 0, "declared": 2, "hand_size": 6},
+              "Vanessa": {"captured": 0, "declared": 2, "hand_size": 6}
+            }
+          }
+        ],
+        "round_summary": {
+          "total_turns": 8,
+          "final_captures": {
+            "Daniel": {"captured": 8, "declared": 1, "difference": 7},
+            "Phil AI": {"captured": 3, "declared": 3, "difference": 0},
+            "Doyle Bot": {"captured": 2, "declared": 2, "difference": 0},
+            "Vanessa": {"captured": 2, "declared": 2, "difference": 0}
+          },
+          "scoring": {
+            "Daniel": {
+              "points": 14,
+              "multiplier": 1,
+              "reason": "overcapture",
+              "calculation": "(8-1) * 2 = 14"
+            },
+            "Phil AI": {
+              "points": 6,
+              "multiplier": 2,
+              "reason": "exact_match",
+              "calculation": "3 * 2 = 6"
+            },
+            "Doyle Bot": {
+              "points": 4,
+              "multiplier": 2,
+              "reason": "exact_match",
+              "calculation": "2 * 2 = 4"
+            },
+            "Vanessa": {
+              "points": 4,
+              "multiplier": 2,
+              "reason": "exact_match",
+              "calculation": "2 * 2 = 4"
+            }
+          },
+          "cumulative_scores": {
+            "Daniel": 14,
+            "Phil AI": 6,
+            "Doyle Bot": 4,
+            "Vanessa": 4
+          }
+        }
+      }
+    ]
+  },
+
+  "mockup_2_chess_inspired": {
+    "room_id": "CHESS-MASTERS-2024",
+    "total_rounds": 2,
+    "players": {
+      "Magnus": {
+        "player_id": "magnus_c",
+        "player_name": "Magnus",
+        "player_type": "human",
+        "ai_version": null
+      },
+      "Stockfish AI": {
+        "player_id": "stockfish_15",
+        "player_name": "Stockfish AI",
+        "player_type": "ai",
+        "ai_version": "v4.0"
+      },
+      "AlphaZero": {
+        "player_id": "alpha_zero",
+        "player_name": "AlphaZero",
+        "player_type": "ai",
+        "ai_version": "v4.1"
+      },
+      "Hikaru": {
+        "player_id": "hikaru_n",
+        "player_name": "Hikaru",
+        "player_type": "human",
+        "ai_version": null
+      }
+    },
+    "rounds": [
+      {
+        "round_number": 1,
+        "initial_state": {
+          "starter": {
+            "player_id": "stockfish_15",
+            "player_name": "Stockfish AI",
+            "reason": "black_general",
+            "highest_card": "GENERAL_BLACK"
+          },
+          "player_order": ["Stockfish AI", "AlphaZero", "Hikaru", "Magnus"]
+        },
+        "hands_dealt": {
+          "Magnus": [
+            {"kind": "ADVISOR_RED", "point": 60},
+            {"kind": "ADVISOR_RED", "point": 60},
+            {"kind": "HORSE_RED", "point": 40},
+            {"kind": "CANNON_RED", "point": 15},
+            {"kind": "ELEPHANT_BLACK", "point": 55},
+            {"kind": "CHARIOT_BLACK", "point": 25},
+            {"kind": "SOLDIER_BLACK", "point": 2},
+            {"kind": "SOLDIER_BLACK", "point": 2}
+          ],
+          "Stockfish AI": [
+            {"kind": "GENERAL_BLACK", "point": 10000},
+            {"kind": "ELEPHANT_RED", "point": 50},
+            {"kind": "CHARIOT_RED", "point": 20},
+            {"kind": "SOLDIER_RED", "point": 1},
+            {"kind": "ADVISOR_BLACK", "point": 70},
+            {"kind": "HORSE_BLACK", "point": 45},
+            {"kind": "CANNON_BLACK", "point": 30},
+            {"kind": "SOLDIER_BLACK", "point": 2}
+          ],
+          "AlphaZero": [
+            {"kind": "ELEPHANT_RED", "point": 50},
+            {"kind": "HORSE_RED", "point": 40},
+            {"kind": "CHARIOT_RED", "point": 20},
+            {"kind": "CANNON_RED", "point": 15},
+            {"kind": "ADVISOR_BLACK", "point": 70},
+            {"kind": "ELEPHANT_BLACK", "point": 55},
+            {"kind": "HORSE_BLACK", "point": 45},
+            {"kind": "CHARIOT_BLACK", "point": 25}
+          ],
+          "Hikaru": [
+            {"kind": "GENERAL_RED", "point": 9999},
+            {"kind": "SOLDIER_RED", "point": 1},
+            {"kind": "SOLDIER_RED", "point": 1},
+            {"kind": "SOLDIER_RED", "point": 1},
+            {"kind": "CANNON_BLACK", "point": 30},
+            {"kind": "CANNON_BLACK", "point": 30},
+            {"kind": "CHARIOT_BLACK", "point": 25},
+            {"kind": "SOLDIER_BLACK", "point": 2}
+          ]
+        },
+        "declaration_phase": {
+          "declarations": [
+            {
+              "player_id": "stockfish_15",
+              "declared": 2,
+              "position": 0,
+              "strategy_notes": "Control center with generals",
+              "ai_reasoning": "GENERAL_BLACK guarantees one pile. ADVISOR_BLACK(70) likely wins second. Declaring 2 for positional advantage."
+            },
+            {
+              "player_id": "alpha_zero",
+              "declared": 3,
+              "position": 1,
+              "strategy_notes": "Distributed power pieces",
+              "ai_reasoning": "Neural network evaluation: 68.2% probability of 3 piles with ADVISOR_BLACK(70), ELEPHANT_BLACK(55), ELEPHANT_RED(50)."
+            },
+            {
+              "player_id": "hikaru_n",
+              "declared": 1,
+              "position": 2,
+              "strategy_notes": "Speed chess approach - fast decisive wins"
+            },
+            {
+              "player_id": "magnus_c",
+              "declared": 2,
+              "position": 3,
+              "strategy_notes": "Endgame specialist - calculated risk"
+            }
+          ],
+          "total_declared": 8,
+          "pile_room_calculation": {
+            "Magnus": 6,
+            "Stockfish AI": 6,
+            "AlphaZero": 5,
+            "Hikaru": 7
+          }
+        },
+        "turn_history": [
+          {
+            "turn_number": 1,
+            "plays": [
+              {
+                "player_id": "stockfish_15",
+                "player_name": "Stockfish AI",
+                "pieces_played": [{"kind": "SOLDIER_RED", "point": 1}],
+                "play_type": "SINGLE",
+                "hand_before_size": 8,
+                "hand_after_size": 7,
+                "captured_count": 0,
+                "declared_count": 2,
+                "ai_decision_analysis": "Opening with pawn sacrifice. Depth 25 analysis: Best move to probe opponent responses."
+              }
+            ],
+            "winner": {
+              "player_id": "magnus_c",
+              "player_name": "Magnus",
+              "winning_play": [{"kind": "ADVISOR_RED", "point": 60}, {"kind": "ADVISOR_RED", "point": 60}],
+              "pieces_captured": 6,
+              "reason": "Doubled advisors - total 120 points"
+            }
+          },
+          {
+            "turn_number": 2,
+            "plays": [
+              {
+                "player_id": "magnus_c",
+                "player_name": "Magnus",
+                "pieces_played": [{"kind": "SOLDIER_BLACK", "point": 2}, {"kind": "SOLDIER_BLACK", "point": 2}],
+                "play_type": "DOUBLE",
+                "hand_before_size": 6,
+                "hand_after_size": 4,
+                "captured_count": 6,
+                "declared_count": 2
+              }
+            ],
+            "winner": {
+              "player_id": "stockfish_15",
+              "player_name": "Stockfish AI",
+              "winning_play": [{"kind": "GENERAL_BLACK", "point": 10000}],
+              "pieces_captured": 5,
+              "reason": "Checkmate - GENERAL_BLACK unbeatable"
+            }
+          }
+        ],
+        "round_summary": {
+          "total_turns": 8,
+          "final_captures": {
+            "Magnus": {"captured": 2, "declared": 2, "difference": 0},
+            "Stockfish AI": {"captured": 2, "declared": 2, "difference": 0},
+            "AlphaZero": {"captured": 3, "declared": 3, "difference": 0},
+            "Hikaru": {"captured": 1, "declared": 1, "difference": 0}
+          },
+          "scoring": {
+            "Magnus": {
+              "points": 4,
+              "multiplier": 2,
+              "reason": "exact_match",
+              "calculation": "2 * 2 = 4"
+            },
+            "Stockfish AI": {
+              "points": 4,
+              "multiplier": 2,
+              "reason": "exact_match",
+              "calculation": "2 * 2 = 4"
+            },
+            "AlphaZero": {
+              "points": 6,
+              "multiplier": 2,
+              "reason": "exact_match",
+              "calculation": "3 * 2 = 6"
+            },
+            "Hikaru": {
+              "points": 2,
+              "multiplier": 2,
+              "reason": "exact_match",
+              "calculation": "1 * 2 = 2"
+            }
+          },
+          "cumulative_scores": {
+            "Magnus": 4,
+            "Stockfish AI": 4,
+            "AlphaZero": 6,
+            "Hikaru": 2
+          }
+        }
+      }
+    ]
+  },
+
+  "mockup_3_hearts_inspired": {
+    "room_id": "HEARTS-CLUB-2024",
+    "total_rounds": 2,
+    "players": {
+      "Alice": {
+        "player_id": "alice_h",
+        "player_name": "Alice",
+        "player_type": "human",
+        "ai_version": null
+      },
+      "CardShark": {
+        "player_id": "card_shark",
+        "player_name": "CardShark",
+        "player_type": "ai",
+        "ai_version": "v2.5"
+      },
+      "TrickMaster": {
+        "player_id": "trick_master",
+        "player_name": "TrickMaster",
+        "player_type": "ai",
+        "ai_version": "v2.5"
+      },
+      "Bob": {
+        "player_id": "bob_j",
+        "player_name": "Bob",
+        "player_type": "human",
+        "ai_version": null
+      }
+    },
+    "rounds": [
+      {
+        "round_number": 1,
+        "initial_state": {
+          "starter": {
+            "player_id": "alice_h",
+            "player_name": "Alice",
+            "reason": "red_advisor_pair",
+            "highest_card": "ADVISOR_RED"
+          },
+          "player_order": ["Alice", "CardShark", "TrickMaster", "Bob"]
+        },
+        "hands_dealt": {
+          "Alice": [
+            {"kind": "ADVISOR_RED", "point": 60},
+            {"kind": "ADVISOR_RED", "point": 60},
+            {"kind": "ELEPHANT_RED", "point": 50},
+            {"kind": "SOLDIER_RED", "point": 1},
+            {"kind": "ELEPHANT_BLACK", "point": 55},
+            {"kind": "HORSE_BLACK", "point": 45},
+            {"kind": "CANNON_BLACK", "point": 30},
+            {"kind": "SOLDIER_BLACK", "point": 2}
+          ]
+        },
+        "declaration_phase": {
+          "declarations": [
+            {
+              "player_id": "alice_h",
+              "declared": 3,
+              "position": 0,
+              "strategy_notes": "Shooting the moon strategy"
+            },
+            {
+              "player_id": "card_shark",
+              "declared": 2,
+              "position": 1,
+              "strategy_notes": "Conservative play",
+              "ai_reasoning": "Statistical analysis: 73% success rate with 2 piles based on hand strength distribution."
+            },
+            {
+              "player_id": "trick_master",
+              "declared": 1,
+              "position": 2,
+              "strategy_notes": "Avoiding hearts",
+              "ai_reasoning": "Minimizing risk. One strong pile better than spreading thin."
+            },
+            {
+              "player_id": "bob_j",
+              "declared": 2,
+              "position": 3,
+              "strategy_notes": "Following suit"
+            }
+          ],
+          "total_declared": 8,
+          "pile_room_calculation": {
+            "Alice": 5,
+            "CardShark": 6,
+            "TrickMaster": 7,
+            "Bob": 6
+          }
+        },
+        "turn_history": [
+          {
+            "turn_number": 1,
+            "plays": [
+              {
+                "player_id": "alice_h",
+                "player_name": "Alice",
+                "pieces_played": [{"kind": "SOLDIER_RED", "point": 1}],
+                "play_type": "SINGLE",
+                "hand_before_size": 8,
+                "hand_after_size": 7,
+                "captured_count": 0,
+                "declared_count": 3,
+                "ai_decision_analysis": null
+              }
+            ],
+            "winner": {
+              "player_id": "trick_master",
+              "player_name": "TrickMaster",
+              "winning_play": [{"kind": "CHARIOT_RED", "point": 20}, {"kind": "CHARIOT_RED", "point": 20}, {"kind": "CHARIOT_BLACK", "point": 25}],
+              "pieces_captured": 7,
+              "reason": "Triple play - 65 total points"
+            }
+          }
+        ],
+        "round_summary": {
+          "total_turns": 8,
+          "final_captures": {
+            "Alice": {"captured": 3, "declared": 3, "difference": 0},
+            "CardShark": {"captured": 2, "declared": 2, "difference": 0},
+            "TrickMaster": {"captured": 1, "declared": 1, "difference": 0},
+            "Bob": {"captured": 2, "declared": 2, "difference": 0}
+          },
+          "scoring": {
+            "Alice": {
+              "points": 6,
+              "multiplier": 2,
+              "reason": "exact_match",
+              "calculation": "3 * 2 = 6"
+            },
+            "CardShark": {
+              "points": 4,
+              "multiplier": 2,
+              "reason": "exact_match",
+              "calculation": "2 * 2 = 4"
+            },
+            "TrickMaster": {
+              "points": 2,
+              "multiplier": 2,
+              "reason": "exact_match",
+              "calculation": "1 * 2 = 2"
+            },
+            "Bob": {
+              "points": 4,
+              "multiplier": 2,
+              "reason": "exact_match",
+              "calculation": "2 * 2 = 4"
+            }
+          },
+          "cumulative_scores": {
+            "Alice": 6,
+            "CardShark": 4,
+            "TrickMaster": 2,
+            "Bob": 4
+          }
+        }
+      }
+    ]
+  },
+
+  "mockup_4_bridge_inspired": {
+    "room_id": "BRIDGE-TOURNAMENT-2024",
+    "total_rounds": 2,
+    "players": {
+      "North": {
+        "player_id": "north_player",
+        "player_name": "North",
+        "player_type": "human",
+        "ai_version": null
+      },
+      "East Bot": {
+        "player_id": "east_bot",
+        "player_name": "East Bot",
+        "player_type": "ai",
+        "ai_version": "v3.0"
+      },
+      "South Bot": {
+        "player_id": "south_bot",
+        "player_name": "South Bot",
+        "player_type": "ai",
+        "ai_version": "v3.0"
+      },
+      "West": {
+        "player_id": "west_player",
+        "player_name": "West",
+        "player_type": "human",
+        "ai_version": null
+      }
+    },
+    "rounds": [
+      {
+        "round_number": 1,
+        "initial_state": {
+          "starter": {
+            "player_id": "east_bot",
+            "player_name": "East Bot",
+            "reason": "high_black_cards",
+            "highest_card": "ADVISOR_BLACK"
+          },
+          "player_order": ["East Bot", "South Bot", "West", "North"]
+        },
+        "hands_dealt": {
+          "North": [
+            {"kind": "HORSE_RED", "point": 40},
+            {"kind": "HORSE_RED", "point": 40},
+            {"kind": "CHARIOT_RED", "point": 20},
+            {"kind": "CANNON_RED", "point": 15},
+            {"kind": "ADVISOR_BLACK", "point": 70},
+            {"kind": "ELEPHANT_BLACK", "point": 55},
+            {"kind": "SOLDIER_BLACK", "point": 2},
+            {"kind": "SOLDIER_BLACK", "point": 2}
+          ],
+          "East Bot": [
+            {"kind": "ADVISOR_BLACK", "point": 70},
+            {"kind": "ELEPHANT_RED", "point": 50},
+            {"kind": "ELEPHANT_RED", "point": 50},
+            {"kind": "SOLDIER_RED", "point": 1},
+            {"kind": "HORSE_BLACK", "point": 45},
+            {"kind": "CHARIOT_BLACK", "point": 25},
+            {"kind": "CANNON_BLACK", "point": 30},
+            {"kind": "SOLDIER_BLACK", "point": 2}
+          ]
+        },
+        "declaration_phase": {
+          "declarations": [
+            {
+              "player_id": "east_bot",
+              "declared": 2,
+              "position": 0,
+              "strategy_notes": "Opening bid - two clubs",
+              "ai_reasoning": "Strong hand with ADVISOR_BLACK(70) and paired ELEPHANT_RED. Standard 2-pile declaration."
+            },
+            {
+              "player_id": "south_bot",
+              "declared": 2,
+              "position": 1,
+              "strategy_notes": "Supporting partner",
+              "ai_reasoning": "Partner opened with 2. Following partnership conventions with supportive declaration."
+            },
+            {
+              "player_id": "west_player",
+              "declared": 2,
+              "position": 2,
+              "strategy_notes": "Defensive bidding"
+            },
+            {
+              "player_id": "north_player",
+              "declared": 2,
+              "position": 3,
+              "strategy_notes": "Balanced approach"
+            }
+          ],
+          "total_declared": 8,
+          "pile_room_calculation": {
+            "North": 6,
+            "East Bot": 6,
+            "South Bot": 6,
+            "West": 6
+          }
+        },
+        "turn_history": [
+          {
+            "turn_number": 1,
+            "plays": [
+              {
+                "player_id": "east_bot",
+                "player_name": "East Bot",
+                "pieces_played": [{"kind": "ELEPHANT_RED", "point": 50}, {"kind": "ELEPHANT_RED", "point": 50}],
+                "play_type": "DOUBLE",
+                "hand_before_size": 8,
+                "hand_after_size": 6,
+                "captured_count": 0,
+                "declared_count": 2,
+                "ai_decision_analysis": "Opening with strong double. Establishing trump control early."
+              }
+            ],
+            "winner": {
+              "player_id": "east_bot",
+              "player_name": "East Bot",
+              "winning_play": [{"kind": "ELEPHANT_RED", "point": 50}, {"kind": "ELEPHANT_RED", "point": 50}],
+              "pieces_captured": 7,
+              "reason": "Doubled elephants - 100 points"
+            }
+          }
+        ],
+        "round_summary": {
+          "total_turns": 8,
+          "final_captures": {
+            "North": {"captured": 2, "declared": 2, "difference": 0},
+            "East Bot": {"captured": 2, "declared": 2, "difference": 0},
+            "South Bot": {"captured": 2, "declared": 2, "difference": 0},
+            "West": {"captured": 2, "declared": 2, "difference": 0}
+          },
+          "scoring": {
+            "North": {
+              "points": 4,
+              "multiplier": 2,
+              "reason": "exact_match",
+              "calculation": "2 * 2 = 4"
+            },
+            "East Bot": {
+              "points": 4,
+              "multiplier": 2,
+              "reason": "exact_match",
+              "calculation": "2 * 2 = 4"
+            },
+            "South Bot": {
+              "points": 4,
+              "multiplier": 2,
+              "reason": "exact_match",
+              "calculation": "2 * 2 = 4"
+            },
+            "West": {
+              "points": 4,
+              "multiplier": 2,
+              "reason": "exact_match",
+              "calculation": "2 * 2 = 4"
+            }
+          },
+          "cumulative_scores": {
+            "North": 4,
+            "East Bot": 4,
+            "South Bot": 4,
+            "West": 4
+          }
+        }
+      }
+    ]
+  },
+
+  "mockup_5_mahjong_inspired": {
+    "room_id": "MAHJONG-MASTERS-2024",
+    "total_rounds": 3,
+    "players": {
+      "Mei-Ling": {
+        "player_id": "mei_ling",
+        "player_name": "Mei-Ling",
+        "player_type": "human",
+        "ai_version": null
+      },
+      "Dragon AI": {
+        "player_id": "dragon_ai",
+        "player_name": "Dragon AI",
+        "player_type": "ai",
+        "ai_version": "v3.5"
+      },
+      "Phoenix Bot": {
+        "player_id": "phoenix_bot",
+        "player_name": "Phoenix Bot",
+        "player_type": "ai",
+        "ai_version": "v3.5"
+      },
+      "Wei Chen": {
+        "player_id": "wei_chen",
+        "player_name": "Wei Chen",
+        "player_type": "human",
+        "ai_version": null
+      }
+    },
+    "rounds": [
+      {
+        "round_number": 1,
+        "initial_state": {
+          "starter": {
+            "player_id": "dragon_ai",
+            "player_name": "Dragon AI",
+            "reason": "double_general",
+            "highest_card": "GENERAL_RED_BLACK_PAIR"
+          },
+          "player_order": ["Dragon AI", "Phoenix Bot", "Wei Chen", "Mei-Ling"]
+        },
+        "hands_dealt": {
+          "Mei-Ling": [
+            {"kind": "ADVISOR_RED", "point": 60},
+            {"kind": "ELEPHANT_RED", "point": 50},
+            {"kind": "HORSE_RED", "point": 40},
+            {"kind": "CHARIOT_RED", "point": 20},
+            {"kind": "HORSE_BLACK", "point": 45},
+            {"kind": "CANNON_BLACK", "point": 30},
+            {"kind": "SOLDIER_BLACK", "point": 2},
+            {"kind": "SOLDIER_BLACK", "point": 2}
+          ],
+          "Dragon AI": [
+            {"kind": "GENERAL_RED", "point": 9999},
+            {"kind": "GENERAL_BLACK", "point": 10000},
+            {"kind": "CANNON_RED", "point": 15},
+            {"kind": "SOLDIER_RED", "point": 1},
+            {"kind": "CHARIOT_BLACK", "point": 25},
+            {"kind": "CHARIOT_BLACK", "point": 25},
+            {"kind": "SOLDIER_BLACK", "point": 2},
+            {"kind": "SOLDIER_BLACK", "point": 2}
+          ],
+          "Phoenix Bot": [
+            {"kind": "ADVISOR_RED", "point": 60},
+            {"kind": "ELEPHANT_RED", "point": 50},
+            {"kind": "CANNON_RED", "point": 15},
+            {"kind": "SOLDIER_RED", "point": 1},
+            {"kind": "ADVISOR_BLACK", "point": 70},
+            {"kind": "ADVISOR_BLACK", "point": 70},
+            {"kind": "ELEPHANT_BLACK", "point": 55},
+            {"kind": "HORSE_BLACK", "point": 45}
+          ],
+          "Wei Chen": [
+            {"kind": "HORSE_RED", "point": 40},
+            {"kind": "CHARIOT_RED", "point": 20},
+            {"kind": "CANNON_RED", "point": 15},
+            {"kind": "SOLDIER_RED", "point": 1},
+            {"kind": "ELEPHANT_BLACK", "point": 55},
+            {"kind": "CANNON_BLACK", "point": 30},
+            {"kind": "CANNON_BLACK", "point": 30},
+            {"kind": "SOLDIER_BLACK", "point": 2}
+          ]
+        },
+        "declaration_phase": {
+          "declarations": [
+            {
+              "player_id": "dragon_ai",
+              "declared": 2,
+              "position": 0,
+              "strategy_notes": "Dragon and Phoenix strategy",
+              "ai_reasoning": "Double generals guarantee 2 piles. Conservative declaration to ensure scoring."
+            },
+            {
+              "player_id": "phoenix_bot",
+              "declared": 3,
+              "position": 1,
+              "strategy_notes": "Triple harmony pattern",
+              "ai_reasoning": "Double ADVISOR_BLACK(70) plus ADVISOR_RED(60) forms strong triple threat. 82% confidence."
+            },
+            {
+              "player_id": "wei_chen",
+              "declared": 2,
+              "position": 2,
+              "strategy_notes": "Bamboo strategy"
+            },
+            {
+              "player_id": "mei_ling",
+              "declared": 1,
+              "position": 3,
+              "strategy_notes": "Single dragon wait"
+            }
+          ],
+          "total_declared": 8,
+          "pile_room_calculation": {
+            "Mei-Ling": 7,
+            "Dragon AI": 6,
+            "Phoenix Bot": 5,
+            "Wei Chen": 6
+          }
+        },
+        "turn_history": [
+          {
+            "turn_number": 1,
+            "plays": [
+              {
+                "player_id": "dragon_ai",
+                "player_name": "Dragon AI",
+                "pieces_played": [{"kind": "SOLDIER_RED", "point": 1}],
+                "play_type": "SINGLE",
+                "hand_before_size": 8,
+                "hand_after_size": 7,
+                "captured_count": 0,
+                "declared_count": 2,
+                "ai_decision_analysis": "Opening with wind tile. Preserving dragon pairs for later."
+              }
+            ],
+            "winner": {
+              "player_id": "phoenix_bot",
+              "player_name": "Phoenix Bot",
+              "winning_play": [{"kind": "ADVISOR_BLACK", "point": 70}, {"kind": "ADVISOR_BLACK", "point": 70}],
+              "pieces_captured": 6,
+              "reason": "Paired black advisors - 140 points"
+            }
+          },
+          {
+            "turn_number": 2,
+            "plays": [
+              {
+                "player_id": "phoenix_bot",
+                "player_name": "Phoenix Bot",
+                "pieces_played": [{"kind": "SOLDIER_RED", "point": 1}],
+                "play_type": "SINGLE",
+                "hand_before_size": 6,
+                "hand_after_size": 5,
+                "captured_count": 6,
+                "declared_count": 3,
+                "ai_decision_analysis": "Minimum discard. Maintaining strong hand for final piles."
+              }
+            ],
+            "winner": {
+              "player_id": "dragon_ai",
+              "player_name": "Dragon AI",
+              "winning_play": [{"kind": "GENERAL_RED", "point": 9999}],
+              "pieces_captured": 4,
+              "reason": "Red Dragon - ultimate tile"
+            }
+          },
+          {
+            "turn_number": 3,
+            "plays": [
+              {
+                "player_id": "dragon_ai",
+                "player_name": "Dragon AI",
+                "pieces_played": [{"kind": "CANNON_RED", "point": 15}],
+                "play_type": "SINGLE",
+                "hand_before_size": 6,
+                "hand_after_size": 5,
+                "captured_count": 4,
+                "declared_count": 2,
+                "ai_decision_analysis": "Discarding bamboo. Black Dragon reserved for final pile."
+              }
+            ],
+            "winner": {
+              "player_id": "dragon_ai",
+              "player_name": "Dragon AI",
+              "winning_play": [{"kind": "GENERAL_BLACK", "point": 10000}],
+              "pieces_captured": 4,
+              "reason": "Black Dragon - supreme tile"
+            }
+          }
+        ],
+        "round_summary": {
+          "total_turns": 8,
+          "final_captures": {
+            "Mei-Ling": {"captured": 1, "declared": 1, "difference": 0},
+            "Dragon AI": {"captured": 2, "declared": 2, "difference": 0},
+            "Phoenix Bot": {"captured": 3, "declared": 3, "difference": 0},
+            "Wei Chen": {"captured": 2, "declared": 2, "difference": 0}
+          },
+          "scoring": {
+            "Mei-Ling": {
+              "points": 2,
+              "multiplier": 2,
+              "reason": "exact_match",
+              "calculation": "1 * 2 = 2"
+            },
+            "Dragon AI": {
+              "points": 4,
+              "multiplier": 2,
+              "reason": "exact_match",
+              "calculation": "2 * 2 = 4"
+            },
+            "Phoenix Bot": {
+              "points": 6,
+              "multiplier": 2,
+              "reason": "exact_match",
+              "calculation": "3 * 2 = 6"
+            },
+            "Wei Chen": {
+              "points": 4,
+              "multiplier": 2,
+              "reason": "exact_match",
+              "calculation": "2 * 2 = 4"
+            }
+          },
+          "cumulative_scores": {
+            "Mei-Ling": 2,
+            "Dragon AI": 4,
+            "Phoenix Bot": 6,
+            "Wei Chen": 4
+          }
+        }
+      },
+      {
+        "round_number": 2,
+        "initial_state": {
+          "starter": {
+            "player_id": "phoenix_bot",
+            "player_name": "Phoenix Bot",
+            "reason": "previous_round_winner",
+            "highest_card": null
+          },
+          "player_order": ["Phoenix Bot", "Wei Chen", "Mei-Ling", "Dragon AI"]
+        },
+        "hands_dealt": {},
+        "declaration_phase": {
+          "declarations": [
+            {
+              "player_id": "phoenix_bot",
+              "declared": 2,
+              "position": 0,
+              "strategy_notes": "Consistent strategy",
+              "ai_reasoning": "Maintaining 2-pile strategy based on 76% historical success rate."
+            },
+            {
+              "player_id": "wei_chen",
+              "declared": 3,
+              "position": 1,
+              "strategy_notes": "Aggressive play"
+            },
+            {
+              "player_id": "mei_ling",
+              "declared": 2,
+              "position": 2,
+              "strategy_notes": "Adapting strategy"
+            },
+            {
+              "player_id": "dragon_ai",
+              "declared": 1,
+              "position": 3,
+              "strategy_notes": "Minimalist approach",
+              "ai_reasoning": "Without generals, focusing on single strong pile with highest remaining cards."
+            }
+          ],
+          "total_declared": 8,
+          "pile_room_calculation": {
+            "Phoenix Bot": 6,
+            "Wei Chen": 5,
+            "Mei-Ling": 6,
+            "Dragon AI": 7
+          }
+        },
+        "turn_history": [],
+        "round_summary": {
+          "total_turns": 8,
+          "final_captures": {
+            "Phoenix Bot": {"captured": 1, "declared": 2, "difference": -1},
+            "Wei Chen": {"captured": 3, "declared": 3, "difference": 0},
+            "Mei-Ling": {"captured": 2, "declared": 2, "difference": 0},
+            "Dragon AI": {"captured": 2, "declared": 1, "difference": 1}
+          },
+          "scoring": {
+            "Phoenix Bot": {
+              "points": -2,
+              "multiplier": 1,
+              "reason": "undercapture",
+              "calculation": "(1-2) * 2 = -2"
+            },
+            "Wei Chen": {
+              "points": 6,
+              "multiplier": 2,
+              "reason": "exact_match",
+              "calculation": "3 * 2 = 6"
+            },
+            "Mei-Ling": {
+              "points": 4,
+              "multiplier": 2,
+              "reason": "exact_match",
+              "calculation": "2 * 2 = 4"
+            },
+            "Dragon AI": {
+              "points": 2,
+              "multiplier": 1,
+              "reason": "overcapture",
+              "calculation": "(2-1) * 2 = 2"
+            }
+          },
+          "cumulative_scores": {
+            "Phoenix Bot": 4,
+            "Wei Chen": 10,
+            "Mei-Ling": 6,
+            "Dragon AI": 6
+          }
+        }
+      }
+    ]
+  }
+}

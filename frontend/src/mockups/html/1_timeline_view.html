@@ -1,0 +1,651 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Liap Tui - Timeline View (Chess.com Style)</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background-color: #1a1a1a;
+            color: #ffffff;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .game-header {
+            background-color: #2a2a2a;
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .game-info h1 {
+            font-size: 24px;
+            margin-bottom: 5px;
+            color: #f0f0f0;
+        }
+
+        .game-meta {
+            color: #999;
+            font-size: 14px;
+        }
+
+        .view-controls {
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn {
+            padding: 8px 16px;
+            background-color: #3498db;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: background-color 0.2s;
+        }
+
+        .btn:hover {
+            background-color: #2980b9;
+        }
+
+        .btn-secondary {
+            background-color: #444;
+        }
+
+        .btn-secondary:hover {
+            background-color: #555;
+        }
+
+        .round-tabs {
+            display: flex;
+            gap: 5px;
+            margin-bottom: 20px;
+            background-color: #2a2a2a;
+            padding: 10px;
+            border-radius: 12px;
+        }
+
+        .round-tab {
+            padding: 10px 20px;
+            background-color: #3a3a3a;
+            border: none;
+            border-radius: 8px;
+            color: #999;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.2s;
+        }
+
+        .round-tab.active {
+            background-color: #3498db;
+            color: white;
+        }
+
+        .round-tab:hover:not(.active) {
+            background-color: #444;
+            color: #ccc;
+        }
+
+        .round-content {
+            background-color: #2a2a2a;
+            padding: 30px;
+            border-radius: 12px;
+        }
+
+        .round-header {
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #444;
+        }
+
+        .round-header h2 {
+            font-size: 20px;
+            margin-bottom: 10px;
+            color: #f0f0f0;
+        }
+
+        .starter-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: #999;
+            font-size: 14px;
+        }
+
+        .starter-badge {
+            background-color: #e74c3c;
+            color: white;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        .timeline-container {
+            margin: 30px 0;
+            position: relative;
+        }
+
+        .timeline-track {
+            height: 2px;
+            background-color: #444;
+            position: relative;
+            margin: 40px 0;
+        }
+
+        .timeline-turns {
+            display: flex;
+            justify-content: space-between;
+            position: relative;
+        }
+
+        .turn-card {
+            background-color: #3a3a3a;
+            border-radius: 8px;
+            padding: 15px;
+            width: 140px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s;
+            position: relative;
+        }
+
+        .turn-card:hover {
+            background-color: #444;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+        }
+
+        .turn-card.winner {
+            border: 2px solid #27ae60;
+        }
+
+        .turn-number {
+            font-size: 12px;
+            color: #999;
+            margin-bottom: 5px;
+        }
+
+        .turn-pieces {
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 8px;
+            color: #f0f0f0;
+        }
+
+        .turn-winner {
+            font-size: 14px;
+            color: #27ae60;
+        }
+
+        .turn-dot {
+            width: 12px;
+            height: 12px;
+            background-color: #666;
+            border-radius: 50%;
+            position: absolute;
+            bottom: -46px;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+
+        .turn-card.winner .turn-dot {
+            background-color: #27ae60;
+            width: 16px;
+            height: 16px;
+            bottom: -48px;
+        }
+
+        .declarations-section {
+            background-color: #3a3a3a;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+
+        .declarations-title {
+            font-size: 16px;
+            margin-bottom: 15px;
+            color: #f0f0f0;
+        }
+
+        .declarations-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+        }
+
+        .declaration-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px;
+            background-color: #2a2a2a;
+            border-radius: 6px;
+        }
+
+        .player-name {
+            font-weight: 500;
+            color: #f0f0f0;
+        }
+
+        .declaration-value {
+            font-size: 18px;
+            font-weight: bold;
+            color: #3498db;
+        }
+
+        .final-scores {
+            background-color: #3a3a3a;
+            padding: 20px;
+            border-radius: 8px;
+            margin-top: 20px;
+        }
+
+        .scores-title {
+            font-size: 16px;
+            margin-bottom: 15px;
+            color: #f0f0f0;
+        }
+
+        .score-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px;
+            background-color: #2a2a2a;
+            border-radius: 6px;
+            margin-bottom: 10px;
+        }
+
+        .score-player {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .ai-badge {
+            background-color: #9b59b6;
+            color: white;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 11px;
+            font-weight: bold;
+        }
+
+        .score-value {
+            font-size: 20px;
+            font-weight: bold;
+        }
+
+        .score-positive {
+            color: #27ae60;
+        }
+
+        .score-negative {
+            color: #e74c3c;
+        }
+
+        .turn-detail-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0,0,0,0.8);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+
+        .turn-detail {
+            background-color: #2a2a2a;
+            padding: 30px;
+            border-radius: 12px;
+            max-width: 600px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+
+        .turn-detail-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .close-btn {
+            background: none;
+            border: none;
+            color: #999;
+            font-size: 24px;
+            cursor: pointer;
+        }
+
+        .close-btn:hover {
+            color: #fff;
+        }
+
+        .play-item {
+            background-color: #3a3a3a;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+        }
+
+        .play-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .pieces-played {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .piece-card {
+            background-color: #2a2a2a;
+            padding: 10px;
+            border-radius: 6px;
+            text-align: center;
+            min-width: 80px;
+        }
+
+        .piece-kind {
+            font-size: 12px;
+            color: #999;
+            margin-bottom: 5px;
+        }
+
+        .piece-point {
+            font-size: 16px;
+            font-weight: bold;
+            color: #f0f0f0;
+        }
+
+        .red-piece {
+            border-left: 3px solid #e74c3c;
+        }
+
+        .black-piece {
+            border-left: 3px solid #34495e;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Game Header -->
+        <div class="game-header">
+            <div class="game-info">
+                <h1>Game: TEXAS-HOLDEM-2024</h1>
+                <div class="game-meta">Daniel vs 3 AI Players • 3 Rounds • Completed</div>
+            </div>
+            <div class="view-controls">
+                <button class="btn btn-secondary">Export</button>
+                <button class="btn btn-secondary">Share</button>
+                <button class="btn">Analyze</button>
+            </div>
+        </div>
+
+        <!-- Round Tabs -->
+        <div class="round-tabs">
+            <button class="round-tab active" onclick="showRound(1)">Round 1</button>
+            <button class="round-tab" onclick="showRound(2)">Round 2</button>
+            <button class="round-tab" onclick="showRound(3)">Round 3</button>
+            <button class="round-tab" onclick="showSummary()">Game Summary</button>
+        </div>
+
+        <!-- Round Content -->
+        <div class="round-content" id="round-1">
+            <div class="round-header">
+                <h2>Round 1</h2>
+                <div class="starter-info">
+                    <span class="starter-badge">RED GENERAL</span>
+                    <span>Daniel started this round</span>
+                </div>
+            </div>
+
+            <!-- Timeline -->
+            <div class="timeline-container">
+                <div class="timeline-turns">
+                    <div class="turn-card" onclick="showTurnDetail(1)">
+                        <div class="turn-number">Turn 1</div>
+                        <div class="turn-pieces">4 pieces</div>
+                        <div class="turn-winner">Daniel wins</div>
+                        <div class="turn-dot"></div>
+                    </div>
+                    <div class="turn-card winner" onclick="showTurnDetail(2)">
+                        <div class="turn-number">Turn 2</div>
+                        <div class="turn-pieces">GENERAL</div>
+                        <div class="turn-winner">Daniel wins</div>
+                        <div class="turn-dot"></div>
+                    </div>
+                    <div class="turn-card" onclick="showTurnDetail(3)">
+                        <div class="turn-number">Turn 3</div>
+                        <div class="turn-pieces">3 pieces</div>
+                        <div class="turn-winner">Phil AI wins</div>
+                        <div class="turn-dot"></div>
+                    </div>
+                    <div class="turn-card" onclick="showTurnDetail(4)">
+                        <div class="turn-number">Turn 4</div>
+                        <div class="turn-pieces">2 pieces</div>
+                        <div class="turn-winner">Doyle Bot wins</div>
+                        <div class="turn-dot"></div>
+                    </div>
+                    <div class="turn-card" onclick="showTurnDetail(5)">
+                        <div class="turn-number">Turn 5</div>
+                        <div class="turn-pieces">5 pieces</div>
+                        <div class="turn-winner">Vanessa wins</div>
+                        <div class="turn-dot"></div>
+                    </div>
+                    <div class="turn-card" onclick="showTurnDetail(6)">
+                        <div class="turn-number">Turn 6</div>
+                        <div class="turn-pieces">4 pieces</div>
+                        <div class="turn-winner">Phil AI wins</div>
+                        <div class="turn-dot"></div>
+                    </div>
+                    <div class="turn-card winner" onclick="showTurnDetail(7)">
+                        <div class="turn-number">Turn 7</div>
+                        <div class="turn-pieces">GENERAL</div>
+                        <div class="turn-winner">Doyle Bot wins</div>
+                        <div class="turn-dot"></div>
+                    </div>
+                    <div class="turn-card" onclick="showTurnDetail(8)">
+                        <div class="turn-number">Turn 8</div>
+                        <div class="turn-pieces">6 pieces</div>
+                        <div class="turn-winner">Daniel wins</div>
+                        <div class="turn-dot"></div>
+                    </div>
+                </div>
+                <div class="timeline-track"></div>
+            </div>
+
+            <!-- Declarations -->
+            <div class="declarations-section">
+                <h3 class="declarations-title">Declarations</h3>
+                <div class="declarations-grid">
+                    <div class="declaration-item">
+                        <span class="player-name">Daniel</span>
+                        <span class="declaration-value">1</span>
+                    </div>
+                    <div class="declaration-item">
+                        <span class="player-name">Phil AI</span>
+                        <span class="declaration-value">3</span>
+                    </div>
+                    <div class="declaration-item">
+                        <span class="player-name">Doyle Bot</span>
+                        <span class="declaration-value">2</span>
+                    </div>
+                    <div class="declaration-item">
+                        <span class="player-name">Vanessa</span>
+                        <span class="declaration-value">2</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Final Scores -->
+            <div class="final-scores">
+                <h3 class="scores-title">Round Scores</h3>
+                <div class="score-item">
+                    <div class="score-player">
+                        <span class="player-name">Daniel</span>
+                    </div>
+                    <div class="score-value score-positive">+14</div>
+                </div>
+                <div class="score-item">
+                    <div class="score-player">
+                        <span class="player-name">Phil AI</span>
+                        <span class="ai-badge">AI v3.2</span>
+                    </div>
+                    <div class="score-value score-positive">+6</div>
+                </div>
+                <div class="score-item">
+                    <div class="score-player">
+                        <span class="player-name">Doyle Bot</span>
+                        <span class="ai-badge">AI v3.2</span>
+                    </div>
+                    <div class="score-value score-positive">+4</div>
+                </div>
+                <div class="score-item">
+                    <div class="score-player">
+                        <span class="player-name">Vanessa</span>
+                    </div>
+                    <div class="score-value score-positive">+4</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Turn Detail Overlay -->
+        <div class="turn-detail-overlay" id="turnDetailOverlay" onclick="closeTurnDetail(event)">
+            <div class="turn-detail" onclick="event.stopPropagation()">
+                <div class="turn-detail-header">
+                    <h3>Turn 1 Details</h3>
+                    <button class="close-btn" onclick="closeTurnDetail()">&times;</button>
+                </div>
+                
+                <div class="play-item">
+                    <div class="play-header">
+                        <span class="player-name">Daniel</span>
+                        <span>Position 1</span>
+                    </div>
+                    <div class="pieces-played">
+                        <div class="piece-card red-piece">
+                            <div class="piece-kind">SOLDIER</div>
+                            <div class="piece-point">1</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="play-item">
+                    <div class="play-header">
+                        <span class="player-name">Phil AI</span>
+                        <span>Position 2</span>
+                    </div>
+                    <div class="pieces-played">
+                        <div class="piece-card red-piece">
+                            <div class="piece-kind">SOLDIER</div>
+                            <div class="piece-point">1</div>
+                        </div>
+                    </div>
+                    <div style="margin-top: 10px; padding: 10px; background-color: #2a2a2a; border-radius: 6px;">
+                        <div style="font-size: 12px; color: #999; margin-bottom: 5px;">AI Analysis:</div>
+                        <div style="font-size: 14px; color: #ccc;">"Matching minimum bet to stay in pile. Saving high cards for critical piles."</div>
+                    </div>
+                </div>
+
+                <div class="play-item">
+                    <div class="play-header">
+                        <span class="player-name">Doyle Bot</span>
+                        <span>Position 3</span>
+                    </div>
+                    <div class="pieces-played">
+                        <div class="piece-card red-piece">
+                            <div class="piece-kind">SOLDIER</div>
+                            <div class="piece-point">1</div>
+                        </div>
+                    </div>
+                    <div style="margin-top: 10px; padding: 10px; background-color: #2a2a2a; border-radius: 6px;">
+                        <div style="font-size: 12px; color: #999; margin-bottom: 5px;">AI Analysis:</div>
+                        <div style="font-size: 14px; color: #ccc;">"Minimal investment in first pile. Protecting GENERAL_BLACK for later."</div>
+                    </div>
+                </div>
+
+                <div class="play-item">
+                    <div class="play-header">
+                        <span class="player-name">Vanessa</span>
+                        <span>Position 4</span>
+                    </div>
+                    <div class="pieces-played">
+                        <div class="piece-card red-piece">
+                            <div class="piece-kind">SOLDIER</div>
+                            <div class="piece-point">1</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div style="margin-top: 20px; padding: 15px; background-color: #27ae60; border-radius: 8px;">
+                    <div style="font-size: 16px; font-weight: bold; margin-bottom: 5px;">Winner: Daniel</div>
+                    <div style="font-size: 14px;">First player advantage on tie - captured 4 pieces</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function showRound(roundNumber) {
+            // Update active tab
+            document.querySelectorAll('.round-tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            event.target.classList.add('active');
+
+            // In a real implementation, this would load different round data
+            console.log(`Showing round ${roundNumber}`);
+        }
+
+        function showSummary() {
+            // Update active tab
+            document.querySelectorAll('.round-tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            event.target.classList.add('active');
+
+            console.log('Showing game summary');
+        }
+
+        function showTurnDetail(turnNumber) {
+            document.getElementById('turnDetailOverlay').style.display = 'flex';
+            // In a real implementation, this would load the specific turn data
+            console.log(`Showing details for turn ${turnNumber}`);
+        }
+
+        function closeTurnDetail(event) {
+            if (!event || event.target.id === 'turnDetailOverlay') {
+                document.getElementById('turnDetailOverlay').style.display = 'none';
+            }
+        }
+    </script>
+</body>
+</html>

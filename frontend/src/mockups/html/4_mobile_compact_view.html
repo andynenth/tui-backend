@@ -1,0 +1,661 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Liap Tui - Mobile Compact View (Hearthstone Style)</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #1a1f3a 0%, #0f1322 100%);
+            color: #ffffff;
+            line-height: 1.6;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        .mobile-container {
+            max-width: 430px;
+            margin: 0 auto;
+            min-height: 100vh;
+            background-color: rgba(0,0,0,0.3);
+        }
+
+        /* Header */
+        .mobile-header {
+            background: linear-gradient(180deg, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0.4) 100%);
+            padding: 20px 15px 15px;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            backdrop-filter: blur(10px);
+        }
+
+        .header-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .back-btn {
+            width: 40px;
+            height: 40px;
+            background-color: rgba(255,255,255,0.1);
+            border: none;
+            border-radius: 10px;
+            color: white;
+            font-size: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .back-btn:active {
+            transform: scale(0.95);
+            background-color: rgba(255,255,255,0.2);
+        }
+
+        .header-title {
+            font-size: 18px;
+            font-weight: 600;
+        }
+
+        .share-btn {
+            width: 40px;
+            height: 40px;
+            background-color: rgba(255,255,255,0.1);
+            border: none;
+            border-radius: 10px;
+            color: white;
+            font-size: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .share-btn:active {
+            transform: scale(0.95);
+            background-color: rgba(255,255,255,0.2);
+        }
+
+        .match-meta {
+            font-size: 12px;
+            color: rgba(255,255,255,0.6);
+            text-align: center;
+        }
+
+        /* Match Result Card */
+        .result-card {
+            margin: 20px 15px;
+            background: linear-gradient(135deg, #2a3f5f 0%, #1e2d45 100%);
+            border-radius: 20px;
+            padding: 25px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .result-card::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.05) 0%, transparent 70%);
+            animation: shimmer 3s ease-in-out infinite;
+        }
+
+        @keyframes shimmer {
+            0%, 100% { transform: rotate(0deg); }
+            50% { transform: rotate(180deg); }
+        }
+
+        .result-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .result-badge {
+            background: linear-gradient(135deg, #4ade80 0%, #22c55e 100%);
+            color: white;
+            padding: 8px 20px;
+            border-radius: 25px;
+            font-weight: 600;
+            font-size: 16px;
+            box-shadow: 0 4px 15px rgba(34, 197, 94, 0.4);
+        }
+
+        .result-badge.loss {
+            background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+            box-shadow: 0 4px 15px rgba(239, 68, 68, 0.4);
+        }
+
+        .result-score {
+            font-size: 36px;
+            font-weight: bold;
+            color: #4ade80;
+            text-shadow: 0 0 20px rgba(74, 222, 128, 0.5);
+        }
+
+        .result-score.negative {
+            color: #ef4444;
+            text-shadow: 0 0 20px rgba(239, 68, 68, 0.5);
+        }
+
+        .vs-opponents {
+            text-align: center;
+            margin-bottom: 15px;
+            font-size: 14px;
+            color: rgba(255,255,255,0.8);
+            position: relative;
+            z-index: 1;
+        }
+
+        .ai-badge {
+            display: inline-block;
+            background-color: #8b5cf6;
+            color: white;
+            padding: 2px 8px;
+            border-radius: 10px;
+            font-size: 10px;
+            font-weight: 600;
+            margin-left: 5px;
+        }
+
+        /* Key Moments */
+        .key-moments {
+            background-color: rgba(0,0,0,0.3);
+            border-radius: 15px;
+            padding: 20px;
+            margin: 0 15px 20px;
+        }
+
+        .section-title {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .section-icon {
+            width: 30px;
+            height: 30px;
+            background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+        }
+
+        .moment-item {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 12px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .moment-item:last-child {
+            border-bottom: none;
+        }
+
+        .moment-turn {
+            min-width: 50px;
+            font-size: 12px;
+            color: rgba(255,255,255,0.5);
+            font-weight: 600;
+        }
+
+        .moment-description {
+            flex: 1;
+            font-size: 14px;
+            color: rgba(255,255,255,0.9);
+        }
+
+        .moment-icon {
+            width: 24px;
+            height: 24px;
+            background-color: rgba(255,255,255,0.1);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+        }
+
+        /* Quick Stats */
+        .quick-stats {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            margin: 0 15px 20px;
+        }
+
+        .stat-card {
+            background: linear-gradient(135deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0.05) 100%);
+            border-radius: 15px;
+            padding: 15px;
+            text-align: center;
+            backdrop-filter: blur(10px);
+        }
+
+        .stat-label {
+            font-size: 11px;
+            color: rgba(255,255,255,0.5);
+            text-transform: uppercase;
+            margin-bottom: 5px;
+        }
+
+        .stat-value {
+            font-size: 20px;
+            font-weight: bold;
+            color: #ffffff;
+        }
+
+        .stat-value.success {
+            color: #4ade80;
+        }
+
+        .stat-value.warning {
+            color: #fbbf24;
+        }
+
+        /* Action Buttons */
+        .action-buttons {
+            padding: 0 15px 20px;
+            display: flex;
+            gap: 10px;
+        }
+
+        .action-btn {
+            flex: 1;
+            background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+            border: none;
+            border-radius: 15px;
+            padding: 15px;
+            color: white;
+            font-weight: 600;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.2s;
+            box-shadow: 0 4px 15px rgba(59, 130, 246, 0.3);
+        }
+
+        .action-btn:active {
+            transform: translateY(2px);
+            box-shadow: 0 2px 10px rgba(59, 130, 246, 0.3);
+        }
+
+        .action-btn.secondary {
+            background: linear-gradient(135deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0.05) 100%);
+            box-shadow: none;
+        }
+
+        /* Recent Matches List */
+        .recent-matches {
+            padding: 0 15px 30px;
+        }
+
+        .match-list-item {
+            background-color: rgba(255,255,255,0.05);
+            border-radius: 15px;
+            padding: 15px;
+            margin-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .match-list-item:active {
+            background-color: rgba(255,255,255,0.1);
+            transform: scale(0.98);
+        }
+
+        .match-info {
+            flex: 1;
+        }
+
+        .match-opponents {
+            font-size: 14px;
+            font-weight: 500;
+            margin-bottom: 5px;
+            color: rgba(255,255,255,0.9);
+        }
+
+        .match-time {
+            font-size: 12px;
+            color: rgba(255,255,255,0.5);
+        }
+
+        .match-result {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            gap: 3px;
+        }
+
+        .match-score {
+            font-size: 18px;
+            font-weight: bold;
+        }
+
+        .match-status {
+            font-size: 11px;
+            color: rgba(255,255,255,0.5);
+            text-transform: uppercase;
+        }
+
+        /* Bottom Tab Bar */
+        .tab-bar {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: linear-gradient(180deg, rgba(0,0,0,0.4) 0%, rgba(0,0,0,0.9) 100%);
+            backdrop-filter: blur(20px);
+            padding: 10px 0 env(safe-area-inset-bottom);
+            display: flex;
+            justify-content: space-around;
+            border-top: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .tab-item {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 5px;
+            padding: 10px;
+            color: rgba(255,255,255,0.5);
+            text-decoration: none;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .tab-item.active {
+            color: #3b82f6;
+        }
+
+        .tab-icon {
+            font-size: 24px;
+        }
+
+        .tab-label {
+            font-size: 11px;
+            font-weight: 500;
+        }
+
+        /* Floating achievement */
+        .achievement-popup {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(0);
+            background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
+            color: white;
+            padding: 20px 30px;
+            border-radius: 20px;
+            font-weight: 600;
+            font-size: 16px;
+            box-shadow: 0 10px 40px rgba(251, 191, 36, 0.5);
+            z-index: 1000;
+            animation: achievementPop 2s ease-out;
+        }
+
+        @keyframes achievementPop {
+            0% { transform: translate(-50%, -50%) scale(0); opacity: 0; }
+            20% { transform: translate(-50%, -50%) scale(1.1); opacity: 1; }
+            40% { transform: translate(-50%, -50%) scale(0.95); }
+            60% { transform: translate(-50%, -50%) scale(1); }
+            100% { transform: translate(-50%, -50%) scale(1); opacity: 0; }
+        }
+    </style>
+</head>
+<body>
+    <div class="mobile-container">
+        <!-- Header -->
+        <header class="mobile-header">
+            <div class="header-top">
+                <button class="back-btn">←</button>
+                <h1 class="header-title">Match Details</h1>
+                <button class="share-btn">⬆</button>
+            </div>
+            <div class="match-meta">2 hours ago • vs 3 AI Players</div>
+        </header>
+
+        <!-- Match Result Card -->
+        <div class="result-card">
+            <div class="result-header">
+                <div class="result-badge">Victory</div>
+                <div class="result-score">+14</div>
+            </div>
+            <div class="vs-opponents">
+                vs Phil<span class="ai-badge">AI</span>, 
+                Doyle<span class="ai-badge">AI</span>, 
+                Vanessa
+            </div>
+        </div>
+
+        <!-- Key Moments -->
+        <section class="key-moments">
+            <div class="section-title">
+                <div class="section-icon">⚡</div>
+                <span>Key Moments</span>
+            </div>
+            <div class="moment-item">
+                <div class="moment-turn">Turn 1</div>
+                <div class="moment-description">4-way tie on minimum bet</div>
+                <div class="moment-icon">🤝</div>
+            </div>
+            <div class="moment-item">
+                <div class="moment-turn">Turn 2</div>
+                <div class="moment-description">GENERAL_RED dominance</div>
+                <div class="moment-icon">👑</div>
+            </div>
+            <div class="moment-item">
+                <div class="moment-turn">Turn 8</div>
+                <div class="moment-description">Final pile secured victory</div>
+                <div class="moment-icon">🏆</div>
+            </div>
+        </section>
+
+        <!-- Quick Stats -->
+        <div class="quick-stats">
+            <div class="stat-card">
+                <div class="stat-label">Declared</div>
+                <div class="stat-value success">1 ✓</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">Captured</div>
+                <div class="stat-value warning">8 (!)</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">Multiplier</div>
+                <div class="stat-value">1x</div>
+            </div>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="action-buttons">
+            <button class="action-btn">View Full Replay</button>
+            <button class="action-btn secondary">Share Result</button>
+        </div>
+
+        <!-- Recent Matches -->
+        <section class="recent-matches">
+            <div class="section-title">
+                <div class="section-icon">📊</div>
+                <span>Recent Matches</span>
+            </div>
+            
+            <div class="match-list-item">
+                <div class="match-info">
+                    <div class="match-opponents">vs AlphaZero, Magnus, Hikaru</div>
+                    <div class="match-time">5 hours ago</div>
+                </div>
+                <div class="match-result">
+                    <div class="match-score score-negative">-2</div>
+                    <div class="match-status">Lost</div>
+                </div>
+            </div>
+
+            <div class="match-list-item">
+                <div class="match-info">
+                    <div class="match-opponents">vs CardShark, TrickMaster, Bob</div>
+                    <div class="match-time">Yesterday</div>
+                </div>
+                <div class="match-result">
+                    <div class="match-score score-positive">+22</div>
+                    <div class="match-status">Won</div>
+                </div>
+            </div>
+
+            <div class="match-list-item">
+                <div class="match-info">
+                    <div class="match-opponents">vs Dragon AI, Phoenix Bot, Wei</div>
+                    <div class="match-time">2 days ago</div>
+                </div>
+                <div class="match-result">
+                    <div class="match-score score-positive">+18</div>
+                    <div class="match-status">Won</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Bottom Tab Bar -->
+        <nav class="tab-bar">
+            <a href="#" class="tab-item">
+                <span class="tab-icon">🎮</span>
+                <span class="tab-label">Play</span>
+            </a>
+            <a href="#" class="tab-item active">
+                <span class="tab-icon">📊</span>
+                <span class="tab-label">Stats</span>
+            </a>
+            <a href="#" class="tab-item">
+                <span class="tab-icon">🏆</span>
+                <span class="tab-label">Rank</span>
+            </a>
+            <a href="#" class="tab-item">
+                <span class="tab-icon">👤</span>
+                <span class="tab-label">Profile</span>
+            </a>
+        </nav>
+
+        <!-- Achievement Popup (hidden by default) -->
+        <div class="achievement-popup" id="achievementPopup">
+            🏆 First Victory!
+        </div>
+    </div>
+
+    <script>
+        // Simulate achievement popup
+        setTimeout(() => {
+            const popup = document.getElementById('achievementPopup');
+            popup.style.display = 'block';
+            setTimeout(() => {
+                popup.style.display = 'none';
+            }, 2000);
+        }, 1000);
+
+        // Add touch feedback
+        document.querySelectorAll('button, .match-list-item, .tab-item').forEach(element => {
+            element.addEventListener('touchstart', function() {
+                this.style.opacity = '0.7';
+            });
+            element.addEventListener('touchend', function() {
+                this.style.opacity = '1';
+            });
+        });
+
+        // Action button handlers
+        document.querySelector('.action-btn').addEventListener('click', () => {
+            console.log('Opening full replay...');
+            // In a real app, this would navigate to the replay view
+        });
+
+        document.querySelector('.action-btn.secondary').addEventListener('click', () => {
+            console.log('Sharing result...');
+            // In a real app, this would open the share dialog
+            if (navigator.share) {
+                navigator.share({
+                    title: 'Liap Tui Victory!',
+                    text: 'I just won a game with +14 points!',
+                    url: window.location.href
+                });
+            }
+        });
+
+        // Match list item click handlers
+        document.querySelectorAll('.match-list-item').forEach(item => {
+            item.addEventListener('click', () => {
+                console.log('Opening match details...');
+                // In a real app, this would navigate to that match's details
+            });
+        });
+
+        // Tab navigation
+        document.querySelectorAll('.tab-item').forEach(tab => {
+            tab.addEventListener('click', (e) => {
+                e.preventDefault();
+                document.querySelectorAll('.tab-item').forEach(t => t.classList.remove('active'));
+                tab.classList.add('active');
+            });
+        });
+
+        // Pull to refresh simulation
+        let startY = 0;
+        let currentY = 0;
+        let pulling = false;
+
+        document.addEventListener('touchstart', (e) => {
+            if (window.scrollY === 0) {
+                startY = e.touches[0].pageY;
+                pulling = true;
+            }
+        });
+
+        document.addEventListener('touchmove', (e) => {
+            if (!pulling) return;
+            currentY = e.touches[0].pageY;
+            const diff = currentY - startY;
+            if (diff > 0 && diff < 100) {
+                document.querySelector('.mobile-header').style.transform = `translateY(${diff * 0.5}px)`;
+            }
+        });
+
+        document.addEventListener('touchend', () => {
+            if (!pulling) return;
+            pulling = false;
+            document.querySelector('.mobile-header').style.transform = '';
+            
+            if (currentY - startY > 80) {
+                console.log('Refreshing...');
+                // In a real app, this would refresh the data
+            }
+        });
+    </script>
+</body>
+</html>

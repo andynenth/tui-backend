@@ -109,24 +109,7 @@ Records initial hands dealt to each player at round start.
 }
 ```
 
-### 5. `play_with_context` (~122 events)
-Enhanced play information with hand state before and after the play.
-
-**Payload Structure:**
-```json
-{
-  "player_name": "Player 1",
-  "pieces": [
-    {"kind": "SOLDIER_BLACK", "point": 1}
-  ],
-  "hand_before": [/* pieces before play */],
-  "hand_after": [/* pieces after play */],
-  "turn_number": 1,
-  "required_count": 1
-}
-```
-
-### 6. `turn_complete` (~13 events)
+### 5. `turn_complete` (~13 events)
 Marks the completion of a turn (all players have played).
 
 ## Piece Types
@@ -172,3 +155,6 @@ ORDER BY sequence;
 
 ## File Location
 The database is stored at the project root: `/liap-tui/game_events.db`
+
+## Note on play_with_context Events
+The `play_with_context` event type is used for real-time WebSocket broadcasting during gameplay but is NOT stored in the database. The Play History API calculates hand states by tracking changes from `hands_dealt` and `action_processed` events, avoiding redundant data storage.

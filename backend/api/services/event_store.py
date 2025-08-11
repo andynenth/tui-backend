@@ -6,6 +6,7 @@ Provides persistent event storage, state reconstruction, and client recovery
 import asyncio
 import json
 import logging
+import os
 import sqlite3
 import time
 from dataclasses import asdict, dataclass
@@ -44,9 +45,17 @@ class EventStore:
     Uses SQLite for development, can be extended for PostgreSQL in production
     """
 
-    def __init__(self, db_path: str = "game_events.db"):
+    def __init__(self, db_path: Optional[str] = None):
         """Initialize EventStore with database connection"""
-        self.db_path = db_path
+        # Use absolute path to ensure database is always in project root
+        if db_path is None:
+            # Get the project root directory (3 levels up from this file)
+            # backend/api/services/event_store.py -> project_root
+            current_dir = Path(__file__).resolve()
+            project_root = current_dir.parent.parent.parent.parent
+            self.db_path = str(project_root / "game_events.db")
+        else:
+            self.db_path = db_path
         self.sequence_counter = 0
         self._connection = None
         self._lock = asyncio.Lock()
