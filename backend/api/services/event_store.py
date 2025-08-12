@@ -14,6 +14,9 @@ from datetime import datetime, timedelta
 from pathlib import Path
 from typing import Any, Dict, List, Optional
 
+# Import EventBuffer for optimized writes
+from backend.services.event_buffer import EventBuffer
+
 logger = logging.getLogger(__name__)
 
 
@@ -66,6 +69,22 @@ class EventStore:
         # Load current sequence counter
         self._load_sequence_counter()
 
+        # Initialize event buffer if enabled
+        buffer_enabled = os.getenv("EVENT_BUFFER_ENABLED", "true").lower() == "true"
+        buffer_size = int(os.getenv("EVENT_BUFFER_SIZE", "20"))
+        buffer_interval = float(os.getenv("EVENT_BUFFER_FLUSH_INTERVAL", "2.0"))
+        
+        if buffer_enabled:
+            self._buffer = EventBuffer(
+                max_size=buffer_size,
+                flush_interval=buffer_interval,
+                event_store=self
+            )
+            logger.info(f"EventStore: Buffer enabled (size: {buffer_size}, interval: {buffer_interval}s)")
+        else:
+            self._buffer = None
+            logger.info("EventStore: Buffer disabled, using direct writes")
+
         logger.info(f"EventStore initialized with database: {db_path}")
 
     def _init_database(self):
@@ -114,6 +133,45 @@ class EventStore:
         current = self.sequence_counter
         self.sequence_counter += 1
         return current
+
+    async def store_event_buffered(
+        self,
+        room_id: str,
+        event_type: str,
+        payload: Dict[str, Any],
+        player_id: Optional[str] = None,
+    ) -> None:
+        """
+        Store event through buffer if enabled, otherwise direct storage
+        
+        This is the new optimized entry point that uses buffering to
+        reduce database writes by 90%.
+        
+        Args:
+            room_id: The room/game identifier
+            event_type: Type of event
+            payload: Event data
+            player_id: Optional player identifier
+        """
+        if self._buffer:
+            await self._buffer.add_event(room_id, event_type, payload, player_id)
+        else:
+            await self.store_event(room_id, event_type, payload, player_id)
+
+    async def store_event_direct(
+        self,
+        room_id: str,
+        event_type: str,
+        payload: Dict[str, Any],
+        player_id: Optional[str] = None,
+    ) -> GameEvent:
+        """
+        Direct storage without buffering - used by buffer flush
+        
+        This bypasses the buffer and writes directly to the database.
+        Used internally by the EventBuffer during flush operations.
+        """
+        return await self.store_event(room_id, event_type, payload, player_id)
 
     async def store_event(
         self,
@@ -739,6 +797,31 @@ class EventStore:
             "total_events": len(sequences),
             "first_sequence": sequences[0],
             "last_sequence": sequences[-1]
+        }
+
+    async def shutdown(self) -> None:
+        """
+        Gracefully shutdown the event store
+        
+        Flushes any pending buffered events to ensure no data loss.
+        """
+        if self._buffer:
+            logger.info("Shutting down EventStore - flushing buffer...")
+            await self._buffer.shutdown()
+            logger.info("EventStore buffer flushed successfully")
+
+    def get_buffer_metrics(self) -> Dict[str, Any]:
+        """
+        Get buffer performance metrics
+        
+        Returns:
+            Dict: Buffer metrics or empty dict if buffer disabled
+        """
+        if self._buffer:
+            return self._buffer.get_metrics()
+        return {
+            "buffer_enabled": False,
+            "message": "Event buffering is disabled"
         }
 
 

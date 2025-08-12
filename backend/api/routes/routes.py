@@ -544,6 +544,11 @@ async def detailed_health_check():
             for conns in backend.socket_manager._socket_manager.room_connections.values()
         )
 
+        # Get event buffer metrics
+        buffer_metrics = {}
+        if EVENT_STORE_AVAILABLE and event_store:
+            buffer_metrics = event_store.get_buffer_metrics()
+
         # Return in the expected DetailedHealthCheck format
         return {
             "status": (
@@ -562,6 +567,7 @@ async def detailed_health_check():
             "memory_usage_mb": memory_usage_mb,
             "active_rooms": active_rooms,
             "active_connections": active_connections,
+            "event_buffer": buffer_metrics,
         }
 
     except Exception as e:

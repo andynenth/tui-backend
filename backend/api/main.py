@@ -271,6 +271,14 @@ async def shutdown_event():
     if hasattr(app.state, "maintenance_scheduler"):
         app.state.maintenance_scheduler.stop()
         print("✅ Log maintenance scheduler stopped")
+    
+    # Flush EventStore buffer to ensure no data loss
+    try:
+        from backend.api.services.event_store import event_store
+        await event_store.shutdown()
+        print("✅ EventStore buffer flushed successfully")
+    except Exception as e:
+        print(f"⚠️  Error flushing EventStore buffer: {e}")
 
 
 # Catch-all route for React Router - MUST be after all other routes

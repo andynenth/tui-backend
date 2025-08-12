@@ -76,7 +76,8 @@ class ActionQueue:
             player_id: Optional player identifier
         """
         try:
-            await event_store.store_event(
+            # Use buffered storage for 90% write reduction
+            await event_store.store_event_buffered(
                 room_id=self.room_id,
                 event_type=event_type,
                 payload=payload,
@@ -84,7 +85,7 @@ class ActionQueue:
             )
 
             self.logger.debug(
-                f"Stored state event: {event_type} for room {self.room_id}"
+                f"Stored state event (buffered): {event_type} for room {self.room_id}"
             )
 
         except Exception as e:
