@@ -6,7 +6,7 @@ from typing import AsyncGenerator, List, Optional
 
 from .core import GameAction
 
-# Import EventStore for action persistence
+# Import EventStore for state event persistence
 from backend.api.services.event_store import event_store
 
 
@@ -35,9 +35,10 @@ class ActionQueue:
 
     async def process_actions(self) -> List[GameAction]:
         """
-        FIX: Process all queued actions and return them as a list.
-        The previous async generator approach had timing issues.
-        Enhanced: Now persists actions to EventStore for replay capability.
+        Process all queued actions and return them as a list.
+        
+        Note: Raw actions are not stored - only validated state changes from 
+        state classes are persisted to maintain data integrity.
         """
         async with self.processing_lock:
             self.processing = True
@@ -49,8 +50,8 @@ class ActionQueue:
                     processed_actions.append(action)
                     self.logger.debug(f"Processing action: {action.action_type.value}")
 
-                    # Store action in EventStore for persistence and replay
-                    await self._store_action_event(action)
+                    # Note: Action storage removed - state machine stores validated state changes
+                    # This prevents duplicate/invalid bot actions from being persisted
 
                     self.queue.task_done()
             finally:
@@ -62,50 +63,6 @@ class ActionQueue:
         """Check if there are actions waiting to be processed"""
         return not self.queue.empty()
 
-    async def _store_action_event(self, action: GameAction) -> None:
-        """
-        Store action in EventStore for persistence and replay
-
-        Args:
-            action: The action to store
-        """
-        try:
-            # Deep copy payload to avoid modifying original
-            serializable_payload = {}
-            if hasattr(action, "payload") and action.payload:
-                for key, value in action.payload.items():
-                    if key == "pieces" and isinstance(value, list):
-                        # Convert Piece objects to dictionaries
-                        serializable_payload[key] = [
-                            piece.to_dict() if hasattr(piece, "to_dict") else str(piece)
-                            for piece in value
-                        ]
-                    else:
-                        serializable_payload[key] = value
-
-            # Convert action to event payload
-            payload = {
-                "action_type": action.action_type.value,
-                "player_name": action.player_name,
-                "sequence_id": action.sequence_id,
-                "payload": serializable_payload,
-            }
-
-            # Store event
-            await event_store.store_event(
-                room_id=self.room_id,
-                event_type="action_processed",
-                payload=payload,
-                player_id=action.player_name,
-            )
-
-            self.logger.debug(
-                f"Stored action event: {action.action_type.value} for room {self.room_id}"
-            )
-
-        except Exception as e:
-            # Don't let event storage failures break the game
-            self.logger.error(f"Failed to store action event: {e}")
 
     async def store_state_event(
         self, event_type: str, payload: dict, player_id: Optional[str] = None

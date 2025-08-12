@@ -24,7 +24,7 @@
 @import './components/game/turnresults.css';
 @import './components/game/scoring.css';
 @import './components/game/gameover.css';
-@import 'tailwindcss/index.css';
+@import 'tailwindcss';
 
 /* Your custom styles */
 @layer base {
