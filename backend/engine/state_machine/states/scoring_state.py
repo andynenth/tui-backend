@@ -368,6 +368,9 @@ class ScoringState(GameState):
                 f"total {player.score}"
             )
 
+        # 🚀 V2 OPTIMIZATION: Fire round_completed event after scoring
+        await self._fire_round_completed_event()
+
     async def _check_game_winner(self) -> None:
         """Check if any player has won the game (≥50 points)"""
         game = self.state_machine.game
@@ -446,3 +449,52 @@ class ScoringState(GameState):
             f"⏰ SCORING_DELAY_DEBUG: 7-second delay complete - setting display_delay_complete = True"
         )
         self.logger.info("Scoring display delay complete - ready to transition")
+
+    async def _fire_round_completed_event(self) -> None:
+        """🚀 V2 OPTIMIZATION: Fire round_completed event with comprehensive round data"""
+        game = self.state_machine.game
+        
+        # Get initial hands data from game if stored during preparation phase
+        initial_hands = {}
+        if hasattr(game, "round_initial_hands"):
+            initial_hands = game.round_initial_hands
+        else:
+            # Fallback: reconstruct from current player hands (less accurate)
+            self.logger.warning("round_initial_hands not found, using fallback")
+            if hasattr(game, "players"):
+                for player in game.players:
+                    initial_hands[player.name] = []  # Empty since we can't reconstruct
+        
+        # Gather all round data for the event
+        round_data = {
+            "round_number": getattr(game, "round_number", 1),
+            "starter_player": getattr(game, "round_starter", ""),
+            "starter_reason": getattr(game, "starter_reason", "default"),
+            "initial_hands": initial_hands,
+            "declarations": getattr(game, "player_declarations", {}),
+            "turn_sequence": [],  # Captured from turn_results below
+            "scores": self.round_scores,
+            "total_scores": {p.name: p.score for p in game.players} if hasattr(game, "players") else {},
+        }
+        
+        # Add turn sequence if available (from turn_results)
+        if hasattr(game, "turn_results") and game.turn_results:
+            round_data["turn_sequence"] = [
+                {
+                    "turn_number": i + 1,
+                    "starter": turn.get("starter", ""),
+                    "plays": turn.get("plays", {}),
+                    "winner": turn.get("winner", ""),
+                    "piles_won": turn.get("piles_won", 0),
+                }
+                for i, turn in enumerate(game.turn_results)
+            ]
+        
+        await self.state_machine.store_game_event(
+            "round_completed",
+            round_data,
+        )
+        
+        self.logger.info(
+            f"🚀 V2 EVENT: round_completed event fired for room {self.state_machine.room_id}, round {game.round_number}"
+        )

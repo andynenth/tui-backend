@@ -174,6 +174,9 @@ class PreparationState(GameState):
             starter_name = getattr(game.players[0], "name", str(game.players[0]))
             starter_reason = "default"
         
+        # Store initial hands in game object for round_completed event
+        game.round_initial_hands = hands_data
+        
         # Broadcast hands_dealt event for complete game history
         hands_dealt_data = {
             "round_number": game.round_number,

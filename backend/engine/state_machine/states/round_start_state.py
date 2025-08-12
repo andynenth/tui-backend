@@ -64,6 +64,35 @@ class RoundStartState(GameState):
             f"Round {game.round_number} starting with {starter}",
         )
 
+        # 🚀 V2 OPTIMIZATION: Fire semantic events
+        if game.round_number == 1:
+            # Fire game_started event for first round only
+            players = []
+            if hasattr(game, "players") and game.players:
+                players = [p.name for p in game.players]
+            
+            await self.state_machine.store_game_event(
+                "game_started",
+                {
+                    "players": players,
+                    "timestamp": time.time(),
+                    "round_number": game.round_number,
+                },
+            )
+            self.logger.info(f"🚀 V2 EVENT: game_started event fired for room {self.state_machine.room_id}")
+        
+        # Fire round_started event for every round
+        await self.state_machine.store_game_event(
+            "round_started",
+            {
+                "round_number": game.round_number,
+                "starter": starter,
+                "starter_reason": starter_reason,
+                "timestamp": time.time(),
+            },
+        )
+        self.logger.info(f"🚀 V2 EVENT: round_started event fired for round {game.round_number}")
+
         # Record start time for auto-transition
         self.start_time = time.time()
 

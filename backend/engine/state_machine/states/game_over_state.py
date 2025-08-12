@@ -47,14 +47,38 @@ class GameOverState(GameState):
         if not game.end_time:
             game.end_time = time.time()
 
+        # Calculate winners and rankings
+        winners = get_winners(game)
+        winner_names = [player.name for player in winners]
+        rankings = self._calculate_final_rankings()
+
         # Prepare all final data for frontend
         await self.update_phase_data(
             {
-                "final_rankings": self._calculate_final_rankings(),
+                "final_rankings": rankings,
                 "game_stats": self._calculate_game_statistics(),
-                "winners": [player.name for player in get_winners(game)],
+                "winners": winner_names,
             },
             "Game over phase initialized",
+        )
+
+        # 🚀 V2 OPTIMIZATION: Fire game_completed event
+        final_scores = {p.name: p.score for p in game.players} if hasattr(game, "players") else {}
+        winner = winner_names[0] if winner_names else ""  # Use first winner if multiple
+        
+        await self.state_machine.store_game_event(
+            "game_completed",
+            {
+                "final_scores": final_scores,
+                "winner": winner,
+                "total_rounds": getattr(game, "round_number", 0),
+                "game_duration": game.end_time - game.start_time if game.start_time and game.end_time else 0,
+                "timestamp": time.time(),
+            },
+        )
+        
+        self.logger.info(
+            f"🚀 V2 EVENT: game_completed event fired for room {self.state_machine.room_id}, winner: {winner}"
         )
 
     async def _cleanup_phase(self) -> None:

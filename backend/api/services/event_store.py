@@ -938,8 +938,11 @@ class EventStore:
         }
 
 
-# Global instance
-event_store = EventStore()
+# Import MigrationAdapter for optimized v2 integration
+from backend.services.migration_adapter import MigrationAdapter
+
+# Global instance - now uses MigrationAdapter for v2 optimization
+event_store = MigrationAdapter()
 
 
 # Export for easy importing

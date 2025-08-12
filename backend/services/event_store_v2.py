@@ -280,6 +280,40 @@ class EventStoreV2:
         finally:
             conn.close()
     
+    async def store_event(self, room_id: str, event_type: str, payload: Dict[str, Any]) -> None:
+        """
+        Store a generic event in the v2 events table.
+        
+        Args:
+            room_id: Room identifier
+            event_type: Event type
+            payload: Event data
+        """
+        conn = sqlite3.connect(self.db_path)
+        try:
+            # Extract round number from payload if available
+            round_number = payload.get('round_number') or payload.get('round') or None
+            
+            conn.execute("""
+                INSERT INTO game_events_v2 (room_id, event_type, round_number, timestamp, created_at)
+                VALUES (?, ?, ?, ?, ?)
+            """, (
+                room_id,
+                event_type,
+                round_number,
+                time.time(),
+                datetime.now().isoformat()
+            ))
+            
+            conn.commit()
+            logger.debug(f"Stored {event_type} event for room {room_id} in v2")
+            
+        except Exception as e:
+            logger.error(f"Failed to store event in v2: {e}")
+            raise
+        finally:
+            conn.close()
+    
     async def get_active_games(self, limit: int = 50) -> List[Dict[str, Any]]:
         """Get list of active games."""
         conn = sqlite3.connect(self.db_path)

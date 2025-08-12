@@ -181,22 +181,24 @@ class DeclarationState(GameState):
     
     async def _emit_declarations_completed(self) -> None:
         """Emit a compressed declarations_completed event for event compression"""
-        import os
-        compression_enabled = os.getenv("EVENT_COMPRESSION_ENABLED", "false").lower() == "true"
+        declarations = self.phase_data["declarations"]
+        total_declared = self.phase_data["declaration_total"]
         
-        if compression_enabled:
-            declarations = self.phase_data["declarations"]
-            total_declared = self.phase_data["declaration_total"]
-            
-            # Emit semantic event through custom event system
-            await self.broadcast_custom_event(
-                "declarations_completed",
-                {
-                    "declarations": declarations,
-                    "total_declared": total_declared,
-                    "valid": total_declared != 8,  # Total must not equal 8
-                    "_compressed": True,
-                    "_original_count": len(declarations),
-                },
-                f"All declarations complete - total: {total_declared}"
-            )
+        event_data = {
+            "declarations": declarations,
+            "total_declared": total_declared,
+            "valid": total_declared != 8,  # Total must not equal 8
+        }
+        
+        # Store semantic event for v2 optimization
+        await self.state_machine.store_game_event(
+            "declarations_completed",
+            event_data
+        )
+        
+        # Also broadcast for real-time updates
+        await self.broadcast_custom_event(
+            "declarations_completed",
+            event_data,
+            f"All declarations complete - total: {total_declared}"
+        )

@@ -104,7 +104,8 @@ class CompressedEvent:
     """Represents a compressed semantic event."""
     
     def __init__(self, event_type: SemanticEventType, payload: Dict[str, Any]):
-        self.event_type = event_type
+        # Store event_type as string to avoid serialization issues
+        self.event_type = event_type.value if isinstance(event_type, SemanticEventType) else event_type
         self.payload = payload
         self.original_event_count = payload.get("_original_count", 1)
         self.compression_ratio = payload.get("_compression_ratio", 1.0)

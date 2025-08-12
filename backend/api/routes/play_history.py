@@ -152,12 +152,11 @@ async def get_play_history(
     # Start timing for performance monitoring
     start_time = time.time()
     
-    # Check if v2 is enabled
-    use_v2 = os.getenv("DB_V2_PRIMARY", "false").lower() == "true"
-    dual_write_enabled = os.getenv("DB_DUAL_WRITE_MODE", "false").lower() == "true"
+    # Always use v2 service now
+    use_v2 = True
     
     # Create service based on configuration
-    if use_v2 and dual_write_enabled:
+    if use_v2:
         # Use v2 service for optimized performance
         from backend.services.play_history_v2 import PlayHistoryV2Service
         service = PlayHistoryV2Service()
@@ -492,12 +491,11 @@ async def get_rounds_range(
     
     start_time = time.time()
     
-    # Check if v2 is enabled
-    use_v2 = os.getenv("DB_V2_PRIMARY", "false").lower() == "true"
-    dual_write_enabled = os.getenv("DB_DUAL_WRITE_MODE", "false").lower() == "true"
+    # Always use v2 service now
+    use_v2 = True
     
     # Create service based on configuration
-    if use_v2 and dual_write_enabled:
+    if use_v2:
         # Use v2 service for optimized performance
         from backend.services.play_history_v2 import PlayHistoryV2Service
         service = PlayHistoryV2Service()
@@ -547,60 +545,60 @@ async def get_rounds_range(
             logger.info(f"Room {room_id} not in memory, attempting SQLite retrieval for range")
             
             # Create minimal game object for service interface
-        from backend.engine.game import Game
-        from backend.engine.player import Player
-        
-        # Create minimal players (will be overridden by event data)
-        players = [
-            Player("Player 1", is_bot=False),
-            Player("Player 2", is_bot=True),
-            Player("Player 3", is_bot=True),
-            Player("Player 4", is_bot=True)
-        ]
-        
-        minimal_game = Game(players)
-        minimal_game.round_number = 0  # No rounds in memory
-        minimal_game.current_phase = "WAITING"
-        
-        # Try to get history from SQLite
-        play_history = await service.build_play_history(
-            minimal_game, 
-            room_id, 
-            include_ai_analysis=include_ai_analysis, 
-            format=format
-        )
-        
-        # If no data found in SQLite either, then truly not found
-        if play_history.total_rounds == 0:
-            error_response, status_code = create_error_response(
-                code=ErrorCodes.ROOM_NOT_FOUND,
-                message=f"Room with ID '{room_id}' not found",
-                status_code=404,
-                context={"room_id": room_id},
-                path=str(request.url.path)
+            from backend.engine.game import Game
+            from backend.engine.player import Player
+            
+            # Create minimal players (will be overridden by event data)
+            players = [
+                Player("Player 1", is_bot=False),
+                Player("Player 2", is_bot=True),
+                Player("Player 3", is_bot=True),
+                Player("Player 4", is_bot=True)
+            ]
+            
+            minimal_game = Game(players)
+            minimal_game.round_number = 0  # No rounds in memory
+            minimal_game.current_phase = "WAITING"
+            
+            # Try to get history from SQLite
+            play_history = await service.build_play_history(
+                minimal_game, 
+                room_id, 
+                include_ai_analysis=include_ai_analysis, 
+                format=format
             )
-            # Pass the full error response as detail for our custom handler
-            raise HTTPException(status_code=status_code, detail=error_response.model_dump())
-    else:
-        # Room exists in memory
-        if not room.game:
-            error_response, status_code = create_error_response(
-                code=ErrorCodes.NO_ACTIVE_GAME,
-                message=f"Room '{room_id}' has no active game",
-                status_code=400,
-                context={"room_id": room_id},
-                path=str(request.url.path)
+            
+            # If no data found in SQLite either, then truly not found
+            if play_history.total_rounds == 0:
+                error_response, status_code = create_error_response(
+                    code=ErrorCodes.ROOM_NOT_FOUND,
+                    message=f"Room with ID '{room_id}' not found",
+                    status_code=404,
+                    context={"room_id": room_id},
+                    path=str(request.url.path)
+                )
+                # Pass the full error response as detail for our custom handler
+                raise HTTPException(status_code=status_code, detail=error_response.model_dump())
+        else:
+            # Room exists in memory
+            if not room.game:
+                error_response, status_code = create_error_response(
+                    code=ErrorCodes.NO_ACTIVE_GAME,
+                    message=f"Room '{room_id}' has no active game",
+                    status_code=400,
+                    context={"room_id": room_id},
+                    path=str(request.url.path)
+                )
+                # Pass the full error response as detail for our custom handler
+                raise HTTPException(status_code=status_code, detail=error_response.model_dump())
+            
+            # Build play history with actual game
+            play_history = await service.build_play_history(
+                room.game, 
+                room_id, 
+                include_ai_analysis=include_ai_analysis, 
+                format=format
             )
-            # Pass the full error response as detail for our custom handler
-            raise HTTPException(status_code=status_code, detail=error_response.model_dump())
-        
-        # Build play history with actual game
-        play_history = await service.build_play_history(
-            room.game, 
-            room_id, 
-            include_ai_analysis=include_ai_analysis, 
-            format=format
-        )
     
     # Filter to only include rounds in the requested range
     # This is more efficient than parsing comma-separated values

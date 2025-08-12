@@ -8,6 +8,7 @@ from .core import GameAction
 
 # Import EventStore for state event persistence
 from backend.api.services.event_store import event_store
+import os
 
 
 class ActionQueue:
@@ -76,16 +77,11 @@ class ActionQueue:
             player_id: Optional player identifier
         """
         try:
-            # Use buffered storage for 90% write reduction
-            await event_store.store_event_buffered(
-                room_id=self.room_id,
-                event_type=event_type,
-                payload=payload,
-                player_id=player_id,
-            )
-
+            # Use the global event_store which now routes through MigrationAdapter
+            await event_store.store_event(self.room_id, event_type, payload, player_id)
+            
             self.logger.debug(
-                f"Stored state event (buffered): {event_type} for room {self.room_id}"
+                f"Stored state event: {event_type} for room {self.room_id}"
             )
 
         except Exception as e:
