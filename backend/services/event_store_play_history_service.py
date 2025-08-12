@@ -68,6 +68,9 @@ class EventStorePlayHistoryService:
         self.db_path = str(project_root / "game_events.db")
         self._cache = {}
         self._cache_ttl = 300  # 5 minutes
+        
+        # Track if we're dealing with compressed events
+        self._compressed_mode = False
 
     async def build_play_history_from_events(
         self,
@@ -199,6 +202,9 @@ class EventStorePlayHistoryService:
         include_ai_analysis: bool
     ) -> RoundHistory:
         """Build complete round history from events"""
+        # Check if we have compressed events
+        self._check_compression_mode(events)
+        
         initial_state = self._extract_initial_state(events, round_num)
         hands_dealt = self._extract_hands_dealt(events)
         declaration_phase = self._extract_declaration_phase(events, players)
@@ -349,10 +355,17 @@ class EventStorePlayHistoryService:
         pile_room_calculation = {}
         total_declared = 0
 
-        # Extract declarations from phase_data_update events
+        # Check for compressed declarations first
         declaration_map = {}
         for event in events:
-            if event.event_type == "phase_data_update":
+            # Handle compressed declarations_completed event
+            if event.event_type == "declarations_completed":
+                if self._compressed_mode:
+                    declaration_map = event.payload.get("declarations", {})
+                    total_declared = event.payload.get("total_declared", 0)
+                    break
+            # Fall back to phase_data_update events
+            elif event.event_type == "phase_data_update":
                 phase_data = event.payload.get("updates", {})
                 if "declarations" in phase_data:
                     event_declarations = phase_data["declarations"]
@@ -426,9 +439,14 @@ class EventStorePlayHistoryService:
                     initial_hands[player_name] = hand_pieces.copy()
                 break
 
-        # Extract declarations from phase_data_update events
+        # Extract declarations - check compressed first
         for event in events:
-            if event.event_type == "phase_data_update":
+            # Handle compressed declarations_completed event
+            if event.event_type == "declarations_completed" and self._compressed_mode:
+                turn_declarations = event.payload.get("declarations", {})
+                break
+            # Fall back to phase_data_update events
+            elif event.event_type == "phase_data_update":
                 phase_data = event.payload.get("updates", {})
                 if "declarations" in phase_data:
                     event_declarations = phase_data["declarations"]
@@ -456,6 +474,107 @@ class EventStorePlayHistoryService:
             # Update captured counts from phase_change events
             update_captured_from_event(event)
 
+            # Handle compressed turn_completed events
+            if event.event_type == "turn_completed" and self._compressed_mode:
+                turn_data = event.payload
+                turn_num = turn_data.get("turn_number", turn_number)
+                starter = turn_data.get("starter", "")
+                plays_data = turn_data.get("plays", {})
+                
+                # Convert compressed plays to TurnInfo
+                for player_name, play_info in plays_data.items():
+                    pieces = play_info.get("pieces", [])
+                    
+                    # Calculate hand_before (current hand)
+                    hand_before = []
+                    if player_name in player_hands:
+                        hand_before = [
+                            PieceInfo(kind=p["kind"], point=p["point"])
+                            for p in player_hands[player_name]
+                        ]
+                    
+                    # Remove played pieces from player's hand
+                    hand_after_data = player_hands.get(player_name, []).copy()
+                    for played_piece in pieces:
+                        # Find and remove the played piece from hand
+                        for j, hand_piece in enumerate(hand_after_data):
+                            if (hand_piece["kind"] == played_piece["kind"] and
+                                hand_piece["point"] == played_piece["point"]):
+                                hand_after_data.pop(j)
+                                break
+                    
+                    # Update player's current hand
+                    if player_name in player_hands:
+                        player_hands[player_name] = hand_after_data
+                    
+                    # Convert hand_after to PieceInfo objects
+                    hand_after = [
+                        PieceInfo(kind=p["kind"], point=p["point"])
+                        for p in hand_after_data
+                    ]
+                    
+                    # Update pieces played count
+                    if player_name in player_pieces_played:
+                        player_pieces_played[player_name] += len(pieces)
+                    
+                    play_data_obj = PlayData(
+                        player_id=player_name.lower().replace(" ", "_"),
+                        player_name=player_name,
+                        pieces_played=[
+                            PieceInfo(kind=p["kind"], point=p["point"])
+                            for p in pieces
+                        ],
+                        play_type=get_play_type_from_dicts(pieces) if pieces else "UNKNOWN",
+                        hand_before=hand_before,
+                        hand_after=hand_after,
+                        captured_count=player_captured.get(player_name, 0),
+                        declared_count=turn_declarations.get(player_name, 0),
+                        ai_decision_analysis=None
+                    )
+                    current_turn_plays.append(play_data_obj)
+                
+                # Create winner info
+                winner_info = None
+                if turn_data.get("winner"):
+                    winner_name = turn_data["winner"]
+                    winner_play = next(
+                        (p for p in current_turn_plays if p.player_name == winner_name),
+                        None
+                    )
+                    if winner_play:
+                        winner_info = TurnWinner(
+                            player_id=winner_name.lower().replace(" ", "_"),
+                            player_name=winner_name,
+                            winning_play=winner_play.pieces_played,
+                            pieces_captured=turn_data.get("piles_won", 1)
+                        )
+                        # Update captured counts
+                        if winner_name in player_captured:
+                            player_captured[winner_name] += turn_data.get("piles_won", 1)
+                
+                # Calculate game state after turn
+                game_state_after = {}
+                for player_name in turn_declarations:
+                    game_state_after[player_name] = GameStateAfterTurn(
+                        captured=player_captured.get(player_name, 0),
+                        declared=turn_declarations.get(player_name, 0),
+                        hand_size=8 - player_pieces_played.get(player_name, 0)
+                    )
+                
+                turn = TurnInfo(
+                    turn_number=turn_num,
+                    plays=current_turn_plays,
+                    winner=winner_info,
+                    next_starter=turn_data.get("winner", starter),
+                    game_state_after=game_state_after
+                )
+                turns.append(turn)
+                
+                # Reset for next turn
+                current_turn_plays = []
+                turn_number = turn_num + 1
+                continue
+            
             if event.event_type == "phase_data_update":
                 # Check for turn_plays data in phase updates
                 phase_data = event.payload.get("updates", {})
@@ -667,3 +786,16 @@ class EventStorePlayHistoryService:
             scoring=scoring,
             cumulative_scores=cumulative_scores
         )
+    
+    def _check_compression_mode(self, events: List[GameEvent]) -> None:
+        """Check if events are compressed and set mode accordingly"""
+        for event in events:
+            # Check for explicit compression flag
+            if event.payload.get("_compressed", False):
+                self._compressed_mode = True
+                return
+            # Also check for compressed event types
+            if event.event_type in ["declarations_completed", "turn_completed"]:
+                self._compressed_mode = True
+                return
+        self._compressed_mode = False

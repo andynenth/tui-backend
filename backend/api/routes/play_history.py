@@ -20,6 +20,7 @@ from backend.api.docs.play_history_examples import (
     ERROR_NO_ACTIVE_GAME,
     ERROR_INVALID_RANGE
 )
+import os
 
 router = APIRouter()
 logger = logging.getLogger(__name__)
@@ -151,8 +152,57 @@ async def get_play_history(
     # Start timing for performance monitoring
     start_time = time.time()
     
-    # Create service first to allow SQLite fallback
-    service = PlayHistoryService()
+    # Check if v2 is enabled
+    use_v2 = os.getenv("DB_V2_PRIMARY", "false").lower() == "true"
+    dual_write_enabled = os.getenv("DB_DUAL_WRITE_MODE", "false").lower() == "true"
+    
+    # Create service based on configuration
+    if use_v2 and dual_write_enabled:
+        # Use v2 service for optimized performance
+        from backend.services.play_history_v2 import PlayHistoryV2Service
+        service = PlayHistoryV2Service()
+        
+        # Build history from v2
+        play_history = await service.build_play_history(
+            room_id=room_id,
+            round_numbers=None,
+            include_ai_analysis=include_ai_analysis,
+            format=format
+        )
+        
+        # Apply round filtering if specific rounds requested
+        if rounds:
+            # Parse comma-separated round numbers and filter
+            round_numbers = [int(r.strip()) for r in rounds.split(",")]
+            play_history.rounds = [r for r in play_history.rounds if r.round_number in round_numbers]
+        
+        # Update total rounds
+        play_history.total_rounds = len(play_history.rounds)
+        
+        # Handle include_hands parameter with format interaction
+        if format != "compact" and not include_hands:
+            for round_data in play_history.rounds:
+                round_data.hands_dealt = {}
+        
+        # Edge case: User wants compact format but WITH hands
+        if format == "compact" and include_hands:
+            # Re-fetch with full format to get hands
+            full_history = await service.build_play_history(
+                room_id=room_id,
+                round_numbers=None,
+                include_ai_analysis=include_ai_analysis,
+                format=None
+            )
+            # Copy hands from full history
+            for i, round_data in enumerate(play_history.rounds):
+                if i < len(full_history.rounds):
+                    round_data.hands_dealt = full_history.rounds[i].hands_dealt
+        
+        # The v2 service handles other parameters internally
+        
+    else:
+        # Use v1 service (original logic)
+        service = PlayHistoryService()
     
     # Check if room exists
     room = await shared_room_manager.get_room(room_id)
@@ -217,43 +267,43 @@ async def get_play_history(
             format=format
         )
     
-    # Apply round filtering if specific rounds requested
-    if rounds:
-        # Parse comma-separated round numbers and filter
-        # This reduces response size when only specific rounds are needed
-        round_numbers = [int(r.strip()) for r in rounds.split(",")]
-        play_history.rounds = [r for r in play_history.rounds if r.round_number in round_numbers]
-    
-    # Handle include_hands parameter with format interaction
-    # Compact format excludes hands by default for efficiency
-    # Full format includes hands by default but can be excluded
-    if format != "compact" and not include_hands:
-        # For non-compact format, remove hands if include_hands is false
-        # This reduces response size by ~20-30% depending on game length
-        for round_data in play_history.rounds:
-            round_data.hands_dealt = {}
-    
-    # Edge case: User wants compact format but WITH hands
-    # This is unusual but supported for flexibility
-    if format == "compact" and include_hands:
-        # Re-extract hands for each round (compact format excludes them by default)
-        # For event store data, hands are already included if available
-        # Only try to extract from memory if we have game data
-        if hasattr(room, 'game') and room.game:
-            from backend.services.play_history_service import PlayHistoryService
-            temp_service = PlayHistoryService()
+        # Apply round filtering if specific rounds requested
+        if rounds:
+            # Parse comma-separated round numbers and filter
+            # This reduces response size when only specific rounds are needed
+            round_numbers = [int(r.strip()) for r in rounds.split(",")]
+            play_history.rounds = [r for r in play_history.rounds if r.round_number in round_numbers]
+        
+        # Handle include_hands parameter with format interaction
+        # Compact format excludes hands by default for efficiency
+        # Full format includes hands by default but can be excluded
+        if format != "compact" and not include_hands:
+            # For non-compact format, remove hands if include_hands is false
+            # This reduces response size by ~20-30% depending on game length
             for round_data in play_history.rounds:
-                if not round_data.hands_dealt:  # Only if not already populated
-                    hands = temp_service.extract_hands_dealt(room.game, round_data.round_number)
-                    round_data.hands_dealt = hands
-    
-    if not include_ai_analysis:
-        # Remove AI analysis to reduce response size and improve performance
-        # AI analysis can add significant size for games with many AI players
-        for round_data in play_history.rounds:
-            for turn in round_data.turn_history:
-                for play in turn.plays:
-                    play.ai_decision_analysis = None
+                round_data.hands_dealt = {}
+        
+        # Edge case: User wants compact format but WITH hands
+        # This is unusual but supported for flexibility
+        if format == "compact" and include_hands:
+            # Re-extract hands for each round (compact format excludes them by default)
+            # For event store data, hands are already included if available
+            # Only try to extract from memory if we have game data
+            if hasattr(room, 'game') and room.game:
+                from backend.services.play_history_service import PlayHistoryService
+                temp_service = PlayHistoryService()
+                for round_data in play_history.rounds:
+                    if not round_data.hands_dealt:  # Only if not already populated
+                        hands = temp_service.extract_hands_dealt(room.game, round_data.round_number)
+                        round_data.hands_dealt = hands
+        
+        if not include_ai_analysis:
+            # Remove AI analysis to reduce response size and improve performance
+            # AI analysis can add significant size for games with many AI players
+            for round_data in play_history.rounds:
+                for turn in round_data.turn_history:
+                    for play in turn.plays:
+                        play.ai_decision_analysis = None
     
     # Calculate performance metrics for monitoring
     # Build time includes all extraction and filtering operations
@@ -442,17 +492,61 @@ async def get_rounds_range(
     
     start_time = time.time()
     
-    # Create service first to allow SQLite fallback
-    service = PlayHistoryService()
+    # Check if v2 is enabled
+    use_v2 = os.getenv("DB_V2_PRIMARY", "false").lower() == "true"
+    dual_write_enabled = os.getenv("DB_DUAL_WRITE_MODE", "false").lower() == "true"
     
-    # Check if room exists
-    room = await shared_room_manager.get_room(room_id)
-    
-    if not room:
-        # Room not in memory - try to get data from SQLite event store
-        logger.info(f"Room {room_id} not in memory, attempting SQLite retrieval for range")
+    # Create service based on configuration
+    if use_v2 and dual_write_enabled:
+        # Use v2 service for optimized performance
+        from backend.services.play_history_v2 import PlayHistoryV2Service
+        service = PlayHistoryV2Service()
         
-        # Create minimal game object for service interface
+        # Build history from v2 with round range
+        round_numbers = list(range(from_round, to_round + 1))
+        play_history = await service.build_play_history(
+            room_id=room_id,
+            round_numbers=round_numbers,
+            include_ai_analysis=include_ai_analysis,
+            format=format
+        )
+        
+        # Update total rounds
+        play_history.total_rounds = len(play_history.rounds)
+        
+        # Handle include_hands parameter with format interaction
+        if format != "compact" and not include_hands:
+            for round_data in play_history.rounds:
+                round_data.hands_dealt = {}
+        
+        # Edge case: User wants compact format but WITH hands
+        if format == "compact" and include_hands:
+            # Re-fetch with full format to get hands
+            full_history = await service.build_play_history(
+                room_id=room_id,
+                round_numbers=None,
+                include_ai_analysis=include_ai_analysis,
+                format=None
+            )
+            # Copy hands from full history
+            for i, round_data in enumerate(play_history.rounds):
+                if i < len(full_history.rounds):
+                    round_data.hands_dealt = full_history.rounds[i].hands_dealt
+        
+        # The v2 service handles other parameters internally
+        
+    else:
+        # Use v1 service (original logic)
+        service = PlayHistoryService()
+        
+        # Check if room exists
+        room = await shared_room_manager.get_room(room_id)
+        
+        if not room:
+            # Room not in memory - try to get data from SQLite event store
+            logger.info(f"Room {room_id} not in memory, attempting SQLite retrieval for range")
+            
+            # Create minimal game object for service interface
         from backend.engine.game import Game
         from backend.engine.player import Player
         

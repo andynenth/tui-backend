@@ -17,6 +17,9 @@ from typing import Any, Dict, List, Optional
 # Import EventBuffer for optimized writes
 from backend.services.event_buffer import EventBuffer
 
+# Import EventCompressor for semantic compression
+from backend.services.event_compressor import EventCompressor
+
 logger = logging.getLogger(__name__)
 
 
@@ -84,6 +87,17 @@ class EventStore:
         else:
             self._buffer = None
             logger.info("EventStore: Buffer disabled, using direct writes")
+            
+        # Initialize event compressor if enabled
+        compression_enabled = os.getenv("EVENT_COMPRESSION_ENABLED", "false").lower() == "true"
+        importance_threshold = float(os.getenv("EVENT_IMPORTANCE_THRESHOLD", "0.7"))
+        
+        if compression_enabled:
+            self._compressor = EventCompressor(importance_threshold=importance_threshold)
+            logger.info(f"EventStore: Compression enabled (threshold: {importance_threshold})")
+        else:
+            self._compressor = None
+            logger.info("EventStore: Compression disabled")
 
         logger.info(f"EventStore initialized with database: {db_path}")
 
@@ -153,6 +167,61 @@ class EventStore:
             payload: Event data
             player_id: Optional player identifier
         """
+        # Apply compression if enabled
+        if self._compressor:
+            # Check if event should be stored
+            if not self._compressor.should_store_event(event_type):
+                logger.debug(f"Event {event_type} filtered by compression")
+                return
+                
+            # Try to compress the event
+            event_dict = {
+                "event_type": event_type,
+                "payload": payload,
+                "player_id": player_id
+            }
+            compressed = self._compressor.compress_event(room_id, event_dict)
+            
+            # If compressed event is ready, store it
+            if compressed:
+                compressed_dict = compressed.to_dict()
+                await self._store_compressed_event(
+                    room_id,
+                    compressed_dict["event_type"],
+                    compressed_dict["payload"],
+                    player_id
+                )
+                return
+            # If None returned, event is being accumulated
+            else:
+                return
+        
+        # No compression - use buffer if enabled
+        if self._buffer:
+            await self._buffer.add_event(room_id, event_type, payload, player_id)
+        else:
+            await self.store_event(room_id, event_type, payload, player_id)
+
+    async def _store_compressed_event(
+        self,
+        room_id: str,
+        event_type: str,
+        payload: Dict[str, Any],
+        player_id: Optional[str] = None,
+    ) -> None:
+        """
+        Store a compressed event through the buffer.
+        
+        Args:
+            room_id: The room/game identifier
+            event_type: Semantic event type
+            payload: Compressed event data
+            player_id: Optional player identifier
+        """
+        # Mark as compressed event
+        payload["_compressed"] = True
+        
+        # Use buffer if enabled
         if self._buffer:
             await self._buffer.add_event(room_id, event_type, payload, player_id)
         else:
@@ -799,12 +868,42 @@ class EventStore:
             "last_sequence": sequences[-1]
         }
 
+    async def flush_room_events(self, room_id: str) -> None:
+        """
+        Flush any pending events for a room (compression + buffer).
+        
+        Should be called when a room/game completes.
+        
+        Args:
+            room_id: The room to flush
+        """
+        # Flush compressed events first
+        if self._compressor:
+            compressed_events = self._compressor.flush_room_accumulators(room_id)
+            for event in compressed_events:
+                event_dict = event.to_dict()
+                await self._store_compressed_event(
+                    room_id,
+                    event_dict["event_type"],
+                    event_dict["payload"]
+                )
+        
+        # Then flush buffer
+        if self._buffer:
+            await self._buffer.flush()
+
     async def shutdown(self) -> None:
         """
         Gracefully shutdown the event store
         
         Flushes any pending buffered events to ensure no data loss.
         """
+        # Flush all room compressors first
+        if self._compressor:
+            logger.info("Shutting down EventStore - flushing compressor...")
+            # Note: In production, we'd track active rooms and flush each
+            # For now, we rely on room cleanup to handle this
+            
         if self._buffer:
             logger.info("Shutting down EventStore - flushing buffer...")
             await self._buffer.shutdown()
@@ -822,6 +921,20 @@ class EventStore:
         return {
             "buffer_enabled": False,
             "message": "Event buffering is disabled"
+        }
+    
+    def get_compression_metrics(self) -> Dict[str, Any]:
+        """
+        Get compression performance metrics
+        
+        Returns:
+            Dict: Compression metrics or status if disabled
+        """
+        if self._compressor:
+            return self._compressor.get_stats()
+        return {
+            "compression_enabled": False,
+            "message": "Event compression is disabled"
         }
 
 

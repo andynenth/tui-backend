@@ -174,5 +174,29 @@ class DeclarationState(GameState):
         declarations = self.phase_data["declarations"]
 
         if len(declarations) >= len(order):
+            # Emit compressed declarations_completed event if compression is enabled
+            await self._emit_declarations_completed()
             return GamePhase.TURN
         return None
+    
+    async def _emit_declarations_completed(self) -> None:
+        """Emit a compressed declarations_completed event for event compression"""
+        import os
+        compression_enabled = os.getenv("EVENT_COMPRESSION_ENABLED", "false").lower() == "true"
+        
+        if compression_enabled:
+            declarations = self.phase_data["declarations"]
+            total_declared = self.phase_data["declaration_total"]
+            
+            # Emit semantic event through custom event system
+            await self.broadcast_custom_event(
+                "declarations_completed",
+                {
+                    "declarations": declarations,
+                    "total_declared": total_declared,
+                    "valid": total_declared != 8,  # Total must not equal 8
+                    "_compressed": True,
+                    "_original_count": len(declarations),
+                },
+                f"All declarations complete - total: {total_declared}"
+            )

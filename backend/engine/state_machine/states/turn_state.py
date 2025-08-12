@@ -487,6 +487,9 @@ class TurnState(GameState):
         )
 
         await self._process_turn_completion()
+        
+        # Emit compressed turn_completed event if compression is enabled
+        await self._emit_turn_completed()
 
     def _determine_turn_winner(self) -> Optional[str]:
         """Determine the winner of the current turn using turn_resolution.py"""
@@ -1029,3 +1032,34 @@ class TurnState(GameState):
 
         # Force end game
         await self.state_machine.force_end_game("critical_error")
+    
+    async def _emit_turn_completed(self) -> None:
+        """Emit a compressed turn_completed event for event compression"""
+        import os
+        compression_enabled = os.getenv("EVENT_COMPRESSION_ENABLED", "false").lower() == "true"
+        
+        if compression_enabled:
+            game = self.state_machine.game
+            turn_data = {
+                "turn_number": game.turn_number,
+                "starter": self.current_turn_starter,
+                "plays": {},
+                "winner": self.winner,
+                "piles_won": self.required_piece_count if self.winner else 0,
+                "_compressed": True,
+                "_original_count": len(self.turn_plays) + 2,  # plays + turn_complete events
+            }
+            
+            # Add all plays from this turn
+            for player_name, play_data in self.turn_plays.items():
+                turn_data["plays"][player_name] = {
+                    "pieces": [{"kind": p.kind, "point": p.point} for p in play_data["pieces"]],
+                    "count": play_data["piece_count"]
+                }
+            
+            # Emit semantic event through custom event system
+            await self.broadcast_custom_event(
+                "turn_completed",
+                turn_data,
+                f"Turn {game.turn_number} completed - winner: {self.winner}"
+            )

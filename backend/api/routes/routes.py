@@ -546,8 +546,10 @@ async def detailed_health_check():
 
         # Get event buffer metrics
         buffer_metrics = {}
+        compression_metrics = {}
         if EVENT_STORE_AVAILABLE and event_store:
             buffer_metrics = event_store.get_buffer_metrics()
+            compression_metrics = event_store.get_compression_metrics()
 
         # Return in the expected DetailedHealthCheck format
         return {
@@ -568,6 +570,7 @@ async def detailed_health_check():
             "active_rooms": active_rooms,
             "active_connections": active_connections,
             "event_buffer": buffer_metrics,
+            "event_compression": compression_metrics,
         }
 
     except Exception as e:
