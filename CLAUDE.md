@@ -6,10 +6,10 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 Liap Tui is a real-time multiplayer board game inspired by traditional Chinese-Thai gameplay. The project uses a Python FastAPI backend with a JavaScript/PixiJS frontend, packaged in a single Docker container.
 
-
 ## Key Architecture
 
 ### Backend Structure
+
 - **FastAPI** with WebSocket support for real-time gameplay
 - **🚀 ENTERPRISE ARCHITECTURE** (`backend/engine/state_machine/`) **FULLY IMPLEMENTED** - production-ready enterprise patterns:
   - **Automatic Broadcasting System**: All state changes trigger automatic phase_change broadcasts
@@ -19,7 +19,7 @@ Liap Tui is a real-time multiplayer board game inspired by traditional Chinese-T
   - **Single Source of Truth**: No manual broadcast calls - all automatic and guaranteed
 - **State Machine Phases** - All using enterprise architecture:
   - `PREPARATION`: Deal cards, handle weak hands ✅ ENTERPRISE ARCHITECTURE
-  - `DECLARATION`: Players declare target pile counts ✅ ENTERPRISE ARCHITECTURE  
+  - `DECLARATION`: Players declare target pile counts ✅ ENTERPRISE ARCHITECTURE
   - `TURN`: Turn-based piece playing ✅ ENTERPRISE ARCHITECTURE
   - `SCORING`: Calculate scores and check win conditions ✅ ENTERPRISE ARCHITECTURE
 - **Game Engine** (`backend/engine/`) contains core game logic:
@@ -35,6 +35,7 @@ Liap Tui is a real-time multiplayer board game inspired by traditional Chinese-T
   - Game events: `create_room`, `join_room`, `start_game`, `declare`, `play`, `accept_redeal`, `decline_redeal`, `leave_room`
 
 ### Frontend Structure
+
 - **React 19.1.0** with React Router DOM for modern UI architecture
 - **ESBuild** for bundling and hot reload during development
 - **Component Architecture** (`frontend/src/components/`) with reusable UI components
@@ -46,7 +47,9 @@ Liap Tui is a real-time multiplayer board game inspired by traditional Chinese-T
 ## Development Commands
 
 ### ⚠️ IMPORTANT: Setup After Git Operations
+
 After any `git checkout`, `git reset`, `git clone`, or branch switching:
+
 ```bash
 # Install frontend dependencies (required for build to work)
 cd frontend && npm install
@@ -56,6 +59,7 @@ source venv/bin/activate && pip install -r requirements.txt
 ```
 
 ### Local Development
+
 ```bash
 # Start both backend and frontend with hot reload
 ./start.sh
@@ -67,8 +71,8 @@ docker-compose -f docker-compose.dev.yml up backend
 cd frontend && npm run dev
 ```
 
-
 ### Building
+
 ```bash
 # Frontend bundle
 cd frontend && npm run build
@@ -78,12 +82,13 @@ docker build -t liap-tui .
 ```
 
 ### Code Quality
+
 ```bash
 # Python formatting and linting (ALWAYS in venv)
 source venv/bin/activate && cd backend && black .
 source venv/bin/activate && cd backend && pylint engine/ api/ tests/
 
-# Frontend TypeScript checking and linting  
+# Frontend TypeScript checking and linting
 cd frontend && npm run type-check
 cd frontend && npm run lint
 cd frontend && npm run lint:fix  # Auto-fix issues
@@ -100,13 +105,15 @@ cd frontend && npm run lint:fix  # Auto-fix issues
 ### **🚀 Enterprise Architecture Guidelines (MANDATORY)**
 
 **For State Machine Development:**
+
 - **✅ ALWAYS USE**: `await self.update_phase_data()` for state changes
 - **❌ NEVER USE**: Direct `self.phase_data.update()` or `self.phase_data[key] = value`
-- **✅ ALWAYS USE**: `await self.broadcast_custom_event()` for game events  
+- **✅ ALWAYS USE**: `await self.broadcast_custom_event()` for game events
 - **❌ NEVER USE**: Manual `broadcast()` function calls
 - **✅ ALWAYS INCLUDE**: Human-readable reason parameter for debugging
 
 **Enterprise Pattern Examples:**
+
 ```python
 # ✅ CORRECT - Enterprise pattern
 await self.update_phase_data({
@@ -121,6 +128,7 @@ await broadcast(room_id, "play", data)  # This will cause sync issues!
 ```
 
 **Testing Enterprise Architecture:**
+
 - Run `python test_enterprise_architecture.py` to validate enterprise features
 - Run `python test_turn_number_sync.py` to verify sync bug prevention
 - All state changes must go through enterprise methods (no exceptions)
@@ -128,6 +136,7 @@ await broadcast(room_id, "play", data)  # This will cause sync issues!
 ## 🚀 Enterprise Architecture Implementation ✅ PRODUCTION READY
 
 ### **Automatic Broadcasting System**
+
 The backend now implements a **guaranteed automatic broadcasting system** that eliminates sync bugs:
 
 ```python
@@ -141,14 +150,16 @@ await self.update_phase_data({
 ```
 
 ### **Key Enterprise Features IMPLEMENTED:**
+
 - **✅ Automatic Broadcasting**: No manual `broadcast()` calls needed - all automatic
-- **✅ Event Sourcing**: Complete change history with sequence numbers and timestamps  
+- **✅ Event Sourcing**: Complete change history with sequence numbers and timestamps
 - **✅ JSON-Safe Serialization**: Game objects automatically converted for WebSocket transmission
 - **✅ Centralized State Management**: Single `update_phase_data()` method for all state changes
 - **✅ Custom Event Broadcasting**: `broadcast_custom_event()` for game-specific events
 - **✅ Change History Tracking**: `get_change_history()` for debugging and audit trails
 
 ### **Enterprise Architecture Benefits DELIVERED:**
+
 1. **🔒 Sync Bug Prevention**: Impossible to forget broadcasting - it's automatic
 2. **🔍 Complete Debugging**: Every state change logged with reason and sequence
 3. **⚡ Performance**: JSON serialization optimized for WebSocket transmission
@@ -156,15 +167,18 @@ await self.update_phase_data({
 5. **🧪 Testability**: Predictable state changes with full history tracking
 
 ### **Backend State Machine ✅ ENTERPRISE READY**
+
 All phases now use enterprise architecture:
+
 - **`PreparationState`**: ✅ Enterprise automatic broadcasting
-- **`DeclarationState`**: ✅ Enterprise automatic broadcasting  
+- **`DeclarationState`**: ✅ Enterprise automatic broadcasting
 - **`TurnState`**: ✅ Enterprise automatic broadcasting
 - **`ScoringState`**: ✅ Enterprise automatic broadcasting
 
 Key classes **ALL ENTERPRISE**:
+
 - `GameAction`: Represents player/system actions with payloads
-- `GamePhase`: Enum defining the four main game phases  
+- `GamePhase`: Enum defining the four main game phases
 - `ActionType`: All possible action types in the game
 - `GameState`: Base class with enterprise `update_phase_data()` and `broadcast_custom_event()`
 
@@ -175,12 +189,12 @@ Key classes **ALL ENTERPRISE**:
 - **Declaration Phase**: Players declare target pile count (total ≠ 8)
 - **Turn Phase**: Play 1-6 pieces in sets, winner takes all pieces
 - **Scoring**: Compare actual vs declared piles, apply multipliers
-- **Win Condition**: First to 50 points or highest after 20 rounds
+- **Win Condition**: First to 50 points
 
 ## Development Notes
 
 - The project uses both `requirements.txt` and `pyproject.toml` (Poetry) for Python dependencies
-- Frontend uses ESBuild for fast compilation and bundling  
+- Frontend uses ESBuild for fast compilation and bundling
 - ALL game operations use WebSocket exclusively - there are NO REST endpoints for game actions
 - The `start.sh` script sets up the full development environment automatically
 
@@ -195,6 +209,7 @@ Key classes **ALL ENTERPRISE**:
 ## Play History API
 
 The play history API provides comprehensive game history for analysis:
+
 - **Main endpoint**: `/api/rooms/{room_id}/play-history` - Get complete game history
 - **Range endpoint**: `/api/rooms/{room_id}/play-history/rounds?from=1&to=5` - Get specific rounds
 - **Query parameters**:
@@ -208,11 +223,11 @@ The play history API provides comprehensive game history for analysis:
 ## Important Architecture Clarifications
 
 ### WebSocket vs REST Usage
+
 - **WebSocket**: Used for ALL game operations without exception
   - Room management: create, join, leave rooms
   - Game actions: start game, declare, play pieces, handle redeals
   - Real-time updates: game state changes, player actions
-  
 - **REST Endpoints** (all require `/api` prefix): Used ONLY for:
   - Health monitoring: `/api/health`, `/api/health/detailed`, `/api/health/metrics`
   - Debugging: `/api/debug/room-stats`
