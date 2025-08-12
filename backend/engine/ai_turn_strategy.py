@@ -17,7 +17,7 @@ COMBO_TYPE_RANK = {
     "FOUR_OF_A_KIND": 5,
     "EXTENDED_STRAIGHT": 6,
     "FIVE_OF_A_KIND": 7,
-    "DOUBLE_STRAIGHT": 8
+    "DOUBLE_STRAIGHT": 8,
 }
 
 
@@ -27,10 +27,10 @@ COMBO_TYPE_RANK = {
 def should_randomly_play_opener(hand_size: int) -> bool:
     """
     Determine if bot should randomly play opener based on game stage.
-    
+
     Args:
         hand_size: Number of pieces in hand
-        
+
     Returns:
         True if random check succeeds, False otherwise
     """
@@ -41,24 +41,24 @@ def should_randomly_play_opener(hand_size: int) -> bool:
         threshold = 0.40  # 40% mid game
     else:
         threshold = 0.50  # 50% late game
-    
+
     return random.random() < threshold
 
 
-def detect_opener_only_plan(plan: 'StrategicPlan') -> bool:
+def detect_opener_only_plan(plan: "StrategicPlan") -> bool:
     """
     Check if bot has an opener-only plan (no viable combos).
-    
+
     Args:
         plan: Strategic plan with piece assignments
-        
+
     Returns:
         True if only openers available, False otherwise
     """
     return (
-        len(plan.assigned_openers) > 0 and
-        len(plan.assigned_combos) == 0 and
-        plan.main_plan_size == len(plan.assigned_openers)
+        len(plan.assigned_openers) > 0
+        and len(plan.assigned_combos) == 0
+        and plan.main_plan_size == len(plan.assigned_openers)
     )
 
 
@@ -68,6 +68,7 @@ def detect_opener_only_plan(plan: 'StrategicPlan') -> bool:
 @dataclass
 class TurnPlayContext:
     """Holds all context needed for strategic turn play decisions."""
+
     my_name: str  # Bot's name for self-identification
     my_hand: List[Piece]  # Current bot hand
     my_captured: int  # Piles already captured
@@ -76,14 +77,19 @@ class TurnPlayContext:
     turn_number: int  # Current turn in round
     pieces_per_player: int  # Remaining pieces per player
     am_i_starter: bool  # Leading this turn?
-    current_plays: List[Dict]  # ⚠️ NOT IMPLEMENTED - Always empty list, do not use in strategy
-    revealed_pieces: List[Piece]  # ⚠️ NOT IMPLEMENTED - Always empty list, do not use in strategy
+    current_plays: List[
+        Dict
+    ]  # ⚠️ NOT IMPLEMENTED - Always empty list, do not use in strategy
+    revealed_pieces: List[
+        Piece
+    ]  # ⚠️ NOT IMPLEMENTED - Always empty list, do not use in strategy
     player_states: Dict[str, Dict]  # All players' captured/declared
 
 
 @dataclass
 class StrategicPlan:
     """Strategic plan for achieving turn play objectives."""
+
     target_remaining: int  # Piles still needed (declared - captured)
     valid_combos: List[Tuple[str, List[Piece]]]  # All valid plays
     opener_pieces: List[Piece]  # Pieces with point >= 11
@@ -103,6 +109,7 @@ class StrategicPlan:
 @dataclass
 class OvercaptureConstraints:
     """Constraints to avoid capturing too many piles."""
+
     max_safe_pieces: int  # Maximum pieces that can be played safely
     avoid_piece_counts: List[int]  # Piece counts that would cause overcapture
     risky_play_types: List[str]  # Play types likely to win and cause overcapture
@@ -112,35 +119,42 @@ class OvercaptureConstraints:
 def get_overcapture_constraints(context: TurnPlayContext) -> OvercaptureConstraints:
     """
     Calculate constraints to avoid overcapture based on current game state.
-    
+
     Simple strategy:
     - If captured/declared is 1/3, shouldn't play 3+ piece combos
-    - If captured/declared is 4/5, shouldn't play 2+ piece combos  
+    - If captured/declared is 4/5, shouldn't play 2+ piece combos
     - If captured/declared is 2/2, should play weakest pieces
-    
+
     Args:
         context: Game context with capture/declaration info
-        
+
     Returns:
         OvercaptureConstraints object with safety limits
     """
     piles_needed = context.my_declared - context.my_captured
     current_hand_size = len(context.my_hand)
-    
+
     # Already at or over target
     if piles_needed <= 0:
         return OvercaptureConstraints(
             max_safe_pieces=1,  # Only play singles when at/over target
             avoid_piece_counts=list(range(2, 7)),  # Avoid all multi-piece plays
-            risky_play_types=["PAIR", "THREE_OF_A_KIND", "STRAIGHT", "FOUR_OF_A_KIND", 
-                             "EXTENDED_STRAIGHT", "FIVE_OF_A_KIND", "DOUBLE_STRAIGHT"],
-            risk_level="at_target"
+            risky_play_types=[
+                "PAIR",
+                "THREE_OF_A_KIND",
+                "STRAIGHT",
+                "FOUR_OF_A_KIND",
+                "EXTENDED_STRAIGHT",
+                "FIVE_OF_A_KIND",
+                "DOUBLE_STRAIGHT",
+            ],
+            risk_level="at_target",
         )
-    
+
     # Simple calculation: max pieces = piles needed
     max_safe_pieces = min(piles_needed, 6)  # Cap at 6 (max possible play)
     avoid_piece_counts = list(range(piles_needed + 1, 7))
-    
+
     # Determine risk level based on how close to target
     if piles_needed == 1:
         risk_level = "high"  # Very close - only need 1 more
@@ -148,83 +162,99 @@ def get_overcapture_constraints(context: TurnPlayContext) -> OvercaptureConstrai
         risk_level = "medium"  # Close - need 2 more
     else:
         risk_level = "low"  # Still need 3+ wins
-    
+
     # Simple risky play types based on piles needed
     risky_play_types = []
-    
+
     # If need only 1 pile, avoid all multi-piece plays
     if piles_needed == 1:
-        risky_play_types = ["PAIR", "THREE_OF_A_KIND", "STRAIGHT", "FOUR_OF_A_KIND", 
-                           "EXTENDED_STRAIGHT", "FIVE_OF_A_KIND", "DOUBLE_STRAIGHT"]
+        risky_play_types = [
+            "PAIR",
+            "THREE_OF_A_KIND",
+            "STRAIGHT",
+            "FOUR_OF_A_KIND",
+            "EXTENDED_STRAIGHT",
+            "FIVE_OF_A_KIND",
+            "DOUBLE_STRAIGHT",
+        ]
     # If need only 2 piles, avoid 3+ piece plays
     elif piles_needed == 2:
-        risky_play_types = ["THREE_OF_A_KIND", "STRAIGHT", "FOUR_OF_A_KIND", 
-                           "EXTENDED_STRAIGHT", "FIVE_OF_A_KIND", "DOUBLE_STRAIGHT"]
-    
+        risky_play_types = [
+            "THREE_OF_A_KIND",
+            "STRAIGHT",
+            "FOUR_OF_A_KIND",
+            "EXTENDED_STRAIGHT",
+            "FIVE_OF_A_KIND",
+            "DOUBLE_STRAIGHT",
+        ]
+
     return OvercaptureConstraints(
         max_safe_pieces=max_safe_pieces,
         avoid_piece_counts=avoid_piece_counts,
         risky_play_types=risky_play_types,
-        risk_level=risk_level
+        risk_level=risk_level,
     )
 
 
-def is_play_risky_for_overcapture(pieces: List[Piece], constraints: OvercaptureConstraints, 
-                                  field_strength: str) -> bool:
+def is_play_risky_for_overcapture(
+    pieces: List[Piece], constraints: OvercaptureConstraints, field_strength: str
+) -> bool:
     """
     Check if a play is likely to win and cause overcapture.
-    
+
     Args:
         pieces: Pieces to play
         constraints: Overcapture constraints
         field_strength: Current field strength assessment
-        
+
     Returns:
         True if play is risky for overcapture
     """
     # Check piece count constraint
     if len(pieces) in constraints.avoid_piece_counts:
         return True
-    
+
     # Check play type constraint
     play_type = get_play_type(pieces)
     if play_type in constraints.risky_play_types:
         return True
-    
+
     # Additional checks for high-value plays in weak fields
     if constraints.risk_level in ["medium", "high"] and field_strength == "weak":
         total_value = sum(p.point for p in pieces)
         avg_value = total_value / len(pieces)
-        
+
         # High average value plays are risky in weak fields
         if avg_value >= 7:  # Above CHARIOT_BLACK value
             return True
-    
+
     return False
 
 
-def filter_plays_by_constraints(valid_plays: List[Tuple[str, List[Piece]]], 
-                               constraints: OvercaptureConstraints,
-                               field_strength: str) -> List[Tuple[str, List[Piece]]]:
+def filter_plays_by_constraints(
+    valid_plays: List[Tuple[str, List[Piece]]],
+    constraints: OvercaptureConstraints,
+    field_strength: str,
+) -> List[Tuple[str, List[Piece]]]:
     """
     Filter valid plays to exclude those that risk overcapture.
-    
+
     Args:
         valid_plays: List of (play_type, pieces) tuples
         constraints: Overcapture constraints
         field_strength: Current field strength
-        
+
     Returns:
         Filtered list of safe plays
     """
     if constraints.risk_level == "none":
         return valid_plays
-    
+
     safe_plays = []
     for play_type, pieces in valid_plays:
         if not is_play_risky_for_overcapture(pieces, constraints, field_strength):
             safe_plays.append((play_type, pieces))
-    
+
     return safe_plays
 
 
@@ -234,11 +264,11 @@ def filter_plays_by_constraints(valid_plays: List[Tuple[str, List[Piece]]],
 def choose_strategic_play(hand: List[Piece], context: TurnPlayContext) -> List[Piece]:
     """
     Main strategic decision function for turn play with defensive validation.
-    
+
     Args:
         hand: Bot's current hand
         context: All game state information
-        
+
     Returns:
         List of pieces to play
     """
@@ -246,81 +276,74 @@ def choose_strategic_play(hand: List[Piece], context: TurnPlayContext) -> List[P
     if not hand:
         print(f"⚠️ Strategic AI: Empty hand provided")
         return []
-    
+
     if not context:
         print(f"⚠️ Strategic AI: No context provided, falling back to basic play")
         from backend.engine.ai import choose_best_play
+
         return choose_best_play(hand, None)
-    
+
     # Defensive check: validate context fields
-    if not hasattr(context, 'my_captured') or not hasattr(context, 'my_declared'):
+    if not hasattr(context, "my_captured") or not hasattr(context, "my_declared"):
         print(f"⚠️ Strategic AI: Invalid context, falling back to basic play")
         from backend.engine.ai import choose_best_play
-        return choose_best_play(hand, context.required_piece_count if hasattr(context, 'required_piece_count') else None)
-    
-    # Log the decision context with debug information
-    print(f"\n🎯 Strategic AI Decision Process for {context.my_name}")
-    print(f"  📊 Status: captured={context.my_captured}, declared={context.my_declared}")
-    print(f"  🎮 Turn {context.turn_number}, required pieces={context.required_piece_count}")
-    print(f"  🃏 Hand size: {len(hand)} pieces")
-    print(f"  👥 Starter: {'YES' if context.am_i_starter else 'NO'}")
-    
-    # Additional debug logging for starter detection
-    print(f"\n🎯 STRATEGIC PLAY DEBUG for {context.my_name}:")
-    print(f"  - Is starter: {context.am_i_starter}")
-    print(f"  - Turn number: {context.turn_number}")
-    print(f"  - Required pieces: {context.required_piece_count}")
-    
+
+        return choose_best_play(
+            hand,
+            (
+                context.required_piece_count
+                if hasattr(context, "required_piece_count")
+                else None
+            ),
+        )
+
+    # Minimal decision context logging
+    # print(f"🎯 {context.my_name}: captured={context.my_captured}/{context.my_declared}, turn={context.turn_number}, req={context.required_piece_count}")
+
     # Calculate overcapture constraints
     constraints = get_overcapture_constraints(context)
-    
-    if constraints.risk_level != "none":
-        print(f"\n⚠️ OVERCAPTURE RISK DETECTED - Level: {constraints.risk_level}")
-        print(f"  Piles needed: {context.my_declared - context.my_captured}")
-        print(f"  Max safe pieces: {constraints.max_safe_pieces}")
-        print(f"  Avoid piece counts: {constraints.avoid_piece_counts}")
-        print(f"  Risky play types: {constraints.risky_play_types}")
-    
-    # Phase 4: Target Achievement Strategy
-    piles_needed = context.my_declared - context.my_captured
-    if piles_needed > 0:
-        print(f"📈 {context.my_name} needs {piles_needed} more pile(s) - using strategic play with constraints")
-    else:
-        print(f"🎯 {context.my_name} at/above target - minimizing wins")
-    
+
+    # Minimal overcapture risk logging
+    # if constraints.risk_level != "none":
+    #     print(f"⚠️ {context.my_name}: overcapture risk {constraints.risk_level}")
+
+    # Calculate strategy
+    # piles_needed = context.my_declared - context.my_captured
+
     # Generate strategic plan
     plan = generate_strategic_plan(hand, context)
-    
+
     # Evaluate hand
     hand_eval = evaluate_hand(hand, context, plan)
-    
-    # Log strategic context
-    print(f"📊 {context.my_name} - Urgency: {plan.urgency_level}, Target remaining: {plan.target_remaining}, "
-          f"Openers: {len(hand_eval['openers'])}, Burden pieces: {len(hand_eval['burden_pieces'])}")
-    
+
+    # Minimal strategic context
+    # print(f"📊 {context.my_name}: urgency={plan.urgency_level}, remaining={plan.target_remaining}")
+
     # Check if plan is broken and urgency is not none
     if plan.plan_impossible and plan.urgency_level != "none":
-        print(f"💥 {context.my_name}: Plan broken - switching to aggressive capture")
-        result = execute_aggressive_capture(hand, context.required_piece_count, constraints)
+        # Plan broken - switching to aggressive capture
+        result = execute_aggressive_capture(
+            hand, context.required_piece_count, constraints
+        )
     # Execute appropriate strategy based on role
     elif context.am_i_starter:
         result = execute_starter_strategy(plan, context, hand_eval, constraints)
     else:
         # Responder strategy: dispose of burden pieces
         result = execute_responder_strategy(plan, context, hand_eval, constraints)
-    
+
     # Validate result
     if not validate_play_result(result, hand, context):
-        print(f"⚠️ Strategic AI: Invalid result, using fallback")
+        # Strategic AI: Invalid result, using fallback
         # Fallback: return minimum required pieces
         if context.required_piece_count and context.required_piece_count <= len(hand):
-            return hand[:context.required_piece_count]
+            return hand[: context.required_piece_count]
         return [hand[0]] if hand else []
-    
-    # Log final decision with piece values
+
+    # Log final decision concisely
     pieces_with_values = [f"{p.name}({p.point})" for p in result]
-    print(f"\n🎲 {context.my_name} decides to play: {pieces_with_values}")
-    
+    # {context.my_name} plays: {len(result)} pieces
+
     return result
 
 
@@ -328,49 +351,55 @@ def choose_strategic_play(hand: List[Piece], context: TurnPlayContext) -> List[P
 # Phase 4: Target Achievement Strategy Functions
 # ------------------------------------------------------------------
 
-def evaluate_hand(hand: List[Piece], context: TurnPlayContext, plan: StrategicPlan) -> Dict:
+
+def evaluate_hand(
+    hand: List[Piece], context: TurnPlayContext, plan: StrategicPlan
+) -> Dict:
     """
     Evaluate and categorize pieces in the hand based on strategic plan.
-    
+
     Args:
         hand: Bot's current hand
         context: Game context
         plan: Strategic plan with role assignments
-        
+
     Returns:
         Dict with categorized pieces based on plan roles
     """
     # Find all valid combinations
     from backend.engine.ai import find_all_valid_combos
+
     valid_combos = find_all_valid_combos(hand)
-    
+
     # Form/update plan based on current hand (needed every turn as hand changes)
     plan_dict = form_execution_plan(hand, context, valid_combos)
     if plan_dict:
         # Update plan object with assignments
-        plan.assigned_openers = plan_dict['assigned_openers']
-        plan.assigned_combos = plan_dict['assigned_combos']
-        plan.reserve_pieces = plan_dict['reserve_pieces']
-        plan.burden_pieces = plan_dict['burden_pieces']
-        plan.main_plan_size = plan_dict['main_plan_size']
-    
+        plan.assigned_openers = plan_dict["assigned_openers"]
+        plan.assigned_combos = plan_dict["assigned_combos"]
+        plan.reserve_pieces = plan_dict["reserve_pieces"]
+        plan.burden_pieces = plan_dict["burden_pieces"]
+        plan.main_plan_size = plan_dict["main_plan_size"]
+
     # Return plan-based categorization
     return {
-        'openers': plan.assigned_openers,
-        'burden_pieces': plan.burden_pieces,
-        'combo_pieces': [p for combo_type, pieces in plan.assigned_combos for p in pieces],
-        'all_valid_combos': valid_combos,
-        'reserve_pieces': plan.reserve_pieces
+        "openers": plan.assigned_openers,
+        "burden_pieces": plan.burden_pieces,
+        "combo_pieces": [
+            p for combo_type, pieces in plan.assigned_combos for p in pieces
+        ],
+        "all_valid_combos": valid_combos,
+        "reserve_pieces": plan.reserve_pieces,
     }
 
 
 def identify_opener_pieces(hand: List[Piece]) -> List[Piece]:
     """
     Filter pieces with point >= 11 and sort by reliability.
-    
+
     Args:
         hand: List of pieces
-        
+
     Returns:
         List of opener pieces sorted by point value descending
     """
@@ -382,26 +411,33 @@ def identify_opener_pieces(hand: List[Piece]) -> List[Piece]:
 def identify_burden_pieces(hand: List[Piece], valid_combos: List[Tuple]) -> List[Piece]:
     """
     Find pieces that don't appear in any valid winning combination.
-    
+
     Args:
         hand: List of pieces
         valid_combos: All valid combinations from the hand
-        
+
     Returns:
         List of burden pieces
     """
     # Track which pieces appear in winning combos
     pieces_in_winning_combos = set()
-    
+
     for combo_type, pieces in valid_combos:
         # Only consider combinations that can actually win turns
-        if combo_type in ["PAIR", "THREE_OF_A_KIND", "STRAIGHT", "FOUR_OF_A_KIND",
-                         "EXTENDED_STRAIGHT", "FIVE_OF_A_KIND", "DOUBLE_STRAIGHT"]:
+        if combo_type in [
+            "PAIR",
+            "THREE_OF_A_KIND",
+            "STRAIGHT",
+            "FOUR_OF_A_KIND",
+            "EXTENDED_STRAIGHT",
+            "FIVE_OF_A_KIND",
+            "DOUBLE_STRAIGHT",
+        ]:
             pieces_in_winning_combos.update(pieces)
-    
+
     # Burden pieces are those not in any winning combo
     burden_pieces = [p for p in hand if p not in pieces_in_winning_combos]
-    
+
     # Sort by point value ascending (weakest first for disposal)
     return sorted(burden_pieces, key=lambda p: p.point)
 
@@ -409,16 +445,16 @@ def identify_burden_pieces(hand: List[Piece], valid_combos: List[Tuple]) -> List
 def calculate_urgency(context: TurnPlayContext) -> str:
     """
     Calculate urgency level based on turns remaining and piles needed.
-    
+
     Args:
         context: Game context
-        
+
     Returns:
         Urgency level: "none", "low", "medium", "high", "critical"
     """
     turns_remaining = 8 - context.turn_number
     piles_needed = context.my_declared - context.my_captured
-    
+
     if piles_needed == 0:
         return "none"  # Already at target
     elif piles_needed < 0:
@@ -438,19 +474,19 @@ def calculate_urgency(context: TurnPlayContext) -> str:
 def get_field_strength_from_players(player_states: Dict[str, Dict]) -> str:
     """
     Assess field strength based on opponent declarations.
-    
+
     Args:
         player_states: Dictionary of player states with 'declared' values
-        
+
     Returns:
         Field strength: "weak", "normal", or "strong"
     """
     # Extract opponent declarations (excluding self)
     declarations = []
     for player_name, state in player_states.items():
-        if 'declared' in state:
-            declarations.append(state['declared'])
-    
+        if "declared" in state:
+            declarations.append(state["declared"])
+
     # Use the assess_field_strength function from ai.py
     return assess_field_strength(declarations)
 
@@ -458,121 +494,122 @@ def get_field_strength_from_players(player_states: Dict[str, Dict]) -> str:
 def is_combo_viable(combo_type: str, pieces: List[Piece], field_strength: str) -> bool:
     """
     Determine if a combo should be considered viable for winning.
-    
+
     Args:
         combo_type: Type of combination (PAIR, THREE_OF_A_KIND, etc.)
         pieces: The pieces in the combination
         field_strength: Current field strength ("weak", "normal", "strong")
-        
+
     Returns:
         True if combo is likely to win, False otherwise
     """
     # Strong combos are always viable
-    if combo_type in ["THREE_OF_A_KIND", "STRAIGHT", "FOUR_OF_A_KIND", 
-                      "EXTENDED_STRAIGHT", "FIVE_OF_A_KIND", "DOUBLE_STRAIGHT"]:
+    if combo_type in [
+        "THREE_OF_A_KIND",
+        "STRAIGHT",
+        "FOUR_OF_A_KIND",
+        "EXTENDED_STRAIGHT",
+        "FIVE_OF_A_KIND",
+        "DOUBLE_STRAIGHT",
+    ]:
         return True
-    
+
     # For pairs, viability depends on strength and field
     if combo_type == "PAIR":
         total_points = sum(p.point for p in pieces)
-        
+
         if field_strength == "weak":
             return total_points >= 10  # HORSE pair (5+5) or better
         elif field_strength == "normal":
             return total_points >= 14  # CHARIOT pair (7+7) or better
         else:  # strong
             return total_points >= 18  # ELEPHANT pair (9+9) or better
-    
+
     # Single pieces are never considered winning combos
     return False
 
 
-def form_execution_plan(hand: List[Piece], context: TurnPlayContext, valid_combos: List[Tuple]) -> Dict:
+def form_execution_plan(
+    hand: List[Piece], context: TurnPlayContext, valid_combos: List[Tuple]
+) -> Dict:
     """
     Form a specific execution plan assigning roles to pieces.
-    
+
     Args:
         hand: Bot's current hand
         context: Game context including turn number and declarations
         valid_combos: All valid combinations found in hand
-        
+
     Returns:
         Dict with assigned roles for each piece category
     """
-    print(f"\n📋 FORMING EXECUTION PLAN for {context.my_name}")
-    print(f"  Hand: {[f'{p.name}({p.point})' for p in hand]}")
-    print(f"  Target: {context.my_declared} piles, Currently captured: {context.my_captured}")
-    
+    # Forming execution plan for {context.my_name}
+
     # Get field strength
     field_strength = get_field_strength_from_players(context.player_states)
-    print(f"  Field strength: {field_strength}")
-    
+    # Field strength: {field_strength}
+
     # Log all valid combos found
-    print(f"  Valid combos found: {len(valid_combos)}")
-    for combo_type, pieces in valid_combos:
-        print(f"    - {combo_type}: {[f'{p.name}({p.point})' for p in pieces]} (value={sum(p.point for p in pieces)})")
-    
+    # Found {len(valid_combos)} valid combos
+
     # Filter combos for viability
     viable_combos = []
     for combo_type, pieces in valid_combos:
         if is_combo_viable(combo_type, pieces, field_strength):
             viable_combos.append((combo_type, pieces))
-    
-    print(f"  Viable combos (can win in {field_strength} field): {len(viable_combos)}")
+
+    # {len(viable_combos)} viable combos for {field_strength} field
     for combo_type, pieces in viable_combos:
         print(f"    - {combo_type}: {[f'{p.name}({p.point})' for p in pieces]}")
-    
+
     # Calculate how many piles we need to win
     target_remaining = context.my_declared - context.my_captured
-    print(f"  Piles needed to win: {target_remaining}")
-    
+    # Piles needed to win: {target_remaining}
+
     # Assign openers based on target
     all_openers = [p for p in hand if p.point >= 11]
-    print(f"  Openers available: {[f'{p.name}({p.point})' for p in all_openers]}")
-    
+    # Openers available: {len(all_openers)}
+
     # Debug logging for opener assignment
-    print(f"  🎯 Opener Assignment Debug:")
-    print(f"    - All openers found: {[f'{p.name}({p.point})' for p in all_openers]}")
-    print(f"    - Target remaining: {target_remaining}")
-    print(f"    - Has viable combos: {len(viable_combos) > 0}")
-    
+    # Opener assignment: {len(all_openers)} openers, {target_remaining} remaining, {len(viable_combos)} viable combos
+
     if target_remaining <= 0:
         assigned_openers = []  # Already at/above target
-        print(f"  → Assigning 0 openers (already at target)")
+        # Assigning 0 openers (already at target)
     elif target_remaining == 1:
         # Even with 1 pile needed, keep 1 opener for control
         assigned_openers = all_openers[:1] if all_openers else []
-        print(f"  → Assigning {len(assigned_openers)} opener for {target_remaining} pile (control)")
+        # Assigning {len(assigned_openers)} opener for control
     elif target_remaining == 2:
         # For 2 piles, take up to 2 openers
         assigned_openers = all_openers[:2] if len(all_openers) >= 2 else all_openers
-        print(f"  → Assigning {len(assigned_openers)} opener(s) for {target_remaining} piles")
+        # Assigning {len(assigned_openers)} openers for 2 piles
     elif target_remaining == 3:
         # For 3 piles, take 1-2 openers (leave room for combos)
         assigned_openers = all_openers[:2] if len(all_openers) >= 2 else all_openers
-        print(f"  → Assigning {len(assigned_openers)} opener(s) for {target_remaining} piles")
+        # Assigning {len(assigned_openers)} openers for 3 piles
     else:
         # For 4+ piles, take up to 2 openers
         assigned_openers = all_openers[:2]  # Take up to 2 openers
-        print(f"  → Assigning {len(assigned_openers)} openers for {target_remaining} piles")
-    
-    print(f"    - Assigned openers: {[f'{p.name}({p.point})' for p in assigned_openers]}")
-    
+        # Assigning {len(assigned_openers)} openers for {target_remaining} piles
+
+    # Assigned {len(assigned_openers)} openers
+
     # Sort openers by value descending
     assigned_openers.sort(key=lambda p: p.point, reverse=True)
-    
+
     # Check for overlap between openers and combos
     assigned_combos = []
     pieces_in_plan = set(assigned_openers)
-    
+
     for combo_type, pieces in viable_combos:
         # Check if combo pieces overlap with already assigned pieces
         combo_pieces_set = set(pieces)
         overlap = combo_pieces_set.intersection(pieces_in_plan)
-        
+
         if overlap:
-            print(f"    ⚠️ {combo_type} overlaps with assigned pieces: {[f'{p.name}({p.point})' for p in overlap]}")
-            
+            # {combo_type} overlaps with assigned pieces
+
             # For starters with strong combos, prefer the combo over individual openers
             if context.am_i_starter and is_starter_preferred_combo(combo_type, pieces):
                 # Remove overlapping openers from plan and use combo instead
@@ -587,101 +624,83 @@ def form_execution_plan(hand: List[Piece], context: TurnPlayContext, valid_combo
                     assigned_combos.append((combo_type, pieces))
                     pieces_in_plan.update(pieces)
                     continue
-            
+
             # Skip combos that use already assigned opener pieces
             continue
         else:
             assigned_combos.append((combo_type, pieces))
             pieces_in_plan.update(pieces)
-    
+
     # Reserve 1-2 weakest pieces (point <= 4)
     weak_pieces = [p for p in hand if p.point <= 4 and p not in pieces_in_plan]
     weak_pieces.sort(key=lambda p: p.point)  # Sort ascending
     reserve_pieces = weak_pieces[:2]  # Take up to 2 weakest
     pieces_in_plan.update(reserve_pieces)
-    
-    print(f"  Weak pieces (<=4 pts): {[f'{p.name}({p.point})' for p in weak_pieces]}")
-    print(f"  → Reserving {len(reserve_pieces)} weak pieces for overcapture avoidance")
-    
+
+    # Weak pieces: {len(weak_pieces)}, reserving {len(reserve_pieces)} for overcapture avoidance
+
     # Everything else is burden
     burden_pieces = [p for p in hand if p not in pieces_in_plan]
     # Sort burden by value descending (dispose high value first)
     burden_pieces.sort(key=lambda p: p.point, reverse=True)
-    
-    print(f"  Burden pieces (not in winning plan): {[f'{p.name}({p.point})' for p in burden_pieces]}")
-    
+
+    # Burden pieces not in plan: {len(burden_pieces)}
+
     # Calculate main plan size
     main_plan_size = len(assigned_openers)
     for combo_type, pieces in assigned_combos:
         main_plan_size += len(pieces)
-    
-    print(f"\n  📊 FINAL PLAN SUMMARY:")
-    print(f"    - Openers: {[f'{p.name}({p.point})' for p in assigned_openers]}")
-    print(f"    - Viable combos: {len(assigned_combos)}")
-    for combo_type, pieces in assigned_combos:
-        print(f"      • {combo_type}: {[f'{p.name}({p.point})' for p in pieces]}")
-    print(f"    - Reserve pieces: {[f'{p.name}({p.point})' for p in reserve_pieces]}")
-    print(f"    - Burden pieces: {[f'{p.name}({p.point})' for p in burden_pieces]}")
-    print(f"    - Main plan size: {main_plan_size} pieces")
-    
+
+    # Plan: {len(assigned_openers)} openers, {len(assigned_combos)} combos, {main_plan_size} total pieces
+
     # Print the main plan pieces
-    print(f"\n  🎯 MAIN WINNING PLAN (Target: {target_remaining} piles):")
-    piles_accounted = 0
-    if assigned_openers:
-        for opener in assigned_openers:
-            piles_accounted += 1
-            print(f"    Play #{piles_accounted}: {opener.name}({opener.point}) [OPENER] → hope to capture 1 pile")
-    if assigned_combos:
-        for combo_type, pieces in assigned_combos:
-            pieces_count = len(pieces)
-            print(f"    Play #{piles_accounted + 1}: {combo_type} {[f'{p.name}({p.point})' for p in pieces]} → hope to capture {pieces_count} piles")
-            piles_accounted += pieces_count
-    
-    if piles_accounted < target_remaining:
-        print(f"    ⚠️ Plan only accounts for {piles_accounted}/{target_remaining} piles needed")
-    
+    # Main plan targets {target_remaining} piles
+
     return {
-        'assigned_openers': assigned_openers,
-        'assigned_combos': assigned_combos,
-        'reserve_pieces': reserve_pieces,
-        'burden_pieces': burden_pieces,
-        'main_plan_size': main_plan_size,
-        'field_strength': field_strength
+        "assigned_openers": assigned_openers,
+        "assigned_combos": assigned_combos,
+        "reserve_pieces": reserve_pieces,
+        "burden_pieces": burden_pieces,
+        "main_plan_size": main_plan_size,
+        "field_strength": field_strength,
     }
 
 
-def generate_strategic_plan(hand: List[Piece], context: TurnPlayContext) -> StrategicPlan:
+def generate_strategic_plan(
+    hand: List[Piece], context: TurnPlayContext
+) -> StrategicPlan:
     """
     Generate a strategic plan for achieving target piles.
-    
+
     Args:
         hand: Bot's current hand
         context: Game context
-        
+
     Returns:
         StrategicPlan with target analysis and valid plays
     """
     # Calculate target remaining
     target_remaining = context.my_declared - context.my_captured
-    
+
     # Find all valid combinations
     from backend.engine.ai import find_all_valid_combos
+
     valid_combos = find_all_valid_combos(hand)
-    
+
     # Identify openers
     opener_pieces = identify_opener_pieces(hand)
-    
+
     # Assess urgency
     urgency_level = calculate_urgency(context)
-    
+
     # Create plan with default values (will be populated in evaluate_hand on turn 1)
     plan = StrategicPlan(
         target_remaining=target_remaining,
         valid_combos=valid_combos,
         opener_pieces=opener_pieces,
-        urgency_level=urgency_level
+        urgency_level=urgency_level,
     )
-    
+
     # Check if plan is still possible (after turn 1)
     if context.turn_number > 1 and plan.main_plan_size > 0:
         # Check if we still have all our plan pieces
@@ -689,147 +708,170 @@ def generate_strategic_plan(hand: List[Piece], context: TurnPlayContext) -> Stra
         if current_hand_size < plan.main_plan_size:
             plan.plan_impossible = True
             print(f"⚠️ {context.my_name}: Plan impossible - lost key pieces")
-    
+
     return plan
 
 
-def execute_aggressive_capture(hand: List[Piece], required_count: int, 
-                             constraints: OvercaptureConstraints) -> List[Piece]:
+def execute_aggressive_capture(
+    hand: List[Piece], required_count: int, constraints: OvercaptureConstraints
+) -> List[Piece]:
     """
     Execute aggressive capture strategy when plan is broken.
     Play strongest possible combinations to maximize win chances, but respect constraints.
-    
+
     Args:
         hand: Current hand
         required_count: Number of pieces required
         constraints: Overcapture avoidance constraints
-        
+
     Returns:
         List of pieces to play (strongest possible within constraints)
     """
     from backend.engine.ai import find_all_valid_combos
-    
+
     # Find all valid combinations
     all_combos = find_all_valid_combos(hand)
-    
+
     # Filter for required size
-    valid_of_size = [(combo_type, pieces) for combo_type, pieces in all_combos 
-                     if len(pieces) == required_count]
-    
+    valid_of_size = [
+        (combo_type, pieces)
+        for combo_type, pieces in all_combos
+        if len(pieces) == required_count
+    ]
+
     if valid_of_size:
         # Check constraints if risk level is high
         if constraints.risk_level in ["medium", "high"]:
             print(f"⚠️ Aggressive capture with overcapture risk - filtering safe combos")
             field_strength = "normal"  # Default assumption for aggressive play
-            safe_combos = [(t, p) for t, p in valid_of_size 
-                          if not is_play_risky_for_overcapture(p, constraints, field_strength)]
-            
+            safe_combos = [
+                (t, p)
+                for t, p in valid_of_size
+                if not is_play_risky_for_overcapture(p, constraints, field_strength)
+            ]
+
             if safe_combos:
                 # Get strongest safe combination
-                strongest_combo = max(safe_combos, key=lambda x: sum(p.point for p in x[1]))
-                print(f"⚡ Aggressive capture: playing strongest SAFE combo {strongest_combo[0]} "
-                      f"(value={sum(p.point for p in strongest_combo[1])})")
+                strongest_combo = max(
+                    safe_combos, key=lambda x: sum(p.point for p in x[1])
+                )
+                print(
+                    f"⚡ Aggressive capture: playing strongest SAFE combo {strongest_combo[0]} "
+                    f"(value={sum(p.point for p in strongest_combo[1])})"
+                )
                 return strongest_combo[1]
             else:
                 print(f"⚠️ No safe combos available - playing weakest risky combo")
                 # If no safe combos, play weakest risky one
-                weakest_combo = min(valid_of_size, key=lambda x: sum(p.point for p in x[1]))
+                weakest_combo = min(
+                    valid_of_size, key=lambda x: sum(p.point for p in x[1])
+                )
                 return weakest_combo[1]
         else:
             # No constraints, play strongest
-            strongest_combo = max(valid_of_size, key=lambda x: sum(p.point for p in x[1]))
-            print(f"⚡ Aggressive capture: playing strongest combo {strongest_combo[0]} "
-                  f"(value={sum(p.point for p in strongest_combo[1])})")
+            strongest_combo = max(
+                valid_of_size, key=lambda x: sum(p.point for p in x[1])
+            )
+            print(
+                f"⚡ Aggressive capture: playing strongest combo {strongest_combo[0]} "
+                f"(value={sum(p.point for p in strongest_combo[1])})"
+            )
             return strongest_combo[1]
-    
+
     # Fallback: return strongest pieces of required count
     sorted_hand = sorted(hand, key=lambda p: p.point, reverse=True)
     return sorted_hand[:required_count]
 
 
-def execute_responder_strategy(plan: StrategicPlan, context: TurnPlayContext, hand_eval: Dict,
-                             constraints: OvercaptureConstraints) -> List[Piece]:
+def execute_responder_strategy(
+    plan: StrategicPlan,
+    context: TurnPlayContext,
+    hand_eval: Dict,
+    constraints: OvercaptureConstraints,
+) -> List[Piece]:
     """
     Execute strategy when responding (not leading the turn) with overcapture constraints.
     Primary goal: Dispose of pieces in priority order:
     1. Burden pieces (highest value first)
     2. Reserve pieces (if necessary)
     3. Openers (only as last resort)
-    
+
     Args:
         plan: Strategic plan
         context: Game context
         hand_eval: Hand evaluation from evaluate_hand()
         constraints: Overcapture avoidance constraints
-        
+
     Returns:
         List of pieces to play
     """
     required = context.required_piece_count or 1
-    
-    print(f"\n🎯 RESPONDER STRATEGY for {context.my_name} (Turn {context.turn_number})")
-    print(f"  Current hand: {[f'{p.name}({p.point})' for p in context.my_hand]}")
-    print(f"  Required pieces: {required}")
-    print(f"  Urgency: {plan.urgency_level}, Target remaining: {plan.target_remaining}")
-    print(f"  Overcapture risk: {constraints.risk_level}")
-    
+
+    # Responder strategy: {required} pieces, urgency {plan.urgency_level}, risk {constraints.risk_level}
+
     # Check for opener timing when required to play singles
     if required == 1:
         # Check if we have opener-only plan
         opener_only_plan = detect_opener_only_plan(plan)
-        
+
         if opener_only_plan and should_randomly_play_opener(len(context.my_hand)):
             # Random timing triggered!
             hand_size = len(context.my_hand)
             probability = 35 if hand_size >= 6 else 40 if hand_size >= 4 else 50
-            print(f"  🎲 {context.my_name} (RESPONDER) randomly playing opener due to timing")
-            print(f"     - Hand size: {hand_size}, Probability was {probability}%")
-            print(f"     - Opener-only plan with {len(plan.assigned_openers)} openers")
-            
+            # Randomly playing opener due to timing
+            # Hand size: {hand_size}, probability: {probability}%
+            # Opener-only plan with {len(plan.assigned_openers)} openers
+
             # Play the strongest opener available in hand
             openers_in_hand = [p for p in plan.assigned_openers if p in context.my_hand]
             if openers_in_hand:
                 opener_to_play = max(openers_in_hand, key=lambda p: p.point)
-                print(f"  🎯 Playing opener: {opener_to_play.name}({opener_to_play.point})")
+                # Playing opener: {opener_to_play.name}({opener_to_play.point})
                 return [opener_to_play]
-    
+
     # Critical urgency: need to win remaining turns
     if plan.urgency_level == "critical" and plan.target_remaining > 0:
         print(f"  💥 CRITICAL URGENCY - must try to win!")
         # Try to find any valid combination
         from backend.engine.ai import find_all_valid_combos
+
         all_combos = find_all_valid_combos(context.my_hand)
-        valid_of_size = [(combo_type, pieces) for combo_type, pieces in all_combos 
-                         if len(pieces) == required]
-        
+        valid_of_size = [
+            (combo_type, pieces)
+            for combo_type, pieces in all_combos
+            if len(pieces) == required
+        ]
+
         if valid_of_size:
             # Get strongest valid combination
             best_combo = max(valid_of_size, key=lambda x: sum(p.point for p in x[1]))
-            print(f"  ⚡ Playing strongest valid combo: {[p.name for p in best_combo[1]]}")
+            print(
+                f"  ⚡ Playing strongest valid combo: {[p.name for p in best_combo[1]]}"
+            )
             return best_combo[1]
-    
+
     # Build disposal priority list: burden -> reserve -> openers (last resort)
     disposal_candidates = []
-    
+
     # Priority 1: Burden pieces (highest value first)
     burden_in_hand = [p for p in plan.burden_pieces if p in context.my_hand]
     burden_in_hand.sort(key=lambda p: p.point, reverse=True)
     disposal_candidates.extend(burden_in_hand)
-    
+
     # Priority 2: Reserve pieces (if we need more)
     if len(disposal_candidates) < required and plan.reserve_pieces:
         reserve_in_hand = [p for p in plan.reserve_pieces if p in context.my_hand]
         # Sort reserve pieces by value descending (dispose higher value first)
         reserve_in_hand.sort(key=lambda p: p.point, reverse=True)
         disposal_candidates.extend(reserve_in_hand)
-    
+
     # Priority 3: Openers (only as absolute last resort)
     if len(disposal_candidates) < required and plan.assigned_openers:
         openers_in_hand = [p for p in plan.assigned_openers if p in context.my_hand]
         # Sort openers by value ascending (keep strongest openers if possible)
         openers_in_hand.sort(key=lambda p: p.point)
         disposal_candidates.extend(openers_in_hand)
-    
+
     # Priority 4: Combo pieces (should never reach here in a well-formed plan)
     if len(disposal_candidates) < required and plan.assigned_combos:
         combo_pieces_in_hand = []
@@ -839,7 +881,7 @@ def execute_responder_strategy(plan: StrategicPlan, context: TurnPlayContext, ha
         combo_pieces_in_hand = list(set(combo_pieces_in_hand))
         combo_pieces_in_hand.sort(key=lambda p: p.point)
         disposal_candidates.extend(combo_pieces_in_hand)
-    
+
     # Priority 5: Any remaining pieces not in plan
     if len(disposal_candidates) < required:
         all_plan_pieces = set()
@@ -852,76 +894,73 @@ def execute_responder_strategy(plan: StrategicPlan, context: TurnPlayContext, ha
             all_plan_pieces.update(plan.reserve_pieces)
         if plan.burden_pieces:
             all_plan_pieces.update(plan.burden_pieces)
-        
+
         other_pieces = [p for p in context.my_hand if p not in all_plan_pieces]
         other_pieces.sort(key=lambda p: p.point, reverse=True)
         disposal_candidates.extend(other_pieces)
-    
-    # Debug output
-    print(f"  🗑️ DISPOSAL PRIORITY:")
-    print(f"    1. Burden pieces: {[f'{p.name}({p.point})' for p in burden_in_hand]}")
-    if plan.reserve_pieces:
-        reserve_in_hand = [p for p in plan.reserve_pieces if p in context.my_hand]
-        print(f"    2. Reserve pieces: {[f'{p.name}({p.point})' for p in reserve_in_hand]}")
-    if plan.assigned_openers:
-        openers_in_hand = [p for p in plan.assigned_openers if p in context.my_hand]
-        print(f"    3. Openers (last resort): {[f'{p.name}({p.point})' for p in openers_in_hand]}")
-    
+
+    # Debug output: disposal priority set
+    # Priority: burden pieces > reserve pieces > openers
+
     # Special handling for high overcapture risk
-    if constraints.risk_level in ["medium", "high"] and required in constraints.avoid_piece_counts:
-        print(f"  🛡️ High overcapture risk - required count {required} would cause overcapture")
-        print(f"  Seeking weak non-matching pieces to minimize win chance")
-        
+    if (
+        constraints.risk_level in ["medium", "high"]
+        and required in constraints.avoid_piece_counts
+    ):
+        # High overcapture risk - seeking weak non-matching pieces
+
         # Try to select pieces that won't form strong combinations
         # Prefer different types/colors to avoid accidental combos
         selected_pieces = []
         used_names = set()
-        
+
         # First pass: try to get different piece types
         for p in disposal_candidates:
             if len(selected_pieces) < required and p.name not in used_names:
                 selected_pieces.append(p)
                 used_names.add(p.name)
-        
+
         # Second pass: fill remaining slots
         for p in disposal_candidates:
             if len(selected_pieces) < required and p not in selected_pieces:
                 selected_pieces.append(p)
-        
+
         if len(selected_pieces) >= required:
             pieces_to_play = selected_pieces[:required]
-            print(f"  🎯 Selected non-matching pieces to avoid combos: {[f'{p.name}({p.point})' for p in pieces_to_play]}")
+            # Selected non-matching pieces to avoid combos
             total_value = sum(p.point for p in pieces_to_play)
-            print(f"  Total value: {total_value} pts (minimized)")
+            # Total value: {total_value} pts (minimized)
             return pieces_to_play
-    
+
     # Take required number from disposal candidates
     if len(disposal_candidates) >= required:
         pieces_to_play = disposal_candidates[:required]
-        
+
         # Describe what we're disposing
         disposal_description = []
         burden_count = len([p for p in pieces_to_play if p in burden_in_hand])
         if burden_count > 0:
             disposal_description.append(f"{burden_count} burden")
-        
-        reserve_count = len([p for p in pieces_to_play if p in (plan.reserve_pieces or [])])
+
+        reserve_count = len(
+            [p for p in pieces_to_play if p in (plan.reserve_pieces or [])]
+        )
         if reserve_count > 0:
             disposal_description.append(f"{reserve_count} reserve")
-            
-        opener_count = len([p for p in pieces_to_play if p in (plan.assigned_openers or [])])
+
+        opener_count = len(
+            [p for p in pieces_to_play if p in (plan.assigned_openers or [])]
+        )
         if opener_count > 0:
             disposal_description.append(f"{opener_count} opener (last resort!)")
-        
+
         total_value = sum(p.point for p in pieces_to_play)
-        print(f"  🗑️ DISPOSING {' + '.join(disposal_description)}: {[f'{p.name}({p.point})' for p in pieces_to_play]}")
-        print(f"  Total value: {total_value} pts")
+        # Disposing: {' + '.join(disposal_description) if disposal_description else 'pieces'}
+        # Total value: {total_value} pts
         return pieces_to_play
     else:
         # Shouldn't happen with a well-formed plan
-        print(f"  ⚠️ ERROR: Not enough pieces to dispose!")
-        print(f"    - Need: {required} pieces")
-        print(f"    - Have: {len(disposal_candidates)} total candidates")
+        # ERROR: Not enough pieces to dispose! Need: {required}, Have: {len(disposal_candidates)}
         # Return what we have
         return disposal_candidates
 
@@ -930,24 +969,24 @@ def get_optimal_piece_count_for_starter(
     plan: StrategicPlan,
     constraints: OvercaptureConstraints,
     context: TurnPlayContext,
-    hand: List[Piece]
+    hand: List[Piece],
 ) -> Tuple[int, Optional[List[Piece]]]:
     """
     Determine optimal piece count for starter based on strategic goals.
-    
+
     This function implements a combo-first approach where we:
     1. Check if already at/above target
     2. Handle critical urgency situations
     3. Prioritize assigned combos from planning phase
     4. Choose strategic count when no combos available
     5. Always respect overcapture constraints
-    
+
     Args:
         plan: Strategic plan with assigned combos and urgency
         constraints: Overcapture risk constraints
         context: Current game context
         hand: Current hand pieces
-        
+
     Returns:
         Tuple of (piece_count, combo_to_play)
         - piece_count: Optimal number of pieces to play
@@ -957,34 +996,35 @@ def get_optimal_piece_count_for_starter(
     if context.my_declared - context.my_captured <= 0:
         print(f"  🎯 Already at/above target - minimizing play")
         return (1, None)
-    
+
     # 2. Critical urgency override - must win every turn
     if plan.urgency_level == "critical" and plan.target_remaining > 0:
-        print(f"  💥 CRITICAL URGENCY - finding strongest viable combo")
+        # Critical urgency - finding strongest viable combo
         # Find strongest combo regardless of assignment
         best_combo = None
         best_value = 0
-        
+
         for combo_type, pieces in plan.valid_combos:
             if all(p in hand for p in pieces):
                 if not is_play_risky_for_overcapture(
-                    pieces, constraints, 
-                    get_field_strength_from_players(context.player_states)
+                    pieces,
+                    constraints,
+                    get_field_strength_from_players(context.player_states),
                 ):
                     combo_value = sum(p.point for p in pieces)
                     if combo_value > best_value:
                         best_value = combo_value
                         best_combo = pieces
-        
+
         if best_combo:
-            print(f"    Found combo worth {best_value} pts")
+            # Found combo worth {best_value} pts
             return (len(best_combo), best_combo)
-    
+
     # 3. Check assigned combos (primary strategy)
     if plan.assigned_combos:
-        print(f"  📊 Evaluating {len(plan.assigned_combos)} assigned combos")
+        # Evaluating {len(plan.assigned_combos)} assigned combos
         field_strength = get_field_strength_from_players(context.player_states)
-        
+
         # Sort combos by strategic value (rank then points)
         sorted_combos = []
         for combo_type, pieces in plan.assigned_combos:
@@ -992,100 +1032,100 @@ def get_optimal_piece_count_for_starter(
                 combo_rank = COMBO_TYPE_RANK.get(combo_type, 0)
                 combo_value = sum(p.point for p in pieces)
                 sorted_combos.append((combo_type, pieces, combo_rank, combo_value))
-        
+
         sorted_combos.sort(key=lambda x: (x[2], x[3]), reverse=True)
-        
+
         # Try each combo in order
         for combo_type, pieces, rank, value in sorted_combos:
             if not is_play_risky_for_overcapture(pieces, constraints, field_strength):
-                print(f"    Selected {combo_type} worth {value} pts")
+                # Selected {combo_type} worth {value} pts
                 return (len(pieces), pieces)
             else:
-                print(f"    Skipping {combo_type} - overcapture risk")
-    
+                # Skipping {combo_type} - overcapture risk
+                continue
+
     # 4. No viable combos - choose strategic count based on urgency
-    print(f"  📈 No viable combos - choosing count strategically")
-    
+    # No viable combos - choosing count strategically
+
     # Count available openers
     openers_in_hand = [p for p in plan.assigned_openers if p in hand]
-    
+
     if plan.urgency_level == "high":
         # Try to maximize winning chances
         if len(openers_in_hand) >= 2:
-            print(f"    High urgency with {len(openers_in_hand)} openers - playing 2")
+            # High urgency with {len(openers_in_hand)} openers - playing 2
             return (2, None)
         else:
             return (1, None)
-    
+
     elif plan.urgency_level == "medium":
         # Balanced approach
         if plan.target_remaining >= 3 and len(hand) >= 4:
-            print(f"    Medium urgency, need {plan.target_remaining} piles - playing 2")
+            # Medium urgency, need {plan.target_remaining} piles - playing 2
             return (2, None)
         else:
             return (1, None)
-    
+
     else:  # "low" or "none" urgency
         # Conservative, save resources
-        print(f"    Low urgency - conserving with 1 piece")
+        # Low urgency - conserving with 1 piece
         return (1, None)
 
 
-def execute_starter_strategy(plan: StrategicPlan, context: TurnPlayContext, hand_eval: Dict, 
-                           constraints: OvercaptureConstraints) -> List[Piece]:
+def execute_starter_strategy(
+    plan: StrategicPlan,
+    context: TurnPlayContext,
+    hand_eval: Dict,
+    constraints: OvercaptureConstraints,
+) -> List[Piece]:
     """
     Execute strategy when leading the turn with overcapture constraints.
-    
+
     Args:
         plan: Strategic plan
         context: Game context
         hand_eval: Hand evaluation from evaluate_hand()
         constraints: Overcapture avoidance constraints
-        
+
     Returns:
         List of pieces to play
     """
     # FIRST: Detect if we have opener-only plan
     opener_only_plan = detect_opener_only_plan(plan)
-    
+
     # Debug logging
     if opener_only_plan:
-        print(f"\n🎯 {context.my_name} has opener-only plan with {len(plan.assigned_openers)} openers")
-        print(f"  Openers: {[f'{p.name}({p.point})' for p in plan.assigned_openers]}")
-    
+        pass  # Opener-only plan with {len(plan.assigned_openers)} openers
+
     # Since we're the starter, we need to choose how many pieces to play
     # NEW: Use combo-first approach for better goal achievement
     if context.required_piece_count is None:  # We're setting the count
         required, combo_to_play = get_optimal_piece_count_for_starter(
             plan, constraints, context, context.my_hand
         )
-        
+
         # If we selected a specific combo, return it immediately
         if combo_to_play:
-            print(f"\n🎮 STARTER STRATEGY for {context.my_name} (Turn {context.turn_number})")
-            print(f"  Current hand: {[f'{p.name}({p.point})' for p in context.my_hand]}")
-            print(f"  🎯 Playing pre-selected combo: {[f'{p.name}({p.point})' for p in combo_to_play]}")
+            # Starter playing pre-selected combo
             return combo_to_play
-            
+
         # Apply overcapture constraint override if needed
         if constraints.risk_level != "none" and constraints.max_safe_pieces < required:
-            print(f"  🛡️ Overcapture constraint override: {required} → {constraints.max_safe_pieces}")
+            print(
+                f"  🛡️ Overcapture constraint override: {required} → {constraints.max_safe_pieces}"
+            )
             required = constraints.max_safe_pieces
     else:
         required = context.required_piece_count
-    
-    print(f"\n🎮 STARTER STRATEGY for {context.my_name} (Turn {context.turn_number})")
-    print(f"  Current hand: {[f'{p.name}({p.point})' for p in context.my_hand]}")
-    print(f"  Required pieces: {required}")
-    print(f"  Urgency: {plan.urgency_level}, Target remaining: {plan.target_remaining}")
-    print(f"  Overcapture risk: {constraints.risk_level}")
-    
+
+    # Starter strategy: {required} pieces, urgency {plan.urgency_level}, risk {constraints.risk_level}
+
     # NOTE: Critical urgency now handled in get_optimal_piece_count_for_starter()
-    
+
     # Check if we have an assigned combo that matches required pieces
     if plan.assigned_combos:
         field_strength = get_field_strength_from_players(context.player_states)
-        
+
         # First, try to find exact match
         for combo_type, pieces in plan.assigned_combos:
             if len(pieces) == required:
@@ -1093,204 +1133,234 @@ def execute_starter_strategy(plan: StrategicPlan, context: TurnPlayContext, hand
                 all_in_hand = all(p in context.my_hand for p in pieces)
                 if all_in_hand:
                     # Check if this combo is risky for overcapture
-                    if is_play_risky_for_overcapture(pieces, constraints, field_strength):
+                    if is_play_risky_for_overcapture(
+                        pieces, constraints, field_strength
+                    ):
                         print(f"  ⚠️ Skipping {combo_type} - risky for overcapture")
                         continue
-                    print(f"🎯 {context.my_name} plays assigned {combo_type}: {[f'{p.name}({p.point})' for p in pieces]}")
+                    print(
+                        f"🎯 {context.my_name} plays assigned {combo_type}: {[f'{p.name}({p.point})' for p in pieces]}"
+                    )
                     return pieces
-        
+
         # No exact match found - find best combo that fits within required count
-        print(f"  📊 No exact {required}-piece combo found, looking for best available combo...")
-        
+        # No exact {required}-piece combo found, looking for best available combo
+
         # Sort combos by rank first, then by value
         available_combos = []
         for combo_type, pieces in plan.assigned_combos:
             if len(pieces) <= required and all(p in context.my_hand for p in pieces):
                 # Check if this combo is risky for overcapture
                 if is_play_risky_for_overcapture(pieces, constraints, field_strength):
-                    print(f"    ⚠️ Skipping {combo_type} ({len(pieces)} pieces) - risky for overcapture")
+                    # Skipping {combo_type} - risky for overcapture
                     continue
-                
+
                 combo_value = sum(p.point for p in pieces)
                 combo_rank = COMBO_TYPE_RANK.get(combo_type, 0)
                 available_combos.append((combo_type, pieces, combo_rank, combo_value))
-                print(f"    Evaluating {combo_type} ({len(pieces)} pieces): {[f'{p.name}({p.point})' for p in pieces]} = {combo_value} pts, rank={combo_rank}")
-        
+                # Evaluating {combo_type}: {combo_value} pts, rank {combo_rank}
+
         if available_combos:
             # Sort by combo rank first (higher is better), then by value
             available_combos.sort(key=lambda x: (x[2], x[3]), reverse=True)
             best_type, best_combo, best_rank, best_value = available_combos[0]
-            
-            print(f"  🎯 {context.my_name} plays best ranked {best_type} (rank={best_rank}, {len(best_combo)} pieces < {required} required): {[f'{p.name}({p.point})' for p in best_combo]}")
+
+            # Playing best ranked {best_type} (rank {best_rank})
             return best_combo
-    
+
     # Low urgency AND have burden pieces: dispose of them
     if plan.urgency_level in ["low", "medium"] and plan.burden_pieces:
-        print(f"  🗑️ Considering burden disposal ({len(plan.burden_pieces)} burden pieces)")
+        # Considering burden disposal: {len(plan.burden_pieces)} pieces
         # Sort burden by value descending (dispose high value first)
         sorted_burden = sorted(plan.burden_pieces, key=lambda p: -p.point)
-        print(f"    Burden pieces sorted by value: {[f'{p.name}({p.point})' for p in sorted_burden]}")
-        
+        # Burden pieces sorted by value descending
+
         burden_count = min(required, len(sorted_burden))
         if burden_count == required:
             burden_play = sorted_burden[:required]
-            print(f"    Trying to play {burden_count} burden pieces: {[f'{p.name}({p.point})' for p in burden_play]}")
+            # Trying to play {burden_count} burden pieces
             # Check if this is a valid play for starter
             if is_valid_play(burden_play):
-                print(f"  🗑️ DISPOSING burden pieces (high value first): {[f'{p.name}({p.point})' for p in burden_play]}")
+                # Disposing burden pieces (high value first)
                 return burden_play
             else:
-                print(f"    ❌ Burden pieces don't form valid play for starter")
-    
+                # Burden pieces don't form valid play for starter
+                pass
+
     # Before falling back to random selection, try any available combo from assigned combos
     if plan.assigned_combos:
-        print(f"  🔍 Attempting to play ANY available combo before random selection...")
+        # Attempting to play ANY available combo before random selection
         field_strength = get_field_strength_from_players(context.player_states)
-        
+
         # Sort combos by value (strongest first)
-        sorted_combos = sorted(plan.assigned_combos, 
-                              key=lambda x: sum(p.point for p in x[1]), 
-                              reverse=True)
-        
+        sorted_combos = sorted(
+            plan.assigned_combos, key=lambda x: sum(p.point for p in x[1]), reverse=True
+        )
+
         for combo_type, pieces in sorted_combos:
             if all(p in context.my_hand for p in pieces):
                 # Check if this combo is risky for overcapture
                 if is_play_risky_for_overcapture(pieces, constraints, field_strength):
-                    print(f"    ⚠️ Skipping {combo_type} - risky for overcapture")
+                    # Skipping {combo_type} - risky for overcapture
                     continue
-                    
-                print(f"  🎯 {context.my_name} plays {combo_type} (avoiding random selection): {[f'{p.name}({p.point})' for p in pieces]}")
+
+                # Playing {combo_type} (avoiding random selection)
                 return pieces
-        
-        print(f"    ❌ No safe combos available in hand")
-    
+
+        # No safe combos available in hand
+
     # Default: play random pieces that are not part of combos
     # Collect pieces that are disposable (not in main plan)
     pieces_in_plan = set()
-    
+
     # Add opener pieces to protected set
     if plan.assigned_openers:
         pieces_in_plan.update(plan.assigned_openers)
-    
+
     # Add combo pieces to protected set
     for combo_type, pieces in plan.assigned_combos:
         pieces_in_plan.update(pieces)
-    
+
     # Find disposable pieces (burden + reserve + any not in plan)
     disposable_pieces = []
-    
+
     # First priority: burden pieces
     if plan.burden_pieces:
-        burden_in_hand = [p for p in plan.burden_pieces if p in context.my_hand and p not in pieces_in_plan]
+        burden_in_hand = [
+            p
+            for p in plan.burden_pieces
+            if p in context.my_hand and p not in pieces_in_plan
+        ]
         disposable_pieces.extend(burden_in_hand)
-    
+
     # Second priority: reserve pieces
     if plan.reserve_pieces:
-        reserve_in_hand = [p for p in plan.reserve_pieces if p in context.my_hand and p not in pieces_in_plan]
+        reserve_in_hand = [
+            p
+            for p in plan.reserve_pieces
+            if p in context.my_hand and p not in pieces_in_plan
+        ]
         disposable_pieces.extend(reserve_in_hand)
-    
+
     # Third priority: any piece not in plan
-    other_pieces = [p for p in context.my_hand if p not in pieces_in_plan and p not in disposable_pieces]
+    other_pieces = [
+        p
+        for p in context.my_hand
+        if p not in pieces_in_plan and p not in disposable_pieces
+    ]
     disposable_pieces.extend(other_pieces)
-    
+
     # Special handling when at target - play weakest single piece
     if constraints.risk_level == "at_target":
-        print(f"  🎯 At target - playing weakest single piece to minimize wins")
+        # At target - playing weakest single piece to minimize wins
         # Sort hand by value (weakest first)
         sorted_hand = sorted(context.my_hand, key=lambda p: p.point)
         return [sorted_hand[0]]  # Play weakest single piece
-    
-    print(f"  🎲 Selecting random play from disposable pieces")
-    print(f"    Disposable pieces: {[f'{p.name}({p.point})' for p in disposable_pieces]}")
-    
+
+    # Selecting random play from {len(disposable_pieces)} disposable pieces
+
     if len(disposable_pieces) >= required:
         # Randomly select required pieces
         selected_pieces = random.sample(disposable_pieces, required)
-        
+
         # For starter, check if this forms a valid play
         if is_valid_play(selected_pieces):
-            print(f"  🎯 {context.my_name} plays random disposable pieces: {[f'{p.name}({p.point})' for p in selected_pieces]}")
+            # Playing random disposable pieces
             return selected_pieces
         else:
             # Try to find a valid combination from disposable pieces
-            print(f"    Random selection not valid for starter, trying to find valid combo...")
+            # Random selection not valid for starter, trying to find valid combo
             from itertools import combinations
+
             for combo in combinations(disposable_pieces, required):
                 if is_valid_play(list(combo)):
-                    print(f"  🎯 {context.my_name} plays valid disposable combo: {[f'{p.name}({p.point})' for p in combo]}")
+                    # Playing valid disposable combo
                     return list(combo)
-    
+
     # Last resort: try to find ANY valid combo from full hand
-    print(f"  ⚠️ Not enough disposable pieces, searching for ANY valid play from full hand")
+    # Not enough disposable pieces, searching for ANY valid play from full hand
     if required <= len(context.my_hand):
         # First, try all available combos (not just assigned ones)
         from backend.engine.ai import find_all_valid_combos
+
         all_combos = find_all_valid_combos(context.my_hand)
-        
+
         # Filter combos by size
-        valid_combos_of_size = [(combo_type, pieces) for combo_type, pieces in all_combos 
-                               if len(pieces) == required]
-        
+        valid_combos_of_size = [
+            (combo_type, pieces)
+            for combo_type, pieces in all_combos
+            if len(pieces) == required
+        ]
+
         if valid_combos_of_size:
             # Sort by value (weakest first for safety)
             valid_combos_of_size.sort(key=lambda x: sum(p.point for p in x[1]))
             combo_type, pieces = valid_combos_of_size[0]
-            print(f"  🎯 {context.my_name} plays emergency {combo_type}: {[f'{p.name}({p.point})' for p in pieces]}")
+            print(
+                f"  🎯 {context.my_name} plays emergency {combo_type}: {[f'{p.name}({p.point})' for p in pieces]}"
+            )
             return pieces
-        
+
         # If still no valid combo, try random selection but validate
         print(f"    Attempting random selection of {required} pieces...")
         attempts = 0
         while attempts < 20:  # Try up to 20 times
             selected = random.sample(context.my_hand, required)
             if is_valid_play(selected):
-                print(f"  🎯 {context.my_name} plays validated random pieces: {[f'{p.name}({p.point})' for p in selected]}")
+                print(
+                    f"  🎯 {context.my_name} plays validated random pieces: {[f'{p.name}({p.point})' for p in selected]}"
+                )
                 return selected
             attempts += 1
-        
-        print(f"    ❌ Could not find valid {required}-piece play after {attempts} attempts")
-    
+
+        # Could not find valid {required}-piece play after {attempts} attempts
+
     # Absolute fallback
     from backend.engine.ai import choose_best_play
+
     return choose_best_play(context.my_hand, required)
 
 
 # ------------------------------------------------------------------
 # Validation Helper
 # ------------------------------------------------------------------
-def validate_play_result(result: List[Piece], hand: List[Piece], context: TurnPlayContext) -> bool:
+def validate_play_result(
+    result: List[Piece], hand: List[Piece], context: TurnPlayContext
+) -> bool:
     """
     Validate that the AI's chosen play is legal.
-    
+
     Args:
         result: The pieces chosen to play
         hand: The player's hand
         context: Game context
-        
+
     Returns:
         True if the play is valid, False otherwise
     """
     # Check result is not None and is a list
     if result is None or not isinstance(result, list):
-        print(f"⚠️ Validation: Result is not a list")
+        # Validation: Result is not a list
         return False
-    
+
     # Check all pieces in result are actually in hand
     for piece in result:
         if piece not in hand:
-            print(f"⚠️ Validation: Piece {piece} not in hand")
+            # Validation: Piece {piece} not in hand
             return False
-    
+
     # Check piece count matches requirement (if set)
     if context and context.required_piece_count is not None:
         if len(result) != context.required_piece_count:
-            print(f"⚠️ Validation: Expected {context.required_piece_count} pieces, got {len(result)}")
+            print(
+                f"⚠️ Validation: Expected {context.required_piece_count} pieces, got {len(result)}"
+            )
             return False
-    
+
     # For starter, check if play is valid
     if context and context.am_i_starter and result:
         if not is_valid_play(result):
-            print(f"⚠️ Validation: Starter play is not valid")
+            # Validation: Starter play is not valid
             return False
-    
+
     return True

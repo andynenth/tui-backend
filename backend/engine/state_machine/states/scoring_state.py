@@ -453,7 +453,7 @@ class ScoringState(GameState):
     async def _fire_round_completed_event(self) -> None:
         """🚀 V2 OPTIMIZATION: Fire round_completed event with comprehensive round data"""
         game = self.state_machine.game
-        
+
         # Get initial hands data from game if stored during preparation phase
         initial_hands = {}
         if hasattr(game, "round_initial_hands"):
@@ -464,7 +464,7 @@ class ScoringState(GameState):
             if hasattr(game, "players"):
                 for player in game.players:
                     initial_hands[player.name] = []  # Empty since we can't reconstruct
-        
+
         # Gather all round data for the event
         round_data = {
             "round_number": getattr(game, "round_number", 1),
@@ -474,9 +474,13 @@ class ScoringState(GameState):
             "declarations": getattr(game, "player_declarations", {}),
             "turn_sequence": [],  # Captured from turn_results below
             "scores": self.round_scores,
-            "total_scores": {p.name: p.score for p in game.players} if hasattr(game, "players") else {},
+            "total_scores": (
+                {p.name: p.score for p in game.players}
+                if hasattr(game, "players")
+                else {}
+            ),
         }
-        
+
         # Add turn sequence if available (from turn_results)
         if hasattr(game, "turn_results") and game.turn_results:
             round_data["turn_sequence"] = [
@@ -489,12 +493,12 @@ class ScoringState(GameState):
                 }
                 for i, turn in enumerate(game.turn_results)
             ]
-        
+
         await self.state_machine.store_game_event(
             "round_completed",
             round_data,
         )
-        
+
         self.logger.info(
             f"🚀 V2 EVENT: round_completed event fired for room {self.state_machine.room_id}, round {game.round_number}"
         )

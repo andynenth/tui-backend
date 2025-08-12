@@ -60,9 +60,11 @@ class PreparationState(GameState):
     async def _setup_phase(self) -> None:
         """Initialize preparation phase by dealing cards"""
         self.logger.info("🎴 Preparation phase starting - dealing cards")
-        
+
         # Reset phase-specific state for new round
-        self.logger.info(f"🔄 Resetting preparation state - previous redeal_requester: {self.redeal_requester}")
+        self.logger.info(
+            f"🔄 Resetting preparation state - previous redeal_requester: {self.redeal_requester}"
+        )
         self.weak_players.clear()
         self.redeal_decisions.clear()
         self.weak_players_awaiting.clear()
@@ -70,7 +72,7 @@ class PreparationState(GameState):
         self.initial_deal_complete = False
         self.decision_start_time = None
         self.warning_sent = False
-        
+
         await self._deal_cards()
 
     async def _cleanup_phase(self) -> None:
@@ -152,15 +154,14 @@ class PreparationState(GameState):
         hands_data = {}
         starter_name = None
         starter_reason = None
-        
+
         # Collect all hands data
         for player in game.players:
             player_name = getattr(player, "name", str(player))
             hands_data[player_name] = [
-                {"kind": piece.kind, "point": piece.point} 
-                for piece in player.hand
+                {"kind": piece.kind, "point": piece.point} for piece in player.hand
             ]
-            
+
             # Check for GENERAL_RED if round 1
             if game.round_number == 1 and not starter_name:
                 for piece in player.hand:
@@ -168,29 +169,28 @@ class PreparationState(GameState):
                         starter_name = player_name
                         starter_reason = "has_general_red"
                         break
-        
+
         # If no GENERAL_RED found (shouldn't happen), use first player
         if game.round_number == 1 and not starter_name:
             starter_name = getattr(game.players[0], "name", str(game.players[0]))
             starter_reason = "default"
-        
+
         # Store initial hands in game object for round_completed event
         game.round_initial_hands = hands_data
-        
+
         # Broadcast hands_dealt event for complete game history
         hands_dealt_data = {
             "round_number": game.round_number,
             "hands": hands_data,
             "starter": starter_name,
             "starter_reason": starter_reason,
-            "redeal_multiplier": getattr(game, "redeal_multiplier", 1)
+            "redeal_multiplier": getattr(game, "redeal_multiplier", 1),
         }
-        
+
         await self.broadcast_custom_event(
-            event_type="hands_dealt",
-            data=hands_dealt_data
+            event_type="hands_dealt", data=hands_dealt_data
         )
-        
+
         # Store hands_dealt event for play history
         await self.store_custom_event("hands_dealt", hands_dealt_data)
 

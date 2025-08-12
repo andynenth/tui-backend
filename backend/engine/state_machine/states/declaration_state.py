@@ -178,27 +178,24 @@ class DeclarationState(GameState):
             await self._emit_declarations_completed()
             return GamePhase.TURN
         return None
-    
+
     async def _emit_declarations_completed(self) -> None:
         """Emit a compressed declarations_completed event for event compression"""
         declarations = self.phase_data["declarations"]
         total_declared = self.phase_data["declaration_total"]
-        
+
         event_data = {
             "declarations": declarations,
             "total_declared": total_declared,
             "valid": total_declared != 8,  # Total must not equal 8
         }
-        
+
         # Store semantic event for v2 optimization
-        await self.state_machine.store_game_event(
-            "declarations_completed",
-            event_data
-        )
-        
+        await self.state_machine.store_game_event("declarations_completed", event_data)
+
         # Also broadcast for real-time updates
         await self.broadcast_custom_event(
             "declarations_completed",
             event_data,
-            f"All declarations complete - total: {total_declared}"
+            f"All declarations complete - total: {total_declared}",
         )

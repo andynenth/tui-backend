@@ -11,10 +11,22 @@ import time
 import logging
 
 from backend.models.play_history import (
-    PlayerInfo, InitialState, PieceInfo, DeclarationInfo,
-    PlayData, TurnInfo, RoundSummary, RoundHistory, PlayHistoryResponse,
-    StarterInfo, DeclarationData, TurnWinner, GameStateAfterTurn,
-    CaptureInfo, ScoringInfo, AIDecisionAnalysis
+    PlayerInfo,
+    InitialState,
+    PieceInfo,
+    DeclarationInfo,
+    PlayData,
+    TurnInfo,
+    RoundSummary,
+    RoundHistory,
+    PlayHistoryResponse,
+    StarterInfo,
+    DeclarationData,
+    TurnWinner,
+    GameStateAfterTurn,
+    CaptureInfo,
+    ScoringInfo,
+    AIDecisionAnalysis,
 )
 from backend.api.services.event_store import GameEvent, event_store
 from backend.engine.piece import Piece
@@ -62,13 +74,14 @@ class EventStorePlayHistoryService:
     def __init__(self):
         # Use the same path calculation as EventStore to ensure we use the same database
         from pathlib import Path
+
         current_dir = Path(__file__).resolve()
         # backend/services/event_store_play_history_service.py -> project_root
         project_root = current_dir.parent.parent.parent
         self.db_path = str(project_root / "game_events.db")
         self._cache = {}
         self._cache_ttl = 300  # 5 minutes
-        
+
         # Track if we're dealing with compressed events
         self._compressed_mode = False
 
@@ -76,7 +89,7 @@ class EventStorePlayHistoryService:
         self,
         room_id: str,
         include_ai_analysis: bool = True,
-        format: Optional[str] = None
+        format: Optional[str] = None,
     ) -> PlayHistoryResponse:
         """
         Build complete play history from event store
@@ -104,10 +117,7 @@ class EventStorePlayHistoryService:
 
         if not events:
             return PlayHistoryResponse(
-                room_id=room_id,
-                total_rounds=0,
-                players={},
-                rounds=[]
+                room_id=room_id, total_rounds=0, players={}, rounds=[]
             )
 
         # Extract player information
@@ -119,7 +129,7 @@ class EventStorePlayHistoryService:
         # Extract data for each round
         rounds = []
         for round_num, (start_idx, end_idx) in enumerate(round_boundaries, 1):
-            round_events = events[start_idx:end_idx+1]
+            round_events = events[start_idx : end_idx + 1]
 
             if format == "compact":
                 round_history = self._build_compact_round_from_events(
@@ -135,10 +145,7 @@ class EventStorePlayHistoryService:
 
         # Build response
         response = PlayHistoryResponse(
-            room_id=room_id,
-            total_rounds=len(rounds),
-            players=players,
-            rounds=rounds
+            room_id=room_id, total_rounds=len(rounds), players=players, rounds=rounds
         )
 
         # Cache the result
@@ -146,12 +153,17 @@ class EventStorePlayHistoryService:
 
         return response
 
-    def _extract_players_from_events(self, events: List[GameEvent]) -> Dict[str, PlayerInfo]:
+    def _extract_players_from_events(
+        self, events: List[GameEvent]
+    ) -> Dict[str, PlayerInfo]:
         """Extract player information from events"""
         players = {}
 
         for event in events:
-            if event.event_type == "phase_change" and event.payload.get("phase") == "preparation":
+            if (
+                event.event_type == "phase_change"
+                and event.payload.get("phase") == "preparation"
+            ):
                 game_players = event.payload.get("players", {})
                 for player_name, player_data in game_players.items():
                     if player_name not in players:
@@ -162,7 +174,7 @@ class EventStorePlayHistoryService:
                             player_id=player_id,
                             player_name=player_name,
                             player_type="ai" if is_bot else "human",
-                            ai_version="v2" if is_bot else None
+                            ai_version="v2" if is_bot else None,
                         )
                 break  # Only need first preparation phase
 
@@ -175,11 +187,17 @@ class EventStorePlayHistoryService:
 
         for i, event in enumerate(events):
             # Round ends at scoring phase
-            if event.event_type == "phase_change" and event.payload.get("phase") == "scoring":
+            if (
+                event.event_type == "phase_change"
+                and event.payload.get("phase") == "scoring"
+            ):
                 # Find next preparation phase or end of events
                 round_end = i
                 for j in range(i + 1, len(events)):
-                    if events[j].event_type == "phase_change" and events[j].payload.get("phase") == "preparation":
+                    if (
+                        events[j].event_type == "phase_change"
+                        and events[j].payload.get("phase") == "preparation"
+                    ):
                         boundaries.append((current_round_start, round_end))
                         current_round_start = j
                         break
@@ -199,12 +217,12 @@ class EventStorePlayHistoryService:
         events: List[GameEvent],
         round_num: int,
         players: Dict[str, PlayerInfo],
-        include_ai_analysis: bool
+        include_ai_analysis: bool,
     ) -> RoundHistory:
         """Build complete round history from events"""
         # Check if we have compressed events
         self._check_compression_mode(events)
-        
+
         initial_state = self._extract_initial_state(events, round_num)
         hands_dealt = self._extract_hands_dealt(events)
         declaration_phase = self._extract_declaration_phase(events, players)
@@ -217,14 +235,11 @@ class EventStorePlayHistoryService:
             hands_dealt=hands_dealt,
             declaration_phase=declaration_phase,
             turn_history=turn_history,
-            round_summary=round_summary
+            round_summary=round_summary,
         )
 
     def _build_compact_round_from_events(
-        self,
-        events: List[GameEvent],
-        round_num: int,
-        players: Dict[str, PlayerInfo]
+        self, events: List[GameEvent], round_num: int, players: Dict[str, PlayerInfo]
     ) -> RoundHistory:
         """Build compact round history (minimal data)"""
         initial_state = self._extract_initial_state(events, round_num)
@@ -237,10 +252,12 @@ class EventStorePlayHistoryService:
             hands_dealt={},  # Empty for compact
             declaration_phase=declaration_phase,
             turn_history=[],  # Empty for compact
-            round_summary=round_summary
+            round_summary=round_summary,
         )
 
-    def _extract_initial_state(self, events: List[GameEvent], round_num: int) -> InitialState:
+    def _extract_initial_state(
+        self, events: List[GameEvent], round_num: int
+    ) -> InitialState:
         """Extract initial state from events"""
         starter = None
         starter_reason = "default"
@@ -263,7 +280,9 @@ class EventStorePlayHistoryService:
                     # Rotate to start with starter
                     if starter and starter in player_order:
                         starter_idx = player_order.index(starter)
-                        player_order = player_order[starter_idx:] + player_order[:starter_idx]
+                        player_order = (
+                            player_order[starter_idx:] + player_order[:starter_idx]
+                        )
                 break
 
         # Fallback: extract from phase_change events or declarations
@@ -292,7 +311,10 @@ class EventStorePlayHistoryService:
                 # Rotate to start with starter
                 if starter in declaration_order:
                     starter_idx = declaration_order.index(starter)
-                    player_order = declaration_order[starter_idx:] + declaration_order[:starter_idx]
+                    player_order = (
+                        declaration_order[starter_idx:]
+                        + declaration_order[:starter_idx]
+                    )
                 else:
                     player_order = declaration_order
             elif declaration_order:
@@ -312,15 +334,16 @@ class EventStorePlayHistoryService:
             player_id=starter.lower().replace(" ", "_") if starter else "unknown",
             player_name=starter or "Unknown",
             reason=starter_reason,
-            highest_card="GENERAL_RED(14)" if starter_reason == "has_general_red" else None
+            highest_card=(
+                "GENERAL_RED(14)" if starter_reason == "has_general_red" else None
+            ),
         )
 
-        return InitialState(
-            starter=starter_info,
-            player_order=player_order
-        )
+        return InitialState(starter=starter_info, player_order=player_order)
 
-    def _extract_hands_dealt(self, events: List[GameEvent]) -> Dict[str, List[PieceInfo]]:
+    def _extract_hands_dealt(
+        self, events: List[GameEvent]
+    ) -> Dict[str, List[PieceInfo]]:
         """Extract initial hands from events"""
         hands = {}
 
@@ -332,23 +355,17 @@ class EventStorePlayHistoryService:
                     # Sort hand by color (RED first) then by value (high to low)
                     sorted_hand = sorted(
                         hand,
-                        key=lambda p: (
-                            0 if "RED" in p["kind"] else 1,
-                            -p["point"]
-                        )
+                        key=lambda p: (0 if "RED" in p["kind"] else 1, -p["point"]),
                     )
                     hands[player_name] = [
-                        PieceInfo(kind=p["kind"], point=p["point"])
-                        for p in sorted_hand
+                        PieceInfo(kind=p["kind"], point=p["point"]) for p in sorted_hand
                     ]
                 break
 
         return hands
 
     def _extract_declaration_phase(
-        self,
-        events: List[GameEvent],
-        players: Dict[str, PlayerInfo]
+        self, events: List[GameEvent], players: Dict[str, PlayerInfo]
     ) -> DeclarationInfo:
         """Extract declaration phase data from events"""
         declarations = []
@@ -396,12 +413,14 @@ class EventStorePlayHistoryService:
             else:
                 strategy_notes = f"competing for {pile_room} pile room"
 
-            declarations.append(DeclarationData(
-                player_id=player_name.lower().replace(" ", "_"),
-                declared=declared,
-                position=position,
-                strategy_notes=strategy_notes
-            ))
+            declarations.append(
+                DeclarationData(
+                    player_id=player_name.lower().replace(" ", "_"),
+                    declared=declared,
+                    position=position,
+                    strategy_notes=strategy_notes,
+                )
+            )
 
             running_total += declared
             total_declared += declared
@@ -409,13 +428,11 @@ class EventStorePlayHistoryService:
         return DeclarationInfo(
             declarations=declarations,
             total_declared=total_declared,
-            pile_room_calculation=pile_room_calculation
+            pile_room_calculation=pile_room_calculation,
         )
 
     def _extract_turn_history(
-        self,
-        events: List[GameEvent],
-        include_ai_analysis: bool
+        self, events: List[GameEvent], include_ai_analysis: bool
     ) -> List[TurnInfo]:
         """Extract turn-by-turn play history from events"""
         turns = []
@@ -467,7 +484,10 @@ class EventStorePlayHistoryService:
             if event.event_type == "phase_change":
                 players_data = event.payload.get("players", {})
                 for player_name, player_info in players_data.items():
-                    if isinstance(player_info, dict) and "captured_piles" in player_info:
+                    if (
+                        isinstance(player_info, dict)
+                        and "captured_piles" in player_info
+                    ):
                         player_captured[player_name] = player_info["captured_piles"]
 
         for i, event in enumerate(events):
@@ -480,11 +500,11 @@ class EventStorePlayHistoryService:
                 turn_num = turn_data.get("turn_number", turn_number)
                 starter = turn_data.get("starter", "")
                 plays_data = turn_data.get("plays", {})
-                
+
                 # Convert compressed plays to TurnInfo
                 for player_name, play_info in plays_data.items():
                     pieces = play_info.get("pieces", [])
-                    
+
                     # Calculate hand_before (current hand)
                     hand_before = []
                     if player_name in player_hands:
@@ -492,89 +512,94 @@ class EventStorePlayHistoryService:
                             PieceInfo(kind=p["kind"], point=p["point"])
                             for p in player_hands[player_name]
                         ]
-                    
+
                     # Remove played pieces from player's hand
                     hand_after_data = player_hands.get(player_name, []).copy()
                     for played_piece in pieces:
                         # Find and remove the played piece from hand
                         for j, hand_piece in enumerate(hand_after_data):
-                            if (hand_piece["kind"] == played_piece["kind"] and
-                                hand_piece["point"] == played_piece["point"]):
+                            if (
+                                hand_piece["kind"] == played_piece["kind"]
+                                and hand_piece["point"] == played_piece["point"]
+                            ):
                                 hand_after_data.pop(j)
                                 break
-                    
+
                     # Update player's current hand
                     if player_name in player_hands:
                         player_hands[player_name] = hand_after_data
-                    
+
                     # Convert hand_after to PieceInfo objects
                     hand_after = [
                         PieceInfo(kind=p["kind"], point=p["point"])
                         for p in hand_after_data
                     ]
-                    
+
                     # Update pieces played count
                     if player_name in player_pieces_played:
                         player_pieces_played[player_name] += len(pieces)
-                    
+
                     play_data_obj = PlayData(
                         player_id=player_name.lower().replace(" ", "_"),
                         player_name=player_name,
                         pieces_played=[
-                            PieceInfo(kind=p["kind"], point=p["point"])
-                            for p in pieces
+                            PieceInfo(kind=p["kind"], point=p["point"]) for p in pieces
                         ],
-                        play_type=get_play_type_from_dicts(pieces) if pieces else "UNKNOWN",
+                        play_type=(
+                            get_play_type_from_dicts(pieces) if pieces else "UNKNOWN"
+                        ),
                         hand_before=hand_before,
                         hand_after=hand_after,
                         captured_count=player_captured.get(player_name, 0),
                         declared_count=turn_declarations.get(player_name, 0),
-                        ai_decision_analysis=None
+                        ai_decision_analysis=None,
                     )
                     current_turn_plays.append(play_data_obj)
-                
+
                 # Create winner info
                 winner_info = None
                 if turn_data.get("winner"):
                     winner_name = turn_data["winner"]
                     winner_play = next(
                         (p for p in current_turn_plays if p.player_name == winner_name),
-                        None
+                        None,
                     )
                     if winner_play:
                         winner_info = TurnWinner(
                             player_id=winner_name.lower().replace(" ", "_"),
                             player_name=winner_name,
                             winning_play=winner_play.pieces_played,
-                            pieces_captured=turn_data.get("piles_won", 1)
+                            pieces_captured=turn_data.get("piles_won", 1),
                         )
                         # Update captured counts
                         if winner_name in player_captured:
-                            player_captured[winner_name] += turn_data.get("piles_won", 1)
-                
+                            player_captured[winner_name] += turn_data.get(
+                                "piles_won", 1
+                            )
+
                 # Calculate game state after turn
                 game_state_after = {}
                 for player_name in turn_declarations:
                     game_state_after[player_name] = GameStateAfterTurn(
                         captured=player_captured.get(player_name, 0),
                         declared=turn_declarations.get(player_name, 0),
-                        hand_size=8 - player_pieces_played.get(player_name, 0)
+                        hand_size=8 - player_pieces_played.get(player_name, 0),
                     )
-                
+
                 turn = TurnInfo(
                     turn_number=turn_num,
                     plays=current_turn_plays,
                     winner=winner_info,
                     next_starter=turn_data.get("winner", starter),
-                    game_state_after=game_state_after
+                    game_state_after=game_state_after,
                 )
                 turns.append(turn)
-                
+
                 # Reset for next turn
                 current_turn_plays = []
                 turn_number = turn_num + 1
                 continue
-            
+
             if event.event_type == "phase_data_update":
                 # Check for turn_plays data in phase updates
                 phase_data = event.payload.get("updates", {})
@@ -584,18 +609,28 @@ class EventStorePlayHistoryService:
                     # Process any new plays in this update
                     for player_name, play_data in turn_plays.items():
                         # Skip if we've already processed this play
-                        if any(p.player_name == player_name for p in current_turn_plays):
+                        if any(
+                            p.player_name == player_name for p in current_turn_plays
+                        ):
                             continue
 
                         pieces_raw = play_data.get("pieces", [])
-                        
+
                         # Convert piece strings to dictionaries
                         pieces = []
                         for piece_str in pieces_raw:
                             # Parse strings like "ADVISOR_BLACK(11)" or "GENERAL_RED(14)"
-                            if isinstance(piece_str, str) and "(" in piece_str and ")" in piece_str:
-                                kind = piece_str[:piece_str.index("(")]
-                                point = int(piece_str[piece_str.index("(")+1:piece_str.index(")")])
+                            if (
+                                isinstance(piece_str, str)
+                                and "(" in piece_str
+                                and ")" in piece_str
+                            ):
+                                kind = piece_str[: piece_str.index("(")]
+                                point = int(
+                                    piece_str[
+                                        piece_str.index("(") + 1 : piece_str.index(")")
+                                    ]
+                                )
                                 pieces.append({"kind": kind, "point": point})
                             elif isinstance(piece_str, dict):
                                 # Already a dictionary
@@ -621,8 +656,10 @@ class EventStorePlayHistoryService:
                         for played_piece in pieces:
                             # Find and remove the played piece from hand
                             for j, hand_piece in enumerate(hand_after_data):
-                                if (hand_piece["kind"] == played_piece["kind"] and
-                                    hand_piece["point"] == played_piece["point"]):
+                                if (
+                                    hand_piece["kind"] == played_piece["kind"]
+                                    and hand_piece["point"] == played_piece["point"]
+                                ):
                                     hand_after_data.pop(j)
                                     break
 
@@ -643,18 +680,24 @@ class EventStorePlayHistoryService:
                                 PieceInfo(kind=p["kind"], point=p["point"])
                                 for p in pieces
                             ],
-                            play_type=get_play_type_from_dicts(pieces) if pieces else "UNKNOWN",
+                            play_type=(
+                                get_play_type_from_dicts(pieces)
+                                if pieces
+                                else "UNKNOWN"
+                            ),
                             hand_before=hand_before,
                             hand_after=hand_after,
                             captured_count=player_captured.get(player_name, 0),
                             declared_count=turn_declarations.get(player_name, 0),
-                            ai_decision_analysis=None
+                            ai_decision_analysis=None,
                         )
                         current_turn_plays.append(play_data_obj)
 
                 # Also check if turn completed in same event
                 if phase_data.get("turn_complete") and current_turn_plays:
-                    current_turn_num = phase_data.get("current_turn_number", turn_number)
+                    current_turn_num = phase_data.get(
+                        "current_turn_number", turn_number
+                    )
 
                     # Look ahead for winner event
                     winner_info = None
@@ -663,12 +706,16 @@ class EventStorePlayHistoryService:
                     # Search for the winner event that follows this turn completion
                     for j in range(i + 1, min(i + 10, len(events))):
                         next_event = events[j]
-                        if (next_event.event_type == "phase_data_update" and
-                            next_event.payload.get("updates", {}).get("winner")):
+                        if (
+                            next_event.event_type == "phase_data_update"
+                            and next_event.payload.get("updates", {}).get("winner")
+                        ):
                             winner_data = next_event.payload.get("updates", {})
                             winner_name = winner_data.get("winner")
                             piles_won = winner_data.get("piles_won", 1)
-                            next_starter = winner_data.get("next_turn_starter", winner_name)
+                            next_starter = winner_data.get(
+                                "next_turn_starter", winner_name
+                            )
 
                             # Also look for updated captured counts in following events
                             for k in range(j, min(j + 5, len(events))):
@@ -676,15 +723,19 @@ class EventStorePlayHistoryService:
 
                             # Find winner's play
                             winner_play = next(
-                                (p for p in current_turn_plays if p.player_name == winner_name),
-                                None
+                                (
+                                    p
+                                    for p in current_turn_plays
+                                    if p.player_name == winner_name
+                                ),
+                                None,
                             )
                             if winner_play:
                                 winner_info = TurnWinner(
                                     player_id=winner_name.lower().replace(" ", "_"),
                                     player_name=winner_name,
                                     winning_play=winner_play.pieces_played,
-                                    pieces_captured=piles_won
+                                    pieces_captured=piles_won,
                                 )
                             break
 
@@ -694,7 +745,7 @@ class EventStorePlayHistoryService:
                         game_state_after[player_name] = GameStateAfterTurn(
                             captured=player_captured.get(player_name, 0),
                             declared=turn_declarations.get(player_name, 0),
-                            hand_size=8 - player_pieces_played.get(player_name, 0)
+                            hand_size=8 - player_pieces_played.get(player_name, 0),
                         )
 
                     turn = TurnInfo(
@@ -702,7 +753,7 @@ class EventStorePlayHistoryService:
                         plays=current_turn_plays,
                         winner=winner_info,
                         next_starter=next_starter,
-                        game_state_after=game_state_after
+                        game_state_after=game_state_after,
                     )
                     turns.append(turn)
 
@@ -713,9 +764,7 @@ class EventStorePlayHistoryService:
         return turns
 
     def _extract_round_summary(
-        self,
-        events: List[GameEvent],
-        players: Dict[str, PlayerInfo]
+        self, events: List[GameEvent], players: Dict[str, PlayerInfo]
     ) -> RoundSummary:
         """Extract round summary from events"""
         final_captures = {}
@@ -725,7 +774,10 @@ class EventStorePlayHistoryService:
 
         # Look for scoring phase data
         for event in reversed(events):  # Start from end
-            if event.event_type == "phase_change" and event.payload.get("phase") == "scoring":
+            if (
+                event.event_type == "phase_change"
+                and event.payload.get("phase") == "scoring"
+            ):
                 phase_data = event.payload.get("phase_data", {})
 
                 # Extract captures and scores
@@ -754,9 +806,7 @@ class EventStorePlayHistoryService:
                     difference = captured - declared
 
                     final_captures[player_name] = CaptureInfo(
-                        captured=captured,
-                        declared=declared,
-                        difference=difference
+                        captured=captured, declared=declared, difference=difference
                     )
 
                     # Determine scoring reason
@@ -771,9 +821,7 @@ class EventStorePlayHistoryService:
                         multiplier = 2
 
                     scoring[player_name] = ScoringInfo(
-                        points=score,
-                        multiplier=multiplier,
-                        reason=reason
+                        points=score, multiplier=multiplier, reason=reason
                     )
 
                     cumulative_scores[player_name] = total_score
@@ -784,9 +832,9 @@ class EventStorePlayHistoryService:
             total_turns=total_turns,
             final_captures=final_captures,
             scoring=scoring,
-            cumulative_scores=cumulative_scores
+            cumulative_scores=cumulative_scores,
         )
-    
+
     def _check_compression_mode(self, events: List[GameEvent]) -> None:
         """Check if events are compressed and set mode accordingly"""
         for event in events:

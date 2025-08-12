@@ -20,17 +20,22 @@ from backend.api.middleware import (
 from dotenv import (  # Library to load environment variables from a .env file.
     load_dotenv,
 )
-from fastapi import FastAPI, HTTPException  # Import FastAPI framework for building the API.
+from fastapi import (
+    FastAPI,
+    HTTPException,
+)  # Import FastAPI framework for building the API.
 from fastapi.middleware.cors import (  # Middleware for handling Cross-Origin Resource Sharing (CORS).
     CORSMiddleware,
 )
 from fastapi.responses import FileResponse  # Used to return a file as a response.
 from fastapi.staticfiles import StaticFiles  # Utility to serve static files.
 from fastapi.exceptions import RequestValidationError
-from backend.api.middleware.static_cache import NoCacheStaticFiles  # Custom static files handler with cache control
+from backend.api.middleware.static_cache import (
+    NoCacheStaticFiles,
+)  # Custom static files handler with cache control
 from backend.api.middleware.error_handlers import (
     custom_http_exception_handler,
-    custom_validation_exception_handler
+    custom_validation_exception_handler,
 )
 from backend.api.middleware.logging_middleware import StructuredLoggingMiddleware
 
@@ -50,18 +55,20 @@ except ImportError:
 import logging
 from backend.api.services.log_buffer import log_buffer_handler
 
+
 def setup_log_buffer():
     """Configure log buffer handler for Claude AI debugging access"""
     root_logger = logging.getLogger()
-    
+
     # Add the log buffer handler to capture all logs
     root_logger.addHandler(log_buffer_handler)
-    
+
     # Ensure we capture all log levels (the individual loggers can still filter)
     if root_logger.level > logging.DEBUG:
         root_logger.setLevel(logging.DEBUG)
-    
+
     print("✅ Log buffer enabled for Claude AI access")
+
 
 setup_log_buffer()
 
@@ -183,7 +190,10 @@ app.include_router(
     ws_router
 )  # Mounts the WebSocket router at the root (or its defined paths).
 app.include_router(debug_router)  # Mounts the debug router for event store access.
-app.include_router(maintenance_router)  # Mounts the maintenance router for log management.
+app.include_router(
+    maintenance_router
+)  # Mounts the maintenance router for log management.
+
 
 # ✅ Serve static files ONLY for actual static assets (js, css, images, etc)
 # We'll handle the HTML serving through explicit routes to support React Router
@@ -196,6 +206,7 @@ async def serve_bundle():
     response.headers["Expires"] = "0"
     return response
 
+
 @app.get("/bundle.css")
 async def serve_css():
     """Serve the CSS bundle if it exists"""
@@ -207,6 +218,7 @@ async def serve_css():
         response.headers["Expires"] = "0"
         return response
     raise HTTPException(status_code=404, detail="CSS not found")
+
 
 # Mount other static files (images, etc) under /static prefix to avoid conflicts
 app.mount("/static", StaticFiles(directory=STATIC_DIR), name="static")
@@ -236,26 +248,27 @@ async def startup_event():
     """
     # Start the room cleanup background task
     from backend.api.routes.ws import start_cleanup_task
+
     start_cleanup_task()
-    
+
     # Start the maintenance scheduler if enabled
     if os.getenv("LOG_CLEANUP_ENABLED", "true").lower() == "true":
         from backend.api.services.event_store import EventStore
         from backend.api.services.simple_maintenance import SimpleMaintenanceScheduler
         from backend.api.routes.maintenance import set_maintenance_scheduler
-        
+
         # Get or create event store instance
         event_store = EventStore()
-        
+
         # Create and start maintenance scheduler
         scheduler = SimpleMaintenanceScheduler(event_store)
         scheduler.start()
-        
+
         # Make it available to the maintenance API
         set_maintenance_scheduler(scheduler)
-        
+
         print("✅ Log maintenance scheduler started")
-        
+
         # Store scheduler reference for shutdown
         app.state.maintenance_scheduler = scheduler
     else:
@@ -271,10 +284,11 @@ async def shutdown_event():
     if hasattr(app.state, "maintenance_scheduler"):
         app.state.maintenance_scheduler.stop()
         print("✅ Log maintenance scheduler stopped")
-    
+
     # Flush EventStore buffer to ensure no data loss
     try:
         from backend.api.services.event_store import event_store
+
         await event_store.shutdown()
         print("✅ EventStore buffer flushed successfully")
     except Exception as e:
@@ -287,13 +301,13 @@ async def shutdown_event():
 async def catch_all(full_path: str):
     """
     Catch-all route to support client-side routing in React.
-    
+
     This serves index.html for any route that doesn't match an API endpoint or static file,
     allowing React Router to handle the routing on the client side.
-    
+
     Args:
         full_path: The requested path
-        
+
     Returns:
         FileResponse: The index.html file for client-side routing
     """

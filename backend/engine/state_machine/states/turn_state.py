@@ -74,7 +74,7 @@ class TurnState(GameState):
                 self.current_turn_starter = None
 
         self.logger.info(
-            f"🎯 Turn phase starting - {self.current_turn_starter} starts first turn"
+            f"Turn phase starting - {self.current_turn_starter} starts first turn"
         )
         await self._start_new_turn()
 
@@ -209,7 +209,7 @@ class TurnState(GameState):
             f"New turn {current_turn_number} started with starter {self.current_turn_starter}",
         )
 
-        self.logger.info(f"🎯 New turn started - order: {self.turn_order}")
+        self.logger.info(f"New turn started - order: {self.turn_order}")
 
     def _get_current_player(self) -> Optional[str]:
         """Get the player whose turn it is to play"""
@@ -319,7 +319,7 @@ class TurnState(GameState):
         if self.required_piece_count is None:
             self.required_piece_count = piece_count
             self.logger.info(
-                f"🎲 {action.player_name} (starter) plays {piece_count} pieces - setting required count"
+                f"{action.player_name} (starter) plays {piece_count} pieces - setting required count"
             )
 
         # Store the play
@@ -335,7 +335,7 @@ class TurnState(GameState):
         self.turn_plays[action.player_name] = play_data
 
         self.logger.info(
-            f"🎲 {action.player_name} plays: {pieces} (value: {play_data['play_value']})"
+            f"{action.player_name} plays: {pieces} (value: {play_data['play_value']})"
         )
 
         # Remove pieces from player's hand immediately
@@ -348,7 +348,7 @@ class TurnState(GameState):
             self.logger.info(
                 f"Removed {len(pieces)} pieces from {action.player_name}'s hand"
             )
-            
+
             # Broadcast enhanced play event for real-time updates (but don't store it)
             await self.broadcast_custom_event(
                 event_type="play_with_context",
@@ -365,8 +365,8 @@ class TurnState(GameState):
                     "captured_count": getattr(player, "captured_piles", 0),
                     "declared_count": getattr(player, "declared", 0),
                     "play_type": play_type,
-                    "play_value": play_value
-                }
+                    "play_value": play_value,
+                },
             )
             # Note: We don't store play_with_context - Play History calculates hand states from hands_dealt + action_processed
         else:
@@ -452,18 +452,18 @@ class TurnState(GameState):
             piles_won = self.required_piece_count or 1
             await self._award_piles(self.winner, piles_won)
 
-            self.logger.info(f"🏆 {self.winner} wins turn and gets {piles_won} piles")
+            self.logger.info(f"{self.winner} wins turn and gets {piles_won} piles")
 
             # Winner starts next turn
             self.current_turn_starter = self.winner
         else:
-            self.logger.info("🤝 No winner this turn")
+            self.logger.info("No winner this turn")
 
         # 🎮 Add delay for frontend flip animation to complete
         import time
 
         delay_start = time.time()
-        self.logger.info("🎮 Waiting 5s for piece flip animation to complete...")
+        self.logger.info("Waiting for piece flip animation to complete...")
         await asyncio.sleep(
             5.0
         )  # Give frontend plenty of time for 800ms delay + 600ms animation
@@ -487,7 +487,7 @@ class TurnState(GameState):
         )
 
         await self._process_turn_completion()
-        
+
         # Emit compressed turn_completed event if compression is enabled
         await self._emit_turn_completed()
 
@@ -659,25 +659,27 @@ class TurnState(GameState):
             return  # Exit early
 
         # STEP 2.5: Store turn history for AI strategy
-        if hasattr(game, 'turn_history_this_round'):
+        if hasattr(game, "turn_history_this_round"):
             turn_summary = {
-                'turn_number': getattr(game, 'turn_number', 0),
-                'plays': [],
-                'winner': self.winner,
-                'piles_won': self.required_piece_count if self.winner else 0
+                "turn_number": getattr(game, "turn_number", 0),
+                "plays": [],
+                "winner": self.winner,
+                "piles_won": self.required_piece_count if self.winner else 0,
             }
-            
+
             # Add all plays from this turn
             for player_name in self.turn_order:
                 if player_name in self.turn_plays:
                     play_data = self.turn_plays[player_name]
-                    turn_summary['plays'].append({
-                        'player': player_name,
-                        'pieces': play_data.get('pieces', []),
-                        'is_valid': play_data.get('is_valid', True),
-                        'play_type': play_data.get('play_type', 'unknown')
-                    })
-            
+                    turn_summary["plays"].append(
+                        {
+                            "player": player_name,
+                            "pieces": play_data.get("pieces", []),
+                            "is_valid": play_data.get("is_valid", True),
+                            "play_type": play_data.get("play_type", "unknown"),
+                        }
+                    )
+
             game.turn_history_this_round.append(turn_summary)
             self.logger.info(f"📝 Stored turn {turn_summary['turn_number']} in history")
 
@@ -1032,12 +1034,15 @@ class TurnState(GameState):
 
         # Force end game
         await self.state_machine.force_end_game("critical_error")
-    
+
     async def _emit_turn_completed(self) -> None:
         """Emit a compressed turn_completed event for event compression"""
         import os
-        compression_enabled = os.getenv("EVENT_COMPRESSION_ENABLED", "false").lower() == "true"
-        
+
+        compression_enabled = (
+            os.getenv("EVENT_COMPRESSION_ENABLED", "false").lower() == "true"
+        )
+
         if compression_enabled:
             game = self.state_machine.game
             turn_data = {
@@ -1047,19 +1052,22 @@ class TurnState(GameState):
                 "winner": self.winner,
                 "piles_won": self.required_piece_count if self.winner else 0,
                 "_compressed": True,
-                "_original_count": len(self.turn_plays) + 2,  # plays + turn_complete events
+                "_original_count": len(self.turn_plays)
+                + 2,  # plays + turn_complete events
             }
-            
+
             # Add all plays from this turn
             for player_name, play_data in self.turn_plays.items():
                 turn_data["plays"][player_name] = {
-                    "pieces": [{"kind": p.kind, "point": p.point} for p in play_data["pieces"]],
-                    "count": play_data["piece_count"]
+                    "pieces": [
+                        {"kind": p.kind, "point": p.point} for p in play_data["pieces"]
+                    ],
+                    "count": play_data["piece_count"],
                 }
-            
+
             # Emit semantic event through custom event system
             await self.broadcast_custom_event(
                 "turn_completed",
                 turn_data,
-                f"Turn {game.turn_number} completed - winner: {self.winner}"
+                f"Turn {game.turn_number} completed - winner: {self.winner}",
             )

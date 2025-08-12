@@ -123,12 +123,12 @@ class GameState(ABC):
             self._change_history.pop(0)
 
         # Log the change
-        self.logger.info(f"🎮 Phase Data Update: {reason}")
-        self.logger.debug(f"   Updates: {updates}")
+        # self.logger.debug(f"🎮 Phase Data Update: {reason}")
+        # self.logger.debug(f"   Updates: {updates}")
 
         # Store state transition event for replay capability
         await self._store_state_transition_event(updates, reason)
-        
+
         # Automatic broadcasting (enterprise guarantee)
         if broadcast and self._auto_broadcast_enabled:
             await self._auto_broadcast_phase_change(reason)
@@ -173,20 +173,20 @@ class GameState(ABC):
                         player_hand = getattr(player, "hand", [])
 
                         # Debug logging for hand data
-                        self.logger.debug(
-                            f"🔍 Processing hand for player {player_name}:"
-                        )
-                        self.logger.debug(f"   Raw hand: {player_hand}")
-                        self.logger.debug(f"   Hand type: {type(player_hand)}")
-                        self.logger.debug(f"   Hand length: {len(player_hand)}")
+                        # self.logger.debug(
+                        #     f"🔍 Processing hand for player {player_name}:"
+                        # )
+                        # self.logger.debug(f"   Raw hand: {player_hand}")
+                        # self.logger.debug(f"   Hand type: {type(player_hand)}")
+                        # self.logger.debug(f"   Hand length: {len(player_hand)}")
 
                         # Convert hand to string representations
                         hand_strings = [str(piece) for piece in player_hand]
-                        self.logger.debug(f"   Converted hand: {hand_strings}")
+                        # self.logger.debug(f"   Converted hand: {hand_strings}")
 
                         avatar_color = getattr(player, "avatar_color", None)
-                        self.logger.debug(f"   🎨 Player {player_name} avatar_color: {avatar_color}")
-                        
+                        # self.logger.debug(f"   🎨 Player {player_name} avatar_color: {avatar_color}")
+
                         players_data[player_name] = {
                             "name": player_name,
                             "is_bot": getattr(player, "is_bot", False),
@@ -201,9 +201,9 @@ class GameState(ABC):
                             "score": getattr(player, "score", 0),
                         }
 
-                        self.logger.debug(
-                            f"   Final player data: {players_data[player_name]}"
-                        )
+                        # self.logger.debug(
+                        #     f"   Final player data: {players_data[player_name]}"
+                        # )
 
             # Convert phase_data to JSON-safe format with recursive handling
             json_safe_phase_data = self._make_json_safe(self.phase_data)
@@ -226,23 +226,24 @@ class GameState(ABC):
             }
 
             # Debug logging for broadcast data
-            self.logger.debug("📡 Broadcasting phase_change with data:")
-            self.logger.debug(f"   Phase: {broadcast_data['phase']}")
-            self.logger.debug(f"   Players data: {broadcast_data['players']}")
-            for player_name, player_info in broadcast_data["players"].items():
-                self.logger.debug(
-                    f"   {player_name} hand: {player_info.get('hand', [])} (length: {player_info.get('hand_size', 0)})"
-                )
+            # self.logger.debug("📡 Broadcasting phase_change with data:")
+            # self.logger.debug(f"   Phase: {broadcast_data['phase']}")
+            # self.logger.debug(f"   Players data: {broadcast_data['players']}")
+            # for player_name, player_info in broadcast_data["players"].items():
+            #     self.logger.debug(
+            #         f"   {player_name} hand: {player_info.get('hand', [])} (length: {player_info.get('hand_size', 0)})"
+            #     )
 
             await broadcast(room_id, "phase_change", broadcast_data)
 
-            self.logger.info(
-                f"📤 Auto-broadcast: phase_change to room {room_id} - {reason}"
-            )
+            # self.logger.info(
+            #     f"📤 Auto-broadcast: phase_change to room {room_id} - {reason}"
+            # )
 
             # Store state change in EventStore for replay capability
             try:
                 from backend.api.services.event_store import event_store
+
                 # Use buffered storage for 90% write reduction
                 await event_store.store_event_buffered(
                     room_id=room_id,
@@ -253,10 +254,12 @@ class GameState(ABC):
                         "players": players_data,
                         "reason": reason,
                         "sequence": self._sequence_number,
-                        "timestamp": time.time()
-                    }
+                        "timestamp": time.time(),
+                    },
                 )
-                self.logger.debug(f"Stored phase_change event in EventStore (buffered) for room {room_id}")
+                self.logger.debug(
+                    f"Stored phase_change event in EventStore (buffered) for room {room_id}"
+                )
             except Exception as e:
                 # Don't let event storage failures break the game
                 self.logger.error(f"Failed to store phase_change in EventStore: {e}")
@@ -268,7 +271,7 @@ class GameState(ABC):
                 )
 
         except Exception as e:
-            self.logger.error(f"❌ Auto-broadcast failed: {e}", exc_info=True)
+            self.logger.error(f"Auto-broadcast failed: {e}", exc_info=True)
 
     def get_change_history(self) -> List[Dict[str, Any]]:
         """Get phase data change history for debugging"""
@@ -340,58 +343,69 @@ class GameState(ABC):
 
             await broadcast(room_id, event_type, enhanced_data)
 
-            self.logger.info(
-                f"📤 Custom broadcast: {event_type} to room {room_id} - {reason}"
+            self.logger.debug(
+                f"Custom broadcast: {event_type} to room {room_id} - {reason}"
             )
 
         except Exception as e:
-            self.logger.error(f"❌ Custom broadcast failed: {e}", exc_info=True)
-    
+            self.logger.error(f"Custom broadcast failed: {e}", exc_info=True)
+
     async def store_custom_event(self, event_type: str, data: Dict[str, Any]) -> None:
         """
         Store custom event in event store for play history
-        
+
         This method stores custom events like hands_dealt and play_with_context
         that need to be persisted for the Play History API.
-        
+
         Args:
             event_type: Type of custom event (e.g., 'hands_dealt', 'play_with_context')
             data: Event data to store
         """
         try:
-            if hasattr(self.state_machine, 'action_queue') and self.state_machine.action_queue:
+            if (
+                hasattr(self.state_machine, "action_queue")
+                and self.state_machine.action_queue
+            ):
                 await self.state_machine.action_queue.store_state_event(
-                    event_type=event_type,
-                    payload=self._make_json_safe(data)
+                    event_type=event_type, payload=self._make_json_safe(data)
                 )
                 self.logger.debug(f"Stored custom event: {event_type}")
             else:
-                self.logger.warning(f"Cannot store custom event {event_type}: action_queue not available")
+                self.logger.warning(
+                    f"Cannot store custom event {event_type}: action_queue not available"
+                )
         except Exception as e:
             # Don't let event storage failures break the game
             self.logger.error(f"Failed to store custom event {event_type}: {e}")
-    
-    async def _store_state_transition_event(self, updates: Dict[str, Any], reason: str) -> None:
+
+    async def _store_state_transition_event(
+        self, updates: Dict[str, Any], reason: str
+    ) -> None:
         """
         Store state transition in event store for replay capability
-        
+
         Args:
             updates: The phase data updates being applied
             reason: Human-readable reason for the change
         """
         try:
-            if hasattr(self.state_machine, 'action_queue') and self.state_machine.action_queue:
+            if (
+                hasattr(self.state_machine, "action_queue")
+                and self.state_machine.action_queue
+            ):
                 await self.state_machine.action_queue.store_state_event(
-                    event_type='phase_data_update',
+                    event_type="phase_data_update",
                     payload={
-                        'phase': self.phase_name.value,
-                        'updates': self._make_json_safe(updates),
-                        'reason': reason,
-                        'sequence': self._sequence_number,
-                        'timestamp': time.time()
-                    }
+                        "phase": self.phase_name.value,
+                        "updates": self._make_json_safe(updates),
+                        "reason": reason,
+                        "sequence": self._sequence_number,
+                        "timestamp": time.time(),
+                    },
                 )
-                self.logger.debug(f"Stored state transition event for {self.phase_name.value}")
+                self.logger.debug(
+                    f"Stored state transition event for {self.phase_name.value}"
+                )
         except Exception as e:
             # Don't let event storage failures break the game
             self.logger.error(f"Failed to store state transition event: {e}")

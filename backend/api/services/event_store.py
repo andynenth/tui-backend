@@ -76,25 +76,31 @@ class EventStore:
         buffer_enabled = os.getenv("EVENT_BUFFER_ENABLED", "true").lower() == "true"
         buffer_size = int(os.getenv("EVENT_BUFFER_SIZE", "20"))
         buffer_interval = float(os.getenv("EVENT_BUFFER_FLUSH_INTERVAL", "2.0"))
-        
+
         if buffer_enabled:
             self._buffer = EventBuffer(
-                max_size=buffer_size,
-                flush_interval=buffer_interval,
-                event_store=self
+                max_size=buffer_size, flush_interval=buffer_interval, event_store=self
             )
-            logger.info(f"EventStore: Buffer enabled (size: {buffer_size}, interval: {buffer_interval}s)")
+            logger.info(
+                f"EventStore: Buffer enabled (size: {buffer_size}, interval: {buffer_interval}s)"
+            )
         else:
             self._buffer = None
             logger.info("EventStore: Buffer disabled, using direct writes")
-            
+
         # Initialize event compressor if enabled
-        compression_enabled = os.getenv("EVENT_COMPRESSION_ENABLED", "false").lower() == "true"
+        compression_enabled = (
+            os.getenv("EVENT_COMPRESSION_ENABLED", "false").lower() == "true"
+        )
         importance_threshold = float(os.getenv("EVENT_IMPORTANCE_THRESHOLD", "0.7"))
-        
+
         if compression_enabled:
-            self._compressor = EventCompressor(importance_threshold=importance_threshold)
-            logger.info(f"EventStore: Compression enabled (threshold: {importance_threshold})")
+            self._compressor = EventCompressor(
+                importance_threshold=importance_threshold
+            )
+            logger.info(
+                f"EventStore: Compression enabled (threshold: {importance_threshold})"
+            )
         else:
             self._compressor = None
             logger.info("EventStore: Compression disabled")
@@ -157,10 +163,10 @@ class EventStore:
     ) -> None:
         """
         Store event through buffer if enabled, otherwise direct storage
-        
+
         This is the new optimized entry point that uses buffering to
         reduce database writes by 90%.
-        
+
         Args:
             room_id: The room/game identifier
             event_type: Type of event
@@ -173,15 +179,15 @@ class EventStore:
             if not self._compressor.should_store_event(event_type):
                 logger.debug(f"Event {event_type} filtered by compression")
                 return
-                
+
             # Try to compress the event
             event_dict = {
                 "event_type": event_type,
                 "payload": payload,
-                "player_id": player_id
+                "player_id": player_id,
             }
             compressed = self._compressor.compress_event(room_id, event_dict)
-            
+
             # If compressed event is ready, store it
             if compressed:
                 compressed_dict = compressed.to_dict()
@@ -189,13 +195,13 @@ class EventStore:
                     room_id,
                     compressed_dict["event_type"],
                     compressed_dict["payload"],
-                    player_id
+                    player_id,
                 )
                 return
             # If None returned, event is being accumulated
             else:
                 return
-        
+
         # No compression - use buffer if enabled
         if self._buffer:
             await self._buffer.add_event(room_id, event_type, payload, player_id)
@@ -211,7 +217,7 @@ class EventStore:
     ) -> None:
         """
         Store a compressed event through the buffer.
-        
+
         Args:
             room_id: The room/game identifier
             event_type: Semantic event type
@@ -220,7 +226,7 @@ class EventStore:
         """
         # Mark as compressed event
         payload["_compressed"] = True
-        
+
         # Use buffer if enabled
         if self._buffer:
             await self._buffer.add_event(room_id, event_type, payload, player_id)
@@ -236,7 +242,7 @@ class EventStore:
     ) -> GameEvent:
         """
         Direct storage without buffering - used by buffer flush
-        
+
         This bypasses the buffer and writes directly to the database.
         Used internally by the EventBuffer during flush operations.
         """
@@ -440,6 +446,7 @@ class EventStore:
         """
         # Create a deep copy to avoid mutation of nested structures
         import copy
+
         new_state = copy.deepcopy(state)
 
         try:
@@ -461,11 +468,13 @@ class EventStore:
                 if old_phase:
                     new_state["previous_phase"] = old_phase
                 new_state["phase"] = new_phase
-                
+
                 # Store game context if provided
                 game_context = event.payload.get("game_context", {})
                 if game_context:
-                    new_state["round_number"] = game_context.get("round_number", state.get("round_number", 1))
+                    new_state["round_number"] = game_context.get(
+                        "round_number", state.get("round_number", 1)
+                    )
                     new_state["player_count"] = game_context.get("player_count", 4)
                     if "current_player" in game_context:
                         new_state["current_player"] = game_context["current_player"]
@@ -475,10 +484,10 @@ class EventStore:
                 phase = event.payload.get("phase")
                 updates = event.payload.get("updates", {})
                 reason = event.payload.get("reason", "")
-                
+
                 if phase not in new_state["phase_data"]:
                     new_state["phase_data"][phase] = {}
-                
+
                 # Apply updates to phase-specific data
                 new_state["phase_data"][phase].update(updates)
                 new_state["last_update_reason"] = reason
@@ -491,7 +500,7 @@ class EventStore:
                     "action_type": event.payload.get("action_type"),
                     "player_name": event.payload.get("player_name"),
                     "payload": event.payload.get("payload", {}),
-                    "timestamp": event.timestamp
+                    "timestamp": event.timestamp,
                 }
                 new_state["actions"].append(action_data)
 
@@ -504,7 +513,9 @@ class EventStore:
 
             elif event.event_type == "player_declared":
                 player_name = event.payload.get("player_name")
-                declaration = event.payload.get("declaration", event.payload.get("value"))
+                declaration = event.payload.get(
+                    "declaration", event.payload.get("value")
+                )
                 if player_name and declaration is not None:
                     if "declarations" not in new_state["game_state"]:
                         new_state["game_state"]["declarations"] = {}
@@ -517,25 +528,32 @@ class EventStore:
                 if player_name:
                     if "current_turn" not in new_state["game_state"]:
                         new_state["game_state"]["current_turn"] = {"plays": []}
-                    new_state["game_state"]["current_turn"]["plays"].append({
-                        "player": player_name,
-                        "pieces": pieces,
-                        "timestamp": event.timestamp
-                    })
+                    new_state["game_state"]["current_turn"]["plays"].append(
+                        {
+                            "player": player_name,
+                            "pieces": pieces,
+                            "timestamp": event.timestamp,
+                        }
+                    )
 
-            elif event.event_type == "turn_complete" or event.event_type == "turn_resolved":
+            elif (
+                event.event_type == "turn_complete"
+                or event.event_type == "turn_resolved"
+            ):
                 # Handle turn completion
                 winner = event.payload.get("winner")
-                turn_number = event.payload.get("turn_number", state.get("turn_number", 0) + 1)
-                
+                turn_number = event.payload.get(
+                    "turn_number", state.get("turn_number", 0) + 1
+                )
+
                 new_state["turn_number"] = turn_number
                 if winner:
                     new_state["last_turn_winner"] = winner
-                
+
                 # Archive current turn data
                 if "turn_history" not in new_state["game_state"]:
                     new_state["game_state"]["turn_history"] = []
-                
+
                 current_turn = new_state["game_state"].get("current_turn", {})
                 if current_turn:
                     current_turn["winner"] = winner
@@ -543,28 +561,39 @@ class EventStore:
                     new_state["game_state"]["turn_history"].append(current_turn)
                     new_state["game_state"]["current_turn"] = {}
 
-            elif event.event_type == "round_complete" or event.event_type == "round_scoring":
+            elif (
+                event.event_type == "round_complete"
+                or event.event_type == "round_scoring"
+            ):
                 # Handle round scoring
                 new_state["round_number"] = event.payload.get(
                     "round_number", state.get("round_number", 0) + 1
                 )
-                
+
                 scores = event.payload.get("scores", {})
                 if scores:
                     if "round_scores" not in new_state["game_state"]:
                         new_state["game_state"]["round_scores"] = []
-                    new_state["game_state"]["round_scores"].append({
-                        "round": new_state["round_number"],
-                        "scores": scores,
-                        "timestamp": event.timestamp
-                    })
-                    
+                    new_state["game_state"]["round_scores"].append(
+                        {
+                            "round": new_state["round_number"],
+                            "scores": scores,
+                            "timestamp": event.timestamp,
+                        }
+                    )
+
                     # Update player total scores
                     for player, score_data in scores.items():
                         if player in new_state["players"]:
                             current_score = new_state["players"][player].get("score", 0)
-                            round_score = score_data if isinstance(score_data, (int, float)) else score_data.get("score", 0)
-                            new_state["players"][player]["score"] = current_score + round_score
+                            round_score = (
+                                score_data
+                                if isinstance(score_data, (int, float))
+                                else score_data.get("score", 0)
+                            )
+                            new_state["players"][player]["score"] = (
+                                current_score + round_score
+                            )
 
             elif event.event_type == "game_started":
                 new_state["game_state"] = event.payload.get("initial_state", {})
@@ -575,10 +604,10 @@ class EventStore:
                 # Handle game completion
                 new_state["status"] = "complete"
                 new_state["completed_at"] = event.timestamp
-                
+
                 final_scores = event.payload.get("final_scores", {})
                 winner = event.payload.get("winner")
-                
+
                 if final_scores:
                     new_state["final_scores"] = final_scores
                 if winner:
@@ -589,7 +618,9 @@ class EventStore:
                 logger.debug(f"Unhandled event type: {event.event_type}")
 
         except Exception as e:
-            logger.error(f"Error applying event {event.sequence} ({event.event_type}): {e}")
+            logger.error(
+                f"Error applying event {event.sequence} ({event.event_type}): {e}"
+            )
             # Return original state on error to prevent corruption
             return state
 
@@ -631,16 +662,16 @@ class EventStore:
         Returns:
             int: Number of events on that date
         """
-        date_str = date.strftime('%Y-%m-%d')
-        
+        date_str = date.strftime("%Y-%m-%d")
+
         conn = sqlite3.connect(self.db_path)
         cursor = conn.execute(
             "SELECT COUNT(*) FROM game_events WHERE date(created_at) = date(?)",
-            (date_str,)
+            (date_str,),
         )
         count = cursor.fetchone()[0]
         conn.close()
-        
+
         return count
 
     async def get_event_stats(self) -> Dict[str, Any]:
@@ -735,31 +766,31 @@ class EventStore:
     ) -> List[GameEvent]:
         """
         Get events of a specific type for a room
-        
+
         Args:
             room_id: The room identifier
             event_type: The event type to filter by
             limit: Optional limit on number of events
-            
+
         Returns:
             List[GameEvent]: Filtered events in chronological order
         """
         conn = sqlite3.connect(self.db_path)
-        
+
         query = """
             SELECT sequence, room_id, event_type, payload, player_id, timestamp, created_at
             FROM game_events 
             WHERE room_id = ? AND event_type = ?
             ORDER BY sequence ASC
         """
-        
+
         params = [room_id, event_type]
         if limit:
             query += " LIMIT ?"
             params.append(limit)
-            
+
         cursor = conn.execute(query, params)
-        
+
         events = []
         for row in cursor.fetchall():
             event = GameEvent(
@@ -772,37 +803,39 @@ class EventStore:
                 created_at=row[6],
             )
             events.append(event)
-            
+
         conn.close()
-        
+
         logger.info(f"Retrieved {len(events)} {event_type} events for room {room_id}")
         return events
 
     async def export_room_history(self, room_id: str) -> Dict[str, Any]:
         """
         Export complete room history for debugging
-        
+
         Args:
             room_id: The room identifier
-            
+
         Returns:
             Dict: Complete room history with events and reconstructed state
         """
         events = await self.get_room_events(room_id)
         state = await self.replay_room_state(room_id)
-        
+
         # Group events by type for analysis
         events_by_type = {}
         for event in events:
             if event.event_type not in events_by_type:
                 events_by_type[event.event_type] = []
-            events_by_type[event.event_type].append({
-                "sequence": event.sequence,
-                "timestamp": event.timestamp,
-                "player": event.player_id,
-                "payload": event.payload
-            })
-        
+            events_by_type[event.event_type].append(
+                {
+                    "sequence": event.sequence,
+                    "timestamp": event.timestamp,
+                    "player": event.player_id,
+                    "payload": event.payload,
+                }
+            )
+
         return {
             "room_id": room_id,
             "total_events": len(events),
@@ -814,19 +847,19 @@ class EventStore:
                     "sequence": e.sequence,
                     "type": e.event_type,
                     "timestamp": e.timestamp,
-                    "player": e.player_id
+                    "player": e.player_id,
                 }
                 for e in events
-            ]
+            ],
         }
 
     async def validate_event_sequence(self, room_id: str) -> Dict[str, Any]:
         """
         Validate event sequence integrity for a room
-        
+
         Args:
             room_id: The room identifier
-            
+
         Returns:
             Dict: Validation results including any gaps or issues
         """
@@ -837,20 +870,20 @@ class EventStore:
             WHERE room_id = ?
             ORDER BY sequence ASC
             """,
-            (room_id,)
+            (room_id,),
         )
-        
+
         sequences = [row[0] for row in cursor.fetchall()]
         conn.close()
-        
+
         if not sequences:
             return {
                 "valid": True,
                 "message": "No events found",
                 "gaps": [],
-                "total_events": 0
+                "total_events": 0,
             }
-        
+
         # Check for gaps
         gaps = []
         expected = sequences[0]
@@ -858,22 +891,24 @@ class EventStore:
             if seq != expected:
                 gaps.append({"expected": expected, "found": seq})
             expected = seq + 1
-        
+
         return {
             "valid": len(gaps) == 0,
-            "message": "Sequence valid" if len(gaps) == 0 else f"Found {len(gaps)} gaps",
+            "message": (
+                "Sequence valid" if len(gaps) == 0 else f"Found {len(gaps)} gaps"
+            ),
             "gaps": gaps,
             "total_events": len(sequences),
             "first_sequence": sequences[0],
-            "last_sequence": sequences[-1]
+            "last_sequence": sequences[-1],
         }
 
     async def flush_room_events(self, room_id: str) -> None:
         """
         Flush any pending events for a room (compression + buffer).
-        
+
         Should be called when a room/game completes.
-        
+
         Args:
             room_id: The room to flush
         """
@@ -883,11 +918,9 @@ class EventStore:
             for event in compressed_events:
                 event_dict = event.to_dict()
                 await self._store_compressed_event(
-                    room_id,
-                    event_dict["event_type"],
-                    event_dict["payload"]
+                    room_id, event_dict["event_type"], event_dict["payload"]
                 )
-        
+
         # Then flush buffer
         if self._buffer:
             await self._buffer.flush()
@@ -895,7 +928,7 @@ class EventStore:
     async def shutdown(self) -> None:
         """
         Gracefully shutdown the event store
-        
+
         Flushes any pending buffered events to ensure no data loss.
         """
         # Flush all room compressors first
@@ -903,7 +936,7 @@ class EventStore:
             logger.info("Shutting down EventStore - flushing compressor...")
             # Note: In production, we'd track active rooms and flush each
             # For now, we rely on room cleanup to handle this
-            
+
         if self._buffer:
             logger.info("Shutting down EventStore - flushing buffer...")
             await self._buffer.shutdown()
@@ -912,21 +945,18 @@ class EventStore:
     def get_buffer_metrics(self) -> Dict[str, Any]:
         """
         Get buffer performance metrics
-        
+
         Returns:
             Dict: Buffer metrics or empty dict if buffer disabled
         """
         if self._buffer:
             return self._buffer.get_metrics()
-        return {
-            "buffer_enabled": False,
-            "message": "Event buffering is disabled"
-        }
-    
+        return {"buffer_enabled": False, "message": "Event buffering is disabled"}
+
     def get_compression_metrics(self) -> Dict[str, Any]:
         """
         Get compression performance metrics
-        
+
         Returns:
             Dict: Compression metrics or status if disabled
         """
@@ -934,7 +964,7 @@ class EventStore:
             return self._compressor.get_stats()
         return {
             "compression_enabled": False,
-            "message": "Event compression is disabled"
+            "message": "Event compression is disabled",
         }
 
 

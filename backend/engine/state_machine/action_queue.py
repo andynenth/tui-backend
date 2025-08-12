@@ -37,8 +37,8 @@ class ActionQueue:
     async def process_actions(self) -> List[GameAction]:
         """
         Process all queued actions and return them as a list.
-        
-        Note: Raw actions are not stored - only validated state changes from 
+
+        Note: Raw actions are not stored - only validated state changes from
         state classes are persisted to maintain data integrity.
         """
         async with self.processing_lock:
@@ -64,7 +64,6 @@ class ActionQueue:
         """Check if there are actions waiting to be processed"""
         return not self.queue.empty()
 
-
     async def store_state_event(
         self, event_type: str, payload: dict, player_id: Optional[str] = None
     ) -> None:
@@ -79,7 +78,7 @@ class ActionQueue:
         try:
             # Use the global event_store which now routes through MigrationAdapter
             await event_store.store_event(self.room_id, event_type, payload, player_id)
-            
+
             self.logger.debug(
                 f"Stored state event: {event_type} for room {self.room_id}"
             )

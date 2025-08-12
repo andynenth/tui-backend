@@ -448,17 +448,17 @@ class Game:
         """Shuffle and deal 32 pieces evenly among the 4 players."""
         # Initialize round data
         self._initialize_round_data()
-        
+
         # Use helper methods
         deck = self._prepare_deck_and_hands()
-        
+
         # Shuffle the deck (already shuffled in _prepare_deck_and_hands, but shuffle again for consistency)
         random.shuffle(deck)
-        
+
         # Deal 8 pieces to each player
         for i in range(32):
             self.players[i % 4].hand.append(deck[i])
-        
+
         # Shuffle each player's hand to randomize position
         for player in self.players:
             random.shuffle(player.hand)
@@ -474,7 +474,7 @@ class Game:
         # Initialize pile_counts if needed
         if not hasattr(self, "pile_counts"):
             self.pile_counts = {}
-        
+
         # Reset player round data
         for player in self.players:
             player.declared = 0
@@ -569,7 +569,7 @@ class Game:
 
         # Initialize round data
         self._initialize_round_data()
-        
+
         # Use helper methods
         deck = self._prepare_deck_and_hands()
         categories = self._categorize_pieces(deck)
@@ -675,7 +675,7 @@ class Game:
 
         # Initialize round data
         self._initialize_round_data()
-        
+
         # Use helper methods
         deck = self._prepare_deck_and_hands()
         categories = self._categorize_pieces(deck)
@@ -760,7 +760,7 @@ class Game:
 
         # Initialize round data
         self._initialize_round_data()
-        
+
         # Use helper methods
         deck = self._prepare_deck_and_hands()
 

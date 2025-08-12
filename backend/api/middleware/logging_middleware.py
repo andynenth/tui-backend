@@ -25,18 +25,22 @@ class StructuredLoggingMiddleware(BaseHTTPMiddleware):
     """
     Middleware to add structured logging for all API requests.
     """
-    
+
     def __init__(self, app: ASGIApp):
         super().__init__(app)
-    
+
     async def dispatch(self, request: Request, call_next: Callable) -> Response:
         # Generate request ID if not already present
         request_id = request.headers.get("X-Request-ID", str(uuid.uuid4()))
         request.state.request_id = request_id
-        
+
         # Start timing
         start_time = time.time()
-        
+
+        # Skip logging for favicon.ico
+        if request.url.path == "/favicon.ico":
+            return await call_next(request)
+
         # Log request
         logger.info(
             "API Request",
@@ -47,9 +51,9 @@ class StructuredLoggingMiddleware(BaseHTTPMiddleware):
                 "path": request.url.path,
                 "query_params": dict(request.query_params),
                 "client_host": request.client.host if request.client else None,
-            }
+            },
         )
-        
+
         # Process request
         response = None
         error = None
@@ -66,13 +70,13 @@ class StructuredLoggingMiddleware(BaseHTTPMiddleware):
                     "method": request.method,
                     "path": request.url.path,
                 },
-                exc_info=True
+                exc_info=True,
             )
             raise
         finally:
             # Calculate duration
             duration_ms = (time.time() - start_time) * 1000
-            
+
             # Log response
             log_data = {
                 "event": "api_request_complete",
@@ -83,13 +87,13 @@ class StructuredLoggingMiddleware(BaseHTTPMiddleware):
                 "duration_ms": round(duration_ms, 2),
                 "client_host": request.client.host if request.client else None,
             }
-            
+
             # Add performance warnings
             if duration_ms > 1000:  # Slow request (>1s)
                 log_data["performance_warning"] = "slow_request"
             elif duration_ms > 500:  # Medium slow (>500ms)
                 log_data["performance_warning"] = "medium_slow_request"
-            
+
             # Log based on status code
             if response and response.status_code >= 500:
                 logger.error("Server error response", extra=log_data)
@@ -97,20 +101,20 @@ class StructuredLoggingMiddleware(BaseHTTPMiddleware):
                 logger.warning("Client error response", extra=log_data)
             else:
                 logger.info("Request completed", extra=log_data)
-            
+
             # Record metrics if collector is available
             if metrics_collector and response:
                 metrics_collector.record_request(
                     endpoint=request.url.path,
                     method=request.method,
                     status_code=response.status_code,
-                    duration_ms=duration_ms
+                    duration_ms=duration_ms,
                 )
-        
+
         # Add request ID to response headers
         if response:
             response.headers["X-Request-ID"] = request_id
-        
+
         return response
 
 
@@ -118,7 +122,7 @@ class PlayHistoryLoggingMiddleware:
     """
     Specialized logging for play history endpoints.
     """
-    
+
     @staticmethod
     def log_play_history_request(
         room_id: str,
@@ -126,7 +130,7 @@ class PlayHistoryLoggingMiddleware:
         include_hands: bool = True,
         include_ai_analysis: bool = True,
         format: str = None,
-        request_id: str = None
+        request_id: str = None,
     ):
         """Log play history request details."""
         logger.info(
@@ -139,16 +143,16 @@ class PlayHistoryLoggingMiddleware:
                 "include_hands": include_hands,
                 "include_ai_analysis": include_ai_analysis,
                 "format": format,
-            }
+            },
         )
-    
+
     @staticmethod
     def log_play_history_response(
         room_id: str,
         total_rounds: int,
         response_size: int,
         build_time_ms: float,
-        request_id: str = None
+        request_id: str = None,
     ):
         """Log play history response metrics."""
         logger.info(
@@ -160,14 +164,12 @@ class PlayHistoryLoggingMiddleware:
                 "total_rounds": total_rounds,
                 "response_size_bytes": response_size,
                 "build_time_ms": round(build_time_ms, 2),
-            }
+            },
         )
-    
+
     @staticmethod
     def log_performance_warning(
-        warning_type: str,
-        details: dict,
-        request_id: str = None
+        warning_type: str, details: dict, request_id: str = None
     ):
         """Log performance warnings."""
         logger.warning(
@@ -177,14 +179,12 @@ class PlayHistoryLoggingMiddleware:
                 "request_id": request_id,
                 "warning_type": warning_type,
                 "details": details,
-            }
+            },
         )
-    
+
     @staticmethod
     def log_cache_hit(
-        cache_key: str,
-        cache_type: str = "redis",
-        request_id: str = None
+        cache_key: str, cache_type: str = "redis", request_id: str = None
     ):
         """Log cache hit."""
         logger.info(
@@ -194,14 +194,12 @@ class PlayHistoryLoggingMiddleware:
                 "request_id": request_id,
                 "cache_key": cache_key,
                 "cache_type": cache_type,
-            }
+            },
         )
-    
+
     @staticmethod
     def log_cache_miss(
-        cache_key: str,
-        cache_type: str = "redis",
-        request_id: str = None
+        cache_key: str, cache_type: str = "redis", request_id: str = None
     ):
         """Log cache miss."""
         logger.info(
@@ -211,7 +209,7 @@ class PlayHistoryLoggingMiddleware:
                 "request_id": request_id,
                 "cache_key": cache_key,
                 "cache_type": cache_type,
-            }
+            },
         )
 
 
@@ -220,7 +218,7 @@ def setup_structured_logging():
     Configure structured logging with JSON formatter.
     """
     import logging.config
-    
+
     config = {
         "version": 1,
         "disable_existing_loggers": False,
@@ -228,18 +226,18 @@ def setup_structured_logging():
             "json": {
                 "class": "pythonjsonlogger.jsonlogger.JsonFormatter",
                 "format": "%(asctime)s %(name)s %(levelname)s %(message)s",
-                "datefmt": "%Y-%m-%d %H:%M:%S"
+                "datefmt": "%Y-%m-%d %H:%M:%S",
             },
             "standard": {
                 "format": "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
-            }
+            },
         },
         "handlers": {
             "console": {
                 "class": "logging.StreamHandler",
                 "level": "INFO",
                 "formatter": "standard",
-                "stream": "ext://sys.stdout"
+                "stream": "ext://sys.stdout",
             },
             "json_file": {
                 "class": "logging.handlers.RotatingFileHandler",
@@ -247,16 +245,16 @@ def setup_structured_logging():
                 "formatter": "json",
                 "filename": "logs/api_structured.log",
                 "maxBytes": 10485760,  # 10MB
-                "backupCount": 5
-            }
+                "backupCount": 5,
+            },
         },
         "loggers": {
             "backend.api": {
                 "level": "INFO",
                 "handlers": ["console", "json_file"],
-                "propagate": False
+                "propagate": False,
             }
-        }
+        },
     }
-    
+
     logging.config.dictConfig(config)

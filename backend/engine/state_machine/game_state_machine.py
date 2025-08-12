@@ -178,7 +178,7 @@ class GameStateMachine:
                 await asyncio.sleep(0.5)
 
             except Exception as e:
-                print(f"❌ STATE_MACHINE_DEBUG: Error in process loop: {e}")
+                # print(f"❌ STATE_MACHINE_DEBUG: Error in process loop: {e}")
                 logger.error(f"Error in process loop: {e}", exc_info=True)
 
         logger.info("State machine process loop ended")
@@ -229,7 +229,7 @@ class GameStateMachine:
             self.current_phase, set()
         ):
             logger.error(f"❌ Invalid transition: {self.current_phase} -> {new_phase}")
-            print(f"❌ STATE_MACHINE_DEBUG: Invalid transition blocked!")
+            # print(f"❌ STATE_MACHINE_DEBUG: Invalid transition blocked!")
             return
 
         # Get new state
@@ -381,10 +381,10 @@ class GameStateMachine:
             new_phase: The GamePhase that was just entered
         """
         try:
-            print(f"🔍 STATE_MACHINE: BotManager imported successfully")
+            # print(f"🔍 STATE_MACHINE: BotManager imported successfully")
 
             bot_manager = BotManager()
-            print(f"🔍 STATE_MACHINE: BotManager instance created")
+            # print(f"🔍 STATE_MACHINE: BotManager instance created")
             room_id = getattr(self, "room_id", None)
             if not room_id:
                 logger.warning(
@@ -393,9 +393,9 @@ class GameStateMachine:
                 return
 
             logger.info(f"Notifying bot manager about phase {new_phase.value}")
-            print(
-                f"🔍 STATE_MACHINE: Notifying bot manager about phase {new_phase.value} for room {room_id}"
-            )
+            # print(
+            #     f"🔍 STATE_MACHINE: Notifying bot manager about phase {new_phase.value} for room {room_id}"
+            # )
 
             if new_phase == GamePhase.ROUND_START:
                 # Just notify about round start, don't trigger bot actions yet
@@ -461,6 +461,7 @@ class GameStateMachine:
                 # Mark the room's game as ended
                 try:
                     from backend.shared_instances import shared_room_manager
+
                     room = await shared_room_manager.get_room(room_id)
                     if room:
                         await room.mark_game_ended()
@@ -771,6 +772,7 @@ class GameStateMachine:
         if hasattr(self, "room_id") and self.room_id:
             try:
                 from backend.shared_instances import shared_room_manager
+
                 room = await shared_room_manager.get_room(self.room_id)
                 if room:
                     await room.handle_critical_error(reason)

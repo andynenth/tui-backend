@@ -10,11 +10,11 @@ from backend.engine.rules import get_play_type, is_valid_play
 # Strong combo types that starters should prefer over individual openers
 STARTER_PREFERRED_COMBOS = [
     "THREE_OF_A_KIND",
-    "STRAIGHT", 
+    "STRAIGHT",
     "FOUR_OF_A_KIND",
     "EXTENDED_STRAIGHT",
     "FIVE_OF_A_KIND",
-    "DOUBLE_STRAIGHT"
+    "DOUBLE_STRAIGHT",
 ]
 
 # ------------------------------------------------------------------
@@ -24,12 +24,12 @@ STARTER_PREFERRED_COMBOS = [
 # Strong combo types - combos that beat PAIR in hierarchy
 STRONG_COMBO_TYPES = {
     "THREE_OF_A_KIND",
-    "STRAIGHT", 
+    "STRAIGHT",
     "FOUR_OF_A_KIND",
     "EXTENDED_STRAIGHT",
     "EXTENDED_STRAIGHT_5",
     "FIVE_OF_A_KIND",
-    "DOUBLE_STRAIGHT"
+    "DOUBLE_STRAIGHT",
 }
 
 # Threshold for PAIR to be considered strong (must exceed HORSE_RED pair value)
@@ -39,35 +39,36 @@ STRONG_PAIR_THRESHOLD = 12  # HORSE_RED + HORSE_RED = 12 points
 ALL_COMBO_TYPES = {
     "PAIR",
     "THREE_OF_A_KIND",
-    "STRAIGHT", 
+    "STRAIGHT",
     "FOUR_OF_A_KIND",
     "EXTENDED_STRAIGHT",
     "EXTENDED_STRAIGHT_5",
     "FIVE_OF_A_KIND",
-    "DOUBLE_STRAIGHT"
+    "DOUBLE_STRAIGHT",
 }
+
 
 def is_starter_preferred_combo(combo_type: str, pieces: List) -> bool:
     """
     Check if a combo is strong enough for a starter to prefer over individual openers.
-    
+
     Args:
         combo_type: Type of combination
         pieces: List of pieces in the combo
-        
+
     Returns:
         True if the combo should be preferred by starters
     """
     # Always preferred combo types
     if combo_type in STARTER_PREFERRED_COMBOS:
         return True
-    
+
     # High-value pairs (ELEPHANT_BLACK is 9 points)
     if combo_type == "PAIR":
         total_value = sum(p.point for p in pieces)
         # ELEPHANT pairs = 18+ points total
         return total_value >= 18
-    
+
     return False
 
 
@@ -77,6 +78,7 @@ def is_starter_preferred_combo(combo_type: str, pieces: List) -> bool:
 @dataclass
 class DeclarationContext:
     """Holds all context needed for strategic declaration decisions."""
+
     position_in_order: int  # 0-3
     previous_declarations: List[int]  # Length 0-3
     is_starter: bool
@@ -89,16 +91,18 @@ class DeclarationContext:
 # ------------------------------------------------------------------
 # Strategic Helper Functions
 # ------------------------------------------------------------------
-def calculate_pile_room(previous_declarations: List[int], has_general_red: bool = False) -> int:
+def calculate_pile_room(
+    previous_declarations: List[int], has_general_red: bool = False
+) -> int:
     """
     Calculate maximum piles available in this round.
-    
+
     Special Rule: If player has GENERAL_RED, they can ignore all declarations
     after the starter when calculating pile room, giving them more opportunities.
-    
+
     If the sum of previous declarations exceeds 8, ignore the last declaration
     that caused the overflow.
-    
+
     Strategic Note:
     This approach forces bots to fight against aggressive players who declare
     high values, making the game more competitive. Instead of being locked out
@@ -106,22 +110,22 @@ def calculate_pile_room(previous_declarations: List[int], has_general_red: bool 
     players are overly aggressive. This creates tension between:
     - Early players: Can't just declare maximum to block others
     - Later players: Must fight for remaining piles instead of giving up
-    
+
     Examples:
         [2, 4, 4] -> sum=10 > 8, ignore last 4 -> pile_room = 8 - (2+4) = 2
         [4, 5] -> sum=9 > 8, ignore 5 -> pile_room = 8 - 4 = 4
         [3, 2, 2] with GENERAL_RED -> keep only starter's 3 -> pile_room = 8 - 3 = 5
-    
+
     Args:
         previous_declarations: List of previous player declarations
         has_general_red: Whether the current player has GENERAL_RED
-        
+
     Returns:
         int: Available pile room (0-8)
     """
     if not previous_declarations:
         return 8
-    
+
     # GENERAL_RED special rule: ignore declarations after the starter
     if has_general_red and len(previous_declarations) >= 1:
         # Keep only the starter's declaration, ignore all others
@@ -129,7 +133,7 @@ def calculate_pile_room(previous_declarations: List[int], has_general_red: bool 
         total_declared = sum(modified_declarations) if modified_declarations else 0
     else:
         total_declared = sum(previous_declarations)
-    
+
     # If total exceeds 8, ignore the last declaration that caused overflow
     if total_declared > 8:
         if has_general_red and len(previous_declarations) >= 1:
@@ -139,22 +143,22 @@ def calculate_pile_room(previous_declarations: List[int], has_general_red: bool 
         else:
             # Recalculate without the last declaration
             total_declared = sum(previous_declarations[:-1])
-    
+
     return max(0, 8 - total_declared)
 
 
 def assess_field_strength(previous_declarations: List[int]) -> str:
     """
     Categorize the overall field strength based on declarations.
-    
+
     Returns:
         str: "weak", "normal", or "strong"
     """
     if not previous_declarations:
         return "normal"  # No info yet
-        
+
     avg = sum(previous_declarations) / len(previous_declarations)
-    
+
     if avg <= 2.0:
         return "weak"  # Opponents have poor hands
     elif avg >= 3.5:
@@ -166,35 +170,37 @@ def assess_field_strength(previous_declarations: List[int]) -> str:
 def analyze_opponent_patterns(previous_declarations: List[int]) -> Dict:
     """
     Analyze what opponent declarations reveal about their hands.
-    
+
     Returns:
         Dict with:
         - low_declarers: int (count of 0-1 declarations)
-        - high_declarers: int (count of 4+ declarations)  
+        - high_declarers: int (count of 4+ declarations)
         - combo_opportunity: bool (might opponents play 3+ pieces?)
         - likely_singles_only: bool (all opponents playing singles?)
     """
     low_count = sum(1 for d in previous_declarations if d <= 1)
     high_count = sum(1 for d in previous_declarations if d >= 4)
-    
+
     # If all previous players declared 0-1, they have NO combos
-    likely_singles_only = (low_count == len(previous_declarations)) if previous_declarations else False
-    
+    likely_singles_only = (
+        (low_count == len(previous_declarations)) if previous_declarations else False
+    )
+
     # Combo opportunity exists if someone might play combos
     combo_opportunity = high_count > 0 or any(d >= 3 for d in previous_declarations)
-    
+
     return {
-        'low_declarers': low_count,
-        'high_declarers': high_count,
-        'combo_opportunity': combo_opportunity,
-        'likely_singles_only': likely_singles_only
+        "low_declarers": low_count,
+        "high_declarers": high_count,
+        "combo_opportunity": combo_opportunity,
+        "likely_singles_only": likely_singles_only,
     }
 
 
 def evaluate_opener_reliability(piece, field_strength: str) -> float:
     """
     Evaluate how reliable an opener is given field strength.
-    
+
     Returns:
         float: Reliability score (0.0 - 1.0)
     """
@@ -211,13 +217,15 @@ def evaluate_opener_reliability(piece, field_strength: str) -> float:
         return 0.0  # Not an opener
 
 
-def is_combo_viable_simplified(combo_type: str, pieces: List, has_opener: bool, field_strength: str) -> bool:
+def is_combo_viable_simplified(
+    combo_type: str, pieces: List, has_opener: bool, field_strength: str
+) -> bool:
     """
     Simplified combo viability rules.
     Key insight: Having an opener dramatically increases combo viability.
     """
     total_points = sum(p.point for p in pieces)
-    
+
     if has_opener:
         # With opener control, most combos are viable
         if combo_type == "PAIR":
@@ -228,7 +236,12 @@ def is_combo_viable_simplified(combo_type: str, pieces: List, has_opener: bool, 
                 return total_points >= 10  # HORSE pair (5+5) or better
         elif combo_type == "THREE_OF_A_KIND":
             return True  # Any THREE_OF_A_KIND works with opener control
-        elif combo_type in ["STRAIGHT", "FOUR_OF_A_KIND", "EXTENDED_STRAIGHT", "FIVE_OF_A_KIND"]:
+        elif combo_type in [
+            "STRAIGHT",
+            "FOUR_OF_A_KIND",
+            "EXTENDED_STRAIGHT",
+            "FIVE_OF_A_KIND",
+        ]:
             return True  # Strong combos always viable with control
     else:
         # Without opener control, need exceptional combos
@@ -238,32 +251,33 @@ def is_combo_viable_simplified(combo_type: str, pieces: List, has_opener: bool, 
             return total_points >= 12  # Average 4+ per piece
         elif combo_type in ["STRAIGHT", "FOUR_OF_A_KIND"]:
             return total_points >= 20  # Strong straight/four
-            
+
     return False
 
 
-def filter_viable_combos(combos: List[Tuple], context: DeclarationContext, 
-                        has_reliable_opener: bool) -> List[Tuple]:
+def filter_viable_combos(
+    combos: List[Tuple], context: DeclarationContext, has_reliable_opener: bool
+) -> List[Tuple]:
     """
     Filter combos to only those that are actually playable.
-    
+
     Args:
         combos: List of (combo_type, pieces) tuples
         context: Declaration context
         has_reliable_opener: Whether hand has 11+ point piece
-        
+
     Returns:
         List of viable combos
     """
     viable = []
-    
+
     for combo_type, pieces in combos:
         combo_size = len(pieces)
-        
+
         # Check 1: Pile room constraint
         if combo_size > context.pile_room:
             continue  # Can't play if not enough room
-            
+
         # Check 2: Playability without control
         if context.is_starter:
             # Starter always has control
@@ -276,7 +290,7 @@ def filter_viable_combos(combos: List[Tuple], context: DeclarationContext,
             viable.append((combo_type, pieces))
         else:
             # Need opportunity from opponents
-            if context.opponent_patterns['likely_singles_only']:
+            if context.opponent_patterns["likely_singles_only"]:
                 # If all opponents declared 0-1, they have NO combos
                 # Only small combos (pairs) might work
                 if combo_size < 3:
@@ -285,14 +299,16 @@ def filter_viable_combos(combos: List[Tuple], context: DeclarationContext,
                 elif combo_size == 3 and context.field_strength == "weak":
                     # Three-piece combos might work in very weak fields, but need higher quality
                     total_points = sum(p.point for p in pieces)
-                    if total_points >= 21:  # Higher strength requirement for no-opener scenarios
+                    if (
+                        total_points >= 21
+                    ):  # Higher strength requirement for no-opener scenarios
                         viable.append((combo_type, pieces))
                 # Large combos (4+) still have 0% chance - opponents won't play 4+ pieces
-            elif context.opponent_patterns['combo_opportunity'] and combo_size >= 3:
+            elif context.opponent_patterns["combo_opportunity"] and combo_size >= 3:
                 # Some opponents might create opportunity
                 # But consider field strength and combo quality
                 total_points = sum(p.point for p in pieces)
-                
+
                 # Consider field strength and previous declarations
                 if context.field_strength == "strong":
                     # Against strong opponents, need exceptional combos
@@ -304,16 +320,19 @@ def filter_viable_combos(combos: List[Tuple], context: DeclarationContext,
                     # Normal field strength
                     if combo_type == "STRAIGHT" and total_points < 21:
                         continue  # Weak straight unlikely to win
-                    
+
                     # Special case: single opponent declared 3
                     # They likely have combos and will control turns
-                    if len(context.previous_declarations) == 1 and context.previous_declarations[0] == 3:
+                    if (
+                        len(context.previous_declarations) == 1
+                        and context.previous_declarations[0] == 3
+                    ):
                         # Only very strong combos have a chance
                         if combo_type == "THREE_OF_A_KIND" and total_points < 12:
                             continue  # Weak THREE_OF_A_KIND won't get opportunity
-                    
+
                 viable.append((combo_type, pieces))
-    
+
     return viable
 
 
@@ -335,41 +354,42 @@ def find_all_valid_combos(hand):
 # New AI Declaration V2 Helper Functions
 # ------------------------------------------------------------------
 
+
 def is_strong_combo(combo_type: str, pieces: List) -> bool:
     """
     Check if a combo qualifies as a strong combo.
-    
+
     A combo is strong if:
     - It's THREE_OF_A_KIND or higher in hierarchy, OR
     - It's a PAIR with total value > 12 (HORSE_RED pair)
-    
+
     Args:
         combo_type: Type of combo (e.g., "PAIR", "STRAIGHT")
         pieces: List of pieces in the combo
-        
+
     Returns:
         True if combo is strong
     """
     # Combos that beat PAIR in hierarchy are always strong
     if combo_type in STRONG_COMBO_TYPES:
         return True
-    
+
     # For PAIR, check if stronger than HORSE_RED pair
     if combo_type == "PAIR":
         total_value = sum(p.point for p in pieces)
         return total_value > STRONG_PAIR_THRESHOLD
-    
+
     return False
 
 
 def remove_pieces_from_hand(hand: List, pieces_to_remove: List) -> List:
     """
     Remove specific pieces from hand to avoid overlap in play planning.
-    
+
     Args:
         hand: Current hand
         pieces_to_remove: Pieces to remove
-        
+
     Returns:
         New hand with pieces removed
     """
@@ -384,15 +404,15 @@ def get_piece_threshold(pile_room: int) -> int:
     """
     Get minimum piece value needed for given pile room.
     More restrictive with less room, more flexible with more room.
-    
+
     Args:
         pile_room: Available pile slots
-        
+
     Returns:
         Minimum piece value threshold
     """
     if pile_room <= 0:
-        return float('inf')  # Impossible threshold
+        return float("inf")  # Impossible threshold
     elif pile_room == 1:
         return 13  # >13 (only GENERAL_RED qualifies)
     elif pile_room == 2:
@@ -407,28 +427,32 @@ def get_piece_threshold(pile_room: int) -> int:
         return 11  # >=11 for pile room > 5 (default to standard opener threshold)
 
 
-def get_individual_strong_pieces(hand: List, pile_room: int, threshold: Optional[int] = None, 
-                                original_pile_room: Optional[int] = None) -> List:
+def get_individual_strong_pieces(
+    hand: List,
+    pile_room: int,
+    threshold: Optional[int] = None,
+    original_pile_room: Optional[int] = None,
+) -> List:
     """
     Find individual pieces that meet the threshold for given pile room.
-    
+
     Args:
         hand: Current hand
         pile_room: Available pile room (current)
         threshold: Optional threshold to use instead of calculating from pile_room
         original_pile_room: Original pile room when threshold was calculated (for > vs >= logic)
-        
+
     Returns:
         List of qualifying pieces
     """
     if threshold is None:
         threshold = get_piece_threshold(pile_room)
         original_pile_room = pile_room
-    
+
     # Use original pile room to determine > vs >= logic
     if original_pile_room is None:
         original_pile_room = pile_room
-        
+
     if original_pile_room == 1:
         # Special case: original pile room 1 requires > threshold (not >=)
         return [p for p in hand if p.point > threshold]
@@ -439,26 +463,26 @@ def get_individual_strong_pieces(hand: List, pile_room: int, threshold: Optional
 def fit_plays_to_pile_room(play_list: List[Dict], pile_room: int) -> List[Dict]:
     """
     Adjust play list to fit within pile room constraints.
-    
+
     Strategy: Remove combos based on their strength hierarchy and size.
     Prefer to keep larger combos (FOUR_OF_A_KIND over STRAIGHT).
-    
+
     Args:
         play_list: List of planned plays
         pile_room: Maximum pieces allowed
-        
+
     Returns:
         Adjusted play list that fits pile room
     """
-    total_pieces = sum(len(play['pieces']) for play in play_list)
-    
+    total_pieces = sum(len(play["pieces"]) for play in play_list)
+
     if total_pieces <= pile_room:
         return play_list
-    
+
     # Separate openers and combos
-    openers = [p for p in play_list if p['type'] == 'opener']
-    combos = [p for p in play_list if p['type'] == 'combo']
-    
+    openers = [p for p in play_list if p["type"] == "opener"]
+    combos = [p for p in play_list if p["type"] == "combo"]
+
     # Sort combos by hierarchy and size (prefer larger combos)
     # Priority order: FIVE_OF_A_KIND > FOUR_OF_A_KIND > EXTENDED_STRAIGHT > STRAIGHT > THREE_OF_A_KIND > PAIR
     combo_hierarchy = {
@@ -469,17 +493,23 @@ def fit_plays_to_pile_room(play_list: List[Dict], pile_room: int) -> List[Dict]:
         "DOUBLE_STRAIGHT": 4,
         "STRAIGHT": 3,
         "THREE_OF_A_KIND": 2,
-        "PAIR": 1
+        "PAIR": 1,
     }
-    
+
     # Sort by hierarchy (descending) then by number of pieces (descending)
-    combos.sort(key=lambda x: (combo_hierarchy.get(x.get('combo_type', ''), 0), len(x['pieces'])), reverse=True)
-    
+    combos.sort(
+        key=lambda x: (
+            combo_hierarchy.get(x.get("combo_type", ""), 0),
+            len(x["pieces"]),
+        ),
+        reverse=True,
+    )
+
     # Remove combos from the end (weakest/smallest first) until we fit
     while total_pieces > pile_room and combos:
         removed = combos.pop()  # Remove weakest/smallest combo
-        total_pieces -= len(removed['pieces'])
-    
+        total_pieces -= len(removed["pieces"])
+
     # Rebuild play list
     return openers + combos
 
@@ -499,21 +529,22 @@ def choose_declare_strategic(
     """
     Simplified strategic declaration logic:
     - With opener + combo: declare 1 (control) + combo_size
-    - With opener no combo: declare opener_count  
+    - With opener no combo: declare opener_count
     - No opener: declare based on strong combos only
     """
     # Get bot name for logging (if available)
-    bot_name = "Bot" if not hasattr(hand[0], '_bot_name') else getattr(hand[0], '_bot_name', 'Bot')
-    
-    print(f"\n📢 DECLARATION DECISION for position {position_in_order}")
-    print(f"  Hand: {[f'{p.name}({p.point})' for p in hand]}")
-    print(f"  Previous declarations: {previous_declarations}")
-    print(f"  Must declare non-zero: {must_declare_nonzero}")
-    
+    bot_name = (
+        "Bot"
+        if not hasattr(hand[0], "_bot_name")
+        else getattr(hand[0], "_bot_name", "Bot")
+    )
+
+    # Declaration analysis for position {position_in_order}
+
     # Phase 1: Identify openers (11+ points)
     openers = [p for p in hand if p.point >= 11]
     opener_count = len(openers)
-    
+
     # Assess field strength
     if not previous_declarations:
         field_strength = "normal"
@@ -525,48 +556,57 @@ def choose_declare_strategic(
             field_strength = "strong"
         else:
             field_strength = "normal"
-    
-    print(f"  Openers found: {opener_count} - {[f'{p.name}({p.point})' for p in openers]}")
-    print(f"  Field strength: {field_strength}")
-    
+
+    # Found {opener_count} openers, field strength: {field_strength}
+
     # Phase 2: Find all combos
     all_combos = find_all_valid_combos(hand)
-    strong_combos = [c for c in all_combos if c[0] in {
-        "PAIR", "THREE_OF_A_KIND", "STRAIGHT", "FOUR_OF_A_KIND", 
-        "EXTENDED_STRAIGHT", "FIVE_OF_A_KIND", "DOUBLE_STRAIGHT"
-    }]
-    print(f"  Found {len(strong_combos)} strong combos")
-    
+    strong_combos = [
+        c
+        for c in all_combos
+        if c[0]
+        in {
+            "PAIR",
+            "THREE_OF_A_KIND",
+            "STRAIGHT",
+            "FOUR_OF_A_KIND",
+            "EXTENDED_STRAIGHT",
+            "FIVE_OF_A_KIND",
+            "DOUBLE_STRAIGHT",
+        }
+    ]
+    # Found {len(strong_combos)} strong combos
+
     # Phase 3: Filter viable combos with simplified rules
     viable_combos = []
     for combo_type, pieces in strong_combos:
-        if is_combo_viable_simplified(combo_type, pieces, opener_count > 0, field_strength):
+        if is_combo_viable_simplified(
+            combo_type, pieces, opener_count > 0, field_strength
+        ):
             viable_combos.append((combo_type, pieces))
-    
-    print(f"  Viable combos: {len(viable_combos)}")
-    for combo_type, pieces in viable_combos:
-        print(f"    - {combo_type}: {[f'{p.name}({p.point})' for p in pieces]}")
-    
+
+    # {len(viable_combos)} viable combos identified
+
     # Phase 4: Calculate declaration with simplified logic
-    print(f"\n  📊 SIMPLIFIED CALCULATION:")
-    
+    # Calculating optimal declaration
+
     # Find best combo (largest that fits in 8 pieces)
     best_combo = None
     best_combo_size = 0
-    
+
     # Check for overlap between openers and combos
     opener_pieces = set(openers)
-    
+
     for combo_type, pieces in viable_combos:
         combo_size = len(pieces)
         combo_pieces_set = set(pieces)
-        
+
         # Check if combo uses any opener pieces
         overlap = combo_pieces_set.intersection(opener_pieces)
-        
+
         if overlap and opener_count > 0:
             # Combo overlaps with openers - must choose one or the other
-            print(f"    Note: {combo_type} overlaps with openers: {[f'{p.name}({p.point})' for p in overlap]}")
+            # {combo_type} overlaps with openers
             # For declaration, we can still count it as potential wins, just not both
             if combo_size > best_combo_size:
                 best_combo = (combo_type, pieces)
@@ -581,39 +621,49 @@ def choose_declare_strategic(
                 if combo_size > best_combo_size:
                     best_combo = (combo_type, pieces)
                     best_combo_size = combo_size
-    
+
     # Calculate declaration
     if best_combo and opener_count > 0:
         # Check for overlap
         combo_pieces_set = set(best_combo[1])
         overlap = combo_pieces_set.intersection(opener_pieces)
-        
+
         if overlap:
             # Must choose between openers OR combo
             # Compare: individual openers vs combo
             openers_in_combo = len(overlap)
             openers_not_in_combo = opener_count - openers_in_combo
-            
+
             # Piles from playing combo vs playing openers separately
             combo_piles = len(best_combo[1])  # Number of pieces = piles captured
             separate_piles = opener_count  # Each opener captures 1 pile
-            
+
             # Starters should prefer strong combos when they have control
-            if is_first_player and is_starter_preferred_combo(best_combo[0], best_combo[1]):
+            if is_first_player and is_starter_preferred_combo(
+                best_combo[0], best_combo[1]
+            ):
                 # Starter with strong combo should use it
                 score = openers_not_in_combo + combo_piles
-                print(f"    Decision: Starter prefers {best_combo[0]} ({combo_piles} piles) + {openers_not_in_combo} free openers = {score}")
+                print(
+                    f"    Decision: Starter prefers {best_combo[0]} ({combo_piles} piles) + {openers_not_in_combo} free openers = {score}"
+                )
             elif separate_piles >= combo_piles:
                 score = separate_piles
-                print(f"    Decision: {opener_count} openers separately ({separate_piles} piles) > {best_combo[0]} ({combo_piles} piles) = {score}")
+                print(
+                    f"    Decision: {opener_count} openers separately ({separate_piles} piles) > {best_combo[0]} ({combo_piles} piles) = {score}"
+                )
             else:
                 score = openers_not_in_combo + combo_piles
-                print(f"    Decision: {openers_not_in_combo} free openers + {best_combo[0]} ({combo_piles} piles) = {score}")
+                print(
+                    f"    Decision: {openers_not_in_combo} free openers + {best_combo[0]} ({combo_piles} piles) = {score}"
+                )
         else:
             # No overlap - can use all openers + combo
             combo_piles = len(best_combo[1])
             score = opener_count + combo_piles  # All openers + combo piles
-            print(f"    Decision: {opener_count} openers + {best_combo[0]} ({combo_piles} piles) = {score}")
+            print(
+                f"    Decision: {opener_count} openers + {best_combo[0]} ({combo_piles} piles) = {score}"
+            )
     elif opener_count > 0:
         # Has opener(s) but no combo: each opener is a potential win
         score = opener_count
@@ -622,63 +672,74 @@ def choose_declare_strategic(
         # No openers but has strong combo
         combo_piles = len(best_combo[1])  # Number of pieces = piles captured
         score = combo_piles
-        print(f"    Decision: No openers, but {best_combo[0]} ({combo_piles} piles) = {score}")
+        print(
+            f"    Decision: No openers, but {best_combo[0]} ({combo_piles} piles) = {score}"
+        )
     else:
         # Weak hand
         score = 0
         print(f"    Decision: Weak hand, no openers or combos = {score}")
-    
+
     # Phase 4.5: Consider full hand potential (not just best combo)
     # Check if we're underestimating a strong hand
     if len(hand) >= 6 and score < len(hand):
         print(f"\n    🔍 FULL HAND EVALUATION:")
         print(f"    Current score: {score}, but have {len(hand)} pieces total")
-        
+
         # Track which pieces are already accounted for
         accounted_pieces = set()
-        
+
         # Add opener pieces
         accounted_pieces.update(openers)
-        
+
         # Add best combo pieces if any
         if best_combo:
             accounted_pieces.update(best_combo[1])
-        
+
         # Evaluate remaining pieces
         remaining_pieces = [p for p in hand if p not in accounted_pieces]
         if remaining_pieces:
-            print(f"    Remaining pieces: {[f'{p.name}({p.point})' for p in remaining_pieces]}")
-            
+            print(
+                f"    Remaining pieces: {[f'{p.name}({p.point})' for p in remaining_pieces]}"
+            )
+
             # Don't count single pieces - only combos provide reliable wins
             strong_remaining = 0
-            
+
             # Also check for additional combos in remaining pieces
             from backend.engine.rules import get_play_type
+
             additional_combos = 0
-            
+
             # Check for pairs in remaining
             remaining_counts = {}
             for p in remaining_pieces:
                 remaining_counts[p.name] = remaining_counts.get(p.name, 0) + 1
-            
+
             for piece_name, count in remaining_counts.items():
                 if count >= 2:
                     # Found a pair
-                    pair_pieces = [p for p in remaining_pieces if p.name == piece_name][:2]
+                    pair_pieces = [p for p in remaining_pieces if p.name == piece_name][
+                        :2
+                    ]
                     if len(pair_pieces) == 2:
                         # Check if pair is strong enough
                         pair_value = sum(p.point for p in pair_pieces)
-                        if (field_strength == "weak" and pair_value >= 10) or \
-                           (field_strength == "normal" and pair_value >= 14) or \
-                           (field_strength == "strong" and pair_value >= 18):
+                        if (
+                            (field_strength == "weak" and pair_value >= 10)
+                            or (field_strength == "normal" and pair_value >= 14)
+                            or (field_strength == "strong" and pair_value >= 18)
+                        ):
                             additional_combos += 1
-                            print(f"    Found viable PAIR in remaining: {[f'{p.name}({p.point})' for p in pair_pieces]}")
-            
+                            print(
+                                f"    Found viable PAIR in remaining: {[f'{p.name}({p.point})' for p in pair_pieces]}"
+                            )
+
             # Update score with additional combo wins only
             additional_wins = additional_combos
             if additional_wins > 0:
                 old_score = score
-                
+
                 # Add combo wins conservatively
                 # Early positions can be slightly more optimistic
                 if position_in_order <= 1:
@@ -686,40 +747,42 @@ def choose_declare_strategic(
                 else:
                     # Later positions add only half to be conservative
                     score = min(score + (additional_wins // 2), 8)
-                    
+
                 print(f"    Additional combos: {additional_combos}")
                 print(f"    Adjusted score: {old_score} → {score}")
-    
+
     # Phase 5: Handle edge cases
     if score == 0 and field_strength == "weak":
         # In very weak field, might win with decent singles
         decent_singles = sum(1 for p in hand if 7 <= p.point <= 10)
         if decent_singles >= 3:
             score = 1  # Conservative estimate
-    
+
     # Phase 8: Handle forbidden values
     forbidden_declares = set()
-    
+
     # Last player can't make sum = 8
     if position_in_order == 3:
         total_so_far = sum(previous_declarations)
         forbidden = 8 - total_so_far
         if 0 <= forbidden <= 8:
             forbidden_declares.add(forbidden)
-    
+
     # Must declare non-zero rule
     if must_declare_nonzero:
         forbidden_declares.add(0)
-    
+
     # Find best valid alternative if needed
     if score in forbidden_declares:
         valid_options = [d for d in range(0, 9) if d not in forbidden_declares]
-        
+
         # Strategy: Context-aware alternative selection
         if valid_options:
             # Assess hand strength for strategic alternative selection
-            hand_strength = "strong" if opener_count >= 2 or len(viable_combos) >= 2 else "weak"
-            
+            hand_strength = (
+                "strong" if opener_count >= 2 or len(viable_combos) >= 2 else "weak"
+            )
+
             if hand_strength == "strong" and score > 0:
                 # Last player should be more conservative
                 if position_in_order == 3:
@@ -738,38 +801,34 @@ def choose_declare_strategic(
         else:
             # Shouldn't happen, but defensive
             score = 1
-    
-    # Phase 8b: Pile room constraint removed - declarations should be based on 
+
+    # Phase 8b: Pile room constraint removed - declarations should be based on
     # expected wins from hand strength, not maximum theoretical pile availability
-    
+
     # No need for strategic caps with simplified logic
-    
+
     # Phase 9: Debug output
-    print(f"\n  🎯 FINAL DECLARATION: {score}")
-    
+    # Final declaration: {score}
+
     if verbose:
-        print(f"\n🎯 STRATEGIC DECLARATION ANALYSIS")
-        print(f"Position: {position_in_order} (Starter: {is_first_player})")
-        print(f"Previous declarations: {previous_declarations}")
-        print(f"Field strength: {field_strength}")
-        print(f"Openers: {opener_count}")
-        print(f"Found {len(strong_combos)} combos, {len(viable_combos)} viable")
-        print(f"Final declaration: {score}")
-    
+        print(
+            f"Declaration analysis - Position: {position_in_order}, Openers: {opener_count}, Declaration: {score}"
+        )
+
     # Phase 10: Optional analysis callback
     if analysis_callback:
         analysis_data = {
-            'position_in_order': position_in_order,
-            'is_starter': is_first_player,
-            'previous_declarations': previous_declarations,
-            'field_strength': field_strength,
-            'opener_count': opener_count,
-            'strong_combos_found': len(strong_combos),
-            'viable_combos_count': len(viable_combos),
-            'final_decision': score
+            "position_in_order": position_in_order,
+            "is_starter": is_first_player,
+            "previous_declarations": previous_declarations,
+            "field_strength": field_strength,
+            "opener_count": opener_count,
+            "strong_combos_found": len(strong_combos),
+            "viable_combos_count": len(viable_combos),
+            "final_decision": score,
         }
         analysis_callback(analysis_data)
-    
+
     return score
 
 
@@ -779,7 +838,7 @@ def choose_declare_strategic(
 def find_and_select_strong_combos_iteratively(hand_copy, play_list, verbose=False):
     """
     Find strong combos iteratively, preferring larger combos.
-    
+
     This function:
     1. Finds all valid combos in the current hand
     2. Filters for strong combos only
@@ -787,53 +846,51 @@ def find_and_select_strong_combos_iteratively(hand_copy, play_list, verbose=Fals
     4. Selects the largest combo and adds to play list
     5. Removes pieces from hand
     6. Repeats until no more strong combos found
-    
+
     Args:
         hand_copy: Current hand (will be modified)
         play_list: List to append combos to
         verbose: Whether to print debug info
-        
+
     Returns:
         tuple: (updated hand_copy, number of combos found)
     """
     combos_found = 0
-    
+
     while True:
         all_combos = find_all_valid_combos(hand_copy)
-        
+
         # Filter and sort strong combos by size (largest first)
         strong_combos = []
         for combo_type, pieces in all_combos:
             # Skip single pieces - they're not combos
             if combo_type == "SINGLE":
                 continue
-                
+
             if is_strong_combo(combo_type, pieces):
                 strong_combos.append((combo_type, pieces))
-        
+
         # Sort by number of pieces (descending) to prefer larger combos
-        # This ensures DOUBLE_STRAIGHT (6) > FIVE_OF_A_KIND (5) > EXTENDED_STRAIGHT_5 (5) 
+        # This ensures DOUBLE_STRAIGHT (6) > FIVE_OF_A_KIND (5) > EXTENDED_STRAIGHT_5 (5)
         # > EXTENDED_STRAIGHT/FOUR_OF_A_KIND (4) > THREE_OF_A_KIND/STRAIGHT (3) > PAIR (2)
         strong_combos.sort(key=lambda x: len(x[1]), reverse=True)
-        
+
         if not strong_combos:
             break  # No more strong combos found
-            
+
         # Take the largest strong combo
         combo_type, pieces = strong_combos[0]
         if verbose:
             total = sum(p.point for p in pieces)
-            print(f"    Found {combo_type}: {[f'{p.name}({p.point})' for p in pieces]} (total={total})")
-        
+            print(
+                f"    Found {combo_type}: {[f'{p.name}({p.point})' for p in pieces]} (total={total})"
+            )
+
         # Add to play list and remove from hand
-        play_list.append({
-            'type': 'combo',
-            'combo_type': combo_type,
-            'pieces': pieces
-        })
+        play_list.append({"type": "combo", "combo_type": combo_type, "pieces": pieces})
         hand_copy = remove_pieces_from_hand(hand_copy, pieces)
         combos_found += 1
-    
+
     return hand_copy, combos_found
 
 
@@ -845,191 +902,221 @@ def rebuild_play_list_avoiding_forbidden(
     pile_room: int,
     forbidden_declares: set,
     is_first_player: bool,
-    verbose: bool = False
+    verbose: bool = False,
 ) -> List[Dict]:
     """
     Rebuild play_list to avoid forbidden declaration values.
-    
+
     Instead of just adjusting the declaration number, this function
     generates valid play combinations that avoid forbidden values.
-    
+
     Args:
         original_hand: The full hand before any plays
         pile_room: Maximum pieces allowed
         forbidden_declares: Set of forbidden declaration values
         is_first_player: Whether this is the starter
         verbose: Whether to print debug info
-        
+
     Returns:
         New play_list that avoids forbidden values
     """
     if verbose:
-        print(f"\n🔄 Rebuilding play_list to avoid forbidden values: {forbidden_declares}")
-    
+        print(
+            f"\n🔄 Rebuilding play_list to avoid forbidden values: {forbidden_declares}"
+        )
+
     # Find all possible individual plays
     all_plays = []
-    
+
     # 1. Find openers (high-value pieces based on pile room)
     openers = []
     threshold = get_piece_threshold(pile_room)
-    
+
     # For pile_room = 1, need > threshold (not >=)
     if pile_room == 1:
         candidates = [p for p in original_hand if p.point > threshold]
     else:
         candidates = [p for p in original_hand if p.point >= threshold]
-    
+
     for piece in candidates:
-        openers.append({
-            'type': 'opener',
-            'pieces': [piece],
-            'value': piece.point
-        })
-    
+        openers.append({"type": "opener", "pieces": [piece], "value": piece.point})
+
     # 2. Find all strong combos
     combos = []
     all_valid_combos = find_all_valid_combos(original_hand)
     for combo_type, pieces in all_valid_combos:
         if combo_type != "SINGLE" and is_strong_combo(combo_type, pieces):
-            combos.append({
-                'type': 'combo',
-                'combo_type': combo_type,
-                'pieces': pieces,
-                'value': sum(p.point for p in pieces)
-            })
-    
+            combos.append(
+                {
+                    "type": "combo",
+                    "combo_type": combo_type,
+                    "pieces": pieces,
+                    "value": sum(p.point for p in pieces),
+                }
+            )
+
     # Sort combos by size (descending) then by value
-    combos.sort(key=lambda x: (len(x['pieces']), x['value']), reverse=True)
-    
+    combos.sort(key=lambda x: (len(x["pieces"]), x["value"]), reverse=True)
+
     # 3. Generate valid play combinations
     valid_combinations = []
-    
+
     if not is_first_player:
         # Non-starters ALWAYS need at least one opener
         # Even when avoiding forbidden values, they cannot play combos alone
-        
+
         # Try: opener only
         for opener in openers:
-            pieces_count = len(opener['pieces'])
+            pieces_count = len(opener["pieces"])
             if pieces_count not in forbidden_declares and pieces_count <= pile_room:
-                valid_combinations.append({
-                    'plays': [opener],
-                    'total_pieces': pieces_count,
-                    'total_value': opener['value'],
-                    'has_combo': False
-                })
-        
+                valid_combinations.append(
+                    {
+                        "plays": [opener],
+                        "total_pieces": pieces_count,
+                        "total_value": opener["value"],
+                        "has_combo": False,
+                    }
+                )
+
         # Try: opener + combo
         for opener in openers:
             for combo in combos:
                 # Check pieces don't overlap
-                opener_pieces = set(p.name + p.color for p in opener['pieces'])
-                combo_pieces = set(p.name + p.color for p in combo['pieces'])
+                opener_pieces = set(p.name + p.color for p in opener["pieces"])
+                combo_pieces = set(p.name + p.color for p in combo["pieces"])
                 if not opener_pieces.intersection(combo_pieces):
-                    pieces_count = len(opener['pieces']) + len(combo['pieces'])
-                    if pieces_count not in forbidden_declares and pieces_count <= pile_room:
-                        valid_combinations.append({
-                            'plays': [opener, combo],
-                            'total_pieces': pieces_count,
-                            'total_value': opener['value'] + combo['value'],
-                            'has_combo': True
-                        })
-        
+                    pieces_count = len(opener["pieces"]) + len(combo["pieces"])
+                    if (
+                        pieces_count not in forbidden_declares
+                        and pieces_count <= pile_room
+                    ):
+                        valid_combinations.append(
+                            {
+                                "plays": [opener, combo],
+                                "total_pieces": pieces_count,
+                                "total_value": opener["value"] + combo["value"],
+                                "has_combo": True,
+                            }
+                        )
+
         # Try: multiple openers
         if len(openers) >= 2:
             for i in range(len(openers)):
                 for j in range(i + 1, len(openers)):
-                    pieces_count = len(openers[i]['pieces']) + len(openers[j]['pieces'])
-                    if pieces_count not in forbidden_declares and pieces_count <= pile_room:
-                        valid_combinations.append({
-                            'plays': [openers[i], openers[j]],
-                            'total_pieces': pieces_count,
-                            'total_value': openers[i]['value'] + openers[j]['value'],
-                            'has_combo': False
-                        })
+                    pieces_count = len(openers[i]["pieces"]) + len(openers[j]["pieces"])
+                    if (
+                        pieces_count not in forbidden_declares
+                        and pieces_count <= pile_room
+                    ):
+                        valid_combinations.append(
+                            {
+                                "plays": [openers[i], openers[j]],
+                                "total_pieces": pieces_count,
+                                "total_value": openers[i]["value"]
+                                + openers[j]["value"],
+                                "has_combo": False,
+                            }
+                        )
     else:
         # Starters can play combos without openers
         # Try: single combo
         for combo in combos:
-            pieces_count = len(combo['pieces'])
+            pieces_count = len(combo["pieces"])
             if pieces_count not in forbidden_declares and pieces_count <= pile_room:
-                valid_combinations.append({
-                    'plays': [combo],
-                    'total_pieces': pieces_count,
-                    'total_value': combo['value'],
-                    'has_combo': True
-                })
-        
+                valid_combinations.append(
+                    {
+                        "plays": [combo],
+                        "total_pieces": pieces_count,
+                        "total_value": combo["value"],
+                        "has_combo": True,
+                    }
+                )
+
         # Try: opener + combo
         for opener in openers:
             for combo in combos:
-                opener_pieces = set(p.name + p.color for p in opener['pieces'])
-                combo_pieces = set(p.name + p.color for p in combo['pieces'])
+                opener_pieces = set(p.name + p.color for p in opener["pieces"])
+                combo_pieces = set(p.name + p.color for p in combo["pieces"])
                 if not opener_pieces.intersection(combo_pieces):
-                    pieces_count = len(opener['pieces']) + len(combo['pieces'])
-                    if pieces_count not in forbidden_declares and pieces_count <= pile_room:
-                        valid_combinations.append({
-                            'plays': [opener, combo],
-                            'total_pieces': pieces_count,
-                            'total_value': opener['value'] + combo['value'],
-                            'has_combo': True
-                        })
-        
+                    pieces_count = len(opener["pieces"]) + len(combo["pieces"])
+                    if (
+                        pieces_count not in forbidden_declares
+                        and pieces_count <= pile_room
+                    ):
+                        valid_combinations.append(
+                            {
+                                "plays": [opener, combo],
+                                "total_pieces": pieces_count,
+                                "total_value": opener["value"] + combo["value"],
+                                "has_combo": True,
+                            }
+                        )
+
         # Try: multiple combos (if non-overlapping)
         if len(combos) >= 2:
             for i in range(len(combos)):
                 for j in range(i + 1, len(combos)):
-                    pieces_i = set(p.name + p.color for p in combos[i]['pieces'])
-                    pieces_j = set(p.name + p.color for p in combos[j]['pieces'])
+                    pieces_i = set(p.name + p.color for p in combos[i]["pieces"])
+                    pieces_j = set(p.name + p.color for p in combos[j]["pieces"])
                     if not pieces_i.intersection(pieces_j):
-                        pieces_count = len(combos[i]['pieces']) + len(combos[j]['pieces'])
-                        if pieces_count not in forbidden_declares and pieces_count <= pile_room:
-                            valid_combinations.append({
-                                'plays': [combos[i], combos[j]],
-                                'total_pieces': pieces_count,
-                                'total_value': combos[i]['value'] + combos[j]['value'],
-                                'has_combo': True
-                            })
-    
+                        pieces_count = len(combos[i]["pieces"]) + len(
+                            combos[j]["pieces"]
+                        )
+                        if (
+                            pieces_count not in forbidden_declares
+                            and pieces_count <= pile_room
+                        ):
+                            valid_combinations.append(
+                                {
+                                    "plays": [combos[i], combos[j]],
+                                    "total_pieces": pieces_count,
+                                    "total_value": combos[i]["value"]
+                                    + combos[j]["value"],
+                                    "has_combo": True,
+                                }
+                            )
+
     # If no valid combinations, return empty play_list (declare 0)
     if not valid_combinations:
         if verbose:
             print("  No valid combinations found - will declare 0")
         return []
-    
+
     # Select best valid combination
     # Priority: 1) Maximum pieces, 2) Has combo, 3) Highest value
-    valid_combinations.sort(key=lambda x: (
-        x['total_pieces'],
-        x['has_combo'],
-        x['total_value']
-    ), reverse=True)
-    
+    valid_combinations.sort(
+        key=lambda x: (x["total_pieces"], x["has_combo"], x["total_value"]),
+        reverse=True,
+    )
+
     best_combination = valid_combinations[0]
-    
+
     if verbose:
         print(f"  Selected combination with {best_combination['total_pieces']} pieces:")
-        for play in best_combination['plays']:
-            if play['type'] == 'combo':
-                print(f"    - {play['combo_type']}: {[f'{p.name}({p.point})' for p in play['pieces']]}")
+        for play in best_combination["plays"]:
+            if play["type"] == "combo":
+                print(
+                    f"    - {play['combo_type']}: {[f'{p.name}({p.point})' for p in play['pieces']]}"
+                )
             else:
-                print(f"    - Opener: {play['pieces'][0].name}({play['pieces'][0].point})")
-    
+                print(
+                    f"    - Opener: {play['pieces'][0].name}({play['pieces'][0].point})"
+                )
+
     # Build and return new play_list
     new_play_list = []
-    for play in best_combination['plays']:
-        if play['type'] == 'combo':
-            new_play_list.append({
-                'type': 'combo',
-                'combo_type': play['combo_type'],
-                'pieces': play['pieces']
-            })
+    for play in best_combination["plays"]:
+        if play["type"] == "combo":
+            new_play_list.append(
+                {
+                    "type": "combo",
+                    "combo_type": play["combo_type"],
+                    "pieces": play["pieces"],
+                }
+            )
         else:
-            new_play_list.append({
-                'type': 'opener',
-                'pieces': play['pieces']
-            })
-    
+            new_play_list.append({"type": "opener", "pieces": play["pieces"]})
+
     return new_play_list
 
 
@@ -1042,16 +1129,16 @@ def choose_declare_strategic_v2(
     position_in_order: int,
     previous_declarations: list[int],
     must_declare_nonzero: bool,
-    verbose: bool = True
+    verbose: bool = True,
 ) -> int:
     """
     New declaration logic with separate starter/non-starter strategies.
-    
+
     Starter Strategy:
     1. Find all strong combos first
     2. Find individual strong pieces
     3. Declaration = total pieces in play list
-    
+
     Non-Starter Strategy:
     1. Find ONE opener first for control
     2. Find strong combos from remaining pieces
@@ -1059,152 +1146,157 @@ def choose_declare_strategic_v2(
     4. Fit to pile room by removing combos if needed
     5. If no opener found, declare 0
     """
-    
+
     play_list = []
     hand_copy = hand.copy()
-    
+
     if verbose:
         print(f"\n📢 DECLARATION DECISION V2 for position {position_in_order}")
         print(f"  Hand: {[f'{p.name}({p.point})' for p in hand]}")
         print(f"  Previous declarations: {previous_declarations}")
         print(f"  Starter: {is_first_player}")
-    
+
     if is_first_player:
         # =====================================================
         # STARTER LOGIC
         # =====================================================
         if verbose:
             print("\n🎯 STARTER STRATEGY:")
-        
+
         # Step 1: Find strong combos iteratively using the helper function
-        hand_copy, combos_found = find_and_select_strong_combos_iteratively(hand_copy, play_list, verbose)
-        
+        hand_copy, combos_found = find_and_select_strong_combos_iteratively(
+            hand_copy, play_list, verbose
+        )
+
         if verbose:
             print(f"  Found {combos_found} strong combos")
-        
+
         # Step 2: Calculate pile room
-        total_pieces_planned = sum(len(play['pieces']) for play in play_list)
+        total_pieces_planned = sum(len(play["pieces"]) for play in play_list)
         pile_room_left = 8 - total_pieces_planned
-        
+
         if verbose:
-            print(f"  After combos: {total_pieces_planned} pieces planned, {pile_room_left} room left")
-        
+            print(
+                f"  After combos: {total_pieces_planned} pieces planned, {pile_room_left} room left"
+            )
+
         # Step 3: Find individual strong pieces
         if pile_room_left > 0:
             # Check pieces with current pile room
             strong_pieces = get_individual_strong_pieces(hand_copy, pile_room_left)
             # Sort by value descending to take best pieces first
             strong_pieces.sort(key=lambda p: p.point, reverse=True)
-            
+
             for piece in strong_pieces:
                 if pile_room_left > 0:
-                    play_list.append({
-                        'type': 'opener',
-                        'pieces': [piece]
-                    })
+                    play_list.append({"type": "opener", "pieces": [piece]})
                     hand_copy = remove_pieces_from_hand(hand_copy, [piece])
                     pile_room_left -= 1
-        
+
         # Calculate declaration
-        declaration = sum(len(play['pieces']) for play in play_list)
-        
+        declaration = sum(len(play["pieces"]) for play in play_list)
+
     else:
         # =====================================================
         # NON-STARTER LOGIC
         # =====================================================
         if verbose:
             print("\n🎯 NON-STARTER STRATEGY:")
-        
+
         # Check if player has GENERAL_RED for special rule
         has_general_red = any(p.name == "GENERAL" and p.color == "RED" for p in hand)
-        
+
         # Step 1: Calculate pile room from previous declarations
         pile_room = calculate_pile_room(previous_declarations, has_general_red)
         if verbose:
             if has_general_red:
                 print(f"  Has GENERAL_RED - ignoring starter's declaration")
             print(f"  Pile room available: {pile_room}")
-        
+
         # If no pile room, cannot declare anything
         if pile_room <= 0:
             if verbose:
                 print("  No pile room available - declaring 0")
             return 0
-        
+
         # Step 2: Find ONE opener that meets pile room requirements
         opener = None
         # Calculate threshold once based on original pile room
         original_threshold = get_piece_threshold(pile_room)
-        
+
         # For pile_room = 1, need > threshold (not >=)
         if pile_room == 1:
             candidates = [p for p in hand_copy if p.point > original_threshold]
         else:
             candidates = [p for p in hand_copy if p.point >= original_threshold]
-        
+
         if candidates:
             opener = max(candidates, key=lambda p: p.point)
-            play_list.append({
-                'type': 'opener',
-                'pieces': [opener]
-            })
+            play_list.append({"type": "opener", "pieces": [opener]})
             hand_copy = remove_pieces_from_hand(hand_copy, [opener])
             if verbose:
                 print(f"  Found opener: {opener.name}({opener.point})")
-        
+
         if not opener:
             if verbose:
                 print("  No opener found - declaring 0")
             return 0
-        
+
         # Step 3: Find strong combos iteratively using the helper function
-        hand_copy, combos_found = find_and_select_strong_combos_iteratively(hand_copy, play_list, verbose)
-        
+        hand_copy, combos_found = find_and_select_strong_combos_iteratively(
+            hand_copy, play_list, verbose
+        )
+
         # Step 4: Find additional individual strong pieces
-        current_pieces = sum(len(play['pieces']) for play in play_list)
+        current_pieces = sum(len(play["pieces"]) for play in play_list)
         room_left = pile_room - current_pieces
-        
+
         if room_left > 0:
             # Use the original threshold throughout piece selection
             # Pass pile_room as the current pile_room, and also as original_pile_room for consistency
-            strong_pieces = get_individual_strong_pieces(hand_copy, pile_room, original_threshold, pile_room)
+            strong_pieces = get_individual_strong_pieces(
+                hand_copy, pile_room, original_threshold, pile_room
+            )
             # Sort by value descending to take best pieces first
             strong_pieces.sort(key=lambda p: p.point, reverse=True)
-            
+
             pieces_added = 0
             for piece in strong_pieces:
                 if pieces_added < room_left:
-                    play_list.append({
-                        'type': 'opener',
-                        'pieces': [piece]
-                    })
+                    play_list.append({"type": "opener", "pieces": [piece]})
                     hand_copy = remove_pieces_from_hand(hand_copy, [piece])
                     pieces_added += 1
-        
+
         # Step 5: Fit to pile room if needed
         play_list = fit_plays_to_pile_room(play_list, pile_room)
-        
+
         # Step 6: After fitting, check if we have room for more individual pieces
         # This is important when combos were removed during fitting
-        current_pieces_after_fit = sum(len(play['pieces']) for play in play_list)
+        current_pieces_after_fit = sum(len(play["pieces"]) for play in play_list)
         final_room_left = pile_room - current_pieces_after_fit
-        
+
         if final_room_left > 0 and verbose:
-            print(f"  After fitting: {current_pieces_after_fit} pieces used, {final_room_left} room left")
-        
+            print(
+                f"  After fitting: {current_pieces_after_fit} pieces used, {final_room_left} room left"
+            )
+
         if final_room_left > 0:
             # Try to add more strong pieces with the remaining room
             # Get remaining pieces not already in play_list
             pieces_in_play = []
             for play in play_list:
-                pieces_in_play.extend(play['pieces'])
-            
+                pieces_in_play.extend(play["pieces"])
+
             # Find pieces not yet used
-            remaining_hand = [p for p in hand if not any(
-                p.name == used.name and p.color == used.color 
-                for used in pieces_in_play
-            )]
-            
+            remaining_hand = [
+                p
+                for p in hand
+                if not any(
+                    p.name == used.name and p.color == used.color
+                    for used in pieces_in_play
+                )
+            ]
+
             # Get strong pieces from remaining hand
             # For the last few slots, be more selective about which pieces to add
             # If only 1 slot left, require higher value pieces
@@ -1213,65 +1305,70 @@ def choose_declare_strategic_v2(
                 additional_strong = [p for p in remaining_hand if p.point >= 12]
             else:
                 # For multiple slots, use original threshold
-                additional_strong = get_individual_strong_pieces(remaining_hand, pile_room, original_threshold, pile_room)
+                additional_strong = get_individual_strong_pieces(
+                    remaining_hand, pile_room, original_threshold, pile_room
+                )
             additional_strong.sort(key=lambda p: p.point, reverse=True)
-            
+
             pieces_added = 0
             for piece in additional_strong:
                 if pieces_added < final_room_left:
-                    play_list.append({
-                        'type': 'opener',
-                        'pieces': [piece]
-                    })
+                    play_list.append({"type": "opener", "pieces": [piece]})
                     pieces_added += 1
                     if verbose:
-                        print(f"    Added additional piece: {piece.name}({piece.point})")
-        
+                        print(
+                            f"    Added additional piece: {piece.name}({piece.point})"
+                        )
+
         # Calculate declaration
-        declaration = sum(len(play['pieces']) for play in play_list)
-    
+        declaration = sum(len(play["pieces"]) for play in play_list)
+
     # =====================================================
     # HANDLE FORBIDDEN VALUES (same for both)
     # =====================================================
     forbidden_declares = set()
-    
+
     # Last player can't make sum = 8
     if position_in_order == 3:
         total_so_far = sum(previous_declarations)
         forbidden = 8 - total_so_far
         if 0 <= forbidden <= 8:
             forbidden_declares.add(forbidden)
-    
+
     # Must declare non-zero rule
     if must_declare_nonzero:
         forbidden_declares.add(0)
-    
+
     # Adjust if needed by rebuilding play_list
     if declaration in forbidden_declares:
         # Calculate pile room for this position
         pile_room = calculate_pile_room(previous_declarations, has_general_red)
-        
+
         # Rebuild play_list to avoid forbidden values
         play_list = rebuild_play_list_avoiding_forbidden(
             original_hand=hand,  # Use original hand, not hand_copy
             pile_room=pile_room,
             forbidden_declares=forbidden_declares,
             is_first_player=is_first_player,
-            verbose=verbose
+            verbose=verbose,
         )
-        
+
         # Recalculate declaration based on new play_list
-        declaration = sum(len(play['pieces']) for play in play_list)
-    
+        declaration = sum(len(play["pieces"]) for play in play_list)
+
     if verbose:
         print(f"\n🎯 FINAL DECLARATION: {declaration}")
         print(f"  Play list has {len(play_list)} plays:")
         for play in play_list:
-            if play['type'] == 'combo':
-                print(f"    - {play['combo_type']}: {[f'{p.name}({p.point})' for p in play['pieces']]}")
+            if play["type"] == "combo":
+                print(
+                    f"    - {play['combo_type']}: {[f'{p.name}({p.point})' for p in play['pieces']]}"
+                )
             else:
-                print(f"    - Opener: {play['pieces'][0].name}({play['pieces'][0].point})")
-    
+                print(
+                    f"    - Opener: {play['pieces'][0].name}({play['pieces'][0].point})"
+                )
+
     return declaration
 
 
@@ -1297,7 +1394,7 @@ def choose_declare(
         position_in_order=position_in_order,
         previous_declarations=previous_declarations,
         must_declare_nonzero=must_declare_nonzero,
-        verbose=verbose
+        verbose=verbose,
     )
 
 
@@ -1338,14 +1435,14 @@ def choose_best_play(hand: list, required_count, verbose: bool = True) -> list:
     if best_play:
         if verbose:
             summary = ", ".join(p.name for p in best_play)
-            print(f"🤖 BOT chooses to play {best_type} ({best_score} pts): {summary}")
+            print(f"Bot plays {best_type} ({best_score} pts): {summary}")
         return best_play
 
     # Fallback: discard lowest-point pieces if no valid play
     fallback = sorted(hand, key=lambda p: p.point)[: required_count or 1]
     if verbose:
         summary = ", ".join(p.name for p in fallback)
-        print(f"🤖 BOT has no valid play. Discards lowest pieces: {summary}")
+        print(f"Bot discards lowest pieces: {summary}")
         print(f"    🔍 Final play: {[p.name for p in fallback]}")
         print(f"    🧠 Hand left: {[p.name for p in hand]}")
 
@@ -1358,40 +1455,44 @@ def choose_best_play(hand: list, required_count, verbose: bool = True) -> list:
 def choose_strategic_play_safe(hand: list, context, verbose: bool = True) -> list:
     """
     Safe wrapper for strategic play that falls back to basic AI if needed.
-    
+
     Args:
         hand: List of pieces in player's hand
         context: TurnPlayContext object (or None for fallback)
         verbose: Whether to print debug info
-        
+
     Returns:
         List of pieces to play
     """
     try:
         # Try to import and use strategic play
         from backend.engine.ai_turn_strategy import choose_strategic_play
-        if context and hasattr(context, 'my_name'):
-            print(f"🤖 Strategic AI wrapper called for {context.my_name}")
+
+        # if context and hasattr(context, "my_name"):
+        #     print(f"🤖 Strategic AI wrapper called for {context.my_name}")
+        pass
         return choose_strategic_play(hand, context)
     except ImportError:
         # Fallback to basic AI if strategic module not available
-        if verbose:
-            print("⚠️ Strategic AI module not available, using basic AI")
-        
+        # if verbose:
+        #     print("⚠️ Strategic AI module not available, using basic AI")
+        pass
+
         # Extract required_piece_count from context if available
         required_count = None
-        if context and hasattr(context, 'required_piece_count'):
+        if context and hasattr(context, "required_piece_count"):
             required_count = context.required_piece_count
-            
+
         return choose_best_play(hand, required_count, verbose)
     except Exception as e:
         # Any other error, fall back to basic AI
-        if verbose:
-            print(f"⚠️ Error in strategic AI: {e}, using basic AI")
-            
+        # if verbose:
+        #     print(f"⚠️ Error in strategic AI: {e}, using basic AI")
+        pass
+
         # Extract required_piece_count from context if available
         required_count = None
-        if context and hasattr(context, 'required_piece_count'):
+        if context and hasattr(context, "required_piece_count"):
             required_count = context.required_piece_count
-            
+
         return choose_best_play(hand, required_count, verbose)
