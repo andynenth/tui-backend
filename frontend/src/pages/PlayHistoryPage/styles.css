@@ -1,0 +1,84 @@
+.play-history-page {
+  min-height: 100vh;
+  background-color: #0a0a0a;
+  color: #ffffff;
+  padding: 20px;
+}
+
+.play-history-page .container {
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.play-history-page .header {
+  margin-bottom: 40px;
+}
+
+.play-history-page .back-link {
+  display: inline-block;
+  color: #3498db;
+  text-decoration: none;
+  margin-bottom: 20px;
+  transition: color 0.3s;
+}
+
+.play-history-page .back-link:hover {
+  color: #2980b9;
+}
+
+.play-history-page h1 {
+  font-size: 36px;
+  margin-bottom: 10px;
+}
+
+.play-history-page .content {
+  background-color: #1a1a1a;
+  border-radius: 12px;
+  padding: 40px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+}
+
+.play-history-page .placeholder-message {
+  text-align: center;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.play-history-page .placeholder-message h2 {
+  font-size: 28px;
+  margin-bottom: 20px;
+  color: #3498db;
+}
+
+.play-history-page .placeholder-message ul {
+  list-style: none;
+  padding: 0;
+  margin: 30px 0;
+}
+
+.play-history-page .placeholder-message li {
+  padding: 10px 0;
+  font-size: 18px;
+  color: #cccccc;
+}
+
+.play-history-page .placeholder-message li:before {
+  content: "✓ ";
+  color: #2ecc71;
+  font-weight: bold;
+  margin-right: 10px;
+}
+
+.play-history-page .demo-link {
+  margin-top: 40px;
+  padding: 20px;
+  background-color: rgba(52, 152, 219, 0.1);
+  border-radius: 8px;
+  border: 1px solid #3498db;
+}
+
+.play-history-page .demo-link a {
+  color: #3498db;
+  font-size: 18px;
+  font-weight: 600;
+}

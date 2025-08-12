@@ -21,6 +21,7 @@ import LobbyPage from './pages/LobbyPage';
 import RoomPage from './pages/RoomPage';
 import GamePage from './pages/GamePage';
 import TutorialPage from './pages/TutorialPage';
+import PlayHistoryPage from './pages/PlayHistoryPage';
 import { LoadingOverlay } from './components';
 
 // Service initialization
@@ -164,6 +165,9 @@ const AppRouterContent = ({ sessionToRecover }) => {
           </GameRoute>
         }
       />
+
+      {/* Admin-only Play History - direct URL access only */}
+      <Route path="/history/:roomId" element={<PlayHistoryPage />} />
 
       {/* Catch all - redirect to start */}
       <Route path="*" element={<Navigate to="/" replace />} />

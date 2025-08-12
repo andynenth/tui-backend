@@ -1,0 +1,1212 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Liap Tui - Round Timeline View</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background-color: #0a0a0a;
+            color: #ffffff;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        /* Header */
+        .game-header {
+            background: linear-gradient(135deg, #1a1a1a 0%, #2a2a2a 100%);
+            padding: 20px 30px;
+            border-radius: 12px;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+        }
+
+        .header-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .game-title {
+            font-size: 24px;
+            margin-bottom: 10px;
+        }
+
+        .round-selector {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background-color: rgba(255,255,255,0.1);
+            padding: 5px 15px;
+            border-radius: 20px;
+        }
+
+        .round-selector label {
+            font-size: 14px;
+            color: #999;
+        }
+
+        .round-selector select {
+            background-color: transparent;
+            color: #fff;
+            border: none;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            outline: none;
+        }
+
+        .round-selector select option {
+            background-color: #2a2a2a;
+        }
+
+        .game-info {
+            display: flex;
+            gap: 30px;
+            color: #999;
+            font-size: 14px;
+        }
+
+        .info-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .info-label {
+            color: #666;
+        }
+
+        /* Players Grid */
+        .players-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        .player-card {
+            background-color: #1a1a1a;
+            padding: 20px;
+            border-radius: 10px;
+            border: 2px solid #333;
+            transition: all 0.2s;
+        }
+
+        .player-card.starter {
+            border-color: #f39c12;
+            box-shadow: 0 0 20px rgba(243, 156, 18, 0.3);
+        }
+
+        .player-name {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 5px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .player-type {
+            font-size: 11px;
+            padding: 2px 8px;
+            border-radius: 4px;
+            background-color: #333;
+            color: #999;
+        }
+
+        .player-type.ai {
+            background-color: #8b5cf6;
+            color: white;
+        }
+
+        .starter-badge {
+            background-color: #f39c12;
+            color: white;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 11px;
+            font-weight: 600;
+        }
+
+        .player-stats {
+            margin-top: 10px;
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+        }
+
+        .stat {
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 20px;
+            font-weight: bold;
+            color: #3498db;
+        }
+
+        .stat-label {
+            font-size: 11px;
+            color: #666;
+            text-transform: uppercase;
+        }
+
+        /* Declaration Phase */
+        .declaration-section {
+            background-color: #1a1a1a;
+            padding: 25px;
+            border-radius: 12px;
+            margin-bottom: 30px;
+        }
+
+        .section-header {
+            font-size: 20px;
+            margin-bottom: 20px;
+            color: #f0f0f0;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .phase-icon {
+            width: 30px;
+            height: 30px;
+            background-color: #3498db;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+        }
+
+        .declarations-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 15px;
+        }
+
+        .declaration-item {
+            background-color: #2a2a2a;
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+        }
+
+        .declaration-player {
+            font-size: 14px;
+            color: #999;
+            margin-bottom: 8px;
+        }
+
+        .declaration-value {
+            font-size: 32px;
+            font-weight: bold;
+            color: #e74c3c;
+            margin-bottom: 5px;
+        }
+
+        .declaration-room {
+            font-size: 12px;
+            color: #666;
+        }
+
+        .declaration-forced {
+            color: #e74c3c;
+            font-style: italic;
+        }
+
+        /* Turn Timeline */
+        .turn-section {
+            background-color: #1a1a1a;
+            padding: 25px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+        }
+
+        .turn-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #333;
+        }
+
+        .turn-title {
+            font-size: 18px;
+            color: #f0f0f0;
+        }
+
+        .turn-winner {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .winner-name {
+            font-weight: 600;
+            color: #27ae60;
+        }
+
+        .pieces-won {
+            background-color: #27ae60;
+            color: white;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        /* Player Plays */
+        .plays-timeline {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 15px;
+        }
+
+        .play-card {
+            background-color: #2a2a2a;
+            padding: 15px;
+            border-radius: 8px;
+            border: 2px solid transparent;
+            transition: all 0.2s;
+        }
+
+        .play-card.winner {
+            border-color: #27ae60;
+            background-color: rgba(39, 174, 96, 0.1);
+        }
+
+        .play-header {
+            font-size: 14px;
+            font-weight: 500;
+            margin-bottom: 10px;
+            color: #ccc;
+        }
+
+        /* Hand Before Section */
+        .hand-before {
+            background-color: rgba(255,255,255,0.05);
+            padding: 10px;
+            border-radius: 6px;
+            margin-bottom: 15px;
+        }
+
+        .hand-before-label {
+            font-size: 11px;
+            color: #999;
+            text-transform: uppercase;
+            margin-bottom: 5px;
+        }
+
+        .hand-before-pieces {
+            display: flex;
+            gap: 4px;
+            flex-wrap: wrap;
+        }
+
+        .hand-before-piece {
+            font-size: 10px;
+            padding: 3px 6px;
+            border-radius: 3px;
+            background-color: rgba(255,255,255,0.1);
+            color: #ccc;
+        }
+
+        .hand-before-piece.red {
+            background-color: rgba(231, 76, 60, 0.2);
+            color: #e74c3c;
+        }
+
+        .hand-before-piece.black {
+            background-color: rgba(52, 73, 94, 0.2);
+            color: #95a5a6;
+        }
+
+        .pieces-played {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            margin-bottom: 10px;
+        }
+
+        .piece {
+            background-color: #333;
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .piece.red {
+            background-color: #e74c3c;
+            color: white;
+        }
+
+        .piece.black {
+            background-color: #34495e;
+            color: white;
+        }
+
+        .piece-kind {
+            font-size: 11px;
+        }
+
+        .piece-point {
+            font-weight: bold;
+        }
+
+        .play-type {
+            font-size: 11px;
+            color: #666;
+            text-transform: uppercase;
+            margin-top: 10px;
+        }
+
+        .hand-info {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 10px;
+            padding-top: 10px;
+            border-top: 1px solid #444;
+            font-size: 12px;
+            color: #999;
+        }
+
+        /* Round Summary */
+        .summary-section {
+            background: linear-gradient(135deg, #2a2a2a 0%, #1a1a1a 100%);
+            padding: 30px;
+            border-radius: 12px;
+            margin-top: 30px;
+        }
+
+        .summary-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 20px;
+        }
+
+        .summary-card {
+            background-color: rgba(0,0,0,0.3);
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+        }
+
+        .summary-player {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 15px;
+            color: #f0f0f0;
+        }
+
+        .summary-stats {
+            display: grid;
+            gap: 10px;
+        }
+
+        .summary-stat {
+            display: flex;
+            justify-content: space-between;
+            padding: 5px 0;
+            font-size: 14px;
+        }
+
+        .summary-label {
+            color: #999;
+        }
+
+        .summary-value {
+            font-weight: 600;
+        }
+
+        .score-positive {
+            color: #27ae60;
+        }
+
+        .score-negative {
+            color: #e74c3c;
+        }
+
+        .score-neutral {
+            color: #3498db;
+        }
+
+        /* Hand Display */
+        .initial-hands {
+            background-color: #1a1a1a;
+            padding: 25px;
+            border-radius: 12px;
+            margin-bottom: 30px;
+        }
+
+        .hands-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+        }
+
+        .hand-display {
+            background-color: #2a2a2a;
+            padding: 15px;
+            border-radius: 8px;
+        }
+
+        .hand-player {
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 10px;
+            color: #f0f0f0;
+        }
+
+        .hand-pieces {
+            display: flex;
+            gap: 5px;
+            flex-wrap: wrap;
+        }
+
+        .hand-piece {
+            background-color: #333;
+            padding: 5px 8px;
+            border-radius: 4px;
+            font-size: 11px;
+            font-weight: 500;
+        }
+
+        .hand-piece.red {
+            background-color: rgba(231, 76, 60, 0.2);
+            color: #e74c3c;
+            border: 1px solid #e74c3c;
+        }
+
+        .hand-piece.black {
+            background-color: rgba(52, 73, 94, 0.2);
+            color: #95a5a6;
+            border: 1px solid #34495e;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Game Header -->
+        <div class="game-header">
+            <div class="header-top">
+                <h1 class="game-title">Room 23BEBA - Round 1</h1>
+                <div class="round-selector">
+                    <label>Round:</label>
+                    <select>
+                        <option value="1" selected>Round 1</option>
+                        <option value="2">Round 2</option>
+                        <option value="3">Round 3</option>
+                        <option value="4">Round 4</option>
+                        <option value="5">Round 5</option>
+                    </select>
+                </div>
+            </div>
+            <div class="game-info">
+                <div class="info-item">
+                    <span class="info-label">Total Turns:</span>
+                    <span>6</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">Winner:</span>
+                    <span>Bot 2 (+6 points)</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">Game Mode:</span>
+                    <span>1 Human vs 3 AI</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Players Overview -->
+        <div class="players-grid">
+            <div class="player-card">
+                <div class="player-name">
+                    Andy
+                    <span class="player-type">Human</span>
+                </div>
+                <div class="player-stats">
+                    <div class="stat">
+                        <div class="stat-value">3</div>
+                        <div class="stat-label">Declared</div>
+                    </div>
+                    <div class="stat">
+                        <div class="stat-value">0</div>
+                        <div class="stat-label">Captured</div>
+                    </div>
+                    <div class="stat">
+                        <div class="stat-value score-negative">-3</div>
+                        <div class="stat-label">Score</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="player-card">
+                <div class="player-name">
+                    Bot 2
+                    <span class="player-type ai">AI v2</span>
+                </div>
+                <div class="player-stats">
+                    <div class="stat">
+                        <div class="stat-value">1</div>
+                        <div class="stat-label">Declared</div>
+                    </div>
+                    <div class="stat">
+                        <div class="stat-value">1</div>
+                        <div class="stat-label">Captured</div>
+                    </div>
+                    <div class="stat">
+                        <div class="stat-value score-positive">+6</div>
+                        <div class="stat-label">Score</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="player-card starter">
+                <div class="player-name">
+                    Bot 3
+                    <span class="player-type ai">AI v2</span>
+                    <span class="starter-badge">STARTER</span>
+                </div>
+                <div class="player-stats">
+                    <div class="stat">
+                        <div class="stat-value">6</div>
+                        <div class="stat-label">Declared</div>
+                    </div>
+                    <div class="stat">
+                        <div class="stat-value">7</div>
+                        <div class="stat-label">Captured</div>
+                    </div>
+                    <div class="stat">
+                        <div class="stat-value score-negative">-1</div>
+                        <div class="stat-label">Score</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="player-card">
+                <div class="player-name">
+                    Bot 4
+                    <span class="player-type ai">AI v2</span>
+                </div>
+                <div class="player-stats">
+                    <div class="stat">
+                        <div class="stat-value">0</div>
+                        <div class="stat-label">Declared</div>
+                    </div>
+                    <div class="stat">
+                        <div class="stat-value">0</div>
+                        <div class="stat-label">Captured</div>
+                    </div>
+                    <div class="stat">
+                        <div class="stat-value score-positive">+3</div>
+                        <div class="stat-label">Score</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Initial Hands -->
+        <div class="initial-hands">
+            <h2 class="section-header">
+                <div class="phase-icon">🎴</div>
+                Initial Hands Dealt
+            </h2>
+            <div class="hands-grid">
+                <div class="hand-display">
+                    <div class="hand-player">Andy</div>
+                    <div class="hand-pieces">
+                        <span class="hand-piece red">ADVISOR(12)</span>
+                        <span class="hand-piece red">HORSE(6)</span>
+                        <span class="hand-piece red">CANNON(4)</span>
+                        <span class="hand-piece red">SOLDIER(2)</span>
+                        <span class="hand-piece black">HORSE(5)</span>
+                        <span class="hand-piece black">CANNON(3)</span>
+                        <span class="hand-piece black">SOLDIER(1)</span>
+                        <span class="hand-piece black">SOLDIER(1)</span>
+                    </div>
+                </div>
+                <div class="hand-display">
+                    <div class="hand-player">Bot 2</div>
+                    <div class="hand-pieces">
+                        <span class="hand-piece red">ELEPHANT(10)</span>
+                        <span class="hand-piece red">SOLDIER(2)</span>
+                        <span class="hand-piece red">SOLDIER(2)</span>
+                        <span class="hand-piece red">SOLDIER(2)</span>
+                        <span class="hand-piece black">GENERAL(13)</span>
+                        <span class="hand-piece black">ADVISOR(11)</span>
+                        <span class="hand-piece black">ELEPHANT(9)</span>
+                        <span class="hand-piece black">CHARIOT(7)</span>
+                    </div>
+                </div>
+                <div class="hand-display">
+                    <div class="hand-player">Bot 3 - Has GENERAL_RED(14)</div>
+                    <div class="hand-pieces">
+                        <span class="hand-piece red" style="background-color: #e74c3c; color: white;">GENERAL(14)</span>
+                        <span class="hand-piece red">ADVISOR(12)</span>
+                        <span class="hand-piece red">CHARIOT(8)</span>
+                        <span class="hand-piece red">HORSE(6)</span>
+                        <span class="hand-piece red">CANNON(4)</span>
+                        <span class="hand-piece black">ADVISOR(11)</span>
+                        <span class="hand-piece black">ELEPHANT(9)</span>
+                        <span class="hand-piece black">HORSE(5)</span>
+                    </div>
+                </div>
+                <div class="hand-display">
+                    <div class="hand-player">Bot 4</div>
+                    <div class="hand-pieces">
+                        <span class="hand-piece red">ELEPHANT(10)</span>
+                        <span class="hand-piece red">CHARIOT(8)</span>
+                        <span class="hand-piece red">SOLDIER(2)</span>
+                        <span class="hand-piece black">CHARIOT(7)</span>
+                        <span class="hand-piece black">CANNON(3)</span>
+                        <span class="hand-piece black">SOLDIER(1)</span>
+                        <span class="hand-piece black">SOLDIER(1)</span>
+                        <span class="hand-piece black">SOLDIER(1)</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Declaration Phase -->
+        <div class="declaration-section">
+            <h2 class="section-header">
+                <div class="phase-icon">📢</div>
+                Declaration Phase
+            </h2>
+            <div class="declarations-grid">
+                <div class="declaration-item">
+                    <div class="declaration-player">Andy (Position 1)</div>
+                    <div class="declaration-value">3</div>
+                    <div class="declaration-room">Room: 8 piles</div>
+                </div>
+                <div class="declaration-item">
+                    <div class="declaration-player">Bot 2 (Position 2)</div>
+                    <div class="declaration-value">1</div>
+                    <div class="declaration-room">Room: 5 piles</div>
+                </div>
+                <div class="declaration-item">
+                    <div class="declaration-player">Bot 3 (Position 3)</div>
+                    <div class="declaration-value">6</div>
+                    <div class="declaration-room">Room: 4 piles</div>
+                </div>
+                <div class="declaration-item">
+                    <div class="declaration-player">Bot 4 (Position 4)</div>
+                    <div class="declaration-value">0</div>
+                    <div class="declaration-room declaration-forced">Forced zero</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Turn 1 -->
+        <div class="turn-section">
+            <div class="turn-header">
+                <h3 class="turn-title">Turn 1 - Triple Play Showdown</h3>
+                <div class="turn-winner">
+                    <span class="winner-name">Bot 3 wins</span>
+                    <span class="pieces-won">3 pieces</span>
+                </div>
+            </div>
+            <div class="plays-timeline">
+                <div class="play-card winner">
+                    <div class="play-header">Bot 3 (Starter)</div>
+                    <div class="hand-before">
+                        <div class="hand-before-label">Hand Before Play</div>
+                        <div class="hand-before-pieces">
+                            <span class="hand-before-piece red">GENERAL(14)</span>
+                            <span class="hand-before-piece red">ADVISOR(12)</span>
+                            <span class="hand-before-piece red">CHARIOT(8)</span>
+                            <span class="hand-before-piece red">HORSE(6)</span>
+                            <span class="hand-before-piece red">CANNON(4)</span>
+                            <span class="hand-before-piece black">ADVISOR(11)</span>
+                            <span class="hand-before-piece black">ELEPHANT(9)</span>
+                            <span class="hand-before-piece black">HORSE(5)</span>
+                        </div>
+                    </div>
+                    <div class="pieces-played">
+                        <span class="piece red">
+                            <span class="piece-kind">CHARIOT</span>
+                            <span class="piece-point">8</span>
+                        </span>
+                        <span class="piece red">
+                            <span class="piece-kind">CANNON</span>
+                            <span class="piece-point">4</span>
+                        </span>
+                        <span class="piece red">
+                            <span class="piece-kind">HORSE</span>
+                            <span class="piece-point">6</span>
+                        </span>
+                    </div>
+                    <div class="play-type">Triple Play (18 pts)</div>
+                    <div class="hand-info">
+                        <span>Captured: 0→3</span>
+                        <span>Declared: 6</span>
+                    </div>
+                </div>
+
+                <div class="play-card">
+                    <div class="play-header">Bot 4</div>
+                    <div class="hand-before">
+                        <div class="hand-before-label">Hand Before Play</div>
+                        <div class="hand-before-pieces">
+                            <span class="hand-before-piece red">ELEPHANT(10)</span>
+                            <span class="hand-before-piece red">CHARIOT(8)</span>
+                            <span class="hand-before-piece red">SOLDIER(2)</span>
+                            <span class="hand-before-piece black">CHARIOT(7)</span>
+                            <span class="hand-before-piece black">CANNON(3)</span>
+                            <span class="hand-before-piece black">SOLDIER(1)</span>
+                            <span class="hand-before-piece black">SOLDIER(1)</span>
+                            <span class="hand-before-piece black">SOLDIER(1)</span>
+                        </div>
+                    </div>
+                    <div class="pieces-played">
+                        <span class="piece red">
+                            <span class="piece-kind">ELEPHANT</span>
+                            <span class="piece-point">10</span>
+                        </span>
+                        <span class="piece red">
+                            <span class="piece-kind">CHARIOT</span>
+                            <span class="piece-point">8</span>
+                        </span>
+                        <span class="piece black">
+                            <span class="piece-kind">CHARIOT</span>
+                            <span class="piece-point">7</span>
+                        </span>
+                    </div>
+                    <div class="play-type">Triple Play (25 pts)</div>
+                    <div class="hand-info">
+                        <span>Captured: 0→0</span>
+                        <span>Declared: 0</span>
+                    </div>
+                </div>
+
+                <div class="play-card">
+                    <div class="play-header">Andy</div>
+                    <div class="hand-before">
+                        <div class="hand-before-label">Hand Before Play</div>
+                        <div class="hand-before-pieces">
+                            <span class="hand-before-piece red">ADVISOR(12)</span>
+                            <span class="hand-before-piece red">HORSE(6)</span>
+                            <span class="hand-before-piece red">CANNON(4)</span>
+                            <span class="hand-before-piece red">SOLDIER(2)</span>
+                            <span class="hand-before-piece black">HORSE(5)</span>
+                            <span class="hand-before-piece black">CANNON(3)</span>
+                            <span class="hand-before-piece black">SOLDIER(1)</span>
+                            <span class="hand-before-piece black">SOLDIER(1)</span>
+                        </div>
+                    </div>
+                    <div class="pieces-played">
+                        <span class="piece red">
+                            <span class="piece-kind">HORSE</span>
+                            <span class="piece-point">6</span>
+                        </span>
+                        <span class="piece red">
+                            <span class="piece-kind">CANNON</span>
+                            <span class="piece-point">4</span>
+                        </span>
+                        <span class="piece black">
+                            <span class="piece-kind">HORSE</span>
+                            <span class="piece-point">5</span>
+                        </span>
+                    </div>
+                    <div class="play-type">Triple Play (15 pts)</div>
+                    <div class="hand-info">
+                        <span>Captured: 0→0</span>
+                        <span>Declared: 3</span>
+                    </div>
+                </div>
+
+                <div class="play-card">
+                    <div class="play-header">Bot 2</div>
+                    <div class="hand-before">
+                        <div class="hand-before-label">Hand Before Play</div>
+                        <div class="hand-before-pieces">
+                            <span class="hand-before-piece red">ELEPHANT(10)</span>
+                            <span class="hand-before-piece red">SOLDIER(2)</span>
+                            <span class="hand-before-piece red">SOLDIER(2)</span>
+                            <span class="hand-before-piece red">SOLDIER(2)</span>
+                            <span class="hand-before-piece black">GENERAL(13)</span>
+                            <span class="hand-before-piece black">ADVISOR(11)</span>
+                            <span class="hand-before-piece black">ELEPHANT(9)</span>
+                            <span class="hand-before-piece black">CHARIOT(7)</span>
+                        </div>
+                    </div>
+                    <div class="pieces-played">
+                        <span class="piece black">
+                            <span class="piece-kind">GENERAL</span>
+                            <span class="piece-point">13</span>
+                        </span>
+                        <span class="piece red">
+                            <span class="piece-kind">ELEPHANT</span>
+                            <span class="piece-point">10</span>
+                        </span>
+                        <span class="piece black">
+                            <span class="piece-kind">CHARIOT</span>
+                            <span class="piece-point">7</span>
+                        </span>
+                    </div>
+                    <div class="play-type">Triple Play (30 pts)</div>
+                    <div class="hand-info">
+                        <span>Captured: 0→0</span>
+                        <span>Declared: 1</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Turn 2 -->
+        <div class="turn-section">
+            <div class="turn-header">
+                <h3 class="turn-title">Turn 2 - Advisor Battle</h3>
+                <div class="turn-winner">
+                    <span class="winner-name">Bot 3 wins</span>
+                    <span class="pieces-won">1 piece</span>
+                </div>
+            </div>
+            <div class="plays-timeline">
+                <div class="play-card winner">
+                    <div class="play-header">Bot 3</div>
+                    <div class="hand-before">
+                        <div class="hand-before-label">Hand Before Play</div>
+                        <div class="hand-before-pieces">
+                            <span class="hand-before-piece red">GENERAL(14)</span>
+                            <span class="hand-before-piece red">ADVISOR(12)</span>
+                            <span class="hand-before-piece black">ADVISOR(11)</span>
+                            <span class="hand-before-piece black">ELEPHANT(9)</span>
+                            <span class="hand-before-piece black">HORSE(5)</span>
+                        </div>
+                    </div>
+                    <div class="pieces-played">
+                        <span class="piece black">
+                            <span class="piece-kind">ADVISOR</span>
+                            <span class="piece-point">11</span>
+                        </span>
+                    </div>
+                    <div class="play-type">Single Play</div>
+                    <div class="hand-info">
+                        <span>Captured: 3→4</span>
+                        <span>Declared: 6</span>
+                    </div>
+                </div>
+
+                <div class="play-card">
+                    <div class="play-header">Bot 4</div>
+                    <div class="hand-before">
+                        <div class="hand-before-label">Hand Before Play</div>
+                        <div class="hand-before-pieces">
+                            <span class="hand-before-piece red">SOLDIER(2)</span>
+                            <span class="hand-before-piece black">CANNON(3)</span>
+                            <span class="hand-before-piece black">SOLDIER(1)</span>
+                            <span class="hand-before-piece black">SOLDIER(1)</span>
+                            <span class="hand-before-piece black">SOLDIER(1)</span>
+                        </div>
+                    </div>
+                    <div class="pieces-played">
+                        <span class="piece black">
+                            <span class="piece-kind">CANNON</span>
+                            <span class="piece-point">3</span>
+                        </span>
+                    </div>
+                    <div class="play-type">Single Play</div>
+                    <div class="hand-info">
+                        <span>Captured: 0→0</span>
+                        <span>Declared: 0</span>
+                    </div>
+                </div>
+
+                <div class="play-card">
+                    <div class="play-header">Andy</div>
+                    <div class="hand-before">
+                        <div class="hand-before-label">Hand Before Play</div>
+                        <div class="hand-before-pieces">
+                            <span class="hand-before-piece red">ADVISOR(12)</span>
+                            <span class="hand-before-piece red">SOLDIER(2)</span>
+                            <span class="hand-before-piece black">CANNON(3)</span>
+                            <span class="hand-before-piece black">SOLDIER(1)</span>
+                            <span class="hand-before-piece black">SOLDIER(1)</span>
+                        </div>
+                    </div>
+                    <div class="pieces-played">
+                        <span class="piece black">
+                            <span class="piece-kind">CANNON</span>
+                            <span class="piece-point">3</span>
+                        </span>
+                    </div>
+                    <div class="play-type">Single Play</div>
+                    <div class="hand-info">
+                        <span>Captured: 0→0</span>
+                        <span>Declared: 3</span>
+                    </div>
+                </div>
+
+                <div class="play-card">
+                    <div class="play-header">Bot 2</div>
+                    <div class="hand-before">
+                        <div class="hand-before-label">Hand Before Play</div>
+                        <div class="hand-before-pieces">
+                            <span class="hand-before-piece red">SOLDIER(2)</span>
+                            <span class="hand-before-piece red">SOLDIER(2)</span>
+                            <span class="hand-before-piece red">SOLDIER(2)</span>
+                            <span class="hand-before-piece black">ADVISOR(11)</span>
+                            <span class="hand-before-piece black">ELEPHANT(9)</span>
+                        </div>
+                    </div>
+                    <div class="pieces-played">
+                        <span class="piece black">
+                            <span class="piece-kind">ELEPHANT</span>
+                            <span class="piece-point">9</span>
+                        </span>
+                    </div>
+                    <div class="play-type">Single Play</div>
+                    <div class="hand-info">
+                        <span>Captured: 0→0</span>
+                        <span>Declared: 1</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Turn 3 -->
+        <div class="turn-section">
+            <div class="turn-header">
+                <h3 class="turn-title">Turn 3 - Bot 2's Advisor Takes It</h3>
+                <div class="turn-winner">
+                    <span class="winner-name">Bot 2 wins</span>
+                    <span class="pieces-won">1 piece</span>
+                </div>
+            </div>
+            <div class="plays-timeline">
+                <div class="play-card">
+                    <div class="play-header">Bot 3</div>
+                    <div class="hand-before">
+                        <div class="hand-before-label">Hand Before Play</div>
+                        <div class="hand-before-pieces">
+                            <span class="hand-before-piece red">GENERAL(14)</span>
+                            <span class="hand-before-piece red">ADVISOR(12)</span>
+                            <span class="hand-before-piece black">ELEPHANT(9)</span>
+                            <span class="hand-before-piece black">HORSE(5)</span>
+                        </div>
+                    </div>
+                    <div class="pieces-played">
+                        <span class="piece black">
+                            <span class="piece-kind">ELEPHANT</span>
+                            <span class="piece-point">9</span>
+                        </span>
+                    </div>
+                    <div class="play-type">Single Play</div>
+                    <div class="hand-info">
+                        <span>Captured: 4→4</span>
+                        <span>Declared: 6</span>
+                    </div>
+                </div>
+
+                <div class="play-card">
+                    <div class="play-header">Bot 4</div>
+                    <div class="hand-before">
+                        <div class="hand-before-label">Hand Before Play</div>
+                        <div class="hand-before-pieces">
+                            <span class="hand-before-piece red">SOLDIER(2)</span>
+                            <span class="hand-before-piece black">SOLDIER(1)</span>
+                            <span class="hand-before-piece black">SOLDIER(1)</span>
+                            <span class="hand-before-piece black">SOLDIER(1)</span>
+                        </div>
+                    </div>
+                    <div class="pieces-played">
+                        <span class="piece red">
+                            <span class="piece-kind">SOLDIER</span>
+                            <span class="piece-point">2</span>
+                        </span>
+                    </div>
+                    <div class="play-type">Single Play</div>
+                    <div class="hand-info">
+                        <span>Captured: 0→0</span>
+                        <span>Declared: 0</span>
+                    </div>
+                </div>
+
+                <div class="play-card">
+                    <div class="play-header">Andy</div>
+                    <div class="hand-before">
+                        <div class="hand-before-label">Hand Before Play</div>
+                        <div class="hand-before-pieces">
+                            <span class="hand-before-piece red">ADVISOR(12)</span>
+                            <span class="hand-before-piece red">SOLDIER(2)</span>
+                            <span class="hand-before-piece black">SOLDIER(1)</span>
+                            <span class="hand-before-piece black">SOLDIER(1)</span>
+                        </div>
+                    </div>
+                    <div class="pieces-played">
+                        <span class="piece red">
+                            <span class="piece-kind">SOLDIER</span>
+                            <span class="piece-point">2</span>
+                        </span>
+                    </div>
+                    <div class="play-type">Single Play</div>
+                    <div class="hand-info">
+                        <span>Captured: 0→0</span>
+                        <span>Declared: 3</span>
+                    </div>
+                </div>
+
+                <div class="play-card winner">
+                    <div class="play-header">Bot 2</div>
+                    <div class="hand-before">
+                        <div class="hand-before-label">Hand Before Play</div>
+                        <div class="hand-before-pieces">
+                            <span class="hand-before-piece red">SOLDIER(2)</span>
+                            <span class="hand-before-piece red">SOLDIER(2)</span>
+                            <span class="hand-before-piece red">SOLDIER(2)</span>
+                            <span class="hand-before-piece black">ADVISOR(11)</span>
+                        </div>
+                    </div>
+                    <div class="pieces-played">
+                        <span class="piece black">
+                            <span class="piece-kind">ADVISOR</span>
+                            <span class="piece-point">11</span>
+                        </span>
+                    </div>
+                    <div class="play-type">Single Play</div>
+                    <div class="hand-info">
+                        <span>Captured: 0→1</span>
+                        <span>Declared: 1</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Continue with Turns 4-6... -->
+
+        <!-- Round Summary -->
+        <div class="summary-section">
+            <h2 class="section-header">
+                <div class="phase-icon">🏆</div>
+                Round 1 Final Results
+            </h2>
+            <div class="summary-grid">
+                <div class="summary-card">
+                    <div class="summary-player">Andy</div>
+                    <div class="summary-stats">
+                        <div class="summary-stat">
+                            <span class="summary-label">Declared</span>
+                            <span class="summary-value">3</span>
+                        </div>
+                        <div class="summary-stat">
+                            <span class="summary-label">Captured</span>
+                            <span class="summary-value">0</span>
+                        </div>
+                        <div class="summary-stat">
+                            <span class="summary-label">Difference</span>
+                            <span class="summary-value score-negative">-3</span>
+                        </div>
+                        <div class="summary-stat">
+                            <span class="summary-label">Score</span>
+                            <span class="summary-value score-negative">-3 pts</span>
+                        </div>
+                        <div class="summary-stat">
+                            <span class="summary-label">Reason</span>
+                            <span class="summary-value">Missed by 3</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="summary-card">
+                    <div class="summary-player">Bot 2</div>
+                    <div class="summary-stats">
+                        <div class="summary-stat">
+                            <span class="summary-label">Declared</span>
+                            <span class="summary-value">1</span>
+                        </div>
+                        <div class="summary-stat">
+                            <span class="summary-label">Captured</span>
+                            <span class="summary-value">1</span>
+                        </div>
+                        <div class="summary-stat">
+                            <span class="summary-label">Difference</span>
+                            <span class="summary-value score-neutral">0</span>
+                        </div>
+                        <div class="summary-stat">
+                            <span class="summary-label">Score</span>
+                            <span class="summary-value score-positive">+6 pts</span>
+                        </div>
+                        <div class="summary-stat">
+                            <span class="summary-label">Reason</span>
+                            <span class="summary-value">Exact match!</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="summary-card">
+                    <div class="summary-player">Bot 3</div>
+                    <div class="summary-stats">
+                        <div class="summary-stat">
+                            <span class="summary-label">Declared</span>
+                            <span class="summary-value">6</span>
+                        </div>
+                        <div class="summary-stat">
+                            <span class="summary-label">Captured</span>
+                            <span class="summary-value">7</span>
+                        </div>
+                        <div class="summary-stat">
+                            <span class="summary-label">Difference</span>
+                            <span class="summary-value score-positive">+1</span>
+                        </div>
+                        <div class="summary-stat">
+                            <span class="summary-label">Score</span>
+                            <span class="summary-value score-negative">-1 pts</span>
+                        </div>
+                        <div class="summary-stat">
+                            <span class="summary-label">Reason</span>
+                            <span class="summary-value">Exceeded by 1</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="summary-card">
+                    <div class="summary-player">Bot 4</div>
+                    <div class="summary-stats">
+                        <div class="summary-stat">
+                            <span class="summary-label">Declared</span>
+                            <span class="summary-value">0</span>
+                        </div>
+                        <div class="summary-stat">
+                            <span class="summary-label">Captured</span>
+                            <span class="summary-value">0</span>
+                        </div>
+                        <div class="summary-stat">
+                            <span class="summary-label">Difference</span>
+                            <span class="summary-value score-neutral">0</span>
+                        </div>
+                        <div class="summary-stat">
+                            <span class="summary-label">Score</span>
+                            <span class="summary-value score-positive">+3 pts</span>
+                        </div>
+                        <div class="summary-stat">
+                            <span class="summary-label">Reason</span>
+                            <span class="summary-value">Forced zero bonus</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

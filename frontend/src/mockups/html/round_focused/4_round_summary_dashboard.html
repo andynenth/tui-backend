@@ -1,0 +1,828 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Liap Tui - Round Summary Dashboard</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #0a0e1a;
+            color: #e4e6eb;
+            line-height: 1.6;
+        }
+
+        .dashboard-container {
+            max-width: 1600px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        /* Header */
+        .dashboard-header {
+            background: linear-gradient(135deg, #1e3a5f 0%, #0a0e1a 100%);
+            padding: 30px;
+            border-radius: 20px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            text-align: center;
+        }
+
+        .header-main {
+            font-size: 36px;
+            font-weight: 700;
+            margin-bottom: 10px;
+            background: linear-gradient(to right, #60a5fa, #3b82f6);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .header-sub {
+            color: #9ca3af;
+            font-size: 18px;
+        }
+
+        /* Summary Grid */
+        .summary-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .metric-card {
+            background: rgba(255,255,255,0.05);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 16px;
+            padding: 25px;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .metric-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(59, 130, 246, 0.2);
+            border-color: rgba(59, 130, 246, 0.3);
+        }
+
+        .metric-icon {
+            width: 60px;
+            height: 60px;
+            margin: 0 auto 15px;
+            background: linear-gradient(135deg, #3b82f6, #60a5fa);
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+        }
+
+        .metric-value {
+            font-size: 32px;
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+
+        .metric-label {
+            font-size: 14px;
+            color: #9ca3af;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        /* Main Content Grid */
+        .main-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+
+        @media (max-width: 1200px) {
+            .main-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .content-card {
+            background: rgba(255,255,255,0.03);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+        }
+
+        .card-title {
+            font-size: 22px;
+            font-weight: 600;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .title-icon {
+            width: 32px;
+            height: 32px;
+            background: rgba(59, 130, 246, 0.2);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+        }
+
+        /* Score Breakdown */
+        .score-breakdown {
+            display: grid;
+            gap: 15px;
+        }
+
+        .player-score-row {
+            background: rgba(255,255,255,0.02);
+            border: 1px solid rgba(255,255,255,0.05);
+            border-radius: 12px;
+            padding: 20px;
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr 1fr 1.5fr;
+            gap: 15px;
+            align-items: center;
+            transition: all 0.2s;
+        }
+
+        .player-score-row:hover {
+            background: rgba(255,255,255,0.04);
+            transform: translateX(5px);
+        }
+
+        .player-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .player-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #3b82f6, #60a5fa);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 18px;
+        }
+
+        .player-details {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .player-name {
+            font-weight: 600;
+            font-size: 16px;
+        }
+
+        .player-type {
+            font-size: 12px;
+            color: #9ca3af;
+        }
+
+        .score-item {
+            text-align: center;
+        }
+
+        .score-label {
+            font-size: 11px;
+            color: #9ca3af;
+            text-transform: uppercase;
+            margin-bottom: 5px;
+        }
+
+        .score-value {
+            font-size: 20px;
+            font-weight: 600;
+        }
+
+        .final-score {
+            font-size: 24px;
+            font-weight: 700;
+            text-align: center;
+        }
+
+        .score-positive {
+            color: #10b981;
+        }
+
+        .score-negative {
+            color: #ef4444;
+        }
+
+        /* Turn Progression Chart */
+        .turn-chart {
+            height: 300px;
+            position: relative;
+            background: rgba(255,255,255,0.02);
+            border-radius: 12px;
+            padding: 20px;
+            margin-top: 20px;
+        }
+
+        .chart-grid {
+            position: absolute;
+            inset: 20px;
+            display: grid;
+            grid-template-rows: repeat(4, 1fr);
+        }
+
+        .chart-row {
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+            position: relative;
+        }
+
+        .chart-label {
+            position: absolute;
+            left: -40px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 12px;
+            color: #9ca3af;
+        }
+
+        .turn-bars {
+            display: flex;
+            gap: 10px;
+            height: 100%;
+            align-items: flex-end;
+            padding: 0 50px;
+        }
+
+        .turn-bar {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .bar-stack {
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            border-radius: 8px 8px 0 0;
+            overflow: hidden;
+        }
+
+        .bar-segment {
+            width: 100%;
+            transition: all 0.3s ease;
+        }
+
+        .bar-andy { background: #ef4444; }
+        .bar-bot2 { background: #10b981; }
+        .bar-bot3 { background: #3b82f6; }
+        .bar-bot4 { background: #f59e0b; }
+
+        .turn-label {
+            font-size: 12px;
+            color: #9ca3af;
+            margin-top: 10px;
+        }
+
+        /* Declaration Analysis */
+        .declaration-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+        }
+
+        .declaration-card {
+            background: rgba(255,255,255,0.02);
+            border: 1px solid rgba(255,255,255,0.05);
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .declaration-player {
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+
+        .declaration-visual {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 20px;
+            margin: 20px 0;
+        }
+
+        .declaration-number {
+            font-size: 36px;
+            font-weight: 700;
+            color: #3b82f6;
+        }
+
+        .vs-divider {
+            color: #9ca3af;
+            font-size: 20px;
+        }
+
+        .actual-number {
+            font-size: 36px;
+            font-weight: 700;
+        }
+
+        .declaration-result {
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 600;
+            display: inline-block;
+        }
+
+        .result-exact {
+            background: rgba(16, 185, 129, 0.2);
+            color: #10b981;
+        }
+
+        .result-over {
+            background: rgba(239, 68, 68, 0.2);
+            color: #ef4444;
+        }
+
+        .result-under {
+            background: rgba(239, 68, 68, 0.2);
+            color: #ef4444;
+        }
+
+        /* Game Flow Timeline */
+        .timeline-container {
+            padding: 30px 0;
+        }
+
+        .timeline {
+            position: relative;
+            padding: 0 50px;
+        }
+
+        .timeline-line {
+            position: absolute;
+            left: 50%;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background: rgba(255,255,255,0.1);
+            transform: translateX(-50%);
+        }
+
+        .timeline-item {
+            position: relative;
+            margin-bottom: 40px;
+            display: flex;
+            align-items: center;
+        }
+
+        .timeline-item:nth-child(even) {
+            flex-direction: row-reverse;
+        }
+
+        .timeline-content {
+            background: rgba(255,255,255,0.03);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 12px;
+            padding: 20px;
+            width: 45%;
+            transition: all 0.3s ease;
+        }
+
+        .timeline-content:hover {
+            transform: scale(1.02);
+            box-shadow: 0 5px 20px rgba(59, 130, 246, 0.2);
+        }
+
+        .timeline-dot {
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 20px;
+            height: 20px;
+            background: #3b82f6;
+            border-radius: 50%;
+            border: 4px solid #0a0e1a;
+            z-index: 1;
+        }
+
+        .timeline-turn {
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 5px;
+            color: #60a5fa;
+        }
+
+        .timeline-winner {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+
+        .timeline-details {
+            font-size: 14px;
+            color: #9ca3af;
+        }
+
+        /* Legend */
+        .legend {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            margin-top: 30px;
+            flex-wrap: wrap;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .legend-color {
+            width: 16px;
+            height: 16px;
+            border-radius: 4px;
+        }
+
+        .legend-label {
+            font-size: 14px;
+            color: #9ca3af;
+        }
+
+        /* Starter Badge */
+        .starter-badge {
+            display: inline-block;
+            background: #f59e0b;
+            color: white;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: 600;
+            margin-left: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="dashboard-container">
+        <!-- Header -->
+        <div class="dashboard-header">
+            <h1 class="header-main">Round 1 Complete Summary</h1>
+            <p class="header-sub">Room 23BEBA • 6 Turns • Bot 2 Victory</p>
+        </div>
+
+        <!-- Key Metrics -->
+        <div class="summary-grid">
+            <div class="metric-card">
+                <div class="metric-icon">🏆</div>
+                <div class="metric-value">Bot 2</div>
+                <div class="metric-label">Round Winner</div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-icon">🎯</div>
+                <div class="metric-value">50%</div>
+                <div class="metric-label">Declaration Accuracy</div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-icon">🎴</div>
+                <div class="metric-value">32</div>
+                <div class="metric-label">Total Pieces Played</div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-icon">📊</div>
+                <div class="metric-value">8</div>
+                <div class="metric-label">Total Piles</div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-icon">⚡</div>
+                <div class="metric-value">Bot 3</div>
+                <div class="metric-label">Most Piles Won</div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-icon">🎮</div>
+                <div class="metric-value">1 vs 3</div>
+                <div class="metric-label">Human vs AI</div>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-grid">
+            <!-- Score Breakdown -->
+            <div class="content-card">
+                <h2 class="card-title">
+                    <div class="title-icon">📊</div>
+                    Final Score Breakdown
+                </h2>
+                <div class="score-breakdown">
+                    <div class="player-score-row">
+                        <div class="player-info">
+                            <div class="player-avatar">A</div>
+                            <div class="player-details">
+                                <span class="player-name">Andy</span>
+                                <span class="player-type">Human Player</span>
+                            </div>
+                        </div>
+                        <div class="score-item">
+                            <div class="score-label">Declared</div>
+                            <div class="score-value">3</div>
+                        </div>
+                        <div class="score-item">
+                            <div class="score-label">Captured</div>
+                            <div class="score-value">0</div>
+                        </div>
+                        <div class="score-item">
+                            <div class="score-label">Diff</div>
+                            <div class="score-value score-negative">-3</div>
+                        </div>
+                        <div class="final-score score-negative">-3 pts</div>
+                    </div>
+
+                    <div class="player-score-row" style="background: rgba(16, 185, 129, 0.05); border-color: rgba(16, 185, 129, 0.2);">
+                        <div class="player-info">
+                            <div class="player-avatar" style="background: linear-gradient(135deg, #10b981, #34d399);">B2</div>
+                            <div class="player-details">
+                                <span class="player-name">Bot 2</span>
+                                <span class="player-type">AI v2</span>
+                            </div>
+                        </div>
+                        <div class="score-item">
+                            <div class="score-label">Declared</div>
+                            <div class="score-value">1</div>
+                        </div>
+                        <div class="score-item">
+                            <div class="score-label">Captured</div>
+                            <div class="score-value">1</div>
+                        </div>
+                        <div class="score-item">
+                            <div class="score-label">Diff</div>
+                            <div class="score-value score-positive">0</div>
+                        </div>
+                        <div class="final-score score-positive">+6 pts</div>
+                    </div>
+
+                    <div class="player-score-row">
+                        <div class="player-info">
+                            <div class="player-avatar">B3</div>
+                            <div class="player-details">
+                                <span class="player-name">Bot 3<span class="starter-badge">STARTER</span></span>
+                                <span class="player-type">AI v2</span>
+                            </div>
+                        </div>
+                        <div class="score-item">
+                            <div class="score-label">Declared</div>
+                            <div class="score-value">6</div>
+                        </div>
+                        <div class="score-item">
+                            <div class="score-label">Captured</div>
+                            <div class="score-value">7</div>
+                        </div>
+                        <div class="score-item">
+                            <div class="score-label">Diff</div>
+                            <div class="score-value score-negative">+1</div>
+                        </div>
+                        <div class="final-score score-negative">-1 pts</div>
+                    </div>
+
+                    <div class="player-score-row">
+                        <div class="player-info">
+                            <div class="player-avatar" style="background: linear-gradient(135deg, #f59e0b, #fbbf24);">B4</div>
+                            <div class="player-details">
+                                <span class="player-name">Bot 4</span>
+                                <span class="player-type">AI v2 (Forced 0)</span>
+                            </div>
+                        </div>
+                        <div class="score-item">
+                            <div class="score-label">Declared</div>
+                            <div class="score-value">0</div>
+                        </div>
+                        <div class="score-item">
+                            <div class="score-label">Captured</div>
+                            <div class="score-value">0</div>
+                        </div>
+                        <div class="score-item">
+                            <div class="score-label">Diff</div>
+                            <div class="score-value score-positive">0</div>
+                        </div>
+                        <div class="final-score score-positive">+3 pts</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Declaration Performance -->
+            <div class="content-card">
+                <h2 class="card-title">
+                    <div class="title-icon">🎯</div>
+                    Declaration vs Actual Performance
+                </h2>
+                <div class="declaration-grid">
+                    <div class="declaration-card">
+                        <div class="declaration-player">Andy</div>
+                        <div class="declaration-visual">
+                            <span class="declaration-number">3</span>
+                            <span class="vs-divider">→</span>
+                            <span class="actual-number score-negative">0</span>
+                        </div>
+                        <div class="declaration-result result-under">Missed by 3</div>
+                    </div>
+                    <div class="declaration-card" style="background: rgba(16, 185, 129, 0.05);">
+                        <div class="declaration-player">Bot 2</div>
+                        <div class="declaration-visual">
+                            <span class="declaration-number">1</span>
+                            <span class="vs-divider">→</span>
+                            <span class="actual-number score-positive">1</span>
+                        </div>
+                        <div class="declaration-result result-exact">Perfect Match!</div>
+                    </div>
+                    <div class="declaration-card">
+                        <div class="declaration-player">Bot 3</div>
+                        <div class="declaration-visual">
+                            <span class="declaration-number">6</span>
+                            <span class="vs-divider">→</span>
+                            <span class="actual-number" style="color: #f59e0b;">7</span>
+                        </div>
+                        <div class="declaration-result result-over">Exceeded by 1</div>
+                    </div>
+                    <div class="declaration-card" style="background: rgba(245, 158, 11, 0.05);">
+                        <div class="declaration-player">Bot 4</div>
+                        <div class="declaration-visual">
+                            <span class="declaration-number">0</span>
+                            <span class="vs-divider">→</span>
+                            <span class="actual-number score-positive">0</span>
+                        </div>
+                        <div class="declaration-result result-exact">Forced Zero Match</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Turn Progression -->
+        <div class="content-card">
+            <h2 class="card-title">
+                <div class="title-icon">📈</div>
+                Turn-by-Turn Pile Progression
+            </h2>
+            <div class="turn-chart">
+                <div class="turn-bars">
+                    <div class="turn-bar">
+                        <div class="bar-stack" style="height: 37.5%;">
+                            <div class="bar-segment bar-bot3" style="height: 100%;"></div>
+                        </div>
+                        <div class="turn-label">Turn 1</div>
+                    </div>
+                    <div class="turn-bar">
+                        <div class="bar-stack" style="height: 50%;">
+                            <div class="bar-segment bar-bot3" style="height: 100%;"></div>
+                        </div>
+                        <div class="turn-label">Turn 2</div>
+                    </div>
+                    <div class="turn-bar">
+                        <div class="bar-stack" style="height: 62.5%;">
+                            <div class="bar-segment bar-bot3" style="height: 80%;"></div>
+                            <div class="bar-segment bar-bot2" style="height: 20%;"></div>
+                        </div>
+                        <div class="turn-label">Turn 3</div>
+                    </div>
+                    <div class="turn-bar">
+                        <div class="bar-stack" style="height: 75%;">
+                            <div class="bar-segment bar-bot3" style="height: 83.3%;"></div>
+                            <div class="bar-segment bar-bot2" style="height: 16.7%;"></div>
+                        </div>
+                        <div class="turn-label">Turn 4</div>
+                    </div>
+                    <div class="turn-bar">
+                        <div class="bar-stack" style="height: 87.5%;">
+                            <div class="bar-segment bar-bot3" style="height: 85.7%;"></div>
+                            <div class="bar-segment bar-bot2" style="height: 14.3%;"></div>
+                        </div>
+                        <div class="turn-label">Turn 5</div>
+                    </div>
+                    <div class="turn-bar">
+                        <div class="bar-stack" style="height: 100%;">
+                            <div class="bar-segment bar-bot3" style="height: 87.5%;"></div>
+                            <div class="bar-segment bar-bot2" style="height: 12.5%;"></div>
+                        </div>
+                        <div class="turn-label">Turn 6</div>
+                    </div>
+                </div>
+            </div>
+            <div class="legend">
+                <div class="legend-item">
+                    <div class="legend-color bar-andy"></div>
+                    <span class="legend-label">Andy</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color bar-bot2"></div>
+                    <span class="legend-label">Bot 2</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color bar-bot3"></div>
+                    <span class="legend-label">Bot 3</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color bar-bot4"></div>
+                    <span class="legend-label">Bot 4</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Game Flow Timeline -->
+        <div class="content-card">
+            <h2 class="card-title">
+                <div class="title-icon">⏱️</div>
+                Key Moments Timeline
+            </h2>
+            <div class="timeline-container">
+                <div class="timeline">
+                    <div class="timeline-line"></div>
+                    
+                    <div class="timeline-item">
+                        <div class="timeline-content">
+                            <div class="timeline-turn">Opening Move</div>
+                            <div class="timeline-winner">Bot 3 Sets the Pace</div>
+                            <div class="timeline-details">All players open with triple plays. Bot 3 wins with lowest value (18 pts) due to first position advantage.</div>
+                        </div>
+                        <div class="timeline-dot"></div>
+                    </div>
+
+                    <div class="timeline-item">
+                        <div class="timeline-content">
+                            <div class="timeline-turn">Turn 2</div>
+                            <div class="timeline-winner">Bot 3 Maintains Lead</div>
+                            <div class="timeline-details">Bot 3's ADVISOR(11) beats all opponents' lower value plays.</div>
+                        </div>
+                        <div class="timeline-dot"></div>
+                    </div>
+
+                    <div class="timeline-item">
+                        <div class="timeline-content">
+                            <div class="timeline-turn">Turn 3</div>
+                            <div class="timeline-winner">Bot 2 Breaks Through</div>
+                            <div class="timeline-details">Bot 2 finally wins a pile with ADVISOR(11), securing their declared target.</div>
+                        </div>
+                        <div class="timeline-dot" style="background: #10b981;"></div>
+                    </div>
+
+                    <div class="timeline-item">
+                        <div class="timeline-content">
+                            <div class="timeline-turn">Turn 4-6</div>
+                            <div class="timeline-winner">Bot 3 Dominates</div>
+                            <div class="timeline-details">Bot 3 uses GENERAL(14) and high cards to sweep remaining piles, exceeding declaration by 1.</div>
+                        </div>
+                        <div class="timeline-dot"></div>
+                    </div>
+
+                    <div class="timeline-item">
+                        <div class="timeline-content">
+                            <div class="timeline-turn">Final Result</div>
+                            <div class="timeline-winner">Bot 2 Wins Round</div>
+                            <div class="timeline-details">Perfect declaration match earns Bot 2 the victory with +6 points despite winning only 1 pile.</div>
+                        </div>
+                        <div class="timeline-dot" style="background: #10b981; width: 24px; height: 24px;"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Animate metric cards on load
+        window.addEventListener('load', function() {
+            const cards = document.querySelectorAll('.metric-card');
+            cards.forEach((card, index) => {
+                card.style.opacity = '0';
+                card.style.transform = 'translateY(20px)';
+                setTimeout(() => {
+                    card.style.transition = 'all 0.5s ease';
+                    card.style.opacity = '1';
+                    card.style.transform = 'translateY(0)';
+                }, index * 100);
+            });
+
+            // Animate bar charts
+            const bars = document.querySelectorAll('.bar-stack');
+            bars.forEach((bar, index) => {
+                const height = bar.style.height;
+                bar.style.height = '0';
+                setTimeout(() => {
+                    bar.style.transition = 'height 0.5s ease';
+                    bar.style.height = height;
+                }, 1000 + (index * 100));
+            });
+        });
+    </script>
+</body>
+</html>

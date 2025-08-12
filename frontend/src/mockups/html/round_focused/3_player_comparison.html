@@ -1,0 +1,944 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Liap Tui - Player Comparison View</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(to bottom, #0f0f23, #1a1a2e);
+            color: #e0e0e0;
+            line-height: 1.6;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        /* Header */
+        .comparison-header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .header-title {
+            font-size: 32px;
+            font-weight: 700;
+            margin-bottom: 10px;
+            background: linear-gradient(to right, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .header-subtitle {
+            color: #999;
+            font-size: 16px;
+        }
+
+        /* Player Grid */
+        .players-comparison-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 20px;
+            margin-bottom: 40px;
+        }
+
+        @media (max-width: 1200px) {
+            .players-comparison-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .players-comparison-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .player-column {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 16px;
+            overflow: hidden;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .player-column:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            border-color: rgba(102, 126, 234, 0.5);
+        }
+
+        /* Player Header */
+        .player-header {
+            padding: 20px;
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.1), rgba(118, 75, 162, 0.1));
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .player-name {
+            font-size: 20px;
+            font-weight: 600;
+            margin-bottom: 5px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .player-type-badge {
+            font-size: 11px;
+            padding: 3px 8px;
+            border-radius: 12px;
+            font-weight: 500;
+        }
+
+        .badge-human {
+            background-color: #10b981;
+            color: white;
+        }
+
+        .badge-ai {
+            background-color: #8b5cf6;
+            color: white;
+        }
+
+        .starter-indicator {
+            background-color: #f59e0b;
+            color: white;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: 600;
+        }
+
+        /* Quick Stats */
+        .quick-stats {
+            padding: 20px;
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+        }
+
+        .stat-item {
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .stat-label {
+            font-size: 12px;
+            color: #999;
+            text-transform: uppercase;
+        }
+
+        /* Declaration Info */
+        .declaration-info {
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.02);
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .declaration-value {
+            font-size: 48px;
+            font-weight: bold;
+            text-align: center;
+            margin-bottom: 10px;
+            color: #667eea;
+        }
+
+        .declaration-details {
+            text-align: center;
+            font-size: 14px;
+            color: #999;
+        }
+
+        .forced-zero {
+            color: #ef4444;
+        }
+
+        /* Turn History */
+        .turn-history {
+            padding: 20px;
+        }
+
+        .history-title {
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 15px;
+            color: #ccc;
+            text-transform: uppercase;
+        }
+
+        .turn-item {
+            padding: 12px;
+            margin-bottom: 10px;
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 8px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            transition: all 0.2s;
+        }
+
+        .turn-item:hover {
+            background: rgba(255, 255, 255, 0.05);
+            border-color: rgba(255, 255, 255, 0.1);
+        }
+
+        .turn-item.winner {
+            background: rgba(102, 126, 234, 0.1);
+            border-color: rgba(102, 126, 234, 0.3);
+        }
+
+        .turn-number {
+            font-size: 12px;
+            color: #999;
+            margin-bottom: 5px;
+        }
+
+        .pieces-played {
+            display: flex;
+            gap: 5px;
+            flex-wrap: wrap;
+            margin-bottom: 8px;
+        }
+
+        .piece-badge {
+            font-size: 11px;
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-weight: 600;
+        }
+
+        .piece-red {
+            background-color: rgba(239, 68, 68, 0.2);
+            color: #ef4444;
+            border: 1px solid #ef4444;
+        }
+
+        .piece-black {
+            background-color: rgba(107, 114, 128, 0.2);
+            color: #9ca3af;
+            border: 1px solid #6b7280;
+        }
+
+        .turn-result {
+            display: flex;
+            justify-content: space-between;
+            font-size: 12px;
+            color: #999;
+        }
+
+        .turn-win {
+            color: #10b981;
+            font-weight: 600;
+        }
+
+        /* Final Results */
+        .final-results {
+            padding: 20px;
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.05), rgba(118, 75, 162, 0.05));
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .result-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            font-size: 14px;
+        }
+
+        .result-label {
+            color: #999;
+        }
+
+        .result-value {
+            font-weight: 600;
+        }
+
+        .score-display {
+            font-size: 28px;
+            font-weight: bold;
+            text-align: center;
+            margin-top: 15px;
+        }
+
+        .score-positive {
+            color: #10b981;
+        }
+
+        .score-negative {
+            color: #ef4444;
+        }
+
+        /* Performance Chart */
+        .performance-section {
+            margin-top: 40px;
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 16px;
+            padding: 30px;
+        }
+
+        .section-title {
+            font-size: 24px;
+            font-weight: 600;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .performance-chart {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .performance-bar {
+            text-align: center;
+        }
+
+        .bar-container {
+            height: 200px;
+            position: relative;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 8px;
+            overflow: hidden;
+            margin-bottom: 10px;
+        }
+
+        .bar-fill {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: linear-gradient(to top, #667eea, #764ba2);
+            transition: height 0.5s ease;
+            display: flex;
+            align-items: flex-start;
+            justify-content: center;
+            padding-top: 10px;
+            color: white;
+            font-weight: bold;
+        }
+
+        .bar-label {
+            font-size: 14px;
+            color: #999;
+        }
+
+        /* Play Pattern Analysis */
+        .patterns-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+        }
+
+        .pattern-card {
+            background: rgba(255, 255, 255, 0.03);
+            padding: 20px;
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .pattern-title {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 15px;
+            color: #e0e0e0;
+        }
+
+        .pattern-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+        }
+
+        .pattern-player {
+            text-align: center;
+            padding: 10px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 8px;
+        }
+
+        .pattern-name {
+            font-size: 12px;
+            color: #999;
+            margin-bottom: 5px;
+        }
+
+        .pattern-value {
+            font-size: 18px;
+            font-weight: bold;
+            color: #667eea;
+        }
+
+        /* Summary Cards */
+        .summary-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-top: 30px;
+        }
+
+        .summary-card {
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.1), rgba(118, 75, 162, 0.1));
+            padding: 20px;
+            border-radius: 12px;
+            text-align: center;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .summary-icon {
+            font-size: 36px;
+            margin-bottom: 10px;
+        }
+
+        .summary-value {
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .summary-label {
+            font-size: 14px;
+            color: #999;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="comparison-header">
+            <h1 class="header-title">Player Performance Comparison</h1>
+            <div class="header-subtitle">Room 23BEBA • Round 1 • Detailed Analysis</div>
+        </div>
+
+        <!-- Player Comparison Grid -->
+        <div class="players-comparison-grid">
+            <!-- Andy (Human) -->
+            <div class="player-column">
+                <div class="player-header">
+                    <div class="player-name">
+                        Andy
+                        <span class="player-type-badge badge-human">Human</span>
+                    </div>
+                </div>
+                
+                <div class="quick-stats">
+                    <div class="stat-item">
+                        <div class="stat-value">0</div>
+                        <div class="stat-label">Piles Won</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value">0</div>
+                        <div class="stat-label">Pieces</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value">8</div>
+                        <div class="stat-label">Cards Played</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value">34</div>
+                        <div class="stat-label">Total Points</div>
+                    </div>
+                </div>
+
+                <div class="declaration-info">
+                    <div class="declaration-value">3</div>
+                    <div class="declaration-details">
+                        Declared Piles<br>
+                        Position 1 • Room: 8
+                    </div>
+                </div>
+
+                <div class="turn-history">
+                    <div class="history-title">Turn History</div>
+                    <div class="turn-item">
+                        <div class="turn-number">Turn 1</div>
+                        <div class="pieces-played">
+                            <span class="piece-badge piece-red">HORSE(6)</span>
+                            <span class="piece-badge piece-red">CANNON(4)</span>
+                            <span class="piece-badge piece-black">HORSE(5)</span>
+                        </div>
+                        <div class="turn-result">
+                            <span>Triple Play</span>
+                            <span>Lost</span>
+                        </div>
+                    </div>
+                    <div class="turn-item">
+                        <div class="turn-number">Turn 2</div>
+                        <div class="pieces-played">
+                            <span class="piece-badge piece-black">CANNON(3)</span>
+                        </div>
+                        <div class="turn-result">
+                            <span>Single Play</span>
+                            <span>Lost</span>
+                        </div>
+                    </div>
+                    <div class="turn-item">
+                        <div class="turn-number">Turn 3</div>
+                        <div class="pieces-played">
+                            <span class="piece-badge piece-red">SOLDIER(2)</span>
+                        </div>
+                        <div class="turn-result">
+                            <span>Single Play</span>
+                            <span>Lost</span>
+                        </div>
+                    </div>
+                    <div class="turn-item">
+                        <div class="turn-number">Turn 4</div>
+                        <div class="pieces-played">
+                            <span class="piece-badge piece-red">ADVISOR(12)</span>
+                        </div>
+                        <div class="turn-result">
+                            <span>Single Play</span>
+                            <span>Lost</span>
+                        </div>
+                    </div>
+                    <div class="turn-item">
+                        <div class="turn-number">Turn 5-6</div>
+                        <div class="pieces-played">
+                            <span class="piece-badge piece-black">SOLDIER(1)</span>
+                            <span class="piece-badge piece-black">SOLDIER(1)</span>
+                        </div>
+                        <div class="turn-result">
+                            <span>Singles</span>
+                            <span>Lost All</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="final-results">
+                    <div class="result-item">
+                        <span class="result-label">Declared</span>
+                        <span class="result-value">3 piles</span>
+                    </div>
+                    <div class="result-item">
+                        <span class="result-label">Captured</span>
+                        <span class="result-value">0 piles</span>
+                    </div>
+                    <div class="result-item">
+                        <span class="result-label">Difference</span>
+                        <span class="result-value score-negative">-3</span>
+                    </div>
+                    <div class="score-display score-negative">-3 pts</div>
+                </div>
+            </div>
+
+            <!-- Bot 2 (AI) -->
+            <div class="player-column">
+                <div class="player-header">
+                    <div class="player-name">
+                        Bot 2
+                        <span class="player-type-badge badge-ai">AI v2</span>
+                    </div>
+                </div>
+                
+                <div class="quick-stats">
+                    <div class="stat-item">
+                        <div class="stat-value">1</div>
+                        <div class="stat-label">Piles Won</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value">1</div>
+                        <div class="stat-label">Pieces</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value">8</div>
+                        <div class="stat-label">Cards Played</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value">46</div>
+                        <div class="stat-label">Total Points</div>
+                    </div>
+                </div>
+
+                <div class="declaration-info">
+                    <div class="declaration-value">1</div>
+                    <div class="declaration-details">
+                        Declared Piles<br>
+                        Position 2 • Room: 5
+                    </div>
+                </div>
+
+                <div class="turn-history">
+                    <div class="history-title">Turn History</div>
+                    <div class="turn-item">
+                        <div class="turn-number">Turn 1</div>
+                        <div class="pieces-played">
+                            <span class="piece-badge piece-black">GENERAL(13)</span>
+                            <span class="piece-badge piece-red">ELEPHANT(10)</span>
+                            <span class="piece-badge piece-black">CHARIOT(7)</span>
+                        </div>
+                        <div class="turn-result">
+                            <span>Triple Play</span>
+                            <span>Lost</span>
+                        </div>
+                    </div>
+                    <div class="turn-item">
+                        <div class="turn-number">Turn 2</div>
+                        <div class="pieces-played">
+                            <span class="piece-badge piece-black">ELEPHANT(9)</span>
+                        </div>
+                        <div class="turn-result">
+                            <span>Single Play</span>
+                            <span>Lost</span>
+                        </div>
+                    </div>
+                    <div class="turn-item winner">
+                        <div class="turn-number">Turn 3</div>
+                        <div class="pieces-played">
+                            <span class="piece-badge piece-black">ADVISOR(11)</span>
+                        </div>
+                        <div class="turn-result">
+                            <span>Single Play</span>
+                            <span class="turn-win">WON (1 piece)</span>
+                        </div>
+                    </div>
+                    <div class="turn-item">
+                        <div class="turn-number">Turn 4-6</div>
+                        <div class="pieces-played">
+                            <span class="piece-badge piece-red">SOLDIER(2)</span>
+                            <span class="piece-badge piece-red">SOLDIER(2)</span>
+                            <span class="piece-badge piece-red">SOLDIER(2)</span>
+                        </div>
+                        <div class="turn-result">
+                            <span>Singles</span>
+                            <span>Lost All</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="final-results">
+                    <div class="result-item">
+                        <span class="result-label">Declared</span>
+                        <span class="result-value">1 pile</span>
+                    </div>
+                    <div class="result-item">
+                        <span class="result-label">Captured</span>
+                        <span class="result-value">1 pile</span>
+                    </div>
+                    <div class="result-item">
+                        <span class="result-label">Difference</span>
+                        <span class="result-value score-positive">0</span>
+                    </div>
+                    <div class="score-display score-positive">+6 pts</div>
+                </div>
+            </div>
+
+            <!-- Bot 3 (AI - Starter) -->
+            <div class="player-column">
+                <div class="player-header">
+                    <div class="player-name">
+                        Bot 3
+                        <span class="player-type-badge badge-ai">AI v2</span>
+                        <span class="starter-indicator">STARTER</span>
+                    </div>
+                </div>
+                
+                <div class="quick-stats">
+                    <div class="stat-item">
+                        <div class="stat-value">5</div>
+                        <div class="stat-label">Piles Won</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value">7</div>
+                        <div class="stat-label">Pieces</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value">8</div>
+                        <div class="stat-label">Cards Played</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value">69</div>
+                        <div class="stat-label">Total Points</div>
+                    </div>
+                </div>
+
+                <div class="declaration-info">
+                    <div class="declaration-value">6</div>
+                    <div class="declaration-details">
+                        Declared Piles<br>
+                        Position 3 • Room: 4
+                    </div>
+                </div>
+
+                <div class="turn-history">
+                    <div class="history-title">Turn History</div>
+                    <div class="turn-item winner">
+                        <div class="turn-number">Turn 1</div>
+                        <div class="pieces-played">
+                            <span class="piece-badge piece-red">CHARIOT(8)</span>
+                            <span class="piece-badge piece-red">CANNON(4)</span>
+                            <span class="piece-badge piece-red">HORSE(6)</span>
+                        </div>
+                        <div class="turn-result">
+                            <span>Triple Play</span>
+                            <span class="turn-win">WON (3 pieces)</span>
+                        </div>
+                    </div>
+                    <div class="turn-item winner">
+                        <div class="turn-number">Turn 2</div>
+                        <div class="pieces-played">
+                            <span class="piece-badge piece-black">ADVISOR(11)</span>
+                        </div>
+                        <div class="turn-result">
+                            <span>Single Play</span>
+                            <span class="turn-win">WON (1 piece)</span>
+                        </div>
+                    </div>
+                    <div class="turn-item">
+                        <div class="turn-number">Turn 3</div>
+                        <div class="pieces-played">
+                            <span class="piece-badge piece-black">ELEPHANT(9)</span>
+                        </div>
+                        <div class="turn-result">
+                            <span>Single Play</span>
+                            <span>Lost</span>
+                        </div>
+                    </div>
+                    <div class="turn-item winner">
+                        <div class="turn-number">Turn 4-6</div>
+                        <div class="pieces-played">
+                            <span class="piece-badge piece-red">GENERAL(14)</span>
+                            <span class="piece-badge piece-black">HORSE(5)</span>
+                            <span class="piece-badge piece-red">ADVISOR(12)</span>
+                        </div>
+                        <div class="turn-result">
+                            <span>Singles</span>
+                            <span class="turn-win">WON ALL</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="final-results">
+                    <div class="result-item">
+                        <span class="result-label">Declared</span>
+                        <span class="result-value">6 piles</span>
+                    </div>
+                    <div class="result-item">
+                        <span class="result-label">Captured</span>
+                        <span class="result-value">7 piles</span>
+                    </div>
+                    <div class="result-item">
+                        <span class="result-label">Difference</span>
+                        <span class="result-value score-negative">+1</span>
+                    </div>
+                    <div class="score-display score-negative">-1 pts</div>
+                </div>
+            </div>
+
+            <!-- Bot 4 (AI) -->
+            <div class="player-column">
+                <div class="player-header">
+                    <div class="player-name">
+                        Bot 4
+                        <span class="player-type-badge badge-ai">AI v2</span>
+                    </div>
+                </div>
+                
+                <div class="quick-stats">
+                    <div class="stat-item">
+                        <div class="stat-value">0</div>
+                        <div class="stat-label">Piles Won</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value">0</div>
+                        <div class="stat-label">Pieces</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value">8</div>
+                        <div class="stat-label">Cards Played</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value">33</div>
+                        <div class="stat-label">Total Points</div>
+                    </div>
+                </div>
+
+                <div class="declaration-info">
+                    <div class="declaration-value">0</div>
+                    <div class="declaration-details forced-zero">
+                        Forced Zero<br>
+                        Position 4 • No Room
+                    </div>
+                </div>
+
+                <div class="turn-history">
+                    <div class="history-title">Turn History</div>
+                    <div class="turn-item">
+                        <div class="turn-number">Turn 1</div>
+                        <div class="pieces-played">
+                            <span class="piece-badge piece-red">ELEPHANT(10)</span>
+                            <span class="piece-badge piece-red">CHARIOT(8)</span>
+                            <span class="piece-badge piece-black">CHARIOT(7)</span>
+                        </div>
+                        <div class="turn-result">
+                            <span>Triple Play</span>
+                            <span>Lost</span>
+                        </div>
+                    </div>
+                    <div class="turn-item">
+                        <div class="turn-number">Turn 2-6</div>
+                        <div class="pieces-played">
+                            <span class="piece-badge piece-black">CANNON(3)</span>
+                            <span class="piece-badge piece-red">SOLDIER(2)</span>
+                            <span class="piece-badge piece-black">SOLDIER(1)</span>
+                            <span class="piece-badge piece-black">SOLDIER(1)</span>
+                            <span class="piece-badge piece-black">SOLDIER(1)</span>
+                        </div>
+                        <div class="turn-result">
+                            <span>All Singles</span>
+                            <span>Lost All</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="final-results">
+                    <div class="result-item">
+                        <span class="result-label">Declared</span>
+                        <span class="result-value">0 piles</span>
+                    </div>
+                    <div class="result-item">
+                        <span class="result-label">Captured</span>
+                        <span class="result-value">0 piles</span>
+                    </div>
+                    <div class="result-item">
+                        <span class="result-label">Difference</span>
+                        <span class="result-value score-positive">0</span>
+                    </div>
+                    <div class="score-display score-positive">+3 pts</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Performance Analysis -->
+        <div class="performance-section">
+            <h2 class="section-title">Performance Metrics</h2>
+            
+            <div class="performance-chart">
+                <div class="performance-bar">
+                    <div class="bar-container">
+                        <div class="bar-fill" style="height: 0%;">0</div>
+                    </div>
+                    <div class="bar-label">Andy<br>Piles Won</div>
+                </div>
+                <div class="performance-bar">
+                    <div class="bar-container">
+                        <div class="bar-fill" style="height: 14%;">1</div>
+                    </div>
+                    <div class="bar-label">Bot 2<br>Piles Won</div>
+                </div>
+                <div class="performance-bar">
+                    <div class="bar-container">
+                        <div class="bar-fill" style="height: 100%;">7</div>
+                    </div>
+                    <div class="bar-label">Bot 3<br>Piles Won</div>
+                </div>
+                <div class="performance-bar">
+                    <div class="bar-container">
+                        <div class="bar-fill" style="height: 0%;">0</div>
+                    </div>
+                    <div class="bar-label">Bot 4<br>Piles Won</div>
+                </div>
+            </div>
+
+            <div class="patterns-grid">
+                <div class="pattern-card">
+                    <h3 class="pattern-title">Declaration Accuracy</h3>
+                    <div class="pattern-grid">
+                        <div class="pattern-player">
+                            <div class="pattern-name">Andy</div>
+                            <div class="pattern-value score-negative">0%</div>
+                        </div>
+                        <div class="pattern-player">
+                            <div class="pattern-name">Bot 2</div>
+                            <div class="pattern-value score-positive">100%</div>
+                        </div>
+                        <div class="pattern-player">
+                            <div class="pattern-name">Bot 3</div>
+                            <div class="pattern-value">86%</div>
+                        </div>
+                        <div class="pattern-player">
+                            <div class="pattern-name">Bot 4</div>
+                            <div class="pattern-value score-positive">100%</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="pattern-card">
+                    <h3 class="pattern-title">Average Points Per Play</h3>
+                    <div class="pattern-grid">
+                        <div class="pattern-player">
+                            <div class="pattern-name">Andy</div>
+                            <div class="pattern-value">4.3</div>
+                        </div>
+                        <div class="pattern-player">
+                            <div class="pattern-name">Bot 2</div>
+                            <div class="pattern-value">5.8</div>
+                        </div>
+                        <div class="pattern-player">
+                            <div class="pattern-name">Bot 3</div>
+                            <div class="pattern-value">8.6</div>
+                        </div>
+                        <div class="pattern-player">
+                            <div class="pattern-name">Bot 4</div>
+                            <div class="pattern-value">4.1</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="summary-cards">
+                <div class="summary-card">
+                    <div class="summary-icon">🏆</div>
+                    <div class="summary-value">Bot 2</div>
+                    <div class="summary-label">Round Winner</div>
+                </div>
+                <div class="summary-card">
+                    <div class="summary-icon">🎯</div>
+                    <div class="summary-value">2/4</div>
+                    <div class="summary-label">Exact Matches</div>
+                </div>
+                <div class="summary-card">
+                    <div class="summary-icon">📊</div>
+                    <div class="summary-value">8</div>
+                    <div class="summary-label">Total Piles</div>
+                </div>
+                <div class="summary-card">
+                    <div class="summary-icon">🎴</div>
+                    <div class="summary-value">32</div>
+                    <div class="summary-label">Cards Played</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Animate performance bars on load
+        window.addEventListener('load', function() {
+            const bars = document.querySelectorAll('.bar-fill');
+            bars.forEach((bar, index) => {
+                const height = bar.style.height;
+                bar.style.height = '0%';
+                setTimeout(() => {
+                    bar.style.height = height;
+                }, 100 + (index * 100));
+            });
+        });
+    </script>
+</body>
+</html>

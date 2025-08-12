@@ -185,11 +185,31 @@ app.include_router(
 app.include_router(debug_router)  # Mounts the debug router for event store access.
 app.include_router(maintenance_router)  # Mounts the maintenance router for log management.
 
-# ✅ Serve static files with cache control headers.
-# This mounts the specified directory to the root path "/", meaning files like index.html, bundle.js, etc.,
-# will be served directly from this directory. `html=True` ensures that `index.html` is served for root.
-# Using custom NoCacheStaticFiles to prevent caching issues with JavaScript files
-app.mount("/", NoCacheStaticFiles(directory=STATIC_DIR, html=True), name="static")
+# ✅ Serve static files ONLY for actual static assets (js, css, images, etc)
+# We'll handle the HTML serving through explicit routes to support React Router
+@app.get("/bundle.js")
+async def serve_bundle():
+    """Serve the JavaScript bundle with no-cache headers"""
+    response = FileResponse(os.path.join(STATIC_DIR, "bundle.js"))
+    response.headers["Cache-Control"] = "no-cache, no-store, must-revalidate"
+    response.headers["Pragma"] = "no-cache"
+    response.headers["Expires"] = "0"
+    return response
+
+@app.get("/bundle.css")
+async def serve_css():
+    """Serve the CSS bundle if it exists"""
+    css_path = os.path.join(STATIC_DIR, "bundle.css")
+    if os.path.exists(css_path):
+        response = FileResponse(css_path)
+        response.headers["Cache-Control"] = "no-cache, no-store, must-revalidate"
+        response.headers["Pragma"] = "no-cache"
+        response.headers["Expires"] = "0"
+        return response
+    raise HTTPException(status_code=404, detail="CSS not found")
+
+# Mount other static files (images, etc) under /static prefix to avoid conflicts
+app.mount("/static", StaticFiles(directory=STATIC_DIR), name="static")
 
 
 # ✅ Optional fallback: Define a GET endpoint for the root path.
@@ -251,3 +271,24 @@ async def shutdown_event():
     if hasattr(app.state, "maintenance_scheduler"):
         app.state.maintenance_scheduler.stop()
         print("✅ Log maintenance scheduler stopped")
+
+
+# Catch-all route for React Router - MUST be after all other routes
+# This needs to be the very last route defined
+@app.get("/{full_path:path}")
+async def catch_all(full_path: str):
+    """
+    Catch-all route to support client-side routing in React.
+    
+    This serves index.html for any route that doesn't match an API endpoint or static file,
+    allowing React Router to handle the routing on the client side.
+    
+    Args:
+        full_path: The requested path
+        
+    Returns:
+        FileResponse: The index.html file for client-side routing
+    """
+    # For all paths that aren't API routes or WebSocket, serve the React app
+    # This allows React Router to handle client-side routing
+    return FileResponse(os.path.join(STATIC_DIR, INDEX_FILE))
