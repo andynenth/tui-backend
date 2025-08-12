@@ -90,11 +90,16 @@ class OptimizedEventStore:
         logger.debug(
             f"🔍 DEBUG: OptimizedEventStore.store_event called - room: {room_id}, type: {event_type}"
         )
+        logger.debug(f"🔍 DEBUG: OptimizedEventStore payload keys: {list(payload.keys()) if payload else 'None'}")
+        logger.debug(f"🔍 DEBUG: OptimizedEventStore compression enabled: {self.compressor is not None}")
+        logger.debug(f"🔍 DEBUG: OptimizedEventStore buffer enabled: {self.buffer is not None}")
         # Step 1: Compression
         if self.compressor:
             # Check if event should be compressed
-            if not self.compressor.should_store_event(event_type):
-                logger.debug(f"Filtering low-importance event: {event_type}")
+            should_store = self.compressor.should_store_event(event_type)
+            logger.debug(f"🔍 DEBUG: Compressor should_store_event({event_type}) = {should_store}")
+            if not should_store:
+                logger.debug(f"🔍 DEBUG: Filtering low-importance event: {event_type}")
                 return
 
             # Try to compress the event
@@ -105,12 +110,14 @@ class OptimizedEventStore:
 
             if compressed:
                 logger.debug(
-                    f"🔍 DEBUG: Event compressed to type: {compressed.event_type}"
+                    f"🔍 DEBUG: Event compressed from {event_type} to type: {compressed.event_type}"
                 )
+                logger.debug(f"🔍 DEBUG: Compressed payload keys: {list(compressed.payload.keys()) if compressed.payload else 'None'}")
                 # Event was compressed, route it through buffer
                 await self._route_compressed_event(room_id, compressed, player_id)
                 return
             # If None returned, event is being accumulated for later compression
+            logger.debug(f"🔍 DEBUG: Event {event_type} being accumulated for compression")
             return
 
         # Step 2: Buffer (for non-compressed events)

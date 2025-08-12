@@ -93,14 +93,21 @@ class EventCompressor:
 
         # Compression mapping
         compression_type = EventMapping.COMPRESS_EVENTS.get(event_type)
+        logger.debug(
+            f"🔍 DEBUG: Compression type for {event_type}: {compression_type}"
+        )
 
         if compression_type == "accumulate_declarations":
+            logger.debug(f"🔍 DEBUG: Accumulating declaration event")
             return self._accumulate_declaration(room_id, event)
         elif compression_type == "accumulate_turn":
+            logger.debug(f"🔍 DEBUG: Accumulating turn event")
             return self._accumulate_turn(room_id, event)
         elif compression_type == "compress_turn":
+            logger.debug(f"🔍 DEBUG: Compressing turn events")
             return self._compress_turn(room_id, event)
         elif compression_type == "filter_redundant":
+            logger.debug(f"🔍 DEBUG: Filtering redundant event")
             return self._filter_redundant(room_id, event)
 
         # Unknown event type - log and skip
@@ -127,11 +134,17 @@ class EventCompressor:
         """Accumulate declaration events until all 4 are received."""
         key = f"{room_id}:declarations"
         self._declaration_accumulator[key].append(event)
+        logger.debug(
+            f"🔍 DEBUG: Declaration accumulator for {key} now has {len(self._declaration_accumulator[key])} events"
+        )
 
         # Check if we have all 4 declarations
         if len(self._declaration_accumulator[key]) >= 4:
             declarations = self._declaration_accumulator.pop(key)
             compressed = CompressedEvent.from_declaration_events(declarations)
+            logger.debug(
+                f"🔍 DEBUG: Created compressed DECLARATIONS_COMPLETED event from {len(declarations)} events"
+            )
 
             self.compression_stats["events_processed"] += len(declarations)
             self.compression_stats["events_compressed"] += 1
@@ -167,6 +180,9 @@ class EventCompressor:
         )
 
         key = f"{room_id}:turn_{turn_number}"
+        logger.debug(
+            f"🔍 DEBUG: Compressing turn {key} - accumulator has {len(self._turn_accumulator.get(key, []))} events"
+        )
 
         # Add the completion event
         self._turn_accumulator[key].append(event)
@@ -176,6 +192,9 @@ class EventCompressor:
 
         if turn_events:
             compressed = CompressedEvent.from_turn_events(turn_events)
+            logger.debug(
+                f"🔍 DEBUG: Created compressed TURN_COMPLETED event from {len(turn_events)} events"
+            )
 
             self.compression_stats["events_processed"] += len(turn_events)
             self.compression_stats["events_compressed"] += 1

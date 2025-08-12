@@ -52,6 +52,9 @@ class EventStoreV2:
         self, room_id: str, players: List[Dict[str, Any]]
     ) -> None:
         """Store game start in summary table."""
+        logger.debug(
+            f"🔍 DEBUG: EventStoreV2.store_game_started - room: {room_id}, players: {len(players) if players else 0}"
+        )
         conn = sqlite3.connect(self.db_path)
         try:
             # Create game summary entry
@@ -80,7 +83,7 @@ class EventStoreV2:
             )
 
             conn.commit()
-            logger.info(f"Game started for room {room_id}")
+            logger.info(f"🔍 DEBUG: Game started stored in v2 for room {room_id}")
         finally:
             conn.close()
 
@@ -172,6 +175,9 @@ class EventStoreV2:
         self, room_id: str, final_scores: Dict[str, int], winner: str
     ) -> None:
         """Store game completion."""
+        logger.debug(
+            f"🔍 DEBUG: EventStoreV2.store_game_completed - room: {room_id}, winner: {winner}"
+        )
         conn = sqlite3.connect(self.db_path)
         try:
             # Get game start time
@@ -308,6 +314,11 @@ class EventStoreV2:
             event_type: Event type
             payload: Event data
         """
+        logger.debug(
+            f"🔍 DEBUG: EventStoreV2.store_event - room: {room_id}, type: {event_type}"
+        )
+        logger.debug(f"🔍 DEBUG: EventStoreV2 payload keys: {list(payload.keys()) if payload else 'None'}")
+        
         conn = sqlite3.connect(self.db_path)
         try:
             # Extract round number from payload if available
@@ -328,7 +339,7 @@ class EventStoreV2:
             )
 
             conn.commit()
-            logger.debug(f"Stored {event_type} event for room {room_id} in v2")
+            logger.debug(f"🔍 DEBUG: Successfully stored {event_type} event for room {room_id} in v2")
 
         except Exception as e:
             logger.error(f"Failed to store event in v2: {e}")

@@ -61,13 +61,17 @@ class MigrationAdapter:
         logger.debug(
             f"🔍 DEBUG: MigrationAdapter.store_event - mode: {self.mode}, room: {room_id}, type: {event_type}"
         )
+        logger.debug(f"🔍 DEBUG: MigrationAdapter payload keys: {list(payload.keys()) if payload else 'None'}")
+        logger.debug(f"🔍 DEBUG: MigrationAdapter player_id: {player_id}")
         if self.mode == "v1_only":
             # Only write to v1 (rollback mode)
             await self.v1_store.store_event(room_id, event_type, payload, player_id)
 
         elif self.mode == "v2_only":
             # Only write to v2 (full migration)
+            logger.debug(f"🔍 DEBUG: MigrationAdapter routing to v2_store")
             await self.v2_store.store_event(room_id, event_type, payload, player_id)
+            logger.debug(f"🔍 DEBUG: MigrationAdapter v2_store.store_event completed")
 
         elif self.mode in ["dual_write", "dual_read_v1", "dual_read_v2"]:
             # Write to both schemas

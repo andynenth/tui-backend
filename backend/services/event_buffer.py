@@ -76,6 +76,10 @@ class EventBuffer:
                 # No event loop, skip background flushing
                 logger.warning("No event loop available for background flushing")
 
+        logger.debug(
+            f"🔍 DEBUG: EventBuffer.add_event - room: {room_id}, type: {event_type}, buffer size: {len(self._buffer)}"
+        )
+        
         async with self._buffer_lock:
             self._buffer.append(
                 {
@@ -87,9 +91,15 @@ class EventBuffer:
                 }
             )
             self._metrics["events_buffered"] += 1
+            buffer_size = len(self._buffer)
+            
+            logger.debug(
+                f"🔍 DEBUG: EventBuffer - buffer size after add: {buffer_size}, max size: {self.max_size}"
+            )
 
             # Check if we need to flush
-            if len(self._buffer) >= self.max_size:
+            if buffer_size >= self.max_size:
+                logger.debug(f"🔍 DEBUG: EventBuffer - triggering flush due to size limit")
                 await self._flush_buffer()
 
     async def _background_flush(self) -> None:
@@ -99,6 +109,9 @@ class EventBuffer:
                 await asyncio.sleep(self.flush_interval)
                 async with self._buffer_lock:
                     if self._buffer:
+                        logger.debug(
+                            f"🔍 DEBUG: EventBuffer - background flush triggered, buffer size: {len(self._buffer)}"
+                        )
                         await self._flush_buffer()
             except asyncio.CancelledError:
                 # Shutting down
@@ -117,6 +130,10 @@ class EventBuffer:
 
         events_to_flush = self._buffer.copy()
         self._buffer.clear()
+        
+        logger.debug(
+            f"🔍 DEBUG: EventBuffer - flushing {len(events_to_flush)} events"
+        )
 
         # Release lock before database operations
         self._buffer_lock.release()
@@ -137,7 +154,9 @@ class EventBuffer:
             self._metrics["flushes_triggered"] += 1
             self._update_efficiency()
 
-            logger.debug(f"Flushed {len(events_to_flush)} events to database")
+            logger.debug(
+                f"🔍 DEBUG: EventBuffer - successfully flushed {len(events_to_flush)} events, total flushes: {self._metrics['flushes_triggered']}"
+            )
         finally:
             # Re-acquire lock
             await self._buffer_lock.acquire()
