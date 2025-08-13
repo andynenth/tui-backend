@@ -40,7 +40,9 @@ function transformRound(roundData: any): Round {
     winner: roundData.round_summary?.winner || findRoundWinner(roundData),
     declarations: transformDeclarations(roundData),
     turns: transformTurns(roundData.turn_history || []),
-    scoring: transformScoring(roundData.round_summary)
+    scoring: transformScoring(roundData.round_summary),
+    handsDealt: roundData.hands_dealt || {},
+    finalCaptures: roundData.round_summary?.final_captures || {}
   };
 }
 
@@ -66,16 +68,14 @@ function findRoundWinner(roundData: any): string {
 
 function transformDeclarations(roundData: any): any[] {
   const declarations = roundData.declaration_phase?.declarations || [];
-  const handsDealt = roundData.hands_dealt || {};
   
   return declarations.map((decl: any) => {
-    const playerName = decl.player_name || findPlayerName(decl.player_id, roundData);
-    const hand = handsDealt[playerName] || [];
+    const playerName = decl.player || decl.player_name || findPlayerName(decl.player_id, roundData);
     
     return {
       player: playerName,
       declared: decl.declared,
-      hand: hand.map(transformPiece),
+      hand: decl.hand || [],
       timestamp: decl.timestamp || new Date().toISOString()
     };
   });
@@ -83,10 +83,10 @@ function transformDeclarations(roundData: any): any[] {
 
 function transformTurns(turns: any[]): Turn[] {
   return turns.map((turn, index) => ({
-    turnNumber: turn.turn_number || index + 1,
-    plays: transformPlays(turn.plays || []),
+    turnNumber: turn.turnNumber || turn.turn_number || index + 1,
+    plays: turn.plays || [],
     winner: turn.winner?.player_name || turn.winner || 'Unknown',
-    winnerPieces: turn.winner?.pieces_captured || turn.winnerPieces || 0,
+    winnerPieces: turn.winnerPieces || turn.winner?.pieces_captured || 0,
     timestamp: turn.timestamp || new Date().toISOString()
   }));
 }
@@ -94,10 +94,10 @@ function transformTurns(turns: any[]): Turn[] {
 function transformPlays(plays: any[]): Play[] {
   return plays.map(play => ({
     player: play.player_name || play.player || 'Unknown',
-    pieces: (play.pieces_played || play.pieces || []).map(transformPiece),
+    pieces: (play.pieces_played || play.pieces || []),
     isStarter: play.is_starter || play.isStarter || false,
-    handBefore: (play.hand_before || []).map(transformPiece),
-    handAfter: (play.hand_after || []).map(transformPiece),
+    handBefore: (play.handBefore || play.hand_before || []),
+    handAfter: (play.handAfter || play.hand_after || []),
     captured: play.captured_count || play.captured || 0
   }));
 }
@@ -106,11 +106,13 @@ function transformPiece(piece: any): Piece {
   // Handle different piece formats from API
   if (piece.kind) {
     // Format: { kind: "GENERAL_RED", point: 14 }
-    const [type, color] = piece.kind.split('_');
+    const parts = piece.kind.split('_');
+    const color = parts.pop()?.toLowerCase() as 'red' | 'black';
+    const type = parts.join('_');
     return {
       type: type,
       point: piece.point,
-      color: color.toLowerCase() as 'red' | 'black'
+      color: color || 'black'
     };
   }
   
@@ -130,16 +132,30 @@ function transformScoring(summary: any): any {
     };
   }
   
+  // Handle the new structure where scoring contains players and bonuses
+  if (summary.scoring) {
+    return {
+      players: summary.scoring.players || {},
+      bonuses: (summary.scoring.bonuses || []).map((bonus: any) => ({
+        player: bonus.player,
+        type: bonus.type,
+        points: bonus.value || bonus.points || 0,
+        description: bonus.description
+      }))
+    };
+  }
+  
+  // Fallback for old structure
   const players: Record<string, any> = {};
   
-  if (summary.scoring) {
-    Object.entries(summary.scoring).forEach(([playerName, score]: [string, any]) => {
+  if (summary.scores) {
+    Object.entries(summary.scores).forEach(([playerName, score]: [string, any]) => {
       players[playerName] = {
-        declared: summary.final_captures?.[playerName]?.declared || score.declared || 0,
-        captured: summary.final_captures?.[playerName]?.captured || score.captured || 0,
-        score: score.points || 0,
-        multiplier: score.multiplier || 0,
-        baseScore: score.points || 0
+        declared: score.declared || 0,
+        captured: score.captured || 0,
+        score: score.points || score.score || 0,
+        multiplier: score.multiplier || 1,
+        baseScore: score.baseScore || score.points || 0
       };
     });
   }

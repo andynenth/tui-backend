@@ -93,14 +93,15 @@ export const PlayHistoryPage = () => {
         
         <div className="bg-game-surface rounded-lg shadow-game-lg p-8 mb-6">
           <DeclarationPhase 
-            declarations={currentRound.declarations}
+            declarations={currentRound.declarations || []}
+            handsDealt={currentRound.handsDealt}
             players={data.players}
           />
         </div>
         
         <div className="bg-game-surface rounded-lg shadow-game-lg p-8 mb-6">
           <TurnTimeline 
-            turns={currentRound.turns}
+            turns={currentRound.turns || []}
             players={data.players}
           />
         </div>
@@ -109,6 +110,7 @@ export const PlayHistoryPage = () => {
           <RoundSummary 
             scoring={currentRound.scoring}
             winner={currentRound.winner}
+            finalCaptures={currentRound.finalCaptures}
           />
         </div>
       </div>
@@ -140,9 +142,9 @@ const GameHeader = ({ roomId, round, totalRounds, selectedRound, onRoundSelect }
       </div>
       
       <div className="text-sm text-game-text/60">
-        <span>Total Turns: {round.turns.length}</span>
+        <span>Total Turns: {round.turns?.length || 0}</span>
         <span className="mx-4">•</span>
-        <span>Winner: <span className="text-game-success font-semibold">{round.winner}</span></span>
+        <span>Winner: <span className="text-game-success font-semibold">{round.winner || 'Unknown'}</span></span>
       </div>
     </div>
   );
@@ -152,7 +154,7 @@ const GameHeader = ({ roomId, round, totalRounds, selectedRound, onRoundSelect }
 const PlayerOverview = ({ players, roundData }) => {
   return players.map((player) => {
     const isStarter = roundData.starter === player.name;
-    const playerStats = roundData.scoring.players[player.name];
+    const playerStats = roundData.scoring?.players?.[player.name] || {};
     
     return (
       <div 
@@ -195,13 +197,15 @@ const PlayerOverview = ({ players, roundData }) => {
 };
 
 // DeclarationPhase component
-const DeclarationPhase = ({ declarations, players }) => {
+const DeclarationPhase = ({ declarations, handsDealt, players }) => {
   return (
     <div>
       <h2 className="text-xl font-semibold mb-4">Declaration Phase</h2>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         {declarations.map((declaration) => {
           const player = players.find(p => p.name === declaration.player);
+          // Use hand from declaration or fall back to handsDealt
+          const hand = declaration.hand || handsDealt?.[declaration.player] || [];
           return (
             <div key={declaration.player} className="bg-game-background rounded-lg p-4">
               <div className="flex items-center justify-between mb-3">
@@ -210,7 +214,7 @@ const DeclarationPhase = ({ declarations, players }) => {
               </div>
               
               <div className="mb-3">
-                <HandBeforePlay pieces={declaration.hand} />
+                <HandBeforePlay pieces={hand} />
               </div>
               
               <div className="text-center">
@@ -335,7 +339,7 @@ const PlayCard = ({ play, isWinner, isStarter }) => {
                 }
               `}
             >
-              {piece.type[0]}{piece.point}
+              {piece.type?.charAt(0)}{piece.point}
             </span>
           ))}
         </div>
@@ -355,7 +359,7 @@ const PlayCard = ({ play, isWinner, isStarter }) => {
                 }
               `}
             >
-              {piece.type}({piece.point})
+              {piece.type?.replace(/_/g, ' ')}({piece.point})
             </span>
           ))}
         </div>
@@ -372,9 +376,11 @@ const PlayCard = ({ play, isWinner, isStarter }) => {
 };
 
 // RoundSummary component
-const RoundSummary = ({ scoring, winner }) => {
+const RoundSummary = ({ scoring, winner, finalCaptures }) => {
+  if (!scoring) return null;
+  
   // Convert players object to array for easier manipulation
-  const playerScores = Object.entries(scoring.players).map(([name, score]) => ({
+  const playerScores = Object.entries(scoring.players || {}).map(([name, score]) => ({
     name,
     ...score
   }));
@@ -438,7 +444,7 @@ const RoundSummary = ({ scoring, winner }) => {
       </div>
       
       {scoring.bonuses && scoring.bonuses.length > 0 && (
-        <div>
+        <div className="mb-6">
           <h3 className="text-lg font-medium mb-3">Bonuses</h3>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
             {scoring.bonuses.map((bonus, index) => (
@@ -448,8 +454,23 @@ const RoundSummary = ({ scoring, winner }) => {
                     <div className="font-medium">{bonus.player}</div>
                     <div className="text-sm text-game-text/60">{bonus.description}</div>
                   </div>
-                  <div className="text-game-success font-bold">+{bonus.points}</div>
+                  <div className="text-game-success font-bold">+{bonus.points || bonus.value}</div>
                 </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+      
+      {finalCaptures && (
+        <div>
+          <h3 className="text-lg font-medium mb-3">Final Captures</h3>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+            {Object.entries(finalCaptures).map(([player, captures]) => (
+              <div key={player} className="bg-game-background rounded-lg p-3 text-center">
+                <div className="font-medium mb-1">{player}</div>
+                <div className="text-2xl font-bold">{captures}</div>
+                <div className="text-xs text-game-text/60">piles</div>
               </div>
             ))}
           </div>

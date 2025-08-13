@@ -30,6 +30,8 @@ export interface Round {
   readonly scoring: Readonly<RoundScoring>;
   readonly winner: string;
   readonly timestamp: string;
+  readonly handsDealt?: Readonly<Record<string, ReadonlyArray<Piece>>>;
+  readonly finalCaptures?: Readonly<Record<string, number>>;
 }
 
 export interface Declaration {
