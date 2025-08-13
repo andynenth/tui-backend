@@ -1,531 +1,444 @@
-🎨 DEBUG: Assigned avatar color 'orange' to player 'Andy' from 8 available colors
-2025-08-12 19:55:53 - backend.engine.async_room - INFO - AsyncRoom CAEFFC created with host Andy
-2025-08-12 19:55:53 - backend.engine.async_room_manager - INFO - Created async room CAEFFC with host Andy
-2025-08-12 19:55:53 - backend.engine.async_room_manager - INFO - Current rooms in manager: ['CAEFFC']
-✅ Notified lobby about new room: CAEFFC
-2025-08-12 19:55:53 - backend.api.routes.ws - INFO - 🔌 [ROOM_DEBUG] Handling disconnect for room 'CAEFFC', websocket_id: 003a0125-9489-47f0-8e14-cc20ecbc6a20 at 1755053753.875795
-2025-08-12 19:55:53 - backend.api.websocket.connection_manager - WARNING - WebSocket ID 003a0125-9489-47f0-8e14-cc20ecbc6a20 not found in mapping. Current mappings: []
-2025-08-12 19:55:53 - backend.api.routes.ws - WARNING - No websocket_id found on websocket object for room CAEFFC
-2025-08-12 19:55:53 - backend.api.routes.ws - INFO - ⚠️ [ROOM_DEBUG] WebSocket disconnect without ID for room 'CAEFFC'
-2025-08-12 19:55:53 - backend.api.routes.ws - INFO - 🔌 [ROOM_DEBUG] WebSocket unregistered from room 'CAEFFC'
-INFO:     connection closed
-INFO:     127.0.0.1:53647 - "GET /favicon.ico HTTP/1.1" 200 OK
-2025-08-12 19:55:53 - backend.api.routes.ws - INFO - 🔌 [ROOM_DEBUG] New WebSocket connection to room 'CAEFFC', ws_id: 30954d51-44b8-4f26-a463-852135cb108f at 1755053753.9453928
-2025-08-12 19:55:53 - backend.api.routes.ws - INFO - 🧹 [ROOM_DEBUG] Room cleanup task already running
-INFO:     ('127.0.0.1', 53651) - "WebSocket /ws/CAEFFC" [accepted]
+(venv) Narongwits-MacBook-Pro:liap-tui nrw$ ./start.sh
+▶️ Starting backend on http://0.0.0.0:5050 ...
+INFO:     Will watch for changes in these directories: ['/Users/nrw/python/tui-project/liap-tui']
+INFO:     Uvicorn running on http://0.0.0.0:5050 (Press CTRL+C to quit)
+INFO:     Started reloader process [53818] using WatchFiles
+/Users/nrw/python/tui-project/liap-tui/venv/lib/python3.11/site-packages/pydantic/_internal/_config.py:373: UserWarning: Valid config keys have changed in V2:
+* 'schema_extra' has been renamed to 'json_schema_extra'
+  warnings.warn(message, UserWarning)
+socket_manager id in backend.api.routes.routes: 4532793680
+📦 Checking frontend dependencies...
+✅ Frontend dependencies already installed
+🌐 Starting esbuild in watch mode...
+2025-08-12 22:46:17 - config.logging_config - INFO - Logging configured
+✅ Log buffer enabled for Claude AI access
+⚠️  DEBUG MODE ENABLED - Not for production
+Rate limiting is enabled
+INFO:     Started server process [53822]
+INFO:     Waiting for application startup.
+2025-08-12 22:46:17 - backend.api.routes.ws - INFO - 🧹 [ROOM_DEBUG] Starting room cleanup background task
+2025-08-12 22:46:17 - apscheduler.scheduler - INFO - Adding job tentatively -- it will be properly scheduled when the scheduler starts
+2025-08-12 22:46:17 - apscheduler.scheduler - INFO - Added job "Daily log cleanup and archival" to job store "default"
+2025-08-12 22:46:17 - apscheduler.scheduler - INFO - Scheduler started
+2025-08-12 22:46:17 - backend.api.services.simple_maintenance - INFO - Maintenance scheduler started. Daily cleanup at 3:00
+✅ Log maintenance scheduler started
+2025-08-12 22:46:17 - backend.api.routes.ws - INFO - 🧹 [ROOM_DEBUG] Room cleanup task started
+INFO:     Application startup complete.
+
+> frontend@1.3.1 dev
+> node esbuild.config.cjs
+
+👀 Watching for changes to ./main.js, output to ../backend/static/
+
+[0.30ms] [@tailwindcss/postcss] src/pages/PlayHistoryPage/styles.css
+[0.28ms]   ↳ Quick bail check
+
+
+[0.09ms] [@tailwindcss/postcss] src/styles/components/game/gameover.css
+[0.08ms]   ↳ Quick bail check
+
+
+[0.05ms] [@tailwindcss/postcss] src/styles/toast-notifications.css
+[0.04ms]   ↳ Quick bail check
+
+
+[243.44ms] [@tailwindcss/postcss] src/styles/globals.css
+[  0.09ms]   ↳ Quick bail check
+[ 90.56ms]   ↳ Setup compiler
+[  0.60ms]     ↳ PostCSS AST -> Tailwind CSS AST
+[ 89.93ms]     ↳ Create compiler
+[  0.33ms]   ↳ Register full rebuild paths
+[  1.96ms]   ↳ Setup scanner
+[ 46.36ms]   ↳ Scan for candidates
+[ 19.50ms]   ↳ Register dependency messages
+[ 67.55ms]   ↳ Build utilities
+[ 10.91ms]   ↳ Transform Tailwind CSS AST into PostCSS AST
+[  5.79ms]   ↳ Update PostCSS AST
+
+2025-08-12 22:46:21 - backend.api.middleware.logging_middleware - INFO - API Request
+2025-08-12 22:46:21 - backend.api.middleware.logging_middleware - INFO - Request completed
+INFO:     127.0.0.1:55528 - "GET / HTTP/1.1" 200 OK
+2025-08-12 22:46:21 - backend.api.middleware.logging_middleware - INFO - API Request
+2025-08-12 22:46:21 - backend.api.middleware.logging_middleware - INFO - Request completed
+INFO:     127.0.0.1:55528 - "GET /bundle.css HTTP/1.1" 200 OK
+2025-08-12 22:46:21 - backend.api.middleware.logging_middleware - INFO - API Request
+2025-08-12 22:46:21 - backend.api.middleware.logging_middleware - INFO - Request completed
+INFO:     127.0.0.1:55530 - "GET /bundle.js HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55530 - "GET /favicon.ico HTTP/1.1" 200 OK
+2025-08-12 22:46:22 - backend.api.routes.ws - INFO - 🔌 [ROOM_DEBUG] New WebSocket connection to room 'lobby', ws_id: d575052f-33e8-4900-989a-09a0081032d7 at 1755063982.1306229
+2025-08-12 22:46:22 - backend.api.routes.ws - INFO - 🧹 [ROOM_DEBUG] Room cleanup task already running
+INFO:     ('127.0.0.1', 55532) - "WebSocket /ws/lobby" [accepted]
 INFO:     connection open
-2025-08-12 19:55:53 - backend.api.websocket.connection_manager - INFO - Player Andy connected to room CAEFFC
-2025-08-12 19:55:53 - backend.api.routes.ws - INFO - Successfully registered player Andy for room CAEFFC
-2025-08-12 19:55:53 - backend.api.routes.ws - INFO - 🔌 RECONNECT_CHECK: Room CAEFFC - started=False, game_ended=False
-2025-08-12 19:55:54 - backend.engine.async_game - INFO - AsyncGame initialized with 4 players
-2025-08-12 19:55:54 - backend.engine.state_machine.async_game_adapter - INFO - AsyncGameAdapter initialized with async game
-2025-08-12 19:55:54 - backend.engine.state_machine.game_state_machine - INFO - 🔍 ROUND_DEBUG: GameStateMachine created with async game: <backend.engine.async_game.AsyncGame object at 0x10e9a4c50>, round_number: 1
-2025-08-12 19:55:54 - backend.engine.state_machine.game_state_machine - INFO - Initialized ActionQueue with room_id: CAEFFC
-2025-08-12 19:55:54 - backend.engine.state_machine.game_state_machine - INFO - 🚀 Starting state machine in GamePhase.PREPARATION phase
-2025-08-12 19:55:54 - backend.engine.state_machine.game_state_machine - INFO - Transitioning from None to GamePhase.PREPARATION
-2025-08-12 19:55:54 - backend.engine.state_machine.game_state_machine - INFO - 🔄 Transitioning: None -> GamePhase.PREPARATION
-2025-08-12 19:55:54 - game.state.preparation - INFO - Entering preparation phase
-2025-08-12 19:55:54 - game.state.preparation - INFO - 🎴 Preparation phase starting - dealing cards
-2025-08-12 19:55:54 - game.state.preparation - INFO - 🔄 Resetting preparation state - previous redeal_requester: None
-2025-08-12 19:55:54 - backend.services.migration_adapter - INFO - 🔍 DEBUG: MigrationAdapter.store_event CALLED - mode: v2_only, room: CAEFFC, type: phase_data_update
-2025-08-12 19:55:54 - backend.services.migration_adapter - INFO - 🔍 DEBUG: MigrationAdapter.store_event - mode: v2_only, room: CAEFFC, type: phase_data_update
-2025-08-12 19:55:54 - backend.engine.state_machine.game_state_machine - INFO - State machine process loop started
-2025-08-12 19:55:54 - backend.services.migration_adapter - INFO - 🔍 DEBUG: MigrationAdapter.store_event CALLED - mode: v2_only, room: CAEFFC, type: hands_dealt
-2025-08-12 19:55:54 - backend.services.migration_adapter - INFO - 🔍 DEBUG: MigrationAdapter.store_event - mode: v2_only, room: CAEFFC, type: hands_dealt
-2025-08-12 19:55:54 - game.state.preparation - INFO - 🔍 Weak hand check - Found 1 weak players: {'Andy'}
-2025-08-12 19:55:54 - backend.services.migration_adapter - INFO - 🔍 DEBUG: MigrationAdapter.store_event CALLED - mode: v2_only, room: CAEFFC, type: phase_data_update
-2025-08-12 19:55:54 - backend.services.migration_adapter - INFO - 🔍 DEBUG: MigrationAdapter.store_event - mode: v2_only, room: CAEFFC, type: phase_data_update
-🔍 BOT_HANDLER: _handle_redeal_decision_phase called
-🔍 BOT_HANDLER: Weak players awaiting: ['Andy'], decisions: {}
-2025-08-12 19:55:54 - backend.services.migration_adapter - INFO - 🔍 DEBUG: MigrationAdapter.store_event CALLED - mode: v2_only, room: CAEFFC, type: phase_data_update
-2025-08-12 19:55:54 - backend.services.migration_adapter - INFO - 🔍 DEBUG: MigrationAdapter.store_event - mode: v2_only, room: CAEFFC, type: phase_data_update
-🔍 BOT_HANDLER: _handle_redeal_decision_phase called
-🔍 BOT_HANDLER: Weak players awaiting: ['Andy'], decisions: {}
-2025-08-12 19:55:54 - backend.services.migration_adapter - INFO - 🔍 DEBUG: MigrationAdapter.store_event CALLED - mode: v2_only, room: CAEFFC, type: phase_change
-2025-08-12 19:55:54 - backend.services.migration_adapter - INFO - 🔍 DEBUG: MigrationAdapter.store_event - mode: v2_only, room: CAEFFC, type: phase_change
-2025-08-12 19:55:54 - backend.engine.state_machine.game_state_machine - INFO - Stored phase change event: None -> GamePhase.PREPARATION
-2025-08-12 19:55:54 - backend.engine.state_machine.game_state_machine - INFO - Notifying bot manager about phase preparation
-2025-08-12 19:55:54 - backend.engine.async_room - INFO - Game started in room CAEFFC
-2025-08-12 19:55:54 - backend.api.routes.ws - INFO - Game started in room CAEFFC
-2025-08-12 19:55:54 - backend.api.routes.ws - INFO - 🔌 [ROOM_DEBUG] Handling disconnect for room 'CAEFFC', websocket_id: 30954d51-44b8-4f26-a463-852135cb108f at 1755053754.982511
-2025-08-12 19:55:54 - backend.api.websocket.connection_manager - INFO - Player Andy disconnected from room CAEFFC. Can reconnect anytime while game is active.
-2025-08-12 19:55:54 - backend.api.routes.ws - INFO - 🎮 [ROOM_DEBUG] In-game disconnect detected for player 'Andy' in room 'CAEFFC'
-2025-08-12 19:55:54 - backend.api.websocket.message_queue - INFO - Created message queue for Andy in room CAEFFC
-2025-08-12 19:55:54 - backend.engine.async_room - INFO - Host migrated from Andy to bot Andy in room CAEFFC
+INFO:     127.0.0.1:55530 - "GET /favicon.ico HTTP/1.1" 200 OK
+🎨 DEBUG: Assigned avatar color 'green' to player 'Andy' from 8 available colors
+2025-08-12 22:46:23 - backend.engine.async_room - INFO - AsyncRoom C805BC created with host Andy
+2025-08-12 22:46:23 - backend.engine.async_room_manager - INFO - Created async room C805BC with host Andy
+2025-08-12 22:46:23 - backend.engine.async_room_manager - INFO - Current rooms in manager: ['C805BC']
+✅ Notified lobby about new room: C805BC
+2025-08-12 22:46:23 - backend.api.routes.ws - INFO - 🔌 [ROOM_DEBUG] Handling disconnect for room 'C805BC', websocket_id: d575052f-33e8-4900-989a-09a0081032d7 at 1755063983.95101
+2025-08-12 22:46:23 - backend.api.websocket.connection_manager - WARNING - WebSocket ID d575052f-33e8-4900-989a-09a0081032d7 not found in mapping. Current mappings: []
+2025-08-12 22:46:23 - backend.api.routes.ws - WARNING - No websocket_id found on websocket object for room C805BC
+2025-08-12 22:46:23 - backend.api.routes.ws - INFO - ⚠️ [ROOM_DEBUG] WebSocket disconnect without ID for room 'C805BC'
+2025-08-12 22:46:23 - backend.api.routes.ws - INFO - 🔌 [ROOM_DEBUG] WebSocket unregistered from room 'C805BC'
 INFO:     connection closed
-2025-08-12 19:55:54 - backend.engine.async_room - INFO - 👥 [ROOM_DEBUG] Room 'CAEFFC' player count: 0 humans, 4 bots
-2025-08-12 19:55:54 - backend.engine.async_room - INFO - 👥 [ROOM_DEBUG] Room 'CAEFFC' player count: 0 humans, 4 bots
-2025-08-12 19:55:54 - backend.engine.async_room - INFO - ⏱️ [ROOM_DEBUG] Room 'CAEFFC' using cleanup timeout: 30s (started=True, game_ended=False)
-2025-08-12 19:55:54 - backend.engine.async_room - INFO - 🗑️ [ROOM_DEBUG] Room 'CAEFFC' marked for cleanup at 1755053754.983607, timeout=30s
-2025-08-12 19:55:54 - backend.api.routes.ws - INFO - 🔌 [ROOM_DEBUG] WebSocket unregistered from room 'CAEFFC'
-INFO:     127.0.0.1:53647 - "GET /favicon.ico HTTP/1.1" 200 OK
-2025-08-12 19:55:55 - backend.api.routes.ws - INFO - 🔌 [ROOM_DEBUG] New WebSocket connection to room 'CAEFFC', ws_id: 05eb06a0-ba86-48ec-b202-d849524a4733 at 1755053755.014585
-2025-08-12 19:55:55 - backend.api.routes.ws - INFO - 🧹 [ROOM_DEBUG] Room cleanup task already running
-INFO:     ('127.0.0.1', 53653) - "WebSocket /ws/CAEFFC" [accepted]
+2025-08-12 22:46:23 - backend.api.routes.ws - INFO - 🔌 [ROOM_DEBUG] New WebSocket connection to room 'C805BC', ws_id: 7ba08df6-986c-4bc6-9f90-0bc03a575264 at 1755063983.956307
+2025-08-12 22:46:23 - backend.api.routes.ws - INFO - 🧹 [ROOM_DEBUG] Room cleanup task already running
+INFO:     ('127.0.0.1', 55534) - "WebSocket /ws/C805BC" [accepted]
 INFO:     connection open
-2025-08-12 19:55:55 - backend.api.websocket.connection_manager - INFO - Player Andy reconnected to room CAEFFC
-2025-08-12 19:55:55 - backend.api.routes.ws - INFO - Successfully registered player Andy for room CAEFFC
-2025-08-12 19:55:55 - backend.api.routes.ws - INFO - 🔌 RECONNECT_CHECK: Room CAEFFC - started=True, game_ended=False
-2025-08-12 19:55:55 - backend.engine.async_room - INFO - ✅ [ROOM_DEBUG] Cleanup cancelled for room 'CAEFFC' - human player reconnected
-2025-08-12 19:55:55 - backend.api.routes.ws - INFO - Player Andy reconnected to game in room CAEFFC
-2025-08-12 19:55:55 - backend.api.websocket.message_queue - INFO - Retrieved 0 queued messages for Andy
-2025-08-12 19:55:55 - backend.api.websocket.message_queue - INFO - Cleared message queue for Andy in room CAEFFC
-2025-08-12 19:55:55 - backend.api.middleware.logging_middleware - INFO - API Request
-2025-08-12 19:55:55 - backend.api.middleware.logging_middleware - INFO - Request completed
-INFO:     127.0.0.1:53647 - "GET / HTTP/1.1" 200 OK
-2025-08-12 19:55:55 - backend.api.middleware.logging_middleware - INFO - API Request
-2025-08-12 19:55:55 - backend.api.middleware.logging_middleware - INFO - API Request
-2025-08-12 19:55:55 - backend.api.routes.ws - INFO - 🔌 [ROOM_DEBUG] Handling disconnect for room '9CA5EF', websocket_id: 050798bb-3f5d-4bf6-af6c-40de253ec7ca at 1755053755.373853
-2025-08-12 19:55:55 - backend.api.websocket.connection_manager - WARNING - WebSocket ID 050798bb-3f5d-4bf6-af6c-40de253ec7ca not found in mapping. Current mappings: ['05eb06a0-ba86-48ec-b202-d849524a4733']
-2025-08-12 19:55:55 - backend.engine.async_room_manager - WARNING - Room 9CA5EF not found in AsyncRoomManager. Current rooms: ['CAEFFC']
-2025-08-12 19:55:55 - backend.api.routes.ws - WARNING - No websocket_id found on websocket object for room 9CA5EF
-2025-08-12 19:55:55 - backend.api.routes.ws - INFO - ⚠️ [ROOM_DEBUG] WebSocket disconnect without ID for room '9CA5EF'
-2025-08-12 19:55:55 - backend.api.routes.ws - INFO - 🔌 [ROOM_DEBUG] WebSocket unregistered from room '9CA5EF'
-2025-08-12 19:55:55 - backend.api.routes.ws - INFO - 🔌 [ROOM_DEBUG] Handling disconnect for room 'CAEFFC', websocket_id: 05eb06a0-ba86-48ec-b202-d849524a4733 at 1755053755.374465
-2025-08-12 19:55:55 - backend.api.websocket.connection_manager - INFO - Player Andy disconnected from room CAEFFC. Can reconnect anytime while game is active.
-2025-08-12 19:55:55 - backend.api.routes.ws - INFO - 🎮 [ROOM_DEBUG] In-game disconnect detected for player 'Andy' in room 'CAEFFC'
-2025-08-12 19:55:55 - backend.api.websocket.message_queue - INFO - Created message queue for Andy in room CAEFFC
-2025-08-12 19:55:55 - backend.engine.async_room - INFO - Host migrated from Andy to bot Andy in room CAEFFC
-2025-08-12 19:55:55 - backend.engine.async_room_manager - WARNING - Room 9CA5EF not found in AsyncRoomManager. Current rooms: ['CAEFFC']
-2025-08-12 19:55:55 - backend.engine.async_room - INFO - 👥 [ROOM_DEBUG] Room 'CAEFFC' player count: 0 humans, 4 bots
-2025-08-12 19:55:55 - backend.engine.async_room - INFO - 👥 [ROOM_DEBUG] Room 'CAEFFC' player count: 0 humans, 4 bots
-2025-08-12 19:55:55 - backend.engine.async_room - INFO - ⏱️ [ROOM_DEBUG] Room 'CAEFFC' using cleanup timeout: 30s (started=True, game_ended=False)
-2025-08-12 19:55:55 - backend.engine.async_room - INFO - 🗑️ [ROOM_DEBUG] Room 'CAEFFC' marked for cleanup at 1755053755.376215, timeout=30s
-2025-08-12 19:55:55 - backend.api.routes.ws - INFO - 🔌 [ROOM_DEBUG] WebSocket unregistered from room 'CAEFFC'
+2025-08-12 22:46:23 - backend.api.websocket.connection_manager - INFO - Player Andy connected to room C805BC
+2025-08-12 22:46:23 - backend.api.routes.ws - INFO - Successfully registered player Andy for room C805BC
+2025-08-12 22:46:23 - backend.api.routes.ws - INFO - 🔌 RECONNECT_CHECK: Room C805BC - started=False, game_ended=False
+INFO:     127.0.0.1:55530 - "GET /favicon.ico HTTP/1.1" 200 OK
+2025-08-12 22:46:24 - backend.engine.async_game - INFO - AsyncGame initialized with 4 players
+2025-08-12 22:46:24 - backend.engine.state_machine.async_game_adapter - INFO - AsyncGameAdapter initialized with async game
+2025-08-12 22:46:24 - backend.engine.state_machine.game_state_machine - INFO - 🔍 ROUND_DEBUG: GameStateMachine created with async game: <backend.engine.async_game.AsyncGame object at 0x10e7b18d0>, round_number: 1
+2025-08-12 22:46:24 - backend.engine.state_machine.game_state_machine - INFO - Initialized ActionQueue with room_id: C805BC
+2025-08-12 22:46:24 - backend.engine.state_machine.game_state_machine - INFO - 🚀 Starting state machine in GamePhase.PREPARATION phase
+2025-08-12 22:46:24 - backend.engine.state_machine.game_state_machine - INFO - Transitioning from None to GamePhase.PREPARATION
+2025-08-12 22:46:24 - backend.engine.state_machine.game_state_machine - INFO - 🔄 Transitioning: None -> GamePhase.PREPARATION
+2025-08-12 22:46:24 - game.state.preparation - INFO - Entering preparation phase
+2025-08-12 22:46:24 - game.state.preparation - INFO - 🎴 Preparation phase starting - dealing cards
+2025-08-12 22:46:24 - game.state.preparation - INFO - 🔄 Resetting preparation state - previous redeal_requester: None
+2025-08-12 22:46:24 - backend.services.migration_adapter - INFO - 🔍 DEBUG: MigrationAdapter.store_event - room: C805BC, type: phase_data_update
+2025-08-12 22:46:24 - backend.engine.state_machine.game_state_machine - INFO - State machine process loop started
+2025-08-12 22:46:24 - backend.services.migration_adapter - INFO - 🔍 DEBUG: MigrationAdapter.store_event - room: C805BC, type: hands_dealt
+2025-08-12 22:46:24 - game.state.preparation - INFO - 🔍 Weak hand check - Found 0 weak players: set()
+2025-08-12 22:46:24 - game.state.preparation - INFO - 🔍 STARTER_DEBUG: Current round number: 1
+2025-08-12 22:46:24 - game.state.preparation - INFO - 🎯 Starter: Bot 3 (has GENERAL_RED)
+2025-08-12 22:46:24 - game.state.preparation - INFO - ✅ No weak hands - determined new starter: Bot 3
+2025-08-12 22:46:25 - backend.engine.state_machine.game_state_machine - INFO - Transitioning from GamePhase.PREPARATION to GamePhase.ROUND_START
+2025-08-12 22:46:25 - backend.engine.state_machine.game_state_machine - INFO - 🔄 Transitioning: GamePhase.PREPARATION -> GamePhase.ROUND_START
+2025-08-12 22:46:25 - game.state.preparation - INFO - Exiting preparation phase
+2025-08-12 22:46:25 - game.state.preparation - INFO - 🎯 Round starter already set: Bot 3
+2025-08-12 22:46:25 - game.state.preparation - INFO - 📋 Preparation complete - Starter: Bot 3, Multiplier: 1x
+2025-08-12 22:46:25 - game.state.round_start - INFO - Entering round_start phase
+2025-08-12 22:46:25 - game.state.round_start - INFO - 📋 Round 1 starting - Starter: Bot 3 (has_general_red)
+2025-08-12 22:46:25 - backend.services.migration_adapter - INFO - 🔍 DEBUG: MigrationAdapter.store_event - room: C805BC, type: phase_data_update
+2025-08-12 22:46:25 - backend.services.migration_adapter - INFO - 🔍 DEBUG: MigrationAdapter.store_event - room: C805BC, type: game_started
+2025-08-12 22:46:25 - backend.services.event_store_v2 - INFO - 🔍 DEBUG: Game started stored in v2 for room C805BC
+2025-08-12 22:46:25 - game.state.round_start - INFO - 🚀 V2 EVENT: game_started event fired for room C805BC
+2025-08-12 22:46:25 - backend.services.migration_adapter - INFO - 🔍 DEBUG: MigrationAdapter.store_event - room: C805BC, type: round_started
+2025-08-12 22:46:25 - game.state.round_start - INFO - 🚀 V2 EVENT: round_started event fired for round 1
+2025-08-12 22:46:25 - backend.services.migration_adapter - INFO - 🔍 DEBUG: MigrationAdapter.store_event - room: C805BC, type: phase_change
+2025-08-12 22:46:25 - backend.engine.state_machine.game_state_machine - INFO - Stored phase change event: GamePhase.PREPARATION -> GamePhase.ROUND_START
+2025-08-12 22:46:25 - backend.engine.state_machine.game_state_machine - INFO - Notifying bot manager about phase round_start
+2025-08-12 22:46:26 - backend.services.migration_adapter - INFO - 🔍 DEBUG: MigrationAdapter.store_event - room: C805BC, type: phase_data_update
+2025-08-12 22:46:26 - backend.services.optimized_event_store - INFO - Storing round_started event for room C805BC, round 1
+2025-08-12 22:46:26 - backend.services.migration_adapter - INFO - 🔍 DEBUG: MigrationAdapter.store_event - room: C805BC, type: phase_change
+2025-08-12 22:46:26 - backend.engine.state_machine.game_state_machine - INFO - Stored phase change event: None -> GamePhase.PREPARATION
+2025-08-12 22:46:26 - backend.engine.state_machine.game_state_machine - INFO - Notifying bot manager about phase preparation
+2025-08-12 22:46:26 - backend.engine.async_room - INFO - Game started in room C805BC
+2025-08-12 22:46:26 - backend.api.routes.ws - INFO - Game started in room C805BC
+2025-08-12 22:46:26 - backend.api.routes.ws - INFO - 🔌 [ROOM_DEBUG] Handling disconnect for room 'C805BC', websocket_id: 7ba08df6-986c-4bc6-9f90-0bc03a575264 at 1755063986.82378
+2025-08-12 22:46:26 - backend.api.websocket.connection_manager - INFO - Player Andy disconnected from room C805BC. Can reconnect anytime while game is active.
+2025-08-12 22:46:26 - backend.api.routes.ws - INFO - 🎮 [ROOM_DEBUG] In-game disconnect detected for player 'Andy' in room 'C805BC'
+2025-08-12 22:46:26 - backend.api.websocket.message_queue - INFO - Created message queue for Andy in room C805BC
+2025-08-12 22:46:26 - backend.engine.async_room - INFO - Host migrated from Andy to bot Andy in room C805BC
 INFO:     connection closed
-INFO:     connection closed
-2025-08-12 19:55:55 - backend.api.middleware.logging_middleware - INFO - Request completed
-INFO:     127.0.0.1:53647 - "GET /bundle.css HTTP/1.1" 200 OK
-2025-08-12 19:55:55 - backend.api.middleware.logging_middleware - INFO - Request completed
-INFO:     127.0.0.1:53645 - "GET /bundle.js HTTP/1.1" 200 OK
-2025-08-12 19:55:55 - backend.api.routes.ws - INFO - 🔌 [ROOM_DEBUG] New WebSocket connection to room 'CAEFFC', ws_id: 3b0111b8-bde0-4bee-ae89-fcc9885679c6 at 1755053755.469899
-2025-08-12 19:55:55 - backend.api.routes.ws - INFO - 🧹 [ROOM_DEBUG] Room cleanup task already running
-INFO:     ('127.0.0.1', 53655) - "WebSocket /ws/CAEFFC" [accepted]
+2025-08-12 22:46:26 - backend.engine.async_room - INFO - 👥 [ROOM_DEBUG] Room 'C805BC' player count: 0 humans, 4 bots
+2025-08-12 22:46:26 - backend.engine.async_room - INFO - 👥 [ROOM_DEBUG] Room 'C805BC' player count: 0 humans, 4 bots
+2025-08-12 22:46:26 - backend.engine.async_room - INFO - ⏱️ [ROOM_DEBUG] Room 'C805BC' using cleanup timeout: 30s (started=True, game_ended=False)
+2025-08-12 22:46:26 - backend.engine.async_room - INFO - 🗑️ [ROOM_DEBUG] Room 'C805BC' marked for cleanup at 1755063986.8286998, timeout=30s
+2025-08-12 22:46:26 - backend.api.routes.ws - INFO - 🔌 [ROOM_DEBUG] WebSocket unregistered from room 'C805BC'
+2025-08-12 22:46:26 - backend.api.routes.ws - INFO - 🔌 [ROOM_DEBUG] New WebSocket connection to room 'C805BC', ws_id: f17baed8-6f7f-4cb8-9f24-6fc97f2cc9d5 at 1755063986.838302
+2025-08-12 22:46:26 - backend.api.routes.ws - INFO - 🧹 [ROOM_DEBUG] Room cleanup task already running
+INFO:     ('127.0.0.1', 55536) - "WebSocket /ws/C805BC" [accepted]
 INFO:     connection open
-INFO:     127.0.0.1:53645 - "GET /favicon.ico HTTP/1.1" 200 OK
-2025-08-12 19:55:55 - backend.api.websocket.connection_manager - INFO - Player Andy reconnected to room CAEFFC
-2025-08-12 19:55:55 - backend.api.routes.ws - INFO - Successfully registered player Andy for room CAEFFC
-2025-08-12 19:55:55 - backend.api.routes.ws - INFO - 🔌 RECONNECT_CHECK: Room CAEFFC - started=True, game_ended=False
-2025-08-12 19:55:55 - backend.engine.async_room - INFO - ✅ [ROOM_DEBUG] Cleanup cancelled for room 'CAEFFC' - human player reconnected
-2025-08-12 19:55:55 - backend.api.routes.ws - INFO - Player Andy reconnected to game in room CAEFFC
-2025-08-12 19:55:55 - backend.api.websocket.message_queue - INFO - Retrieved 0 queued messages for Andy
-2025-08-12 19:55:55 - backend.api.websocket.message_queue - INFO - Cleared message queue for Andy in room CAEFFC
-2025-08-12 19:55:57 - backend.api.routes.ws - INFO - 🧹 [ROOM_DEBUG] Cleanup iteration 2: Checking 1 rooms: ['CAEFFC']
-2025-08-12 19:56:00 - game.state.preparation - INFO - ♻️ Andy ACCEPTS redeal
-2025-08-12 19:56:00 - game.state.preparation - INFO - ♻️ Redeal accepted by Andy - new starter
-2025-08-12 19:56:00 - game.state.preparation - INFO - 📈 Multiplier: 1x → 2x
-2025-08-12 19:56:00 - backend.services.migration_adapter - INFO - 🔍 DEBUG: MigrationAdapter.store_event CALLED - mode: v2_only, room: CAEFFC, type: phase_data_update
-2025-08-12 19:56:00 - backend.services.migration_adapter - INFO - 🔍 DEBUG: MigrationAdapter.store_event - mode: v2_only, room: CAEFFC, type: phase_data_update
-🔍 BOT_HANDLER: _handle_redeal_decision_phase called
-🔍 BOT_HANDLER: Weak players awaiting: ['Andy'], decisions: {}
-2025-08-12 19:56:00 - backend.services.migration_adapter - INFO - 🔍 DEBUG: MigrationAdapter.store_event CALLED - mode: v2_only, room: CAEFFC, type: hands_dealt
-2025-08-12 19:56:00 - backend.services.migration_adapter - INFO - 🔍 DEBUG: MigrationAdapter.store_event - mode: v2_only, room: CAEFFC, type: hands_dealt
-2025-08-12 19:56:00 - game.state.preparation - INFO - 🔍 Weak hand check - Found 1 weak players: {'Andy'}
-2025-08-12 19:56:00 - backend.services.migration_adapter - INFO - 🔍 DEBUG: MigrationAdapter.store_event CALLED - mode: v2_only, room: CAEFFC, type: phase_data_update
-2025-08-12 19:56:00 - backend.services.migration_adapter - INFO - 🔍 DEBUG: MigrationAdapter.store_event - mode: v2_only, room: CAEFFC, type: phase_data_update
-🔍 BOT_HANDLER: _handle_redeal_decision_phase called
-🔍 BOT_HANDLER: Weak players awaiting: ['Andy'], decisions: {}
-2025-08-12 19:56:00 - backend.services.migration_adapter - INFO - 🔍 DEBUG: MigrationAdapter.store_event CALLED - mode: v2_only, room: CAEFFC, type: phase_data_update
-2025-08-12 19:56:00 - backend.services.migration_adapter - INFO - 🔍 DEBUG: MigrationAdapter.store_event - mode: v2_only, room: CAEFFC, type: phase_data_update
-🔍 BOT_HANDLER: _handle_redeal_decision_phase called
-🔍 BOT_HANDLER: Weak players awaiting: ['Andy'], decisions: {}
-2025-08-12 19:56:00 - game.state.preparation - INFO - 🔄 New weak hands found after redeal: {'Andy'}
-2025-08-12 19:56:00 - backend.services.migration_adapter - INFO - 🔍 DEBUG: MigrationAdapter.store_event CALLED - mode: v2_only, room: CAEFFC, type: phase_data_update
-2025-08-12 19:56:00 - backend.services.migration_adapter - INFO - 🔍 DEBUG: MigrationAdapter.store_event - mode: v2_only, room: CAEFFC, type: phase_data_update
-🔍 BOT_HANDLER: _handle_redeal_decision_phase called
-🔍 BOT_HANDLER: Weak players awaiting: ['Andy'], decisions: {}
-2025-08-12 19:56:02 - backend.api.routes.ws - INFO - 🧹 [ROOM_DEBUG] Cleanup iteration 3: Checking 1 rooms: ['CAEFFC']
-2025-08-12 19:56:05 - game.state.preparation - INFO - ♻️ Andy ACCEPTS redeal
-2025-08-12 19:56:05 - game.state.preparation - INFO - ♻️ Redeal accepted by Andy - new starter
-2025-08-12 19:56:05 - game.state.preparation - INFO - 📈 Multiplier: 2x → 3x
-2025-08-12 19:56:05 - backend.services.migration_adapter - INFO - 🔍 DEBUG: MigrationAdapter.store_event CALLED - mode: v2_only, room: CAEFFC, type: phase_data_update
-2025-08-12 19:56:05 - backend.services.migration_adapter - INFO - 🔍 DEBUG: MigrationAdapter.store_event - mode: v2_only, room: CAEFFC, type: phase_data_update
-🔍 BOT_HANDLER: _handle_redeal_decision_phase called
-🔍 BOT_HANDLER: Weak players awaiting: ['Andy'], decisions: {}
-2025-08-12 19:56:05 - backend.services.migration_adapter - INFO - 🔍 DEBUG: MigrationAdapter.store_event CALLED - mode: v2_only, room: CAEFFC, type: hands_dealt
-2025-08-12 19:56:05 - backend.services.migration_adapter - INFO - 🔍 DEBUG: MigrationAdapter.store_event - mode: v2_only, room: CAEFFC, type: hands_dealt
-2025-08-12 19:56:05 - game.state.preparation - INFO - 🔍 Weak hand check - Found 0 weak players: set()
-2025-08-12 19:56:05 - game.state.preparation - INFO - ✅ No weak hands - keeping existing starter: Andy (reason: accepted_redeal)
-2025-08-12 19:56:07 - backend.api.routes.ws - INFO - 🧹 [ROOM_DEBUG] Cleanup iteration 4: Checking 1 rooms: ['CAEFFC']
-2025-08-12 19:56:07 - backend.services.migration_adapter - INFO - 🔍 DEBUG: MigrationAdapter.store_event CALLED - mode: v2_only, room: CAEFFC, type: phase_data_update
-2025-08-12 19:56:07 - backend.services.migration_adapter - INFO - 🔍 DEBUG: MigrationAdapter.store_event - mode: v2_only, room: CAEFFC, type: phase_data_update
-🔍 BOT_HANDLER: _handle_redeal_decision_phase called
-🔍 BOT_HANDLER: Weak players awaiting: ['Andy'], decisions: {}
-2025-08-12 19:56:07 - backend.services.migration_adapter - INFO - 🔍 DEBUG: MigrationAdapter.store_event CALLED - mode: v2_only, room: CAEFFC, type: phase_data_update
-2025-08-12 19:56:07 - backend.services.migration_adapter - INFO - 🔍 DEBUG: MigrationAdapter.store_event - mode: v2_only, room: CAEFFC, type: phase_data_update
-🔍 BOT_HANDLER: _handle_redeal_decision_phase called
-🔍 BOT_HANDLER: Weak players awaiting: ['Andy'], decisions: {}
-2025-08-12 19:56:07 - game.state.preparation - INFO - 🎴 Waiting for dealing animation to complete...
-2025-08-12 19:56:11 - backend.engine.state_machine.game_state_machine - INFO - Transitioning from GamePhase.PREPARATION to GamePhase.ROUND_START
-2025-08-12 19:56:11 - backend.engine.state_machine.game_state_machine - INFO - 🔄 Transitioning: GamePhase.PREPARATION -> GamePhase.ROUND_START
-2025-08-12 19:56:11 - game.state.preparation - INFO - Exiting preparation phase
-2025-08-12 19:56:11 - game.state.preparation - INFO - 🎯 Round starter already set: Andy
-2025-08-12 19:56:11 - game.state.preparation - INFO - 📋 Preparation complete - Starter: Andy, Multiplier: 3x
-2025-08-12 19:56:11 - game.state.round_start - INFO - Entering round_start phase
-2025-08-12 19:56:11 - game.state.round_start - INFO - 📋 Round 1 starting - Starter: Andy (accepted_redeal)
-2025-08-12 19:56:11 - backend.services.migration_adapter - INFO - 🔍 DEBUG: MigrationAdapter.store_event CALLED - mode: v2_only, room: CAEFFC, type: phase_data_update
-2025-08-12 19:56:11 - backend.services.migration_adapter - INFO - 🔍 DEBUG: MigrationAdapter.store_event - mode: v2_only, room: CAEFFC, type: phase_data_update
-2025-08-12 19:56:11 - backend.services.migration_adapter - INFO - 🔍 DEBUG: MigrationAdapter.store_event CALLED - mode: v2_only, room: CAEFFC, type: game_started
-2025-08-12 19:56:11 - backend.services.migration_adapter - INFO - 🔍 DEBUG: MigrationAdapter.store_event - mode: v2_only, room: CAEFFC, type: game_started
-2025-08-12 19:56:11 - backend.services.event_store_v2 - INFO - 🔍 DEBUG: Game started stored in v2 for room CAEFFC
-2025-08-12 19:56:11 - game.state.round_start - INFO - 🚀 V2 EVENT: game_started event fired for room CAEFFC
-2025-08-12 19:56:11 - backend.services.migration_adapter - INFO - 🔍 DEBUG: MigrationAdapter.store_event CALLED - mode: v2_only, room: CAEFFC, type: round_started
-2025-08-12 19:56:11 - backend.services.migration_adapter - INFO - 🔍 DEBUG: MigrationAdapter.store_event - mode: v2_only, room: CAEFFC, type: round_started
-2025-08-12 19:56:11 - game.state.round_start - INFO - 🚀 V2 EVENT: round_started event fired for round 1
-2025-08-12 19:56:11 - backend.services.migration_adapter - INFO - 🔍 DEBUG: MigrationAdapter.store_event CALLED - mode: v2_only, room: CAEFFC, type: phase_change
-2025-08-12 19:56:11 - backend.services.migration_adapter - INFO - 🔍 DEBUG: MigrationAdapter.store_event - mode: v2_only, room: CAEFFC, type: phase_change
-2025-08-12 19:56:11 - backend.engine.state_machine.game_state_machine - INFO - Stored phase change event: GamePhase.PREPARATION -> GamePhase.ROUND_START
-2025-08-12 19:56:11 - backend.engine.state_machine.game_state_machine - INFO - Notifying bot manager about phase round_start
-2025-08-12 19:56:12 - backend.api.routes.ws - INFO - 🧹 [ROOM_DEBUG] Cleanup iteration 5: Checking 1 rooms: ['CAEFFC']
-2025-08-12 19:56:12 - backend.services.optimized_event_store - INFO - Storing round_started event for room CAEFFC, round 1
-2025-08-12 19:56:16 - backend.engine.state_machine.game_state_machine - INFO - Transitioning from GamePhase.ROUND_START to GamePhase.DECLARATION
-2025-08-12 19:56:16 - backend.engine.state_machine.game_state_machine - INFO - 🔄 Transitioning: GamePhase.ROUND_START -> GamePhase.DECLARATION
-2025-08-12 19:56:16 - game.state.round_start - INFO - Exiting round_start phase
-2025-08-12 19:56:16 - game.state.round_start - INFO - 🎯 Round start display complete - transitioning to Declaration
-2025-08-12 19:56:16 - game.state.declaration - INFO - Entering declaration phase
-2025-08-12 19:56:16 - backend.services.migration_adapter - INFO - 🔍 DEBUG: MigrationAdapter.store_event CALLED - mode: v2_only, room: CAEFFC, type: phase_data_update
-2025-08-12 19:56:16 - backend.services.migration_adapter - INFO - 🔍 DEBUG: MigrationAdapter.store_event - mode: v2_only, room: CAEFFC, type: phase_data_update
-2025-08-12 19:56:16 - backend.services.migration_adapter - INFO - 🔍 DEBUG: MigrationAdapter.store_event CALLED - mode: v2_only, room: CAEFFC, type: phase_data_update
-2025-08-12 19:56:16 - backend.services.migration_adapter - INFO - 🔍 DEBUG: MigrationAdapter.store_event - mode: v2_only, room: CAEFFC, type: phase_data_update
-2025-08-12 19:56:16 - backend.services.migration_adapter - INFO - 🔍 DEBUG: MigrationAdapter.store_event CALLED - mode: v2_only, room: CAEFFC, type: phase_change
-2025-08-12 19:56:16 - backend.services.migration_adapter - INFO - 🔍 DEBUG: MigrationAdapter.store_event - mode: v2_only, room: CAEFFC, type: phase_change
-2025-08-12 19:56:16 - backend.engine.state_machine.game_state_machine - INFO - Stored phase change event: GamePhase.ROUND_START -> GamePhase.DECLARATION
-2025-08-12 19:56:16 - backend.engine.state_machine.game_state_machine - INFO - Notifying bot manager about phase declaration
-2025-08-12 19:56:16 - backend.engine.bot_manager - INFO - 👤 Round starter is human or None: Andy
-2025-08-12 19:56:17 - backend.api.routes.ws - INFO - 🧹 [ROOM_DEBUG] Cleanup iteration 6: Checking 1 rooms: ['CAEFFC']
-2025-08-12 19:56:21 - backend.services.migration_adapter - INFO - 🔍 DEBUG: MigrationAdapter.store_event CALLED - mode: v2_only, room: CAEFFC, type: phase_data_update
-2025-08-12 19:56:21 - backend.services.migration_adapter - INFO - 🔍 DEBUG: MigrationAdapter.store_event - mode: v2_only, room: CAEFFC, type: phase_data_update
-2025-08-12 19:56:22 - backend.api.routes.ws - INFO - 🧹 [ROOM_DEBUG] Cleanup iteration 7: Checking 1 rooms: ['CAEFFC']
-2025-08-12 19:56:22 - backend.engine.bot_manager - INFO - ✅ Bot Bot 2 declared 3
-2025-08-12 19:56:23 - backend.engine.bot_manager - INFO - ✅ Bot Bot 3 declared 2
-2025-08-12 19:56:24 - backend.engine.bot_manager - INFO - ✅ Bot Bot 4 declared 0
-2025-08-12 19:56:24 - game.state.declaration - INFO - Player Andy declared 7
-2025-08-12 19:56:25 - backend.services.migration_adapter - INFO - 🔍 DEBUG: MigrationAdapter.store_event CALLED - mode: v2_only, room: CAEFFC, type: phase_data_update
-2025-08-12 19:56:25 - backend.services.migration_adapter - INFO - 🔍 DEBUG: MigrationAdapter.store_event - mode: v2_only, room: CAEFFC, type: phase_data_update
-2025-08-12 19:56:26 - backend.engine.bot_manager - INFO - ✅ Bot Bot 3 declared 0
-2025-08-12 19:56:27 - backend.engine.bot_manager - INFO - ✅ Bot Bot 4 declared 0
-2025-08-12 19:56:27 - game.state.declaration - INFO - Player Bot 2 declared 3
-2025-08-12 19:56:27 - backend.services.migration_adapter - INFO - 🔍 DEBUG: MigrationAdapter.store_event CALLED - mode: v2_only, room: CAEFFC, type: phase_data_update
-2025-08-12 19:56:27 - backend.services.migration_adapter - INFO - 🔍 DEBUG: MigrationAdapter.store_event - mode: v2_only, room: CAEFFC, type: phase_data_update
-2025-08-12 19:56:27 - backend.api.routes.ws - INFO - 🧹 [ROOM_DEBUG] Cleanup iteration 8: Checking 1 rooms: ['CAEFFC']
-2025-08-12 19:56:28 - backend.engine.bot_manager - INFO - ✅ Bot Bot 4 declared 0
-2025-08-12 19:56:28 - game.state.declaration - INFO - Player Bot 3 declared 2
-2025-08-12 19:56:28 - backend.services.migration_adapter - INFO - 🔍 DEBUG: MigrationAdapter.store_event CALLED - mode: v2_only, room: CAEFFC, type: phase_data_update
-2025-08-12 19:56:28 - backend.services.migration_adapter - INFO - 🔍 DEBUG: MigrationAdapter.store_event - mode: v2_only, room: CAEFFC, type: phase_data_update
-2025-08-12 19:56:28 - game.state.declaration - INFO - Player Bot 4 declared 0
-2025-08-12 19:56:28 - backend.services.migration_adapter - INFO - 🔍 DEBUG: MigrationAdapter.store_event CALLED - mode: v2_only, room: CAEFFC, type: declarations_completed
-2025-08-12 19:56:28 - backend.services.migration_adapter - INFO - 🔍 DEBUG: MigrationAdapter.store_event - mode: v2_only, room: CAEFFC, type: declarations_completed
-2025-08-12 19:56:28 - backend.engine.state_machine.game_state_machine - INFO - Transitioning from GamePhase.DECLARATION to GamePhase.TURN
-2025-08-12 19:56:28 - backend.engine.state_machine.game_state_machine - INFO - 🔄 Transitioning: GamePhase.DECLARATION -> GamePhase.TURN
-2025-08-12 19:56:28 - game.state.declaration - INFO - Exiting declaration phase
-2025-08-12 19:56:28 - game.state.declaration - INFO - Copied declarations to game: {'Andy': 7, 'Bot 2': 3, 'Bot 3': 2, 'Bot 4': 0}
-2025-08-12 19:56:28 - game.state.turn - INFO - Entering turn phase
-2025-08-12 19:56:28 - game.state.turn - INFO - Turn phase starting - Andy starts first turn
-2025-08-12 19:56:28 - backend.services.migration_adapter - INFO - 🔍 DEBUG: MigrationAdapter.store_event CALLED - mode: v2_only, room: CAEFFC, type: phase_data_update
-2025-08-12 19:56:28 - backend.services.migration_adapter - INFO - 🔍 DEBUG: MigrationAdapter.store_event - mode: v2_only, room: CAEFFC, type: phase_data_update
-2025-08-12 19:56:28 - game.state.turn - INFO - New turn started - order: ['Andy', 'Bot 2', 'Bot 3', 'Bot 4']
-2025-08-12 19:56:28 - backend.services.migration_adapter - INFO - 🔍 DEBUG: MigrationAdapter.store_event CALLED - mode: v2_only, room: CAEFFC, type: phase_change
-2025-08-12 19:56:28 - backend.services.migration_adapter - INFO - 🔍 DEBUG: MigrationAdapter.store_event - mode: v2_only, room: CAEFFC, type: phase_change
-2025-08-12 19:56:28 - backend.engine.state_machine.game_state_machine - INFO - Stored phase change event: GamePhase.DECLARATION -> GamePhase.TURN
-2025-08-12 19:56:28 - backend.engine.state_machine.game_state_machine - INFO - Notifying bot manager about phase turn
-2025-08-12 19:56:29 - game.state.turn - WARNING - Action declare not allowed in turn
-2025-08-12 19:56:29 - backend.engine.state_machine.game_state_machine - INFO - Action rejected: declare from Bot 3
-2025-08-12 19:56:29 - game.state.turn - WARNING - Action declare not allowed in turn
-2025-08-12 19:56:29 - backend.engine.state_machine.game_state_machine - INFO - Action rejected: declare from Bot 4
-2025-08-12 19:56:29 - game.state.turn - WARNING - Action declare not allowed in turn
-2025-08-12 19:56:29 - backend.engine.state_machine.game_state_machine - INFO - Action rejected: declare from Bot 4
-2025-08-12 19:56:32 - backend.api.routes.ws - INFO - 🧹 [ROOM_DEBUG] Cleanup iteration 9: Checking 1 rooms: ['CAEFFC']
-2025-08-12 19:56:36 - game.state.turn - INFO - Andy (starter) plays 6 pieces - setting required count
-2025-08-12 19:56:36 - game.state.turn - INFO - Andy plays: [CHARIOT_RED(8), CHARIOT_RED(8), HORSE_RED(6), HORSE_RED(6), CANNON_RED(4), CANNON_RED(4)] (value: 36)
-2025-08-12 19:56:36 - game.state.turn - INFO - Removed 6 pieces from Andy's hand
-2025-08-12 19:56:36 - backend.services.migration_adapter - INFO - 🔍 DEBUG: MigrationAdapter.store_event CALLED - mode: v2_only, room: CAEFFC, type: phase_data_update
-2025-08-12 19:56:36 - backend.services.migration_adapter - INFO - 🔍 DEBUG: MigrationAdapter.store_event - mode: v2_only, room: CAEFFC, type: phase_data_update
-2025-08-12 19:56:37 - backend.api.routes.ws - INFO - 🧹 [ROOM_DEBUG] Cleanup iteration 10: Checking 1 rooms: ['CAEFFC']
-2025-08-12 19:56:38 - backend.engine.bot_manager - INFO - Bot Bot 2 (0/3) plays: INVALID (33 pts): ADVISOR, ELEPHANT, CHARIOT, CANNON, SOLDIER, SOLDIER
-2025-08-12 19:56:38 - backend.engine.bot_manager - INFO - Bot Bot 2 action queued
-2025-08-12 19:56:39 - backend.engine.bot_manager - INFO - Bot Bot 3 (0/2) plays: INVALID (21 pts): ELEPHANT, HORSE, CANNON, SOLDIER, SOLDIER, SOLDIER
-2025-08-12 19:56:39 - backend.engine.bot_manager - INFO - Bot Bot 3 action queued
-    - THREE_OF_A_KIND: ['SOLDIER(2)', 'SOLDIER(2)', 'SOLDIER(2)']
-2025-08-12 19:56:39 - backend.engine.bot_manager - INFO - Bot Bot 4 (at target) plays weakly: INVALID (34 pts): ELEPHANT, ELEPHANT, CHARIOT, HORSE, SOLDIER, SOLDIER
-2025-08-12 19:56:39 - backend.engine.bot_manager - INFO - Bot Bot 4 action queued
-2025-08-12 19:56:40 - game.state.turn - INFO - Bot 2 plays: [ADVISOR_BLACK(11), ELEPHANT_RED(10), CHARIOT_BLACK(7), CANNON_BLACK(3), SOLDIER_BLACK(1), SOLDIER_BLACK(1)] (value: 33)
-2025-08-12 19:56:40 - game.state.turn - INFO - Removed 6 pieces from Bot 2's hand
-2025-08-12 19:56:40 - backend.services.migration_adapter - INFO - 🔍 DEBUG: MigrationAdapter.store_event CALLED - mode: v2_only, room: CAEFFC, type: phase_data_update
-2025-08-12 19:56:40 - backend.services.migration_adapter - INFO - 🔍 DEBUG: MigrationAdapter.store_event - mode: v2_only, room: CAEFFC, type: phase_data_update
-2025-08-12 19:56:41 - backend.engine.bot_manager - INFO - Bot Bot 3 (0/2) plays: INVALID (21 pts): ELEPHANT, HORSE, CANNON, SOLDIER, SOLDIER, SOLDIER
-2025-08-12 19:56:41 - backend.engine.bot_manager - INFO - Bot Bot 3 action queued
-2025-08-12 19:56:42 - backend.api.routes.ws - INFO - 🧹 [ROOM_DEBUG] Cleanup iteration 11: Checking 1 rooms: ['CAEFFC']
-    - THREE_OF_A_KIND: ['SOLDIER(2)', 'SOLDIER(2)', 'SOLDIER(2)']
-2025-08-12 19:56:42 - backend.engine.bot_manager - INFO - Bot Bot 4 (at target) plays weakly: INVALID (34 pts): ELEPHANT, ELEPHANT, CHARIOT, HORSE, SOLDIER, SOLDIER
-2025-08-12 19:56:42 - backend.engine.bot_manager - INFO - Bot Bot 4 action queued
-2025-08-12 19:56:42 - game.state.turn - INFO - Bot 3 plays: [ELEPHANT_BLACK(9), HORSE_BLACK(5), CANNON_BLACK(3), SOLDIER_RED(2), SOLDIER_BLACK(1), SOLDIER_BLACK(1)] (value: 21)
-2025-08-12 19:56:42 - game.state.turn - INFO - Removed 6 pieces from Bot 3's hand
-2025-08-12 19:56:42 - backend.services.migration_adapter - INFO - 🔍 DEBUG: MigrationAdapter.store_event CALLED - mode: v2_only, room: CAEFFC, type: phase_data_update
-2025-08-12 19:56:42 - backend.services.migration_adapter - INFO - 🔍 DEBUG: MigrationAdapter.store_event - mode: v2_only, room: CAEFFC, type: phase_data_update
-    - THREE_OF_A_KIND: ['SOLDIER(2)', 'SOLDIER(2)', 'SOLDIER(2)']
-2025-08-12 19:56:44 - backend.engine.bot_manager - INFO - Bot Bot 4 (at target) plays weakly: INVALID (34 pts): ELEPHANT, ELEPHANT, CHARIOT, HORSE, SOLDIER, SOLDIER
-2025-08-12 19:56:44 - backend.engine.bot_manager - INFO - Bot Bot 4 action queued
-2025-08-12 19:56:44 - game.state.turn - INFO - Bot 4 plays: [ELEPHANT_RED(10), ELEPHANT_BLACK(9), CHARIOT_BLACK(7), HORSE_BLACK(5), SOLDIER_BLACK(1), SOLDIER_RED(2)] (value: 34)
-2025-08-12 19:56:44 - game.state.turn - INFO - Removed 6 pieces from Bot 4's hand
-2025-08-12 19:56:44 - backend.services.migration_adapter - INFO - 🔍 DEBUG: MigrationAdapter.store_event CALLED - mode: v2_only, room: CAEFFC, type: phase_data_update
-2025-08-12 19:56:44 - backend.services.migration_adapter - INFO - 🔍 DEBUG: MigrationAdapter.store_event - mode: v2_only, room: CAEFFC, type: phase_data_update
-2025-08-12 19:56:44 - game.state.turn - INFO - 🎯 Round 1, Turn 1 winner: Andy with DOUBLE_STRAIGHT value 36
-2025-08-12 19:56:44 - game.state.turn - INFO - 💰 Andy won 6 piles this turn, total: 6 piles
-2025-08-12 19:56:44 - game.state.turn - INFO - Andy wins turn and gets 6 piles
-2025-08-12 19:56:44 - game.state.turn - INFO - Waiting for piece flip animation to complete...
-2025-08-12 19:56:47 - backend.api.routes.ws - INFO - 🧹 [ROOM_DEBUG] Cleanup iteration 12: Checking 1 rooms: ['CAEFFC']
-2025-08-12 19:56:49 - backend.services.migration_adapter - INFO - 🔍 DEBUG: MigrationAdapter.store_event CALLED - mode: v2_only, room: CAEFFC, type: phase_data_update
-2025-08-12 19:56:49 - backend.services.migration_adapter - INFO - 🔍 DEBUG: MigrationAdapter.store_event - mode: v2_only, room: CAEFFC, type: phase_data_update
-2025-08-12 19:56:49 - game.state.turn - INFO - 📝 Stored turn 1 in history
-2025-08-12 19:56:49 - game.state.turn - INFO - 🚀 Enterprise broadcast turn completion - winner: Andy, turn piles awarded: {'Andy': 6, 'Bot 2': 0, 'Bot 3': 0, 'Bot 4': 0}
-2025-08-12 19:56:49 - game.state.turn - INFO - 🔄 Updated turn order - new starter first: ['Andy', 'Bot 2', 'Bot 3', 'Bot 4']
-2025-08-12 19:56:49 - game.state.turn - INFO - 🎯 Next turn starter: Andy
-2025-08-12 19:56:50 - game.state.turn - INFO - 🎯 Turn complete - auto-starting next turn in 7 seconds
-2025-08-12 19:56:52 - backend.api.routes.ws - INFO - 🧹 [ROOM_DEBUG] Cleanup iteration 13: Checking 1 rooms: ['CAEFFC']
-2025-08-12 19:56:57 - backend.services.migration_adapter - INFO - 🔍 DEBUG: MigrationAdapter.store_event CALLED - mode: v2_only, room: CAEFFC, type: phase_data_update
-2025-08-12 19:56:57 - backend.services.migration_adapter - INFO - 🔍 DEBUG: MigrationAdapter.store_event - mode: v2_only, room: CAEFFC, type: phase_data_update
-2025-08-12 19:56:57 - game.state.turn - INFO - New turn started - order: ['Andy', 'Bot 2', 'Bot 3', 'Bot 4']
-2025-08-12 19:56:57 - game.state.turn - INFO - 🚀 Enterprise: New turn auto-started with automatic broadcasting
-2025-08-12 19:56:57 - backend.api.routes.ws - INFO - 🧹 [ROOM_DEBUG] Cleanup iteration 14: Checking 1 rooms: ['CAEFFC']
-2025-08-12 19:56:57 - game.state.turn - WARNING - Not Bot 3's turn - expected Andy
-2025-08-12 19:56:57 - game.state.turn - WARNING - Invalid action: GameAction(player_name='Bot 3', action_type=<ActionType.PLAY_PIECES: 'play_pieces'>, payload={'pieces': [ELEPHANT_BLACK(9), HORSE_BLACK(5), CANNON_BLACK(3), SOLDIER_RED(2), SOLDIER_BLACK(1), SOLDIER_BLACK(1)]}, timestamp=datetime.datetime(2025, 8, 12, 19, 56, 41, 299339), sequence_id=13, is_bot=True)
-2025-08-12 19:56:57 - game.state.turn - WARNING - Not Bot 4's turn - expected Andy
-2025-08-12 19:56:57 - game.state.turn - WARNING - Invalid action: GameAction(player_name='Bot 4', action_type=<ActionType.PLAY_PIECES: 'play_pieces'>, payload={'pieces': [ELEPHANT_RED(10), ELEPHANT_BLACK(9), CHARIOT_BLACK(7), HORSE_BLACK(5), SOLDIER_BLACK(1), SOLDIER_RED(2)]}, timestamp=datetime.datetime(2025, 8, 12, 19, 56, 42, 723826), sequence_id=14, is_bot=True)
-2025-08-12 19:56:57 - game.state.turn - WARNING - Not Bot 4's turn - expected Andy
-2025-08-12 19:56:57 - game.state.turn - WARNING - Invalid action: GameAction(player_name='Bot 4', action_type=<ActionType.PLAY_PIECES: 'play_pieces'>, payload={'pieces': [ELEPHANT_RED(10), ELEPHANT_BLACK(9), CHARIOT_BLACK(7), HORSE_BLACK(5), SOLDIER_BLACK(1), SOLDIER_RED(2)]}, timestamp=datetime.datetime(2025, 8, 12, 19, 56, 44, 186092), sequence_id=15, is_bot=True)
-2025-08-12 19:56:59 - game.state.turn - INFO - Andy (starter) plays 1 pieces - setting required count
-2025-08-12 19:56:59 - game.state.turn - INFO - Andy plays: [SOLDIER_RED(2)] (value: 2)
-2025-08-12 19:56:59 - game.state.turn - INFO - Removed 1 pieces from Andy's hand
-2025-08-12 19:56:59 - backend.services.migration_adapter - INFO - 🔍 DEBUG: MigrationAdapter.store_event CALLED - mode: v2_only, room: CAEFFC, type: phase_data_update
-2025-08-12 19:56:59 - backend.services.migration_adapter - INFO - 🔍 DEBUG: MigrationAdapter.store_event - mode: v2_only, room: CAEFFC, type: phase_data_update
-2025-08-12 19:57:00 - backend.engine.bot_manager - INFO - Bot Bot 2 (0/3) plays: SINGLE (13 pts): GENERAL
-2025-08-12 19:57:00 - backend.engine.bot_manager - INFO - Bot Bot 2 action queued
-2025-08-12 19:57:01 - backend.engine.bot_manager - INFO - Bot Bot 3 (0/2) plays: SINGLE (12 pts): ADVISOR
-2025-08-12 19:57:01 - backend.engine.bot_manager - INFO - Bot Bot 3 action queued
-2025-08-12 19:57:02 - backend.api.routes.ws - INFO - 🧹 [ROOM_DEBUG] Cleanup iteration 15: Checking 1 rooms: ['CAEFFC']
-2025-08-12 19:57:02 - backend.engine.bot_manager - INFO - Bot Bot 4 (at target) plays weakly: SINGLE (2 pts): SOLDIER
-2025-08-12 19:57:02 - backend.engine.bot_manager - INFO - Bot Bot 4 action queued
-2025-08-12 19:57:03 - game.state.turn - INFO - Bot 2 plays: [GENERAL_BLACK(13)] (value: 13)
-2025-08-12 19:57:03 - game.state.turn - INFO - Removed 1 pieces from Bot 2's hand
-2025-08-12 19:57:03 - backend.services.migration_adapter - INFO - 🔍 DEBUG: MigrationAdapter.store_event CALLED - mode: v2_only, room: CAEFFC, type: phase_data_update
-2025-08-12 19:57:03 - backend.services.migration_adapter - INFO - 🔍 DEBUG: MigrationAdapter.store_event - mode: v2_only, room: CAEFFC, type: phase_data_update
-2025-08-12 19:57:04 - backend.engine.bot_manager - INFO - Bot Bot 3 (0/2) plays: SINGLE (12 pts): ADVISOR
-2025-08-12 19:57:04 - backend.engine.bot_manager - INFO - Bot Bot 3 action queued
-2025-08-12 19:57:05 - backend.engine.bot_manager - INFO - Bot Bot 4 (at target) plays weakly: SINGLE (2 pts): SOLDIER
-2025-08-12 19:57:05 - backend.engine.bot_manager - INFO - Bot Bot 4 action queued
-2025-08-12 19:57:05 - game.state.turn - INFO - Bot 3 plays: [ADVISOR_RED(12)] (value: 12)
-2025-08-12 19:57:05 - game.state.turn - INFO - Removed 1 pieces from Bot 3's hand
-2025-08-12 19:57:05 - backend.services.migration_adapter - INFO - 🔍 DEBUG: MigrationAdapter.store_event CALLED - mode: v2_only, room: CAEFFC, type: phase_data_update
-2025-08-12 19:57:05 - backend.services.migration_adapter - INFO - 🔍 DEBUG: MigrationAdapter.store_event - mode: v2_only, room: CAEFFC, type: phase_data_update
-2025-08-12 19:57:06 - backend.engine.bot_manager - INFO - Bot Bot 4 (at target) plays weakly: SINGLE (2 pts): SOLDIER
-2025-08-12 19:57:06 - backend.engine.bot_manager - INFO - Bot Bot 4 action queued
-2025-08-12 19:57:06 - game.state.turn - INFO - Bot 4 plays: [SOLDIER_RED(2)] (value: 2)
-2025-08-12 19:57:06 - game.state.turn - INFO - Removed 1 pieces from Bot 4's hand
-2025-08-12 19:57:06 - backend.services.migration_adapter - INFO - 🔍 DEBUG: MigrationAdapter.store_event CALLED - mode: v2_only, room: CAEFFC, type: phase_data_update
-2025-08-12 19:57:06 - backend.services.migration_adapter - INFO - 🔍 DEBUG: MigrationAdapter.store_event - mode: v2_only, room: CAEFFC, type: phase_data_update
-2025-08-12 19:57:06 - game.state.turn - INFO - 🎯 Round 1, Turn 2 winner: Bot 2 with SINGLE value 13
-2025-08-12 19:57:06 - game.state.turn - INFO - 💰 Bot 2 won 1 piles this turn, total: 1 piles
-2025-08-12 19:57:06 - game.state.turn - INFO - Bot 2 wins turn and gets 1 piles
-2025-08-12 19:57:06 - game.state.turn - INFO - Waiting for piece flip animation to complete...
-2025-08-12 19:57:07 - backend.api.routes.ws - INFO - 🧹 [ROOM_DEBUG] Cleanup iteration 16: Checking 1 rooms: ['CAEFFC']
-2025-08-12 19:57:11 - backend.services.migration_adapter - INFO - 🔍 DEBUG: MigrationAdapter.store_event CALLED - mode: v2_only, room: CAEFFC, type: phase_data_update
-2025-08-12 19:57:11 - backend.services.migration_adapter - INFO - 🔍 DEBUG: MigrationAdapter.store_event - mode: v2_only, room: CAEFFC, type: phase_data_update
-2025-08-12 19:57:11 - game.state.turn - INFO - 📝 Stored turn 2 in history
-2025-08-12 19:57:11 - game.state.turn - INFO - 🚀 Enterprise broadcast turn completion - winner: Bot 2, turn piles awarded: {'Bot 2': 1, 'Andy': 0, 'Bot 3': 0, 'Bot 4': 0}
-2025-08-12 19:57:11 - game.state.turn - INFO - 🔄 Updated turn order - new starter first: ['Bot 2', 'Andy', 'Bot 3', 'Bot 4']
-2025-08-12 19:57:11 - game.state.turn - INFO - 🎯 Next turn starter: Bot 2
-2025-08-12 19:57:11 - game.state.turn - INFO - 🎯 Turn complete - auto-starting next turn in 7 seconds
-2025-08-12 19:57:12 - backend.api.routes.ws - INFO - 🧹 [ROOM_DEBUG] Cleanup iteration 17: Checking 1 rooms: ['CAEFFC']
-2025-08-12 19:57:17 - backend.api.routes.ws - INFO - 🧹 [ROOM_DEBUG] Cleanup iteration 18: Checking 1 rooms: ['CAEFFC']
-2025-08-12 19:57:18 - backend.services.migration_adapter - INFO - 🔍 DEBUG: MigrationAdapter.store_event CALLED - mode: v2_only, room: CAEFFC, type: phase_data_update
-2025-08-12 19:57:18 - backend.services.migration_adapter - INFO - 🔍 DEBUG: MigrationAdapter.store_event - mode: v2_only, room: CAEFFC, type: phase_data_update
-  🎯 Bot 2 plays emergency SINGLE: ['ADVISOR(12)']
-2025-08-12 19:57:19 - backend.engine.bot_manager - INFO - Bot Bot 2 (1/3) plays: SINGLE (12 pts): ADVISOR
-2025-08-12 19:57:19 - backend.engine.bot_manager - INFO - Bot Bot 2 action queued
-2025-08-12 19:57:20 - backend.engine.bot_manager - INFO - Bot Bot 3 (0/2) plays: SINGLE (11 pts): ADVISOR
-2025-08-12 19:57:20 - backend.engine.bot_manager - INFO - Bot Bot 3 action queued
-2025-08-12 19:57:21 - backend.engine.bot_manager - INFO - Bot Bot 4 (at target) plays weakly: SINGLE (2 pts): SOLDIER
-2025-08-12 19:57:21 - backend.engine.bot_manager - INFO - Bot Bot 4 action queued
-2025-08-12 19:57:21 - game.state.turn - INFO - New turn started - order: ['Bot 2', 'Bot 3', 'Bot 4', 'Andy']
-2025-08-12 19:57:21 - game.state.turn - INFO - 🚀 Enterprise: New turn auto-started with automatic broadcasting
-2025-08-12 19:57:22 - backend.api.routes.ws - INFO - 🧹 [ROOM_DEBUG] Cleanup iteration 19: Checking 1 rooms: ['CAEFFC']
-2025-08-12 19:57:22 - game.state.turn - WARNING - Not Bot 3's turn - expected Bot 2
-2025-08-12 19:57:22 - game.state.turn - WARNING - Invalid action: GameAction(player_name='Bot 3', action_type=<ActionType.PLAY_PIECES: 'play_pieces'>, payload={'pieces': [ADVISOR_RED(12)]}, timestamp=datetime.datetime(2025, 8, 12, 19, 57, 4, 97434), sequence_id=20, is_bot=True)
-2025-08-12 19:57:22 - game.state.turn - WARNING - Not Bot 4's turn - expected Bot 2
-2025-08-12 19:57:22 - game.state.turn - WARNING - Invalid action: GameAction(player_name='Bot 4', action_type=<ActionType.PLAY_PIECES: 'play_pieces'>, payload={'pieces': [SOLDIER_RED(2)]}, timestamp=datetime.datetime(2025, 8, 12, 19, 57, 5, 199384), sequence_id=21, is_bot=True)
-2025-08-12 19:57:22 - game.state.turn - WARNING - Not Bot 4's turn - expected Bot 2
-2025-08-12 19:57:22 - game.state.turn - WARNING - Invalid action: GameAction(player_name='Bot 4', action_type=<ActionType.PLAY_PIECES: 'play_pieces'>, payload={'pieces': [SOLDIER_RED(2)]}, timestamp=datetime.datetime(2025, 8, 12, 19, 57, 6, 483524), sequence_id=22, is_bot=True)
-2025-08-12 19:57:22 - game.state.turn - INFO - Bot 2 (starter) plays 1 pieces - setting required count
-2025-08-12 19:57:22 - game.state.turn - INFO - Bot 2 plays: [ADVISOR_RED(12)] (value: 12)
-2025-08-12 19:57:22 - game.state.turn - INFO - Removed 1 pieces from Bot 2's hand
-2025-08-12 19:57:22 - backend.services.migration_adapter - INFO - 🔍 DEBUG: MigrationAdapter.store_event CALLED - mode: v2_only, room: CAEFFC, type: phase_data_update
-2025-08-12 19:57:22 - backend.services.migration_adapter - INFO - 🔍 DEBUG: MigrationAdapter.store_event - mode: v2_only, room: CAEFFC, type: phase_data_update
-2025-08-12 19:57:23 - backend.engine.bot_manager - INFO - Bot Bot 3 (0/2) plays: SINGLE (11 pts): ADVISOR
-2025-08-12 19:57:23 - backend.engine.bot_manager - INFO - Bot Bot 3 action queued
-2025-08-12 19:57:24 - backend.engine.bot_manager - INFO - Bot Bot 4 (at target) plays weakly: SINGLE (2 pts): SOLDIER
-2025-08-12 19:57:24 - backend.engine.bot_manager - INFO - Bot Bot 4 action queued
-2025-08-12 19:57:24 - game.state.turn - INFO - Bot 3 plays: [ADVISOR_BLACK(11)] (value: 11)
-2025-08-12 19:57:24 - game.state.turn - INFO - Removed 1 pieces from Bot 3's hand
-2025-08-12 19:57:24 - backend.services.migration_adapter - INFO - 🔍 DEBUG: MigrationAdapter.store_event CALLED - mode: v2_only, room: CAEFFC, type: phase_data_update
-2025-08-12 19:57:24 - backend.services.migration_adapter - INFO - 🔍 DEBUG: MigrationAdapter.store_event - mode: v2_only, room: CAEFFC, type: phase_data_update
-2025-08-12 19:57:26 - backend.engine.bot_manager - INFO - Bot Bot 4 (at target) plays weakly: SINGLE (2 pts): SOLDIER
-2025-08-12 19:57:26 - backend.engine.bot_manager - INFO - Bot Bot 4 action queued
-2025-08-12 19:57:26 - game.state.turn - INFO - Bot 4 plays: [SOLDIER_RED(2)] (value: 2)
-2025-08-12 19:57:26 - game.state.turn - INFO - Removed 1 pieces from Bot 4's hand
-2025-08-12 19:57:26 - backend.services.migration_adapter - INFO - 🔍 DEBUG: MigrationAdapter.store_event CALLED - mode: v2_only, room: CAEFFC, type: phase_data_update
-2025-08-12 19:57:26 - backend.services.migration_adapter - INFO - 🔍 DEBUG: MigrationAdapter.store_event - mode: v2_only, room: CAEFFC, type: phase_data_update
-2025-08-12 19:57:26 - game.state.turn - WARNING - Not Bot 3's turn - expected Andy
-2025-08-12 19:57:26 - game.state.turn - WARNING - Invalid action: GameAction(player_name='Bot 3', action_type=<ActionType.PLAY_PIECES: 'play_pieces'>, payload={'pieces': [ADVISOR_BLACK(11)]}, timestamp=datetime.datetime(2025, 8, 12, 19, 57, 23, 387727), sequence_id=26, is_bot=True)
-2025-08-12 19:57:26 - game.state.turn - WARNING - Not Bot 4's turn - expected Andy
-2025-08-12 19:57:26 - game.state.turn - WARNING - Invalid action: GameAction(player_name='Bot 4', action_type=<ActionType.PLAY_PIECES: 'play_pieces'>, payload={'pieces': [SOLDIER_RED(2)]}, timestamp=datetime.datetime(2025, 8, 12, 19, 57, 24, 673408), sequence_id=27, is_bot=True)
-2025-08-12 19:57:26 - game.state.turn - WARNING - Not Bot 4's turn - expected Andy
-2025-08-12 19:57:26 - game.state.turn - WARNING - Invalid action: GameAction(player_name='Bot 4', action_type=<ActionType.PLAY_PIECES: 'play_pieces'>, payload={'pieces': [SOLDIER_RED(2)]}, timestamp=datetime.datetime(2025, 8, 12, 19, 57, 26, 113227), sequence_id=28, is_bot=True)
-2025-08-12 19:57:27 - backend.api.routes.ws - INFO - 🧹 [ROOM_DEBUG] Cleanup iteration 20: Checking 1 rooms: ['CAEFFC']
-2025-08-12 19:57:28 - game.state.turn - INFO - Andy plays: [GENERAL_RED(14)] (value: 14)
-2025-08-12 19:57:28 - game.state.turn - INFO - Removed 1 pieces from Andy's hand
-2025-08-12 19:57:28 - backend.services.migration_adapter - INFO - 🔍 DEBUG: MigrationAdapter.store_event CALLED - mode: v2_only, room: CAEFFC, type: phase_data_update
-2025-08-12 19:57:28 - backend.services.migration_adapter - INFO - 🔍 DEBUG: MigrationAdapter.store_event - mode: v2_only, room: CAEFFC, type: phase_data_update
-2025-08-12 19:57:28 - game.state.turn - INFO - 🎯 Round 1, Turn 3 winner: Andy with SINGLE value 14
-2025-08-12 19:57:28 - game.state.turn - INFO - 💰 Andy won 1 piles this turn, total: 7 piles
-2025-08-12 19:57:28 - game.state.turn - INFO - Andy wins turn and gets 1 piles
-2025-08-12 19:57:28 - game.state.turn - INFO - Waiting for piece flip animation to complete...
-2025-08-12 19:57:32 - backend.api.routes.ws - INFO - 🧹 [ROOM_DEBUG] Cleanup iteration 21: Checking 1 rooms: ['CAEFFC']
-2025-08-12 19:57:33 - backend.services.migration_adapter - INFO - 🔍 DEBUG: MigrationAdapter.store_event CALLED - mode: v2_only, room: CAEFFC, type: phase_data_update
-2025-08-12 19:57:33 - backend.services.migration_adapter - INFO - 🔍 DEBUG: MigrationAdapter.store_event - mode: v2_only, room: CAEFFC, type: phase_data_update
-2025-08-12 19:57:33 - game.state.turn - INFO - 📝 Stored turn 3 in history
-2025-08-12 19:57:33 - game.state.turn - INFO - 🚀 Enterprise broadcast turn completion - winner: Andy, turn piles awarded: {'Andy': 1, 'Bot 2': 0, 'Bot 3': 0, 'Bot 4': 0}
-2025-08-12 19:57:33 - game.state.turn - INFO - 🏁 All hands are now empty - round complete. Last turn winner: Andy
-2025-08-12 19:57:33 - game.state.turn - INFO - 🏁 Turn complete - transitioning to turn_results
-2025-08-12 19:57:33 - backend.engine.state_machine.game_state_machine - INFO - Transitioning from GamePhase.TURN to GamePhase.TURN_RESULTS
-2025-08-12 19:57:33 - backend.engine.state_machine.game_state_machine - INFO - 🔄 Transitioning: GamePhase.TURN -> GamePhase.TURN_RESULTS
-2025-08-12 19:57:33 - game.state.turn - INFO - Exiting turn phase
-2025-08-12 19:57:33 - game.state.turn - INFO - 🏁 Turn phase complete - all hands empty
-2025-08-12 19:57:33 - game.state.turn_results - INFO - Entering turn_results phase
-2025-08-12 19:57:33 - game.state.turn_results - INFO - 🏆 Turn results phase starting - displaying turn outcome
-2025-08-12 19:57:33 - game.state.turn_results - INFO - ℹ️ TURNS_WON_DEBUG: No turn winner to update
-2025-08-12 19:57:33 - backend.services.migration_adapter - INFO - 🔍 DEBUG: MigrationAdapter.store_event CALLED - mode: v2_only, room: CAEFFC, type: phase_data_update
-2025-08-12 19:57:33 - backend.services.migration_adapter - INFO - 🔍 DEBUG: MigrationAdapter.store_event - mode: v2_only, room: CAEFFC, type: phase_data_update
-2025-08-12 19:57:33 - backend.services.migration_adapter - INFO - 🔍 DEBUG: MigrationAdapter.store_event CALLED - mode: v2_only, room: CAEFFC, type: phase_change
-2025-08-12 19:57:33 - backend.services.migration_adapter - INFO - 🔍 DEBUG: MigrationAdapter.store_event - mode: v2_only, room: CAEFFC, type: phase_change
-2025-08-12 19:57:33 - backend.engine.state_machine.game_state_machine - INFO - Stored phase change event: GamePhase.TURN -> GamePhase.TURN_RESULTS
-2025-08-12 19:57:33 - backend.engine.state_machine.game_state_machine - INFO - Notifying bot manager about phase turn_results
-2025-08-12 19:57:37 - backend.api.routes.ws - INFO - 🧹 [ROOM_DEBUG] Cleanup iteration 22: Checking 1 rooms: ['CAEFFC']
-2025-08-12 19:57:40 - backend.services.migration_adapter - INFO - 🔍 DEBUG: MigrationAdapter.store_event CALLED - mode: v2_only, room: CAEFFC, type: phase_data_update
-2025-08-12 19:57:40 - backend.services.migration_adapter - INFO - 🔍 DEBUG: MigrationAdapter.store_event - mode: v2_only, room: CAEFFC, type: phase_data_update
-2025-08-12 19:57:40 - game.state.turn_results - INFO - 🏆 Turn results complete - transitioning to GamePhase.SCORING
-2025-08-12 19:57:40 - backend.engine.state_machine.game_state_machine - INFO - Transitioning from GamePhase.TURN_RESULTS to GamePhase.SCORING
-2025-08-12 19:57:40 - backend.engine.state_machine.game_state_machine - INFO - 🔄 Transitioning: GamePhase.TURN_RESULTS -> GamePhase.SCORING
-2025-08-12 19:57:40 - game.state.turn_results - INFO - Exiting turn_results phase
-2025-08-12 19:57:40 - game.state.turn_results - INFO - 🏆 Cleaning up turn results phase
-2025-08-12 19:57:40 - game.state.scoring - INFO - Entering scoring phase
+INFO:     127.0.0.1:55530 - "GET /favicon.ico HTTP/1.1" 200 OK
+2025-08-12 22:46:26 - backend.api.websocket.connection_manager - INFO - Player Andy reconnected to room C805BC
+2025-08-12 22:46:26 - backend.api.routes.ws - INFO - Successfully registered player Andy for room C805BC
+2025-08-12 22:46:26 - backend.api.routes.ws - INFO - 🔌 RECONNECT_CHECK: Room C805BC - started=True, game_ended=False
+2025-08-12 22:46:26 - backend.engine.async_room - INFO - ✅ [ROOM_DEBUG] Cleanup cancelled for room 'C805BC' - human player reconnected
+2025-08-12 22:46:26 - backend.api.routes.ws - INFO - Player Andy reconnected to game in room C805BC
+2025-08-12 22:46:26 - backend.api.websocket.message_queue - INFO - Retrieved 0 queued messages for Andy
+2025-08-12 22:46:26 - backend.api.websocket.message_queue - INFO - Cleared message queue for Andy in room C805BC
+2025-08-12 22:46:27 - backend.api.routes.ws - INFO - 🧹 [ROOM_DEBUG] Cleanup iteration 3: Checking 1 rooms: ['C805BC']
+2025-08-12 22:46:30 - backend.engine.state_machine.game_state_machine - INFO - Transitioning from GamePhase.ROUND_START to GamePhase.DECLARATION
+2025-08-12 22:46:30 - backend.engine.state_machine.game_state_machine - INFO - 🔄 Transitioning: GamePhase.ROUND_START -> GamePhase.DECLARATION
+2025-08-12 22:46:30 - game.state.round_start - INFO - Exiting round_start phase
+2025-08-12 22:46:30 - game.state.round_start - INFO - 🎯 Round start display complete - transitioning to Declaration
+2025-08-12 22:46:30 - game.state.declaration - INFO - Entering declaration phase
+2025-08-12 22:46:30 - backend.services.migration_adapter - INFO - 🔍 DEBUG: MigrationAdapter.store_event - room: C805BC, type: phase_data_update
+2025-08-12 22:46:30 - backend.services.migration_adapter - INFO - 🔍 DEBUG: MigrationAdapter.store_event - room: C805BC, type: phase_data_update
+2025-08-12 22:46:31 - backend.engine.bot_manager - INFO - ✅ Bot Bot 3 declared 2
+2025-08-12 22:46:32 - backend.api.routes.ws - INFO - 🧹 [ROOM_DEBUG] Cleanup iteration 4: Checking 1 rooms: ['C805BC']
+2025-08-12 22:46:32 - backend.engine.bot_manager - INFO - ✅ Bot Bot 4 declared 1
+2025-08-12 22:46:32 - backend.services.migration_adapter - INFO - 🔍 DEBUG: MigrationAdapter.store_event - room: C805BC, type: phase_change
+2025-08-12 22:46:32 - backend.engine.state_machine.game_state_machine - INFO - Stored phase change event: GamePhase.ROUND_START -> GamePhase.DECLARATION
+2025-08-12 22:46:32 - backend.engine.state_machine.game_state_machine - INFO - Notifying bot manager about phase declaration
+2025-08-12 22:46:33 - backend.services.migration_adapter - INFO - 🔍 DEBUG: MigrationAdapter.store_event - room: C805BC, type: phase_data_update
+2025-08-12 22:46:34 - backend.engine.bot_manager - INFO - ✅ Bot Bot 4 declared 1
+2025-08-12 22:46:34 - game.state.declaration - INFO - Player Bot 3 declared 2
+2025-08-12 22:46:34 - backend.services.migration_adapter - INFO - 🔍 DEBUG: MigrationAdapter.store_event - room: C805BC, type: phase_data_update
+2025-08-12 22:46:34 - game.state.declaration - INFO - Player Bot 4 declared 1
+2025-08-12 22:46:35 - game.state.declaration - WARNING - Wrong player turn: Bot 4, expected: Andy
+2025-08-12 22:46:35 - game.state.declaration - WARNING - Invalid action: GameAction(player_name='Bot 4', action_type=<ActionType.DECLARE: 'declare'>, payload={'value': 1}, timestamp=datetime.datetime(2025, 8, 12, 22, 46, 34, 654735), sequence_id=2, is_bot=True)
+2025-08-12 22:46:37 - backend.services.migration_adapter - INFO - 🔍 DEBUG: MigrationAdapter.store_event - room: C805BC, type: phase_data_update
+2025-08-12 22:46:37 - backend.api.routes.ws - INFO - 🧹 [ROOM_DEBUG] Cleanup iteration 5: Checking 1 rooms: ['C805BC']
+2025-08-12 22:46:38 - backend.engine.bot_manager - INFO - ✅ Bot Bot 2 declared 4
+2025-08-12 22:46:38 - game.state.declaration - INFO - Player Andy declared 7
+2025-08-12 22:46:38 - backend.services.migration_adapter - INFO - 🔍 DEBUG: MigrationAdapter.store_event - room: C805BC, type: phase_data_update
+2025-08-12 22:46:38 - game.state.declaration - INFO - Player Bot 2 declared 4
+2025-08-12 22:46:38 - backend.services.migration_adapter - INFO - 🔍 DEBUG: MigrationAdapter.store_event - room: C805BC, type: declarations_completed
+2025-08-12 22:46:38 - backend.engine.state_machine.game_state_machine - INFO - Transitioning from GamePhase.DECLARATION to GamePhase.TURN
+2025-08-12 22:46:38 - backend.engine.state_machine.game_state_machine - INFO - 🔄 Transitioning: GamePhase.DECLARATION -> GamePhase.TURN
+2025-08-12 22:46:38 - game.state.declaration - INFO - Exiting declaration phase
+2025-08-12 22:46:38 - game.state.declaration - INFO - Copied declarations to game: {'Bot 3': 2, 'Bot 4': 1, 'Andy': 7, 'Bot 2': 4}
+2025-08-12 22:46:38 - game.state.turn - INFO - Entering turn phase
+2025-08-12 22:46:38 - game.state.turn - INFO - Turn phase starting - Bot 3 starts first turn
+2025-08-12 22:46:38 - backend.services.migration_adapter - INFO - 🔍 DEBUG: MigrationAdapter.store_event - room: C805BC, type: phase_data_update
+2025-08-12 22:46:39 - backend.engine.bot_manager - INFO - Bot Bot 3 (0/2) plays: SINGLE (10 pts): ELEPHANT
+2025-08-12 22:46:39 - backend.engine.bot_manager - INFO - Bot Bot 3 action queued
+2025-08-12 22:46:40 - backend.engine.bot_manager - INFO - Bot Bot 4 (0/1) plays: SINGLE (9 pts): ELEPHANT
+2025-08-12 22:46:40 - backend.engine.bot_manager - INFO - Bot Bot 4 action queued
+2025-08-12 22:46:40 - game.state.turn - INFO - New turn started - order: ['Bot 3', 'Bot 4', 'Andy', 'Bot 2']
+2025-08-12 22:46:40 - backend.services.migration_adapter - INFO - 🔍 DEBUG: MigrationAdapter.store_event - room: C805BC, type: phase_change
+2025-08-12 22:46:40 - backend.engine.state_machine.game_state_machine - INFO - Stored phase change event: GamePhase.DECLARATION -> GamePhase.TURN
+2025-08-12 22:46:40 - backend.engine.state_machine.game_state_machine - INFO - Notifying bot manager about phase turn
+2025-08-12 22:46:41 - game.state.turn - INFO - Bot 3 (starter) plays 1 pieces - setting required count
+2025-08-12 22:46:41 - game.state.turn - INFO - Bot 3 plays: [ELEPHANT_RED(10)] (value: 10)
+2025-08-12 22:46:41 - game.state.turn - INFO - Removed 1 pieces from Bot 3's hand
+2025-08-12 22:46:41 - backend.services.migration_adapter - INFO - 🔍 DEBUG: MigrationAdapter.store_event - room: C805BC, type: phase_data_update
+2025-08-12 22:46:42 - backend.api.routes.ws - INFO - 🧹 [ROOM_DEBUG] Cleanup iteration 6: Checking 1 rooms: ['C805BC']
+2025-08-12 22:46:42 - backend.engine.bot_manager - INFO - Bot Bot 4 (0/1) plays: SINGLE (9 pts): ELEPHANT
+2025-08-12 22:46:42 - backend.engine.bot_manager - INFO - Bot Bot 4 action queued
+2025-08-12 22:46:42 - game.state.turn - INFO - Bot 4 plays: [ELEPHANT_BLACK(9)] (value: 9)
+2025-08-12 22:46:42 - game.state.turn - INFO - Removed 1 pieces from Bot 4's hand
+2025-08-12 22:46:42 - backend.services.migration_adapter - INFO - 🔍 DEBUG: MigrationAdapter.store_event - room: C805BC, type: phase_data_update
+2025-08-12 22:46:43 - game.state.turn - WARNING - Not Bot 4's turn - expected Andy
+2025-08-12 22:46:43 - game.state.turn - WARNING - Invalid action: GameAction(player_name='Bot 4', action_type=<ActionType.PLAY_PIECES: 'play_pieces'>, payload={'pieces': [ELEPHANT_BLACK(9)]}, timestamp=datetime.datetime(2025, 8, 12, 22, 46, 42, 447491), sequence_id=7, is_bot=True)
+2025-08-12 22:46:45 - game.state.turn - INFO - Andy plays: [ADVISOR_RED(12)] (value: 12)
+2025-08-12 22:46:45 - game.state.turn - INFO - Removed 1 pieces from Andy's hand
+2025-08-12 22:46:45 - backend.services.migration_adapter - INFO - 🔍 DEBUG: MigrationAdapter.store_event - room: C805BC, type: phase_data_update
+    - THREE_OF_A_KIND: ['SOLDIER(1)', 'SOLDIER(1)', 'SOLDIER(1)']
+2025-08-12 22:46:46 - backend.engine.bot_manager - INFO - Bot Bot 2 (0/4) plays: SINGLE (10 pts): ELEPHANT
+2025-08-12 22:46:46 - backend.engine.bot_manager - INFO - Bot Bot 2 action queued
+2025-08-12 22:46:46 - game.state.turn - INFO - Bot 2 plays: [ELEPHANT_RED(10)] (value: 10)
+2025-08-12 22:46:46 - game.state.turn - INFO - Removed 1 pieces from Bot 2's hand
+2025-08-12 22:46:46 - backend.services.migration_adapter - INFO - 🔍 DEBUG: MigrationAdapter.store_event - room: C805BC, type: phase_data_update
+2025-08-12 22:46:46 - game.state.turn - INFO - 🎯 Round 1, Turn 1 winner: Andy with SINGLE value 12
+2025-08-12 22:46:46 - game.state.turn - INFO - 💰 Andy won 1 piles this turn, total: 1 piles
+2025-08-12 22:46:46 - game.state.turn - INFO - Andy wins turn and gets 1 piles
+2025-08-12 22:46:46 - game.state.turn - INFO - Waiting for piece flip animation to complete...
+2025-08-12 22:46:47 - backend.api.routes.ws - INFO - 🧹 [ROOM_DEBUG] Cleanup iteration 7: Checking 1 rooms: ['C805BC']
+2025-08-12 22:46:51 - backend.services.migration_adapter - INFO - 🔍 DEBUG: MigrationAdapter.store_event - room: C805BC, type: phase_data_update
+2025-08-12 22:46:51 - game.state.turn - INFO - 📝 Stored turn 1 in history
+2025-08-12 22:46:51 - game.state.turn - INFO - 🚀 Enterprise broadcast turn completion - winner: Andy, turn piles awarded: {'Andy': 1, 'Bot 2': 0, 'Bot 3': 0, 'Bot 4': 0}
+2025-08-12 22:46:51 - game.state.turn - INFO - 🔄 Updated turn order - new starter first: ['Andy', 'Bot 3', 'Bot 4', 'Bot 2']
+2025-08-12 22:46:51 - game.state.turn - INFO - 🎯 Next turn starter: Andy
+2025-08-12 22:46:51 - game.state.turn - INFO - 🎯 Turn complete - auto-starting next turn in 7 seconds
+2025-08-12 22:46:52 - backend.api.routes.ws - INFO - 🧹 [ROOM_DEBUG] Cleanup iteration 8: Checking 1 rooms: ['C805BC']
+2025-08-12 22:46:57 - backend.api.routes.ws - INFO - 🧹 [ROOM_DEBUG] Cleanup iteration 9: Checking 1 rooms: ['C805BC']
+2025-08-12 22:46:58 - backend.services.migration_adapter - INFO - 🔍 DEBUG: MigrationAdapter.store_event - room: C805BC, type: phase_data_update
+2025-08-12 22:46:58 - game.state.turn - INFO - New turn started - order: ['Andy', 'Bot 2', 'Bot 3', 'Bot 4']
+2025-08-12 22:46:58 - game.state.turn - INFO - 🚀 Enterprise: New turn auto-started with automatic broadcasting
+2025-08-12 22:47:02 - backend.api.routes.ws - INFO - 🧹 [ROOM_DEBUG] Cleanup iteration 10: Checking 1 rooms: ['C805BC']
+2025-08-12 22:47:03 - game.state.turn - INFO - Andy (starter) plays 6 pieces - setting required count
+2025-08-12 22:47:03 - game.state.turn - INFO - Andy plays: [CHARIOT_RED(8), CHARIOT_RED(8), HORSE_RED(6), HORSE_RED(6), CANNON_RED(4), CANNON_RED(4)] (value: 36)
+2025-08-12 22:47:03 - game.state.turn - INFO - Removed 6 pieces from Andy's hand
+2025-08-12 22:47:03 - backend.services.migration_adapter - INFO - 🔍 DEBUG: MigrationAdapter.store_event - room: C805BC, type: phase_data_update
+    - THREE_OF_A_KIND: ['SOLDIER(1)', 'SOLDIER(1)', 'SOLDIER(1)']
+2025-08-12 22:47:04 - backend.engine.bot_manager - INFO - Bot Bot 2 (0/4) plays: INVALID (32 pts): HORSE, SOLDIER, ADVISOR, ADVISOR, SOLDIER, SOLDIER
+2025-08-12 22:47:04 - backend.engine.bot_manager - INFO - Bot Bot 2 action queued
+2025-08-12 22:47:05 - backend.engine.bot_manager - INFO - Bot Bot 3 (0/2) plays: INVALID (48 pts): ELEPHANT, CHARIOT, HORSE, SOLDIER, ADVISOR, GENERAL
+2025-08-12 22:47:05 - backend.engine.bot_manager - INFO - Bot Bot 3 action queued
+2025-08-12 22:47:06 - backend.engine.bot_manager - INFO - Bot Bot 4 (0/1) plays: INVALID (12 pts): CANNON, SOLDIER, CANNON, SOLDIER, SOLDIER, SOLDIER
+2025-08-12 22:47:06 - backend.engine.bot_manager - INFO - Bot Bot 4 action queued
+2025-08-12 22:47:06 - game.state.turn - INFO - Bot 2 plays: [HORSE_BLACK(5), SOLDIER_RED(2), ADVISOR_BLACK(11), ADVISOR_RED(12), SOLDIER_BLACK(1), SOLDIER_BLACK(1)] (value: 32)
+2025-08-12 22:47:06 - game.state.turn - INFO - Removed 6 pieces from Bot 2's hand
+2025-08-12 22:47:06 - backend.services.migration_adapter - INFO - 🔍 DEBUG: MigrationAdapter.store_event - room: C805BC, type: phase_data_update
+2025-08-12 22:47:07 - backend.api.routes.ws - INFO - 🧹 [ROOM_DEBUG] Cleanup iteration 11: Checking 1 rooms: ['C805BC']
+2025-08-12 22:47:07 - backend.engine.bot_manager - INFO - Bot Bot 3 (0/2) plays: INVALID (48 pts): ELEPHANT, CHARIOT, HORSE, SOLDIER, ADVISOR, GENERAL
+2025-08-12 22:47:07 - backend.engine.bot_manager - INFO - Bot Bot 3 action queued
+2025-08-12 22:47:08 - backend.engine.bot_manager - INFO - Bot Bot 4 (0/1) plays: INVALID (12 pts): CANNON, SOLDIER, CANNON, SOLDIER, SOLDIER, SOLDIER
+2025-08-12 22:47:08 - backend.engine.bot_manager - INFO - Bot Bot 4 action queued
+2025-08-12 22:47:09 - game.state.turn - INFO - Bot 3 plays: [ELEPHANT_BLACK(9), CHARIOT_BLACK(7), HORSE_BLACK(5), SOLDIER_RED(2), ADVISOR_BLACK(11), GENERAL_RED(14)] (value: 48)
+2025-08-12 22:47:09 - game.state.turn - INFO - Removed 6 pieces from Bot 3's hand
+2025-08-12 22:47:09 - backend.services.migration_adapter - INFO - 🔍 DEBUG: MigrationAdapter.store_event - room: C805BC, type: phase_data_update
+2025-08-12 22:47:10 - backend.engine.bot_manager - INFO - Bot Bot 4 (0/1) plays: INVALID (12 pts): CANNON, SOLDIER, CANNON, SOLDIER, SOLDIER, SOLDIER
+2025-08-12 22:47:10 - backend.engine.bot_manager - INFO - Bot Bot 4 action queued
+2025-08-12 22:47:10 - game.state.turn - INFO - Bot 4 plays: [CANNON_BLACK(3), SOLDIER_RED(2), CANNON_BLACK(3), SOLDIER_RED(2), SOLDIER_BLACK(1), SOLDIER_BLACK(1)] (value: 12)
+2025-08-12 22:47:10 - game.state.turn - INFO - Removed 6 pieces from Bot 4's hand
+2025-08-12 22:47:10 - backend.services.migration_adapter - INFO - 🔍 DEBUG: MigrationAdapter.store_event - room: C805BC, type: phase_data_update
+2025-08-12 22:47:10 - game.state.turn - INFO - 🎯 Round 1, Turn 2 winner: Andy with DOUBLE_STRAIGHT value 36
+2025-08-12 22:47:10 - game.state.turn - INFO - 💰 Andy won 6 piles this turn, total: 7 piles
+2025-08-12 22:47:10 - game.state.turn - INFO - Andy wins turn and gets 6 piles
+2025-08-12 22:47:10 - game.state.turn - INFO - Waiting for piece flip animation to complete...
+2025-08-12 22:47:12 - backend.api.routes.ws - INFO - 🧹 [ROOM_DEBUG] Cleanup iteration 12: Checking 1 rooms: ['C805BC']
+2025-08-12 22:47:15 - backend.services.migration_adapter - INFO - 🔍 DEBUG: MigrationAdapter.store_event - room: C805BC, type: phase_data_update
+2025-08-12 22:47:15 - game.state.turn - INFO - 📝 Stored turn 2 in history
+2025-08-12 22:47:15 - game.state.turn - INFO - 🚀 Enterprise broadcast turn completion - winner: Andy, turn piles awarded: {'Andy': 6, 'Bot 2': 0, 'Bot 3': 0, 'Bot 4': 0}
+2025-08-12 22:47:15 - game.state.turn - INFO - 🔄 Updated turn order - new starter first: ['Andy', 'Bot 2', 'Bot 3', 'Bot 4']
+2025-08-12 22:47:15 - game.state.turn - INFO - 🎯 Next turn starter: Andy
+2025-08-12 22:47:15 - game.state.turn - INFO - 🎯 Turn complete - auto-starting next turn in 7 seconds
+2025-08-12 22:47:17 - backend.api.routes.ws - INFO - 🧹 [ROOM_DEBUG] Cleanup iteration 13: Checking 1 rooms: ['C805BC']
+2025-08-12 22:47:22 - backend.services.migration_adapter - INFO - 🔍 DEBUG: MigrationAdapter.store_event - room: C805BC, type: phase_data_update
+2025-08-12 22:47:22 - game.state.turn - INFO - New turn started - order: ['Andy', 'Bot 2', 'Bot 3', 'Bot 4']
+2025-08-12 22:47:22 - game.state.turn - INFO - 🚀 Enterprise: New turn auto-started with automatic broadcasting
+2025-08-12 22:47:22 - backend.api.routes.ws - INFO - 🧹 [ROOM_DEBUG] Cleanup iteration 14: Checking 1 rooms: ['C805BC']
+2025-08-12 22:47:22 - game.state.turn - WARNING - Not Bot 3's turn - expected Andy
+2025-08-12 22:47:22 - game.state.turn - WARNING - Invalid action: GameAction(player_name='Bot 3', action_type=<ActionType.PLAY_PIECES: 'play_pieces'>, payload={'pieces': [ELEPHANT_BLACK(9), CHARIOT_BLACK(7), HORSE_BLACK(5), SOLDIER_RED(2), ADVISOR_BLACK(11), GENERAL_RED(14)]}, timestamp=datetime.datetime(2025, 8, 12, 22, 47, 7, 668025), sequence_id=14, is_bot=True)
+2025-08-12 22:47:22 - game.state.turn - WARNING - Not Bot 4's turn - expected Andy
+2025-08-12 22:47:22 - game.state.turn - WARNING - Invalid action: GameAction(player_name='Bot 4', action_type=<ActionType.PLAY_PIECES: 'play_pieces'>, payload={'pieces': [CANNON_BLACK(3), SOLDIER_RED(2), CANNON_BLACK(3), SOLDIER_RED(2), SOLDIER_BLACK(1), SOLDIER_BLACK(1)]}, timestamp=datetime.datetime(2025, 8, 12, 22, 47, 8, 864795), sequence_id=15, is_bot=True)
+2025-08-12 22:47:22 - game.state.turn - WARNING - Not Bot 4's turn - expected Andy
+2025-08-12 22:47:22 - game.state.turn - WARNING - Invalid action: GameAction(player_name='Bot 4', action_type=<ActionType.PLAY_PIECES: 'play_pieces'>, payload={'pieces': [CANNON_BLACK(3), SOLDIER_RED(2), CANNON_BLACK(3), SOLDIER_RED(2), SOLDIER_BLACK(1), SOLDIER_BLACK(1)]}, timestamp=datetime.datetime(2025, 8, 12, 22, 47, 10, 58949), sequence_id=16, is_bot=True)
+2025-08-12 22:47:25 - game.state.turn - INFO - Andy (starter) plays 1 pieces - setting required count
+2025-08-12 22:47:25 - game.state.turn - INFO - Andy plays: [CHARIOT_BLACK(7)] (value: 7)
+2025-08-12 22:47:25 - game.state.turn - INFO - Removed 1 pieces from Andy's hand
+2025-08-12 22:47:25 - backend.services.migration_adapter - INFO - 🔍 DEBUG: MigrationAdapter.store_event - room: C805BC, type: phase_data_update
+2025-08-12 22:47:26 - backend.engine.bot_manager - INFO - Bot Bot 2 (0/4) plays: SINGLE (1 pts): SOLDIER
+2025-08-12 22:47:26 - backend.engine.bot_manager - INFO - Bot Bot 2 action queued
+2025-08-12 22:47:27 - backend.engine.bot_manager - INFO - Bot Bot 3 (0/2) plays: SINGLE (2 pts): SOLDIER
+2025-08-12 22:47:27 - backend.engine.bot_manager - INFO - Bot Bot 3 action queued
+2025-08-12 22:47:27 - backend.api.routes.ws - INFO - 🧹 [ROOM_DEBUG] Cleanup iteration 15: Checking 1 rooms: ['C805BC']
+2025-08-12 22:47:28 - backend.engine.bot_manager - INFO - Bot Bot 4 (0/1) plays: SINGLE (13 pts): GENERAL
+2025-08-12 22:47:28 - backend.engine.bot_manager - INFO - Bot Bot 4 action queued
+2025-08-12 22:47:28 - game.state.turn - INFO - Bot 2 plays: [SOLDIER_BLACK(1)] (value: 1)
+2025-08-12 22:47:28 - game.state.turn - INFO - Removed 1 pieces from Bot 2's hand
+2025-08-12 22:47:28 - backend.services.migration_adapter - INFO - 🔍 DEBUG: MigrationAdapter.store_event - room: C805BC, type: phase_data_update
+2025-08-12 22:47:30 - backend.engine.bot_manager - INFO - Bot Bot 3 (0/2) plays: SINGLE (2 pts): SOLDIER
+2025-08-12 22:47:30 - backend.engine.bot_manager - INFO - Bot Bot 3 action queued
+2025-08-12 22:47:31 - backend.engine.bot_manager - INFO - Bot Bot 4 (0/1) plays: SINGLE (13 pts): GENERAL
+2025-08-12 22:47:31 - backend.engine.bot_manager - INFO - Bot Bot 4 action queued
+2025-08-12 22:47:31 - game.state.turn - INFO - Bot 3 plays: [SOLDIER_RED(2)] (value: 2)
+2025-08-12 22:47:31 - game.state.turn - INFO - Removed 1 pieces from Bot 3's hand
+2025-08-12 22:47:31 - backend.services.migration_adapter - INFO - 🔍 DEBUG: MigrationAdapter.store_event - room: C805BC, type: phase_data_update
+2025-08-12 22:47:31 - backend.engine.bot_manager - INFO - Bot Bot 4 (0/1) plays: SINGLE (13 pts): GENERAL
+2025-08-12 22:47:31 - backend.engine.bot_manager - INFO - Bot Bot 4 action queued
+2025-08-12 22:47:32 - game.state.turn - INFO - Bot 4 plays: [GENERAL_BLACK(13)] (value: 13)
+2025-08-12 22:47:32 - game.state.turn - INFO - Removed 1 pieces from Bot 4's hand
+2025-08-12 22:47:32 - backend.services.migration_adapter - INFO - 🔍 DEBUG: MigrationAdapter.store_event - room: C805BC, type: phase_data_update
+2025-08-12 22:47:32 - game.state.turn - INFO - 🎯 Round 1, Turn 3 winner: Bot 4 with SINGLE value 13
+2025-08-12 22:47:32 - game.state.turn - INFO - 💰 Bot 4 won 1 piles this turn, total: 1 piles
+2025-08-12 22:47:32 - game.state.turn - INFO - Bot 4 wins turn and gets 1 piles
+2025-08-12 22:47:32 - game.state.turn - INFO - Waiting for piece flip animation to complete...
+2025-08-12 22:47:32 - backend.api.routes.ws - INFO - 🧹 [ROOM_DEBUG] Cleanup iteration 16: Checking 1 rooms: ['C805BC']
+2025-08-12 22:47:37 - backend.services.migration_adapter - INFO - 🔍 DEBUG: MigrationAdapter.store_event - room: C805BC, type: phase_data_update
+2025-08-12 22:47:37 - game.state.turn - INFO - 📝 Stored turn 3 in history
+2025-08-12 22:47:37 - game.state.turn - INFO - 🚀 Enterprise broadcast turn completion - winner: Bot 4, turn piles awarded: {'Bot 4': 1, 'Andy': 0, 'Bot 2': 0, 'Bot 3': 0}
+2025-08-12 22:47:37 - game.state.turn - INFO - 🏁 All hands are now empty - round complete. Last turn winner: Bot 4
+2025-08-12 22:47:37 - game.state.turn - INFO - 🏁 Turn complete - transitioning to turn_results
+2025-08-12 22:47:37 - backend.engine.state_machine.game_state_machine - INFO - Transitioning from GamePhase.TURN to GamePhase.TURN_RESULTS
+2025-08-12 22:47:37 - backend.engine.state_machine.game_state_machine - INFO - 🔄 Transitioning: GamePhase.TURN -> GamePhase.TURN_RESULTS
+2025-08-12 22:47:37 - game.state.turn - INFO - Exiting turn phase
+2025-08-12 22:47:37 - game.state.turn - INFO - 🏁 Turn phase complete - all hands empty
+2025-08-12 22:47:37 - game.state.turn_results - INFO - Entering turn_results phase
+2025-08-12 22:47:37 - game.state.turn_results - INFO - 🏆 Turn results phase starting - displaying turn outcome
+2025-08-12 22:47:37 - game.state.turn_results - INFO - ℹ️ TURNS_WON_DEBUG: No turn winner to update
+2025-08-12 22:47:37 - backend.services.migration_adapter - INFO - 🔍 DEBUG: MigrationAdapter.store_event - room: C805BC, type: phase_data_update
+2025-08-12 22:47:37 - backend.services.migration_adapter - INFO - 🔍 DEBUG: MigrationAdapter.store_event - room: C805BC, type: phase_change
+2025-08-12 22:47:37 - backend.engine.state_machine.game_state_machine - INFO - Stored phase change event: GamePhase.TURN -> GamePhase.TURN_RESULTS
+2025-08-12 22:47:37 - backend.engine.state_machine.game_state_machine - INFO - Notifying bot manager about phase turn_results
+2025-08-12 22:47:37 - backend.api.routes.ws - INFO - 🧹 [ROOM_DEBUG] Cleanup iteration 17: Checking 1 rooms: ['C805BC']
+2025-08-12 22:47:37 - game.state.turn_results - WARNING - Unhandled action in turn results phase: ActionType.PLAY_PIECES
+2025-08-12 22:47:37 - game.state.turn_results - WARNING - Unhandled action in turn results phase: ActionType.PLAY_PIECES
+2025-08-12 22:47:37 - game.state.turn_results - WARNING - Unhandled action in turn results phase: ActionType.PLAY_PIECES
+2025-08-12 22:47:42 - backend.api.routes.ws - INFO - 🧹 [ROOM_DEBUG] Cleanup iteration 18: Checking 1 rooms: ['C805BC']
+2025-08-12 22:47:44 - backend.services.migration_adapter - INFO - 🔍 DEBUG: MigrationAdapter.store_event - room: C805BC, type: phase_data_update
+2025-08-12 22:47:44 - game.state.turn_results - INFO - 🏆 Turn results complete - transitioning to GamePhase.SCORING
+2025-08-12 22:47:44 - backend.engine.state_machine.game_state_machine - INFO - Transitioning from GamePhase.TURN_RESULTS to GamePhase.SCORING
+2025-08-12 22:47:44 - backend.engine.state_machine.game_state_machine - INFO - 🔄 Transitioning: GamePhase.TURN_RESULTS -> GamePhase.SCORING
+2025-08-12 22:47:44 - game.state.turn_results - INFO - Exiting turn_results phase
+2025-08-12 22:47:44 - game.state.turn_results - INFO - 🏆 Cleaning up turn results phase
+2025-08-12 22:47:44 - game.state.scoring - INFO - Entering scoring phase
 🔄 SCORING_SETUP_DEBUG: Reset display_delay_complete = False
-2025-08-12 19:57:40 - game.state.scoring - INFO - Setting up Scoring Phase
-🗳️ DECLARATION_DEBUG: game.player_declarations = {'Andy': 7, 'Bot 2': 3, 'Bot 3': 2, 'Bot 4': 0}
+2025-08-12 22:47:44 - game.state.scoring - INFO - Setting up Scoring Phase
+🗳️ DECLARATION_DEBUG: game.player_declarations = {'Bot 3': 2, 'Bot 4': 1, 'Andy': 7, 'Bot 2': 4}
 📋 SCORING_FIX_DEBUG: Andy - declared: 7, actual: 7
-2025-08-12 19:57:40 - game.state.scoring - INFO - 🎯 PERFECT_ROUNDS_DEBUG: Andy had perfect round! perfect_rounds: 0 -> 1
+2025-08-12 22:47:44 - game.state.scoring - INFO - 🎯 PERFECT_ROUNDS_DEBUG: Andy had perfect round! perfect_rounds: 0 -> 1
 🏆 SCORING_DEBUG: Andy scoring data:
    📋 Declared: 7, Actual: 7
-   📊 Base Score: 12, Multiplier: 3x, Final: 36
-   💯 Total Score: 36
-2025-08-12 19:57:40 - game.state.scoring - INFO - Player Andy: declared 7, actual 7, base 12, final 36 (×3), total 36
-📋 SCORING_FIX_DEBUG: Bot 2 - declared: 3, actual: 1
+   📊 Base Score: 12, Multiplier: 1x, Final: 12
+   💯 Total Score: 12
+2025-08-12 22:47:44 - game.state.scoring - INFO - Player Andy: declared 7, actual 7, base 12, final 12 (×1), total 12
+📋 SCORING_FIX_DEBUG: Bot 2 - declared: 4, actual: 0
 🏆 SCORING_DEBUG: Bot 2 scoring data:
-   📋 Declared: 3, Actual: 1
-   📊 Base Score: -2, Multiplier: 3x, Final: -6
-   💯 Total Score: -6
-2025-08-12 19:57:40 - game.state.scoring - INFO - Player Bot 2: declared 3, actual 1, base -2, final -6 (×3), total -6
+   📋 Declared: 4, Actual: 0
+   📊 Base Score: -4, Multiplier: 1x, Final: -4
+   💯 Total Score: -4
+2025-08-12 22:47:44 - game.state.scoring - INFO - Player Bot 2: declared 4, actual 0, base -4, final -4 (×1), total -4
 📋 SCORING_FIX_DEBUG: Bot 3 - declared: 2, actual: 0
 🏆 SCORING_DEBUG: Bot 3 scoring data:
    📋 Declared: 2, Actual: 0
-   📊 Base Score: -2, Multiplier: 3x, Final: -6
-   💯 Total Score: -6
-2025-08-12 19:57:40 - game.state.scoring - INFO - Player Bot 3: declared 2, actual 0, base -2, final -6 (×3), total -6
-📋 SCORING_FIX_DEBUG: Bot 4 - declared: 0, actual: 0
+   📊 Base Score: -2, Multiplier: 1x, Final: -2
+   💯 Total Score: -2
+2025-08-12 22:47:44 - game.state.scoring - INFO - Player Bot 3: declared 2, actual 0, base -2, final -2 (×1), total -2
+📋 SCORING_FIX_DEBUG: Bot 4 - declared: 1, actual: 1
+2025-08-12 22:47:44 - game.state.scoring - INFO - 🎯 PERFECT_ROUNDS_DEBUG: Bot 4 had perfect round! perfect_rounds: 0 -> 1
 🏆 SCORING_DEBUG: Bot 4 scoring data:
-   📋 Declared: 0, Actual: 0
-   📊 Base Score: 3, Multiplier: 3x, Final: 9
-   💯 Total Score: 9
-2025-08-12 19:57:40 - game.state.scoring - INFO - Player Bot 4: declared 0, actual 0, base 3, final 9 (×3), total 9
-2025-08-12 19:57:40 - backend.services.migration_adapter - INFO - 🔍 DEBUG: MigrationAdapter.store_event CALLED - mode: v2_only, room: CAEFFC, type: round_completed
-2025-08-12 19:57:40 - backend.services.migration_adapter - INFO - 🔍 DEBUG: MigrationAdapter.store_event - mode: v2_only, room: CAEFFC, type: round_completed
-2025-08-12 19:57:40 - backend.services.optimized_event_store - INFO - 🔍 DEBUG: Processing ROUND_COMPLETED event for room CAEFFC
-2025-08-12 19:57:40 - backend.services.optimized_event_store - INFO - 🔍 DEBUG: Round data extracted - round_number: 1
-2025-08-12 19:57:40 - backend.services.event_store_v2 - INFO - 🔍 DEBUG: EventStoreV2.store_round_snapshot called - room: CAEFFC, round: 1
-2025-08-12 19:57:40 - backend.services.event_store_v2 - INFO - 🔍 DEBUG: Round data keys: ['round_number', 'starter_player', 'starter_reason', 'initial_hands', 'declarations', 'turn_sequence', 'round_scores', 'cumulative_scores']
-2025-08-12 19:57:40 - backend.services.event_store_v2 - INFO - ✅ DEBUG: Round snapshot successfully stored in database - room: CAEFFC, round: 1
-2025-08-12 19:57:40 - backend.services.optimized_event_store - INFO - ✅ DEBUG: Round snapshot stored for room CAEFFC, round 1
-2025-08-12 19:57:40 - game.state.scoring - INFO - 🚀 V2 EVENT: round_completed event fired for room CAEFFC, round 1
+   📋 Declared: 1, Actual: 1
+   📊 Base Score: 6, Multiplier: 1x, Final: 6
+   💯 Total Score: 6
+2025-08-12 22:47:44 - game.state.scoring - INFO - Player Bot 4: declared 1, actual 1, base 6, final 6 (×1), total 6
+2025-08-12 22:47:44 - backend.services.migration_adapter - INFO - 🔍 DEBUG: MigrationAdapter.store_event - room: C805BC, type: round_completed
+2025-08-12 22:47:44 - backend.services.optimized_event_store - INFO - 🔍 DEBUG: Processing ROUND_COMPLETED event for room C805BC
+2025-08-12 22:47:44 - backend.services.optimized_event_store - INFO - 🔍 DEBUG: Round data extracted - round_number: 1
+2025-08-12 22:47:44 - backend.services.event_store_v2 - INFO - 🔍 DEBUG: EventStoreV2.store_round_snapshot called - room: C805BC, round: 1
+2025-08-12 22:47:44 - backend.services.event_store_v2 - INFO - 🔍 DEBUG: Round data keys: ['round_number', 'starter_player', 'starter_reason', 'initial_hands', 'declarations', 'turn_sequence', 'round_scores', 'cumulative_scores']
+2025-08-12 22:47:44 - backend.services.event_store_v2 - INFO - ✅ DEBUG: Round snapshot successfully stored in database - room: C805BC, round: 1
+2025-08-12 22:47:44 - backend.services.optimized_event_store - INFO - ✅ DEBUG: Round snapshot stored for room C805BC, round 1
+2025-08-12 22:47:44 - game.state.scoring - INFO - 🚀 V2 EVENT: round_completed event fired for room C805BC, round 1
 🚀 SCORING_BROADCAST_DEBUG: Broadcasting scoring data:
-   📊 Round scores: {'Andy': {'declared': 7, 'actual': 7, 'base_score': 12, 'bonus': 5, 'hit_value': 7, 'multiplier': 3, 'final_score': 36, 'total_score': 36}, 'Bot 2': {'declared': 3, 'actual': 1, 'base_score': -2, 'bonus': 0, 'hit_value': -2, 'multiplier': 3, 'final_score': -6, 'total_score': -6}, 'Bot 3': {'declared': 2, 'actual': 0, 'base_score': -2, 'bonus': 0, 'hit_value': -2, 'multiplier': 3, 'final_score': -6, 'total_score': -6}, 'Bot 4': {'declared': 0, 'actual': 0, 'base_score': 3, 'bonus': 3, 'hit_value': 0, 'multiplier': 3, 'final_score': 9, 'total_score': 9}}
+   📊 Round scores: {'Andy': {'declared': 7, 'actual': 7, 'base_score': 12, 'bonus': 5, 'hit_value': 7, 'multiplier': 1, 'final_score': 12, 'total_score': 12}, 'Bot 2': {'declared': 4, 'actual': 0, 'base_score': -4, 'bonus': 0, 'hit_value': -4, 'multiplier': 1, 'final_score': -4, 'total_score': -4}, 'Bot 3': {'declared': 2, 'actual': 0, 'base_score': -2, 'bonus': 0, 'hit_value': -2, 'multiplier': 1, 'final_score': -2, 'total_score': -2}, 'Bot 4': {'declared': 1, 'actual': 1, 'base_score': 6, 'bonus': 5, 'hit_value': 1, 'multiplier': 1, 'final_score': 6, 'total_score': 6}}
    🏁 Game complete: False
    🏆 Winners: []
 🚀 SCORING_BROADCAST_DEBUG: Also sending:
-   💯 Total scores: {'Andy': 36, 'Bot 2': -6, 'Bot 3': -6, 'Bot 4': 9}
-   👥 Scoring players data: [{'name': 'Andy', 'is_bot': False, 'pile_count': 7, 'captured_piles': 7}, {'name': 'Bot 2', 'is_bot': True, 'pile_count': 3, 'captured_piles': 1}, {'name': 'Bot 3', 'is_bot': True, 'pile_count': 2, 'captured_piles': 0}, {'name': 'Bot 4', 'is_bot': True, 'pile_count': 0, 'captured_piles': 0}]
-2025-08-12 19:57:40 - backend.services.migration_adapter - INFO - 🔍 DEBUG: MigrationAdapter.store_event CALLED - mode: v2_only, room: CAEFFC, type: phase_data_update
-2025-08-12 19:57:40 - backend.services.migration_adapter - INFO - 🔍 DEBUG: MigrationAdapter.store_event - mode: v2_only, room: CAEFFC, type: phase_data_update
-2025-08-12 19:57:40 - game.state.scoring - INFO - Scoring complete. Game over: False
-2025-08-12 19:57:40 - backend.services.migration_adapter - INFO - 🔍 DEBUG: MigrationAdapter.store_event CALLED - mode: v2_only, room: CAEFFC, type: phase_change
-2025-08-12 19:57:40 - backend.services.migration_adapter - INFO - 🔍 DEBUG: MigrationAdapter.store_event - mode: v2_only, room: CAEFFC, type: phase_change
-2025-08-12 19:57:40 - backend.engine.state_machine.game_state_machine - INFO - Stored phase change event: GamePhase.TURN_RESULTS -> GamePhase.SCORING
-2025-08-12 19:57:40 - backend.engine.state_machine.game_state_machine - INFO - Notifying bot manager about phase scoring
+   💯 Total scores: {'Andy': 12, 'Bot 2': -4, 'Bot 3': -2, 'Bot 4': 6}
+   👥 Scoring players data: [{'name': 'Andy', 'is_bot': False, 'pile_count': 7, 'captured_piles': 7}, {'name': 'Bot 2', 'is_bot': True, 'pile_count': 4, 'captured_piles': 0}, {'name': 'Bot 3', 'is_bot': True, 'pile_count': 2, 'captured_piles': 0}, {'name': 'Bot 4', 'is_bot': True, 'pile_count': 1, 'captured_piles': 1}]
+2025-08-12 22:47:44 - backend.services.migration_adapter - INFO - 🔍 DEBUG: MigrationAdapter.store_event - room: C805BC, type: phase_data_update
+2025-08-12 22:47:44 - game.state.scoring - INFO - Scoring complete. Game over: False
+2025-08-12 22:47:44 - backend.services.migration_adapter - INFO - 🔍 DEBUG: MigrationAdapter.store_event - room: C805BC, type: phase_change
+2025-08-12 22:47:44 - backend.engine.state_machine.game_state_machine - INFO - Stored phase change event: GamePhase.TURN_RESULTS -> GamePhase.SCORING
+2025-08-12 22:47:44 - backend.engine.state_machine.game_state_machine - INFO - Notifying bot manager about phase scoring
 ⏰ SCORING_DELAY_DEBUG: Starting 7-second display delay...
-2025-08-12 19:57:42 - backend.api.routes.ws - INFO - 🧹 [ROOM_DEBUG] Cleanup iteration 23: Checking 1 rooms: ['CAEFFC']
-2025-08-12 19:57:47 - backend.api.routes.ws - INFO - 🧹 [ROOM_DEBUG] Cleanup iteration 24: Checking 1 rooms: ['CAEFFC']
+2025-08-12 22:47:47 - backend.api.routes.ws - INFO - 🧹 [ROOM_DEBUG] Cleanup iteration 19: Checking 1 rooms: ['C805BC']
 ⏰ SCORING_DELAY_DEBUG: 7-second delay complete - setting display_delay_complete = True
-2025-08-12 19:57:47 - game.state.scoring - INFO - Scoring display delay complete - ready to transition
-2025-08-12 19:57:47 - game.state.scoring - INFO - 🔍 SCORING_TRANSITION_DEBUG: Ready to transition to PREPARATION
-2025-08-12 19:57:47 - backend.engine.state_machine.game_state_machine - INFO - Transitioning from GamePhase.SCORING to GamePhase.PREPARATION
-2025-08-12 19:57:47 - backend.engine.state_machine.game_state_machine - INFO - 🔄 Transitioning: GamePhase.SCORING -> GamePhase.PREPARATION
-2025-08-12 19:57:47 - game.state.scoring - INFO - Exiting scoring phase
-2025-08-12 19:57:47 - game.state.scoring - INFO - 🎯 Next round starter set to last turn winner: Andy
-2025-08-12 19:57:47 - game.state.scoring - INFO - Prepared for round 2
-2025-08-12 19:57:47 - game.state.scoring - INFO - Prepared for next round
-2025-08-12 19:57:47 - game.state.preparation - INFO - Entering preparation phase
-2025-08-12 19:57:47 - game.state.preparation - INFO - 🎴 Preparation phase starting - dealing cards
-2025-08-12 19:57:47 - game.state.preparation - INFO - 🔄 Resetting preparation state - previous redeal_requester: Andy
-2025-08-12 19:57:47 - backend.services.migration_adapter - INFO - 🔍 DEBUG: MigrationAdapter.store_event CALLED - mode: v2_only, room: CAEFFC, type: phase_data_update
-2025-08-12 19:57:47 - backend.services.migration_adapter - INFO - 🔍 DEBUG: MigrationAdapter.store_event - mode: v2_only, room: CAEFFC, type: phase_data_update
-2025-08-12 19:57:47 - backend.services.migration_adapter - INFO - 🔍 DEBUG: MigrationAdapter.store_event CALLED - mode: v2_only, room: CAEFFC, type: hands_dealt
-2025-08-12 19:57:47 - backend.services.migration_adapter - INFO - 🔍 DEBUG: MigrationAdapter.store_event - mode: v2_only, room: CAEFFC, type: hands_dealt
-2025-08-12 19:57:47 - game.state.preparation - INFO - 🔍 Weak hand check - Found 0 weak players: set()
-2025-08-12 19:57:47 - game.state.preparation - INFO - ✅ No weak hands - keeping existing starter: Andy (reason: won_last_turn)
-2025-08-12 19:57:49 - backend.services.migration_adapter - INFO - 🔍 DEBUG: MigrationAdapter.store_event CALLED - mode: v2_only, room: CAEFFC, type: phase_data_update
-2025-08-12 19:57:49 - backend.services.migration_adapter - INFO - 🔍 DEBUG: MigrationAdapter.store_event - mode: v2_only, room: CAEFFC, type: phase_data_update
-2025-08-12 19:57:49 - backend.services.migration_adapter - INFO - 🔍 DEBUG: MigrationAdapter.store_event CALLED - mode: v2_only, room: CAEFFC, type: phase_change
-2025-08-12 19:57:49 - backend.services.migration_adapter - INFO - 🔍 DEBUG: MigrationAdapter.store_event - mode: v2_only, room: CAEFFC, type: phase_change
-2025-08-12 19:57:49 - backend.engine.state_machine.game_state_machine - INFO - Stored phase change event: GamePhase.SCORING -> GamePhase.PREPARATION
-2025-08-12 19:57:49 - backend.engine.state_machine.game_state_machine - INFO - Notifying bot manager about phase preparation
-2025-08-12 19:57:49 - backend.engine.state_machine.game_state_machine - INFO - Transitioning from GamePhase.PREPARATION to GamePhase.ROUND_START
-2025-08-12 19:57:49 - backend.engine.state_machine.game_state_machine - INFO - 🔄 Transitioning: GamePhase.PREPARATION -> GamePhase.ROUND_START
-2025-08-12 19:57:49 - game.state.preparation - INFO - Exiting preparation phase
-2025-08-12 19:57:49 - game.state.preparation - INFO - 🎯 Round starter already set: Andy
-2025-08-12 19:57:49 - game.state.preparation - INFO - 📋 Preparation complete - Starter: Andy, Multiplier: 1x
-2025-08-12 19:57:49 - game.state.round_start - INFO - Entering round_start phase
-2025-08-12 19:57:49 - game.state.round_start - INFO - 📋 Round 2 starting - Starter: Andy (won_last_turn)
-2025-08-12 19:57:49 - backend.services.migration_adapter - INFO - 🔍 DEBUG: MigrationAdapter.store_event CALLED - mode: v2_only, room: CAEFFC, type: phase_data_update
-2025-08-12 19:57:49 - backend.services.migration_adapter - INFO - 🔍 DEBUG: MigrationAdapter.store_event - mode: v2_only, room: CAEFFC, type: phase_data_update
-2025-08-12 19:57:49 - backend.services.migration_adapter - INFO - 🔍 DEBUG: MigrationAdapter.store_event CALLED - mode: v2_only, room: CAEFFC, type: round_started
-2025-08-12 19:57:49 - backend.services.migration_adapter - INFO - 🔍 DEBUG: MigrationAdapter.store_event - mode: v2_only, room: CAEFFC, type: round_started
-2025-08-12 19:57:49 - game.state.round_start - INFO - 🚀 V2 EVENT: round_started event fired for round 2
-2025-08-12 19:57:49 - backend.services.migration_adapter - INFO - 🔍 DEBUG: MigrationAdapter.store_event CALLED - mode: v2_only, room: CAEFFC, type: phase_change
-2025-08-12 19:57:49 - backend.services.migration_adapter - INFO - 🔍 DEBUG: MigrationAdapter.store_event - mode: v2_only, room: CAEFFC, type: phase_change
-2025-08-12 19:57:49 - backend.engine.state_machine.game_state_machine - INFO - Stored phase change event: GamePhase.PREPARATION -> GamePhase.ROUND_START
-2025-08-12 19:57:49 - backend.engine.state_machine.game_state_machine - INFO - Notifying bot manager about phase round_start
-2025-08-12 19:57:51 - backend.services.optimized_event_store - INFO - Storing round_started event for room CAEFFC, round 2
-2025-08-12 19:57:52 - backend.api.routes.ws - INFO - 🧹 [ROOM_DEBUG] Cleanup iteration 25: Checking 1 rooms: ['CAEFFC']
-2025-08-12 19:57:54 - backend.engine.state_machine.game_state_machine - INFO - Transitioning from GamePhase.ROUND_START to GamePhase.DECLARATION
-2025-08-12 19:57:54 - backend.engine.state_machine.game_state_machine - INFO - 🔄 Transitioning: GamePhase.ROUND_START -> GamePhase.DECLARATION
-2025-08-12 19:57:54 - game.state.round_start - INFO - Exiting round_start phase
-2025-08-12 19:57:54 - game.state.round_start - INFO - 🎯 Round start display complete - transitioning to Declaration
-2025-08-12 19:57:54 - game.state.declaration - INFO - Entering declaration phase
-2025-08-12 19:57:54 - backend.services.migration_adapter - INFO - 🔍 DEBUG: MigrationAdapter.store_event CALLED - mode: v2_only, room: CAEFFC, type: phase_data_update
-2025-08-12 19:57:54 - backend.services.migration_adapter - INFO - 🔍 DEBUG: MigrationAdapter.store_event - mode: v2_only, room: CAEFFC, type: phase_data_update
-2025-08-12 19:57:54 - backend.services.migration_adapter - INFO - 🔍 DEBUG: MigrationAdapter.store_event CALLED - mode: v2_only, room: CAEFFC, type: phase_data_update
-2025-08-12 19:57:54 - backend.services.migration_adapter - INFO - 🔍 DEBUG: MigrationAdapter.store_event - mode: v2_only, room: CAEFFC, type: phase_data_update
-2025-08-12 19:57:54 - backend.services.migration_adapter - INFO - 🔍 DEBUG: MigrationAdapter.store_event CALLED - mode: v2_only, room: CAEFFC, type: phase_change
-2025-08-12 19:57:54 - backend.services.migration_adapter - INFO - 🔍 DEBUG: MigrationAdapter.store_event - mode: v2_only, room: CAEFFC, type: phase_change
-2025-08-12 19:57:54 - backend.engine.state_machine.game_state_machine - INFO - Stored phase change event: GamePhase.ROUND_START -> GamePhase.DECLARATION
-2025-08-12 19:57:54 - backend.engine.state_machine.game_state_machine - INFO - Notifying bot manager about phase declaration
-2025-08-12 19:57:54 - backend.engine.bot_manager - INFO - 👤 Round starter is human or None: Andy
-2025-08-12 19:57:57 - backend.api.routes.ws - INFO - 🧹 [ROOM_DEBUG] Cleanup iteration 26: Checking 1 rooms: ['CAEFFC']
+2025-08-12 22:47:51 - game.state.scoring - INFO - Scoring display delay complete - ready to transition
+2025-08-12 22:47:51 - game.state.scoring - INFO - 🔍 SCORING_TRANSITION_DEBUG: Ready to transition to PREPARATION
+2025-08-12 22:47:51 - backend.engine.state_machine.game_state_machine - INFO - Transitioning from GamePhase.SCORING to GamePhase.PREPARATION
+2025-08-12 22:47:51 - backend.engine.state_machine.game_state_machine - INFO - 🔄 Transitioning: GamePhase.SCORING -> GamePhase.PREPARATION
+2025-08-12 22:47:51 - game.state.scoring - INFO - Exiting scoring phase
+2025-08-12 22:47:51 - game.state.scoring - INFO - 🎯 Next round starter set to last turn winner: Bot 4
+2025-08-12 22:47:51 - game.state.scoring - INFO - Prepared for round 2
+2025-08-12 22:47:51 - game.state.scoring - INFO - Prepared for next round
+2025-08-12 22:47:51 - game.state.preparation - INFO - Entering preparation phase
+2025-08-12 22:47:51 - game.state.preparation - INFO - 🎴 Preparation phase starting - dealing cards
+2025-08-12 22:47:51 - game.state.preparation - INFO - 🔄 Resetting preparation state - previous redeal_requester: None
+2025-08-12 22:47:51 - backend.services.migration_adapter - INFO - 🔍 DEBUG: MigrationAdapter.store_event - room: C805BC, type: phase_data_update
+2025-08-12 22:47:51 - backend.services.migration_adapter - INFO - 🔍 DEBUG: MigrationAdapter.store_event - room: C805BC, type: hands_dealt
+2025-08-12 22:47:51 - game.state.preparation - INFO - 🔍 Weak hand check - Found 0 weak players: set()
+2025-08-12 22:47:51 - game.state.preparation - INFO - ✅ No weak hands - keeping existing starter: Bot 4 (reason: won_last_turn)
+2025-08-12 22:47:52 - backend.api.routes.ws - INFO - 🧹 [ROOM_DEBUG] Cleanup iteration 20: Checking 1 rooms: ['C805BC']
+2025-08-12 22:47:53 - backend.services.migration_adapter - INFO - 🔍 DEBUG: MigrationAdapter.store_event - room: C805BC, type: phase_data_update
+2025-08-12 22:47:53 - backend.services.migration_adapter - INFO - 🔍 DEBUG: MigrationAdapter.store_event - room: C805BC, type: phase_change
+2025-08-12 22:47:53 - backend.engine.state_machine.game_state_machine - INFO - Stored phase change event: GamePhase.SCORING -> GamePhase.PREPARATION
+2025-08-12 22:47:53 - backend.engine.state_machine.game_state_machine - INFO - Notifying bot manager about phase preparation
+2025-08-12 22:47:53 - backend.engine.state_machine.game_state_machine - INFO - Transitioning from GamePhase.PREPARATION to GamePhase.ROUND_START
+2025-08-12 22:47:53 - backend.engine.state_machine.game_state_machine - INFO - 🔄 Transitioning: GamePhase.PREPARATION -> GamePhase.ROUND_START
+2025-08-12 22:47:53 - game.state.preparation - INFO - Exiting preparation phase
+2025-08-12 22:47:53 - game.state.preparation - INFO - 🎯 Round starter already set: Bot 4
+2025-08-12 22:47:53 - game.state.preparation - INFO - 📋 Preparation complete - Starter: Bot 4, Multiplier: 1x
+2025-08-12 22:47:53 - game.state.round_start - INFO - Entering round_start phase
+2025-08-12 22:47:53 - game.state.round_start - INFO - 📋 Round 2 starting - Starter: Bot 4 (won_last_turn)
+2025-08-12 22:47:53 - backend.services.migration_adapter - INFO - 🔍 DEBUG: MigrationAdapter.store_event - room: C805BC, type: phase_data_update
+2025-08-12 22:47:53 - backend.services.migration_adapter - INFO - 🔍 DEBUG: MigrationAdapter.store_event - room: C805BC, type: round_started
+2025-08-12 22:47:53 - game.state.round_start - INFO - 🚀 V2 EVENT: round_started event fired for round 2
+2025-08-12 22:47:53 - backend.services.migration_adapter - INFO - 🔍 DEBUG: MigrationAdapter.store_event - room: C805BC, type: phase_change
+2025-08-12 22:47:53 - backend.engine.state_machine.game_state_machine - INFO - Stored phase change event: GamePhase.PREPARATION -> GamePhase.ROUND_START
+2025-08-12 22:47:53 - backend.engine.state_machine.game_state_machine - INFO - Notifying bot manager about phase round_start
+2025-08-12 22:47:54 - backend.services.optimized_event_store - INFO - Storing round_started event for room C805BC, round 2
+2025-08-12 22:47:57 - backend.api.routes.ws - INFO - 🧹 [ROOM_DEBUG] Cleanup iteration 21: Checking 1 rooms: ['C805BC']
+2025-08-12 22:47:58 - backend.engine.state_machine.game_state_machine - INFO - Transitioning from GamePhase.ROUND_START to GamePhase.DECLARATION
+2025-08-12 22:47:58 - backend.engine.state_machine.game_state_machine - INFO - 🔄 Transitioning: GamePhase.ROUND_START -> GamePhase.DECLARATION
+2025-08-12 22:47:58 - game.state.round_start - INFO - Exiting round_start phase
+2025-08-12 22:47:58 - game.state.round_start - INFO - 🎯 Round start display complete - transitioning to Declaration
+2025-08-12 22:47:58 - game.state.declaration - INFO - Entering declaration phase
+2025-08-12 22:47:58 - backend.services.migration_adapter - INFO - 🔍 DEBUG: MigrationAdapter.store_event - room: C805BC, type: phase_data_update
+2025-08-12 22:47:58 - backend.services.migration_adapter - INFO - 🔍 DEBUG: MigrationAdapter.store_event - room: C805BC, type: phase_data_update
+2025-08-12 22:48:00 - backend.engine.bot_manager - INFO - ✅ Bot Bot 4 declared 4
+2025-08-12 22:48:00 - backend.services.migration_adapter - INFO - 🔍 DEBUG: MigrationAdapter.store_event - room: C805BC, type: phase_change
+2025-08-12 22:48:00 - backend.engine.state_machine.game_state_machine - INFO - Stored phase change event: GamePhase.ROUND_START -> GamePhase.DECLARATION
+2025-08-12 22:48:00 - backend.engine.state_machine.game_state_machine - INFO - Notifying bot manager about phase declaration
+2025-08-12 22:48:00 - backend.services.migration_adapter - INFO - 🔍 DEBUG: MigrationAdapter.store_event - room: C805BC, type: phase_data_update
+2025-08-12 22:48:00 - game.state.declaration - INFO - Player Bot 4 declared 4
+2025-08-12 22:48:02 - backend.api.routes.ws - INFO - 🧹 [ROOM_DEBUG] Cleanup iteration 22: Checking 1 rooms: ['C805BC']

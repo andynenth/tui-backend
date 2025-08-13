@@ -47,3 +47,6 @@ docker-compose.override.yml
 *.tar
 .env
 
+# Database files (prevent confusion - only root database should exist)
+backend/game_events.db
+

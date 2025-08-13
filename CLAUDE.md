@@ -242,3 +242,4 @@ The play history API provides comprehensive game history for analysis:
 - As you complete each task listed in CODE_QUALITY_CHECKLIST.md, follow the documentation procedures outlined in CODE_QUALITY_TRACKING_GUIDE.md
 - CRITICAL: This project uses WebSocket for ALL game operations. Do not look for or suggest REST endpoints for game actions - they don't exist by design.
 - When implementing game features, always use WebSocket events through the NetworkService (frontend) or ws.py handlers (backend)
+- IMPORTANT: The game_events.db database is located in the project root directory (/Users/nrw/python/tui-project/liap-tui/game_events.db), NOT in the backend directory. This is intentional as EventStoreV2 resolves the path to the project root.
