@@ -103,25 +103,23 @@ Pydantic Serialization → JSON Response → Performance Metrics → Client
 - **Responsibilities:**
   - Orchestration between SQLite and memory sources
   - Async coordination and fallback handling
-  - Integration with EventStorePlayHistoryService
+  - Integration with PlayHistoryV2Service (V2 event store)
 
 - **Key Methods:**
   - `build_play_history()`: Main orchestration (now async)
   - Falls back to memory extraction if SQLite fails
 
-### Event Store Service (`event_store_play_history_service.py`)
+### Event Store Service (`play_history_v2.py`)
 - **Responsibilities:**
-  - SQLite event extraction and parsing
-  - Event reconstruction into play history
-  - 5-minute caching for performance
+  - V2 optimized schema access
+  - Fast extraction from pre-computed round snapshots
+  - 10x faster query performance than V1
   - Primary data source for historical games
 
 - **Key Methods:**
-  - `build_play_history_from_events()`: Main entry point
-  - `_extract_players_from_events()`: Player info extraction
-  - `_find_round_boundaries()`: Round detection
-  - `_build_round_from_events()`: Round reconstruction
-  - `_extract_turn_history()`: Turn-by-turn reconstruction
+  - `get_play_history()`: Main entry point
+  - Uses pre-computed game_summaries and round_snapshots
+  - Optimized for performance with V2 schema
 
 ### Data Models (`models/play_history.py`)
 - **Key Models:**

@@ -44,11 +44,9 @@ class PlayHistoryService:
     def __init__(self):
         """Initialize the service. Currently stateless so no initialization needed."""
         # Import here to avoid circular imports
-        from backend.services.event_store_play_history_service import (
-            EventStorePlayHistoryService,
-        )
+        from backend.services.play_history_db import play_history_db_service
 
-        self.event_store_service = EventStorePlayHistoryService()
+        self.db_service = play_history_db_service
 
     async def build_play_history(
         self,
@@ -76,22 +74,31 @@ class PlayHistoryService:
             None - Errors are logged but method returns partial data rather than failing
         """
         try:
-            # Try to get complete history from event store first
-            play_history = (
-                await self.event_store_service.build_play_history_from_events(
-                    room_id=room_id,
-                    include_ai_analysis=include_ai_analysis,
-                    format=format,
-                )
-            )
-
-            # If we got data from event store, return it
-            if play_history.total_rounds > 0:
-                return play_history
+            # Try to get complete history from database service first
+            history_data = await self.db_service.get_play_history(room_id)
+            
+            # If we got data, convert it to PlayHistoryResponse format
+            if history_data:
+                print(f"Got history data from database for room {room_id}: {len(history_data.get('rounds', []))} rounds")
+                return self._convert_to_play_history_response(history_data)
+            else:
+                print(f"No history data from database for room {room_id}")
 
         except Exception as e:
-            # Log error but fall back to memory-based extraction
-            print(f"Error retrieving from event store: {e}, falling back to memory")
+            # Log error with traceback
+            import traceback
+            print(f"Error retrieving from database: {e}")
+            print(f"Traceback: {traceback.format_exc()}")
+            print("Falling back to memory")
+
+        # If no game provided (room not in memory), return empty response
+        if game is None:
+            return PlayHistoryResponse(
+                room_id=room_id,
+                players={},
+                rounds=[],
+                total_rounds=0
+            )
 
         # Fallback to original memory-based extraction for compatibility
         # This handles cases where event store isn't available or has no data
@@ -933,3 +940,190 @@ class PlayHistoryService:
         """Add AI decision analysis if player is AI."""
         # TODO: Implement integration with play data
         pass
+    
+    def _convert_to_play_history_response(self, history_data: Dict[str, Any]) -> PlayHistoryResponse:
+        """Convert simple history format to PlayHistoryResponse format."""
+        from backend.models.play_history import (
+            PlayerInfo, RoundHistory, InitialState, StarterInfo,
+            DeclarationInfo, DeclarationData, TurnInfo, PlayData,
+            PieceInfo, RoundSummary, ScoringInfo, TurnWinner
+        )
+        
+        # Convert players
+        players = {}
+        for player in history_data.get('players', []):
+            player_id = player['name'].lower().replace(' ', '_')
+            players[player['name']] = PlayerInfo(
+                player_id=player_id,
+                player_name=player['name'],
+                player_type='human' if player['type'] == 'human' else 'ai',
+                ai_version='v2' if player['type'] == 'bot' else None
+            )
+        
+        # Convert rounds
+        rounds = []
+        for round_data in history_data.get('rounds', []):
+            # Build initial state
+            initial_state = InitialState(
+                starter=StarterInfo(
+                    player_id=round_data['starter'].lower().replace(' ', '_'),
+                    player_name=round_data['starter'],
+                    reason='default'
+                ),
+                player_order=[p['name'] for p in history_data['players']]
+            )
+            
+            # Build declarations
+            declarations_list = []
+            total_declared = 0
+            for i, decl in enumerate(round_data.get('declarations', [])):
+                player_id = decl['player'].lower().replace(' ', '_')
+                declarations_list.append(DeclarationData(
+                    player_id=player_id,
+                    declared=decl['declared'],
+                    position=i
+                ))
+                total_declared += decl['declared']
+            
+            from backend.models.play_history import DeclarationInfo
+            declarations_info = DeclarationInfo(
+                declarations=declarations_list,
+                total_declared=total_declared,
+                pile_room_calculation={}  # Not available in simple format
+            )
+            
+            # Build turn history
+            turn_history = []
+            for turn in round_data.get('turns', []):
+                plays = []
+                winner_player = None
+                winner_play = None
+                
+                for play in turn.get('plays', []):
+                    player_id = play['player'].lower().replace(' ', '_')
+                    pieces_info = [
+                        PieceInfo(kind=p['type'], point=p['point'])
+                        for p in play.get('pieces', [])
+                    ]
+                    
+                    play_data = PlayData(
+                        player_id=player_id,
+                        player_name=play['player'],
+                        pieces_played=pieces_info,
+                        play_type=self._determine_play_type(play.get('pieces', [])),
+                        hand_before=[],  # Not available in simple format
+                        hand_after=[],   # Not available in simple format
+                        captured_count=play.get('captured', 0),
+                        declared_count=0  # Will be filled from declarations
+                    )
+                    plays.append(play_data)
+                    
+                    if play['player'] == turn.get('winner'):
+                        winner_player = players[play['player']]
+                        winner_play = play_data
+                
+                # Create turn winner info
+                winner_info = None
+                if winner_player and winner_play:
+                    winner_info = TurnWinner(
+                        player_id=winner_player.player_id,
+                        player_name=winner_player.player_name,
+                        pieces_played=winner_play.pieces_played,
+                        pieces_captured=turn.get('winnerPieces', 0)
+                    )
+                
+                turn_info = TurnInfo(
+                    turn_number=turn['turnNumber'],
+                    plays=plays,
+                    winner=winner_info
+                )
+                turn_history.append(turn_info)
+            
+            # Build round summary
+            scoring_info = {}
+            for player_name, score_data in round_data.get('scoring', {}).get('players', {}).items():
+                # Calculate reason based on declared vs captured
+                declared = score_data.get('declared', 0)
+                captured = score_data.get('captured', 0)
+                
+                if declared == captured:
+                    reason = f"Exact match: {declared} declared, {captured} captured"
+                elif declared < captured:
+                    reason = f"Under-declared: {declared} declared < {captured} captured"
+                else:
+                    reason = f"Over-declared: {declared} declared > {captured} captured"
+                    
+                scoring_info[player_name] = ScoringInfo(
+                    points=score_data.get('score', 0),
+                    multiplier=score_data.get('multiplier', 1),
+                    reason=reason
+                )
+            
+            # Build final captures info
+            final_captures = {}
+            for player_name, score_data in round_data.get('scoring', {}).get('players', {}).items():
+                from backend.models.play_history import CaptureInfo
+                declared = score_data.get('declared', 0)
+                captured = score_data.get('captured', 0)
+                final_captures[player_name] = CaptureInfo(
+                    captured=captured,
+                    declared=declared,
+                    difference=abs(declared - captured)
+                )
+            
+            # Build cumulative scores
+            cumulative_scores = {}
+            if 'gameStatus' in history_data and 'finalScores' in history_data['gameStatus']:
+                cumulative_scores = history_data['gameStatus']['finalScores']
+            else:
+                # Use round scores as cumulative for single round
+                for player_name, score_data in round_data.get('scoring', {}).get('players', {}).items():
+                    cumulative_scores[player_name] = score_data.get('score', 0)
+            
+            round_summary = RoundSummary(
+                total_turns=len(round_data.get('turns', [])),
+                final_captures=final_captures,
+                scoring=scoring_info,
+                cumulative_scores=cumulative_scores
+            )
+            
+            # Build round history
+            round_history = RoundHistory(
+                round_number=round_data['roundNumber'],
+                initial_state=initial_state,
+                hands_dealt={},  # Not available in simple format
+                declaration_phase=declarations_info,
+                turn_history=turn_history,
+                round_summary=round_summary
+            )
+            rounds.append(round_history)
+        
+        # Return complete response
+        return PlayHistoryResponse(
+            room_id=history_data['roomId'],
+            total_rounds=history_data['totalRounds'],
+            players=players,
+            rounds=rounds
+        )
+    
+    def _determine_play_type(self, pieces: List[Dict[str, Any]]) -> str:
+        """Determine the type of play based on pieces."""
+        if not pieces:
+            return "UNKNOWN"
+        
+        count = len(pieces)
+        if count == 1:
+            return "SINGLE"
+        elif count == 2:
+            # Check if same kind
+            if len(set(p['type'] for p in pieces)) == 1:
+                return "PAIR"
+            else:
+                return "DOUBLE"
+        elif count == 3:
+            if len(set(p['type'] for p in pieces)) == 1:
+                return "TRIPLE"
+            else:
+                return "TRIPLE_MIXED"
+        else:
+            return f"MULTI_{count}"

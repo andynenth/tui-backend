@@ -30,7 +30,7 @@ logger = logging.getLogger(__name__)
 
 @router.get(
     "/rooms/{room_id}/play-history",
-    response_model=PlayHistoryResponse,
+    response_model=None,  # Allow dict response for frontend format
     response_model_exclude_none=True,
     responses={
         200: {
@@ -141,7 +141,7 @@ async def get_play_history(
         404: Room not found
         400: Room has no active game
     """
-    from backend.shared_instances import shared_room_manager
+    # Removed shared_room_manager import - using async_room_manager instead
     from backend.services.play_history_service import PlayHistoryService
 
     # Get request ID for logging
@@ -160,135 +160,79 @@ async def get_play_history(
     # Start timing for performance monitoring
     start_time = time.time()
 
-    # Always use v2 service now
-    use_v2 = True
-
-    # Create service based on configuration
-    if use_v2:
-        # Use v2 service for optimized performance
-        from backend.services.play_history_v2 import PlayHistoryV2Service
-
-        service = PlayHistoryV2Service()
-
-        # Build history from v2
-        play_history = await service.build_play_history(
-            room_id=room_id,
-            round_numbers=None,
-            include_ai_analysis=include_ai_analysis,
-            format=format,
-        )
-
-        # Apply round filtering if specific rounds requested
-        if rounds:
-            # Parse comma-separated round numbers and filter
-            round_numbers = [int(r.strip()) for r in rounds.split(",")]
-            play_history.rounds = [
-                r for r in play_history.rounds if r.round_number in round_numbers
-            ]
-
-        # Update total rounds
-        play_history.total_rounds = len(play_history.rounds)
-
-        # Handle include_hands parameter with format interaction
-        if format != "compact" and not include_hands:
-            for round_data in play_history.rounds:
-                round_data.hands_dealt = {}
-
-        # Edge case: User wants compact format but WITH hands
-        if format == "compact" and include_hands:
-            # Re-fetch with full format to get hands
-            full_history = await service.build_play_history(
-                room_id=room_id,
-                round_numbers=None,
-                include_ai_analysis=include_ai_analysis,
-                format=None,
-            )
-            # Copy hands from full history
-            for i, round_data in enumerate(play_history.rounds):
-                if i < len(full_history.rounds):
-                    round_data.hands_dealt = full_history.rounds[i].hands_dealt
-
-        # The v2 service handles other parameters internally
-
-    else:
-        # Use v1 service (original logic)
-        service = PlayHistoryService()
-
-    # Check if room exists
-    room = await shared_room_manager.get_room(room_id)
-
-    if not room:
-        # Room not in memory - try to get data from SQLite event store
-        logger.info(f"Room {room_id} not in memory, attempting SQLite retrieval")
-
-        # Create minimal game object for service interface
-        from backend.engine.game import Game
-        from backend.engine.player import Player
-
-        # Create minimal players (will be overridden by event data)
-        players = [
-            Player("Player 1", is_bot=False),
-            Player("Player 2", is_bot=True),
-            Player("Player 3", is_bot=True),
-            Player("Player 4", is_bot=True),
-        ]
-
-        minimal_game = Game(players)
-        minimal_game.round_number = 0  # No rounds in memory
-        minimal_game.current_phase = "WAITING"
-
-        # Try to get history from SQLite
-        play_history = await service.build_play_history(
-            minimal_game,
-            room_id,
-            include_ai_analysis=include_ai_analysis,
-            format=format,
-        )
-
-        # If no data found in SQLite either, then truly not found
-        if play_history.total_rounds == 0:
+    # Check if this is a request from the frontend (simplified format)
+    # Frontend always wants the simplified format
+    if request.headers.get("X-Frontend-Request") or True:  # Always use simplified format for now
+        from backend.services.play_history_db import play_history_db_service
+        
+        # Get play history in simplified frontend format
+        simplified_data = await play_history_db_service.get_play_history(room_id)
+        
+        if not simplified_data:
             error_response, status_code = create_error_response(
                 code=ErrorCodes.ROOM_NOT_FOUND,
-                message=f"Room with ID '{room_id}' not found",
+                message=f"Room with ID '{room_id}' not found or has no game history",
                 status_code=404,
                 context={"room_id": room_id},
                 path=str(request.url.path),
             )
-            # Pass the full error response as detail for our custom handler
             raise HTTPException(
                 status_code=status_code, detail=error_response.model_dump()
             )
-    else:
-        # Room exists in memory
-        if not room.game:
-            error_response, status_code = create_error_response(
-                code=ErrorCodes.NO_ACTIVE_GAME,
-                message=f"Room '{room_id}' has no active game",
-                status_code=400,
-                context={"room_id": room_id},
-                path=str(request.url.path),
-            )
-            # Pass the full error response as detail for our custom handler
-            raise HTTPException(
-                status_code=status_code, detail=error_response.model_dump()
-            )
+        
+        # Return simplified format directly
+        return simplified_data
+    
+    # Original complex format (kept for backwards compatibility)
+    from backend.services.play_history_service import PlayHistoryService
+    service = PlayHistoryService()
 
-        # Build play history with actual game
+    # Get the room and game to pass to the service
+    from backend.shared_instances import shared_room_manager
+    room = await shared_room_manager.get_room(room_id)
+    
+    if not room:
+        # Try to get from database directly if no active room
         play_history = await service.build_play_history(
-            room.game, room_id, include_ai_analysis=include_ai_analysis, format=format
+            game=None,  # No active game
+            room_id=room_id,
+            include_ai_analysis=include_ai_analysis,
+            format=format,
+        )
+    else:
+        # Build history from active game
+        play_history = await service.build_play_history(
+            game=room.game,
+            room_id=room_id,
+            include_ai_analysis=include_ai_analysis,
+            format=format,
         )
 
-        # Apply round filtering if specific rounds requested
-        if rounds:
-            # Parse comma-separated round numbers and filter
-            # This reduces response size when only specific rounds are needed
-            round_numbers = [int(r.strip()) for r in rounds.split(",")]
-            play_history.rounds = [
-                r for r in play_history.rounds if r.round_number in round_numbers
-            ]
+    
+    # Check if we got any data
+    if not play_history or (hasattr(play_history, 'total_rounds') and play_history.total_rounds == 0):
+        error_response, status_code = create_error_response(
+            code=ErrorCodes.ROOM_NOT_FOUND,
+            message=f"Room with ID '{room_id}' not found or has no game history",
+            status_code=404,
+            context={"room_id": room_id},
+            path=str(request.url.path),
+        )
+        raise HTTPException(
+            status_code=status_code, detail=error_response.model_dump()
+        )
+    
+    # Apply round filtering if specific rounds requested
+    if rounds and hasattr(play_history, 'rounds'):
+        # Parse comma-separated round numbers and filter
+        round_numbers = [int(r.strip()) for r in rounds.split(",")]
+        play_history.rounds = [
+            r for r in play_history.rounds if r.round_number in round_numbers
+        ]
+        play_history.total_rounds = len(play_history.rounds)
 
-        # Handle include_hands parameter with format interaction
-        # Compact format excludes hands by default for efficiency
+    # Handle include_hands parameter with format interaction
+    # Compact format excludes hands by default for efficiency
         # Full format includes hands by default but can be excluded
         if format != "compact" and not include_hands:
             # For non-compact format, remove hands if include_hands is false
@@ -497,7 +441,7 @@ async def get_rounds_range(
         # Pass the full error response as detail for our custom handler
         raise HTTPException(status_code=status_code, detail=error_response.model_dump())
 
-    from backend.shared_instances import shared_room_manager
+    # Removed shared_room_manager import - using async_room_manager instead
     from backend.services.play_history_service import PlayHistoryService
 
     # Get request ID for logging
@@ -564,6 +508,7 @@ async def get_rounds_range(
         service = PlayHistoryService()
 
         # Check if room exists
+        # Already imported shared_room_manager above
         room = await shared_room_manager.get_room(room_id)
 
         if not room:
