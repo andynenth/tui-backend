@@ -76,7 +76,7 @@ class PlayHistoryDatabaseService:
             return None
     
     def _build_response(self, room_id: str, summary: sqlite3.Row, round_snapshots: List[sqlite3.Row]) -> Dict[str, Any]:
-        """Build the response in the format expected by frontend."""
+        """Build the response in the format expected by frontend transformer."""
         
         # Parse players from summary
         players_data = json.loads(summary['players']) if summary['players'] else []
@@ -92,9 +92,11 @@ class PlayHistoryDatabaseService:
                 player_name = str(player_data)
                 player_type = 'bot' if player_name.startswith('Bot') else 'human'
             
+            # Include position field for frontend validation
             players.append({
                 "name": player_name,
-                "type": player_type
+                "type": player_type,
+                "position": i
             })
         
         # Build rounds from snapshots
@@ -104,10 +106,35 @@ class PlayHistoryDatabaseService:
             if round_data:
                 rounds.append(round_data)
         
-        # Return simplified structure for frontend
+        # Get final scores from last round
+        final_scores = {}
+        winner = None
+        if round_snapshots:
+            last_round = round_snapshots[-1]
+            cumulative_scores = json.loads(last_round['cumulative_scores']) if last_round['cumulative_scores'] else {}
+            final_scores = cumulative_scores
+            
+            # Determine winner based on highest score
+            if final_scores:
+                max_score = max(final_scores.values())
+                for player_name, score in final_scores.items():
+                    if score == max_score:
+                        winner = player_name
+                        break
+        
+        # Return in snake_case format for transformer
         return {
+            "room_id": room_id,
+            "total_rounds": len(round_snapshots),
+            "start_time": datetime.fromtimestamp(summary['started_at']).isoformat() if summary['started_at'] else datetime.now().isoformat(),
+            "end_time": datetime.fromtimestamp(summary['completed_at']).isoformat() if summary['completed_at'] else None,
             "players": players,
-            "rounds": rounds
+            "rounds": rounds,
+            "game_status": {
+                "completed": bool(summary['completed_at']),
+                "winner": winner,
+                "final_scores": final_scores
+            }
         }
     
     def _build_round(self, snapshot: sqlite3.Row, players: List[Dict[str, Any]]) -> Dict[str, Any]:
@@ -137,8 +164,11 @@ class PlayHistoryDatabaseService:
             
             declarations.append({
                 "player": player_name,
+                "player_name": player_name,  # Transformer expects player_name
+                "player_id": player_name.lower().replace(' ', '_'),
                 "declared": declared_value,
-                "hand": hand_pieces
+                "hand": hand_pieces,
+                "timestamp": datetime.now().isoformat()  # Add timestamp for validation
             })
         
         # Build turns array
@@ -195,12 +225,26 @@ class PlayHistoryDatabaseService:
                     max_score = score
                     winner = player_name
         
+        # Return in the format expected by the transformer
         return {
-            "starter": snapshot['starter_player'] or "Unknown",
-            "turns": turns,
-            "winner": winner,
-            "declarations": declarations,
-            "scoring": scoring
+            "round_number": snapshot['round_number'],
+            "initial_state": {
+                "starter": {
+                    "player_name": snapshot['starter_player'] or "Unknown"
+                }
+            },
+            "timestamp": snapshot['created_at'] or datetime.now().isoformat(),
+            "turn_history": turns,  # Transformer expects turn_history
+            "declaration_phase": {
+                "declarations": declarations  # Nested under declaration_phase
+            },
+            "hands_dealt": {},  # Empty for now
+            "round_summary": {
+                "winner": winner,
+                "scoring": scoring,  # Nested under round_summary
+                "final_captures": {},
+                "cumulative_scores": cumulative_scores
+            }
         }
     
     def _build_turn(self, turn_data: Dict[str, Any]) -> Optional[Dict[str, Any]]:
@@ -244,6 +288,7 @@ class PlayHistoryDatabaseService:
                 "pieces": pieces_list,
                 "isStarter": is_starter,
                 "handBefore": [],  # Not stored in turn sequence
+                "handAfter": [],   # Not stored in turn sequence
                 "captured": len(pieces_list) if player_name == winner else 0
             })
         
@@ -251,7 +296,8 @@ class PlayHistoryDatabaseService:
             "turnNumber": turn_number,
             "plays": plays,
             "winner": winner,
-            "winnerPieces": winner_pieces
+            "winnerPieces": winner_pieces,
+            "timestamp": datetime.now().isoformat()  # Add timestamp for validation
         }
 
 
