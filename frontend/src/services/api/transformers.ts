@@ -132,7 +132,18 @@ function transformScoring(summary: any): any {
   
   const players: Record<string, any> = {};
   
-  if (summary.scoring) {
+  // Check if we have the newer format with scoring.players directly
+  if (summary.scoring?.players) {
+    Object.entries(summary.scoring.players).forEach(([playerName, playerData]: [string, any]) => {
+      players[playerName] = {
+        declared: playerData.declared || 0,
+        captured: playerData.captured || 0,
+        score: playerData.score || 0,
+        multiplier: playerData.multiplier || 1,
+        baseScore: playerData.baseScore || 0
+      };
+    });
+  } else if (summary.scoring) {
     Object.entries(summary.scoring).forEach(([playerName, score]: [string, any]) => {
       players[playerName] = {
         declared: summary.final_captures?.[playerName]?.declared || score.declared || 0,

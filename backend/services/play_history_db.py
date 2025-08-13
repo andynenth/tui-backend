@@ -19,9 +19,8 @@ class PlayHistoryDatabaseService:
     def __init__(self, db_path: Optional[str] = None):
         """Initialize with database path."""
         if db_path is None:
-            current_dir = Path(__file__).resolve()
-            project_root = current_dir.parent.parent.parent
-            self.db_path = str(project_root / "game_events.db")
+            # Use absolute path to the game_events.db in project root
+            self.db_path = "/Users/nrw/python/tui-project/liap-tui/game_events.db"
         else:
             self.db_path = db_path
         
@@ -189,18 +188,17 @@ class PlayHistoryDatabaseService:
             
             if isinstance(player_round_score, dict):
                 declared = player_round_score.get('declared', declarations_data.get(player_name, 0))
-                captured = player_round_score.get('captured', 0)
+                captured = player_round_score.get('actual', player_round_score.get('captured', 0))
                 multiplier = player_round_score.get('multiplier', 1)
-                score = player_round_score.get('score', 0)
+                score = player_round_score.get('final_score', player_round_score.get('score', 0))
+                base_score = player_round_score.get('base_score', abs(declared - captured))
             else:
                 # Simple score format
                 declared = declarations_data.get(player_name, 0)
                 captured = 0  # Not available in simple format
                 multiplier = 1
                 score = player_round_score if isinstance(player_round_score, (int, float)) else 0
-            
-            # Calculate base score
-            base_score = abs(declared - captured)
+                base_score = abs(declared - captured)
             
             scoring["players"][player_name] = {
                 "declared": declared,
@@ -217,7 +215,7 @@ class PlayHistoryDatabaseService:
             max_score = -999
             for player_name, score_data in round_scores.items():
                 if isinstance(score_data, dict):
-                    score = score_data.get('score', 0)
+                    score = score_data.get('final_score', score_data.get('score', 0))
                 else:
                     score = score_data
                 
@@ -242,7 +240,7 @@ class PlayHistoryDatabaseService:
             "round_summary": {
                 "winner": winner,
                 "scoring": scoring,  # Nested under round_summary
-                "final_captures": {},
+                "final_captures": self._build_final_captures(declarations_data, round_scores),
                 "cumulative_scores": cumulative_scores
             }
         }
@@ -299,6 +297,24 @@ class PlayHistoryDatabaseService:
             "winnerPieces": winner_pieces,
             "timestamp": datetime.now().isoformat()  # Add timestamp for validation
         }
+    
+    def _build_final_captures(self, declarations_data: Dict[str, int], round_scores: Dict[str, Any]) -> Dict[str, Any]:
+        """Build final captures data for the transformer."""
+        final_captures = {}
+        
+        for player_name, declared_value in declarations_data.items():
+            # Get captured value from round scores
+            captured = 0
+            if player_name in round_scores:
+                if isinstance(round_scores[player_name], dict):
+                    captured = round_scores[player_name].get('captured', 0)
+            
+            final_captures[player_name] = {
+                "declared": declared_value,
+                "captured": captured
+            }
+        
+        return final_captures
 
 
 # Create singleton instance

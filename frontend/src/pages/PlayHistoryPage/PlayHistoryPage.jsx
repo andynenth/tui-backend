@@ -70,6 +70,24 @@ export const PlayHistoryPage = () => {
     return <EmptyState />;
   }
   
+  // Check if there are no rounds
+  if (!data.rounds || data.rounds.length === 0) {
+    return (
+      <div className="min-h-screen bg-game-background flex items-center justify-center">
+        <div className="bg-game-surface rounded-lg shadow-game-lg p-8 max-w-md w-full mx-4">
+          <div className="text-center">
+            <h2 className="text-xl font-semibold text-game-text mb-2">No Game History</h2>
+            <p className="text-game-text/60">This room was created but no rounds were played.</p>
+            <div className="mt-4 text-sm text-game-text/40">
+              <p>Room ID: {roomId}</p>
+              <p>Players: {data.players.map(p => p.name).join(', ')}</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+  
   const currentRound = data.rounds[selectedRound - 1];
   
   // Basic implementation with mock data
