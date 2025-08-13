@@ -317,8 +317,10 @@ class EventStoreV2:
         logger.debug(
             f"🔍 DEBUG: EventStoreV2.store_event - room: {room_id}, type: {event_type}"
         )
-        logger.debug(f"🔍 DEBUG: EventStoreV2 payload keys: {list(payload.keys()) if payload else 'None'}")
-        
+        logger.debug(
+            f"🔍 DEBUG: EventStoreV2 payload keys: {list(payload.keys()) if payload else 'None'}"
+        )
+
         conn = sqlite3.connect(self.db_path)
         try:
             # Extract round number from payload if available
@@ -339,7 +341,9 @@ class EventStoreV2:
             )
 
             conn.commit()
-            logger.debug(f"🔍 DEBUG: Successfully stored {event_type} event for room {room_id} in v2")
+            logger.debug(
+                f"🔍 DEBUG: Successfully stored {event_type} event for room {room_id} in v2"
+            )
 
         except Exception as e:
             logger.error(f"Failed to store event in v2: {e}")

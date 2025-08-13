@@ -133,7 +133,7 @@ class PreparationState(GameState):
         # Choose dealing mode - uncomment ONE of the following:
 
         # 1. Normal random dealing (production)
-        game._deal_pieces()
+        # game._deal_pieces()
 
         # 2. Guaranteed no weak hands (testing)
         # game._deal_guaranteed_no_redeal(red_general_player_index=0)
@@ -142,7 +142,7 @@ class PreparationState(GameState):
         # game._deal_weak_hand(weak_player_indices=[1], max_weak_points=9, limit=6)
 
         # 4.
-        # game._deal_double_straight(0, "RED")
+        game._deal_double_straight(0, "RED")
 
         # Examples:
         # game._deal_guaranteed_no_redeal()                              # Random RED_GENERAL assignment

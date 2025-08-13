@@ -7,8 +7,14 @@ from typing import AsyncGenerator, List, Optional
 from .core import GameAction
 
 # Import EventStore for state event persistence
-from backend.api.services.event_store import event_store
+from backend.shared_event_store import event_store
 import os
+
+# Debug log to verify we're using the right event store
+logger = logging.getLogger("game.action_queue")
+logger.debug(
+    f"🔍 DEBUG: action_queue.py imported event_store from shared_event_store, type: {type(event_store).__name__}"
+)
 
 
 class ActionQueue:
@@ -76,6 +82,14 @@ class ActionQueue:
             player_id: Optional player identifier
         """
         try:
+            # Debug log the exact path
+            self.logger.debug(
+                f"🔍 DEBUG: action_queue.store_state_event calling event_store.store_event - type: {event_type}, room: {self.room_id}"
+            )
+            self.logger.debug(
+                f"🔍 DEBUG: event_store type in action_queue: {type(event_store).__name__}"
+            )
+
             # Use the global event_store which now routes through MigrationAdapter
             await event_store.store_event(self.room_id, event_type, payload, player_id)
 

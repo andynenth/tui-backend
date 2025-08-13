@@ -24,9 +24,11 @@ class MigrationAdapter:
 
     def __init__(self):
         """Initialize migration adapter based on environment configuration."""
+        logger.info("🔍 DEBUG: MigrationAdapter.__init__ called")
 
         # Get migration mode
         self.mode = os.getenv("MIGRATION_MODE", "v2_only").lower()
+        logger.info(f"🔍 DEBUG: MigrationAdapter mode = {self.mode}")
 
         # Initialize stores based on mode
         if self.mode in ["v1_only", "dual_write", "dual_read_v1", "dual_read_v2"]:
@@ -42,6 +44,9 @@ class MigrationAdapter:
             self.v2_store = None
 
         logger.info(f"MigrationAdapter initialized in '{self.mode}' mode")
+        logger.info(
+            f"🔍 DEBUG: MigrationAdapter v1_store = {self.v1_store is not None}, v2_store = {self.v2_store is not None}"
+        )
 
         # Validate configuration
         if not self.v1_store and not self.v2_store:
@@ -57,11 +62,17 @@ class MigrationAdapter:
         """
         Store event based on migration mode.
         """
+        # Log entry point to detect if events flow through here
+        logger.info(
+            f"🔍 DEBUG: MigrationAdapter.store_event CALLED - mode: {self.mode}, room: {room_id}, type: {event_type}"
+        )
 
-        logger.debug(
+        logger.info(
             f"🔍 DEBUG: MigrationAdapter.store_event - mode: {self.mode}, room: {room_id}, type: {event_type}"
         )
-        logger.debug(f"🔍 DEBUG: MigrationAdapter payload keys: {list(payload.keys()) if payload else 'None'}")
+        logger.debug(
+            f"🔍 DEBUG: MigrationAdapter payload keys: {list(payload.keys()) if payload else 'None'}"
+        )
         logger.debug(f"🔍 DEBUG: MigrationAdapter player_id: {player_id}")
         if self.mode == "v1_only":
             # Only write to v1 (rollback mode)

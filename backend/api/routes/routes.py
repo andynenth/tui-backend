@@ -33,7 +33,7 @@ from . import monitoring
 
 # Import EventStore for recovery endpoints
 try:
-    from backend.api.services.event_store import event_store
+    from backend.shared_event_store import event_store
 
     EVENT_STORE_AVAILABLE = True
 except ImportError:

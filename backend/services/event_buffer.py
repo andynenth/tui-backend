@@ -79,7 +79,7 @@ class EventBuffer:
         logger.debug(
             f"🔍 DEBUG: EventBuffer.add_event - room: {room_id}, type: {event_type}, buffer size: {len(self._buffer)}"
         )
-        
+
         async with self._buffer_lock:
             self._buffer.append(
                 {
@@ -92,14 +92,16 @@ class EventBuffer:
             )
             self._metrics["events_buffered"] += 1
             buffer_size = len(self._buffer)
-            
+
             logger.debug(
                 f"🔍 DEBUG: EventBuffer - buffer size after add: {buffer_size}, max size: {self.max_size}"
             )
 
             # Check if we need to flush
             if buffer_size >= self.max_size:
-                logger.debug(f"🔍 DEBUG: EventBuffer - triggering flush due to size limit")
+                logger.debug(
+                    f"🔍 DEBUG: EventBuffer - triggering flush due to size limit"
+                )
                 await self._flush_buffer()
 
     async def _background_flush(self) -> None:
@@ -130,10 +132,8 @@ class EventBuffer:
 
         events_to_flush = self._buffer.copy()
         self._buffer.clear()
-        
-        logger.debug(
-            f"🔍 DEBUG: EventBuffer - flushing {len(events_to_flush)} events"
-        )
+
+        logger.debug(f"🔍 DEBUG: EventBuffer - flushing {len(events_to_flush)} events")
 
         # Release lock before database operations
         self._buffer_lock.release()

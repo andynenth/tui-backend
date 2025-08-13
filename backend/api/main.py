@@ -55,6 +55,9 @@ except ImportError:
 import logging
 from backend.api.services.log_buffer import log_buffer_handler
 
+# Create logger for this module
+logger = logging.getLogger(__name__)
+
 
 def setup_log_buffer():
     """Configure log buffer handler for Claude AI debugging access"""
@@ -257,8 +260,11 @@ async def startup_event():
         from backend.api.services.simple_maintenance import SimpleMaintenanceScheduler
         from backend.api.routes.maintenance import set_maintenance_scheduler
 
-        # Get or create event store instance
-        event_store = EventStore()
+        # Use the shared event store instance
+        from backend.shared_event_store import event_store
+
+        logger.debug("🔍 DEBUG: main.py using shared event_store instance")
+        logger.debug(f"🔍 DEBUG: event_store type: {type(event_store).__name__}")
 
         # Create and start maintenance scheduler
         scheduler = SimpleMaintenanceScheduler(event_store)
@@ -287,7 +293,7 @@ async def shutdown_event():
 
     # Flush EventStore buffer to ensure no data loss
     try:
-        from backend.api.services.event_store import event_store
+        from backend.shared_event_store import event_store
 
         await event_store.shutdown()
         print("✅ EventStore buffer flushed successfully")

@@ -93,9 +93,7 @@ class EventCompressor:
 
         # Compression mapping
         compression_type = EventMapping.COMPRESS_EVENTS.get(event_type)
-        logger.debug(
-            f"🔍 DEBUG: Compression type for {event_type}: {compression_type}"
-        )
+        logger.debug(f"🔍 DEBUG: Compression type for {event_type}: {compression_type}")
 
         if compression_type == "accumulate_declarations":
             logger.debug(f"🔍 DEBUG: Accumulating declaration event")

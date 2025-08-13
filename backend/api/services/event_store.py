@@ -968,12 +968,8 @@ class EventStore:
         }
 
 
-# Import MigrationAdapter for optimized v2 integration
-from backend.services.migration_adapter import MigrationAdapter
-
-# Global instance - now uses MigrationAdapter for v2 optimization
-event_store = MigrationAdapter()
-
+# Note: The global event_store instance is now created in shared_event_store.py
+# to avoid circular imports with MigrationAdapter
 
 # Export for easy importing
-__all__ = ["EventStore", "GameEvent", "event_store"]
+__all__ = ["EventStore", "GameEvent"]

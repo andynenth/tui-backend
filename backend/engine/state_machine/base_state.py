@@ -242,7 +242,7 @@ class GameState(ABC):
 
             # Store state change in EventStore for replay capability
             try:
-                from backend.api.services.event_store import event_store
+                from backend.shared_event_store import event_store
 
                 # Use buffered storage for 90% write reduction
                 await event_store.store_event_buffered(
