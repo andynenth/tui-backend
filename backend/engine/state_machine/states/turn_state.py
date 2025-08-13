@@ -696,6 +696,11 @@ class TurnState(GameState):
                 )
             else:
                 self.logger.info("🏁 All hands are now empty - round complete")
+            
+            # Transfer turn history to turn_results for scoring_state
+            if hasattr(game, "turn_history_this_round") and hasattr(game, "turn_results"):
+                game.turn_results = game.turn_history_this_round.copy()
+                self.logger.info(f"📋 Transferred {len(game.turn_results)} turns to turn_results for scoring")
         else:
             # Update starter for next turn
             if self.winner:

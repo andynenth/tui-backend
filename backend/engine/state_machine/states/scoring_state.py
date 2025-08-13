@@ -483,17 +483,57 @@ class ScoringState(GameState):
 
         # Add turn sequence if available (from turn_results)
         if hasattr(game, "turn_results") and game.turn_results:
-            round_data["turn_sequence"] = [
-                {
-                    "turn_number": i + 1,
-                    "starter": turn.get("starter", ""),
-                    "plays": turn.get("plays", {}),
+            self.logger.info(f"📝 Building turn_sequence from {len(game.turn_results)} turns")
+            turn_sequence = []
+            
+            for i, turn in enumerate(game.turn_results):
+                # Debug log
+                self.logger.info(f"Turn {i}: {turn}")
+                
+                # Build plays dict from turn data
+                plays_dict = {}
+                for play in turn.get("plays", []):
+                    player_name = play.get("player")
+                    if player_name:
+                        # Convert Piece objects to dictionaries
+                        pieces_data = []
+                        for piece in play.get("pieces", []):
+                            if hasattr(piece, "kind") and hasattr(piece, "point"):
+                                # It's a Piece object
+                                pieces_data.append({
+                                    "kind": piece.kind,
+                                    "point": piece.point
+                                })
+                            elif isinstance(piece, dict):
+                                # Already a dict
+                                pieces_data.append(piece)
+                            else:
+                                # Unknown format, try to convert to string
+                                pieces_data.append(str(piece))
+                        
+                        plays_dict[player_name] = {
+                            "pieces": pieces_data,
+                            "is_starter": i == 0 and play == turn.get("plays", [])[0],  # First player of first turn
+                            "play_type": play.get("play_type", "unknown"),
+                            "play_value": play.get("play_value", 0)
+                        }
+                
+                turn_entry = {
+                    "turn_number": turn.get("turn_number", i + 1),
+                    "starter": turn.get("plays", [{}])[0].get("player", "") if turn.get("plays") else "",
+                    "plays": plays_dict,
                     "winner": turn.get("winner", ""),
                     "piles_won": turn.get("piles_won", 0),
                 }
-                for i, turn in enumerate(game.turn_results)
-            ]
+                turn_sequence.append(turn_entry)
+                
+            round_data["turn_sequence"] = turn_sequence
+            self.logger.info(f"✅ Built turn_sequence with {len(turn_sequence)} turns")
 
+        # Add debug logging
+        self.logger.info(f"🔥 SCORING_STATE: About to store round_completed event for room {self.state_machine.room_id}")
+        self.logger.info(f"🔥 SCORING_STATE: Round data has {len(round_data.get('turn_sequence', []))} turns")
+        
         await self.state_machine.store_game_event(
             "round_completed",
             round_data,
@@ -502,3 +542,4 @@ class ScoringState(GameState):
         self.logger.info(
             f"🚀 V2 EVENT: round_completed event fired for room {self.state_machine.room_id}, round {game.round_number}"
         )
+        self.logger.info(f"🔥 SCORING_STATE: round_completed event stored successfully")

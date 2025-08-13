@@ -37,6 +37,7 @@ class Game:
         self.last_turn_winner = None  # Player who won the last turn
         self.turn_number = 0  # Current turn number within the round
         self.turn_history_this_round = []  # Track all turns with plays for AI strategy
+        self.turn_results = []  # For scoring_state to read turn data
 
         # Player tracking for state machine
         self.current_player = None  # Current player (for round start/declarations)

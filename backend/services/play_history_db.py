@@ -78,8 +78,8 @@ class PlayHistoryDatabaseService:
     def _build_response(self, room_id: str, summary: sqlite3.Row, round_snapshots: List[sqlite3.Row]) -> Dict[str, Any]:
         """Build the response in the format expected by frontend transformer."""
         
-        # Parse players from summary
-        players_data = json.loads(summary['players']) if summary['players'] else []
+        # Parse players from summary (using correct column name)
+        players_data = json.loads(summary['player_names']) if summary['player_names'] else []
         players = []
         
         for i, player_data in enumerate(players_data):

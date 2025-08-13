@@ -262,9 +262,9 @@ class TestPlayHistoryAlerts:
         return room_id
 
     @patch(
-        "backend.services.play_history_service.PlayHistoryService.build_play_history"
+        "backend.services.play_history_db.play_history_db_service.get_play_history"
     )
-    def test_slow_query_alert(self, mock_build):
+    def test_slow_query_alert(self, mock_get):
         """Test that slow play history queries trigger alerts."""
         loop = asyncio.new_event_loop()
         asyncio.set_event_loop(loop)
@@ -272,22 +272,20 @@ class TestPlayHistoryAlerts:
         # Create room
         room_id = loop.run_until_complete(self.create_test_room_with_game())
 
-        # Mock slow response with proper attributes
-        from backend.models.play_history import PlayHistoryResponse
-
-        mock_response = PlayHistoryResponse(
-            room_id=room_id,
-            total_rounds=10,
-            rounds=[],
-            players={},  # Empty dict for players
-        )
+        # Mock slow response with simplified format
+        mock_response = {
+            "room_id": room_id,
+            "players": [],
+            "rounds": [],
+            "game_status": "active"
+        }
 
         # Add artificial delay to trigger alert
-        def slow_build(*args, **kwargs):
+        async def slow_get(*args, **kwargs):
             time.sleep(0.1)  # 100ms delay
             return mock_response
 
-        mock_build.side_effect = slow_build
+        mock_get.side_effect = slow_get
 
         # Override threshold for testing
         alert_service.thresholds["play_history_slow"].threshold_ms = 50

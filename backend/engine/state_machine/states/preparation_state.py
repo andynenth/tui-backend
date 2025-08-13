@@ -129,6 +129,10 @@ class PreparationState(GameState):
         # Clear turn history for new round
         if hasattr(game, "turn_history_this_round"):
             game.turn_history_this_round.clear()
+        
+        # Clear turn results for new round
+        if hasattr(game, "turn_results"):
+            game.turn_results = []
 
         # Choose dealing mode - uncomment ONE of the following:
 

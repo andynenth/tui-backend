@@ -57,22 +57,23 @@ class EventStoreV2:
         )
         conn = sqlite3.connect(self.db_path)
         try:
-            # Create game summary entry
+            # Create game summary entry with design-correct column names
             conn.execute(
                 """
                 INSERT OR REPLACE INTO game_summaries 
-                (room_id, players, started_at, total_rounds, total_events)
-                VALUES (?, ?, ?, 0, 0)
+                (room_id, player_names, player_types, started_at, total_rounds, 
+                 current_round, game_status, last_activity)
+                VALUES (?, ?, ?, ?, 0, 0, 'active', ?)
             """,
-                (room_id, json.dumps(players), time.time()),
+                (room_id, json.dumps(players), '{}', time.time(), time.time()),
             )
 
-            # Also store minimal event
+            # Also store minimal event with event_sequence
             conn.execute(
                 """
                 INSERT INTO game_events_v2
-                (room_id, event_type, timestamp, created_at)
-                VALUES (?, ?, ?, ?)
+                (room_id, event_type, event_sequence, timestamp, created_at)
+                VALUES (?, ?, 0, ?, ?)
             """,
                 (
                     room_id,
@@ -95,6 +96,8 @@ class EventStoreV2:
             f"🔍 DEBUG: EventStoreV2.store_round_snapshot called - room: {room_id}, round: {round_number}"
         )
         logger.info(f"🔍 DEBUG: Round data keys: {list(round_data.keys())}")
+        logger.info(f"🔥 EVENT_STORE_V2: store_round_snapshot called for room {room_id}, round {round_number}")
+        logger.info(f"🔥 EVENT_STORE_V2: turn_sequence length: {len(round_data.get('turn_sequence', []))}")
         conn = sqlite3.connect(self.db_path)
         try:
             # Extract data
@@ -106,14 +109,32 @@ class EventStoreV2:
             scores = round_data.get("round_scores", {})
             cumulative = round_data.get("cumulative_scores", {})
 
-            # Store round snapshot
+            # Store round snapshot with correct column names
+            # Calculate pile_counts from scores data
+            pile_counts = {}
+            for player_name, score_data in scores.items():
+                if isinstance(score_data, dict):
+                    pile_counts[player_name] = score_data.get('actual', score_data.get('captured', 0))
+                else:
+                    pile_counts[player_name] = 0
+            
+            # Determine if there's a winner (anyone reached 50 points)
+            has_winner = False
+            winning_player = None
+            for player_name, score in cumulative.items():
+                if score >= 50:
+                    has_winner = True
+                    if not winning_player or score > cumulative.get(winning_player, 0):
+                        winning_player = player_name
+                        
             conn.execute(
                 """
                 INSERT OR REPLACE INTO round_snapshots
                 (room_id, round_number, starter_player, starter_reason,
-                 initial_hands, declarations, turn_sequence, round_scores,
-                 cumulative_scores, created_at, total_turns)
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                 initial_hands, declarations, turn_count, turn_sequence, 
+                 round_scores, pile_counts, cumulative_scores,
+                 has_winner, winning_player, created_at)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
             """,
                 (
                     room_id,
@@ -122,11 +143,14 @@ class EventStoreV2:
                     starter_reason,
                     json.dumps(hands),
                     json.dumps(declarations),
+                    max(1, min(8, len(turns))),  # turn_count with constraint
                     json.dumps(turns),
                     json.dumps(scores),
+                    json.dumps(pile_counts),
                     json.dumps(cumulative),
+                    has_winner,
+                    winning_player,
                     datetime.now().isoformat(),
-                    len(turns),
                 ),
             )
 
@@ -137,7 +161,7 @@ class EventStoreV2:
                     conn.execute(
                         """
                         INSERT OR REPLACE INTO turn_details
-                        (room_id, round_number, turn_number, starter,
+                        (room_id, round_number, turn_number, starter_player,
                          plays, winner, piles_won, created_at)
                         VALUES (?, ?, ?, ?, ?, ?, ?, ?)
                     """,
@@ -145,7 +169,7 @@ class EventStoreV2:
                             room_id,
                             round_number,
                             turn_num,
-                            turn.get("starter", ""),
+                            turn.get("starter", ""),  # starter_player column
                             json.dumps(turn.get("plays", {})),
                             turn.get("winner", ""),
                             turn.get("piles_won", 0),
@@ -153,20 +177,24 @@ class EventStoreV2:
                         ),
                     )
 
-            # Update game summary
+            # Update game summary with correct columns
             conn.execute(
                 """
                 UPDATE game_summaries
                 SET total_rounds = ?,
-                    total_events = total_events + ?
+                    current_round = ?,
+                    last_activity = ?
                 WHERE room_id = ?
             """,
-                (round_number, 1, room_id),
+                (round_number, round_number, time.time(), room_id),
             )
 
             conn.commit()
             logger.info(
                 f"✅ DEBUG: Round snapshot successfully stored in database - room: {room_id}, round: {round_number}"
+            )
+            logger.info(
+                f"✅ ROUND_COMPLETED: Successfully stored round {round_number} for room {room_id} with {len(turns)} turns"
             )
         finally:
             conn.close()
@@ -191,29 +219,38 @@ class EventStoreV2:
             completed_at = time.time()
             duration = int(completed_at - started_at)
 
-            # Update game summary
+            # Update game summary with correct columns
             conn.execute(
                 """
                 UPDATE game_summaries
                 SET completed_at = ?,
                     final_scores = ?,
                     winner = ?,
-                    duration_seconds = ?
+                    game_status = 'completed',
+                    last_activity = ?
                 WHERE room_id = ?
             """,
-                (completed_at, json.dumps(final_scores), winner, duration, room_id),
+                (completed_at, json.dumps(final_scores), winner, completed_at, room_id),
             )
 
-            # Store completion event
+            # Store completion event with event_sequence
+            # Get next sequence number
+            cursor = conn.execute(
+                "SELECT COALESCE(MAX(event_sequence), 0) + 1 FROM game_events_v2 WHERE room_id = ?",
+                (room_id,)
+            )
+            next_seq = cursor.fetchone()[0]
+            
             conn.execute(
                 """
                 INSERT INTO game_events_v2
-                (room_id, event_type, timestamp, created_at)
-                VALUES (?, ?, ?, ?)
+                (room_id, event_type, event_sequence, timestamp, created_at)
+                VALUES (?, ?, ?, ?, ?)
             """,
                 (
                     room_id,
                     SemanticEventType.GAME_COMPLETED.value,
+                    next_seq,
                     completed_at,
                     datetime.now().isoformat(),
                 ),
@@ -230,8 +267,9 @@ class EventStoreV2:
         try:
             cursor = conn.execute(
                 """
-                SELECT room_id, players, total_rounds, final_scores,
-                       winner, started_at, completed_at, duration_seconds
+                SELECT room_id, player_names, total_rounds, final_scores,
+                       winner, started_at, completed_at, game_status, 
+                       current_round, last_activity
                 FROM game_summaries
                 WHERE room_id = ?
             """,
@@ -250,8 +288,10 @@ class EventStoreV2:
                 "winner": row[4],
                 "started_at": row[5],
                 "completed_at": row[6],
-                "duration_seconds": row[7],
-                "is_active": row[6] is None,
+                "game_status": row[7],
+                "current_round": row[8],
+                "last_activity": row[9],
+                "is_active": row[7] == 'active',
             }
         finally:
             conn.close()
@@ -382,21 +422,29 @@ class EventStoreV2:
             conn.close()
 
     async def get_player_statistics(self, player_name: str) -> Dict[str, Any]:
-        """Get player statistics using optimized queries."""
+        """Get player statistics by querying game_summaries directly."""
         conn = sqlite3.connect(self.db_path)
         try:
-            # Use the player_stats view
+            # Query game_summaries directly instead of using the removed player_stats view
             cursor = conn.execute(
                 """
-                SELECT games_played, games_won, avg_score
-                FROM player_stats
-                WHERE player_name = ?
+                SELECT 
+                    COUNT(*) as games_played,
+                    SUM(CASE WHEN winner = ? THEN 1 ELSE 0 END) as games_won,
+                    AVG(CASE 
+                        WHEN json_extract(final_scores, '$.' || ?) IS NOT NULL 
+                        THEN json_extract(final_scores, '$.' || ?)
+                        ELSE 0 
+                    END) as avg_score
+                FROM game_summaries
+                WHERE completed_at IS NOT NULL
+                AND json_extract(players, '$') LIKE '%' || ? || '%'
             """,
-                (player_name,),
+                (player_name, player_name, player_name, player_name),
             )
 
             row = cursor.fetchone()
-            if not row:
+            if not row or row[0] == 0:
                 return {
                     "player_name": player_name,
                     "games_played": 0,
@@ -406,7 +454,7 @@ class EventStoreV2:
                 }
 
             games_played = row[0]
-            games_won = row[1]
+            games_won = row[1] or 0
             avg_score = row[2] or 0.0
 
             return {

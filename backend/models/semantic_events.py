@@ -68,7 +68,7 @@ class EventMapping:
         "pieces_played": "accumulate_turn",
         "play": "accumulate_turn",
         "turn_resolved": "accumulate_turn",
-        "turn_complete": "compress_turn",
+        "turn_completed": "compress_turn",
         # Phase updates - mostly redundant
         "phase_change": "filter_redundant",
         "phase_data_update": "filter_redundant",
