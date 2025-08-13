@@ -172,9 +172,14 @@ class PlayHistoryDatabaseService:
             })
         
         # Build turns array
+        # Track hands across turns
+        player_hands = {}
+        for player_name, hand in initial_hands.items():
+            player_hands[player_name] = hand.copy() if hand else []
+        
         turns = []
         for turn_data in turn_sequence:
-            turn = self._build_turn(turn_data)
+            turn = self._build_turn(turn_data, player_hands)
             if turn:
                 turns.append(turn)
         
@@ -184,31 +189,55 @@ class PlayHistoryDatabaseService:
             "bonuses": []
         }
         
+        # Also build final_captures
+        final_captures = {}
+        
         for player_name in [p['name'] for p in players]:
             player_round_score = round_scores.get(player_name, {})
             
             if isinstance(player_round_score, dict):
                 declared = player_round_score.get('declared', declarations_data.get(player_name, 0))
-                captured = player_round_score.get('captured', 0)
+                actual = player_round_score.get('actual', 0)
                 multiplier = player_round_score.get('multiplier', 1)
-                score = player_round_score.get('score', 0)
+                final_score = player_round_score.get('final_score', 0)
+                bonus = player_round_score.get('bonus', 0)
             else:
                 # Simple score format
                 declared = declarations_data.get(player_name, 0)
-                captured = 0  # Not available in simple format
+                actual = 0  # Not available in simple format
                 multiplier = 1
-                score = player_round_score if isinstance(player_round_score, (int, float)) else 0
+                final_score = player_round_score if isinstance(player_round_score, (int, float)) else 0
+                bonus = 0
             
-            # Calculate base score
-            base_score = abs(declared - captured)
+            # Store actual captures
+            final_captures[player_name] = actual
+            
+            # Calculate base score (for display)
+            base_score = player_round_score.get('base_score', abs(declared - actual)) if isinstance(player_round_score, dict) else abs(declared - actual)
             
             scoring["players"][player_name] = {
                 "declared": declared,
-                "captured": captured,
-                "score": score,
+                "captured": actual,
+                "score": final_score,
                 "multiplier": multiplier,
                 "baseScore": base_score
             }
+            
+            # Add bonus events
+            if bonus > 0:
+                bonus_type = ""
+                if declared == 0 and actual == 0:
+                    bonus_type = "ZERO_DECLARATION"
+                elif declared > 0 and declared == actual:
+                    bonus_type = "PERFECT_PREDICTION"
+                
+                if bonus_type:
+                    scoring["bonuses"].append({
+                        "type": bonus_type,
+                        "player": player_name,
+                        "value": bonus,
+                        "description": f"{player_name} achieved {bonus_type.replace('_', ' ').lower()}"
+                    })
         
         # Determine round winner
         winner = snapshot['starter_player']  # Default to starter
@@ -225,6 +254,20 @@ class PlayHistoryDatabaseService:
                     max_score = score
                     winner = player_name
         
+        # Build hands_dealt from initial_hands
+        hands_dealt = {}
+        for player_name, hand in initial_hands.items():
+            # Convert hand pieces to frontend format
+            hand_pieces = []
+            for piece in hand:
+                if isinstance(piece, dict):
+                    hand_pieces.append({
+                        "type": piece.get('kind', 'UNKNOWN'),
+                        "point": piece.get('point', 0),
+                        "color": "red" if "RED" in piece.get('kind', '') else "black"
+                    })
+            hands_dealt[player_name] = hand_pieces
+        
         # Return in the format expected by the transformer
         return {
             "round_number": snapshot['round_number'],
@@ -238,17 +281,22 @@ class PlayHistoryDatabaseService:
             "declaration_phase": {
                 "declarations": declarations  # Nested under declaration_phase
             },
-            "hands_dealt": {},  # Empty for now
+            "hands_dealt": hands_dealt,  # Same data as in declarations
             "round_summary": {
                 "winner": winner,
                 "scoring": scoring,  # Nested under round_summary
-                "final_captures": {},
+                "final_captures": final_captures,
                 "cumulative_scores": cumulative_scores
             }
         }
     
-    def _build_turn(self, turn_data: Dict[str, Any]) -> Optional[Dict[str, Any]]:
-        """Build turn data from turn sequence entry in frontend format."""
+    def _build_turn(self, turn_data: Dict[str, Any], player_hands: Dict[str, List[Any]]) -> Optional[Dict[str, Any]]:
+        """Build turn data from turn sequence entry in frontend format.
+        
+        Args:
+            turn_data: Turn data from database
+            player_hands: Mutable dict tracking current hands for each player
+        """
         if not isinstance(turn_data, dict):
             return None
         
@@ -269,11 +317,46 @@ class PlayHistoryDatabaseService:
                 pieces = []
                 is_starter = False
             
+            # Get player's current hand
+            hand_before = player_hands.get(player_name, []).copy()
+            
             # Convert pieces to frontend format
             pieces_list = []
             for piece in pieces:
                 if isinstance(piece, dict):
                     pieces_list.append({
+                        "type": piece.get('kind', 'UNKNOWN'),
+                        "point": piece.get('point', 0),
+                        "color": "red" if "RED" in piece.get('kind', '') else "black"
+                    })
+            
+            # Calculate hand after by removing played pieces
+            hand_after = hand_before.copy()
+            for played_piece in pieces:
+                # Find and remove the piece from hand_after
+                for i, hand_piece in enumerate(hand_after):
+                    if isinstance(hand_piece, dict) and isinstance(played_piece, dict):
+                        if hand_piece.get('kind') == played_piece.get('kind') and hand_piece.get('point') == played_piece.get('point'):
+                            hand_after.pop(i)
+                            break
+            
+            # Update player's hand for next turn
+            player_hands[player_name] = hand_after
+            
+            # Convert hands to frontend format
+            hand_before_formatted = []
+            for piece in hand_before:
+                if isinstance(piece, dict):
+                    hand_before_formatted.append({
+                        "type": piece.get('kind', 'UNKNOWN'),
+                        "point": piece.get('point', 0),
+                        "color": "red" if "RED" in piece.get('kind', '') else "black"
+                    })
+            
+            hand_after_formatted = []
+            for piece in hand_after:
+                if isinstance(piece, dict):
+                    hand_after_formatted.append({
                         "type": piece.get('kind', 'UNKNOWN'),
                         "point": piece.get('point', 0),
                         "color": "red" if "RED" in piece.get('kind', '') else "black"
@@ -287,8 +370,8 @@ class PlayHistoryDatabaseService:
                 "player": player_name,
                 "pieces": pieces_list,
                 "isStarter": is_starter,
-                "handBefore": [],  # Not stored in turn sequence
-                "handAfter": [],   # Not stored in turn sequence
+                "handBefore": hand_before_formatted,
+                "handAfter": hand_after_formatted,
                 "captured": len(pieces_list) if player_name == winner else 0
             })
         
