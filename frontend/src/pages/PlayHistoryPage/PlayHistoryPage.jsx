@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { usePlayHistory } from '../../hooks/usePlayHistory';
+import { sortPieces } from '../../utils/pieceUtils';
 import './styles.css';
 
 // Placeholder components - will be implemented later
@@ -248,32 +249,34 @@ const DeclarationPhase = ({ declarations, handsDealt, players }) => {
   );
 };
 
+// Reusable PieceDisplay component for consistent styling
+const PieceDisplay = ({ piece }) => {
+  const isGeneral = piece.type === 'GENERAL' && piece.color === 'red' && piece.point === 14;
+  return (
+    <span 
+      className={`
+        px-2 py-1 rounded text-[11px] font-medium
+        ${piece.color === 'red' 
+          ? isGeneral 
+            ? 'bg-[#e74c3c] text-white' 
+            : 'bg-[#e74c3c]/20 text-[#e74c3c] border border-[#e74c3c]' 
+          : 'bg-[#34495e]/20 text-[#95a5a6] border border-[#34495e]'
+        }
+      `}
+    >
+      {piece.type}({piece.point})
+    </span>
+  );
+};
+
 // HandBeforePlay component
 const HandBeforePlay = ({ pieces }) => {
+  const sortedPieces = sortPieces(pieces);
   return (
-    <div>
-      <div className="text-[11px] text-[#999] uppercase mb-[5px]">Hand</div>
-      <div className="flex flex-wrap gap-1 justify-center">
-        {pieces.map((piece, index) => {
-          const isGeneral = piece.type === 'GENERAL' && piece.color === 'red' && piece.point === 14;
-          return (
-            <span 
-              key={index}
-              className={`
-                px-2 py-1 rounded text-[11px] font-medium
-                ${piece.color === 'red' 
-                  ? isGeneral 
-                    ? 'bg-[#e74c3c] text-white' 
-                    : 'bg-[#e74c3c]/20 text-[#e74c3c] border border-[#e74c3c]' 
-                  : 'bg-[#34495e]/20 text-[#95a5a6] border border-[#34495e]'
-                }
-              `}
-            >
-              {piece.type}({piece.point})
-            </span>
-          );
-        })}
-      </div>
+    <div className="flex flex-wrap gap-1 justify-center">
+      {sortedPieces.map((piece, index) => (
+        <PieceDisplay key={index} piece={piece} />
+      ))}
     </div>
   );
 };
@@ -357,38 +360,15 @@ const PlayCard = ({ play, isWinner, isStarter }) => {
       <div className="bg-white/5 p-[10px] rounded-md mb-[15px]">
         <div className="text-[11px] text-[#999] uppercase mb-[5px]">Hand Before Play</div>
         <div className="flex flex-wrap gap-1">
-          {play.handBefore.map((piece, index) => (
-            <span 
-              key={index}
-              className={`
-                text-[10px] px-[6px] py-[3px] rounded
-                ${piece.color === 'red' 
-                  ? 'bg-[#e74c3c]/20 text-[#e74c3c]' 
-                  : 'bg-[#34495e]/20 text-[#95a5a6]'
-                }
-              `}
-            >
-              {piece.type?.charAt(0)}{piece.point}
-            </span>
+          {sortPieces(play.handBefore).map((piece, index) => (
+            <PieceDisplay key={index} piece={piece} />
           ))}
         </div>
       </div>
       
-      <div className="flex flex-wrap gap-2 mb-[10px]">
-        {play.pieces.map((piece, index) => (
-          <span 
-            key={index}
-            className={`
-              px-3 py-2 rounded-md text-xs font-semibold flex items-center gap-[5px]
-              ${piece.color === 'red' 
-                ? 'bg-[#e74c3c] text-white' 
-                : 'bg-[#34495e] text-white'
-              }
-            `}
-          >
-            <span className="text-[11px]">{piece.type}</span>
-            <span className="font-bold">{piece.point}</span>
-          </span>
+      <div className="flex flex-wrap gap-1 mb-[10px]">
+        {sortPieces(play.pieces).map((piece, index) => (
+          <PieceDisplay key={index} piece={piece} />
         ))}
       </div>
       
