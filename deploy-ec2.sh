@@ -37,8 +37,10 @@ ssh -i ${KEY_PATH} ${EC2_USER}@${EC2_HOST} << 'ENDSSH'
   # Create data directory if not exists
   mkdir -p /home/ubuntu/liap-tui-data
   
-  # Stop existing container
+  # Stop and remove existing container
   docker-compose down || true
+  docker stop liap-tui-game || true
+  docker rm liap-tui-game || true
   
   # Start new container
   docker-compose up -d

@@ -39,7 +39,7 @@ class EventStoreV2:
                 # Fall back to current behavior
                 current_dir = Path(__file__).resolve()
                 project_root = current_dir.parent.parent.parent
-                self.db_path = str(project_root / "game_events.db")
+                self.db_path = str(project_root / "data" / "game_events.db")
         else:
             self.db_path = db_path
 
