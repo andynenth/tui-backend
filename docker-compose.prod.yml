@@ -23,6 +23,9 @@ services:
       - API_PORT=5050
       - DEBUG=false
       
+      # Version (can be overridden)
+      - APP_VERSION=${APP_VERSION:-}
+      
       # Game settings
       - MAX_SCORE=50
       - MAX_ROUNDS=20

@@ -95,10 +95,31 @@ def get_logging_config() -> Dict[str, Any]:
         config["handlers"]["console"]["formatter"] = "text"
         config["handlers"]["rate_limit_file"]["formatter"] = "text"
 
-    # Create logs directory if it doesn't exist
-    os.makedirs("logs", exist_ok=True)
+    # Check if we can write logs before adding file handlers
+    if not can_write_logs():
+        print("Warning: Cannot write to logs directory, disabling file logging")
+        # Remove the file handler
+        if "rate_limit_file" in config["handlers"]:
+            del config["handlers"]["rate_limit_file"]
+        # Remove rate_limit_file from any loggers that use it
+        for logger_config in config["loggers"].values():
+            if isinstance(logger_config.get("handlers"), list):
+                logger_config["handlers"] = [h for h in logger_config["handlers"] if h != "rate_limit_file"]
 
     return config
+
+
+def can_write_logs():
+    """Check if we can write to the logs directory."""
+    try:
+        test_file = "logs/.test_write"
+        os.makedirs("logs", exist_ok=True)
+        with open(test_file, 'w') as f:
+            f.write("test")
+        os.remove(test_file)
+        return True
+    except (PermissionError, OSError):
+        return False
 
 
 def setup_logging():

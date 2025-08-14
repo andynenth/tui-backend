@@ -37,6 +37,10 @@ ssh -i ${KEY_PATH} ${EC2_USER}@${EC2_HOST} << 'ENDSSH'
   # Create data directory if not exists
   mkdir -p /home/ubuntu/liap-tui-data
   
+  # Create logs directory with proper permissions
+  mkdir -p /home/ubuntu/logs
+  chmod 755 /home/ubuntu/logs
+  
   # Stop and remove existing container
   docker-compose down || true
   docker stop liap-tui-game || true
@@ -56,3 +60,26 @@ rm liap-tui-latest.tar.gz
 
 echo -e "${GREEN}✅ EC2 deployment successful!${NC}"
 echo -e "${GREEN}🌐 Application URL: http://${EC2_HOST}${NC}"
+
+# Verify deployed version
+echo -e "\n${YELLOW}🔍 Verifying deployment version...${NC}"
+sleep 5  # Give the server a moment to fully start
+
+# Get deployed version from API
+DEPLOYED_VERSION=$(curl -s http://${EC2_HOST}/api/health | python3 -c "import sys, json; print(json.load(sys.stdin).get('version', 'unknown'))" 2>/dev/null || echo "failed")
+
+# Get local version
+LOCAL_VERSION=$(cd frontend && node -p "require('./package.json').version" 2>/dev/null || echo "unknown")
+
+if [ "$DEPLOYED_VERSION" = "$LOCAL_VERSION" ]; then
+    echo -e "${GREEN}✅ Version verified: $DEPLOYED_VERSION${NC}"
+else
+    echo -e "${YELLOW}⚠️  Version mismatch!${NC}"
+    echo "   Deployed: $DEPLOYED_VERSION"
+    echo "   Expected: $LOCAL_VERSION"
+    echo "   Check logs: ssh -i ${KEY_PATH} ${EC2_USER}@${EC2_HOST} 'docker logs liap-tui-game | grep -i version'"
+fi
+
+echo -e "\n📊 Monitoring commands:"
+echo "  ssh -i ${KEY_PATH} ${EC2_USER}@${EC2_HOST} 'docker logs liap-tui-game'"
+echo "  ssh -i ${KEY_PATH} ${EC2_USER}@${EC2_HOST} 'docker-compose logs -f'"

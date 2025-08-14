@@ -38,8 +38,14 @@ RUN mkdir -p /app/data /app/logs && chown -R appuser:appuser /app/data /app/logs
 
 # Copy built frontend files from frontend-builder stage
 COPY --from=frontend-builder /app/bundle.* ./backend/static/
+
+# Copy package.json to extract version (small file, minimal impact)
+COPY --from=frontend-builder /app/package.json ./frontend-package.json
 COPY --from=frontend-builder /app/bundle.*.map ./backend/static/
 COPY --from=frontend-builder /app/index.html ./backend/static/
+
+# Copy VERSION file if it exists (created during build)
+COPY VERSION* ./
 
 # Set ownership and switch to non-root user
 RUN chown -R appuser:appuser /app

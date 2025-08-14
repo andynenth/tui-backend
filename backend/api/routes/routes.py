@@ -10,6 +10,7 @@ from backend.shared_instances import shared_bot_manager, shared_room_manager
 from backend.socket_manager import broadcast
 from fastapi import APIRouter, HTTPException, Query
 from fastapi.responses import JSONResponse
+from backend.config.version import APP_VERSION
 
 # Import Pydantic models for OpenAPI documentation
 from backend.api.models.game_models import (
@@ -442,7 +443,7 @@ async def health_check():
             "timestamp": health_status.last_check,
             "uptime_seconds": health_status.uptime_seconds,
             "uptime_formatted": health_status._format_uptime(),
-            "version": "1.0.0",
+            "version": APP_VERSION,
             "service": "liap-tui-backend",
         }
 
@@ -563,7 +564,7 @@ async def detailed_health_check():
                 )
             ),
             "timestamp": datetime.now().isoformat(),
-            "version": "1.0.0",
+            "version": APP_VERSION,
             "uptime_seconds": health_status.uptime_seconds,
             "components": components,
             "memory_usage_mb": memory_usage_mb,

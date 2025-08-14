@@ -46,25 +46,50 @@ This guide provides detailed documentation for all deployment, monitoring, and m
 
 **Usage**:
 ```bash
-./version-and-deploy.sh [major|minor|patch] "Release message"
+./version-and-deploy.sh [major|minor|patch]
 ```
 
 **Example**:
 ```bash
-./version-and-deploy.sh minor "Added lucky seven bonus feature"
+./version-and-deploy.sh minor  # Bumps 1.4.2 -> 1.5.0
+./version-and-deploy.sh patch  # Bumps 1.4.2 -> 1.4.3
 ```
 
 **What it does**:
-1. Increments version number based on type
-2. Creates Git tag with release message
-3. Builds and tags Docker image with version
-4. Deploys to EC2 with version tracking
-5. Updates deployment history
+1. Updates version in `frontend/package.json` using npm
+2. Runs the standard deployment process
+
+**Version System Architecture**:
+The application uses a multi-layered version detection system for reliability:
+
+1. **Frontend (Build Time)**:
+   - Version from `package.json` is injected via esbuild as `__APP_VERSION__`
+   - Build process creates a `VERSION` file with the current version
+   - Version displays on start page via `VersionDisplay` component
+
+2. **Backend (Runtime)** - checks in priority order:
+   - `APP_VERSION` environment variable (highest priority)
+   - `/app/VERSION` file (created during build)
+   - `/app/frontend-package.json` (copied during Docker build)
+   - `frontend/package.json` (development fallback)
+   - Default: '1.0.0'
+
+3. **Version Verification**:
+   - `deploy-ec2.sh` automatically verifies version after deployment
+   - Compares local `package.json` with deployed API `/api/health`
+   - Shows warning if versions don't match
+
+4. **Manual Version Override**:
+   ```bash
+   # Via environment variable in docker-compose.prod.yml
+   APP_VERSION=1.5.0 docker-compose up -d
+   ```
 
 **Benefits**:
-- Automatic semantic versioning
-- Deployment history tracking
-- Easy rollback to specific versions
+- Automatic version synchronization between frontend and backend
+- Multiple fallbacks ensure version is always available
+- Deployment verification catches version mismatches
+- Version visible in both UI and API health endpoint
 
 ---
 

@@ -1,6 +1,6 @@
 {
   "name": "frontend",
-  "version": "1.4.1",
+  "version": "1.4.3",
   "type": "module",
   "main": "main.js",
   "dependencies": {
@@ -124,7 +124,7 @@
   },
   "scripts": {
     "dev": "node esbuild.config.cjs",
-    "build": "node esbuild.config.cjs --production && cp index.html ../backend/static/",
+    "build": "node esbuild.config.cjs --production && cp index.html ../backend/static/ && node -p \"require('./package.json').version\" > ../VERSION",
     "lint": "eslint . --ext .js,.jsx,.ts,.tsx",
     "lint:fix": "eslint . --ext .js,.jsx,.ts,.tsx --fix",
     "type-check": "tsc --noEmit",
