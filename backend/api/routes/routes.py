@@ -592,9 +592,7 @@ async def health_metrics():
         import sys
 
         from backend.api.services.health_monitor import health_monitor
-
-        sys.path.append("/Users/nrw/python/tui-project/liap-tui/backend")
-        from socket_manager import _socket_manager as socket_manager
+        from backend.socket_manager import _socket_manager as socket_manager
 
         health_status = await health_monitor.get_health_status()
 
@@ -779,9 +777,7 @@ async def system_stats():
 
         from backend.api.services.health_monitor import health_monitor
         from backend.api.services.recovery_manager import recovery_manager
-
-        sys.path.append("/Users/nrw/python/tui-project/liap-tui/backend")
-        from socket_manager import _socket_manager as socket_manager
+        from backend.socket_manager import _socket_manager as socket_manager
 
         # Get health status
         health_status = await health_monitor.get_health_status()

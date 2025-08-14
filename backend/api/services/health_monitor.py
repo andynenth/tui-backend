@@ -233,10 +233,7 @@ class HealthMonitor:
                 await asyncio.sleep(check_interval)
 
                 # Get WebSocket statistics
-                import sys
-
-                sys.path.append("/Users/nrw/python/tui-project/liap-tui/backend")
-                from socket_manager import _socket_manager as socket_manager
+                from backend.socket_manager import _socket_manager as socket_manager
 
                 total_connections = 0
                 total_pending = 0
@@ -390,9 +387,6 @@ class HealthMonitor:
                 await asyncio.sleep(check_interval)
 
                 # Get room and game statistics
-                import sys
-
-                sys.path.append("/Users/nrw/python/tui-project/liap-tui/backend")
                 from backend.shared_instances import shared_room_manager
 
                 total_rooms = len(shared_room_manager.rooms)
@@ -579,10 +573,7 @@ class HealthMonitor:
 
             # WebSocket health
             try:
-                import sys
-
-                sys.path.append("/Users/nrw/python/tui-project/liap-tui/backend")
-                from socket_manager import _socket_manager as socket_manager
+                from backend.socket_manager import _socket_manager as socket_manager
 
                 total_connections = sum(
                     len(conns) for conns in socket_manager.room_connections.values()

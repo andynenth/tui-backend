@@ -357,10 +357,7 @@ class RecoveryManager:
     async def _cleanup_stale_connections(self, context: Dict[str, Any]) -> bool:
         """Clean up stale WebSocket connections"""
         try:
-            import sys
-
-            sys.path.append("/Users/nrw/python/tui-project/liap-tui/backend")
-            from socket_manager import _socket_manager as socket_manager
+            from backend.socket_manager import _socket_manager as socket_manager
 
             cleaned_count = 0
 
@@ -404,10 +401,7 @@ class RecoveryManager:
     async def _clear_pending_messages(self, context: Dict[str, Any]) -> bool:
         """Clear excessive pending messages"""
         try:
-            import sys
-
-            sys.path.append("/Users/nrw/python/tui-project/liap-tui/backend")
-            from socket_manager import _socket_manager as socket_manager
+            from backend.socket_manager import _socket_manager as socket_manager
 
             cleared_count = 0
 
@@ -448,9 +442,6 @@ class RecoveryManager:
             if not room_id:
                 return False
 
-            import sys
-
-            sys.path.append("/Users/nrw/python/tui-project/liap-tui/backend")
             from backend.shared_instances import shared_room_manager
 
             room = shared_room_manager.get_room(room_id)
@@ -466,10 +457,7 @@ class RecoveryManager:
             room.game_state_machine = None
 
             # Notify players of restart
-            import sys
-
-            sys.path.append("/Users/nrw/python/tui-project/liap-tui/backend")
-            from socket_manager import broadcast
+            from backend.socket_manager import broadcast
 
             await broadcast(
                 room_id,
@@ -495,10 +483,7 @@ class RecoveryManager:
         try:
             room_id = context.get("room_id", "all")
 
-            import sys
-
-            sys.path.append("/Users/nrw/python/tui-project/liap-tui/backend")
-            from socket_manager import _socket_manager as socket_manager
+            from backend.socket_manager import _socket_manager as socket_manager
 
             sync_count = 0
 
