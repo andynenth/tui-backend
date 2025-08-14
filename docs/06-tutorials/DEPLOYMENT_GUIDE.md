@@ -1,35 +1,35 @@
-# Deployment Guide - AWS Production Deployment Walkthrough
+# Deployment Guide - AWS EC2 Production Deployment Walkthrough
 
 ## Table of Contents
 1. [Overview](#overview)
 2. [Prerequisites](#prerequisites)
 3. [AWS Account Setup](#aws-account-setup)
-4. [Infrastructure Preparation](#infrastructure-preparation)
-5. [Container Registry Setup](#container-registry-setup)
-6. [Database Setup](#database-setup)
-7. [ECS Deployment](#ecs-deployment)
-8. [Load Balancer Configuration](#load-balancer-configuration)
-9. [Domain and SSL Setup](#domain-and-ssl-setup)
-10. [Monitoring Setup](#monitoring-setup)
-11. [Go Live Checklist](#go-live-checklist)
-12. [Post-Deployment](#post-deployment)
+4. [EC2 Instance Setup](#ec2-instance-setup)
+5. [Software Installation](#software-installation)
+6. [Application Deployment](#application-deployment)
+7. [Database Setup](#database-setup)
+8. [Domain and SSL Setup](#domain-and-ssl-setup)
+9. [Monitoring Setup](#monitoring-setup)
+10. [Go Live Checklist](#go-live-checklist)
+11. [Post-Deployment](#post-deployment)
+12. [Cost Optimization](#cost-optimization)
 
 ## Overview
 
-This guide walks through deploying Liap Tui to AWS ECS step-by-step. By the end, you'll have a production-ready deployment capable of handling thousands of concurrent players.
+This guide walks through deploying Liap Tui to AWS EC2 step-by-step. By the end, you'll have a production-ready deployment capable of handling hundreds of concurrent players on a single EC2 instance.
 
 ### Deployment Architecture
 
 ```
 ┌─────────────┐     ┌─────────────┐     ┌─────────────┐
-│  CloudFront │────▶│     ALB     │────▶│  ECS Tasks  │
-│     CDN     │     │   (HTTPS)   │     │  (Fargate)  │
+│  CloudFront │────▶│   EC2 with  │────▶│   SQLite    │
+│     CDN     │     │   Docker    │     │   Database  │
 └─────────────┘     └─────────────┘     └─────────────┘
-                            │                    │
-                    ┌───────▼───────┐    ┌──────▼──────┐
-                    │      NLB      │    │    Redis    │
-                    │  (WebSocket)  │    │(ElastiCache)│
-                    └───────────────┘    └─────────────┘
+                            │
+                    ┌───────▼───────┐
+                    │     Nginx     │
+                    │  (SSL/Proxy)  │
+                    └───────────────┘
 ```
 
 ## Prerequisites
@@ -51,66 +51,83 @@ This guide walks through deploying Liap Tui to AWS ECS step-by-step. By the end,
    # Enter default output format (json)
    ```
 
-2. **Docker installed**
+2. **SSH Key Pair**
    ```bash
-   # Verify Docker
-   docker --version
-   docker-compose --version
+   # Create key pair if you don't have one
+   aws ec2 create-key-pair --key-name liap-tui-key --query 'KeyMaterial' --output text > liap-tui-key.pem
+   chmod 400 liap-tui-key.pem
    ```
 
-3. **Terraform installed (optional but recommended)**
+3. **Git for deployment**
    ```bash
-   # Install Terraform
-   wget https://releases.hashicorp.com/terraform/1.6.0/terraform_1.6.0_linux_amd64.zip
-   unzip terraform_1.6.0_linux_amd64.zip
-   sudo mv terraform /usr/local/bin/
-   terraform --version
+   # Ensure git is installed
+   git --version
    ```
 
 ### AWS Services Required
 
-- ECS (Elastic Container Service)
-- ECR (Elastic Container Registry)
-- ElastiCache (Redis)
-- RDS (PostgreSQL) - optional
-- ALB (Application Load Balancer)
-- NLB (Network Load Balancer)
+- EC2 (Elastic Compute Cloud)
+- VPC (Virtual Private Cloud)
+- Security Groups
+- Elastic IP
 - CloudWatch
+- S3 (for backups)
 - Route 53 (for domain)
-- Certificate Manager
+- Certificate Manager (optional)
 
 ## AWS Account Setup
 
-### Step 1: Create IAM User for Deployment
+### Step 1: Check Free Tier Eligibility
 
 ```bash
-# Create deployment user
-aws iam create-user --user-name liap-tui-deploy
-
-# Attach necessary policies
-aws iam attach-user-policy \
-  --user-name liap-tui-deploy \
-  --policy-arn arn:aws:iam::aws:policy/AmazonECS_FullAccess
-
-aws iam attach-user-policy \
-  --user-name liap-tui-deploy \
-  --policy-arn arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryFullAccess
-
-aws iam attach-user-policy \
-  --user-name liap-tui-deploy \
-  --policy-arn arn:aws:iam::aws:policy/ElasticLoadBalancingFullAccess
-
-# Create access key
-aws iam create-access-key --user-name liap-tui-deploy
+# Check if your account is eligible for free tier
+# t2.micro instance is free for 750 hours/month for 12 months
+aws ce get-cost-and-usage \
+  --time-period Start=2024-01-01,End=2024-01-31 \
+  --granularity MONTHLY \
+  --metrics "UsageQuantity" \
+  --group-by Type=DIMENSION,Key=USAGE_TYPE
 ```
 
-### Step 2: Create VPC and Subnets
+### Step 2: Create Security Group
 
 ```bash
-# Using AWS CLI
-aws ec2 create-vpc --cidr-block 10.0.0.0/16 --tag-specifications 'ResourceType=vpc,Tags=[{Key=Name,Value=liap-tui-vpc}]'
+# Create security group
+aws ec2 create-security-group \
+  --group-name liap-tui-sg \
+  --description "Security group for Liap Tui game server"
 
-# Or use this CloudFormation template
+# Get your IP address
+MY_IP=$(curl -s http://checkip.amazonaws.com)
+
+# Add inbound rules
+# SSH (restricted to your IP)
+aws ec2 authorize-security-group-ingress \
+  --group-name liap-tui-sg \
+  --protocol tcp \
+  --port 22 \
+  --cidr $MY_IP/32
+
+# HTTP
+aws ec2 authorize-security-group-ingress \
+  --group-name liap-tui-sg \
+  --protocol tcp \
+  --port 80 \
+  --cidr 0.0.0.0/0
+
+# HTTPS
+aws ec2 authorize-security-group-ingress \
+  --group-name liap-tui-sg \
+  --protocol tcp \
+  --port 443 \
+  --cidr 0.0.0.0/0
+
+# WebSocket (if using separate port)
+aws ec2 authorize-security-group-ingress \
+  --group-name liap-tui-sg \
+  --protocol tcp \
+  --port 8000 \
+  --cidr 0.0.0.0/0
 ```
 
 ```yaml
@@ -256,38 +273,50 @@ aws cloudformation create-stack \
   --template-body file://infrastructure/vpc.yaml
 ```
 
-## Infrastructure Preparation
+## EC2 Instance Setup
 
-### Security Groups
+### Step 1: Launch EC2 Instance
 
-```yaml
-# infrastructure/security-groups.yaml
-AWSTemplateFormatVersion: '2010-09-09'
-Description: Security Groups for Liap Tui
+```bash
+# Launch t2.micro instance (free tier eligible)
+aws ec2 run-instances \
+  --image-id ami-0c02fb55956c7d316 \
+  --instance-type t2.micro \
+  --key-name liap-tui-key \
+  --security-groups liap-tui-sg \
+  --tag-specifications 'ResourceType=instance,Tags=[{Key=Name,Value=liap-tui-production}]' \
+  --block-device-mappings '[{"DeviceName":"/dev/xvda","Ebs":{"VolumeSize":30,"VolumeType":"gp3"}}]' \
+  --user-data file://user-data.sh
+```
 
-Parameters:
-  VPCId:
-    Type: String
-    Default: !ImportValue liap-tui-vpc-id
+### Step 2: Create User Data Script
 
-Resources:
-  ALBSecurityGroup:
-    Type: AWS::EC2::SecurityGroup
-    Properties:
-      GroupDescription: Security group for ALB
-      VpcId: !Ref VPCId
-      SecurityGroupIngress:
-        - IpProtocol: tcp
-          FromPort: 80
-          ToPort: 80
-          CidrIp: 0.0.0.0/0
-        - IpProtocol: tcp
-          FromPort: 443
-          ToPort: 443
-          CidrIp: 0.0.0.0/0
-      Tags:
-        - Key: Name
-          Value: liap-tui-alb-sg
+```bash
+# user-data.sh
+#!/bin/bash
+# Update system
+sudo yum update -y
+
+# Install Docker
+sudo yum install docker -y
+sudo service docker start
+sudo usermod -a -G docker ec2-user
+
+# Install Docker Compose
+sudo curl -L "https://github.com/docker/compose/releases/latest/download/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+sudo chmod +x /usr/local/bin/docker-compose
+
+# Install Git
+sudo yum install git -y
+
+# Install CloudWatch Agent
+wget https://s3.amazonaws.com/amazoncloudwatch-agent/amazon_linux/amd64/latest/amazon-cloudwatch-agent.rpm
+sudo rpm -U ./amazon-cloudwatch-agent.rpm
+
+# Create app directory
+mkdir -p /home/ec2-user/liap-tui
+chown ec2-user:ec2-user /home/ec2-user/liap-tui
+```
 
   NLBSecurityGroup:
     Type: AWS::EC2::SecurityGroup
@@ -357,155 +386,159 @@ aws cloudformation create-stack \
   --template-body file://infrastructure/security-groups.yaml
 ```
 
-## Container Registry Setup
-
-### Step 1: Create ECR Repository
+### Step 3: Allocate Elastic IP
 
 ```bash
-# Create repository
-aws ecr create-repository \
-  --repository-name liap-tui \
-  --image-scanning-configuration scanOnPush=true \
-  --region us-east-1
+# Allocate Elastic IP
+EIP_ALLOC=$(aws ec2 allocate-address --domain vpc --query 'AllocationId' --output text)
+echo "Elastic IP Allocation ID: $EIP_ALLOC"
 
-# Get login token
-aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin $(aws sts get-caller-identity --query Account --output text).dkr.ecr.us-east-1.amazonaws.com
+# Get instance ID
+INSTANCE_ID=$(aws ec2 describe-instances \
+  --filters "Name=tag:Name,Values=liap-tui-production" \
+  --query 'Reservations[0].Instances[0].InstanceId' \
+  --output text)
+
+# Associate Elastic IP with instance
+aws ec2 associate-address \
+  --instance-id $INSTANCE_ID \
+  --allocation-id $EIP_ALLOC
+
+# Get the public IP
+PUBLIC_IP=$(aws ec2 describe-addresses \
+  --allocation-ids $EIP_ALLOC \
+  --query 'Addresses[0].PublicIp' \
+  --output text)
+
+echo "Your server IP: $PUBLIC_IP"
 ```
 
-### Step 2: Build and Push Image
+### Step 4: Connect to Instance
 
 ```bash
-# Build production image
-docker build -t liap-tui:latest .
+# SSH into the instance
+ssh -i liap-tui-key.pem ec2-user@$PUBLIC_IP
 
-# Tag for ECR
-export AWS_ACCOUNT_ID=$(aws sts get-caller-identity --query Account --output text)
-export ECR_REGISTRY=${AWS_ACCOUNT_ID}.dkr.ecr.us-east-1.amazonaws.com
-
-docker tag liap-tui:latest ${ECR_REGISTRY}/liap-tui:latest
-docker tag liap-tui:latest ${ECR_REGISTRY}/liap-tui:v1.0.0
-
-# Push to ECR
-docker push ${ECR_REGISTRY}/liap-tui:latest
-docker push ${ECR_REGISTRY}/liap-tui:v1.0.0
+# Once connected, verify Docker is installed
+docker --version
+docker-compose --version
 ```
 
-### Step 3: Setup CI/CD Pipeline
+## Software Installation
 
-```yaml
-# .github/workflows/deploy.yml
-name: Deploy to AWS ECS
+### Step 1: Install Application Dependencies
 
-on:
-  push:
-    branches: [main]
-    tags: ['v*']
+```bash
+# SSH into your EC2 instance
+ssh -i liap-tui-key.pem ec2-user@$PUBLIC_IP
 
-env:
-  AWS_REGION: us-east-1
-  ECR_REPOSITORY: liap-tui
-  ECS_SERVICE: liap-tui-service
-  ECS_CLUSTER: production-cluster
-  TASK_DEFINITION: .aws/task-definition.json
+# Clone your repository
+cd /home/ec2-user
+git clone https://github.com/yourusername/liap-tui.git
+cd liap-tui
 
-jobs:
-  deploy:
-    runs-on: ubuntu-latest
-    
-    steps:
-    - name: Checkout
-      uses: actions/checkout@v3
-    
-    - name: Configure AWS credentials
-      uses: aws-actions/configure-aws-credentials@v2
-      with:
-        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-        aws-region: ${{ env.AWS_REGION }}
-    
-    - name: Login to Amazon ECR
-      id: login-ecr
-      uses: aws-actions/amazon-ecr-login@v1
-    
-    - name: Build, tag, and push image
-      id: build-image
-      env:
-        ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-        IMAGE_TAG: ${{ github.sha }}
-      run: |
-        docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
-        docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
-        echo "image=$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG" >> $GITHUB_OUTPUT
-    
-    - name: Fill in the new image ID in task definition
-      id: task-def
-      uses: aws-actions/amazon-ecs-render-task-definition@v1
-      with:
-        task-definition: ${{ env.TASK_DEFINITION }}
-        container-name: liap-tui-app
-        image: ${{ steps.build-image.outputs.image }}
-    
-    - name: Deploy to ECS
-      uses: aws-actions/amazon-ecs-deploy-task-definition@v1
-      with:
-        task-definition: ${{ steps.task-def.outputs.task-definition }}
-        service: ${{ env.ECS_SERVICE }}
-        cluster: ${{ env.ECS_CLUSTER }}
-        wait-for-service-stability: true
+# Create necessary directories
+mkdir -p logs backups
+
+# Set permissions
+chown -R ec2-user:ec2-user /home/ec2-user/liap-tui
 ```
 
-## Database Setup
+### Step 2: Configure Environment
 
-### ElastiCache Redis Setup
+```bash
+# Create production environment file
+cat > .env.production << EOF
+ENV=production
+DATABASE_PATH=/home/ec2-user/liap-tui/game_events.db
+CORS_ORIGINS=https://yourdomain.com
+LOG_LEVEL=info
+WORKERS=4
+MAX_CONNECTIONS=1000
+JWT_SECRET=$(openssl rand -base64 32)
+EOF
 
-```yaml
-# infrastructure/redis.yaml
-AWSTemplateFormatVersion: '2010-09-09'
-Description: ElastiCache Redis for Liap Tui
+# Secure the file
+chmod 600 .env.production
+```
 
-Resources:
-  RedisSubnetGroup:
-    Type: AWS::ElastiCache::SubnetGroup
-    Properties:
-      Description: Subnet group for Redis
-      SubnetIds:
-        - !ImportValue liap-tui-private-subnet-1
-        - !ImportValue liap-tui-private-subnet-2
+### Step 3: Setup Automated Deployment Script
 
-  RedisParameterGroup:
-    Type: AWS::ElastiCache::ParameterGroup
-    Properties:
-      CacheParameterGroupFamily: redis7
-      Description: Parameter group for Liap Tui Redis
-      Properties:
-        maxmemory-policy: allkeys-lru
-        timeout: 300
+```bash
+# deploy.sh
+#!/bin/bash
+set -e
 
-  RedisCluster:
-    Type: AWS::ElastiCache::CacheCluster
-    Properties:
-      CacheNodeType: cache.t3.micro  # Start small, scale as needed
-      Engine: redis
-      EngineVersion: 7.0
-      NumCacheNodes: 1
-      Port: 6379
-      CacheSubnetGroupName: !Ref RedisSubnetGroup
-      CacheParameterGroupName: !Ref RedisParameterGroup
-      VpcSecurityGroupIds:
-        - !ImportValue liap-tui-redis-sg-id
-      Tags:
-        - Key: Name
-          Value: liap-tui-redis
+echo "Starting deployment..."
 
-Outputs:
-  RedisEndpoint:
-    Value: !GetAtt RedisCluster.RedisEndpoint.Address
-    Export:
-      Name: liap-tui-redis-endpoint
-  RedisPort:
-    Value: !GetAtt RedisCluster.RedisEndpoint.Port
-    Export:
-      Name: liap-tui-redis-port
+# Pull latest code
+git pull origin main
+
+# Build and restart containers
+docker-compose down
+docker-compose build --no-cache
+docker-compose up -d
+
+# Check health
+sleep 10
+curl -f http://localhost/api/health || exit 1
+
+echo "Deployment complete!"
+```
+
+## Application Deployment
+
+### Step 1: Initial Docker Setup
+
+```bash
+# Create docker-compose.yml
+cat > docker-compose.yml << 'EOF'
+version: '3.8'
+
+services:
+  app:
+    build: .
+    container_name: liap-tui
+    ports:
+      - "80:80"
+      - "443:443"
+    environment:
+      - ENV=production
+      - DATABASE_PATH=/app/data/game_events.db
+    volumes:
+      - ./game_events.db:/app/data/game_events.db
+      - ./logs:/app/logs
+      - ./backups:/app/backups
+      - /etc/letsencrypt:/etc/letsencrypt:ro
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost/api/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+EOF
+```
+
+### Step 2: Build and Run
+
+```bash
+# Build the application
+docker-compose build
+
+# Start the application
+docker-compose up -d
+
+# Check logs
+docker-compose logs -f
+
+# Verify it's running
+curl http://localhost/api/health
 ```
 
 Deploy Redis:
@@ -515,72 +548,78 @@ aws cloudformation create-stack \
   --template-body file://infrastructure/redis.yaml
 ```
 
-### Optional: RDS PostgreSQL Setup
+## Database Setup
 
-```yaml
-# infrastructure/rds.yaml (for future persistence)
-AWSTemplateFormatVersion: '2010-09-09'
-Description: RDS PostgreSQL for Liap Tui (Optional)
-
-Parameters:
-  DBPassword:
-    Type: String
-    NoEcho: true
-    Description: Database password
-
-Resources:
-  DBSubnetGroup:
-    Type: AWS::RDS::DBSubnetGroup
-    Properties:
-      DBSubnetGroupDescription: Subnet group for RDS
-      SubnetIds:
-        - !ImportValue liap-tui-private-subnet-1
-        - !ImportValue liap-tui-private-subnet-2
-      Tags:
-        - Key: Name
-          Value: liap-tui-db-subnet-group
-
-  DBInstance:
-    Type: AWS::RDS::DBInstance
-    Properties:
-      DBInstanceIdentifier: liap-tui-db
-      AllocatedStorage: 20
-      DBInstanceClass: db.t3.micro
-      Engine: postgres
-      EngineVersion: '15.4'
-      MasterUsername: liaptuiadmin
-      MasterUserPassword: !Ref DBPassword
-      DBName: liaptui
-      VPCSecurityGroups:
-        - !ImportValue liap-tui-rds-sg-id
-      DBSubnetGroupName: !Ref DBSubnetGroup
-      BackupRetentionPeriod: 7
-      PreferredBackupWindow: "03:00-04:00"
-      PreferredMaintenanceWindow: "mon:04:00-mon:05:00"
-      Tags:
-        - Key: Name
-          Value: liap-tui-db
-
-Outputs:
-  DBEndpoint:
-    Value: !GetAtt DBInstance.Endpoint.Address
-    Export:
-      Name: liap-tui-db-endpoint
-```
-
-## ECS Deployment
-
-### Step 1: Create ECS Cluster
+### SQLite Configuration
 
 ```bash
-# Create cluster with capacity providers
-aws ecs create-cluster \
-  --cluster-name production-cluster \
-  --capacity-providers FARGATE FARGATE_SPOT \
-  --default-capacity-provider-strategy \
-    capacityProvider=FARGATE,weight=1,base=2 \
-    capacityProvider=FARGATE_SPOT,weight=2,base=0 \
-  --settings name=containerInsights,value=enabled
+# The database is automatically created by the application
+# Ensure proper permissions
+touch /home/ec2-user/liap-tui/game_events.db
+chown ec2-user:ec2-user /home/ec2-user/liap-tui/game_events.db
+chmod 644 /home/ec2-user/liap-tui/game_events.db
+
+# Setup automated backups
+cat > /home/ec2-user/liap-tui/backup.sh << 'EOF'
+#!/bin/bash
+# Daily backup script
+
+DB_PATH="/home/ec2-user/liap-tui/game_events.db"
+BACKUP_DIR="/home/ec2-user/liap-tui/backups"
+S3_BUCKET="liap-tui-backups"
+DATE=$(date +%Y%m%d_%H%M%S)
+
+# Create local backup
+sqlite3 $DB_PATH ".backup $BACKUP_DIR/game_events_$DATE.db"
+gzip $BACKUP_DIR/game_events_$DATE.db
+
+# Upload to S3 (if configured)
+if command -v aws &> /dev/null; then
+    aws s3 cp $BACKUP_DIR/game_events_$DATE.db.gz s3://$S3_BUCKET/daily/
+fi
+
+# Keep only last 7 days of local backups
+find $BACKUP_DIR -name "*.db.gz" -mtime +7 -delete
+EOF
+
+chmod +x /home/ec2-user/liap-tui/backup.sh
+
+# Add to crontab
+(crontab -l 2>/dev/null; echo "0 2 * * * /home/ec2-user/liap-tui/backup.sh") | crontab -
+```
+
+### S3 Backup Bucket (Optional)
+
+```bash
+# Create S3 bucket for backups
+aws s3 mb s3://liap-tui-backups-$(date +%s)
+
+# Set lifecycle policy
+aws s3api put-bucket-lifecycle-configuration \
+  --bucket liap-tui-backups-$(date +%s) \
+  --lifecycle-configuration file://s3-lifecycle.json
+```
+
+### S3 Lifecycle Configuration
+
+```json
+// s3-lifecycle.json
+{
+  "Rules": [{
+    "Id": "ArchiveOldBackups",
+    "Status": "Enabled",
+    "Transitions": [{
+      "Days": 30,
+      "StorageClass": "STANDARD_IA"
+    }, {
+      "Days": 90,
+      "StorageClass": "GLACIER"
+    }],
+    "Expiration": {
+      "Days": 365
+    }
+  }]
+}
 ```
 
 ### Step 2: Create Task Definition
@@ -711,30 +750,61 @@ Resources:
           Value: liap-tui-service
 ```
 
-## Load Balancer Configuration
+## Domain and SSL Setup
 
-### Application Load Balancer (HTTP/HTTPS)
+### Step 1: Install Certbot
 
-```yaml
-# infrastructure/alb.yaml
-AWSTemplateFormatVersion: '2010-09-09'
-Description: Application Load Balancer for Liap Tui
+```bash
+# Install Certbot for Let's Encrypt
+sudo yum install -y certbot
 
-Resources:
-  ALB:
-    Type: AWS::ElasticLoadBalancingV2::LoadBalancer
-    Properties:
-      Name: liap-tui-alb
-      Type: application
-      Scheme: internet-facing
-      SecurityGroups:
-        - !ImportValue liap-tui-alb-sg-id
-      Subnets:
-        - !ImportValue liap-tui-public-subnet-1
-        - !ImportValue liap-tui-public-subnet-2
-      Tags:
-        - Key: Name
-          Value: liap-tui-alb
+# Stop the application temporarily
+cd /home/ec2-user/liap-tui
+docker-compose down
+
+# Get SSL certificate
+sudo certbot certonly --standalone \
+  -d yourdomain.com \
+  -d www.yourdomain.com \
+  --email your-email@example.com \
+  --agree-tos \
+  --non-interactive
+
+# Start the application again
+docker-compose up -d
+```
+
+### Step 2: Configure Nginx for SSL
+
+```nginx
+# nginx.conf (updated for SSL)
+server {
+    listen 80;
+    server_name yourdomain.com www.yourdomain.com;
+    return 301 https://$server_name$request_uri;
+}
+
+server {
+    listen 443 ssl http2;
+    server_name yourdomain.com www.yourdomain.com;
+    
+    ssl_certificate /etc/letsencrypt/live/yourdomain.com/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/yourdomain.com/privkey.pem;
+    
+    # SSL configuration
+    ssl_protocols TLSv1.2 TLSv1.3;
+    ssl_ciphers HIGH:!aNULL:!MD5;
+    ssl_prefer_server_ciphers on;
+    
+    # Security headers
+    add_header Strict-Transport-Security "max-age=31536000" always;
+    add_header X-Frame-Options "SAMEORIGIN" always;
+    add_header X-Content-Type-Options "nosniff" always;
+    add_header X-XSS-Protection "1; mode=block" always;
+    
+    # Rest of configuration...
+}
+```
 
   ALBTargetGroup:
     Type: AWS::ElasticLoadBalancingV2::TargetGroup
@@ -855,51 +925,41 @@ Outputs:
       Name: liap-tui-nlb-dns
 ```
 
-## Domain and SSL Setup
-
-### Step 1: Request SSL Certificate
+### Step 3: Setup Auto-Renewal
 
 ```bash
-# Request certificate for your domain
-aws acm request-certificate \
-  --domain-name liaptui.com \
-  --subject-alternative-names "*.liaptui.com" \
-  --validation-method DNS \
-  --region us-east-1
+# Add renewal cron job
+echo "0 0,12 * * * root certbot renew --quiet --post-hook 'docker restart liap-tui'" | sudo tee /etc/cron.d/certbot
 ```
 
-### Step 2: Create Route 53 Hosted Zone
+### Step 4: Configure Route 53
 
 ```bash
-# Create hosted zone
-aws route53 create-hosted-zone \
-  --name liaptui.com \
-  --caller-reference $(date +%s)
+# Create A record pointing to your Elastic IP
+HOSTED_ZONE_ID="Z123456789ABC" # Your hosted zone ID
+
+aws route53 change-resource-record-sets \
+  --hosted-zone-id $HOSTED_ZONE_ID \
+  --change-batch '{
+    "Changes": [{
+      "Action": "UPSERT",
+      "ResourceRecordSet": {
+        "Name": "yourdomain.com",
+        "Type": "A",
+        "TTL": 300,
+        "ResourceRecords": [{"Value": "'$PUBLIC_IP'"}]
+      }
+    }, {
+      "Action": "UPSERT",
+      "ResourceRecordSet": {
+        "Name": "www.yourdomain.com",
+        "Type": "A",
+        "TTL": 300,
+        "ResourceRecords": [{"Value": "'$PUBLIC_IP'"}]
+      }
+    }]
+  }'
 ```
-
-### Step 3: Configure DNS Records
-
-```yaml
-# infrastructure/route53.yaml
-AWSTemplateFormatVersion: '2010-09-09'
-Description: Route 53 DNS for Liap Tui
-
-Parameters:
-  HostedZoneId:
-    Type: String
-    Description: Route 53 Hosted Zone ID
-
-Resources:
-  WebRecord:
-    Type: AWS::Route53::RecordSet
-    Properties:
-      HostedZoneId: !Ref HostedZoneId
-      Name: liaptui.com
-      Type: A
-      AliasTarget:
-        DNSName: !ImportValue liap-tui-alb-dns
-        HostedZoneId: !GetAtt ALB.CanonicalHostedZoneID
-        EvaluateTargetHealth: true
 
   WWWRecord:
     Type: AWS::Route53::RecordSet
@@ -926,43 +986,84 @@ Resources:
 
 ## Monitoring Setup
 
-### CloudWatch Dashboard
+### Step 1: Configure CloudWatch Agent
 
-```json
-// infrastructure/dashboard.json
+```bash
+# Create CloudWatch configuration
+sudo cat > /opt/aws/amazon-cloudwatch-agent/etc/amazon-cloudwatch-agent.json << 'EOF'
 {
-  "widgets": [
-    {
-      "type": "metric",
-      "properties": {
-        "metrics": [
-          ["AWS/ECS", "CPUUtilization", { "stat": "Average" }],
-          [".", "MemoryUtilization", { "stat": "Average" }],
-          ["LiapTui", "ActiveConnections", { "stat": "Sum" }],
-          [".", "GameRoomsActive", { "stat": "Average" }]
+  "metrics": {
+    "namespace": "LiapTui",
+    "metrics_collected": {
+      "cpu": {
+        "measurement": [
+          {"name": "cpu_usage_idle", "rename": "CPU_USAGE_IDLE", "unit": "Percent"},
+          "cpu_usage_active"
         ],
-        "period": 300,
-        "stat": "Average",
-        "region": "us-east-1",
-        "title": "Service Metrics"
-      }
-    },
-    {
-      "type": "metric",
-      "properties": {
-        "metrics": [
-          ["AWS/ApplicationELB", "TargetResponseTime"],
-          [".", "RequestCount", { "stat": "Sum" }],
-          [".", "HTTPCode_Target_4XX_Count", { "stat": "Sum" }],
-          [".", "HTTPCode_Target_5XX_Count", { "stat": "Sum" }]
-        ],
-        "period": 300,
-        "region": "us-east-1",
-        "title": "ALB Metrics"
+        "metrics_collection_interval": 60,
+        "totalcpu": false
+      },
+      "disk": {
+        "measurement": ["used_percent"],
+        "metrics_collection_interval": 60,
+        "resources": ["*"]
+      },
+      "mem": {
+        "measurement": ["mem_used_percent"],
+        "metrics_collection_interval": 60
       }
     }
-  ]
+  },
+  "logs": {
+    "logs_collected": {
+      "files": {
+        "collect_list": [
+          {
+            "file_path": "/home/ec2-user/liap-tui/logs/app.log",
+            "log_group_name": "/aws/ec2/liap-tui",
+            "log_stream_name": "{instance_id}/app.log"
+          }
+        ]
+      }
+    }
+  }
 }
+EOF
+
+# Start CloudWatch Agent
+sudo /opt/aws/amazon-cloudwatch-agent/bin/amazon-cloudwatch-agent-ctl \
+  -a fetch-config \
+  -m ec2 \
+  -s \
+  -c file:/opt/aws/amazon-cloudwatch-agent/etc/amazon-cloudwatch-agent.json
+```
+
+### Step 2: Create CloudWatch Dashboard
+
+```bash
+# Create dashboard
+aws cloudwatch put-dashboard \
+  --dashboard-name liap-tui-ec2 \
+  --dashboard-body '{
+    "widgets": [
+      {
+        "type": "metric",
+        "properties": {
+          "metrics": [
+            ["AWS/EC2", "CPUUtilization", {"stat": "Average"}],
+            [".", "NetworkIn", {"stat": "Sum"}],
+            [".", "NetworkOut", {"stat": "Sum"}],
+            ["LiapTui", "CPU_USAGE_IDLE", {"stat": "Average"}],
+            [".", "mem_used_percent", {"stat": "Average"}]
+          ],
+          "period": 300,
+          "stat": "Average",
+          "region": "us-east-1",
+          "title": "EC2 Instance Metrics"
+        }
+      }
+    ]
+  }'
 ```
 
 Create dashboard:
@@ -972,219 +1073,308 @@ aws cloudwatch put-dashboard \
   --dashboard-body file://infrastructure/dashboard.json
 ```
 
-### CloudWatch Alarms
+### Step 3: Setup Alarms
 
 ```bash
 # CPU alarm
 aws cloudwatch put-metric-alarm \
-  --alarm-name liap-tui-high-cpu \
+  --alarm-name liap-tui-ec2-high-cpu \
   --alarm-description "Alert when CPU exceeds 80%" \
   --metric-name CPUUtilization \
-  --namespace AWS/ECS \
+  --namespace AWS/EC2 \
   --statistic Average \
   --period 300 \
   --threshold 80 \
   --comparison-operator GreaterThanThreshold \
-  --evaluation-periods 2
+  --evaluation-periods 2 \
+  --dimensions Name=InstanceId,Value=$INSTANCE_ID
 
-# Memory alarm
+# Disk space alarm
 aws cloudwatch put-metric-alarm \
-  --alarm-name liap-tui-high-memory \
-  --alarm-description "Alert when memory exceeds 80%" \
-  --metric-name MemoryUtilization \
-  --namespace AWS/ECS \
+  --alarm-name liap-tui-ec2-high-disk \
+  --alarm-description "Alert when disk usage exceeds 80%" \
+  --metric-name disk_used_percent \
+  --namespace LiapTui \
   --statistic Average \
   --period 300 \
   --threshold 80 \
-  --comparison-operator GreaterThanThreshold \
-  --evaluation-periods 2
-
-# Error rate alarm
-aws cloudwatch put-metric-alarm \
-  --alarm-name liap-tui-high-error-rate \
-  --alarm-description "Alert when 5XX errors exceed 1%" \
-  --metric-name HTTPCode_Target_5XX_Count \
-  --namespace AWS/ApplicationELB \
-  --statistic Sum \
-  --period 300 \
-  --threshold 10 \
   --comparison-operator GreaterThanThreshold \
   --evaluation-periods 1
+
+# Setup SNS for notifications (optional)
+aws sns create-topic --name liap-tui-alerts
+aws sns subscribe \
+  --topic-arn arn:aws:sns:us-east-1:123456789012:liap-tui-alerts \
+  --protocol email \
+  --notification-endpoint your-email@example.com
 ```
 
 ## Go Live Checklist
 
 ### Pre-Deployment
 
-- [ ] **Code Review**
-  - [ ] All PRs approved and merged
-  - [ ] No critical security issues
-  - [ ] Performance tested
+- [ ] **Server Setup**
+  - [ ] EC2 instance running
+  - [ ] Security group configured
+  - [ ] Elastic IP assigned
+  - [ ] SSH access working
 
-- [ ] **Infrastructure**
-  - [ ] VPC and subnets created
-  - [ ] Security groups configured
-  - [ ] Load balancers healthy
-  - [ ] Redis cluster running
-  - [ ] SSL certificates active
-
-- [ ] **Container**
-  - [ ] Production image built
-  - [ ] Image scanned for vulnerabilities
-  - [ ] Image pushed to ECR
-
-- [ ] **Configuration**
+- [ ] **Software Installation**
+  - [ ] Docker installed
+  - [ ] Docker Compose installed
+  - [ ] Git repository cloned
   - [ ] Environment variables set
-  - [ ] Secrets stored in Secrets Manager
-  - [ ] CORS origins configured
-  - [ ] Feature flags set
+
+- [ ] **Application**
+  - [ ] Docker image builds successfully
+  - [ ] Health check passing
+  - [ ] Database file created
+  - [ ] Logs directory created
+
+- [ ] **SSL/Domain**
+  - [ ] Domain pointing to Elastic IP
+  - [ ] SSL certificate obtained
+  - [ ] HTTPS working
+  - [ ] Auto-renewal configured
 
 ### Deployment Steps
 
-1. **Deploy Infrastructure**
+1. **Initial Deployment**
    ```bash
-   # Deploy all CloudFormation stacks in order
-   ./deploy-infrastructure.sh
-   ```
-
-2. **Deploy Application**
-   ```bash
-   # Update service with new task definition
-   aws ecs update-service \
-     --cluster production-cluster \
-     --service liap-tui-service \
-     --task-definition liap-tui-production:latest \
-     --force-new-deployment
-   ```
-
-3. **Verify Deployment**
-   ```bash
-   # Check service status
-   aws ecs describe-services \
-     --cluster production-cluster \
-     --services liap-tui-service
+   # SSH into server
+   ssh -i liap-tui-key.pem ec2-user@$PUBLIC_IP
    
-   # Check health endpoint
-   curl https://liaptui.com/api/health
+   # Navigate to application
+   cd /home/ec2-user/liap-tui
+   
+   # Start application
+   docker-compose up -d
+   
+   # Check logs
+   docker-compose logs -f
    ```
 
-4. **Test WebSocket**
+2. **Verify Deployment**
+   ```bash
+   # Check health endpoint
+   curl https://yourdomain.com/api/health
+   
+   # Check Docker status
+   docker ps
+   
+   # Check resource usage
+   docker stats liap-tui
+   ```
+
+3. **Test WebSocket**
    ```javascript
    // Test WebSocket connection
-   const ws = new WebSocket('wss://ws.liaptui.com/ws/test');
+   const ws = new WebSocket('wss://yourdomain.com/ws/lobby');
    ws.onopen = () => console.log('Connected');
    ws.onmessage = (e) => console.log('Message:', e.data);
+   ```
+
+4. **Update Deployment**
+   ```bash
+   # For updates
+   cd /home/ec2-user/liap-tui
+   git pull origin main
+   docker-compose build
+   docker-compose up -d
    ```
 
 ### Post-Deployment
 
 - [ ] **Monitoring**
   - [ ] CloudWatch dashboard showing data
-  - [ ] Alarms configured and tested
-  - [ ] Logs flowing correctly
+  - [ ] Alarms working
+  - [ ] Logs visible in CloudWatch
 
 - [ ] **Performance**
-  - [ ] Response times acceptable
-  - [ ] WebSocket latency low
-  - [ ] No memory leaks
+  - [ ] Page load time < 3s
+  - [ ] WebSocket latency < 100ms
+  - [ ] CPU usage < 50%
+  - [ ] Memory usage < 70%
 
 - [ ] **Security**
-  - [ ] WAF rules active
-  - [ ] Security groups locked down
-  - [ ] Secrets rotated
+  - [ ] SSH restricted to your IP
+  - [ ] HTTPS enforced
+  - [ ] Firewall rules verified
+  - [ ] fail2ban active
 
 - [ ] **Backup**
-  - [ ] Redis snapshots enabled
-  - [ ] CloudFormation templates backed up
-  - [ ] Runbooks documented
+  - [ ] Database backup script working
+  - [ ] S3 backups configured (optional)
+  - [ ] Can restore from backup
 
 ## Post-Deployment
 
 ### Monitoring and Maintenance
 
 1. **Daily Checks**
-   - Review CloudWatch dashboard
-   - Check error logs
-   - Monitor costs
+   ```bash
+   # Check application health
+   curl https://yourdomain.com/api/health
+   
+   # Check disk space
+   df -h
+   
+   # Check Docker logs
+   docker-compose logs --tail=100
+   ```
 
 2. **Weekly Tasks**
-   - Review performance metrics
-   - Check for security updates
-   - Update dependencies
+   ```bash
+   # Update system packages
+   sudo yum update -y
+   
+   # Check for Docker updates
+   docker version
+   
+   # Review backup files
+   ls -la /home/ec2-user/liap-tui/backups/
+   ```
 
 3. **Monthly Tasks**
-   - Rotate secrets
-   - Review and optimize costs
-   - Update documentation
+   ```bash
+   # Rotate logs
+   docker-compose logs > logs/archive-$(date +%Y%m).log
+   docker-compose logs --tail=0 -f > logs/current.log &
+   
+   # Update SSL certificate (auto-renews)
+   sudo certbot renew --dry-run
+   
+   # Review costs in AWS console
+   ```
 
-### Scaling Operations
+### Scaling Considerations
 
-```bash
-# Scale up for peak times
-aws ecs update-service \
-  --cluster production-cluster \
-  --service liap-tui-service \
-  --desired-count 10
+When you need to scale:
 
-# Scale down during quiet times
-aws ecs update-service \
-  --cluster production-cluster \
-  --service liap-tui-service \
-  --desired-count 3
-```
+1. **Vertical Scaling** (Recommended first)
+   ```bash
+   # Stop instance
+   aws ec2 stop-instances --instance-ids $INSTANCE_ID
+   
+   # Change instance type
+   aws ec2 modify-instance-attribute \
+     --instance-id $INSTANCE_ID \
+     --instance-type t2.small
+   
+   # Start instance
+   aws ec2 start-instances --instance-ids $INSTANCE_ID
+   ```
+
+2. **Add CloudFront CDN**
+   - Reduces load on server
+   - Improves global performance
+   - Caches static assets
 
 ### Troubleshooting Common Issues
 
 1. **Container Won't Start**
    ```bash
-   # Check task stopped reason
-   aws ecs describe-tasks \
-     --cluster production-cluster \
-     --tasks $(aws ecs list-tasks --cluster production-cluster --service-name liap-tui-service --query 'taskArns[0]' --output text)
+   # Check container logs
+   docker-compose logs app
+   
+   # Check container status
+   docker ps -a
+   
+   # Rebuild if needed
+   docker-compose build --no-cache
+   docker-compose up -d
    ```
 
 2. **WebSocket Connection Issues**
-   - Check NLB target health
-   - Verify security group rules
-   - Check nginx timeout settings
+   ```bash
+   # Check if port is open
+   sudo netstat -tlnp | grep 8000
+   
+   # Check nginx config
+   docker exec liap-tui cat /etc/nginx/nginx.conf
+   
+   # Test WebSocket locally
+   wscat -c ws://localhost:8000/ws/test
+   ```
 
-3. **High Latency**
-   - Check Redis connection
-   - Review CloudWatch metrics
-   - Consider scaling up
+3. **High CPU/Memory Usage**
+   ```bash
+   # Check resource usage
+   docker stats
+   
+   # Check process inside container
+   docker exec liap-tui top
+   
+   # Restart if needed
+   docker-compose restart
+   ```
 
-### Rollback Procedure
+### Backup and Recovery
 
-```bash
-# Rollback to previous version
-aws ecs update-service \
-  --cluster production-cluster \
-  --service liap-tui-service \
-  --task-definition liap-tui-production:previous-version \
-  --force-new-deployment
+1. **Create Manual Backup**
+   ```bash
+   # Backup database
+   sqlite3 game_events.db ".backup game_events_backup_$(date +%Y%m%d).db"
+   
+   # Backup entire application
+   tar -czf liap-tui-backup-$(date +%Y%m%d).tar.gz \
+     game_events.db docker-compose.yml .env.production
+   ```
 
-# If infrastructure issues
-aws cloudformation update-stack \
-  --stack-name liap-tui-infrastructure \
-  --use-previous-template
-```
+2. **Restore from Backup**
+   ```bash
+   # Stop application
+   docker-compose down
+   
+   # Restore database
+   cp game_events_backup_20240115.db game_events.db
+   
+   # Start application
+   docker-compose up -d
+   ```
+
+## Cost Optimization
+
+### Free Tier Usage
+- **EC2**: 750 hours/month of t2.micro (12 months)
+- **EBS**: 30GB storage included
+- **Data Transfer**: 15GB/month out
+- **CloudWatch**: Basic monitoring free
+- **Total Cost**: $0/month within limits
+
+### After Free Tier
+- **t2.micro**: ~$8.50/month
+- **30GB EBS**: ~$3/month  
+- **Elastic IP**: Free when attached
+- **Data Transfer**: $0.09/GB after 15GB
+- **Estimated Total**: ~$15-20/month
+
+### Cost Saving Tips
+1. Use CloudFront for static assets
+2. Enable gzip compression
+3. Implement caching headers
+4. Monitor data transfer
+5. Use S3 for backups (cheaper than EBS)
 
 ## Summary
 
-You've successfully deployed Liap Tui to AWS! The deployment includes:
+You've successfully deployed Liap Tui to AWS EC2! The deployment includes:
 
-✅ High-availability ECS Fargate cluster
-✅ Auto-scaling based on load
-✅ Redis for session state
-✅ Dual load balancers (ALB + NLB)
-✅ SSL/TLS encryption
+✅ EC2 t2.micro instance (free tier eligible)
+✅ Docker containerization
+✅ SQLite database with backups
+✅ SSL/TLS encryption with Let's Encrypt
 ✅ CloudWatch monitoring
-✅ Automated deployments
+✅ Automated backup system
+✅ Simple deployment process
 
 Next steps:
 1. Monitor initial performance
-2. Gather user feedback
-3. Optimize based on real usage
-4. Plan feature updates
+2. Set up CloudFront CDN if needed
+3. Implement additional monitoring
+4. Plan for scaling when needed
 
 Congratulations on launching your multiplayer game! 🎮
+
+Total deployment time: ~30 minutes
+Monthly cost: $0 (free tier) or ~$15-20

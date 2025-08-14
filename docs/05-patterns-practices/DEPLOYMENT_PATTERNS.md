@@ -1,12 +1,12 @@
-# Deployment Patterns - AWS ECS Production Setup
+# Deployment Patterns - AWS EC2 Production Setup
 
 ## Table of Contents
 1. [Overview](#overview)
 2. [Architecture Overview](#architecture-overview)
 3. [Container Strategy](#container-strategy)
-4. [AWS ECS Configuration](#aws-ecs-configuration)
-5. [Load Balancing](#load-balancing)
-6. [Auto-Scaling](#auto-scaling)
+4. [AWS EC2 Configuration](#aws-ec2-configuration)
+5. [Docker Compose Setup](#docker-compose-setup)
+6. [Database Management](#database-management)
 7. [Monitoring & Logging](#monitoring--logging)
 8. [Security Configuration](#security-configuration)
 9. [Cost Optimization](#cost-optimization)
@@ -14,15 +14,15 @@
 
 ## Overview
 
-This document outlines production deployment patterns for Liap Tui using AWS ECS (Elastic Container Service). The architecture emphasizes scalability, reliability, and cost-effectiveness for a real-time multiplayer game.
+This document outlines production deployment patterns for Liap Tui using AWS EC2 with Docker Compose. The architecture emphasizes simplicity, reliability, and cost-effectiveness for a real-time multiplayer game using a single EC2 instance with SQLite database.
 
 ### Deployment Goals
 
-1. **High Availability**: 99.9% uptime target
-2. **Auto-Scaling**: Handle 100 to 10,000 concurrent players
+1. **High Availability**: 99.5% uptime target
+2. **Simplicity**: Single instance deployment with Docker Compose
 3. **Low Latency**: <100ms WebSocket latency
-4. **Cost Efficient**: Pay for what you use
-5. **Zero Downtime**: Blue-green deployments
+4. **Cost Efficient**: Fixed monthly cost with free tier eligible
+5. **Easy Maintenance**: Simple SSH-based deployments
 
 ## Architecture Overview
 
@@ -34,74 +34,63 @@ graph TB
         Users[Players]
     end
     
-    subgraph "AWS Edge"
-        CF[CloudFront CDN]
-        WAF[AWS WAF]
-    end
-    
-    subgraph "Load Balancing"
-        ALB[Application Load Balancer]
-        NLB[Network Load Balancer]
-    end
-    
-    subgraph "ECS Cluster"
-        subgraph "Service A"
-            Task1[ECS Task 1]
-            Task2[ECS Task 2]
+    subgraph "AWS"
+        subgraph "EC2 Instance"
+            Docker[Docker Engine]
+            subgraph "Containers"
+                App[Liap Tui Container]
+                Nginx[Nginx]
+                Python[Python Backend]
+            end
+            SQLite[(SQLite DB)]
+            Volume[EBS Volume]
         end
-        subgraph "Service B"
-            Task3[ECS Task 3]
-            Task4[ECS Task 4]
-        end
-    end
-    
-    subgraph "Data Layer"
-        ElastiCache[(Redis)]
-        RDS[(PostgreSQL)]
-        S3[S3 Bucket]
+        
+        SG[Security Group]
+        EIP[Elastic IP]
     end
     
     subgraph "Monitoring"
         CW[CloudWatch]
-        XRay[X-Ray]
+        Logs[CloudWatch Logs]
     end
     
-    Users --> CF
-    CF --> WAF
-    WAF --> ALB
-    ALB --> NLB
-    NLB --> Task1
-    NLB --> Task2
-    NLB --> Task3
-    NLB --> Task4
+    subgraph "Backup"
+        S3[S3 Bucket]
+        Snapshot[EBS Snapshot]
+    end
     
-    Task1 --> ElastiCache
-    Task2 --> ElastiCache
-    Task3 --> RDS
-    Task4 --> S3
+    Users --> EIP
+    EIP --> SG
+    SG --> Docker
+    Docker --> App
+    App --> Nginx
+    App --> Python
+    Python --> SQLite
+    SQLite --> Volume
     
-    Task1 --> CW
-    Task2 --> XRay
+    Docker --> CW
+    Docker --> Logs
+    Volume --> Snapshot
+    SQLite --> S3
     
-    style CF fill:#FF9900
-    style ALB fill:#FF9900
-    style Task1 fill:#146EB4
-    style ElastiCache fill:#C92540
-    style RDS fill:#232F3E
+    style Docker fill:#0db7ed
+    style SQLite fill:#003B57
+    style EC2 fill:#FF9900
 ```
 
 ### Component Responsibilities
 
 | Component | Purpose | Technology |
 |-----------|---------|------------|
-| CDN | Static assets, DDoS protection | CloudFront |
-| WAF | Application firewall | AWS WAF |
-| Load Balancer | Request distribution | ALB for HTTP, NLB for WebSocket |
-| Container Service | Application hosting | ECS Fargate |
-| Cache | Session state, game state | ElastiCache Redis |
-| Database | Player data, game history | RDS PostgreSQL |
-| Object Storage | Replays, logs | S3 |
-| Monitoring | Metrics and tracing | CloudWatch, X-Ray |
+| Web Server | Static assets, reverse proxy | Nginx (in container) |
+| Application | Game logic, WebSocket handler | Python FastAPI |
+| Database | Game events, play history | SQLite (file-based) |
+| Container Runtime | Application isolation | Docker + Docker Compose |
+| Storage | Database persistence | EBS Volume |
+| Backup | Database backups | S3 + EBS Snapshots |
+| Monitoring | Metrics and logs | CloudWatch Agent |
+| Security | Network firewall | Security Groups |
 
 ## Container Strategy
 
@@ -178,375 +167,380 @@ CMD ["/usr/bin/supervisord", "-c", "/etc/supervisor/conf.d/supervisord.conf"]
 3. **Caching**: Efficient layer caching
 4. **Versioning**: Build metadata included
 
-### Container Best Practices
+### Docker Compose Configuration
 
 ```yaml
-# docker-compose.prod.yml
+# docker-compose.yml
 version: '3.8'
 
 services:
   app:
-    image: ${ECR_REGISTRY}/liap-tui:${VERSION}
+    build: .
+    image: liap-tui:latest
+    container_name: liap-tui
+    ports:
+      - "80:80"
+      - "8000:8000"
     environment:
       - ENV=production
-      - REDIS_URL=redis://${REDIS_HOST}:6379
-      - DATABASE_URL=postgresql://${DB_USER}:${DB_PASS}@${DB_HOST}/liaptui
-      - CORS_ORIGINS=${ALLOWED_ORIGINS}
+      - DATABASE_PATH=/app/data/game_events.db
+      - CORS_ORIGINS=https://yourdomain.com
       - LOG_LEVEL=info
+    volumes:
+      - ./game_events.db:/app/data/game_events.db
+      - ./logs:/app/logs
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost/api/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+```
+
+## AWS EC2 Configuration
+
+### EC2 Instance Setup
+
+```bash
+# Launch EC2 instance
+aws ec2 run-instances \
+  --image-id ami-0c02fb55956c7d316 \
+  --instance-type t2.micro \
+  --key-name your-key-pair \
+  --security-group-ids sg-xxxxxx \
+  --subnet-id subnet-xxxxxx \
+  --tag-specifications 'ResourceType=instance,Tags=[{Key=Name,Value=liap-tui-production}]' \
+  --user-data file://user-data.sh
+
+# user-data.sh - Instance initialization
+#!/bin/bash
+# Update system
+sudo yum update -y
+
+# Install Docker
+sudo yum install docker -y
+sudo service docker start
+sudo usermod -a -G docker ec2-user
+
+# Install Docker Compose
+sudo curl -L "https://github.com/docker/compose/releases/latest/download/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+sudo chmod +x /usr/local/bin/docker-compose
+
+# Install CloudWatch Agent
+wget https://s3.amazonaws.com/amazoncloudwatch-agent/amazon_linux/amd64/latest/amazon-cloudwatch-agent.rpm
+sudo rpm -U ./amazon-cloudwatch-agent.rpm
+
+# Create app directory
+mkdir -p /home/ec2-user/liap-tui
+cd /home/ec2-user/liap-tui
+
+# Clone repository (or copy files)
+git clone https://github.com/yourusername/liap-tui.git .
+
+# Start application
+docker-compose up -d
+```
+
+### Security Group Configuration
+
+```yaml
+# EC2 Security Group
+SecurityGroup:
+  Type: AWS::EC2::SecurityGroup
+  Properties:
+    GroupDescription: Security group for Liap Tui EC2 instance
+    VpcId: !Ref VPC
+    SecurityGroupIngress:
+      # HTTP
+      - IpProtocol: tcp
+        FromPort: 80
+        ToPort: 80
+        CidrIp: 0.0.0.0/0
+      # HTTPS
+      - IpProtocol: tcp
+        FromPort: 443
+        ToPort: 443
+        CidrIp: 0.0.0.0/0
+      # WebSocket
+      - IpProtocol: tcp
+        FromPort: 8000
+        ToPort: 8000
+        CidrIp: 0.0.0.0/0
+      # SSH (restricted)
+      - IpProtocol: tcp
+        FromPort: 22
+        ToPort: 22
+        CidrIp: YOUR_IP/32
+    SecurityGroupEgress:
+      # All outbound traffic
+      - IpProtocol: -1
+        CidrIp: 0.0.0.0/0
+```
+
+### Elastic IP Assignment
+
+```bash
+# Allocate Elastic IP
+EIP_ALLOC=$(aws ec2 allocate-address --domain vpc --query 'AllocationId' --output text)
+
+# Associate with instance
+aws ec2 associate-address \
+  --instance-id i-xxxxxxxxx \
+  --allocation-id $EIP_ALLOC
+
+# Update DNS records
+aws route53 change-resource-record-sets \
+  --hosted-zone-id Z123456789 \
+  --change-batch '{
+    "Changes": [{
+      "Action": "UPSERT",
+      "ResourceRecordSet": {
+        "Name": "liaptui.com",
+        "Type": "A",
+        "TTL": 300,
+        "ResourceRecords": [{"Value": "YOUR_ELASTIC_IP"}]
+      }
+    }]
+  }'
+```
+
+## Database Management
+
+### SQLite Configuration
+
+```yaml
+# SQLite database setup
+Database:
+  Type: File
+  Path: /home/ec2-user/liap-tui/game_events.db
+  Permissions: 644
+  Owner: ec2-user
+  Group: ec2-user
+  
+  # Volume mapping in docker-compose.yml
+  volumes:
+    - ./game_events.db:/app/data/game_events.db
+    - ./backups:/app/backups
+```
+
+### Backup Strategy
+
+```bash
+#!/bin/bash
+# backup.sh - Daily backup script
+
+# Variables
+DB_PATH="/home/ec2-user/liap-tui/game_events.db"
+BACKUP_DIR="/home/ec2-user/liap-tui/backups"
+S3_BUCKET="liap-tui-backups"
+DATE=$(date +%Y%m%d_%H%M%S)
+
+# Create backup
+sqlite3 $DB_PATH ".backup $BACKUP_DIR/game_events_$DATE.db"
+
+# Compress
+gzip $BACKUP_DIR/game_events_$DATE.db
+
+# Upload to S3
+aws s3 cp $BACKUP_DIR/game_events_$DATE.db.gz s3://$S3_BUCKET/daily/
+
+# Clean old local backups (keep 7 days)
+find $BACKUP_DIR -name "*.db.gz" -mtime +7 -delete
+
+# Setup cron job
+# crontab -e
+# 0 2 * * * /home/ec2-user/liap-tui/backup.sh
+```
+
+### Database Maintenance
+
+```python
+# backend/maintenance/db_maintenance.py
+import sqlite3
+import logging
+from datetime import datetime, timedelta
+
+class DatabaseMaintenance:
+    """SQLite maintenance tasks."""
+    
+    def __init__(self, db_path: str):
+        self.db_path = db_path
+        self.logger = logging.getLogger(__name__)
+    
+    def vacuum_database(self):
+        """Reclaim unused space."""
+        conn = sqlite3.connect(self.db_path)
+        try:
+            self.logger.info("Starting VACUUM...")
+            conn.execute("VACUUM")
+            self.logger.info("VACUUM completed")
+        finally:
+            conn.close()
+    
+    def analyze_database(self):
+        """Update query optimizer statistics."""
+        conn = sqlite3.connect(self.db_path)
+        try:
+            conn.execute("ANALYZE")
+            self.logger.info("ANALYZE completed")
+        finally:
+            conn.close()
+    
+    def archive_old_events(self, days_to_keep: int = 30):
+        """Archive events older than specified days."""
+        conn = sqlite3.connect(self.db_path)
+        try:
+            cutoff_date = datetime.now() - timedelta(days=days_to_keep)
+            
+            # Count events to archive
+            cursor = conn.execute(
+                "SELECT COUNT(*) FROM events WHERE timestamp < ?",
+                (cutoff_date.timestamp(),)
+            )
+            count = cursor.fetchone()[0]
+            
+            if count > 0:
+                # Create archive table if not exists
+                conn.execute("""
+                    CREATE TABLE IF NOT EXISTS events_archive (
+                        LIKE events INCLUDING ALL
+                    )
+                """)
+                
+                # Move old events
+                conn.execute("""
+                    INSERT INTO events_archive 
+                    SELECT * FROM events 
+                    WHERE timestamp < ?
+                """, (cutoff_date.timestamp(),))
+                
+                conn.execute("""
+                    DELETE FROM events 
+                    WHERE timestamp < ?
+                """, (cutoff_date.timestamp(),))
+                
+                conn.commit()
+                self.logger.info(f"Archived {count} events")
+            
+        finally:
+            conn.close()
+```
+
+## Performance Optimization
+
+### EC2 Instance Optimization
+
+```bash
+# System tuning for game server
+cat << EOF > /etc/sysctl.d/99-liaptui.conf
+# Network optimizations
+net.core.somaxconn = 65535
+net.ipv4.tcp_max_syn_backlog = 65535
+net.ipv4.ip_local_port_range = 1024 65535
+net.ipv4.tcp_tw_reuse = 1
+net.ipv4.tcp_fin_timeout = 15
+
+# WebSocket optimizations
+net.core.netdev_max_backlog = 5000
+net.ipv4.tcp_keepalive_time = 600
+net.ipv4.tcp_keepalive_intvl = 60
+net.ipv4.tcp_keepalive_probes = 3
+
+# File descriptor limits
+fs.file-max = 100000
+EOF
+
+# Apply settings
+sysctl -p /etc/sysctl.d/99-liaptui.conf
+
+# Update limits
+cat << EOF > /etc/security/limits.d/99-liaptui.conf
+ec2-user soft nofile 65535
+ec2-user hard nofile 65535
+ec2-user soft nproc 65535
+ec2-user hard nproc 65535
+EOF
+```
+
+### Docker Performance Tuning
+
+```yaml
+# docker-compose.yml optimizations
+version: '3.8'
+
+services:
+  app:
+    build: .
+    image: liap-tui:latest
+    container_name: liap-tui
+    restart: unless-stopped
+    
+    # Resource limits
     deploy:
       resources:
         limits:
-          cpus: '2'
-          memory: 2G
+          cpus: '0.8'
+          memory: 800M
         reservations:
           cpus: '0.5'
           memory: 512M
+    
+    # Performance settings
+    environment:
+      - PYTHONUNBUFFERED=1
+      - WORKERS=4
+      - MAX_CONNECTIONS=1000
+      - DATABASE_POOL_SIZE=20
+    
+    # Logging optimization
     logging:
-      driver: awslogs
+      driver: "json-file"
       options:
-        awslogs-group: /ecs/liap-tui
-        awslogs-region: us-east-1
-        awslogs-stream-prefix: app
+        max-size: "10m"
+        max-file: "3"
+        compress: "true"
 ```
 
-## AWS ECS Configuration
-
-### Task Definition
-
-```json
-{
-  "family": "liap-tui-production",
-  "networkMode": "awsvpc",
-  "requiresCompatibilities": ["FARGATE"],
-  "cpu": "1024",
-  "memory": "2048",
-  "containerDefinitions": [
-    {
-      "name": "liap-tui-app",
-      "image": "${ECR_REGISTRY}/liap-tui:${VERSION}",
-      "essential": true,
-      "portMappings": [
-        {
-          "containerPort": 80,
-          "protocol": "tcp"
-        },
-        {
-          "containerPort": 8000,
-          "protocol": "tcp"
-        }
-      ],
-      "environment": [
-        {
-          "name": "ENV",
-          "value": "production"
-        }
-      ],
-      "secrets": [
-        {
-          "name": "DATABASE_URL",
-          "valueFrom": "arn:aws:secretsmanager:region:account:secret:liap-tui/db-url"
-        },
-        {
-          "name": "REDIS_URL",
-          "valueFrom": "arn:aws:secretsmanager:region:account:secret:liap-tui/redis-url"
-        }
-      ],
-      "healthCheck": {
-        "command": ["CMD-SHELL", "curl -f http://localhost/api/health || exit 1"],
-        "interval": 30,
-        "timeout": 5,
-        "retries": 3,
-        "startPeriod": 60
-      },
-      "logConfiguration": {
-        "logDriver": "awslogs",
-        "options": {
-          "awslogs-group": "/ecs/liap-tui",
-          "awslogs-region": "us-east-1",
-          "awslogs-stream-prefix": "ecs"
-        }
-      }
-    }
-  ],
-  "executionRoleArn": "arn:aws:iam::account:role/ecsTaskExecutionRole",
-  "taskRoleArn": "arn:aws:iam::account:role/liap-tui-task-role"
-}
-```
-
-### Service Configuration
-
-```yaml
-# ecs-service.yml
-apiVersion: v1
-kind: Service
-metadata:
-  name: liap-tui-service
-spec:
-  cluster: production-cluster
-  taskDefinition: liap-tui-production:latest
-  desiredCount: 3
-  launchType: FARGATE
-  networkConfiguration:
-    awsvpcConfiguration:
-      subnets:
-        - subnet-12345678
-        - subnet-87654321
-        - subnet-11223344
-      securityGroups:
-        - sg-app-servers
-      assignPublicIp: DISABLED
-  loadBalancers:
-    - targetGroupArn: arn:aws:elasticloadbalancing:region:account:targetgroup/liap-tui/abc123
-      containerName: liap-tui-app
-      containerPort: 80
-  deploymentConfiguration:
-    maximumPercent: 200
-    minimumHealthyPercent: 100
-    deploymentCircuitBreaker:
-      enable: true
-      rollback: true
-  placementStrategies:
-    - type: spread
-      field: attribute:ecs.availability-zone
-```
-
-### ECS Cluster Setup
-
-```bash
-# Create ECS cluster with capacity providers
-aws ecs create-cluster \
-  --cluster-name production-cluster \
-  --capacity-providers FARGATE FARGATE_SPOT \
-  --default-capacity-provider-strategy \
-    capacityProvider=FARGATE,weight=2,base=1 \
-    capacityProvider=FARGATE_SPOT,weight=3,base=0 \
-  --settings name=containerInsights,value=enabled
-```
-
-## Load Balancing
-
-### Dual Load Balancer Strategy
-
-```yaml
-# Application Load Balancer (HTTP/HTTPS)
-ALB:
-  Type: AWS::ElasticLoadBalancingV2::LoadBalancer
-  Properties:
-    Type: application
-    Scheme: internet-facing
-    SecurityGroups:
-      - !Ref ALBSecurityGroup
-    Subnets:
-      - !Ref PublicSubnet1
-      - !Ref PublicSubnet2
-      - !Ref PublicSubnet3
-    Tags:
-      - Key: Name
-        Value: liap-tui-alb
-
-# Network Load Balancer (WebSocket)
-NLB:
-  Type: AWS::ElasticLoadBalancingV2::LoadBalancer
-  Properties:
-    Type: network
-    Scheme: internet-facing
-    Subnets:
-      - !Ref PublicSubnet1
-      - !Ref PublicSubnet2
-      - !Ref PublicSubnet3
-    Tags:
-      - Key: Name
-        Value: liap-tui-nlb
-```
-
-### Target Group Configuration
-
-```yaml
-# WebSocket target group with sticky sessions
-WebSocketTargetGroup:
-  Type: AWS::ElasticLoadBalancingV2::TargetGroup
-  Properties:
-    Port: 8000
-    Protocol: TCP
-    VpcId: !Ref VPC
-    TargetType: ip
-    HealthCheckEnabled: true
-    HealthCheckProtocol: HTTP
-    HealthCheckPath: /api/health
-    HealthCheckIntervalSeconds: 30
-    HealthCheckTimeoutSeconds: 10
-    HealthyThresholdCount: 2
-    UnhealthyThresholdCount: 3
-    TargetGroupAttributes:
-      - Key: stickiness.enabled
-        Value: true
-      - Key: stickiness.type
-        Value: source_ip
-      - Key: deregistration_delay.timeout_seconds
-        Value: 60
-```
-
-### Path-Based Routing
-
-```yaml
-# ALB listener rules
-ListenerRules:
-  - Priority: 1
-    Conditions:
-      - Field: path-pattern
-        Values: ["/api/*"]
-    Actions:
-      - Type: forward
-        TargetGroupArn: !Ref APITargetGroup
-  
-  - Priority: 2
-    Conditions:
-      - Field: path-pattern
-        Values: ["/ws/*"]
-    Actions:
-      - Type: redirect
-        RedirectConfig:
-          Protocol: TCP
-          Port: 8000
-          Host: "#{host}"
-          Path: "/#{path}"
-          Query: "#{query}"
-          StatusCode: HTTP_301
-  
-  - Priority: 100
-    Conditions:
-      - Field: path-pattern
-        Values: ["/*"]
-    Actions:
-      - Type: forward
-        TargetGroupArn: !Ref StaticTargetGroup
-```
-
-## Auto-Scaling
-
-### Application Auto-Scaling
-
-```yaml
-# ECS service auto-scaling
-ServiceScalingTarget:
-  Type: AWS::ApplicationAutoScaling::ScalableTarget
-  Properties:
-    MaxCapacity: 20
-    MinCapacity: 3
-    ResourceId: !Sub service/${ClusterName}/${ServiceName}
-    RoleARN: !Sub arn:aws:iam::${AWS::AccountId}:role/aws-service-role/ecs.application-autoscaling.amazonaws.com/AWSServiceRoleForApplicationAutoScaling_ECSService
-    ScalableDimension: ecs:service:DesiredCount
-    ServiceNamespace: ecs
-
-# CPU-based scaling
-CPUScalingPolicy:
-  Type: AWS::ApplicationAutoScaling::ScalingPolicy
-  Properties:
-    PolicyName: cpu-scaling
-    PolicyType: TargetTrackingScaling
-    ScalingTargetId: !Ref ServiceScalingTarget
-    TargetTrackingScalingPolicyConfiguration:
-      PredefinedMetricSpecification:
-        PredefinedMetricType: ECSServiceAverageCPUUtilization
-      TargetValue: 70.0
-      ScaleInCooldown: 300
-      ScaleOutCooldown: 60
-
-# Connection-based scaling
-ConnectionScalingPolicy:
-  Type: AWS::ApplicationAutoScaling::ScalingPolicy
-  Properties:
-    PolicyName: connection-scaling
-    PolicyType: TargetTrackingScaling
-    ScalingTargetId: !Ref ServiceScalingTarget
-    TargetTrackingScalingPolicyConfiguration:
-      CustomizedMetricSpecification:
-        MetricName: ActiveConnections
-        Namespace: LiapTui
-        Statistic: Average
-        Unit: Count
-      TargetValue: 1000.0
-```
-
-### Predictive Scaling
+### Application Performance
 
 ```python
-# backend/monitoring/predictive_scaling.py
-import boto3
-from datetime import datetime, timedelta
-import numpy as np
+# backend/performance/optimization.py
+import asyncio
+from functools import lru_cache
+import uvloop
 
-class PredictiveScaler:
-    """Predictive scaling based on historical patterns."""
+# Use uvloop for better async performance
+asyncio.set_event_loop_policy(uvloop.EventLoopPolicy())
+
+class PerformanceOptimizer:
+    """Application performance optimizations."""
     
     def __init__(self):
-        self.cloudwatch = boto3.client('cloudwatch')
-        self.autoscaling = boto3.client('application-autoscaling')
+        self.connection_pool = None
+        self.cache = {}
     
-    async def analyze_patterns(self):
-        """Analyze weekly patterns for predictive scaling."""
-        # Get historical data
-        end_time = datetime.utcnow()
-        start_time = end_time - timedelta(days=14)
-        
-        metrics = self.cloudwatch.get_metric_statistics(
-            Namespace='LiapTui',
-            MetricName='ActivePlayers',
-            StartTime=start_time,
-            EndTime=end_time,
-            Period=3600,  # 1 hour
-            Statistics=['Average', 'Maximum']
-        )
-        
-        # Analyze patterns by hour and day
-        patterns = self.extract_patterns(metrics['Datapoints'])
-        
-        # Schedule scaling based on patterns
-        await self.schedule_scaling(patterns)
+    @lru_cache(maxsize=1000)
+    def get_cached_game_state(self, room_id: str, sequence: int):
+        """Cache frequently accessed game states."""
+        return self._fetch_game_state(room_id, sequence)
     
-    def extract_patterns(self, datapoints):
-        """Extract usage patterns from historical data."""
-        hourly_averages = {}
-        
-        for point in datapoints:
-            hour = point['Timestamp'].hour
-            day = point['Timestamp'].weekday()
-            key = (day, hour)
-            
-            if key not in hourly_averages:
-                hourly_averages[key] = []
-            
-            hourly_averages[key].append(point['Average'])
-        
-        # Calculate averages and peaks
-        patterns = {}
-        for key, values in hourly_averages.items():
-            patterns[key] = {
-                'average': np.mean(values),
-                'peak': np.max(values),
-                'stddev': np.std(values)
-            }
-        
-        return patterns
-    
-    async def schedule_scaling(self, patterns):
-        """Schedule scaling actions based on patterns."""
-        for (day, hour), stats in patterns.items():
-            # Calculate required capacity
-            required_capacity = int(stats['peak'] / 1000) + 2  # Buffer
-            
-            # Create scheduled action
-            self.autoscaling.put_scheduled_action(
-                ServiceNamespace='ecs',
-                ResourceId=f'service/production-cluster/liap-tui-service',
-                ScalableDimension='ecs:service:DesiredCount',
-                ScheduledActionName=f'scale-{day}-{hour}',
-                Schedule=f'cron(0 {hour} ? * {day} *)',
-                ScalableTargetAction={
-                    'MinCapacity': max(3, required_capacity - 2),
-                    'MaxCapacity': required_capacity + 5
-                }
-            )
+    async def batch_database_writes(self, events: list):
+        """Batch multiple writes for efficiency."""
+        if len(events) < 10:
+            # Write immediately for small batches
+            await self._write_events(events)
+        else:
+            # Batch larger writes
+            for i in range(0, len(events), 100):
+                batch = events[i:i+100]
+                await self._write_events(batch)
+                await asyncio.sleep(0.01)  # Prevent blocking
 ```
 
 ## Monitoring & Logging
@@ -560,8 +554,9 @@ class PredictiveScaler:
       "type": "metric",
       "properties": {
         "metrics": [
-          ["AWS/ECS", "CPUUtilization", {"stat": "Average"}],
-          [".", "MemoryUtilization", {"stat": "Average"}],
+          ["AWS/EC2", "CPUUtilization", {"stat": "Average"}],
+          [".", "NetworkIn", {"stat": "Sum"}],
+          [".", "NetworkOut", {"stat": "Sum"}],
           ["LiapTui", "ActiveConnections", {"stat": "Sum"}],
           [".", "GameRoomsActive", {"stat": "Average"}],
           [".", "WebSocketLatency", {"stat": "p99"}]
@@ -569,13 +564,13 @@ class PredictiveScaler:
         "period": 300,
         "stat": "Average",
         "region": "us-east-1",
-        "title": "ECS Service Metrics"
+        "title": "EC2 Instance Metrics"
       }
     },
     {
       "type": "log",
       "properties": {
-        "query": "SOURCE '/ecs/liap-tui' | fields @timestamp, @message | filter @message like /ERROR/ | sort @timestamp desc | limit 20",
+        "query": "SOURCE '/aws/ec2/liap-tui' | fields @timestamp, @message | filter @message like /ERROR/ | sort @timestamp desc | limit 20",
         "region": "us-east-1",
         "title": "Recent Errors"
       }
@@ -644,204 +639,298 @@ class MetricsPublisher:
             )
 ```
 
-### Distributed Tracing
+### CloudWatch Agent Configuration
 
-```python
-# backend/monitoring/tracing.py
-from aws_xray_sdk.core import xray_recorder
-from aws_xray_sdk.ext.fastapi.middleware import XRayMiddleware
-
-# Add X-Ray tracing
-app.add_middleware(XRayMiddleware, recorder=xray_recorder)
-
-# Trace WebSocket operations
-@xray_recorder.capture('websocket_handler')
-async def handle_websocket_message(websocket, message):
-    subsegment = xray_recorder.current_subsegment()
-    subsegment.put_annotation('event_type', message.get('event'))
-    subsegment.put_annotation('room_id', websocket.room_id)
-    
-    try:
-        result = await process_message(message)
-        subsegment.put_metadata('result', result)
-        return result
-    except Exception as e:
-        subsegment.add_exception(e)
-        raise
+```json
+// /opt/aws/amazon-cloudwatch-agent/etc/amazon-cloudwatch-agent.json
+{
+  "metrics": {
+    "namespace": "LiapTui",
+    "metrics_collected": {
+      "cpu": {
+        "measurement": [
+          {
+            "name": "cpu_usage_idle",
+            "rename": "CPU_USAGE_IDLE",
+            "unit": "Percent"
+          },
+          "cpu_usage_active"
+        ],
+        "totalcpu": false,
+        "metrics_collection_interval": 60
+      },
+      "disk": {
+        "measurement": [
+          "used_percent",
+          "inodes_free"
+        ],
+        "metrics_collection_interval": 60,
+        "resources": [
+          "*"
+        ]
+      },
+      "mem": {
+        "measurement": [
+          "mem_used_percent"
+        ],
+        "metrics_collection_interval": 60
+      },
+      "netstat": {
+        "measurement": [
+          "tcp_established",
+          "tcp_time_wait"
+        ],
+        "metrics_collection_interval": 60
+      }
+    }
+  },
+  "logs": {
+    "logs_collected": {
+      "files": {
+        "collect_list": [
+          {
+            "file_path": "/home/ec2-user/liap-tui/logs/app.log",
+            "log_group_name": "/aws/ec2/liap-tui",
+            "log_stream_name": "{instance_id}/app.log"
+          },
+          {
+            "file_path": "/home/ec2-user/liap-tui/logs/error.log",
+            "log_group_name": "/aws/ec2/liap-tui",
+            "log_stream_name": "{instance_id}/error.log"
+          }
+        ]
+      }
+    }
+  }
+}
 ```
 
 ## Security Configuration
 
-### Network Security
+### SSH Access Management
 
-```yaml
-# Security groups
-AppSecurityGroup:
-  Type: AWS::EC2::SecurityGroup
-  Properties:
-    GroupDescription: Security group for ECS tasks
-    VpcId: !Ref VPC
-    SecurityGroupIngress:
-      # ALB access only
-      - IpProtocol: tcp
-        FromPort: 80
-        ToPort: 80
-        SourceSecurityGroupId: !Ref ALBSecurityGroup
-      # NLB access for WebSocket
-      - IpProtocol: tcp
-        FromPort: 8000
-        ToPort: 8000
-        SourceSecurityGroupId: !Ref NLBSecurityGroup
-    SecurityGroupEgress:
-      # Redis access
-      - IpProtocol: tcp
-        FromPort: 6379
-        ToPort: 6379
-        DestinationSecurityGroupId: !Ref RedisSecurityGroup
-      # RDS access
-      - IpProtocol: tcp
-        FromPort: 5432
-        ToPort: 5432
-        DestinationSecurityGroupId: !Ref RDSSecurityGroup
-      # HTTPS for external APIs
-      - IpProtocol: tcp
-        FromPort: 443
-        ToPort: 443
-        CidrIp: 0.0.0.0/0
+```bash
+# Secure SSH configuration
+cat << EOF > /etc/ssh/sshd_config.d/99-liaptui.conf
+# Disable root login
+PermitRootLogin no
+
+# Use key authentication only
+PasswordAuthentication no
+PubkeyAuthentication yes
+
+# Limit SSH access
+AllowUsers ec2-user
+
+# Security settings
+Protocol 2
+ClientAliveInterval 300
+ClientAliveCountMax 2
+MaxAuthTries 3
+MaxSessions 2
+EOF
+
+# Restart SSH
+sudo systemctl restart sshd
+
+# Setup fail2ban for SSH protection
+sudo yum install fail2ban -y
+cat << EOF > /etc/fail2ban/jail.local
+[sshd]
+enabled = true
+port = ssh
+filter = sshd
+logpath = /var/log/secure
+maxretry = 3
+bantime = 3600
+EOF
+
+sudo systemctl enable fail2ban
+sudo systemctl start fail2ban
 ```
 
-### WAF Rules
-
-```json
-{
-  "Rules": [
-    {
-      "Name": "RateLimitRule",
-      "Priority": 1,
-      "Statement": {
-        "RateBasedStatement": {
-          "Limit": 2000,
-          "AggregateKeyType": "IP",
-          "ScopeDownStatement": {
-            "ByteMatchStatement": {
-              "SearchString": "/api/",
-              "FieldToMatch": {
-                "UriPath": {}
-              },
-              "TextTransformations": [
-                {
-                  "Priority": 0,
-                  "Type": "NONE"
-                }
-              ],
-              "PositionalConstraint": "STARTS_WITH"
-            }
-          }
-        }
-      },
-      "Action": {
-        "Block": {}
-      }
-    },
-    {
-      "Name": "SQLInjectionRule",
-      "Priority": 2,
-      "Statement": {
-        "ManagedRuleGroupStatement": {
-          "VendorName": "AWS",
-          "Name": "AWSManagedRulesSQLiRuleSet"
-        }
-      },
-      "OverrideAction": {
-        "None": {}
-      }
-    }
-  ]
-}
-```
-
-### Secrets Management
+### Application Security
 
 ```python
-# backend/config/secrets.py
-import boto3
-import json
-from functools import lru_cache
+# backend/security/hardening.py
+import os
+import secrets
+from datetime import datetime, timedelta
+import jwt
 
-class SecretsManager:
-    """Manage secrets from AWS Secrets Manager."""
+class SecurityHardening:
+    """Security hardening for EC2 deployment."""
     
     def __init__(self):
-        self.client = boto3.client('secretsmanager')
+        self.secret_key = os.environ.get('JWT_SECRET', secrets.token_urlsafe(32))
+        self.rate_limits = {}
     
-    @lru_cache(maxsize=32)
-    def get_secret(self, secret_name: str) -> dict:
-        """Get secret from AWS Secrets Manager."""
-        try:
-            response = self.client.get_secret_value(
-                SecretId=secret_name
-            )
-            
-            if 'SecretString' in response:
-                return json.loads(response['SecretString'])
-            else:
-                # Binary secret
-                return response['SecretBinary']
-                
-        except Exception as e:
-            # Use local env vars as fallback
-            import os
-            return {
-                'database_url': os.getenv('DATABASE_URL'),
-                'redis_url': os.getenv('REDIS_URL'),
-                'jwt_secret': os.getenv('JWT_SECRET')
-            }
+    def setup_cors(self, app):
+        """Configure CORS for production."""
+        from fastapi.middleware.cors import CORSMiddleware
+        
+        app.add_middleware(
+            CORSMiddleware,
+            allow_origins=["https://yourdomain.com"],
+            allow_credentials=True,
+            allow_methods=["GET", "POST"],
+            allow_headers=["*"],
+            max_age=3600,
+        )
+    
+    def rate_limit_check(self, ip: str, endpoint: str) -> bool:
+        """Simple rate limiting."""
+        key = f"{ip}:{endpoint}"
+        now = datetime.now()
+        
+        if key not in self.rate_limits:
+            self.rate_limits[key] = []
+        
+        # Clean old entries
+        self.rate_limits[key] = [
+            t for t in self.rate_limits[key] 
+            if now - t < timedelta(minutes=1)
+        ]
+        
+        # Check limit (100 requests per minute)
+        if len(self.rate_limits[key]) >= 100:
+            return False
+        
+        self.rate_limits[key].append(now)
+        return True
+    
+    def generate_csrf_token(self) -> str:
+        """Generate CSRF token."""
+        return secrets.token_urlsafe(32)
+    
+    def validate_input(self, data: dict) -> dict:
+        """Sanitize user input."""
+        # Remove any potential SQL injection attempts
+        cleaned = {}
+        for key, value in data.items():
+            if isinstance(value, str):
+                # Basic sanitization
+                value = value.replace(";", "")
+                value = value.replace("--", "")
+                value = value.replace("/*", "")
+                value = value.replace("*/", "")
+            cleaned[key] = value
+        return cleaned
+```
+
+### Environment Variable Management
+
+```bash
+# .env.production - Production environment variables
+ENV=production
+DATABASE_PATH=/home/ec2-user/liap-tui/game_events.db
+CORS_ORIGINS=https://yourdomain.com
+LOG_LEVEL=info
+WORKERS=4
+MAX_CONNECTIONS=1000
+JWT_SECRET=your-secret-key-here
+
+# Secure the file
+chmod 600 .env.production
+chown ec2-user:ec2-user .env.production
+
+# Load in docker-compose.yml
+env_file:
+  - .env.production
+```
+
+### SSL/TLS Configuration
+
+```bash
+# Install Certbot for Let's Encrypt
+sudo yum install certbot -y
+
+# Get SSL certificate
+sudo certbot certonly --standalone \
+  -d yourdomain.com \
+  -d www.yourdomain.com \
+  --email your-email@example.com \
+  --agree-tos \
+  --non-interactive
+
+# Auto-renewal cron job
+echo "0 0,12 * * * root certbot renew --quiet" | sudo tee /etc/cron.d/certbot
+
+# Update nginx.conf for SSL
+server {
+    listen 443 ssl;
+    server_name yourdomain.com;
+    
+    ssl_certificate /etc/letsencrypt/live/yourdomain.com/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/yourdomain.com/privkey.pem;
+    
+    # SSL hardening
+    ssl_protocols TLSv1.2 TLSv1.3;
+    ssl_ciphers HIGH:!aNULL:!MD5;
+    ssl_prefer_server_ciphers on;
+    
+    # Security headers
+    add_header Strict-Transport-Security "max-age=31536000" always;
+    add_header X-Frame-Options "SAMEORIGIN" always;
+    add_header X-Content-Type-Options "nosniff" always;
+    add_header X-XSS-Protection "1; mode=block" always;
+}
 ```
 
 ## Cost Optimization
 
-### Cost-Saving Strategies
+### EC2 Cost-Saving Strategies
 
-1. **Fargate Spot for Non-Critical Tasks**
+1. **Free Tier Usage**
+   - t2.micro instance: 750 hours/month free for 12 months
+   - 30GB EBS storage included
+   - 15GB bandwidth included
+   - Total cost: $0/month (within free tier limits)
+
+2. **Reserved Instance (After Free Tier)**
+   ```bash
+   # Purchase 1-year reserved instance for 30% savings
+   aws ec2 purchase-reserved-instances-offering \
+     --instance-count 1 \
+     --reserved-instances-offering-id xxxxxxxx \
+     --instance-type t2.micro
+   ```
+
+3. **S3 Lifecycle Policies**
+   ```json
+   {
+     "Rules": [{
+       "Id": "ArchiveOldBackups",
+       "Status": "Enabled",
+       "Transitions": [{
+         "Days": 30,
+         "StorageClass": "STANDARD_IA"
+       }, {
+         "Days": 90,
+         "StorageClass": "GLACIER"
+       }],
+       "Expiration": {
+         "Days": 365
+       }
+     }]
+   }
+   ```
+
+4. **CloudFront for Static Assets**
    ```yaml
-   CapacityProviderStrategy:
-     - Base: 2
-       Weight: 1
-       CapacityProvider: FARGATE
-     - Base: 0
-       Weight: 3
-       CapacityProvider: FARGATE_SPOT
+   # CloudFront distribution
+   Distribution:
+     Origins:
+       - DomainName: yourdomain.com
+         Id: EC2Origin
+         CustomOriginConfig:
+           OriginProtocolPolicy: https-only
+     DefaultCacheBehavior:
+       TargetOriginId: EC2Origin
+       ViewerProtocolPolicy: redirect-to-https
+       CachePolicyId: 658327ea-f89d-4fab-a63d-7e88639e58f6
+       Compress: true
    ```
-
-2. **Reserved Capacity for Baseline**
-   - Purchase Savings Plans for predictable workload
-   - Use Spot for burst capacity
-
-3. **Intelligent Tiering**
-   ```python
-   # Move cold data to cheaper storage
-   def archive_old_games():
-       # Games older than 30 days
-       old_games = db.query(Game).filter(
-           Game.ended_at < datetime.now() - timedelta(days=30)
-       )
-       
-       for game in old_games:
-           # Archive to S3
-           s3.put_object(
-               Bucket='liap-tui-archives',
-               Key=f'games/{game.id}.json',
-               Body=json.dumps(game.to_dict()),
-               StorageClass='GLACIER'
-           )
-           
-           # Remove from hot storage
-           db.delete(game)
-   ```
-
-4. **CDN for Static Assets**
-   - Serve all static content from CloudFront
-   - Reduce load on application servers
 
 ### Cost Monitoring
 
@@ -860,88 +949,116 @@ Tags:
 
 ## Disaster Recovery
 
-### Backup Strategy
+### Automated Backup Strategy
 
-```yaml
-# RDS automated backups
-DBInstance:
-  BackupRetentionPeriod: 7
-  PreferredBackupWindow: "03:00-04:00"
-  PreferredMaintenanceWindow: "Mon:04:00-Mon:05:00"
-  
-# Point-in-time recovery
-DBCluster:
-  BackupRetentionPeriod: 35
-  EnableCloudwatchLogsExports:
-    - postgresql
+```bash
+#!/bin/bash
+# disaster-recovery.sh - Comprehensive backup and recovery
+
+# EBS Snapshot
+create_ebs_snapshot() {
+    VOLUME_ID=$(aws ec2 describe-instances \
+        --instance-ids $(curl -s http://169.254.169.254/latest/meta-data/instance-id) \
+        --query 'Reservations[0].Instances[0].BlockDeviceMappings[0].Ebs.VolumeId' \
+        --output text)
+    
+    SNAPSHOT_ID=$(aws ec2 create-snapshot \
+        --volume-id $VOLUME_ID \
+        --description "Liap Tui backup $(date +%Y%m%d_%H%M%S)" \
+        --query 'SnapshotId' \
+        --output text)
+    
+    echo "Created snapshot: $SNAPSHOT_ID"
+}
+
+# Application backup
+backup_application() {
+    # Stop application gracefully
+    docker-compose stop
+    
+    # Create tarball
+    tar -czf /tmp/liap-tui-backup-$(date +%Y%m%d_%H%M%S).tar.gz \
+        /home/ec2-user/liap-tui \
+        --exclude='logs/*' \
+        --exclude='*.log'
+    
+    # Upload to S3
+    aws s3 cp /tmp/liap-tui-backup-*.tar.gz \
+        s3://liap-tui-backups/application/
+    
+    # Restart application
+    docker-compose up -d
+}
+
+# Recovery procedures
+recover_from_snapshot() {
+    SNAPSHOT_ID=$1
+    
+    # Create volume from snapshot
+    VOLUME_ID=$(aws ec2 create-volume \
+        --snapshot-id $SNAPSHOT_ID \
+        --availability-zone $(curl -s http://169.254.169.254/latest/meta-data/placement/availability-zone) \
+        --query 'VolumeId' \
+        --output text)
+    
+    echo "Created volume: $VOLUME_ID from snapshot: $SNAPSHOT_ID"
+    # Additional steps to attach and mount volume...
+}
 ```
 
-### Multi-Region Failover
+### Instance Recovery
 
-```python
-# backend/failover/health_check.py
-class RegionHealthChecker:
-    """Monitor region health and trigger failover."""
+```yaml
+# CloudFormation template for quick recovery
+AWSTemplateFormatVersion: '2010-09-09'
+Description: 'Liap Tui EC2 Recovery Template'
+
+Parameters:
+  SnapshotId:
+    Type: String
+    Description: EBS Snapshot ID for recovery
     
-    async def check_primary_region(self):
-        """Check if primary region is healthy."""
-        try:
-            # Check critical services
-            checks = [
-                self.check_ecs_health(),
-                self.check_rds_health(),
-                self.check_redis_health()
-            ]
-            
-            results = await asyncio.gather(*checks)
-            return all(results)
-            
-        except Exception:
-            return False
-    
-    async def initiate_failover(self):
-        """Failover to secondary region."""
-        # Update Route53 to point to secondary
-        route53 = boto3.client('route53')
-        
-        route53.change_resource_record_sets(
-            HostedZoneId='Z123456789',
-            ChangeBatch={
-                'Changes': [{
-                    'Action': 'UPSERT',
-                    'ResourceRecordSet': {
-                        'Name': 'api.liaptui.com',
-                        'Type': 'A',
-                        'AliasTarget': {
-                            'HostedZoneId': 'Z0987654321',
-                            'DNSName': 'secondary-alb.us-west-2.elb.amazonaws.com',
-                            'EvaluateTargetHealth': True
-                        }
-                    }
-                }]
-            }
-        )
+Resources:
+  RecoveryInstance:
+    Type: AWS::EC2::Instance
+    Properties:
+      ImageId: ami-0c02fb55956c7d316
+      InstanceType: t2.micro
+      KeyName: !Ref KeyPair
+      SecurityGroupIds:
+        - !Ref SecurityGroup
+      BlockDeviceMappings:
+        - DeviceName: /dev/xvda
+          Ebs:
+            SnapshotId: !Ref SnapshotId
+            VolumeSize: 30
+            VolumeType: gp3
+      UserData:
+        Fn::Base64: !Sub |
+          #!/bin/bash
+          cd /home/ec2-user/liap-tui
+          docker-compose up -d
 ```
 
 ### Recovery Time Objectives
 
 | Scenario | RTO | RPO | Strategy |
 |----------|-----|-----|----------|
-| Task failure | <1 min | 0 | ECS auto-restart |
-| AZ failure | <5 min | 0 | Multi-AZ deployment |
-| Region failure | <30 min | <5 min | Cross-region replication |
-| Data corruption | <2 hours | <1 hour | Point-in-time recovery |
+| Container failure | <1 min | 0 | Docker restart policy |
+| Instance failure | <10 min | <1 hour | EBS snapshots + CloudFormation |
+| Database corruption | <30 min | <6 hours | SQLite backups from S3 |
+| Complete disaster | <1 hour | <1 day | Full recovery from S3 + snapshots |
 
 ## Summary
 
-This deployment pattern provides:
+This EC2 deployment pattern provides:
 
-1. **Scalability**: Auto-scaling from 100 to 10,000+ players
-2. **Reliability**: Multi-AZ deployment with health checks
-3. **Performance**: CDN + optimized containers
-4. **Security**: WAF + network isolation + secrets management
-5. **Cost Efficiency**: Spot instances + reserved capacity
-6. **Observability**: Comprehensive monitoring and tracing
-7. **Disaster Recovery**: Automated backups and failover
+1. **Simplicity**: Single instance with Docker Compose
+2. **Reliability**: Automated backups and recovery procedures
+3. **Performance**: Optimized for real-time WebSocket gaming
+4. **Security**: SSL/TLS, SSH hardening, and security best practices
+5. **Cost Efficiency**: Free tier eligible, ~$0/month for small deployments
+6. **Observability**: CloudWatch monitoring and logging
+7. **Disaster Recovery**: EBS snapshots and S3 backups
 
-The architecture balances complexity with operational excellence, providing a robust platform for production deployment.
+The architecture is ideal for small to medium deployments, balancing simplicity with production readiness. It can handle hundreds of concurrent players on a single t2.micro instance, with easy upgrade paths as the game grows.

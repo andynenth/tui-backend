@@ -245,33 +245,33 @@ FROM python:3.11-slim
 - Zero environment issues
 - Easy local development
 
-### AWS ECS Fargate
-**What**: Serverless container platform
+### AWS EC2
+**What**: Virtual server in the cloud
 
-**Why ECS Fargate?**
-- **Serverless**: No server management
-- **Auto-scaling**: Handle traffic spikes
-- **Cost-effective**: Pay only for usage
-- **AWS Integration**: ALB, CloudWatch, etc.
+**Why EC2?**
+- **Full Control**: Complete server access
+- **Cost-effective**: Free tier eligible
+- **Persistent Storage**: Database persistence
+- **Simple Architecture**: Direct deployment
 
 **Architecture Benefits**:
 ```yaml
-Service Configuration:
-  - CPU: 256 (.25 vCPU)
-  - Memory: 512 MB
-  - Auto-scaling: 1-10 tasks
-  - Health checks: Every 30s
-  - Cost: ~$10/month for low traffic
+Instance Configuration:
+  - Type: t2.micro (Free tier)
+  - Storage: 30GB EBS
+  - Database: SQLite with volume mapping
+  - Backups: Daily automated backups
+  - Cost: $0/month (Free tier)
 ```
 
-### Application Load Balancer
-**What**: AWS load balancing service
+### SQLite Database
+**What**: Embedded SQL database
 
-**Why ALB?**
-- **WebSocket Support**: Sticky sessions for games
-- **Health Checks**: Automatic failover
-- **SSL Termination**: HTTPS without complexity
-- **Path Routing**: Future microservices ready
+**Why SQLite?**
+- **Simplicity**: No separate database server
+- **Performance**: Fast for single-instance apps
+- **Persistence**: Game state survives restarts
+- **Backup**: Easy file-based backups
 
 ## Development Tools
 
@@ -285,8 +285,8 @@ Git:
 GitHub Actions:
   - Linting: On every push
   - Tests: On pull requests
-  - Deploy: On main branch
-  - Docker: Build and push to ECR
+  - Deploy: Manual via SSH
+  - Docker: Build locally and transfer
 ```
 
 ### Code Quality Tools
@@ -322,11 +322,11 @@ pip install -r requirements.txt  # Backend deps
 | Backend Language | Python 3.11 | Node.js, Go | FastAPI, readability, async support |
 | Web Framework | FastAPI | Django, Flask | WebSocket support, performance |
 | Container | Docker | Direct deployment | Consistency, portability |
-| Cloud Platform | AWS ECS | Kubernetes, Heroku | Serverless, cost, AWS ecosystem |
+| Cloud Platform | AWS EC2 | ECS, Kubernetes | Control, cost, simplicity |
 | WebSocket | Native | Socket.io | Simplicity, standards-based |
 | State Management | React Context | Redux, MobX | Simplicity, built-in |
 | CSS | Tailwind + Custom | CSS-in-JS | Performance, flexibility |
-| Database | In-memory | PostgreSQL | Simplicity for MVP |
+| Database | SQLite | PostgreSQL | Simplicity, persistence, backups |
 
 ## Alternative Technologies Considered
 

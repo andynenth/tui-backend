@@ -18,7 +18,7 @@ Liap Tui (also known as Castellan) is a real-time multiplayer board game inspire
 - **Turn-based** gameplay with simultaneous phases
 - **Real-time** multiplayer using WebSockets
 - **Cross-platform** web application
-- **Cloud-deployed** on AWS ECS
+- **Cloud-deployed** on AWS EC2
 
 ### Game Overview
 Players compete to capture "piles" by playing strategic combinations of pieces. The game features:
@@ -38,8 +38,7 @@ graph TB
     end
     
     subgraph "AWS Infrastructure"
-        ALB[Application Load Balancer]
-        ECS[ECS Fargate Service]
+        EC2[EC2 Instance]
         
         subgraph "Docker Container"
             FastAPI[FastAPI Server]
@@ -47,6 +46,7 @@ graph TB
             WS_Server[WebSocket Handler]
             SM[State Machine]
             Game[Game Engine]
+            DB[(SQLite DB)]
         end
     end
     
@@ -58,13 +58,13 @@ graph TB
     
     Browser --> React
     React --> WS_Client
-    WS_Client <--> ALB
-    ALB <--> ECS
-    ECS --> FastAPI
+    WS_Client <--> EC2
+    EC2 --> FastAPI
     FastAPI --> Static
     FastAPI --> WS_Server
     WS_Server <--> SM
     SM <--> Game
+    Game <--> DB
     
     React <--> FrontendState
     SM <--> BackendState
@@ -75,8 +75,8 @@ graph TB
     style React fill:#81c784
     style FastAPI fill:#ffd54f
     style SM fill:#ba68c8
-    style ALB fill:#ff8a65
-    style ECS fill:#ff8a65
+    style EC2 fill:#ff8a65
+    style DB fill:#90caf9
 ```
 
 ### Architecture Highlights
@@ -172,10 +172,10 @@ graph TB
 
 ### Infrastructure
 - **Container**: Docker with multi-stage builds
-- **Cloud**: AWS ECS Fargate
-- **Load Balancer**: AWS Application Load Balancer
-- **Registry**: AWS ECR
-- **Deployment**: GitHub Actions CI/CD
+- **Cloud**: AWS EC2 with Docker Compose
+- **Database**: SQLite with persistent volume
+- **Deployment**: Direct Docker deployment via SSH
+- **Monitoring**: Health checks and automated backups
 
 ## Key Features
 
@@ -215,7 +215,9 @@ await self.update_phase_data({
 - Performance metrics
 - Rate limiting
 - CORS configuration
-- Session persistence
+- Game state persistence (SQLite)
+- Automated daily backups
+- Play history API
 
 ## Design Philosophy
 

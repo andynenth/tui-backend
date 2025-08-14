@@ -118,6 +118,37 @@ initialize_shared_instances()
 - **BotManager**: Handles bot players
 - **Both are global**: Shared across all requests
 
+### 3.5. Database Initialization
+
+```python
+# backend/services/event_store_v2.py
+def __init__(self):
+    # Resolve database path to project root
+    self.db_path = os.path.join(
+        os.path.dirname(os.path.dirname(os.path.dirname(__file__))),
+        "game_events.db"
+    )
+    
+    # Initialize database schema
+    self._init_db()
+    
+def _init_db(self):
+    """Initialize SQLite database with optimized schema."""
+    with sqlite3.connect(self.db_path) as conn:
+        # Create tables if they don't exist
+        conn.execute('''CREATE TABLE IF NOT EXISTS game_events ...''')
+        conn.execute('''CREATE TABLE IF NOT EXISTS game_summaries ...''')
+        conn.execute('''CREATE TABLE IF NOT EXISTS game_snapshots ...''')
+        
+    logger.info(f"✅ Database initialized at {self.db_path}")
+```
+
+**Database Features**:
+- **SQLite File**: Located at project root `/game_events.db`
+- **Persistent Storage**: Survives container restarts via volume mapping
+- **Auto-Schema**: Creates tables on first startup
+- **Optimized Design**: Separate tables for events, summaries, and snapshots
+
 ### 4. Route Registration
 
 ```python
@@ -459,14 +490,14 @@ CMD ["python", "-m", "uvicorn", "backend.api.main:app", \
 ```
 
 ```bash
-# ECS task definition
-{
-  "command": ["python", "-m", "uvicorn", "backend.api.main:app"],
-  "environment": [
-    {"name": "ENVIRONMENT", "value": "production"},
-    {"name": "LOG_LEVEL", "value": "INFO"}
-  ]
-}
+# Docker Compose on EC2
+docker-compose up -d
+
+# Environment configuration in docker-compose.yml
+environment:
+  - ENVIRONMENT=production
+  - LOG_LEVEL=INFO
+  - DATABASE_PATH=/app/data/game_events.db
 ```
 
 **Production Optimizations**:
@@ -478,19 +509,23 @@ CMD ["python", "-m", "uvicorn", "backend.api.main:app", \
 
 ### Health Monitoring
 
-**ALB Health Check**:
+**Docker Compose Health Check**:
 ```yaml
-Target: /api/health
-Interval: 30 seconds
-Timeout: 5 seconds
-Healthy threshold: 2
-Unhealthy threshold: 3
+healthcheck:
+  test: ["CMD", "curl", "-f", "http://localhost:5050/api/health"]
+  interval: 30s
+  timeout: 3s
+  retries: 3
+  start_period: 40s
 ```
 
-**Container Health**:
-```dockerfile
-HEALTHCHECK --interval=30s --timeout=3s \
-  CMD curl -f http://localhost:5050/api/health || exit 1
+**Manual Health Check**:
+```bash
+# Check from EC2 instance
+curl http://localhost:5050/api/health
+
+# Check from external
+curl http://34.233.7.20/api/health
 ```
 
 ## Startup Troubleshooting

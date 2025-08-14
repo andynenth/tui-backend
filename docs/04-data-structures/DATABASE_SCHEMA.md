@@ -3,63 +3,67 @@
 ## Table of Contents
 1. [Overview](#overview)
 2. [Current Architecture](#current-architecture)
-3. [Future Database Design](#future-database-design)
+3. [SQLite Implementation](#sqlite-implementation)
 4. [Schema Design](#schema-design)
-5. [Relationships](#relationships)
-6. [Indexes and Performance](#indexes-and-performance)
-7. [Data Migration](#data-migration)
-8. [Caching Strategy](#caching-strategy)
-9. [Security Considerations](#security-considerations)
-10. [Implementation Plan](#implementation-plan)
+5. [Event Store System](#event-store-system)
+6. [Play History](#play-history)
+7. [Performance Optimizations](#performance-optimizations)
+8. [Backup Strategy](#backup-strategy)
+9. [Future PostgreSQL Design](#future-postgresql-design)
+10. [Migration Path](#migration-path)
 
 ## Overview
 
-Currently, Liap Tui uses in-memory storage for all game state. This document outlines a future database schema design for implementing persistent storage, allowing for features like game history, player statistics, and crash recovery.
+Liap Tui currently uses SQLite for persistent storage of game events and play history. This document outlines the current implementation and future plans for enhanced database capabilities.
 
-### Why Add Persistence?
+### Current Persistence Features
 
-1. **Game Recovery**: Resume games after server restarts
-2. **Player Statistics**: Track wins, scores, and achievements
-3. **Match History**: Review past games
-4. **Leaderboards**: Global and friend rankings
-5. **Analytics**: Understand player behavior
+1. **Event Store**: All game events stored for recovery and history
+2. **Play History**: Complete game history for analysis
+3. **Database Backup**: Daily automated backups on EC2
+4. **Crash Recovery**: Resume games from event store
+5. **Performance Monitoring**: Alerts for slow queries
 
 ## Current Architecture
 
-### In-Memory Storage
+### SQLite with Event Store
 
 ```python
-# Current implementation
-class RoomManager:
+# Current implementation in backend/services/event_store_v2.py
+class EventStoreV2:
     def __init__(self):
-        # All data stored in memory
-        self.rooms: Dict[str, Room] = {}
-        self.room_players: Dict[str, Set[str]] = {}
-        self.player_rooms: Dict[str, str] = {}
-        self.game_state_machines: Dict[str, GameStateMachine] = {}
+        # SQLite database with optimizations
+        self.db_path = "/app/data/game_events.db"
+        self.connection_pool = self._create_connection_pool()
+        
+        # Performance optimizations
+        self._execute_pragmas()
+        self._create_indexes()
 
 # Pros:
-# - Fast access (no I/O)
-# - Simple implementation
-# - No dependencies
+# - Simple deployment (single file)
+# - No external dependencies
+# - Good performance for our scale
+# - Easy backups
+# - Persistent across restarts
 
 # Cons:
-# - Data lost on restart
-# - No historical data
-# - Limited by server memory
-# - No horizontal scaling
+# - Single-server limitation
+# - No built-in replication
+# - Limited concurrent writes
 ```
 
 ### Current Data Flow
 
 ```mermaid
 graph LR
-    Client[Client] -->|WebSocket| Server[Server Memory]
-    Server -->|Direct Access| GameState[Game State]
-    Server -->|Direct Access| RoomData[Room Data]
-    Server -->|Direct Access| PlayerData[Player Data]
+    Client[Client] -->|WebSocket| Server[FastAPI Server]
+    Server -->|Event Store| SQLite[(SQLite DB)]
+    Server -->|In-Memory| GameState[Game State Cache]
+    SQLite -->|Recovery| GameState
+    SQLite -->|History API| Client
     
-    style Server fill:#ff9999
+    style SQLite fill:#90EE90
 ```
 
 ## Future Database Design

@@ -39,7 +39,7 @@ graph TB
     end
     
     subgraph "Network Layer"
-        ALB[AWS ALB<br/>Sticky Sessions]
+        EC2[Direct EC2<br/>Connection]
     end
     
     subgraph "Server Side"
@@ -55,8 +55,8 @@ graph TB
     NS --> Queue
     NS --> Handlers
     
-    WS_Client <--> ALB
-    ALB <--> FastAPI
+    WS_Client <--> EC2
+    EC2 <--> FastAPI
     
     FastAPI --> WS_Handler
     WS_Handler --> ConnMgr
@@ -65,7 +65,7 @@ graph TB
     
     style NS fill:#81c784
     style SM fill:#ba68c8
-    style ALB fill:#ff8a65
+    style EC2 fill:#ff8a65
 ```
 
 ### Component Responsibilities
@@ -672,7 +672,7 @@ async def websocket_endpoint(websocket: WebSocket, room_id: str):
 ### Common Issues
 
 1. **Connection Drops**
-   - Check ALB idle timeout (> heartbeat interval)
+   - Check network connectivity to EC2 instance
    - Verify client heartbeat implementation
    - Monitor server resource usage
 

@@ -449,6 +449,61 @@ app.include_router(ws_router)
 app.mount("/", StaticFiles(directory="static", html=True))
 ```
 
+## Database Design
+
+**Decision**: Use SQLite as the embedded database for game state persistence.
+
+**Status**: Accepted
+
+**Context**:
+- Need persistent storage for game history and recovery
+- Want simple deployment without external dependencies
+- Single-instance application doesn't need distributed database
+- Backup and recovery should be straightforward
+
+**Alternatives Considered**:
+
+1. **PostgreSQL**
+   - ✅ Pros: Full-featured, battle-tested, scalable
+   - ❌ Cons: Separate service, operational complexity, overkill for single instance
+
+2. **Redis**
+   - ✅ Pros: Fast, in-memory, good for real-time
+   - ❌ Cons: Persistence complexity, memory constraints, another service
+
+3. **No Database (Memory Only)**
+   - ✅ Pros: Simplest option, fastest performance
+   - ❌ Cons: No persistence, no game history, no recovery
+
+**Consequences**:
+
+✅ **Benefits**:
+- Zero configuration database
+- File-based backups (simple cp command)
+- Excellent performance for single instance
+- No network latency for DB operations
+- Easy local development
+
+❌ **Trade-offs**:
+- Single writer limitation
+- No horizontal scaling without migration
+- Limited concurrent connections
+- File-based means careful volume management
+
+### SQLite Implementation
+
+```python
+# Simple file-based database with volume mapping
+DATABASE_PATH = "/app/data/game_events.db"
+
+# Docker Compose volume mapping
+volumes:
+  - ./game_events.db:/app/data/game_events.db
+  
+# Automated backups
+0 2 * * * cp /app/data/game_events.db /backups/game_events_$(date +%Y%m%d).db
+```
+
 ## Design Trade-offs
 
 ### What We Optimized For
