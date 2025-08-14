@@ -6,6 +6,7 @@ Play history service that reads from the V2 database schema.
 import json
 import sqlite3
 import logging
+import os
 from typing import Dict, List, Any, Optional
 from datetime import datetime
 from pathlib import Path
@@ -19,9 +20,18 @@ class PlayHistoryDatabaseService:
     def __init__(self, db_path: Optional[str] = None):
         """Initialize with database path."""
         if db_path is None:
-            current_dir = Path(__file__).resolve()
-            project_root = current_dir.parent.parent.parent
-            self.db_path = str(project_root / "game_events.db")
+            # Check environment variable first
+            env_db_path = os.getenv('DATABASE_PATH')
+            if env_db_path:
+                self.db_path = env_db_path
+                # Ensure directory exists
+                db_dir = Path(self.db_path).parent
+                db_dir.mkdir(parents=True, exist_ok=True)
+            else:
+                # Fall back to current behavior
+                current_dir = Path(__file__).resolve()
+                project_root = current_dir.parent.parent.parent
+                self.db_path = str(project_root / "game_events.db")
         else:
             self.db_path = db_path
         

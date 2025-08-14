@@ -257,6 +257,60 @@ npm run dev
 
 > This ensures backend runs in Docker, while frontend is live-rebuilt by host.
 
+---
+
+## 🚢 Deployment Options
+
+### Option 1: AWS EC2 with Docker Compose (Recommended for Free Tier)
+
+Perfect for AWS Free Tier users who want simple deployment with database persistence.
+
+**Features:**
+- ✅ Database persistence with Docker volumes
+- ✅ Automated daily backups
+- ✅ Health monitoring and auto-recovery
+- ✅ Simple deployment with one command
+- ✅ Free tier friendly (t2.micro + 30GB storage)
+
+**Quick Deploy:**
+```bash
+# 1. Update deployment script with your EC2 details
+# Edit deploy-ec2.sh: EC2_HOST and KEY_PATH
+
+# 2. Deploy to EC2
+./deploy-ec2.sh
+
+# 3. Access your game
+http://your-ec2-ip
+```
+
+**Full Guide:** See [EC2_DEPLOYMENT_GUIDE.md](EC2_DEPLOYMENT_GUIDE.md)
+
+### Option 2: AWS ECS (Original Method)
+
+For users who need auto-scaling and managed container orchestration.
+
+```bash
+# Deploy to ECS
+./deploy-to-aws.sh
+```
+
+**Note:** ECS may incur costs beyond free tier (ALB, data transfer, etc.)
+
+### Option 3: Local Docker
+
+For testing or private network deployment.
+
+```bash
+# Production build
+docker build -t liap-tui -f Dockerfile.prod .
+docker run -p 80:5050 liap-tui
+
+# With persistence
+docker-compose -f docker-compose.prod.yml up -d
+```
+
+---
 
 ## 🎯 Game Mechanics
 
@@ -469,6 +523,20 @@ pip install -r requirements.txt
 - Check for zombie rooms: `/api/system/stats`
 - Restart container: `docker restart liap-tui`
 - Enable event store pruning in production
+
+#### Database Persistence Issues
+**Symptoms:** Data lost after container restart
+**Solutions:**
+- Ensure using docker-compose with volumes (not plain docker run)
+- Check volume mapping in docker-compose.yml
+- Verify DATABASE_PATH environment variable is set
+- For EC2: Check `/home/ubuntu/liap-tui-data/` permissions
+
+#### Migration from ECS to EC2
+**Resources:**
+- [Migration Checklist](MIGRATION_CHECKLIST.md) - Step-by-step guide
+- [EC2 Deployment Guide](EC2_DEPLOYMENT_GUIDE.md) - Complete EC2 setup
+- Test persistence locally: `./test-persistence.sh`
 
 ### Getting Help
 

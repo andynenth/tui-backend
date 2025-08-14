@@ -28,6 +28,15 @@ htmlcov/
 *.log
 npm-debug.log*
 yarn-debug.log*
+
+# EC2 Migration - Local test data and backups
+test-data/
+backups/
+*.tar.gz
+game_backup_*.tar.gz
+
+# Temporary files
+liap-tui-latest.tar.gz
 yarn-error.log*
 
 # Build output

@@ -33,6 +33,8 @@ RUN pip install --no-cache-dir -r requirements.txt
 COPY backend/ ./backend
 COPY shared/ ./shared
 
+# Create data directory for database and logs directory with correct permissions
+RUN mkdir -p /app/data /app/logs && chown -R appuser:appuser /app/data /app/logs
 
 # Copy built frontend files from frontend-builder stage
 COPY --from=frontend-builder /app/bundle.* ./backend/static/

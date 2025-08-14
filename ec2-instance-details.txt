@@ -1,0 +1,20 @@
+Liap Tui EC2 Instance Details
+============================
+Created: Wed Aug 13 23:17:16 PDT 2025
+
+Instance ID: i-031f0be2cfed1ff2f
+Instance Type: t2.micro
+Elastic IP: 34.233.7.20
+SSH Key: liap-tui-key-1755152170.pem
+Security Group: sg-0e38841b4467d4545
+Region: us-east-1
+
+Connection Command:
+  ssh -i liap-tui-key-1755152170.pem ubuntu@34.233.7.20
+  
+Or use:
+  ./connect-to-ec2.sh
+
+Deployment:
+  EC2_HOST has been updated in deploy-ec2.sh
+  KEY_PATH has been updated in deploy-ec2.sh
