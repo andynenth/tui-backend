@@ -6,18 +6,24 @@ This index provides quick access to all EC2 migration resources, scripts, and do
 
 ### Core Migration Documents
 - **[EC2_DEPLOYMENT_GUIDE.md](EC2_DEPLOYMENT_GUIDE.md)** - Complete step-by-step deployment guide
+- **[EC2_DEPLOYMENT_GUIDE_FOR_ANDY.md](EC2_DEPLOYMENT_GUIDE_FOR_ANDY.md)** - Simplified personal deployment guide
 - **[MIGRATION_CHECKLIST.md](MIGRATION_CHECKLIST.md)** - Detailed checklist for ECS to EC2 migration
 - **[EC2_OPERATIONS_GUIDE.md](EC2_OPERATIONS_GUIDE.md)** - Day-to-day operations manual
-- **[EC2_MIGRATION_PLAN.md](EC2_DOCKER_COMPOSE_MIGRATION_PLAN.md)** - Original migration plan document
+- **[EC2_DOCKER_COMPOSE_MIGRATION_PLAN.md](EC2_DOCKER_COMPOSE_MIGRATION_PLAN.md)** - Original migration plan document
+
+### Setup & Troubleshooting
+- **[EC2_SETUP_FROM_SCRATCH_GUIDE.md](EC2_SETUP_FROM_SCRATCH_GUIDE.md)** - Guide for setting up new EC2 instances
+- **[EC2_TROUBLESHOOTING_GUIDE.md](EC2_TROUBLESHOOTING_GUIDE.md)** - Common issues and solutions
 
 ### Summary & Status
 - **[EC2_MIGRATION_SUMMARY.md](EC2_MIGRATION_SUMMARY.md)** - Summary of implementation changes
 - **[EC2_MIGRATION_COMPLETE.md](EC2_MIGRATION_COMPLETE.md)** - Completion status and quick start
 - **[CHANGELOG_EC2_MIGRATION.md](CHANGELOG_EC2_MIGRATION.md)** - Detailed changelog of all changes
 
-### Specialized Guides
-- **[DISASTER_RECOVERY_PLAN.md](DISASTER_RECOVERY_PLAN.md)** - Comprehensive DR procedures
-- **[HTTPS_SETUP_GUIDE.md](HTTPS_SETUP_GUIDE.md)** - SSL/TLS configuration with Let's Encrypt
+### Related Deployment Guides
+- **[../DOCKER_GUIDE.md](../DOCKER_GUIDE.md)** - Docker concepts and setup
+- **[../HTTPS_SETUP_GUIDE.md](../HTTPS_SETUP_GUIDE.md)** - SSL/TLS configuration with Let's Encrypt
+- **[../operations/DISASTER_RECOVERY_PLAN.md](../operations/DISASTER_RECOVERY_PLAN.md)** - Comprehensive DR procedures
 
 ## 🛠️ Deployment Scripts
 

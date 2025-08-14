@@ -2,6 +2,8 @@
 
 Welcome to the comprehensive documentation for the Liap Tui project. This documentation is organized to help developers understand, contribute to, and deploy the application.
 
+> **📋 Quick Navigation**: See [DOCUMENTATION_INDEX.md](DOCUMENTATION_INDEX.md) for a complete index of all documentation organized by category.
+
 ## 📚 Documentation Structure
 
 ### Teaching Materials (Organized by Category)
