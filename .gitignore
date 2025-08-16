@@ -61,3 +61,6 @@ backend/game_events.db
 game_events.db
 /game_events.db
 
+# Claude.ai instructions
+CLAUDE.md
+
