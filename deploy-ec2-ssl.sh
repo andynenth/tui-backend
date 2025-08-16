@@ -68,15 +68,15 @@ ssh -i "$KEY_PATH" "$EC2_USER@$EC2_HOST" << 'ENDSSH'
         exit 1
     fi
 
-    # Check if SSL certificate exists
-    if [ ! -d "/etc/letsencrypt/live/castellan.andynenth.dev" ]; then
+    # Check if SSL certificate exists (using sudo to check root-owned directory)
+    if ! sudo test -d "/etc/letsencrypt/live/castellan.andynenth.dev"; then
         echo -e "${RED}SSL certificate not found!${NC}"
         echo -e "${YELLOW}Please run: sudo certbot certonly --standalone -d castellan.andynenth.dev${NC}"
         exit 1
     fi
 
-    # Copy nginx config if needed
-    if [ ! -f "/etc/nginx/sites-available/castellan" ]; then
+    # Copy nginx config if needed (using sudo to check)
+    if ! sudo test -f "/etc/nginx/sites-available/castellan"; then
         echo -e "${GREEN}Setting up nginx configuration...${NC}"
         sudo cp ~/nginx-config/castellan.conf /etc/nginx/sites-available/castellan
         sudo ln -sf /etc/nginx/sites-available/castellan /etc/nginx/sites-enabled/
