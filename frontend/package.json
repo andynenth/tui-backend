@@ -1,6 +1,6 @@
 {
   "name": "frontend",
-  "version": "1.4.4",
+  "version": "1.4.9",
   "type": "module",
   "main": "main.js",
   "dependencies": {

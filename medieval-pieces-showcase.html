@@ -1,0 +1,520 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Medieval Chess Pieces - Castellan Game Assets</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: linear-gradient(135deg, #2c1810 0%, #1a0f08 100%);
+            color: #f8f9fa;
+            min-height: 100vh;
+            padding: 40px 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 60px;
+            position: relative;
+        }
+
+        .header::before {
+            content: '⚔️';
+            position: absolute;
+            left: 50%;
+            top: -30px;
+            transform: translateX(-50%);
+            font-size: 40px;
+            opacity: 0.3;
+        }
+
+        h1 {
+            font-size: 48px;
+            font-weight: 700;
+            margin-bottom: 16px;
+            background: linear-gradient(135deg, #ffd700 0%, #ff8c00 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .subtitle {
+            font-size: 20px;
+            color: #adb5bd;
+            margin-bottom: 8px;
+        }
+
+        .info {
+            font-size: 14px;
+            color: #6c757d;
+            margin-top: 20px;
+        }
+
+        .piece-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 40px;
+            margin-bottom: 60px;
+        }
+
+        .piece-section {
+            background: linear-gradient(145deg, rgba(52, 58, 64, 0.9) 0%, rgba(33, 37, 41, 0.9) 100%);
+            border: 2px solid rgba(255, 215, 0, 0.2);
+            border-radius: 16px;
+            padding: 30px;
+            box-shadow: 
+                0 10px 30px rgba(0, 0, 0, 0.5),
+                inset 0 1px 0 rgba(255, 255, 255, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .piece-section:hover {
+            transform: translateY(-4px);
+            border-color: rgba(255, 215, 0, 0.4);
+            box-shadow: 
+                0 15px 40px rgba(0, 0, 0, 0.6),
+                inset 0 1px 0 rgba(255, 255, 255, 0.2);
+        }
+
+        .piece-header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .piece-name {
+            font-size: 24px;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #ffd700;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .piece-info {
+            font-size: 14px;
+            color: #adb5bd;
+        }
+
+        .piece-display {
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            gap: 20px;
+            padding: 20px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 12px;
+            margin-bottom: 20px;
+        }
+
+        .piece-container {
+            text-align: center;
+        }
+
+        .piece-color-label {
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+
+        .red-label {
+            color: #dc3545;
+        }
+
+        .black-label {
+            color: #6c757d;
+        }
+
+        .piece-svg {
+            width: 120px;
+            height: 120px;
+            background: radial-gradient(circle at center, rgba(255, 255, 255, 0.1) 0%, transparent 70%);
+            border-radius: 12px;
+            padding: 15px;
+            transition: all 0.3s ease;
+        }
+
+        .piece-svg:hover {
+            transform: scale(1.1);
+            background: radial-gradient(circle at center, rgba(255, 215, 0, 0.1) 0%, transparent 70%);
+        }
+
+        .piece-stats {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            font-size: 14px;
+        }
+
+        .stat {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 8px 12px;
+            border-radius: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .stat-label {
+            color: #6c757d;
+        }
+
+        .stat-value {
+            font-weight: 600;
+            color: #f8f9fa;
+        }
+
+        .download-section {
+            text-align: center;
+            margin-top: 60px;
+            padding: 40px;
+            background: linear-gradient(145deg, rgba(52, 58, 64, 0.9) 0%, rgba(33, 37, 41, 0.9) 100%);
+            border-radius: 16px;
+            border: 2px solid rgba(255, 215, 0, 0.2);
+        }
+
+        .download-title {
+            font-size: 28px;
+            margin-bottom: 20px;
+            color: #ffd700;
+        }
+
+        .download-info {
+            color: #adb5bd;
+            margin-bottom: 30px;
+            line-height: 1.6;
+        }
+
+        .download-buttons {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .download-btn {
+            padding: 12px 24px;
+            background: linear-gradient(135deg, #ffd700 0%, #ff8c00 100%);
+            color: #2c1810;
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .download-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(255, 215, 0, 0.3);
+        }
+
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 32px;
+            }
+            
+            .piece-grid {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+            
+            .piece-svg {
+                width: 80px;
+                height: 80px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Medieval Chess Pieces Collection</h1>
+            <p class="subtitle">High-Quality Game Assets from Castellan</p>
+            <p class="info">All pieces available in SVG format • Scalable to any size • Perfect for portfolio projects</p>
+        </div>
+
+        <div class="piece-grid">
+            <!-- General (King) -->
+            <div class="piece-section">
+                <div class="piece-header">
+                    <h2 class="piece-name">General</h2>
+                    <p class="piece-info">The most valuable piece • King equivalent</p>
+                </div>
+                <div class="piece-display">
+                    <div class="piece-container">
+                        <p class="piece-color-label red-label">Red Team</p>
+                        <img src="frontend/src/assets/pieces/medieval/GENERAL_RED.svg" 
+                             alt="Red General" 
+                             class="piece-svg">
+                    </div>
+                    <div class="piece-container">
+                        <p class="piece-color-label black-label">Black Team</p>
+                        <img src="frontend/src/assets/pieces/medieval/GENERAL_BLACK.svg" 
+                             alt="Black General" 
+                             class="piece-svg">
+                    </div>
+                </div>
+                <div class="piece-stats">
+                    <div class="stat">
+                        <span class="stat-label">Points</span>
+                        <span class="stat-value">11</span>
+                    </div>
+                    <div class="stat">
+                        <span class="stat-label">Rank</span>
+                        <span class="stat-value">Highest</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Advisor -->
+            <div class="piece-section">
+                <div class="piece-header">
+                    <h2 class="piece-name">Advisor</h2>
+                    <p class="piece-info">Strategic counselor • Queen equivalent</p>
+                </div>
+                <div class="piece-display">
+                    <div class="piece-container">
+                        <p class="piece-color-label red-label">Red Team</p>
+                        <img src="frontend/src/assets/pieces/medieval/ADVISOR_RED.svg" 
+                             alt="Red Advisor" 
+                             class="piece-svg">
+                    </div>
+                    <div class="piece-container">
+                        <p class="piece-color-label black-label">Black Team</p>
+                        <img src="frontend/src/assets/pieces/medieval/ADVISOR_BLACK.svg" 
+                             alt="Black Advisor" 
+                             class="piece-svg">
+                    </div>
+                </div>
+                <div class="piece-stats">
+                    <div class="stat">
+                        <span class="stat-label">Points</span>
+                        <span class="stat-value">10</span>
+                    </div>
+                    <div class="stat">
+                        <span class="stat-label">Rank</span>
+                        <span class="stat-value">2nd</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Elephant -->
+            <div class="piece-section">
+                <div class="piece-header">
+                    <h2 class="piece-name">Elephant</h2>
+                    <p class="piece-info">Defensive powerhouse • Bishop equivalent</p>
+                </div>
+                <div class="piece-display">
+                    <div class="piece-container">
+                        <p class="piece-color-label red-label">Red Team</p>
+                        <img src="frontend/src/assets/pieces/medieval/ELEPHANT_RED.svg" 
+                             alt="Red Elephant" 
+                             class="piece-svg">
+                    </div>
+                    <div class="piece-container">
+                        <p class="piece-color-label black-label">Black Team</p>
+                        <img src="frontend/src/assets/pieces/medieval/ELEPHANT_BLACK.svg" 
+                             alt="Black Elephant" 
+                             class="piece-svg">
+                    </div>
+                </div>
+                <div class="piece-stats">
+                    <div class="stat">
+                        <span class="stat-label">Points</span>
+                        <span class="stat-value">7</span>
+                    </div>
+                    <div class="stat">
+                        <span class="stat-label">Rank</span>
+                        <span class="stat-value">3rd</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Horse -->
+            <div class="piece-section">
+                <div class="piece-header">
+                    <h2 class="piece-name">Horse</h2>
+                    <p class="piece-info">Swift cavalry • Knight equivalent</p>
+                </div>
+                <div class="piece-display">
+                    <div class="piece-container">
+                        <p class="piece-color-label red-label">Red Team</p>
+                        <img src="frontend/src/assets/pieces/medieval/HORSE_RED.svg" 
+                             alt="Red Horse" 
+                             class="piece-svg">
+                    </div>
+                    <div class="piece-container">
+                        <p class="piece-color-label black-label">Black Team</p>
+                        <img src="frontend/src/assets/pieces/medieval/HORSE_BLACK.svg" 
+                             alt="Black Horse" 
+                             class="piece-svg">
+                    </div>
+                </div>
+                <div class="piece-stats">
+                    <div class="stat">
+                        <span class="stat-label">Points</span>
+                        <span class="stat-value">7</span>
+                    </div>
+                    <div class="stat">
+                        <span class="stat-label">Rank</span>
+                        <span class="stat-value">3rd</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Chariot -->
+            <div class="piece-section">
+                <div class="piece-header">
+                    <h2 class="piece-name">Chariot</h2>
+                    <p class="piece-info">Siege weapon • Rook equivalent</p>
+                </div>
+                <div class="piece-display">
+                    <div class="piece-container">
+                        <p class="piece-color-label red-label">Red Team</p>
+                        <img src="frontend/src/assets/pieces/medieval/CHARIOT_RED.svg" 
+                             alt="Red Chariot" 
+                             class="piece-svg">
+                    </div>
+                    <div class="piece-container">
+                        <p class="piece-color-label black-label">Black Team</p>
+                        <img src="frontend/src/assets/pieces/medieval/CHARIOT_BLACK.svg" 
+                             alt="Black Chariot" 
+                             class="piece-svg">
+                    </div>
+                </div>
+                <div class="piece-stats">
+                    <div class="stat">
+                        <span class="stat-label">Points</span>
+                        <span class="stat-value">9</span>
+                    </div>
+                    <div class="stat">
+                        <span class="stat-label">Rank</span>
+                        <span class="stat-value">High</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Cannon -->
+            <div class="piece-section">
+                <div class="piece-header">
+                    <h2 class="piece-name">Cannon</h2>
+                    <p class="piece-info">Ranged artillery • Unique piece</p>
+                </div>
+                <div class="piece-display">
+                    <div class="piece-container">
+                        <p class="piece-color-label red-label">Red Team</p>
+                        <img src="frontend/src/assets/pieces/medieval/CANNON_RED.svg" 
+                             alt="Red Cannon" 
+                             class="piece-svg">
+                    </div>
+                    <div class="piece-container">
+                        <p class="piece-color-label black-label">Black Team</p>
+                        <img src="frontend/src/assets/pieces/medieval/CANNON_BLACK.svg" 
+                             alt="Black Cannon" 
+                             class="piece-svg">
+                    </div>
+                </div>
+                <div class="piece-stats">
+                    <div class="stat">
+                        <span class="stat-label">Points</span>
+                        <span class="stat-value">8</span>
+                    </div>
+                    <div class="stat">
+                        <span class="stat-label">Rank</span>
+                        <span class="stat-value">Medium</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Soldier -->
+            <div class="piece-section">
+                <div class="piece-header">
+                    <h2 class="piece-name">Soldier</h2>
+                    <p class="piece-info">Infantry unit • Pawn equivalent</p>
+                </div>
+                <div class="piece-display">
+                    <div class="piece-container">
+                        <p class="piece-color-label red-label">Red Team</p>
+                        <img src="frontend/src/assets/pieces/medieval/SOLDIER_RED.svg" 
+                             alt="Red Soldier" 
+                             class="piece-svg">
+                    </div>
+                    <div class="piece-container">
+                        <p class="piece-color-label black-label">Black Team</p>
+                        <img src="frontend/src/assets/pieces/medieval/SOLDIER_BLACK.svg" 
+                             alt="Black Soldier" 
+                             class="piece-svg">
+                    </div>
+                </div>
+                <div class="piece-stats">
+                    <div class="stat">
+                        <span class="stat-label">Points</span>
+                        <span class="stat-value">1-6</span>
+                    </div>
+                    <div class="stat">
+                        <span class="stat-label">Rank</span>
+                        <span class="stat-value">Basic</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="download-section">
+            <h2 class="download-title">Using These Assets</h2>
+            <p class="download-info">
+                These medieval-themed chess pieces are high-quality SVG assets that can be scaled to any size without losing quality.<br>
+                Perfect for game development, portfolio projects, or any creative work requiring chess/strategy game pieces.<br>
+                All pieces are designed with consistent style and can be easily customized by changing the fill color in the SVG code.
+            </p>
+            <div class="download-buttons">
+                <a href="#" class="download-btn">
+                    📁 Download All SVGs
+                </a>
+                <a href="#" class="download-btn">
+                    🎨 View Color Variations
+                </a>
+                <a href="https://castellan.andynenth.dev" class="download-btn">
+                    🎮 Play Castellan
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Add some interactive hover effects
+        document.querySelectorAll('.piece-svg').forEach(img => {
+            img.addEventListener('mouseover', function() {
+                this.style.filter = 'drop-shadow(0 0 20px rgba(255, 215, 0, 0.5))';
+            });
+            
+            img.addEventListener('mouseout', function() {
+                this.style.filter = 'none';
+            });
+        });
+
+        // Show piece info on click
+        document.querySelectorAll('.piece-section').forEach(section => {
+            section.addEventListener('click', function() {
+                const pieceName = this.querySelector('.piece-name').textContent;
+                console.log(`Selected piece: ${pieceName}`);
+                // You could add a modal or tooltip here with more info
+            });
+        });
+    </script>
+</body>
+</html>

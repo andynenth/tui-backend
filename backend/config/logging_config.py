@@ -23,6 +23,7 @@ def get_logging_config() -> Dict[str, Any]:
     log_level = os.getenv("LOG_LEVEL", "INFO").upper()
     log_format = os.getenv("LOG_FORMAT", "json")  # json or text
     rate_limit_debug = os.getenv("RATE_LIMIT_DEBUG", "false").lower() == "true"
+    running_in_docker = os.getenv("RUNNING_IN_DOCKER", "false").lower() == "true"
 
     # Check if JSON formatter is available
     json_formatter_available = False
@@ -95,8 +96,18 @@ def get_logging_config() -> Dict[str, Any]:
         config["handlers"]["console"]["formatter"] = "text"
         config["handlers"]["rate_limit_file"]["formatter"] = "text"
 
-    # Check if we can write logs before adding file handlers
-    if not can_write_logs():
+    # Disable file logging when running in Docker (logs go to stdout which Docker captures)
+    if running_in_docker:
+        print("Running in Docker - disabling file logging (using stdout)")
+        # Remove the file handler
+        if "rate_limit_file" in config["handlers"]:
+            del config["handlers"]["rate_limit_file"]
+        # Remove rate_limit_file from any loggers that use it
+        for logger_config in config["loggers"].values():
+            if isinstance(logger_config.get("handlers"), list):
+                logger_config["handlers"] = [h for h in logger_config["handlers"] if h != "rate_limit_file"]
+    # Check if we can write logs before adding file handlers (for non-Docker environments)
+    elif not can_write_logs():
         print("Warning: Cannot write to logs directory, disabling file logging")
         # Remove the file handler
         if "rate_limit_file" in config["handlers"]:

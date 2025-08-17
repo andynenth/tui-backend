@@ -1,0 +1,520 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Game Pieces - Exact Replica from Castellan</title>
+    <style>
+        /* Import Google Fonts */
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap');
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Plus Jakarta Sans', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+            background: linear-gradient(
+                135deg,
+                #f8f9fa 0%,
+                #e9ecef 25%,
+                #dee2e6 50%,
+                #ced4da 75%,
+                #adb5bd 100%
+            );
+            min-height: 100vh;
+            padding: 40px 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            text-align: center;
+            color: #212529;
+            margin-bottom: 40px;
+            font-size: 36px;
+            font-weight: 700;
+        }
+
+        .info-box {
+            background: rgba(255, 255, 255, 0.9);
+            border: 1px solid rgba(173, 181, 189, 0.3);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 40px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+        }
+
+        .piece-showcase {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 40px;
+            margin-bottom: 60px;
+        }
+
+        .piece-card {
+            background: linear-gradient(145deg, #ffffff 0%, #f8f9fa 100%);
+            border: 1px solid rgba(173, 181, 189, 0.3);
+            border-radius: 16px;
+            padding: 30px;
+            box-shadow: 
+                0 20px 40px rgba(0, 0, 0, 0.15),
+                0 0 0 1px rgba(255, 255, 255, 0.9) inset,
+                inset 0 1px 0 rgba(255, 255, 255, 1);
+        }
+
+        .piece-title {
+            font-size: 24px;
+            font-weight: 600;
+            color: #343a40;
+            text-align: center;
+            margin-bottom: 20px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .piece-row {
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            gap: 30px;
+            margin-bottom: 20px;
+        }
+
+        .piece-container {
+            text-align: center;
+        }
+
+        .piece-label {
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 15px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .red-label {
+            color: #dc3545;
+        }
+
+        .black-label {
+            color: #495057;
+        }
+
+        /* EXACT Game Piece Styles from game-piece.css */
+        .game-piece {
+            border-radius: 50%;
+            background:
+                /* Main ivory gradient */
+                linear-gradient(145deg, #fffff0 0%, #faf8f3 50%, #f0ebe4 100%),
+                /* Top highlight */
+                radial-gradient(
+                    ellipse at 30% 30%,
+                    rgba(255, 255, 240, 0.9) 0%,
+                    transparent 50%
+                );
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            border: none;
+            font-family: 'SimSun', '宋体', serif;
+            box-shadow: 
+                /* Multi-layer border effect */
+                0 0 0 0.5px rgba(200, 190, 180, 0.9),
+                0 0 0 1px rgba(255, 255, 245, 0.4),
+                0 0 0 1.5px rgba(220, 210, 200, 0.3),
+                /* Carved edge illusion */ 
+                inset 0 0 1px 1px rgba(255, 255, 255, 0.5),
+                inset 0 1px 0 1px rgba(255, 255, 255, 0.8),
+                inset 0 -1px 0 1px rgba(200, 190, 180, 0.6),
+                /* Main depth shadow */ 
+                0 4px 8px rgba(0, 0, 0, 0.15),
+                /* Subtle colored shadow */ 
+                0 2px 4px rgba(139, 111, 71, 0.1),
+                /* Top rim highlight */ 
+                inset 0 2px 3px rgba(255, 255, 255, 0.7),
+                /* Bottom rim shadow */ 
+                inset 0 -2px 3px rgba(230, 220, 210, 0.3),
+                /* Side bevels */ 
+                inset 2px 0 2px rgba(255, 255, 255, 0.3),
+                inset -2px 0 2px rgba(230, 220, 210, 0.3);
+            transition: all 0.15s ease;
+            position: relative;
+        }
+
+        /* Medium size (default in-game size) */
+        .game-piece--medium {
+            width: 68px;
+            height: 68px;
+            font-size: 42px;
+        }
+
+        /* Large size for showcase */
+        .game-piece--large {
+            width: 120px;
+            height: 120px;
+            font-size: 72px;
+        }
+
+        /* Extra large for detail view */
+        .game-piece--xlarge {
+            width: 180px;
+            height: 180px;
+            font-size: 108px;
+        }
+
+        /* Red piece coloring */
+        .game-piece.piece-red {
+            color: #dc3545;
+            box-shadow: 
+                /* Red-tinted border layers */
+                0 0 0 0.5px color-mix(in srgb, #dc3545 30%, #c8beb4),
+                0 0 0 1px rgba(255, 245, 245, 0.4),
+                0 0 0 1.5px color-mix(in srgb, #dc3545 20%, #dcd2c8),
+                /* Keep all other shadows */ 
+                inset 0 0 1px 1px rgba(255, 255, 255, 0.5),
+                inset 0 1px 0 1px rgba(255, 255, 255, 0.8),
+                inset 0 -1px 0 1px rgba(200, 190, 180, 0.6),
+                0 4px 8px rgba(0, 0, 0, 0.15),
+                0 2px 4px rgba(139, 111, 71, 0.1),
+                inset 0 2px 3px rgba(255, 255, 255, 0.7),
+                inset 0 -2px 3px rgba(230, 220, 210, 0.3),
+                inset 2px 0 2px rgba(255, 255, 255, 0.3),
+                inset -2px 0 2px rgba(230, 220, 210, 0.3);
+        }
+
+        /* Black piece coloring */
+        .game-piece.piece-black {
+            color: #495057;
+            box-shadow: 
+                /* Black-tinted border layers */
+                0 0 0 0.5px color-mix(in srgb, #495057 30%, #c8beb4),
+                0 0 0 1px rgba(255, 255, 255, 0.4),
+                0 0 0 1.5px color-mix(in srgb, #495057 20%, #dcd2c8),
+                /* Keep all other shadows */ 
+                inset 0 0 1px 1px rgba(255, 255, 255, 0.5),
+                inset 0 1px 0 1px rgba(255, 255, 255, 0.8),
+                inset 0 -1px 0 1px rgba(200, 190, 180, 0.6),
+                0 4px 8px rgba(0, 0, 0, 0.15),
+                0 2px 4px rgba(139, 111, 71, 0.1),
+                inset 0 2px 3px rgba(255, 255, 255, 0.7),
+                inset 0 -2px 3px rgba(230, 220, 210, 0.3),
+                inset 2px 0 2px rgba(255, 255, 255, 0.3),
+                inset -2px 0 2px rgba(230, 220, 210, 0.3);
+        }
+
+        .game-piece img {
+            width: 90%;
+            height: 90%;
+            filter: none;
+        }
+
+        /* Hover effect */
+        .game-piece:hover {
+            transform: translateY(-2px);
+            box-shadow: 
+                /* Enhanced border on hover */
+                0 0 0 0.5px rgba(13, 110, 253, 0.6),
+                0 0 0 1px rgba(255, 255, 255, 0.5),
+                0 0 0 1.5px rgba(13, 110, 253, 0.3),
+                /* Carved edge */ 
+                inset 0 0 1px 1px rgba(255, 255, 255, 0.6),
+                inset 0 1px 0 1px rgba(255, 255, 255, 0.9),
+                inset 0 -1px 0 1px rgba(200, 190, 180, 0.5),
+                /* Enhanced depth on hover */ 
+                0 6px 12px rgba(0, 0, 0, 0.18),
+                0 4px 8px rgba(139, 111, 71, 0.12),
+                /* Keep the 3D bevels */ 
+                inset 0 2px 3px rgba(255, 255, 255, 0.7),
+                inset 0 -2px 3px rgba(230, 220, 210, 0.3),
+                inset 2px 0 2px rgba(255, 255, 255, 0.3),
+                inset -2px 0 2px rgba(230, 220, 210, 0.3);
+            cursor: pointer;
+        }
+
+        .piece-info {
+            font-size: 14px;
+            color: #6c757d;
+            text-align: center;
+            margin-top: 10px;
+        }
+
+        .size-showcase {
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 16px;
+            padding: 40px;
+            margin-bottom: 40px;
+        }
+
+        .size-showcase h2 {
+            text-align: center;
+            margin-bottom: 30px;
+            color: #343a40;
+        }
+
+        .size-row {
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 40px;
+        }
+
+        .size-example {
+            text-align: center;
+        }
+
+        .size-label {
+            margin-top: 15px;
+            font-size: 14px;
+            color: #6c757d;
+            font-weight: 600;
+        }
+
+        .download-section {
+            background: #343a40;
+            color: white;
+            padding: 40px;
+            border-radius: 16px;
+            text-align: center;
+            margin-top: 40px;
+        }
+
+        .download-section h2 {
+            color: #ffd700;
+            margin-bottom: 20px;
+        }
+
+        .download-info {
+            color: #adb5bd;
+            margin-bottom: 30px;
+            line-height: 1.6;
+        }
+
+        .download-note {
+            background: rgba(255, 193, 7, 0.1);
+            border: 1px solid rgba(255, 193, 7, 0.3);
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 20px;
+            color: #ffc107;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎮 Castellan Game Pieces - Exact Replica</h1>
+        
+        <div class="info-box">
+            <h3>About These Pieces</h3>
+            <p>These are exact replicas of how pieces appear in the Castellan game. Each piece features:</p>
+            <ul style="margin: 10px 0 0 20px; color: #6c757d;">
+                <li>3D ivory appearance with realistic shadows and highlights</li>
+                <li>Medieval-themed SVG graphics</li>
+                <li>Red (#dc3545) and Black (#495057) team colors</li>
+                <li>Multiple size variants (68px default, up to 180px showcase)</li>
+            </ul>
+        </div>
+
+        <!-- All pieces showcase -->
+        <div class="piece-showcase">
+            <!-- General -->
+            <div class="piece-card">
+                <h3 class="piece-title">General (帥/將)</h3>
+                <div class="piece-row">
+                    <div class="piece-container">
+                        <p class="piece-label red-label">Red Team</p>
+                        <div class="game-piece game-piece--large piece-red">
+                            <img src="frontend/src/assets/pieces/medieval/GENERAL_RED.svg" alt="Red General">
+                        </div>
+                        <p class="piece-info">Value: 11 points</p>
+                    </div>
+                    <div class="piece-container">
+                        <p class="piece-label black-label">Black Team</p>
+                        <div class="game-piece game-piece--large piece-black">
+                            <img src="frontend/src/assets/pieces/medieval/GENERAL_BLACK.svg" alt="Black General">
+                        </div>
+                        <p class="piece-info">Value: 11 points</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Advisor -->
+            <div class="piece-card">
+                <h3 class="piece-title">Advisor (仕/士)</h3>
+                <div class="piece-row">
+                    <div class="piece-container">
+                        <p class="piece-label red-label">Red Team</p>
+                        <div class="game-piece game-piece--large piece-red">
+                            <img src="frontend/src/assets/pieces/medieval/ADVISOR_RED.svg" alt="Red Advisor">
+                        </div>
+                        <p class="piece-info">Value: 10 points</p>
+                    </div>
+                    <div class="piece-container">
+                        <p class="piece-label black-label">Black Team</p>
+                        <div class="game-piece game-piece--large piece-black">
+                            <img src="frontend/src/assets/pieces/medieval/ADVISOR_BLACK.svg" alt="Black Advisor">
+                        </div>
+                        <p class="piece-info">Value: 10 points</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Chariot -->
+            <div class="piece-card">
+                <h3 class="piece-title">Chariot (車/车)</h3>
+                <div class="piece-row">
+                    <div class="piece-container">
+                        <p class="piece-label red-label">Red Team</p>
+                        <div class="game-piece game-piece--large piece-red">
+                            <img src="frontend/src/assets/pieces/medieval/CHARIOT_RED.svg" alt="Red Chariot">
+                        </div>
+                        <p class="piece-info">Value: 9 points</p>
+                    </div>
+                    <div class="piece-container">
+                        <p class="piece-label black-label">Black Team</p>
+                        <div class="game-piece game-piece--large piece-black">
+                            <img src="frontend/src/assets/pieces/medieval/CHARIOT_BLACK.svg" alt="Black Chariot">
+                        </div>
+                        <p class="piece-info">Value: 9 points</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Cannon -->
+            <div class="piece-card">
+                <h3 class="piece-title">Cannon (砲/炮)</h3>
+                <div class="piece-row">
+                    <div class="piece-container">
+                        <p class="piece-label red-label">Red Team</p>
+                        <div class="game-piece game-piece--large piece-red">
+                            <img src="frontend/src/assets/pieces/medieval/CANNON_RED.svg" alt="Red Cannon">
+                        </div>
+                        <p class="piece-info">Value: 8 points</p>
+                    </div>
+                    <div class="piece-container">
+                        <p class="piece-label black-label">Black Team</p>
+                        <div class="game-piece game-piece--large piece-black">
+                            <img src="frontend/src/assets/pieces/medieval/CANNON_BLACK.svg" alt="Black Cannon">
+                        </div>
+                        <p class="piece-info">Value: 8 points</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Elephant -->
+            <div class="piece-card">
+                <h3 class="piece-title">Elephant (相/象)</h3>
+                <div class="piece-row">
+                    <div class="piece-container">
+                        <p class="piece-label red-label">Red Team</p>
+                        <div class="game-piece game-piece--large piece-red">
+                            <img src="frontend/src/assets/pieces/medieval/ELEPHANT_RED.svg" alt="Red Elephant">
+                        </div>
+                        <p class="piece-info">Value: 7 points</p>
+                    </div>
+                    <div class="piece-container">
+                        <p class="piece-label black-label">Black Team</p>
+                        <div class="game-piece game-piece--large piece-black">
+                            <img src="frontend/src/assets/pieces/medieval/ELEPHANT_BLACK.svg" alt="Black Elephant">
+                        </div>
+                        <p class="piece-info">Value: 7 points</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Horse -->
+            <div class="piece-card">
+                <h3 class="piece-title">Horse (馬/马)</h3>
+                <div class="piece-row">
+                    <div class="piece-container">
+                        <p class="piece-label red-label">Red Team</p>
+                        <div class="game-piece game-piece--large piece-red">
+                            <img src="frontend/src/assets/pieces/medieval/HORSE_RED.svg" alt="Red Horse">
+                        </div>
+                        <p class="piece-info">Value: 7 points</p>
+                    </div>
+                    <div class="piece-container">
+                        <p class="piece-label black-label">Black Team</p>
+                        <div class="game-piece game-piece--large piece-black">
+                            <img src="frontend/src/assets/pieces/medieval/HORSE_BLACK.svg" alt="Black Horse">
+                        </div>
+                        <p class="piece-info">Value: 7 points</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Soldier -->
+            <div class="piece-card">
+                <h3 class="piece-title">Soldier (兵/卒)</h3>
+                <div class="piece-row">
+                    <div class="piece-container">
+                        <p class="piece-label red-label">Red Team</p>
+                        <div class="game-piece game-piece--large piece-red">
+                            <img src="frontend/src/assets/pieces/medieval/SOLDIER_RED.svg" alt="Red Soldier">
+                        </div>
+                        <p class="piece-info">Value: 1-6 points</p>
+                    </div>
+                    <div class="piece-container">
+                        <p class="piece-label black-label">Black Team</p>
+                        <div class="game-piece game-piece--large piece-black">
+                            <img src="frontend/src/assets/pieces/medieval/SOLDIER_BLACK.svg" alt="Black Soldier">
+                        </div>
+                        <p class="piece-info">Value: 1-6 points</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Size showcase -->
+        <div class="size-showcase">
+            <h2>Size Variations</h2>
+            <div class="size-row">
+                <div class="size-example">
+                    <div class="game-piece game-piece--medium piece-red">
+                        <img src="frontend/src/assets/pieces/medieval/GENERAL_RED.svg" alt="Medium General">
+                    </div>
+                    <p class="size-label">Medium (68px)<br>In-game default</p>
+                </div>
+                <div class="size-example">
+                    <div class="game-piece game-piece--large piece-red">
+                        <img src="frontend/src/assets/pieces/medieval/GENERAL_RED.svg" alt="Large General">
+                    </div>
+                    <p class="size-label">Large (120px)<br>Showcase size</p>
+                </div>
+                <div class="size-example">
+                    <div class="game-piece game-piece--xlarge piece-red">
+                        <img src="frontend/src/assets/pieces/medieval/GENERAL_RED.svg" alt="XLarge General">
+                    </div>
+                    <p class="size-label">Extra Large (180px)<br>Detail view</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="download-section">
+            <h2>Using These Pieces in Your Portfolio</h2>
+            <p class="download-info">
+                These game pieces combine the SVG graphics with CSS styling to create the exact 3D ivory appearance from the game.<br>
+                To use them in your portfolio:
+            </p>
+            <ol style="text-align: left; max-width: 600px; margin: 0 auto; color: #adb5bd;">
+                <li>Copy the CSS styles for the <code>.game-piece</code> classes</li>
+                <li>Download the SVG files from the <code>frontend/src/assets/pieces/medieval/</code> directory</li>
+                <li>Apply the appropriate classes: <code>game-piece game-piece--large piece-red</code></li>
+                <li>Insert the SVG as an <code>&lt;img&gt;</code> tag inside the game-piece div</li>
+            </ol>
+            <div class="download-note">
+                💡 The 3D ivory effect is created entirely with CSS box-shadows and gradients - no images needed for the base!
+            </div>
+        </div>
+    </div>
+</body>
+</html>

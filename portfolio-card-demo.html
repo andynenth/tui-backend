@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Portfolio Card Component Demo</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Merriweather:wght@700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="portfolio-card-styles.css">
+    <style>
+        /* Demo Page Styles */
+        body {
+            margin: 0;
+            padding: 40px 20px;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background: #f3f4f6;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 40px;
+        }
+        
+        .demo-header {
+            text-align: center;
+            max-width: 800px;
+        }
+        
+        .demo-header h1 {
+            font-size: 32px;
+            color: #212529;
+            margin-bottom: 16px;
+        }
+        
+        .demo-header p {
+            font-size: 18px;
+            color: #6c757d;
+            line-height: 1.6;
+        }
+        
+        .demo-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 40px;
+            width: 100%;
+            max-width: 1200px;
+        }
+        
+        /* Icon placeholder */
+        .icon {
+            width: 20px;
+            height: 20px;
+            background: currentColor;
+            border-radius: 50%;
+        }
+        
+        @media (max-width: 640px) {
+            .demo-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="demo-header">
+        <h1>Portfolio Card Component</h1>
+        <p>Beautiful, responsive card components extracted from the Castellan game design system. Perfect for showcasing projects, features, or team members on your portfolio website.</p>
+    </div>
+
+    <div class="demo-grid">
+        <!-- Example 1: Project Card -->
+        <div class="portfolio-card featured">
+            <div class="portfolio-card-header">
+                <h2 class="portfolio-card-title">Castellan</h2>
+                <p class="portfolio-card-subtitle">Real-Time Multiplayer Board Game</p>
+                <span class="portfolio-card-badge success">🟢 LIVE PROJECT</span>
+            </div>
+            
+            <div class="portfolio-card-body">
+                <div class="portfolio-card-section">
+                    <h3 class="portfolio-card-section-title">Key Features</h3>
+                    <ul class="portfolio-card-list">
+                        <li class="portfolio-card-list-item">
+                            <span class="portfolio-card-list-icon">✅</span>
+                            <span>Real-time WebSocket communication</span>
+                        </li>
+                        <li class="portfolio-card-list-item">
+                            <span class="portfolio-card-list-icon">✅</span>
+                            <span>Sub-100ms latency gameplay</span>
+                        </li>
+                        <li class="portfolio-card-list-item">
+                            <span class="portfolio-card-list-icon">✅</span>
+                            <span>AI opponents with strategic thinking</span>
+                        </li>
+                        <li class="portfolio-card-list-item">
+                            <span class="portfolio-card-list-icon">✅</span>
+                            <span>82% test coverage</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="portfolio-card-footer">
+                <button class="portfolio-card-button primary">Play Now</button>
+                <button class="portfolio-card-button secondary">View Code</button>
+            </div>
+        </div>
+
+        <!-- Example 2: Service Card -->
+        <div class="portfolio-card">
+            <div class="portfolio-card-header">
+                <h2 class="portfolio-card-title">Full-Stack Development</h2>
+                <p class="portfolio-card-subtitle">End-to-end application development</p>
+                <span class="portfolio-card-badge">Popular Service</span>
+            </div>
+            
+            <div class="portfolio-card-body">
+                <div class="portfolio-card-section">
+                    <h3 class="portfolio-card-section-title">What I Offer</h3>
+                    <ul class="portfolio-card-list">
+                        <li class="portfolio-card-list-item">
+                            <span class="portfolio-card-list-icon">🎨</span>
+                            <span>Modern UI/UX with React & TypeScript</span>
+                        </li>
+                        <li class="portfolio-card-list-item">
+                            <span class="portfolio-card-list-icon">⚡</span>
+                            <span>Fast APIs with Python FastAPI</span>
+                        </li>
+                        <li class="portfolio-card-list-item">
+                            <span class="portfolio-card-list-icon">🔐</span>
+                            <span>Secure authentication & authorization</span>
+                        </li>
+                        <li class="portfolio-card-list-item">
+                            <span class="portfolio-card-list-icon">☁️</span>
+                            <span>AWS deployment & optimization</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="portfolio-card-footer">
+                <button class="portfolio-card-button primary">Get Quote</button>
+                <button class="portfolio-card-button secondary">Learn More</button>
+            </div>
+        </div>
+
+        <!-- Example 3: Achievement Card -->
+        <div class="portfolio-card">
+            <div class="portfolio-card-header">
+                <h2 class="portfolio-card-title">AWS Certified</h2>
+                <p class="portfolio-card-subtitle">Solutions Architect Associate</p>
+                <span class="portfolio-card-badge warning">2024 Achievement</span>
+            </div>
+            
+            <div class="portfolio-card-body">
+                <div class="portfolio-card-section">
+                    <h3 class="portfolio-card-section-title">Certification Details</h3>
+                    <ul class="portfolio-card-list">
+                        <li class="portfolio-card-list-item">
+                            <span class="portfolio-card-list-icon">📅</span>
+                            <span>Earned: January 2024</span>
+                        </li>
+                        <li class="portfolio-card-list-item">
+                            <span class="portfolio-card-list-icon">🎯</span>
+                            <span>Score: 920/1000</span>
+                        </li>
+                        <li class="portfolio-card-list-item">
+                            <span class="portfolio-card-list-icon">🔧</span>
+                            <span>Cloud architecture expertise</span>
+                        </li>
+                        <li class="portfolio-card-list-item">
+                            <span class="portfolio-card-list-icon">💰</span>
+                            <span>Cost optimization specialist</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="portfolio-card-footer">
+                <button class="portfolio-card-button primary">Verify</button>
+                <button class="portfolio-card-button secondary">View Badge</button>
+            </div>
+        </div>
+
+        <!-- Example 4: Contact Card -->
+        <div class="portfolio-card">
+            <div class="portfolio-card-header">
+                <h2 class="portfolio-card-title">Let's Connect</h2>
+                <p class="portfolio-card-subtitle">Available for new projects</p>
+                <span class="portfolio-card-badge success">Open to Work</span>
+            </div>
+            
+            <div class="portfolio-card-body">
+                <div class="portfolio-card-section">
+                    <h3 class="portfolio-card-section-title">Contact Methods</h3>
+                    <ul class="portfolio-card-list">
+                        <li class="portfolio-card-list-item">
+                            <span class="portfolio-card-list-icon">📧</span>
+                            <span>andy@example.com</span>
+                        </li>
+                        <li class="portfolio-card-list-item">
+                            <span class="portfolio-card-list-icon">💼</span>
+                            <span>LinkedIn: /in/andynenth</span>
+                        </li>
+                        <li class="portfolio-card-list-item">
+                            <span class="portfolio-card-list-icon">🐙</span>
+                            <span>GitHub: @andynenth</span>
+                        </li>
+                        <li class="portfolio-card-list-item">
+                            <span class="portfolio-card-list-icon">🌍</span>
+                            <span>Location: Remote Worldwide</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="portfolio-card-footer">
+                <button class="portfolio-card-button primary">Send Message</button>
+                <button class="portfolio-card-button secondary">Schedule Call</button>
+            </div>
+        </div>
+    </div>
+
+    <div style="margin-top: 60px; text-align: center; color: #6c757d;">
+        <h3>Integration Instructions</h3>
+        <p style="max-width: 800px; margin: 0 auto; line-height: 1.6;">
+            1. Copy the <code>portfolio-card-styles.css</code> file to your project<br>
+            2. Include the CSS file in your HTML: <code>&lt;link rel="stylesheet" href="portfolio-card-styles.css"&gt;</code><br>
+            3. Use the HTML structure shown above for your cards<br>
+            4. Customize the CSS variables to match your brand colors<br>
+            5. The cards are responsive and will adapt to mobile screens automatically
+        </p>
+    </div>
+</body>
+</html>

@@ -5,10 +5,12 @@ services:
   backend:
     build:
       context: .
-      dockerfile: Dockerfile
+      dockerfile: Dockerfile.dev
     volumes:
       - ./backend:/app/backend
+      - ./frontend:/app/frontend
       - ./requirements.txt:/app/requirements.txt
+      - ./favicon.ico:/app/favicon.ico
     ports:
       - "${API_PORT}:${API_PORT}"
     env_file: .env
@@ -17,8 +19,9 @@ services:
       --host ${API_HOST}
       --port ${API_PORT}
       --reload
+      --workers 1
     environment:
-      - PYTHONPATH=/app/backend
+      - PYTHONPATH=/app
       - DEBUG=${DEBUG}
       - MAX_SCORE=${MAX_SCORE}
       - MAX_ROUNDS=${MAX_ROUNDS}

@@ -1,0 +1,521 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Game Pieces PNG Exporter - Localhost Version</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: #f8f9fa;
+            padding: 40px 20px;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            text-align: center;
+            color: #212529;
+            margin-bottom: 20px;
+        }
+
+        .success-box {
+            background: #d4edda;
+            border: 1px solid #c3e6cb;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 30px;
+            color: #155724;
+        }
+
+        .success-box h3 {
+            margin-bottom: 10px;
+        }
+
+        .instructions {
+            background: #fff;
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 30px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .instructions h3 {
+            color: #495057;
+            margin-bottom: 10px;
+        }
+
+        .instructions ol {
+            margin-left: 20px;
+            color: #6c757d;
+        }
+
+        .export-controls {
+            background: #fff;
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 30px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .control-group {
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .control-group label {
+            font-weight: 600;
+            color: #495057;
+            min-width: 100px;
+        }
+
+        .control-group select, 
+        .control-group input {
+            padding: 8px 12px;
+            border: 1px solid #ced4da;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+
+        .preview-section {
+            background: #fff;
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+
+        .preview-container {
+            display: inline-block;
+            position: relative;
+            margin: 20px auto;
+        }
+
+        #preview-wrapper {
+            background-image: 
+                linear-gradient(45deg, #ccc 25%, transparent 25%),
+                linear-gradient(-45deg, #ccc 25%, transparent 25%),
+                linear-gradient(45deg, transparent 75%, #ccc 75%),
+                linear-gradient(-45deg, transparent 75%, #ccc 75%);
+            background-size: 20px 20px;
+            background-position: 0 0, 0 10px, 10px -10px, -10px 0px;
+            border: 2px solid #dee2e6;
+            border-radius: 8px;
+            padding: 20px;
+            display: inline-block;
+        }
+
+        /* Hidden canvas for rendering */
+        #export-canvas {
+            display: none;
+        }
+
+        /* Game piece styles (same as game) */
+        .game-piece {
+            border-radius: 50%;
+            background:
+                linear-gradient(145deg, #fffff0 0%, #faf8f3 50%, #f0ebe4 100%),
+                radial-gradient(
+                    ellipse at 30% 30%,
+                    rgba(255, 255, 240, 0.9) 0%,
+                    transparent 50%
+                );
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            border: none;
+            font-family: 'SimSun', '宋体', serif;
+            box-shadow: 
+                0 0 0 0.5px rgba(200, 190, 180, 0.9),
+                0 0 0 1px rgba(255, 255, 245, 0.4),
+                0 0 0 1.5px rgba(220, 210, 200, 0.3),
+                inset 0 0 1px 1px rgba(255, 255, 255, 0.5),
+                inset 0 1px 0 1px rgba(255, 255, 255, 0.8),
+                inset 0 -1px 0 1px rgba(200, 190, 180, 0.6),
+                0 4px 8px rgba(0, 0, 0, 0.15),
+                0 2px 4px rgba(139, 111, 71, 0.1),
+                inset 0 2px 3px rgba(255, 255, 255, 0.7),
+                inset 0 -2px 3px rgba(230, 220, 210, 0.3),
+                inset 2px 0 2px rgba(255, 255, 255, 0.3),
+                inset -2px 0 2px rgba(230, 220, 210, 0.3);
+            position: relative;
+        }
+
+        .game-piece.piece-red {
+            color: #dc3545;
+            box-shadow: 
+                0 0 0 0.5px color-mix(in srgb, #dc3545 30%, #c8beb4),
+                0 0 0 1px rgba(255, 245, 245, 0.4),
+                0 0 0 1.5px color-mix(in srgb, #dc3545 20%, #dcd2c8),
+                inset 0 0 1px 1px rgba(255, 255, 255, 0.5),
+                inset 0 1px 0 1px rgba(255, 255, 255, 0.8),
+                inset 0 -1px 0 1px rgba(200, 190, 180, 0.6),
+                0 4px 8px rgba(0, 0, 0, 0.15),
+                0 2px 4px rgba(139, 111, 71, 0.1),
+                inset 0 2px 3px rgba(255, 255, 255, 0.7),
+                inset 0 -2px 3px rgba(230, 220, 210, 0.3),
+                inset 2px 0 2px rgba(255, 255, 255, 0.3),
+                inset -2px 0 2px rgba(230, 220, 210, 0.3);
+        }
+
+        .game-piece.piece-black {
+            color: #495057;
+            box-shadow: 
+                0 0 0 0.5px color-mix(in srgb, #495057 30%, #c8beb4),
+                0 0 0 1px rgba(255, 255, 255, 0.4),
+                0 0 0 1.5px color-mix(in srgb, #495057 20%, #dcd2c8),
+                inset 0 0 1px 1px rgba(255, 255, 255, 0.5),
+                inset 0 1px 0 1px rgba(255, 255, 255, 0.8),
+                inset 0 -1px 0 1px rgba(200, 190, 180, 0.6),
+                0 4px 8px rgba(0, 0, 0, 0.15),
+                0 2px 4px rgba(139, 111, 71, 0.1),
+                inset 0 2px 3px rgba(255, 255, 255, 0.7),
+                inset 0 -2px 3px rgba(230, 220, 210, 0.3),
+                inset 2px 0 2px rgba(255, 255, 255, 0.3),
+                inset -2px 0 2px rgba(230, 220, 210, 0.3);
+        }
+
+        .game-piece img {
+            width: 90%;
+            height: 90%;
+        }
+
+        .download-button {
+            background: #28a745;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 6px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin: 20px 10px;
+        }
+
+        .download-button:hover {
+            background: #218838;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        }
+
+        .batch-export {
+            background: #fff;
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
+            padding: 20px;
+            margin-top: 30px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .batch-button {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 6px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin: 10px 5px;
+        }
+
+        .batch-button:hover {
+            background: #0056b3;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        }
+
+        .export-status {
+            margin-top: 20px;
+            padding: 10px;
+            border-radius: 4px;
+            font-size: 14px;
+            display: none;
+        }
+
+        .export-status.success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+            display: block;
+        }
+
+        .export-status.info {
+            background: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎮 Game Pieces PNG Exporter - Localhost</h1>
+        <p style="text-align: center; color: #6c757d; margin-bottom: 30px;">
+            Export Castellan game pieces as PNG images with transparent backgrounds
+        </p>
+
+        <div class="success-box">
+            <h3>✅ Ready to Export!</h3>
+            <p>This page will load the SVG files from your game running at <strong>http://localhost:5050</strong></p>
+            <p>Make sure your game is running, then open this file at: <strong>http://localhost:5050/game-pieces-png-exporter-localhost.html</strong></p>
+        </div>
+
+        <div class="instructions">
+            <h3>📋 Instructions</h3>
+            <ol>
+                <li>Copy this HTML file to your game's static folder: <code>backend/static/</code></li>
+                <li>Access it at: <code>http://localhost:5050/game-pieces-png-exporter-localhost.html</code></li>
+                <li>Select the piece type, color, and size</li>
+                <li>Click "Download PNG" to save with transparent background</li>
+            </ol>
+        </div>
+
+        <div class="export-controls">
+            <h3>🎨 Customize Your Piece</h3>
+            
+            <div class="control-group">
+                <label for="piece-type">Piece Type:</label>
+                <select id="piece-type">
+                    <option value="GENERAL">General (帥/將)</option>
+                    <option value="ADVISOR">Advisor (仕/士)</option>
+                    <option value="CHARIOT">Chariot (車/车)</option>
+                    <option value="CANNON">Cannon (砲/炮)</option>
+                    <option value="ELEPHANT">Elephant (相/象)</option>
+                    <option value="HORSE">Horse (馬/马)</option>
+                    <option value="SOLDIER">Soldier (兵/卒)</option>
+                </select>
+            </div>
+
+            <div class="control-group">
+                <label for="piece-color">Color:</label>
+                <select id="piece-color">
+                    <option value="RED">Red Team</option>
+                    <option value="BLACK">Black Team</option>
+                </select>
+            </div>
+
+            <div class="control-group">
+                <label for="piece-size">Export Size:</label>
+                <select id="piece-size">
+                    <option value="68">Small (68px)</option>
+                    <option value="120">Medium (120px)</option>
+                    <option value="180">Large (180px)</option>
+                    <option value="256">Extra Large (256px)</option>
+                    <option value="512">Huge (512px)</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="preview-section">
+            <h3>Preview</h3>
+            <p style="color: #6c757d; margin-bottom: 20px;">
+                The checkered background shows transparency
+            </p>
+            <div class="preview-container">
+                <div id="preview-wrapper">
+                    <div id="preview-piece" class="game-piece piece-red" style="width: 120px; height: 120px;">
+                        <img id="piece-svg" src="/static/assets/pieces/medieval/GENERAL_RED.svg" alt="Game Piece">
+                    </div>
+                </div>
+            </div>
+            <div>
+                <button class="download-button" onclick="downloadSinglePiece()">
+                    📥 Download PNG
+                </button>
+            </div>
+        </div>
+
+        <div class="batch-export">
+            <h3>🚀 Batch Export</h3>
+            <p style="color: #6c757d; margin-bottom: 15px;">
+                Export all pieces at once in your selected size
+            </p>
+            <button class="batch-button" onclick="exportAllPieces('RED')">
+                Export All Red Pieces
+            </button>
+            <button class="batch-button" onclick="exportAllPieces('BLACK')">
+                Export All Black Pieces
+            </button>
+            <button class="batch-button" onclick="exportAllPieces('BOTH')">
+                Export All Pieces (Both Colors)
+            </button>
+            <div id="export-status" class="export-status"></div>
+        </div>
+    </div>
+
+    <canvas id="export-canvas"></canvas>
+
+    <script>
+        // Piece configuration
+        const pieces = ['GENERAL', 'ADVISOR', 'CHARIOT', 'CANNON', 'ELEPHANT', 'HORSE', 'SOLDIER'];
+        const pieceValues = {
+            'GENERAL': 11,
+            'ADVISOR': 10,
+            'CHARIOT': 9,
+            'CANNON': 8,
+            'ELEPHANT': 7,
+            'HORSE': 7,
+            'SOLDIER': '1-6'
+        };
+
+        // Update preview when controls change
+        document.getElementById('piece-type').addEventListener('change', updatePreview);
+        document.getElementById('piece-color').addEventListener('change', updatePreview);
+        document.getElementById('piece-size').addEventListener('change', updatePreview);
+
+        function updatePreview() {
+            const type = document.getElementById('piece-type').value;
+            const color = document.getElementById('piece-color').value;
+            const size = document.getElementById('piece-size').value;
+            
+            const pieceDiv = document.getElementById('preview-piece');
+            const img = document.getElementById('piece-svg');
+            
+            // Update piece class
+            pieceDiv.className = `game-piece piece-${color.toLowerCase()}`;
+            pieceDiv.style.width = size + 'px';
+            pieceDiv.style.height = size + 'px';
+            
+            // Update SVG source - using the game's static path
+            img.src = `/static/assets/pieces/medieval/${type}_${color}.svg`;
+        }
+
+        async function downloadSinglePiece() {
+            const type = document.getElementById('piece-type').value;
+            const color = document.getElementById('piece-color').value;
+            const size = parseInt(document.getElementById('piece-size').value);
+            
+            await exportPiece(type, color, size);
+        }
+
+        async function exportPiece(type, color, size) {
+            const canvas = document.getElementById('export-canvas');
+            const ctx = canvas.getContext('2d');
+            
+            // Set canvas size with some padding for shadows
+            const padding = 20;
+            canvas.width = size + padding * 2;
+            canvas.height = size + padding * 2;
+            
+            // Clear canvas with transparent background
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            // Enable image smoothing for better quality
+            ctx.imageSmoothingEnabled = true;
+            ctx.imageSmoothingQuality = 'high';
+            
+            // Draw the ivory base circle with gradients
+            const centerX = canvas.width / 2;
+            const centerY = canvas.height / 2;
+            const radius = size / 2;
+            
+            // Shadow layers
+            ctx.save();
+            ctx.shadowColor = 'rgba(0, 0, 0, 0.15)';
+            ctx.shadowBlur = 8;
+            ctx.shadowOffsetY = 4;
+            
+            // Main ivory gradient
+            const gradient = ctx.createRadialGradient(
+                centerX - radius * 0.3, 
+                centerY - radius * 0.3, 
+                0,
+                centerX, 
+                centerY, 
+                radius
+            );
+            gradient.addColorStop(0, '#fffff0');
+            gradient.addColorStop(0.5, '#faf8f3');
+            gradient.addColorStop(1, '#f0ebe4');
+            
+            ctx.beginPath();
+            ctx.arc(centerX, centerY, radius, 0, Math.PI * 2);
+            ctx.fillStyle = gradient;
+            ctx.fill();
+            
+            // Add border effect
+            ctx.strokeStyle = 'rgba(200, 190, 180, 0.9)';
+            ctx.lineWidth = 0.5;
+            ctx.stroke();
+            
+            ctx.restore();
+            
+            // Load and draw SVG
+            const img = new Image();
+            img.crossOrigin = 'anonymous';
+            
+            await new Promise((resolve, reject) => {
+                img.onload = resolve;
+                img.onerror = reject;
+                // Use the game's static path
+                img.src = `/static/assets/pieces/medieval/${type}_${color}.svg`;
+            });
+            
+            // Draw SVG centered
+            const svgSize = size * 0.9;
+            const svgX = (canvas.width - svgSize) / 2;
+            const svgY = (canvas.height - svgSize) / 2;
+            ctx.drawImage(img, svgX, svgY, svgSize, svgSize);
+            
+            // Convert to blob and download
+            canvas.toBlob((blob) => {
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `${type}_${color}_${size}px.png`;
+                a.click();
+                URL.revokeObjectURL(url);
+            }, 'image/png');
+        }
+
+        async function exportAllPieces(colorOption) {
+            const size = parseInt(document.getElementById('piece-size').value);
+            const status = document.getElementById('export-status');
+            
+            status.className = 'export-status info';
+            status.textContent = 'Exporting pieces... Please wait.';
+            
+            const colors = colorOption === 'BOTH' ? ['RED', 'BLACK'] : [colorOption];
+            let exported = 0;
+            const total = pieces.length * colors.length;
+            
+            for (const color of colors) {
+                for (const piece of pieces) {
+                    await exportPiece(piece, color, size);
+                    exported++;
+                    status.textContent = `Exporting... ${exported}/${total} pieces completed.`;
+                    // Small delay between exports
+                    await new Promise(resolve => setTimeout(resolve, 300));
+                }
+            }
+            
+            status.className = 'export-status success';
+            status.textContent = `✅ Successfully exported ${exported} pieces!`;
+        }
+
+        // Initialize preview
+        updatePreview();
+    </script>
+</body>
+</html>

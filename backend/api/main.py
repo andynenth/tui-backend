@@ -223,6 +223,20 @@ async def serve_css():
     raise HTTPException(status_code=404, detail="CSS not found")
 
 
+@app.get("/favicon.ico")
+async def serve_favicon():
+    """Serve the favicon.ico file"""
+    # Look for favicon in the project root directory
+    favicon_path = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__))), "favicon.ico")
+    if os.path.exists(favicon_path):
+        return FileResponse(favicon_path, media_type="image/x-icon")
+    # Fallback to static directory
+    static_favicon_path = os.path.join(STATIC_DIR, "favicon.ico")
+    if os.path.exists(static_favicon_path):
+        return FileResponse(static_favicon_path, media_type="image/x-icon")
+    raise HTTPException(status_code=404, detail="Favicon not found")
+
+
 # Mount other static files (images, etc) under /static prefix to avoid conflicts
 app.mount("/static", StaticFiles(directory=STATIC_DIR), name="static")
 
