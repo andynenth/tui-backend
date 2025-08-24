@@ -55,6 +55,7 @@ const buildOptions = {
   plugins: [cssPlugin],
   define: {
     '__APP_VERSION__': JSON.stringify(appVersion),
+    'process.env.NODE_ENV': JSON.stringify(process.argv.includes('--production') ? 'production' : 'development'),
   },
 };
 

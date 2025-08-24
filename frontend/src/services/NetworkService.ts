@@ -109,6 +109,14 @@ export class NetworkService extends EventTarget {
     const baseUrl = NETWORK.WEBSOCKET_BASE_URL();
     const url = `${baseUrl}/${roomId}`;
 
+    // Log WebSocket URL for debugging (especially on iOS)
+    console.log(`🔌 WebSocket connecting to: ${url}`, {
+      protocol: window.location.protocol,
+      host: window.location.host,
+      baseUrl,
+      fullUrl: url,
+    });
+
     try {
       const connection = await this.createConnection(url, roomId);
 

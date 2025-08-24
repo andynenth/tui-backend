@@ -35,7 +35,24 @@
     <link rel="stylesheet" href="/bundle.css" />
   </head>
   <body>
-    <div id="root"></div>
-    <script src="/bundle.js"></script>
+    <div id="root">
+      <div style="padding: 20px; text-align: center; font-family: system-ui, -apple-system, sans-serif;">
+        <div style="margin: 20px auto; width: 50px; height: 50px; border: 3px solid #f3f3f3; border-top: 3px solid #3498db; border-radius: 50%; animation: spin 1s linear infinite;"></div>
+        <style>@keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }</style>
+        <p>Loading Castellan...</p>
+        <noscript>
+          <p style="color: red;">JavaScript is required to run this application.</p>
+        </noscript>
+      </div>
+    </div>
+    <script>
+      // Script loading error handler
+      window.addEventListener('error', function(e) {
+        if (e.filename && e.filename.includes('bundle.js')) {
+          document.getElementById('root').innerHTML = '<div style="padding: 20px; color: red;">Failed to load application bundle. Please check your connection and refresh the page.</div>';
+        }
+      });
+    </script>
+    <script src="/bundle.js" onerror="document.getElementById('root').innerHTML = '<div style=\'padding: 20px; color: red;\'>Failed to load bundle.js. Error details: ' + this.src + '</div>'"></script>
   </body>
 </html>
