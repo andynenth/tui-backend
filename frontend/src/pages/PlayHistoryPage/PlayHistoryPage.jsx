@@ -380,7 +380,7 @@ const PlayCard = ({ play, isWinner, isStarter }) => {
       
       <div className="flex justify-between mt-[10px] pt-[10px] border-t border-[#444] text-xs text-[#999]">
         <span>Captured: 0→{play.captured}</span>
-        <span>Declared: {play.declared || 'N/A'}</span>
+        <span>Pieces Played: {play.pieces.length}</span>
       </div>
     </div>
   );

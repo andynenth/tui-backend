@@ -446,11 +446,19 @@ class GameBotHandler:
         from backend.socket_manager import broadcast
 
         try:
-            # Get previous declarations
+            # Get CURRENT round declarations from phase data
             game_state = self._get_game_state()
-            previous_declarations = [
-                p.declared for p in game_state.players if p.declared != 0
-            ]
+            phase_data = self.state_machine.current_state.phase_data
+            declarations = phase_data.get('declarations', {})
+            declaration_order = phase_data.get('declaration_order', [])
+            
+            # Build list in order, only including players who have already declared
+            previous_declarations = []
+            for player_name in declaration_order:
+                if player_name == bot.name:
+                    break  # Stop at current bot's turn
+                if player_name in declarations:
+                    previous_declarations.append(declarations[player_name])
 
             # Check if last player
             is_last = position == len(game_state.players) - 1
@@ -481,18 +489,24 @@ class GameBotHandler:
                 print(f"❌ BOT_AI_ERROR: Declaration choice failed for {bot.name}: {e}")
                 raise
 
-            # Apply last player rule
+            # Apply last player rule using CURRENT round data
             if is_last:
-                game_state = self._get_game_state()
-                total_so_far = sum(
-                    p.declared for p in game_state.players if p.declared != 0
-                )
+                # Get current declarations from state machine phase data
+                phase_data = self.state_machine.current_state.phase_data
+                declarations = phase_data.get('declarations', {})
+                total_so_far = sum(declarations.values())
+                
                 forbidden = 8 - total_so_far
                 if value == forbidden and 0 <= forbidden <= 8:
                     logger.warning(
                         f"⚠️ Bot {bot.name} cannot declare {value} (total would be 8)"
                     )
-                    value = 1 if forbidden != 1 else 2
+                    # Choose a different valid value
+                    valid_options = [v for v in range(0, 9) if v != forbidden]
+                    # Respect zero streak rule if applicable
+                    if bot.zero_declares_in_a_row >= 2:
+                        valid_options = [v for v in valid_options if v > 0]
+                    value = valid_options[0] if valid_options else 1
 
             # Apply declaration via state machine
             if self.state_machine:
