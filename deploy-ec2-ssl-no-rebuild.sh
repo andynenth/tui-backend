@@ -6,7 +6,7 @@ set -e
 # Configuration
 EC2_HOST="34.233.7.20"
 EC2_USER="ubuntu"
-KEY_PATH="./liap-tui-key-1755152170.pem"
+KEY_PATH="~/.ssh/liap-tui-key-1755152170.pem"
 
 # Colors
 GREEN='\033[0;32m'
