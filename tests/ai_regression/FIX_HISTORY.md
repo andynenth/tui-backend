@@ -69,6 +69,29 @@ openers_needed = max(0, target_remaining - secured_wins)
 
 **Update**: Code structure simplified from 27 lines with redundant if-elif branches to 14 lines with unified logic. All functionality preserved.
 
+## Fix #5: Urgency-Based Random Opener Play
+
+**Date**: 2025-08-28
+**Bug**: Bots always played their strongest opener when playing singles, making them predictable
+**Root Cause**: 
+1. Urgency calculation didn't consider competitive pressure (room concept)
+2. Random opener play was restricted to "opener-only plan" scenarios
+3. Always selected max(openers) by point value
+
+**Fix**: 
+1. Rewrote urgency calculation to use room = remaining_turns - max_opponent_target_remaining
+2. Enable random opener play when urgency == "low" (not urgent)
+3. Use random.choice() instead of max() for opener selection
+4. Applied to both responder and starter strategies
+
+**Test**: `test_urgency_random_opener.py`
+
+**Impact**: 
+- Bots now understand when they have room to play flexibly vs when they must compete
+- Opener play is unpredictable - any opener can be selected randomly
+- Better simulation of human play patterns
+- Strategic play kicks in automatically when room becomes tight
+
 ## Running Regression Tests
 
 ```bash

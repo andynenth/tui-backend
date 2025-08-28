@@ -445,35 +445,44 @@ def identify_burden_pieces(hand: List[Piece], valid_combos: List[Tuple]) -> List
 
 def calculate_urgency(context: TurnPlayContext) -> str:
     """
-    Calculate urgency level based on turns remaining and piles needed.
+    Calculate urgency level based on room concept.
+    Room = remaining_turns - max_opponent_target_remaining
+    
+    Not urgent when: room >= my_target_remaining
+    Urgent when: room < my_target_remaining
 
     Args:
         context: Game context
 
     Returns:
-        Urgency level: "none", "low", "medium", "high", "critical"
+        Urgency level: "none", "low", "critical"
     """
-    # Estimate remaining turns based on current hand size and typical play patterns
-    # Assuming average of 3 pieces played per turn
-    hand_size = len(context.my_hand)
-    estimated_turns_remaining = max(1, (hand_size + 2) // 3)  # Round up, at least 1 turn
+    # Calculate my target remaining
+    my_target_remaining = context.my_declared - context.my_captured
     
-    piles_needed = context.my_declared - context.my_captured
-
-    if piles_needed == 0:
-        return "none"  # Already at target
-    elif piles_needed < 0:
-        return "none"  # Already exceeded target
-    elif estimated_turns_remaining <= 0:
-        return "critical"  # No turns left
-    elif piles_needed >= estimated_turns_remaining:
-        return "critical"  # Need to win every turn
-    elif piles_needed >= estimated_turns_remaining * 0.75:
-        return "high"  # Need to win most turns
-    elif piles_needed >= estimated_turns_remaining * 0.5:
-        return "medium"  # Need to win half the turns
+    if my_target_remaining <= 0:
+        return "none"  # Already at/above target
+    
+    # Calculate remaining turns (each turn uses at least 1 piece)
+    hand_size = len(context.my_hand)
+    remaining_turns = hand_size
+    
+    # Find max opponent target_remaining
+    max_opponent_remaining = 0
+    for player_name, state in context.player_states.items():
+        if player_name != context.my_name:
+            opponent_remaining = state.get('declared', 0) - state.get('captured', 0)
+            if opponent_remaining > max_opponent_remaining:
+                max_opponent_remaining = opponent_remaining
+    
+    # Calculate room
+    room = remaining_turns - max_opponent_remaining
+    
+    # Determine urgency based on room
+    if room < my_target_remaining:
+        return "critical"  # URGENT - must compete for wins
     else:
-        return "low"  # Have cushion for strategic play
+        return "low"  # NOT URGENT - have flexibility for random play
 
 
 def get_field_strength_from_players(player_states: Dict[str, Dict]) -> str:
@@ -825,25 +834,24 @@ def execute_responder_strategy(
         # At or above target - play weakest single piece to minimize winning
         return [min(context.my_hand, key=lambda p: p.point)]
 
-    # Check for opener timing when required to play singles
-    if required == 1:
-        # Check if we have opener-only plan
-        opener_only_plan = detect_opener_only_plan(plan)
-
-        if opener_only_plan and should_randomly_play_opener(len(context.my_hand)):
+    # Check for random opener play when not urgent
+    if required == 1 and plan.urgency_level == "low":
+        # Not urgent - consider random opener play
+        # Get all openers in hand (pieces with point >= 11)
+        openers_in_hand = [p for p in context.my_hand if p.point >= 11]
+        
+        if openers_in_hand and should_randomly_play_opener(len(context.my_hand)):
             # Random timing triggered!
             hand_size = len(context.my_hand)
             probability = 35 if hand_size >= 6 else 40 if hand_size >= 4 else 50
             # Randomly playing opener due to timing
             # Hand size: {hand_size}, probability: {probability}%
-            # Opener-only plan with {len(plan.assigned_openers)} openers
+            # {len(openers_in_hand)} openers available
 
-            # Play the strongest opener available in hand
-            openers_in_hand = [p for p in plan.assigned_openers if p in context.my_hand]
-            if openers_in_hand:
-                opener_to_play = max(openers_in_hand, key=lambda p: p.point)
-                # Playing opener: {opener_to_play.name}({opener_to_play.point})
-                return [opener_to_play]
+            # Randomly select an opener (not always the strongest!)
+            opener_to_play = random.choice(openers_in_hand)
+            # Playing opener: {opener_to_play.name}({opener_to_play.point})
+            return [opener_to_play]
 
     # Critical urgency: need to win remaining turns
     if plan.urgency_level == "critical" and plan.target_remaining > 0:
@@ -1143,6 +1151,25 @@ def execute_starter_strategy(
     # Starter strategy: {required} pieces, urgency {plan.urgency_level}, risk {constraints.risk_level}
 
     # NOTE: Critical urgency now handled in get_optimal_piece_count_for_starter()
+    
+    # Check for random opener play when not urgent (for single piece plays)
+    if required == 1 and plan.urgency_level == "low":
+        # Not urgent - consider random opener play
+        # Get all openers in hand (pieces with point >= 11)
+        openers_in_hand = [p for p in context.my_hand if p.point >= 11]
+        
+        if openers_in_hand and should_randomly_play_opener(len(context.my_hand)):
+            # Random timing triggered for starter!
+            hand_size = len(context.my_hand)
+            probability = 35 if hand_size >= 6 else 40 if hand_size >= 4 else 50
+            # Starter randomly playing opener
+            # Hand size: {hand_size}, probability: {probability}%
+            # {len(openers_in_hand)} openers available
+            
+            # Randomly select an opener (not always the strongest!)
+            opener_to_play = random.choice(openers_in_hand)
+            print(f"🎲 {context.my_name} randomly plays opener: {opener_to_play.name}({opener_to_play.point})")
+            return [opener_to_play]
 
     # Check if we have an assigned combo that matches required pieces
     if plan.assigned_combos:
