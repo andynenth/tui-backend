@@ -1,0 +1,3568 @@
+{
+    "room_id": "EBA903",
+    "total_rounds": 2,
+    "start_time": "2025-08-28T07:48:00.136765",
+    "end_time": null,
+    "players": [
+        {
+            "name": "Alexanderium",
+            "type": "human",
+            "position": 0
+        },
+        {
+            "name": "Bot 2",
+            "type": "bot",
+            "position": 1
+        },
+        {
+            "name": "Bot 3",
+            "type": "bot",
+            "position": 2
+        },
+        {
+            "name": "Bot 4",
+            "type": "bot",
+            "position": 3
+        }
+    ],
+    "rounds": [
+        {
+            "round_number": 1,
+            "initial_state": {
+                "starter": {
+                    "player_name": "Alexanderium"
+                }
+            },
+            "timestamp": "2025-08-28T07:50:27.664455",
+            "turn_history": [
+                {
+                    "turnNumber": 1,
+                    "plays": [
+                        {
+                            "player": "Alexanderium",
+                            "pieces": [
+                                {
+                                    "type": "HORSE_BLACK",
+                                    "point": 5,
+                                    "color": "black"
+                                },
+                                {
+                                    "type": "HORSE_BLACK",
+                                    "point": 5,
+                                    "color": "black"
+                                }
+                            ],
+                            "isStarter": true,
+                            "handBefore": [
+                                {
+                                    "type": "HORSE_RED",
+                                    "point": 6,
+                                    "color": "red"
+                                },
+                                {
+                                    "type": "GENERAL_RED",
+                                    "point": 14,
+                                    "color": "red"
+                                },
+                                {
+                                    "type": "CHARIOT_RED",
+                                    "point": 8,
+                                    "color": "red"
+                                },
+                                {
+                                    "type": "HORSE_BLACK",
+                                    "point": 5,
+                                    "color": "black"
+                                },
+                                {
+                                    "type": "SOLDIER_RED",
+                                    "point": 2,
+                                    "color": "red"
+                                },
+                                {
+                                    "type": "SOLDIER_BLACK",
+                                    "point": 1,
+                                    "color": "black"
+                                },
+                                {
+                                    "type": "SOLDIER_RED",
+                                    "point": 2,
+                                    "color": "red"
+                                },
+                                {
+                                    "type": "HORSE_BLACK",
+                                    "point": 5,
+                                    "color": "black"
+                                }
+                            ],
+                            "handAfter": [
+                                {
+                                    "type": "HORSE_RED",
+                                    "point": 6,
+                                    "color": "red"
+                                },
+                                {
+                                    "type": "GENERAL_RED",
+                                    "point": 14,
+                                    "color": "red"
+                                },
+                                {
+                                    "type": "CHARIOT_RED",
+                                    "point": 8,
+                                    "color": "red"
+                                },
+                                {
+                                    "type": "SOLDIER_RED",
+                                    "point": 2,
+                                    "color": "red"
+                                },
+                                {
+                                    "type": "SOLDIER_BLACK",
+                                    "point": 1,
+                                    "color": "black"
+                                },
+                                {
+                                    "type": "SOLDIER_RED",
+                                    "point": 2,
+                                    "color": "red"
+                                }
+                            ],
+                            "captured": 0
+                        },
+                        {
+                            "player": "Bot 2",
+                            "pieces": [
+                                {
+                                    "type": "ELEPHANT_RED",
+                                    "point": 10,
+                                    "color": "red"
+                                },
+                                {
+                                    "type": "ELEPHANT_RED",
+                                    "point": 10,
+                                    "color": "red"
+                                }
+                            ],
+                            "isStarter": false,
+                            "handBefore": [
+                                {
+                                    "type": "CANNON_RED",
+                                    "point": 4,
+                                    "color": "red"
+                                },
+                                {
+                                    "type": "ADVISOR_BLACK",
+                                    "point": 11,
+                                    "color": "black"
+                                },
+                                {
+                                    "type": "ELEPHANT_RED",
+                                    "point": 10,
+                                    "color": "red"
+                                },
+                                {
+                                    "type": "ELEPHANT_RED",
+                                    "point": 10,
+                                    "color": "red"
+                                },
+                                {
+                                    "type": "CHARIOT_BLACK",
+                                    "point": 7,
+                                    "color": "black"
+                                },
+                                {
+                                    "type": "SOLDIER_BLACK",
+                                    "point": 1,
+                                    "color": "black"
+                                },
+                                {
+                                    "type": "SOLDIER_BLACK",
+                                    "point": 1,
+                                    "color": "black"
+                                },
+                                {
+                                    "type": "ELEPHANT_BLACK",
+                                    "point": 9,
+                                    "color": "black"
+                                }
+                            ],
+                            "handAfter": [
+                                {
+                                    "type": "CANNON_RED",
+                                    "point": 4,
+                                    "color": "red"
+                                },
+                                {
+                                    "type": "ADVISOR_BLACK",
+                                    "point": 11,
+                                    "color": "black"
+                                },
+                                {
+                                    "type": "CHARIOT_BLACK",
+                                    "point": 7,
+                                    "color": "black"
+                                },
+                                {
+                                    "type": "SOLDIER_BLACK",
+                                    "point": 1,
+                                    "color": "black"
+                                },
+                                {
+                                    "type": "SOLDIER_BLACK",
+                                    "point": 1,
+                                    "color": "black"
+                                },
+                                {
+                                    "type": "ELEPHANT_BLACK",
+                                    "point": 9,
+                                    "color": "black"
+                                }
+                            ],
+                            "captured": 2
+                        },
+                        {
+                            "player": "Bot 3",
+                            "pieces": [
+                                {
+                                    "type": "SOLDIER_RED",
+                                    "point": 2,
+                                    "color": "red"
+                                },
+                                {
+                                    "type": "SOLDIER_RED",
+                                    "point": 2,
+                                    "color": "red"
+                                }
+                            ],
+                            "isStarter": false,
+                            "handBefore": [
+                                {
+                                    "type": "SOLDIER_RED",
+                                    "point": 2,
+                                    "color": "red"
+                                },
+                                {
+                                    "type": "SOLDIER_RED",
+                                    "point": 2,
+                                    "color": "red"
+                                },
+                                {
+                                    "type": "ELEPHANT_BLACK",
+                                    "point": 9,
+                                    "color": "black"
+                                },
+                                {
+                                    "type": "CANNON_RED",
+                                    "point": 4,
+                                    "color": "red"
+                                },
+                                {
+                                    "type": "ADVISOR_RED",
+                                    "point": 12,
+                                    "color": "red"
+                                },
+                                {
+                                    "type": "HORSE_RED",
+                                    "point": 6,
+                                    "color": "red"
+                                },
+                                {
+                                    "type": "CANNON_BLACK",
+                                    "point": 3,
+                                    "color": "black"
+                                },
+                                {
+                                    "type": "CHARIOT_RED",
+                                    "point": 8,
+                                    "color": "red"
+                                }
+                            ],
+                            "handAfter": [
+                                {
+                                    "type": "ELEPHANT_BLACK",
+                                    "point": 9,
+                                    "color": "black"
+                                },
+                                {
+                                    "type": "CANNON_RED",
+                                    "point": 4,
+                                    "color": "red"
+                                },
+                                {
+                                    "type": "ADVISOR_RED",
+                                    "point": 12,
+                                    "color": "red"
+                                },
+                                {
+                                    "type": "HORSE_RED",
+                                    "point": 6,
+                                    "color": "red"
+                                },
+                                {
+                                    "type": "CANNON_BLACK",
+                                    "point": 3,
+                                    "color": "black"
+                                },
+                                {
+                                    "type": "CHARIOT_RED",
+                                    "point": 8,
+                                    "color": "red"
+                                }
+                            ],
+                            "captured": 0
+                        },
+                        {
+                            "player": "Bot 4",
+                            "pieces": [
+                                {
+                                    "type": "SOLDIER_BLACK",
+                                    "point": 1,
+                                    "color": "black"
+                                },
+                                {
+                                    "type": "SOLDIER_BLACK",
+                                    "point": 1,
+                                    "color": "black"
+                                }
+                            ],
+                            "isStarter": false,
+                            "handBefore": [
+                                {
+                                    "type": "ADVISOR_BLACK",
+                                    "point": 11,
+                                    "color": "black"
+                                },
+                                {
+                                    "type": "SOLDIER_BLACK",
+                                    "point": 1,
+                                    "color": "black"
+                                },
+                                {
+                                    "type": "SOLDIER_RED",
+                                    "point": 2,
+                                    "color": "red"
+                                },
+                                {
+                                    "type": "CANNON_BLACK",
+                                    "point": 3,
+                                    "color": "black"
+                                },
+                                {
+                                    "type": "ADVISOR_RED",
+                                    "point": 12,
+                                    "color": "red"
+                                },
+                                {
+                                    "type": "GENERAL_BLACK",
+                                    "point": 13,
+                                    "color": "black"
+                                },
+                                {
+                                    "type": "CHARIOT_BLACK",
+                                    "point": 7,
+                                    "color": "black"
+                                },
+                                {
+                                    "type": "SOLDIER_BLACK",
+                                    "point": 1,
+                                    "color": "black"
+                                }
+                            ],
+                            "handAfter": [
+                                {
+                                    "type": "ADVISOR_BLACK",
+                                    "point": 11,
+                                    "color": "black"
+                                },
+                                {
+                                    "type": "SOLDIER_RED",
+                                    "point": 2,
+                                    "color": "red"
+                                },
+                                {
+                                    "type": "CANNON_BLACK",
+                                    "point": 3,
+                                    "color": "black"
+                                },
+                                {
+                                    "type": "ADVISOR_RED",
+                                    "point": 12,
+                                    "color": "red"
+                                },
+                                {
+                                    "type": "GENERAL_BLACK",
+                                    "point": 13,
+                                    "color": "black"
+                                },
+                                {
+                                    "type": "CHARIOT_BLACK",
+                                    "point": 7,
+                                    "color": "black"
+                                }
+                            ],
+                            "captured": 0
+                        }
+                    ],
+                    "winner": "Bot 2",
+                    "winnerPieces": 2,
+                    "timestamp": "2025-08-28T07:58:16.924358"
+                },
+                {
+                    "turnNumber": 2,
+                    "plays": [
+                        {
+                            "player": "Bot 2",
+                            "pieces": [
+                                {
+                                    "type": "ELEPHANT_BLACK",
+                                    "point": 9,
+                                    "color": "black"
+                                }
+                            ],
+                            "isStarter": false,
+                            "handBefore": [
+                                {
+                                    "type": "CANNON_RED",
+                                    "point": 4,
+                                    "color": "red"
+                                },
+                                {
+                                    "type": "ADVISOR_BLACK",
+                                    "point": 11,
+                                    "color": "black"
+                                },
+                                {
+                                    "type": "CHARIOT_BLACK",
+                                    "point": 7,
+                                    "color": "black"
+                                },
+                                {
+                                    "type": "SOLDIER_BLACK",
+                                    "point": 1,
+                                    "color": "black"
+                                },
+                                {
+                                    "type": "SOLDIER_BLACK",
+                                    "point": 1,
+                                    "color": "black"
+                                },
+                                {
+                                    "type": "ELEPHANT_BLACK",
+                                    "point": 9,
+                                    "color": "black"
+                                }
+                            ],
+                            "handAfter": [
+                                {
+                                    "type": "CANNON_RED",
+                                    "point": 4,
+                                    "color": "red"
+                                },
+                                {
+                                    "type": "ADVISOR_BLACK",
+                                    "point": 11,
+                                    "color": "black"
+                                },
+                                {
+                                    "type": "CHARIOT_BLACK",
+                                    "point": 7,
+                                    "color": "black"
+                                },
+                                {
+                                    "type": "SOLDIER_BLACK",
+                                    "point": 1,
+                                    "color": "black"
+                                },
+                                {
+                                    "type": "SOLDIER_BLACK",
+                                    "point": 1,
+                                    "color": "black"
+                                }
+                            ],
+                            "captured": 0
+                        },
+                        {
+                            "player": "Bot 3",
+                            "pieces": [
+                                {
+                                    "type": "ADVISOR_RED",
+                                    "point": 12,
+                                    "color": "red"
+                                }
+                            ],
+                            "isStarter": false,
+                            "handBefore": [
+                                {
+                                    "type": "ELEPHANT_BLACK",
+                                    "point": 9,
+                                    "color": "black"
+                                },
+                                {
+                                    "type": "CANNON_RED",
+                                    "point": 4,
+                                    "color": "red"
+                                },
+                                {
+                                    "type": "ADVISOR_RED",
+                                    "point": 12,
+                                    "color": "red"
+                                },
+                                {
+                                    "type": "HORSE_RED",
+                                    "point": 6,
+                                    "color": "red"
+                                },
+                                {
+                                    "type": "CANNON_BLACK",
+                                    "point": 3,
+                                    "color": "black"
+                                },
+                                {
+                                    "type": "CHARIOT_RED",
+                                    "point": 8,
+                                    "color": "red"
+                                }
+                            ],
+                            "handAfter": [
+                                {
+                                    "type": "ELEPHANT_BLACK",
+                                    "point": 9,
+                                    "color": "black"
+                                },
+                                {
+                                    "type": "CANNON_RED",
+                                    "point": 4,
+                                    "color": "red"
+                                },
+                                {
+                                    "type": "HORSE_RED",
+                                    "point": 6,
+                                    "color": "red"
+                                },
+                                {
+                                    "type": "CANNON_BLACK",
+                                    "point": 3,
+                                    "color": "black"
+                                },
+                                {
+                                    "type": "CHARIOT_RED",
+                                    "point": 8,
+                                    "color": "red"
+                                }
+                            ],
+                            "captured": 1
+                        },
+                        {
+                            "player": "Bot 4",
+                            "pieces": [
+                                {
+                                    "type": "ADVISOR_RED",
+                                    "point": 12,
+                                    "color": "red"
+                                }
+                            ],
+                            "isStarter": false,
+                            "handBefore": [
+                                {
+                                    "type": "ADVISOR_BLACK",
+                                    "point": 11,
+                                    "color": "black"
+                                },
+                                {
+                                    "type": "SOLDIER_RED",
+                                    "point": 2,
+                                    "color": "red"
+                                },
+                                {
+                                    "type": "CANNON_BLACK",
+                                    "point": 3,
+                                    "color": "black"
+                                },
+                                {
+                                    "type": "ADVISOR_RED",
+                                    "point": 12,
+                                    "color": "red"
+                                },
+                                {
+                                    "type": "GENERAL_BLACK",
+                                    "point": 13,
+                                    "color": "black"
+                                },
+                                {
+                                    "type": "CHARIOT_BLACK",
+                                    "point": 7,
+                                    "color": "black"
+                                }
+                            ],
+                            "handAfter": [
+                                {
+                                    "type": "ADVISOR_BLACK",
+                                    "point": 11,
+                                    "color": "black"
+                                },
+                                {
+                                    "type": "SOLDIER_RED",
+                                    "point": 2,
+                                    "color": "red"
+                                },
+                                {
+                                    "type": "CANNON_BLACK",
+                                    "point": 3,
+                                    "color": "black"
+                                },
+                                {
+                                    "type": "GENERAL_BLACK",
+                                    "point": 13,
+                                    "color": "black"
+                                },
+                                {
+                                    "type": "CHARIOT_BLACK",
+                                    "point": 7,
+                                    "color": "black"
+                                }
+                            ],
+                            "captured": 0
+                        },
+                        {
+                            "player": "Alexanderium",
+                            "pieces": [
+                                {
+                                    "type": "CHARIOT_RED",
+                                    "point": 8,
+                                    "color": "red"
+                                }
+                            ],
+                            "isStarter": false,
+                            "handBefore": [
+                                {
+                                    "type": "HORSE_RED",
+                                    "point": 6,
+                                    "color": "red"
+                                },
+                                {
+                                    "type": "GENERAL_RED",
+                                    "point": 14,
+                                    "color": "red"
+                                },
+                                {
+                                    "type": "CHARIOT_RED",
+                                    "point": 8,
+                                    "color": "red"
+                                },
+                                {
+                                    "type": "SOLDIER_RED",
+                                    "point": 2,
+                                    "color": "red"
+                                },
+                                {
+                                    "type": "SOLDIER_BLACK",
+                                    "point": 1,
+                                    "color": "black"
+                                },
+                                {
+                                    "type": "SOLDIER_RED",
+                                    "point": 2,
+                                    "color": "red"
+                                }
+                            ],
+                            "handAfter": [
+                                {
+                                    "type": "HORSE_RED",
+                                    "point": 6,
+                                    "color": "red"
+                                },
+                                {
+                                    "type": "GENERAL_RED",
+                                    "point": 14,
+                                    "color": "red"
+                                },
+                                {
+                                    "type": "SOLDIER_RED",
+                                    "point": 2,
+                                    "color": "red"
+                                },
+                                {
+                                    "type": "SOLDIER_BLACK",
+                                    "point": 1,
+                                    "color": "black"
+                                },
+                                {
+                                    "type": "SOLDIER_RED",
+                                    "point": 2,
+                                    "color": "red"
+                                }
+                            ],
+                            "captured": 0
+                        }
+                    ],
+                    "winner": "Bot 3",
+                    "winnerPieces": 1,
+                    "timestamp": "2025-08-28T07:58:16.924418"
+                },
+                {
+                    "turnNumber": 3,
+                    "plays": [
+                        {
+                            "player": "Bot 3",
+                            "pieces": [
+                                {
+                                    "type": "CANNON_RED",
+                                    "point": 4,
+                                    "color": "red"
+                                },
+                                {
+                                    "type": "HORSE_RED",
+                                    "point": 6,
+                                    "color": "red"
+                                },
+                                {
+                                    "type": "CHARIOT_RED",
+                                    "point": 8,
+                                    "color": "red"
+                                }
+                            ],
+                            "isStarter": false,
+                            "handBefore": [
+                                {
+                                    "type": "ELEPHANT_BLACK",
+                                    "point": 9,
+                                    "color": "black"
+                                },
+                                {
+                                    "type": "CANNON_RED",
+                                    "point": 4,
+                                    "color": "red"
+                                },
+                                {
+                                    "type": "HORSE_RED",
+                                    "point": 6,
+                                    "color": "red"
+                                },
+                                {
+                                    "type": "CANNON_BLACK",
+                                    "point": 3,
+                                    "color": "black"
+                                },
+                                {
+                                    "type": "CHARIOT_RED",
+                                    "point": 8,
+                                    "color": "red"
+                                }
+                            ],
+                            "handAfter": [
+                                {
+                                    "type": "ELEPHANT_BLACK",
+                                    "point": 9,
+                                    "color": "black"
+                                },
+                                {
+                                    "type": "CANNON_BLACK",
+                                    "point": 3,
+                                    "color": "black"
+                                }
+                            ],
+                            "captured": 3
+                        },
+                        {
+                            "player": "Bot 4",
+                            "pieces": [
+                                {
+                                    "type": "CHARIOT_BLACK",
+                                    "point": 7,
+                                    "color": "black"
+                                },
+                                {
+                                    "type": "CANNON_BLACK",
+                                    "point": 3,
+                                    "color": "black"
+                                },
+                                {
+                                    "type": "SOLDIER_RED",
+                                    "point": 2,
+                                    "color": "red"
+                                }
+                            ],
+                            "isStarter": false,
+                            "handBefore": [
+                                {
+                                    "type": "ADVISOR_BLACK",
+                                    "point": 11,
+                                    "color": "black"
+                                },
+                                {
+                                    "type": "SOLDIER_RED",
+                                    "point": 2,
+                                    "color": "red"
+                                },
+                                {
+                                    "type": "CANNON_BLACK",
+                                    "point": 3,
+                                    "color": "black"
+                                },
+                                {
+                                    "type": "GENERAL_BLACK",
+                                    "point": 13,
+                                    "color": "black"
+                                },
+                                {
+                                    "type": "CHARIOT_BLACK",
+                                    "point": 7,
+                                    "color": "black"
+                                }
+                            ],
+                            "handAfter": [
+                                {
+                                    "type": "ADVISOR_BLACK",
+                                    "point": 11,
+                                    "color": "black"
+                                },
+                                {
+                                    "type": "GENERAL_BLACK",
+                                    "point": 13,
+                                    "color": "black"
+                                }
+                            ],
+                            "captured": 0
+                        },
+                        {
+                            "player": "Alexanderium",
+                            "pieces": [
+                                {
+                                    "type": "HORSE_RED",
+                                    "point": 6,
+                                    "color": "red"
+                                },
+                                {
+                                    "type": "SOLDIER_RED",
+                                    "point": 2,
+                                    "color": "red"
+                                },
+                                {
+                                    "type": "SOLDIER_RED",
+                                    "point": 2,
+                                    "color": "red"
+                                }
+                            ],
+                            "isStarter": false,
+                            "handBefore": [
+                                {
+                                    "type": "HORSE_RED",
+                                    "point": 6,
+                                    "color": "red"
+                                },
+                                {
+                                    "type": "GENERAL_RED",
+                                    "point": 14,
+                                    "color": "red"
+                                },
+                                {
+                                    "type": "SOLDIER_RED",
+                                    "point": 2,
+                                    "color": "red"
+                                },
+                                {
+                                    "type": "SOLDIER_BLACK",
+                                    "point": 1,
+                                    "color": "black"
+                                },
+                                {
+                                    "type": "SOLDIER_RED",
+                                    "point": 2,
+                                    "color": "red"
+                                }
+                            ],
+                            "handAfter": [
+                                {
+                                    "type": "GENERAL_RED",
+                                    "point": 14,
+                                    "color": "red"
+                                },
+                                {
+                                    "type": "SOLDIER_BLACK",
+                                    "point": 1,
+                                    "color": "black"
+                                }
+                            ],
+                            "captured": 0
+                        },
+                        {
+                            "player": "Bot 2",
+                            "pieces": [
+                                {
+                                    "type": "CHARIOT_BLACK",
+                                    "point": 7,
+                                    "color": "black"
+                                },
+                                {
+                                    "type": "CANNON_RED",
+                                    "point": 4,
+                                    "color": "red"
+                                },
+                                {
+                                    "type": "SOLDIER_BLACK",
+                                    "point": 1,
+                                    "color": "black"
+                                }
+                            ],
+                            "isStarter": false,
+                            "handBefore": [
+                                {
+                                    "type": "CANNON_RED",
+                                    "point": 4,
+                                    "color": "red"
+                                },
+                                {
+                                    "type": "ADVISOR_BLACK",
+                                    "point": 11,
+                                    "color": "black"
+                                },
+                                {
+                                    "type": "CHARIOT_BLACK",
+                                    "point": 7,
+                                    "color": "black"
+                                },
+                                {
+                                    "type": "SOLDIER_BLACK",
+                                    "point": 1,
+                                    "color": "black"
+                                },
+                                {
+                                    "type": "SOLDIER_BLACK",
+                                    "point": 1,
+                                    "color": "black"
+                                }
+                            ],
+                            "handAfter": [
+                                {
+                                    "type": "ADVISOR_BLACK",
+                                    "point": 11,
+                                    "color": "black"
+                                },
+                                {
+                                    "type": "SOLDIER_BLACK",
+                                    "point": 1,
+                                    "color": "black"
+                                }
+                            ],
+                            "captured": 0
+                        }
+                    ],
+                    "winner": "Bot 3",
+                    "winnerPieces": 3,
+                    "timestamp": "2025-08-28T07:58:16.924512"
+                },
+                {
+                    "turnNumber": 4,
+                    "plays": [
+                        {
+                            "player": "Bot 3",
+                            "pieces": [
+                                {
+                                    "type": "CANNON_BLACK",
+                                    "point": 3,
+                                    "color": "black"
+                                }
+                            ],
+                            "isStarter": false,
+                            "handBefore": [
+                                {
+                                    "type": "ELEPHANT_BLACK",
+                                    "point": 9,
+                                    "color": "black"
+                                },
+                                {
+                                    "type": "CANNON_BLACK",
+                                    "point": 3,
+                                    "color": "black"
+                                }
+                            ],
+                            "handAfter": [
+                                {
+                                    "type": "ELEPHANT_BLACK",
+                                    "point": 9,
+                                    "color": "black"
+                                }
+                            ],
+                            "captured": 0
+                        },
+                        {
+                            "player": "Bot 4",
+                            "pieces": [
+                                {
+                                    "type": "GENERAL_BLACK",
+                                    "point": 13,
+                                    "color": "black"
+                                }
+                            ],
+                            "isStarter": false,
+                            "handBefore": [
+                                {
+                                    "type": "ADVISOR_BLACK",
+                                    "point": 11,
+                                    "color": "black"
+                                },
+                                {
+                                    "type": "GENERAL_BLACK",
+                                    "point": 13,
+                                    "color": "black"
+                                }
+                            ],
+                            "handAfter": [
+                                {
+                                    "type": "ADVISOR_BLACK",
+                                    "point": 11,
+                                    "color": "black"
+                                }
+                            ],
+                            "captured": 1
+                        },
+                        {
+                            "player": "Alexanderium",
+                            "pieces": [
+                                {
+                                    "type": "SOLDIER_BLACK",
+                                    "point": 1,
+                                    "color": "black"
+                                }
+                            ],
+                            "isStarter": false,
+                            "handBefore": [
+                                {
+                                    "type": "GENERAL_RED",
+                                    "point": 14,
+                                    "color": "red"
+                                },
+                                {
+                                    "type": "SOLDIER_BLACK",
+                                    "point": 1,
+                                    "color": "black"
+                                }
+                            ],
+                            "handAfter": [
+                                {
+                                    "type": "GENERAL_RED",
+                                    "point": 14,
+                                    "color": "red"
+                                }
+                            ],
+                            "captured": 0
+                        },
+                        {
+                            "player": "Bot 2",
+                            "pieces": [
+                                {
+                                    "type": "ADVISOR_BLACK",
+                                    "point": 11,
+                                    "color": "black"
+                                }
+                            ],
+                            "isStarter": false,
+                            "handBefore": [
+                                {
+                                    "type": "ADVISOR_BLACK",
+                                    "point": 11,
+                                    "color": "black"
+                                },
+                                {
+                                    "type": "SOLDIER_BLACK",
+                                    "point": 1,
+                                    "color": "black"
+                                }
+                            ],
+                            "handAfter": [
+                                {
+                                    "type": "SOLDIER_BLACK",
+                                    "point": 1,
+                                    "color": "black"
+                                }
+                            ],
+                            "captured": 0
+                        }
+                    ],
+                    "winner": "Bot 4",
+                    "winnerPieces": 1,
+                    "timestamp": "2025-08-28T07:58:16.924557"
+                },
+                {
+                    "turnNumber": 5,
+                    "plays": [
+                        {
+                            "player": "Bot 4",
+                            "pieces": [
+                                {
+                                    "type": "ADVISOR_BLACK",
+                                    "point": 11,
+                                    "color": "black"
+                                }
+                            ],
+                            "isStarter": false,
+                            "handBefore": [
+                                {
+                                    "type": "ADVISOR_BLACK",
+                                    "point": 11,
+                                    "color": "black"
+                                }
+                            ],
+                            "handAfter": [],
+                            "captured": 0
+                        },
+                        {
+                            "player": "Alexanderium",
+                            "pieces": [
+                                {
+                                    "type": "GENERAL_RED",
+                                    "point": 14,
+                                    "color": "red"
+                                }
+                            ],
+                            "isStarter": false,
+                            "handBefore": [
+                                {
+                                    "type": "GENERAL_RED",
+                                    "point": 14,
+                                    "color": "red"
+                                }
+                            ],
+                            "handAfter": [],
+                            "captured": 1
+                        },
+                        {
+                            "player": "Bot 2",
+                            "pieces": [
+                                {
+                                    "type": "SOLDIER_BLACK",
+                                    "point": 1,
+                                    "color": "black"
+                                }
+                            ],
+                            "isStarter": false,
+                            "handBefore": [
+                                {
+                                    "type": "SOLDIER_BLACK",
+                                    "point": 1,
+                                    "color": "black"
+                                }
+                            ],
+                            "handAfter": [],
+                            "captured": 0
+                        },
+                        {
+                            "player": "Bot 3",
+                            "pieces": [
+                                {
+                                    "type": "ELEPHANT_BLACK",
+                                    "point": 9,
+                                    "color": "black"
+                                }
+                            ],
+                            "isStarter": false,
+                            "handBefore": [
+                                {
+                                    "type": "ELEPHANT_BLACK",
+                                    "point": 9,
+                                    "color": "black"
+                                }
+                            ],
+                            "handAfter": [],
+                            "captured": 0
+                        }
+                    ],
+                    "winner": "Alexanderium",
+                    "winnerPieces": 1,
+                    "timestamp": "2025-08-28T07:58:16.924631"
+                }
+            ],
+            "declaration_phase": {
+                "declarations": [
+                    {
+                        "player": "Alexanderium",
+                        "player_name": "Alexanderium",
+                        "player_id": "alexanderium",
+                        "declared": 3,
+                        "hand": [
+                            {
+                                "type": "HORSE_RED",
+                                "point": 6,
+                                "color": "red"
+                            },
+                            {
+                                "type": "GENERAL_RED",
+                                "point": 14,
+                                "color": "red"
+                            },
+                            {
+                                "type": "CHARIOT_RED",
+                                "point": 8,
+                                "color": "red"
+                            },
+                            {
+                                "type": "HORSE_BLACK",
+                                "point": 5,
+                                "color": "black"
+                            },
+                            {
+                                "type": "SOLDIER_RED",
+                                "point": 2,
+                                "color": "red"
+                            },
+                            {
+                                "type": "SOLDIER_BLACK",
+                                "point": 1,
+                                "color": "black"
+                            },
+                            {
+                                "type": "SOLDIER_RED",
+                                "point": 2,
+                                "color": "red"
+                            },
+                            {
+                                "type": "HORSE_BLACK",
+                                "point": 5,
+                                "color": "black"
+                            }
+                        ],
+                        "timestamp": "2025-08-28T07:58:16.923722"
+                    },
+                    {
+                        "player": "Bot 2",
+                        "player_name": "Bot 2",
+                        "player_id": "bot_2",
+                        "declared": 3,
+                        "hand": [
+                            {
+                                "type": "CANNON_RED",
+                                "point": 4,
+                                "color": "red"
+                            },
+                            {
+                                "type": "ADVISOR_BLACK",
+                                "point": 11,
+                                "color": "black"
+                            },
+                            {
+                                "type": "ELEPHANT_RED",
+                                "point": 10,
+                                "color": "red"
+                            },
+                            {
+                                "type": "ELEPHANT_RED",
+                                "point": 10,
+                                "color": "red"
+                            },
+                            {
+                                "type": "CHARIOT_BLACK",
+                                "point": 7,
+                                "color": "black"
+                            },
+                            {
+                                "type": "SOLDIER_BLACK",
+                                "point": 1,
+                                "color": "black"
+                            },
+                            {
+                                "type": "SOLDIER_BLACK",
+                                "point": 1,
+                                "color": "black"
+                            },
+                            {
+                                "type": "ELEPHANT_BLACK",
+                                "point": 9,
+                                "color": "black"
+                            }
+                        ],
+                        "timestamp": "2025-08-28T07:58:16.923766"
+                    },
+                    {
+                        "player": "Bot 3",
+                        "player_name": "Bot 3",
+                        "player_id": "bot_3",
+                        "declared": 4,
+                        "hand": [
+                            {
+                                "type": "SOLDIER_RED",
+                                "point": 2,
+                                "color": "red"
+                            },
+                            {
+                                "type": "SOLDIER_RED",
+                                "point": 2,
+                                "color": "red"
+                            },
+                            {
+                                "type": "ELEPHANT_BLACK",
+                                "point": 9,
+                                "color": "black"
+                            },
+                            {
+                                "type": "CANNON_RED",
+                                "point": 4,
+                                "color": "red"
+                            },
+                            {
+                                "type": "ADVISOR_RED",
+                                "point": 12,
+                                "color": "red"
+                            },
+                            {
+                                "type": "HORSE_RED",
+                                "point": 6,
+                                "color": "red"
+                            },
+                            {
+                                "type": "CANNON_BLACK",
+                                "point": 3,
+                                "color": "black"
+                            },
+                            {
+                                "type": "CHARIOT_RED",
+                                "point": 8,
+                                "color": "red"
+                            }
+                        ],
+                        "timestamp": "2025-08-28T07:58:16.924237"
+                    },
+                    {
+                        "player": "Bot 4",
+                        "player_name": "Bot 4",
+                        "player_id": "bot_4",
+                        "declared": 3,
+                        "hand": [
+                            {
+                                "type": "ADVISOR_BLACK",
+                                "point": 11,
+                                "color": "black"
+                            },
+                            {
+                                "type": "SOLDIER_BLACK",
+                                "point": 1,
+                                "color": "black"
+                            },
+                            {
+                                "type": "SOLDIER_RED",
+                                "point": 2,
+                                "color": "red"
+                            },
+                            {
+                                "type": "CANNON_BLACK",
+                                "point": 3,
+                                "color": "black"
+                            },
+                            {
+                                "type": "ADVISOR_RED",
+                                "point": 12,
+                                "color": "red"
+                            },
+                            {
+                                "type": "GENERAL_BLACK",
+                                "point": 13,
+                                "color": "black"
+                            },
+                            {
+                                "type": "CHARIOT_BLACK",
+                                "point": 7,
+                                "color": "black"
+                            },
+                            {
+                                "type": "SOLDIER_BLACK",
+                                "point": 1,
+                                "color": "black"
+                            }
+                        ],
+                        "timestamp": "2025-08-28T07:58:16.924269"
+                    }
+                ]
+            },
+            "hands_dealt": {
+                "Alexanderium": [
+                    {
+                        "type": "HORSE_RED",
+                        "point": 6,
+                        "color": "red"
+                    },
+                    {
+                        "type": "GENERAL_RED",
+                        "point": 14,
+                        "color": "red"
+                    },
+                    {
+                        "type": "CHARIOT_RED",
+                        "point": 8,
+                        "color": "red"
+                    },
+                    {
+                        "type": "HORSE_BLACK",
+                        "point": 5,
+                        "color": "black"
+                    },
+                    {
+                        "type": "SOLDIER_RED",
+                        "point": 2,
+                        "color": "red"
+                    },
+                    {
+                        "type": "SOLDIER_BLACK",
+                        "point": 1,
+                        "color": "black"
+                    },
+                    {
+                        "type": "SOLDIER_RED",
+                        "point": 2,
+                        "color": "red"
+                    },
+                    {
+                        "type": "HORSE_BLACK",
+                        "point": 5,
+                        "color": "black"
+                    }
+                ],
+                "Bot 2": [
+                    {
+                        "type": "CANNON_RED",
+                        "point": 4,
+                        "color": "red"
+                    },
+                    {
+                        "type": "ADVISOR_BLACK",
+                        "point": 11,
+                        "color": "black"
+                    },
+                    {
+                        "type": "ELEPHANT_RED",
+                        "point": 10,
+                        "color": "red"
+                    },
+                    {
+                        "type": "ELEPHANT_RED",
+                        "point": 10,
+                        "color": "red"
+                    },
+                    {
+                        "type": "CHARIOT_BLACK",
+                        "point": 7,
+                        "color": "black"
+                    },
+                    {
+                        "type": "SOLDIER_BLACK",
+                        "point": 1,
+                        "color": "black"
+                    },
+                    {
+                        "type": "SOLDIER_BLACK",
+                        "point": 1,
+                        "color": "black"
+                    },
+                    {
+                        "type": "ELEPHANT_BLACK",
+                        "point": 9,
+                        "color": "black"
+                    }
+                ],
+                "Bot 3": [
+                    {
+                        "type": "SOLDIER_RED",
+                        "point": 2,
+                        "color": "red"
+                    },
+                    {
+                        "type": "SOLDIER_RED",
+                        "point": 2,
+                        "color": "red"
+                    },
+                    {
+                        "type": "ELEPHANT_BLACK",
+                        "point": 9,
+                        "color": "black"
+                    },
+                    {
+                        "type": "CANNON_RED",
+                        "point": 4,
+                        "color": "red"
+                    },
+                    {
+                        "type": "ADVISOR_RED",
+                        "point": 12,
+                        "color": "red"
+                    },
+                    {
+                        "type": "HORSE_RED",
+                        "point": 6,
+                        "color": "red"
+                    },
+                    {
+                        "type": "CANNON_BLACK",
+                        "point": 3,
+                        "color": "black"
+                    },
+                    {
+                        "type": "CHARIOT_RED",
+                        "point": 8,
+                        "color": "red"
+                    }
+                ],
+                "Bot 4": [
+                    {
+                        "type": "ADVISOR_BLACK",
+                        "point": 11,
+                        "color": "black"
+                    },
+                    {
+                        "type": "SOLDIER_BLACK",
+                        "point": 1,
+                        "color": "black"
+                    },
+                    {
+                        "type": "SOLDIER_RED",
+                        "point": 2,
+                        "color": "red"
+                    },
+                    {
+                        "type": "CANNON_BLACK",
+                        "point": 3,
+                        "color": "black"
+                    },
+                    {
+                        "type": "ADVISOR_RED",
+                        "point": 12,
+                        "color": "red"
+                    },
+                    {
+                        "type": "GENERAL_BLACK",
+                        "point": 13,
+                        "color": "black"
+                    },
+                    {
+                        "type": "CHARIOT_BLACK",
+                        "point": 7,
+                        "color": "black"
+                    },
+                    {
+                        "type": "SOLDIER_BLACK",
+                        "point": 1,
+                        "color": "black"
+                    }
+                ]
+            },
+            "round_summary": {
+                "winner": "Alexanderium",
+                "scoring": {
+                    "players": {
+                        "Alexanderium": {
+                            "declared": 3,
+                            "captured": 1,
+                            "score": -2,
+                            "multiplier": 1,
+                            "baseScore": -2
+                        },
+                        "Bot 2": {
+                            "declared": 3,
+                            "captured": 2,
+                            "score": -1,
+                            "multiplier": 1,
+                            "baseScore": -1
+                        },
+                        "Bot 3": {
+                            "declared": 4,
+                            "captured": 4,
+                            "score": 9,
+                            "multiplier": 1,
+                            "baseScore": 9
+                        },
+                        "Bot 4": {
+                            "declared": 3,
+                            "captured": 1,
+                            "score": -2,
+                            "multiplier": 1,
+                            "baseScore": -2
+                        }
+                    },
+                    "bonuses": [
+                        {
+                            "type": "PERFECT_PREDICTION",
+                            "player": "Bot 3",
+                            "value": 5,
+                            "description": "Bot 3 achieved perfect prediction"
+                        }
+                    ]
+                },
+                "final_captures": {
+                    "Alexanderium": 1,
+                    "Bot 2": 2,
+                    "Bot 3": 4,
+                    "Bot 4": 1
+                },
+                "cumulative_scores": {
+                    "Alexanderium": -2,
+                    "Bot 2": -1,
+                    "Bot 3": 9,
+                    "Bot 4": -2
+                }
+            }
+        },
+        {
+            "round_number": 2,
+            "initial_state": {
+                "starter": {
+                    "player_name": "Alexanderium"
+                }
+            },
+            "timestamp": "2025-08-28T07:55:21.740562",
+            "turn_history": [
+                {
+                    "turnNumber": 1,
+                    "plays": [
+                        {
+                            "player": "Alexanderium",
+                            "pieces": [
+                                {
+                                    "type": "HORSE_RED",
+                                    "point": 6,
+                                    "color": "red"
+                                },
+                                {
+                                    "type": "HORSE_RED",
+                                    "point": 6,
+                                    "color": "red"
+                                }
+                            ],
+                            "isStarter": true,
+                            "handBefore": [
+                                {
+                                    "type": "HORSE_RED",
+                                    "point": 6,
+                                    "color": "red"
+                                },
+                                {
+                                    "type": "SOLDIER_BLACK",
+                                    "point": 1,
+                                    "color": "black"
+                                },
+                                {
+                                    "type": "SOLDIER_RED",
+                                    "point": 2,
+                                    "color": "red"
+                                },
+                                {
+                                    "type": "ADVISOR_BLACK",
+                                    "point": 11,
+                                    "color": "black"
+                                },
+                                {
+                                    "type": "CANNON_BLACK",
+                                    "point": 3,
+                                    "color": "black"
+                                },
+                                {
+                                    "type": "ELEPHANT_RED",
+                                    "point": 10,
+                                    "color": "red"
+                                },
+                                {
+                                    "type": "SOLDIER_BLACK",
+                                    "point": 1,
+                                    "color": "black"
+                                },
+                                {
+                                    "type": "HORSE_RED",
+                                    "point": 6,
+                                    "color": "red"
+                                }
+                            ],
+                            "handAfter": [
+                                {
+                                    "type": "SOLDIER_BLACK",
+                                    "point": 1,
+                                    "color": "black"
+                                },
+                                {
+                                    "type": "SOLDIER_RED",
+                                    "point": 2,
+                                    "color": "red"
+                                },
+                                {
+                                    "type": "ADVISOR_BLACK",
+                                    "point": 11,
+                                    "color": "black"
+                                },
+                                {
+                                    "type": "CANNON_BLACK",
+                                    "point": 3,
+                                    "color": "black"
+                                },
+                                {
+                                    "type": "ELEPHANT_RED",
+                                    "point": 10,
+                                    "color": "red"
+                                },
+                                {
+                                    "type": "SOLDIER_BLACK",
+                                    "point": 1,
+                                    "color": "black"
+                                }
+                            ],
+                            "captured": 2
+                        },
+                        {
+                            "player": "Bot 2",
+                            "pieces": [
+                                {
+                                    "type": "ELEPHANT_BLACK",
+                                    "point": 9,
+                                    "color": "black"
+                                },
+                                {
+                                    "type": "CHARIOT_BLACK",
+                                    "point": 7,
+                                    "color": "black"
+                                }
+                            ],
+                            "isStarter": false,
+                            "handBefore": [
+                                {
+                                    "type": "ELEPHANT_BLACK",
+                                    "point": 9,
+                                    "color": "black"
+                                },
+                                {
+                                    "type": "HORSE_BLACK",
+                                    "point": 5,
+                                    "color": "black"
+                                },
+                                {
+                                    "type": "SOLDIER_BLACK",
+                                    "point": 1,
+                                    "color": "black"
+                                },
+                                {
+                                    "type": "SOLDIER_BLACK",
+                                    "point": 1,
+                                    "color": "black"
+                                },
+                                {
+                                    "type": "CHARIOT_BLACK",
+                                    "point": 7,
+                                    "color": "black"
+                                },
+                                {
+                                    "type": "SOLDIER_RED",
+                                    "point": 2,
+                                    "color": "red"
+                                },
+                                {
+                                    "type": "SOLDIER_RED",
+                                    "point": 2,
+                                    "color": "red"
+                                },
+                                {
+                                    "type": "CANNON_RED",
+                                    "point": 4,
+                                    "color": "red"
+                                }
+                            ],
+                            "handAfter": [
+                                {
+                                    "type": "HORSE_BLACK",
+                                    "point": 5,
+                                    "color": "black"
+                                },
+                                {
+                                    "type": "SOLDIER_BLACK",
+                                    "point": 1,
+                                    "color": "black"
+                                },
+                                {
+                                    "type": "SOLDIER_BLACK",
+                                    "point": 1,
+                                    "color": "black"
+                                },
+                                {
+                                    "type": "SOLDIER_RED",
+                                    "point": 2,
+                                    "color": "red"
+                                },
+                                {
+                                    "type": "SOLDIER_RED",
+                                    "point": 2,
+                                    "color": "red"
+                                },
+                                {
+                                    "type": "CANNON_RED",
+                                    "point": 4,
+                                    "color": "red"
+                                }
+                            ],
+                            "captured": 0
+                        },
+                        {
+                            "player": "Bot 3",
+                            "pieces": [
+                                {
+                                    "type": "ELEPHANT_RED",
+                                    "point": 10,
+                                    "color": "red"
+                                },
+                                {
+                                    "type": "CHARIOT_RED",
+                                    "point": 8,
+                                    "color": "red"
+                                }
+                            ],
+                            "isStarter": false,
+                            "handBefore": [
+                                {
+                                    "type": "ELEPHANT_RED",
+                                    "point": 10,
+                                    "color": "red"
+                                },
+                                {
+                                    "type": "CANNON_RED",
+                                    "point": 4,
+                                    "color": "red"
+                                },
+                                {
+                                    "type": "CHARIOT_RED",
+                                    "point": 8,
+                                    "color": "red"
+                                },
+                                {
+                                    "type": "SOLDIER_BLACK",
+                                    "point": 1,
+                                    "color": "black"
+                                },
+                                {
+                                    "type": "HORSE_BLACK",
+                                    "point": 5,
+                                    "color": "black"
+                                },
+                                {
+                                    "type": "SOLDIER_RED",
+                                    "point": 2,
+                                    "color": "red"
+                                },
+                                {
+                                    "type": "ADVISOR_RED",
+                                    "point": 12,
+                                    "color": "red"
+                                },
+                                {
+                                    "type": "ELEPHANT_BLACK",
+                                    "point": 9,
+                                    "color": "black"
+                                }
+                            ],
+                            "handAfter": [
+                                {
+                                    "type": "CANNON_RED",
+                                    "point": 4,
+                                    "color": "red"
+                                },
+                                {
+                                    "type": "SOLDIER_BLACK",
+                                    "point": 1,
+                                    "color": "black"
+                                },
+                                {
+                                    "type": "HORSE_BLACK",
+                                    "point": 5,
+                                    "color": "black"
+                                },
+                                {
+                                    "type": "SOLDIER_RED",
+                                    "point": 2,
+                                    "color": "red"
+                                },
+                                {
+                                    "type": "ADVISOR_RED",
+                                    "point": 12,
+                                    "color": "red"
+                                },
+                                {
+                                    "type": "ELEPHANT_BLACK",
+                                    "point": 9,
+                                    "color": "black"
+                                }
+                            ],
+                            "captured": 0
+                        },
+                        {
+                            "player": "Bot 4",
+                            "pieces": [
+                                {
+                                    "type": "GENERAL_RED",
+                                    "point": 14,
+                                    "color": "red"
+                                },
+                                {
+                                    "type": "ADVISOR_RED",
+                                    "point": 12,
+                                    "color": "red"
+                                }
+                            ],
+                            "isStarter": false,
+                            "handBefore": [
+                                {
+                                    "type": "CHARIOT_BLACK",
+                                    "point": 7,
+                                    "color": "black"
+                                },
+                                {
+                                    "type": "GENERAL_BLACK",
+                                    "point": 13,
+                                    "color": "black"
+                                },
+                                {
+                                    "type": "CHARIOT_RED",
+                                    "point": 8,
+                                    "color": "red"
+                                },
+                                {
+                                    "type": "SOLDIER_RED",
+                                    "point": 2,
+                                    "color": "red"
+                                },
+                                {
+                                    "type": "ADVISOR_BLACK",
+                                    "point": 11,
+                                    "color": "black"
+                                },
+                                {
+                                    "type": "GENERAL_RED",
+                                    "point": 14,
+                                    "color": "red"
+                                },
+                                {
+                                    "type": "ADVISOR_RED",
+                                    "point": 12,
+                                    "color": "red"
+                                },
+                                {
+                                    "type": "CANNON_BLACK",
+                                    "point": 3,
+                                    "color": "black"
+                                }
+                            ],
+                            "handAfter": [
+                                {
+                                    "type": "CHARIOT_BLACK",
+                                    "point": 7,
+                                    "color": "black"
+                                },
+                                {
+                                    "type": "GENERAL_BLACK",
+                                    "point": 13,
+                                    "color": "black"
+                                },
+                                {
+                                    "type": "CHARIOT_RED",
+                                    "point": 8,
+                                    "color": "red"
+                                },
+                                {
+                                    "type": "SOLDIER_RED",
+                                    "point": 2,
+                                    "color": "red"
+                                },
+                                {
+                                    "type": "ADVISOR_BLACK",
+                                    "point": 11,
+                                    "color": "black"
+                                },
+                                {
+                                    "type": "CANNON_BLACK",
+                                    "point": 3,
+                                    "color": "black"
+                                }
+                            ],
+                            "captured": 0
+                        }
+                    ],
+                    "winner": "Alexanderium",
+                    "winnerPieces": 2,
+                    "timestamp": "2025-08-28T07:58:16.951070"
+                },
+                {
+                    "turnNumber": 2,
+                    "plays": [
+                        {
+                            "player": "Alexanderium",
+                            "pieces": [
+                                {
+                                    "type": "CANNON_BLACK",
+                                    "point": 3,
+                                    "color": "black"
+                                }
+                            ],
+                            "isStarter": false,
+                            "handBefore": [
+                                {
+                                    "type": "SOLDIER_BLACK",
+                                    "point": 1,
+                                    "color": "black"
+                                },
+                                {
+                                    "type": "SOLDIER_RED",
+                                    "point": 2,
+                                    "color": "red"
+                                },
+                                {
+                                    "type": "ADVISOR_BLACK",
+                                    "point": 11,
+                                    "color": "black"
+                                },
+                                {
+                                    "type": "CANNON_BLACK",
+                                    "point": 3,
+                                    "color": "black"
+                                },
+                                {
+                                    "type": "ELEPHANT_RED",
+                                    "point": 10,
+                                    "color": "red"
+                                },
+                                {
+                                    "type": "SOLDIER_BLACK",
+                                    "point": 1,
+                                    "color": "black"
+                                }
+                            ],
+                            "handAfter": [
+                                {
+                                    "type": "SOLDIER_BLACK",
+                                    "point": 1,
+                                    "color": "black"
+                                },
+                                {
+                                    "type": "SOLDIER_RED",
+                                    "point": 2,
+                                    "color": "red"
+                                },
+                                {
+                                    "type": "ADVISOR_BLACK",
+                                    "point": 11,
+                                    "color": "black"
+                                },
+                                {
+                                    "type": "ELEPHANT_RED",
+                                    "point": 10,
+                                    "color": "red"
+                                },
+                                {
+                                    "type": "SOLDIER_BLACK",
+                                    "point": 1,
+                                    "color": "black"
+                                }
+                            ],
+                            "captured": 0
+                        },
+                        {
+                            "player": "Bot 2",
+                            "pieces": [
+                                {
+                                    "type": "SOLDIER_BLACK",
+                                    "point": 1,
+                                    "color": "black"
+                                }
+                            ],
+                            "isStarter": false,
+                            "handBefore": [
+                                {
+                                    "type": "HORSE_BLACK",
+                                    "point": 5,
+                                    "color": "black"
+                                },
+                                {
+                                    "type": "SOLDIER_BLACK",
+                                    "point": 1,
+                                    "color": "black"
+                                },
+                                {
+                                    "type": "SOLDIER_BLACK",
+                                    "point": 1,
+                                    "color": "black"
+                                },
+                                {
+                                    "type": "SOLDIER_RED",
+                                    "point": 2,
+                                    "color": "red"
+                                },
+                                {
+                                    "type": "SOLDIER_RED",
+                                    "point": 2,
+                                    "color": "red"
+                                },
+                                {
+                                    "type": "CANNON_RED",
+                                    "point": 4,
+                                    "color": "red"
+                                }
+                            ],
+                            "handAfter": [
+                                {
+                                    "type": "HORSE_BLACK",
+                                    "point": 5,
+                                    "color": "black"
+                                },
+                                {
+                                    "type": "SOLDIER_BLACK",
+                                    "point": 1,
+                                    "color": "black"
+                                },
+                                {
+                                    "type": "SOLDIER_RED",
+                                    "point": 2,
+                                    "color": "red"
+                                },
+                                {
+                                    "type": "SOLDIER_RED",
+                                    "point": 2,
+                                    "color": "red"
+                                },
+                                {
+                                    "type": "CANNON_RED",
+                                    "point": 4,
+                                    "color": "red"
+                                }
+                            ],
+                            "captured": 0
+                        },
+                        {
+                            "player": "Bot 3",
+                            "pieces": [
+                                {
+                                    "type": "ELEPHANT_BLACK",
+                                    "point": 9,
+                                    "color": "black"
+                                }
+                            ],
+                            "isStarter": false,
+                            "handBefore": [
+                                {
+                                    "type": "CANNON_RED",
+                                    "point": 4,
+                                    "color": "red"
+                                },
+                                {
+                                    "type": "SOLDIER_BLACK",
+                                    "point": 1,
+                                    "color": "black"
+                                },
+                                {
+                                    "type": "HORSE_BLACK",
+                                    "point": 5,
+                                    "color": "black"
+                                },
+                                {
+                                    "type": "SOLDIER_RED",
+                                    "point": 2,
+                                    "color": "red"
+                                },
+                                {
+                                    "type": "ADVISOR_RED",
+                                    "point": 12,
+                                    "color": "red"
+                                },
+                                {
+                                    "type": "ELEPHANT_BLACK",
+                                    "point": 9,
+                                    "color": "black"
+                                }
+                            ],
+                            "handAfter": [
+                                {
+                                    "type": "CANNON_RED",
+                                    "point": 4,
+                                    "color": "red"
+                                },
+                                {
+                                    "type": "SOLDIER_BLACK",
+                                    "point": 1,
+                                    "color": "black"
+                                },
+                                {
+                                    "type": "HORSE_BLACK",
+                                    "point": 5,
+                                    "color": "black"
+                                },
+                                {
+                                    "type": "SOLDIER_RED",
+                                    "point": 2,
+                                    "color": "red"
+                                },
+                                {
+                                    "type": "ADVISOR_RED",
+                                    "point": 12,
+                                    "color": "red"
+                                }
+                            ],
+                            "captured": 0
+                        },
+                        {
+                            "player": "Bot 4",
+                            "pieces": [
+                                {
+                                    "type": "GENERAL_BLACK",
+                                    "point": 13,
+                                    "color": "black"
+                                }
+                            ],
+                            "isStarter": false,
+                            "handBefore": [
+                                {
+                                    "type": "CHARIOT_BLACK",
+                                    "point": 7,
+                                    "color": "black"
+                                },
+                                {
+                                    "type": "GENERAL_BLACK",
+                                    "point": 13,
+                                    "color": "black"
+                                },
+                                {
+                                    "type": "CHARIOT_RED",
+                                    "point": 8,
+                                    "color": "red"
+                                },
+                                {
+                                    "type": "SOLDIER_RED",
+                                    "point": 2,
+                                    "color": "red"
+                                },
+                                {
+                                    "type": "ADVISOR_BLACK",
+                                    "point": 11,
+                                    "color": "black"
+                                },
+                                {
+                                    "type": "CANNON_BLACK",
+                                    "point": 3,
+                                    "color": "black"
+                                }
+                            ],
+                            "handAfter": [
+                                {
+                                    "type": "CHARIOT_BLACK",
+                                    "point": 7,
+                                    "color": "black"
+                                },
+                                {
+                                    "type": "CHARIOT_RED",
+                                    "point": 8,
+                                    "color": "red"
+                                },
+                                {
+                                    "type": "SOLDIER_RED",
+                                    "point": 2,
+                                    "color": "red"
+                                },
+                                {
+                                    "type": "ADVISOR_BLACK",
+                                    "point": 11,
+                                    "color": "black"
+                                },
+                                {
+                                    "type": "CANNON_BLACK",
+                                    "point": 3,
+                                    "color": "black"
+                                }
+                            ],
+                            "captured": 1
+                        }
+                    ],
+                    "winner": "Bot 4",
+                    "winnerPieces": 1,
+                    "timestamp": "2025-08-28T07:58:16.951118"
+                },
+                {
+                    "turnNumber": 3,
+                    "plays": [
+                        {
+                            "player": "Bot 4",
+                            "pieces": [
+                                {
+                                    "type": "ADVISOR_BLACK",
+                                    "point": 11,
+                                    "color": "black"
+                                }
+                            ],
+                            "isStarter": false,
+                            "handBefore": [
+                                {
+                                    "type": "CHARIOT_BLACK",
+                                    "point": 7,
+                                    "color": "black"
+                                },
+                                {
+                                    "type": "CHARIOT_RED",
+                                    "point": 8,
+                                    "color": "red"
+                                },
+                                {
+                                    "type": "SOLDIER_RED",
+                                    "point": 2,
+                                    "color": "red"
+                                },
+                                {
+                                    "type": "ADVISOR_BLACK",
+                                    "point": 11,
+                                    "color": "black"
+                                },
+                                {
+                                    "type": "CANNON_BLACK",
+                                    "point": 3,
+                                    "color": "black"
+                                }
+                            ],
+                            "handAfter": [
+                                {
+                                    "type": "CHARIOT_BLACK",
+                                    "point": 7,
+                                    "color": "black"
+                                },
+                                {
+                                    "type": "CHARIOT_RED",
+                                    "point": 8,
+                                    "color": "red"
+                                },
+                                {
+                                    "type": "SOLDIER_RED",
+                                    "point": 2,
+                                    "color": "red"
+                                },
+                                {
+                                    "type": "CANNON_BLACK",
+                                    "point": 3,
+                                    "color": "black"
+                                }
+                            ],
+                            "captured": 1
+                        },
+                        {
+                            "player": "Alexanderium",
+                            "pieces": [
+                                {
+                                    "type": "SOLDIER_RED",
+                                    "point": 2,
+                                    "color": "red"
+                                }
+                            ],
+                            "isStarter": false,
+                            "handBefore": [
+                                {
+                                    "type": "SOLDIER_BLACK",
+                                    "point": 1,
+                                    "color": "black"
+                                },
+                                {
+                                    "type": "SOLDIER_RED",
+                                    "point": 2,
+                                    "color": "red"
+                                },
+                                {
+                                    "type": "ADVISOR_BLACK",
+                                    "point": 11,
+                                    "color": "black"
+                                },
+                                {
+                                    "type": "ELEPHANT_RED",
+                                    "point": 10,
+                                    "color": "red"
+                                },
+                                {
+                                    "type": "SOLDIER_BLACK",
+                                    "point": 1,
+                                    "color": "black"
+                                }
+                            ],
+                            "handAfter": [
+                                {
+                                    "type": "SOLDIER_BLACK",
+                                    "point": 1,
+                                    "color": "black"
+                                },
+                                {
+                                    "type": "ADVISOR_BLACK",
+                                    "point": 11,
+                                    "color": "black"
+                                },
+                                {
+                                    "type": "ELEPHANT_RED",
+                                    "point": 10,
+                                    "color": "red"
+                                },
+                                {
+                                    "type": "SOLDIER_BLACK",
+                                    "point": 1,
+                                    "color": "black"
+                                }
+                            ],
+                            "captured": 0
+                        },
+                        {
+                            "player": "Bot 2",
+                            "pieces": [
+                                {
+                                    "type": "SOLDIER_BLACK",
+                                    "point": 1,
+                                    "color": "black"
+                                }
+                            ],
+                            "isStarter": false,
+                            "handBefore": [
+                                {
+                                    "type": "HORSE_BLACK",
+                                    "point": 5,
+                                    "color": "black"
+                                },
+                                {
+                                    "type": "SOLDIER_BLACK",
+                                    "point": 1,
+                                    "color": "black"
+                                },
+                                {
+                                    "type": "SOLDIER_RED",
+                                    "point": 2,
+                                    "color": "red"
+                                },
+                                {
+                                    "type": "SOLDIER_RED",
+                                    "point": 2,
+                                    "color": "red"
+                                },
+                                {
+                                    "type": "CANNON_RED",
+                                    "point": 4,
+                                    "color": "red"
+                                }
+                            ],
+                            "handAfter": [
+                                {
+                                    "type": "HORSE_BLACK",
+                                    "point": 5,
+                                    "color": "black"
+                                },
+                                {
+                                    "type": "SOLDIER_RED",
+                                    "point": 2,
+                                    "color": "red"
+                                },
+                                {
+                                    "type": "SOLDIER_RED",
+                                    "point": 2,
+                                    "color": "red"
+                                },
+                                {
+                                    "type": "CANNON_RED",
+                                    "point": 4,
+                                    "color": "red"
+                                }
+                            ],
+                            "captured": 0
+                        },
+                        {
+                            "player": "Bot 3",
+                            "pieces": [
+                                {
+                                    "type": "HORSE_BLACK",
+                                    "point": 5,
+                                    "color": "black"
+                                }
+                            ],
+                            "isStarter": false,
+                            "handBefore": [
+                                {
+                                    "type": "CANNON_RED",
+                                    "point": 4,
+                                    "color": "red"
+                                },
+                                {
+                                    "type": "SOLDIER_BLACK",
+                                    "point": 1,
+                                    "color": "black"
+                                },
+                                {
+                                    "type": "HORSE_BLACK",
+                                    "point": 5,
+                                    "color": "black"
+                                },
+                                {
+                                    "type": "SOLDIER_RED",
+                                    "point": 2,
+                                    "color": "red"
+                                },
+                                {
+                                    "type": "ADVISOR_RED",
+                                    "point": 12,
+                                    "color": "red"
+                                }
+                            ],
+                            "handAfter": [
+                                {
+                                    "type": "CANNON_RED",
+                                    "point": 4,
+                                    "color": "red"
+                                },
+                                {
+                                    "type": "SOLDIER_BLACK",
+                                    "point": 1,
+                                    "color": "black"
+                                },
+                                {
+                                    "type": "SOLDIER_RED",
+                                    "point": 2,
+                                    "color": "red"
+                                },
+                                {
+                                    "type": "ADVISOR_RED",
+                                    "point": 12,
+                                    "color": "red"
+                                }
+                            ],
+                            "captured": 0
+                        }
+                    ],
+                    "winner": "Bot 4",
+                    "winnerPieces": 1,
+                    "timestamp": "2025-08-28T07:58:16.951145"
+                },
+                {
+                    "turnNumber": 4,
+                    "plays": [
+                        {
+                            "player": "Bot 4",
+                            "pieces": [
+                                {
+                                    "type": "CANNON_BLACK",
+                                    "point": 3,
+                                    "color": "black"
+                                }
+                            ],
+                            "isStarter": false,
+                            "handBefore": [
+                                {
+                                    "type": "CHARIOT_BLACK",
+                                    "point": 7,
+                                    "color": "black"
+                                },
+                                {
+                                    "type": "CHARIOT_RED",
+                                    "point": 8,
+                                    "color": "red"
+                                },
+                                {
+                                    "type": "SOLDIER_RED",
+                                    "point": 2,
+                                    "color": "red"
+                                },
+                                {
+                                    "type": "CANNON_BLACK",
+                                    "point": 3,
+                                    "color": "black"
+                                }
+                            ],
+                            "handAfter": [
+                                {
+                                    "type": "CHARIOT_BLACK",
+                                    "point": 7,
+                                    "color": "black"
+                                },
+                                {
+                                    "type": "CHARIOT_RED",
+                                    "point": 8,
+                                    "color": "red"
+                                },
+                                {
+                                    "type": "SOLDIER_RED",
+                                    "point": 2,
+                                    "color": "red"
+                                }
+                            ],
+                            "captured": 0
+                        },
+                        {
+                            "player": "Alexanderium",
+                            "pieces": [
+                                {
+                                    "type": "ELEPHANT_RED",
+                                    "point": 10,
+                                    "color": "red"
+                                }
+                            ],
+                            "isStarter": false,
+                            "handBefore": [
+                                {
+                                    "type": "SOLDIER_BLACK",
+                                    "point": 1,
+                                    "color": "black"
+                                },
+                                {
+                                    "type": "ADVISOR_BLACK",
+                                    "point": 11,
+                                    "color": "black"
+                                },
+                                {
+                                    "type": "ELEPHANT_RED",
+                                    "point": 10,
+                                    "color": "red"
+                                },
+                                {
+                                    "type": "SOLDIER_BLACK",
+                                    "point": 1,
+                                    "color": "black"
+                                }
+                            ],
+                            "handAfter": [
+                                {
+                                    "type": "SOLDIER_BLACK",
+                                    "point": 1,
+                                    "color": "black"
+                                },
+                                {
+                                    "type": "ADVISOR_BLACK",
+                                    "point": 11,
+                                    "color": "black"
+                                },
+                                {
+                                    "type": "SOLDIER_BLACK",
+                                    "point": 1,
+                                    "color": "black"
+                                }
+                            ],
+                            "captured": 0
+                        },
+                        {
+                            "player": "Bot 2",
+                            "pieces": [
+                                {
+                                    "type": "SOLDIER_RED",
+                                    "point": 2,
+                                    "color": "red"
+                                }
+                            ],
+                            "isStarter": false,
+                            "handBefore": [
+                                {
+                                    "type": "HORSE_BLACK",
+                                    "point": 5,
+                                    "color": "black"
+                                },
+                                {
+                                    "type": "SOLDIER_RED",
+                                    "point": 2,
+                                    "color": "red"
+                                },
+                                {
+                                    "type": "SOLDIER_RED",
+                                    "point": 2,
+                                    "color": "red"
+                                },
+                                {
+                                    "type": "CANNON_RED",
+                                    "point": 4,
+                                    "color": "red"
+                                }
+                            ],
+                            "handAfter": [
+                                {
+                                    "type": "HORSE_BLACK",
+                                    "point": 5,
+                                    "color": "black"
+                                },
+                                {
+                                    "type": "SOLDIER_RED",
+                                    "point": 2,
+                                    "color": "red"
+                                },
+                                {
+                                    "type": "CANNON_RED",
+                                    "point": 4,
+                                    "color": "red"
+                                }
+                            ],
+                            "captured": 0
+                        },
+                        {
+                            "player": "Bot 3",
+                            "pieces": [
+                                {
+                                    "type": "ADVISOR_RED",
+                                    "point": 12,
+                                    "color": "red"
+                                }
+                            ],
+                            "isStarter": false,
+                            "handBefore": [
+                                {
+                                    "type": "CANNON_RED",
+                                    "point": 4,
+                                    "color": "red"
+                                },
+                                {
+                                    "type": "SOLDIER_BLACK",
+                                    "point": 1,
+                                    "color": "black"
+                                },
+                                {
+                                    "type": "SOLDIER_RED",
+                                    "point": 2,
+                                    "color": "red"
+                                },
+                                {
+                                    "type": "ADVISOR_RED",
+                                    "point": 12,
+                                    "color": "red"
+                                }
+                            ],
+                            "handAfter": [
+                                {
+                                    "type": "CANNON_RED",
+                                    "point": 4,
+                                    "color": "red"
+                                },
+                                {
+                                    "type": "SOLDIER_BLACK",
+                                    "point": 1,
+                                    "color": "black"
+                                },
+                                {
+                                    "type": "SOLDIER_RED",
+                                    "point": 2,
+                                    "color": "red"
+                                }
+                            ],
+                            "captured": 1
+                        }
+                    ],
+                    "winner": "Bot 3",
+                    "winnerPieces": 1,
+                    "timestamp": "2025-08-28T07:58:16.951215"
+                },
+                {
+                    "turnNumber": 5,
+                    "plays": [
+                        {
+                            "player": "Bot 3",
+                            "pieces": [
+                                {
+                                    "type": "SOLDIER_BLACK",
+                                    "point": 1,
+                                    "color": "black"
+                                }
+                            ],
+                            "isStarter": false,
+                            "handBefore": [
+                                {
+                                    "type": "CANNON_RED",
+                                    "point": 4,
+                                    "color": "red"
+                                },
+                                {
+                                    "type": "SOLDIER_BLACK",
+                                    "point": 1,
+                                    "color": "black"
+                                },
+                                {
+                                    "type": "SOLDIER_RED",
+                                    "point": 2,
+                                    "color": "red"
+                                }
+                            ],
+                            "handAfter": [
+                                {
+                                    "type": "CANNON_RED",
+                                    "point": 4,
+                                    "color": "red"
+                                },
+                                {
+                                    "type": "SOLDIER_RED",
+                                    "point": 2,
+                                    "color": "red"
+                                }
+                            ],
+                            "captured": 0
+                        },
+                        {
+                            "player": "Bot 4",
+                            "pieces": [
+                                {
+                                    "type": "CHARIOT_RED",
+                                    "point": 8,
+                                    "color": "red"
+                                }
+                            ],
+                            "isStarter": false,
+                            "handBefore": [
+                                {
+                                    "type": "CHARIOT_BLACK",
+                                    "point": 7,
+                                    "color": "black"
+                                },
+                                {
+                                    "type": "CHARIOT_RED",
+                                    "point": 8,
+                                    "color": "red"
+                                },
+                                {
+                                    "type": "SOLDIER_RED",
+                                    "point": 2,
+                                    "color": "red"
+                                }
+                            ],
+                            "handAfter": [
+                                {
+                                    "type": "CHARIOT_BLACK",
+                                    "point": 7,
+                                    "color": "black"
+                                },
+                                {
+                                    "type": "SOLDIER_RED",
+                                    "point": 2,
+                                    "color": "red"
+                                }
+                            ],
+                            "captured": 1
+                        },
+                        {
+                            "player": "Alexanderium",
+                            "pieces": [
+                                {
+                                    "type": "SOLDIER_BLACK",
+                                    "point": 1,
+                                    "color": "black"
+                                }
+                            ],
+                            "isStarter": false,
+                            "handBefore": [
+                                {
+                                    "type": "SOLDIER_BLACK",
+                                    "point": 1,
+                                    "color": "black"
+                                },
+                                {
+                                    "type": "ADVISOR_BLACK",
+                                    "point": 11,
+                                    "color": "black"
+                                },
+                                {
+                                    "type": "SOLDIER_BLACK",
+                                    "point": 1,
+                                    "color": "black"
+                                }
+                            ],
+                            "handAfter": [
+                                {
+                                    "type": "ADVISOR_BLACK",
+                                    "point": 11,
+                                    "color": "black"
+                                },
+                                {
+                                    "type": "SOLDIER_BLACK",
+                                    "point": 1,
+                                    "color": "black"
+                                }
+                            ],
+                            "captured": 0
+                        },
+                        {
+                            "player": "Bot 2",
+                            "pieces": [
+                                {
+                                    "type": "SOLDIER_RED",
+                                    "point": 2,
+                                    "color": "red"
+                                }
+                            ],
+                            "isStarter": false,
+                            "handBefore": [
+                                {
+                                    "type": "HORSE_BLACK",
+                                    "point": 5,
+                                    "color": "black"
+                                },
+                                {
+                                    "type": "SOLDIER_RED",
+                                    "point": 2,
+                                    "color": "red"
+                                },
+                                {
+                                    "type": "CANNON_RED",
+                                    "point": 4,
+                                    "color": "red"
+                                }
+                            ],
+                            "handAfter": [
+                                {
+                                    "type": "HORSE_BLACK",
+                                    "point": 5,
+                                    "color": "black"
+                                },
+                                {
+                                    "type": "CANNON_RED",
+                                    "point": 4,
+                                    "color": "red"
+                                }
+                            ],
+                            "captured": 0
+                        }
+                    ],
+                    "winner": "Bot 4",
+                    "winnerPieces": 1,
+                    "timestamp": "2025-08-28T07:58:16.951234"
+                },
+                {
+                    "turnNumber": 6,
+                    "plays": [
+                        {
+                            "player": "Bot 4",
+                            "pieces": [
+                                {
+                                    "type": "SOLDIER_RED",
+                                    "point": 2,
+                                    "color": "red"
+                                }
+                            ],
+                            "isStarter": false,
+                            "handBefore": [
+                                {
+                                    "type": "CHARIOT_BLACK",
+                                    "point": 7,
+                                    "color": "black"
+                                },
+                                {
+                                    "type": "SOLDIER_RED",
+                                    "point": 2,
+                                    "color": "red"
+                                }
+                            ],
+                            "handAfter": [
+                                {
+                                    "type": "CHARIOT_BLACK",
+                                    "point": 7,
+                                    "color": "black"
+                                }
+                            ],
+                            "captured": 0
+                        },
+                        {
+                            "player": "Alexanderium",
+                            "pieces": [
+                                {
+                                    "type": "SOLDIER_BLACK",
+                                    "point": 1,
+                                    "color": "black"
+                                }
+                            ],
+                            "isStarter": false,
+                            "handBefore": [
+                                {
+                                    "type": "ADVISOR_BLACK",
+                                    "point": 11,
+                                    "color": "black"
+                                },
+                                {
+                                    "type": "SOLDIER_BLACK",
+                                    "point": 1,
+                                    "color": "black"
+                                }
+                            ],
+                            "handAfter": [
+                                {
+                                    "type": "ADVISOR_BLACK",
+                                    "point": 11,
+                                    "color": "black"
+                                }
+                            ],
+                            "captured": 0
+                        },
+                        {
+                            "player": "Bot 2",
+                            "pieces": [
+                                {
+                                    "type": "CANNON_RED",
+                                    "point": 4,
+                                    "color": "red"
+                                }
+                            ],
+                            "isStarter": false,
+                            "handBefore": [
+                                {
+                                    "type": "HORSE_BLACK",
+                                    "point": 5,
+                                    "color": "black"
+                                },
+                                {
+                                    "type": "CANNON_RED",
+                                    "point": 4,
+                                    "color": "red"
+                                }
+                            ],
+                            "handAfter": [
+                                {
+                                    "type": "HORSE_BLACK",
+                                    "point": 5,
+                                    "color": "black"
+                                }
+                            ],
+                            "captured": 1
+                        },
+                        {
+                            "player": "Bot 3",
+                            "pieces": [
+                                {
+                                    "type": "SOLDIER_RED",
+                                    "point": 2,
+                                    "color": "red"
+                                }
+                            ],
+                            "isStarter": false,
+                            "handBefore": [
+                                {
+                                    "type": "CANNON_RED",
+                                    "point": 4,
+                                    "color": "red"
+                                },
+                                {
+                                    "type": "SOLDIER_RED",
+                                    "point": 2,
+                                    "color": "red"
+                                }
+                            ],
+                            "handAfter": [
+                                {
+                                    "type": "CANNON_RED",
+                                    "point": 4,
+                                    "color": "red"
+                                }
+                            ],
+                            "captured": 0
+                        }
+                    ],
+                    "winner": "Bot 2",
+                    "winnerPieces": 1,
+                    "timestamp": "2025-08-28T07:58:16.951249"
+                },
+                {
+                    "turnNumber": 7,
+                    "plays": [
+                        {
+                            "player": "Bot 2",
+                            "pieces": [
+                                {
+                                    "type": "HORSE_BLACK",
+                                    "point": 5,
+                                    "color": "black"
+                                }
+                            ],
+                            "isStarter": false,
+                            "handBefore": [
+                                {
+                                    "type": "HORSE_BLACK",
+                                    "point": 5,
+                                    "color": "black"
+                                }
+                            ],
+                            "handAfter": [],
+                            "captured": 0
+                        },
+                        {
+                            "player": "Bot 3",
+                            "pieces": [
+                                {
+                                    "type": "CANNON_RED",
+                                    "point": 4,
+                                    "color": "red"
+                                }
+                            ],
+                            "isStarter": false,
+                            "handBefore": [
+                                {
+                                    "type": "CANNON_RED",
+                                    "point": 4,
+                                    "color": "red"
+                                }
+                            ],
+                            "handAfter": [],
+                            "captured": 0
+                        },
+                        {
+                            "player": "Bot 4",
+                            "pieces": [
+                                {
+                                    "type": "CHARIOT_BLACK",
+                                    "point": 7,
+                                    "color": "black"
+                                }
+                            ],
+                            "isStarter": false,
+                            "handBefore": [
+                                {
+                                    "type": "CHARIOT_BLACK",
+                                    "point": 7,
+                                    "color": "black"
+                                }
+                            ],
+                            "handAfter": [],
+                            "captured": 0
+                        },
+                        {
+                            "player": "Alexanderium",
+                            "pieces": [
+                                {
+                                    "type": "ADVISOR_BLACK",
+                                    "point": 11,
+                                    "color": "black"
+                                }
+                            ],
+                            "isStarter": false,
+                            "handBefore": [
+                                {
+                                    "type": "ADVISOR_BLACK",
+                                    "point": 11,
+                                    "color": "black"
+                                }
+                            ],
+                            "handAfter": [],
+                            "captured": 1
+                        }
+                    ],
+                    "winner": "Alexanderium",
+                    "winnerPieces": 1,
+                    "timestamp": "2025-08-28T07:58:16.951261"
+                }
+            ],
+            "declaration_phase": {
+                "declarations": [
+                    {
+                        "player": "Alexanderium",
+                        "player_name": "Alexanderium",
+                        "player_id": "alexanderium",
+                        "declared": 2,
+                        "hand": [
+                            {
+                                "type": "HORSE_RED",
+                                "point": 6,
+                                "color": "red"
+                            },
+                            {
+                                "type": "SOLDIER_BLACK",
+                                "point": 1,
+                                "color": "black"
+                            },
+                            {
+                                "type": "SOLDIER_RED",
+                                "point": 2,
+                                "color": "red"
+                            },
+                            {
+                                "type": "ADVISOR_BLACK",
+                                "point": 11,
+                                "color": "black"
+                            },
+                            {
+                                "type": "CANNON_BLACK",
+                                "point": 3,
+                                "color": "black"
+                            },
+                            {
+                                "type": "ELEPHANT_RED",
+                                "point": 10,
+                                "color": "red"
+                            },
+                            {
+                                "type": "SOLDIER_BLACK",
+                                "point": 1,
+                                "color": "black"
+                            },
+                            {
+                                "type": "HORSE_RED",
+                                "point": 6,
+                                "color": "red"
+                            }
+                        ],
+                        "timestamp": "2025-08-28T07:58:16.924891"
+                    },
+                    {
+                        "player": "Bot 2",
+                        "player_name": "Bot 2",
+                        "player_id": "bot_2",
+                        "declared": 0,
+                        "hand": [
+                            {
+                                "type": "ELEPHANT_BLACK",
+                                "point": 9,
+                                "color": "black"
+                            },
+                            {
+                                "type": "HORSE_BLACK",
+                                "point": 5,
+                                "color": "black"
+                            },
+                            {
+                                "type": "SOLDIER_BLACK",
+                                "point": 1,
+                                "color": "black"
+                            },
+                            {
+                                "type": "SOLDIER_BLACK",
+                                "point": 1,
+                                "color": "black"
+                            },
+                            {
+                                "type": "CHARIOT_BLACK",
+                                "point": 7,
+                                "color": "black"
+                            },
+                            {
+                                "type": "SOLDIER_RED",
+                                "point": 2,
+                                "color": "red"
+                            },
+                            {
+                                "type": "SOLDIER_RED",
+                                "point": 2,
+                                "color": "red"
+                            },
+                            {
+                                "type": "CANNON_RED",
+                                "point": 4,
+                                "color": "red"
+                            }
+                        ],
+                        "timestamp": "2025-08-28T07:58:16.924906"
+                    },
+                    {
+                        "player": "Bot 3",
+                        "player_name": "Bot 3",
+                        "player_id": "bot_3",
+                        "declared": 1,
+                        "hand": [
+                            {
+                                "type": "ELEPHANT_RED",
+                                "point": 10,
+                                "color": "red"
+                            },
+                            {
+                                "type": "CANNON_RED",
+                                "point": 4,
+                                "color": "red"
+                            },
+                            {
+                                "type": "CHARIOT_RED",
+                                "point": 8,
+                                "color": "red"
+                            },
+                            {
+                                "type": "SOLDIER_BLACK",
+                                "point": 1,
+                                "color": "black"
+                            },
+                            {
+                                "type": "HORSE_BLACK",
+                                "point": 5,
+                                "color": "black"
+                            },
+                            {
+                                "type": "SOLDIER_RED",
+                                "point": 2,
+                                "color": "red"
+                            },
+                            {
+                                "type": "ADVISOR_RED",
+                                "point": 12,
+                                "color": "red"
+                            },
+                            {
+                                "type": "ELEPHANT_BLACK",
+                                "point": 9,
+                                "color": "black"
+                            }
+                        ],
+                        "timestamp": "2025-08-28T07:58:16.924920"
+                    },
+                    {
+                        "player": "Bot 4",
+                        "player_name": "Bot 4",
+                        "player_id": "bot_4",
+                        "declared": 4,
+                        "hand": [
+                            {
+                                "type": "CHARIOT_BLACK",
+                                "point": 7,
+                                "color": "black"
+                            },
+                            {
+                                "type": "GENERAL_BLACK",
+                                "point": 13,
+                                "color": "black"
+                            },
+                            {
+                                "type": "CHARIOT_RED",
+                                "point": 8,
+                                "color": "red"
+                            },
+                            {
+                                "type": "SOLDIER_RED",
+                                "point": 2,
+                                "color": "red"
+                            },
+                            {
+                                "type": "ADVISOR_BLACK",
+                                "point": 11,
+                                "color": "black"
+                            },
+                            {
+                                "type": "GENERAL_RED",
+                                "point": 14,
+                                "color": "red"
+                            },
+                            {
+                                "type": "ADVISOR_RED",
+                                "point": 12,
+                                "color": "red"
+                            },
+                            {
+                                "type": "CANNON_BLACK",
+                                "point": 3,
+                                "color": "black"
+                            }
+                        ],
+                        "timestamp": "2025-08-28T07:58:16.924958"
+                    }
+                ]
+            },
+            "hands_dealt": {
+                "Alexanderium": [
+                    {
+                        "type": "HORSE_RED",
+                        "point": 6,
+                        "color": "red"
+                    },
+                    {
+                        "type": "SOLDIER_BLACK",
+                        "point": 1,
+                        "color": "black"
+                    },
+                    {
+                        "type": "SOLDIER_RED",
+                        "point": 2,
+                        "color": "red"
+                    },
+                    {
+                        "type": "ADVISOR_BLACK",
+                        "point": 11,
+                        "color": "black"
+                    },
+                    {
+                        "type": "CANNON_BLACK",
+                        "point": 3,
+                        "color": "black"
+                    },
+                    {
+                        "type": "ELEPHANT_RED",
+                        "point": 10,
+                        "color": "red"
+                    },
+                    {
+                        "type": "SOLDIER_BLACK",
+                        "point": 1,
+                        "color": "black"
+                    },
+                    {
+                        "type": "HORSE_RED",
+                        "point": 6,
+                        "color": "red"
+                    }
+                ],
+                "Bot 2": [
+                    {
+                        "type": "ELEPHANT_BLACK",
+                        "point": 9,
+                        "color": "black"
+                    },
+                    {
+                        "type": "HORSE_BLACK",
+                        "point": 5,
+                        "color": "black"
+                    },
+                    {
+                        "type": "SOLDIER_BLACK",
+                        "point": 1,
+                        "color": "black"
+                    },
+                    {
+                        "type": "SOLDIER_BLACK",
+                        "point": 1,
+                        "color": "black"
+                    },
+                    {
+                        "type": "CHARIOT_BLACK",
+                        "point": 7,
+                        "color": "black"
+                    },
+                    {
+                        "type": "SOLDIER_RED",
+                        "point": 2,
+                        "color": "red"
+                    },
+                    {
+                        "type": "SOLDIER_RED",
+                        "point": 2,
+                        "color": "red"
+                    },
+                    {
+                        "type": "CANNON_RED",
+                        "point": 4,
+                        "color": "red"
+                    }
+                ],
+                "Bot 3": [
+                    {
+                        "type": "ELEPHANT_RED",
+                        "point": 10,
+                        "color": "red"
+                    },
+                    {
+                        "type": "CANNON_RED",
+                        "point": 4,
+                        "color": "red"
+                    },
+                    {
+                        "type": "CHARIOT_RED",
+                        "point": 8,
+                        "color": "red"
+                    },
+                    {
+                        "type": "SOLDIER_BLACK",
+                        "point": 1,
+                        "color": "black"
+                    },
+                    {
+                        "type": "HORSE_BLACK",
+                        "point": 5,
+                        "color": "black"
+                    },
+                    {
+                        "type": "SOLDIER_RED",
+                        "point": 2,
+                        "color": "red"
+                    },
+                    {
+                        "type": "ADVISOR_RED",
+                        "point": 12,
+                        "color": "red"
+                    },
+                    {
+                        "type": "ELEPHANT_BLACK",
+                        "point": 9,
+                        "color": "black"
+                    }
+                ],
+                "Bot 4": [
+                    {
+                        "type": "CHARIOT_BLACK",
+                        "point": 7,
+                        "color": "black"
+                    },
+                    {
+                        "type": "GENERAL_BLACK",
+                        "point": 13,
+                        "color": "black"
+                    },
+                    {
+                        "type": "CHARIOT_RED",
+                        "point": 8,
+                        "color": "red"
+                    },
+                    {
+                        "type": "SOLDIER_RED",
+                        "point": 2,
+                        "color": "red"
+                    },
+                    {
+                        "type": "ADVISOR_BLACK",
+                        "point": 11,
+                        "color": "black"
+                    },
+                    {
+                        "type": "GENERAL_RED",
+                        "point": 14,
+                        "color": "red"
+                    },
+                    {
+                        "type": "ADVISOR_RED",
+                        "point": 12,
+                        "color": "red"
+                    },
+                    {
+                        "type": "CANNON_BLACK",
+                        "point": 3,
+                        "color": "black"
+                    }
+                ]
+            },
+            "round_summary": {
+                "winner": "Alexanderium",
+                "scoring": {
+                    "players": {
+                        "Alexanderium": {
+                            "declared": 2,
+                            "captured": 3,
+                            "score": -1,
+                            "multiplier": 1,
+                            "baseScore": -1
+                        },
+                        "Bot 2": {
+                            "declared": 0,
+                            "captured": 1,
+                            "score": -1,
+                            "multiplier": 1,
+                            "baseScore": -1
+                        },
+                        "Bot 3": {
+                            "declared": 1,
+                            "captured": 1,
+                            "score": 6,
+                            "multiplier": 1,
+                            "baseScore": 6
+                        },
+                        "Bot 4": {
+                            "declared": 4,
+                            "captured": 3,
+                            "score": -1,
+                            "multiplier": 1,
+                            "baseScore": -1
+                        }
+                    },
+                    "bonuses": [
+                        {
+                            "type": "PERFECT_PREDICTION",
+                            "player": "Bot 3",
+                            "value": 5,
+                            "description": "Bot 3 achieved perfect prediction"
+                        }
+                    ]
+                },
+                "final_captures": {
+                    "Alexanderium": 3,
+                    "Bot 2": 1,
+                    "Bot 3": 1,
+                    "Bot 4": 3
+                },
+                "cumulative_scores": {
+                    "Alexanderium": -3,
+                    "Bot 2": -2,
+                    "Bot 3": 15,
+                    "Bot 4": -3
+                }
+            }
+        }
+    ],
+    "game_status": {
+        "completed": false,
+        "winner": "Bot 3",
+        "final_scores": {
+            "Alexanderium": -3,
+            "Bot 2": -2,
+            "Bot 3": 15,
+            "Bot 4": -3
+        }
+    }
+}

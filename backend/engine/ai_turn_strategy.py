@@ -16,8 +16,9 @@ COMBO_TYPE_RANK = {
     "STRAIGHT": 4,
     "FOUR_OF_A_KIND": 5,
     "EXTENDED_STRAIGHT": 6,
-    "FIVE_OF_A_KIND": 7,
-    "DOUBLE_STRAIGHT": 8,
+    "EXTENDED_STRAIGHT_5": 7,  # Added missing type
+    "FIVE_OF_A_KIND": 8,
+    "DOUBLE_STRAIGHT": 9,
 }
 
 
@@ -452,20 +453,24 @@ def calculate_urgency(context: TurnPlayContext) -> str:
     Returns:
         Urgency level: "none", "low", "medium", "high", "critical"
     """
-    turns_remaining = 8 - context.turn_number
+    # Estimate remaining turns based on current hand size and typical play patterns
+    # Assuming average of 3 pieces played per turn
+    hand_size = len(context.my_hand)
+    estimated_turns_remaining = max(1, (hand_size + 2) // 3)  # Round up, at least 1 turn
+    
     piles_needed = context.my_declared - context.my_captured
 
     if piles_needed == 0:
         return "none"  # Already at target
     elif piles_needed < 0:
         return "none"  # Already exceeded target
-    elif turns_remaining <= 0:
+    elif estimated_turns_remaining <= 0:
         return "critical"  # No turns left
-    elif piles_needed >= turns_remaining:
+    elif piles_needed >= estimated_turns_remaining:
         return "critical"  # Need to win every turn
-    elif piles_needed >= turns_remaining * 0.75:
+    elif piles_needed >= estimated_turns_remaining * 0.75:
         return "high"  # Need to win most turns
-    elif piles_needed >= turns_remaining * 0.5:
+    elif piles_needed >= estimated_turns_remaining * 0.5:
         return "medium"  # Need to win half the turns
     else:
         return "low"  # Have cushion for strategic play
@@ -569,29 +574,33 @@ def form_execution_plan(
     # Assign openers based on target
     all_openers = [p for p in hand if p.point >= 11]
     # Openers available: {len(all_openers)}
+    
+    # Count secured wins from non-opener combos
+    secured_wins = 0
+    opener_set = set(all_openers)
+    
+    for combo_type, pieces in viable_combos:
+        # Only count combos that don't require opener pieces
+        if not any(p in opener_set for p in pieces):
+            secured_wins += 1
+    
+    # Debug logging for smart opener assignment
+    # Smart assignment: target={target_remaining}, secured_wins={secured_wins}, openers_available={len(all_openers)}
 
-    # Debug logging for opener assignment
-    # Opener assignment: {len(all_openers)} openers, {target_remaining} remaining, {len(viable_combos)} viable combos
-
+    # Smart opener assignment based on secured wins from combos
     if target_remaining <= 0:
         assigned_openers = []  # Already at/above target
-        # Assigning 0 openers (already at target)
-    elif target_remaining == 1:
-        # Even with 1 pile needed, keep 1 opener for control
-        assigned_openers = all_openers[:1] if all_openers else []
-        # Assigning {len(assigned_openers)} opener for control
-    elif target_remaining == 2:
-        # For 2 piles, take up to 2 openers
-        assigned_openers = all_openers[:2] if len(all_openers) >= 2 else all_openers
-        # Assigning {len(assigned_openers)} openers for 2 piles
-    elif target_remaining == 3:
-        # For 3 piles, take 1-2 openers (leave room for combos)
-        assigned_openers = all_openers[:2] if len(all_openers) >= 2 else all_openers
-        # Assigning {len(assigned_openers)} openers for 3 piles
     else:
-        # For 4+ piles, take up to 2 openers
-        assigned_openers = all_openers[:2]  # Take up to 2 openers
-        # Assigning {len(assigned_openers)} openers for {target_remaining} piles
+        # Calculate how many openers we actually need
+        openers_needed = max(0, target_remaining - secured_wins)
+        
+        # Apply practical limits (cap at 4 for very high declarations)
+        if target_remaining >= 4:
+            openers_needed = min(openers_needed, len(all_openers), 4)
+        else:
+            openers_needed = min(openers_needed, len(all_openers))
+        
+        assigned_openers = all_openers[:openers_needed]
 
     # Assigned {len(assigned_openers)} openers
 
@@ -628,8 +637,10 @@ def form_execution_plan(
             # Skip combos that use already assigned opener pieces
             continue
         else:
-            assigned_combos.append((combo_type, pieces))
-            pieces_in_plan.update(pieces)
+            # Only preserve combos if we need to win more piles
+            if target_remaining > 0:
+                assigned_combos.append((combo_type, pieces))
+                pieces_in_plan.update(pieces)
 
     # Reserve 1-2 weakest pieces (point <= 4)
     weak_pieces = [p for p in hand if p.point <= 4 and p not in pieces_in_plan]
@@ -808,6 +819,11 @@ def execute_responder_strategy(
     required = context.required_piece_count or 1
 
     # Responder strategy: {required} pieces, urgency {plan.urgency_level}, risk {constraints.risk_level}
+
+    # Special handling when at/above target - minimize win chance
+    if plan.urgency_level == "none" and required == 1:
+        # At or above target - play weakest single piece to minimize winning
+        return [min(context.my_hand, key=lambda p: p.point)]
 
     # Check for opener timing when required to play singles
     if required == 1:
@@ -1000,8 +1016,9 @@ def get_optimal_piece_count_for_starter(
     # 2. Critical urgency override - must win every turn
     if plan.urgency_level == "critical" and plan.target_remaining > 0:
         # Critical urgency - finding strongest viable combo
-        # Find strongest combo regardless of assignment
+        # Find combo with highest win probability (rank first, then points)
         best_combo = None
+        best_rank = 0
         best_value = 0
 
         for combo_type, pieces in plan.valid_combos:
@@ -1011,13 +1028,18 @@ def get_optimal_piece_count_for_starter(
                     constraints,
                     get_field_strength_from_players(context.player_states),
                 ):
+                    combo_rank = COMBO_TYPE_RANK.get(combo_type, 0)
                     combo_value = sum(p.point for p in pieces)
-                    if combo_value > best_value:
+                    
+                    # Prioritize by rank first, then by points
+                    if combo_rank > best_rank or (combo_rank == best_rank and combo_value > best_value):
+                        best_rank = combo_rank
                         best_value = combo_value
                         best_combo = pieces
+                        print(f"  New best: {combo_type} (rank={combo_rank}, value={combo_value})")
 
         if best_combo:
-            # Found combo worth {best_value} pts
+            print(f"  Selected combo with rank {best_rank}, value {best_value}")
             return (len(best_combo), best_combo)
 
     # 3. Check assigned combos (primary strategy)
@@ -1192,9 +1214,11 @@ def execute_starter_strategy(
         # Attempting to play ANY available combo before random selection
         field_strength = get_field_strength_from_players(context.player_states)
 
-        # Sort combos by value (strongest first)
+        # Sort combos by rank first, then value
         sorted_combos = sorted(
-            plan.assigned_combos, key=lambda x: sum(p.point for p in x[1]), reverse=True
+            plan.assigned_combos, 
+            key=lambda x: (COMBO_TYPE_RANK.get(x[0], 0), sum(p.point for p in x[1])), 
+            reverse=True
         )
 
         for combo_type, pieces in sorted_combos:

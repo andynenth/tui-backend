@@ -1,0 +1,28 @@
+#!/bin/bash
+
+# Pre-commit hook to ensure AI changes have tests
+
+# Check if ai_turn_strategy.py or ai.py were modified
+if git diff --cached --name-only | grep -E "(ai_turn_strategy|ai\.py|ai_simplified\.py)"; then
+    echo "AI files modified. Checking for regression tests..."
+    
+    # Check if any test files in ai_regression were added/modified
+    if ! git diff --cached --name-only | grep "tests/ai_regression/"; then
+        echo "❌ ERROR: AI files modified but no regression tests added!"
+        echo "Please add regression tests in tests/ai_regression/"
+        echo "See AI_BUG_FIX_CHECKLIST.md for workflow"
+        exit 1
+    fi
+    
+    # Run regression tests
+    echo "Running AI regression tests..."
+    cd tests/ai_regression && python run_all_regression_tests.py
+    
+    if [ $? -ne 0 ]; then
+        echo "❌ ERROR: AI regression tests failed!"
+        echo "Fix the tests before committing"
+        exit 1
+    fi
+    
+    echo "✅ AI regression tests passed"
+fi
