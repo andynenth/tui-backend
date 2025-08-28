@@ -11,6 +11,8 @@ RUN npm ci
 
 # Copy frontend source and build
 COPY frontend/ ./
+# Force rebuild when package.json changes
+ARG FRONTEND_VERSION=unknown
 RUN npm run build
 
 # Python production stage

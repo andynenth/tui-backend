@@ -17,17 +17,7 @@ def get_app_version():
         logger.info(f"Version from environment: {version}")
         return version
     
-    # Method 2: VERSION file (most reliable in production)
-    version_file = Path('/app/VERSION')
-    if version_file.exists():
-        try:
-            version = version_file.read_text().strip()
-            logger.info(f"Version from VERSION file: {version}")
-            return version
-        except Exception as e:
-            logger.warning(f"Failed to read VERSION file: {e}")
-    
-    # Method 3: frontend-package.json in production
+    # Method 2: frontend-package.json in production (most reliable in Docker)
     prod_package_path = Path('/app/frontend-package.json')
     if prod_package_path.exists():
         try:
@@ -38,6 +28,16 @@ def get_app_version():
                 return version
         except Exception as e:
             logger.warning(f"Failed to read frontend-package.json: {e}")
+    
+    # Method 3: VERSION file (legacy fallback)
+    version_file = Path('/app/VERSION')
+    if version_file.exists():
+        try:
+            version = version_file.read_text().strip()
+            logger.info(f"Version from VERSION file: {version}")
+            return version
+        except Exception as e:
+            logger.warning(f"Failed to read VERSION file: {e}")
     
     # Method 4: Development - read from frontend/package.json
     try:
