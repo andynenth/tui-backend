@@ -64,3 +64,10 @@ game_events.db
 # Claude.ai instructions
 CLAUDE.md
 
+# SSH Keys and certificates (SECURITY)
+*.pem
+*.key
+*.ppk
+id_rsa
+id_rsa.*
+
