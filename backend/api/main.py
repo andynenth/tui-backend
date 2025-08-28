@@ -14,6 +14,9 @@ from backend.api.routes.debug import (
 from backend.api.routes.maintenance import (
     router as maintenance_router,  # Import the maintenance router for log management.
 )
+from backend.api.routes.telemetry import (
+    router as telemetry_router,  # Import the telemetry router for client-side metrics.
+)
 from backend.api.middleware import (
     RateLimitMiddleware,
 )  # Import rate limiting middleware
@@ -30,6 +33,7 @@ from fastapi.middleware.cors import (  # Middleware for handling Cross-Origin Re
 from fastapi.responses import FileResponse  # Used to return a file as a response.
 from fastapi.staticfiles import StaticFiles  # Utility to serve static files.
 from fastapi.exceptions import RequestValidationError
+from starlette.middleware.gzip import GZipMiddleware  # Middleware for GZip compression
 from backend.api.middleware.static_cache import (
     NoCacheStaticFiles,
 )  # Custom static files handler with cache control
@@ -171,6 +175,14 @@ app.add_middleware(
     allow_headers=["*"],  # Allows all HTTP headers.
 )
 
+# ✅ Add GZip compression middleware for better mobile performance
+# This reduces bundle size by 60-70% for JavaScript and CSS files
+app.add_middleware(
+    GZipMiddleware,
+    minimum_size=500,  # Compress files larger than 500 bytes
+    compresslevel=6    # Balanced compression level (1-9 scale, 6 is a good balance)
+)
+
 # ✅ Add Structured Logging middleware
 # This provides detailed request/response logging for monitoring
 app.add_middleware(StructuredLoggingMiddleware)
@@ -196,6 +208,7 @@ app.include_router(debug_router)  # Mounts the debug router for event store acce
 app.include_router(
     maintenance_router
 )  # Mounts the maintenance router for log management.
+app.include_router(telemetry_router)  # Mounts the telemetry router for client metrics.
 
 
 # ✅ Serve static files ONLY for actual static assets (js, css, images, etc)

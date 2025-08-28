@@ -46,13 +46,169 @@
       </div>
     </div>
     <script>
-      // Script loading error handler
-      window.addEventListener('error', function(e) {
-        if (e.filename && e.filename.includes('bundle.js')) {
-          document.getElementById('root').innerHTML = '<div style="padding: 20px; color: red;">Failed to load application bundle. Please check your connection and refresh the page.</div>';
+      // Minimal telemetry system for bundle loading
+      const telemetry = {
+        sessionId: Math.random().toString(36).substring(7),
+        startTime: Date.now(),
+        events: [],
+        
+        log(event, data) {
+          const entry = {
+            timestamp: Date.now(),
+            elapsed: Date.now() - this.startTime,
+            event,
+            ...data,
+            userAgent: navigator.userAgent,
+            connection: navigator.connection ? {
+              effectiveType: navigator.connection.effectiveType,
+              rtt: navigator.connection.rtt,
+              downlink: navigator.connection.downlink
+            } : null
+          };
+          
+          this.events.push(entry);
+          
+          // Send critical events immediately
+          if (event === 'bundle_error' || event === 'load_timeout' || event === 'load_failed') {
+            // Telemetry disabled for now
+            // this.send([entry]);
+          }
+        },
+        
+        send(events = this.events) {
+          if (events.length === 0) return;
+          
+          const data = JSON.stringify({
+            sessionId: this.sessionId,
+            events: events
+          });
+          
+          // Use sendBeacon for reliability
+          if (navigator.sendBeacon) {
+            navigator.sendBeacon('/api/telemetry', data);
+          } else {
+            // Fallback to fetch
+            fetch('/api/telemetry', {
+              method: 'POST',
+              body: data,
+              headers: { 'Content-Type': 'application/json' },
+              keepalive: true
+            }).catch(() => {});
+          }
         }
-      });
+      };
+      
+      // Enhanced bundle loading with retry logic
+      (function() {
+        let retryCount = 0;
+        const maxRetries = 3;
+        const baseDelay = 2000;
+        
+        telemetry.log('page_load_start', {
+          url: window.location.href
+        });
+        
+        function updateLoadingMessage(message, isError = false) {
+          const root = document.getElementById('root');
+          if (isError) {
+            root.innerHTML = '<div style="padding: 20px; color: red;">' + message + '</div>';
+          } else {
+            const p = root.querySelector('p');
+            if (p) p.textContent = message;
+          }
+        }
+        
+        function loadBundle() {
+          const loadStart = Date.now();
+          const script = document.createElement('script');
+          script.src = '/bundle.js';
+          
+          // Add timestamp to bypass cache on retry
+          if (retryCount > 0) {
+            script.src += '?retry=' + Date.now();
+          }
+          
+          telemetry.log('bundle_load_attempt', {
+            attempt: retryCount + 1,
+            url: script.src
+          });
+          
+          script.onload = function() {
+            const loadTime = Date.now() - loadStart;
+            script.loaded = true; // Mark as loaded to prevent timeout
+            
+            telemetry.log('bundle_load_success', {
+              attempt: retryCount + 1,
+              loadTime
+            });
+            
+            // Report performance metrics if available
+            if (window.performance && performance.getEntriesByName) {
+              const perfData = performance.getEntriesByName(script.src)[0];
+              if (perfData && perfData.transferSize) {
+                telemetry.log('performance_metrics', {
+                  transferSize: perfData.transferSize,
+                  encodedBodySize: perfData.encodedBodySize,
+                  decodedBodySize: perfData.decodedBodySize,
+                  duration: perfData.duration
+                });
+              }
+            }
+            
+            // telemetry.send();
+          };
+          
+          script.onerror = function(error) {
+            const loadTime = Date.now() - loadStart;
+            
+            telemetry.log('bundle_error', {
+              attempt: retryCount + 1,
+              loadTime,
+              error: 'Script load failed'
+            });
+            
+            retryCount++;
+            
+            if (retryCount < maxRetries) {
+              const delay = baseDelay * Math.pow(2, retryCount - 1);
+              updateLoadingMessage('Loading failed, retrying in ' + (delay/1000) + ' seconds... (Attempt ' + (retryCount + 1) + '/' + maxRetries + ')');
+              setTimeout(loadBundle, delay);
+            } else {
+              telemetry.log('load_failed', {
+                totalAttempts: retryCount
+              });
+              // telemetry.send();
+              updateLoadingMessage(
+                'Unable to load the game after ' + maxRetries + ' attempts. ' +
+                '<br><br>Please try:' +
+                '<br>• Checking your internet connection' +
+                '<br>• Refreshing the page' +
+                '<br>• Using a different network' +
+                '<br><br><button onclick="location.reload()" style="padding: 10px 20px; font-size: 16px;">Refresh Page</button>',
+                true
+              );
+            }
+          };
+          
+          // Timeout detection (30 seconds)
+          setTimeout(function() {
+            if (script.parentNode && !script.loaded) {
+              telemetry.log('load_timeout', {
+                attempt: retryCount + 1,
+                elapsed: Date.now() - loadStart
+              });
+              script.onerror(new Error('Load timeout'));
+            }
+          }, 30000);
+          
+          document.body.appendChild(script);
+        }
+        
+        loadBundle();
+      })();
+      
+      // Send telemetry before page unload
+      window.addEventListener('beforeunload', function() { telemetry.send(); });
     </script>
-    <script src="/bundle.js" onerror="document.getElementById('root').innerHTML = '<div style=\'padding: 20px; color: red;\'>Failed to load bundle.js. Error details: ' + this.src + '</div>'"></script>
   </body>
 </html>
