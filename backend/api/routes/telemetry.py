@@ -12,6 +12,7 @@ import logging
 import json
 import sqlite3
 import asyncio
+import os
 from pathlib import Path
 
 # WebSocket notification function will be imported dynamically to avoid circular imports
@@ -19,11 +20,29 @@ from pathlib import Path
 router = APIRouter(tags=["telemetry"])
 logger = logging.getLogger(__name__)
 
-# Database setup
-DB_PATH = Path(__file__).parent.parent.parent.parent / "telemetry_data.db"
+# Database setup - use same pattern as game database with environment variable support
+def get_telemetry_db_path() -> str:
+    """Get telemetry database path with same pattern as game database."""
+    # Check environment variable first (for production/Docker)
+    env_db_path = os.getenv('TELEMETRY_DB_PATH')
+    if env_db_path:
+        # Ensure directory exists
+        db_dir = Path(env_db_path).parent
+        db_dir.mkdir(parents=True, exist_ok=True)
+        return env_db_path
+    else:
+        # Fall back to data directory (for local development)
+        current_dir = Path(__file__).resolve()
+        project_root = current_dir.parent.parent.parent.parent
+        return str(project_root / "data" / "telemetry_data.db")
+
+DB_PATH = get_telemetry_db_path()
 
 def init_telemetry_db():
     """Initialize telemetry database with required tables"""
+    # Ensure the data directory exists
+    Path(DB_PATH).parent.mkdir(parents=True, exist_ok=True)
+    
     conn = sqlite3.connect(DB_PATH)
     cursor = conn.cursor()
     
@@ -221,6 +240,11 @@ async def process_telemetry_data(
             if event_type == 'bundle_load_success':
                 bundle_load_success = True
                 bundle_load_time = event.get('loadTime')
+            
+            # Consider session successful if React app initialized (even without bundle events)
+            # This handles SPA navigation where bundle is already cached
+            if event_type == 'react_app_init' and not bundle_load_success:
+                bundle_load_success = True  # App is running, bundle must have loaded
             
             # Count errors
             if event_type in ['bundle_error', 'load_timeout', 'load_failed', 

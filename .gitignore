@@ -56,10 +56,13 @@ docker-compose.override.yml
 *.tar
 .env
 
-# Database files (prevent confusion - only data/game_events.db should exist)
+# Database files (prevent confusion - only data/*.db should exist in production)
 backend/game_events.db
 game_events.db
 /game_events.db
+data/telemetry_data.db
+telemetry_data.db
+/telemetry_data.db
 
 # Claude.ai instructions
 CLAUDE.md

@@ -9,6 +9,7 @@ from typing import Set, Dict, List, Any
 import json
 import logging
 import asyncio
+import os
 from datetime import datetime, timedelta
 import sqlite3
 from pathlib import Path
@@ -19,8 +20,20 @@ logger = logging.getLogger(__name__)
 # Connected monitoring clients
 connected_monitors: Set[WebSocket] = set()
 
-# Database path (same as telemetry.py)
-DB_PATH = Path(__file__).parent.parent.parent.parent / "telemetry_data.db"
+# Database path (use same pattern as telemetry.py)
+def get_telemetry_db_path() -> str:
+    """Get telemetry database path with same pattern as telemetry.py."""
+    # Check environment variable first (for production/Docker)
+    env_db_path = os.getenv('TELEMETRY_DB_PATH')
+    if env_db_path:
+        return env_db_path
+    else:
+        # Fall back to data directory (for local development)
+        current_dir = Path(__file__).resolve()
+        project_root = current_dir.parent.parent.parent.parent
+        return str(project_root / "data" / "telemetry_data.db")
+
+DB_PATH = get_telemetry_db_path()
 
 @router.websocket("/ws/telemetry-monitor")
 async def telemetry_monitoring_websocket(websocket: WebSocket):

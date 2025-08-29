@@ -15,8 +15,9 @@ services:
       # Logs persistence (optional)
       - ./logs:/app/logs
     environment:
-      # Database
+      # Database paths
       - DATABASE_PATH=/app/data/game_events.db
+      - TELEMETRY_DB_PATH=/app/data/telemetry_data.db
       
       # Application settings
       - API_HOST=0.0.0.0

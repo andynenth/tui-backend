@@ -68,11 +68,15 @@ class TelemetryCleanupService:
             # Clean up old statistics
             stats_cleaned = await self._cleanup_old_statistics(cursor)
             
-            # Vacuum database to reclaim space
-            cursor.execute("VACUUM")
-            
+            # Commit all cleanup operations first
             conn.commit()
             conn.close()
+            
+            # Vacuum database to reclaim space (must be outside transaction)
+            if events_cleaned > 0 or sessions_cleaned > 0 or stats_cleaned > 0:
+                vacuum_conn = sqlite3.connect(self.db_path)
+                vacuum_conn.execute("VACUUM")
+                vacuum_conn.close()
             
             logger.info(
                 f"🧹 Cleanup completed: "

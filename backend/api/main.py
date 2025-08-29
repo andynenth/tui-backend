@@ -346,9 +346,11 @@ async def startup_event():
     # Start telemetry data cleanup service
     if os.getenv("TELEMETRY_CLEANUP_ENABLED", "true").lower() == "true":
         from backend.api.services.telemetry_cleanup import TelemetryCleanupService
+        from backend.api.routes.telemetry import get_telemetry_db_path
         from pathlib import Path
         
-        telemetry_db_path = Path(__file__).parent.parent.parent / "telemetry_data.db"
+        # Use same path resolution as telemetry system
+        telemetry_db_path = Path(get_telemetry_db_path())
         cleanup_service = TelemetryCleanupService(telemetry_db_path)
         
         # Start cleanup scheduler in background
