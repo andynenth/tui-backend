@@ -92,6 +92,41 @@ openers_needed = max(0, target_remaining - secured_wins)
 - Better simulation of human play patterns
 - Strategic play kicks in automatically when room becomes tight
 
+## Fix #6: Object Comparison in Disposal Strategy
+
+**Date**: 2025-08-29
+**Bug**: Responder disposal strategy failed to identify burden pieces
+**Root Cause**: 
+1. Disposal strategy used `if p in context.my_hand` for object comparison
+2. Plan pieces and context.my_hand contained different Piece objects
+3. Python's `in` operator checks object identity, not equality
+4. Result: burden_in_hand was always empty, causing incorrect disposal
+
+**Fix**: 
+Changed object comparison to compare by piece.kind:
+```python
+# OLD (broken):
+burden_in_hand = [p for p in plan.burden_pieces if p in context.my_hand]
+
+# NEW (fixed):
+plan_burden_kinds = {p.kind for p in plan.burden_pieces}
+burden_in_hand = [p for p in context.my_hand if p.kind in plan_burden_kinds]
+```
+
+Applied same fix to all disposal priorities:
+- burden_in_hand (line 881)
+- reserve_in_hand (line 887)
+- openers_in_hand (line 894)
+- combo_pieces_in_hand (line 903)
+
+**Test**: `test_object_comparison_fix.py`
+
+**Impact**: 
+- Disposal strategy now correctly identifies pieces by type
+- Burden pieces are properly disposed when they exist
+- Preserves important pieces like openers and combos
+- Note: Bot 2's specific scenario still has issues due to excessive combo assignment
+
 ## Running Regression Tests
 
 ```bash

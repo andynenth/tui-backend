@@ -878,33 +878,46 @@ def execute_responder_strategy(
     disposal_candidates = []
 
     # Priority 1: Burden pieces (highest value first)
-    burden_in_hand = [p for p in plan.burden_pieces if p in context.my_hand]
+    # Fix object comparison - compare by kind instead of object identity
+    plan_burden_kinds = {p.kind for p in plan.burden_pieces}
+    burden_in_hand = [p for p in context.my_hand if p.kind in plan_burden_kinds]
     burden_in_hand.sort(key=lambda p: p.point, reverse=True)
     disposal_candidates.extend(burden_in_hand)
 
     # Priority 2: Reserve pieces (if we need more)
     if len(disposal_candidates) < required and plan.reserve_pieces:
-        reserve_in_hand = [p for p in plan.reserve_pieces if p in context.my_hand]
+        # Fix object comparison - compare by kind instead of object identity
+        plan_reserve_kinds = {p.kind for p in plan.reserve_pieces}
+        reserve_in_hand = [p for p in context.my_hand if p.kind in plan_reserve_kinds]
         # Sort reserve pieces by value descending (dispose higher value first)
         reserve_in_hand.sort(key=lambda p: p.point, reverse=True)
         disposal_candidates.extend(reserve_in_hand)
 
     # Priority 3: Openers (only as absolute last resort)
     if len(disposal_candidates) < required and plan.assigned_openers:
-        openers_in_hand = [p for p in plan.assigned_openers if p in context.my_hand]
+        # Fix object comparison - compare by kind instead of object identity
+        plan_opener_kinds = {p.kind for p in plan.assigned_openers}
+        openers_in_hand = [p for p in context.my_hand if p.kind in plan_opener_kinds]
         # Sort openers by value ascending (keep strongest openers if possible)
         openers_in_hand.sort(key=lambda p: p.point)
         disposal_candidates.extend(openers_in_hand)
 
     # Priority 4: Combo pieces (should never reach here in a well-formed plan)
     if len(disposal_candidates) < required and plan.assigned_combos:
-        combo_pieces_in_hand = []
+        # Fix object comparison - compare by kind instead of object identity
+        plan_combo_kinds = set()
         for combo_type, pieces in plan.assigned_combos:
-            combo_pieces_in_hand.extend([p for p in pieces if p in context.my_hand])
-        # Remove duplicates
-        combo_pieces_in_hand = list(set(combo_pieces_in_hand))
-        combo_pieces_in_hand.sort(key=lambda p: p.point)
-        disposal_candidates.extend(combo_pieces_in_hand)
+            plan_combo_kinds.update(p.kind for p in pieces)
+        combo_pieces_in_hand = [p for p in context.my_hand if p.kind in plan_combo_kinds]
+        # Remove duplicates by kind (shouldn't happen but just in case)
+        seen_kinds = set()
+        unique_combo_pieces = []
+        for p in combo_pieces_in_hand:
+            if p.kind not in seen_kinds:
+                seen_kinds.add(p.kind)
+                unique_combo_pieces.append(p)
+        unique_combo_pieces.sort(key=lambda p: p.point)
+        disposal_candidates.extend(unique_combo_pieces)
 
     # Priority 5: Any remaining pieces not in plan
     if len(disposal_candidates) < required:
