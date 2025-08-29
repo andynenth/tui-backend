@@ -127,6 +127,28 @@ Applied same fix to all disposal priorities:
 - Preserves important pieces like openers and combos
 - Note: Bot 2's specific scenario still has issues due to excessive combo assignment
 
+## Fix #7: Zero Streak Declaration Bug
+
+**Date**: 2025-08-29
+**Bug**: Bot with zero streak declared 0 despite must_declare_nonzero=True
+**Root Cause**: 
+1. Early returns in non-starter logic bypassed forbidden value checking
+2. Variable `has_general_red` was undefined in starter branch
+3. `rebuild_play_list_avoiding_forbidden` returned empty list when no valid combos
+
+**Fix**: 
+1. Moved `has_general_red` check to beginning of function
+2. Replaced early `return 0` statements with `declaration = 0` to allow forbidden value checking
+3. Updated `rebuild_play_list_avoiding_forbidden` to force non-zero declaration when required
+4. Handle edge case where pile_room=0 but must_declare_nonzero=True
+
+**Test**: `test_zero_streak_fix.py`
+
+**Impact**: 
+- Bots now correctly respect zero streak rule and declare at least 1
+- Prevents game getting stuck when bot repeatedly tries to declare 0
+- Handles edge cases like no pile room or no opener scenarios
+
 ## Running Regression Tests
 
 ```bash

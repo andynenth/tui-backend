@@ -1076,8 +1076,16 @@ def rebuild_play_list_avoiding_forbidden(
                                 }
                             )
 
-    # If no valid combinations, return empty play_list (declare 0)
+    # If no valid combinations, check if we need to force a non-zero declaration
     if not valid_combinations:
+        if 0 in forbidden_declares and pile_room > 0:
+            # Must declare non-zero, try to find ANY piece to play
+            if verbose:
+                print("  No valid combinations found, but must declare non-zero")
+            # Take the weakest piece to declare 1
+            weakest_pieces = sorted(original_hand, key=lambda p: p.point)
+            if weakest_pieces:
+                return [{"type": "opener", "pieces": [weakest_pieces[0]]}]
         if verbose:
             print("  No valid combinations found - will declare 0")
         return []
@@ -1149,6 +1157,9 @@ def choose_declare_strategic_v2(
 
     play_list = []
     hand_copy = hand.copy()
+    
+    # Check if player has GENERAL_RED for special rule (needed for both branches)
+    has_general_red = any(p.name == "GENERAL" and p.color == "RED" for p in hand)
 
     if verbose:
         print(f"\n📢 DECLARATION DECISION V2 for position {position_in_order}")
@@ -1202,9 +1213,9 @@ def choose_declare_strategic_v2(
         # =====================================================
         if verbose:
             print("\n🎯 NON-STARTER STRATEGY:")
-
-        # Check if player has GENERAL_RED for special rule
-        has_general_red = any(p.name == "GENERAL" and p.color == "RED" for p in hand)
+        
+        # Initialize declaration to 0 (will be updated based on logic)
+        declaration = 0
 
         # Step 1: Calculate pile room from previous declarations
         pile_room = calculate_pile_room(previous_declarations, has_general_red)
@@ -1213,62 +1224,63 @@ def choose_declare_strategic_v2(
                 print(f"  Has GENERAL_RED - ignoring starter's declaration")
             print(f"  Pile room available: {pile_room}")
 
-        # If no pile room, cannot declare anything
+        # If no pile room, will declare 0 (but check forbidden values later)
         if pile_room <= 0:
             if verbose:
-                print("  No pile room available - declaring 0")
-            return 0
-
-        # Step 2: Find ONE opener that meets pile room requirements
-        opener = None
-        # Calculate threshold once based on original pile room
-        original_threshold = get_piece_threshold(pile_room)
-
-        # For pile_room = 1, need > threshold (not >=)
-        if pile_room == 1:
-            candidates = [p for p in hand_copy if p.point > original_threshold]
+                print("  No pile room available - would declare 0")
+            # declaration already initialized to 0
         else:
-            candidates = [p for p in hand_copy if p.point >= original_threshold]
+            # Has pile room, proceed with normal logic
+            # Step 2: Find ONE opener that meets pile room requirements
+            opener = None
+            # Calculate threshold once based on original pile room
+            original_threshold = get_piece_threshold(pile_room)
 
-        if candidates:
-            opener = max(candidates, key=lambda p: p.point)
-            play_list.append({"type": "opener", "pieces": [opener]})
-            hand_copy = remove_pieces_from_hand(hand_copy, [opener])
-            if verbose:
-                print(f"  Found opener: {opener.name}({opener.point})")
+            # For pile_room = 1, need > threshold (not >=)
+            if pile_room == 1:
+                candidates = [p for p in hand_copy if p.point > original_threshold]
+            else:
+                candidates = [p for p in hand_copy if p.point >= original_threshold]
 
-        if not opener:
-            if verbose:
-                print("  No opener found - declaring 0")
-            return 0
+            if candidates:
+                opener = max(candidates, key=lambda p: p.point)
+                play_list.append({"type": "opener", "pieces": [opener]})
+                hand_copy = remove_pieces_from_hand(hand_copy, [opener])
+                if verbose:
+                    print(f"  Found opener: {opener.name}({opener.point})")
 
-        # Step 3: Find strong combos iteratively using the helper function
-        hand_copy, combos_found = find_and_select_strong_combos_iteratively(
-            hand_copy, play_list, verbose
-        )
+            if not opener:
+                if verbose:
+                    print("  No opener found - would declare 0")
+                # declaration remains 0 (already initialized)
+            else:
+                # Step 3: Find strong combos iteratively using the helper function
+                hand_copy, combos_found = find_and_select_strong_combos_iteratively(
+                    hand_copy, play_list, verbose
+                )
 
-        # Step 4: Find additional individual strong pieces
-        current_pieces = sum(len(play["pieces"]) for play in play_list)
-        room_left = pile_room - current_pieces
+                # Step 4: Find additional individual strong pieces
+                current_pieces = sum(len(play["pieces"]) for play in play_list)
+                room_left = pile_room - current_pieces
 
-        if room_left > 0:
-            # Use the original threshold throughout piece selection
-            # Pass pile_room as the current pile_room, and also as original_pile_room for consistency
-            strong_pieces = get_individual_strong_pieces(
-                hand_copy, pile_room, original_threshold, pile_room
-            )
-            # Sort by value descending to take best pieces first
-            strong_pieces.sort(key=lambda p: p.point, reverse=True)
+                if room_left > 0:
+                    # Use the original threshold throughout piece selection
+                    # Pass pile_room as the current pile_room, and also as original_pile_room for consistency
+                    strong_pieces = get_individual_strong_pieces(
+                        hand_copy, pile_room, original_threshold, pile_room
+                    )
+                    # Sort by value descending to take best pieces first
+                    strong_pieces.sort(key=lambda p: p.point, reverse=True)
 
-            pieces_added = 0
-            for piece in strong_pieces:
-                if pieces_added < room_left:
-                    play_list.append({"type": "opener", "pieces": [piece]})
-                    hand_copy = remove_pieces_from_hand(hand_copy, [piece])
-                    pieces_added += 1
+                    pieces_added = 0
+                    for piece in strong_pieces:
+                        if pieces_added < room_left:
+                            play_list.append({"type": "opener", "pieces": [piece]})
+                            hand_copy = remove_pieces_from_hand(hand_copy, [piece])
+                            pieces_added += 1
 
-        # Step 5: Fit to pile room if needed
-        play_list = fit_plays_to_pile_room(play_list, pile_room)
+                # Step 5: Fit to pile room if needed
+                play_list = fit_plays_to_pile_room(play_list, pile_room)
 
         # Step 6: After fitting, check if we have room for more individual pieces
         # This is important when combos were removed during fitting
@@ -1320,8 +1332,8 @@ def choose_declare_strategic_v2(
                             f"    Added additional piece: {piece.name}({piece.point})"
                         )
 
-        # Calculate declaration
-        declaration = sum(len(play["pieces"]) for play in play_list)
+                # Calculate declaration
+                declaration = sum(len(play["pieces"]) for play in play_list)
 
     # =====================================================
     # HANDLE FORBIDDEN VALUES (same for both)
@@ -1343,6 +1355,11 @@ def choose_declare_strategic_v2(
     if declaration in forbidden_declares:
         # Calculate pile room for this position
         pile_room = calculate_pile_room(previous_declarations, has_general_red)
+        
+        # Special case: if must_declare_nonzero and pile_room is 0, force pile_room to 1
+        # This handles the edge case where zero streak rule conflicts with no pile room
+        if must_declare_nonzero and 0 in forbidden_declares and pile_room <= 0:
+            pile_room = 1
 
         # Rebuild play_list to avoid forbidden values
         play_list = rebuild_play_list_avoiding_forbidden(
