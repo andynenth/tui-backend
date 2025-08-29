@@ -35,6 +35,10 @@ import { initializeTheme } from './utils/themeManager';
 // Performance monitoring
 import './utils/performanceMonitor';
 
+// Enhanced telemetry service
+import { telemetryService } from './utils/telemetryService';
+import TelemetryErrorBoundary from './components/TelemetryErrorBoundary';
+
 // Loading component for code-split pages
 const PageLoader = ({ message = "Loading page..." }) => (
   <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center">
@@ -222,17 +226,39 @@ const AppWithServices = () => {
 
         await initializeServices();
 
+        // Initialize telemetry service
+        telemetryService.track('react_app_init', {
+          timestamp: Date.now(),
+          userAgent: navigator.userAgent,
+          viewport: {
+            width: window.innerWidth,
+            height: window.innerHeight
+          }
+        });
+
         // Check for stored session
         if (hasValidSession()) {
           const session = getSession();
           console.log('🎮 Found stored session:', session);
+          telemetryService.track('session_recovery', {
+            hasSession: true,
+            roomId: session?.roomId
+          });
           setSessionToRecover(session);
+        } else {
+          telemetryService.track('session_recovery', {
+            hasSession: false
+          });
         }
 
         setServicesInitialized(true);
         console.log('🎮 Global services initialized');
       } catch (error) {
         console.error('Failed to initialize global services:', error);
+        telemetryService.trackError(error, {
+          context: 'service_initialization',
+          phase: 'startup'
+        });
         setInitializationError(error.message);
       }
     };
@@ -280,13 +306,19 @@ const AppWithServices = () => {
 // Main App component
 const App = () => {
   return (
-    <ErrorBoundary>
-      <ThemeProvider>
-        <AppProvider>
-          <AppWithServices />
-        </AppProvider>
-      </ThemeProvider>
-    </ErrorBoundary>
+    <TelemetryErrorBoundary componentName="App">
+      <ErrorBoundary>
+        <ThemeProvider>
+          <TelemetryErrorBoundary componentName="ThemeProvider">
+            <AppProvider>
+              <TelemetryErrorBoundary componentName="AppProvider">
+                <AppWithServices />
+              </TelemetryErrorBoundary>
+            </AppProvider>
+          </TelemetryErrorBoundary>
+        </ThemeProvider>
+      </ErrorBoundary>
+    </TelemetryErrorBoundary>
   );
 };
 

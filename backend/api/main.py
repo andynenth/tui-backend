@@ -17,6 +17,9 @@ from backend.api.routes.maintenance import (
 from backend.api.routes.telemetry import (
     router as telemetry_router,  # Import the telemetry router for client-side metrics.
 )
+from backend.api.routes.telemetry_websocket import (
+    router as telemetry_ws_router,  # Import the telemetry WebSocket router for live monitoring.
+)
 from backend.api.middleware import (
     RateLimitMiddleware,
 )  # Import rate limiting middleware
@@ -208,7 +211,8 @@ app.include_router(debug_router)  # Mounts the debug router for event store acce
 app.include_router(
     maintenance_router
 )  # Mounts the maintenance router for log management.
-app.include_router(telemetry_router)  # Mounts the telemetry router for client metrics.
+app.include_router(telemetry_router, prefix="/api")  # Mounts the telemetry router for client metrics.
+app.include_router(telemetry_ws_router, prefix="/api")  # Mounts the telemetry WebSocket router for live monitoring.
 
 
 # ✅ Serve static files ONLY for actual static assets (js, css, images, etc)
@@ -277,6 +281,15 @@ async def serve_chunk(file_name: str):
 app.mount("/static", StaticFiles(directory=STATIC_DIR), name="static")
 
 
+@app.get("/telemetry-dashboard")
+async def serve_telemetry_dashboard():
+    """Serve the telemetry monitoring dashboard"""
+    dashboard_path = os.path.join(STATIC_DIR, "telemetry-dashboard.html")
+    if os.path.exists(dashboard_path):
+        return FileResponse(dashboard_path, media_type="text/html")
+    raise HTTPException(status_code=404, detail="Telemetry dashboard not found")
+
+
 # ✅ Optional fallback: Define a GET endpoint for the root path.
 # This ensures that if the static files mount doesn't catch the root path for some reason,
 # or for direct access, index.html is still served.
@@ -329,6 +342,25 @@ async def startup_event():
         app.state.maintenance_scheduler = scheduler
     else:
         print("ℹ️  Log maintenance scheduler disabled")
+    
+    # Start telemetry data cleanup service
+    if os.getenv("TELEMETRY_CLEANUP_ENABLED", "true").lower() == "true":
+        from backend.api.services.telemetry_cleanup import TelemetryCleanupService
+        from pathlib import Path
+        
+        telemetry_db_path = Path(__file__).parent.parent.parent / "telemetry_data.db"
+        cleanup_service = TelemetryCleanupService(telemetry_db_path)
+        
+        # Start cleanup scheduler in background
+        import asyncio
+        asyncio.create_task(cleanup_service.start_cleanup_scheduler())
+        
+        # Store reference for shutdown
+        app.state.telemetry_cleanup_service = cleanup_service
+        
+        print("✅ Telemetry data cleanup service started")
+    else:
+        print("ℹ️  Telemetry cleanup service disabled")
 
 
 @app.on_event("shutdown")
@@ -340,6 +372,11 @@ async def shutdown_event():
     if hasattr(app.state, "maintenance_scheduler"):
         app.state.maintenance_scheduler.stop()
         print("✅ Log maintenance scheduler stopped")
+    
+    # Stop telemetry cleanup service if running
+    if hasattr(app.state, "telemetry_cleanup_service"):
+        app.state.telemetry_cleanup_service.stop_cleanup_scheduler()
+        print("✅ Telemetry cleanup service stopped")
 
     # Flush EventStore buffer to ensure no data loss
     try:

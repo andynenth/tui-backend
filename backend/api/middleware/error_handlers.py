@@ -52,12 +52,20 @@ async def custom_validation_exception_handler(request: Request, exc):
         field_path = ".".join(
             str(loc) for loc in error["loc"][1:]
         )  # Skip first element (usually "body")
+        # Handle bytes input that can't be JSON serialized
+        input_value = error.get("input")
+        if isinstance(input_value, bytes):
+            try:
+                input_value = input_value.decode('utf-8')
+            except UnicodeDecodeError:
+                input_value = f"<bytes data of length {len(input_value)}>"
+        
         errors.append(
             {
                 "code": ErrorCodes.INVALID_PARAMETER,
                 "message": error["msg"],
                 "field": field_path if field_path else None,
-                "context": {"type": error["type"], "input": error.get("input")},
+                "context": {"type": error["type"], "input": input_value},
             }
         )
 

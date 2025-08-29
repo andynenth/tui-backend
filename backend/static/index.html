@@ -70,8 +70,7 @@
           
           // Send critical events immediately
           if (event === 'bundle_error' || event === 'load_timeout' || event === 'load_failed') {
-            // Telemetry disabled for now
-            // this.send([entry]);
+            this.send([entry]);
           }
         },
         
@@ -156,7 +155,7 @@
               }
             }
             
-            // telemetry.send();
+            telemetry.send();
           };
           
           script.onerror = function(error) {
@@ -178,7 +177,7 @@
               telemetry.log('load_failed', {
                 totalAttempts: retryCount
               });
-              // telemetry.send();
+              telemetry.send();
               updateLoadingMessage(
                 'Unable to load the game after ' + maxRetries + ' attempts. ' +
                 '<br><br>Please try:' +
