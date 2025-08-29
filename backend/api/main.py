@@ -215,8 +215,8 @@ app.include_router(telemetry_router)  # Mounts the telemetry router for client m
 # We'll handle the HTML serving through explicit routes to support React Router
 @app.get("/bundle.js")
 async def serve_bundle():
-    """Serve the JavaScript bundle with no-cache headers"""
-    response = FileResponse(os.path.join(STATIC_DIR, "bundle.js"))
+    """Serve the JavaScript bundle with no-cache headers and proper content-type for ESM"""
+    response = FileResponse(os.path.join(STATIC_DIR, "bundle.js"), media_type="text/javascript")
     response.headers["Cache-Control"] = "no-cache, no-store, must-revalidate"
     response.headers["Pragma"] = "no-cache"
     response.headers["Expires"] = "0"
@@ -248,6 +248,29 @@ async def serve_favicon():
     if os.path.exists(static_favicon_path):
         return FileResponse(static_favicon_path, media_type="image/x-icon")
     raise HTTPException(status_code=404, detail="Favicon not found")
+
+
+@app.get("/chunks/{file_name}")
+async def serve_chunk(file_name: str):
+    """Serve code-split chunk files with proper content-type for ESM modules"""
+    chunk_path = os.path.join(STATIC_DIR, "chunks", file_name)
+    if os.path.exists(chunk_path):
+        # Determine media type based on file extension
+        if file_name.endswith('.js'):
+            media_type = "text/javascript"  # ESM modules require text/javascript
+        elif file_name.endswith('.css'):
+            media_type = "text/css"
+        elif file_name.endswith('.map'):
+            media_type = "application/json"
+        else:
+            media_type = "application/octet-stream"
+        
+        response = FileResponse(chunk_path, media_type=media_type)
+        response.headers["Cache-Control"] = "no-cache, no-store, must-revalidate"
+        response.headers["Pragma"] = "no-cache" 
+        response.headers["Expires"] = "0"
+        return response
+    raise HTTPException(status_code=404, detail="Chunk file not found")
 
 
 # Mount other static files (images, etc) under /static prefix to avoid conflicts

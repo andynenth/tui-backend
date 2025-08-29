@@ -12,6 +12,9 @@ COPY requirements.txt ./
 # 📦 Install Python dependencies
 RUN pip install --no-cache-dir -r requirements.txt
 
+# 📁 Create data directory for SQLite database
+RUN mkdir -p /app/data && chmod 755 /app/data
+
 # 🧭 Set PYTHONPATH for FastAPI
 ENV PYTHONPATH=/app/backend
 

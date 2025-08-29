@@ -121,6 +121,7 @@
         function loadBundle() {
           const loadStart = Date.now();
           const script = document.createElement('script');
+          script.type = 'module'; // Required for ESM format
           script.src = '/bundle.js';
           
           // Add timestamp to bypass cache on retry

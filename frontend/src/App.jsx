@@ -1,6 +1,6 @@
 // frontend/src/App.jsx
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, Suspense } from 'react';
 import {
   BrowserRouter as Router,
   Routes,
@@ -15,13 +15,15 @@ import { ThemeProvider } from './contexts/ThemeContext';
 import { ErrorBoundary } from './components';
 import { hasValidSession, getSession } from './utils/sessionStorage';
 
-// Import scene components (to be created)
+// Import critical pages directly (immediately needed)
 import StartPage from './pages/StartPage';
-import LobbyPage from './pages/LobbyPage';
-import RoomPage from './pages/RoomPage';
 import GamePage from './pages/GamePage';
-import TutorialPage from './pages/TutorialPage';
-import PlayHistoryPage from './pages/PlayHistoryPage';
+
+// Lazy load secondary pages for better initial bundle size
+const LobbyPage = React.lazy(() => import('./pages/LobbyPage'));
+const RoomPage = React.lazy(() => import('./pages/RoomPage'));
+const TutorialPage = React.lazy(() => import('./pages/TutorialPage'));
+const PlayHistoryPage = React.lazy(() => import('./pages/PlayHistoryPage'));
 import { LoadingOverlay } from './components';
 
 // Service initialization
@@ -29,6 +31,19 @@ import { initializeServices, cleanupServices } from './services';
 
 // Initialize theme on app load
 import { initializeTheme } from './utils/themeManager';
+
+// Performance monitoring
+import './utils/performanceMonitor';
+
+// Loading component for code-split pages
+const PageLoader = ({ message = "Loading page..." }) => (
+  <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center">
+    <div className="text-center">
+      <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600 mx-auto mb-4"></div>
+      <p className="text-indigo-600 font-medium">{message}</p>
+    </div>
+  </div>
+);
 
 // Protected Route component
 const ProtectedRoute = ({ children, requiredData = [] }) => {
@@ -133,30 +148,41 @@ const AppRouterContent = ({ sessionToRecover }) => {
       {/* Start page - no requirements */}
       <Route path="/" element={<StartPage />} />
       
-      {/* Tutorial page - no requirements */}
-      <Route path="/tutorial" element={<TutorialPage />} />
+      {/* Tutorial page - no requirements - Lazy loaded */}
+      <Route 
+        path="/tutorial" 
+        element={
+          <Suspense fallback={<PageLoader message="Loading tutorial..." />}>
+            <TutorialPage />
+          </Suspense>
+        } 
+      />
 
-      {/* Lobby - requires player name */}
+      {/* Lobby - requires player name - Lazy loaded */}
       <Route
         path="/lobby"
         element={
           <ProtectedRoute requiredData={['playerName']}>
-            <LobbyPage />
+            <Suspense fallback={<PageLoader message="Loading lobby..." />}>
+              <LobbyPage />
+            </Suspense>
           </ProtectedRoute>
         }
       />
 
-      {/* Room - requires player name and room ID */}
+      {/* Room - requires player name and room ID - Lazy loaded */}
       <Route
         path="/room/:roomId"
         element={
           <ProtectedRoute requiredData={['playerName', 'roomId']}>
-            <RoomPage />
+            <Suspense fallback={<PageLoader message="Loading room..." />}>
+              <RoomPage />
+            </Suspense>
           </ProtectedRoute>
         }
       />
 
-      {/* Game - requires player name and room ID, provides GameContext */}
+      {/* Game - requires player name and room ID, provides GameContext - Critical page, not lazy loaded */}
       <Route
         path="/game/:roomId"
         element={
@@ -166,8 +192,15 @@ const AppRouterContent = ({ sessionToRecover }) => {
         }
       />
 
-      {/* Admin-only Play History - direct URL access only */}
-      <Route path="/history/:roomId" element={<PlayHistoryPage />} />
+      {/* Admin-only Play History - direct URL access only - Lazy loaded */}
+      <Route 
+        path="/history/:roomId" 
+        element={
+          <Suspense fallback={<PageLoader message="Loading play history..." />}>
+            <PlayHistoryPage />
+          </Suspense>
+        } 
+      />
 
       {/* Catch all - redirect to start */}
       <Route path="*" element={<Navigate to="/" replace />} />
