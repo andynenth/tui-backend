@@ -338,6 +338,291 @@ Logs can be aggregated using standard tools:
 | Error Rate | <0.1% | 0.1-1% | >1% |
 | SQLite Cache Hit | >80% | 50-80% | <50% |
 
+## Telemetry Monitoring
+
+The application includes comprehensive client-side telemetry collection and monitoring capabilities for tracking bundle loading performance, user interactions, and error conditions.
+
+### Telemetry Dashboard
+
+Access the real-time telemetry monitoring dashboard:
+```
+http://localhost:5050/telemetry-dashboard
+```
+
+Features:
+- **Real-time Event Feed**: Live stream of client telemetry events
+- **Critical Alerts**: Automatic alerts for bundle failures and errors  
+- **Performance Metrics**: Success rates, load times, and session statistics
+- **Analytics Overview**: Error analysis, device breakdown, and connection quality
+- **WebSocket Integration**: Live updates without page refresh
+
+### Telemetry Data Collection API
+
+#### Submit Telemetry Events
+Client-side telemetry automatically submits events via:
+```
+POST /api/telemetry
+```
+
+**Request Format**:
+```json
+{
+  "sessionId": "c0ul3k",
+  "events": [
+    {
+      "event": "bundle_load_success",
+      "timestamp": 1756452685169,
+      "elapsed": 1250,
+      "loadTime": 1250,
+      "attempt": 1,
+      "userAgent": "Mozilla/5.0...",
+      "connection": {"effectiveType": "4g"},
+      "screen": {"width": 1920, "height": 1080},
+      "viewport": {"width": 1600, "height": 900},
+      "memory": {"usedJSHeapSize": 45000000}
+    }
+  ]
+}
+```
+
+**Event Types**:
+- `page_load_start`: Initial page load
+- `bundle_load_attempt`: Bundle loading initiated
+- `bundle_load_success`: Bundle loaded successfully
+- `bundle_error`: Bundle loading failed
+- `load_timeout`: Loading exceeded timeout
+- `javascript_error`: Client-side JavaScript error
+- `unhandled_rejection`: Promise rejection
+- `component_error`: React component error
+- `performance_metrics`: Browser performance data
+- `long_task`: Performance bottleneck detected
+- `route_change`: Navigation event
+- `react_app_unload`: Application cleanup
+
+### Analytics APIs
+
+#### Bundle Loading Performance
+```bash
+curl "http://localhost:5050/api/analytics/bundle-load-stats?hours=24&group_by=device"
+```
+
+**Response**:
+```json
+{
+  "period": "last_24_hours",
+  "summary": {
+    "total_sessions": 152,
+    "successful_loads": 147,
+    "failed_loads": 5,
+    "success_rate": 0.967,
+    "avg_load_time": 1420.5,
+    "mobile_percentage": 23.7,
+    "slow_connections": 8,
+    "total_errors": 12
+  },
+  "groups": {
+    "desktop": {"sessions": 116, "success_rate": 0.974, "avg_load_time": 1245.2},
+    "mobile": {"sessions": 36, "success_rate": 0.944, "avg_load_time": 1890.1}
+  }
+}
+```
+
+**Parameters**:
+- `hours`: Time window (1-168 hours, default: 24)
+- `group_by`: Group results by "device", "connection", or omit for summary only
+
+#### Client-Side Errors
+```bash
+curl "http://localhost:5050/api/analytics/client-errors?hours=1&min_occurrences=1"
+```
+
+**Response**:
+```json
+{
+  "period": "last_1_hours",
+  "total_error_types": 3,
+  "total_occurrences": 7,
+  "unique_sessions_affected": 4,
+  "errors": [
+    {
+      "type": "bundle_error",
+      "message": "Failed to fetch bundle.js",
+      "filename": "Unknown file",
+      "occurrences": 3,
+      "unique_sessions": 2,
+      "last_seen": "2025-08-29 00:45:12",
+      "severity": "critical"
+    },
+    {
+      "type": "javascript_error", 
+      "message": "Cannot read properties of null",
+      "filename": "main.js",
+      "occurrences": 2,
+      "unique_sessions": 2,
+      "last_seen": "2025-08-29 00:30:25",
+      "severity": "warning"
+    }
+  ]
+}
+```
+
+#### Device and Browser Breakdown
+```bash
+curl "http://localhost:5050/api/analytics/device-breakdown?hours=24"
+```
+
+**Response**:
+```json
+{
+  "period": "last_24_hours",
+  "devices": {
+    "desktop": 116,
+    "mobile": 34,
+    "tablet": 2
+  },
+  "browsers": {
+    "Chrome": 98,
+    "Safari": 32,
+    "Firefox": 18,
+    "Edge": 4
+  },
+  "connections": {
+    "4g": 89,
+    "3g": 34,
+    "wifi": 25,
+    "2g": 4
+  }
+}
+```
+
+#### Performance Trends
+```bash
+curl "http://localhost:5050/api/analytics/performance-trends?hours=24&interval=1h"
+```
+
+**Response**:
+```json
+{
+  "period": "last_24_hours",
+  "interval": "1h",
+  "data_points": 24,
+  "trends": [
+    {
+      "timestamp": "2025-08-29 01:00:00",
+      "sessions": 12,
+      "success_rate": 0.917,
+      "avg_load_time": 1580.3,
+      "error_rate": 0.08
+    }
+  ]
+}
+```
+
+### Privacy and Data Management
+
+#### Privacy Compliance Report
+```bash
+curl http://localhost:5050/api/privacy/report
+```
+
+Shows data retention policies, anonymization practices, and compliance status.
+
+#### Export User Data (GDPR)
+```bash
+curl http://localhost:5050/api/privacy/export/{session_id}
+```
+
+Export all telemetry data for a specific session ID.
+
+#### Delete User Data (Right to be Forgotten)
+```bash
+curl -X DELETE http://localhost:5050/api/privacy/delete/{session_id}
+```
+
+Permanently delete all telemetry data for a session.
+
+#### Data Summary
+```bash
+curl http://localhost:5050/api/privacy/data-summary
+```
+
+**Response**:
+```json
+{
+  "summary": {
+    "total_events": 1247,
+    "total_sessions": 89,
+    "oldest_data": "2025-08-27 10:15:32",
+    "newest_data": "2025-08-29 00:31:25"
+  },
+  "events_by_type": {
+    "bundle_load_success": 523,
+    "performance_metrics": 312,
+    "page_load_start": 89,
+    "javascript_error": 12
+  },
+  "sessions_by_device": {
+    "desktop": 67,
+    "mobile": 20,
+    "tablet": 2
+  },
+  "data_retention": "7-90 days depending on event type",
+  "privacy_note": "All data is anonymized and automatically cleaned up"
+}
+```
+
+### Telemetry Monitoring Thresholds
+
+| Metric | Good | Warning | Critical |
+|--------|------|---------|----------|
+| Bundle Success Rate | >95% | 90-95% | <90% |
+| Average Load Time | <2s | 2-5s | >5s |
+| Error Rate | <1% | 1-5% | >5% |
+| Mobile Success Rate | >90% | 80-90% | <80% |
+| Slow Connection Success | >85% | 70-85% | <70% |
+
+### Automatic Alerting
+
+The telemetry system includes intelligent alerting:
+
+**Critical Alerts** (immediate attention):
+- Bundle load failures ≥3 consecutive attempts
+- Mobile Safari compatibility issues
+- Error rate spike >5% in 5 minutes
+- Complete bundle loading failures
+
+**Warning Alerts** (investigate when convenient):
+- Success rate drops below 95%
+- Average load time exceeds 3 seconds
+- Slow connection (2G/slow-2G) issues
+- High error frequency on specific browsers
+
+**Alert Actions**:
+1. **Dashboard Notification**: Real-time alert bar with dismiss option
+2. **Server Logging**: Structured logs with alert context
+3. **WebSocket Broadcast**: Live updates to monitoring dashboard
+4. **Auto-Dismissal**: Warning alerts auto-dismiss after 10 seconds
+
+### Telemetry Data Storage
+
+**Database**: SQLite (`telemetry_data.db`) with automatic cleanup
+**Tables**:
+- `telemetry_events`: Individual telemetry events with full context
+- `telemetry_sessions`: Session-level aggregated metrics
+- `telemetry_stats`: Daily statistics for historical analysis
+
+**Data Retention**:
+- Raw events: 7 days (configurable)
+- Session summaries: 30 days
+- Daily statistics: 90 days
+- Automatic cleanup prevents unbounded growth
+
+**Privacy Compliance**:
+- All IP addresses are anonymized after 24 hours
+- No personally identifiable information is stored
+- Session IDs are randomly generated, not user-linked
+- Full GDPR compliance with export/deletion endpoints
+
 ## Troubleshooting Production Issues
 
 ### Common Issues and Solutions

@@ -84,55 +84,103 @@
             50% { opacity: 0.5; }
         }
 
+        /* Critical Alerts Bar */
+        .alerts-bar {
+            background: #fee2e2;
+            border: 2px solid #ef4444;
+            border-radius: 12px;
+            padding: 15px 20px;
+            margin-bottom: 20px;
+            display: none;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .alerts-bar.active {
+            display: flex;
+            animation: alertPulse 2s infinite;
+        }
+
+        .alerts-bar.warning {
+            background: #fef3c7;
+            border-color: #f59e0b;
+        }
+
+        @keyframes alertPulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.9; }
+        }
+
+        .alert-icon {
+            font-size: 1.5rem;
+        }
+
+        .alert-content {
+            flex: 1;
+        }
+
+        .alert-title {
+            font-weight: 700;
+            color: #991b1b;
+            margin-bottom: 4px;
+        }
+
+        .alert-message {
+            color: #7f1d1d;
+            font-size: 0.9rem;
+        }
+
+        /* Key Metrics - Simplified */
         .metrics-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 20px;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 15px;
             margin-bottom: 30px;
         }
 
         .metric-card {
             background: white;
-            padding: 25px;
-            border-radius: 15px;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+            text-align: center;
+            transition: transform 0.2s ease;
         }
 
         .metric-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
+            transform: translateY(-2px);
         }
 
         .metric-card h3 {
-            color: #4a5568;
-            font-size: 0.9rem;
+            color: #6b7280;
+            font-size: 0.75rem;
             font-weight: 600;
             text-transform: uppercase;
             letter-spacing: 1px;
-            margin-bottom: 15px;
+            margin-bottom: 8px;
         }
 
         .metric-value {
-            font-size: 2.5rem;
+            font-size: 1.8rem;
             font-weight: 700;
-            margin-bottom: 5px;
+            margin-bottom: 4px;
         }
 
         .metric-subtitle {
-            color: #718096;
-            font-size: 0.9rem;
+            color: #9ca3af;
+            font-size: 0.8rem;
         }
 
-        .success { color: #38a169; }
-        .warning { color: #d69e2e; }
-        .error { color: #e53e3e; }
-        .info { color: #3182ce; }
+        .success { color: #10b981; }
+        .warning { color: #f59e0b; }
+        .error { color: #ef4444; }
+        .info { color: #3b82f6; }
 
+        /* Main Content - Full Width */
         .main-content {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 30px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
         }
 
         .panel {
@@ -150,26 +198,34 @@
             gap: 10px;
         }
 
+        /* Live Feed - Enhanced */
         .live-feed {
-            height: 500px;
+            height: 400px;
             overflow-y: auto;
-            border: 1px solid #e2e8f0;
-            border-radius: 8px;
-            padding: 15px;
-            background: #f8fafc;
+            border: 1px solid #e5e7eb;
+            border-radius: 12px;
+            background: #f9fafb;
+            padding: 0;
         }
 
         .feed-item {
-            display: flex;
-            align-items: flex-start;
-            gap: 12px;
-            padding: 12px;
-            margin-bottom: 8px;
-            border-radius: 8px;
-            border-left: 4px solid;
+            display: grid;
+            grid-template-columns: 70px 1fr auto;
+            align-items: center;
+            gap: 15px;
+            padding: 12px 20px;
+            border-bottom: 1px solid #f3f4f6;
             background: white;
-            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            transition: background-color 0.2s ease;
             animation: fadeIn 0.3s ease;
+        }
+
+        .feed-item:hover {
+            background: #f8fafc;
+        }
+
+        .feed-item:last-child {
+            border-bottom: none;
         }
 
         @keyframes fadeIn {
@@ -177,15 +233,15 @@
             to { opacity: 1; transform: translateY(0); }
         }
 
-        .feed-item.critical { border-left-color: #e53e3e; }
-        .feed-item.warning { border-left-color: #d69e2e; }
-        .feed-item.info { border-left-color: #3182ce; }
+        .feed-item.critical { border-left: 3px solid #ef4444; background: #fef7f7; }
+        .feed-item.warning { border-left: 3px solid #f59e0b; background: #fffdf7; }
+        .feed-item.info { border-left: 3px solid #3b82f6; background: #f7f9ff; }
 
         .feed-timestamp {
-            font-size: 0.8rem;
-            color: #718096;
-            font-weight: 500;
-            min-width: 60px;
+            font-size: 0.75rem;
+            color: #6b7280;
+            font-weight: 600;
+            text-align: center;
         }
 
         .feed-content {
@@ -193,21 +249,70 @@
         }
 
         .feed-event-type {
-            font-weight: 600;
-            margin-bottom: 3px;
+            font-weight: 700;
+            font-size: 0.85rem;
+            margin-bottom: 2px;
         }
+
+        .feed-event-type.critical { color: #dc2626; }
+        .feed-event-type.warning { color: #d97706; }
+        .feed-event-type.info { color: #2563eb; }
 
         .feed-details {
-            font-size: 0.85rem;
-            color: #4a5568;
-            line-height: 1.4;
+            font-size: 0.75rem;
+            color: #6b7280;
+            line-height: 1.3;
         }
 
-        .analytics-summary {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 20px;
+        .feed-session {
+            font-size: 0.7rem;
+            color: #9ca3af;
+            font-family: 'Courier New', monospace;
+            padding: 2px 6px;
+            background: #f3f4f6;
+            border-radius: 4px;
+        }
+
+        /* Analytics Section - Full Width */
+        .analytics-section {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .analytics-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
             margin-bottom: 20px;
+        }
+
+        .analytics-toggle {
+            background: #f3f4f6;
+            border: none;
+            border-radius: 6px;
+            padding: 6px 12px;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: background-color 0.2s ease;
+        }
+
+        .analytics-toggle:hover {
+            background: #e5e7eb;
+        }
+
+        .analytics-content {
+            display: grid;
+            grid-template-columns: 1fr 2fr;
+            gap: 30px;
+            align-items: start;
+        }
+
+        .analytics-sidebar {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
         }
 
         .summary-item {
@@ -215,28 +320,27 @@
             background: #f8fafc;
             border-radius: 8px;
             text-align: center;
+            border: 1px solid #e5e7eb;
         }
 
         .summary-item h4 {
-            color: #2d3748;
+            color: #374151;
             margin-bottom: 8px;
-            font-size: 0.9rem;
+            font-size: 0.8rem;
+            font-weight: 600;
         }
 
         .summary-value {
-            font-size: 1.5rem;
+            font-size: 1.4rem;
             font-weight: 700;
         }
 
         .charts-container {
-            height: 350px;
-            background: #f8fafc;
-            border-radius: 8px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: #718096;
-            font-style: italic;
+            background: #f9fafb;
+            border-radius: 12px;
+            padding: 20px;
+            border: 1px solid #e5e7eb;
+            min-height: 280px;
         }
 
         .controls {
@@ -281,16 +385,60 @@
         }
 
         @media (max-width: 768px) {
-            .main-content {
-                grid-template-columns: 1fr;
+            .metrics-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 10px;
             }
             
+            .metric-card {
+                padding: 15px;
+            }
+            
+            .metric-value {
+                font-size: 1.5rem;
+            }
+            
+            .analytics-content {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+            
+            .analytics-sidebar {
+                order: 2;
+                flex-direction: row;
+                overflow-x: auto;
+            }
+            
+            .summary-item {
+                min-width: 120px;
+                flex-shrink: 0;
+            }
+            
+            .feed-item {
+                grid-template-columns: 60px 1fr;
+                gap: 10px;
+            }
+            
+            .feed-session {
+                display: none;
+            }
+            
+            .alerts-bar {
+                padding: 12px 15px;
+            }
+        }
+
+        @media (max-width: 480px) {
             .metrics-grid {
                 grid-template-columns: 1fr;
             }
             
-            .analytics-summary {
-                grid-template-columns: 1fr;
+            .dashboard {
+                padding: 15px;
+            }
+            
+            .header h1 {
+                font-size: 2rem;
             }
         }
 
@@ -319,11 +467,22 @@
             </div>
         </div>
 
+        <!-- Critical Alerts Bar -->
+        <div id="alertsBar" class="alerts-bar">
+            <div class="alert-icon">🚨</div>
+            <div class="alert-content">
+                <div class="alert-title">Critical Issue Detected</div>
+                <div id="alertMessage" class="alert-message">Multiple bundle load failures detected</div>
+            </div>
+            <button class="btn secondary" onclick="dismissAlert()">Dismiss</button>
+        </div>
+
+        <!-- Key Metrics - Simplified to 4 Essential -->
         <div class="metrics-grid">
             <div class="metric-card">
                 <h3>Success Rate</h3>
                 <div id="successRate" class="metric-value success">--</div>
-                <div class="metric-subtitle">Bundle Load Success</div>
+                <div class="metric-subtitle">Bundle Loads</div>
             </div>
 
             <div class="metric-card">
@@ -335,29 +494,18 @@
             <div class="metric-card">
                 <h3>Total Sessions</h3>
                 <div id="totalSessions" class="metric-value info">--</div>
-                <div class="metric-subtitle">Last 24 Hours</div>
+                <div class="metric-subtitle">Last 24h</div>
             </div>
 
             <div class="metric-card">
-                <h3>Errors</h3>
+                <h3>Active Errors</h3>
                 <div id="errorCount" class="metric-value error">--</div>
-                <div class="metric-subtitle">Recent Errors</div>
-            </div>
-
-            <div class="metric-card">
-                <h3>Mobile Users</h3>
-                <div id="mobilePercentage" class="metric-value warning">--</div>
-                <div class="metric-subtitle">Percentage</div>
-            </div>
-
-            <div class="metric-card">
-                <h3>Active Monitors</h3>
-                <div id="activeMonitors" class="metric-value success">--</div>
-                <div class="metric-subtitle">Connected</div>
+                <div class="metric-subtitle">Current Issues</div>
             </div>
         </div>
 
         <div class="main-content">
+            <!-- Live Event Feed - Full Width -->
             <div class="panel">
                 <h2>🔴 Live Event Feed</h2>
                 <div class="controls">
@@ -373,22 +521,32 @@
                 </div>
             </div>
 
-            <div class="panel">
-                <h2>📈 Analytics Overview</h2>
-                <div class="analytics-summary">
-                    <div class="summary-item">
-                        <h4>Recent Errors</h4>
-                        <div id="recentErrors" class="summary-value error">--</div>
-                    </div>
-                    <div class="summary-item">
-                        <h4>Slow Connections</h4>
-                        <div id="slowConnections" class="summary-value warning">--</div>
-                    </div>
+            <!-- Analytics Section - Full Width -->
+            <div class="analytics-section">
+                <div class="analytics-header">
+                    <h2>📈 Analytics Overview</h2>
+                    <button class="analytics-toggle" onclick="toggleAnalytics()">Expand Details</button>
                 </div>
-                <div class="charts-container" id="chartsContainer">
-                    <div style="text-align: center;">
-                        <div class="loading-spinner"></div>
-                        <p style="margin-top: 20px;">Loading analytics data...</p>
+                <div class="analytics-content">
+                    <div class="analytics-sidebar">
+                        <div class="summary-item">
+                            <h4>Recent Errors</h4>
+                            <div id="recentErrors" class="summary-value error">--</div>
+                        </div>
+                        <div class="summary-item">
+                            <h4>Slow Connections</h4>
+                            <div id="slowConnections" class="summary-value warning">--</div>
+                        </div>
+                        <div class="summary-item">
+                            <h4>Mobile Users</h4>
+                            <div id="mobilePercentage" class="summary-value info">--</div>
+                        </div>
+                    </div>
+                    <div class="charts-container" id="chartsContainer">
+                        <div style="text-align: center;">
+                            <div class="loading-spinner"></div>
+                            <p style="margin-top: 20px;">Loading analytics data...</p>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -486,18 +644,23 @@
         }
 
         function updateMetrics(data) {
+            // Update main metrics
             document.getElementById('successRate').textContent = 
-                (data.success_rate * 100).toFixed(1) + '%';
+                ((data.success_rate || 0) * 100).toFixed(1) + '%';
             document.getElementById('avgLoadTime').textContent = 
-                data.avg_load_time.toFixed(0) + 'ms';
+                (data.avg_load_time || 0).toFixed(0) + 'ms';
             document.getElementById('totalSessions').textContent = 
-                data.total_sessions.toLocaleString();
+                (data.total_sessions || 0).toLocaleString();
             document.getElementById('errorCount').textContent = 
-                data.total_errors.toLocaleString();
-            document.getElementById('mobilePercentage').textContent = 
-                data.mobile_percentage.toFixed(1) + '%';
-            document.getElementById('activeMonitors').textContent = 
-                data.active_monitors || 0;
+                (data.total_errors || 0).toLocaleString();
+            
+            // Update analytics sidebar if mobile percentage exists
+            if (data.mobile_percentage !== undefined) {
+                const mobileEl = document.getElementById('mobilePercentage');
+                if (mobileEl) {
+                    mobileEl.textContent = data.mobile_percentage.toFixed(1) + '%';
+                }
+            }
         }
 
         function updateLiveStats(data) {
@@ -512,6 +675,47 @@
             if (data.last_5_minutes) {
                 // Could update a "recent activity" indicator
                 console.log('Recent errors (5min):', data.last_5_minutes.recent_errors);
+            }
+            
+            // Update mobile percentage in analytics sidebar
+            if (data.mobile_percentage !== undefined) {
+                document.getElementById('mobilePercentage').textContent = 
+                    data.mobile_percentage.toFixed(1) + '%';
+            }
+        }
+
+        // Alert System
+        function showAlert(severity, message) {
+            const alertsBar = document.getElementById('alertsBar');
+            const alertMessage = document.getElementById('alertMessage');
+            
+            alertsBar.className = `alerts-bar active ${severity === 'warning' ? 'warning' : ''}`;
+            alertMessage.textContent = message;
+            
+            // Auto-dismiss after 10 seconds for warnings
+            if (severity === 'warning') {
+                setTimeout(() => {
+                    dismissAlert();
+                }, 10000);
+            }
+        }
+
+        function dismissAlert() {
+            const alertsBar = document.getElementById('alertsBar');
+            alertsBar.classList.remove('active');
+        }
+
+        // Analytics Toggle
+        function toggleAnalytics() {
+            const button = event.target;
+            const content = document.querySelector('.analytics-content');
+            
+            if (content.style.display === 'none') {
+                content.style.display = 'grid';
+                button.textContent = 'Collapse Details';
+            } else {
+                content.style.display = 'none';
+                button.textContent = 'Expand Details';
             }
         }
 
@@ -547,22 +751,28 @@
             const eventTypeDisplay = event.event_type.replace('_', ' ').toUpperCase();
             
             let details = [];
-            if (event.browser) details.push(`Browser: ${event.browser}`);
-            if (event.connection && event.connection !== 'unknown') details.push(`Connection: ${event.connection}`);
-            if (event.load_time) details.push(`Load Time: ${event.load_time}ms`);
-            if (event.attempt) details.push(`Attempt: ${event.attempt}`);
-            if (event.error) details.push(`Error: ${event.error}`);
+            if (event.browser && event.browser !== 'Unknown') details.push(event.browser);
+            if (event.connection && event.connection !== 'unknown' && event.connection !== '') details.push(event.connection);
+            if (event.load_time) details.push(`${event.load_time}ms`);
+            if (event.attempt && event.attempt > 1) details.push(`Attempt ${event.attempt}`);
+            
+            // Show session ID truncated
+            const sessionDisplay = event.session_id ? event.session_id.substring(0, 6) + '...' : 'Unknown';
             
             item.innerHTML = `
                 <div class="feed-timestamp">${time}</div>
                 <div class="feed-content">
-                    <div class="feed-event-type">${eventTypeDisplay}</div>
-                    <div class="feed-details">
-                        Session: ${event.session_id}<br>
-                        ${details.join(' • ')}
-                    </div>
+                    <div class="feed-event-type ${event.severity}">${eventTypeDisplay}</div>
+                    <div class="feed-details">${details.join(' • ')}</div>
+                    ${event.error ? `<div class="feed-details" style="color: #ef4444; font-weight: 600;">⚠️ ${event.error}</div>` : ''}
                 </div>
+                <div class="feed-session">${sessionDisplay}</div>
             `;
+            
+            // Trigger alert for critical events
+            if (event.severity === 'critical') {
+                showAlert('critical', `${eventTypeDisplay}: ${event.error || 'Critical issue detected'}`);
+            }
             
             return item;
         }
@@ -596,21 +806,22 @@
             const eventTypeDisplay = event.event_type.replace('_', ' ').toUpperCase();
             
             let details = [];
-            if (event.browser) details.push(`Browser: ${event.browser}`);
-            if (event.connection && event.connection !== 'unknown') details.push(`Connection: ${event.connection}`);
-            if (event.load_time) details.push(`Load Time: ${event.load_time}ms`);
-            if (event.attempt) details.push(`Attempt: ${event.attempt}`);
-            if (event.error) details.push(`Error: ${event.error}`);
+            if (event.browser && event.browser !== 'Unknown') details.push(event.browser);
+            if (event.connection && event.connection !== 'unknown' && event.connection !== '') details.push(event.connection);
+            if (event.load_time) details.push(`${event.load_time}ms`);
+            if (event.attempt && event.attempt > 1) details.push(`Attempt ${event.attempt}`);
+            
+            // Show session ID truncated
+            const sessionDisplay = event.session_id ? event.session_id.substring(0, 6) + '...' : 'Unknown';
             
             item.innerHTML = `
                 <div class="feed-timestamp">${time}</div>
                 <div class="feed-content">
-                    <div class="feed-event-type">${eventTypeDisplay}</div>
-                    <div class="feed-details">
-                        Session: ${event.session_id}<br>
-                        ${details.join(' • ')}
-                    </div>
+                    <div class="feed-event-type ${event.severity}">${eventTypeDisplay}</div>
+                    <div class="feed-details">${details.join(' • ')}</div>
+                    ${event.error ? `<div class="feed-details" style="color: #ef4444; font-weight: 600;">⚠️ ${event.error}</div>` : ''}
                 </div>
+                <div class="feed-session">${sessionDisplay}</div>
             `;
             
             return item;
