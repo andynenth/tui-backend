@@ -1,7 +1,10 @@
 # backend/services/migration_adapter.py
 
 import logging
+import sqlite3
+from datetime import datetime
 from typing import Dict, Any, Optional
+from pathlib import Path
 
 from backend.services.optimized_event_store import OptimizedEventStore
 
@@ -93,3 +96,25 @@ class MigrationAdapter:
     def db_path(self):
         """Get database path for compatibility."""
         return self.v2_store.v2_store.db_path
+    
+    async def count_events_for_date(self, date: datetime) -> int:
+        """
+        Count events for a specific date
+        
+        Args:
+            date: The date to count events for
+            
+        Returns:
+            int: Number of events on that date
+        """
+        date_str = date.strftime("%Y-%m-%d")
+        
+        conn = sqlite3.connect(self.db_path)
+        cursor = conn.execute(
+            "SELECT COUNT(*) FROM game_events WHERE date(created_at) = date(?)",
+            (date_str,),
+        )
+        count = cursor.fetchone()[0]
+        conn.close()
+        
+        return count
