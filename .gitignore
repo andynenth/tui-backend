@@ -74,3 +74,6 @@ CLAUDE.md
 id_rsa
 id_rsa.*
 
+# AI Debug logs
+logs/
+

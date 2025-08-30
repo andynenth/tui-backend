@@ -1138,6 +1138,7 @@ def choose_declare_strategic_v2(
     previous_declarations: list[int],
     must_declare_nonzero: bool,
     verbose: bool = True,
+    ai_logger=None,  # Add optional AI logger
 ) -> int:
     """
     New declaration logic with separate starter/non-starter strategies.
@@ -1160,6 +1161,29 @@ def choose_declare_strategic_v2(
     
     # Check if player has GENERAL_RED for special rule (needed for both branches)
     has_general_red = any(p.name == "GENERAL" and p.color == "RED" for p in hand)
+    
+    # Prepare logging data
+    log_data = {
+        'position_in_order': position_in_order,
+        'is_starter': is_first_player,
+        'previous_declarations': previous_declarations,
+        'zero_streak': getattr(hand[0], '_bot_zero_streak', 0) if hand else 0,
+        'hand_analysis': {
+            'raw_hand': [f"{p.name}_{p.color}" for p in hand],
+            'hand_strength': {
+                'opener_count': len([p for p in hand if p.point >= 11]),
+                'strong_combos': [],  # Will be filled later
+                'weak_pieces': len([p for p in hand if p.point <= 3]),
+                'average_piece_value': sum(p.point for p in hand) / len(hand) if hand else 0
+            }
+        },
+        'decision_factors': {
+            'has_general_red': has_general_red,
+            'pile_room': calculate_pile_room(previous_declarations, has_general_red),
+            'field_strength': assess_field_strength(previous_declarations),
+            'forbidden_values': []  # Will be filled later
+        }
+    }
 
     if verbose:
         print(f"\n📢 DECLARATION DECISION V2 for position {position_in_order}")
@@ -1386,6 +1410,34 @@ def choose_declare_strategic_v2(
                     f"    - Opener: {play['pieces'][0].name}({play['pieces'][0].point})"
                 )
 
+    # Log the decision if logger is available
+    if ai_logger:
+        # Update log data with final decision
+        log_data['decision_factors']['forbidden_values'] = list(forbidden_declares)
+        log_data['final_declaration'] = declaration
+        log_data['play_list'] = [
+            {
+                'type': play['type'],
+                'combo_type': play.get('combo_type'),
+                'pieces': [f"{p.name}_{p.color}" for p in play['pieces']]
+            } for play in play_list
+        ]
+        
+        # Determine reasoning
+        if declaration == 0:
+            reasoning = "No viable plays found"
+        elif is_first_player:
+            reasoning = f"Starter with {len([p for p in play_list if p['type'] == 'opener'])} openers and {len([p for p in play_list if p['type'] == 'combo'])} combos"
+        else:
+            reasoning = f"Non-starter with pile room {log_data['decision_factors']['pile_room']}"
+            
+        log_data['reasoning'] = reasoning
+        log_data['confidence'] = 0.8 if declaration > 0 else 0.3
+        
+        # Get player name if available
+        player_name = getattr(hand[0], '_bot_name', 'Unknown') if hand else 'Unknown'
+        ai_logger.log_declaration(player_name, log_data)
+
     return declaration
 
 
@@ -1400,6 +1452,7 @@ def choose_declare(
     must_declare_nonzero: bool,
     verbose: bool = True,
     analysis_callback: Optional[Callable] = None,
+    ai_logger=None,  # Add AI logger support
 ) -> int:
     """
     Main declaration function - now uses V2 strategic implementation.
@@ -1412,6 +1465,7 @@ def choose_declare(
         previous_declarations=previous_declarations,
         must_declare_nonzero=must_declare_nonzero,
         verbose=verbose,
+        ai_logger=ai_logger,
     )
 
 

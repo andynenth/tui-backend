@@ -86,6 +86,12 @@ These documents provide specific technical details and historical context:
 - [PROJECT_HISTORY_AND_DECISIONS.md](PROJECT_HISTORY_AND_DECISIONS.md) - Project evolution
 - [CLAUDE_LOG_ACCESS.md](CLAUDE_LOG_ACCESS.md) - AI assistant integration
 
+#### AI Debug Mode
+- **[ai-debug-mode/](ai-debug-mode/)** - All AI Debug Mode documentation
+  - User guides, technical docs, troubleshooting
+  - Log format, flow diagrams, AI insights
+  - Implementation history and progress
+
 #### Troubleshooting
 - [TROUBLESHOOTING_AND_DEBUGGING_GUIDE.md](TROUBLESHOOTING_AND_DEBUGGING_GUIDE.md) - Common issues
 - [troubleshooting.md](troubleshooting.md) - Quick troubleshooting reference

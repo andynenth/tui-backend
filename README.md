@@ -190,6 +190,67 @@ Liap Tui is a strategic 4-player board game with unique piece-playing and scorin
 
 ---
 
+## 🤖 AI Debug Mode
+
+The AI Debug Mode is a powerful tool for testing and improving AI behavior without the WebSocket infrastructure.
+
+### Quick Start
+
+```bash
+# Run a single AI-only game
+python backend/ai_debug_simple.py
+
+# Run multiple games with detailed logging
+python backend/ai_debug_simple.py --games 10 --log-level detailed
+
+# Analyze game logs
+python backend/tools/analyze_ai_logs.py logs/ai_debug/*.json
+
+# Run performance benchmarks
+python backend/tools/benchmark_quiet.py --mode levels
+```
+
+### Features
+
+- **Synchronous Execution**: Run AI games without WebSocket overhead
+- **Multi-Level Logging**: Summary, decision, or detailed logs
+- **Bug Detection**: Automatic detection of common AI issues
+- **Performance Analysis**: ~7 games/second throughput
+- **Statistical Reports**: Win rates, declaration accuracy, score distributions
+
+### Common Use Cases
+
+1. **Testing AI Changes**:
+   ```bash
+   # Before changes
+   python backend/ai_debug_simple.py --games 100 --output before.json
+   
+   # After changes  
+   python backend/ai_debug_simple.py --games 100 --output after.json
+   
+   # Compare results
+   python backend/tools/analyze_ai_logs.py before.json after.json
+   ```
+
+2. **Finding AI Bugs**:
+   ```bash
+   # Run with detailed logging
+   python backend/ai_debug_simple.py --games 50 --log-level detailed
+   
+   # Check for bugs
+   python backend/tools/analyze_ai_logs.py logs/ai_debug/*.json | grep "BUG"
+   ```
+
+3. **Running Tests**:
+   ```bash
+   # Run all AI tests
+   python tests/ai_debug/run_all_tests.py
+   ```
+
+See [AI Debug Mode Documentation](docs/ai-debug-mode/) for complete details.
+
+---
+
 ## 📚 Documentation
 
 Comprehensive documentation organized into categories:
