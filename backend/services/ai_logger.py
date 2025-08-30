@@ -34,7 +34,9 @@ class AILogger:
             log_dir = Path("logs/ai_debug")
             log_dir.mkdir(parents=True, exist_ok=True)
             timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-            self.output_path = log_dir / f"game_{timestamp}.json"
+            # Add microseconds to ensure uniqueness when games run fast
+            microseconds = datetime.now().microsecond
+            self.output_path = log_dir / f"game_{timestamp}_{microseconds:06d}.json"
             
         # Log levels
         self.LOG_LEVELS = {
