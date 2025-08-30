@@ -928,15 +928,10 @@ def rebuild_play_list_avoiding_forbidden(
     # Find all possible individual plays
     all_plays = []
 
-    # 1. Find openers (high-value pieces based on pile room)
+    # 1. Find openers (standard definition: 11+ points)
     openers = []
-    threshold = get_piece_threshold(pile_room)
-
-    # For pile_room = 1, need > threshold (not >=)
-    if pile_room == 1:
-        candidates = [p for p in original_hand if p.point > threshold]
-    else:
-        candidates = [p for p in original_hand if p.point >= threshold]
+    opener_threshold = 11
+    candidates = [p for p in original_hand if p.point >= opener_threshold]
 
     for piece in candidates:
         openers.append({"type": "opener", "pieces": [piece], "value": piece.point})
@@ -1255,16 +1250,11 @@ def choose_declare_strategic_v2(
             # declaration already initialized to 0
         else:
             # Has pile room, proceed with normal logic
-            # Step 2: Find ONE opener that meets pile room requirements
+            # Step 2: Find ONE opener (standard definition: 11+ points)
             opener = None
-            # Calculate threshold once based on original pile room
-            original_threshold = get_piece_threshold(pile_room)
-
-            # For pile_room = 1, need > threshold (not >=)
-            if pile_room == 1:
-                candidates = [p for p in hand_copy if p.point > original_threshold]
-            else:
-                candidates = [p for p in hand_copy if p.point >= original_threshold]
+            # Use standard opener threshold of 11 points
+            opener_threshold = 11
+            candidates = [p for p in hand_copy if p.point >= opener_threshold]
 
             if candidates:
                 opener = max(candidates, key=lambda p: p.point)
@@ -1288,11 +1278,8 @@ def choose_declare_strategic_v2(
                 room_left = pile_room - current_pieces
 
                 if room_left > 0:
-                    # Use the original threshold throughout piece selection
-                    # Pass pile_room as the current pile_room, and also as original_pile_room for consistency
-                    strong_pieces = get_individual_strong_pieces(
-                        hand_copy, pile_room, original_threshold, pile_room
-                    )
+                    # Use standard opener threshold for finding additional strong pieces
+                    strong_pieces = [p for p in hand_copy if p.point >= opener_threshold]
                     # Sort by value descending to take best pieces first
                     strong_pieces.sort(key=lambda p: p.point, reverse=True)
 
@@ -1334,16 +1321,8 @@ def choose_declare_strategic_v2(
             ]
 
             # Get strong pieces from remaining hand
-            # For the last few slots, be more selective about which pieces to add
-            # If only 1 slot left, require higher value pieces
-            if final_room_left == 1:
-                # For last slot, only take GENERAL pieces or ADVISOR_RED
-                additional_strong = [p for p in remaining_hand if p.point >= 12]
-            else:
-                # For multiple slots, use original threshold
-                additional_strong = get_individual_strong_pieces(
-                    remaining_hand, pile_room, original_threshold, pile_room
-                )
+            # Use standard opener threshold of 11 points
+            additional_strong = [p for p in remaining_hand if p.point >= opener_threshold]
             additional_strong.sort(key=lambda p: p.point, reverse=True)
 
             pieces_added = 0
@@ -1356,8 +1335,8 @@ def choose_declare_strategic_v2(
                             f"    Added additional piece: {piece.name}({piece.point})"
                         )
 
-                # Calculate declaration
-                declaration = sum(len(play["pieces"]) for play in play_list)
+        # Calculate declaration
+        declaration = sum(len(play["pieces"]) for play in play_list)
 
     # =====================================================
     # HANDLE FORBIDDEN VALUES (same for both)

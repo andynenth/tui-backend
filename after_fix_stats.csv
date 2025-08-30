@@ -1,0 +1,5 @@
+Player,Games,Wins,Win%,AvgScore,AvgDeclared,AvgCaptured,Accuracy%
+Bot 1,50,14,28.0,18.9,0.0,1.6,32.7
+Bot 2,50,12,24.0,19.7,0.0,1.6,34.3
+Bot 3,50,11,22.0,20.0,0.0,1.5,35.0
+Bot 4,50,13,26.0,20.8,0.0,1.6,34.1

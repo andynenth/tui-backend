@@ -252,6 +252,11 @@ class SimpleAIGame:
                     else:
                         # Old format: direct list of pieces
                         selected = play_list
+                    
+                    # Debug: Log what was returned
+                    if selected:
+                        logger.debug(f"AI returned {len(selected)} pieces: {[p.kind for p in selected]}")
+                        logger.debug(f"Player hand contains: {[p.kind for p in player.hand]}")
                         
                 except ImportError:
                     # Fallback to basic AI - returns pieces directly
@@ -280,7 +285,31 @@ class SimpleAIGame:
                     
                 # Make the play - manually update game state instead of using play_turn
                 # Remove pieces from hand
-                for piece in selected:
+                # Important: The AI might return piece objects that aren't the exact same
+                # objects in player.hand, so we need to match by kind and remove the
+                # actual pieces from the hand
+                pieces_to_remove = []
+                selected_kinds = [p.kind for p in selected]
+                
+                for kind in selected_kinds:
+                    # Find and remove the first piece of this kind from hand
+                    for i, hand_piece in enumerate(player.hand):
+                        if hand_piece.kind == kind and hand_piece not in pieces_to_remove:
+                            pieces_to_remove.append(hand_piece)
+                            break
+                    else:
+                        # Piece not found in hand - this is a bug
+                        logger.error(f"ERROR: {player.name} trying to play {kind} but it's not in hand!")
+                        logger.error(f"Hand: {[p.kind for p in player.hand]}")
+                        logger.error(f"Already removing: {[p.kind for p in pieces_to_remove]}")
+                        # Skip this piece
+                        continue
+                
+                # Use the pieces we're removing for the play (not the original selected)
+                selected = pieces_to_remove
+                
+                # Remove the pieces from hand
+                for piece in pieces_to_remove:
                     player.hand.remove(piece)
                     
                 # Add to current turn plays

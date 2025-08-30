@@ -149,6 +149,29 @@ Applied same fix to all disposal priorities:
 - Prevents game getting stuck when bot repeatedly tries to declare 0
 - Handles edge cases like no pile room or no opener scenarios
 
+## Fix #8: Declaration Calculation Bug and Opener Threshold Issue
+
+**Date**: 2025-08-29
+**Bug**: AI declaring 0 with strong hands (2-3 openers available)
+**Root Cause**: 
+1. Declaration calculation was incorrectly indented inside final room adjustment block
+2. `get_piece_threshold` was using variable thresholds based on pile room instead of standard 11+ definition
+**Fix**: 
+1. Fixed indentation so declaration is always calculated from play_list
+2. Changed to use standard opener threshold of 11 points regardless of pile room
+3. Removed dynamic threshold logic that was too restrictive
+
+**Code Changes**:
+- Line ~1339: Moved declaration calculation outside of the if block
+- Lines ~1261, ~1287, ~1330, ~934: Use fixed `opener_threshold = 11` instead of `get_piece_threshold(pile_room)`
+
+**Test**: Manual testing shows zero_declaration_strong_hand bugs eliminated
+
+**Impact**: 
+- AI now correctly declares based on actual openers (11+ point pieces)
+- Eliminated false "zero declaration with strong hand" bugs
+- Better declaration accuracy while maintaining zero streak rule functionality
+
 ## Running Regression Tests
 
 ```bash
