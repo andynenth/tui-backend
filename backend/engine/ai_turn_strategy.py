@@ -63,6 +63,45 @@ def detect_opener_only_plan(plan: "StrategicPlan") -> bool:
     )
 
 
+def is_never_win_combo(combo_type: str, pieces: List[Piece]) -> bool:
+    """
+    Check if a combination can never win against any other combo of the same type.
+    
+    Never-win combos:
+    1. All-BLACK straights (3+5+7=15 points minimum)
+    2. SOLDIER_BLACK pairs (1+1=2 points minimum)
+    3. Multiple SOLDIER_BLACK (minimum points for their type)
+    
+    Args:
+        combo_type: Type of combination
+        pieces: List of pieces in the combination
+        
+    Returns:
+        True if this combo can never win, False otherwise
+    """
+    if combo_type == "STRAIGHT":
+        # Check if all pieces are BLACK (odd points)
+        all_black = all(p.point % 2 == 1 for p in pieces)
+        if all_black:
+            # Check if it's the minimum straight
+            points = sorted([p.point for p in pieces])
+            # Minimum straight is 3,5,7 (CANNON_BLACK, HORSE_BLACK, CHARIOT_BLACK)
+            if len(points) >= 3 and points[:3] == [3, 5, 7]:
+                return True
+                
+    elif combo_type == "PAIR":
+        # Check if both pieces are SOLDIER_BLACK (1 point each)
+        if len(pieces) == 2 and all(p.point == 1 for p in pieces):
+            return True
+            
+    elif combo_type in ["THREE_OF_A_KIND", "FOUR_OF_A_KIND", "FIVE_OF_A_KIND"]:
+        # Check if all pieces are SOLDIER_BLACK
+        if all(p.point == 1 for p in pieces):
+            return True
+            
+    return False
+
+
 # ------------------------------------------------------------------
 # Strategic AI Turn Play System - Data Structures
 # ------------------------------------------------------------------
@@ -760,6 +799,16 @@ def execute_aggressive_capture(
     ]
 
     if valid_of_size:
+        # Filter out never-win combos if we have alternatives
+        winnable_of_size = [
+            (combo_type, pieces)
+            for combo_type, pieces in valid_of_size
+            if not is_never_win_combo(combo_type, pieces)
+        ]
+        
+        # Use winnable combos if available, otherwise use all valid
+        if winnable_of_size:
+            valid_of_size = winnable_of_size
         # Check constraints if risk level is high
         if constraints.risk_level in ["medium", "high"]:
             print(f"⚠️ Aggressive capture with overcapture risk - filtering safe combos")
@@ -867,8 +916,18 @@ def execute_responder_strategy(
         ]
 
         if valid_of_size:
+            # Filter out never-win combos if we have alternatives
+            winnable_combos = [
+                (combo_type, pieces) 
+                for combo_type, pieces in valid_of_size
+                if not is_never_win_combo(combo_type, pieces)
+            ]
+            
+            # Use winnable combos if available, otherwise fall back to all valid
+            combos_to_consider = winnable_combos if winnable_combos else valid_of_size
+            
             # Get strongest valid combination
-            best_combo = max(valid_of_size, key=lambda x: sum(p.point for p in x[1]))
+            best_combo = max(combos_to_consider, key=lambda x: sum(p.point for p in x[1]))
             print(
                 f"  ⚡ Playing strongest valid combo: {[p.name for p in best_combo[1]]}"
             )
@@ -1357,9 +1416,19 @@ def execute_starter_strategy(
         ]
 
         if valid_combos_of_size:
+            # Filter out never-win combos if we have alternatives
+            winnable_combos = [
+                (combo_type, pieces)
+                for combo_type, pieces in valid_combos_of_size
+                if not is_never_win_combo(combo_type, pieces)
+            ]
+            
+            # Use winnable combos if available, otherwise use all valid
+            combos_to_use = winnable_combos if winnable_combos else valid_combos_of_size
+            
             # Sort by value (weakest first for safety)
-            valid_combos_of_size.sort(key=lambda x: sum(p.point for p in x[1]))
-            combo_type, pieces = valid_combos_of_size[0]
+            combos_to_use.sort(key=lambda x: sum(p.point for p in x[1]))
+            combo_type, pieces = combos_to_use[0]
             print(
                 f"  🎯 {context.my_name} plays emergency {combo_type}: {[f'{p.name}({p.point})' for p in pieces]}"
             )
