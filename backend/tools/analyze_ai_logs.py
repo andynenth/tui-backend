@@ -155,6 +155,7 @@ class AILogAnalyzer:
                 
             elif event['event'] == 'round_end':
                 for player, perf in event.get('player_performance', {}).items():
+                    self.player_stats[player]['declarations'].append(perf.get('declared', 0))
                     self.player_stats[player]['captures'].append(perf.get('captured', 0))
                     self.player_stats[player]['total_rounds'] += 1
                     if perf.get('declared') == perf.get('captured'):
