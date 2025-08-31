@@ -98,6 +98,7 @@ def analyze_never_win_play(game_data: Dict, event: Dict, play: Dict,
     pieces_played = play.get('pieces_played', [])
     play_type = play.get('play_type')
     required_pieces = event.get('required_pieces')
+    turn_starter = event.get('starter')  # Get the starter for this turn
     
     # Skip if we don't have hand data
     if not initial_hands or player not in initial_hands:
@@ -119,23 +120,30 @@ def analyze_never_win_play(game_data: Dict, event: Dict, play: Dict,
     if not round_hands or player not in round_hands:
         return None
     
-    # Track what pieces have been played by this player
-    pieces_played_so_far = []
-    for prev_event in game_data.get('events', []):
-        if prev_event.get('event') == 'turn_complete':
-            prev_turn = prev_event.get('turn_number', 0)
-            if prev_turn >= turn_number:
-                break
-            
-            for prev_play in prev_event.get('plays', []):
-                if prev_play.get('player') == player and prev_play.get('is_valid'):
-                    pieces_played_so_far.extend(prev_play.get('pieces_played', []))
-    
-    # Calculate remaining hand
-    remaining_hand = round_hands[player].copy()
-    for piece in pieces_played_so_far:
-        if piece in remaining_hand:
-            remaining_hand.remove(piece)
+    # Get the hand before this play directly from the play data if available
+    if 'hand_before' in play:
+        # Use the actual hand_before from the log
+        remaining_hand = play['hand_before']
+        pieces_played_so_far = []  # Not needed when we have hand_before
+    else:
+        # Fallback: calculate from round start
+        # Track what pieces have been played by this player
+        pieces_played_so_far = []
+        for prev_event in game_data.get('events', []):
+            if prev_event.get('event') == 'turn_complete':
+                prev_turn = prev_event.get('turn_number', 0)
+                if prev_turn >= turn_number:
+                    break
+                
+                for prev_play in prev_event.get('plays', []):
+                    if prev_play.get('player') == player and prev_play.get('is_valid'):
+                        pieces_played_so_far.extend(prev_play.get('pieces_played', []))
+        
+        # Calculate remaining hand
+        remaining_hand = round_hands[player].copy()
+        for piece in pieces_played_so_far:
+            if piece in remaining_hand:
+                remaining_hand.remove(piece)
     
     # Find better alternatives
     better_plays = find_better_plays(remaining_hand, required_pieces)
@@ -167,6 +175,7 @@ def analyze_never_win_play(game_data: Dict, event: Dict, play: Dict,
         'round': current_round,
         'turn': turn_number,
         'player': player,
+        'is_starter': (player == turn_starter),  # Track if player was the starter
         'play_type': play_type,
         'pieces': actual_pieces,
         'required_pieces': required_pieces,
@@ -311,23 +320,31 @@ def main():
     # Categorize the analyses
     forced_plays = []
     poor_choices = []
+    starter_strategic_plays = []
     
     for analysis in all_analyses:
         if analysis['non_never_win_alternatives'] == 0:
             forced_plays.append(analysis)
+        elif analysis['is_starter']:
+            # Starters playing never-win combos are making strategic choices, not mistakes
+            starter_strategic_plays.append(analysis)
         else:
+            # Only responders playing never-win with alternatives are making poor choices
             poor_choices.append(analysis)
     
     print(f"\n🎯 CATEGORIZATION:")
     print(f"  Forced plays (no alternatives): {len(forced_plays)}")
-    print(f"  Poor AI choices (had alternatives): {len(poor_choices)}")
+    print(f"  Strategic starter plays (intentionally weak): {len(starter_strategic_plays)}")
+    print(f"  Poor RESPONDER choices (had alternatives): {len(poor_choices)}")
     
     # Show examples of poor choices
     if poor_choices:
-        print(f"\n❌ POOR AI CHOICES (had better alternatives):")
+        print(f"\n❌ POOR RESPONDER CHOICES (had better alternatives):")
+        print(f"   All {len(poor_choices)} cases are RESPONDERS who could have played stronger combos")
+        
         for i, analysis in enumerate(poor_choices[:10]):  # Show up to 10 examples
             print(f"\n{i+1}. Game {analysis['game_id']}, Round {analysis['round']}, Turn {analysis['turn']}")
-            print(f"   Player: {analysis['player']}")
+            print(f"   Player: {analysis['player']} ({'STARTER' if analysis['is_starter'] else 'RESPONDER'})")
             print(f"   Declared: {analysis['declared']}, Captured: {analysis['captured']}, Piles needed: {analysis['piles_needed']}")
             
             pieces_str = ', '.join([f"{p['name']}({p['point']})" for p in analysis['pieces']])
@@ -353,12 +370,26 @@ def main():
             print(f"   Remaining hand: {', '.join(analysis['remaining_hand'])}")
             print(f"   Had {analysis['total_alternatives']} valid plays, ALL were never-win combos")
     
+    # Show strategic starter plays
+    if starter_strategic_plays:
+        print(f"\n🎯 STRATEGIC STARTER PLAYS (intentionally weak):")
+        for i, analysis in enumerate(starter_strategic_plays[:3]):
+            print(f"\n{i+1}. Game {analysis['game_id']}, Round {analysis['round']}, Turn {analysis['turn']}")
+            print(f"   Player: {analysis['player']} (STARTER)")
+            pieces_str = ', '.join([f"{p['name']}({p['point']})" for p in analysis['pieces']])
+            print(f"   Played: {analysis['play_type']} [{pieces_str}]")
+            print(f"   This is a VALID strategic choice - starters can intentionally play weak")
+    
     # Summary recommendations
     print(f"\n💡 RECOMMENDATIONS:")
     if poor_choices:
-        print(f"  • {len(poor_choices)} never-win plays could have been avoided")
-        print(f"  • The AI is not properly checking for never-win combos before playing")
-        print(f"  • Fix needed in choose_best_play and strategic play selection")
+        print(f"  • {len(poor_choices)} RESPONDER never-win plays could have been avoided")
+        print(f"  • The responder AI is not properly checking for never-win combos")
+        print(f"  • Fix needed in responder strategy (execute_responder_strategy)")
+    
+    if starter_strategic_plays:
+        print(f"  • {len(starter_strategic_plays)} starter plays were strategic choices (NOT bugs)")
+        print(f"  • Starters can intentionally play weak - this is valid strategy")
     
     if forced_plays:
         print(f"  • {len(forced_plays)} plays were forced (no better alternatives)")

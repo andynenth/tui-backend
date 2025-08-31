@@ -188,6 +188,7 @@ Key classes **ALL ENTERPRISE**:
 - **Weak Hand Rule**: Players with no piece > 9 points can request redeal
 - **Declaration Phase**: Players declare target pile count (total ≠ 8)
 - **Turn Phase**: Play 1-6 pieces in sets, winner takes all pieces
+- **Pile Counting**: Winner captures piles equal to pieces played (e.g., win with 3-piece STRAIGHT = 3 piles, win with 6-piece DOUBLE_STRAIGHT = 6 piles)
 - **Scoring**: Compare actual vs declared piles, apply multipliers
 - **Win Condition**: First to 50 points
 
@@ -244,3 +245,4 @@ The play history API provides comprehensive game history for analysis:
 - When implementing game features, always use WebSocket events through the NetworkService (frontend) or ws.py handlers (backend)
 - IMPORTANT: The game_events.db database is located in the project root directory (/Users/nrw/python/tui-project/liap-tui/game_events.db), NOT in the backend directory. This is intentional as EventStoreV2 resolves the path to the project root.
 - **AI BUG FIXES**: When fixing AI decision bugs, ALWAYS follow AI_BUG_FIX_CHECKLIST.md step by step. Create regression tests in tests/ai_regression/ and update FIX_HISTORY.md. Never make assumptions about AI logic - trace actual execution.
+- **PILE COUNTING BUG FIXED**: The `ai_debug_simple.py` script had a critical bug where it only awarded 1 pile per turn win regardless of pieces played. This has been fixed to match the production game logic: winner captures piles equal to pieces played (e.g., DOUBLE_STRAIGHT = 6 piles, STRAIGHT = 3 piles, SINGLE = 1 pile). The production game (`backend/engine/game.py`) always had correct pile counting.

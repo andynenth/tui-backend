@@ -403,15 +403,18 @@ class SimpleAIGame:
             # Update game state
             winner = self.game.get_player(winner_name)
             self.game.last_turn_winner = winner
-            winner.captured_piles += 1
+            
+            # Award piles equal to the number of pieces played (as per game rules)
+            piles_won = len(winning_play.pieces)
+            winner.captured_piles += piles_won
             winner.turns_won += 1
             
             # Update pile counts
             if winner_name not in self.game.pile_counts:
                 self.game.pile_counts[winner_name] = 0
-            self.game.pile_counts[winner_name] += 1
+            self.game.pile_counts[winner_name] += piles_won
             
-            logger.info(f"  Turn {turn_number} winner: {winner_name} (now has {winner.captured_piles} piles)")
+            logger.info(f"  Turn {turn_number} winner: {winner_name} won {piles_won} piles (now has {winner.captured_piles} total)")
             
             # Return winner data
             return {

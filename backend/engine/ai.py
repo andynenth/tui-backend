@@ -1134,6 +1134,7 @@ def choose_declare_strategic_v2(
     must_declare_nonzero: bool,
     verbose: bool = True,
     ai_logger=None,  # Add optional AI logger
+    player_name: str = "Unknown",
 ) -> int:
     """
     New declaration logic with separate starter/non-starter strategies.
@@ -1445,6 +1446,7 @@ def choose_declare(
         must_declare_nonzero=must_declare_nonzero,
         verbose=verbose,
         ai_logger=ai_logger,
+        player_name=player_name,
     )
 
 
