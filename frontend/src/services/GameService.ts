@@ -63,6 +63,14 @@ export class GameService extends EventTarget {
 
     // Set up network event listeners
     this.setupNetworkListeners();
+    
+    // Request full state on reconnection
+    networkService.addEventListener('reconnected', () => {
+      console.log('🔄 Requesting full state after reconnection');
+      if (this.state.roomId) {
+        this.sendAction('get_full_state', {});
+      }
+    });
   }
 
   // ===== PUBLIC API =====
@@ -422,6 +430,7 @@ export class GameService extends EventTarget {
       'player_disconnected',
       'player_reconnected',
       'host_changed',
+      'full_state',
     ];
 
     // Special error events
@@ -595,6 +604,12 @@ export class GameService extends EventTarget {
 
       case 'game_ended':
         newState = this.handleGameEnded(newState, data);
+        break;
+        
+      case 'full_state':
+        // Handle full state update from backend
+        console.log('📥 Received full state from backend:', data);
+        newState = this.handlePhaseChange(newState, data);
         break;
 
       case 'player_disconnected':
@@ -1604,12 +1619,19 @@ export class GameService extends EventTarget {
     // Update sequence in state
     this.state.lastEventSequence = this.sequenceNumber;
 
-    // Debug logging
-    console.group(`🎮 State Change: ${reason}`);
-    console.log('Previous:', oldState);
-    console.log('New:', newState);
-    console.log('Diff:', this.stateDiff(oldState, newState));
-    console.groupEnd();
+    // Debug logging with enhanced round tracking
+    const hasRoundChange = oldState.currentRound !== newState.currentRound;
+    const hasPhaseChange = oldState.phase !== newState.phase;
+    
+    if (hasRoundChange || hasPhaseChange) {
+      console.group(`🎮 State Change: ${reason} ${hasRoundChange ? '🔴' : ''}`);
+      console.log(`Phase: ${oldState.phase} → ${newState.phase}`);
+      console.log(`Round: ${oldState.currentRound} → ${newState.currentRound}`);
+      console.log(`Connected: ${newState.isConnected}`);
+      console.log(`Timestamp: ${new Date().toISOString()}`);
+      console.log('Full Diff:', this.stateDiff(oldState, newState));
+      console.groupEnd();
+    }
 
     // Enable debugging
     if (typeof window !== 'undefined') {

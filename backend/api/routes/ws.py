@@ -664,9 +664,13 @@ async def websocket_endpoint(websocket: WebSocket, room_id: str):
                                 f"client_ready received without player_name for room {room_id} or missing _ws_id"
                             )
 
+                        # Check if client requested full state (for reconnection)
+                        request_full_state = event_data.get("request_full_state", False)
+                        is_reconnection = event_data.get("is_reconnection", False)
+                        
                         # Check if reconnecting to an active game
                         logger.info(
-                            f"🔌 RECONNECT_CHECK: Room {room_id} - started={room.started}, game_ended={getattr(room, 'game_ended', False)}"
+                            f"🔌 RECONNECT_CHECK: Room {room_id} - started={room.started}, game_ended={getattr(room, 'game_ended', False)}, request_full_state={request_full_state}"
                         )
 
                         # Prevent reconnections if game has ended
@@ -742,10 +746,49 @@ async def websocket_endpoint(websocket: WebSocket, room_id: str):
                                     },
                                 )
 
-                        # Send current game phase if game is running
-                        if room.started and room.game_state_machine:
+                        # Send full game state if requested or on reconnection
+                        if (request_full_state or is_reconnection) and room.started and room.game_state_machine:
+                            # Get current game state
+                            state_machine = room.game_state_machine
+                            if state_machine:
+                                current_phase = state_machine.get_current_phase()
+                                if current_phase:
+                                    # Get comprehensive state data (already JSON-safe)
+                                    phase_data = state_machine.get_phase_data()
+                                    players_data = {}
+                                    
+                                    for p in room.game.players:
+                                        players_data[p.name] = {
+                                            "name": p.name,
+                                            "is_bot": p.is_bot,
+                                            "avatar_color": getattr(p, "avatar_color", None),
+                                            "hand": [str(piece) for piece in p.hand],
+                                            "hand_size": len(p.hand),
+                                            "declared": getattr(p, "declared", 0),
+                                            "captured_piles": getattr(p, "captured_piles", 0),
+                                            "score": p.score,
+                                        }
+                                    
+                                    full_state_data = {
+                                        "phase": current_phase.value,
+                                        "round": room.game.round_number,
+                                        "phase_data": phase_data,
+                                        "players": players_data,
+                                        "allowed_actions": [action.value for action in state_machine.get_allowed_actions()],
+                                        "timestamp": asyncio.get_event_loop().time(),
+                                    }
+                                    
+                                    await registered_ws.send_json({
+                                        "event": "full_state",
+                                        "data": full_state_data
+                                    })
+                                    
+                                    logger.info(f"📤 Sent full state to {player_name} - phase: {full_state_data['phase']}, round: {full_state_data['round']}")
+                        # Send current game phase if game is running (for normal connections)
+                        elif room.started and room.game_state_machine:
                             current_phase = room.game_state_machine.get_current_phase()
                             if current_phase:
+                                # get_phase_data() already returns JSON-safe data
                                 phase_data = room.game_state_machine.get_phase_data()
                                 allowed_actions = [
                                     action.value
@@ -829,6 +872,48 @@ async def websocket_endpoint(websocket: WebSocket, room_id: str):
                                 "data": {"message": "Room not found."},
                             }
                         )
+                        
+                elif event_name == "get_full_state":
+                    # Handle explicit full state request
+                    room = await room_manager.get_room(room_id)
+                    if room and room.started and room.game:
+                        state_machine = getattr(room.game, "state_machine", None)
+                        if state_machine:
+                            current_phase = state_machine.get_current_phase()
+                            if current_phase:
+                                # Get comprehensive state data (already JSON-safe)
+                                phase_data = state_machine.get_phase_data()
+                                players_data = {}
+                                
+                                for p in room.game.players:
+                                    players_data[p.name] = {
+                                        "name": p.name,
+                                        "is_bot": p.is_bot,
+                                        "avatar_color": getattr(p, "avatar_color", None),
+                                        "hand": [str(piece) for piece in p.hand],
+                                        "hand_size": len(p.hand),
+                                        "declared": getattr(p, "declared", 0),
+                                        "captured_piles": getattr(p, "captured_piles", 0),
+                                        "score": p.score,
+                                    }
+                                
+                                full_state_data = {
+                                    "phase": current_phase.value,
+                                    "round": room.game.round_number,
+                                    "phase_data": phase_data,
+                                    "players": players_data,
+                                    "allowed_actions": [action.value for action in state_machine.get_allowed_actions()],
+                                    "timestamp": asyncio.get_event_loop().time(),
+                                }
+                                
+                                await registered_ws.send_json({
+                                    "event": "full_state",
+                                    "data": full_state_data
+                                })
+                                
+                                logger.info(f"📤 Sent full state on request - phase: {full_state_data['phase']}, round: {full_state_data['round']}")
+                    else:
+                        logger.warning(f"get_full_state request but game not active in room {room_id}")
 
                 elif event_name == "remove_player":
                     # Already validated - slot_id is guaranteed to be present and valid

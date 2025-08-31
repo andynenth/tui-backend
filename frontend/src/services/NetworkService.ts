@@ -147,10 +147,20 @@ export class NetworkService extends EventTarget {
 
       // Send initial ready signal
       const connectionData = this.connections.get(roomId);
+      const isReconnection = connectionData?.isReconnection || false;
+      // For game rooms (not lobby), always request full state to handle fresh page loads
+      const shouldRequestFullState = isReconnection || (roomId !== 'lobby');
+      console.log(`🔌 [${new Date().toISOString()}] Sending client_ready:`, {
+        roomId,
+        playerName: connectionData?.playerName,
+        isReconnection,
+        requestFullState: shouldRequestFullState,
+      });
       this.send(roomId, 'client_ready', {
         room_id: roomId,
         player_name: connectionData?.playerName,
-        is_reconnection: connectionData?.isReconnection || false,
+        is_reconnection: isReconnection,
+        request_full_state: shouldRequestFullState, // Request full state for reconnections or game rooms
       });
 
       // Process any queued messages
@@ -403,6 +413,26 @@ export class NetworkService extends EventTarget {
       const message = JSON.parse(event.data) as NetworkMessage;
       connectionData.messagesReceived++;
       connectionData.lastActivity = Date.now();
+
+      // Enhanced logging for debugging state synchronization
+      const timestamp = new Date().toISOString();
+      if (message.event === 'phase_change') {
+        console.log(`🔄 [${timestamp}] Phase Change:`, {
+          roomId,
+          oldPhase: message.data.old_phase,
+          newPhase: message.data.phase,
+          round: message.data.round,
+          phaseData: message.data.phase_data,
+          hasRound: 'round' in message.data,
+        });
+      } else if (message.event === 'reconnected') {
+        console.log(`🔗 [${timestamp}] Reconnection State:`, {
+          roomId,
+          phase: message.data.phase,
+          round: message.data.round,
+          fullState: message.data,
+        });
+      }
 
       // Handle heartbeat response
       if (message.event === 'pong' && message.data?.timestamp) {

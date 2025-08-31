@@ -24,6 +24,7 @@ import { GameContainer } from '../components/game/GameContainer';
 import { LoadingOverlay } from '../components';
 import ErrorBoundary from '../components/ErrorBoundary';
 import ToastContainer from '../components/ToastContainer';
+import StateDebugOverlay from '../components/debug/StateDebugOverlay';
 
 const GamePage = () => {
   const navigate = useNavigate();
@@ -121,6 +122,9 @@ const GamePage = () => {
           roomId={roomId}
           onNavigateToLobby={() => navigate('/lobby')}
         />
+        
+        {/* Debug overlay in development mode */}
+        {process.env.NODE_ENV === 'development' && <StateDebugOverlay />}
       </div>
     </ErrorBoundary>
   );

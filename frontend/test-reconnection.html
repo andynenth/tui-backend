@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reconnection Test Page</title>
+    <style>
+        body {
+            font-family: monospace;
+            background: #1a1a1a;
+            color: #fff;
+            padding: 20px;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        button {
+            background: #3b82f6;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            margin: 5px;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+        button:hover {
+            background: #2563eb;
+        }
+        button:disabled {
+            background: #6b7280;
+            cursor: not-allowed;
+        }
+        .log {
+            background: #111;
+            padding: 10px;
+            border-radius: 5px;
+            margin-top: 20px;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        .log-entry {
+            margin: 5px 0;
+            padding: 5px;
+            border-left: 3px solid #3b82f6;
+            padding-left: 10px;
+        }
+        .error {
+            border-left-color: #ef4444;
+            color: #fca5a5;
+        }
+        .success {
+            border-left-color: #10b981;
+            color: #86efac;
+        }
+        .warning {
+            border-left-color: #f59e0b;
+            color: #fde047;
+        }
+        .status {
+            margin: 20px 0;
+            padding: 10px;
+            background: #374151;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🧪 Reconnection Test Page</h1>
+        
+        <div class="status">
+            <p>Status: <span id="connection-status">Not Connected</span></p>
+            <p>Round: <span id="current-round">-</span></p>
+            <p>Phase: <span id="current-phase">-</span></p>
+            <p>Last Update: <span id="last-update">-</span></p>
+        </div>
+        
+        <div>
+            <h2>Test Controls</h2>
+            <button onclick="testQuickDisconnect()">Quick Disconnect (1s)</button>
+            <button onclick="testMediumDisconnect()">Medium Disconnect (5s)</button>
+            <button onclick="testLongDisconnect()">Long Disconnect (15s)</button>
+            <button onclick="testRapidDisconnects()">Rapid Disconnects (3x)</button>
+            <button onclick="clearLog()">Clear Log</button>
+        </div>
+        
+        <div class="log" id="log">
+            <div class="log-entry">Waiting for test to start...</div>
+        </div>
+    </div>
+
+    <script>
+        // Import the test script
+        const script = document.createElement('script');
+        script.src = '/test-reconnection.js';
+        document.head.appendChild(script);
+        
+        // Logging functions
+        function log(message, type = 'info') {
+            const logDiv = document.getElementById('log');
+            const entry = document.createElement('div');
+            entry.className = `log-entry ${type}`;
+            entry.textContent = `[${new Date().toLocaleTimeString()}] ${message}`;
+            logDiv.appendChild(entry);
+            logDiv.scrollTop = logDiv.scrollHeight;
+        }
+        
+        function clearLog() {
+            document.getElementById('log').innerHTML = '';
+            log('Log cleared');
+        }
+        
+        // Update status display
+        function updateStatus(connected, round, phase) {
+            document.getElementById('connection-status').textContent = 
+                connected ? '✅ Connected' : '❌ Disconnected';
+            document.getElementById('current-round').textContent = round || '-';
+            document.getElementById('current-phase').textContent = phase || '-';
+            document.getElementById('last-update').textContent = 
+                new Date().toLocaleTimeString();
+        }
+        
+        // Test functions
+        async function testQuickDisconnect() {
+            log('Starting quick disconnect test (1s)...', 'warning');
+            if (window.testReconnection) {
+                await window.testReconnection.testQuickReconnect(1000);
+            } else {
+                log('Test script not loaded yet', 'error');
+            }
+        }
+        
+        async function testMediumDisconnect() {
+            log('Starting medium disconnect test (5s)...', 'warning');
+            if (window.testReconnection) {
+                await window.testReconnection.testQuickReconnect(5000);
+            } else {
+                log('Test script not loaded yet', 'error');
+            }
+        }
+        
+        async function testLongDisconnect() {
+            log('Starting long disconnect test (15s)...', 'warning');
+            if (window.testReconnection) {
+                await window.testReconnection.testQuickReconnect(15000);
+            } else {
+                log('Test script not loaded yet', 'error');
+            }
+        }
+        
+        async function testRapidDisconnects() {
+            log('Starting rapid disconnects test...', 'warning');
+            if (window.testReconnection) {
+                await window.testReconnection.testRapidDisconnects(3);
+            } else {
+                log('Test script not loaded yet', 'error');
+            }
+        }
+        
+        // Monitor game state changes
+        setInterval(() => {
+            if (window.__gameService) {
+                const state = window.__gameService.getState();
+                updateStatus(state.isConnected, state.currentRound, state.phase);
+            }
+        }, 1000);
+        
+        // Hook into console.log to capture test output
+        const originalLog = console.log;
+        console.log = function(...args) {
+            originalLog.apply(console, args);
+            const message = args.map(arg => 
+                typeof arg === 'object' ? JSON.stringify(arg, null, 2) : arg
+            ).join(' ');
+            
+            // Determine log type based on content
+            let type = 'info';
+            if (message.includes('❌') || message.includes('error')) type = 'error';
+            else if (message.includes('⚠️') || message.includes('warning')) type = 'warning';
+            else if (message.includes('✅') || message.includes('success')) type = 'success';
+            
+            log(message, type);
+        };
+        
+        // Instructions
+        setTimeout(() => {
+            log('Test page loaded. Make sure you have an active game running.');
+            log('Open browser DevTools to see detailed logs.');
+            log('Click any test button to start testing reconnection scenarios.');
+        }, 1000);
+    </script>
+</body>
+</html>

@@ -14,6 +14,9 @@ from backend.engine.rules import get_play_type
 
 logger = logging.getLogger(__name__)
 
+# Bot activation grace period - players have 10 seconds to reconnect before bot takes over
+BOT_ACTIVATION_GRACE_PERIOD = 10.0
+
 # Try to import async bot strategy for improved performance
 try:
     from backend.engine.async_bot_strategy import async_bot_strategy
@@ -94,6 +97,27 @@ class BotManager:
 
         handler = self.active_games[room_id]
         await handler.handle_event(event, data)
+
+    def should_bot_act(self, player):
+        """
+        Check if bot should act for a player, considering grace period for disconnected players.
+        
+        Returns True if:
+        - Player is marked as bot AND
+        - Either never had disconnect_time OR grace period has expired
+        """
+        if not getattr(player, "is_bot", False):
+            return False
+        
+        # If player was recently human (disconnected), check grace period
+        if hasattr(player, 'disconnect_time') and player.disconnect_time:
+            time_since_disconnect = time.time() - player.disconnect_time
+            if time_since_disconnect < BOT_ACTIVATION_GRACE_PERIOD:
+                # Still in grace period, don't let bot act yet
+                logger.info(f"⏳ Player {player.name} in grace period ({time_since_disconnect:.1f}s < {BOT_ACTIVATION_GRACE_PERIOD}s)")
+                return False
+        
+        return True
 
 
 class GameBotHandler:
@@ -312,7 +336,9 @@ class GameBotHandler:
                 if hasattr(game_state, "players"):
                     for player in game_state.players:
                         if getattr(player, "name", str(player)) == current_declarer:
-                            if getattr(player, "is_bot", False):
+                            # Use bot manager's grace period check
+                            bot_manager = BotManager()
+                            if bot_manager.should_bot_act(player):
                                 # 🔧 PHASE_TRACKING_FIX: Mark this phase as having triggered actions
                                 self._phase_action_triggered[phase] = True
                                 # Get last declarer to continue sequence
@@ -408,8 +434,10 @@ class GameBotHandler:
             if not player_obj:
                 continue
 
-            if not getattr(player_obj, "is_bot", False):
-                break  # Wait for human player
+            # Use bot manager's grace period check
+            bot_manager = BotManager()
+            if not bot_manager.should_bot_act(player_obj):
+                break  # Wait for human player or grace period
 
             # Check if player has already declared in current phase (use state machine data)
             phase_declarations = (
@@ -581,7 +609,9 @@ class GameBotHandler:
 
         # logger.debug(f"🔍 BOT_HANDLER: Starter object found: {starter}, is_bot: {getattr(starter, 'is_bot', None) if starter else 'N/A'}")
 
-        if starter and getattr(starter, "is_bot", False):
+        # Use bot manager's grace period check
+        bot_manager = BotManager()
+        if starter and bot_manager.should_bot_act(starter):
             logger.info(f"🤖 Round starter is bot: {starter.name}")
             await asyncio.sleep(1)
             await self._handle_declaration_phase(
@@ -628,8 +658,10 @@ class GameBotHandler:
             if not player_obj:
                 continue
 
-            if not getattr(player_obj, "is_bot", False):
-                break  # Stop at human player
+            # Use bot manager's grace period check
+            bot_manager = BotManager()
+            if not bot_manager.should_bot_act(player_obj):
+                break  # Stop at human player or grace period
 
             # Check if bot already played this turn (using phase data)
             if self.state_machine:
@@ -910,7 +942,9 @@ class GameBotHandler:
             if not player:
                 continue
 
-            if not getattr(player, "is_bot", False):
+            # Use bot manager's grace period check
+            bot_manager = BotManager()
+            if not bot_manager.should_bot_act(player):
                 continue
 
             # Bot decides with standard delay (0.5-1.5s)
