@@ -84,6 +84,25 @@ class AILogger:
             
             self.log_event(event)
             
+    def log_round_start(self, round_number: int, game):
+        """Log round initialization with hands"""
+        if self.should_log('summary'):
+            # Get initial hands for the round
+            round_hands = {}
+            for player in game.players:
+                round_hands[player.name] = [
+                    f"{p.name}_{p.color}" for p in player.hand
+                ]
+                
+            event = {
+                'event': 'round_start',
+                'round_number': round_number,
+                'round_starter': game.round_starter,
+                'initial_hands': round_hands if self.should_log('detailed') else None
+            }
+            
+            self.log_event(event)
+            
     def log_declaration(self, player_name: str, declaration_data: Dict):
         """Log AI declaration decision"""
         if not self.should_log('decision'):
@@ -127,7 +146,7 @@ class AILogger:
             'turn_context': {
                 'turn_number': play_data.get('turn_number'),
                 'required_pieces': play_data.get('required_piece_count'),
-                'current_winner': play_data.get('current_winner'),
+                'last_turn_winner': play_data.get('last_turn_winner'),
                 'am_starter': play_data.get('am_i_starter', False)
             },
             'my_situation': {
@@ -139,7 +158,6 @@ class AILogger:
             'play_decision': {
                 'selected_play': play_data.get('selected_play'),
                 'play_type': play_data.get('play_type'),
-                'pieces': play_data.get('pieces_played'),
                 'reasoning': play_data.get('reasoning')
             }
         }
@@ -148,6 +166,66 @@ class AILogger:
         if self.should_log('detailed'):
             event['available_plays'] = play_data.get('available_plays', [])
             event['hand_before'] = play_data.get('hand_before', [])
+            
+        # Check for bugs
+        bugs = self.bug_detector.check_turn_play_bugs(player_name, play_data)
+        if bugs:
+            event['bugs_detected'] = [bug.to_dict() for bug in bugs]
+            for bug in bugs:
+                self.log_bug_detected(bug.bug_type, bug.to_dict())
+            
+        self.log_event(event)
+        
+    def log_turn_result(self, turn_number: int, turn_data: Dict):
+        """Log complete turn with all plays and winner"""
+        if not self.should_log('summary'):
+            return
+            
+        event = {
+            'event': 'turn_complete',
+            'turn_number': turn_number,
+            'required_pieces': turn_data.get('required_pieces'),
+            'starter': turn_data.get('starter'),
+            'plays': []
+        }
+        
+        # Log all plays in the turn
+        for play in turn_data.get('plays', []):
+            play_entry = {
+                'player': play['player'],
+                'pieces_played': play['pieces'],
+                'play_type': play['type'],
+                'is_valid': play['valid'],
+                'points': play.get('points', 0)
+            }
+            
+            # Add hand information if detailed logging
+            if self.should_log('detailed'):
+                play_entry['hand_before'] = play.get('hand_before', [])
+                play_entry['hand_after'] = play.get('hand_after', [])
+                
+            event['plays'].append(play_entry)
+            
+        # Add winner information
+        if turn_data.get('winner'):
+            event['winner'] = {
+                'player': turn_data['winner'],
+                'winning_play': turn_data.get('winning_pieces', []),
+                'play_type': turn_data.get('winning_type'),
+                'points': turn_data.get('winning_points', 0)
+            }
+        else:
+            event['winner'] = None
+            
+        # Add game state after turn
+        event['game_state_after'] = {
+            'pile_counts': turn_data.get('pile_counts', {}),
+            'next_starter': turn_data.get('next_starter')
+        }
+        
+        # Add player states if available
+        if self.should_log('detailed') and 'player_states' in turn_data:
+            event['player_states'] = turn_data['player_states']
             
         self.log_event(event)
         

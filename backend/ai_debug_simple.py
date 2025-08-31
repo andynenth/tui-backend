@@ -62,9 +62,6 @@ class SimpleAIGame:
         """Run a complete game and return results"""
         self.setup_game()
         
-        # Log game start
-        self.ai_logger.log_game_start(self.game_id, self.game)
-        
         rounds_played = 0
         
         while not is_game_over(self.game) and rounds_played < 10:
@@ -76,6 +73,13 @@ class SimpleAIGame:
             # Start new round
             self.game.deal_pieces()
             self._initialize_round()
+            
+            # Log game start AFTER dealing cards (only on first round)
+            if rounds_played == 1:
+                self.ai_logger.log_game_start(self.game_id, self.game)
+            else:
+                # Log round start for subsequent rounds
+                self.ai_logger.log_round_start(rounds_played, self.game)
             
             # Run phases
             self._run_declaration_phase()
@@ -151,7 +155,8 @@ class SimpleAIGame:
                 previous_declarations=previous_declarations,
                 must_declare_nonzero=(player.zero_declares_in_a_row >= 2),
                 verbose=self.verbose,
-                ai_logger=self.ai_logger
+                ai_logger=self.ai_logger,
+                player_name=player.name
             )
             
             # Apply last player rule
@@ -198,6 +203,9 @@ class SimpleAIGame:
             # Reset for new turn
             self.game.current_turn_plays = []
             self.game.required_piece_count = None
+            
+            # Collect all plays for this turn
+            turn_plays_data = []
             
             # Each player plays
             for player in turn_order:
@@ -265,6 +273,9 @@ class SimpleAIGame:
                         required_count=required,
                         verbose=self.verbose
                     )
+                
+                # Always track hand before play for turn logging
+                hand_before_list = [f"{p.name}_{p.color}" for p in player.hand]
                     
                 # Log the play
                 if self.ai_logger.should_log('decision'):
@@ -278,8 +289,9 @@ class SimpleAIGame:
                         'play_type': get_play_type(selected),
                         'reasoning': f"{'Must win' if player.captured_piles < player.declared else 'Safe play'}",
                         'am_i_starter': (player.name == current_starter),
-                        'current_winner': self.game.last_turn_winner.name if self.game.last_turn_winner else None,
-                        'piles_needed': max(0, player.declared - player.captured_piles)
+                        'last_turn_winner': self.game.last_turn_winner.name if self.game.last_turn_winner else None,
+                        'piles_needed': max(0, player.declared - player.captured_piles),
+                        'hand_before': hand_before_list
                     }
                     self.ai_logger.log_turn_play(player.name, play_data)
                     
@@ -307,6 +319,9 @@ class SimpleAIGame:
                 
                 # Use the pieces we're removing for the play (not the original selected)
                 selected = pieces_to_remove
+                
+                # Record hand after removing pieces (before actual removal)
+                hand_after = [f"{p.name}_{p.color}" for p in player.hand if p not in pieces_to_remove]
                 
                 # Remove the pieces from hand
                 for piece in pieces_to_remove:
@@ -336,17 +351,42 @@ class SimpleAIGame:
                 points = sum(p.point for p in selected)
                 logger.info(f"  {player.name} plays: {play_type} ({points} points) - {[p.name for p in selected]}")
                 
-            # Resolve turn
-            self._resolve_turn(turn_number)
+                # Collect play data for turn logging
+                turn_plays_data.append({
+                    'player': player.name,
+                    'pieces': [f"{p.name}_{p.color}" for p in selected],
+                    'type': play_type,
+                    'valid': play_valid,
+                    'points': points,
+                    'hand_before': hand_before_list,
+                    'hand_after': hand_after
+                })
+                
+            # Resolve turn and get winner data
+            winner_data = self._resolve_turn(turn_number)
+            
+            # Log complete turn data
+            self.ai_logger.log_turn_result(turn_number, {
+                'required_pieces': self.game.required_piece_count,
+                'starter': current_starter,
+                'plays': turn_plays_data,
+                'winner': winner_data.get('winner_name') if winner_data else None,
+                'winning_pieces': winner_data.get('winning_pieces') if winner_data else [],
+                'winning_type': winner_data.get('winning_type') if winner_data else None,
+                'winning_points': winner_data.get('winning_points') if winner_data else 0,
+                'pile_counts': dict(self.game.pile_counts),
+                'next_starter': self.game.last_turn_winner.name if self.game.last_turn_winner else current_starter
+            })
             
     def _resolve_turn(self, turn_number: int):
         """Determine turn winner and update game state"""
         if not self.game.current_turn_plays:
-            return
+            return {}
             
         # Find winner based on highest point total
         winner_name = None
         best_score = -1
+        winning_play = None
         
         for turn_play in self.game.current_turn_plays:
             # Skip invalid plays
@@ -357,6 +397,7 @@ class SimpleAIGame:
             if total > best_score:
                 best_score = total
                 winner_name = turn_play.player.name
+                winning_play = turn_play
                 
         if winner_name:
             # Update game state
@@ -371,8 +412,17 @@ class SimpleAIGame:
             self.game.pile_counts[winner_name] += 1
             
             logger.info(f"  Turn {turn_number} winner: {winner_name} (now has {winner.captured_piles} piles)")
+            
+            # Return winner data
+            return {
+                'winner_name': winner_name,
+                'winning_pieces': [f"{p.name}_{p.color}" for p in winning_play.pieces],
+                'winning_type': get_play_type(winning_play.pieces),
+                'winning_points': best_score
+            }
         else:
             logger.warning(f"  Turn {turn_number}: No valid plays - no winner")
+            return {}
         
     def _run_scoring_phase(self, round_number: int):
         """Score the round and update player scores"""

@@ -57,6 +57,8 @@ class AIBugDetector:
         final_declaration = declaration_data.get('final_declaration', 0)
         position = declaration_data.get('position_in_order', 0)
         pile_room = decision_factors.get('pile_room', 8)
+        previous_declarations = declaration_data.get('previous_declarations', [])
+        zero_streak = declaration_data.get('zero_streak', 0)
         
         # Count openers and combos
         openers = sum(1 for play in declaration_data.get('play_list', []) 
@@ -84,7 +86,6 @@ class AIBugDetector:
         # Bug 2: Zero declaration with strong hand
         if final_declaration == 0 and openers >= 2:
             # Check if forced by zero streak
-            zero_streak = declaration_data.get('zero_streak', 0)
             if zero_streak < 2:  # Not forced to declare non-zero
                 bugs.append(BugReport(
                     bug_type="zero_declaration_strong_hand",
@@ -118,6 +119,40 @@ class AIBugDetector:
                     suggested_fix="Respect pile room calculations (max declaration = pile room)"
                 ))
                 
+        # Bug 4: Excessive zero declarations (>2 in a row)
+        if zero_streak > 2:
+            bugs.append(BugReport(
+                bug_type="excessive_zero_declarations",
+                severity=BugSeverity.CRITICAL,
+                player=player_name,
+                phase="declaration",
+                description=f"Declared 0 for {zero_streak} times in a row (max allowed: 2)",
+                context={
+                    'zero_streak': zero_streak,
+                    'declaration': final_declaration
+                },
+                suggested_fix="Enforce rule: cannot declare 0 more than 2 times in a row"
+            ))
+            
+        # Bug 5: Last player declaring sum of 8
+        if position == 3:  # Last player (0-indexed)
+            total_declared = sum(previous_declarations) + final_declaration
+            if total_declared == 8:
+                bugs.append(BugReport(
+                    bug_type="last_player_sum_8",
+                    severity=BugSeverity.CRITICAL,
+                    player=player_name,
+                    phase="declaration",
+                    description=f"Last player declared {final_declaration} making total equal to 8",
+                    context={
+                        'position': position,
+                        'declaration': final_declaration,
+                        'previous_declarations': previous_declarations,
+                        'total': total_declared
+                    },
+                    suggested_fix="Last player cannot declare a value that makes total equal to 8"
+                ))
+                
         self.bugs_detected.extend(bugs)
         return bugs
         
@@ -132,6 +167,8 @@ class AIBugDetector:
         play_type = turn_data.get('play_type', '')
         pieces_remaining = turn_data.get('pieces_remaining', 0)
         turn_number = turn_data.get('turn_number', 0)
+        hand_before = turn_data.get('hand_before', [])  # Get actual hand if available
+        required_count = turn_data.get('required_piece_count', 0)
         
         # Calculate if at target
         at_target = my_captured >= my_declared
@@ -144,7 +181,8 @@ class AIBugDetector:
             has_opener = any(name in ['GENERAL', 'ADVISOR'] for name in piece_names)
             
             # Bug 4: Wasting openers when at target
-            if at_target and has_opener and pieces_remaining > 2:
+            # Only flag if playing invalidly (strategic disposal is not a bug)
+            if at_target and has_opener and pieces_remaining > 2 and play_type != 'INVALID':
                 bugs.append(BugReport(
                     bug_type="wasting_opener_at_target",
                     severity=BugSeverity.MEDIUM,
@@ -161,22 +199,43 @@ class AIBugDetector:
                 ))
                 
             # Bug 5: Not playing to win when needed
-            if needs_to_win and pieces_remaining <= 2 and not has_opener:
-                # Final turns, needs to win, but playing weak
+            # REMOVED: This detection is disabled because we cannot determine if playing
+            # weak pieces is a bug or a strategic choice without full game context.
+            # There may be valid strategic reasons to play weak pieces even when
+            # holding openers (e.g., baiting, misdirection, or other tactical considerations).
+            
+            # Bug 6: Playing pieces not in hand
+            if hand_before:  # Only check if we have hand data
+                for piece in selected_play:
+                    if piece not in hand_before:
+                        bugs.append(BugReport(
+                            bug_type="playing_piece_not_in_hand",
+                            severity=BugSeverity.CRITICAL,
+                            player=player_name,
+                            phase="turn_play",
+                            description=f"Played {piece} which was not in hand",
+                            context={
+                                'played_piece': piece,
+                                'hand_before': hand_before,
+                                'selected_play': selected_play
+                            },
+                            suggested_fix="Only play pieces that are actually in the player's hand"
+                        ))
+                        
+            # Bug 7: Playing wrong number of pieces
+            if required_count and required_count > 0 and len(selected_play) != required_count:
                 bugs.append(BugReport(
-                    bug_type="not_playing_to_win",
-                    severity=BugSeverity.HIGH,
+                    bug_type="wrong_piece_count",
+                    severity=BugSeverity.CRITICAL,
                     player=player_name,
                     phase="turn_play",
-                    description=f"Played weak pieces when must win (at {my_captured}/{my_declared})",
+                    description=f"Played {len(selected_play)} pieces when {required_count} were required",
                     context={
-                        'played': selected_play,
-                        'captured': my_captured,
-                        'declared': my_declared,
-                        'pieces_remaining': pieces_remaining,
-                        'turn_number': turn_number
+                        'played_count': len(selected_play),
+                        'required_count': required_count,
+                        'selected_play': selected_play
                     },
-                    suggested_fix="Identify must-win situations and play strongest pieces"
+                    suggested_fix=f"Must play exactly {required_count} pieces as required"
                 ))
                 
         self.bugs_detected.extend(bugs)
@@ -289,5 +348,23 @@ class AIBugDetector:
         summary = self.get_bug_summary()
         report += f"By Type: {summary['by_type']}\n"
         report += f"By Player: {summary['by_player']}\n"
+        
+        # Add descriptions for new bug types
+        report += "\n\nBUG TYPE DESCRIPTIONS\n"
+        report += "-" * 30 + "\n"
+        bug_descriptions = {
+            'over_aggressive_declaration': "Declaring high values without sufficient strong pieces",
+            'zero_declaration_strong_hand': "Declaring 0 with strong opener pieces",
+            'ignoring_pile_room': "Declaring more piles than mathematically possible",
+            'excessive_zero_declarations': "Declaring 0 more than 2 times in a row (rule violation)",
+            'last_player_sum_8': "Last player making total declaration equal to 8 (rule violation)",
+            'wasting_opener_at_target': "Playing high-value pieces when already at/above target",
+            'playing_piece_not_in_hand': "Playing pieces that are not in the player's hand (rule violation)",
+            'wrong_piece_count': "Playing wrong number of pieces than required (rule violation)"
+        }
+        
+        for bug_type in summary['by_type'].keys():
+            if bug_type in bug_descriptions:
+                report += f"{bug_type}: {bug_descriptions[bug_type]}\n"
         
         return report

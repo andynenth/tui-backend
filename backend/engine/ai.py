@@ -1413,8 +1413,7 @@ def choose_declare_strategic_v2(
         log_data['reasoning'] = reasoning
         log_data['confidence'] = 0.8 if declaration > 0 else 0.3
         
-        # Get player name if available
-        player_name = getattr(hand[0], '_bot_name', 'Unknown') if hand else 'Unknown'
+        # Use the player_name parameter passed to the function
         ai_logger.log_declaration(player_name, log_data)
 
     return declaration
@@ -1432,6 +1431,7 @@ def choose_declare(
     verbose: bool = True,
     analysis_callback: Optional[Callable] = None,
     ai_logger=None,  # Add AI logger support
+    player_name: str = "Unknown",
 ) -> int:
     """
     Main declaration function - now uses V2 strategic implementation.
@@ -1459,6 +1459,42 @@ def pieces_exist_in_hand(play, hand):
 
 
 # ------------------------------------------------------------------
+# Never-win combo detection (duplicated to avoid circular import)
+# ------------------------------------------------------------------
+def is_never_win_combo_basic(combo_type: str, pieces: List) -> bool:
+    """
+    Check if a combination can never win against any other combo of the same type.
+    This is a duplicate of the function in ai_turn_strategy.py to avoid circular imports.
+    
+    Never-win combos:
+    1. All-BLACK straights (3+5+7=15 points minimum)
+    2. SOLDIER_BLACK pairs (1+1=2 points minimum)
+    3. Multiple SOLDIER_BLACK (minimum points for their type)
+    """
+    if combo_type == "STRAIGHT":
+        # Check if all pieces are BLACK (odd points)
+        all_black = all(p.point % 2 == 1 for p in pieces)
+        if all_black:
+            # Check if it's the minimum straight
+            points = sorted([p.point for p in pieces])
+            # Minimum straight is 3,5,7 (CANNON_BLACK, HORSE_BLACK, CHARIOT_BLACK)
+            if len(points) >= 3 and points[:3] == [3, 5, 7]:
+                return True
+                
+    elif combo_type == "PAIR":
+        # Check if both pieces are SOLDIER_BLACK (1 point each)
+        if len(pieces) == 2 and all(p.point == 1 for p in pieces):
+            return True
+            
+    elif combo_type in ["THREE_OF_A_KIND", "FOUR_OF_A_KIND", "FIVE_OF_A_KIND"]:
+        # Check if all pieces are SOLDIER_BLACK
+        if all(p.point == 1 for p in pieces):
+            return True
+            
+    return False
+
+
+# ------------------------------------------------------------------
 # Choose the best play (set of 1–6 pieces) based on total point value
 # ------------------------------------------------------------------
 def choose_best_play(hand: list, required_count, verbose: bool = True) -> list:
@@ -1475,11 +1511,15 @@ def choose_best_play(hand: list, required_count, verbose: bool = True) -> list:
             if required_count and len(pieces) != required_count:
                 continue  # Skip if the size does not match required count
             if is_valid_play(pieces):
+                play_type = get_play_type(pieces)
+                # Skip never-win combos
+                if is_never_win_combo_basic(play_type, pieces):
+                    continue
                 total = sum(p.point for p in pieces)
                 if total > best_score:
                     best_score = total
                     best_play = pieces
-                    best_type = get_play_type(pieces)
+                    best_type = play_type
 
     # Return best found play
     if best_play:
