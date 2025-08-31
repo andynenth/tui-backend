@@ -15,6 +15,9 @@ python backend/ai_debug_simple.py --games 10 --log-level detailed
 
 # Run 100 games quickly for statistical analysis
 python backend/ai_debug_simple.py --games 100 --log-level summary
+
+# View a game log in human-readable format
+python backend/tools/read_ai_game_log.py AI_393635
 ```
 
 ## Command Line Options
@@ -44,18 +47,21 @@ python backend/ai_debug_simple.py --games 10 --output logs/ai_debug/test_run.jso
 ### Summary Level
 - Minimal logging for performance testing
 - Records only game start/end and round summaries
+- Includes complete turn results with all plays and winners
 - Best for: Running many games quickly, statistical analysis
 
 ### Decision Level (Default)
 - Records all AI decisions with reasoning
 - Includes declaration logic and turn play choices
+- Complete turn-by-turn logging with all 4 players' plays
 - Automatically detects and logs AI bugs
 - Best for: Understanding AI behavior, bug detection
 
 ### Detailed Level
 - Complete game state at every decision point
-- Full hand contents and available plays
+- Full hand contents before and after each play
 - Comprehensive debugging information
+- Turn-by-turn logging with detailed hand states
 - Best for: Deep debugging, understanding specific issues
 
 ## Analyzing Results
@@ -86,6 +92,19 @@ python backend/tools/analyze_ai_logs.py logs/ai_debug/*.json | grep "zero_declar
 python backend/tools/analyze_ai_logs.py before/*.json > before.txt
 python backend/tools/analyze_ai_logs.py after/*.json > after.txt
 diff before.txt after.txt
+```
+
+### Turn-Level Analysis
+
+```bash
+# Analyze turn-by-turn win rates and combo effectiveness
+python backend/tools/analyze_ai_games_realistic.py
+
+# View complete game flow with turn-by-turn details
+python backend/tools/read_ai_game_log.py AI_393635
+
+# Search for a specific game by ID
+python backend/tools/read_ai_game_log.py AI_393635 --dir logs/ai_debug
 ```
 
 ## Performance Benchmarking
@@ -187,6 +206,9 @@ python backend/ai_debug_simple.py --games 3 --verbose
 # Run many games for statistics
 python backend/ai_debug_simple.py --games 500 --log-level summary
 python backend/tools/analyze_ai_logs.py logs/ai_debug/*.json --export-stats ai_performance.csv
+
+# Analyze turn-level win rates
+python backend/tools/analyze_ai_games_realistic.py
 ```
 
 ### 3. Bug Investigation
@@ -195,6 +217,9 @@ python backend/tools/analyze_ai_logs.py logs/ai_debug/*.json --export-stats ai_p
 # Detailed logging to catch bugs
 python backend/ai_debug_simple.py --games 20 --log-level detailed
 python backend/tools/analyze_ai_logs.py logs/ai_debug/*.json | grep -A5 -B5 "BUG"
+
+# View specific game for bug analysis
+python backend/tools/read_ai_game_log.py AI_393635
 ```
 
 ### 4. Performance Testing
@@ -212,6 +237,16 @@ python tests/ai_debug/run_all_tests.py
 
 # Run specific regression test
 python tests/ai_debug/regression/test_zero_declaration_bug.py
+```
+
+### 6. Turn-by-Turn Game Analysis
+
+```bash
+# View complete game flow with colored output
+python backend/tools/read_ai_game_log.py AI_393635
+
+# Search for games by ID pattern
+python backend/tools/read_ai_game_log.py AI_393 --dir logs/ai_debug
 ```
 
 ## Tips and Best Practices
@@ -255,10 +290,41 @@ Logs are stored as JSON in `logs/ai_debug/` with this structure:
         "reasoning": "Starter with 2 openers and 1 combos"
       },
       ...
+    },
+    {
+      "event": "turn_complete",
+      "turn_number": 1,
+      "starter": "Bot 1",
+      "required_pieces": 1,
+      "plays": [
+        {
+          "player": "Bot 1",
+          "pieces_played": ["GENERAL_RED"],
+          "play_type": "SINGLE",
+          "is_valid": true,
+          "points": 15,
+          "hand_before": ["GENERAL_RED", "ADVISOR_RED", ...]
+        },
+        ...
+      ],
+      "winner": {
+        "player": "Bot 1",
+        "play_type": "SINGLE",
+        "points": 15
+      },
+      "game_state_after": {
+        "pile_counts": {"Bot 1": 1, "Bot 2": 0, ...}
+      }
     }
   ]
 }
 ```
+
+Key features:
+- **Turn-complete events**: Include all 4 players' plays with winner
+- **Hand tracking**: Optional hand_before/hand_after for detailed logging
+- **Pile counting**: Winner captures piles equal to pieces played
+- **Piece format**: "PIECE_COLOR" (e.g., "GENERAL_RED", "SOLDIER_BLACK")
 
 See [LOG_FORMAT.md](LOG_FORMAT.md) for complete format documentation.
 

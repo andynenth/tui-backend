@@ -124,6 +124,7 @@ class TurnPlayContext:
         Piece
     ]  # ⚠️ NOT IMPLEMENTED - Always empty list, do not use in strategy
     player_states: Dict[str, Dict]  # All players' captured/declared
+    required_play_type: Optional[str] = None  # The play type set by starter (e.g., "PAIR", "STRAIGHT")
 
 
 @dataclass
@@ -1028,8 +1029,49 @@ def execute_responder_strategy(
             # Total value: {total_value} pts (minimized)
             return pieces_to_play
 
-    # Take required number from disposal candidates
+    # Take required number from disposal candidates - but validate they form a valid combo!
     if len(disposal_candidates) >= required:
+        # If we need multiple pieces and have a required play type, find valid combos
+        if required > 1 and context.required_play_type:
+            # Find all valid combinations of the required size and type
+            from itertools import combinations
+            valid_plays = []
+            
+            for combo in combinations(disposal_candidates, required):
+                combo_list = list(combo)
+                if is_valid_play(combo_list):
+                    play_type = get_play_type(combo_list)
+                    if play_type == context.required_play_type:
+                        # Check if it's a never-win combo
+                        is_never_win = is_never_win_combo(play_type, combo_list)
+                        total_value = sum(p.point for p in combo_list)
+                        valid_plays.append({
+                            'pieces': combo_list,
+                            'value': total_value,
+                            'is_never_win': is_never_win
+                        })
+            
+            if valid_plays:
+                # Sort by: non-never-win first, then by lowest value (to dispose burden)
+                valid_plays.sort(key=lambda x: (x['is_never_win'], x['value']))
+                
+                # Log if we're choosing a never-win combo when alternatives exist
+                if valid_plays[0]['is_never_win'] and any(not p['is_never_win'] for p in valid_plays):
+                    non_never_win = [p for p in valid_plays if not p['is_never_win']]
+                    print(f"  ⚠️ WARNING: Choosing never-win combo when {len(non_never_win)} better alternatives exist!")
+                
+                pieces_to_play = valid_plays[0]['pieces']
+                play_type_str = context.required_play_type
+                total_value = valid_plays[0]['value']
+                never_win_str = " (NEVER-WIN!)" if valid_plays[0]['is_never_win'] else ""
+                print(f"  Playing valid {play_type_str}: {[p.name for p in pieces_to_play]} ({total_value} pts){never_win_str}")
+                return pieces_to_play
+            else:
+                # No valid combos found - this is a problem!
+                print(f"  ❌ ERROR: Cannot form valid {context.required_play_type} from disposal candidates!")
+                # Fall through to old behavior as emergency fallback
+        
+        # Fallback: Take first N pieces (original behavior for singles or when no type required)
         pieces_to_play = disposal_candidates[:required]
 
         # Describe what we're disposing

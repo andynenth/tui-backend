@@ -224,6 +224,14 @@ class SimpleAIGame:
                 try:
                     from backend.engine.ai_turn_strategy import TurnPlayContext
                     
+                    # Get the starter's play type if this is a responder
+                    required_play_type = None
+                    if self.game.current_turn_plays and not (player.name == current_starter):
+                        # Get the first play (starter's play)
+                        first_play = self.game.current_turn_plays[0]
+                        required_play_type = get_play_type(first_play.pieces)
+                        logger.debug(f"Responder {player.name} must match play type: {required_play_type}")
+                    
                     context = TurnPlayContext(
                         my_name=player.name,
                         my_hand=player.hand,
@@ -241,7 +249,8 @@ class SimpleAIGame:
                                 "declared": p.declared,
                             }
                             for p in self.game.players
-                        }
+                        },
+                        required_play_type=required_play_type
                     )
                     
                     # Use strategic AI - returns list of play dictionaries

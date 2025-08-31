@@ -709,9 +709,21 @@ class GameBotHandler:
                 )
                 bot_captured = pile_counts.get(bot.name, 0)
 
+                # Get the starter's play type from turn_plays
+                required_play_type = None
+                if self.state_machine:
+                    phase_data = self.state_machine.get_phase_data()
+                    turn_plays = phase_data.get("turn_plays", {})
+                    # Find the starter's play (first play in the turn)
+                    if turn_plays and current_turn_starter:
+                        starter_play = turn_plays.get(current_turn_starter, {})
+                        required_play_type = starter_play.get("play_type")
+                        if required_play_type:
+                            logger.info(f"Responder {bot.name} must match play type: {required_play_type}")
+
                 # DEBUG: Log detailed info for overcapture investigation
                 logger.debug(
-                    f"Bot Turn Decision for {bot.name}: captured={bot_captured}, declared={bot.declared}, turn={getattr(game_state, 'turn_number', 'unknown')}, required={required_piece_count}"
+                    f"Bot Turn Decision for {bot.name}: captured={bot_captured}, declared={bot.declared}, turn={getattr(game_state, 'turn_number', 'unknown')}, required={required_piece_count}, play_type={required_play_type}"
                 )
 
                 # Check if bot is at target
@@ -746,6 +758,7 @@ class GameBotHandler:
                         }
                         for p in game_state.players
                     },
+                    required_play_type=required_play_type,  # Pass the required play type
                 )
             else:
                 # No strategic AI available, use None for context
