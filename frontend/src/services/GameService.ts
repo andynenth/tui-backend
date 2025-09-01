@@ -16,7 +16,7 @@
  */
 
 import { networkService } from './NetworkService';
-import { storeSession, clearSession } from '../utils/sessionStorage';
+import { storeSession, clearSession, getSession } from '../utils/sessionStorage';
 import type {
   GameState,
   PhaseData,
@@ -655,11 +655,24 @@ export class GameService extends EventTarget {
     newState.phase = data.phase;
     newState.currentRound = data.round || state.currentRound;
 
+    // Check if we have playerName - if not, try to get it from session storage
+    let playerNameToUse = state.playerName;
+    if (!playerNameToUse && state.roomId) {
+      // During reconnection, playerName might not be set yet
+      const session = getSession();
+      if (session && session.roomId === state.roomId) {
+        playerNameToUse = session.playerName;
+        console.log('🔄 [PHASE_CHANGE] Using playerName from session:', playerNameToUse);
+        // Also update the state with the playerName
+        newState.playerName = playerNameToUse;
+      }
+    }
+
     // Extract my hand from players data (sent by backend)
-    if (data.players && state.playerName && data.players[state.playerName]) {
-      const myPlayerData = data.players[state.playerName];
+    if (data.players && playerNameToUse && data.players[playerNameToUse]) {
+      const myPlayerData = data.players[playerNameToUse];
       console.log('🎴 [DEBUG] My player data:', {
-        playerName: state.playerName,
+        playerName: playerNameToUse,
         hasHand: !!myPlayerData.hand,
         handLength: myPlayerData.hand?.length,
         myPlayerData,
