@@ -663,6 +663,7 @@ async def websocket_endpoint(websocket: WebSocket, room_id: str):
                     from backend.api.services.player_activity_tracker import activity_tracker
                     
                     # Get current player name
+                    websocket_id = getattr(registered_ws, "_ws_id", None)
                     player_name = await get_current_player_name(websocket_id)
                     if player_name:
                         await activity_tracker.record_heartbeat(room_id, player_name, event_data)
