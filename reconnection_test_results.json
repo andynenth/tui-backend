@@ -1,0 +1,26 @@
+[
+  {
+    "scenario": "Room Before Start",
+    "phase": "waiting",
+    "passed": true,
+    "issues": [],
+    "before_state": {
+      "phase": null,
+      "currentRound": null,
+      "players": null,
+      "myHand": 0,
+      "currentPlayer": null,
+      "currentDeclarer": null
+    },
+    "after_state": {
+      "phase": null,
+      "currentRound": null,
+      "players": null,
+      "myHand": 0,
+      "currentPlayer": null,
+      "currentDeclarer": null,
+      "error": null
+    },
+    "timestamp": "2025-08-31T23:24:05.885278"
+  }
+]

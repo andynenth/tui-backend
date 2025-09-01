@@ -99,16 +99,18 @@ async def handle_disconnect(room_id: str, websocket: WebSocket):
                         None,
                     )
 
-                if player and not player.is_bot:
-
-                    # Store original bot state AND avatar color
+                if player:
+                    # Store original state for ALL players (both human and bot)
                     player.original_is_bot = player.is_bot
                     player.original_avatar_color = getattr(player, 'avatar_color', None)
-                    player.is_connected = False
-                    player.disconnect_time = connection.disconnect_time
-
-                    # Convert to bot
-                    player.is_bot = True
+                    
+                    # Only process human players for disconnect
+                    if not player.is_bot:
+                        player.is_connected = False
+                        player.disconnect_time = connection.disconnect_time
+                        
+                        # Convert human to bot during disconnect
+                        player.is_bot = True
 
                     # Create message queue for the disconnected player
                     await message_queue_manager.create_queue(
@@ -692,19 +694,25 @@ async def websocket_endpoint(websocket: WebSocket, room_id: str):
                             return
 
                         if room.started and room.game:
+                            # First, restore state for ALL players in the game
+                            for game_player in room.game.players:
+                                # Restore original bot state
+                                if hasattr(game_player, 'original_is_bot'):
+                                    game_player.is_bot = game_player.original_is_bot
+                                
+                                # Restore avatar color
+                                if hasattr(game_player, 'original_avatar_color'):
+                                    game_player.avatar_color = game_player.original_avatar_color
+                            
+                            # Now handle the reconnecting player specifically
                             player = next(
                                 (p for p in room.game.players if p.name == player_name),
                                 None,
                             )
-                            if player and player.is_bot and not player.original_is_bot:
+                            if player and hasattr(player, 'original_is_bot') and not player.original_is_bot:
                                 # This is a human player reconnecting
-                                player.is_bot = False
                                 player.is_connected = True
                                 player.disconnect_time = None
-                                
-                                # Restore avatar color if it was saved
-                                if hasattr(player, 'original_avatar_color') and player.original_avatar_color:
-                                    player.avatar_color = player.original_avatar_color
 
                                 # Cancel any pending cleanup
                                 room.cancel_cleanup()
@@ -783,6 +791,7 @@ async def websocket_endpoint(websocket: WebSocket, room_id: str):
                                             ]
 
                                         players_data[player_name] = {
+                                            "name": player_name,
                                             "hand": player_hand,
                                             "hand_size": len(player_hand),
                                             "zero_declares_in_a_row": getattr(
@@ -790,6 +799,9 @@ async def websocket_endpoint(websocket: WebSocket, room_id: str):
                                             ),
                                             "declared": getattr(player, "declared", 0),
                                             "score": getattr(player, "score", 0),
+                                            "is_bot": getattr(player, "is_bot", False),
+                                            "avatar_color": getattr(player, "avatar_color", None),
+                                            "captured_piles": getattr(player, "captured_piles", 0),
                                         }
 
                                 # Get current round number
