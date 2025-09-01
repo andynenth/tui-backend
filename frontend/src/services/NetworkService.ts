@@ -151,6 +151,14 @@ export class NetworkService extends EventTarget {
       // Send initial ready signal
       const connectionData = this.connections.get(roomId);
       const isReconnection = connectionData?.isReconnection || false;
+      
+      console.log('🔍 [REFRESH_DEBUG] Sending client_ready:', {
+        room_id: roomId,
+        player_name: connectionData?.playerName,
+        is_reconnection: isReconnection,
+        request_full_state: isReconnection,
+      });
+      
       this.send(roomId, 'client_ready', {
         room_id: roomId,
         player_name: connectionData?.playerName,

@@ -269,6 +269,12 @@ class GameStateMachine:
             GamePhase enum value representing the current phase,
             or None if state machine is not initialized.
         """
+        logger.info(
+            f"🔍 [REFRESH_DEBUG] get_current_phase called: "
+            f"current_phase={self.current_phase}, "
+            f"is_running={self.is_running}, "
+            f"current_state={type(self.current_state).__name__ if self.current_state else 'None'}"
+        )
         return self.current_phase
 
     def get_allowed_actions(self) -> Set[ActionType]:
@@ -301,21 +307,27 @@ class GameStateMachine:
         # Get raw phase data
         raw_data = self.current_state.phase_data.copy()
 
-        # Convert Player objects to serializable format
-        serializable_data = {}
-        for key, value in raw_data.items():
-            if key == "declaration_order" and isinstance(value, list):
-                # Convert Player objects to player names
-                serializable_data[key] = [
-                    getattr(player, "name", str(player)) for player in value
-                ]
-            elif hasattr(value, "__dict__"):
-                # Convert complex objects to string representation
-                serializable_data[key] = str(value)
-            else:
-                serializable_data[key] = value
-
-        return serializable_data
+        # Convert to JSON-safe format using the same method as auto-broadcast
+        from backend.engine.state_machine.base_state import GameState
+        
+        # Use the _make_json_safe method from base_state
+        if hasattr(self.current_state, '_make_json_safe'):
+            return self.current_state._make_json_safe(raw_data)
+        else:
+            # Fallback to simple conversion
+            serializable_data = {}
+            for key, value in raw_data.items():
+                if key == "declaration_order" and isinstance(value, list):
+                    # Convert Player objects to player names
+                    serializable_data[key] = [
+                        getattr(player, "name", str(player)) for player in value
+                    ]
+                elif hasattr(value, "__dict__"):
+                    # Convert complex objects to string representation
+                    serializable_data[key] = str(value)
+                else:
+                    serializable_data[key] = value
+            return serializable_data
 
     async def _broadcast_phase_change_with_hands(self, phase: GamePhase):
         """

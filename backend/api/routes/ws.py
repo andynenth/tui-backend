@@ -765,11 +765,23 @@ async def websocket_endpoint(websocket: WebSocket, room_id: str):
                             logger.info(
                                 f"📋 [DEBUG] Full state requested by {player_name} for room {room_id}"
                             )
+                            logger.info(
+                                f"🔍 [REFRESH_DEBUG] Room state check: started={room.started}, "
+                                f"has_game_state_machine={room.game_state_machine is not None}, "
+                                f"has_game={room.game is not None}"
+                            )
                         
                         if room.started and room.game_state_machine:
                             current_phase = room.game_state_machine.get_current_phase()
+                            logger.info(
+                                f"🔍 [REFRESH_DEBUG] Current phase: {current_phase}, "
+                                f"phase type: {type(current_phase)}"
+                            )
                             if current_phase:
                                 phase_data = room.game_state_machine.get_phase_data()
+                                logger.info(
+                                    f"🔍 [REFRESH_DEBUG] Phase data keys: {list(phase_data.keys()) if phase_data else 'None'}"
+                                )
                                 allowed_actions = [
                                     action.value
                                     for action in room.game_state_machine.get_allowed_actions()
@@ -811,6 +823,11 @@ async def websocket_endpoint(websocket: WebSocket, room_id: str):
                                         room.game, "round_number", 1
                                     )
 
+                                logger.info(
+                                    f"🔍 [REFRESH_DEBUG] Sending phase_change event: "
+                                    f"phase={current_phase.value}, round={current_round}, "
+                                    f"has_players_data={bool(players_data)}"
+                                )
                                 await registered_ws.send_json(
                                     {
                                         "event": "phase_change",
@@ -823,6 +840,16 @@ async def websocket_endpoint(websocket: WebSocket, room_id: str):
                                         },
                                     }
                                 )
+                            else:
+                                logger.warning(
+                                    f"⚠️ [REFRESH_DEBUG] current_phase is None/False! "
+                                    f"room.started={room.started}, game_state_machine exists={room.game_state_machine is not None}"
+                                )
+                        else:
+                            logger.warning(
+                                f"⚠️ [REFRESH_DEBUG] Conditions not met for sending phase_change: "
+                                f"room.started={room.started}, has_game_state_machine={room.game_state_machine is not None}"
+                            )
 
                         await asyncio.sleep(0)
                     else:

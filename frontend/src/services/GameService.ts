@@ -552,6 +552,18 @@ export class GameService extends EventTarget {
   private processGameEvent(eventType: string, data: any): GameState {
     let newState = { ...this.state };
 
+    // Special debug for refresh scenarios
+    if (eventType === 'phase_change') {
+      console.log('🔍 [REFRESH_DEBUG] Phase change received:', {
+        newPhase: data.phase,
+        currentPhase: this.state.phase,
+        hasPlayers: !!data.players,
+        hasPhaseData: !!data.phase_data,
+        playerName: this.state.playerName,
+        roomId: this.state.roomId,
+      });
+    }
+
     switch (eventType) {
       case 'phase_change':
         newState = this.handlePhaseChange(newState, data);
