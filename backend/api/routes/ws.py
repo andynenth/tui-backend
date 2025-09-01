@@ -407,6 +407,25 @@ async def websocket_endpoint(websocket: WebSocket, room_id: str):
                             },
                         }
                     )
+                    
+                elif event_name == "heartbeat":
+                    # Enhanced heartbeat with diagnostic data
+                    from backend.api.services.player_activity_tracker import activity_tracker
+                    
+                    # Record heartbeat data (player not in room yet in lobby)
+                    player_name = event_data.get("player_name", f"lobby_user_{websocket_id}")
+                    await activity_tracker.record_heartbeat("lobby", player_name, event_data)
+                    
+                    # Respond with pong
+                    await registered_ws.send_json(
+                        {
+                            "event": "pong",
+                            "data": {
+                                "timestamp": event_data.get("timestamp", asyncio.get_event_loop().time()),
+                                "server_time": asyncio.get_event_loop().time(),
+                            },
+                        }
+                    )
 
                 elif event_name == "client_ready":
                     # Send initial room list when client connects to lobby
@@ -633,6 +652,27 @@ async def websocket_endpoint(websocket: WebSocket, room_id: str):
                                 "timestamp": event_data.get(
                                     "timestamp", asyncio.get_event_loop().time()
                                 ),
+                                "server_time": asyncio.get_event_loop().time(),
+                                "room_id": room_id,
+                            },
+                        }
+                    )
+                    
+                elif event_name == "heartbeat":
+                    # Enhanced heartbeat with diagnostic data
+                    from backend.api.services.player_activity_tracker import activity_tracker
+                    
+                    # Get current player name
+                    player_name = await get_current_player_name(websocket_id)
+                    if player_name:
+                        await activity_tracker.record_heartbeat(room_id, player_name, event_data)
+                    
+                    # Respond with pong
+                    await registered_ws.send_json(
+                        {
+                            "event": "pong",
+                            "data": {
+                                "timestamp": event_data.get("timestamp", asyncio.get_event_loop().time()),
                                 "server_time": asyncio.get_event_loop().time(),
                                 "room_id": room_id,
                             },
@@ -1199,6 +1239,13 @@ async def websocket_endpoint(websocket: WebSocket, room_id: str):
                     # Handle player declaration (already validated)
                     player_name = event_data.get("player_name")
                     value = event_data.get("value")
+                    
+                    # Track player action
+                    from backend.api.services.player_activity_tracker import activity_tracker
+                    await activity_tracker.record_action(
+                        room_id, player_name, "declare",
+                        {"value": value}
+                    )
 
                     try:
                         room = await room_manager.get_room(room_id)
@@ -1253,6 +1300,13 @@ async def websocket_endpoint(websocket: WebSocket, room_id: str):
                     # Handle piece playing (already validated)
                     player_name = event_data.get("player_name")
                     indices = event_data.get("indices", [])
+                    
+                    # Track player action
+                    from backend.api.services.player_activity_tracker import activity_tracker
+                    await activity_tracker.record_action(
+                        room_id, player_name, "play",
+                        {"indices": indices, "piece_count": len(indices)}
+                    )
 
                     try:
                         room = await room_manager.get_room(room_id)

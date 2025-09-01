@@ -1,13 +1,16 @@
 # backend/api/routes/debug.py
 
+import asyncio
 import logging
-from typing import Optional
+import time
+from typing import Optional, List, Dict, Any
 
-from fastapi import APIRouter, HTTPException, Query
+from fastapi import APIRouter, HTTPException, Query, WebSocket, WebSocketDisconnect
 from fastapi.responses import JSONResponse
 
 from backend.shared_event_store import event_store
 from backend.api.services.log_buffer import log_buffer, LogLevel
+from backend.api.services.player_activity_tracker import activity_tracker
 
 logger = logging.getLogger(__name__)
 
@@ -469,3 +472,149 @@ async def clear_logs():
     except Exception as e:
         logger.error(f"Error clearing log buffer: {e}")
         raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.get("/player-activity/{room_id}")
+async def get_player_activity(room_id: str):
+    """
+    Get current player activity status for a room
+    
+    Shows heartbeat status, last actions, and potential hang detection
+    for all players in a room.
+    """
+    try:
+        activities = await activity_tracker.get_room_activities(room_id)
+        
+        players_data = []
+        for player_name, activity in activities.items():
+            now = time.time()
+            heartbeat_lag = now - activity.last_heartbeat
+            action_lag = now - activity.last_action
+            
+            player_data = {
+                "name": player_name,
+                "status": "active" if activity.is_active() else "inactive",
+                "last_heartbeat": activity.last_heartbeat,
+                "last_action": activity.last_action,
+                "last_action_type": activity.last_action_type,
+                "heartbeat_lag": heartbeat_lag,
+                "action_lag": action_lag,
+                "connection_health": "good" if heartbeat_lag < 35 else "warning" if heartbeat_lag < 90 else "critical",
+                "recent_actions": list(activity.action_history)[-5:],  # Last 5 actions
+            }
+            
+            # Add client state if available
+            if activity.heartbeat_data:
+                game_context = activity.heartbeat_data.get("game_context", {})
+                player_data["game_state"] = {
+                    "phase": game_context.get("phase"),
+                    "is_my_turn": game_context.get("is_my_turn"),
+                    "waiting_for": game_context.get("waiting_for"),
+                }
+                player_data["client_memory_mb"] = activity.heartbeat_data.get("performance", {}).get("memory_mb")
+                
+            players_data.append(player_data)
+            
+        # Check for current hangs
+        hang_detections = await activity_tracker.detect_hangs()
+        room_hangs = [h for h in hang_detections if h.room_id == room_id]
+        
+        return {
+            "room_id": room_id,
+            "timestamp": time.time(),
+            "players": players_data,
+            "hang_detections": [h.to_dict() for h in room_hangs],
+        }
+        
+    except Exception as e:
+        logger.error(f"Error getting player activity for room {room_id}: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.get("/hang-diagnostics")
+async def get_hang_diagnostics(
+    limit: int = Query(20, description="Maximum number of diagnostics to return"),
+    hang_type: Optional[str] = Query(None, description="Filter by hang type"),
+    player_id: Optional[str] = Query(None, description="Filter by player ID"),
+):
+    """
+    Get recent hang diagnostic snapshots
+    
+    Returns detailed diagnostic information about detected hang situations,
+    including client state, server state, and network conditions.
+    """
+    try:
+        diagnostics = await activity_tracker.get_diagnostics(
+            limit=limit,
+            hang_type=hang_type,
+            player_id=player_id
+        )
+        
+        summary = await activity_tracker.get_hang_summary()
+        
+        return {
+            "total": len(diagnostics),
+            "diagnostics": [d.to_dict() for d in diagnostics],
+            "summary": summary,
+        }
+        
+    except Exception as e:
+        logger.error(f"Error getting hang diagnostics: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.websocket("/ws/activity-monitor")
+async def activity_monitor_websocket(websocket: WebSocket):
+    """
+    Real-time activity monitoring WebSocket
+    
+    Provides live updates on player activity, hang detections,
+    and system health metrics.
+    """
+    await websocket.accept()
+    
+    try:
+        while True:
+            # Gather current statistics
+            all_activities = {}
+            active_count = 0
+            inactive_count = 0
+            
+            # Get all activities across all rooms
+            for room_id in list(activity_tracker.activities.keys()):
+                room_activities = await activity_tracker.get_room_activities(room_id)
+                for player_name, activity in room_activities.items():
+                    all_activities[f"{room_id}:{player_name}"] = activity
+                    if activity.is_active():
+                        active_count += 1
+                    else:
+                        inactive_count += 1
+                        
+            # Check for active hangs
+            active_hangs = await activity_tracker.detect_hangs()
+            
+            # Count hang types
+            hang_type_counts = {}
+            for hang in active_hangs:
+                hang_type = hang.hang_type
+                hang_type_counts[hang_type] = hang_type_counts.get(hang_type, 0) + 1
+                
+            # Send update
+            await websocket.send_json({
+                "type": "activity_update",
+                "timestamp": time.time(),
+                "active_players": active_count,
+                "inactive_players": inactive_count,
+                "active_hangs": len(active_hangs),
+                "hang_types": hang_type_counts,
+                "total_rooms": len(activity_tracker.activities),
+            })
+            
+            # Wait 5 seconds before next update
+            await asyncio.sleep(5)
+            
+    except WebSocketDisconnect:
+        logger.info("Activity monitor disconnected")
+    except Exception as e:
+        logger.error(f"Activity monitor error: {e}")
+        await websocket.close()

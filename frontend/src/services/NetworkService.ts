@@ -60,6 +60,11 @@ export class NetworkService extends EventTarget {
   private readonly heartbeatTimers = new Map<string, NodeJS.Timeout>();
   private readonly reconnectStates = new Map<string, ReconnectState>();
   private isDestroyed = false;
+  
+  // Activity tracking for hang detection
+  private lastUserAction: string | null = null;
+  private lastUserActionType: string | null = null;
+  private lastUserActionTimestamp: number = Date.now();
 
   private constructor() {
     super();
@@ -244,6 +249,14 @@ export class NetworkService extends EventTarget {
     if (this.isDestroyed) {
       console.warn('Cannot send message: NetworkService destroyed');
       return false;
+    }
+    
+    // Track user actions for hang detection (exclude system events)
+    const userActionEvents = ['play', 'declare', 'accept_redeal', 'decline_redeal', 'start_game', 'join_room'];
+    if (userActionEvents.includes(event)) {
+      this.lastUserAction = event;
+      this.lastUserActionType = data.action_type || event;
+      this.lastUserActionTimestamp = Date.now();
     }
 
     const sequenceNumber = this.getNextSequenceNumber(roomId);
@@ -646,6 +659,58 @@ export class NetworkService extends EventTarget {
   }
 
   /**
+   * Collect diagnostic data for hang detection
+   */
+  private collectDiagnosticData(roomId: string): Record<string, any> {
+    // Get game state from GameService if available
+    let gameState: any = null;
+    try {
+      // Import dynamically to avoid circular dependency
+      const GameService = (window as any).GameService;
+      if (GameService && typeof GameService.getInstance === 'function') {
+        const gameService = GameService.getInstance();
+        if (gameService && typeof gameService.getState === 'function') {
+          gameState = gameService.getState();
+        }
+      }
+    } catch (error) {
+      console.warn('Failed to get game state for diagnostics:', error);
+    }
+    
+    const connectionData = this.connections.get(roomId);
+    const queueSize = this.messageQueues.get(roomId)?.length || 0;
+    
+    return {
+      timestamp: Date.now(),
+      last_user_action: this.lastUserAction,
+      last_user_action_type: this.lastUserActionType,
+      last_user_action_age: Date.now() - this.lastUserActionTimestamp,
+      
+      game_context: gameState ? {
+        phase: gameState.phase,
+        round: gameState.currentRound,
+        turn: gameState.currentTurnNumber,
+        current_player: gameState.currentPlayer,
+        is_my_turn: gameState.isMyTurn,
+        waiting_for: gameState.allowedActions?.join(',') || null,
+      } : null,
+      
+      network_state: {
+        connection_status: connectionData?.status || 'unknown',
+        message_queue_size: queueSize,
+        reconnect_count: this.reconnectStates.get(roomId)?.attempts || 0,
+        latency_ms: connectionData?.latency || null,
+      },
+      
+      performance: {
+        memory_mb: (performance as any).memory?.usedJSHeapSize 
+          ? (performance as any).memory.usedJSHeapSize / 1048576 
+          : null,
+      },
+    };
+  }
+
+  /**
    * Start heartbeat monitoring for a room
    */
   private startHeartbeat(roomId: string): void {
@@ -654,7 +719,9 @@ export class NetworkService extends EventTarget {
     const timer = setInterval(() => {
       const connectionData = this.connections.get(roomId);
       if (connectionData?.websocket?.readyState === WebSocket.OPEN) {
-        this.send(roomId, 'ping', { timestamp: Date.now() });
+        // Send enhanced heartbeat with diagnostic data
+        const diagnosticData = this.collectDiagnosticData(roomId);
+        this.send(roomId, 'heartbeat', diagnosticData);
       } else {
         this.stopHeartbeat(roomId);
       }
