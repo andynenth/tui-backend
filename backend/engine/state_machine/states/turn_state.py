@@ -55,6 +55,25 @@ class TurnState(GameState):
             None  # Store validation error messages
         )
 
+    def _serialize_turn_plays(self) -> Dict[str, Dict[str, Any]]:
+        """Convert turn_plays to JSON-safe format"""
+        from datetime import datetime
+        
+        serialized = {}
+        for player_name, play_data in self.turn_plays.items():
+            serialized_play = play_data.copy()
+            # Convert Piece objects to JSON-safe format
+            if "pieces" in serialized_play:
+                serialized_play["pieces"] = [
+                    {"kind": piece.kind, "point": piece.point} 
+                    for piece in serialized_play["pieces"]
+                ]
+            # Convert datetime to ISO format string
+            if "timestamp" in serialized_play and isinstance(serialized_play["timestamp"], datetime):
+                serialized_play["timestamp"] = serialized_play["timestamp"].isoformat()
+            serialized[player_name] = serialized_play
+        return serialized
+
     async def _setup_phase(self) -> None:
         """Initialize turn phase"""
         game = self.state_machine.game
@@ -400,7 +419,7 @@ class TurnState(GameState):
             {
                 "current_player": next_player,
                 "required_piece_count": self.required_piece_count,
-                "turn_plays": self.turn_plays.copy(),  # This now includes the current player's play
+                "turn_plays": self._serialize_turn_plays(),  # Serialize to JSON-safe format
                 "turn_complete": is_turn_complete,
                 "current_turn_number": current_turn_number,
                 "pile_counts": pile_counts.copy(),  # Add accumulated pile counts
@@ -479,7 +498,7 @@ class TurnState(GameState):
                 "turn_complete": True,
                 "winner": self.winner,
                 "piles_won": self.required_piece_count if self.winner else 0,
-                "turn_plays": self.turn_plays.copy(),  # Preserve the completed turn data
+                "turn_plays": self._serialize_turn_plays(),  # Serialize to JSON-safe format
                 "next_turn_starter": self.winner or self.current_turn_starter,
                 "pile_counts": pile_counts.copy(),  # Include updated pile counts
             },

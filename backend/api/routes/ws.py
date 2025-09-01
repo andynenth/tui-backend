@@ -747,6 +747,7 @@ async def websocket_endpoint(websocket: WebSocket, room_id: str):
                                 )
 
                         # Send full game state if requested or on reconnection
+                        logger.info(f"🔍 Full state check - request_full_state: {request_full_state}, is_reconnection: {is_reconnection}, room.started: {room.started}, has game_state_machine: {hasattr(room, 'game_state_machine')}, game_state_machine: {room.game_state_machine if hasattr(room, 'game_state_machine') else 'N/A'}")
                         if (request_full_state or is_reconnection) and room.started and room.game_state_machine:
                             # Get current game state
                             state_machine = room.game_state_machine
