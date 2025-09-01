@@ -1,0 +1,14 @@
+# Debug Log Access Point
+This file will be populated with debug logs during testing.
+Run the following to test:
+
+1. Start backend with debug logging:
+   ./enable_debug_logs.py
+
+2. In another terminal, run the monitor:
+   ./monitor_debug_logs.sh
+
+3. In a third terminal, run the debug script:
+   python debug_reconnection.py
+
+The logs will be available in debug_websocket_recent.log

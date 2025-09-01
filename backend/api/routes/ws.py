@@ -101,8 +101,9 @@ async def handle_disconnect(room_id: str, websocket: WebSocket):
 
                 if player and not player.is_bot:
 
-                    # Store original bot state
+                    # Store original bot state AND avatar color
                     player.original_is_bot = player.is_bot
+                    player.original_avatar_color = getattr(player, 'avatar_color', None)
                     player.is_connected = False
                     player.disconnect_time = connection.disconnect_time
 
@@ -637,6 +638,10 @@ async def websocket_endpoint(websocket: WebSocket, room_id: str):
                     )
 
                 elif event_name == "client_ready":
+                    # Enhanced logging for client_ready event
+                    logger.info(
+                        f"📥 [DEBUG] client_ready received for room {room_id}: {event_data}"
+                    )
                     room = await room_manager.get_room(room_id)
                     if room:
                         updated_summary = await room.summary()
@@ -696,6 +701,10 @@ async def websocket_endpoint(websocket: WebSocket, room_id: str):
                                 player.is_bot = False
                                 player.is_connected = True
                                 player.disconnect_time = None
+                                
+                                # Restore avatar color if it was saved
+                                if hasattr(player, 'original_avatar_color') and player.original_avatar_color:
+                                    player.avatar_color = player.original_avatar_color
 
                                 # Cancel any pending cleanup
                                 room.cancel_cleanup()
@@ -743,6 +752,12 @@ async def websocket_endpoint(websocket: WebSocket, room_id: str):
                                 )
 
                         # Send current game phase if game is running
+                        request_full_state = event_data.get("request_full_state", False)
+                        if request_full_state:
+                            logger.info(
+                                f"📋 [DEBUG] Full state requested by {player_name} for room {room_id}"
+                            )
+                        
                         if room.started and room.game_state_machine:
                             current_phase = room.game_state_machine.get_current_phase()
                             if current_phase:

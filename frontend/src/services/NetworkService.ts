@@ -109,12 +109,15 @@ export class NetworkService extends EventTarget {
     const baseUrl = NETWORK.WEBSOCKET_BASE_URL();
     const url = `${baseUrl}/${roomId}`;
 
-    // Log WebSocket URL for debugging (especially on iOS)
-    console.log(`🔌 WebSocket connecting to: ${url}`, {
+    // Enhanced debug logging for WebSocket connection
+    console.log(`🔌 [DEBUG] WebSocket connecting to: ${url}`, {
       protocol: window.location.protocol,
       host: window.location.host,
       baseUrl,
       fullUrl: url,
+      roomId,
+      playerInfo,
+      timestamp: new Date().toISOString(),
     });
 
     try {
@@ -147,10 +150,12 @@ export class NetworkService extends EventTarget {
 
       // Send initial ready signal
       const connectionData = this.connections.get(roomId);
+      const isReconnection = connectionData?.isReconnection || false;
       this.send(roomId, 'client_ready', {
         room_id: roomId,
         player_name: connectionData?.playerName,
-        is_reconnection: connectionData?.isReconnection || false,
+        is_reconnection: isReconnection,
+        request_full_state: isReconnection, // Request full state on reconnection
       });
 
       // Process any queued messages
@@ -168,7 +173,10 @@ export class NetworkService extends EventTarget {
         })
       );
 
-      console.log(`🌐 NetworkService: Connected to room ${roomId}`);
+      console.log(`🌐 [DEBUG] NetworkService: Connected to room ${roomId}`, {
+        isReconnection,
+        timestamp: new Date().toISOString(),
+      });
       return connection;
     } catch (error) {
       const errorMessage =
@@ -214,7 +222,11 @@ export class NetworkService extends EventTarget {
       })
     );
 
-    console.log(`🌐 NetworkService: Disconnected from room ${roomId}`);
+    console.log(`🌐 [DEBUG] NetworkService: Disconnected from room ${roomId}`, {
+      intentional,
+      timestamp: new Date().toISOString(),
+      hadConnection: !!connectionData,
+    });
   }
 
   /**
@@ -240,7 +252,14 @@ export class NetworkService extends EventTarget {
     if (connectionData?.websocket?.readyState === WebSocket.OPEN) {
       // Send immediately
       try {
-        connectionData.websocket.send(JSON.stringify(message));
+        const messageStr = JSON.stringify(message);
+        console.log(`📤 [DEBUG] Sending message to ${roomId}:`, {
+          event,
+          data,
+          sequence: sequenceNumber,
+          messageLength: messageStr.length,
+        });
+        connectionData.websocket.send(messageStr);
         connectionData.messagesSent++;
         connectionData.lastActivity = Date.now();
 
@@ -389,7 +408,10 @@ export class NetworkService extends EventTarget {
    * Handle connection open
    */
   private handleConnectionOpen(roomId: string): void {
-    console.log(`🔗 Connection opened to room ${roomId}`);
+    console.log(`🔗 [DEBUG] Connection opened to room ${roomId}`, {
+      timestamp: new Date().toISOString(),
+      connectionData: this.connections.get(roomId),
+    });
   }
 
   /**
@@ -403,6 +425,15 @@ export class NetworkService extends EventTarget {
       const message = JSON.parse(event.data) as NetworkMessage;
       connectionData.messagesReceived++;
       connectionData.lastActivity = Date.now();
+
+      // Enhanced debug logging for received messages
+      console.log(`📥 [DEBUG] Received message from ${roomId}:`, {
+        event: message.event,
+        data: message.data,
+        sequence: message.sequence,
+        messagesReceived: connectionData.messagesReceived,
+        timestamp: new Date().toISOString(),
+      });
 
       // Handle heartbeat response
       if (message.event === 'pong' && message.data?.timestamp) {
@@ -477,7 +508,10 @@ export class NetworkService extends EventTarget {
    * Handle connection error
    */
   private handleConnectionError(roomId: string): void {
-    console.error(`WebSocket error for room ${roomId}`);
+    console.error(`❌ [DEBUG] WebSocket error for room ${roomId}`, {
+      timestamp: new Date().toISOString(),
+      connectionData: this.connections.get(roomId),
+    });
 
     this.dispatchEvent(
       new CustomEvent<NetworkEventDetail>('connectionError', {
@@ -523,7 +557,12 @@ export class NetworkService extends EventTarget {
     try {
       const delay = this.calculateReconnectDelay(reconnectState.attempts);
       console.log(
-        `🔄 Reconnecting to ${roomId} in ${delay}ms (attempt ${reconnectState.attempts + 1})`
+        `🔄 [DEBUG] Reconnecting to ${roomId} in ${delay}ms (attempt ${reconnectState.attempts + 1})`,
+        {
+          timestamp: new Date().toISOString(),
+          previousConnectionData: this.connections.get(roomId),
+          messageQueueLength: this.messageQueues.get(roomId)?.length || 0,
+        }
       );
 
       await new Promise<void>((resolve, reject) => {

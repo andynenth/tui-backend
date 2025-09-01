@@ -2,12 +2,15 @@
 
 import asyncio
 import json
+import logging
 import time
 from dataclasses import dataclass, field
 from datetime import datetime, timedelta
 from typing import Any, Dict, Optional, Set
 
 from fastapi.websockets import WebSocket
+
+logger = logging.getLogger(__name__)
 
 
 @dataclass
@@ -142,7 +145,11 @@ class SocketManager:
                             failed_websockets.append(ws)
                             continue
 
-                        await ws.send_json({"event": event, "data": data})
+                        message_to_send = {"event": event, "data": data}
+                        # Enhanced debug logging for message sending
+                        if event in ["phase_change", "client_ready"]:
+                            logger.info(f"📤 [DEBUG] Sending {event} to websocket in room {room_id}, data_keys: {list(data.keys()) if isinstance(data, dict) else 'not-dict'}")
+                        await ws.send_json(message_to_send)
                         success_count += 1
                     except Exception as e:
                         if "not JSON serializable" in str(e):
@@ -294,9 +301,10 @@ class SocketManager:
         """
         Enhanced broadcast with debugging specifically for lobby
         """
-        # Add extra debugging for lobby
-        if room_id == "lobby":
-            pass
+        # Enhanced debug logging for all broadcasts
+        import logging
+        logger = logging.getLogger(__name__)
+        logger.info(f"📡 [DEBUG] Broadcasting to room {room_id}: event={event}, data_keys={list(data.keys()) if data else []}")
 
         async with self.lock:
             # Check if we have connections for this room

@@ -1,0 +1,12 @@
+[
+  {
+    "phase": "ROOM",
+    "action": "before_start",
+    "timestamp": "2025-08-31T23:02:44.506207",
+    "issues": [],
+    "snapshot": "{'role': 'WebArea', 'name': 'Castellan Game', 'children': [{'role': 'button', 'name': 'Settings'}, {'role': 'text', 'name': 'v'}, {'role': 'text', 'name': '1.5.9'}, {'role': 'image', 'name': 'Game icon'}, {'role': 'image', 'name': 'Red piece'}, {'role': 'image', 'name': 'Black piece'}, {'role': 'heading', 'name': 'Welcome to Castellan', 'level': 1}, {'role': 'text', 'name': 'Enter your player name to start playing'}, {'role': 'text', 'name': 'PLAYER NAME'}, {'role': 'textbox', 'name': 'Enter you",
+    "has_issues": false,
+    "url_before": "http://localhost:5050/room/156BD5",
+    "url_after": "http://localhost:5050/"
+  }
+]

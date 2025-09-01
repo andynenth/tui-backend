@@ -642,12 +642,29 @@ export class GameService extends EventTarget {
   private handlePhaseChange(state: GameState, data: any): GameState {
     const newState = { ...state };
 
+    // Enhanced debug logging for phase change
+    console.log('📋 [DEBUG] handlePhaseChange received:', {
+      phase: data.phase,
+      round: data.round,
+      hasPlayers: !!data.players,
+      playerName: state.playerName,
+      dataKeys: Object.keys(data),
+      fullData: data,
+    });
+
     newState.phase = data.phase;
     newState.currentRound = data.round || state.currentRound;
 
     // Extract my hand from players data (sent by backend)
     if (data.players && state.playerName && data.players[state.playerName]) {
       const myPlayerData = data.players[state.playerName];
+      console.log('🎴 [DEBUG] My player data:', {
+        playerName: state.playerName,
+        hasHand: !!myPlayerData.hand,
+        handLength: myPlayerData.hand?.length,
+        myPlayerData,
+      });
+      
       if (myPlayerData.hand) {
         // Convert string pieces back to objects for frontend with original indices
         const unsortedHand = myPlayerData.hand.map(
