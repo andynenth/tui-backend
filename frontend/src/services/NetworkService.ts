@@ -157,18 +157,41 @@ export class NetworkService extends EventTarget {
       const connectionData = this.connections.get(roomId);
       const isReconnection = connectionData?.isReconnection || false;
       
+      // Check if we have a stored session (indicates page refresh/reconnection)
+      let hasStoredSession = false;
+      try {
+        // Import dynamically to avoid circular dependency
+        const sessionModule = await import('../utils/sessionStorage');
+        const session = sessionModule.getSession();
+        hasStoredSession = !!(session && session.roomId === roomId);
+        console.log('🔍 [REFRESH_DEBUG] Session check:', {
+          hasSession: hasStoredSession,
+          sessionRoomId: session?.roomId,
+          currentRoomId: roomId,
+          sessionPlayerName: session?.playerName,
+        });
+      } catch (error) {
+        console.warn('Failed to check session storage:', error);
+      }
+      
+      // Set reconnection flag if we have a stored session OR if marked as reconnection
+      const shouldRequestFullState = isReconnection || hasStoredSession;
+      
       console.log('🔍 [REFRESH_DEBUG] Sending client_ready:', {
         room_id: roomId,
         player_name: connectionData?.playerName,
-        is_reconnection: isReconnection,
-        request_full_state: isReconnection,
+        is_reconnection: shouldRequestFullState,
+        request_full_state: shouldRequestFullState,
+        hasStoredSession,
+        isReconnection,
+        timestamp: new Date().toISOString(),
       });
       
       this.send(roomId, 'client_ready', {
         room_id: roomId,
         player_name: connectionData?.playerName,
-        is_reconnection: isReconnection,
-        request_full_state: isReconnection, // Request full state on reconnection
+        is_reconnection: shouldRequestFullState,
+        request_full_state: shouldRequestFullState, // Request full state on reconnection
       });
 
       // Process any queued messages
@@ -598,7 +621,21 @@ export class NetworkService extends EventTarget {
 
       // Preserve player info for reconnection
       const connectionData = this.connections.get(roomId);
-      const playerName = connectionData?.playerName;
+      let playerName = connectionData?.playerName;
+
+      // Also check session storage for player name if not in connection data
+      if (!playerName) {
+        try {
+          const sessionModule = await import('../utils/sessionStorage');
+          const session = sessionModule.getSession();
+          if (session && session.roomId === roomId) {
+            playerName = session.playerName;
+            console.log('🔄 [REFRESH_DEBUG] Retrieved playerName from session for reconnection:', playerName);
+          }
+        } catch (error) {
+          console.warn('Failed to check session storage during reconnection:', error);
+        }
+      }
 
       reconnectState.attempts++;
       // Mark this as a reconnection attempt

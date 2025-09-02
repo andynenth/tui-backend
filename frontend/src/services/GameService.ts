@@ -82,6 +82,18 @@ export class GameService extends EventTarget {
       throw new Error('GameService has been destroyed');
     }
 
+    console.log('🎮 [REFRESH_DEBUG] GameService.joinRoom called:', {
+      roomId,
+      playerName,
+      currentState: {
+        roomId: this.state.roomId,
+        playerName: this.state.playerName,
+        phase: this.state.phase,
+        isConnected: this.state.isConnected,
+      },
+      timestamp: new Date().toISOString(),
+    });
+
     try {
       // Set room ID and player name immediately so events can be processed
       this.setState(
@@ -655,13 +667,16 @@ export class GameService extends EventTarget {
     const newState = { ...state };
 
     // Enhanced debug logging for phase change
-    console.log('📋 [DEBUG] handlePhaseChange received:', {
+    console.log('📋 [REFRESH_DEBUG] handlePhaseChange received:', {
       phase: data.phase,
       round: data.round,
       hasPlayers: !!data.players,
       playerName: state.playerName,
+      roomId: state.roomId,
+      isConnected: state.isConnected,
       dataKeys: Object.keys(data),
       fullData: data,
+      timestamp: new Date().toISOString(),
     });
 
     newState.phase = data.phase;
@@ -669,14 +684,28 @@ export class GameService extends EventTarget {
 
     // Check if we have playerName - if not, try to get it from session storage
     let playerNameToUse = state.playerName;
-    if (!playerNameToUse && state.roomId) {
+    if (!playerNameToUse) {
       // During reconnection, playerName might not be set yet
       const session = getSession();
-      if (session && session.roomId === state.roomId) {
+      console.log('🔍 [REFRESH_DEBUG] No playerName in state, checking session:', {
+        hasSession: !!session,
+        sessionRoomId: session?.roomId,
+        stateRoomId: state.roomId,
+        sessionPlayerName: session?.playerName,
+      });
+      
+      // Use session playerName if available (don't require roomId match as it might not be set yet)
+      if (session && session.playerName) {
         playerNameToUse = session.playerName;
-        console.log('🔄 [PHASE_CHANGE] Using playerName from session:', playerNameToUse);
+        console.log('🔄 [REFRESH_DEBUG] Using playerName from session:', playerNameToUse);
         // Also update the state with the playerName
         newState.playerName = playerNameToUse;
+        
+        // Also set roomId if missing
+        if (!state.roomId && session.roomId) {
+          newState.roomId = session.roomId;
+          console.log('🔄 [REFRESH_DEBUG] Also restored roomId from session:', session.roomId);
+        }
       }
     }
 
