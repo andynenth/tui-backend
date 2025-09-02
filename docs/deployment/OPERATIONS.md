@@ -5,11 +5,21 @@ This guide covers production monitoring, maintenance, and operational procedures
 ## Table of Contents
 1. [Health Monitoring](#health-monitoring)
 2. [System Statistics](#system-statistics)
-3. [Event Store & Recovery](#event-store--recovery)
+3. [Player Activity Monitor](#player-activity-monitor)
+4. [Player Management](#player-management)
+   - [Disconnect and Reconnection](#disconnect-and-reconnection)
+   - [Room Cleanup System](#room-cleanup-system)
+5. [Event Store & Recovery](#event-store--recovery)
    - [Automated Log Maintenance System](#automated-log-maintenance-system)
-4. [Logging](#logging)
-5. [Performance Monitoring](#performance-monitoring)
-6. [Troubleshooting Production Issues](#troubleshooting-production-issues)
+6. [Logging](#logging)
+7. [Performance Monitoring](#performance-monitoring)
+8. [API Performance Monitoring](#api-performance-monitoring)
+9. [Telemetry Monitoring](#telemetry-monitoring)
+10. [Troubleshooting Production Issues](#troubleshooting-production-issues)
+11. [Maintenance Tasks](#maintenance-tasks)
+12. [Security Monitoring](#security-monitoring)
+13. [Capacity Planning](#capacity-planning)
+14. [Compliance and Auditing](#compliance-and-auditing)
 
 ## Health Monitoring
 
@@ -96,6 +106,179 @@ Detailed room information:
 - Player counts and bot status
 - Game phase distribution
 - Average game duration
+- Player activity status
+
+## Player Activity Monitor
+
+The Player Activity Monitor is a comprehensive system for tracking player activity and detecting hang situations in real-time.
+
+### Overview
+
+The system continuously tracks player heartbeats and actions to identify when players experience "hang" situations where the game appears frozen or unresponsive. It provides detailed diagnostic information for debugging.
+
+### Key Features
+
+- **Enhanced Heartbeat System**: Collects diagnostic data every 30 seconds
+- **Action Tracking**: Records all player game actions with context
+- **Hang Detection**: Identifies multiple types of hang situations
+- **Diagnostic Snapshots**: Captures comprehensive state when hangs detected
+- **Real-time Monitoring**: WebSocket endpoint for live activity updates
+
+### Hang Detection Types
+
+#### No Heartbeat Hang
+- **Threshold**: 90 seconds without heartbeat
+- **Common Causes**: JavaScript errors, browser tab suspended, network loss, client crash
+- **Detection**: Automatic via heartbeat timeout
+
+#### Waiting for Action Hang
+- **Threshold**: 60 seconds when action required
+- **Common Causes**: UI not showing prompt, WebSocket message lost, state sync issue
+- **Detection**: Player hasn't acted when it's their turn
+
+### Debug Endpoints
+
+#### Get Player Activity Status
+```bash
+curl http://localhost:5050/api/debug/player-activity/{room_id}
+```
+
+**Response**:
+```json
+{
+  "room_id": "ROOM_ABC",
+  "timestamp": 1735234567.89,
+  "players": [
+    {
+      "name": "player1",
+      "status": "active",
+      "last_heartbeat": 1735234540.0,
+      "last_action": 1735234535.0,
+      "last_action_type": "play",
+      "heartbeat_lag": 27.89,
+      "action_lag": 32.89,
+      "connection_health": "good",
+      "recent_actions": [...],
+      "game_state": {
+        "phase": "TURN",
+        "is_my_turn": true,
+        "waiting_for": "play_action"
+      },
+      "client_memory_mb": 125.4
+    }
+  ],
+  "hang_detections": []
+}
+```
+
+#### Get Hang Diagnostics
+```bash
+# All recent hangs
+curl http://localhost:5050/api/debug/hang-diagnostics
+
+# Filter by type
+curl "http://localhost:5050/api/debug/hang-diagnostics?hang_type=no_heartbeat"
+
+# Filter by player
+curl "http://localhost:5050/api/debug/hang-diagnostics?player_id=player1"
+```
+
+**Diagnostic Snapshot Fields**:
+- `hang_type`: Type of hang detected
+- `duration_seconds`: How long the hang lasted
+- `game_phase`: Game state when hang occurred
+- `last_actions`: Player's recent actions before hang
+- `pending_actions`: What game was waiting for
+- `connection_status`: Network state
+- `message_queue_size`: Undelivered messages
+- `client_ui_state`: What player sees
+- `server_memory_mb`: Server resource usage
+- `room_player_states`: All players' states
+
+#### Real-time Activity Monitor
+```javascript
+// Connect to WebSocket for live updates
+const ws = new WebSocket('ws://localhost:5050/api/debug/ws/activity-monitor');
+ws.onmessage = (event) => {
+  const data = JSON.parse(event.data);
+  console.log('Activity Update:', data);
+  // Shows: active_players, inactive_players, active_hangs, hang_types, total_rooms
+};
+```
+
+### Activity Monitoring Thresholds
+
+| Metric | Good | Warning | Critical |
+|--------|------|---------|----------|
+| Heartbeat Lag | <35s | 35-90s | >90s |
+| Action Response Time | <30s | 30-60s | >60s |
+| Hang Detection Rate | <1% | 1-5% | >5% |
+| Message Queue Size | <10 | 10-50 | >50 |
+
+### Common Hang Scenarios
+
+#### Scenario 1: Player Reports Game Frozen
+1. Check `/api/debug/player-activity/{room_id}`
+2. Look for player's heartbeat lag
+3. If heartbeat active but no actions, check `pending_actions`
+4. Review diagnostic snapshot for UI state mismatch
+
+#### Scenario 2: Multiple Players Hanging
+1. Check `/api/debug/hang-diagnostics?limit=50`
+2. Look for patterns in `hang_type`
+3. Check server health metrics
+4. Review WebSocket connection statistics
+
+#### Scenario 3: Intermittent Hangs
+1. Monitor real-time WebSocket feed
+2. Set up logging for specific player
+3. Correlate with network issues
+4. Check client telemetry for JavaScript errors
+
+### Integration with Other Systems
+
+The Player Activity Monitor integrates with:
+- **Health Monitoring**: Provides player-level health metrics
+- **Event Store**: Correlates hangs with game events
+- **Telemetry**: Links client-side errors with server-side hangs
+- **Recovery Manager**: Can trigger player-specific recovery actions
+
+## Player Management
+
+### Disconnect and Reconnection
+
+#### Grace Period System
+When a player disconnects during an active game, the system provides a 5-second grace period before bot takeover:
+
+**Timeline**:
+1. **Disconnect**: Player connection lost
+2. **Grace Period** (5 seconds): Player can reconnect without losing control
+3. **Bot Takeover**: After 5 seconds, AI takes control of the player
+4. **Reconnection**: Player can reconnect at any time to resume control
+
+**Key Features**:
+- **5-Second Grace Period**: Prevents immediate bot takeover on brief disconnections
+- **Seamless Reconnection**: Players reconnecting within grace period continue playing normally
+- **Bot Deactivation**: If player reconnects after bot takeover, they immediately regain control
+- **Message Queuing**: Game events are queued during disconnection for replay on reconnect
+
+#### Room Cleanup System
+Rooms are automatically cleaned up when no human players remain:
+
+**Cleanup Triggers**:
+- All human players have disconnected (including those in grace period)
+- Game has ended and all players have left
+- Pre-game room where host has disconnected
+
+**Cleanup Timeline**:
+- **Pre-game Rooms**: Immediate cleanup (0 seconds)
+- **In-game Rooms**: 30-second timeout after last human leaves
+- **Ended Games**: 5-second timeout after game completion
+
+**Important Notes**:
+- Players in grace period (disconnected but pending bot takeover) are NOT counted as active humans
+- Rooms with only bots will be cleaned up after the timeout period
+- Cleanup can be cancelled if a human player reconnects before timeout expires
 
 ## Event Store & Recovery
 
@@ -326,6 +509,8 @@ Logs can be aggregated using standard tools:
 - Bot vs human player ratio
 - Popular game times
 - Historical games retrieved via Play History API
+- Active vs inactive player ratios
+- Player hang detection rates
 
 ### Performance Thresholds
 
@@ -337,6 +522,7 @@ Logs can be aggregated using standard tools:
 | Memory Usage | <70% | 70-85% | >85% |
 | Error Rate | <0.1% | 0.1-1% | >1% |
 | SQLite Cache Hit | >80% | 50-80% | <50% |
+| Player Activity Health | >95% | 90-95% | <90% |
 
 ## Telemetry Monitoring
 
@@ -581,6 +767,107 @@ curl http://localhost:5050/api/privacy/data-summary
 | Mobile Success Rate | >90% | 80-90% | <80% |
 | Slow Connection Success | >85% | 70-85% | <70% |
 
+## API Performance Monitoring
+
+Comprehensive monitoring of API endpoint performance, response times, and error rates.
+
+### Performance Metrics
+
+#### Overall Metrics
+```bash
+curl http://localhost:5050/api/metrics
+```
+
+**Response**:
+```json
+{
+  "overall": {
+    "total_requests": 12543,
+    "total_errors": 45,
+    "total_slow_requests": 23,
+    "average_response_time_ms": 125.4
+  },
+  "endpoints": {
+    "/api/rooms/{room_id}/play-history": {
+      "request_count": 543,
+      "error_count": 2,
+      "avg_response_time_ms": 456.7,
+      "p50_response_time_ms": 320,
+      "p95_response_time_ms": 1250,
+      "p99_response_time_ms": 2100
+    }
+  },
+  "cache": {
+    "play_history_cache": {
+      "hits": 423,
+      "misses": 120,
+      "hit_rate": 0.779
+    }
+  }
+}
+```
+
+#### Time Series Metrics
+```bash
+curl "http://localhost:5050/api/metrics/time-series?endpoint=/api/rooms/{room_id}/play-history&minutes=10"
+```
+
+Returns arrays of timestamps and response times for graphing performance over time.
+
+#### Performance Health Status
+```bash
+curl http://localhost:5050/api/health/performance
+```
+
+**Response**:
+```json
+{
+  "status": "YELLOW",
+  "issues": [
+    "/api/rooms/{room_id}/play-history: Slow p95 response time (1250ms)"
+  ],
+  "metrics_summary": {
+    "total_requests": 12543,
+    "error_rate": "0.36%",
+    "slow_requests": 23
+  }
+}
+```
+
+**Health Status Levels**:
+- **GREEN**: All metrics within acceptable ranges
+- **YELLOW**: Some metrics approaching thresholds
+- **RED**: Critical performance issues detected
+
+### Performance Alerts
+
+#### Get Recent Alerts
+```bash
+curl "http://localhost:5050/api/alerts?minutes=60&severity=critical"
+```
+
+**Alert Types**:
+- `slow_query`: Response time exceeded threshold
+- `high_error_rate`: Error rate above acceptable level
+- `cache_degradation`: Cache hit rate dropped significantly
+- `resource_exhaustion`: System resources approaching limits
+
+#### Alert Summary
+```bash
+curl http://localhost:5050/api/alerts/summary
+```
+
+Provides counts and breakdowns of alerts by severity and type.
+
+### Performance Thresholds
+
+| Metric | Good | Warning | Critical |
+|--------|------|---------|----------|
+| P95 Response Time | <1s | 1-2s | >2s |
+| Error Rate | <1% | 1-2% | >2% |
+| Cache Hit Rate | >80% | 50-80% | <50% |
+| Slow Request Rate | <1% | 1-5% | >5% |
+
 ### Automatic Alerting
 
 The telemetry system includes intelligent alerting:
@@ -680,6 +967,20 @@ The telemetry system includes intelligent alerting:
 - Use compact format for large histories
 - Query specific rounds instead of full history
 
+#### Player Activity Monitor Issues
+**Symptoms**: High hang detection rate, many inactive players
+
+**Diagnosis**:
+1. Check activity monitor dashboard
+2. Review hang diagnostic snapshots
+3. Analyze heartbeat patterns
+
+**Solutions**:
+- Investigate client-side JavaScript errors
+- Check WebSocket message delivery
+- Review UI state synchronization
+- Force refresh affected players
+
 ### Emergency Procedures
 
 #### Service Degradation
@@ -708,6 +1009,7 @@ Recommended dashboard panels:
 3. **Resources**: CPU, memory, network, disk
 4. **Game Analytics**: Popular times, game duration, win rates
 5. **Alerts**: Critical issues, anomalies, trends
+6. **Player Activity**: Active/inactive players, hang detections
 
 ### Alerting Rules
 
@@ -717,6 +1019,8 @@ Configure alerts for:
 - Resource exhaustion (>90% for 10 minutes)
 - Connection limit reached
 - Recovery system activation
+- Player hang rate spike (>5% for 5 minutes)
+- Mass heartbeat failures (>10 players)
 
 ## Maintenance Tasks
 
@@ -765,6 +1069,39 @@ Configure alerts for:
 - Rate limit violations
 - Unusual traffic patterns
 - Geographic anomalies
+
+### Rate Limiting
+
+#### Rate Limit Statistics
+```bash
+curl http://localhost:5050/api/rate-limit/stats
+```
+
+**Response**:
+```json
+{
+  "success": true,
+  "timestamp": 1735234567.89,
+  "http_rate_limits": {
+    "total_requests": 45678,
+    "blocked_requests": 123,
+    "unique_clients": 234,
+    "block_rate": 0.0027
+  },
+  "websocket_rate_limits": {
+    "total_connections": 3456,
+    "blocked_connections": 12,
+    "active_connections": 42,
+    "connection_limit": 100
+  },
+  "rate_limiting_enabled": true
+}
+```
+
+**Rate Limit Thresholds**:
+- HTTP: 100 requests per minute per IP
+- WebSocket: 10 new connections per minute per IP
+- Game Actions: 30 actions per minute per player
 
 ### Security Response
 1. **Detection**: Automated alerts on suspicious activity

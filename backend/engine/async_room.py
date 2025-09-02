@@ -500,10 +500,11 @@ class AsyncRoom:
 
     def has_any_human_players(self) -> bool:
         """
-        Check if there are ANY human players in the room (connected or disconnected).
+        Check if there are ANY ACTIVE human players in the room.
+        Players in grace period (disconnected, pending bot takeover) don't count as active humans.
         This is used to determine if the room should continue existing.
         Returns:
-            bool: True if at least one human player exists, False if all are bots
+            bool: True if at least one active human player exists, False if all are bots or in grace period
         """
         if not self.game:
             logger.info(
@@ -513,15 +514,22 @@ class AsyncRoom:
 
         human_count = 0
         bot_count = 0
+        grace_period_count = 0
+        
         for player in self.game.players:
             if player:
                 if player.is_bot:
                     bot_count += 1
+                elif player.bot_takeover_scheduled:
+                    # Player in grace period - not counted as active human
+                    grace_period_count += 1
                 else:
+                    # Only count as human if not a bot and not pending bot takeover
                     human_count += 1
 
         logger.info(
-            f"👥 [ROOM_DEBUG] Room '{self.room_id}' player count: {human_count} humans, {bot_count} bots"
+            f"👥 [ROOM_DEBUG] Room '{self.room_id}' player count: "
+            f"{human_count} active humans, {grace_period_count} in grace period, {bot_count} bots"
         )
         return human_count > 0
 
