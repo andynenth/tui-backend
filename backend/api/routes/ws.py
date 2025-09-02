@@ -109,8 +109,22 @@ async def handle_disconnect(room_id: str, websocket: WebSocket):
                         player.is_connected = False
                         player.disconnect_time = connection.disconnect_time
                         
-                        # Convert human to bot during disconnect
-                        player.is_bot = True
+                        # Schedule bot takeover after grace period (5 seconds)
+                        from datetime import datetime, timedelta
+                        player.pending_bot_takeover = datetime.now() + timedelta(seconds=5)
+                        player.bot_takeover_scheduled = True
+                        
+                        # Keep is_bot = False during grace period
+                        # Bot will take over after 5 seconds if player doesn't reconnect
+                        logger.info(
+                            f"🕐 [GRACE_PERIOD] Player {connection.player_name} disconnected. "
+                            f"Bot takeover scheduled in 5 seconds at {player.pending_bot_takeover}"
+                        )
+                        
+                        # Schedule async task to activate bot after grace period
+                        asyncio.create_task(
+                            activate_bot_after_grace(room_id, connection.player_name)
+                        )
 
                     # Create message queue for the disconnected player
                     await message_queue_manager.create_queue(
@@ -131,15 +145,17 @@ async def handle_disconnect(room_id: str, websocket: WebSocket):
                             # )
                             pass
 
-                    # Broadcast disconnect event
+                    # Broadcast disconnect event with grace period info
                     await broadcast(
                         room_id,
                         "player_disconnected",
                         {
                             "player_name": connection.player_name,
-                            "ai_activated": True,
+                            "ai_activated": False,  # Not activated yet
                             "can_reconnect": True,
-                            "is_bot": True,
+                            "is_bot": False,  # Still human during grace period
+                            "grace_period_seconds": 5,
+                            "bot_takeover_at": player.pending_bot_takeover.isoformat() if player.pending_bot_takeover else None,
                         },
                     )
 
@@ -754,6 +770,14 @@ async def websocket_endpoint(websocket: WebSocket, room_id: str):
                                 # This is a human player reconnecting
                                 player.is_connected = True
                                 player.disconnect_time = None
+                                
+                                # Cancel pending bot takeover if within grace period
+                                if player.bot_takeover_scheduled:
+                                    player.bot_takeover_scheduled = False
+                                    player.pending_bot_takeover = None
+                                    logger.info(
+                                        f"🕐 [GRACE_PERIOD] Cancelled bot takeover for {player_name} - player reconnected"
+                                    )
 
                                 # Cancel any pending cleanup
                                 room.cancel_cleanup()
@@ -1864,6 +1888,74 @@ async def websocket_endpoint(websocket: WebSocket, room_id: str):
     except Exception as e:
         logger.error(f"WebSocket error in room {room_id}: {e}")
         await handle_disconnect(room_id, websocket)
+
+
+async def activate_bot_after_grace(room_id: str, player_name: str):
+    """Activate bot takeover after grace period expires"""
+    try:
+        # Wait for grace period (5 seconds)
+        await asyncio.sleep(5)
+        
+        # Get room and player
+        room = await room_manager.get_room(room_id)
+        if not room or not room.game:
+            logger.info(f"🕐 [GRACE_PERIOD] Room {room_id} no longer exists, cancelling bot takeover")
+            return
+            
+        # Find player
+        player = next((p for p in room.game.players if p.name == player_name), None)
+        if not player:
+            logger.info(f"🕐 [GRACE_PERIOD] Player {player_name} not found, cancelling bot takeover")
+            return
+            
+        # Check if player reconnected during grace period
+        if player.is_connected:
+            logger.info(f"🕐 [GRACE_PERIOD] Player {player_name} reconnected, cancelling bot takeover")
+            return
+            
+        # Check if takeover is still scheduled
+        if not player.bot_takeover_scheduled:
+            logger.info(f"🕐 [GRACE_PERIOD] Bot takeover already cancelled for {player_name}")
+            return
+            
+        # Activate bot takeover
+        player.is_bot = True
+        player.bot_takeover_scheduled = False
+        logger.info(f"🤖 [GRACE_PERIOD] Bot takeover activated for {player_name} after 5 second grace period")
+        
+        # Broadcast bot activation
+        await broadcast(
+            room_id,
+            "bot_activated",
+            {
+                "player_name": player_name,
+                "message": f"Bot took over for {player_name} after disconnect timeout",
+                "is_bot": True,
+            },
+        )
+        
+        # Trigger bot action if it's their turn
+        from backend.engine.bot_manager import BotManager
+        bot_manager = BotManager()
+        if room_id in bot_manager.active_games:
+            handler = bot_manager.active_games[room_id]
+            # Get current phase
+            phase_data = room.game_state_machine.get_phase_data() if room.game_state_machine else {}
+            
+            # Check if it's this player's turn in various phases
+            if phase_data.get("current_phase") == "turn" and phase_data.get("current_player") == player_name:
+                # It's this player's turn, trigger bot action
+                logger.info(f"🤖 [GRACE_PERIOD] Triggering bot action for {player_name} - their turn")
+                await handler._handle_turn_play_phase("")
+            elif phase_data.get("current_phase") == "declaration":
+                # Check if player needs to declare
+                declarations = phase_data.get("declarations", {})
+                if player_name not in declarations:
+                    logger.info(f"🤖 [GRACE_PERIOD] Triggering bot declaration for {player_name}")
+                    await handler._handle_declaration_phase("")
+                    
+    except Exception as e:
+        logger.error(f"Error in activate_bot_after_grace: {e}")
 
 
 async def room_cleanup_task():
