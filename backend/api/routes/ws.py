@@ -751,17 +751,7 @@ async def websocket_endpoint(websocket: WebSocket, room_id: str):
                             return
 
                         if room.started and room.game:
-                            # First, restore state for ALL players in the game
-                            for game_player in room.game.players:
-                                # Restore original bot state
-                                if hasattr(game_player, 'original_is_bot'):
-                                    game_player.is_bot = game_player.original_is_bot
-                                
-                                # Restore avatar color
-                                if hasattr(game_player, 'original_avatar_color'):
-                                    game_player.avatar_color = game_player.original_avatar_color
-                            
-                            # Now handle the reconnecting player specifically
+                            # Handle the reconnecting player ONLY - don't touch other players
                             player = next(
                                 (p for p in room.game.players if p.name == player_name),
                                 None,
@@ -771,13 +761,24 @@ async def websocket_endpoint(websocket: WebSocket, room_id: str):
                                 player.is_connected = True
                                 player.disconnect_time = None
                                 
-                                # Cancel pending bot takeover if within grace period
-                                if player.bot_takeover_scheduled:
-                                    player.bot_takeover_scheduled = False
-                                    player.pending_bot_takeover = None
-                                    logger.info(
-                                        f"🕐 [GRACE_PERIOD] Cancelled bot takeover for {player_name} - player reconnected"
-                                    )
+                                # ALWAYS restore human control when human reconnects
+                                # Clear ALL bot-related flags regardless of grace period status
+                                logger.info(
+                                    f"🔄 [BOT_STATE_CHANGE] {player_name}: is_bot {player.is_bot} -> False, "
+                                    f"bot_takeover_scheduled {player.bot_takeover_scheduled} -> False, "
+                                    f"pending_bot_takeover {player.pending_bot_takeover} -> None"
+                                )
+                                player.is_bot = False  # Ensure bot control is removed
+                                player.bot_takeover_scheduled = False
+                                player.pending_bot_takeover = None
+                                
+                                # Restore avatar color for this player only
+                                if hasattr(player, 'original_avatar_color'):
+                                    player.avatar_color = player.original_avatar_color
+                                
+                                logger.info(
+                                    f"✅ [RECONNECT] Player {player_name} reconnected - bot control removed, all flags cleared"
+                                )
 
                                 # Cancel any pending cleanup
                                 room.cancel_cleanup()
@@ -1919,6 +1920,7 @@ async def activate_bot_after_grace(room_id: str, player_name: str):
             return
             
         # Activate bot takeover
+        logger.info(f"🤖 [BOT_STATE_CHANGE] {player_name}: is_bot {player.is_bot} -> True, bot_takeover_scheduled {player.bot_takeover_scheduled} -> False")
         player.is_bot = True
         player.bot_takeover_scheduled = False
         logger.info(f"🤖 [GRACE_PERIOD] Bot takeover activated for {player_name} after 5 second grace period")
