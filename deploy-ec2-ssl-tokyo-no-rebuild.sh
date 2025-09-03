@@ -4,7 +4,7 @@
 set -e
 
 # Configuration for Tokyo
-EC2_HOST="54.250.35.226"  # Tokyo instance IP
+EC2_HOST="54.250.35.226"  # Tokyo instance IP (SSH doesn't work through Cloudflare)
 EC2_USER="ubuntu"
 KEY_PATH="~/.ssh/liap-tui-tokyo-key.pem"  # Tokyo key
 
@@ -20,8 +20,8 @@ NC='\033[0m'
 echo -e "${GREEN}🗾 Starting Tokyo EC2 SSL deployment...${NC}"
 
 # Check if IP is set
-if [ "$EC2_HOST" = "YOUR_TOKYO_EC2_IP" ]; then
-    echo -e "${RED}❌ Error: Please set EC2_HOST to your Tokyo instance IP${NC}"
+if [ "$EC2_HOST" = "YOUR_EC2_IP_HERE" ]; then
+    echo -e "${RED}❌ Error: Please set EC2_HOST to your EC2 IP${NC}"
     exit 1
 fi
 
@@ -133,30 +133,18 @@ rm liap-tui-latest.tar.gz
 
 echo -e "${GREEN}✨ Tokyo deployment successful!${NC}"
 echo -e "${GREEN}🗾 Region: ap-northeast-1 (Tokyo)${NC}"
-echo -e "${GREEN}🌐 Server IP: http://$EC2_HOST${NC}"
+echo -e "${GREEN}🌐 Server: https://$EC2_HOST${NC}"
 
-# Check if this is before DNS switch
-if [ "$EC2_HOST" != "34.233.7.20" ]; then
-    echo -e "\n${YELLOW}📋 Migration Status:${NC}"
-    echo -e "${YELLOW}1. ✅ Tokyo server is running${NC}"
-    echo -e "${YELLOW}2. ⏳ DNS still points to old server${NC}"
-    echo -e "${YELLOW}3. Next: Update DNS A record to point to $EC2_HOST${NC}"
-    echo -e "${YELLOW}4. Then: Run SSL setup on Tokyo server${NC}"
-else
-    echo -e "${GREEN}🔗 Game available at: https://$DOMAIN${NC}"
-fi
+# Since we're using domain name, the game should be accessible via HTTPS
+echo -e "${GREEN}🔗 Game available at: https://$DOMAIN${NC}"
 
 echo -e "\n${GREEN}🌏 Latency Benefits:${NC}"
 echo "   Vancouver → Tokyo: ~120ms (balanced)"
 echo "   Thailand → Tokyo: ~120ms (balanced)"
 echo "   (Previously Thailand → US/Canada: ~250-300ms)"
 
-echo -e "\n${YELLOW}📝 Tokyo Migration Checklist:${NC}"
-echo "[ ] 1. Launch EC2 in ap-northeast-1"
-echo "[ ] 2. Update EC2_HOST in this script"
-echo "[ ] 3. Run this deployment"
-echo "[ ] 4. Test at http://$EC2_HOST"
-echo "[ ] 5. Update DNS A record"
-echo "[ ] 6. Setup SSL on Tokyo server"
-echo "[ ] 7. Verify https://$DOMAIN works"
-echo "[ ] 8. Shutdown old server"
+echo -e "\n${GREEN}📝 Deployment Complete!${NC}"
+echo "Your game is now running on the Tokyo server with:"
+echo "✅ SSL/HTTPS enabled"
+echo "✅ Balanced latency for Vancouver and Thailand"
+echo "✅ Automatic deployments ready for future updates"
