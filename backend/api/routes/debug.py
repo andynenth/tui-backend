@@ -484,9 +484,12 @@ async def get_player_activity(room_id: str):
     """
     try:
         activities = await activity_tracker.get_room_activities(room_id)
+        logger.info(f"Activities for room {room_id}: {activities}")
         
         players_data = []
         for player_name, activity in activities.items():
+            logger.info(f"Processing player {player_name}, activity: {activity}")
+            logger.info(f"heartbeat_data: {activity.heartbeat_data}")
             now = time.time()
             heartbeat_lag = now - activity.last_heartbeat
             action_lag = now - activity.last_action
@@ -506,12 +509,15 @@ async def get_player_activity(room_id: str):
             # Add client state if available
             if activity.heartbeat_data:
                 game_context = activity.heartbeat_data.get("game_context", {})
-                player_data["game_state"] = {
-                    "phase": game_context.get("phase"),
-                    "is_my_turn": game_context.get("is_my_turn"),
-                    "waiting_for": game_context.get("waiting_for"),
-                }
-                player_data["client_memory_mb"] = activity.heartbeat_data.get("performance", {}).get("memory_mb")
+                if game_context:  # Only add game_state if game_context is not None
+                    player_data["game_state"] = {
+                        "phase": game_context.get("phase"),
+                        "is_my_turn": game_context.get("is_my_turn"),
+                        "waiting_for": game_context.get("waiting_for"),
+                    }
+                performance = activity.heartbeat_data.get("performance", {})
+                if performance:
+                    player_data["client_memory_mb"] = performance.get("memory_mb")
                 
             players_data.append(player_data)
             

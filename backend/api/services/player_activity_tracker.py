@@ -109,7 +109,8 @@ class PlayerActivityTracker:
             
             # Update heartbeat time
             activity.last_heartbeat = time.time()
-            activity.heartbeat_data = data
+            # Ensure we never set heartbeat_data to None
+            activity.heartbeat_data = data or {}
             
             # Check for anomalies in heartbeat data
             if data.get("last_user_action_age", 0) > 300000:  # 5 minutes
@@ -238,6 +239,8 @@ class PlayerActivityTracker:
             
         # Check for waiting too long
         heartbeat_data = activity.heartbeat_data
+        if not heartbeat_data:
+            return None
         game_context = heartbeat_data.get("game_context", {})
         
         if game_context and game_context.get("is_my_turn"):
@@ -284,20 +287,24 @@ class PlayerActivityTracker:
                     }
                     
         # Create diagnostic
+        heartbeat_data = activity.heartbeat_data or {}
+        game_context = heartbeat_data.get("game_context", {})
+        performance = heartbeat_data.get("performance", {})
+        
         diagnostic = HangDiagnostic(
             player_id=activity.player_id,
             room_id=activity.room_id,
             hang_type=hang_type,
             duration_seconds=duration,
-            game_phase=activity.heartbeat_data.get("game_context", {}).get("phase"),
+            game_phase=game_context.get("phase"),
             last_actions=list(activity.action_history)[-5:],  # Last 5 actions
             connection_status=connection.connection_status.value if connection else "unknown",
             last_heartbeat_delta=time.time() - activity.last_heartbeat,
             server_memory_mb=server_memory_mb,
             active_connections=len(connection_manager.websocket_to_player),
             room_player_states=room_player_states,
-            client_ui_state=activity.heartbeat_data.get("game_context", {}),
-            client_memory_mb=activity.heartbeat_data.get("performance", {}).get("memory_mb"),
+            client_ui_state=game_context,
+            client_memory_mb=performance.get("memory_mb") if performance else None,
         )
         
         # Log the hang detection
