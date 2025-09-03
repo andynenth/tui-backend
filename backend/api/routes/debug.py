@@ -11,6 +11,7 @@ from fastapi.responses import JSONResponse
 from backend.shared_event_store import event_store
 from backend.api.services.log_buffer import log_buffer, LogLevel
 from backend.api.services.player_activity_tracker import activity_tracker
+from backend.services.debug_db_service import debug_db_service
 
 logger = logging.getLogger(__name__)
 
@@ -37,10 +38,10 @@ async def get_room_events(
     try:
         if event_type:
             # Get filtered events
-            events = await event_store.get_events_by_type(room_id, event_type, limit)
+            events = await debug_db_service.get_events_by_type(room_id, event_type, limit)
         else:
             # Get all events
-            events = await event_store.get_room_events(room_id, limit)
+            events = await debug_db_service.get_room_events(room_id, limit)
 
         # Convert events to JSON-serializable format
         event_list = []
@@ -57,7 +58,7 @@ async def get_room_events(
             )
 
         # Get event statistics
-        stats = await event_store.get_event_stats()
+        stats = await debug_db_service.get_event_stats()
         room_stats = stats.get("room_stats", {}).get(room_id, 0)
 
         return {
@@ -86,13 +87,13 @@ async def replay_room_state(room_id: str):
     """
     try:
         # Replay the room state
-        state = await event_store.replay_room_state(room_id)
+        state = await debug_db_service.replay_room_state(room_id)
 
         # Validate event sequence
-        validation = await event_store.validate_event_sequence(room_id)
+        validation = await debug_db_service.validate_event_sequence(room_id)
 
         # Get event statistics
-        events = await event_store.get_room_events(room_id)
+        events = await debug_db_service.get_room_events(room_id)
         event_types = {}
         for event in events:
             event_types[event.event_type] = event_types.get(event.event_type, 0) + 1
@@ -133,7 +134,7 @@ async def get_events_since_sequence(
     """
     try:
         # Get events since sequence
-        events = await event_store.get_events_since(room_id, seq)
+        events = await debug_db_service.get_events_since(room_id, seq)
 
         # Apply limit if specified
         if limit and len(events) > limit:
@@ -180,7 +181,7 @@ async def export_room_history(room_id: str):
         Complete room history with timeline and analysis
     """
     try:
-        history = await event_store.export_room_history(room_id)
+        history = await debug_db_service.export_room_history(room_id)
         return history
 
     except Exception as e:
@@ -197,8 +198,8 @@ async def get_event_statistics():
         Event store statistics including rooms, event types, and counts
     """
     try:
-        stats = await event_store.get_event_stats()
-        health = await event_store.health_check()
+        stats = await debug_db_service.get_event_stats()
+        health = await debug_db_service.health_check()
 
         return {"health": health, "statistics": stats}
 
@@ -228,7 +229,7 @@ async def get_turn_plays(
     """
     try:
         # Get all turn_play events for the room
-        events = await event_store.get_events_by_type(room_id, "turn_play")
+        events = await debug_db_service.get_events_by_type(room_id, "turn_play")
 
         # Group plays by turn
         turns = {}
@@ -267,7 +268,7 @@ async def get_turn_plays(
                 turns[turn_num]["winner"] = event.player_id
 
         # Get turn results to identify winners
-        result_events = await event_store.get_events_by_type(room_id, "turn_result")
+        result_events = await debug_db_service.get_events_by_type(room_id, "turn_result")
         for event in result_events:
             payload = event.payload
             turn_num = payload.get("turn_number", 0)
@@ -315,7 +316,7 @@ async def cleanup_old_events(
                 status_code=400, detail="Age threshold must be at least 1 hour"
             )
 
-        deleted_count = await event_store.cleanup_old_events(older_than_hours)
+        deleted_count = await debug_db_service.cleanup_old_events(older_than_hours)
 
         return {
             "success": True,
@@ -340,11 +341,11 @@ async def validate_room_events(room_id: str):
         Validation results including any gaps or issues
     """
     try:
-        validation = await event_store.validate_event_sequence(room_id)
+        validation = await debug_db_service.validate_event_sequence(room_id)
 
         # Get additional diagnostics if invalid
         if not validation["valid"]:
-            events = await event_store.get_room_events(room_id)
+            events = await debug_db_service.get_room_events(room_id)
 
             # Find duplicate sequences
             sequence_counts = {}
