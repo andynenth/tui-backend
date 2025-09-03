@@ -761,17 +761,28 @@ export class GameService extends EventTarget {
     // Convert players dictionary to array for UI components
     if (data.players) {
       newState.players = Object.entries(data.players).map(
-        ([playerName, playerData]: [string, any]) => ({
-          name: playerName, // Use the key as the name
-          score: playerData.score || 0,
-          is_bot: playerData.is_bot || false,
-          is_host: playerData.is_host || false,
-          avatar_color: playerData.avatar_color || null, // Include avatar_color!
-          zero_declares_in_a_row: playerData.zero_declares_in_a_row || 0,
-          hand_size: playerData.hand_size || 0, // Include hand_size from backend
-          captured_piles: playerData.captured_piles || 0,
-          declared: playerData.declared || 0,
-        })
+        ([playerName, playerData]: [string, any]) => {
+          // DEBUG logging to track the bug
+          if (playerName === 'TestPlayer' || playerName.includes('Bot 2')) {
+            console.log(`🔍 [CAPTURED_DECLARED_DEBUG] Initial mapping ${playerName}:`, {
+              from_backend: playerData,
+              captured_piles: playerData.captured_piles,
+              declared: playerData.declared,
+            });
+          }
+          
+          return {
+            name: playerName, // Use the key as the name
+            score: playerData.score || 0,
+            is_bot: playerData.is_bot || false,
+            is_host: playerData.is_host || false,
+            avatar_color: playerData.avatar_color || null, // Include avatar_color!
+            zero_declares_in_a_row: playerData.zero_declares_in_a_row || 0,
+            hand_size: playerData.hand_size || 0, // Include hand_size from backend
+            captured_piles: playerData.captured_piles || 0,
+            declared: playerData.declared || 0,
+          };
+        }
       );
     }
 
@@ -787,10 +798,24 @@ export class GameService extends EventTarget {
         );
         newState.players = phaseData.players.map((player: any) => {
           const existing = existingPlayersMap.get(player.name);
+          
+          // DEBUG logging to track the bug
+          if (player.name === 'TestPlayer' || player.name.includes('Bot 2')) {
+            console.log(`🔍 [CAPTURED_DECLARED_DEBUG] Mapping ${player.name}:`, {
+              from_phaseData: player,
+              existing_data: existing,
+              will_set_captured: existing?.captured_piles || 0,
+              will_set_declared: existing?.declared || 0,
+            });
+          }
+          
           return {
             ...player,
             avatar_color: player.avatar_color,
             zero_declares_in_a_row: existing?.zero_declares_in_a_row || 0,
+            // CRITICAL: Preserve captured_piles and declared from existing data
+            captured_piles: existing?.captured_piles || 0,
+            declared: existing?.declared || 0,
             // Preserve connection status if not provided by backend
             is_connected:
               player.is_connected !== undefined
