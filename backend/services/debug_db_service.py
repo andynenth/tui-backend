@@ -56,8 +56,8 @@ class DebugDatabaseService:
             conn.row_factory = sqlite3.Row
             
             query = """
-                SELECT event_sequence as sequence, room_id, event_type, 
-                       round_number, timestamp, created_at
+                SELECT COALESCE(id, 0) as sequence, room_id, event_type, 
+                       round_number, timestamp, created_at, payload, player_id
                 FROM game_events_v2
                 WHERE room_id = ?
                 ORDER BY id ASC
@@ -72,15 +72,22 @@ class DebugDatabaseService:
             
             events = []
             for row in rows:
-                # v2 schema doesn't have payload/player_id, create minimal payload
-                payload = {"round_number": row['round_number']} if row['round_number'] else {}
+                # Parse payload JSON if available
+                payload = {}
+                if 'payload' in row.keys() and row['payload']:
+                    try:
+                        payload = json.loads(row['payload'])
+                    except:
+                        payload = {"round_number": row['round_number']} if row['round_number'] else {}
+                elif row['round_number']:
+                    payload = {"round_number": row['round_number']}
                 
                 events.append(GameEvent(
-                    sequence=row['sequence'],
+                    sequence=row['sequence'] if 'sequence' in row.keys() else 0,
                     room_id=row['room_id'],
                     event_type=row['event_type'],
                     payload=payload,
-                    player_id=None,  # Not available in v2 schema
+                    player_id=row['player_id'] if 'player_id' in row.keys() else None,
                     timestamp=row['timestamp'],
                     created_at=row['created_at']
                 ))
@@ -98,8 +105,8 @@ class DebugDatabaseService:
             conn.row_factory = sqlite3.Row
             
             query = """
-                SELECT event_sequence as sequence, room_id, event_type, 
-                       round_number, timestamp, created_at
+                SELECT COALESCE(id, 0) as sequence, room_id, event_type, 
+                       round_number, timestamp, created_at, payload, player_id
                 FROM game_events_v2
                 WHERE room_id = ? AND event_type = ?
                 ORDER BY id ASC
@@ -114,15 +121,22 @@ class DebugDatabaseService:
             
             events = []
             for row in rows:
-                # v2 schema doesn't have payload/player_id, create minimal payload
-                payload = {"round_number": row['round_number']} if row['round_number'] else {}
+                # Parse payload JSON if available
+                payload = {}
+                if 'payload' in row.keys() and row['payload']:
+                    try:
+                        payload = json.loads(row['payload'])
+                    except:
+                        payload = {"round_number": row['round_number']} if row['round_number'] else {}
+                elif row['round_number']:
+                    payload = {"round_number": row['round_number']}
                 
                 events.append(GameEvent(
-                    sequence=row['sequence'],
+                    sequence=row['sequence'] if 'sequence' in row.keys() else 0,
                     room_id=row['room_id'],
                     event_type=row['event_type'],
                     payload=payload,
-                    player_id=None,  # Not available in v2 schema
+                    player_id=row['player_id'] if 'player_id' in row.keys() else None,
                     timestamp=row['timestamp'],
                     created_at=row['created_at']
                 ))

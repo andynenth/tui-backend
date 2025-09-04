@@ -7,6 +7,7 @@ from abc import ABC, abstractmethod
 from typing import Any, Dict, List, Optional, Set
 
 from .core import ActionType, GameAction, GamePhase
+from backend.shared_event_store import event_store
 
 
 class GameState(ABC):
@@ -67,6 +68,35 @@ class GameState(ABC):
                     self, "_last_validation_error", "Please try different pieces"
                 ),
             }
+
+        # Track action attribution (human vs bot)
+        if hasattr(self.state_machine, '_room_id') and self.state_machine._room_id:
+            # Determine who is controlling this action
+            player = None
+            if hasattr(self.state_machine, 'game') and self.state_machine.game:
+                player = next(
+                    (p for p in self.state_machine.game.players if p.name == action.player_name),
+                    None
+                )
+            
+            is_bot_controlled = getattr(player, 'is_bot', False) if player else False
+            
+            # Store action attribution
+            await event_store.store_event(
+                self.state_machine._room_id,
+                "bot_action" if is_bot_controlled else "human_action",
+                {
+                    "player_name": action.player_name,
+                    "action_type": action.action_type.value,
+                    "is_bot": is_bot_controlled,
+                    "phase": self.phase_name.value,
+                    "turn_number": self.state_machine.game.turn_number if hasattr(self.state_machine.game, 'turn_number') else None,
+                    "round_number": self.state_machine.game.round_number if hasattr(self.state_machine.game, 'round_number') else None,
+                    "timestamp": time.time(),
+                    "action_details": action.payload
+                },
+                player_id=action.player_name
+            )
 
         return await self._process_action(action)
 

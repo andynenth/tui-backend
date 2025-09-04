@@ -14,6 +14,14 @@ from backend.models.semantic_events import SemanticEventType
 logger = logging.getLogger(__name__)
 
 
+class DateTimeEncoder(json.JSONEncoder):
+    """JSON encoder that handles datetime objects"""
+    def default(self, obj):
+        if isinstance(obj, datetime):
+            return obj.isoformat()
+        return super().default(obj)
+
+
 class EventStoreV2:
     """
     Optimized event store using new schema design.
@@ -354,7 +362,8 @@ class EventStoreV2:
             conn.close()
 
     async def store_event(
-        self, room_id: str, event_type: str, payload: Dict[str, Any]
+        self, room_id: str, event_type: str, payload: Dict[str, Any],
+        player_id: Optional[str] = None
     ) -> None:
         """
         Store a generic event in the v2 events table.
@@ -363,6 +372,7 @@ class EventStoreV2:
             room_id: Room identifier
             event_type: Event type
             payload: Event data
+            player_id: Optional player identifier
         """
         logger.debug(
             f"🔍 DEBUG: EventStoreV2.store_event - room: {room_id}, type: {event_type}"
@@ -370,16 +380,23 @@ class EventStoreV2:
         logger.debug(
             f"🔍 DEBUG: EventStoreV2 payload keys: {list(payload.keys()) if payload else 'None'}"
         )
+        logger.debug(
+            f"🔍 DEBUG: EventStoreV2 player_id: {player_id}"
+        )
 
         conn = sqlite3.connect(self.db_path)
         try:
             # Extract round number from payload if available
             round_number = payload.get("round_number") or payload.get("round") or None
 
+            # Convert payload to JSON string
+            payload_json = json.dumps(payload, cls=DateTimeEncoder) if payload else None
+
             conn.execute(
                 """
-                INSERT INTO game_events_v2 (room_id, event_type, round_number, timestamp, created_at)
-                VALUES (?, ?, ?, ?, ?)
+                INSERT INTO game_events_v2 (room_id, event_type, round_number, 
+                                           timestamp, created_at, payload, player_id)
+                VALUES (?, ?, ?, ?, ?, ?, ?)
             """,
                 (
                     room_id,
@@ -387,6 +404,8 @@ class EventStoreV2:
                     round_number,
                     time.time(),
                     datetime.now().isoformat(),
+                    payload_json,
+                    player_id,
                 ),
             )
 

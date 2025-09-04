@@ -25,6 +25,26 @@ class SemanticEventType(Enum):
     PLAYER_LEFT = "player_left"
     PLAYER_RECONNECTED = "player_reconnected"
 
+    # Connection lifecycle events
+    PLAYER_DISCONNECTED = "player_disconnected"
+    CONNECTION_LOST = "connection_lost"  # Network failure vs intentional disconnect
+    PLAYER_RECONNECTED_FAILED = "player_reconnected_failed"
+
+    # Bot control events
+    BOT_TAKEOVER_SCHEDULED = "bot_takeover_scheduled"
+    BOT_TAKEOVER_CANCELLED = "bot_takeover_cancelled"
+    BOT_TAKEOVER_ACTIVATED = "bot_takeover_activated"
+    BOT_CONTROL_RELEASED = "bot_control_released"
+    BOT_CONTROL_FAILED_RELEASE = "bot_control_failed_release"
+
+    # Action attribution events
+    HUMAN_ACTION = "human_action"
+    BOT_ACTION = "bot_action"
+    ACTION_BLOCKED = "action_blocked"  # When human tries to act but bot has control
+
+    # Grace period events
+    GRACE_PERIOD_EXPIRED = "grace_period_expired"
+
     # Recovery events
     GAME_RECOVERED = "game_recovered"
     STATE_SNAPSHOT = "state_snapshot"  # Periodic full state capture
@@ -56,6 +76,19 @@ class EventMapping:
         "player_left": SemanticEventType.PLAYER_LEFT,
         "player_reconnected": SemanticEventType.PLAYER_RECONNECTED,
         "game_recovered": SemanticEventType.GAME_RECOVERED,
+        # All new events MUST be stored for debugging
+        "player_disconnected": SemanticEventType.PLAYER_DISCONNECTED,
+        "connection_lost": SemanticEventType.CONNECTION_LOST,
+        "player_reconnected_failed": SemanticEventType.PLAYER_RECONNECTED_FAILED,
+        "bot_takeover_scheduled": SemanticEventType.BOT_TAKEOVER_SCHEDULED,
+        "bot_takeover_cancelled": SemanticEventType.BOT_TAKEOVER_CANCELLED,
+        "bot_takeover_activated": SemanticEventType.BOT_TAKEOVER_ACTIVATED,
+        "bot_control_released": SemanticEventType.BOT_CONTROL_RELEASED,
+        "bot_control_failed_release": SemanticEventType.BOT_CONTROL_FAILED_RELEASE,
+        "human_action": SemanticEventType.HUMAN_ACTION,
+        "bot_action": SemanticEventType.BOT_ACTION,
+        "action_blocked": SemanticEventType.ACTION_BLOCKED,
+        "grace_period_expired": SemanticEventType.GRACE_PERIOD_EXPIRED,
     }
 
     # Events that should be accumulated and compressed

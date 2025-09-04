@@ -3,6 +3,7 @@
 import asyncio
 import logging
 import uuid
+import time
 from typing import Optional
 
 import backend.socket_manager
@@ -17,6 +18,7 @@ from backend.api.middleware.websocket_rate_limit import (
 )
 from backend.api.websocket.connection_manager import connection_manager
 from backend.api.websocket.message_queue import message_queue_manager
+from backend.shared_event_store import event_store
 
 # Set up logging
 logger = logging.getLogger(__name__)
@@ -119,6 +121,47 @@ async def handle_disconnect(room_id: str, websocket: WebSocket):
                         logger.info(
                             f"🕐 [GRACE_PERIOD] Player {connection.player_name} disconnected. "
                             f"Bot takeover scheduled in 5 seconds at {player.pending_bot_takeover}"
+                        )
+                        
+                        # Store comprehensive disconnection data
+                        game_context = {
+                            "current_phase": room.game_state_machine.get_current_phase() if room.game_state_machine else None,
+                            "current_player": room.game_state_machine.get_phase_data().get("current_player") if room.game_state_machine else None,
+                            "round_number": room.game.round_number if room.game else None,
+                            "turn_number": room.game.turn_number if room.game else None,
+                            "is_players_turn": (room.game_state_machine.get_phase_data().get("current_player") == connection.player_name) if room.game_state_machine else False
+                        }
+                        
+                        # Store player disconnected event
+                        await event_store.store_event(
+                            room_id,
+                            "player_disconnected",
+                            {
+                                "player_name": connection.player_name,
+                                "timestamp": player.disconnect_time,
+                                "was_bot": player.is_bot,
+                                "grace_period_seconds": 5,
+                                "bot_takeover_scheduled_at": player.pending_bot_takeover.isoformat(),
+                                "disconnect_reason": "websocket_close",
+                                "game_context": game_context,
+                                "connection_duration_seconds": time.time() - connection.connect_time if hasattr(connection, 'connect_time') else None,
+                                "websocket_id": getattr(websocket, '_ws_id', None)
+                            },
+                            player_id=connection.player_name
+                        )
+                        
+                        # Also store bot takeover scheduled event
+                        await event_store.store_event(
+                            room_id,
+                            "bot_takeover_scheduled",
+                            {
+                                "player_name": connection.player_name,
+                                "scheduled_for": player.pending_bot_takeover.isoformat(),
+                                "current_time": datetime.now().isoformat(),
+                                "delay_seconds": 5,
+                                "game_context": game_context
+                            },
+                            player_id=connection.player_name
                         )
                         
                         # Schedule async task to activate bot after grace period
@@ -758,6 +801,16 @@ async def websocket_endpoint(websocket: WebSocket, room_id: str):
                             )
                             if player and hasattr(player, 'original_is_bot') and not player.original_is_bot:
                                 # This is a human player reconnecting
+                                
+                                # Capture state BEFORE any changes
+                                pre_reconnect_state = {
+                                    "is_bot": player.is_bot,
+                                    "is_connected": player.is_connected,
+                                    "bot_takeover_scheduled": getattr(player, 'bot_takeover_scheduled', None),
+                                    "pending_bot_takeover": getattr(player, 'pending_bot_takeover', None),
+                                    "disconnect_time": getattr(player, 'disconnect_time', None)
+                                }
+                                
                                 player.is_connected = True
                                 player.disconnect_time = None
                                 
@@ -779,6 +832,59 @@ async def websocket_endpoint(websocket: WebSocket, room_id: str):
                                 logger.info(
                                     f"✅ [RECONNECT] Player {player_name} reconnected - bot control removed, all flags cleared"
                                 )
+                                
+                                # Store reconnection attempt
+                                await event_store.store_event(
+                                    room_id,
+                                    "player_reconnected",
+                                    {
+                                        "player_name": player_name,
+                                        "timestamp": time.time(),
+                                        "pre_state": pre_reconnect_state,
+                                        "time_disconnected_seconds": time.time() - player.disconnect_time if player.disconnect_time else None,
+                                        "bot_was_active": pre_reconnect_state["is_bot"],
+                                        "reconnect_method": "websocket",
+                                        "game_context": {
+                                            "current_phase": room.game_state_machine.get_current_phase() if room.game_state_machine else None,
+                                            "current_player": room.game_state_machine.get_phase_data().get("current_player") if room.game_state_machine else None,
+                                        }
+                                    },
+                                    player_id=player_name
+                                )
+                                
+                                # Verify release worked
+                                if player.is_bot:
+                                    # CRITICAL: Failed to release bot control!
+                                    await event_store.store_event(
+                                        room_id,
+                                        "bot_control_failed_release",
+                                        {
+                                            "player_name": player_name,
+                                            "timestamp": time.time(),
+                                            "error": "is_bot still True after clearing",
+                                            "state": {
+                                                "is_bot": player.is_bot,
+                                                "bot_takeover_scheduled": player.bot_takeover_scheduled
+                                            }
+                                        },
+                                        player_id=player_name
+                                    )
+                                else:
+                                    # Success - store release event
+                                    await event_store.store_event(
+                                        room_id,
+                                        "bot_control_released",
+                                        {
+                                            "player_name": player_name,
+                                            "timestamp": time.time(),
+                                            "method": "player_reconnection",
+                                            "post_state": {
+                                                "is_bot": player.is_bot,
+                                                "is_connected": player.is_connected
+                                            }
+                                        },
+                                        player_id=player_name
+                                    )
 
                                 # Cancel any pending cleanup
                                 room.cancel_cleanup()
@@ -1919,11 +2025,51 @@ async def activate_bot_after_grace(room_id: str, player_name: str):
             logger.info(f"🕐 [GRACE_PERIOD] Bot takeover already cancelled for {player_name}")
             return
             
+        # Before activation, store detailed state
+        pre_activation_state = {
+            "player_name": player_name,
+            "was_connected": player.is_connected,
+            "was_bot": player.is_bot,
+            "bot_takeover_scheduled": player.bot_takeover_scheduled,
+            "current_phase": room.game_state_machine.get_current_phase() if room.game_state_machine else None,
+            "timestamp": time.time()
+        }
+        
+        # Store activation attempt
+        await event_store.store_event(
+            room_id,
+            "bot_takeover_activated",
+            {
+                "player_name": player_name,
+                "activation_time": time.time(),
+                "scheduled_time": player.pending_bot_takeover.timestamp() if player.pending_bot_takeover else None,
+                "delay_actual": time.time() - player.disconnect_time.timestamp() if player.disconnect_time else None,
+                "pre_state": pre_activation_state,
+                "reason": "disconnect_timeout_5s"
+            },
+            player_id=player_name
+        )
+        
         # Activate bot takeover
         logger.info(f"🤖 [BOT_STATE_CHANGE] {player_name}: is_bot {player.is_bot} -> True, bot_takeover_scheduled {player.bot_takeover_scheduled} -> False")
         player.is_bot = True
         player.bot_takeover_scheduled = False
         logger.info(f"🤖 [GRACE_PERIOD] Bot takeover activated for {player_name} after 5 second grace period")
+        
+        # After setting is_bot = True, verify it worked
+        if not player.is_bot:
+            # CRITICAL: Bot activation failed!
+            await event_store.store_event(
+                room_id,
+                "bot_control_failed_release",  # Reuse for activation failure
+                {
+                    "player_name": player_name,
+                    "operation": "activation",
+                    "error": "is_bot flag not set",
+                    "state": {"is_bot": player.is_bot, "is_connected": player.is_connected}
+                },
+                player_id=player_name
+            )
         
         # Broadcast bot activation
         await broadcast(
