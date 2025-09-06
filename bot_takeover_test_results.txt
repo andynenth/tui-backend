@@ -1,3 +1,0 @@
-🧪 Testing bot takeover with payload storage fix...
-📍 Creating new room: Z2AQLW
-❌ Error creating room: Multiple exceptions: [Errno 61] Connect call failed ('::1', 5050, 0, 0), [Errno 61] Connect call failed ('127.0.0.1', 5050)
