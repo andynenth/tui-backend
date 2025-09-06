@@ -4,9 +4,9 @@
 set -e
 
 # Configuration
-EC2_HOST="${EC2_HOST:-34.233.7.20}"
+EC2_HOST="${EC2_HOST:-54.250.35.226}"
 EC2_USER="${EC2_USER:-ubuntu}"
-KEY_PATH="${KEY_PATH:-./liap-tui-key-1755152170.pem}"
+KEY_PATH="${KEY_PATH:-~/.ssh/liap-tui-tokyo-key.pem}"
 
 # Colors
 GREEN='\033[0;32m'
@@ -83,9 +83,9 @@ fi
 
 # Health Check
 echo -e "\n${YELLOW}🏥 Health Check...${NC}"
-HEALTH_RESPONSE=$(curl -s -w "\n%{http_code}" http://${EC2_HOST}/api/health 2>/dev/null || echo "failed")
+HEALTH_RESPONSE=$(curl -k -s -w "\n%{http_code}" https://${EC2_HOST}/api/health 2>/dev/null || echo "failed")
 HTTP_CODE=$(echo "$HEALTH_RESPONSE" | tail -n1)
-HEALTH_BODY=$(echo "$HEALTH_RESPONSE" | head -n-1)
+HEALTH_BODY=$(echo "$HEALTH_RESPONSE" | sed '$d')
 
 if [ "$HTTP_CODE" = "200" ]; then
     echo -e "${GREEN}✅ API Health: OK${NC}"

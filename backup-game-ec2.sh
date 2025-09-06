@@ -2,9 +2,9 @@
 # Backup Liap Tui game data from EC2
 
 # Configuration
-EC2_HOST="${EC2_HOST:-34.233.7.20}"
+EC2_HOST="${EC2_HOST:-54.250.35.226}"
 EC2_USER="${EC2_USER:-ubuntu}"
-KEY_PATH="${KEY_PATH:-./liap-tui-key-1755152170.pem}"
+KEY_PATH="${KEY_PATH:-~/.ssh/liap-tui-tokyo-key.pem}"
 TIMESTAMP=$(date +%Y%m%d_%H%M%S)
 BACKUP_NAME="game_backup_${TIMESTAMP}.tar.gz"
 

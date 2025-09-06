@@ -4,9 +4,9 @@
 set -e
 
 # Configuration
-EC2_HOST="${EC2_HOST:-your-ec2-ip-here}"
+EC2_HOST="${EC2_HOST:-54.250.35.226}"
 EC2_USER="${EC2_USER:-ubuntu}"
-KEY_PATH="${KEY_PATH:-~/.ssh/your-key.pem}"
+KEY_PATH="${KEY_PATH:-~/.ssh/liap-tui-tokyo-key.pem}"
 
 # Colors
 GREEN='\033[0;32m'
