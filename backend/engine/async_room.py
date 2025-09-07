@@ -76,69 +76,141 @@ class AsyncRoom:
 
         logger.info(f"AsyncRoom {room_id} created with host {host_name}")
 
-    async def join_room(self, player_name: str) -> int:
+    async def join_room(self, player_name: str) -> dict:
         """
         Allow a player to join the room asynchronously.
+        Thread-safe with all validation inside the lock.
 
         Args:
             player_name: Name of the player attempting to join
 
         Returns:
-            int: The slot index the player joined
-
-        Raises:
-            ValueError: If no slot available
-
-        Future: Will persist join to database
+            dict: Structured response with success/failure details
         """
+        join_start = time.time()
+
+        # Log entry (per investigation guide)
+        logger.info(
+            f"JOIN_TRACE [{self.room_id}] Enter: player={player_name}, "
+            f"time={join_start:.6f}, current_slots={[p.name if p else None for p in self.players]}"
+        )
+
+        # Track lock wait time
+        lock_wait_start = time.time()
+
         async with self._join_lock:
+            lock_acquired_time = time.time()
+            lock_wait_ms = (lock_acquired_time - lock_wait_start) * 1000
+
+            logger.info(
+                f"JOIN_TRACE [{self.room_id}] Lock acquired: player={player_name}, "
+                f"wait_ms={lock_wait_ms:.1f}"
+            )
+
             self._last_activity = datetime.now()
 
             # Check if game already started
             if self.started:
-                raise ValueError("Cannot join: game already started")
+                result = {
+                    "success": False,
+                    "error": "Cannot join: game already started",
+                    "error_type": "game_started",
+                    "room_state": await self._get_room_state(),
+                }
 
-            # Find first empty slot
-            for i, player in enumerate(self.players):
-                if player is None:
-                    self.players[i] = Player(
-                        player_name,
-                        is_bot=False,
-                        available_colors=self._get_available_colors(),
-                    )
-                    self._total_joins += 1
+            # Check if player already in room
+            elif any(p and p.name == player_name for p in self.players):
+                slot = next(
+                    i for i, p in enumerate(self.players) if p and p.name == player_name
+                )
+                result = {
+                    "success": True,
+                    "slot": slot,
+                    "already_joined": True,
+                    "room_state": await self._get_room_state(),
+                }
 
-                    logger.info(
-                        f"Player {player_name} joined room {self.room_id} in slot {i}"
-                    )
+            else:
+                # Try to find a slot (empty or bot)
+                slot_found = False
 
-                    # Future: await self._persist_player_join(player_name, i)
+                # First try empty slots
+                for i, player in enumerate(self.players):
+                    if player is None:
+                        self.players[i] = Player(
+                            player_name,
+                            is_bot=False,
+                            available_colors=self._get_available_colors(),
+                        )
+                        self._total_joins += 1
+                        result = {
+                            "success": True,
+                            "slot": i,
+                            "replaced_bot": False,
+                            "room_state": await self._get_room_state(),
+                        }
+                        slot_found = True
+                        break
 
-                    return i
+                # If no empty slot, try replacing a bot
+                if not slot_found:
+                    for i, player in enumerate(self.players):
+                        if player and player.is_bot:
+                            old_bot = player.name
+                            self.players[i] = Player(
+                                player_name,
+                                is_bot=False,
+                                available_colors=self._get_available_colors(),
+                            )
+                            self._total_joins += 1
+                            result = {
+                                "success": True,
+                                "slot": i,
+                                "replaced_bot": True,
+                                "replaced_bot_name": old_bot,
+                                "room_state": await self._get_room_state(),
+                            }
+                            slot_found = True
+                            break
 
-            # No empty slots, try to replace a bot
-            for i, player in enumerate(self.players):
-                if player and player.is_bot:
-                    old_bot = player.name
-                    self.players[i] = Player(
-                        player_name,
-                        is_bot=False,
-                        available_colors=self._get_available_colors(),
-                    )
-                    self._total_joins += 1
+                # No slots available
+                if not slot_found:
+                    result = {
+                        "success": False,
+                        "error": "Room is full",
+                        "error_type": "room_full",
+                        "room_state": await self._get_room_state(),
+                    }
 
-                    logger.info(
-                        f"Player {player_name} joined room {self.room_id} in slot {i}, "
-                        f"replacing {old_bot}"
-                    )
+        # Calculate total time
+        join_end = time.time()
+        total_ms = (join_end - join_start) * 1000
 
-                    # Future: await self._persist_player_join(player_name, i)
+        # Log exit
+        logger.info(
+            f"JOIN_TRACE [{self.room_id}] Exit: player={player_name}, "
+            f"result={result['success']}, total_ms={total_ms:.1f}"
+        )
 
-                    return i
+        # Store event for investigation (per guide)
+        from backend.shared_event_store import event_store
 
-            raise ValueError(
-                "No available slot (all slots are filled by human players)."
-            )
+        await event_store.store_event(
+            self.room_id,
+            "join_attempt",
+            {
+                "player_name": player_name,
+                "success": result.get("success", False),
+                "error_type": result.get("error_type"),
+                "slot": result.get("slot"),
+                "lock_wait_ms": lock_wait_ms,
+                "total_ms": total_ms,
+                "room_state": result.get("room_state", {}),
+            },
+            player_id=player_name,
+        )
+
+        return result
 
     async def exit_room(self, player_name: str) -> bool:
         """
@@ -454,13 +526,27 @@ class AsyncRoom:
         self._last_operation_id += 1
         return f"{self.room_id}_{self._last_operation_id}"
 
+    async def _get_room_state(self) -> Dict[str, Any]:
+        """Get current room state for logging purposes."""
+        return {
+            "player_count": len([p for p in self.players if p]),
+            "human_count": len([p for p in self.players if p and not p.is_bot]),
+            "bot_count": len([p for p in self.players if p and p.is_bot]),
+            "started": self.started,
+            "room_id": self.room_id,
+        }
+
     # Compatibility methods for migration
     def join_room_sync(self, player_name: str) -> int:
-        """Sync wrapper for join_room."""
+        """Sync wrapper for join_room. Maintains compatibility by extracting slot from result."""
         loop = asyncio.new_event_loop()
         asyncio.set_event_loop(loop)
         try:
-            return loop.run_until_complete(self.join_room(player_name))
+            result = loop.run_until_complete(self.join_room(player_name))
+            if result["success"]:
+                return result["slot"]
+            else:
+                raise ValueError(result["error"])
         finally:
             loop.close()
 

@@ -614,65 +614,19 @@ async def websocket_endpoint(websocket: WebSocket, room_id: str):
                                     "event": "error",
                                     "data": {
                                         "message": "Room not found",
-                                        "type": "join_room_error",
+                                        "type": "room_not_found",
                                     },
                                 }
                             )
                             continue
 
-                        # Check if room is full
-                        if room.is_full():
-                            await registered_ws.send_json(
-                                {
-                                    "event": "error",
-                                    "data": {
-                                        "message": "Room is full",
-                                        "type": "join_room_error",
-                                    },
-                                }
-                            )
-                            continue
+                        # REMOVED: Redundant is_full() check (lines 624-634)
+                        # REMOVED: Redundant started check (lines 637-647)
+                        # Let join_room handle ALL validation atomically
 
-                        # Check if room has started
-                        if room.started:
-                            await registered_ws.send_json(
-                                {
-                                    "event": "error",
-                                    "data": {
-                                        "message": "Room has already started",
-                                        "type": "join_room_error",
-                                    },
-                                }
-                            )
-                            continue
+                        result = await room.join_room(player_name)
 
-                        # Try to join the room (AsyncRoom.join_room returns slot index)
-                        try:
-                            assigned_slot = await room.join_room(player_name)
-
-                            # Create result dict to match expected format
-                            room_summary = await room.summary()
-                            result = {
-                                "success": True,
-                                "assigned_slot": assigned_slot,
-                                "room_state": room_summary,
-                                "operation_id": str(uuid.uuid4()),
-                            }
-
-                        except ValueError as e:
-                            # Room is full or other error
-                            await registered_ws.send_json(
-                                {
-                                    "event": "error",
-                                    "data": {
-                                        "message": str(e),
-                                        "type": "join_room_error",
-                                    },
-                                }
-                            )
-                            continue
-
-                        if True:  # Always succeeds if no exception
+                        if result["success"]:
                             # Send success response to the client
                             await registered_ws.send_json(
                                 {
@@ -680,53 +634,59 @@ async def websocket_endpoint(websocket: WebSocket, room_id: str):
                                     "data": {
                                         "room_id": room_id_to_join,
                                         "player_name": player_name,
-                                        "assigned_slot": result["assigned_slot"],
+                                        "assigned_slot": result["slot"],
                                         "success": True,
+                                        "replaced_bot": result.get(
+                                            "replaced_bot", False
+                                        ),
+                                        "already_joined": result.get(
+                                            "already_joined", False
+                                        ),
                                     },
                                 }
                             )
 
-                            # Broadcast room update to all clients in the room
-                            room_summary = result["room_state"]
-                            await broadcast(
-                                room_id_to_join,
-                                "room_update",
-                                {
-                                    "players": room_summary["players"],
-                                    "host_name": room_summary["host_name"],
-                                    "operation_id": result["operation_id"],
-                                    "room_id": room_id_to_join,
-                                    "started": room_summary.get("started", False),
-                                },
-                            )
+                            # Only broadcast room update if not already joined
+                            if not result.get("already_joined", False):
+                                room_summary = await room.summary()
+                                await broadcast(
+                                    room_id_to_join,
+                                    "room_update",
+                                    {
+                                        "players": room_summary["players"],
+                                        "host_name": room_summary["host_name"],
+                                        "room_id": room_id_to_join,
+                                        "started": room_summary.get("started", False),
+                                        "new_player": player_name,
+                                        "replaced_bot": result.get("replaced_bot_name"),
+                                    },
+                                )
 
-                            # Notify all lobby clients about room update
-                            from .routes import notify_lobby_room_updated
+                                # Update lobby
+                                from .routes import notify_lobby_room_updated
 
-                            await notify_lobby_room_updated(result["room_state"])
-
+                                await notify_lobby_room_updated(room_summary)
                         else:
-                            # Send error response
+                            # Send error response with consistent format
                             await registered_ws.send_json(
                                 {
                                     "event": "error",
                                     "data": {
-                                        "message": result.get(
-                                            "reason", "Failed to join room"
-                                        ),
-                                        "type": "join_room_error",
+                                        "message": result["error"],
+                                        "type": result["error_type"],
+                                        "room_state": result.get("room_state", {}),
                                     },
                                 }
                             )
 
                     except Exception as e:
-                        # Send error response
+                        logger.error(f"Unexpected error in join_room: {e}")
                         await registered_ws.send_json(
                             {
                                 "event": "error",
                                 "data": {
-                                    "message": f"Failed to join room: {str(e)}",
-                                    "type": "join_room_error",
+                                    "message": "An unexpected error occurred",
+                                    "type": "internal_error",
                                 },
                             }
                         )
