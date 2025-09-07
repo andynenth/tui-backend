@@ -1,5 +1,7 @@
 # AI Debug Mode Documentation
 
+**📍 MIGRATION NOTICE**: This directory's content is being consolidated into [`/docs/ai-system/debug-mode/`](../ai-system/debug-mode/) for better organization.
+
 This directory contains all documentation related to the AI Debug Mode feature of Liap Tui.
 
 ## 📚 Documentation Structure
@@ -53,3 +55,19 @@ AI Debug Mode allows you to:
 - Detect bugs in AI logic automatically
 - Benchmark performance (~7 games/second)
 - Generate statistics for AI improvement
+
+## 📦 Migration Status
+
+### ✅ Completed
+- **Comprehensive Guide Created**: All debug mode content merged into [AI Debug Mode Comprehensive Guide](../ai-system/debug-mode/AI_DEBUG_MODE_COMPREHENSIVE.md)
+- **Directory Structure**: New location at `/docs/ai-system/debug-mode/`
+
+### 🔄 In Progress
+- Moving individual guide files
+- Updating all cross-references
+- Creating redirects
+
+### 📌 New Users Should:
+1. Go directly to the [Comprehensive Guide](../ai-system/debug-mode/AI_DEBUG_MODE_COMPREHENSIVE.md)
+2. Use the new [`/docs/ai-system/`](../ai-system/) structure
+3. Refer to the [AI System README](../ai-system/README.md) for navigation

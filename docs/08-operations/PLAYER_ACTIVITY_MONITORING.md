@@ -1,8 +1,18 @@
 # Player Activity Monitoring Guide
 
-## Overview
+This document has been consolidated into a comprehensive reference.
 
-The Player Activity Monitoring system tracks player connectivity, activity patterns, and automatically detects hang situations. It provides real-time visibility into player states and comprehensive diagnostic data for troubleshooting connection issues.
+## New Location
+
+Please see: [Comprehensive Monitoring & Observability Guide](./MONITORING_COMPREHENSIVE.md)
+
+Specifically, player activity monitoring is covered in:
+- **Section**: "Player Activity Monitoring"
+- **Section**: "Engagement Metrics"
+
+## Legacy Reference
+
+This file originally described the player activity tracking system. All content has been preserved with enhancements in the comprehensive guide.
 
 ## Architecture
 

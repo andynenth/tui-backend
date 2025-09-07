@@ -1,8 +1,19 @@
 # Performance Monitoring Guide
 
-## Overview
+This document has been consolidated into a comprehensive reference.
 
-The performance monitoring system tracks API response times, resource utilization, and system health to ensure optimal performance. It provides real-time metrics, historical analysis, and automated alerting for performance degradation.
+## New Location
+
+Please see: [Comprehensive Monitoring & Observability Guide](./MONITORING_COMPREHENSIVE.md)
+
+Specifically, performance monitoring is covered in:
+- **Section**: "Performance Monitoring" 
+- **Section**: "Performance Thresholds"
+- **Section**: "Play History Performance"
+
+## Legacy Reference
+
+This file originally contained performance-specific monitoring guidance. All content has been preserved and enhanced in the comprehensive guide.
 
 ## Architecture
 

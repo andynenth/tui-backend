@@ -1,5 +1,7 @@
 # EC2 Monitoring & Maintenance Guide
 
+**📍 Note**: For comprehensive monitoring documentation, see [Comprehensive Monitoring & Observability Guide](./MONITORING_COMPREHENSIVE.md), particularly the "EC2 Deployment Monitoring" section.
+
 This guide explains how to monitor and maintain your Liap Tui EC2 server using the provided shell scripts.
 
 ## Quick Start
