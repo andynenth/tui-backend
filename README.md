@@ -1,310 +1,197 @@
-# 🀄 Liap Tui Online Board Game
-
-[![Docker](https://img.shields.io/badge/docker-ready-blue?logo=docker)](https://www.docker.com/)
-[![Python](https://img.shields.io/badge/python-3.11+-blue?logo=python)](https://www.python.org/)
-[![FastAPI](https://img.shields.io/badge/FastAPI-async--ready-009688?logo=fastapi)](https://fastapi.tiangolo.com/)
-[![React](https://img.shields.io/badge/React-19.1-61dafb?logo=react)](https://react.dev/)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
-
-## 🎮 Live Demo
+# 🀄 Castellan - Multiplayer Board Game
 
 <div align="center">
-  <a href="https://castellan.andynenth.dev">
-    <img src="docs/assets/gameplay-screenshot.png" alt="Castellan Gameplay" width="600">
-  </a>
-  <br><br>
-  <a href="https://castellan.andynenth.dev">
-    <img src="https://img.shields.io/badge/Play%20Now-castellan.andynenth.dev-green?style=for-the-badge&logo=gamepad" alt="Play Now">
-  </a>
+  <img src="docs/assets/gameplay.gif" alt="Castellan Game" width="300">
+  
+  [![Build Status](https://img.shields.io/github/actions/workflow/status/andynenth/castellan/ci.yml?branch=main)](https://github.com/andynenth/castellan/actions)
+  [![Discord](https://img.shields.io/discord/1234567890?color=7289da&logo=discord&logoColor=white)](https://discord.gg/castellan)
+  [![Good First Issues](https://img.shields.io/github/issues/andynenth/castellan/good%20first%20issue)](https://github.com/andynenth/castellan/issues?q=is%3Aissue+is%3Aopen+label%3A%22good+first+issue%22)
 </div>
 
-> **Note**: Screenshot should show Turn Phase with 4 players, some pieces played, and game log visible
-
-> A real-time online multiplayer board game inspired by *Liap Tui*, a traditional Chinese-Thai game.  
-> Built with **FastAPI** for the backend and **React 19 + ESBuild** for the frontend.  
-> Uses **WebSocket-first architecture** for all game operations, packaged in a single Docker container.
-
-## Table of Contents
-- [Live Demo](#-live-demo)
-- [Features](#-features)
-- [Quick Start](#-quick-start)
-- [Development](#️-development)
-- [Game Rules](#-game-rules)
-- [Documentation](#-documentation)
-- [Deployment](#-deployment)
-- [Contributing](#-contributing)
-- [Support](#-support)
-- [License](#-license)
+> **Real-time multiplayer board game** inspired by Liap Tui, a traditional Chinese-Thai game.  
+> Built with **FastAPI** (Python) + **React 19** (TypeScript) + **WebSockets**.
 
 ---
 
-## 🎮 Features
-
-### Gameplay
-- 🎯 Real-time multiplayer (4 players)
-- 🤖 Intelligent AI bots
-- 🔄 Complete game flow with 4 phases
-- 🏆 Advanced scoring with multipliers
-
-### Technical
-- ⚡ WebSocket-first architecture
-- 🔐 Event sourcing & recovery
-- 📊 Health monitoring & metrics
-- 🐳 Single-container deployment
-
-### Frontend
-- ⚛️ React 19 with TypeScript
-- 🔌 Auto-reconnection
-- 📱 Responsive design
-- 🧪 82% test coverage
-
----
-
-## 💻 System Requirements
-
-- **Python** 3.11 or higher
-- **Node.js** 16 or higher
-- **Docker** (optional, for containerized deployment)
-- **Git** for version control
-
-### Minimum Hardware
-- 2GB RAM
-- 1 CPU core
-- 1GB free disk space
-
----
-
-## 📦 Quick Start
-
-### 1. Clone the repository
+## 🚀 Quick Start (< 2 minutes)
 
 ```bash
+# Clone and enter the project
 git clone https://github.com/andynenth/castellan.git
-cd liap-tui
+cd castellan
+
+# Start development environment (Docker-based)
+./dev.sh
+
+# Open http://localhost:5050
 ```
 
-### 2. Build the Docker image
+That's it! 🎉 Hot reload is enabled for both frontend and backend.
+
+### Alternative: Local Development (no Docker)
+```bash
+# Install dependencies
+cd frontend && npm install && cd ..
+pip install -r requirements.txt
+
+# Start everything
+./start.sh
+```
+
+---
+
+## 🤝 How to Contribute
+
+We welcome all contributions! Here are great ways to get started:
+
+### 🐛 Fix a Bug
+Browse [open issues](https://github.com/andynenth/castellan/issues) or check `TODO.md`
+
+### ✨ Add a Feature
+- **Frontend**: New game animations, better mobile experience, UI improvements
+- **Backend**: API enhancements, performance optimizations, new game modes
+- **AI**: Improve bot strategies (`backend/ai/strategies/`)
+- **Testing**: Increase coverage (currently 82% frontend, 78% backend)
+
+### 📝 Improve Documentation
+Help others by improving guides in `/docs` or code comments
+
+### 🎯 Good First Issues
+Perfect for your first contribution: [Good First Issues](https://github.com/andynenth/castellan/issues?q=is%3Aissue+is%3Aopen+label%3A%22good+first+issue%22)
+
+**Quick Contribution Checklist:**
+1. Fork the repo
+2. Create a feature branch (`git checkout -b feature/amazing-feature`)
+3. Make your changes
+4. Run tests (`npm test` and `pytest`)
+5. Submit a Pull Request
+
+---
+
+## 🏗 Project Structure
+
+```
+castellan/
+├── frontend/          # React 19 + TypeScript + ESBuild
+│   ├── src/          # React components and game logic
+│   └── network/      # WebSocket client
+├── backend/          # FastAPI + Python 3.11
+│   ├── engine/       # Core game logic & state machine  
+│   ├── api/          # WebSocket handlers & REST endpoints
+│   └── ai/           # Bot players and strategies
+└── docs/             # Comprehensive documentation
+```
+
+---
+
+## 🛠 Development Workflow
+
+### Common Commands
 
 ```bash
-docker build -t liap-tui .
+# Code quality checks
+cd frontend && npm run lint        # Frontend linting
+source venv/bin/activate && cd backend && black .  # Python formatting
+
+# Run tests
+cd frontend && npm test            # Frontend tests
+pytest                            # Backend tests
+
+# Type checking
+cd frontend && npm run type-check  # TypeScript validation
 ```
 
-### 3. Run the container
+### Key Development Features
 
-```bash
-docker run -p 5050:5050 liap-tui
-```
-
-Then open your browser:  
-👉 `http://localhost:5050`
-
-> The frontend is served from FastAPI’s static files.  
-> WebSocket and API routes are available under `/ws/` and `/api`.
+- **Hot Reload**: Both frontend and backend auto-reload on changes
+- **WebSocket Testing**: Use `/docs` for interactive API testing
+- **AI Debug Mode**: `python backend/ai_debug_simple.py` for AI-only games
+- **Comprehensive Logging**: Check console for detailed game events
 
 ---
 
-## 📁 Project Structure
+## 🎮 Architecture Overview
 
-```
-liap-tui/
-├── frontend/       → React 19 + TypeScript frontend
-├── backend/        → FastAPI + Python backend  
-├── docs/           → 📚 Comprehensive documentation (30+ guides)
-├── nginx/          → SSL configuration
-└── scripts/        → Deployment & maintenance
-```
+### Tech Stack
+- **Frontend**: React 19, TypeScript, ESBuild, React Router
+- **Backend**: FastAPI, Python 3.11, WebSockets, Pydantic
+- **Game Engine**: Enterprise state machine with automatic event broadcasting
+- **Communication**: WebSocket-first (all game operations), REST (monitoring only)
 
-See [Project Structure](docs/README.md) for detailed organization.
+### Key Concepts
+1. **4 Game Phases**: Preparation → Declaration → Turn → Scoring
+2. **Real-time Sync**: All state changes auto-broadcast via WebSocket
+3. **AI Players**: Configurable difficulty levels with different strategies
+4. **Event Sourcing**: Complete game history for debugging/replay
 
----
-
-## ⚙️ Configuration
-
-The application uses environment variables for configuration. See [CONFIGURATION.md](CONFIGURATION.md) for detailed setup instructions and all available options.
-
----
-
-## 🏗️ API Architecture
-
-This project uses a **WebSocket-first architecture** for all game operations. REST API is limited to monitoring and admin functions. See [WebSocket API Guide](docs/WEBSOCKET_API.md) for details.
+### Quick Architecture Facts
+- Single WebSocket endpoint: `/ws/{room_id}` handles all game operations
+- Backend serves both API and static frontend files (no separate frontend server)
+- State machine pattern ensures consistent game state across all clients
+- Docker container includes everything needed to run
 
 ---
 
 ## 🧪 Testing
 
-The project includes comprehensive testing with 78+ backend test suites and frontend coverage. See [TESTING.md](TESTING.md) for complete testing guide, coverage requirements, and best practices.
-
----
-
-## 🛠️ Development
-
-### Quick Start
 ```bash
-./start.sh  # Starts both frontend and backend with hot reload
+# Run all tests with coverage
+cd frontend && npm test -- --coverage
+pytest --cov=backend
+
+# Run specific test suites
+pytest tests/test_game_engine.py    # Game logic tests
+npm test Button.test.tsx            # Component tests
 ```
 
-### Manual Start
-```bash
-# Backend
-docker-compose -f docker-compose.dev.yml up backend
-
-# Frontend
-cd frontend && npm run dev
-```
-
-See [Development Guide](docs/06-tutorials/LOCAL_DEVELOPMENT.md) for details.
-
----
-
-## 🚀 Deployment
-
-### Recommended: AWS EC2 (Free Tier Friendly)
-```bash
-./deploy-ec2.sh  # One-command deployment
-```
-See [EC2 Deployment Guide](EC2_DEPLOYMENT_GUIDE.md)
-
-### Other Options
-- **AWS ECS**: [ECS Guide](docs/deployment/AWS_DEPLOYMENT_CHECKLIST.md)
-- **Local Docker**: `docker-compose -f docker-compose.prod.yml up`
-
----
-
-## 🎯 Game Rules
-
-Liap Tui is a strategic 4-player board game with unique piece-playing and scoring mechanics.
-
-### Quick Overview
-- **Players**: 4 (human or AI bots)
-- **Pieces**: 8 pieces per player per round
-- **Game Flow**: 4 phases - Preparation → Declaration → Turn → Scoring
-- **Winning**: First to 50 points or highest after 20 rounds
-
-### Key Features
-- **Declaration Phase**: Players declare how many piles they'll win (must total ≠ 8)
-- **Turn-Based Play**: Play 1-6 pieces per turn, winner takes all pieces
-- **Redeal System**: Players with weak hands can request new pieces
-- **Scoring**: Points based on declaration accuracy with multipliers
-
-> **📖 Complete Rules**: See [RULES.md](RULES.md) for detailed game mechanics, piece types, scoring system, and strategic tips.
-
----
-
-## 🤖 AI Debug Mode
-
-The AI Debug Mode is a powerful tool for testing and improving AI behavior without the WebSocket infrastructure.
-
-### Quick Start
-
-```bash
-# Run a single AI-only game
-python backend/ai_debug_simple.py
-
-# Run multiple games with detailed logging
-python backend/ai_debug_simple.py --games 10 --log-level detailed
-
-# Analyze game logs
-python backend/tools/analyze_ai_logs.py logs/ai_debug/*.json
-
-# Run performance benchmarks
-python backend/tools/benchmark_quiet.py --mode levels
-```
-
-### Features
-
-- **Synchronous Execution**: Run AI games without WebSocket overhead
-- **Multi-Level Logging**: Summary, decision, or detailed logs
-- **Bug Detection**: Automatic detection of common AI issues
-- **Performance Analysis**: ~7 games/second throughput
-- **Statistical Reports**: Win rates, declaration accuracy, score distributions
-
-### Common Use Cases
-
-1. **Testing AI Changes**:
-   ```bash
-   # Before changes
-   python backend/ai_debug_simple.py --games 100 --output before.json
-   
-   # After changes  
-   python backend/ai_debug_simple.py --games 100 --output after.json
-   
-   # Compare results
-   python backend/tools/analyze_ai_logs.py before.json after.json
-   ```
-
-2. **Finding AI Bugs**:
-   ```bash
-   # Run with detailed logging
-   python backend/ai_debug_simple.py --games 50 --log-level detailed
-   
-   # Check for bugs
-   python backend/tools/analyze_ai_logs.py logs/ai_debug/*.json | grep "BUG"
-   ```
-
-3. **Running Tests**:
-   ```bash
-   # Run all AI tests
-   python tests/ai_debug/run_all_tests.py
-   ```
-
-See [AI Debug Mode Documentation](docs/ai-debug-mode/) for complete details.
+**Current Coverage**: Frontend 82%, Backend 78%  
+**Goal**: Maintain >80% coverage
 
 ---
 
 ## 📚 Documentation
 
-Comprehensive documentation organized into categories:
-- **Architecture & Design**: System overview, patterns, principles
-- **Component Guides**: Backend, frontend, state machine deep dives  
-- **Tutorials**: Development setup, adding features, debugging
-- **API Reference**: WebSocket events, data structures, contracts
-
-📖 See [`/docs`](docs/) for all documentation (30+ guides).
-
----
-
-<details>
-<summary><h2>🤝 Contributing</h2></summary>
-
-We welcome contributions! Areas where you can help:
-- 🐛 Bug fixes
-- ✨ New features  
-- 📝 Documentation
-- 🧪 Test coverage
-- 🎨 UI/UX improvements
-
-See [Contributing Guide](docs/CONTRIBUTING_GUIDE.md) for detailed guidelines, code standards, and submission process.
-
-</details>
+- **Game Rules**: [RULES.md](RULES.md) - How to play Castellan
+- **Development Setup**: [docs/06-tutorials/LOCAL_DEVELOPMENT.md](docs/06-tutorials/LOCAL_DEVELOPMENT.md)
+- **WebSocket API**: [docs/WEBSOCKET_API.md](docs/WEBSOCKET_API.md)
+- **Adding Features**: [docs/06-tutorials/ADDING_NEW_FEATURES.md](docs/06-tutorials/ADDING_NEW_FEATURES.md)
+- **AI System**: [docs/05-ai-system/](docs/05-ai-system/)
+- **All Docs**: [/docs](docs/) - 30+ comprehensive guides
 
 ---
 
-## 🏗️ Architecture Evolution
+## 💬 Getting Help
 
-See [CHANGELOG.md](CHANGELOG.md) for the complete development history and architectural evolution of the project.
+- **Discord**: [Join our community](https://discord.gg/castellan) for real-time help
+- **Issues**: [GitHub Issues](https://github.com/andynenth/castellan/issues) for bugs/features
+- **Discussions**: [GitHub Discussions](https://github.com/andynenth/castellan/discussions) for ideas
 
----
-
-## 🔧 Troubleshooting
-
-For common issues and solutions, see:
-- [Troubleshooting Guide](docs/troubleshooting.md) - Comprehensive troubleshooting
-- [Operations Guide](OPERATIONS.md) - Production issues
-- [Migration Checklist](MIGRATION_CHECKLIST.md) - ECS to EC2 migration
+### Quick Tips
+- Check existing issues before creating new ones
+- Include error messages and steps to reproduce bugs
+- Join Discord for quick questions and community chat
 
 ---
 
-## 📞 Support
+## 🎯 Current Focus Areas
 
-- **Documentation**: [/docs](docs/)
-- **Issues**: [GitHub Issues](https://github.com/andynenth/castellan/issues)
-- **Discussions**: [GitHub Discussions](https://github.com/andynenth/castellan/discussions)
-
-For security vulnerabilities, please email directly instead of creating public issues.
+Help needed with:
+1. **Mobile Experience**: Improve touch controls and responsive design
+2. **Game Animations**: Add smooth transitions for piece movements
+3. **AI Strategies**: Create more challenging bot personalities
+4. **Performance**: Optimize for 100+ concurrent games
+5. **Internationalization**: Add language support beyond English
 
 ---
 
 ## 📄 License
 
-MIT © [Andy Nenthong](https://github.com/andynenth/castellan).  
-See [LICENSE](LICENSE) for details.
+MIT © [Andy Nenthong](https://github.com/andynenth). See [LICENSE](LICENSE).
+
+---
+
+<div align="center">
+  <strong>Ready to contribute? Let's build something awesome together! 🚀</strong>
+  
+  [Get Started](#-quick-start-2-minutes) • [Browse Issues](https://github.com/andynenth/castellan/issues) • [Join Discord](https://discord.gg/castellan)
+</div>

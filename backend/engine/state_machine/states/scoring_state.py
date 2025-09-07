@@ -307,29 +307,29 @@ class ScoringState(GameState):
                 f"📋 SCORING_FIX_DEBUG: {player.name} - declared: {declared}, actual: {actual}"
             )
 
-            # Calculate base score using dedicated scoring module
-            base_score = calculate_score(declared, actual)
-
-            # Calculate bonus and hit_value separately for frontend display
+            # Apply new scoring logic: multiplier only applies to base points (X), not bonuses
+            multiplier = getattr(game, "redeal_multiplier", 1)
+            
             if declared == 0 and actual == 0:
-                # Perfect zero prediction
+                # Perfect zero prediction - no multiplier on bonus
                 bonus = 3
                 hit_value = 0
+                final_score = 3  # No multiplier applied
+            elif declared == 0 and actual > 0:
+                # Failed zero declaration - penalty gets multiplied
+                bonus = 0
+                hit_value = -actual
+                final_score = -actual * multiplier
             elif declared > 0 and declared == actual:
-                # Perfect non-zero prediction
+                # Perfect non-zero prediction - multiply base, add bonus after
                 bonus = 5
                 hit_value = declared
+                final_score = (declared * multiplier) + 5
             else:
-                # Miss - no bonus
+                # Miss - penalty gets multiplied
                 bonus = 0
-                if declared == 0:
-                    hit_value = -actual  # Penalty for breaking zero
-                else:
-                    hit_value = -abs(declared - actual)  # Penalty for missing target
-
-            # Apply redeal multiplier
-            multiplier = getattr(game, "redeal_multiplier", 1)
-            final_score = base_score * multiplier
+                hit_value = -abs(declared - actual)
+                final_score = -abs(declared - actual) * multiplier
 
             # Update player's total score
             current_score = getattr(player, "score", 0)
@@ -343,6 +343,14 @@ class ScoringState(GameState):
                     f"🎯 PERFECT_ROUNDS_DEBUG: {player.name} had perfect round! perfect_rounds: {old_perfect_rounds} -> {player.perfect_rounds}"
                 )
 
+            # Calculate base_score for display (what it would be without multiplier)
+            if declared == 0 and actual == 0:
+                base_score = 3
+            elif declared > 0 and declared == actual:
+                base_score = declared + 5
+            else:
+                base_score = hit_value  # Already negative for penalties
+            
             # Store round score data
             self.round_scores[player.name] = {
                 "declared": declared,

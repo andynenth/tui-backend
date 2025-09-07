@@ -9,15 +9,17 @@ The Liap Tui game uses traditional Chinese chess pieces with a unique reveal mec
 ### Piece Hierarchy
 The game uses 7 different piece types from Chinese chess, each with specific point values:
 
-| Piece Type | Chinese Character | Red | Black | Point Value |
-|------------|-------------------|-----|-------|-------------|
-| GENERAL | 將/帥 | 帥 | 將 | 14 |
-| ADVISOR | 士/仕 | 仕 | 士 | 13 |
-| ELEPHANT | 相/象 | 相 | 象 | 10 |
-| CHARIOT | 車/俥 | 俥 | 車 | 9 |
-| HORSE | 馬/傌 | 傌 | 馬 | 7 |
-| CANNON | 炮/砲 | 砲 | 炮 | 8 |
-| SOLDIER | 兵/卒 | 兵 | 卒 | 11 |
+| Piece Type | Chinese Character | Red | Black | Red Point Value | Black Point Value |
+|------------|-------------------|-----|-------|-----------------|-------------------|
+| GENERAL | 將/帥 | 帥 | 將 | 14 | 13 |
+| ADVISOR | 士/仕 | 仕 | 士 | 12 | 11 |
+| ELEPHANT | 相/象 | 相 | 象 | 10 | 9 |
+| CHARIOT | 車/俥 | 俥 | 車 | 8 | 7 |
+| HORSE | 馬/傌 | 傌 | 馬 | 6 | 5 |
+| CANNON | 炮/砲 | 砲 | 炮 | 4 | 3 |
+| SOLDIER | 兵/卒 | 兵 | 卒 | 2 | 1 |
+
+**Important**: RED pieces are always 1 point stronger than their BLACK counterparts.
 
 ### Distribution
 - 32 total pieces (16 red, 16 black)
@@ -34,8 +36,8 @@ The backend represents pieces in string format:
 
 Examples:
 - `"GENERAL_RED(14)"`
-- `"HORSE_BLACK(7)"`
-- `"SOLDIER_RED(11)"`
+- `"HORSE_BLACK(5)"`
+- `"SOLDIER_RED(2)"`
 
 ### Data Flow
 1. **Dealing Phase**: Backend creates and distributes pieces

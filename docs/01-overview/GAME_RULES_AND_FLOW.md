@@ -37,22 +37,24 @@ Liap Tui is a strategic multiplayer card game inspired by traditional Chinese-Th
 The game uses 32 traditional Chinese chess pieces:
 
 #### Red Pieces (16 total)
-- **1 General** (帥) - 10 points
-- **2 Advisors** (仕) - 2 points each  
-- **2 Elephants** (相) - 2 points each
-- **2 Horses** (馬) - 4 points each
-- **2 Chariots** (車) - 9 points each
-- **2 Cannons** (炮) - 4.5 points each
-- **5 Soldiers** (兵) - 1 point each
+- **1 General** (帥) - 14 points
+- **2 Advisors** (仕) - 12 points each  
+- **2 Elephants** (相) - 10 points each
+- **2 Horses** (傌) - 6 points each
+- **2 Chariots** (俥) - 8 points each
+- **2 Cannons** (砲) - 4 points each
+- **5 Soldiers** (兵) - 2 points each
 
 #### Black Pieces (16 total)
-- **1 General** (將) - 10 points
-- **2 Advisors** (士) - 2 points each
-- **2 Elephants** (象) - 2 points each  
-- **2 Horses** (馬) - 4 points each
-- **2 Chariots** (車) - 9 points each
-- **2 Cannons** (炮) - 4.5 points each
+- **1 General** (將) - 13 points
+- **2 Advisors** (士) - 11 points each
+- **2 Elephants** (象) - 9 points each  
+- **2 Horses** (馬) - 5 points each
+- **2 Chariots** (車) - 7 points each
+- **2 Cannons** (炮) - 3 points each
 - **5 Soldiers** (卒) - 1 point each
+
+**Important**: RED pieces are always 1 point stronger than their BLACK counterparts.
 
 ### Hand Size
 - Each player receives **8 pieces** per round

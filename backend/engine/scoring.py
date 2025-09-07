@@ -3,11 +3,11 @@
 # Scoring Logic for Each Round
 # ------------------------------------------------------------------------
 # Rules:
-# - If declared = 0 and actual = 0 → +3 bonus points
-# - If declared = 0 but actual > 0 → penalty = -actual
-# - If declared == actual (non-zero) → score = declared + 5 bonus
-# - Otherwise → penalty = -abs(declared - actual)
-# - If this round was triggered by a redeal → score × multiplier
+# - If declared = 0 and actual = 0 → +3 bonus points (no multiplier)
+# - If declared = 0 but actual > 0 → penalty = -actual × multiplier
+# - If declared == actual (non-zero) → score = (declared × multiplier) + 5
+# - Otherwise → penalty = -abs(declared - actual) × multiplier
+# - Multipliers apply only to base points (X), not to bonuses (+3 or +5)
 # ------------------------------------------------------------------------
 
 

@@ -1,21 +1,36 @@
 #!/bin/bash
 # Purge Cloudflare cache for castellan.andynenth.dev
 
-# Configuration
-ZONE_ID="23a6d2d5eb8d91293fdaa75a2bee60fa"  # andynenth.dev zone
-API_TOKEN="uCwtKKmBTDF7qjghASBfRsICJa7xV56F_c8Iafrq"  # Your API token
+# Load environment variables from .env file
+if [ -f "../.env" ]; then
+    # Export the variables so they're available in this script
+    export $(grep -v '^#' ../.env | grep -E '^(CLOUDFLARE_ZONE_ID|CLOUDFLARE_API_TOKEN)=' | xargs)
+elif [ -f ".env" ]; then
+    export $(grep -v '^#' .env | grep -E '^(CLOUDFLARE_ZONE_ID|CLOUDFLARE_API_TOKEN)=' | xargs)
+fi
+
+# Configuration from environment
+ZONE_ID="${CLOUDFLARE_ZONE_ID}"
+API_TOKEN="${CLOUDFLARE_API_TOKEN}"
 
 # Colors
 GREEN='\033[0;32m'
 YELLOW='\033[1;33m'
 RED='\033[0;31m'
+BLUE='\033[0;34m'
 NC='\033[0m'
 
 # Check if credentials are set
-if [ "$ZONE_ID" = "YOUR_ZONE_ID" ] || [ "$API_TOKEN" = "YOUR_API_TOKEN" ]; then
-    echo -e "${RED}❌ Error: Please set ZONE_ID and API_TOKEN in this script${NC}"
-    echo "1. Find Zone ID: Cloudflare dashboard → Overview → Zone ID (right sidebar)"
-    echo "2. Create API Token: Cloudflare → My Profile → API Tokens → Create Token"
+if [ -z "$ZONE_ID" ] || [ -z "$API_TOKEN" ]; then
+    echo -e "${RED}❌ Error: Cloudflare credentials not found${NC}"
+    echo ""
+    echo "Please set these in your .env file:"
+    echo "  CLOUDFLARE_ZONE_ID=your_zone_id"
+    echo "  CLOUDFLARE_API_TOKEN=your_api_token"
+    echo ""
+    echo "To find these values:"
+    echo "1. Zone ID: Cloudflare dashboard → Overview → Zone ID (right sidebar)"
+    echo "2. API Token: Cloudflare → My Profile → API Tokens → Create Token"
     echo "   - Use template: 'Purge Cache'"
     echo "   - Or create custom with 'Zone:Cache Purge' permission"
     exit 1
@@ -29,8 +44,13 @@ purge_all() {
         -H "Content-Type: application/json" \
         --data '{"purge_everything":true}')
     
-    if echo "$response" | grep -q '"success":true'; then
+    if echo "$response" | grep -q '"success":[[:space:]]*true'; then
         echo -e "${GREEN}✅ Cache purged successfully!${NC}"
+        # Show zone ID if available
+        zone_id=$(echo "$response" | jq -r '.result.id // empty' 2>/dev/null)
+        if [ -n "$zone_id" ]; then
+            echo -e "${BLUE}   Zone ID: $zone_id${NC}"
+        fi
     else
         echo -e "${RED}❌ Error purging cache:${NC}"
         echo "$response" | jq '.' 2>/dev/null || echo "$response"
@@ -48,8 +68,13 @@ purge_urls() {
         -H "Content-Type: application/json" \
         --data "{\"files\":$urls}")
     
-    if echo "$response" | grep -q '"success":true'; then
+    if echo "$response" | grep -q '"success":[[:space:]]*true'; then
         echo -e "${GREEN}✅ URLs purged successfully!${NC}"
+        # Show number of files purged if available
+        file_count=$(echo "$response" | jq -r '.result.files | length // empty' 2>/dev/null)
+        if [ -n "$file_count" ]; then
+            echo -e "${BLUE}   Files purged: $file_count${NC}"
+        fi
     else
         echo -e "${RED}❌ Error purging URLs:${NC}"
         echo "$response" | jq '.' 2>/dev/null || echo "$response"

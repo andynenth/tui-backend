@@ -66,6 +66,26 @@ export const themes = {
 
 // Get current theme from localStorage
 export const getTheme = () => {
+  // Check URL path first
+  const path = window.location.pathname;
+  
+  // Define URL-to-theme mappings
+  const urlThemeMappings = {
+    '/tui': 'classic',
+    '/classic': 'classic',
+    '/modern': 'modern',
+    '/medieval': 'medieval'
+  };
+  
+  // Check if current path matches a theme URL
+  const urlTheme = urlThemeMappings[path];
+  if (urlTheme && themes[urlTheme]) {
+    // Save to localStorage so theme persists during session
+    localStorage.setItem('liap-tui-theme', urlTheme);
+    return themes[urlTheme];
+  }
+  
+  // Fall back to localStorage or default
   const saved = localStorage.getItem('liap-tui-theme');
   return saved && themes[saved] ? themes[saved] : themes.medieval;
 };

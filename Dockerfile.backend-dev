@@ -1,0 +1,64 @@
+# Backend development Dockerfile - mirrors production but with dev tools
+FROM python:3.11-slim
+WORKDIR /app
+
+# Create non-root user with specific UID that matches EC2 ubuntu user
+# This prevents permission issues when mounting volumes
+RUN groupadd -r -g 1000 appuser && useradd -r -u 1000 -g appuser appuser
+
+# Install system dependencies for health checks and development
+RUN apt-get update && apt-get install -y \
+    curl \
+    git \
+    vim \
+    && rm -rf /var/lib/apt/lists/*
+
+# Install Python dependencies
+COPY requirements.txt ./
+RUN pip install --no-cache-dir -r requirements.txt
+
+# Install additional dev dependencies
+RUN pip install --no-cache-dir \
+    ipython \
+    ipdb \
+    pytest \
+    pytest-asyncio \
+    pytest-cov \
+    black \
+    pylint \
+    watchdog
+
+# Create necessary directories with correct permissions
+RUN mkdir -p /app/data /app/logs /app/backend/static && \
+    chown -R appuser:appuser /app
+
+# Copy application files (these will be overridden by volume mounts)
+COPY backend/ ./backend
+COPY shared/ ./shared
+
+# Copy favicon.ico to the root directory
+COPY favicon.ico ./
+
+# Set ownership and switch to non-root user
+RUN chown -R appuser:appuser /app
+USER appuser
+
+# Health check using existing health endpoint
+HEALTHCHECK --interval=30s --timeout=10s --start-period=30s --retries=3 \
+  CMD curl -f http://localhost:5050/api/health || exit 1
+
+# Environment configuration
+ENV PYTHONPATH=/app
+ENV DEBUG=true
+ENV API_HOST=0.0.0.0
+ENV API_PORT=5050
+ENV RUNNING_IN_DOCKER=true
+
+# Development specific
+ENV PYTHONDONTWRITEBYTECODE=1
+ENV PYTHONUNBUFFERED=1
+
+EXPOSE 5050
+
+# Default command - will be overridden by docker-compose for hot reload
+CMD ["uvicorn", "backend.api.main:app", "--host", "0.0.0.0", "--port", "5050", "--reload"]

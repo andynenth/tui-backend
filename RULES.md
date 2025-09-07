@@ -107,11 +107,15 @@ A player wins by reaching **50 points**.
 
 | Case | Result |
 | --- | --- |
-| Declared 0, captured 0 | +3 points (bonus) |
-| Declared 0, captured > 0 | −captured (penalty) |
-| Declared X, captured X | X + 5 points (perfect hit) |
-| Declared X, captured ≠ X | − |
-- If redeal occurred → **multiply score** by ×2, ×3, etc.
+| Declared 0, captured 0 | +3 points (bonus, no multiplier) |
+| Declared 0, captured > 0 | −captured × multiplier (penalty) |
+| Declared X, captured X | (X × multiplier) + 5 points (perfect hit) |
+| Declared X, captured ≠ X | −|X − captured| × multiplier (penalty) |
+
+### Multiplier Rules:
+- If redeal occurred → multiplier increases: ×2, ×3, ×4, etc.
+- **Multipliers apply ONLY to base points (X), not to bonuses (+3 or +5)**
+- Example: Declared 3, captured 3 with 2× multiplier = (3 × 2) + 5 = 11 points
 
 ---
 
